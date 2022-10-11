@@ -197,6 +197,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
 
   net::NetworkIsolationKey GetNetworkIsolationKey() const;
 
+  net::NetworkAnonymizationKey GetNetworkAnonymizationKey() const;
+
   const blink::StorageKey& GetStorageKey() const;
 
   const base::UnguessableToken& GetReportingSource() const {

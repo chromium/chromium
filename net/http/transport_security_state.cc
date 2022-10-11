@@ -459,7 +459,7 @@ TransportSecurityState::PKPStatus TransportSecurityState::CheckPublicKeyPins(
     const X509Certificate* served_certificate_chain,
     const X509Certificate* validated_certificate_chain,
     const PublicKeyPinReportStatus report_status,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     std::string* pinning_failure_log) {
   // Perform pin validation only if the server actually has public key pins.
   if (!HasPublicKeyPins(host_port_pair.host())) {
@@ -469,7 +469,7 @@ TransportSecurityState::PKPStatus TransportSecurityState::CheckPublicKeyPins(
   PKPStatus pin_validity = CheckPublicKeyPinsImpl(
       host_port_pair, is_issued_by_known_root, public_key_hashes,
       served_certificate_chain, validated_certificate_chain, report_status,
-      network_isolation_key, pinning_failure_log);
+      network_anonymization_key, pinning_failure_log);
 
   // Don't track statistics when a local trust anchor would override the pinning
   // anyway.
@@ -497,7 +497,7 @@ TransportSecurityState::CheckCTRequirements(
         signed_certificate_timestamps,
     const ExpectCTReportStatus report_status,
     ct::CTPolicyCompliance policy_compliance,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
   std::string hostname = host_port_pair.host();
 
@@ -528,13 +528,13 @@ TransportSecurityState::CheckCTRequirements(
   bool required_via_expect_ct = false;
   ExpectCTState state;
   if (IsDynamicExpectCTEnabled() &&
-      GetDynamicExpectCTState(hostname, network_isolation_key, &state)) {
+      GetDynamicExpectCTState(hostname, network_anonymization_key, &state)) {
     if (!complies && expect_ct_reporter_ && !state.report_uri.is_empty() &&
         report_status == ENABLE_EXPECT_CT_REPORTS) {
       MaybeNotifyExpectCTFailed(
           host_port_pair, state.report_uri, state.expiry,
           validated_certificate_chain, served_certificate_chain,
-          signed_certificate_timestamps, network_isolation_key);
+          signed_certificate_timestamps, network_anonymization_key);
     }
     required_via_expect_ct = state.enforce;
   }
@@ -721,7 +721,7 @@ void TransportSecurityState::AddExpectCTInternal(
     const base::Time& expiry,
     bool enforce,
     const GURL& report_uri,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!IsDynamicExpectCTEnabled())
     return;
@@ -741,7 +741,7 @@ void TransportSecurityState::AddExpectCTInternal(
   // Only store new state when Expect-CT is explicitly enabled. If it is
   // disabled, remove the state from the enabled hosts.
   ExpectCTStateIndex index = CreateExpectCTStateIndex(
-      HashHost(canonicalized_host), network_isolation_key);
+      HashHost(canonicalized_host), network_anonymization_key);
   if (expect_ct_state.enforce || !expect_ct_state.report_uri.is_empty()) {
     enabled_expect_ct_hosts_[index] = expect_ct_state;
     MaybePruneExpectCTState();
@@ -766,7 +766,7 @@ TransportSecurityState::CheckPinsAndMaybeSendReport(
     const X509Certificate* served_certificate_chain,
     const X509Certificate* validated_certificate_chain,
     const TransportSecurityState::PublicKeyPinReportStatus report_status,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     std::string* failure_log) {
   if (pkp_state.CheckPublicKeyPins(hashes, failure_log))
     return PKPStatus::OK;
@@ -807,7 +807,7 @@ TransportSecurityState::CheckPinsAndMaybeSendReport(
       base::TimeTicks::Now() + base::Minutes(kTimeToRememberReportsMins));
 
   report_sender_->Send(pkp_state.report_uri, "application/json; charset=utf-8",
-                       serialized_report, network_isolation_key,
+                       serialized_report, network_anonymization_key,
                        base::OnceCallback<void()>(),
                        base::OnceCallback<void(const GURL&, int, int)>());
   return PKPStatus::VIOLATED;
@@ -841,7 +841,7 @@ void TransportSecurityState::MaybeNotifyExpectCTFailed(
     const X509Certificate* served_certificate_chain,
     const SignedCertificateTimestampAndStatusList&
         signed_certificate_timestamps,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   // Do not send repeated reports to the same host/port pair within
   // |kTimeToRememberReportsMins|. Theoretically, there could be scenarios in
   // which the same host/port generates different reports and it would be useful
@@ -859,7 +859,7 @@ void TransportSecurityState::MaybeNotifyExpectCTFailed(
   expect_ct_reporter_->OnExpectCTFailed(
       host_port_pair, report_uri, expiration, validated_certificate_chain,
       served_certificate_chain, signed_certificate_timestamps,
-      network_isolation_key);
+      network_anonymization_key);
 }
 
 bool TransportSecurityState::DeleteDynamicDataForHost(const std::string& host) {
@@ -1014,17 +1014,17 @@ void TransportSecurityState::AddExpectCT(
     const base::Time& expiry,
     bool enforce,
     const GURL& report_uri,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AddExpectCTInternal(host, base::Time::Now(), expiry, enforce, report_uri,
-                      network_isolation_key);
+                      network_anonymization_key);
 }
 
 void TransportSecurityState::ProcessExpectCTHeader(
     const std::string& value,
     const HostPortPair& host_port_pair,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // If a site sends `Expect-CT: preload` and appears on the preload list, they
@@ -1049,7 +1049,7 @@ void TransportSecurityState::ProcessExpectCTHeader(
       MaybeNotifyExpectCTFailed(
           host_port_pair, state.report_uri, base::Time(), ssl_info.cert.get(),
           ssl_info.unverified_cert.get(),
-          ssl_info.signed_certificate_timestamps, network_isolation_key);
+          ssl_info.signed_certificate_timestamps, network_anonymization_key);
     }
     return;
   }
@@ -1089,17 +1089,17 @@ void TransportSecurityState::ProcessExpectCTHeader(
     }
     ExpectCTState state;
     if (expect_ct_reporter_ && !report_uri.is_empty() &&
-        !GetDynamicExpectCTState(host_port_pair.host(), network_isolation_key,
-                                 &state)) {
+        !GetDynamicExpectCTState(host_port_pair.host(),
+                                 network_anonymization_key, &state)) {
       MaybeNotifyExpectCTFailed(
           host_port_pair, report_uri, base::Time(), ssl_info.cert.get(),
           ssl_info.unverified_cert.get(),
-          ssl_info.signed_certificate_timestamps, network_isolation_key);
+          ssl_info.signed_certificate_timestamps, network_anonymization_key);
     }
     return;
   }
   AddExpectCTInternal(host_port_pair.host(), now, now + max_age, enforce,
-                      report_uri, network_isolation_key);
+                      report_uri, network_anonymization_key);
 }
 
 // static
@@ -1135,7 +1135,7 @@ TransportSecurityState::CheckPublicKeyPinsImpl(
     const X509Certificate* served_certificate_chain,
     const X509Certificate* validated_certificate_chain,
     const PublicKeyPinReportStatus report_status,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     std::string* failure_log) {
   PKPState pkp_state;
   bool found_state = GetPKPState(host_port_pair.host(), &pkp_state);
@@ -1146,7 +1146,7 @@ TransportSecurityState::CheckPublicKeyPinsImpl(
   return CheckPinsAndMaybeSendReport(
       host_port_pair, is_issued_by_known_root, pkp_state, hashes,
       served_certificate_chain, validated_certificate_chain, report_status,
-      network_isolation_key, failure_log);
+      network_anonymization_key, failure_log);
 }
 
 bool TransportSecurityState::GetStaticSTSState(const std::string& host,
@@ -1342,7 +1342,7 @@ bool TransportSecurityState::GetDynamicPKPState(const std::string& host,
 
 bool TransportSecurityState::GetDynamicExpectCTState(
     const std::string& host,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     ExpectCTState* result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -1352,7 +1352,7 @@ bool TransportSecurityState::GetDynamicExpectCTState(
 
   base::Time current_time(base::Time::Now());
   auto j = enabled_expect_ct_hosts_.find(CreateExpectCTStateIndex(
-      HashHost(canonicalized_host), network_isolation_key));
+      HashHost(canonicalized_host), network_anonymization_key));
   if (j == enabled_expect_ct_hosts_.end())
     return false;
   // If the entry is invalid, drop it.
@@ -1376,12 +1376,12 @@ void TransportSecurityState::AddOrUpdateEnabledSTSHosts(
 
 void TransportSecurityState::AddOrUpdateEnabledExpectCTHosts(
     const std::string& hashed_host,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const ExpectCTState& state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(state.enforce || !state.report_uri.is_empty());
   enabled_expect_ct_hosts_[CreateExpectCTStateIndex(
-      hashed_host, network_isolation_key)] = state;
+      hashed_host, network_anonymization_key)] = state;
 }
 
 TransportSecurityState::STSState::STSState() = default;
@@ -1412,12 +1412,12 @@ TransportSecurityState::ExpectCTState::~ExpectCTState() = default;
 
 TransportSecurityState::ExpectCTStateIndex::ExpectCTStateIndex(
     const std::string& hashed_host,
-    const NetworkIsolationKey& network_isolation_key,
-    bool respect_network_isolation_keyn_key)
+    const NetworkAnonymizationKey& network_anonymization_key,
+    bool respect_network_anonymization_key)
     : hashed_host(hashed_host),
-      network_isolation_key(respect_network_isolation_keyn_key
-                                ? network_isolation_key
-                                : NetworkIsolationKey()) {}
+      network_anonymization_key(respect_network_anonymization_key
+                                    ? network_anonymization_key
+                                    : NetworkAnonymizationKey()) {}
 
 TransportSecurityState::ExpectCTStateIterator::ExpectCTStateIterator(
     const TransportSecurityState& state)
@@ -1491,8 +1491,8 @@ bool TransportSecurityState::PKPState::HasPublicKeyPins() const {
 TransportSecurityState::ExpectCTStateIndex
 TransportSecurityState::CreateExpectCTStateIndex(
     const std::string& hashed_host,
-    const NetworkIsolationKey& network_isolation_key) {
-  return ExpectCTStateIndex(hashed_host, network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  return ExpectCTStateIndex(hashed_host, network_anonymization_key,
                             key_expect_ct_by_nik_);
 }
 
@@ -1535,7 +1535,7 @@ void TransportSecurityState::MaybePruneExpectCTState() {
       return;
 
     // Entries that are older than the prunable time window, are report-only, or
-    // have a transient NetworkIsolationKey, are considered prunable.
+    // have a transient NetworkAnonymizationKey, are considered prunable.
     //
     // If |key_expect_ct_by_nik_| is false, all entries have an empty NIK.
     // IsTransient() returns true for the empty NIK, despite entries being saved
@@ -1544,7 +1544,7 @@ void TransportSecurityState::MaybePruneExpectCTState() {
             last_prunable_observation_time ||
         !expect_ct_iterator->second.enforce ||
         (key_expect_ct_by_nik_ &&
-         expect_ct_iterator->first.network_isolation_key.IsTransient())) {
+         expect_ct_iterator->first.network_anonymization_key.IsTransient())) {
       prunable_expect_ct_entries.push_back(expect_ct_iterator);
     }
     ++expect_ct_iterator;
@@ -1572,22 +1572,23 @@ void TransportSecurityState::MaybePruneExpectCTState() {
   }
 
   // If there are fewer than |kExpectCTPruneMin| entries remaining, or entries
-  // are not being keyed by NetworkIsolationKey, nothing left to do.
+  // are not being keyed by NetworkAnonymizationKey, nothing left to do.
   if (enabled_expect_ct_hosts_.size() <= expect_ct_prune_min ||
       !key_expect_ct_by_nik_) {
     return;
   }
 
-  // Otherwise, cap the number of entries per NetworkIsolationKey to
+  // Otherwise, cap the number of entries per NetworkAnonymizationKey to
   // |kMaxEntriesPerNik|.
 
   // Create a vector of all the ExpectCT entries for each NIK.
-  std::map<net::NetworkIsolationKey, std::vector<ExpectCTStateMap::iterator>>
+  std::map<net::NetworkAnonymizationKey,
+           std::vector<ExpectCTStateMap::iterator>>
       nik_map;
   for (auto expect_ct_iterator = enabled_expect_ct_hosts_.begin();
        expect_ct_iterator != enabled_expect_ct_hosts_.end();
        ++expect_ct_iterator) {
-    nik_map[expect_ct_iterator->first.network_isolation_key].push_back(
+    nik_map[expect_ct_iterator->first.network_anonymization_key].push_back(
         expect_ct_iterator);
   }
 
@@ -1614,8 +1615,8 @@ bool TransportSecurityState::ExpectCTPruningSorter(
     const ExpectCTStateMap::iterator& it2) {
   // std::tie requires r-values, so have to put these on the stack to use
   // std::tie.
-  bool is_not_transient1 = !it1->first.network_isolation_key.IsTransient();
-  bool is_not_transient2 = !it2->first.network_isolation_key.IsTransient();
+  bool is_not_transient1 = !it1->first.network_anonymization_key.IsTransient();
+  bool is_not_transient2 = !it2->first.network_anonymization_key.IsTransient();
   return std::tie(is_not_transient1, it1->second.enforce,
                   it1->second.last_observed) <
          std::tie(is_not_transient2, it2->second.enforce,

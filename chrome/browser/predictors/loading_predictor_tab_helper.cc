@@ -493,8 +493,9 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
 
   PreconnectPrediction prediction;
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
-  net::NetworkIsolationKey network_isolation_key(main_frame_origin,
-                                                 main_frame_origin);
+  net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
+  net::NetworkAnonymizationKey network_anonymization_key(main_frame_site,
+                                                         main_frame_site);
   std::set<url::Origin> predicted_origins;
   std::vector<GURL> predicted_subresources;
   const auto lp_metadata = metadata.loading_predictor_metadata();
@@ -510,7 +511,7 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
       if (ShouldPrefetchDestination(destination)) {
         // TODO(falken): Detect duplicates.
         prediction.prefetch_requests.emplace_back(
-            subresource_url, network_isolation_key, destination);
+            subresource_url, network_anonymization_key, destination);
       }
     } else if (should_add_preconnects_to_prediction) {
       url::Origin subresource_origin = url::Origin::Create(subresource_url);
@@ -523,7 +524,7 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
         continue;
       predicted_origins.insert(subresource_origin);
       prediction.requests.emplace_back(subresource_origin, 1,
-                                       network_isolation_key);
+                                       network_anonymization_key);
     }
   }
 

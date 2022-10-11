@@ -765,16 +765,18 @@ class MockNetworkContext : public network::TestNetworkContext {
         tcp_failure_type_, std::move(receiver), std::move(callback)));
   }
 
-  void ResolveHost(network::mojom::HostResolverHostPtr host,
-                   const net::NetworkIsolationKey& network_isolation_key,
-                   network::mojom::ResolveHostParametersPtr optional_parameters,
-                   mojo::PendingRemote<network::mojom::ResolveHostClient>
-                       pending_response_client) override {
+  void ResolveHost(
+      network::mojom::HostResolverHostPtr host,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      network::mojom::ResolveHostParametersPtr optional_parameters,
+      mojo::PendingRemote<network::mojom::ResolveHostClient>
+          pending_response_client) override {
     EXPECT_EQ(browser_->tab_strip_model()
                   ->GetActiveWebContents()
                   ->GetPrimaryMainFrame()
-                  ->GetNetworkIsolationKey(),
-              network_isolation_key);
+                  ->GetIsolationInfoForSubresources()
+                  .network_anonymization_key(),
+              network_anonymization_key);
     mojo::Remote<network::mojom::ResolveHostClient> response_client(
         std::move(pending_response_client));
     response_client->OnComplete(
@@ -1227,9 +1229,9 @@ TEST_PPAPI_NACL_DISALLOWED_SOCKETS(TCPSocketPrivateDisallowed)
 TEST_PPAPI_NACL_DISALLOWED_SOCKETS(UDPSocketPrivateDisallowed)
 
 // Checks that a hostname used by the HostResolver tests ("host_resolver.test")
-// is present in the DNS cache with the NetworkIsolationKey associated with the
-// foreground WebContents - this is needed so as not to leak what hostnames were
-// looked up across tabs with different first party origins.
+// is present in the DNS cache with the NetworkAnonymizationKey associated with
+// the foreground WebContents - this is needed so as not to leak what hostnames
+// were looked up across tabs with different first party origins.
 void CheckTestHostNameUsedWithCorrectNetworkIsolationKey(Browser* browser) {
   network::mojom::NetworkContext* network_context =
       browser->profile()->GetDefaultStoragePartition()->GetNetworkContext();
@@ -1242,13 +1244,15 @@ void CheckTestHostNameUsedWithCorrectNetworkIsolationKey(Browser* browser) {
   params->source = net::HostResolverSource::LOCAL_ONLY;
   // Match the parameters used by the test.
   params->include_canonical_name = true;
-  net::NetworkIsolationKey network_isolation_key =
+  net::NetworkAnonymizationKey network_anonymization_key =
       browser->tab_strip_model()
           ->GetActiveWebContents()
           ->GetPrimaryMainFrame()
-          ->GetNetworkIsolationKey();
-  network::DnsLookupResult result1 = network::BlockingDnsLookup(
-      network_context, kHostPortPair, std::move(params), network_isolation_key);
+          ->GetIsolationInfoForSubresources()
+          .network_anonymization_key();
+  network::DnsLookupResult result1 =
+      network::BlockingDnsLookup(network_context, kHostPortPair,
+                                 std::move(params), network_anonymization_key);
   EXPECT_EQ(net::OK, result1.error);
   ASSERT_TRUE(result1.resolved_addresses.has_value());
   ASSERT_EQ(1u, result1.resolved_addresses->size());
@@ -1259,15 +1263,15 @@ void CheckTestHostNameUsedWithCorrectNetworkIsolationKey(Browser* browser) {
             result1.resolved_addresses.value()[0].ToStringWithoutPort());
 
   // Check that the entry isn't present in the cache with the empty
-  // NetworkIsolationKey().
+  // NetworkAnonymizationKey().
   params = network::mojom::ResolveHostParameters::New();
   // Cache only lookup.
   params->source = net::HostResolverSource::LOCAL_ONLY;
   // Match the parameters used by the test.
   params->include_canonical_name = true;
-  network::DnsLookupResult result2 =
-      network::BlockingDnsLookup(network_context, kHostPortPair,
-                                 std::move(params), net::NetworkIsolationKey());
+  network::DnsLookupResult result2 = network::BlockingDnsLookup(
+      network_context, kHostPortPair, std::move(params),
+      net::NetworkAnonymizationKey());
   EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, result2.error);
 }
 

@@ -9,7 +9,7 @@ import "services/network/public/mojom/address_list.mojom";
 import "services/network/public/mojom/host_resolver_endpoint_result.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
-import "services/network/public/mojom/network_isolation_key.mojom";
+import "services/network/public/mojom/network_anonymization_key.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "url/mojom/scheme_host_port.mojom";
@@ -297,11 +297,11 @@ interface HostResolver {
   // error code, and on success (network error code OK), an AddressList. All
   // results are sent via the passed `response_client`.
   //
-  // `network_isolation_key` specifies what NetworkIsolationKey to use as an
-  // index into the host cache. This both allows a URLLoader created with the
-  // same NetworkIsolationKey to access the host cache entry populated by a
+  // `network_anonymization_key` specifies what NetworkAnonymizationKey to use
+  // as index into the host cache. This both allows a URLLoader created with the
+  // same NetworkAnonymizationKey to access the host cache entry populated by a
   // call to the HostResolver, and prevents the result from being leaked to
-  // URLLoaders made using a different NetworkIsolationKey.
+  // URLLoaders made using a different NetworkAnonymizationKey.
   //
   // Additional optional parameters may be set using `optional_parameters`. If
   // unset, reasonable defaults will be used, equivalent to using a
@@ -324,7 +324,7 @@ interface HostResolver {
   // should not be made without first redirecting an http or ws request to an
   // https or wss request.
   ResolveHost(HostResolverHost host,
-              NetworkIsolationKey network_isolation_key,
+              NetworkAnonymizationKey network_anonymization_key,
               ResolveHostParameters? optional_parameters,
               pending_remote<ResolveHostClient> response_client);
 

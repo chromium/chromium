@@ -104,10 +104,10 @@ void SearchEnginePreconnector::PreconnectDSE() {
                                                kDefaultSkipInBackground) ||
       is_browser_app_likely_in_foreground) {
     net::SchemefulSite schemeful_site(preconnect_url);
-    net::NetworkIsolationKey network_isolation_key(schemeful_site,
-                                                   schemeful_site);
+    net::NetworkAnonymizationKey network_anonymziation_key(schemeful_site,
+                                                           schemeful_site);
     loading_predictor->PreconnectURLIfAllowed(
-        preconnect_url, /*allow_credentials=*/true, network_isolation_key);
+        preconnect_url, /*allow_credentials=*/true, network_anonymziation_key);
   }
 
   // The delay beyond the idle socket timeout that net uses when

@@ -116,7 +116,7 @@ class NetworkContextForTesting : public network::TestNetworkContext {
   // http2/http3/multihost.com, results include endpoint_results_with_metadata
   // as well as resolved_addresses.
   void ResolveHost(network::mojom::HostResolverHostPtr host,
-                   const net::NetworkIsolationKey& network_isolation_key,
+                   const net::NetworkAnonymizationKey& network_isolation_key,
                    network::mojom::ResolveHostParametersPtr optional_parameters,
                    mojo::PendingRemote<network::mojom::ResolveHostClient>
                        pending_response_client) override {
@@ -227,10 +227,10 @@ class NetInternalsTest::MessageHandler : public content::WebUIMessageHandler {
 
   NetworkContextForTesting network_context_for_testing_;
 
-  // Single NetworkIsolationKey used for all DNS lookups, so repeated lookups
-  // use the same cache key.
-  net::NetworkIsolationKey network_isolation_key_{
-      net::NetworkIsolationKey::CreateTransient()};
+  // Single NetworkAnonymizationKey used for all DNS lookups, so repeated
+  // lookups use the same cache key.
+  net::NetworkAnonymizationKey network_isolation_key_{
+      net::NetworkAnonymizationKey::CreateTransient()};
 
   base::WeakPtrFactory<MessageHandler> weak_factory_{this};
 };

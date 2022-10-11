@@ -442,12 +442,12 @@ void PrefetchService::StartProxyLookupCheck(
 
   // Start proxy check for this prefetch, and give ownership of the
   // |ProxyLookupClientImpl| to |prefetch_container|.
-  net::NetworkIsolationKey network_isolation_key(
+  net::NetworkAnonymizationKey network_anonymization_key(
       net::SchemefulSite(prefetch_container->GetURL()),
       net::SchemefulSite(prefetch_container->GetURL()));
   prefetch_container->TakeProxyLookupClient(
       std::make_unique<ProxyLookupClientImpl>(
-          prefetch_container->GetURL(), network_isolation_key,
+          prefetch_container->GetURL(), network_anonymization_key,
           base::BindOnce(&PrefetchService::OnGotProxyLookupResult,
                          weak_method_factory_.GetWeakPtr(), prefetch_container,
                          std::move(result_callback)),

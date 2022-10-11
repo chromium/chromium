@@ -46,9 +46,9 @@ int HttpCacheLookupManager::LookupTransaction::StartLookup(
   });
 
   request_->url = push_helper_->GetURL();
-  request_->network_isolation_key = push_helper_->GetNetworkAnonymizationKey();
-  request_->network_anonymization_key =
-      push_helper_->GetNetworkAnonymizationKey();
+  // TODO(crbug/1355929) Remove push helper.
+  request_->network_isolation_key = NetworkIsolationKey();
+  request_->network_anonymization_key = NetworkAnonymizationKey();
   request_->method = "GET";
   request_->load_flags = LOAD_ONLY_FROM_CACHE | LOAD_SKIP_CACHE_VALIDATION;
   cache->CreateTransaction(DEFAULT_PRIORITY, &transaction_);

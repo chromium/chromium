@@ -31,13 +31,13 @@ CrossOriginEmbedderPolicyReporter::CrossOriginEmbedderPolicyReporter(
     const absl::optional<std::string>& endpoint,
     const absl::optional<std::string>& report_only_endpoint,
     const base::UnguessableToken& reporting_source,
-    const net::NetworkIsolationKey& network_isolation_key)
+    const net::NetworkAnonymizationKey& network_anonymization_key)
     : storage_partition_(std::move(storage_partition)),
       context_url_(context_url),
       endpoint_(endpoint),
       report_only_endpoint_(report_only_endpoint),
       reporting_source_(reporting_source),
-      network_isolation_key_(network_isolation_key) {
+      network_anonymization_key_(network_anonymization_key) {
   DCHECK(storage_partition_);
   DCHECK(!reporting_source_.is_empty());
 }
@@ -121,7 +121,7 @@ void CrossOriginEmbedderPolicyReporter::QueueAndNotify(
     if (auto* storage_partition = storage_partition_.get()) {
       storage_partition->GetNetworkContext()->QueueReport(
           kType, *endpoint, context_url_, reporting_source_,
-          network_isolation_key_,
+          network_anonymization_key_,
           /*user_agent=*/absl::nullopt, std::move(body_to_pass));
     }
   }

@@ -30,7 +30,7 @@
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_flags.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -86,22 +86,22 @@ class MockExpectCTReporter
       const net::X509Certificate* served_certificate_chain,
       const net::SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps,
-      const net::NetworkIsolationKey& network_isolation_key) override {
+      const net::NetworkAnonymizationKey& network_anonymization_key) override {
     num_failures_++;
     report_uri_ = report_uri;
-    network_isolation_key_ = network_isolation_key;
+    network_anonymization_key_ = network_anonymization_key;
   }
 
   int num_failures() const { return num_failures_; }
   const GURL& report_uri() const { return report_uri_; }
-  const net::NetworkIsolationKey& network_isolation_key() const {
-    return network_isolation_key_;
+  const net::NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
   }
 
  private:
   int num_failures_ = 0;
   GURL report_uri_;
-  net::NetworkIsolationKey network_isolation_key_;
+  net::NetworkAnonymizationKey network_anonymization_key_;
 };
 
 class TestBrowserClient : public ContentBrowserClient {
@@ -368,7 +368,7 @@ class SignedExchangeHandlerTest
         std::move(source_stream_),
         base::BindOnce(&SignedExchangeHandlerTest::OnHeaderFound,
                        base::Unretained(this)),
-        std::move(cert_fetcher_factory_), network_isolation_key_,
+        std::move(cert_fetcher_factory_), network_anonymization_key_,
         absl::nullopt /* outer_request_isolation_info */, net::LOAD_NORMAL,
         net::IPEndPoint(),
         std::make_unique<blink::WebPackageRequestMatcher>(
@@ -407,10 +407,10 @@ class SignedExchangeHandlerTest
                              ocsp_revocation_status);
   }
 
-  // Sets the NetworkIsolationKey used by CreateSignedExchangeHandler().
-  void set_network_isolation_key(
-      const net::NetworkIsolationKey& network_isolation_key) {
-    network_isolation_key_ = network_isolation_key;
+  // Sets the NetworkAnonymizationKey used by CreateSignedExchangeHandler().
+  void set_network_anonymization_key(
+      const net::NetworkAnonymizationKey& network_anonymization_key) {
+    network_anonymization_key_ = network_anonymization_key;
   }
 
  protected:
@@ -457,7 +457,7 @@ class SignedExchangeHandlerTest
       original_ignore_errors_spki_list_;
   std::unique_ptr<net::MockSourceStream> source_stream_;
   std::unique_ptr<MockSignedExchangeCertFetcherFactory> cert_fetcher_factory_;
-  net::NetworkIsolationKey network_isolation_key_;
+  net::NetworkAnonymizationKey network_anonymization_key_;
 
   bool read_header_ = false;
   SignedExchangeLoadResult result_;
@@ -907,11 +907,11 @@ TEST_P(SignedExchangeHandlerTest, NotEnoughSCTsFromPubliclyTrustedCert) {
 }
 
 TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
-  const net::NetworkIsolationKey kNetworkIsolationKey =
-      net::NetworkIsolationKey::CreateTransient();
+  const net::NetworkAnonymizationKey kNetworkIsolationKey =
+      net::NetworkAnonymizationKey::CreateTransient();
   const GURL kReportUri = GURL("https://report.test/");
 
-  set_network_isolation_key(kNetworkIsolationKey);
+  set_network_anonymization_key(kNetworkIsolationKey);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -961,7 +961,8 @@ TEST_P(SignedExchangeHandlerTest, ReportUsesNetworkIsolationKey) {
 
   ASSERT_EQ(1, expect_ct_reporter.num_failures());
   EXPECT_EQ(kReportUri, expect_ct_reporter.report_uri());
-  EXPECT_EQ(kNetworkIsolationKey, expect_ct_reporter.network_isolation_key());
+  EXPECT_EQ(kNetworkIsolationKey,
+            expect_ct_reporter.network_anonymization_key());
 }
 
 TEST_P(SignedExchangeHandlerTest, CTRequirementsMetForPubliclyTrustedCert) {

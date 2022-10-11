@@ -19,7 +19,7 @@ class GURL;
 
 namespace net {
 
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class URLRequestContext;
 
 // ReportSender asynchronously sends serialized reports to a URI.
@@ -55,7 +55,7 @@ class NET_EXPORT ReportSender
   void Send(const GURL& report_uri,
             base::StringPiece content_type,
             base::StringPiece report,
-            const NetworkIsolationKey& network_isolation_key,
+            const NetworkAnonymizationKey& network_anonymization_key,
             SuccessCallback success_callback,
             ErrorCallback error_callback) override;
 

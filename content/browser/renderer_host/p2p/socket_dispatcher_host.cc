@@ -71,7 +71,7 @@ void P2PSocketDispatcherHost::StopRtpDump(bool incoming, bool outgoing) {
 void P2PSocketDispatcherHost::BindReceiver(
     RenderProcessHostImpl& process,
     mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver,
-    net::NetworkIsolationKey isolation_key,
+    net::NetworkAnonymizationKey anonymization_key,
     const GlobalRenderFrameHostId& render_frame_host_id) {
   DCHECK_EQ(process.GetID(), render_process_id_);
 
@@ -83,7 +83,7 @@ void P2PSocketDispatcherHost::BindReceiver(
   mojo::PendingRemote<network::mojom::P2PTrustedSocketManager>
       pending_trusted_socket_manager;
   process.GetStoragePartition()->GetNetworkContext()->CreateP2PSocketManager(
-      isolation_key, std::move(trusted_socket_manager_client),
+      anonymization_key, std::move(trusted_socket_manager_client),
       pending_trusted_socket_manager.InitWithNewPipeAndPassReceiver(),
       std::move(receiver));
   mojo::Remote<network::mojom::P2PTrustedSocketManager> trusted_socket_manager(

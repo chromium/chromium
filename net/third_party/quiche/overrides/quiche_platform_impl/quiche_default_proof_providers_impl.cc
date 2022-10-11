@@ -58,14 +58,15 @@ class ProofVerifierChromiumWithOwnership : public net::ProofVerifierChromium {
   ProofVerifierChromiumWithOwnership(
       std::unique_ptr<net::CertVerifier> cert_verifier,
       std::string host)
-      : net::ProofVerifierChromium(cert_verifier.get(),
-                                   &ct_policy_enforcer_,
-                                   &transport_security_state_,
-                                   /*sct_auditing_delegate=*/nullptr,
-                                   UnknownRootAllowlistForHost(host),
-                                   // Fine to use an empty NetworkIsolationKey
-                                   // here, since this isn't used in Chromium.
-                                   net::NetworkAnonymizationKey()),
+      : net::ProofVerifierChromium(
+            cert_verifier.get(),
+            &ct_policy_enforcer_,
+            &transport_security_state_,
+            /*sct_auditing_delegate=*/nullptr,
+            UnknownRootAllowlistForHost(host),
+            // Fine to use an empty NetworkAnonymizationKey
+            // here, since this isn't used in Chromium.
+            net::NetworkAnonymizationKey()),
         cert_verifier_(std::move(cert_verifier)) {}
 
  private:

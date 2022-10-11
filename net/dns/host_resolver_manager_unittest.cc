@@ -51,7 +51,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_config.h"
@@ -3891,7 +3891,7 @@ DnsConfig CreateUpgradableDnsConfig() {
 }
 
 // Check that entries are written to the cache with the right NIK.
-TEST_F(HostResolverManagerTest, NetworkIsolationKeyWriteToHostCache) {
+TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyWriteToHostCache) {
   const SchemefulSite kSite1(GURL("https://origin1.test/"));
   const SchemefulSite kSite2(GURL("https://origin2.test/"));
   const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
@@ -3900,9 +3900,9 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyWriteToHostCache) {
   const char kFirstDnsResult[] = "192.168.1.42";
   const char kSecondDnsResult[] = "192.168.1.43";
 
-  for (bool split_cache_by_network_isolation_key : {false, true}) {
+  for (bool split_cache_by_network_anonymization_key : {false, true}) {
     base::test::ScopedFeatureList feature_list;
-    if (split_cache_by_network_isolation_key) {
+    if (split_cache_by_network_anonymization_key) {
       feature_list.InitAndEnableFeature(
           features::kSplitHostCacheByNetworkIsolationKey);
     } else {
@@ -3927,10 +3927,10 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyWriteToHostCache) {
     EXPECT_FALSE(response1.request()->GetStaleInfo());
     EXPECT_EQ(1u, proc_->GetCaptureList().size());
 
-    // If the host cache is being split by NetworkIsolationKeys, there should be
-    // an entry in the HostCache with kNetworkAnonymizationKey1. Otherwise,
-    // there should be an entry with the empy NIK.
-    if (split_cache_by_network_isolation_key) {
+    // If the host cache is being split by NetworkAnonymizationKeys, there
+    // should be an entry in the HostCache with kNetworkAnonymizationKey1.
+    // Otherwise, there should be an entry with the empty NAK.
+    if (split_cache_by_network_anonymization_key) {
       EXPECT_TRUE(GetCacheHit(
           HostCache::Key("just.testing", DnsQueryType::UNSPECIFIED,
                          0 /* host_resolver_flags */, HostResolverSource::ANY,
@@ -3958,10 +3958,10 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyWriteToHostCache) {
         HostResolverSource::ANY, kNetworkAnonymizationKey2)));
 
     // A request using kNetworkAnonymizationKey2 should only be served out of
-    // the cache of the cache if |split_cache_by_network_isolation_key| is
+    // the cache of the cache if |split_cache_by_network_anonymization_key| is
     // false. If it's not served over the network, it is provided a different
     // result.
-    if (split_cache_by_network_isolation_key) {
+    if (split_cache_by_network_anonymization_key) {
       proc_->AddRuleForAllFamilies("just.testing", kSecondDnsResult);
       proc_->SignalMultiple(1u);
     }
@@ -3970,7 +3970,7 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyWriteToHostCache) {
         NetLogWithSource(), absl::nullopt, resolve_context_.get(),
         resolve_context_->host_cache()));
     EXPECT_THAT(response2.result_error(), IsOk());
-    if (split_cache_by_network_isolation_key) {
+    if (split_cache_by_network_anonymization_key) {
       EXPECT_THAT(response2.request()->GetAddressResults()->endpoints(),
                   testing::ElementsAre(CreateExpected(kSecondDnsResult, 80)));
       EXPECT_THAT(
@@ -4004,14 +4004,14 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyWriteToHostCache) {
 }
 
 // Check that entries are read to the cache with the right NIK.
-TEST_F(HostResolverManagerTest, NetworkIsolationKeyReadFromHostCache) {
+TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyReadFromHostCache) {
   const SchemefulSite kSite1(GURL("https://origin1.test/"));
   const SchemefulSite kSite2(GURL("https://origin2.test/"));
   const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
   const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
 
   struct CacheEntry {
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
     const char* cached_ip_address;
   };
 
@@ -4025,11 +4025,9 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyReadFromHostCache) {
   // HostResolverManager obeys features::kSplitHostCacheByNetworkIsolationKey,
   // so this is fine to do regardless of the feature value.
   for (const auto& cache_entry : kCacheEntries) {
-    HostCache::Key key(
-        "just.testing", DnsQueryType::UNSPECIFIED, 0, HostResolverSource::ANY,
-        net::NetworkAnonymizationKey::
-            CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                cache_entry.network_isolation_key));
+    HostCache::Key key("just.testing", DnsQueryType::UNSPECIFIED, 0,
+                       HostResolverSource::ANY,
+                       cache_entry.network_anonymization_key);
     IPAddress address;
     ASSERT_TRUE(address.AssignFromIPLiteral(cache_entry.cached_ip_address));
     HostCache::Entry entry = HostCache::Entry(
@@ -4038,9 +4036,9 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyReadFromHostCache) {
                                         base::Days(1));
   }
 
-  for (bool split_cache_by_network_isolation_key : {false, true}) {
+  for (bool split_cache_by_network_anonymization_key : {false, true}) {
     base::test::ScopedFeatureList feature_list;
-    if (split_cache_by_network_isolation_key) {
+    if (split_cache_by_network_anonymization_key) {
       feature_list.InitAndEnableFeature(
           features::kSplitHostCacheByNetworkIsolationKey);
     } else {
@@ -4049,52 +4047,56 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyReadFromHostCache) {
     }
 
     // A request that uses kNetworkAnonymizationKey1 will return cache entry 1
-    // if the NetworkIsolationKeys are being used, and cache entry 0 otherwise.
+    // if the NetworkAnonymizationKeys are being used, and cache entry 0
+    // otherwise.
     ResolveHostResponseHelper response1(resolver_->CreateRequest(
         HostPortPair("just.testing", 80), kNetworkAnonymizationKey1,
         NetLogWithSource(), absl::nullopt, resolve_context_.get(),
         resolve_context_->host_cache()));
     EXPECT_THAT(response1.result_error(), IsOk());
-    EXPECT_THAT(response1.request()->GetAddressResults()->endpoints(),
-                testing::ElementsAre(CreateExpected(
-                    kCacheEntries[split_cache_by_network_isolation_key ? 1 : 0]
-                        .cached_ip_address,
-                    80)));
+    EXPECT_THAT(
+        response1.request()->GetAddressResults()->endpoints(),
+        testing::ElementsAre(CreateExpected(
+            kCacheEntries[split_cache_by_network_anonymization_key ? 1 : 0]
+                .cached_ip_address,
+            80)));
     EXPECT_THAT(
         response1.request()->GetEndpointResults(),
         testing::Pointee(testing::ElementsAre(
             ExpectEndpointResult(testing::ElementsAre(CreateExpected(
-                kCacheEntries[split_cache_by_network_isolation_key ? 1 : 0]
+                kCacheEntries[split_cache_by_network_anonymization_key ? 1 : 0]
                     .cached_ip_address,
                 80))))));
     EXPECT_TRUE(response1.request()->GetStaleInfo());
 
     // A request that uses kNetworkAnonymizationKey2 will return cache entry 2
-    // if the NetworkIsolationKeys are being used, and cache entry 0 otherwise.
+    // if the NetworkAnonymizationKeys are being used, and cache entry 0
+    // otherwise.
     ResolveHostResponseHelper response2(resolver_->CreateRequest(
         HostPortPair("just.testing", 80), kNetworkAnonymizationKey2,
         NetLogWithSource(), absl::nullopt, resolve_context_.get(),
         resolve_context_->host_cache()));
     EXPECT_THAT(response2.result_error(), IsOk());
-    EXPECT_THAT(response2.request()->GetAddressResults()->endpoints(),
-                testing::ElementsAre(CreateExpected(
-                    kCacheEntries[split_cache_by_network_isolation_key ? 2 : 0]
-                        .cached_ip_address,
-                    80)));
+    EXPECT_THAT(
+        response2.request()->GetAddressResults()->endpoints(),
+        testing::ElementsAre(CreateExpected(
+            kCacheEntries[split_cache_by_network_anonymization_key ? 2 : 0]
+                .cached_ip_address,
+            80)));
     EXPECT_THAT(
         response2.request()->GetEndpointResults(),
         testing::Pointee(testing::ElementsAre(
             ExpectEndpointResult(testing::ElementsAre(CreateExpected(
-                kCacheEntries[split_cache_by_network_isolation_key ? 2 : 0]
+                kCacheEntries[split_cache_by_network_anonymization_key ? 2 : 0]
                     .cached_ip_address,
                 80))))));
     EXPECT_TRUE(response2.request()->GetStaleInfo());
   }
 }
 
-// Test that two requests made with different NetworkIsolationKeys are not
+// Test that two requests made with different NetworkAnonymizationKeys are not
 // merged if |features::kSplitHostCacheByNetworkIsolationKey| is enabled.
-TEST_F(HostResolverManagerTest, NetworkIsolationKeyTwoRequestsAtOnce) {
+TEST_F(HostResolverManagerTest, NetworkAnonymizationKeyTwoRequestsAtOnce) {
   const SchemefulSite kSite1(GURL("https://origin1.test/"));
   const SchemefulSite kSite2(GURL("https://origin2.test/"));
   const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
@@ -4102,9 +4104,9 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyTwoRequestsAtOnce) {
 
   const char kDnsResult[] = "192.168.1.42";
 
-  for (bool split_cache_by_network_isolation_key : {false, true}) {
+  for (bool split_cache_by_network_anonymization_key : {false, true}) {
     base::test::ScopedFeatureList feature_list;
-    if (split_cache_by_network_isolation_key) {
+    if (split_cache_by_network_anonymization_key) {
       feature_list.InitAndEnableFeature(
           features::kSplitHostCacheByNetworkIsolationKey);
     } else {
@@ -4129,7 +4131,7 @@ TEST_F(HostResolverManagerTest, NetworkIsolationKeyTwoRequestsAtOnce) {
 
     // Wait for and complete the expected number of over-the-wire DNS
     // resolutions.
-    if (split_cache_by_network_isolation_key) {
+    if (split_cache_by_network_anonymization_key) {
       proc_->WaitFor(2);
       EXPECT_EQ(2u, proc_->GetCaptureList().size());
       proc_->SignalMultiple(2u);

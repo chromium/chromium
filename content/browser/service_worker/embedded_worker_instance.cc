@@ -333,10 +333,10 @@ void EmbeddedWorkerInstance::Start(
           storage_partition->GetWeakPtr(), params->script_url,
           coep->reporting_endpoint, coep->report_only_reporting_endpoint,
           owner_version_->reporting_source(),
-          // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of
-          // a top-level browsing context, which shouldn't be use for
-          // ServiceWorkers used in iframes.
-          net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
+          // TODO(https://crbug.com/1147281): This is the
+          // NetworkAnonymizationKey of a top-level browsing context, which
+          // shouldn't be use for ServiceWorkers used in iframes.
+          net::NetworkAnonymizationKey::ToDoUseTopFrameOriginAsWell(
               url::Origin::Create(params->script_url)));
       coep_reporter_->BindObserver(std::move(reporting_observer_remote));
 

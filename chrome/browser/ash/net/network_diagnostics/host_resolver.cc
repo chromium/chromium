@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -53,7 +53,7 @@ HostResolver::HostResolver(const net::HostPortPair& host_port_pair,
   // exists.
   host_resolver_->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(host_port_pair),
-      net::NetworkIsolationKey::CreateTransient(), std::move(parameters),
+      net::NetworkAnonymizationKey::CreateTransient(), std::move(parameters),
       receiver_.BindNewPipeAndPassRemote());
 }
 

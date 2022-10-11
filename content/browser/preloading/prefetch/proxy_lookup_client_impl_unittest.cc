@@ -8,7 +8,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,10 +24,11 @@ class TestNetworkContext : public network::TestNetworkContext {
       : call_on_proxy_lookup_complete_(call_on_proxy_lookup_complete),
         proxy_info_(proxy_info) {}
 
-  void LookUpProxyForURL(const GURL& url,
-                         const net::NetworkIsolationKey& network_isolation_key,
-                         mojo::PendingRemote<network::mojom::ProxyLookupClient>
-                             pending_proxy_lookup_client) override {
+  void LookUpProxyForURL(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      mojo::PendingRemote<network::mojom::ProxyLookupClient>
+          pending_proxy_lookup_client) override {
     mojo::Remote<network::mojom::ProxyLookupClient> proxy_lookup_client(
         std::move(pending_proxy_lookup_client));
     if (call_on_proxy_lookup_complete_)
@@ -52,10 +53,10 @@ TEST_F(ProxyLookupClientImplTest, NoProxyInfo) {
   base::RunLoop run_loop;
   GURL test_url("example.com");
   net::SchemefulSite site(test_url);
-  net::NetworkIsolationKey network_isolation_key(site, site);
+  net::NetworkAnonymizationKey network_anonymization_key(site, site);
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client =
       std::make_unique<ProxyLookupClientImpl>(
-          test_url, network_isolation_key,
+          test_url, network_anonymization_key,
           base::BindOnce(
               [](base::RunLoop* run_loop, bool has_proxy) {
                 EXPECT_FALSE(has_proxy);
@@ -78,10 +79,10 @@ TEST_F(ProxyLookupClientImplTest, OnlyDirect) {
   base::RunLoop run_loop;
   GURL test_url("example.com");
   net::SchemefulSite site(test_url);
-  net::NetworkIsolationKey network_isolation_key(site, site);
+  net::NetworkAnonymizationKey network_anonymization_key(site, site);
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client =
       std::make_unique<ProxyLookupClientImpl>(
-          test_url, network_isolation_key,
+          test_url, network_anonymization_key,
           base::BindOnce(
               [](base::RunLoop* run_loop, bool has_proxy) {
                 EXPECT_FALSE(has_proxy);
@@ -103,10 +104,10 @@ TEST_F(ProxyLookupClientImplTest, Proxy) {
   base::RunLoop run_loop;
   GURL test_url("example.com");
   net::SchemefulSite site(test_url);
-  net::NetworkIsolationKey network_isolation_key(site, site);
+  net::NetworkAnonymizationKey network_anonymization_key(site, site);
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client =
       std::make_unique<ProxyLookupClientImpl>(
-          test_url, network_isolation_key,
+          test_url, network_anonymization_key,
           base::BindOnce(
               [](base::RunLoop* run_loop, bool has_proxy) {
                 EXPECT_TRUE(has_proxy);
@@ -128,10 +129,10 @@ TEST_F(ProxyLookupClientImplTest, Disconnect) {
   base::RunLoop run_loop;
   GURL test_url("example.com");
   net::SchemefulSite site(test_url);
-  net::NetworkIsolationKey network_isolation_key(site, site);
+  net::NetworkAnonymizationKey network_anonymization_key(site, site);
   std::unique_ptr<ProxyLookupClientImpl> proxy_lookup_client =
       std::make_unique<ProxyLookupClientImpl>(
-          test_url, network_isolation_key,
+          test_url, network_anonymization_key,
           base::BindOnce(
               [](base::RunLoop* run_loop, bool has_proxy) {
                 // If the mojo pipe disconnects, then result should be false.

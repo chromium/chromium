@@ -20,7 +20,7 @@
 
 namespace net {
 class NetLog;
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace network {
@@ -33,7 +33,7 @@ class ResolveHostRequest : public mojom::ResolveHostHandle {
   ResolveHostRequest(
       net::HostResolver* resolver,
       mojom::HostResolverHostPtr host,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       const absl::optional<net::HostResolver::ResolveHostParameters>&
           optional_parameters,
       net::NetLog* net_log);

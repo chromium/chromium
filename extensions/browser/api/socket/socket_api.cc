@@ -31,8 +31,8 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_interfaces.h"
-#include "net/base/network_isolation_key.h"
 #include "net/base/url_util.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
@@ -227,8 +227,9 @@ void SocketExtensionWithDnsLookupFunction::StartDnsLookup(
   // Intentionally using a HostPortPair because scheme isn't specified.
   host_resolver_->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(host_port_pair),
-      net::NetworkIsolationKey(origin, origin), std::move(params),
-      receiver_.BindNewPipeAndPassRemote());
+      net::NetworkAnonymizationKey(net::SchemefulSite(origin),
+                                   net::SchemefulSite(origin)),
+      std::move(params), receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &SocketExtensionWithDnsLookupFunction::OnComplete, base::Unretained(this),
       net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),

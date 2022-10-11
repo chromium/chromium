@@ -1002,7 +1002,7 @@ void URLRequestHttpJob::ProcessExpectCTHeader() {
   if (has_expect_ct_header) {
     security_state->ProcessExpectCTHeader(
         value, HostPortPair::FromURL(request_info_.url), ssl_info,
-        request_->isolation_info().network_isolation_key());
+        request_->isolation_info().network_anonymization_key());
   }
 }
 

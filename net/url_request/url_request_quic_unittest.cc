@@ -17,8 +17,8 @@
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_delegate.h"
-#include "net/base/network_isolation_key.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -102,23 +102,23 @@ class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
       const X509Certificate* served_certificate_chain,
       const SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps,
-      const NetworkIsolationKey& network_isolation_key) override {
+      const NetworkAnonymizationKey& network_anonymization_key) override {
     num_failures_++;
     report_uri_ = report_uri;
-    network_isolation_key_ = network_isolation_key;
+    network_anonymization_key_ = network_anonymization_key;
   }
 
   int num_failures() const { return num_failures_; }
   const GURL& report_uri() const { return report_uri_; }
-  const NetworkIsolationKey& network_isolation_key() const {
-    return network_isolation_key_;
+  const NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
   }
 
  private:
   int num_failures_ = 0;
 
   GURL report_uri_;
-  NetworkIsolationKey network_isolation_key_;
+  NetworkAnonymizationKey network_anonymization_key_;
 };
 
 class URLRequestQuicTest
@@ -504,7 +504,7 @@ TEST_P(URLRequestQuicTest, ExpectCT) {
   IsolationInfo isolation_info = IsolationInfo::CreateTransient();
   context->transport_security_state()->AddExpectCT(
       kTestServerHost, base::Time::Now() + base::Days(1), true /* enforce */,
-      report_uri, isolation_info.network_isolation_key());
+      report_uri, isolation_info.network_anonymization_key());
 
   base::RunLoop run_loop;
   TestDelegate delegate;
@@ -517,8 +517,8 @@ TEST_P(URLRequestQuicTest, ExpectCT) {
   EXPECT_EQ(ERR_QUIC_PROTOCOL_ERROR, delegate.request_status());
   ASSERT_EQ(1, expect_ct_reporter()->num_failures());
   EXPECT_EQ(report_uri, expect_ct_reporter()->report_uri());
-  EXPECT_EQ(isolation_info.network_isolation_key(),
-            expect_ct_reporter()->network_isolation_key());
+  EXPECT_EQ(isolation_info.network_anonymization_key(),
+            expect_ct_reporter()->network_anonymization_key());
 }
 
 }  // namespace net

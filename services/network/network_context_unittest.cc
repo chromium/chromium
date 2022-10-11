@@ -255,8 +255,8 @@ std::unique_ptr<TestURLLoaderClient> FetchRequest(
 }
 
 // proxy_resolver::mojom::ProxyResolverFactory that captures the most recent PAC
-// script passed to it, and the most recent URL/NetworkIsolationKey passed to
-// the GetProxyForUrl() method of proxy_resolver::mojom::ProxyResolver it
+// script passed to it, and the most recent URL/NetworkAnonymizationKey passed
+// to the GetProxyForUrl() method of proxy_resolver::mojom::ProxyResolver it
 // returns.
 class CapturingMojoProxyResolverFactory
     : public proxy_resolver::mojom::ProxyResolverFactory,
@@ -309,7 +309,7 @@ class CapturingMojoProxyResolverFactory
 
   const std::string& pac_script() const { return pac_script_; }
 
-  // Return the GURL and NetworkIsolationKey passed to the most recent
+  // Return the GURL and NetworkAnonymizationKey passed to the most recent
   // GetProxyForUrl() call.
   const GURL& url() const { return url_; }
   const net::NetworkAnonymizationKey& network_anonymization_key() const {
@@ -339,12 +339,12 @@ class TestProxyLookupClient : public mojom::ProxyLookupClient {
 
   void StartLookUpProxyForURL(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojom::NetworkContext* network_context) {
     // Make sure this method is called at most once.
     EXPECT_FALSE(receiver_.is_bound());
 
-    network_context->LookUpProxyForURL(url, network_isolation_key,
+    network_context->LookUpProxyForURL(url, network_anonymization_key,
                                        receiver_.BindNewPipeAndPassRemote());
   }
 
@@ -1483,7 +1483,7 @@ TEST_F(NetworkContextTest, HostResolutionFailure) {
 
 #if BUILDFLAG(IS_P2P_ENABLED)
 // Test the P2PSocketManager::GetHostAddress() works and uses the correct
-// NetworkIsolationKey.
+// NetworkAnonymizationKey.
 TEST_F(NetworkContextTest, P2PHostResolution) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -1492,11 +1492,8 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
   const char kHostname[] = "foo.test.";
   net::IPAddress ip_address;
   ASSERT_TRUE(ip_address.AssignFromIPLiteral("1.2.3.4"));
-  net::NetworkIsolationKey network_isolation_key =
-      net::NetworkIsolationKey::CreateTransient();
   net::NetworkAnonymizationKey network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-          network_isolation_key);
+      net::NetworkAnonymizationKey::CreateTransient();
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->set_host_resolver(
       std::make_unique<net::MockCachingHostResolver>());
@@ -1520,7 +1517,7 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
   mojo::Remote<mojom::P2PTrustedSocketManager> trusted_socket_manager;
   mojo::Remote<mojom::P2PSocketManager> socket_manager;
   network_context_remote_->CreateP2PSocketManager(
-      network_isolation_key, receiver.BindNewPipeAndPassRemote(),
+      network_anonymization_key, receiver.BindNewPipeAndPassRemote(),
       trusted_socket_manager.BindNewPipeAndPassReceiver(),
       socket_manager.BindNewPipeAndPassReceiver());
 
@@ -1536,7 +1533,7 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
   run_loop.Run();
 
   // Check that the URL in kHostname is in the HostCache, with
-  // |network_isolation_key|.
+  // |network_anonymization_key|.
   const net::HostPortPair kHostPortPair = net::HostPortPair(kHostname, 0);
   net::HostResolver::ResolveHostParameters params;
   params.source = net::HostResolverSource::LOCAL_ONLY;
@@ -1566,8 +1563,8 @@ TEST_F(NetworkContextTest, P2PHostResolution) {
 }
 
 TEST_F(NetworkContextTest, P2PHostResolutionWithFamily) {
-  net::NetworkIsolationKey network_isolation_key =
-      net::NetworkIsolationKey::CreateTransient();
+  net::NetworkAnonymizationKey network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateTransient();
   auto context_builder = CreateTestURLRequestContextBuilder();
   std::unique_ptr<net::MockHostResolver> resolver =
       std::make_unique<net::MockHostResolver>();
@@ -1589,7 +1586,7 @@ TEST_F(NetworkContextTest, P2PHostResolutionWithFamily) {
   mojo::Remote<mojom::P2PTrustedSocketManager> trusted_socket_manager;
   mojo::Remote<mojom::P2PSocketManager> socket_manager;
   network_context_remote_->CreateP2PSocketManager(
-      network_isolation_key, receiver.BindNewPipeAndPassRemote(),
+      network_anonymization_key, receiver.BindNewPipeAndPassRemote(),
       trusted_socket_manager.BindNewPipeAndPassReceiver(),
       socket_manager.BindNewPipeAndPassReceiver());
 
@@ -2212,8 +2209,9 @@ TEST_F(NetworkContextTest, LookupServerBasicAuthCredentials) {
   cache->Add(url::SchemeHostPort(origin2), net::HttpAuth::AUTH_PROXY, "Realm",
              net::HttpAuth::AUTH_SCHEME_BASIC, network_anonymization_key1,
              "basic realm=Realm", net::AuthCredentials(user, password), "/");
-  absl::optional<net::AuthCredentials> result =
-      GetAuthCredentials(network_context.get(), origin, network_anonymization_key1);
+
+  absl::optional<net::AuthCredentials> result = GetAuthCredentials(
+      network_context.get(), origin, network_anonymization_key1);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(user, result->username());
   EXPECT_EQ(password, result->password());
@@ -3004,15 +3002,14 @@ TEST_F(NetworkContextTest, CancelPendingProxyLookup) {
   EXPECT_EQ(0u, network_context->pending_proxy_lookup_requests_for_testing());
 }
 
-// Test to make sure the NetworkIsolationKey passed to LookUpProxyForURL() makes
-// it to the proxy resolver.
+// Test to make sure the NetworkAnonymizationKey passed to LookUpProxyForURL()
+// makes it to the proxy resolver.
 TEST_F(NetworkContextTest, ProxyLookupWithNetworkIsolationKey) {
   const GURL kUrl("http://bar.test/");
-  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey =
-      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-          kNetworkIsolationKey);
+  const net::SchemefulSite kSite =
+      net::SchemefulSite(GURL("https://foo.test/"));
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+
   // Pac scripts must contain this string to be passed to the
   // ProxyResolverFactory.
   const std::string kPacScript("FindProxyForURL");
@@ -3040,7 +3037,7 @@ TEST_F(NetworkContextTest, ProxyLookupWithNetworkIsolationKey) {
       CreateContextWithParams(std::move(context_params));
 
   TestProxyLookupClient proxy_lookup_client;
-  proxy_lookup_client.StartLookUpProxyForURL(kUrl, kNetworkIsolationKey,
+  proxy_lookup_client.StartLookUpProxyForURL(kUrl, kNetworkAnonymizationKey,
                                              network_context.get());
   proxy_lookup_client.WaitForResult();
   ASSERT_TRUE(proxy_lookup_client.proxy_info());
@@ -3631,13 +3628,11 @@ TEST_F(NetworkContextTest, ResolveHost_Failure_Async) {
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
 }
 
-TEST_F(NetworkContextTest, ResolveHost_NetworkIsolationKey) {
-  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
-  net::NetworkAnonymizationKey kNetworkAnonymizationKey =
-      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-          kNetworkIsolationKey);
-  
+TEST_F(NetworkContextTest, ResolveHost_NetworkAnonymizationKey) {
+  const net::SchemefulSite kSite =
+      net::SchemefulSite(GURL("https://foo.test/"));
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey(kSite, kSite);
+
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddRule("nik.test", "1.2.3.4");
   net::MockHostResolver* raw_resolver = resolver.get();
@@ -3658,7 +3653,7 @@ TEST_F(NetworkContextTest, ResolveHost_NetworkIsolationKey) {
   network_context->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(
           net::HostPortPair("nik.test", 160)),
-      kNetworkIsolationKey, std::move(optional_parameters),
+      kNetworkAnonymizationKey, std::move(optional_parameters),
       std::move(pending_response_client));
   run_loop.Run();
 
@@ -4502,12 +4497,8 @@ TEST_F(NetworkContextTest, PreconnectOne) {
 }
 
 TEST_F(NetworkContextTest, PreconnectHSTS) {
-  net::NetworkIsolationKey network_isolation_key =
-      net::NetworkIsolationKey::CreateTransient();
   net::NetworkAnonymizationKey network_anonymization_key =
-      net::NetworkAnonymizationKey::
-          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-              network_isolation_key);
+      net::NetworkAnonymizationKey::CreateTransient();
 
   for (bool partition_connections : {false, true}) {
     base::test::ScopedFeatureList feature_list;
@@ -4545,7 +4536,7 @@ TEST_F(NetworkContextTest, PreconnectHSTS) {
 
     network_context->PreconnectSockets(1, server_http_url,
                                        /*allow_credentials=*/false,
-                                       network_isolation_key);
+                                       network_anonymization_key);
     connection_listener.WaitForAcceptedConnections(1u);
 
     int num_sockets = GetSocketCountForGroup(network_context.get(), group);
@@ -4556,7 +4547,7 @@ TEST_F(NetworkContextTest, PreconnectHSTS) {
         server_http_url.host(), expiry, false);
     network_context->PreconnectSockets(1, server_http_url,
                                        /*allow_credentials=*/false,
-                                       network_isolation_key);
+                                       network_anonymization_key);
     connection_listener.WaitForAcceptedConnections(1u);
 
     // If HSTS weren't respected, the initial connection would have been reused.
@@ -4671,15 +4662,15 @@ TEST_F(NetworkContextTest, PreconnectNetworkIsolationKey) {
   test_server.SetConnectionListener(&connection_listener);
   ASSERT_TRUE(test_server.Start());
 
-  const auto kOriginFoo = url::Origin::Create(GURL("http://foo.test"));
-  const auto kOriginBar = url::Origin::Create(GURL("http://bar.test"));
-  const net::NetworkIsolationKey kKey1(kOriginFoo, kOriginFoo);
-  const net::NetworkIsolationKey kKey2(kOriginBar, kOriginBar);
-  const net::NetworkAnonymizationKey kNak1(net::SchemefulSite(kOriginFoo),
-                                           net::SchemefulSite(kOriginFoo),
+  const auto kSiteFoo = net::SchemefulSite(GURL("http://foo.test"));
+  const auto kSiteBar = net::SchemefulSite(GURL("http://bar.test"));
+  const net::NetworkAnonymizationKey kKey1(kSiteFoo, kSiteFoo);
+  const net::NetworkAnonymizationKey kKey2(kSiteBar, kSiteBar);
+  const net::NetworkAnonymizationKey kNak1(net::SchemefulSite(kSiteFoo),
+                                           net::SchemefulSite(kSiteFoo),
                                            /*is_cross_site=*/false);
-  const net::NetworkAnonymizationKey kNak2(net::SchemefulSite(kOriginBar),
-                                           net::SchemefulSite(kOriginBar),
+  const net::NetworkAnonymizationKey kNak2(net::SchemefulSite(kSiteBar),
+                                           net::SchemefulSite(kSiteBar),
                                            /*is_cross_site=*/false);
   network_context->PreconnectSockets(1, test_server.base_url(),
                                      /*allow_credentials=*/false, kKey1);
@@ -4984,15 +4975,15 @@ TEST_F(NetworkContextTest, ExpectCT) {
   const bool enforce = true;
   const GURL report_uri = GURL("https://example.com/foo/bar");
 
-  net::NetworkIsolationKey network_isolation_key =
-      net::NetworkIsolationKey::CreateTransient();
+  net::NetworkAnonymizationKey network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateTransient();
 
   // Assert we start with no data for the test host.
   {
     base::Value::Dict state;
     base::RunLoop run_loop;
     network_context->GetExpectCTState(
-        kTestDomain, network_isolation_key,
+        kTestDomain, network_anonymization_key,
         base::BindOnce(&StoreValue, &state, run_loop.QuitClosure()));
     run_loop.Run();
 
@@ -5006,7 +4997,7 @@ TEST_F(NetworkContextTest, ExpectCT) {
     base::RunLoop run_loop;
     bool result = false;
     network_context->AddExpectCT(
-        kTestDomain, expiry, enforce, report_uri, network_isolation_key,
+        kTestDomain, expiry, enforce, report_uri, network_anonymization_key,
         base::BindOnce(&StoreBool, &result, run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(result);
@@ -5017,7 +5008,7 @@ TEST_F(NetworkContextTest, ExpectCT) {
     base::Value::Dict state;
     base::RunLoop run_loop;
     network_context->GetExpectCTState(
-        kTestDomain, network_isolation_key,
+        kTestDomain, network_anonymization_key,
         base::BindOnce(&StoreValue, &state, run_loop.QuitClosure()));
     run_loop.Run();
 
@@ -5040,12 +5031,12 @@ TEST_F(NetworkContextTest, ExpectCT) {
     EXPECT_EQ(report_uri, *dynamic_expect_ct_report_uri);
   }
 
-  // Using a different NetworkIsolationKey should return no result.
+  // Using a different NetworkAnonymizationKey should return no result.
   {
     base::Value::Dict state;
     base::RunLoop run_loop;
     network_context->GetExpectCTState(
-        kTestDomain, net::NetworkIsolationKey::CreateTransient(),
+        kTestDomain, net::NetworkAnonymizationKey::CreateTransient(),
         base::BindOnce(&StoreValue, &state, run_loop.QuitClosure()));
     run_loop.Run();
 
@@ -5070,7 +5061,7 @@ TEST_F(NetworkContextTest, ExpectCT) {
     base::Value::Dict state;
     base::RunLoop run_loop;
     network_context->GetExpectCTState(
-        kTestDomain, network_isolation_key,
+        kTestDomain, network_anonymization_key,
         base::BindOnce(&StoreValue, &state, run_loop.QuitClosure()));
     run_loop.Run();
 
@@ -6528,7 +6519,7 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntry) {
                                   ->GetSession()
                                   ->http_auth_cache();
   ASSERT_TRUE(cache);
-  // |key_server_entries_by_network_isolation_key| should be disabled by
+  // |key_server_entries_by_network_anonymization_key| should be disabled by
   // default, so the passed in NetworkIsolationKeys don't matter.
   EXPECT_FALSE(cache->key_server_entries_by_network_anonymization_key());
 
@@ -6637,7 +6628,8 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntryWithNetworkIsolationKey) {
   EXPECT_EQ(net::HttpAuth::StringToScheme(challenge.scheme), entry->scheme());
   EXPECT_EQ(kUsername, entry->credentials().username());
   EXPECT_EQ(kPassword, entry->credentials().password());
-  // Entry should only be accessibly when using the correct NetworkIsolationKey.
+  // Entry should only be accessibly when using the correct
+  // NetworkAnonymizationKey.
   EXPECT_FALSE(cache->Lookup(scheme_host_port, net::HttpAuth::AUTH_SERVER,
                              challenge.realm, net::HttpAuth::AUTH_SCHEME_BASIC,
                              net::NetworkAnonymizationKey()));

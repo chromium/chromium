@@ -53,8 +53,8 @@ class LoadingStatsCollectorTest : public testing::Test {
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 
-  const net::NetworkIsolationKey network_isolation_key_ =
-      net::NetworkIsolationKey::CreateTransient();
+  const net::NetworkAnonymizationKey network_isolation_key_ =
+      net::NetworkAnonymizationKey::CreateTransient();
 };
 
 LoadingStatsCollectorTest::LoadingStatsCollectorTest() = default;

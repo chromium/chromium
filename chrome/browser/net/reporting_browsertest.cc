@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
   original_response()->Done();
 
   // Open a cross-origin kReportingHost iframe that fails to load. No report
-  // should be uploaded, since the NetworkIsolationKey does not match.
+  // should be uploaded, since the NetworkAnonymizationKey does not match.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), server()->GetURL("/iframe_blank.html")));
   content::NavigateIframeToURL(
@@ -389,8 +389,8 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
       server()->GetURL(kReportingHost, "/close-socket?should-not-be-reported"));
 
   // Navigate the main frame to a kReportingHost URL that fails to load. A
-  // report should be uploaded, since the NetworkIsolationKey matches that of
-  // the original request where reporting information was learned.
+  // report should be uploaded, since the NetworkAnonymizationKey matches that
+  // of the original request where reporting information was learned.
   GURL expect_reported_url =
       server()->GetURL(kReportingHost, "/close-socket?should-be-reported");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), expect_reported_url));

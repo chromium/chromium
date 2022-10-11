@@ -57,12 +57,12 @@ class ResolveHostAndOpenSocket final : public network::ResolveHostClientBase {
                        },
                        resolver.BindNewPipeAndPassReceiver()));
     // Intentionally using a HostPortPair because scheme isn't specified.
-    // Fine to use a transient NetworkIsolationKey here - this is for debugging,
-    // so performance doesn't matter, and it doesn't need to share a DNS cache
-    // with anything else.
+    // Fine to use a transient NetworkAnonymizationKey here - this is for
+    // debugging, so performance doesn't matter, and it doesn't need to share a
+    // DNS cache with anything else.
     resolver->ResolveHost(
         network::mojom::HostResolverHost::NewHostPortPair(address),
-        net::NetworkIsolationKey::CreateTransient(), nullptr,
+        net::NetworkAnonymizationKey::CreateTransient(), nullptr,
         receiver_.BindNewPipeAndPassRemote());
     receiver_.set_disconnect_handler(base::BindOnce(
         &ResolveHostAndOpenSocket::OnComplete, base::Unretained(this),

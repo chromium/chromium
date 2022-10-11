@@ -1544,7 +1544,8 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
       std::move(url_loader_client_endpoints), std::move(response_head),
       std::move(response_body), global_request_id, is_download,
       download_policy_,
-      resource_request_->trusted_params->isolation_info.network_isolation_key(),
+      resource_request_->trusted_params->isolation_info
+          .network_anonymization_key(),
       std::move(subresource_loader_params_), std::move(early_hints));
 }
 
@@ -1554,7 +1555,8 @@ void NavigationURLLoaderImpl::NotifyRequestRedirected(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   delegate_->OnRequestRedirected(
       redirect_info,
-      resource_request_->trusted_params->isolation_info.network_isolation_key(),
+      resource_request_->trusted_params->isolation_info
+          .network_anonymization_key(),
       std::move(response_head));
 }
 

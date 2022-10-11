@@ -374,9 +374,9 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     return false;
   }
 
-  // request's NetworkIsolationKey is not present. This is because the
+  // request's NetworkAnonymizationKey is not present. This is because the
   // restricted prefetch flag is only used when the browser sets the request's
-  // NetworkIsolationKey to correctly cache-partition the resource.
+  // NetworkAnonymizationKey to correctly cache-partition the resource.
   bool request_network_isolation_key_present =
       request.trusted_params &&
       !request.trusted_params->isolation_info.IsEmpty();

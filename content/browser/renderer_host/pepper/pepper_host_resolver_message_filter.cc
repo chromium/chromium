@@ -156,8 +156,9 @@ int32_t PepperHostResolverMessageFilter::OnMsgResolve(
   storage_partition->GetNetworkContext()->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(
           net::HostPortPair(host_port.host, host_port.port)),
-      render_frame_host->GetNetworkIsolationKey(), std::move(parameters),
-      receiver_.BindNewPipeAndPassRemote());
+      render_frame_host->GetIsolationInfoForSubresources()
+          .network_anonymization_key(),
+      std::move(parameters), receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &PepperHostResolverMessageFilter::OnComplete, base::Unretained(this),
       net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),

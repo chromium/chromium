@@ -14,7 +14,7 @@
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/browser_thread.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -58,7 +58,8 @@ bool AddInitialUrlToPreconnectPrediction(const GURL& initial_url,
               initial_origin.scheme() == url::kHttpsScheme)) {
     prediction->requests.emplace(
         prediction->requests.begin(), initial_origin, kMinSockets,
-        net::NetworkIsolationKey(initial_origin, initial_origin));
+        net::NetworkAnonymizationKey(net::SchemefulSite(initial_origin),
+                                     net::SchemefulSite(initial_origin)));
   }
 
   return !prediction->requests.empty();
@@ -318,14 +319,15 @@ void LoadingPredictor::HandleOmniboxHint(const GURL& url, bool preconnectable) {
   url::Origin origin = url::Origin::Create(url);
   bool is_new_origin = origin != last_omnibox_origin_;
   last_omnibox_origin_ = origin;
-  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  net::SchemefulSite site = net::SchemefulSite(origin);
+  net::NetworkAnonymizationKey network_anonymization_key(site, site);
   base::TimeTicks now = base::TimeTicks::Now();
   if (preconnectable) {
     if (is_new_origin || now - last_omnibox_preconnect_time_ >=
                              kMinDelayBetweenPreconnectRequests) {
       last_omnibox_preconnect_time_ = now;
       preconnect_manager()->StartPreconnectUrl(url, true,
-                                               network_isolation_key);
+                                               network_anonymization_key);
     }
     return;
   }
@@ -333,7 +335,7 @@ void LoadingPredictor::HandleOmniboxHint(const GURL& url, bool preconnectable) {
   if (is_new_origin || now - last_omnibox_preresolve_time_ >=
                            kMinDelayBetweenPreresolveRequests) {
     last_omnibox_preresolve_time_ = now;
-    preconnect_manager()->StartPreresolveHost(url, network_isolation_key);
+    preconnect_manager()->StartPreresolveHost(url, network_anonymization_key);
   }
 }
 
@@ -387,7 +389,7 @@ void LoadingPredictor::PrefetchFinished(std::unique_ptr<PrefetchStats> stats) {
 void LoadingPredictor::PreconnectURLIfAllowed(
     const GURL& url,
     bool allow_credentials,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   if (!url.is_valid() || !url.has_host() || !IsPreconnectAllowed(profile_))
     return;
 
@@ -398,7 +400,7 @@ void LoadingPredictor::PreconnectURLIfAllowed(
   }
 
   preconnect_manager()->StartPreconnectUrl(url, allow_credentials,
-                                           network_isolation_key);
+                                           network_anonymization_key);
 }
 
 }  // namespace predictors

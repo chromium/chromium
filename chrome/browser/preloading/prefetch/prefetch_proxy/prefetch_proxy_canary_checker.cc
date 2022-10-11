@@ -367,9 +367,9 @@ std::string PrefetchProxyCanaryChecker::AppendNameToHistogram(
 }
 
 void PrefetchProxyCanaryChecker::StartDNSResolution(const GURL& url) {
-  net::NetworkIsolationKey nik =
+  net::NetworkAnonymizationKey nak =
       net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url))
-          .network_isolation_key();
+          .network_anonymization_key();
 
   network::mojom::ResolveHostParametersPtr resolve_host_parameters =
       network::mojom::ResolveHostParameters::New();
@@ -395,7 +395,7 @@ void PrefetchProxyCanaryChecker::StartDNSResolution(const GURL& url) {
   profile_->GetDefaultStoragePartition()->GetNetworkContext()->ResolveHost(
       network::mojom::HostResolverHost::NewHostPortPair(
           net::HostPortPair::FromURL(url)),
-      nik, std::move(resolve_host_parameters), std::move(client_remote));
+      nak, std::move(resolve_host_parameters), std::move(client_remote));
 
   timeout_timer_ = std::make_unique<base::OneShotTimer>(tick_clock_);
   // base::Unretained is safe because |timeout_timer_| is owned by this.

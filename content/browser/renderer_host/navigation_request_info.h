@@ -67,7 +67,7 @@ struct CONTENT_EXPORT NavigationRequestInfo {
   // Contains information used to prevent sharing information from a navigation
   // request across first party contexts. In particular, tracks the
   // SiteForCookies, which controls what site's SameSite cookies may be set,
-  // NetworkIsolationKey, which is used to restrict sharing of network
+  // NetworkAnonymizationKey, which is used to restrict sharing of network
   // resources, and how to update them across redirects, which is different for
   // main frames and subresources.
   const net::IsolationInfo isolation_info;

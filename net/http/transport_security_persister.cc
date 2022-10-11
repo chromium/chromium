@@ -22,7 +22,7 @@
 #include "base/values.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/cert/x509_certificate.h"
 #include "net/http/transport_security_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -82,7 +82,7 @@ const char kForceHTTPS[] = "force-https";
 const char kDefault[] = "default";
 
 // Key names in serialized Expect-CT entries.
-const char kNetworkIsolationKey[] = "nik";
+const char kNetworkAnonymizationKey[] = "nak";
 const char kExpectCTObserved[] = "expect_ct_observed";
 const char kExpectCTExpiry[] = "expect_ct_expiry";
 const char kExpectCTEnforce[] = "expect_ct_enforce";
@@ -195,13 +195,14 @@ base::Value::List SerializeExpectCTData(TransportSecurityState* state) {
 
     base::Value::Dict ct_entry;
 
-    base::Value network_isolation_key_value;
-    // Don't serialize entries with transient NetworkIsolationKeys.
-    if (!expect_ct_iterator.network_isolation_key().ToValue(
-            &network_isolation_key_value)) {
+    base::Value network_anonymization_key_value;
+    // Don't serialize entries with transient NetworkAnonymizationKeys.
+    if (!expect_ct_iterator.network_anonymization_key().ToValue(
+            &network_anonymization_key_value)) {
       continue;
     }
-    ct_entry.Set(kNetworkIsolationKey, std::move(network_isolation_key_value));
+    ct_entry.Set(kNetworkAnonymizationKey,
+                 std::move(network_anonymization_key_value));
 
     ct_entry.Set(kHostname,
                  HashedDomainToExternalString(expect_ct_iterator.hostname()));
@@ -232,8 +233,8 @@ void DeserializeExpectCTData(const base::Value& ct_list,
       continue;
 
     const std::string* hostname = ct_dict->FindString(kHostname);
-    const base::Value* network_isolation_key_value =
-        ct_dict->Find(kNetworkIsolationKey);
+    const base::Value* network_anonymization_key_value =
+        ct_dict->Find(kNetworkAnonymizationKey);
     absl::optional<double> expect_ct_last_observed =
         ct_dict->FindDouble(kExpectCTObserved);
     absl::optional<double> expect_ct_expiry =
@@ -243,7 +244,7 @@ void DeserializeExpectCTData(const base::Value& ct_list,
     const std::string* expect_ct_report_uri =
         ct_dict->FindString(kExpectCTReportUri);
 
-    if (!hostname || !network_isolation_key_value ||
+    if (!hostname || !network_anonymization_key_value ||
         !expect_ct_last_observed.has_value() || !expect_ct_expiry.has_value() ||
         !expect_ct_enforce.has_value() || !expect_ct_report_uri) {
       continue;
@@ -268,19 +269,20 @@ void DeserializeExpectCTData(const base::Value& ct_list,
     if (hashed.empty())
       continue;
 
-    NetworkIsolationKey network_isolation_key;
-    if (!NetworkIsolationKey::FromValue(*network_isolation_key_value,
-                                        &network_isolation_key)) {
+    NetworkAnonymizationKey network_anonymization_key;
+    if (!NetworkAnonymizationKey::FromValue(*network_anonymization_key_value,
+                                            &network_anonymization_key)) {
       continue;
     }
 
-    // If Expect-CT is not being partitioned by NetworkIsolationKey, but
-    // |network_isolation_key| is not empty, drop the entry, to avoid ambiguity
-    // and favor entries that were saved with an empty NetworkIsolationKey.
-    if (!partition_by_nik && !network_isolation_key.IsEmpty())
+    // If Expect-CT is not being partitioned by NetworkAnonymizationKey, but
+    // |network_anonymization_key| is not empty, drop the entry, to avoid
+    // ambiguity and favor entries that were saved with an empty
+    // NetworkAnonymizationKey.
+    if (!partition_by_nik && !network_anonymization_key.IsEmpty())
       continue;
 
-    state->AddOrUpdateEnabledExpectCTHosts(hashed, network_isolation_key,
+    state->AddOrUpdateEnabledExpectCTHosts(hashed, network_anonymization_key,
                                            expect_ct_state);
   }
 }

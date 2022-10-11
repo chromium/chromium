@@ -77,12 +77,6 @@ NetworkAnonymizationKey NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
       nak_is_cross_site, network_isolation_key.GetNonce());
 }
 
-NetworkAnonymizationKey
-NetworkAnonymizationKey::CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-    const net::NetworkIsolationKey& network_isolation_key) {
-  return CreateFromNetworkIsolationKey(network_isolation_key);
-}
-
 NetworkAnonymizationKey::NetworkAnonymizationKey() = default;
 
 NetworkAnonymizationKey::NetworkAnonymizationKey(

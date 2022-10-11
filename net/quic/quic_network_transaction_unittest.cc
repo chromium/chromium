@@ -23,7 +23,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/base/test_proxy_delegate.h"
@@ -2191,7 +2191,7 @@ TEST_P(QuicNetworkTransactionTest,
 
   AddCertificate(&ssl_data_);
 
-  // Request with empty NetworkIsolationKey.
+  // Request with empty NetworkAnonymizationKey.
   StaticSocketDataProvider http_data1(http_reads, base::span<MockWrite>());
   socket_factory_.AddSocketDataProvider(&http_data1);
   socket_factory_.AddSSLSocketDataProvider(&ssl_data_);
@@ -2238,9 +2238,9 @@ TEST_P(QuicNetworkTransactionTest,
   CreateSession();
 
   // This is first so that the test fails if alternative service info is
-  // written with the right NetworkIsolationKey, but always queried with an
+  // written with the right NetworkAnonymizationKey, but always queried with an
   // empty one.
-  request_.network_isolation_key = NetworkAnonymizationKey();
+  request_.network_isolation_key = NetworkIsolationKey();
   request_.network_anonymization_key = NetworkAnonymizationKey();
   SendRequestAndExpectHttpResponse("hello world");
   request_.network_isolation_key = kNetworkIsolationKey1;
@@ -2250,7 +2250,7 @@ TEST_P(QuicNetworkTransactionTest,
   request_.network_anonymization_key = kNetworkAnonymizationKey2;
   SendRequestAndExpectHttpResponse("hello world");
 
-  // Only use QUIC when using a NetworkIsolationKey which has been used when
+  // Only use QUIC when using a NetworkAnonymizationKey which has been used when
   // alternative service information was received.
   request_.network_isolation_key = kNetworkIsolationKey1;
   request_.network_anonymization_key = kNetworkAnonymizationKey1;
@@ -2987,7 +2987,7 @@ TEST_P(
   feature_list.InitWithFeatures(
       // enabled_features
       {features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-       // Need to partition connections by NetworkIsolationKey for
+       // Need to partition connections by NetworkAnonymizationKey for
        // QuicSessionAliasKey to include NetworkIsolationKeys.
        features::kPartitionConnectionsByNetworkIsolationKey},
       // disabled_features
@@ -3698,7 +3698,7 @@ TEST_P(QuicNetworkTransactionTest,
   ASSERT_TRUE(http_data.AllReadDataConsumed());
 }
 
-// Much like above test, but verifies that NetworkIsolationKey is respected.
+// Much like above test, but verifies that NetworkAnonymizationKey is respected.
 TEST_P(QuicNetworkTransactionTest,
        ProtocolErrorAfterHandshakeConfirmedThenBrokenWithNetworkIsolationKey) {
   if (version_.AlpnDeferToRFCv1()) {
@@ -8985,7 +8985,7 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPushUpdatesPriority) {
   EXPECT_TRUE(mock_quic_data.AllWriteDataConsumed());
 }
 
-// Test that NetworkIsolationKey is respected by QUIC connections, when
+// Test that NetworkAnonymizationKey is respected by QUIC connections, when
 // kPartitionConnectionsByNetworkIsolationKey is enabled.
 TEST_P(QuicNetworkTransactionTest, NetworkIsolation) {
   const SchemefulSite kSite1(GURL("http://origin1/"));

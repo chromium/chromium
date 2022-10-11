@@ -35,7 +35,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
       mojo::PendingReceiver<network::mojom::NetworkContext> receiver)
       : receiver_(this, std::move(receiver)) {}
   void ResolveHost(network::mojom::HostResolverHostPtr host,
-                   const net::NetworkIsolationKey& network_isolation_key,
+                   const net::NetworkAnonymizationKey& network_isolation_key,
                    network::mojom::ResolveHostParametersPtr optional_parameters,
                    mojo::PendingRemote<network::mojom::ResolveHostClient>
                        response_client) override {

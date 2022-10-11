@@ -128,7 +128,7 @@ class NET_EXPORT_PRIVATE ProofVerifierChromium : public quic::ProofVerifier {
 
   std::set<std::string> hostnames_to_allow_unknown_roots_;
 
-  const NetworkAnonymizationKey network_isolation_key_;
+  const NetworkAnonymizationKey network_anonymization_key_;
 };
 
 }  // namespace net

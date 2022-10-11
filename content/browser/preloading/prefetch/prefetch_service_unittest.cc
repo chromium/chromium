@@ -153,10 +153,11 @@ class TestNetworkContext : public network::TestNetworkContext {
   explicit TestNetworkContext(absl::optional<net::ProxyInfo> proxy_info)
       : proxy_info_(proxy_info) {}
 
-  void LookUpProxyForURL(const GURL& url,
-                         const net::NetworkIsolationKey& network_isolation_key,
-                         mojo::PendingRemote<network::mojom::ProxyLookupClient>
-                             pending_proxy_lookup_client) override {
+  void LookUpProxyForURL(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_isolation_key,
+      mojo::PendingRemote<network::mojom::ProxyLookupClient>
+          pending_proxy_lookup_client) override {
     mojo::Remote<network::mojom::ProxyLookupClient> proxy_lookup_client(
         std::move(pending_proxy_lookup_client));
     proxy_lookup_client->OnProxyLookupComplete(net::OK, proxy_info_);

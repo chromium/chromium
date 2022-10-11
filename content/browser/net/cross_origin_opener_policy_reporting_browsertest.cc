@@ -183,14 +183,14 @@ class SendTestReportsAtNavigationFinishObserver : public WebContentsObserver {
 
   void DidFinishLoad(RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override {
-    url::Origin origin = url::Origin::Create(url_);
+    net::SchemefulSite site = net::SchemefulSite(url_);
     auto* network_context =
         render_frame_host->GetStoragePartition()->GetNetworkContext();
     // Queue reports using transient reporting sources. These sources should be
     // marked as expired now so we expect no reports being sent out.
     for (const base::UnguessableToken& reporting_source : reporting_sources_) {
       network_context->QueueReport("type", "default", url_, reporting_source,
-                                   net::NetworkIsolationKey(origin, origin),
+                                   net::NetworkAnonymizationKey(site, site),
                                    "Mozilla/1.0", base::Value::Dict());
     }
   }

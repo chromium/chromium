@@ -1090,7 +1090,7 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationURLLoaderDelegate implementation.
   void OnRequestRedirected(
       const net::RedirectInfo& redirect_info,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnResponseStarted(
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
@@ -1099,7 +1099,7 @@ class CONTENT_EXPORT NavigationRequest
       GlobalRequestID request_id,
       bool is_download,
       blink::NavigationDownloadPolicy download_policy,
-      net::NetworkIsolationKey network_isolation_key,
+      net::NetworkAnonymizationKey network_anonymization_key,
       absl::optional<SubresourceLoaderParams> subresource_loader_params,
       EarlyHints early_hints) override;
   void OnRequestFailed(
@@ -1955,7 +1955,7 @@ class CONTENT_EXPORT NavigationRequest
 
   // Whether the document loaded by this navigation will be committed inside an
   // anonymous iframe. Documents loaded inside anonymous iframes get partitioned
-  // storage and use a transient NetworkIsolationKey.
+  // storage and use a transient NetworkAnonymizationKey.
   const bool is_anonymous_;
 
   // Non-nullopt from construction until |TakePolicyContainerHost()| is called.

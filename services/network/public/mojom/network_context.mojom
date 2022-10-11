@@ -1069,7 +1069,7 @@ interface NetworkContext {
               string group,
               url.mojom.Url url,
               mojo_base.mojom.UnguessableToken? reporting_source,
-              NetworkIsolationKey network_isolation_key,
+              NetworkAnonymizationKey network_anonymization_key,
               string? user_agent,
               mojo_base.mojom.DictionaryValue body);
 
@@ -1079,7 +1079,7 @@ interface NetworkContext {
   // endpoint matching is registered for with the provided
   // |network_isolation_key|.
   QueueSignedExchangeReport(SignedExchangeReport report,
-                            NetworkIsolationKey network_isolation_key);
+                            NetworkAnonymizationKey network_anonymization_key);
 
   // Closes all open connections within this context.
   CloseAllConnections() => ();
@@ -1120,7 +1120,8 @@ interface NetworkContext {
   [EnableIf=is_ct_supported]
   AddExpectCT(string host, mojo_base.mojom.Time expiry,
               bool enforce, url.mojom.Url report_uri,
-              NetworkIsolationKey network_isolation_key) => (bool success);
+              NetworkAnonymizationKey network_anonymization_key)
+              => (bool success);
 
   // Send a test CT report with dummy data for test purposes.
   [EnableIf=is_ct_supported]
@@ -1130,7 +1131,7 @@ interface NetworkContext {
   // transport security state.
   [EnableIf=is_ct_supported]
   GetExpectCTState(string domain,
-                   NetworkIsolationKey network_isolation_key)
+                   NetworkAnonymizationKey network_anonymization_key)
                    => (mojo_base.mojom.DictionaryValue state);
 
   // Creates a UDP socket. Caller can supply a |listener| interface pointer
@@ -1215,7 +1216,7 @@ interface NetworkContext {
   // is used to partition the DNS cache in the case a PAC script is used, and
   // should match the NIK of the frame the lookup is for use with.
   LookUpProxyForURL(url.mojom.Url url,
-                    NetworkIsolationKey network_isolation_key,
+                    NetworkAnonymizationKey network_anonymization_key,
                     pending_remote<ProxyLookupClient> proxy_lookup_client);
 
   // Forces refetching the proxy configuration, and applying it.
@@ -1308,7 +1309,7 @@ interface NetworkContext {
   PreconnectSockets(uint32 num_streams,
                     url.mojom.Url url,
                     bool allow_credentials,
-                    NetworkIsolationKey network_isolation_key);
+                    NetworkAnonymizationKey network_anonymization_key);
 
   // Creates a P2PSocketManager instance, used for WebRTC.
   // |network_isolation_key| is the network cache shard to associate with the
@@ -1316,7 +1317,7 @@ interface NetworkContext {
   // connection sharing.
   [EnableIf=is_p2p_enabled]
   CreateP2PSocketManager(
-      NetworkIsolationKey network_isolation_key,
+      NetworkAnonymizationKey network_anonymization_key,
       pending_remote<P2PTrustedSocketManagerClient> client,
       pending_receiver<P2PTrustedSocketManager> trusted_socket_manager,
       pending_receiver<P2PSocketManager> socket_manager);
@@ -1339,7 +1340,7 @@ interface NetworkContext {
   // should not be made without first redirecting an http or ws request to an
   // https or wss request.
   ResolveHost(HostResolverHost host,
-              NetworkIsolationKey network_isolation_key,
+              NetworkAnonymizationKey network_anonymization_key,
               ResolveHostParameters? optional_parameters,
               pending_remote<ResolveHostClient> response_client);
 
@@ -1363,12 +1364,12 @@ interface NetworkContext {
   // Checks the given certificate against the CertVerifier and CTVerifier. This
   // implementation is currently specific for use by Signed Exchange.
   //
-  // |network_isolation_key| must be the NetworkIsolationKey associated with the
-  // underlying resource load, and is used foy any reports generated as a result
-  // of verifying the cert.
+  // |network_anonymization_key| must be the NetworkAnonymizationKey associated
+  // with the underlying resource load, and is used foy any reports generated as
+  // a result of verifying the cert.
   VerifyCertForSignedExchange(X509Certificate certificate,
                               url.mojom.Url url,
-                              NetworkIsolationKey network_isolation_key,
+                              NetworkAnonymizationKey network_anonymization_key,
                               string ocsp_response,
                               string sct_list) => (int32 error_code,
                                                    CertVerifyResult cv_result,

@@ -249,7 +249,7 @@ constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
 class EmptyResolveHostClient : ResolveHostClientBase {
  public:
   EmptyResolveHostClient(const GURL& url,
-                         const net::NetworkIsolationKey& key,
+                         const net::NetworkAnonymizationKey& key,
                          raw_ptr<NetworkContext> context) {
     mojom::ResolveHostParametersPtr params =
         mojom::ResolveHostParameters::New();
@@ -537,7 +537,7 @@ void CorsURLLoader::OnReceiveResponse(
 
   if (base::FeatureList::IsEnabled(features::kPreconnectInNetworkService) &&
       context_->enable_preconnect() && response_head->parsed_headers) {
-    auto key = isolation_info_.network_isolation_key();
+    auto key = isolation_info_.network_anonymization_key();
     for (auto& header : response_head->parsed_headers->link_headers) {
       if (header->rel == mojom::LinkRelAttribute::kDnsPrefetch) {
         // Deletes itself.

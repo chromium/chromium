@@ -13,7 +13,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,7 +40,7 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
       const absl::optional<std::string>& endpoint,
       const absl::optional<std::string>& report_only_endpoint,
       const base::UnguessableToken& reporting_source,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key);
   ~CrossOriginEmbedderPolicyReporter() override;
   CrossOriginEmbedderPolicyReporter(const CrossOriginEmbedderPolicyReporter&) =
       delete;
@@ -89,7 +89,7 @@ class CONTENT_EXPORT CrossOriginEmbedderPolicyReporter final
   // actual owner of this token needs to manage the lifecycle (including
   // cleaning up the reporting source from reporting cache).
   base::UnguessableToken reporting_source_;
-  const net::NetworkIsolationKey network_isolation_key_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
 
   mojo::ReceiverSet<network::mojom::CrossOriginEmbedderPolicyReporter>
       receiver_set_;

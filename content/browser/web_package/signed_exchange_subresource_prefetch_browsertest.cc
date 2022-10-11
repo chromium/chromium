@@ -1627,7 +1627,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
   const GURL report_url = ssl_server.GetURL(report_path);
 
   // Get Report-To and NEL information for the server that serves the signed
-  // exchange. The same site is also used for the NetworkIsolationKey. This
+  // exchange. The same site is also used for the NetworkAnonymizationKey. This
   // should result in sending a report to that server a request for that signed
   // exchange fails with a certificate error.
   {

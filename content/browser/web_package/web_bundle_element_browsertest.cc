@@ -562,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(WebBundleElementBrowserTest,
   EXPECT_EQ(GURL(kUuidInPackageURL), GetObservedUnknownSchemeUrl());
 }
 
-IN_PROC_BROWSER_TEST_F(WebBundleElementBrowserTest, NetworkIsolationKey) {
+IN_PROC_BROWSER_TEST_F(WebBundleElementBrowserTest, NetworkAnonymizationKey) {
   GURL bundle_url(https_server()->GetURL("bundle.test", kUuidTestBundlePath));
   GURL page_url(https_server()->GetURL(
       "page.test", "/web_bundle/frame_parent.html?wbn=" + bundle_url.spec() +

@@ -401,11 +401,12 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   absl::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kTrue;
-  url::Origin main_frame_origin = url::Origin::Create(GURL("http://test.org"));
+  net::SchemefulSite main_frame_site =
+      net::SchemefulSite(GURL("http://test.org"));
   PreconnectPrediction preconnect_prediction = CreatePreconnectPrediction(
       "", false,
       {{url::Origin::Create(GURL("http://other.org")), 1,
-        net::NetworkIsolationKey(main_frame_origin, main_frame_origin)}});
+        net::NetworkAnonymizationKey(main_frame_site, main_frame_site)}});
   prediction->preconnect_prediction = preconnect_prediction;
   prediction->predicted_subresources = {GURL("http://test.org/resource1"),
                                         GURL("http://other.org/resource2"),
@@ -455,11 +456,12 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   absl::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kTrue;
-  url::Origin main_frame_origin = url::Origin::Create(GURL("http://test.org"));
+  net::SchemefulSite main_frame_site =
+      net::SchemefulSite(GURL("http://test.org"));
   PreconnectPrediction preconnect_prediction = CreatePreconnectPrediction(
       "", false,
       {{url::Origin::Create(GURL("http://other.org")), 1,
-        net::NetworkIsolationKey(main_frame_origin, main_frame_origin)}});
+        net::NetworkAnonymizationKey(main_frame_site, main_frame_site)}});
   prediction->preconnect_prediction = preconnect_prediction;
   prediction->predicted_subresources = {GURL("http://test.org/resource1"),
                                         GURL("http://other.org/resource2"),
@@ -743,21 +745,25 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
   absl::optional<OptimizationGuidePrediction> prediction =
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kTrue;
-  url::Origin main_frame_origin = url::Origin::Create(GURL("http://test.org"));
-  net::NetworkIsolationKey network_isolation_key(main_frame_origin,
-                                                 main_frame_origin);
+  net::SchemefulSite main_frame_site =
+      net::SchemefulSite(GURL("http://test.org"));
+  net::NetworkAnonymizationKey network_anonymization_key(main_frame_site,
+                                                         main_frame_site);
   network::mojom::RequestDestination destination =
       network::mojom::RequestDestination::kEmpty;
   PreconnectPrediction preconnect_prediction = CreatePreconnectPrediction(
       "", false,
       {{url::Origin::Create(GURL("http://preconnectonly.com/")), 1,
-        network_isolation_key}});
+        network_anonymization_key}});
   preconnect_prediction.prefetch_requests.emplace_back(
-      GURL("http://test.org/resource1"), network_isolation_key, destination);
+      GURL("http://test.org/resource1"), network_anonymization_key,
+      destination);
   preconnect_prediction.prefetch_requests.emplace_back(
-      GURL("http://other.org/resource1"), network_isolation_key, destination);
+      GURL("http://other.org/resource1"), network_anonymization_key,
+      destination);
   preconnect_prediction.prefetch_requests.emplace_back(
-      GURL("http://other.org/resource2"), network_isolation_key, destination);
+      GURL("http://other.org/resource2"), network_anonymization_key,
+      destination);
   prediction->preconnect_prediction = preconnect_prediction;
   prediction->predicted_subresources = {
       GURL("http://test.org/resource1"), GURL("http://other.org/resource2"),

@@ -132,7 +132,7 @@ TEST(NetworkQualityEstimatorUtilTest, MAYBE_ReservedHostUncached) {
 #define MAYBE_ReservedHostUncachedWithNetworkIsolationKey \
   ReservedHostUncachedWithNetworkIsolationKey
 #endif
-// Make sure that IsPrivateHostForTesting() uses the NetworkIsolationKey
+// Make sure that IsPrivateHostForTesting() uses the NetworkAnonymizationKey
 // provided to it.
 TEST(NetworkQualityEstimatorUtilTest,
      MAYBE_ReservedHostUncachedWithNetworkIsolationKey) {
@@ -170,7 +170,7 @@ TEST(NetworkQualityEstimatorUtilTest,
   EXPECT_EQ(1u, mock_host_resolver.num_non_local_resolves());
 
   // IsPrivateHostForTesting should return false when using a different
-  // NetworkIsolationKey (in this case, any empty one).
+  // NetworkAnonymizationKey (in this case, any empty one).
   EXPECT_FALSE(IsPrivateHostForTesting(&mock_host_resolver,
                                        HostPortPair("example3.com", 443),
                                        NetworkAnonymizationKey()));

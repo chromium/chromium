@@ -304,6 +304,8 @@ base::Value URLRequest::GetStateAsValue() const {
     dict.Set("delegate_blocked_by", blocked_by_);
 
   dict.Set("method", method_);
+  // TODO(https://crbug.com/1343856): Update "network_isolation_key" to
+  // "network_anonymization_key" and change NetLog viewer.
   dict.Set("network_isolation_key",
            isolation_info_.network_isolation_key().ToDebugString());
   dict.Set("has_upload", has_upload());

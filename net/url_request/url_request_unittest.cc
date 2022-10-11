@@ -602,26 +602,26 @@ class MockCertificateReportSender
       const GURL& report_uri,
       base::StringPiece content_type,
       base::StringPiece report,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       base::OnceCallback<void()> success_callback,
       base::OnceCallback<void(const GURL&, int, int)> error_callback) override {
     latest_report_uri_ = report_uri;
     latest_report_.assign(report.data(), report.size());
     latest_content_type_.assign(content_type.data(), content_type.size());
-    latest_network_isolation_key_ = network_isolation_key;
+    latest_network_anonymization_key_ = network_anonymization_key;
   }
   const GURL& latest_report_uri() { return latest_report_uri_; }
   const std::string& latest_report() { return latest_report_; }
   const std::string& latest_content_type() { return latest_content_type_; }
-  const NetworkIsolationKey& latest_network_isolation_key() {
-    return latest_network_isolation_key_;
+  const NetworkAnonymizationKey& latest_network_anonymization_key() {
+    return latest_network_anonymization_key_;
   }
 
  private:
   GURL latest_report_uri_;
   std::string latest_report_;
   std::string latest_content_type_;
-  NetworkIsolationKey latest_network_isolation_key_;
+  NetworkAnonymizationKey latest_network_anonymization_key_;
 };
 
 // OCSPErrorTestDelegate caches the SSLInfo passed to OnSSLCertificateError.
@@ -3856,8 +3856,8 @@ class URLRequestTestHTTP : public URLRequestTest {
         isolation_info1_(IsolationInfo::CreateForInternalRequest(origin1_)),
         isolation_info2_(IsolationInfo::CreateForInternalRequest(origin2_)),
         test_server_(base::FilePath(kTestFilePath)) {
-    // Needed for NetworkIsolationKey to make it down to the socket layer, for
-    // the PKP violation report test.
+    // Needed for NetworkAnonymizationKey to make it down to the socket layer,
+    // for the PKP violation report test.
     feature_list_.InitAndEnableFeature(
         net::features::kPartitionConnectionsByNetworkIsolationKey);
   }
@@ -6228,8 +6228,8 @@ TEST_F(URLRequestTestHTTP, ProcessPKPAndSendReport) {
   std::string* report_hostname = report_dict->FindString("hostname");
   ASSERT_TRUE(report_hostname);
   EXPECT_EQ(test_server_hostname, *report_hostname);
-  EXPECT_EQ(isolation_info.network_isolation_key(),
-            mock_report_sender.latest_network_isolation_key());
+  EXPECT_EQ(isolation_info.network_anonymization_key(),
+            mock_report_sender.latest_network_anonymization_key());
 }
 
 // Tests that reports do not get sent on requests to static pkp hosts that
@@ -6285,8 +6285,8 @@ TEST_F(URLRequestTestHTTP, ProcessPKPWithNoViolation) {
   EXPECT_EQ(OK, d.request_status());
   EXPECT_EQ(GURL(), mock_report_sender.latest_report_uri());
   EXPECT_EQ(std::string(), mock_report_sender.latest_report());
-  EXPECT_EQ(NetworkIsolationKey(),
-            mock_report_sender.latest_network_isolation_key());
+  EXPECT_EQ(NetworkAnonymizationKey(),
+            mock_report_sender.latest_network_anonymization_key());
   TransportSecurityState::PKPState pkp_state;
   EXPECT_TRUE(context->transport_security_state()->GetStaticPKPState(
       test_server_hostname, &pkp_state));
@@ -6345,8 +6345,8 @@ TEST_F(URLRequestTestHTTP, PKPBypassRecorded) {
   EXPECT_EQ(OK, d.request_status());
   EXPECT_EQ(GURL(), mock_report_sender.latest_report_uri());
   EXPECT_EQ(std::string(), mock_report_sender.latest_report());
-  EXPECT_EQ(NetworkIsolationKey(),
-            mock_report_sender.latest_network_isolation_key());
+  EXPECT_EQ(NetworkAnonymizationKey(),
+            mock_report_sender.latest_network_anonymization_key());
   TransportSecurityState::PKPState pkp_state;
   EXPECT_TRUE(context->transport_security_state()->GetStaticPKPState(
       test_server_hostname, &pkp_state));
@@ -6398,7 +6398,7 @@ class MockExpectCTReporter : public TransportSecurityState::ExpectCTReporter {
       const X509Certificate* served_certificate_chain,
       const SignedCertificateTimestampAndStatusList&
           signed_certificate_timestamps,
-      const NetworkIsolationKey& network_isolation_key) override {
+      const NetworkAnonymizationKey& network_anonymization_key) override {
     num_failures_++;
   }
 
@@ -6531,7 +6531,7 @@ TEST_F(URLRequestTestHTTP, ExpectCTHeader) {
 
   TransportSecurityState::ExpectCTState state;
   ASSERT_TRUE(context->transport_security_state()->GetDynamicExpectCTState(
-      url.host(), NetworkIsolationKey(), &state));
+      url.host(), NetworkAnonymizationKey(), &state));
   EXPECT_TRUE(state.enforce);
   EXPECT_EQ(GURL("https://example.test"), state.report_uri);
 }
@@ -6582,7 +6582,7 @@ TEST_F(URLRequestTestHTTP, MultipleExpectCTHeaders) {
 
   TransportSecurityState::ExpectCTState state;
   ASSERT_TRUE(context->transport_security_state()->GetDynamicExpectCTState(
-      url.host(), NetworkIsolationKey(), &state));
+      url.host(), NetworkAnonymizationKey(), &state));
   EXPECT_TRUE(state.enforce);
   EXPECT_EQ(GURL("https://example.test"), state.report_uri);
 }
@@ -7740,20 +7740,20 @@ TEST_F(URLRequestTestHTTP, IsolationInfoUpdatedOnRedirect) {
   }
 }
 
-// Tests that |key_auth_cache_by_network_isolation_key| is respected.
-TEST_F(URLRequestTestHTTP, AuthWithNetworkIsolationKey) {
+// Tests that |key_auth_cache_by_network_anonymization_key| is respected.
+TEST_F(URLRequestTestHTTP, AuthWithNetworkAnonymizationKey) {
   ASSERT_TRUE(http_test_server()->Start());
 
-  for (bool key_auth_cache_by_network_isolation_key : {false, true}) {
+  for (bool key_auth_cache_by_network_anonymization_key : {false, true}) {
     auto context_builder = CreateTestURLRequestContextBuilder();
     HttpNetworkSessionParams network_session_params;
     network_session_params
-        .key_auth_cache_server_entries_by_network_isolation_key =
-        key_auth_cache_by_network_isolation_key;
+        .key_auth_cache_server_entries_by_network_anonymization_key =
+        key_auth_cache_by_network_anonymization_key;
     context_builder->set_http_network_session_params(network_session_params);
     auto context = context_builder->Build();
 
-    // Populate the auth cache using one NetworkIsolationKey.
+    // Populate the auth cache using one NetworkAnonymizationKey.
     {
       TestDelegate d;
       GURL url(base::StringPrintf(
@@ -7774,9 +7774,9 @@ TEST_F(URLRequestTestHTTP, AuthWithNetworkIsolationKey) {
       EXPECT_TRUE(d.data_received().find("user/secret") != std::string::npos);
     }
 
-    // Make a request with another NetworkIsolationKey. This may or may not use
-    // the cached auth credentials, depending on whether or not the
-    // HttpAuthCache is configured to respect the NetworkIsolationKey.
+    // Make a request with another NetworkAnonymizationKey. This may or may not
+    // use the cached auth credentials, depending on whether or not the
+    // HttpAuthCache is configured to respect the NetworkAnonymizationKey.
     {
       TestDelegate d;
 
@@ -7791,13 +7791,13 @@ TEST_F(URLRequestTestHTTP, AuthWithNetworkIsolationKey) {
 
       EXPECT_THAT(d.request_status(), IsOk());
       ASSERT_TRUE(r->response_headers());
-      if (key_auth_cache_by_network_isolation_key) {
+      if (key_auth_cache_by_network_anonymization_key) {
         EXPECT_EQ(401, r->response_headers()->response_code());
       } else {
         EXPECT_EQ(200, r->response_headers()->response_code());
       }
 
-      EXPECT_EQ(!key_auth_cache_by_network_isolation_key,
+      EXPECT_EQ(!key_auth_cache_by_network_anonymization_key,
                 d.data_received().find("user/secret") != std::string::npos);
     }
   }

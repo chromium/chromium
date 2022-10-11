@@ -91,8 +91,8 @@ class CAProxyLookupClient : public network::mojom::ProxyLookupClient {
     CHECK(network_context);
   }
   void Start(network::mojom::NetworkContext* network_context, const GURL& url) {
-    const net::NetworkIsolationKey network_isolation_key =
-        net::NetworkIsolationKey::CreateTransient();
+    const net::NetworkAnonymizationKey network_isolation_key =
+        net::NetworkAnonymizationKey::CreateTransient();
     mojo::PendingRemote<network::mojom::ProxyLookupClient> proxy_lookup_client =
         receiver_.BindNewPipeAndPassRemote();
     receiver_.set_disconnect_handler(base::BindOnce(

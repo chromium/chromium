@@ -19,7 +19,7 @@
 #include "chrome/browser/predictors/proxy_lookup_client_impl.h"
 #include "chrome/browser/predictors/resolve_host_client_impl.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -83,7 +83,7 @@ struct PreresolveJob {
   PreresolveJob(const GURL& url,
                 int num_sockets,
                 bool allow_credentials,
-                net::NetworkIsolationKey network_isolation_key,
+                net::NetworkAnonymizationKey network_anonymization_key,
                 PreresolveInfo* info);
 
   PreresolveJob(const PreresolveJob&) = delete;
@@ -101,7 +101,7 @@ struct PreresolveJob {
   GURL url;
   int num_sockets;
   bool allow_credentials;
-  net::NetworkIsolationKey network_isolation_key;
+  net::NetworkAnonymizationKey network_anonymization_key;
   // Raw pointer usage is fine here because even though PreresolveJob can
   // outlive PreresolveInfo. It's only accessed on PreconnectManager class
   // context and PreresolveInfo lifetime is tied to PreconnectManager.
@@ -150,11 +150,11 @@ class PreconnectManager {
 
     virtual void OnPreresolveFinished(
         const GURL& url,
-        const net::NetworkIsolationKey& network_isolation_key,
+        const net::NetworkAnonymizationKey& network_anonymization_key,
         bool success) {}
     virtual void OnProxyLookupFinished(
         const GURL& url,
-        const net::NetworkIsolationKey& network_isolation_key,
+        const net::NetworkAnonymizationKey& network_anonymization_key,
         bool success) {}
   };
 
@@ -175,19 +175,20 @@ class PreconnectManager {
   // don't report about their completion. They are considered more important
   // than trackable requests thus they are put in the front of the jobs queue.
   //
-  // |network_isolation_key| specifies the key that the corresponding network
-  // requests are expected to use. If a request is issued with a different key,
-  // it may not use the prefetched DNS entry or preconnected socket.
+  // |network_anonymization_key| specifies the key that the corresponding
+  // network requests are expected to use. If a request is issued with a
+  // different key, it may not use the prefetched DNS entry or preconnected
+  // socket.
   virtual void StartPreresolveHost(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key);
   virtual void StartPreresolveHosts(
       const std::vector<std::string>& hostnames,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key);
   virtual void StartPreconnectUrl(
       const GURL& url,
       bool allow_credentials,
-      net::NetworkIsolationKey network_isolation_key);
+      net::NetworkAnonymizationKey network_anonymization_key);
 
   // No additional jobs keyed by the |url| will be queued after this.
   virtual void Stop(const GURL& url);
@@ -212,14 +213,14 @@ class PreconnectManager {
       const GURL& url,
       int num_sockets,
       bool allow_credentials,
-      const net::NetworkIsolationKey& network_isolation_key) const;
+      const net::NetworkAnonymizationKey& network_anonymization_key) const;
   std::unique_ptr<ResolveHostClientImpl> PreresolveUrl(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       ResolveHostCallback callback) const;
   std::unique_ptr<ProxyLookupClientImpl> LookupProxyForUrl(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       ProxyLookupCallback callback) const;
 
   void TryToLaunchPreresolveJobs();

@@ -685,7 +685,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   void BindP2PSocketManager(
-      net::NetworkIsolationKey isolation_key,
+      net::NetworkAnonymizationKey isolation_key,
       mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver,
       GlobalRenderFrameHostId render_frame_host_id);
 

@@ -182,6 +182,10 @@ class DedicatedWorkerHost final
     return isolation_info_.network_isolation_key();
   }
 
+  const net::NetworkAnonymizationKey& GetNetworkAnonymizationKey() const {
+    return isolation_info_.network_anonymization_key();
+  }
+
   const base::UnguessableToken& GetReportingSource() const {
     return reporting_source_;
   }

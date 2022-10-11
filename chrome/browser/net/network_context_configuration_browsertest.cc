@@ -1090,8 +1090,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, DiskCache) {
 // Make sure that NetworkContexts have separate DNS caches.
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
                        DnsCacheIsolation) {
-  net::NetworkIsolationKey network_isolation_key =
-      net::NetworkIsolationKey::CreateTransient();
+  net::NetworkAnonymizationKey network_anonymization_key =
+      net::NetworkAnonymizationKey::CreateTransient();
   net::HostPortPair host_port_pair(kHostname, 0);
   network::mojom::ResolveHostParametersPtr params =
       network::mojom::ResolveHostParameters::New();
@@ -1103,7 +1103,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   // NetworkContext's cache.
   network::DnsLookupResult result =
       network::BlockingDnsLookup(network_context(), host_port_pair,
-                                 std::move(params), network_isolation_key);
+                                 std::move(params), network_anonymization_key);
   EXPECT_EQ(net::OK, result.error);
   ASSERT_TRUE(result.resolved_addresses.has_value());
   ASSERT_EQ(1u, result.resolved_addresses->size());
@@ -1121,7 +1121,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
         params->source = net::HostResolverSource::LOCAL_ONLY;
         network::DnsLookupResult result = network::BlockingDnsLookup(
             GetNetworkContextForContextType(network_context_type),
-            host_port_pair, std::move(params), network_isolation_key);
+            host_port_pair, std::move(params), network_anonymization_key);
         EXPECT_EQ(net::ERR_NAME_NOT_RESOLVED, result.error);
       }));
   // Do a cache-only lookup using the original network context, which should
@@ -1132,8 +1132,9 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   params->source = net::HostResolverSource::LOCAL_ONLY;
   params->cache_usage =
       network::mojom::ResolveHostParameters::CacheUsage::STALE_ALLOWED;
-  result = network::BlockingDnsLookup(network_context(), host_port_pair,
-                                      std::move(params), network_isolation_key);
+  result =
+      network::BlockingDnsLookup(network_context(), host_port_pair,
+                                 std::move(params), network_anonymization_key);
   EXPECT_EQ(net::OK, result.error);
   ASSERT_TRUE(result.resolved_addresses.has_value());
   ASSERT_EQ(1u, result.resolved_addresses->size());

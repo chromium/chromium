@@ -46,7 +46,9 @@ bool LookUpProxyForURLCallback(
       site_instance->GetBrowserContext()->GetStoragePartition(site_instance);
 
   storage_partition->GetNetworkContext()->LookUpProxyForURL(
-      url, render_frame_host->GetNetworkIsolationKey(),
+      url,
+      render_frame_host->GetIsolationInfoForSubresources()
+          .network_anonymization_key(),
       std::move(proxy_lookup_client));
   return true;
 }

@@ -15,14 +15,14 @@ namespace content {
 
 ProxyLookupClientImpl::ProxyLookupClientImpl(
     const GURL& url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     ProxyLookupCallback callback,
     network::mojom::NetworkContext* network_context)
     : callback_(std::move(callback)) {
   DCHECK(network_context);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  network_context->LookUpProxyForURL(url, network_isolation_key,
+  network_context->LookUpProxyForURL(url, network_anonymization_key,
                                      receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
       base::BindOnce(&ProxyLookupClientImpl::OnProxyLookupComplete,

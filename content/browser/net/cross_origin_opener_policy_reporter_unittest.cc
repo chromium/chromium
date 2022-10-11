@@ -26,7 +26,7 @@ class TestNetworkContext : public network::TestNetworkContext {
     Report(const std::string& type,
            const std::string& group,
            const GURL& url,
-           const net::NetworkIsolationKey& network_isolation_key,
+           const net::NetworkAnonymizationKey& network_isolation_key,
            base::Value::Dict body)
         : type(type),
           group(group),
@@ -37,7 +37,7 @@ class TestNetworkContext : public network::TestNetworkContext {
     std::string type;
     std::string group;
     GURL url;
-    net::NetworkIsolationKey network_isolation_key;
+    net::NetworkAnonymizationKey network_isolation_key;
     base::Value::Dict body;
   };
 
@@ -46,7 +46,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       const std::string& group,
       const GURL& url,
       const absl::optional<base::UnguessableToken>& reporting_source,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_isolation_key,
       const absl::optional<std::string>& user_agent,
       base::Value::Dict body) override {
     DCHECK(!user_agent);
@@ -80,7 +80,7 @@ class CrossOriginOpenerPolicyReporterTest : public testing::Test {
   const base::UnguessableToken& reporting_source() const {
     return reporting_source_;
   }
-  const net::NetworkIsolationKey& network_isolation_key() const {
+  const net::NetworkAnonymizationKey& network_isolation_key() const {
     return network_isolation_key_;
   }
 
@@ -99,8 +99,8 @@ class CrossOriginOpenerPolicyReporterTest : public testing::Test {
   network::CrossOriginOpenerPolicy coop_;
   const base::UnguessableToken reporting_source_ =
       base::UnguessableToken::Create();
-  const net::NetworkIsolationKey network_isolation_key_ =
-      net::NetworkIsolationKey::CreateTransient();
+  const net::NetworkAnonymizationKey network_isolation_key_ =
+      net::NetworkAnonymizationKey::CreateTransient();
 };
 
 TEST_F(CrossOriginOpenerPolicyReporterTest, Basic) {

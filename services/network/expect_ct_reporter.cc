@@ -159,7 +159,7 @@ void ExpectCTReporter::OnExpectCTFailed(
     const net::X509Certificate* served_certificate_chain,
     const net::SignedCertificateTimestampAndStatusList&
         signed_certificate_timestamps,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   if (report_uri.is_empty())
     return;
 
@@ -193,7 +193,7 @@ void ExpectCTReporter::OnExpectCTFailed(
     return;
   }
 
-  SendPreflight(report_uri, serialized_report, network_isolation_key);
+  SendPreflight(report_uri, serialized_report, network_anonymization_key);
 }
 
 void ExpectCTReporter::OnResponseStarted(net::URLRequest* request,
@@ -231,7 +231,7 @@ void ExpectCTReporter::OnResponseStarted(net::URLRequest* request,
   report_sender_->Send(preflight->report_uri,
                        "application/expect-ct-report+json; charset=utf-8",
                        preflight->serialized_report,
-                       preflight->network_isolation_key, success_callback_,
+                       preflight->network_anonymization_key, success_callback_,
                        // Since |this| owns the |report_sender_|, it's safe to
                        // use base::Unretained here: |report_sender_| will be
                        // destroyed before |this|.
@@ -249,26 +249,26 @@ ExpectCTReporter::PreflightInProgress::PreflightInProgress(
     std::unique_ptr<net::URLRequest> request,
     const std::string& serialized_report,
     const GURL& report_uri,
-    const net::NetworkIsolationKey& network_isolation_key)
+    const net::NetworkAnonymizationKey& network_anonymization_key)
     : request(std::move(request)),
       serialized_report(serialized_report),
       report_uri(report_uri),
-      network_isolation_key(network_isolation_key) {}
+      network_anonymization_key(network_anonymization_key) {}
 
 ExpectCTReporter::PreflightInProgress::~PreflightInProgress() {}
 
 void ExpectCTReporter::SendPreflight(
     const GURL& report_uri,
     const std::string& serialized_report,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   std::unique_ptr<net::URLRequest> url_request =
       request_context_->CreateRequest(report_uri, net::DEFAULT_PRIORITY, this,
                                       kExpectCTReporterTrafficAnnotation);
   url_request->SetLoadFlags(net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE);
   url_request->set_allow_credentials(false);
   url_request->set_method(net::HttpRequestHeaders::kOptionsMethod);
-  url_request->set_isolation_info(net::IsolationInfo::CreatePartial(
-      net::IsolationInfo::RequestType::kOther, network_isolation_key));
+  url_request->set_isolation_info_from_network_anonymization_key(
+      network_anonymization_key);
 
   net::HttpRequestHeaders extra_headers;
   extra_headers.SetHeader("Origin", "null");
@@ -280,7 +280,7 @@ void ExpectCTReporter::SendPreflight(
   net::URLRequest* raw_request = url_request.get();
   inflight_preflights_[raw_request] = std::make_unique<PreflightInProgress>(
       std::move(url_request), serialized_report, report_uri,
-      network_isolation_key);
+      network_anonymization_key);
   raw_request->Start();
 }
 

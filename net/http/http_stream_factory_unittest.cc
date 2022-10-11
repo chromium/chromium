@@ -373,7 +373,7 @@ TestCase kTests[] = {
 
 void PreconnectHelperForURL(int num_streams,
                             const GURL& url,
-                            NetworkIsolationKey network_isolation_key,
+                            NetworkAnonymizationKey network_anonymization_key,
                             SecureDnsPolicy secure_dns_policy,
                             HttpNetworkSession* session) {
   HttpNetworkSessionPeer peer(session);
@@ -386,7 +386,7 @@ void PreconnectHelperForURL(int num_streams,
   request.method = "GET";
   request.url = url;
   request.load_flags = 0;
-  request.network_isolation_key = network_isolation_key;
+  request.network_anonymization_key = network_anonymization_key;
   request.secure_dns_policy = secure_dns_policy;
   request.traffic_annotation =
       MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
@@ -398,7 +398,7 @@ void PreconnectHelperForURL(int num_streams,
 void PreconnectHelper(const TestCase& test, HttpNetworkSession* session) {
   GURL url =
       test.ssl ? GURL("https://www.google.com") : GURL("http://www.google.com");
-  PreconnectHelperForURL(test.num_streams, url, NetworkIsolationKey(),
+  PreconnectHelperForURL(test.num_streams, url, NetworkAnonymizationKey(),
                          SecureDnsPolicy::kAllow, session);
 }
 
@@ -647,7 +647,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectUnsafePort) {
   EXPECT_EQ(-1, transport_conn_pool->last_num_streams());
 }
 
-// Verify that preconnects use the specified NetworkIsolationKey.
+// Verify that preconnects use the specified NetworkAnonymizationKey.
 TEST_F(HttpStreamFactoryTest, PreconnectNetworkIsolationKey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -674,8 +674,8 @@ TEST_F(HttpStreamFactoryTest, PreconnectNetworkIsolationKey) {
   const GURL kURL("http://foo.test/");
   SchemefulSite kSiteFoo(GURL("http://foo.test"));
   SchemefulSite kSiteBar(GURL("http://bar.test"));
-  const NetworkIsolationKey kKey1(kSiteFoo, kSiteFoo);
-  const NetworkIsolationKey kKey2(kSiteBar, kSiteBar);
+  const NetworkAnonymizationKey kKey1(kSiteFoo, kSiteFoo);
+  const NetworkAnonymizationKey kKey2(kSiteBar, kSiteBar);
   PreconnectHelperForURL(1, kURL, kKey1, SecureDnsPolicy::kAllow,
                          session.get());
   EXPECT_EQ(1, transport_conn_pool->last_num_streams());
@@ -712,13 +712,13 @@ TEST_F(HttpStreamFactoryTest, PreconnectDisableSecureDns) {
   const GURL kURL("http://foo.test/");
   SchemefulSite kSiteFoo(GURL("http://foo.test"));
   SchemefulSite kSiteBar(GURL("http://bar.test"));
-  PreconnectHelperForURL(1, kURL, NetworkIsolationKey(),
+  PreconnectHelperForURL(1, kURL, NetworkAnonymizationKey(),
                          SecureDnsPolicy::kAllow, session.get());
   EXPECT_EQ(1, transport_conn_pool->last_num_streams());
   EXPECT_EQ(SecureDnsPolicy::kAllow,
             transport_conn_pool->last_group_id().secure_dns_policy());
 
-  PreconnectHelperForURL(2, kURL, NetworkIsolationKey(),
+  PreconnectHelperForURL(2, kURL, NetworkAnonymizationKey(),
                          SecureDnsPolicy::kDisable, session.get());
   EXPECT_EQ(2, transport_conn_pool->last_num_streams());
   EXPECT_EQ(SecureDnsPolicy::kDisable,
@@ -1031,7 +1031,7 @@ TEST_F(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
     auto mock_pool_manager = std::make_unique<MockClientSocketPoolManager>();
     mock_pool_manager->SetSocketPool(proxy_server, std::move(http_proxy_pool));
     peer.SetClientSocketPoolManager(std::move(mock_pool_manager));
-    PreconnectHelperForURL(num_streams, url, NetworkIsolationKey(),
+    PreconnectHelperForURL(num_streams, url, NetworkAnonymizationKey(),
                            SecureDnsPolicy::kAllow, session.get());
     EXPECT_EQ(num_streams, http_proxy_pool_ptr->last_num_streams());
   }
@@ -1676,16 +1676,16 @@ TEST_F(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpURL) {
 }
 
 // Same as above, but checks HttpServerProperties is updated using the correct
-// NetworkIsolationKey. When/if NetworkIsolationKey is enabled by default, this
-// should probably be merged into the above test.
+// NetworkAnonymizationKey. When/if NetworkAnonymizationKey is enabled by
+// default, this should probably be merged into the above test.
 TEST_F(HttpStreamFactoryTest,
-       RequestSpdyHttpStreamHttpURLWithNetworkIsolationKey) {
+       RequestSpdyHttpStreamHttpURLWithNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const NetworkIsolationKey kNetworkIsolationKey2(kSite1, kSite1);
 
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

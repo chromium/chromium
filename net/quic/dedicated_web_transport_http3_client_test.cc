@@ -98,8 +98,8 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
   DedicatedWebTransportHttp3Test() {
     quic::QuicEnableVersion(quic::ParsedQuicVersion::RFCv1());
     origin_ = url::Origin::Create(GURL{"https://example.org"});
-    isolation_key_ =
-        NetworkIsolationKey(SchemefulSite(origin_), SchemefulSite(origin_));
+    anonymization_key_ =
+        NetworkAnonymizationKey(SchemefulSite(origin_), SchemefulSite(origin_));
 
     URLRequestContextBuilder builder;
     builder.set_proxy_resolution_service(
@@ -185,7 +185,6 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
 
   int port_ = 0;
   url::Origin origin_;
-  NetworkIsolationKey isolation_key_;
   NetworkAnonymizationKey anonymization_key_;
 };
 

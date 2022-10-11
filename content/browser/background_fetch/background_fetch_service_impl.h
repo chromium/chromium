@@ -18,7 +18,7 @@
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace content {
