@@ -209,8 +209,7 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
                                    base::TimeDelta timeout,
                                    ui::AXTreeUpdate*) = 0;
 
-  virtual void MarkAllImageAXObjectsDirty(
-      ax::mojom::blink::Action event_from_action) = 0;
+  virtual void MarkAllImageAXObjectsDirty() = 0;
 
   // Notifies that an AXObject is dirty and its state needs
   // to be serialized again. If |subtree| is true, the entire subtree is

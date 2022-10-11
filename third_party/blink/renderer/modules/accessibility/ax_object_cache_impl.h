@@ -416,9 +416,8 @@ class MODULES_EXPORT AXObjectCacheImpl
                            base::TimeDelta timeout,
                            ui::AXTreeUpdate*) override;
 
-  void MarkAllImageAXObjectsDirty(
-      ax::mojom::blink::Action event_from_action) override {
-    return Root()->MarkAllImageAXObjectsDirty(event_from_action);
+  void MarkAllImageAXObjectsDirty() override {
+    return Root()->MarkAllImageAXObjectsDirty();
   }
 
   void ResetSerializer() override { ax_tree_serializer_->Reset(); }

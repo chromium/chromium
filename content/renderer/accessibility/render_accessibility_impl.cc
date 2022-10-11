@@ -462,8 +462,7 @@ void RenderAccessibilityImpl::PerformAction(const ui::AXActionData& data) {
         // they get added to the annotator.
         DCHECK(ax_context_);
         ScopedFreezeAXTreeSource freeze(ax_context_.get());
-        ax_context_->MarkAllImageAXObjectsDirty(
-            ax::mojom::Action::kAnnotatePageImages);
+        ax_context_->MarkAllImageAXObjectsDirty();
       }
       break;
     case ax::mojom::Action::kSignalEndOfTest:

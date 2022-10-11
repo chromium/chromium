@@ -78,11 +78,10 @@ bool WebAXContext::SerializeEntireTree(bool exclude_offscreen,
       exclude_offscreen, max_node_count, timeout, response);
 }
 
-void WebAXContext::MarkAllImageAXObjectsDirty(
-    ax::mojom::blink::Action event_from_action) {
+void WebAXContext::MarkAllImageAXObjectsDirty() {
   if (!private_->HasActiveDocument())
     return;
-  private_->GetAXObjectCache().MarkAllImageAXObjectsDirty(event_from_action);
+  private_->GetAXObjectCache().MarkAllImageAXObjectsDirty();
 }
 
 void WebAXContext::SerializeDirtyObjectsAndEvents(

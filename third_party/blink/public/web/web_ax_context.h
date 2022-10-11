@@ -54,8 +54,7 @@ class BLINK_EXPORT WebAXContext {
                            base::TimeDelta timeout,
                            ui::AXTreeUpdate* response);
 
-  void MarkAllImageAXObjectsDirty(
-      ax::mojom::Action event_from_action);
+  void MarkAllImageAXObjectsDirty();
 
   // Serialize all AXObjects that are dirty (have changed their state since
   // the last serialization) into |updates|. (Heuristically) skips

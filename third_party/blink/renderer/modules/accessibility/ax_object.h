@@ -1338,7 +1338,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void PopulateAXRelativeBounds(ui::AXRelativeBounds& bounds,
                                 bool* clips_children) const;
 
-  void MarkAllImageAXObjectsDirty(ax::mojom::blink::Action event_from_action);
+  void MarkAllImageAXObjectsDirty();
 
  protected:
   AXID id_;

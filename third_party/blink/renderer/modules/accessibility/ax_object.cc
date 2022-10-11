@@ -1364,15 +1364,15 @@ void AXObject::PopulateAXRelativeBounds(ui::AXRelativeBounds& bounds,
     bounds.transform = std::make_unique<gfx::Transform>(container_transform);
 }
 
-void AXObject::MarkAllImageAXObjectsDirty(
-    ax::mojom::blink::Action event_from_action) {
+void AXObject::MarkAllImageAXObjectsDirty() {
   if (RoleValue() == ax::mojom::blink::Role::kImage) {
     AXObjectCache().MarkAXObjectDirtyWithCleanLayoutAndEvent(
-        this, ax::mojom::blink::EventFrom::kNone, event_from_action);
+        this, ax::mojom::blink::EventFrom::kNone,
+        ax::mojom::Action::kAnnotatePageImages);
   }
 
   for (auto& child : UnignoredChildren())
-    child->MarkAllImageAXObjectsDirty(event_from_action);
+    child->MarkAllImageAXObjectsDirty();
 }
 
 void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
