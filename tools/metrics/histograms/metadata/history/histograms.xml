@@ -1667,7 +1667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryURLHistoryItems" units="items"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -1679,7 +1679,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryURLIndexingTime" units="ms"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>mpearson@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -1707,7 +1707,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryURLIndexRestoreCacheTime" units="ms"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>tommycli@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -1718,7 +1718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.InMemoryURLIndexSaveCacheTime" units="ms"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>tommycli@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>

@@ -761,7 +761,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.OnBrowserStartup.SkipServiceWorkerOnFirstNavigation"
-    enum="BooleanSkipped" expires_after="2023-02-05">
+    enum="BooleanSkipped" expires_after="2023-04-09">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1100,7 +1100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.Storage.ReadInitialDataFromDB.Time" units="ms"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1111,7 +1111,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.Storage.RegisteredStorageKeyCacheInitialization.Time"
-    units="ms" expires_after="2023-02-05">
+    units="ms" expires_after="2023-04-09">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

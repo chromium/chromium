@@ -286,7 +286,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Startup.Cold.ShellLaunchToSplashscreenVisible"
-    units="ms" expires_after="2023-02-05">
+    units="ms" expires_after="2023-04-09">
   <owner>mheikal@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>

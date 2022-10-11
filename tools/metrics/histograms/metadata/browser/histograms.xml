@@ -1086,7 +1086,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserSwitcher.LaunchTime" units="ms"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>nicolaso@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>

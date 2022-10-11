@@ -11758,7 +11758,7 @@ Safe Browsing lookups, which is critical for security. -->
 </histogram>
 
 <histogram name="SB2.RemoteCall.Result" enum="SB2RemoteCallResult"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

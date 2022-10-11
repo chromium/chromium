@@ -149,7 +149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SideSearch.OpenAction" enum="SideSearchOpenActionType"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>

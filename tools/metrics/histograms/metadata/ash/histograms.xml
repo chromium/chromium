@@ -169,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.AmbientMode.Enabled" enum="BooleanEnabled"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>cowmoo@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <summary>

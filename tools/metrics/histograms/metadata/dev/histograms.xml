@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.PanelShown" enum="DevToolsPanel"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@chromium.org</owner>
   <summary>Specified DevTools panel was shown.</summary>

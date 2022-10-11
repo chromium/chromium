@@ -608,7 +608,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Memory.Experimental.Browser2.Tiny" units="bytes"
-    expires_after="2023-04-02">
+    expires_after="2023-04-09">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocatorTiny2" -->
 
   <owner>sashamcintosh@chromium.org</owner>

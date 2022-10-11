@@ -433,7 +433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.TextBubble.ShownTime" units="ms"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>haileywang@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>
