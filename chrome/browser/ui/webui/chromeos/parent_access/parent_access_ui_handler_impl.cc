@@ -81,16 +81,34 @@ void ParentAccessUIHandlerImpl::GetParentAccessParams(
   return;
 }
 
-void ParentAccessUIHandlerImpl::OnParentApproved(
-    OnParentApprovedCallback callback) {
-  DCHECK(parent_access_token_);
-  auto result = std::make_unique<ParentAccessDialog::Result>();
-  result->status = ParentAccessDialog::Result::Status::kApproved;
-  result->parent_access_token = parent_access_token_->token();
-  // Only keep the seconds, not the nanoseconds.
-  result->parent_access_token_expire_timestamp_ =
-      base::Time::FromDoubleT(parent_access_token_->expire_time().seconds());
-  ParentAccessDialog::GetInstance()->SetResultAndClose(std::move(result));
+void ParentAccessUIHandlerImpl::OnParentAccessDone(
+    parent_access_ui::mojom::ParentAccessResult result,
+    OnParentAccessDoneCallback callback) {
+  auto dialog_result = std::make_unique<ParentAccessDialog::Result>();
+
+  switch (result) {
+    case parent_access_ui::mojom::ParentAccessResult::kApproved:
+      DCHECK(parent_access_token_);
+      dialog_result->status = ParentAccessDialog::Result::Status::kApproved;
+      dialog_result->parent_access_token = parent_access_token_->token();
+      // Only keep the seconds, not the nanoseconds.
+      dialog_result->parent_access_token_expire_timestamp_ =
+          base::Time::FromDoubleT(
+              parent_access_token_->expire_time().seconds());
+      break;
+    case parent_access_ui::mojom::ParentAccessResult::kDeclined:
+      dialog_result->status = ParentAccessDialog::Result::Status::kDeclined;
+      break;
+    case parent_access_ui::mojom::ParentAccessResult::kCancelled:
+      dialog_result->status = ParentAccessDialog::Result::Status::kCancelled;
+      break;
+    case parent_access_ui::mojom::ParentAccessResult::kError:
+      dialog_result->status = ParentAccessDialog::Result::Status::kError;
+      break;
+  }
+
+  ParentAccessDialog::GetInstance()->SetResultAndClose(
+      std::move(dialog_result));
   std::move(callback).Run();
 }
 

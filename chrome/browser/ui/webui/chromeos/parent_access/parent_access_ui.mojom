@@ -62,6 +62,14 @@ union FlowTypeParams {
   WebApprovalsParams web_approvals_params;
 };
 
+// The result of the parent access request.
+enum ParentAccessResult {
+  kApproved,
+  kDeclined,
+  kCancelled,
+  kError,
+};
+
 // Interface that supports integration between the ParentAccess WebUI and
 // ChromeOS.
 interface ParentAccessUIHandler {
@@ -76,7 +84,7 @@ interface ParentAccessUIHandler {
   // Returns the FlowTypeParams pertinent to the current parent access flow.
   GetParentAccessParams() => (ParentAccessParams params);
 
-  // When called, indicates that the parent has explicitly approved the request
-  // from the ChromeOS flow, which will cause the Parent Access UI to close.
-  OnParentApproved() => ();
+  // When called, indicates that that the request has completed with the
+  // specified result, which will cause the Parent Access UI to close.
+  OnParentAccessDone(ParentAccessResult result) => ();
 };

@@ -131,9 +131,9 @@ MATCHER_P(EqualsProto,
   return expected_serialized == actual_serialized;
 }
 
-// Verifies that the ParentVerified status is handled correctly.
+// Verifies that the parent approvals sequence is handled correctly.
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
-                       ParentVerifiedParsed) {
+                       OnParentVerifiedAndApproved) {
   // Construct the ParentAccessCallback
   kids::platform::parentaccess::client::proto::ParentAccessCallback
       parent_access_callback;
@@ -201,17 +201,63 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
   // Verify the Parent Access Token was stored.
   EXPECT_THAT(*pat, EqualsProto(*(handler->GetParentAccessTokenForTest())));
 
-  // Send the OnParentApproved event.
+  // Send the approved result status.
   base::RunLoop parent_approved_run_loop;
-  handler->OnParentApproved(base::BindOnce(
-      [](base::OnceClosure quit_closure) -> void {
-        std::move(quit_closure).Run();
-      },
-      parent_approved_run_loop.QuitClosure()));
+  handler->OnParentAccessDone(
+      parent_access_ui::mojom::ParentAccessResult::kApproved,
+      base::BindOnce([](base::OnceClosure quit_closure)
+                         -> void { std::move(quit_closure).Run(); },
+                     parent_approved_run_loop.QuitClosure()));
 
   parent_approved_run_loop.Run();
 
   // Wait for the "Show Dialog" callback to complete, which wil test for the
+  // expected result to be shown.
+  show_dialog_run_loop.Run();
+
+  // The dialog should have been closed
+  EXPECT_EQ(nullptr, ParentAccessDialog::GetInstance());
+}
+
+// Verifies ParentDeclined is handled correctly.
+IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest, OnParentDeclined) {
+  // Show the parent access dialog.
+  base::RunLoop show_dialog_run_loop;
+  ParentAccessDialog::ShowError error = ParentAccessDialog::Show(
+      GetParamsForWebApprovals(),
+      base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             std::unique_ptr<chromeos::ParentAccessDialog::Result> result)
+              -> void {
+            // The dialog result should contain the test token.
+            EXPECT_EQ(chromeos::ParentAccessDialog::Result::kDeclined,
+                      result->status);
+            std::move(quit_closure).Run();
+          },
+          show_dialog_run_loop.QuitClosure()));
+
+  // Verify dialog is showing.
+  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+
+  EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
+
+  ParentAccessUIHandlerImpl* handler = static_cast<ParentAccessUIHandlerImpl*>(
+      GetParentAccessUI()->GetHandlerForTest());
+
+  // Make sure the handler isn't null.
+  ASSERT_NE(handler, nullptr);
+
+  // Send the declined result status.
+  base::RunLoop parent_denied_run_loop;
+  handler->OnParentAccessDone(
+      parent_access_ui::mojom::ParentAccessResult::kDeclined,
+      base::BindOnce([](base::OnceClosure quit_closure)
+                         -> void { std::move(quit_closure).Run(); },
+                     parent_denied_run_loop.QuitClosure()));
+
+  parent_denied_run_loop.Run();
+
+  // Wait for the "Show Dialog" callback to complete, which will test for the
   // expected result to be shown.
   show_dialog_run_loop.Run();
 
