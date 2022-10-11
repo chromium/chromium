@@ -140,7 +140,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     const idElement = this.shadowRoot!.querySelector('#extension-id');
     if (idElement) {
       assert(this.data);
-      idElement.innerHTML = this.i18n('itemId', this.data.id);
+      idElement.textContent = this.i18n('itemId', this.data.id);
     }
   }
 

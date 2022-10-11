@@ -221,7 +221,7 @@
     Export Activities
   </message>
   <message name="IDS_EXTENSIONS_ITEM_ID" desc="The text for the label next to the extension id.">
-    &lt;span&gt;ID: &lt;/span&gt;<ph name="EXTENSION_ID">$1<ex>cfhdojbkjhnklbpkdaibdccddilifddb</ex></ph>
+    ID: <ph name="EXTENSION_ID">$1<ex>cfhdojbkjhnklbpkdaibdccddilifddb</ex></ph>
   </message>
   <message name="IDS_EXTENSIONS_ITEM_INSPECT_VIEWS" desc="The text next to any inspectable views for an extension.">
     Inspect views
