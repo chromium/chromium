@@ -135,6 +135,28 @@ ui::GestureEvent CreateTestGestureEvent(const ui::GestureEventDetails& details,
   return ui::GestureEvent(x, y, 0, base::TimeTicks(), details);
 }
 
+class TestWidgetRemovalsObserver : public WidgetRemovalsObserver {
+ public:
+  TestWidgetRemovalsObserver() = default;
+
+  TestWidgetRemovalsObserver(const TestWidgetRemovalsObserver&) = delete;
+  TestWidgetRemovalsObserver& operator=(const TestWidgetRemovalsObserver&) =
+      delete;
+
+  ~TestWidgetRemovalsObserver() override = default;
+
+  void OnWillRemoveView(Widget* widget, View* view) override {
+    removed_views_.insert(view);
+  }
+
+  bool DidRemoveView(View* view) {
+    return removed_views_.find(view) != removed_views_.end();
+  }
+
+ private:
+  std::set<View*> removed_views_;
+};
+
 }  // namespace
 
 // A view that keeps track of the events it receives, and consumes all scroll
@@ -1013,6 +1035,24 @@ TEST_P(WidgetWithDestroyedNativeViewTest, GetWorkAreaBoundsInScreen) {
 
 TEST_P(WidgetWithDestroyedNativeViewTest, HasCapture) {
   widget()->HasCapture();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, HasFocusManager) {
+  widget()->HasFocusManager();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, HasHitTestMask) {
+  widget()->HasHitTestMask();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, HasObserver) {
+  TestWidgetObserver observer(widget());
+  widget()->HasObserver(&observer);
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, HasRemovalsObserver) {
+  TestWidgetRemovalsObserver observer;
+  widget()->HasRemovalsObserver(&observer);
 }
 
 TEST_P(WidgetWithDestroyedNativeViewTest, Hide) {
@@ -4238,32 +4278,6 @@ TEST_F(WidgetTest, OnDeviceScaleFactorChanged) {
   widget->GetLayer()->OnDeviceScaleFactorChanged(scale_factor);
   EXPECT_EQ(scale_factor, view->last_scale_factor());
 }
-
-namespace {
-
-class TestWidgetRemovalsObserver : public WidgetRemovalsObserver {
- public:
-  TestWidgetRemovalsObserver() = default;
-
-  TestWidgetRemovalsObserver(const TestWidgetRemovalsObserver&) = delete;
-  TestWidgetRemovalsObserver& operator=(const TestWidgetRemovalsObserver&) =
-      delete;
-
-  ~TestWidgetRemovalsObserver() override = default;
-
-  void OnWillRemoveView(Widget* widget, View* view) override {
-    removed_views_.insert(view);
-  }
-
-  bool DidRemoveView(View* view) {
-    return removed_views_.find(view) != removed_views_.end();
-  }
-
- private:
-  std::set<View*> removed_views_;
-};
-
-}  // namespace
 
 // Test that WidgetRemovalsObserver::OnWillRemoveView is called when deleting
 // a view.

@@ -1676,6 +1676,9 @@ bool Widget::ExecuteCommand(int command_id) {
 }
 
 bool Widget::HasHitTestMask() const {
+  if (!widget_delegate_)
+    return false;
+
   return widget_delegate_->WidgetHasHitTestMask();
 }
 
