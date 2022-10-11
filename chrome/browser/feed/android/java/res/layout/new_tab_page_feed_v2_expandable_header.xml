@@ -16,12 +16,6 @@ found in the LICENSE file.
     android:gravity="center_vertical"
     android:layoutDirection="locale" >
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_marginBottom="@dimen/feed_divider_margin_bottom"
-        style="@style/FeedHorizontalDivider" />
-
     <RelativeLayout
         tools:ignore="RelativeOverlap"
         android:id="@+id/main_content"

@@ -27,11 +27,6 @@ found in the LICENSE file.
         <item name="solidColorChip">false</item>
     </style>
 
-    <style name="FeedHorizontalDivider" parent="HorizontalDivider">
-        <item name="android:layout_height">@dimen/feed_divider_height</item>
-        <item name="android:background">@drawable/rectangle_surface_1</item>
-    </style>
-
     <style name="NtpHeaderTabLayoutStyle" parent="TabLayoutStyle">
         <item name="tabTextAppearance">@style/TextAppearance.TabLayout</item>
         <item name="tabGravity">center</item>

@@ -48,8 +48,6 @@ found in the LICENSE file.
     <dimen name="ntp_header_lateral_paddings_v2">16dp</dimen>
     <dimen name="feed_options_vertical_margins">6dp</dimen>
     <dimen name="feed_options_chip_margin">8dp</dimen>
-    <dimen name="feed_divider_height">4dp</dimen>
-    <dimen name="feed_divider_margin_bottom">12dp</dimen>
     <dimen name="feed_header_dropdown_size">15dp</dimen>
     <dimen name="feed_header_tab_extra_margin_right">7dp</dimen>
     <dimen name="feed_header_background_corner_radius">60dp</dimen>
