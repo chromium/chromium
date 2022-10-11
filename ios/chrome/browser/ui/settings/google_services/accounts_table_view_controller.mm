@@ -357,7 +357,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.image = self.accountManagerService->GetIdentityAvatarWithIdentity(
       identity, IdentityAvatarSize::TableViewIcon);
   item.text = identity.userEmail;
-  item.chromeIdentity = identity;
+  item.identity = identity;
   item.accessibilityIdentifier = identity.userEmail;
   item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 }
@@ -429,11 +429,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       TableViewAccountItem* item =
           base::mac::ObjCCastStrict<TableViewAccountItem>(
               [self.tableViewModel itemAtIndexPath:indexPath]);
-      DCHECK(item.chromeIdentity);
+      DCHECK(item.identity);
 
       UIView* itemView =
           [[tableView cellForRowAtIndexPath:indexPath] contentView];
-      [self showAccountDetails:item.chromeIdentity itemView:itemView];
+      [self showAccountDetails:item.identity itemView:itemView];
       break;
     }
     case ItemTypeAddAccount: {
@@ -499,7 +499,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-- (void)showAccountDetails:(ChromeIdentity*)identity
+- (void)showAccountDetails:(id<SystemIdentity>)identity
                   itemView:(UIView*)itemView {
   DCHECK(!self.removeOrMyGoogleChooserAlertCoordinator);
   self.removeOrMyGoogleChooserAlertCoordinator = [[ActionSheetCoordinator alloc]
@@ -536,7 +536,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Handles the manage Google account action from
 // `self.removeOrMyGoogleChooserAlertCoordinator`. Action sheet created in
 // `showAccountDetails:itemView:`
-- (void)handleManageGoogleAccountWithIdentity:(ChromeIdentity*)identity {
+- (void)handleManageGoogleAccountWithIdentity:(id<SystemIdentity>)identity {
   DCHECK(self.removeOrMyGoogleChooserAlertCoordinator);
   // `self.removeOrMyGoogleChooserAlertCoordinator` should not be stopped, since
   // the coordinator has been confirmed.
@@ -551,7 +551,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Handles the secondary account remove action from
 // `self.removeOrMyGoogleChooserAlertCoordinator`. Action sheet created in
 // `showAccountDetails:itemView:`
-- (void)handleRemoveSecondaryAccountWithIdentity:(ChromeIdentity*)identity {
+- (void)handleRemoveSecondaryAccountWithIdentity:(id<SystemIdentity>)identity {
   DCHECK(self.removeOrMyGoogleChooserAlertCoordinator);
   // `self.removeOrMyGoogleChooserAlertCoordinator` should not be stopped, since
   // the coordinator has been confirmed.
@@ -583,7 +583,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self.removeAccountCoordinator start];
 }
 
-- (void)removeSecondaryIdentity:(ChromeIdentity*)identity {
+- (void)removeSecondaryIdentity:(id<SystemIdentity>)identity {
   DCHECK(self.removeAccountCoordinator);
   self.removeAccountCoordinator = nil;
   self.uiDisabled = YES;
