@@ -3788,7 +3788,14 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
   resource_pool_ = nullptr;
   ClearUIResources();
 
-  if (layer_tree_frame_sink_->context_provider()) {
+  bool should_finish = true;
+#if BUILDFLAG(IS_WIN)
+  // Windows does not have stability issues that require calling Finish.
+  // To minimize risk, only avoid waiting for the UI layer tree.
+  should_finish = !settings_.is_layer_tree_for_ui;
+#endif
+
+  if (should_finish && layer_tree_frame_sink_->context_provider()) {
     // TODO(ericrk): Remove this once all uses of ContextGL from LTFS are
     // removed.
     auto* gl = layer_tree_frame_sink_->context_provider()->ContextGL();
