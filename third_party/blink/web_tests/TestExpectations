@@ -6533,6 +6533,9 @@ crbug.com/1183990 http/tests/devtools/sources/debugger/network-uisourcecode-prov
 crbug.com/1183990 http/tests/devtools/sources/debugger-ui/scripts-panel.js [ Failure Pass ]
 crbug.com/1183990 http/tests/devtools/sources/debugger-ui/scripts-with-same-source-url.js [ Failure Pass ]
 
+# Interop PE 2022-2023 investigation
+crbug.com/269917 external/wpt/uievents/mouse/cancel-mousedown-in-subframe.html [ Timeout ]
+
 # Sheriff 2022-01-17
 crbug.com/1233938 http/tests/notifications/click-shared-worker.html [ Pass Timeout ]
 # Temporarily disable test to allow fixing of devtools path escaping
