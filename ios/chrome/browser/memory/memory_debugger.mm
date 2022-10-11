@@ -10,7 +10,6 @@
 
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/memory/memory_metrics.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/util/device_util.h"
 

@@ -28,7 +28,6 @@ source_set("google_logo") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/ui/util",
     "//ios/web",
     "//net",
     "//ui/gfx",

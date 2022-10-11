@@ -9,7 +9,6 @@
 #import "base/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
