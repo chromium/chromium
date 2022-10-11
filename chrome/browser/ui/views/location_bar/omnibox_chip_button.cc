@@ -61,13 +61,29 @@ void OmniboxChipButton::VisibilityChanged(views::View* starting_from,
 }
 
 void OmniboxChipButton::AnimateCollapse(base::TimeDelta kAnimationDuration) {
+  base_width_ = 0;
   animation_->SetSlideDuration(kAnimationDuration);
-  animation_->Hide();
+  ForceAnimateCollapse();
 }
 
 void OmniboxChipButton::AnimateExpand(base::TimeDelta kAnimationDuration) {
+  base_width_ = 0;
   animation_->SetSlideDuration(kAnimationDuration);
-  animation_->Show();
+  ForceAnimateExpand();
+}
+
+void OmniboxChipButton::AnimateToFit(base::TimeDelta kAnimationDuration) {
+  animation_->SetSlideDuration(kAnimationDuration);
+  base_width_ = label()->width();
+
+  if (label()->GetPreferredSize().width() < width()) {
+    // As we're collapsing, we need to make sure that the padding is not
+    // animated away.
+    base_width_ += kChipImagePadding + kExtraRightPadding;
+    ForceAnimateCollapse();
+  } else {
+    ForceAnimateExpand();
+  }
 }
 
 void OmniboxChipButton::ResetAnimation(double value) {
@@ -89,10 +105,12 @@ gfx::Size OmniboxChipButton::CalculatePreferredSize() const {
   const int fixed_width = GetIconSize() + GetInsets().width();
   const int collapsable_width = label()->GetPreferredSize().width() +
                                 kChipImagePadding + kExtraRightPadding;
+
   const double animation_value =
       force_expanded_for_testing_ ? 1.0 : animation_->GetCurrentValue();
-  const int width =
-      std::round(collapsable_width * animation_value) + fixed_width;
+  const int width = base_width_ +
+                    std::round(collapsable_width * animation_value) +
+                    fixed_width;
   return gfx::Size(width, GetHeightForWidth(width));
 }
 
@@ -153,6 +171,16 @@ const gfx::VectorIcon& OmniboxChipButton::GetIcon() const {
   }
 
   return gfx::kNoneIcon;
+}
+
+void OmniboxChipButton::ForceAnimateExpand() {
+  ResetAnimation(0.0);
+  animation_->Show();
+}
+
+void OmniboxChipButton::ForceAnimateCollapse() {
+  ResetAnimation(1.0);
+  animation_->Hide();
 }
 
 int OmniboxChipButton::GetIconSize() const {

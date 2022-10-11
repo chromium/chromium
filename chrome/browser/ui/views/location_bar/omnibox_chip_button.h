@@ -32,6 +32,7 @@ class OmniboxChipButton : public views::MdTextButton {
 
   void AnimateCollapse(base::TimeDelta duration);
   void AnimateExpand(base::TimeDelta duration);
+  void AnimateToFit(base::TimeDelta duration);
   void ResetAnimation(double value = 0);
   void SetExpandAnimationEndedCallback(
       base::RepeatingCallback<void()> callback);
@@ -70,6 +71,14 @@ class OmniboxChipButton : public views::MdTextButton {
   void UpdateIconAndColors();
 
  private:
+  // Performs a full animation from 0 to 1, ending up at the preferred size of
+  // the chip.
+  void ForceAnimateExpand();
+
+  // Performs a full collapse from 1 to 0, ending up at base_width_ + fixed
+  // width.
+  void ForceAnimateCollapse();
+
   int GetIconSize() const;
 
   SkColor GetTextAndIconColor() const;
@@ -80,6 +89,8 @@ class OmniboxChipButton : public views::MdTextButton {
   std::unique_ptr<gfx::SlideAnimation> animation_;
 
   OmniboxChipTheme theme_ = OmniboxChipTheme::kNormalVisibility;
+
+  int base_width_ = 0;
 
   // If chip is collapsed. In the collapsed state, only an icon is visible,
   // without text.

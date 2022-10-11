@@ -36,6 +36,7 @@
 #include "ui/views/widget/widget.h"
 
 constexpr auto kExpandDuration = base::Milliseconds(350);
+constexpr auto kAnimateToFitDuration = base::Milliseconds(200);
 constexpr auto kPromptCollapseDuration = base::Milliseconds(250);
 constexpr auto kConfirmationCollapseDuration = base::Milliseconds(75);
 constexpr auto kConfirmationDisplayDuration = base::Seconds(4);
@@ -333,9 +334,17 @@ void ChipController::HandleConfirmation(
   SyncChipWithModel();
   if (permission_prompt_model_->CanDisplayConfirmation()) {
     is_confirmation_showing_ = true;
-    chip_->SetVisible(true);
-    chip_->ResetAnimation();
-    chip_->AnimateExpand(kExpandDuration);
+
+    if (chip_->GetVisible()) {
+      chip_->AnimateToFit(kAnimateToFitDuration);
+    } else {
+      // No request chip was shown, always expand independently of what contents
+      // are stored in the previous chip (which is not visible before the
+      // SetVisible call).
+      chip_->SetVisible(true);
+      chip_->AnimateExpand(kExpandDuration);
+    }
+
     chip_->SetCallback(base::BindRepeating(&ChipController::ShowPageInfoDialog,
                                            base::Unretained(this)));
     collapse_timer_.Start(FROM_HERE, kConfirmationDisplayDuration, this,
@@ -362,7 +371,9 @@ void ChipController::CollapsePrompt(bool allow_restart) {
   } else {
     permission_prompt_model_->UpdateAutoCollapsePromptChipState(true);
     SyncChipWithModel();
-    chip_->AnimateCollapse(kPromptCollapseDuration);
+
+    if (!chip_->is_fully_collapsed())
+      chip_->AnimateCollapse(kPromptCollapseDuration);
 
     StartDismissTimer();
   }
