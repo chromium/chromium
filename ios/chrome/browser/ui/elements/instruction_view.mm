@@ -80,7 +80,7 @@ constexpr CGFloat kIconLabelWidth = 30;
             [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
         break;
       case InstructionViewStyleDefault:
-        self.backgroundColor = [UIColor colorNamed:kGrey100Color];
+        self.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
         break;
     }
     self.layer.cornerRadius = kCornerRadius;
