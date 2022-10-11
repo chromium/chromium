@@ -17,6 +17,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
+#include "ash/system/holding_space/holding_space_ui.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
@@ -56,11 +57,8 @@ class Header : public views::Button {
         .SetCallback(
             base::BindRepeating(&Header::OnPressed, base::Unretained(this)))
         .AddChildren(
-            views::Builder<views::Label>(
-                bubble_utils::CreateLabel(
-                    bubble_utils::LabelStyle::kSubheader,
-                    l10n_util::GetStringUTF16(
-                        IDS_ASH_HOLDING_SPACE_SUGGESTIONS_TITLE)))
+            holding_space_ui::CreateSuggestionsSectionHeaderLabel(
+                IDS_ASH_HOLDING_SPACE_SUGGESTIONS_TITLE)
                 .CopyAddressTo(&label)
                 .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT),
             views::Builder<views::ImageView>().CopyAddressTo(&chevron_).SetID(

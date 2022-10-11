@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_chip_view.h"
+#include "ash/system/holding_space/holding_space_ui.h"
 #include "ash/system/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -53,10 +54,11 @@ class Header : public views::Button {
         kHoldingSpaceSectionHeaderSpacing));
 
     // Label.
-    auto* label = AddChildView(bubble_utils::CreateLabel(
-        bubble_utils::LabelStyle::kHeader,
-        l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)));
-    label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+    auto* label = AddChildView(
+        holding_space_ui::CreateSectionHeaderLabel(
+            IDS_ASH_HOLDING_SPACE_DOWNLOADS_TITLE)
+            .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+            .Build());
     layout->SetFlexForView(label, 1);
 
     // Chevron.

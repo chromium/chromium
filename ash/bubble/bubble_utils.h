@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/style/ash_color_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/font.h"
 
 namespace ui {
 class LocatedEvent;
@@ -47,11 +48,11 @@ enum class LabelStyle {
 struct ASH_EXPORT LabelStyleOverrides {
   LabelStyleOverrides();
   LabelStyleOverrides(
-      absl::optional<FontName> font_name,
+      absl::optional<gfx::Font::Weight> font_weight,
       absl::optional<AshColorProvider::ContentLayerType> text_color);
   ~LabelStyleOverrides();
 
-  absl::optional<FontName> font_name;
+  absl::optional<gfx::Font::Weight> font_weight;
   absl::optional<AshColorProvider::ContentLayerType> text_color;
 };
 

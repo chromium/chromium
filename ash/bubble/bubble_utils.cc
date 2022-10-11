@@ -48,41 +48,38 @@ class LabelWithThemeChangedCallback : public views::Label {
   ThemeChangedCallback theme_changed_callback_;
 };
 
-std::string GetFontName(const absl::optional<FontName>& font) {
-  switch (font.value_or(FontName::kRoboto)) {
-    case FontName::kGoogleSans:
-      return "Google Sans";
-    case FontName::kRoboto:
-      return "Roboto";
-  }
-}
-
-gfx::FontList GetFontList(LabelStyle style,
-                          const absl::optional<FontName>& font) {
-  std::string font_name = GetFontName(font);
-
+gfx::FontList GetFontList(
+    LabelStyle style,
+    const absl::optional<gfx::Font::Weight>& font_weight_override) {
   switch (style) {
     case LabelStyle::kBadge:
-      return gfx::FontList({font_name}, gfx::Font::NORMAL, 14,
-                           gfx::Font::Weight::MEDIUM);
+      return gfx::FontList(
+          {"Roboto"}, gfx::Font::NORMAL, 14,
+          font_weight_override.value_or(gfx::Font::Weight::MEDIUM));
     case LabelStyle::kBody:
-      return gfx::FontList({font_name}, gfx::Font::NORMAL, 14,
-                           gfx::Font::Weight::NORMAL);
+      return gfx::FontList(
+          {"Roboto"}, gfx::Font::NORMAL, 14,
+          font_weight_override.value_or(gfx::Font::Weight::NORMAL));
     case LabelStyle::kChipBody:
-      return gfx::FontList({font_name}, gfx::Font::NORMAL, 10,
-                           gfx::Font::Weight::MEDIUM);
+      return gfx::FontList(
+          {"Roboto"}, gfx::Font::NORMAL, 10,
+          font_weight_override.value_or(gfx::Font::Weight::MEDIUM));
     case LabelStyle::kChipTitle:
-      return gfx::FontList({font_name}, gfx::Font::NORMAL, 13,
-                           gfx::Font::Weight::NORMAL);
+      return gfx::FontList(
+          {"Roboto"}, gfx::Font::NORMAL, 13,
+          font_weight_override.value_or(gfx::Font::Weight::NORMAL));
     case LabelStyle::kHeader:
-      return gfx::FontList({font_name}, gfx::Font::NORMAL, 16,
-                           gfx::Font::Weight::MEDIUM);
+      return gfx::FontList(
+          {"Roboto"}, gfx::Font::NORMAL, 16,
+          font_weight_override.value_or(gfx::Font::Weight::MEDIUM));
     case LabelStyle::kSubheader:
-      return gfx::FontList({font_name}, gfx::Font::NORMAL, 13,
-                           gfx::Font::Weight::MEDIUM);
+      return gfx::FontList(
+          {"Roboto"}, gfx::Font::NORMAL, 13,
+          font_weight_override.value_or(gfx::Font::Weight::MEDIUM));
     case LabelStyle::kSubtitle:
-      return gfx::FontList({font_name}, gfx::Font::NORMAL, 12,
-                           gfx::Font::Weight::NORMAL);
+      return gfx::FontList(
+          {"Roboto"}, gfx::Font::NORMAL, 12,
+          font_weight_override.value_or(gfx::Font::Weight::NORMAL));
   }
 }
 
@@ -105,9 +102,9 @@ AshColorProvider::ContentLayerType GetTextColor(LabelStyle style) {
 LabelStyleOverrides::LabelStyleOverrides() = default;
 
 LabelStyleOverrides::LabelStyleOverrides(
-    absl::optional<FontName> font,
+    absl::optional<gfx::Font::Weight> font_weight,
     absl::optional<AshColorProvider::ContentLayerType> text_color)
-    : font_name(font), text_color(text_color) {}
+    : font_weight(font_weight), text_color(text_color) {}
 
 LabelStyleOverrides::~LabelStyleOverrides() = default;
 
@@ -158,13 +155,10 @@ bool ShouldCloseBubbleForEvent(const ui::LocatedEvent& event) {
 void ApplyStyle(views::Label* label,
                 LabelStyle style,
                 const LabelStyleOverrides& overrides) {
-  const auto font_list = GetFontList(style, overrides.font_name);
-  const auto text_color = overrides.text_color.value_or(GetTextColor(style));
-
   label->SetAutoColorReadabilityEnabled(false);
-  label->SetFontList(font_list);
-  label->SetEnabledColor(
-      AshColorProvider::Get()->GetContentLayerColor(text_color));
+  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      overrides.text_color.value_or(GetTextColor(style))));
+  label->SetFontList(GetFontList(style, overrides.font_weight));
 }
 
 std::unique_ptr<views::Label> CreateLabel(

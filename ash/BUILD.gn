@@ -1222,6 +1222,8 @@ component("ash") {
     "system/holding_space/holding_space_tray_icon.h",
     "system/holding_space/holding_space_tray_icon_preview.cc",
     "system/holding_space/holding_space_tray_icon_preview.h",
+    "system/holding_space/holding_space_ui.cc",
+    "system/holding_space/holding_space_ui.h",
     "system/holding_space/holding_space_util.cc",
     "system/holding_space/holding_space_util.h",
     "system/holding_space/holding_space_view_delegate.cc",

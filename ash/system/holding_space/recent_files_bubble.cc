@@ -10,6 +10,7 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/downloads_section.h"
+#include "ash/system/holding_space/holding_space_ui.h"
 #include "ash/system/holding_space/screen_captures_section.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
@@ -50,14 +51,8 @@ std::unique_ptr<views::View> RecentFilesBubble::CreatePlaceholder() {
           ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
               IDR_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER_IMAGE)))
       .AddChild(
-          views::Builder<views::Label>(
-              bubble_utils::CreateLabel(
-                  bubble_utils::LabelStyle::kHeader,
-                  l10n_util::GetStringUTF16(
-                      IDS_ASH_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER),
-                  bubble_utils::LabelStyleOverrides{
-                      bubble_utils::FontName::kGoogleSans,
-                      AshColorProvider::ContentLayerType::kTextColorSecondary}))
+          holding_space_ui::CreateBubblePlaceholderLabel(
+              IDS_ASH_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER)
               .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
               .SetMultiLine(true))
       .Build();
