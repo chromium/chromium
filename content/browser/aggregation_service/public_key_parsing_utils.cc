@@ -63,7 +63,7 @@ std::vector<PublicKey> GetPublicKeys(base::Value& value) {
   std::vector<PublicKey> public_keys;
   base::flat_set<std::string> key_ids_set;
 
-  for (auto& key_json : keys_json.value().GetListDeprecated()) {
+  for (auto& key_json : keys_json.value().GetList()) {
     // Return error (i.e. empty vector) if more keys than expected are
     // specified.
     if (public_keys.size() == PublicKeyset::kMaxNumberKeys)
