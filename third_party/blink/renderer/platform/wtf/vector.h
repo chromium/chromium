@@ -1785,7 +1785,7 @@ inline void Vector<T, inlineCapacity, Allocator>::resize(wtf_size_t size) {
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 void Vector<T, inlineCapacity, Allocator>::Shrink(wtf_size_t size) {
-  DCHECK_LE(size, size_);
+  CHECK_LE(size, size_);
   TypeOperations::Destruct(begin() + size, end());
   ClearUnusedSlots(begin() + size, end());
   MARKING_AWARE_ANNOTATE_CHANGE_SIZE(Allocator, begin(), capacity(), size_,

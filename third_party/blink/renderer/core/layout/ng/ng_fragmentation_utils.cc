@@ -503,10 +503,15 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
   if (builder->FoundColumnSpanner() || !space.HasBlockFragmentation())
     return NGBreakStatus::kContinue;
 
+  bool was_broken_by_child = builder->HasInflowChildBreakInside();
+  if (!was_broken_by_child && space.IsNewFormattingContext())
+    was_broken_by_child = builder->HasFloatBreakInside();
+
   if (space_left == kIndefiniteSize) {
     // We don't know how space is available (initial column balancing pass), so
     // we won't break.
-    builder->SetIsAtBlockEnd();
+    if (!was_broken_by_child)
+      builder->SetIsAtBlockEnd();
     return NGBreakStatus::kContinue;
   }
 
@@ -541,11 +546,6 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
       // IsKnownToFitInFragmentainer() will return true now), we know that we're
       // at the end. If block-size is unconstrained (or at least allowed to grow
       // a bit more), we're only at the end if no in-flow content inside broke.
-
-      bool was_broken_by_child = builder->HasInflowChildBreakInside();
-      if (!was_broken_by_child && space.IsNewFormattingContext())
-        was_broken_by_child = builder->HasFloatBreakInside();
-
       if (!was_broken_by_child || builder->IsKnownToFitInFragmentainer()) {
         if (node.HasNonVisibleBlockOverflow() &&
             builder->HasChildBreakInside()) {
