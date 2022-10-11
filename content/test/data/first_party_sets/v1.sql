@@ -48,8 +48,8 @@ CREATE INDEX idx_cleared_at_run_browser_contexts ON browser_contexts_cleared (cl
 
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
-INSERT INTO meta VALUES('version','1');
-INSERT INTO meta VALUES('last_compatible_version','1');
+INSERT INTO meta VALUES('version','2');
+INSERT INTO meta VALUES('last_compatible_version','2');
 INSERT INTO meta VALUES('run_count','1');
 
 INSERT INTO public_sets VALUES('0.0.1', 'https://aaa.test', 'https://bbb.test', 1),

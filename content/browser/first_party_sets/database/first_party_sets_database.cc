@@ -36,7 +36,15 @@ namespace content {
 namespace {
 
 // Version number of the database.
-const int kCurrentVersionNumber = 1;
+const int kCurrentVersionNumber = 2;
+
+// Earliest version which can use a |kCurrentVersionNumber| database
+// without failing.
+const int kCompatibleVersionNumber = 2;
+
+// Latest version of the database that cannot be upgraded to
+// |kCurrentVersionNumber| without razing the database.
+const int kDeprecatedVersionNumber = 1;
 
 const char kRunCountKey[] = "run_count";
 
@@ -656,6 +664,16 @@ FirstPartySetsDatabase::InitStatus FirstPartySetsDatabase::InitializeTables() {
   // Database should now be open.
   DCHECK(db_->is_open());
 
+  // Razes the DB if the version is deprecated or too new to get the feature
+  // working.
+  //
+  // TODO(crbug.com/1372445): Re-enable track DB init status kTooNew and kTooOld
+  // after the bug is resolved and migration is implemented.
+  DCHECK_LT(kDeprecatedVersionNumber, kCurrentVersionNumber);
+  sql::MetaTable::RazeIfIncompatible(
+      db_.get(), /*lowest_supported_version=*/kDeprecatedVersionNumber + 1,
+      kCurrentVersionNumber);
+
   // Scope initialization in a transaction so we can't be partially initialized.
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin()) {
@@ -666,19 +684,9 @@ FirstPartySetsDatabase::InitStatus FirstPartySetsDatabase::InitializeTables() {
 
   // Create the tables.
   if (!meta_table_.Init(db_.get(), kCurrentVersionNumber,
-                        kCurrentVersionNumber) ||
+                        kCompatibleVersionNumber) ||
       !InitSchema(*db_)) {
     return InitStatus::kError;
-  }
-
-  if (meta_table_.GetCompatibleVersionNumber() > kCurrentVersionNumber) {
-    LOG(WARNING) << "First-Party Sets database is too new.";
-    return InitStatus::kTooNew;
-  }
-
-  if (meta_table_.GetVersionNumber() < kCurrentVersionNumber) {
-    LOG(WARNING) << "First-Party Sets database is too old to be compatible.";
-    return InitStatus::kTooOld;
   }
 
   if (!transaction.Commit()) {
