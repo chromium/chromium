@@ -259,9 +259,6 @@ sync_pb::PasswordSpecificsData SpecificsDataFromPassword(
           : password_form.federation_origin.Serialize());
   *password_data.mutable_password_issues() =
       PasswordIssuesMapToProto(password_form.password_issues);
-  // TODO(crbug.com/1369638): Force downloading all passwords from the sync
-  // server when the feature is enabled in order to avoid local copy missing
-  // notes overriding the server copy.
   if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
     *password_data.mutable_notes() =
         PasswordNotesToProto(password_form.notes, base_password_data.notes());

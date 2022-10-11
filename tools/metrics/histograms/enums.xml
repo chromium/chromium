@@ -77871,6 +77871,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="4"
       label="Reading success but metadata cleaned to resolve inconsistencies
              in the cache of unsupported proto fields"/>
+  <int value="5"
+      label="Reading successful, but the browser has just been upgraded to a
+             version that supports passwords notes. Therefore, the metadata
+             are cleared to enforce the initial sync flow and download any
+             potential passwords notes on the server"/>
 </enum>
 
 <enum name="PasswordSyncState">

@@ -2950,4 +2950,36 @@ TEST_F(ClientTagBasedModelTypeProcessorTest,
       /*count=*/2);
 }
 
+// The param indicates whether the password notes feature is enabled.
+class PasswordsClientTagBasedModelTypeProcessorTest
+    : public testing::WithParamInterface<bool>,
+      public ClientTagBasedModelTypeProcessorTest {
+ public:
+  PasswordsClientTagBasedModelTypeProcessorTest() {
+    feature_list_.InitWithFeatureState(syncer::kPasswordNotesWithBackup,
+                                       GetParam());
+  }
+
+ protected:
+  ModelType GetModelType() override { return PASSWORDS; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(PasswordsClientTagBasedModelTypeProcessorTest,
+       ShouldSetPasswordsRedownloadedForNotesFlag) {
+  ModelReadyToSync();
+  OnSyncStarting();
+  worker()->UpdateFromServer(UpdateResponseDataList());
+
+  EXPECT_EQ(base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup),
+            db()->model_type_state()
+                .notes_enabled_before_initial_sync_for_passwords());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PasswordsClientTagBasedModelTypeProcessorTest,
+                         testing::Bool());
+
 }  // namespace syncer

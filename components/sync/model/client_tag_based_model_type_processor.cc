@@ -151,6 +151,17 @@ void ClientTagBasedModelTypeProcessor::ConnectIfReady() {
     model_type_state.set_cache_guid(activation_request_.cache_guid);
     model_type_state.set_authenticated_account_id(
         activation_request_.authenticated_account_id.ToString());
+    // For passwords, the bridge re-downloads all passwords to obtain any
+    // potential notes on the sync server but have ignored by earlier version of
+    // the browser that didn't support notes. This should be done first when the
+    // browser is upgraded to a version that support passwords notes. Store in
+    // the model type store that the this redownload has happened already to
+    // ensure it happens only once.
+    if (type_ == PASSWORDS) {
+      model_type_state.set_notes_enabled_before_initial_sync_for_passwords(
+          base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
+    }
+
     if (CommitOnlyTypes().Has(type_)) {
       // For commit-only types, no updates are expected and hence we can
       // consider initial_sync_done(), reflecting that sync is enabled.

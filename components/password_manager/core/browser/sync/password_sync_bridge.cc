@@ -59,8 +59,15 @@ enum class SyncMetadataReadError {
   // preserve unsupported fields, hence the initial sync flow is forced to
   // resolve this incosistency.
   kNewlySupportedFieldDetectedInUnsupportedFieldsCache = 4,
+  // Reading successful, but the browser has been upgraded to a version that
+  // supports
+  // password notes for the first time. Therefore, initial sync is enforced to
+  // issue a password re-download in order to obtain any potential password
+  // notes on the server that has been ignored by earlier version of the
+  // browser.
+  kPasswordsRequireRedownloadForPotentialNotesOnTheServer = 5,
 
-  kMaxValue = kNewlySupportedFieldDetectedInUnsupportedFieldsCache,
+  kMaxValue = kPasswordsRequireRedownloadForPotentialNotesOnTheServer,
 };
 
 std::string ComputeClientTag(
@@ -290,6 +297,30 @@ PasswordSyncBridge::PasswordSyncBridge(
       batch = std::make_unique<syncer::MetadataBatch>();
       sync_metadata_read_error = SyncMetadataReadError::
           kNewlySupportedFieldDetectedInUnsupportedFieldsCache;
+    } else if (batch->GetModelTypeState().initial_sync_done() &&
+               !batch->GetModelTypeState()
+                    .notes_enabled_before_initial_sync_for_passwords() &&
+               base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+      // The browser has just been upgraded to a version that supports password
+      // notes. Therefore, the metadata are cleared to enforce the initial sync
+      // flow and download any potential passwords notes on the server. The
+      // processor takes care of setting the flag in the model type state to
+      // avoid running this flow upon every start-up.
+      password_store_sync_->GetMetadataStore()->DeleteAllSyncMetadata();
+      batch = std::make_unique<syncer::MetadataBatch>();
+      sync_metadata_read_error = SyncMetadataReadError::
+          kPasswordsRequireRedownloadForPotentialNotesOnTheServer;
+    } else if (batch->GetModelTypeState().initial_sync_done() &&
+               batch->GetModelTypeState()
+                   .notes_enabled_before_initial_sync_for_passwords() &&
+               !base::FeatureList::IsEnabled(
+                   syncer::kPasswordNotesWithBackup)) {
+      // The feature was enabled before, but not anymore (e.g. due to experiment
+      // ramp-down). Clear the flag to enforce the initial sync flow when the
+      // feature is enabled again.
+      sync_pb::ModelTypeState model_state = batch->GetModelTypeState();
+      model_state.set_notes_enabled_before_initial_sync_for_passwords(false);
+      batch->SetModelTypeState(model_state);
     }
   }
   base::UmaHistogramEnumeration("PasswordManager.SyncMetadataReadError",

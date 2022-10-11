@@ -60,4 +60,13 @@ message ModelTypeState {
   // All incoming invalidations are stored in this message and persist until
   // they are used in GetUpdate() message.
   repeated Invalidation invalidations = 7;
+
+  // This is relevant for the passwords datatype. This indicates that the
+  // initial sync flow (downling all passwords from the server) has been run at
+  // least once after the password notes features is enabled. It is used to
+  // enforce redownload of passwords upon upgrading the browser to a version
+  // that supports password notes if necessary. It is false by default and set
+  // to true upon downloading passwords to make sure this download is executed
+  // only once.
+  optional bool notes_enabled_before_initial_sync_for_passwords = 8;
 }
