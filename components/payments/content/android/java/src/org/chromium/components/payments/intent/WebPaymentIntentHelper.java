@@ -274,20 +274,20 @@ public class WebPaymentIntentHelper {
      * @param methodDataMap The payment-method specific data for all applicable payment methods,
      *         e.g., whether the app should be invoked in test or production, a merchant identifier,
      *         or a public key. The map should have at least one entry.
-     * @param isIdentityInReadyToPayEnabled Whether the IS_READY_TO_PAY intent should pass merchant
-     *         user identity to the payment app.
+     * @param clearIdFields When this feature flag is enabled, the IS_READY_TO_PAY
+     *        intent should NOT pass merchant and user identity to the payment app.
      * @return The intent to invoke the service.
      */
     public static Intent createIsReadyToPayIntent(String packageName, String serviceName,
             String schemelessOrigin, String schemelessIframeOrigin,
             @Nullable byte[][] certificateChain, Map<String, PaymentMethodData> methodDataMap,
-            boolean isIdentityInReadyToPayEnabled) {
+            boolean clearIdFields) {
         Intent isReadyToPayIntent = new Intent();
         checkStringNotEmpty(serviceName, "serviceName");
         checkStringNotEmpty(packageName, "packageName");
         isReadyToPayIntent.setClassName(packageName, serviceName);
         Bundle extras = new Bundle();
-        if (isIdentityInReadyToPayEnabled) {
+        if (!clearIdFields) {
             addCommonExtrasWithIdentity(schemelessOrigin, schemelessIframeOrigin, certificateChain,
                     methodDataMap, extras);
         }

@@ -1799,8 +1799,8 @@ extern const char kWebPaymentAPICSPDescription[];
 extern const char kPaymentRequestBasicCardName[];
 extern const char kPaymentRequestBasicCardDescription[];
 
-extern const char kIdentityInCanMakePaymentEventFeatureName[];
-extern const char kIdentityInCanMakePaymentEventFeatureDescription[];
+extern const char kClearIdentityInCanMakePaymentEventName[];
+extern const char kClearIdentityInCanMakePaymentEventDescription[];
 
 extern const char kAppStoreBillingDebugName[];
 extern const char kAppStoreBillingDebugDescription[];

@@ -1007,6 +1007,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "clear-identity-in-can-make-payment",
+    "owners": [ "rouslan", "web-payments-team@google.com" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "client-storage-access-context-auditing",
     "owners": [
       "sauski",
@@ -4030,11 +4035,6 @@
     "name": "https-only-mode-setting",
     "owners": [ "cthomp", "trusty-transport@chromium.org" ],
     "expiry_milestone": 97
-  },
-  {
-    "name": "identity-in-can-make-payment",
-    "owners": [ "rouslan", "web-payments-team@google.com" ],
-    "expiry_milestone": 115
   },
   {
     "name": "ignore-gpu-blocklist",

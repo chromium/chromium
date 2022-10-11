@@ -449,6 +449,14 @@
       status: "stable",
     },
     {
+      name: "ClearIdentityInCanMakePaymentEvent",
+      base_feature: "ClearIdentityInCanMakePaymentEvent",
+      origin_trial_allows_third_party: true,
+      origin_trial_feature_name: "IdentityInCanMakePaymentEventFeature",
+      origin_trial_type: "deprecation",
+      public: true,
+    },
+    {
       name: "ClickToCapturedPointer",
       status: "experimental",
     },
@@ -1406,14 +1414,6 @@
     {
       name: "IDBBatchGetAll",
       status:"experimental",
-    },
-    {
-      name: "IdentityInCanMakePaymentEventFeature",
-      origin_trial_allows_third_party: true,
-      origin_trial_feature_name: "IdentityInCanMakePaymentEventFeature",
-      origin_trial_type: "deprecation",
-      public: true,
-      status: "stable",
     },
     {
       name: "IdleDetection",

@@ -3201,11 +3201,11 @@ const char kPaymentRequestBasicCardName[] =
 const char kPaymentRequestBasicCardDescription[] =
     "The 'basic-card' payment method of the PaymentRequest API.";
 
-const char kIdentityInCanMakePaymentEventFeatureName[] =
-    "Identity in canmakepayment event";
-const char kIdentityInCanMakePaymentEventFeatureDescription[] =
-    "The payment app receives the merchant and user identity when the merchant "
-    "checks whether this payment app is present and can make payments.";
+const char kClearIdentityInCanMakePaymentEventName[] =
+    "Remove identity from canmakepayment event";
+const char kClearIdentityInCanMakePaymentEventDescription[] =
+    "Do not share the merchant and user identity with the payment app when the "
+    "merchant checks whether the payment app can make payments.";
 
 const char kAppStoreBillingDebugName[] =
     "Web Payments App Store Billing Debug Mode";

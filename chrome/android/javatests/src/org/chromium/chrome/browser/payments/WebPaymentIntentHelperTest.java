@@ -840,7 +840,7 @@ public class WebPaymentIntentHelperTest {
 
         Intent intent = WebPaymentIntentHelper.createIsReadyToPayIntent("package.name",
                 "service.name", "schemeless.origin", "schemeless.iframe.origin", certificateChain,
-                methodDataMap, /*isIdentityInReadyToPayEnabled=*/true);
+                methodDataMap, /*clearIdFields=*/false);
         Assert.assertEquals("package.name", intent.getComponent().getPackageName());
         Assert.assertEquals("service.name", intent.getComponent().getClassName());
         Bundle bundle = intent.getExtras();
@@ -881,7 +881,7 @@ public class WebPaymentIntentHelperTest {
 
         Intent intent = WebPaymentIntentHelper.createIsReadyToPayIntent("package.name",
                 "service.name", "schemeless.origin", "schemeless.iframe.origin", certificateChain,
-                methodDataMap, /*isIdentityInReadyToPayEnabled=*/false);
+                methodDataMap, /*clearIdFields=*/true);
         Assert.assertEquals("package.name", intent.getComponent().getPackageName());
         Assert.assertEquals("service.name", intent.getComponent().getClassName());
         Bundle bundle = intent.getExtras();
@@ -914,7 +914,7 @@ public class WebPaymentIntentHelperTest {
 
         WebPaymentIntentHelper.createIsReadyToPayIntent(/*packageName=*/null, "service.name",
                 "schemeless.origin", "schemeless.iframe.origin", /*certificateChain=*/null,
-                methodDataMap, /*isIdentityInReadyToPayEnabled=*/true);
+                methodDataMap, /*clearIdFields=*/false);
     }
 
     @Test
@@ -933,6 +933,6 @@ public class WebPaymentIntentHelperTest {
 
         WebPaymentIntentHelper.createIsReadyToPayIntent(/*packageName=*/null, "service.name",
                 "schemeless.origin", "schemeless.iframe.origin", /*certificateChain=*/null,
-                methodDataMap, /*isIdentityInReadyToPayEnabled=*/false);
+                methodDataMap, /*clearIdFields=*/true);
     }
 }
