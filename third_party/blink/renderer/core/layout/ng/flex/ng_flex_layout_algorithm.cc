@@ -1049,9 +1049,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::Layout() {
     case NGLayoutResult::kNeedsEarlierBreak:
       // If we found a good break somewhere inside this block, re-layout and
       // break at that location.
-      DCHECK(result->GetEarlyBreak());
-      return RelayoutAndBreakEarlier<NGFlexLayoutAlgorithm>(
-          *result->GetEarlyBreak(), &column_early_breaks_);
+      return RelayoutAndBreakEarlierForFlex(result);
     case NGLayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges:
       return RelayoutIgnoringChildScrollbarChanges();
     case NGLayoutResult::kDisableFragmentation:
@@ -1074,6 +1072,18 @@ NGFlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
   NGFlexLayoutAlgorithm algorithm(params);
   algorithm.ignore_child_scrollbar_changes_ = true;
   return algorithm.Layout();
+}
+
+const NGLayoutResult* NGFlexLayoutAlgorithm::RelayoutAndBreakEarlierForFlex(
+    const NGLayoutResult* previous_result) {
+  DCHECK(previous_result->GetEarlyBreak());
+  NGLayoutAlgorithmParams params(
+      Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
+      BreakToken(), previous_result->GetEarlyBreak(), &column_early_breaks_);
+  NGFlexLayoutAlgorithm algorithm_with_break(params);
+  algorithm_with_break.ignore_child_scrollbar_changes_ =
+      ignore_child_scrollbar_changes_;
+  return RelayoutAndBreakEarlier(&algorithm_with_break);
 }
 
 const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {

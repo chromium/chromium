@@ -33,6 +33,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
 
  private:
   const NGLayoutResult* RelayoutIgnoringChildScrollbarChanges();
+  const NGLayoutResult* RelayoutAndBreakEarlierForFlex(
+      const NGLayoutResult* previous_result);
   const NGLayoutResult* LayoutInternal();
 
   void PlaceFlexItems(

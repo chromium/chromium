@@ -161,14 +161,20 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
         Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
         BreakToken(), &breakpoint, additional_early_breaks);
     Algorithm algorithm_with_break(params);
-    auto& new_builder = algorithm_with_break.container_builder_;
+    return RelayoutAndBreakEarlier(&algorithm_with_break);
+  }
+
+  template <typename Algorithm>
+  const NGLayoutResult* RelayoutAndBreakEarlier(Algorithm* new_algorithm) {
+    DCHECK(new_algorithm);
+    auto& new_builder = new_algorithm->container_builder_;
     new_builder.SetBoxType(container_builder_.BoxType());
     // We're not going to run out of space in the next layout pass, since we're
     // breaking earlier, so no space shortage will be detected. Repeat what we
     // found in this pass.
     new_builder.PropagateSpaceShortage(
         container_builder_.MinimalSpaceShortage());
-    return algorithm_with_break.Layout();
+    return new_algorithm->Layout();
   }
 
   // Lay out again, this time without block fragmentation. This happens when a
