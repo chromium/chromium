@@ -34,6 +34,7 @@ export enum I18nString {
   DELETE_CONFIRMATION_MSG = 'delete_confirmation_msg',
   DELETE_MULTI_CONFIRMATION_MSG = 'delete_multi_confirmation_msg',
   DELETE_PAGE_BUTTON = 'delete_page_button',
+  DELETE_PAGE_MESSAGE = 'delete_page_message',
   DESCRIPTION = 'description',
   DIALOG_CANCEL_BUTTON = 'dialog_cancel_button',
   DIALOG_OK_BUTTON = 'dialog_ok_button',

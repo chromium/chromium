@@ -15,6 +15,7 @@ import {
   sendDocScanResultEvent,
 } from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
+import {getI18nMessage} from '../models/load_time_data.js';
 import {
   getBool as getLocalStorage,
   set as setLocalStorage,
@@ -22,6 +23,7 @@ import {
 import {ResultSaver} from '../models/result_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import * as nav from '../nav.js';
+import {speakMessage} from '../spoken_msg.js';
 import {show as showToast} from '../toast.js';
 import {
   LocalStorageKey,
@@ -151,6 +153,16 @@ export class DocumentReview extends View {
       }
       this.selectPage(index);
     });
+
+    const pagesElementMutationObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        assert(
+            mutation.type === 'childList',
+            '`mutation.type` must be `childList`');
+        this.updateDeleteButtonLabels();
+      }
+    });
+    pagesElementMutationObserver.observe(this.pagesElement, {childList: true});
 
     const fixMode = new DocumentFixMode({
       target: this.previewElement,
@@ -395,7 +407,7 @@ export class DocumentReview extends View {
   private async onDeletePage(index: number): Promise<void> {
     sendDocScanEvent(DocScanActionType.DELETE_PAGE);
     await this.deletePage(index);
-
+    speakMessage(getI18nMessage(I18nString.DELETE_PAGE_MESSAGE, index + 1));
     if (this.pages.length === 0) {
       // By design, this line is not reachable. If we decide to let users delete
       // the last page later, we should close the view when no pages remain.
@@ -549,5 +561,15 @@ export class DocumentReview extends View {
       fixType |= DocScanFixType.ROTATION;
     }
     return sendDocScanResultEvent(action, fixType, this.fixCount);
+  }
+
+  private updateDeleteButtonLabels() {
+    for (let i = 0; i < this.pagesElement.children.length; i++) {
+      const deleteButton = dom.getFrom(
+          this.pagesElement.children[i], `.${this.classes.delete}`,
+          HTMLElement);
+      deleteButton.setAttribute(
+          'aria-label', getI18nMessage(I18nString.DELETE_PAGE_BUTTON, i + 1));
+    }
   }
 }

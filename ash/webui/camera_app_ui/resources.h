@@ -43,6 +43,7 @@ const struct {
     {"delete_confirmation_msg", IDS_DELETE_CONFIRMATION_MSG},
     {"delete_multi_confirmation_msg", IDS_DELETE_MULTI_CONFIRMATION_MSG},
     {"delete_page_button", IDS_DELETE_PAGE_BUTTON},
+    {"delete_page_message", IDS_DELETE_PAGE_MESSAGE},
     {"description", IDS_DESCRIPTION},
     {"dialog_cancel_button", IDS_DIALOG_CANCEL_BUTTON},
     {"dialog_ok_button", IDS_DIALOG_OK_BUTTON},

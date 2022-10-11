@@ -708,7 +708,7 @@ If your feedback is about image or video quality, please attach a sample photo o
         Page thumbnail
       </message>
       <message desc="Label for the button of deleting the document page." name="IDS_DELETE_PAGE_BUTTON">
-        Delete page
+        Delete page <ph name="page_number">$1<ex>2</ex></ph>
       </message>
       <message desc="Message for the next page count of document scanning mode." name="IDS_NEXT_PAGE_COUNT">
         Scanning page <ph name="count">$1<ex>2</ex></ph>
@@ -718,6 +718,9 @@ If your feedback is about image or video quality, please attach a sample photo o
       </message>
       <message desc="Label for the button to edit the selected document page." name="IDS_FIX_PAGE_BUTTON">
         Edit page <ph name="index">$1<ex>1</ex></ph>
+      </message>
+      <message desc="Message for page deletion" name="IDS_DELETE_PAGE_MESSAGE">
+        Page <ph name="page_number">$1<ex>2</ex></ph> deleted
       </message>
     </messages>
   </release>
