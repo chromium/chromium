@@ -5,8 +5,6 @@
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_properties.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -42,8 +40,10 @@ class NGGridLayoutAlgorithmTest
 
   void BuildGridItemsAndTrackCollections(NGGridLayoutAlgorithm& algorithm) {
     const auto& node = algorithm.Node();
+
+    bool has_nested_subgrid;
     auto grid_items =
-        node.GridItemsIncludingSubgridded(algorithm.PlacementData());
+        node.ConstructGridItems(algorithm.PlacementData(), &has_nested_subgrid);
 
     LayoutUnit unused_intrinsic_block_size;
     algorithm.ComputeGridGeometry(node.CachedPlacementData(), &grid_items,

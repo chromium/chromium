@@ -124,12 +124,12 @@ GridItemData::GridItemData(
     bool parent_must_consider_grid_items_for_column_sizing,
     bool parent_must_consider_grid_items_for_row_sizing)
     : node(node),
-      parent_grid(nullptr),
       has_subgridded_columns(false),
       has_subgridded_rows(false),
       is_considered_for_column_sizing(false),
       is_considered_for_row_sizing(false),
       is_sizing_dependent_on_block_size(false),
+      is_subgridded_to_parent_grid(false),
       must_consider_grid_items_for_column_sizing(false),
       must_consider_grid_items_for_row_sizing(false) {
   const auto& style = node.Style();
@@ -304,7 +304,8 @@ void GridItemData::ComputeSetIndices(
 
 void GridItemData::ComputeOutOfFlowItemPlacement(
     const NGGridLayoutTrackCollection& track_collection,
-    const NGGridPlacement& grid_placement) {
+    const NGGridPlacementData& placement_data,
+    const ComputedStyle& grid_style) {
   DCHECK(IsOutOfFlow());
 
   const bool is_for_columns = track_collection.Direction() == kForColumns;
@@ -315,8 +316,9 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
                                     : row_placement.offset_in_range.end;
 
   if (IsGridContainingBlock()) {
-    grid_placement.ResolveOutOfFlowItemGridLines(track_collection, node.Style(),
-                                                 &start_offset, &end_offset);
+    NGGridPlacement::ResolveOutOfFlowItemGridLines(
+        track_collection, placement_data, grid_style, node.Style(),
+        &start_offset, &end_offset);
   } else {
     start_offset = kNotFound;
     end_offset = kNotFound;
@@ -379,14 +381,14 @@ void GridItemData::ComputeOutOfFlowItemPlacement(
 void GridItems::RemoveSubgriddedItems() {
   wtf_size_t new_item_count = 0;
   for (const auto& grid_item : item_data) {
-    if (grid_item->ParentGrid())
+    if (grid_item->is_subgridded_to_parent_grid)
       break;
     ++new_item_count;
   }
 
 #if DCHECK_IS_ON()
   for (wtf_size_t i = new_item_count; i < item_data.size(); ++i)
-    DCHECK(item_data[i]->ParentGrid());
+    DCHECK(item_data[i]->is_subgridded_to_parent_grid);
 #endif
   item_data.Shrink(new_item_count);
 }

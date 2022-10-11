@@ -394,18 +394,17 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
            !node_style.GridRowEnd().IsAuto();
   };
 
-  auto GridAreaContainingBlockInfo =
-      [&](const LayoutNGGrid& containing_grid,
-          const NGGridLayoutData& grid_layout_data, const NGBoxStrut& borders,
-          const LogicalSize& size)
+  auto GridAreaContainingBlockInfo = [&](const LayoutNGGrid& containing_grid,
+                                         const NGGridLayoutData& layout_data,
+                                         const NGBoxStrut& borders,
+                                         const LogicalSize& size)
       -> NGOutOfFlowLayoutPart::ContainingBlockInfo {
     const auto& grid_style = containing_grid.StyleRef();
-    const auto& placement_data = containing_grid.CachedPlacementData();
-
     GridItemData grid_item(candidate.Node(), grid_style);
+
     return {grid_style.GetWritingDirection(),
             NGGridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
-                NGGridPlacement(grid_style, placement_data), grid_layout_data,
+                containing_grid.CachedPlacementData(), layout_data, grid_style,
                 borders, size, &grid_item)};
   };
 

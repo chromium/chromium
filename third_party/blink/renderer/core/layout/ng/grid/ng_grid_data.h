@@ -13,56 +13,61 @@
 namespace blink {
 
 struct CORE_EXPORT NGGridPlacementData {
-  NGGridPlacementData() = default;
+  NGGridPlacementData(NGGridPlacementData&&) = default;
+  NGGridPlacementData& operator=(NGGridPlacementData&&) = default;
 
-  NGGridPlacementData(bool is_subgridded_to_parent,
-                      const ComputedStyle& grid_style)
-      : line_resolver(grid_style),
-        is_subgridded_to_parent(is_subgridded_to_parent) {}
+  explicit NGGridPlacementData(const ComputedStyle& grid_style)
+      : line_resolver(grid_style) {}
 
   // Subgrids need to map named lines from every parent grid. This constructor
   // should be used exclusively by subgrids to differentiate such scenario.
-  NGGridPlacementData(bool is_subgridded_to_parent,
-                      const ComputedStyle& grid_style,
+  NGGridPlacementData(const ComputedStyle& grid_style,
                       const NGGridLineResolver& parent_line_resolver)
-      : line_resolver(grid_style, parent_line_resolver),
-        is_subgridded_to_parent(is_subgridded_to_parent) {}
+      : line_resolver(grid_style, parent_line_resolver) {}
 
-  // Do not check `line_resolver` for comparison, as it's used to generate
-  // `grid_item_positions` and isn't shared between equivalent instances.
+  // This constructor only copies inputs to the auto-placement algorithm.
+  NGGridPlacementData(const NGGridPlacementData& other)
+      : line_resolver(other.line_resolver),
+        subgridded_column_span_size(other.subgridded_column_span_size),
+        subgridded_row_span_size(other.subgridded_row_span_size),
+        column_auto_repetitions(other.column_auto_repetitions),
+        row_auto_repetitions(other.row_auto_repetitions) {}
+
+  // This method compares the fields computed by the auto-placement algorithm in
+  // |NGGridPlacement| and it's only intended to validate the cached data.
   bool operator==(const NGGridPlacementData& other) const {
     return grid_item_positions == other.grid_item_positions &&
-           is_subgridded_to_parent == other.is_subgridded_to_parent &&
-           column_subgrid_span_size == other.column_subgrid_span_size &&
-           row_subgrid_span_size == other.row_subgrid_span_size &&
-           column_auto_repetitions == other.column_auto_repetitions &&
-           row_auto_repetitions == other.row_auto_repetitions &&
+           explicit_grid_column_count == other.explicit_grid_column_count &&
+           explicit_grid_row_count == other.explicit_grid_row_count &&
            column_start_offset == other.column_start_offset &&
-           row_start_offset == other.row_start_offset &&
-           column_explicit_count == other.column_explicit_count &&
-           row_explicit_count == other.row_explicit_count;
+           row_start_offset == other.row_start_offset;
   }
 
   bool HasStandaloneAxis(GridTrackSizingDirection track_direction) const {
     const wtf_size_t subgrid_span_size = (track_direction == kForColumns)
-                                             ? column_subgrid_span_size
-                                             : row_subgrid_span_size;
+                                             ? subgridded_column_span_size
+                                             : subgridded_row_span_size;
     return subgrid_span_size == kNotFound;
   }
 
+  bool IsSubgriddedToParent() const {
+    return subgridded_column_span_size != kNotFound ||
+           subgridded_row_span_size != kNotFound;
+  }
+
   NGGridLineResolver line_resolver;
+  wtf_size_t subgridded_column_span_size{kNotFound};
+  wtf_size_t subgridded_row_span_size{kNotFound};
+  wtf_size_t column_auto_repetitions{1};
+  wtf_size_t row_auto_repetitions{1};
+
+  // These fields are computed in |NGGridPlacement::RunAutoPlacementAlgorithm|,
+  // so they're not considered inputs to the grid placement step.
   Vector<GridArea> grid_item_positions;
-
-  bool is_subgridded_to_parent : 1;
-
-  wtf_size_t column_subgrid_span_size{kNotFound};
-  wtf_size_t row_subgrid_span_size{kNotFound};
-  wtf_size_t column_auto_repetitions{0};
-  wtf_size_t row_auto_repetitions{0};
+  wtf_size_t explicit_grid_column_count{0};
+  wtf_size_t explicit_grid_row_count{0};
   wtf_size_t column_start_offset{0};
   wtf_size_t row_start_offset{0};
-  wtf_size_t column_explicit_count{0};
-  wtf_size_t row_explicit_count{0};
 };
 
 // This struct contains the column and row data necessary to layout grid items.

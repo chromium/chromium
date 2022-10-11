@@ -13,8 +13,6 @@
 
 namespace blink {
 
-class NGGridPlacement;
-
 enum class AxisEdge { kStart, kCenter, kEnd, kFirstBaseline, kLastBaseline };
 enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
 
@@ -29,6 +27,8 @@ struct OutOfFlowItemPlacement {
 };
 
 struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
+  GridItemData() = delete;
+
   GridItemData(const NGBlockNode node,
                const ComputedStyle& root_grid_style,
                bool parent_must_consider_grid_items_for_column_sizing = false,
@@ -88,7 +88,8 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   // |grid_placement| is used to resolve the grid lines.
   void ComputeOutOfFlowItemPlacement(
       const NGGridLayoutTrackCollection& track_collection,
-      const NGGridPlacement& grid_placement);
+      const NGGridPlacementData& placement_data,
+      const ComputedStyle& grid_style);
 
   enum BaselineGroup BaselineGroup(
       GridTrackSizingDirection track_direction) const {
@@ -129,12 +130,17 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
     return resolved_position.SpanSize(track_direction);
   }
 
-  GridItemData* ParentGrid() const { return parent_grid.Get(); }
+  bool IsSubgrid() const {
+    return has_subgridded_columns || has_subgridded_rows;
+  }
 
   bool IsConsideredForSizing(GridTrackSizingDirection track_direction) const {
     return (track_direction == kForColumns) ? is_considered_for_column_sizing
                                             : is_considered_for_row_sizing;
   }
+
+  void Set(GridTrackSizingDirection track_direction,
+           bool parent_must_consider_grid_items_for_sizing);
 
   bool IsGridContainingBlock() const { return node.IsContainingBlockNGGrid(); }
   bool IsOutOfFlow() const { return node.IsOutOfFlowPositioned(); }
@@ -178,14 +184,10 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
         .HasProperty(TrackSpanProperties::kHasFixedMaximumTrack);
   }
 
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(node);
-    visitor->Trace(parent_grid);
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(node); }
 
   const NGBlockNode node;
   GridArea resolved_position;
-  Member<GridItemData> parent_grid;
 
   bool has_subgridded_columns : 1;
   bool has_subgridded_rows : 1;
@@ -195,6 +197,7 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
   bool is_inline_axis_overflow_safe : 1;
   bool is_parallel_with_root_grid : 1;
   bool is_sizing_dependent_on_block_size : 1;
+  bool is_subgridded_to_parent_grid : 1;
   bool must_consider_grid_items_for_column_sizing : 1;
   bool must_consider_grid_items_for_row_sizing : 1;
 
@@ -233,7 +236,7 @@ struct CORE_EXPORT GridItemData : public GarbageCollected<GridItemData> {
 };
 
 struct CORE_EXPORT GridItems {
-  STACK_ALLOCATED();
+  DISALLOW_NEW();
 
  public:
   using GridItemDataVector = HeapVector<Member<GridItemData>, 16>;
@@ -297,7 +300,7 @@ struct CORE_EXPORT GridItems {
   wtf_size_t Size() const { return item_data.size(); }
   bool IsEmpty() const { return item_data.empty(); }
 
-  GridItemData& operator[](wtf_size_t index) { return *item_data[index]; }
+  GridItemData& At(wtf_size_t index) { return *item_data[index]; }
 
   void Append(GridItemData* new_item_data) {
     DCHECK(new_item_data);
@@ -312,6 +315,8 @@ struct CORE_EXPORT GridItems {
   void ReserveCapacity(wtf_size_t new_capacity) {
     item_data.reserve(new_capacity);
   }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(item_data); }
 
   // Grid items are rearranged in order-modified document order since
   // auto-placement and painting rely on it later in the algorithm.

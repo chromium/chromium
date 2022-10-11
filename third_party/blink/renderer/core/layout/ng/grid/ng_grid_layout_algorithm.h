@@ -7,12 +7,9 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_break_token_data.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_item.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_node.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_properties.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_track_collection.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_sizing_tree.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -48,8 +45,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
   // Computes the containing block rect of out of flow items from stored data in
   // |NGGridLayoutData|.
   static LogicalRect ComputeOutOfFlowItemContainingRect(
-      const NGGridPlacement& grid_placement,
+      const NGGridPlacementData& placement_data,
       const NGGridLayoutData& layout_data,
+      const ComputedStyle& grid_style,
       const NGBoxStrut& borders,
       const LogicalSize& border_box_size,
       GridItemData* out_of_flow_item);
@@ -62,6 +60,14 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
  private:
   friend class NGGridLayoutAlgorithmTest;
+
+  wtf_size_t BuildGridSizingSubtree(
+      NGGridSizingTree* sizing_tree,
+      const NGGridSizingData* parent_sizing_data = nullptr,
+      const NGGridLineResolver* parent_line_resolver = nullptr,
+      const GridItemData* subgrid_data_in_parent = nullptr) const;
+
+  NGGridSizingTree BuildGridSizingTree() const;
 
   const NGLayoutResult* LayoutInternal();
 
