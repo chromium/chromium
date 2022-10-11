@@ -102,6 +102,7 @@ public final class TabGridViewBinderUnitTest {
 
     @Test
     public void bindClosableTabWithCardWidth_updateCardAndThumbnail() {
+        TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(false);
         // Update width.
         // updatedBitmapWidth = updatedCardWidth - margins = 200 - 40 = 160.
         // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 40 - 160.
@@ -126,6 +127,7 @@ public final class TabGridViewBinderUnitTest {
 
     @Test
     public void bindClosableTabWithCardWidth_updateCardAndThumbnail_notSelected() {
+        TabUiFeatureUtilities.setTabletGridTabSwitcherPolishEnabledForTesting(false);
         // Update width.
         // updatedBitmapWidth = updatedCardWidth - margins = 200 - 40 = 160.
         // updatedBitmapHeight = INIT_HEIGHT - margins = 200 - 40 - 160.

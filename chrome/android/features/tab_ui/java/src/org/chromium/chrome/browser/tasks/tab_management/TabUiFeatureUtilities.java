@@ -95,13 +95,13 @@ public class TabUiFeatureUtilities {
     private static final String GRID_TAB_SWITCHER_FOR_TABLETS_POLISH_PARAM = "enable_launch_polish";
     public static final BooleanCachedFieldTrialParameter GRID_TAB_SWITCHER_FOR_TABLETS_POLISH =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS,
-                    GRID_TAB_SWITCHER_FOR_TABLETS_POLISH_PARAM, false);
+                    GRID_TAB_SWITCHER_FOR_TABLETS_POLISH_PARAM, true);
 
     // Field trial parameter for controlling delay grid tab switcher creation for tablets.
     private static final String DELAY_GTS_CREATION_PARAM = "delay_creation";
     public static final BooleanCachedFieldTrialParameter DELAY_GTS_CREATION =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS,
-                    DELAY_GTS_CREATION_PARAM, false);
+                    DELAY_GTS_CREATION_PARAM, true);
 
     // Field trial parameter for defining tab width for tab strip improvements.
     private static final String TAB_STRIP_IMPROVEMENTS_TAB_WIDTH_PARAM = "min_tab_width";

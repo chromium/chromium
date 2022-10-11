@@ -687,7 +687,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sFeedLoadingPlaceholder =
             new CachedFlag(FEED_LOADING_PLACEHOLDER, false);
     public static final CachedFlag sGridTabSwitcherForTablets =
-            new CachedFlag(GRID_TAB_SWITCHER_FOR_TABLETS, false);
+            new CachedFlag(GRID_TAB_SWITCHER_FOR_TABLETS, true);
     public static final CachedFlag sImmersiveUiMode = new CachedFlag(IMMERSIVE_UI_MODE, false);
     public static final CachedFlag sIncognitoReauthenticationForAndroid =
             new CachedFlag(INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);

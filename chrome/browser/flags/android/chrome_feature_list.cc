@@ -775,7 +775,7 @@ BASE_FEATURE(kExploreSites, "ExploreSites", base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGridTabSwitcherForTablets,
              "GridTabSwitcherForTablets",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHandleMediaIntents,
              "HandleMediaIntents",

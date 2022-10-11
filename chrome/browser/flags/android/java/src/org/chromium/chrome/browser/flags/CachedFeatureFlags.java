@@ -73,7 +73,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS, true)
                     .put(ChromeFeatureList.EXPERIMENTS_FOR_AGSA, true)
                     .put(ChromeFeatureList.FEED_LOADING_PLACEHOLDER, false)
-                    .put(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, false)
+                    .put(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS, true)
                     .put(ChromeFeatureList.IMMERSIVE_UI_MODE, false)
                     .put(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false)
                     .put(ChromeFeatureList.INSTANCE_SWITCHER, true)

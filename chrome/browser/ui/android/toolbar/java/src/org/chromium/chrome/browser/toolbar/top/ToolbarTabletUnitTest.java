@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 import java.util.ArrayList;
@@ -199,6 +200,7 @@ public final class ToolbarTabletUnitTest {
         verify(mLocationBar).setUrlBarFocusable(false);
     }
 
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
     @Test
     public void testSetTabSwitcherOnGTSDisabled_hidesViews() {
         // Enable tab stack button when GTS is disabled
@@ -218,6 +220,7 @@ public final class ToolbarTabletUnitTest {
         verify(mMenuButtonCoordinator).setAppMenuUpdateBadgeSuppressed(true);
     }
 
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS)
     @Test
     public void testSetTabSwitcherOffGTSDisabled_showsViews() {
         // Enable tab stack button when GTS is disabled
