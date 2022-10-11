@@ -1969,7 +1969,7 @@ BASE_FEATURE(kUseAuthsessionAuthentication,
 // This feature flag also affects usage of AuthSession on lock screen.
 BASE_FEATURE(kUseAuthFactors,
              "UseAuthFactors",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables using the BluetoothSystem Mojo interface for Bluetooth operations.
 BASE_FEATURE(kUseBluetoothSystemInAsh,
