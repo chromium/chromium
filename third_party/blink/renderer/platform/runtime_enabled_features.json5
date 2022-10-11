@@ -686,6 +686,10 @@
       status: "stable",
     },
     {
+      // crbug.com/924069
+      name: "CSSHyphenateLimitChars",
+    },
+    {
       name: "CSSIcUnit",
       status: "stable",
     },
