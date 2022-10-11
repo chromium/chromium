@@ -84,7 +84,9 @@ etc.
 UKM for INP are:
 * Most navigations: `PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration`
 * BFCache navigations: `HistoryNavigation.UserInteractionLatencyAfterBackForwardCacheRestore.HighPercentile2.MaxEventDuration`
+* Prerender2 activations: `PrerenderPageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration`
 
 UMA for INP are:
 * Most navigations: `PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration`
 * BFCache navigations: `PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration.AfterBackForwardCacheRestore`
+* Prerender2 activations: `PageLoad.InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration.Prerender`
