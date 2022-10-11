@@ -15,7 +15,7 @@ package org.chromium.weblayer;
  * synchronize the painting of other Views with WebLayer's Views. It's entirely possible one will
  * render before or after the other.
  */
-public abstract class ScrollOffsetCallback {
+abstract class ScrollOffsetCallback {
     /**
      * Called when the vertical scroll location of the content of a Tab changes.
      *

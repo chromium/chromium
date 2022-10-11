@@ -14,7 +14,7 @@ import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 /**
  * Parameters for constructing context menu.
  */
-public class ContextMenuParams {
+class ContextMenuParams {
     /**
      * The Uri associated with the main frame of the page that triggered the context menu.
      */

@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 /**
  * Parameters for {@link NavigationController#navigate}.
  */
-public class NavigateParams {
+class NavigateParams {
     private boolean mShouldReplaceCurrentEntry;
     private boolean mIntentProcessingDisabled;
     private boolean mIntentLaunchesAllowedInBackground;

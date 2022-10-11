@@ -16,7 +16,7 @@ import org.chromium.weblayer_private.interfaces.IRemoteFragment;
  * This class hosts dialog fragments for casting, such as a {@link MediaRouteChooserDialogFragment}
  * or a {@link MediaRouteControllerDialogFragment}.
  */
-public class MediaRouteDialogFragment extends RemoteFragment {
+class MediaRouteDialogFragment extends RemoteFragment {
     private static final String FRAGMENT_TAG = "WebLayerMediaRouteDialogFragment";
 
     static IRemoteFragment create(Fragment browserFragment) {

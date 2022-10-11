@@ -15,7 +15,7 @@ import org.chromium.weblayer_private.interfaces.UrlBarOptionsKeys;
  *
  * @since 95
  */
-public final class PageInfoDisplayOptions {
+final class PageInfoDisplayOptions {
     public static Builder builder() {
         return new Builder();
     }

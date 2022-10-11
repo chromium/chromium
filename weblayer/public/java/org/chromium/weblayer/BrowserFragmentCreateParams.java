@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 /**
  * Parameters for {@link Weblayer#createBrowserFragmentWithParams}.
  */
-public class BrowserFragmentCreateParams {
+class BrowserFragmentCreateParams {
     private boolean mIncognito;
     @Nullable
     private String mProfileName;

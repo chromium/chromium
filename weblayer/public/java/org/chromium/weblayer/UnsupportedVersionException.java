@@ -7,7 +7,7 @@ package org.chromium.weblayer;
 /**
  * Error thrown if client and implementation versions are not compatible.
  */
-public class UnsupportedVersionException extends RuntimeException {
+class UnsupportedVersionException extends RuntimeException {
     /**
      * Constructs a new exception with the specified version.
      */

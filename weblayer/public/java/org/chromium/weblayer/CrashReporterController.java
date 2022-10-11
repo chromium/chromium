@@ -36,7 +36,7 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
  * user preference. Knowing that a crash is available can be used as a signal to schedule upload
  * work for a later point in time (or favourable power/network conditions).
  */
-public class CrashReporterController {
+class CrashReporterController {
     private ICrashReporterController mImpl;
     private final ObserverList<CrashReporterCallback> mCallbacks;
 

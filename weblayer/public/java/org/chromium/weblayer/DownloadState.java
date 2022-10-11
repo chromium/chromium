@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({DownloadState.IN_PROGRESS, DownloadState.COMPLETE, DownloadState.PAUSED,
         DownloadState.CANCELLED, DownloadState.FAILED})
 @Retention(RetentionPolicy.SOURCE)
-public @interface DownloadState {
+@interface DownloadState {
     int IN_PROGRESS = org.chromium.weblayer_private.interfaces.DownloadState.IN_PROGRESS;
     int COMPLETE = org.chromium.weblayer_private.interfaces.DownloadState.COMPLETE;
     int PAUSED = org.chromium.weblayer_private.interfaces.DownloadState.PAUSED;

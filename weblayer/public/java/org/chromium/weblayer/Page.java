@@ -15,4 +15,4 @@ import org.chromium.weblayer_private.interfaces.IClientPage;
  *
  * @since 90
  */
-public class Page extends IClientPage.Stub {}
+class Page extends IClientPage.Stub {}

@@ -16,7 +16,7 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 /**
  * UrlBarController enables creation of URL bar views and retrieval of information about them.
  */
-public class UrlBarController {
+class UrlBarController {
     private final IUrlBarController mImpl;
 
     // Constructor for test mocking.

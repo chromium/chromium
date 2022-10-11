@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 /**
  * Params passed to {@link GoogleAccountsCallback#onGoogleAccountsRequest}.
  */
-public class GoogleAccountsParams {
+class GoogleAccountsParams {
     /**
      * The requested service type such as "ADD_SESSION".
      */

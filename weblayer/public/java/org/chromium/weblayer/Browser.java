@@ -44,7 +44,7 @@ import java.util.Set;
  * restored in {@link onStart}. Restore happens during start so that callbacks can be attached. As
  *  a result of this, the Browser has no tabs until the Fragment is started.
  */
-public class Browser {
+class Browser {
     // Set to null once destroyed (or for tests).
     private IBrowser mImpl;
     // The Fragment the Browser is associated with. The value of this may change.

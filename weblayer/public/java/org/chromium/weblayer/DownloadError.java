@@ -16,7 +16,7 @@ import java.lang.annotation.RetentionPolicy;
         DownloadError.CONNECTIVITY_ERROR, DownloadError.NO_SPACE, DownloadError.FILE_ERROR,
         DownloadError.CANCELLED, DownloadError.OTHER_ERROR})
 @Retention(RetentionPolicy.SOURCE)
-public @interface DownloadError {
+@interface DownloadError {
     int NO_ERROR = org.chromium.weblayer_private.interfaces.DownloadError.NO_ERROR;
     int SERVER_ERROR = org.chromium.weblayer_private.interfaces.DownloadError.SERVER_ERROR;
     int SSL_ERROR = org.chromium.weblayer_private.interfaces.DownloadError.SSL_ERROR;

@@ -24,7 +24,7 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
 /**
  * Provides methods to control navigation, along with maintaining the current list of navigations.
  */
-public class NavigationController {
+class NavigationController {
     private INavigationController mNavigationController;
     private final ObserverList<NavigationCallback> mCallbacks;
 

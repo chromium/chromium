@@ -22,7 +22,7 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
  * The Web API is used by sites to record video and audio from the user's device, e.g. for voice
  * recognition or video conferencing. There is one MediaCaptureController per {@link Tab}.
  */
-public class MediaCaptureController {
+class MediaCaptureController {
     private final ITab mTab;
 
     protected MediaCaptureController() {

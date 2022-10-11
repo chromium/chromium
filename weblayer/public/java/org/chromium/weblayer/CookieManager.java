@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Manages cookies for a WebLayer profile.
  */
-public class CookieManager {
+class CookieManager {
     private final ICookieManager mImpl;
 
     static CookieManager create(IProfile profile) {

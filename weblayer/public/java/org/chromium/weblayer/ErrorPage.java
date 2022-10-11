@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 /**
  * ErrorPage contains the html to show when an error is encountered.
  */
-public class ErrorPage {
+class ErrorPage {
     public final String htmlContent;
 
     /**

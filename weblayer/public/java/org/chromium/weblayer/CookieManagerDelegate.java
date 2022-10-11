@@ -17,7 +17,7 @@ import org.chromium.browserfragment.interfaces.IStringCallback;
  * This class acts as a proxy between the embedding app's BrowserFragment and
  * the WebLayer implementation.
  */
-public class CookieManagerDelegate extends ICookieManagerDelegate.Stub {
+class CookieManagerDelegate extends ICookieManagerDelegate.Stub {
     private CookieManager mCookieManager;
     private Handler mHandler = new Handler(Looper.getMainLooper());
 

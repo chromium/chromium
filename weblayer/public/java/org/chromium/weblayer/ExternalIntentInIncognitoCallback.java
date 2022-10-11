@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
  * See {@link Tab#setExternalIntentInIncognitoCallback()}.
  * @since 93
  */
-public abstract class ExternalIntentInIncognitoCallback {
+abstract class ExternalIntentInIncognitoCallback {
     /* Invoked when the user initiates a launch of an intent in incognito mode. The embedder's
      * implementation should present a modal dialog warning the user that they are leaving
      * incognito and asking if they wish to continue; it should then invoke onUserDecision() with

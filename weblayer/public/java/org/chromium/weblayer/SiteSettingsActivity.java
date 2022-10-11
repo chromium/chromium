@@ -13,7 +13,7 @@ import android.content.Intent;
  * @deprecated Use SettingsActivity instead
  */
 @Deprecated
-public class SiteSettingsActivity extends SettingsActivity {
+class SiteSettingsActivity extends SettingsActivity {
     private static boolean sActivityNotExportedChecked;
 
     /** @deprecated Use SettingsActivity#createIntentForSiteSettingsCategoryList instead */

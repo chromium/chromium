@@ -11,7 +11,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @IntDef({ExternalIntentInIncognitoUserDecision.ALLOW, ExternalIntentInIncognitoUserDecision.DENY})
 @Retention(RetentionPolicy.SOURCE)
-public @interface ExternalIntentInIncognitoUserDecision {
+@interface ExternalIntentInIncognitoUserDecision {
     int ALLOW =
             org.chromium.weblayer_private.interfaces.ExternalIntentInIncognitoUserDecision.ALLOW;
     int DENY = org.chromium.weblayer_private.interfaces.ExternalIntentInIncognitoUserDecision.DENY;

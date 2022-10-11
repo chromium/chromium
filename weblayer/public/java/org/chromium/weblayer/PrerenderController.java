@@ -21,7 +21,7 @@ import org.chromium.weblayer_private.interfaces.IProfile;
  * not execute Javascript or render any part of the page in advance. For more information on
  * NoStatePrefetch, see https://developers.google.com/web/updates/2018/07/nostate-prefetch.
  */
-public class PrerenderController {
+class PrerenderController {
     private final IPrerenderController mImpl;
 
     static PrerenderController create(IProfile profile) {

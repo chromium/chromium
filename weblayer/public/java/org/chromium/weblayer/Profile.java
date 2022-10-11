@@ -37,7 +37,7 @@ import java.util.Set;
  * Profile holds state (typically on disk) needed for browsing. Create a
  * Profile via WebLayer.
  */
-public class Profile {
+class Profile {
     private static final Map<String, Profile> sProfiles = new HashMap<>();
     private static final Map<String, Profile> sIncognitoProfiles = new HashMap<>();
 

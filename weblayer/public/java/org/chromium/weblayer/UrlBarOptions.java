@@ -17,7 +17,7 @@ import org.chromium.weblayer_private.interfaces.UrlBarOptionsKeys;
 /**
  * Class containing options to tweak the URL bar.
  */
-public final class UrlBarOptions {
+final class UrlBarOptions {
     public static Builder builder() {
         return new Builder();
     }

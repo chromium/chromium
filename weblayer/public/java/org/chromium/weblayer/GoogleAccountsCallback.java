@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 /**
  * Used to intercept interaction with GAIA accounts.
  */
-public abstract class GoogleAccountsCallback {
+abstract class GoogleAccountsCallback {
     /**
      * Called when a user wants to change the state of their GAIA account. This could be a signin,
      * signout, or any other action. See {@link GoogleAccountServiceType} for all the possible

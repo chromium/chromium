@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({GoogleAccountServiceType.SIGNOUT, GoogleAccountServiceType.ADD_SESSION,
         GoogleAccountServiceType.DEFAULT})
 @Retention(RetentionPolicy.SOURCE)
-public @interface GoogleAccountServiceType {
+@interface GoogleAccountServiceType {
     /**
      * Logout all existing sessions.
      */

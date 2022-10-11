@@ -22,7 +22,7 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
  *
  * @since 90
  */
-public class GooglePayDataCallbacksServiceWrapper extends Service {
+class GooglePayDataCallbacksServiceWrapper extends Service {
     @Nullable
     private Service mService;
 

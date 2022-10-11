@@ -38,7 +38,7 @@ import org.chromium.weblayer_private.interfaces.IRemoteFragment;
  * attaches the fragment immediately on activity's onCreate event, so there is currently no way to
  * asynchronously init WebLayer in that case.
  */
-public final class BrowserFragment extends RemoteFragment {
+final class BrowserFragment extends RemoteFragment {
     // Nonnull after first onAttach().
     private IBrowserFragment mImpl;
     private WebLayer mWebLayer;

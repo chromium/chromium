@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
  * If this callback is implemented and set on {@link Profile}, the information is used to better
  * organize contact details in the navigator.contacts UI as well as by Autofill Assistant.
  */
-public abstract class UserIdentityCallback {
+abstract class UserIdentityCallback {
     /**
      * The current user's email address. If no user is signed in or the email is currently
      * unavailable, this should return an empty string.

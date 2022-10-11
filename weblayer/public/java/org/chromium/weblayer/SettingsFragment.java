@@ -18,7 +18,7 @@ import org.chromium.weblayer_private.interfaces.IRemoteFragment;
  *
  * @since 89
  */
-public class SettingsFragment extends RemoteFragment {
+class SettingsFragment extends RemoteFragment {
     public SettingsFragment() {
         super();
     }

@@ -23,7 +23,7 @@ import java.util.Map;
  * Navigation object will be created and that same object will be used in all
  * of the NavigationCallback methods.
  */
-public class Navigation extends IClientNavigation.Stub {
+class Navigation extends IClientNavigation.Stub {
     private final INavigation mNavigationImpl;
 
     // Constructor for test mocking.

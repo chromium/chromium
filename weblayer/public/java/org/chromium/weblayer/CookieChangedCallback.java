@@ -9,6 +9,6 @@ import androidx.annotation.NonNull;
 /**
  * Callback used to listen for cookie changes.
  */
-public abstract class CookieChangedCallback {
+abstract class CookieChangedCallback {
     public abstract void onCookieChanged(@NonNull String cookie, @CookieChangeCause int cause);
 }

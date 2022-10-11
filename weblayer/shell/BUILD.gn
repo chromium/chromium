@@ -206,10 +206,6 @@ repack("pak") {
 }
 
 if (is_android) {
-  group("weblayer_shell") {
-    testonly = true
-    deps = [ "//weblayer/shell/android:weblayer_shell_apk" ]
-  }
   group("weblayer_support") {
     testonly = true
     deps = [ "//weblayer/shell/android:weblayer_support_apk" ]

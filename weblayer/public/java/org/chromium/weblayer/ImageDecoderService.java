@@ -14,7 +14,7 @@ import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 /**
  * A service used internally by WebLayer for decoding images on the local device.
  */
-public class ImageDecoderService extends Service {
+class ImageDecoderService extends Service {
     private IBinder mImageDecoder;
 
     @Override

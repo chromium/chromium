@@ -9,7 +9,7 @@ package org.chromium.weblayer;
  *
  * @since 88
  */
-public abstract class BrowserRestoreCallback {
+abstract class BrowserRestoreCallback {
     /**
      * Called when WebLayer has finished restoring the previous state.
      */

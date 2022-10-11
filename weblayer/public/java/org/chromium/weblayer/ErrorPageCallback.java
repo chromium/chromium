@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 /**
  * An interface that allows clients to handle error page interactions.
  */
-public abstract class ErrorPageCallback {
+abstract class ErrorPageCallback {
     /**
      * The user has attempted to back out of an error page, such as one warning of an SSL error.
      *

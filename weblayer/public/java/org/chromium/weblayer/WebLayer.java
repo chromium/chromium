@@ -48,7 +48,7 @@ import java.util.List;
 /**
  * WebLayer is responsible for initializing state necessary to use any of the classes in web layer.
  */
-public class WebLayer {
+class WebLayer {
     private static final String TAG = "WebLayer";
     // This metadata key, if defined, overrides the default behaviour of loading WebLayer from the
     // current WebView implementation. This is only intended for testing, and does not enforce any
@@ -88,7 +88,7 @@ public class WebLayer {
      *
      * @return true Returns true if WebLayer is available.
      */
-    public static boolean isAvailable(Context context) {
+    static boolean isAvailable(Context context) {
         ThreadCheck.ensureOnUiThread();
         return getWebLayerLoader(context).isAvailable();
     }
@@ -111,7 +111,7 @@ public class WebLayer {
      * @throws UnsupportedVersionException If {@link #isAvailable} returns false. See
      * {@link #isAvailable} for details.
      */
-    public static void loadAsync(@NonNull Context appContext, @NonNull Callback<WebLayer> callback)
+    static void loadAsync(@NonNull Context appContext, @NonNull Callback<WebLayer> callback)
             throws UnsupportedVersionException {
         ThreadCheck.ensureOnUiThread();
         checkAvailable(appContext);
@@ -134,8 +134,7 @@ public class WebLayer {
      * {@link #isAvailable} for details.
      */
     @Nullable
-    public static WebLayer loadSync(@NonNull Context appContext)
-            throws UnsupportedVersionException {
+    static WebLayer loadSync(@NonNull Context appContext) throws UnsupportedVersionException {
         ThreadCheck.ensureOnUiThread();
         checkAvailable(appContext);
         return getWebLayerLoader(appContext).loadSync();
@@ -174,7 +173,7 @@ public class WebLayer {
      *
      * @return the supported version, or -1 if WebLayer is not available.
      */
-    public static int getSupportedMajorVersion(@NonNull Context context) {
+    static int getSupportedMajorVersion(@NonNull Context context) {
         ThreadCheck.ensureOnUiThread();
         return getWebLayerLoader(context).getMajorVersion();
     }
@@ -209,7 +208,7 @@ public class WebLayer {
      * major version integer (79 in the example).
      */
     @NonNull
-    public static String getSupportedFullVersion(@NonNull Context context) {
+    static String getSupportedFullVersion(@NonNull Context context) {
         ThreadCheck.ensureOnUiThread();
         return getWebLayerLoader(context).getVersion();
     }
@@ -219,7 +218,7 @@ public class WebLayer {
      * such as "79.0.3945.0".
      */
     @NonNull
-    public static String getVersion() {
+    static String getVersion() {
         ThreadCheck.ensureOnUiThread();
         return WebLayerClientVersionConstants.PRODUCT_VERSION;
     }
@@ -483,7 +482,7 @@ public class WebLayer {
      * a directory name in the file system.
      */
     @NonNull
-    public static Fragment createBrowserFragment(@Nullable String profileName) {
+    static Fragment createBrowserFragment(@Nullable String profileName) {
         return createBrowserFragment(profileName, null);
     }
 
@@ -499,7 +498,7 @@ public class WebLayer {
      * @see Browser for details on {@link persistenceId}
      */
     @NonNull
-    public static Fragment createBrowserFragment(
+    static Fragment createBrowserFragment(
             @Nullable String profileName, @Nullable String persistenceId) {
         BrowserFragmentCreateParams params = (new BrowserFragmentCreateParams.Builder())
                                                      .setProfileName(profileName)
@@ -520,7 +519,7 @@ public class WebLayer {
      *         exception is thrown later on.
      */
     @NonNull
-    public static Fragment createBrowserFragmentWithIncognitoProfile(
+    static Fragment createBrowserFragmentWithIncognitoProfile(
             @Nullable String profileName, @Nullable String persistenceId) {
         BrowserFragmentCreateParams params = (new BrowserFragmentCreateParams.Builder())
                                                      .setProfileName(profileName)
@@ -540,8 +539,7 @@ public class WebLayer {
      *         exception is thrown later on.
      */
     @NonNull
-    public static Fragment createBrowserFragmentWithParams(
-            @NonNull BrowserFragmentCreateParams params) {
+    static Fragment createBrowserFragmentWithParams(@NonNull BrowserFragmentCreateParams params) {
         ThreadCheck.ensureOnUiThread();
         String profileName = sanitizeProfileName(params.getProfileName());
         boolean isIncognito = params.isIncognito() || "".equals(profileName);

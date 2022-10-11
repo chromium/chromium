@@ -18,7 +18,7 @@ import androidx.annotation.NonNull;
  * 3) navigationCompleted() or navigationFailed()
  * 4) onFirstContentfulPaint().
  */
-public abstract class NavigationCallback {
+abstract class NavigationCallback {
     /**
      * Called when a navigation started in the Tab. |navigation| is unique to a
      * specific navigation. The same |navigation| will be  provided on subsequent calls to

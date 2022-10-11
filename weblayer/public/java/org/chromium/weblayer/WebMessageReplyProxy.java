@@ -18,7 +18,7 @@ import org.chromium.weblayer_private.interfaces.IWebMessageReplyProxy;
  * Each {@link WebMessageReplyProxy} represents a single endpoint. Multiple messages sent to the
  * same endpoint use the same {@link WebMessageReplyProxy}.
  */
-public class WebMessageReplyProxy {
+class WebMessageReplyProxy {
     private final IWebMessageReplyProxy mIReplyProxy;
     private final boolean mIsMainFrame;
     private final String mSourceOrigin;

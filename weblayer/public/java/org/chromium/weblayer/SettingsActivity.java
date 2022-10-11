@@ -23,7 +23,7 @@ import org.chromium.weblayer_private.interfaces.SettingsIntentHelper;
  *
  * @since 89
  */
-public class SettingsActivity extends AppCompatActivity {
+class SettingsActivity extends AppCompatActivity {
     private static final String FRAGMENT_TAG = "settingsFragment";
 
     /**

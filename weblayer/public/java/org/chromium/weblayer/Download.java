@@ -17,7 +17,7 @@ import java.io.File;
 /**
  * Contains information about a single download that's in progress.
  */
-public class Download extends IClientDownload.Stub {
+class Download extends IClientDownload.Stub {
     private final IDownload mDownloadImpl;
 
     // Constructor for test mocking.

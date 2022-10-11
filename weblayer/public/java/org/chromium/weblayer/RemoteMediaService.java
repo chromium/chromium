@@ -32,7 +32,7 @@ import org.chromium.weblayer_private.interfaces.RemoteMediaServiceConstants;
  *
  * @since 88
  */
-public class RemoteMediaService extends MediaPlaybackBaseService {
+class RemoteMediaService extends MediaPlaybackBaseService {
     private int mId;
 
     @Override

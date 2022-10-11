@@ -7,7 +7,7 @@ package org.chromium.weblayer;
 /**
  * Informed of find in page results.
  */
-public abstract class FindInPageCallback {
+abstract class FindInPageCallback {
     /**
      * Called when incremental results from a find operation are ready.
      *

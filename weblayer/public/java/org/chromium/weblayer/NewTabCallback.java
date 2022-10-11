@@ -10,7 +10,7 @@ import androidx.annotation.NonNull;
  * Used for handling new tabs (such as occurs when window.open() is called). If this is not
  * set, popups are disabled.
  */
-public abstract class NewTabCallback {
+abstract class NewTabCallback {
     /**
      * Called when a new tab has been created.
      *

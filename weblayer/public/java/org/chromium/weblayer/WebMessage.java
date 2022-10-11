@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 /**
  * Used when sending and receiving messages to a page.
  */
-public class WebMessage {
+class WebMessage {
     private final String mContents;
 
     /**

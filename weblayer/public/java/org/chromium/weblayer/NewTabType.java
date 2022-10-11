@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({NewTabType.FOREGROUND_TAB, NewTabType.BACKGROUND_TAB, NewTabType.NEW_POPUP,
         NewTabType.NEW_WINDOW})
 @Retention(RetentionPolicy.SOURCE)
-public @interface NewTabType {
+@interface NewTabType {
     /**
      * The page requested a new tab to be shown active.
      */

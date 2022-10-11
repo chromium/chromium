@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 /**
  * Informed of interesting events that happen during the lifetime of a Tab.
  */
-public abstract class TabCallback {
+abstract class TabCallback {
     /**
      * The Uri that should be displayed in the location-bar has updated.
      *

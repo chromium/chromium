@@ -9,7 +9,7 @@ package org.chromium.weblayer;
  *
  * @since 88
  */
-public abstract class ActionModeCallback {
+abstract class ActionModeCallback {
     /**
      * Called when an overridden item type is clicked. The action mode is closed after this returns.
      * @param selectedText the raw selected text. Client is responsible for trimming it to fit into

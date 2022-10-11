@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
 /**
  * An interface for observing changes to the set of tabs in a browser.
  */
-public abstract class TabListCallback {
+abstract class TabListCallback {
     /**
      * The active tab has changed.
      *

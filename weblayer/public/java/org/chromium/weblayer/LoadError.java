@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({LoadError.NO_ERROR, LoadError.HTTP_CLIENT_ERROR, LoadError.HTTP_SERVER_ERROR,
         LoadError.SSL_ERROR, LoadError.CONNECTIVITY_ERROR, LoadError.OTHER_ERROR})
 @Retention(RetentionPolicy.SOURCE)
-public @interface LoadError {
+@interface LoadError {
     /**
      * Navigation completed successfully.
      */

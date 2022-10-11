@@ -15,7 +15,7 @@ import androidx.annotation.Nullable;
  *
  * @since 91
  */
-public abstract class OpenUrlCallback {
+abstract class OpenUrlCallback {
     /**
      * Called to get the {@link Browser} in which to create a new tab for a requested navigation.
      *
