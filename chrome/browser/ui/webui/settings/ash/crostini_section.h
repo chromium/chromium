@@ -54,4 +54,9 @@ class CrostiniSection : public OsSettingsSection {
 }  // namespace settings
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::settings {
+using ::chromeos::settings::CrostiniSection;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_CROSTINI_SECTION_H_

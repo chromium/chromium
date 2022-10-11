@@ -13,17 +13,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResult;
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultIdentifier;
-using ::ash::settings::mojom::SearchResultPtr;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -324,5 +319,4 @@ std::vector<std::u16string> Hierarchy::GenerateHierarchyStrings(
   return hierarchy_strings;
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

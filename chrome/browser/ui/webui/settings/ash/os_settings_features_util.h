@@ -7,9 +7,7 @@
 
 class Profile;
 
-namespace chromeos {
-namespace settings {
-namespace features {
+namespace ash::settings::features {
 
 bool IsGuestModeActive();
 
@@ -21,14 +19,13 @@ bool ShouldShowParentalControlSettings(const Profile* profile);
 // shown for |profile|.
 bool ShouldShowExternalStorageSettings(const Profile* profile);
 
-}  // namespace features
-}  // namespace settings
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings::features {
-using ::chromeos::settings::features::IsGuestModeActive;
-using ::chromeos::settings::features::ShouldShowExternalStorageSettings;
 }  // namespace ash::settings::features
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings::features {
+using ::ash::settings::features::IsGuestModeActive;
+using ::ash::settings::features::ShouldShowExternalStorageSettings;
+using ::ash::settings::features::ShouldShowParentalControlSettings;
+}  // namespace chromeos::settings::features
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_FEATURES_UTIL_H_

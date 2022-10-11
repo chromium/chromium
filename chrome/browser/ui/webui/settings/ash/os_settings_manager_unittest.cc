@@ -33,10 +33,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-namespace local_search_service = ::ash::local_search_service;
+namespace mojom {
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Subpage;
+}  // namespace mojom
 
 // Verifies the OsSettingsManager initialization flow. Behavioral functionality
 // is tested via unit tests on the sub-elements owned by OsSettingsManager.
@@ -141,5 +143,4 @@ TEST_F(OsSettingsManagerTest, Initialization) {
   }
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

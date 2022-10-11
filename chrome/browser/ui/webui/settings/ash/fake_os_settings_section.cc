@@ -8,14 +8,11 @@
 
 #include "chrome/grit/generated_resources.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
 }  // namespace mojom
 
 FakeOsSettingsSection::FakeOsSettingsSection(mojom::Section section)
@@ -61,5 +58,4 @@ std::string FakeOsSettingsSection::ModifySearchResultUrl(
   return ss.str();
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

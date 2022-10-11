@@ -12,13 +12,7 @@
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
 
-namespace chromeos {
-namespace settings {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace mojom {
-using ::ash::settings::mojom::UserActionRecorder;
-}
+namespace ash::settings {
 
 SettingsUserActionTracker::SettingsUserActionTracker(
     Hierarchy* hierarchy,
@@ -77,12 +71,12 @@ void SettingsUserActionTracker::RecordSettingChange() {
 }
 
 void SettingsUserActionTracker::RecordSettingChangeWithDetails(
-    mojom::Setting setting,
-    ash::settings::mojom::SettingChangeValuePtr value) {
+    chromeos::settings::mojom::Setting setting,
+    mojom::SettingChangeValuePtr value) {
   per_session_tracker_->RecordSettingChange();
 
   // Get the primary section location of the changed setting and log the metric.
-  mojom::Section section_id =
+  chromeos::settings::mojom::Section section_id =
       hierarchy_->GetSettingMetadata(setting).primary.first;
   const OsSettingsSection* section = sections_->GetSection(section_id);
   // new_value is initialized as null. Null value is used in cases that don't
@@ -103,5 +97,4 @@ void SettingsUserActionTracker::RecordSettingChangeWithDetails(
                            static_cast<int>(setting));
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

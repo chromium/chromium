@@ -11,20 +11,20 @@
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Fake OsSettingsSection implementation.
 class FakeOsSettingsSection : public OsSettingsSection {
  public:
-  explicit FakeOsSettingsSection(mojom::Section section);
+  explicit FakeOsSettingsSection(chromeos::settings::mojom::Section section);
   ~FakeOsSettingsSection() override;
 
   FakeOsSettingsSection(const FakeOsSettingsSection& other) = delete;
   FakeOsSettingsSection& operator=(const FakeOsSettingsSection& other) = delete;
 
-  mojom::Section section() { return section_; }
-  const std::vector<mojom::Setting>& logged_metrics() const {
+  chromeos::settings::mojom::Section section() { return section_; }
+  const std::vector<chromeos::settings::mojom::Setting>& logged_metrics()
+      const {
     return logged_metrics_;
   }
 
@@ -35,32 +35,33 @@ class FakeOsSettingsSection : public OsSettingsSection {
   // Returns the settings app name as a default value.
   int GetSectionNameMessageId() const override;
 
-  mojom::Section GetSection() const override;
+  chromeos::settings::mojom::Section GetSection() const override;
 
   // These functions return arbitrary dummy values.
-  ash::settings::mojom::SearchResultIcon GetSectionIcon() const override;
+  mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
-  bool LogMetric(mojom::Setting setting, base::Value& value) const override;
+  bool LogMetric(chromeos::settings::mojom::Setting setting,
+                 base::Value& value) const override;
 
   // Prepends the section name and "::" to the URL in |concept|. For example, if
   // the URL is "networkDetails" and the section is mojom::Section::kNetwork,
   // the returned URL is "Section::kNetwork::networkDetails".
   std::string ModifySearchResultUrl(
-      ash::settings::mojom::SearchResultType type,
+      mojom::SearchResultType type,
       OsSettingsIdentifier id,
       const std::string& url_to_modify) const override;
 
   // Static function used to implement the function above.
-  static std::string ModifySearchResultUrl(mojom::Section section,
-                                           const std::string& url_to_modify);
+  static std::string ModifySearchResultUrl(
+      chromeos::settings::mojom::Section section,
+      const std::string& url_to_modify);
 
  private:
-  const mojom::Section section_;
+  const chromeos::settings::mojom::Section section_;
   // Use mutable to modify this vector within the overridden const LogMetric.
-  mutable std::vector<mojom::Setting> logged_metrics_;
+  mutable std::vector<chromeos::settings::mojom::Setting> logged_metrics_;
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FAKE_OS_SETTINGS_SECTION_H_

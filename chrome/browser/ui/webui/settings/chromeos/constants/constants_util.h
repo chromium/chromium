@@ -22,4 +22,11 @@ const std::vector<mojom::Setting>& AllSettings();
 }  // namespace settings
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::settings::constants {
+using ::chromeos::settings::constants::AllSections;
+using ::chromeos::settings::constants::AllSettings;
+using ::chromeos::settings::constants::AllSubpages;
+}  // namespace ash::settings::constants
+
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_CONSTANTS_CONSTANTS_UTIL_H_

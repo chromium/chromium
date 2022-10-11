@@ -19,7 +19,7 @@ class OsSyncUtilTest : public testing::Test {
  public:
   OsSyncUtilTest() {
     syncer::SyncPrefs::RegisterProfilePrefs(prefs_.registry());
-    chromeos::settings::OSSettingsUI::RegisterProfilePrefs(prefs_.registry());
+    ash::settings::OSSettingsUI::RegisterProfilePrefs(prefs_.registry());
   }
 
   sync_preferences::TestingPrefServiceSyncable prefs_;

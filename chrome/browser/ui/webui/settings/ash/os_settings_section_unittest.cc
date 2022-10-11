@@ -7,14 +7,12 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 TEST(OsSettingsSectionTest, Section) {
@@ -52,5 +50,4 @@ TEST(OsSettingsSectionTest, SettingExistingQuery) {
                 /*url_to_modify=*/"networks?type=WiFi"));
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

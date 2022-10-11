@@ -26,7 +26,7 @@ struct Params {
 
 }  // namespace
 
-namespace chromeos::settings {
+namespace ash::settings {
 
 // Test of the authentication dialog in the lock screen page in os-settings.
 class OSSettingsLockScreenAuthenticationTest
@@ -53,7 +53,7 @@ class OSSettingsLockScreenAuthenticationTest
   }
 
  protected:
-  ash::CryptohomeMixin cryptohome_{&mixin_host_};
+  CryptohomeMixin cryptohome_{&mixin_host_};
   OSSettingsBrowserTestMixin os_settings_{&mixin_host_};
 
  private:
@@ -82,4 +82,4 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(Params{.use_auth_session = false},
                                          Params{.use_auth_session = true}));
 
-}  // namespace chromeos::settings
+}  // namespace ash::settings

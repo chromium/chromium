@@ -14,13 +14,12 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SettingChangeValue;
-}
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+}  // namespace mojom
 
 class SettingsUserActionTrackerTest : public testing::Test {
  protected:
@@ -190,5 +189,4 @@ TEST_F(SettingsUserActionTrackerTest, TestRecordSettingChangedNullValue) {
               mojom::Setting::kScanningApp);
 }
 
-}  // namespace settings.
-}  // namespace chromeos.
+}  // namespace ash::settings

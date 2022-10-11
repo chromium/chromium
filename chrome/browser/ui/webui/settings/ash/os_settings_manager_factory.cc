@@ -20,10 +20,7 @@
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 
-namespace chromeos {
-namespace settings {
-
-namespace local_search_service = ::ash::local_search_service;
+namespace ash::settings {
 
 // static
 OsSettingsManager* OsSettingsManagerFactory::GetForProfile(Profile* profile) {
@@ -83,5 +80,4 @@ bool OsSettingsManagerFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

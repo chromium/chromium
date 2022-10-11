@@ -27,8 +27,11 @@
 #include "chrome/browser/ui/webui/settings/ash/reset_section.h"
 #include "chrome/browser/ui/webui/settings/ash/search_section.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
+
+namespace mojom {
+using ::chromeos::settings::mojom::Section;
+}
 
 OsSettingsSections::OsSettingsSections(
     Profile* profile,
@@ -43,7 +46,7 @@ OsSettingsSections::OsSettingsSections(
     android_sms::AndroidSmsService* android_sms_service,
     CupsPrintersManager* printers_manager,
     apps::AppServiceProxy* app_service_proxy,
-    ash::eche_app::EcheAppManager* eche_app_manager) {
+    eche_app::EcheAppManager* eche_app_manager) {
   // Special case: Main section does not have an associated enum value.
   sections_.push_back(
       std::make_unique<MainSection>(profile, search_tag_registry));
@@ -159,5 +162,4 @@ const OsSettingsSection* OsSettingsSections::GetSection(
   return it->second;
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

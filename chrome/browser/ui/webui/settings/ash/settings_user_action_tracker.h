@@ -14,8 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class Hierarchy;
 class OsSettingsSections;
@@ -23,8 +22,7 @@ class OsSettingsSections;
 // Records user actions within Settings. Utilizes a per session tracker that
 // measures the user's effort required to change a setting. Eventually uses
 // a per section tracker to record metrics in each section.
-class SettingsUserActionTracker
-    : public ash::settings::mojom::UserActionRecorder {
+class SettingsUserActionTracker : public mojom::UserActionRecorder {
  public:
   SettingsUserActionTracker(Hierarchy* hierarchy, OsSettingsSections* sections);
   SettingsUserActionTracker(const SettingsUserActionTracker& other) = delete;
@@ -33,8 +31,7 @@ class SettingsUserActionTracker
   ~SettingsUserActionTracker() override;
 
   void BindInterface(
-      mojo::PendingReceiver<ash::settings::mojom::UserActionRecorder>
-          pending_receiver);
+      mojo::PendingReceiver<mojom::UserActionRecorder> pending_receiver);
 
  private:
   // For unit tests.
@@ -61,8 +58,8 @@ class SettingsUserActionTracker
   void RecordSearch() override;
   void RecordSettingChange() override;
   void RecordSettingChangeWithDetails(
-      mojom::Setting setting,
-      ash::settings::mojom::SettingChangeValuePtr value) override;
+      chromeos::settings::mojom::Setting setting,
+      mojom::SettingChangeValuePtr value) override;
 
   void EndCurrentSession();
   void OnBindingDisconnected();
@@ -71,10 +68,9 @@ class SettingsUserActionTracker
   OsSettingsSections* sections_;
 
   std::unique_ptr<PerSessionSettingsUserActionTracker> per_session_tracker_;
-  mojo::Receiver<ash::settings::mojom::UserActionRecorder> receiver_{this};
+  mojo::Receiver<mojom::UserActionRecorder> receiver_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SETTINGS_USER_ACTION_TRACKER_H_

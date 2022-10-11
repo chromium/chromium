@@ -10,10 +10,19 @@
 #include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
 #include "chrome/test/data/grit/webui_generated_test_resources_map.h"
+#include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
+#include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/resource/resource_bundle.h"
 
-namespace chromeos::settings {
+namespace ash::settings {
+
+namespace mojom {
+using ::chromeos::settings::mojom::LockScreenSettingsAsyncWaiter;
+using ::chromeos::settings::mojom::OSSettingsBrowserProcess;
+using ::chromeos::settings::mojom::OSSettingsDriver;
+using ::chromeos::settings::mojom::OSSettingsDriverAsyncWaiter;
+}  // namespace mojom
 
 OSSettingsBrowserTestMixin::BrowserProcessServer::BrowserProcessServer() =
     default;
@@ -134,4 +143,4 @@ OSSettingsBrowserTestMixin::GoToLockScreenSettings() {
       lock_screen_settings_remotes_.Get(id));
 }
 
-}  // namespace chromeos::settings
+}  // namespace ash::settings

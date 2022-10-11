@@ -27,16 +27,15 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 
-namespace ash::settings::mojom {
-class SearchHandler;
-}
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
+
+namespace mojom {
+class SearchHandler;
+}
 
 // The WebUI handler for chrome://os-settings.
 class OSSettingsUI : public ui::MojoWebUIController {
@@ -53,46 +52,42 @@ class OSSettingsUI : public ui::MojoWebUIController {
   // Instantiates implementor of the mojom::CellularSetup mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<ash::cellular_setup::mojom::CellularSetup>
-          receiver);
+      mojo::PendingReceiver<cellular_setup::mojom::CellularSetup> receiver);
 
   // Instantiates implementor of the mojom::ESimManager mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<ash::cellular_setup::mojom::ESimManager> receiver);
+      mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver);
 
   // Instantiates implementor of the mojom::CrosAudioConfig mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<ash::audio_config::mojom::CrosAudioConfig>
-          receiver);
+      mojo::PendingReceiver<audio_config::mojom::CrosAudioConfig> receiver);
 
   // Instantiates implementor of the mojom::CrosNetworkConfig mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<network_config::mojom::CrosNetworkConfig> receiver);
+      mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
+          receiver);
 
   // Instantiates implementor of the mojom::UserActionRecorder mojo interface
   // passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<ash::settings::mojom::UserActionRecorder> receiver);
+  void BindInterface(mojo::PendingReceiver<mojom::UserActionRecorder> receiver);
 
   // Instantiates implementor of the mojom::SearchHandler mojo interface
   // passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<ash::settings::mojom::SearchHandler> receiver);
+  void BindInterface(mojo::PendingReceiver<mojom::SearchHandler> receiver);
 
   // Instantiates implementor of the personalization app mojom::SearchHandler
   // mojo interface passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<::ash::personalization_app::mojom::SearchHandler>
+      mojo::PendingReceiver<personalization_app::mojom::SearchHandler>
           receiver);
 
   // Instantiates implementor of the mojom::AppNotificationsHandler mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<
-          ash::settings::app_notification::mojom::AppNotificationsHandler>
+      mojo::PendingReceiver<app_notification::mojom::AppNotificationsHandler>
           receiver);
 
   // Instantiates implementor of the mojom::PageHandlerFactory mojo interface
@@ -118,29 +113,27 @@ class OSSettingsUI : public ui::MojoWebUIController {
   // Instantiates implementor of the mojom::CrosBluetoothConfig mojo interface
   // passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<ash::bluetooth_config::mojom::CrosBluetoothConfig>
+      mojo::PendingReceiver<bluetooth_config::mojom::CrosBluetoothConfig>
           receiver);
 
   // Binds to the cros authentication factor editing services.
   void BindInterface(
-      mojo::PendingReceiver<ash::auth::mojom::AuthFactorConfig> receiver);
+      mojo::PendingReceiver<auth::mojom::AuthFactorConfig> receiver);
   void BindInterface(
-      mojo::PendingReceiver<ash::auth::mojom::RecoveryFactorEditor> receiver);
+      mojo::PendingReceiver<auth::mojom::RecoveryFactorEditor> receiver);
 
  private:
   base::TimeTicks time_when_opened_;
 
   WebuiLoadTimer webui_load_timer_;
 
-  std::unique_ptr<ash::settings::mojom::UserActionRecorder>
-      user_action_recorder_;
+  std::unique_ptr<mojom::UserActionRecorder> user_action_recorder_;
   std::unique_ptr<AppManagementPageHandlerFactory>
       app_management_page_handler_factory_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_UI_H_

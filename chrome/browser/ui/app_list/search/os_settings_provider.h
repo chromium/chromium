@@ -21,15 +21,10 @@
 class Profile;
 
 namespace ash::settings {
-class SearchHandler;
-}
-
-namespace chromeos {
-namespace settings {
 class Hierarchy;
 class OsSettingsManager;
-}  // namespace settings
-}  // namespace chromeos
+class SearchHandler;
+}  // namespace ash::settings
 
 namespace gfx {
 class ImageSkia;
@@ -109,7 +104,7 @@ class OsSettingsProvider : public SearchProvider,
   std::vector<ash::settings::mojom::SearchResultPtr> FilterResults(
       const std::u16string& query,
       const std::vector<ash::settings::mojom::SearchResultPtr>& results,
-      const chromeos::settings::Hierarchy* hierarchy);
+      const ash::settings::Hierarchy* hierarchy);
 
   void OnLoadIcon(apps::IconValuePtr icon_value);
 
@@ -121,9 +116,9 @@ class OsSettingsProvider : public SearchProvider,
   float min_score_for_alternates_ = 0.4f;
 
   Profile* const profile_;
-  chromeos::settings::OsSettingsManager* const settings_manager_;
+  ash::settings::OsSettingsManager* const settings_manager_;
   ash::settings::SearchHandler* search_handler_;
-  const chromeos::settings::Hierarchy* hierarchy_;
+  const ash::settings::Hierarchy* hierarchy_;
   apps::AppServiceProxy* app_service_proxy_;
   gfx::ImageSkia icon_;
 

@@ -16,8 +16,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class OsSettingsSections;
 
@@ -45,7 +44,8 @@ class Hierarchy {
 
   class SectionMetadata {
    public:
-    SectionMetadata(mojom::Section section, const Hierarchy* hierarchy);
+    SectionMetadata(chromeos::settings::mojom::Section section,
+                    const Hierarchy* hierarchy);
     ~SectionMetadata();
 
     // Whether the only contents of the section is a link to a subpage.
@@ -55,50 +55,48 @@ class Hierarchy {
     // tag as the search result text. |relevance_score| must be passed by the
     // client, since this result is being created manually instead of via query
     // matching.
-    ash::settings::mojom::SearchResultPtr ToSearchResult(
-        double relevance_score) const;
+    mojom::SearchResultPtr ToSearchResult(double relevance_score) const;
 
    private:
-    mojom::Section section_;
+    chromeos::settings::mojom::Section section_;
     const Hierarchy* hierarchy_;
   };
 
   class SubpageMetadata {
    public:
     SubpageMetadata(int name_message_id,
-                    mojom::Section section,
-                    mojom::Subpage subpage,
-                    ash::settings::mojom::SearchResultIcon icon,
-                    ash::settings::mojom::SearchResultDefaultRank default_rank,
+                    chromeos::settings::mojom::Section section,
+                    chromeos::settings::mojom::Subpage subpage,
+                    mojom::SearchResultIcon icon,
+                    mojom::SearchResultDefaultRank default_rank,
                     const std::string& url_path_with_parameters,
                     const Hierarchy* hierarchy);
     ~SubpageMetadata();
 
     // The section in which the subpage appears.
-    mojom::Section section;
+    chromeos::settings::mojom::Section section;
 
     // The parent subpage, if applicable. Only applies to nested subpages.
-    absl::optional<mojom::Subpage> parent_subpage;
+    absl::optional<chromeos::settings::mojom::Subpage> parent_subpage;
 
     // Generates a search result for this subpage, using the canonical search
     // tag as the search result text. |relevance_score| must be passed by the
     // client, since this result is being created manually instead of via query
     // matching.
-    ash::settings::mojom::SearchResultPtr ToSearchResult(
-        double relevance_score) const;
+    mojom::SearchResultPtr ToSearchResult(double relevance_score) const;
 
    private:
-    mojom::Subpage subpage_;
+    chromeos::settings::mojom::Subpage subpage_;
 
     // Message ID corresponding to the localized string used to describe this
     // subpage.
     int name_message_id_;
 
     // Icon used for this subpage.
-    ash::settings::mojom::SearchResultIcon icon_;
+    mojom::SearchResultIcon icon_;
 
     // Default rank; used to order returned results.
-    ash::settings::mojom::SearchResultDefaultRank default_rank_;
+    mojom::SearchResultDefaultRank default_rank_;
 
     // Static URL path, which may need to be modified via
     // |modify_url_callback_|.
@@ -111,10 +109,12 @@ class Hierarchy {
   // its subpage. Some settings are embedded directly into the section and have
   // no associated subpage.
   using SettingLocation =
-      std::pair<mojom::Section, absl::optional<mojom::Subpage>>;
+      std::pair<chromeos::settings::mojom::Section,
+                absl::optional<chromeos::settings::mojom::Subpage>>;
 
   struct SettingMetadata {
-    explicit SettingMetadata(mojom::Section primary_section);
+    explicit SettingMetadata(
+        chromeos::settings::mojom::Section primary_section);
     ~SettingMetadata();
 
     // The primary location, as described above.
@@ -125,9 +125,12 @@ class Hierarchy {
     std::vector<SettingLocation> alternates;
   };
 
-  const SectionMetadata& GetSectionMetadata(mojom::Section section) const;
-  const SubpageMetadata& GetSubpageMetadata(mojom::Subpage subpage) const;
-  const SettingMetadata& GetSettingMetadata(mojom::Setting setting) const;
+  const SectionMetadata& GetSectionMetadata(
+      chromeos::settings::mojom::Section section) const;
+  const SubpageMetadata& GetSubpageMetadata(
+      chromeos::settings::mojom::Subpage subpage) const;
+  const SettingMetadata& GetSettingMetadata(
+      chromeos::settings::mojom::Setting setting) const;
 
   // Generates a list of names of the ancestor sections/subpages for |subpage|.
   // The list contains the Settings app name, the section name and, if
@@ -140,39 +143,36 @@ class Hierarchy {
   // Example 2 - External storage (has parent subpage):
   //                 ["Settings", "Device", "Storage management"]
   std::vector<std::u16string> GenerateAncestorHierarchyStrings(
-      mojom::Subpage subpage) const;
+      chromeos::settings::mojom::Subpage subpage) const;
 
   // Same as above, but for settings.
   std::vector<std::u16string> GenerateAncestorHierarchyStrings(
-      mojom::Setting setting) const;
+      chromeos::settings::mojom::Setting setting) const;
 
  protected:
-  std::unordered_map<mojom::Section, SectionMetadata> section_map_;
-  std::unordered_map<mojom::Subpage, SubpageMetadata> subpage_map_;
-  std::unordered_map<mojom::Setting, SettingMetadata> setting_map_;
+  std::unordered_map<chromeos::settings::mojom::Section, SectionMetadata>
+      section_map_;
+  std::unordered_map<chromeos::settings::mojom::Subpage, SubpageMetadata>
+      subpage_map_;
+  std::unordered_map<chromeos::settings::mojom::Setting, SettingMetadata>
+      setting_map_;
 
  private:
   class PerSectionHierarchyGenerator;
 
   // Generates an array with the Settings app name and |section|'s name.
   std::vector<std::u16string> GenerateHierarchyStrings(
-      mojom::Section section) const;
+      chromeos::settings::mojom::Section section) const;
 
   virtual std::string ModifySearchResultUrl(
-      mojom::Section section,
-      ash::settings::mojom::SearchResultType type,
+      chromeos::settings::mojom::Section section,
+      mojom::SearchResultType type,
       OsSettingsIdentifier id,
       const std::string& url_to_modify) const;
 
   const OsSettingsSections* sections_;
 };
 
-}  // namespace settings
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings {
-using ::chromeos::settings::Hierarchy;
-}
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_HIERARCHY_H_

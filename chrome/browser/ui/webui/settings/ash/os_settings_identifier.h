@@ -8,22 +8,20 @@
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Uniquely identifies a settings item (section, subpage, or setting).
 union OsSettingsIdentifier {
-  mojom::Section section;
-  mojom::Subpage subpage;
-  mojom::Setting setting;
+  chromeos::settings::mojom::Section section;
+  chromeos::settings::mojom::Subpage subpage;
+  chromeos::settings::mojom::Setting setting;
 };
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings {
-using ::chromeos::settings::OsSettingsIdentifier;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::OsSettingsIdentifier;
 }
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_IDENTIFIER_H_

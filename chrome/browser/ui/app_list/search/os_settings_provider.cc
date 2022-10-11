@@ -63,7 +63,7 @@ void LogError(Error error) {
 
 bool ContainsBetterAncestor(Subpage subpage,
                             const double score,
-                            const chromeos::settings::Hierarchy* hierarchy,
+                            const ash::settings::Hierarchy* hierarchy,
                             const base::flat_map<Subpage, double>& subpages,
                             const base::flat_map<Section, double>& sections) {
   // Returns whether or not a higher-scoring ancestor subpage or section of
@@ -86,7 +86,7 @@ bool ContainsBetterAncestor(Subpage subpage,
 
 bool ContainsBetterAncestor(Setting setting,
                             const double score,
-                            const chromeos::settings::Hierarchy* hierarchy,
+                            const ash::settings::Hierarchy* hierarchy,
                             const base::flat_map<Subpage, double>& subpages,
                             const base::flat_map<Section, double>& sections) {
   // Returns whether or not a higher-scoring ancestor subpage or section of
@@ -165,8 +165,7 @@ void OsSettingsResult::Open(int event_flags) {
 OsSettingsProvider::OsSettingsProvider(Profile* profile)
     : profile_(profile),
       settings_manager_(
-          chromeos::settings::OsSettingsManagerFactory::GetForProfile(
-              profile)) {
+          ash::settings::OsSettingsManagerFactory::GetForProfile(profile)) {
   DCHECK(profile_);
 
   if (settings_manager_) {
@@ -316,7 +315,7 @@ void OsSettingsProvider::OnSearchResultsChanged() {
 std::vector<SettingsResultPtr> OsSettingsProvider::FilterResults(
     const std::u16string& query,
     const std::vector<SettingsResultPtr>& results,
-    const chromeos::settings::Hierarchy* hierarchy) {
+    const ash::settings::Hierarchy* hierarchy) {
   base::flat_set<std::string> seen_urls;
   base::flat_map<Subpage, double> seen_subpages;
   base::flat_map<Section, double> seen_sections;

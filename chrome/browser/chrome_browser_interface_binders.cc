@@ -1048,36 +1048,36 @@ void PopulateChromeWebUIFrameBinders(
       map);
 
   RegisterWebUIControllerInterfaceBinder<
-      app_management::mojom::PageHandlerFactory,
-      chromeos::settings::OSSettingsUI>(map);
+      app_management::mojom::PageHandlerFactory, ash::settings::OSSettingsUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<
-      ash::settings::mojom::UserActionRecorder,
-      chromeos::settings::OSSettingsUI>(map);
+      ash::settings::mojom::UserActionRecorder, ash::settings::OSSettingsUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<ash::settings::mojom::SearchHandler,
-                                         chromeos::settings::OSSettingsUI>(map);
+                                         ash::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::personalization_app::mojom::SearchHandler,
-      chromeos::settings::OSSettingsUI>(map);
+      ash::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::settings::app_notification::mojom::AppNotificationsHandler,
-      chromeos::settings::OSSettingsUI>(map);
+      ash::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      ash::cellular_setup::mojom::CellularSetup,
-      chromeos::settings::OSSettingsUI>(map);
+      ash::cellular_setup::mojom::CellularSetup, ash::settings::OSSettingsUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<ash::auth::mojom::AuthFactorConfig,
-                                         chromeos::settings::OSSettingsUI>(map);
+                                         ash::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<ash::auth::mojom::RecoveryFactorEditor,
-                                         chromeos::settings::OSSettingsUI>(map);
+                                         ash::settings::OSSettingsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      ash::cellular_setup::mojom::ESimManager, chromeos::settings::OSSettingsUI,
+      ash::cellular_setup::mojom::ESimManager, ash::settings::OSSettingsUI,
       chromeos::NetworkUI, chromeos::OobeUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
@@ -1111,7 +1111,7 @@ void PopulateChromeWebUIFrameBinders(
       ash::cfm::NetworkSettingsDialogUi,
 #endif  // BUILDFLAG(PLATFORM_CFM)
       chromeos::InternetConfigDialogUI, chromeos::InternetDetailDialogUI,
-      chromeos::NetworkUI, chromeos::OobeUI, chromeos::settings::OSSettingsUI,
+      chromeos::NetworkUI, chromeos::OobeUI, ash::settings::OSSettingsUI,
       chromeos::LockScreenNetworkUI, ash::ShimlessRMADialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
@@ -1235,13 +1235,12 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<
       ash::bluetooth_config::mojom::CrosBluetoothConfig,
-      chromeos::BluetoothPairingDialogUI, chromeos::settings::OSSettingsUI>(
-      map);
+      chromeos::BluetoothPairingDialogUI, ash::settings::OSSettingsUI>(map);
 
   if (ash::features::IsAudioSettingsPageEnabled()) {
     RegisterWebUIControllerInterfaceBinder<
-        ash::audio_config::mojom::CrosAudioConfig,
-        chromeos::settings::OSSettingsUI>(map);
+        ash::audio_config::mojom::CrosAudioConfig, ash::settings::OSSettingsUI>(
+        map);
   }
 
   RegisterWebUIControllerInterfaceBinder<audio::mojom::PageHandlerFactory,
@@ -1297,19 +1296,17 @@ void PopulateChromeWebUIFrameBinders(
   // Nearby Share receivers are bound.
   if (base::FeatureList::IsEnabled(features::kNearbySharing)) {
     RegisterWebUIControllerInterfaceBinder<
-        nearby_share::mojom::NearbyShareSettings,
-        chromeos::settings::OSSettingsUI, nearby_share::NearbyShareDialogUI>(
-        map);
+        nearby_share::mojom::NearbyShareSettings, ash::settings::OSSettingsUI,
+        nearby_share::NearbyShareDialogUI>(map);
     RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::ContactManager,
-                                           chromeos::settings::OSSettingsUI,
+                                           ash::settings::OSSettingsUI,
                                            nearby_share::NearbyShareDialogUI>(
         map);
     RegisterWebUIControllerInterfaceBinder<
         nearby_share::mojom::DiscoveryManager,
         nearby_share::NearbyShareDialogUI>(map);
     RegisterWebUIControllerInterfaceBinder<nearby_share::mojom::ReceiveManager,
-                                           chromeos::settings::OSSettingsUI>(
-        map);
+                                           ash::settings::OSSettingsUI>(map);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

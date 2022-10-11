@@ -7,8 +7,7 @@
 #include "chrome/browser/ui/webui/settings/ash/fake_os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/constants_util.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 FakeOsSettingsSections::FakeOsSettingsSections() : OsSettingsSections() {
   for (const auto& section : constants::AllSections()) {
@@ -20,5 +19,4 @@ FakeOsSettingsSections::FakeOsSettingsSections() : OsSettingsSections() {
 
 FakeOsSettingsSections::~FakeOsSettingsSections() = default;
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

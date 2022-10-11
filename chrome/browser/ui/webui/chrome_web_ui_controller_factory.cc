@@ -1036,7 +1036,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return nullptr;
   }
   if (url.host_piece() == chrome::kChromeUIOSSettingsHost)
-    return &NewWebUI<chromeos::settings::OSSettingsUI>;
+    return &NewWebUI<ash::settings::OSSettingsUI>;
   if (url.host_piece() == chrome::kChromeUIPowerHost)
     return &NewWebUI<chromeos::PowerUI>;
   if (url.host_piece() == ash::kChromeUIDiagnosticsAppHost) {

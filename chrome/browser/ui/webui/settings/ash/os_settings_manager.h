@@ -9,25 +9,7 @@
 
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "base/gtest_prod_util.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/components/phonehub/phone_hub_manager.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/android_sms/android_sms_service.h"
-// TODO(https://crbug.com/1164001): forward declare when moved ash
-#include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
-// TODO(https://crbug.com/1164001): forward declare when moved ash
-#include "chrome/browser/ash/printing/cups_printers_manager.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/settings/ash/os_apps_page/app_notification_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
-// TODO(https://crbug.com/1164001): forward declare when moved ash
-#include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class ArcAppListPrefs;
@@ -47,10 +29,34 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-namespace chromeos::settings {
+namespace ash {
 
+class CupsPrintersManager;
+class KerberosCredentialsManager;
+
+namespace android_sms {
+class AndroidSmsService;
+}
+
+namespace local_search_service {
+class LocalSearchServiceProxy;
+}
+
+namespace multidevice_setup {
+class MultiDeviceSetupClient;
+}
+
+namespace phonehub {
+class PhoneHubManager;
+}
+
+namespace settings {
+
+class AppNotificationHandler;
 class Hierarchy;
 class OsSettingsSections;
+class SearchHandler;
+class SearchTagRegistry;
 class SettingsUserActionTracker;
 
 // Manager for the Chrome OS settings page. This class is implemented as a
@@ -94,7 +100,7 @@ class OsSettingsManager : public KeyedService {
       android_sms::AndroidSmsService* android_sms_service,
       CupsPrintersManager* printers_manager,
       apps::AppServiceProxy* app_service_proxy,
-      ash::eche_app::EcheAppManager* eche_app_manager);
+      eche_app::EcheAppManager* eche_app_manager);
   OsSettingsManager(const OsSettingsManager& other) = delete;
   OsSettingsManager& operator=(const OsSettingsManager& other) = delete;
   ~OsSettingsManager() override;
@@ -134,6 +140,7 @@ class OsSettingsManager : public KeyedService {
   std::unique_ptr<AppNotificationHandler> app_notification_handler_;
 };
 
-}  // namespace chromeos::settings
+}  // namespace settings
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_MANAGER_H_

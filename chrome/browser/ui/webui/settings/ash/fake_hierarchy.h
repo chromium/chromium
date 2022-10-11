@@ -8,8 +8,7 @@
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class OsSettingsSections;
 
@@ -22,34 +21,28 @@ class FakeHierarchy : public Hierarchy {
   FakeHierarchy& operator=(const FakeHierarchy& other) = delete;
   ~FakeHierarchy() override;
 
-  void AddSubpageMetadata(
-      int name_message_id,
-      mojom::Section section,
-      mojom::Subpage subpage,
-      ash::settings::mojom::SearchResultIcon icon,
-      ash::settings::mojom::SearchResultDefaultRank default_rank,
-      const std::string& url_path_with_parameters,
-      absl::optional<mojom::Subpage> parent_subpage = absl::nullopt);
-  void AddSettingMetadata(
-      mojom::Section section,
-      mojom::Setting setting,
-      absl::optional<mojom::Subpage> parent_subpage = absl::nullopt);
+  void AddSubpageMetadata(int name_message_id,
+                          chromeos::settings::mojom::Section section,
+                          chromeos::settings::mojom::Subpage subpage,
+                          mojom::SearchResultIcon icon,
+                          mojom::SearchResultDefaultRank default_rank,
+                          const std::string& url_path_with_parameters,
+                          absl::optional<chromeos::settings::mojom::Subpage>
+                              parent_subpage = absl::nullopt);
+  void AddSettingMetadata(chromeos::settings::mojom::Section section,
+                          chromeos::settings::mojom::Setting setting,
+                          absl::optional<chromeos::settings::mojom::Subpage>
+                              parent_subpage = absl::nullopt);
 
  private:
   // Hierarchy:
   std::string ModifySearchResultUrl(
-      mojom::Section section,
-      ash::settings::mojom::SearchResultType type,
+      chromeos::settings::mojom::Section section,
+      mojom::SearchResultType type,
       OsSettingsIdentifier id,
       const std::string& url_to_modify) const override;
 };
 
-}  // namespace settings
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings {
-using ::chromeos::settings::FakeHierarchy;
-}
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FAKE_HIERARCHY_H_

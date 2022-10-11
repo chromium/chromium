@@ -15,4 +15,9 @@ extern const char kSyncOsWallpaper[];
 }  // namespace settings
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::settings::prefs {
+using ::chromeos::settings::prefs::kSyncOsWallpaper;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PREF_NAMES_H_

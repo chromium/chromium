@@ -12,9 +12,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
-namespace settings {
-namespace features {
+namespace ash::settings::features {
 
 bool IsGuestModeActive() {
   return user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
@@ -39,6 +37,4 @@ bool ShouldShowExternalStorageSettings(const Profile* profile) {
          arc::IsArcPlayStoreEnabledForProfile(profile);
 }
 
-}  // namespace features
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings::features

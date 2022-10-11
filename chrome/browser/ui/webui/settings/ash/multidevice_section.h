@@ -102,4 +102,9 @@ class MultiDeviceSection
 }  // namespace settings
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::settings {
+using ::chromeos::settings::MultiDeviceSection;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_MULTIDEVICE_SECTION_H_

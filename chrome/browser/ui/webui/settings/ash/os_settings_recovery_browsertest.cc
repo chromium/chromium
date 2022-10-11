@@ -26,7 +26,7 @@ const char kAuthToken[] = "123";
 
 }  // namespace
 
-namespace chromeos::settings {
+namespace ash::settings {
 
 class OSSettingsRecoveryTestWithoutFeature
     : public MixinBasedInProcessBrowserTest {
@@ -73,10 +73,10 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, ControlVisible) {
 // TODO(b/239416325): This should eventually check state in fake user data
 // auth, not in the auth factor config mojo service.
 IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, CheckingEnables) {
-  auto auth_factor_config = ash::auth::GetAuthFactorConfigForTesting();
-  auto recovery_editor = ash::auth::GetRecoveryFactorEditorForTesting();
+  auto auth_factor_config = auth::GetAuthFactorConfigForTesting();
+  auto recovery_editor = auth::GetRecoveryFactorEditorForTesting();
 
-  ASSERT_EQ(ash::auth::mojom::RecoveryFactorEditor::ConfigureResult::kSuccess,
+  ASSERT_EQ(auth::mojom::RecoveryFactorEditor::ConfigureResult::kSuccess,
             recovery_editor.Configure(kAuthToken, false));
 
   auto lock_screen_settings = os_settings_.GoToLockScreenSettings();
@@ -85,16 +85,16 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, CheckingEnables) {
   lock_screen_settings.ToggleRecoveryConfiguration();
 
   EXPECT_TRUE(auth_factor_config.IsConfigured(
-      kAuthToken, ash::auth::mojom::AuthFactor::kRecovery));
+      kAuthToken, auth::mojom::AuthFactor::kRecovery));
 }
 
 // TODO(b/239416325): This should eventually check state in fake user data
 // auth, not in the auth factor config mojo service.
 IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, UncheckingDisables) {
-  auto auth_factor_config = ash::auth::GetAuthFactorConfigForTesting();
-  auto recovery_editor = ash::auth::GetRecoveryFactorEditorForTesting();
+  auto auth_factor_config = auth::GetAuthFactorConfigForTesting();
+  auto recovery_editor = auth::GetRecoveryFactorEditorForTesting();
 
-  ASSERT_EQ(ash::auth::mojom::RecoveryFactorEditor::ConfigureResult::kSuccess,
+  ASSERT_EQ(auth::mojom::RecoveryFactorEditor::ConfigureResult::kSuccess,
             recovery_editor.Configure(kAuthToken, true));
 
   auto lock_screen_settings = os_settings_.GoToLockScreenSettings();
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsRecoveryTestWithFeature, UncheckingDisables) {
   lock_screen_settings.ToggleRecoveryConfiguration();
 
   EXPECT_FALSE(auth_factor_config.IsConfigured(
-      kAuthToken, ash::auth::mojom::AuthFactor::kRecovery));
+      kAuthToken, auth::mojom::AuthFactor::kRecovery));
 }
 
-}  // namespace chromeos::settings
+}  // namespace ash::settings

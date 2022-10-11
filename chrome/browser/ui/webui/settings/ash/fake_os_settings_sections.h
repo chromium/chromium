@@ -7,8 +7,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Collection of FakeOsSettingsSections.
 class FakeOsSettingsSections : public OsSettingsSections {
@@ -20,12 +19,6 @@ class FakeOsSettingsSections : public OsSettingsSections {
   ~FakeOsSettingsSections() override;
 };
 
-}  // namespace settings
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings {
-using ::chromeos::settings::FakeOsSettingsSections;
-}
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_FAKE_OS_SETTINGS_SECTIONS_H_
