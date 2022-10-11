@@ -6,23 +6,35 @@
 
 #include "base/files/memory_mapped_file.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/lzma_sdk/google/seven_zip_reader.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+// Must be after <windows.h>
+#include <winbase.h>
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#include <sys/mman.h>
+#endif
+
 namespace safe_browsing::seven_zip_analyzer {
 
 namespace {
 
-// The maximum duration of 7z analysis, in milliseconds.
-const int kSevenZipAnalysisTimeoutMs = 10000;
+constexpr base::TimeDelta kAnalysisTimeout = base::Seconds(10);
 
 class SevenZipDelegate : public seven_zip::Delegate {
  public:
-  SevenZipDelegate(ArchiveAnalyzerResults* results, base::File temp_file)
-      : results_(results), temp_file_(std::move(temp_file)) {
-    start_time_ = base::Time::Now();
+  SevenZipDelegate(ArchiveAnalyzerResults* results,
+                   base::File temp_file,
+                   base::File temp_file2)
+      : results_(results),
+        temp_file_(std::move(temp_file)),
+        temp_file2_(std::move(temp_file2)) {
     results_->success = false;
     results_->analysis_result = ArchiveAnalysisResult::kUnknown;
     results_->file_count = 0;
@@ -31,10 +43,11 @@ class SevenZipDelegate : public seven_zip::Delegate {
 
   void OnOpenError(seven_zip::Result result) override { success_ = false; }
 
+  base::File OnTempFileRequest() override { return std::move(temp_file2_); }
+
   bool OnEntry(const seven_zip::EntryInfo& entry,
                base::span<uint8_t>& output) override {
-    if (base::Time::Now() - start_time_ >
-        base::Milliseconds(kSevenZipAnalysisTimeoutMs)) {
+    if (base::TimeTicks::Now() - start_time_ > kAnalysisTimeout) {
       results_->success = false;
       results_->analysis_result = ArchiveAnalysisResult::kTimeout;
       return false;
@@ -55,8 +68,7 @@ class SevenZipDelegate : public seven_zip::Delegate {
   }
 
   bool OnDirectory(const seven_zip::EntryInfo& entry) override {
-    if (base::Time::Now() - start_time_ >
-        base::Milliseconds(kSevenZipAnalysisTimeoutMs)) {
+    if (base::TimeTicks::Now() - start_time_ > kAnalysisTimeout) {
       results_->success = false;
       results_->analysis_result = ArchiveAnalysisResult::kTimeout;
       return false;
@@ -74,8 +86,7 @@ class SevenZipDelegate : public seven_zip::Delegate {
     base::UmaHistogramEnumeration("SBClientDownload.SevenZipEntryResult",
                                   result);
 
-    if (base::Time::Now() - start_time_ >
-        base::Milliseconds(kSevenZipAnalysisTimeoutMs)) {
+    if (base::TimeTicks::Now() - start_time_ > kAnalysisTimeout) {
       results_->success = false;
       results_->analysis_result = ArchiveAnalysisResult::kTimeout;
       return false;
@@ -86,6 +97,26 @@ class SevenZipDelegate : public seven_zip::Delegate {
     // Since unpacking an encrypted entry is expected to fail, allow all results
     // here for encrypted entries.
     if (result == seven_zip::Result::kSuccess || entry.is_encrypted) {
+      // TODO(crbug/1373509): We have the entire file in memory, so it's silly
+      // to do all this work to flush it and read it back. Can we simplify this
+      // process?
+
+      // Flush the memory mapping, ensuring that
+      // `UpdateArchiveAnalyzerResultsWithFile` gets the full file.
+#if BUILDFLAG(IS_WIN)
+      ::FlushViewOfFile(mapped_file_->data(), mapped_file_->length());
+#else
+      // On OSX, "invalidate" removes all cached pages, forcing a re-read from
+      // disk. That's okay because we're closing the mapping directly after
+      // this.
+      //
+      // On POSIX, "invalidate" forces _other_ processes to recognize what has
+      // been written to disk. This is still okay.
+      ::msync(reinterpret_cast<void*>(mapped_file_->data()),
+              mapped_file_->length(), MS_INVALIDATE | MS_SYNC);
+#endif
+      mapped_file_.reset();
+      temp_file_.Flush();
       UpdateArchiveAnalyzerResultsWithFile(entry.file_path, &temp_file_,
                                            entry.file_size, entry.is_encrypted,
                                            results_);
@@ -99,9 +130,10 @@ class SevenZipDelegate : public seven_zip::Delegate {
   bool success() const { return success_; }
 
  private:
-  ArchiveAnalyzerResults* results_;
+  ArchiveAnalyzerResults* const results_;
   base::File temp_file_;
-  base::Time start_time_;
+  base::File temp_file2_;
+  const base::TimeTicks start_time_{base::TimeTicks::Now()};
   bool success_ = true;
   absl::optional<base::MemoryMappedFile> mapped_file_;
 };
@@ -121,9 +153,9 @@ void AnalyzeSevenZipFile(base::File seven_zip_file,
     return;
   }
 
-  SevenZipDelegate delegate(results, std::move(temp_file));
-  seven_zip::Extract(std::move(seven_zip_file), std::move(temp_file2),
-                     delegate);
+  SevenZipDelegate delegate(results, std::move(temp_file),
+                            std::move(temp_file2));
+  seven_zip::Extract(std::move(seven_zip_file), delegate);
 
   if (delegate.success()) {
     results->success = true;

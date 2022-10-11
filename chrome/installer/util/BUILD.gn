@@ -17,7 +17,7 @@ if (is_win) {
       "self_cleaning_temp_dir.cc",
       "self_cleaning_temp_dir.h",
     ]
-    deps = [ "//third_party/lzma_sdk" ]
+    deps = [ "//third_party/lzma_sdk/google:seven_zip_reader" ]
     public_deps = [
       "//base",
       "//third_party/abseil-cpp:absl",

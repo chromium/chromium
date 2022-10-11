@@ -5,8 +5,6 @@
 #ifndef CHROME_INSTALLER_UTIL_LZMA_UTIL_H_
 #define CHROME_INSTALLER_UTIL_LZMA_UTIL_H_
 
-#include <set>
-
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/win/windows_types.h"
@@ -71,7 +69,6 @@ class LzmaUtilImpl {
 
  private:
   base::File archive_file_;
-  std::set<base::FilePath> directories_created_;
   absl::optional<DWORD> error_code_;
 };
 

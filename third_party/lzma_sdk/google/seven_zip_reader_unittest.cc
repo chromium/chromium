@@ -55,6 +55,7 @@ namespace seven_zip {
 namespace {
 
 using ::testing::_;
+using ::testing::ByMove;
 using ::testing::DoAll;
 using ::testing::Field;
 using ::testing::Matcher;
@@ -87,6 +88,7 @@ base::File OpenTemporaryFile() {
 class MockSevenZipDelegate : public Delegate {
  public:
   MOCK_METHOD(void, OnOpenError, (Result));
+  MOCK_METHOD(base::File, OnTempFileRequest, ());
   MOCK_METHOD(bool, OnEntry, (const EntryInfo&, base::span<uint8_t>&));
   MOCK_METHOD(bool, OnDirectory, (const EntryInfo&));
   MOCK_METHOD(bool, EntryDone, (Result, const EntryInfo&));
@@ -95,20 +97,16 @@ class MockSevenZipDelegate : public Delegate {
 TEST(SevenZipReaderTest, ReportsOpenErrorForInvalidArchive) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("not_a_seven_zip.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   EXPECT_CALL(delegate, OnOpenError(Result::kMalformedArchive));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 TEST(SevenZipReaderTest, ReportsFilePath) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("compressed_exe.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   EXPECT_CALL(delegate,
@@ -117,27 +115,23 @@ TEST(SevenZipReaderTest, ReportsFilePath) {
                       _))
       .WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 TEST(SevenZipReaderTest, ReportsFileSize) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("compressed_exe.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::file_size, 19), _))
       .WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 TEST(SevenZipReaderTest, ReportsFileModifiedTime) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("compressed_exe.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   EXPECT_CALL(
@@ -148,14 +142,12 @@ TEST(SevenZipReaderTest, ReportsFileModifiedTime) {
               _))
       .WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 TEST(SevenZipReaderTest, ReportsDirectoryPath) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("folder.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   EXPECT_CALL(delegate,
@@ -163,14 +155,12 @@ TEST(SevenZipReaderTest, ReportsDirectoryPath) {
                                 base::FilePath(FILE_PATH_LITERAL("folder")))))
       .WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 TEST(SevenZipReaderTest, ReportsDirectoryModifiedTime) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("folder.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   EXPECT_CALL(delegate,
@@ -181,48 +171,44 @@ TEST(SevenZipReaderTest, ReportsDirectoryModifiedTime) {
                           ))
       .WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 TEST(SevenZipReaderTest, StopsExtractionOnDirectory) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("file_folder_file.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   EXPECT_CALL(delegate, OnDirectory(_)).WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 TEST(SevenZipReaderTest, StopsExtractionOnEntry) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("file_folder_file.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   EXPECT_CALL(delegate, OnDirectory(_)).WillOnce(Return(true));
   EXPECT_CALL(delegate, OnEntry(_, _)).WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 TEST(SevenZipReaderTest, StopsExtractionOnEntryDone) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("file_folder_file.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   std::array<uint8_t, 19> buffer;
+  EXPECT_CALL(delegate, OnTempFileRequest())
+      .WillOnce(Return(ByMove(OpenTemporaryFile())));
   EXPECT_CALL(delegate, OnDirectory(_)).WillOnce(Return(true));
   EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::file_size, 19), _))
       .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
   EXPECT_CALL(delegate, EntryDone(_, _)).WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 TEST(SevenZipReaderTest, ExtractsInTempBuffer) {
@@ -230,18 +216,18 @@ TEST(SevenZipReaderTest, ExtractsInTempBuffer) {
   // 7z-internal sense), so it uses the temp buffer.
   base::File file = OpenTestFile(FILE_PATH_LITERAL("file_folder_file.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   Matcher<const EntryInfo&> matches = Field(&EntryInfo::file_size, 19);
   std::array<uint8_t, 19> buffer;
+  EXPECT_CALL(delegate, OnTempFileRequest())
+      .WillOnce(Return(ByMove(OpenTemporaryFile())));
   EXPECT_CALL(delegate, OnDirectory(_)).WillOnce(Return(true));
   EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::file_size, 19), _))
       .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
   EXPECT_CALL(delegate, EntryDone(Result::kSuccess, _)).WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 
   EXPECT_EQ(std::string(buffer.begin(), buffer.end()), "This is not an exe\n");
 }
@@ -249,8 +235,6 @@ TEST(SevenZipReaderTest, ExtractsInTempBuffer) {
 TEST(SevenZipReaderTest, ExtractsNoTempBuffer) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("compressed_exe.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   std::array<uint8_t, 19> buffer;
@@ -258,7 +242,7 @@ TEST(SevenZipReaderTest, ExtractsNoTempBuffer) {
       .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
   EXPECT_CALL(delegate, EntryDone(Result::kSuccess, _)).WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 
   EXPECT_EQ(std::string(buffer.begin(), buffer.end()), "This is not an exe\n");
 }
@@ -266,8 +250,6 @@ TEST(SevenZipReaderTest, ExtractsNoTempBuffer) {
 TEST(SevenZipReaderTest, BadCrc) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("bad_crc.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   std::array<uint8_t, 19> buffer;
@@ -275,14 +257,12 @@ TEST(SevenZipReaderTest, BadCrc) {
       .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
   EXPECT_CALL(delegate, EntryDone(Result::kBadCrc, _)).WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 TEST(SevenZipReaderTest, EmptyFile) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("empty_file.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   std::array<uint8_t, 0> buffer;
@@ -290,7 +270,7 @@ TEST(SevenZipReaderTest, EmptyFile) {
       .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
   EXPECT_CALL(delegate, EntryDone(Result::kSuccess, _)).WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 class SevenZipReaderFakeCrcTableTest : public testing::Test {
@@ -331,15 +311,13 @@ class SevenZipReaderFakeCrcTableTest : public testing::Test {
   }
 
  private:
-  std::array<uint8_t, 2048> crc_table_;
+  std::array<uint32_t, 2048> crc_table_;
 };
 
 // This is useful functionality for the fuzzer, so we test it here.
 TEST_F(SevenZipReaderFakeCrcTableTest, EmptyCrcWithFakeTable) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("fake_crc_table.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   std::array<uint8_t, 19> buffer;
@@ -347,7 +325,7 @@ TEST_F(SevenZipReaderFakeCrcTableTest, EmptyCrcWithFakeTable) {
       .WillOnce(DoAll(SetArgReferee<1>(base::make_span(buffer)), Return(true)));
   EXPECT_CALL(delegate, EntryDone(Result::kSuccess, _)).WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 
   EXPECT_EQ(std::string(buffer.begin(), buffer.end()), "This is not an exe\n");
 }
@@ -355,27 +333,23 @@ TEST_F(SevenZipReaderFakeCrcTableTest, EmptyCrcWithFakeTable) {
 TEST(SevenZipReaderTest, EncryptedFile) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("encrypted.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::is_encrypted, true), _))
       .WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 TEST(SevenZipReaderTest, UnencryptedFile) {
   base::File file = OpenTestFile(FILE_PATH_LITERAL("compressed_exe.7z"));
   ASSERT_TRUE(file.IsValid());
-  base::File temp_file = OpenTemporaryFile();
-  ASSERT_TRUE(temp_file.IsValid());
 
   StrictMock<MockSevenZipDelegate> delegate;
   EXPECT_CALL(delegate, OnEntry(Field(&EntryInfo::is_encrypted, false), _))
       .WillOnce(Return(false));
 
-  Extract(std::move(file), std::move(temp_file), delegate);
+  Extract(std::move(file), delegate);
 }
 
 }  // namespace seven_zip

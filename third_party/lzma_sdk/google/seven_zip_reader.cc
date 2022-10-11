@@ -60,8 +60,8 @@ class SevenZipReaderImpl {
   SevenZipReaderImpl(const SevenZipReaderImpl&) = delete;
   SevenZipReaderImpl& operator=(const SevenZipReaderImpl&) = delete;
 
-  Result Initialize(base::File archive_file, base::File temp_file);
-
+  Result Initialize(base::File archive_file);
+  void SetTempFile(base::File temp_file);
   size_t num_entries() const { return db_.NumFiles; }
   base::span<uint8_t> mapped_span() {
     if (!temp_file_mapped_)
@@ -72,6 +72,7 @@ class SevenZipReaderImpl {
   EntryInfo GetEntryInfo(size_t entry_index) const;
   bool IsDirectory(size_t entry_index) const;
   Result ExtractFile(size_t entry_index, base::span<uint8_t> output);
+  bool NeedsTempFile(size_t entry_index) const;
 
  private:
   static Result SResToResult(SRes res);
@@ -156,8 +157,7 @@ SevenZipReaderImpl::~SevenZipReaderImpl() {
     SzArEx_Free(&db_, &alloc_);
 }
 
-Result SevenZipReaderImpl::Initialize(base::File archive_file,
-                                      base::File temp_file) {
+Result SevenZipReaderImpl::Initialize(base::File archive_file) {
   const size_t kStreamBufferSize = 1 << 14;
   if (!base::UncheckedMalloc(kStreamBufferSize,
                              reinterpret_cast<void**>(&look_stream_.buf))) {
@@ -171,7 +171,6 @@ Result SevenZipReaderImpl::Initialize(base::File archive_file,
   // The destructor assumes that `stream_` is valid whenever `db_` is
   // initialized.
   stream_.Initialize(std::move(archive_file));
-  temp_file_ = std::move(temp_file);
 
   SzArEx_Init(&db_);
 
@@ -180,11 +179,15 @@ Result SevenZipReaderImpl::Initialize(base::File archive_file,
   SRes sz_res = SzArEx_Open(&db_, &look_stream_.vt, &alloc_, &alloc_temp_);
   if (sz_res != SZ_OK) {
     stream_.Close();
-    temp_file_.Close();
     return SResToResult(sz_res);
   }
 
   return Result::kSuccess;
+}
+
+void SevenZipReaderImpl::SetTempFile(base::File temp_file) {
+  DCHECK(!temp_file_.IsValid());
+  temp_file_ = std::move(temp_file);
 }
 
 EntryInfo SevenZipReaderImpl::GetEntryInfo(size_t entry_index) const {
@@ -306,6 +309,22 @@ Result SevenZipReaderImpl::ExtractFile(size_t entry_index,
   return Result::kSuccess;
 }
 
+bool SevenZipReaderImpl::NeedsTempFile(size_t entry_index) const {
+  if (temp_file_.IsValid())
+    return false;
+  const size_t folder_index = db_.FileToFolder[entry_index];
+  if (folder_index == kNoFolder)
+    return false;
+  const uint64_t folder_unpack_size =
+      SzAr_GetFolderUnpackSize(&db_.db, folder_index);
+  const uint64_t file_offset = db_.UnpackPositions[entry_index];
+  // |UnpackPositions| has NumFiles + 1 entries, with an extra entry
+  // for the sentinel.
+  const size_t file_size =
+      static_cast<size_t>(db_.UnpackPositions[entry_index + 1] - file_offset);
+  return file_size != folder_unpack_size;
+}
+
 // static
 Result SevenZipReaderImpl::SResToResult(SRes res) {
   switch (res) {
@@ -335,6 +354,9 @@ Result SevenZipReaderImpl::SResToResult(SRes res) {
 }
 
 Result SevenZipReaderImpl::ExtractIntoTempFile(size_t folder_index) {
+  DCHECK_NE(folder_index, kNoFolder);
+  DCHECK(temp_file_.IsValid());
+
   // Skip extraction if `folder_index` has already been extracted into
   // `temp_file_mapped_`.
   if (temp_folder_index_ == folder_index)
@@ -401,15 +423,11 @@ DWORD FilterPageError(const base::span<uint8_t>& mapped_file,
 
 }  // namespace
 
-void Extract(base::File seven_zip_file,
-             base::File temp_file,
-             Delegate& delegate) {
+void Extract(base::File seven_zip_file, Delegate& delegate) {
   DCHECK(seven_zip_file.IsValid());
-  DCHECK(temp_file.IsValid());
 
   SevenZipReaderImpl impl;
-  Result open_result =
-      impl.Initialize(std::move(seven_zip_file), std::move(temp_file));
+  Result open_result = impl.Initialize(std::move(seven_zip_file));
   if (open_result != Result::kSuccess) {
     delegate.OnOpenError(open_result);
     return;
@@ -418,6 +436,12 @@ void Extract(base::File seven_zip_file,
   for (size_t entry_index = 0; entry_index < impl.num_entries();
        ++entry_index) {
     EntryInfo entry = impl.GetEntryInfo(entry_index);
+    if (entry.file_path.empty()) {
+      if (!delegate.EntryDone(Result::kNoFilename, entry))
+        return;
+      continue;
+    }
+
     if (impl.IsDirectory(entry_index)) {
       if (!delegate.OnDirectory(entry))
         return;
@@ -428,6 +452,13 @@ void Extract(base::File seven_zip_file,
     if (!delegate.OnEntry(entry, output))
       return;
     CHECK_EQ(output.size(), entry.file_size);
+
+    if (impl.NeedsTempFile(entry_index)) {
+      base::File temp_file(delegate.OnTempFileRequest());
+      if (!temp_file.IsValid())
+        return;
+      impl.SetTempFile(std::move(temp_file));
+    }
 
     Result extract_result = Result::kUnknownError;
 #if BUILDFLAG(IS_WIN)

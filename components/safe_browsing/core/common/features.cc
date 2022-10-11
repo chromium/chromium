@@ -191,10 +191,6 @@ BASE_FEATURE(kSendSampledPingsForProtegoAllowlistDomains,
              "SafeBrowsingSendSampledPingsForProtegoAllowlistDomains",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSevenZipReaderInInstaller,
-             "SafeBrowsingSevenZipReaderInInstaller",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSevenZipEvaluationEnabled,
              "SafeBrowsingSevenZipEvaluationEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);

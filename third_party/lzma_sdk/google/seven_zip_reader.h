@@ -40,7 +40,8 @@ enum class Result {
   kMalformedArchive = 5,
   kIoError = 6,
   kDiskFull = 7,
-  kMaxValue = kDiskFull,
+  kNoFilename = 8,
+  kMaxValue = kNoFilename,
 };
 
 class Delegate {
@@ -49,6 +50,13 @@ public:
 
   // Handles errors that may occur when opening an archive.
   virtual void OnOpenError(Result result) = 0;
+
+  // Handles a request for a temporary file to extract a "folder" (in the 7z
+  // internal sense) into. This is only needed for some archives, so lazy
+  // creation is useful. Guaranteed to be called at most once. Returns
+  // a valid file to continue extraction. Returns an invalid file to to stop
+  // extraction.
+  virtual base::File OnTempFileRequest() = 0;
 
   // Handles a single entry in the 7z archive being ready for extraction.
   // Returns `true` to extract the entry, and `false` to stop extraction
@@ -66,10 +74,8 @@ public:
   virtual bool EntryDone(Result result, const EntryInfo &entry) = 0;
 };
 
-// Extracts the 7z archive in `seven_zip_file`, and uses `temp_file` as a
-// buffer when multiple 'files' are contained in one 7z 'folder'.
-void Extract(base::File seven_zip_file, base::File temp_file,
-             Delegate &delegate);
+// Extracts the 7z archive in `seven_zip_file`.
+void Extract(base::File seven_zip_file, Delegate& delegate);
 
 // Ensures that the one-time initialization of the LZMA SDK has been performed.
 // This is usually called by `Extract` when needed, but is exposed here for

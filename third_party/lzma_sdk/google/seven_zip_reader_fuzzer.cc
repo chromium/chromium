@@ -16,13 +16,18 @@ extern "C" {
 
 namespace {
 
+base::NoDestructor<base::File> archive_file;
+base::NoDestructor<base::File> temp_file;
+
 class Delegate : public seven_zip::Delegate {
  public:
   Delegate() : buffer_(4096) {}
 
   // seven_zip::Delegate implementation
-  void OnOpenError(seven_zip::Result result) {}
-  bool OnEntry(const seven_zip::EntryInfo& entry, base::span<uint8_t>& output) {
+  void OnOpenError(seven_zip::Result result) override {}
+  base::File OnTempFileRequest() override { return temp_file->Duplicate(); }
+  bool OnEntry(const seven_zip::EntryInfo& entry,
+               base::span<uint8_t>& output) override {
     if (entry.file_size < 4096) {
       buffer_.resize(entry.file_size);
       output = base::make_span(buffer_);
@@ -31,17 +36,15 @@ class Delegate : public seven_zip::Delegate {
       return false;
     }
   }
-  bool OnDirectory(const seven_zip::EntryInfo& entry) { return true; }
-  bool EntryDone(seven_zip::Result result, const seven_zip::EntryInfo& entry) {
+  bool OnDirectory(const seven_zip::EntryInfo& entry) override { return true; }
+  bool EntryDone(seven_zip::Result result,
+                 const seven_zip::EntryInfo& entry) override {
     return true;
   }
 
  private:
   std::vector<uint8_t> buffer_;
 };
-
-base::NoDestructor<base::File> archive_file;
-base::NoDestructor<base::File> temp_file;
 
 }  // namespace
 
@@ -96,8 +99,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   archive_file->Write(0, reinterpret_cast<const char*>(data), size);
 
   Delegate delegate;
-  seven_zip::Extract(archive_file->Duplicate(), temp_file->Duplicate(),
-                     delegate);
+  seven_zip::Extract(archive_file->Duplicate(), delegate);
 
   return 0;
 }

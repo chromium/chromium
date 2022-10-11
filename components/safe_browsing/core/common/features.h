@@ -165,9 +165,6 @@ BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 // the allowlist to Safe Browsing.
 BASE_DECLARE_FEATURE(kSendSampledPingsForProtegoAllowlistDomains);
 
-// Killswitch for using the SevenZipReader in the installer.
-BASE_DECLARE_FEATURE(kSevenZipReaderInInstaller);
-
 // Controls whether the new 7z evaluation is performed on downloads.
 BASE_DECLARE_FEATURE(kSevenZipEvaluationEnabled);
 
