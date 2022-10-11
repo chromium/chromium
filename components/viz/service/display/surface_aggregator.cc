@@ -1758,14 +1758,11 @@ void SurfaceAggregator::ProcessResolvedFrame(
   Surface* surface = resolved_frame.surface();
   const CompositorFrame& compositor_frame =
       surface->GetActiveOrInterpolatedFrame();
-  auto& resource_list = compositor_frame.resource_list;
 
   // Ref the resources in the surface, and let the provider know we've received
   // new resources from the compositor frame.
   if (surface->client())
-    surface->client()->RefResources(resource_list);
-
-  stats_->declare_resources_count += resource_list.size();
+    surface->client()->RefResources(compositor_frame.resource_list);
 
   resolved_frame.UpdateForActiveFrame(render_pass_id_generator_);
 }
@@ -2116,9 +2113,6 @@ void SurfaceAggregator::RecordStatHistograms() {
       stats_->prewalked_surface_count);
   UMA_HISTOGRAM_COUNTS_100("Compositing.SurfaceAggregator.CopiedSurfaceCount",
                            stats_->copied_surface_count);
-  UMA_HISTOGRAM_COUNTS_1000(
-      "Compositing.SurfaceAggregator.DeclareResourceCount",
-      stats_->declare_resources_count);
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Compositing.SurfaceAggregator.PrewalkUs", stats_->prewalk_time,

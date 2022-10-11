@@ -127,7 +127,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   struct AggregateStatistics {
     int prewalked_surface_count = 0;
     int copied_surface_count = 0;
-    int declare_resources_count = 0;
 
     base::TimeDelta prewalk_time;
     base::TimeDelta copy_time;
