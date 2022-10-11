@@ -114,15 +114,16 @@ public class BookmarkActionBar extends SelectableListToolbar<BookmarkId>
             RecordUserAction.record("MobileBookmarkManagerEntryOpenedInNewTab");
             RecordHistogram.recordCount1000Histogram(
                     "Bookmarks.Count.OpenInNewTab", mSelectionDelegate.getSelectedItems().size());
-            mDelegate.openBookmarks(
-                    selectionDelegate.getSelectedItemsAsList(), /*incognito=*/false);
+            mDelegate.openBookmarks(selectionDelegate.getSelectedItemsAsList(),
+                    /*openInNewTab=*/true, /*incognito=*/false);
             selectionDelegate.clearSelection();
             return true;
         } else if (menuItem.getItemId() == R.id.selection_open_in_incognito_tab_id) {
             RecordUserAction.record("MobileBookmarkManagerEntryOpenedInIncognito");
             RecordHistogram.recordCount1000Histogram("Bookmarks.Count.OpenInIncognito",
                     mSelectionDelegate.getSelectedItems().size());
-            mDelegate.openBookmarks(selectionDelegate.getSelectedItemsAsList(), /*incognito=*/true);
+            mDelegate.openBookmarks(selectionDelegate.getSelectedItemsAsList(),
+                    /*openInNewTab=*/true, /*incognito=*/true);
             selectionDelegate.clearSelection();
             return true;
         }

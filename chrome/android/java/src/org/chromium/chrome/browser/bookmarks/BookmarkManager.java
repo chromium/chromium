@@ -521,17 +521,26 @@ public class BookmarkManager
     }
 
     @Override
-    public void openBookmarks(List<BookmarkId> bookmarks, Boolean incognito) {
+    public void openBookmarks(List<BookmarkId> bookmarks, boolean openInNewTab, Boolean incognito) {
         if (bookmarks == null || bookmarks.size() == 0) return;
 
         boolean anyOpened = false;
         for (int i = 0; i < bookmarks.size(); i++) {
             BookmarkId bookmark = bookmarks.get(i);
+
             @TabLaunchType
-            Integer tabLaunchType = i > 1 ? TabLaunchType.FROM_LONGPRESS_BACKGROUND : null;
-            anyOpened |=
-                    BookmarkUtils.openBookmark(mContext, mOpenBookmarkComponentName, mBookmarkModel,
-                            bookmark, incognito == null ? mIsIncognito : incognito, tabLaunchType);
+            Integer tabLaunchType = null;
+            if (bookmark.getType() == BookmarkType.READING_LIST) {
+                tabLaunchType = TabLaunchType.FROM_READING_LIST;
+            } else if (openInNewTab) {
+                // Only new tab opens should have a TabLaunchType.
+                tabLaunchType = TabLaunchType.FROM_LONGPRESS_BACKGROUND;
+            }
+
+            boolean success = BookmarkUtils.openBookmark(mContext, mOpenBookmarkComponentName,
+                    mBookmarkModel, bookmark, incognito == null ? mIsIncognito : incognito,
+                    tabLaunchType, openInNewTab);
+            anyOpened = success || anyOpened;
         }
 
         if (anyOpened && bookmarks.get(0) != null

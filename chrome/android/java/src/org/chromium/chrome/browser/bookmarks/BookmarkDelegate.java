@@ -63,17 +63,17 @@ public interface BookmarkDelegate {
      * @param bookmark The bookmark to open.
      */
     default void openBookmark(BookmarkId bookmark) {
-        openBookmarks(Arrays.asList(bookmark), null);
+        openBookmarks(Arrays.asList(bookmark), /*openInNewTab=*/false, /*incognito=*/null);
     }
 
     /**
      * Closes the Bookmark UI (if on phone) and opens the given bookmark in new tabs.
      * @param bookmarks The bookmarks to open.
+     * @param openInNewTab Whether the boomkarks should be opened in a new tab.
      * @param incognito Whether the bookmarks should open in an incognito window. If this is null
      *                  then the current incognito context will be used.
      */
-    void openBookmarks(List<BookmarkId> bookmarks, Boolean incognito);
-
+    void openBookmarks(List<BookmarkId> bookmarks, boolean openInNewTab, Boolean incognito);
     /**
      * Shows the search UI.
      */

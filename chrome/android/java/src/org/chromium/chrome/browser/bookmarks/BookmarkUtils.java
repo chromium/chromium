@@ -47,10 +47,13 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
+import org.chromium.chrome.browser.renderer_host.ChromeNavigationUIData;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
+import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -62,6 +65,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.profile_metrics.BrowserProfileType;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
@@ -73,6 +77,8 @@ import java.util.List;
 /** A class holding static util functions for bookmark. */
 public class BookmarkUtils {
     private static final String TAG = "BookmarkUtils";
+    /** ID used to indicate an invalid bookmark node. */
+    private static final long INVALID_BOOKMARK_ID = -1;
 
     /**
      * If the tab has already been bookmarked, start {@link BookmarkEditActivity} for the
@@ -337,8 +343,8 @@ public class BookmarkUtils {
 
         // Tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            openUrl(context, url, folderId, activity == null ? null : activity.getComponentName(),
-                    /*launchType=*/null, isIncognito);
+            openUrl(context, activity == null ? null : activity.getComponentName(), url, folderId,
+                    isIncognito, /*launchType=*/null, /*openInNewTab=*/false);
             return;
         }
 
@@ -444,16 +450,17 @@ public class BookmarkUtils {
     /**
      * Opens a bookmark and reports UMA.
      * @param context The current context used to launch the intent.
-     * @param openBookmarkComponentName The component to use when opening a bookmark.
+     * @param componentName The component to use when opening a bookmark.
      * @param model Bookmarks model to manage the bookmark.
      * @param bookmarkId ID of the bookmark to be opened.
      * @param isIncognito Whether the bookmark manager is opened in incognito mode.
      * @param launchType The {@link TabLaunchType} to use for this bookmark, may be null.
+     * @param openInNewTab Whether the bookmark should be opened in a new tab.
      * @return Whether the bookmark was successfully opened.
      */
-    public static boolean openBookmark(Context context, ComponentName openBookmarkComponentName,
+    public static boolean openBookmark(Context context, ComponentName componentName,
             BookmarkModel model, @Nullable BookmarkId bookmarkId, boolean isIncognito,
-            @Nullable @TabLaunchType Integer launchType) {
+            @Nullable @TabLaunchType Integer launchType, boolean openInNewTab) {
         if (model.getBookmarkById(bookmarkId) == null) return false;
 
         RecordUserAction.record("MobileBookmarkManagerEntryOpened");
@@ -469,12 +476,12 @@ public class BookmarkUtils {
 
         if (bookmarkItem.getId().getType() == BookmarkType.READING_LIST
                 && !bookmarkItem.isFolder()) {
-            openReadingListItem(context, bookmarkItem.getUrl().getSpec(), bookmarkItem.getId(),
-                    openBookmarkComponentName, isIncognito);
+            openReadingListItem(context, componentName, bookmarkItem.getUrl().getSpec(),
+                    bookmarkItem.getId(), isIncognito, openInNewTab);
             model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
         } else {
-            openUrl(context, bookmarkItem.getUrl().getSpec(), bookmarkId, openBookmarkComponentName,
-                    launchType, isIncognito);
+            openUrl(context, componentName, bookmarkItem.getUrl().getSpec(), bookmarkId,
+                    isIncognito, launchType, openInNewTab);
         }
         return true;
     }
@@ -529,16 +536,29 @@ public class BookmarkUtils {
     /**
      * Opens a url.
      *
-     * @param url Url to open.
+     * @param context The Android context to use.
+     * @param componentName The component to use when opening a bookmark.
+     * @param url The url to open.
      * @param id The bookmarkId to open, can be null.
-     * @param componentName Name of the component opening the URL. If null, {@link
-     *          ChromeLauncherActivity} is used.
      * @param launchType If not null, url is opened in a new tab with the specified {@link
      *         TabLaunchType}.
+     * @param isOffTheRecord Whether the url should be opened in incognito.
+     * @param openInNewTab Whether the url should be opened in a new tab.
      */
-    private static void openUrl(Context context, String url, @Nullable BookmarkId id,
-            ComponentName componentName, @Nullable @TabLaunchType Integer launchType,
-            boolean isOffTheRecord) {
+    private static void openUrl(Context context, ComponentName componentName, String url,
+            @Nullable BookmarkId id, boolean isIncognito,
+            @Nullable @TabLaunchType Integer launchType, boolean openInNewTab) {
+        if (openInNewTab) {
+            openUrlInNewTab(context, componentName, url, id, isIncognito, launchType);
+        } else {
+            openUrlInCurrentTab(context, componentName, url, id, isIncognito, launchType);
+        }
+    }
+
+    /** The same as {@link openUrl} - opens the url in the current tab, clobbering the contents. */
+    private static void openUrlInCurrentTab(Context context, ComponentName componentName,
+            String url, @Nullable BookmarkId id, boolean isIncognito,
+            @Nullable @TabLaunchType Integer launchType) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.putExtra(
                 Browser.EXTRA_APPLICATION_ID, context.getApplicationContext().getPackageName());
@@ -550,13 +570,13 @@ public class BookmarkUtils {
 
         if (launchType != null) {
             IntentHandler.setTabLaunchType(intent, launchType);
-            if (isOffTheRecord) {
+            if (isIncognito) {
                 intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
             } else {
                 intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
             }
         } else {
-            intent.putExtra(IntentHandler.EXTRA_INCOGNITO_MODE, isOffTheRecord);
+            intent.putExtra(IntentHandler.EXTRA_INCOGNITO_MODE, isIncognito);
         }
 
         if (componentName != null) {
@@ -571,21 +591,35 @@ public class BookmarkUtils {
         IntentHandler.startActivityForTrustedIntent(intent);
     }
 
-    private static void openReadingListItem(Context context, String url, BookmarkId id,
-            ComponentName componentName, boolean isOffTheRecord) {
+    /** Same as {@link openUrl} - opens the url in a new tab. */
+    private static void openUrlInNewTab(Context context, ComponentName componentName, String url,
+            @Nullable BookmarkId id, boolean isIncognito,
+            @Nullable @TabLaunchType Integer launchType) {
+        TabDelegate tabDelegate = new TabDelegate(isIncognito);
+        LoadUrlParams params = new LoadUrlParams(url, PageTransition.AUTO_BOOKMARK);
+        ChromeNavigationUIData navData = new ChromeNavigationUIData();
+        navData.setBookmarkId(
+                id.getType() == BookmarkType.NORMAL ? id.getId() : INVALID_BOOKMARK_ID);
+        params.setNavigationUIDataSupplier(navData::createUnownedNativeCopy);
+        AsyncTabCreationParams asyncParams = new AsyncTabCreationParams(params, componentName);
+        tabDelegate.createNewTab(asyncParams, launchType, Tab.INVALID_TAB_ID);
+    }
+
+    private static void openReadingListItem(Context context, ComponentName componentName,
+            String url, BookmarkId id, boolean isIncognito, boolean openInNewTab) {
         if (ReadingListFeatures.shouldUseCustomTab()) {
-            openReadingListInCustomTab(context, url, isOffTheRecord);
+            openReadingListInCustomTab(context, url, isIncognito);
         } else {
-            openUrl(context, url, id, componentName,
+            openUrl(context, componentName, url, id, isIncognito,
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                             ? null
                             : TabLaunchType.FROM_READING_LIST,
-                    isOffTheRecord);
+                    openInNewTab);
         }
     }
 
     private static void openReadingListInCustomTab(
-            Context context, String url, boolean isOffTheRecord) {
+            Context context, String url, boolean isIncognito) {
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder();
         builder.setShowTitle(true);
         builder.setShareState(CustomTabsIntent.SHARE_STATE_ON);
@@ -599,7 +633,7 @@ public class BookmarkUtils {
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.READ_LATER);
 
         // Extras for incognito CCT.
-        if (isOffTheRecord) {
+        if (isIncognito) {
             IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
                     intent, IncognitoCCTCallerId.READ_LATER);
         }
