@@ -356,6 +356,14 @@ void DevToolsSession::FallThrough(int call_id,
   // In browser-only mode, we should've handled everything in dispatcher.
   DCHECK(!browser_only_);
 
+  if (waiting_for_response_.find(call_id) != waiting_for_response_.end()) {
+    DispatchProtocolMessageToClient(
+        crdtp::CreateErrorResponse(call_id,
+                                   crdtp::DispatchResponse::InvalidRequest(
+                                       "Duplicate `id` in protocol request"))
+            ->Serialize());
+  }
+
   auto it = pending_messages_.emplace(pending_messages_.end(), call_id, method,
                                       message);
   if (suspended_sending_messages_to_agent_)
@@ -453,6 +461,7 @@ void DevToolsSession::ClearPendingMessages(bool did_crash) {
         crdtp::CreateErrorResponse(
             message.call_id,
             crdtp::DispatchResponse::ServerError(error_message)));
+    waiting_for_response_.erase(message.call_id);
     it = pending_messages_.erase(it);
   }
 }

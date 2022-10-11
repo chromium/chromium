@@ -101,6 +101,8 @@ class TestDevToolsProtocolClient : public DevToolsAgentHostClient {
 
   scoped_refptr<DevToolsAgentHost> agent_host_;
 
+  void SetProtocolCommandId(int id) { last_sent_id_ = id - 1; }
+
  private:
   void WaitForResponse();
   void RunLoopUpdatingQuitClosure();

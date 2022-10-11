@@ -3630,4 +3630,35 @@ IN_PROC_BROWSER_TEST_F(MultiplePrerendersDevToolsProtocolTest,
   EXPECT_THAT(*result.FindString("finalStatus"), Eq("TriggerDestroyed"));
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, ResponseAfterReload) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
+
+  Attach();
+
+  SendCommandSync("Fetch.enable");
+  SendCommandAsync("Page.reload");
+
+  base::Value::Dict command_params;
+  command_params.Set("discover", true);
+  SendCommandSync("Target.setDiscoverTargets", std::move(command_params));
+
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    shell()->LoadURL(GURL(blink::kChromeUICrashURL));
+    WaitForNotification("Target.targetCrashed", true);
+  }
+
+  SetProtocolCommandId(42);
+  SendCommandAsync("Network.enable");
+
+  SetProtocolCommandId(42);
+  SendCommandSync("Page.reload");
+
+  SendCommandAsync("Fetch.disable");
+  SendCommandSync("Network.enable");
+}
+
 }  // namespace content
