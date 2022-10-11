@@ -50,7 +50,7 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
 
   TabDiscardTabHelper* const tab_helper = TabDiscardTabHelper::FromWebContents(
       browser->tab_strip_model()->GetActiveWebContents());
-  const uint64_t memory_savings = tab_helper->GetMemorySavings();
+  const uint64_t memory_savings = tab_helper->GetMemorySavingsInBytes();
 
   if (memory_savings > 0) {
     dialog_model_builder.AddParagraph(

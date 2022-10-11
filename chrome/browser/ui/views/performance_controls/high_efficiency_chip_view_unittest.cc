@@ -32,7 +32,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/button_test_api.h"
 
-constexpr int kMemorySavingsBytes = 100000;
+constexpr int kMemorySavingsKilobytes = 100000;
 
 class DiscardMockNavigationHandle : public content::MockNavigationHandle {
  public:
@@ -62,7 +62,7 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
     TabDiscardTabHelper::CreateForWebContents(contents);
     performance_manager::user_tuning::UserPerformanceTuningManager::
         PreDiscardResourceUsage::CreateForWebContents(contents,
-                                                      kMemorySavingsBytes);
+                                                      kMemorySavingsKilobytes);
   }
 
   void TearDown() override {
@@ -242,8 +242,8 @@ TEST_F(HighEfficiencyChipViewTest, ShouldRenderMemorySavingsInDialog) {
 
   views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
       HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
-  EXPECT_TRUE(label->GetText().find(ui::FormatBytes(kMemorySavingsBytes)) !=
-              std::string::npos);
+  EXPECT_TRUE(label->GetText().find(ui::FormatBytes(
+                  kMemorySavingsKilobytes * 1024)) != std::string::npos);
 }
 
 // When the previous page was not previously discarded, the icon should not be

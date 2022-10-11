@@ -33,7 +33,7 @@ class TabDiscardTabHelper
   void SetWasAnimated();
 
   // Returns the memory savings (in bytes) of the previously discarded tab.
-  uint64_t GetMemorySavings() const;
+  uint64_t GetMemorySavingsInBytes() const;
 
   // content::WebContentsObserver
   void DidStartNavigation(
