@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @return {boolean} Whether a test module was loaded. */
-export function loadTestModule() {
+/** @return Whether a test module was loaded. */
+export function loadTestModule(): boolean {
   const params = new URLSearchParams(window.location.search);
   const module = params.get('module');
   if (!module) {

@@ -16,6 +16,7 @@
 // script in production will result in a failed network request.
 
 import {assert} from 'chrome://resources/js/assert.js';
+
 import {loadTestModule} from './test_loader_util.js';
 
 assert(loadTestModule());

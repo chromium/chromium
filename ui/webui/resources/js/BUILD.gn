@@ -50,7 +50,13 @@ preprocess_if_expr("preprocess_src_ts") {
     "keyboard_shortcut_list.ts",
     "search_highlight_utils.ts",
     "store_ts.ts",
+    "test_loader.ts",
+    "test_loader_util.ts",
   ]
+
+  if (is_chromeos) {
+    in_files += [ "os_about.ts" ]
+  }
 
   if (include_polymer) {
     in_files += [
@@ -77,15 +83,9 @@ preprocess_if_expr("preprocess_src") {
     "plural_string_proxy.js",
     "promise_resolver.js",
     "static_types.js",
-    "test_loader.js",
-    "test_loader_util.js",
     "util.js",
     "webui_resource_test.js",
   ]
-
-  if (is_chromeos) {
-    in_files += [ "os_about.js" ]
-  }
 
   if (is_chromeos_ash || is_ios) {
     # Used by ChromeOS UIs and ios inspect and omaha UIs

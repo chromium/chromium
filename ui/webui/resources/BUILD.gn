@@ -203,6 +203,8 @@ ts_library("library") {
                "js/focus_outline_manager.ts",
                "js/keyboard_shortcut_list.ts",
                "js/store_ts.ts",
+               "js/test_loader.ts",
+               "js/test_loader_util.ts",
              ]
 
   if (include_polymer) {
@@ -219,9 +221,11 @@ ts_library("library") {
     ]
   }
 
+  if (is_chromeos) {
+    in_files += [ "js/os_about.ts" ]
+  }
+
   definitions = [
-    #    "//tools/typescript/definitions/bluetooth_private.d.ts",
-    #    "//tools/typescript/definitions/bluetooth.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
