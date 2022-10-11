@@ -15,6 +15,20 @@ import json
 from util import build_utils
 
 
+
+# Set of unicode characters that do not render with fonts available on ChromeOS
+INVALID_CHARACTERS = set([
+    '\u2688\u0325',
+])
+
+
+def isValidEmoticon(string):
+    for symbol in INVALID_CHARACTERS:
+        if symbol in string:
+            return False
+    return True
+
+
 def process_emoticon_data(metadata):
     """Produce the emoticon data to be consumed by the emoji picker.
     Args:
@@ -31,7 +45,8 @@ def process_emoticon_data(metadata):
                 "string": emoticon["value"],
                 "name": emoticon["description"],
             },
-        } for emoticon in group["emoticon"]]
+        } for emoticon in group["emoticon"]
+                  if isValidEmoticon(emoticon["value"])]
     } for group in metadata]
 
 

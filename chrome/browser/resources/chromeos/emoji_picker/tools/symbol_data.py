@@ -33,7 +33,7 @@ SYMBOLS_GROUPS = {
         # Supplemental Arrows-C Unicode Block.
         # Note: There are unassigned code points in the block which are
         # automatically skipped by the script.
-        (0x1f800, 0x1f8b2),
+        (0x1f800, 0x1f8ff),
     ],
     'Bullet/Stars': [
         # Some rows from Miscellaneous Symbols and Arrows Unicode block.
@@ -92,6 +92,18 @@ SEARCH_ONLY_SYMBOLS_GROUPS = {
         (0x2300, 0x23cf)
     ],
 }
+
+
+# Set of unicode symbols that do not render with fonts available on ChromeOS
+INVALID_SYMBOLS = set([
+    '\u2BBA',
+    '\u2BBB',
+    '\u2BBC',
+    '\u2B97',
+    '\u2BC9',
+    '\U0001F8B0',
+    '\U0001F8B1',
+])
 
 
 @dataclasses.dataclass
@@ -311,6 +323,9 @@ def main(argv: List[str]) -> None:
     # excluded from symbols.
     filter_set = _load_emoji_characters_from_files(
         data_paths=filter_data_paths)
+
+    # Explicitly remove individual symbols that don't render on ChromeOS
+    filter_set |= INVALID_SYMBOLS
 
     # Add symbol groups.
     symbols_groups = get_symbols_groups(
