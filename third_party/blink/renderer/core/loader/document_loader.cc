@@ -254,6 +254,7 @@ struct SameSizeAsDocumentLoader
   bool finish_loading_when_parser_resumed;
   bool in_commit_data;
   scoped_refptr<SharedBuffer> data_buffer;
+  Vector<DocumentLoader::DecodedBodyData> decoded_data_buffer_;
   base::UnguessableToken devtools_navigation_token;
   LoaderFreezeMode defers_loading;
   bool last_navigation_had_transient_user_activation;
@@ -303,6 +304,64 @@ struct SameSizeAsDocumentLoader
 ASSERT_SIZE(DocumentLoader, SameSizeAsDocumentLoader);
 
 }  // namespace
+
+// Base class for body data received by the loader. This allows abstracting away
+// whether encoded or decoded data was received by the loader.
+class DocumentLoader::BodyData {
+ public:
+  virtual ~BodyData() = default;
+  virtual void AppendToParser(DocumentLoader* loader) = 0;
+  virtual void Buffer(DocumentLoader* loader) = 0;
+  virtual base::span<const char> EncodedData() const = 0;
+};
+
+// Wraps encoded data received by the loader.
+class DocumentLoader::EncodedBodyData : public BodyData {
+ public:
+  explicit EncodedBodyData(base::span<const char> data) : data_(data) {
+    DCHECK(data.data());
+    DCHECK(data.size());
+  }
+
+  void AppendToParser(DocumentLoader* loader) override {
+    loader->parser_->AppendBytes(data_.data(), data_.size());
+  }
+
+  void Buffer(DocumentLoader* loader) override {
+    loader->data_buffer_->Append(data_.data(), data_.size());
+  }
+
+  base::span<const char> EncodedData() const override { return data_; }
+
+ private:
+  base::span<const char> data_;
+};
+
+// Wraps decoded data received by the loader.
+class DocumentLoader::DecodedBodyData : public BodyData {
+ public:
+  DecodedBodyData(const String& data,
+                  const DocumentEncodingData& encoding_data,
+                  base::span<const char> encoded_data)
+      : data_(data),
+        encoding_data_(encoding_data),
+        encoded_data_(encoded_data) {}
+
+  void AppendToParser(DocumentLoader* loader) override {
+    loader->parser_->AppendDecodedData(data_, encoding_data_);
+  }
+
+  void Buffer(DocumentLoader* loader) override {
+    loader->decoded_data_buffer_.push_back(*this);
+  }
+
+  base::span<const char> EncodedData() const override { return encoded_data_; }
+
+ private:
+  String data_;
+  DocumentEncodingData encoding_data_;
+  base::span<const char> encoded_data_;
+};
 
 DocumentLoader::DocumentLoader(
     LocalFrame* frame,
@@ -935,17 +994,36 @@ void DocumentLoader::SetHistoryItemStateForCommit(
 }
 
 void DocumentLoader::BodyDataReceived(base::span<const char> data) {
+  EncodedBodyData body_data(data);
+  BodyDataReceivedImpl(body_data);
+}
+
+void DocumentLoader::DecodedBodyDataReceived(
+    const WebString& data,
+    const WebTextDecoder::EncodingData& encoding_data,
+    base::span<const char> encoded_data) {
+  // Decoding has already happened, we don't need the decoder anymore.
+  parser_->SetDecoder(nullptr);
+
+  DecodedBodyData body_data(data, DocumentEncodingData(encoding_data),
+                            encoded_data);
+  BodyDataReceivedImpl(body_data);
+}
+
+void DocumentLoader::BodyDataReceivedImpl(BodyData& data) {
   TRACE_EVENT0("loading", "DocumentLoader::BodyDataReceived");
-  GetFrameLoader().Progress().IncrementProgress(main_resource_identifier_,
-                                                data.size());
-  probe::DidReceiveData(probe::ToCoreProbeSink(GetFrame()),
-                        main_resource_identifier_, this, data.data(),
-                        data.size());
+  base::span<const char> encoded_data = data.EncodedData();
+  if (encoded_data.size()) {
+    GetFrameLoader().Progress().IncrementProgress(main_resource_identifier_,
+                                                  encoded_data.size());
+    probe::DidReceiveData(probe::ToCoreProbeSink(GetFrame()),
+                          main_resource_identifier_, this, encoded_data.data(),
+                          encoded_data.size());
+  }
 
-  TRACE_EVENT1("loading", "DocumentLoader::HandleData", "length", data.size());
+  TRACE_EVENT1("loading", "DocumentLoader::HandleData", "length",
+               encoded_data.size());
 
-  DCHECK(data.data());
-  DCHECK(data.size());
   DCHECK(!frame_->GetPage()->Paused());
   time_of_last_data_received_ = clock_->NowTicks();
 
@@ -954,11 +1032,11 @@ void DocumentLoader::BodyDataReceived(base::span<const char> data) {
     //    to the actual document content.
     // 2) Mhtml archives accumulate data buffer and parse it as mhtml later
     //    to retrieve the actual document content.
-    data_buffer_->Append(data.data(), data.size());
+    data.Buffer(this);
     return;
   }
 
-  ProcessDataBuffer(data.data(), data.size());
+  ProcessDataBuffer(&data);
 }
 
 void DocumentLoader::BodyLoadingFinished(
@@ -1235,8 +1313,9 @@ void DocumentLoader::HandleResponse() {
   }
 }
 
-void DocumentLoader::CommitData(const char* bytes, size_t length) {
-  TRACE_EVENT1("loading", "DocumentLoader::CommitData", "length", length);
+void DocumentLoader::CommitData(BodyData& data) {
+  TRACE_EVENT1("loading", "DocumentLoader::CommitData", "length",
+               data.EncodedData().size());
 
   // This can happen if document.close() is called by an event handler while
   // there's still pending incoming data.
@@ -1247,9 +1326,9 @@ void DocumentLoader::CommitData(const char* bytes, size_t length) {
     return;
 
   base::AutoReset<bool> reentrancy_protector(&in_commit_data_, true);
-  if (length)
+  if (data.EncodedData().size())
     data_received_ = true;
-  parser_->AppendBytes(bytes, length);
+  data.AppendToParser(this);
 }
 
 mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
@@ -1451,7 +1530,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
       url, frame_load_type, view_state, scroll_restoration_type);
 }
 
-void DocumentLoader::ProcessDataBuffer(const char* bytes, size_t length) {
+void DocumentLoader::ProcessDataBuffer(BodyData* data) {
   DCHECK_GE(state_, kCommitted);
   if (parser_blocked_count_ || in_commit_data_) {
     // 1) If parser is blocked, we buffer data and process it upon resume.
@@ -1461,20 +1540,28 @@ void DocumentLoader::ProcessDataBuffer(const char* bytes, size_t length) {
     //    - alert(), confirm(), prompt()
     //    - Detach of plugin elements.
     //    - Synchronous XMLHTTPRequest
-    if (bytes)
-      data_buffer_->Append(bytes, length);
+    if (data)
+      data->Buffer(this);
     return;
   }
 
-  if (bytes)
-    CommitData(bytes, length);
+  if (data)
+    CommitData(*data);
+
   // Process data received in reentrant invocations. Note that the invocations
   // of CommitData() may queue more data in reentrant invocations, so iterate
   // until it's empty.
-  for (const auto& span : *data_buffer_)
-    CommitData(span.data(), span.size());
+  DCHECK(data_buffer_->empty() || decoded_data_buffer_.empty());
+  for (const auto& span : *data_buffer_) {
+    EncodedBodyData body_data(span);
+    CommitData(body_data);
+  }
+  for (auto& decoded_data : decoded_data_buffer_)
+    CommitData(decoded_data);
+
   // All data has been consumed, so flush the buffer.
   data_buffer_->Clear();
+  decoded_data_buffer_.clear();
 }
 
 void DocumentLoader::StopLoading() {

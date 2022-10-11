@@ -1448,7 +1448,6 @@ void HTMLDocumentParser::Flush() {
 
 void HTMLDocumentParser::SetDecoder(
     std::unique_ptr<TextResourceDecoder> decoder) {
-  DCHECK(decoder);
   DecodedDataDocumentParser::SetDecoder(std::move(decoder));
 }
 

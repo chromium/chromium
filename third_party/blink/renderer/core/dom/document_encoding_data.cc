@@ -45,6 +45,12 @@ DocumentEncodingData::DocumentEncodingData(const TextResourceDecoder& decoder) {
   saw_decoding_error_ = decoder.SawError();
 }
 
+DocumentEncodingData::DocumentEncodingData(
+    const WebTextDecoder::EncodingData& data)
+    : encoding_(data.encoding),
+      was_detected_heuristically_(data.was_detected_heuristically),
+      saw_decoding_error_(data.saw_decoding_error) {}
+
 void DocumentEncodingData::SetEncoding(const WTF::TextEncoding& encoding) {
   encoding_ = encoding;
 }

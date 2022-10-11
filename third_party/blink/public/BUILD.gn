@@ -248,6 +248,7 @@ source_set("blink_headers") {
     "platform/web_spell_check_panel_host_client.h",
     "platform/web_string.h",
     "platform/web_surface_layer_bridge.h",
+    "platform/web_text_decoder.h",
     "platform/web_text_input_info.h",
     "platform/web_text_input_mode.h",
     "platform/web_text_input_type.h",

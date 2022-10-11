@@ -50,10 +50,6 @@ void DocumentParser::SetDecoder(std::unique_ptr<TextResourceDecoder>) {
   NOTREACHED();
 }
 
-TextResourceDecoder* DocumentParser::Decoder() {
-  return nullptr;
-}
-
 void DocumentParser::PrepareToStopParsing() {
   DCHECK_EQ(state_, kParsingState);
   state_ = kStoppingState;

@@ -113,6 +113,10 @@ namespace mojom {
 enum class CommitResult : int32_t;
 }
 
+namespace {
+struct SameSizeAsDocumentLoader;
+}  // namespace
+
 // Enables code caching for inline scripts.
 BASE_DECLARE_FEATURE(kCacheInlineScriptCode);
 
@@ -438,6 +442,11 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   Member<MHTMLArchive> archive_;
 
  private:
+  friend struct SameSizeAsDocumentLoader;
+  class BodyData;
+  class EncodedBodyData;
+  class DecodedBodyData;
+
   Frame* CalculateOwnerFrame();
   scoped_refptr<SecurityOrigin> CalculateOrigin(Document* owner_document);
   void InitializeWindow(Document* owner_document);
@@ -497,13 +506,18 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   bool ShouldReportTimingInfoToParent();
 
-  void CommitData(const char* bytes, size_t length);
-  // Processes the data stored in the data_buffer_, used to avoid appending data
-  // to the parser in a nested message loop.
-  void ProcessDataBuffer(const char* bytes = nullptr, size_t length = 0);
+  void CommitData(BodyData& data);
+  // Processes the data stored in |data_buffer_| or |decoded_data_buffer_|, used
+  // to avoid appending data to the parser in a nested message loop.
+  void ProcessDataBuffer(BodyData* data = nullptr);
+  void BodyDataReceivedImpl(BodyData& data);
 
   // WebNavigationBodyLoader::Client
   void BodyDataReceived(base::span<const char> data) override;
+  void DecodedBodyDataReceived(
+      const WebString& data,
+      const WebTextDecoder::EncodingData& encoding_data,
+      base::span<const char> encoded_data) override;
   void BodyLoadingFinished(base::TimeTicks completion_time,
                            int64_t total_encoded_data_length,
                            int64_t total_encoded_body_length,
@@ -623,7 +637,12 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // Used to protect against reentrancy into CommitData().
   bool in_commit_data_;
+
+  // Either |data_buffer_| or |decoded_data_buffer_| will be used depending on
+  // whether BodyDataReceived() or DecodedBodyDataReceived() is called.
   scoped_refptr<SharedBuffer> data_buffer_;
+  Vector<DecodedBodyData> decoded_data_buffer_;
+
   const base::UnguessableToken devtools_navigation_token_;
 
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
