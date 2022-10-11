@@ -186,11 +186,7 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
       /**
        * Current value in username input.
        */
-      username_: {
-        type: String,
-        value: '',
-        observer: 'usernameChanged_',
-      },
+      username_: {type: String, value: ''},
 
       /**
        * Current value in note field.
@@ -348,16 +344,6 @@ export class PasswordEditDialogElement extends PasswordEditDialogElementBase {
     }
 
     return PasswordDialogMode.ADD;
-  }
-
-  /**
-   * Changing the username in the edit dialog should reset the note to empty.
-   */
-  private usernameChanged_() {
-    if (this.isPasswordNotesEnabled_ &&
-        this.dialogMode === PasswordDialogMode.EDIT) {
-      this.note_ = '';
-    }
   }
 
   private computeIsInFederatedViewMode_(): boolean {

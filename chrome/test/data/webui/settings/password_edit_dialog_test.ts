@@ -822,24 +822,6 @@ suite('PasswordEditDialog', function() {
     assertFalse(passwordDialog.$.actionButton.disabled);
   });
 
-  test('changingUsernameResetsNote', async function() {
-    loadTimeData.overrideValues({enablePasswordNotes: true});
-    const commonEntry = createPasswordEntry({
-      url: 'goo.gl',
-      username: 'bart',
-      id: 42,
-      note: 'personal account',
-    });
-    const passwordDialog =
-        elementFactory.createPasswordEditDialog(commonEntry, [], false);
-    const noteElement =
-        passwordDialog.shadowRoot!.querySelector<SettingsTextareaElement>(
-            '#note');
-
-    passwordDialog.$.usernameInput.value = 'maggie';
-    assertEquals('', noteElement!.value);
-  });
-
   test('editingInputsDoesntCallExtendAuthValidity', async function() {
     loadTimeData.overrideValues({enablePasswordViewPage: false});
     const commonEntry = createPasswordEntry({
