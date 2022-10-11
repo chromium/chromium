@@ -173,14 +173,14 @@ void NativeTheme::SetPreferredContrast(
   NotifyOnPreferredContrastUpdated();
 }
 
-bool NativeTheme::IsForcedDarkMode() const {
+bool NativeTheme::IsForcedDarkMode() {
   static bool kIsForcedDarkMode =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceDarkMode);
   return kIsForcedDarkMode;
 }
 
-bool NativeTheme::IsForcedHighContrast() const {
+bool NativeTheme::IsForcedHighContrast() {
   static bool kIsForcedHighContrast =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceHighContrast);

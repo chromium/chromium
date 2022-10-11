@@ -31,9 +31,17 @@ void NativeThemeCache::OnNativeThemeInfoChanged(
 }
 
 void NativeThemeCache::SetNativeThemeInfo() {
+  bool dark_mode = info_->dark_mode || ui::NativeTheme::IsForcedDarkMode();
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_use_dark_colors(info_->dark_mode);
+  native_theme->set_use_dark_colors(dark_mode);
   native_theme->NotifyOnNativeThemeUpdated();
+
+  auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
+  native_theme_web->set_use_dark_colors(dark_mode);
+  native_theme_web->set_preferred_color_scheme(
+      dark_mode ? ui::NativeTheme::PreferredColorScheme::kDark
+                : ui::NativeTheme::PreferredColorScheme::kLight);
+  native_theme_web->NotifyOnNativeThemeUpdated();
 }
 
 }  // namespace chromeos

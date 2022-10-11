@@ -516,16 +516,17 @@ class NATIVE_THEME_EXPORT NativeTheme {
                                  float border_width,
                                  float zoom_level) const;
 
+  // Whether high contrast is forced via command-line flag.
+  static bool IsForcedHighContrast();
+
+  // Whether dark mode is forced via command-line flag.
+  static bool IsForcedDarkMode();
+
  protected:
   explicit NativeTheme(
       bool should_only_use_dark_colors,
       ui::SystemTheme system_theme = ui::SystemTheme::kDefault);
   virtual ~NativeTheme();
-
-  // Whether high contrast is forced via command-line flag.
-  bool IsForcedHighContrast() const;
-  // Whether dark mode is forced via command-line flag.
-  bool IsForcedDarkMode() const;
 
   // Calculates and returns the current user preferred color scheme. The
   // base behavior is to set preferred color scheme to light or dark depending
