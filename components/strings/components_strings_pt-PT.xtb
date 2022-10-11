@@ -727,7 +727,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2882949212241984732">Dobra simétrica dupla</translation>
 <translation id="2893773853358652045">Quarto rolo</translation>
 <translation id="2900528713135656174">Criar evento</translation>
-<translation id="2903493209154104877">Endereços</translation>
+<translation id="2903493209154104877">Moradas</translation>
 <translation id="290376772003165898">A página não está em <ph name="LANGUAGE" />?</translation>
 <translation id="2909946352844186028">Foi detetada uma alteração de rede.</translation>
 <translation id="2911973620368911614">ID do utilizador da contabilidade da tarefa</translation>
@@ -1704,7 +1704,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="54817484435770891">Adicionar endereço válido</translation>
 <translation id="5485973315555778056">Computador da nuvem</translation>
 <translation id="5487426985799386720">Alimentação e bebidas</translation>
-<translation id="5490432419156082418">Endereços e Mais</translation>
+<translation id="5490432419156082418">Moradas e Mais</translation>
 <translation id="5492298309214877701">Este site na intranet da empresa, da entidade ou da escola tem o mesmo URL que um Website externo.
     <ph name="LINE_BREAK" />
     Experimente contactar o gestor do sistema.</translation>
@@ -2792,7 +2792,7 @@ Detalhes adicionais:
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8461694314515752532">Encriptar dados sincronizados com a sua própria frase de acesso de sincronização</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 cartão de crédito}other{# cartões de crédito}}</translation>
-<translation id="8473863474539038330">Endereços e mais</translation>
+<translation id="8473863474539038330">Moradas e mais</translation>
 <translation id="8474910779563686872">Mostrar detalhes do programador</translation>
 <translation id="8479754468255770962">Agrafo na parte inferior esquerda</translation>
 <translation id="8483780878231876732">Para utilizar cartões da sua Conta Google, inicie sessão no Chrome.</translation>
