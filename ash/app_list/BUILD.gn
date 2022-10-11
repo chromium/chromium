@@ -343,6 +343,7 @@ source_set("unit_tests") {
     "//ui/accessibility",
     "//ui/aura:test_support",
     "//ui/base",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/color",
     "//ui/compositor",
     "//ui/compositor:test_support",

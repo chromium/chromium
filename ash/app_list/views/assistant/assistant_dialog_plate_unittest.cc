@@ -20,6 +20,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -87,12 +88,10 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightTheme) {
 }
 
 TEST_F(AssistantDialogPlateTest, DarkAndLightModeFlagOff) {
-  // ProductivityLauncher uses DarkLightMode colors.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
-          features::kProductivityLauncher});
+          chromeos::features::kDarkLightMode, features::kNotificationsRefresh});
 
   ShowAssistantUi();
 
@@ -104,10 +103,15 @@ TEST_F(AssistantDialogPlateTest, DarkAndLightModeFlagOff) {
       static_cast<AssistantButton*>(assistant_dialog_plate->GetViewByID(
           AssistantViewID::kKeyboardInputToggle));
 
-  EXPECT_EQ(assistant_text_field->GetTextColor(), kTextColorPrimary);
+  EXPECT_EQ(assistant_text_field->GetTextColor(),
+            assistant_text_field->GetColorProvider()->GetColor(
+                cros_tokens::kColorPrimaryDark));
+
+  // When dark light mode is not on, the default color is dark.
   EXPECT_TRUE(gfx::test::AreBitmapsEqual(
       *gfx::CreateVectorIcon(vector_icons::kKeyboardIcon, kIconDipSize,
-          gfx::kGoogleGrey900).bitmap(),
+                             gfx::kGoogleGrey200)
+           .bitmap(),
       *keyboard_input_toggle->GetImage(views::Button::STATE_NORMAL).bitmap()));
 
   // Avoid test teardown issues by explicitly closing the launcher.
