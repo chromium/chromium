@@ -824,7 +824,7 @@ void BrowserNonClientFrameViewChromeOS::AddedToWidget() {
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {
   return GetShowCaptionButtonsWhenNotInOverview() && !GetOverviewMode() &&
-         !GetHideCaptionButtonsForFullscreen();
+         !GetHideCaptionButtonsForFullscreen() && !UseWebUITabStrip();
 }
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview()
@@ -868,11 +868,8 @@ bool BrowserNonClientFrameViewChromeOS::GetShouldPaint() const {
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   // Normal windows that have a WebUI-based tab strip do not need a browser
   // frame as no tab strip is drawn on top of the browser frame.
-  if (WebUITabStripContainerView::UseTouchableTabStrip(
-          browser_view()->browser()) &&
-      browser_view()->GetSupportsTabStrip()) {
+  if (UseWebUITabStrip())
     return false;
-  }
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
   // We need to paint when the top-of-window views are revealed in immersive
@@ -1112,6 +1109,12 @@ bool BrowserNonClientFrameViewChromeOS::ShouldEnableImmersiveModeController()
 
   // In clamshell mode, we want immersive mode if fullscreen.
   return frame()->IsFullscreen();
+}
+
+bool BrowserNonClientFrameViewChromeOS::UseWebUITabStrip() const {
+  return WebUITabStripContainerView::UseTouchableTabStrip(
+             browser_view()->browser()) &&
+         browser_view()->GetSupportsTabStrip();
 }
 
 const aura::Window* BrowserNonClientFrameViewChromeOS::GetFrameWindow() const {

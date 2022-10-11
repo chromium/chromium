@@ -135,12 +135,12 @@ using BrowserNonClientFrameViewChromeOSTest =
     TopChromeMdParamTest<InProcessBrowserTest>;
 using BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip =
     WebUiTabStripOverrideTest<false, BrowserNonClientFrameViewChromeOSTest>;
+using BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip =
+    WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewChromeOSTest>;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 using BrowserNonClientFrameViewChromeOSTouchTest =
     TopChromeTouchTest<InProcessBrowserTest>;
-using BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip =
-    WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewChromeOSTest>;
 using BrowserNonClientFrameViewChromeOSTouchTestWithWebUiTabStrip =
     WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewChromeOSTouchTest>;
 
@@ -551,6 +551,23 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip,
   EXPECT_EQ(0, GetFrameViewChromeOS(browser_view)->GetTopInset(false));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Tests to ensure caption buttons are not painted when the WebUI tab strip is
+// present for the browser window (crbug.com/1362731).
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip,
+                       CaptionButtonsHiddenWhenUsingWebUITabStrip) {
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto* frame_view = GetFrameViewChromeOS(browser_view);
+  if (ui::TouchUiController::Get()->touch_ui()) {
+    EXPECT_TRUE(browser_view->webui_tab_strip());
+    EXPECT_FALSE(
+        frame_view->caption_button_container_for_testing()->GetVisible());
+  } else {
+    EXPECT_FALSE(browser_view->webui_tab_strip());
+    EXPECT_TRUE(
+        frame_view->caption_button_container_for_testing()->GetVisible());
+  }
+}
 
 IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
                        IncognitoMarkedAsAssistantBlocked) {
@@ -1139,12 +1156,24 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
       aura::client::kResizeBehaviorKey,
       aura::client::kResizeBehaviorCanMaximize |
           aura::client::kResizeBehaviorCanResize);
-  EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
+
+  // Caption buttons are not supported when using the WebUI tab strip.
+  if (browser_view->webui_tab_strip()) {
+    EXPECT_FALSE(frame_view->caption_button_container_->GetVisible());
+  } else {
+    EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
+  }
 
   StartOverview();
   EXPECT_FALSE(frame_view->caption_button_container_->GetVisible());
   EndOverview();
-  EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
+
+  // Caption buttons are not supported when using the WebUI tab strip.
+  if (browser_view->webui_tab_strip()) {
+    EXPECT_FALSE(frame_view->caption_button_container_->GetVisible());
+  } else {
+    EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
+  }
 
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(true));
@@ -1338,7 +1367,13 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
   BrowserNonClientFrameViewChromeOS* frame_view =
       GetFrameViewChromeOS(browser_view);
 
-  EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
+  // Caption buttons are not supported when using the WebUI tab strip.
+  if (browser_view->webui_tab_strip()) {
+    EXPECT_FALSE(frame_view->caption_button_container_->GetVisible());
+  } else {
+    EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
+  }
+
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(true));
   EXPECT_FALSE(frame_view->caption_button_container_->GetVisible());
@@ -1350,7 +1385,13 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
 
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(false));
-  EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
+
+  // Caption buttons are not supported when using the WebUI tab strip.
+  if (browser_view->webui_tab_strip()) {
+    EXPECT_FALSE(frame_view->caption_button_container_->GetVisible());
+  } else {
+    EXPECT_TRUE(frame_view->caption_button_container_->GetVisible());
+  }
 }
 
 // TODO(crbug.com/993974): When the test flake has been addressed, improve
@@ -1445,8 +1486,8 @@ IN_PROC_BROWSER_TEST_P(TabSearchFrameCaptionButtonTest,
 
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE(BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 INSTANTIATE_TEST_SUITE(WebAppNonClientFrameViewAshTest);
 INSTANTIATE_TEST_SUITE(FloatBrowserNonClientFrameViewChromeOSTest);
 INSTANTIATE_TEST_SUITE(HomeLauncherBrowserNonClientFrameViewChromeOSTest);
