@@ -72,7 +72,8 @@ std::unique_ptr<RuleIterator> ContentSettingsStore::GetRuleIterator(
 
   // The individual |RuleIterators| shouldn't lock; pass |lock_| to the
   // |ConcatenationIterator| in a locked state.
-  std::unique_ptr<base::AutoLock> auto_lock(new base::AutoLock(lock_));
+  std::unique_ptr<base::AutoLock> auto_lock =
+      std::make_unique<base::AutoLock>(lock_);
 
   // Iterate the extensions based on install time (most-recently installed
   // items first).
