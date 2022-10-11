@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
       params.FindStringByDottedPath("visibleSecurityState.safetyTipInfo"));
   const base::Value* security_state_issue_ids =
       params.FindByDottedPath("visibleSecurityState.securityStateIssueIds");
-  EXPECT_TRUE(base::Contains(security_state_issue_ids->GetListDeprecated(),
+  EXPECT_TRUE(base::Contains(security_state_issue_ids->GetList(),
                              base::Value("scheme-is-not-cryptographic")));
 }
 
@@ -410,95 +410,88 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
   base::Value* certificate_security_state =
       params.FindByDottedPath("visibleSecurityState.certificateSecurityState");
   ASSERT_TRUE(certificate_security_state);
+  base::Value::Dict& dict = certificate_security_state->GetDict();
 
-  std::string* protocol =
-      certificate_security_state->FindStringPath("protocol");
+  std::string* protocol = dict.FindString("protocol");
   ASSERT_TRUE(protocol);
   ASSERT_EQ(*protocol, page_protocol);
 
-  std::string* key_exchange =
-      certificate_security_state->FindStringPath("keyExchange");
+  std::string* key_exchange = dict.FindString("keyExchange");
   ASSERT_TRUE(key_exchange);
   ASSERT_EQ(*key_exchange, page_key_exchange);
 
-  std::string* key_exchange_group =
-      certificate_security_state->FindStringPath("keyExchangeGroup");
+  std::string* key_exchange_group = dict.FindString("keyExchangeGroup");
   if (key_exchange_group) {
     ASSERT_EQ(*key_exchange_group, page_key_exchange_group);
   }
 
-  std::string* mac = certificate_security_state->FindStringPath("mac");
+  std::string* mac = dict.FindString("mac");
   if (mac) {
     ASSERT_EQ(*mac, page_mac);
   }
 
-  std::string* cipher = certificate_security_state->FindStringPath("cipher");
+  std::string* cipher = dict.FindString("cipher");
   ASSERT_TRUE(cipher);
   ASSERT_EQ(*cipher, page_cipher);
 
-  std::string* subject_name =
-      certificate_security_state->FindStringPath("subjectName");
+  std::string* subject_name = dict.FindString("subjectName");
   ASSERT_TRUE(subject_name);
   ASSERT_EQ(*subject_name, page_subject_name);
 
-  std::string* issuer = certificate_security_state->FindStringPath("issuer");
+  std::string* issuer = dict.FindString("issuer");
   ASSERT_TRUE(issuer);
   ASSERT_EQ(*issuer, page_issuer_name);
 
-  auto valid_from = certificate_security_state->FindDoublePath("validFrom");
+  auto valid_from = dict.FindDouble("validFrom");
   ASSERT_TRUE(valid_from);
   ASSERT_EQ(*valid_from, page_valid_from);
 
-  auto valid_to = certificate_security_state->FindDoublePath("validTo");
+  auto valid_to = dict.FindDouble("validTo");
   ASSERT_TRUE(valid_to);
   ASSERT_EQ(*valid_to, page_valid_to);
 
   std::string* certificate_network_error =
-      certificate_security_state->FindStringPath("certificateNetworkError");
+      dict.FindString("certificateNetworkError");
   if (certificate_network_error) {
     ASSERT_EQ(*certificate_network_error, page_certificate_network_error);
   }
 
   auto certificate_has_weak_signature =
-      certificate_security_state->FindBoolPath("certificateHasWeakSignature");
+      dict.FindBool("certificateHasWeakSignature");
   ASSERT_TRUE(certificate_has_weak_signature);
   ASSERT_EQ(*certificate_has_weak_signature,
             page_certificate_has_weak_signature);
 
   auto certificate_has_sha1_signature_present =
-      certificate_security_state->FindBoolPath("certificateHasSha1Signature");
+      dict.FindBool("certificateHasSha1Signature");
   ASSERT_TRUE(certificate_has_sha1_signature_present);
   ASSERT_EQ(*certificate_has_sha1_signature_present,
             page_certificate_has_sha1_signature_present);
 
-  auto modern_ssl = certificate_security_state->FindBoolPath("modernSSL");
+  auto modern_ssl = dict.FindBool("modernSSL");
   ASSERT_TRUE(modern_ssl);
   ASSERT_EQ(*modern_ssl, page_modern_ssl);
 
-  auto obsolete_ssl_protocol =
-      certificate_security_state->FindBoolPath("obsoleteSslProtocol");
+  auto obsolete_ssl_protocol = dict.FindBool("obsoleteSslProtocol");
   ASSERT_TRUE(obsolete_ssl_protocol);
   ASSERT_EQ(*obsolete_ssl_protocol, page_obsolete_ssl_protocol);
 
-  auto obsolete_ssl_key_exchange =
-      certificate_security_state->FindBoolPath("obsoleteSslKeyExchange");
+  auto obsolete_ssl_key_exchange = dict.FindBool("obsoleteSslKeyExchange");
   ASSERT_TRUE(obsolete_ssl_key_exchange);
   ASSERT_EQ(*obsolete_ssl_key_exchange, page_obsolete_ssl_key_exchange);
 
-  auto obsolete_ssl_cipher =
-      certificate_security_state->FindBoolPath("obsoleteSslCipher");
+  auto obsolete_ssl_cipher = dict.FindBool("obsoleteSslCipher");
   ASSERT_TRUE(obsolete_ssl_cipher);
   ASSERT_EQ(*obsolete_ssl_cipher, page_obsolete_ssl_cipher);
 
-  auto obsolete_ssl_signature =
-      certificate_security_state->FindBoolPath("obsoleteSslSignature");
+  auto obsolete_ssl_signature = dict.FindBool("obsoleteSslSignature");
   ASSERT_TRUE(obsolete_ssl_signature);
   ASSERT_EQ(*obsolete_ssl_signature, page_obsolete_ssl_signature);
 
-  const base::Value* certificate_value =
-      certificate_security_state->FindListPath("certificate");
+  const base::Value::List* certificate_value = dict.FindList("certificate");
+  ASSERT_TRUE(certificate_value);
   std::vector<std::string> der_certs;
-  for (const auto& cert : certificate_value->GetListDeprecated()) {
+  for (const auto& cert : *certificate_value) {
     std::string decoded;
     ASSERT_TRUE(base::Base64Decode(cert.GetString(), &decoded));
     der_certs.push_back(decoded);
@@ -518,7 +511,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
             certificate->CalculateChainFingerprint256());
   const base::Value* security_state_issue_ids =
       params.FindByDottedPath("visibleSecurityState.securityStateIssueIds");
-  EXPECT_EQ(security_state_issue_ids->GetListDeprecated().size(), 0u);
+  ASSERT_TRUE(security_state_issue_ids->is_list());
+  EXPECT_EQ(security_state_issue_ids->GetList().size(), 0u);
 
   EXPECT_FALSE(params.FindByDottedPath("visibleSecurityState.safetyTipInfo"));
 }
