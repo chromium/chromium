@@ -841,16 +841,16 @@
       'mac-autofill-captured-sites-rel': 'release_bot',
       # b/248132996: for siso experiments.
       'siso-comparison-android': {
-        'reclient': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_coverage_reclient',
-        'siso': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_coverage_siso',
+        'reclient': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient',
+        'siso': 'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_siso',
       },
       'siso-comparison-linux': {
-        'reclient': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
-        'siso': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_siso',
+        'reclient': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_reclient',
+        'siso': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_siso',
       },
       'siso-comparison-win10': {
-        'reclent': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_reclient',
-        'siso': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso',
+        'reclent': 'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_reclient',
+        'siso': 'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_siso',
       },
       'win-autofill-captured-sites-rel': 'release_bot',
       'win-celab-rel': 'official_celab_release_bot',
@@ -1751,23 +1751,16 @@
       'no_secondary_abi',
     ],
 
-    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_coverage_reclient': [
-      'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
-      'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
-      'no_secondary_abi', 'use_java_coverage', 'partial_code_coverage_instrumentation',
-    ],
-
-    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_coverage_siso': [
-      'android', 'release_trybot', 'arm64', 'strip_debug_info',
-      'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
-      'no_secondary_abi', 'use_java_coverage', 'partial_code_coverage_instrumentation',
-      'no_goma', 'no_reclient',
-    ],
-
     'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_reclient': [
       'android', 'release_trybot_reclient', 'arm64', 'strip_debug_info',
       'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
       'no_secondary_abi',
+    ],
+
+    'android_release_trybot_arm64_webview_monochrome_expectations_fastbuild_siso': [
+      'android', 'release_trybot', 'arm64', 'strip_debug_info',
+      'android_fastbuild', 'webview_monochrome', 'fail_on_android_expectations',
+      'no_secondary_abi', 'no_goma', 'no_reclient',
     ],
 
     # TODO(crbug/1182468) Remove these android coverage expectations after
@@ -2867,15 +2860,17 @@
       'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
     ],
 
-    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_siso': [
-      'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation', 'devtools_do_typecheck',
-      'no_goma', 'no_reclient',
-    ],
-
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck': [
       'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
       'devtools_do_typecheck',
+    ],
+    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'no_symbols', 'use_dummy_lastchange',
+      'devtools_do_typecheck',
+    ],
+    'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_do_typecheck_siso': [
+      'gpu_tests', 'release_trybot', 'no_symbols', 'use_dummy_lastchange',
+      'devtools_do_typecheck', 'no_goma', 'no_reclient',
     ],
 
     'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_invert_fieldtrials': [
@@ -2908,14 +2903,17 @@
       'use_clang_coverage', 'partial_code_coverage_instrumentation',
     ],
 
-    'gpu_tests_release_trybot_resource_allowlisting_code_coverage_siso': [
-      'gpu_tests', 'release_trybot', 'no_resource_allowlisting',
-      'use_clang_coverage', 'partial_code_coverage_instrumentation',
-      'no_goma', 'no_reclient',
-    ],
-
     'gpu_tests_release_trybot_resource_allowlisting_invert_fieldtrials': [
       'gpu_tests', 'release_trybot', 'resource_allowlisting', 'invert_fieldtrials',
+    ],
+
+    'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_reclient': [
+      'gpu_tests', 'release_trybot_reclient', 'no_resource_allowlisting', 'no_precompiled_headers',
+    ],
+
+    'gpu_tests_release_trybot_resource_allowlisting_no_precompiled_headers_siso': [
+      'gpu_tests', 'release_trybot', 'no_resource_allowlisting', 'no_precompiled_headers',
+      'no_goma', 'no_reclient',
     ],
 
     'gpu_tests_release_trybot_x86': [
@@ -4423,6 +4421,10 @@
 
     'no_keystone_registration_framework': {
       'gn_args': 'enable_keystone_registration_framework=false',
+    },
+
+    'no_precompiled_headers': {
+      'gn_args': 'enable_precompiled_headers=false',
     },
 
     'no_reclient': {

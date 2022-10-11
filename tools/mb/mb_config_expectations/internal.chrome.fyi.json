@@ -100,7 +100,6 @@
     "reclient": {
       "gn_args": {
         "android_static_analysis": "off",
-        "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
         "dcheck_always_on": true,
         "debuggable_apks": false,
         "fail_on_android_expectations": true,
@@ -114,14 +113,12 @@
         "system_webview_package_name": "com.google.android.apps.chrome",
         "target_cpu": "arm64",
         "target_os": "android",
-        "use_jacoco_coverage": true,
         "use_remoteexec": true
       }
     },
     "siso": {
       "gn_args": {
         "android_static_analysis": "off",
-        "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
         "dcheck_always_on": true,
         "debuggable_apks": false,
         "fail_on_android_expectations": true,
@@ -136,7 +133,6 @@
         "target_cpu": "arm64",
         "target_os": "android",
         "use_goma": false,
-        "use_jacoco_coverage": true,
         "use_remoteexec": false
       }
     }
@@ -144,7 +140,6 @@
   "siso-comparison-linux": {
     "reclient": {
       "gn_args": {
-        "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
         "dcheck_always_on": true,
         "devtools_skip_typecheck": false,
         "ffmpeg_branding": "Chrome",
@@ -152,14 +147,12 @@
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 0,
-        "use_clang_coverage": true,
         "use_dummy_lastchange": true,
         "use_remoteexec": true
       }
     },
     "siso": {
       "gn_args": {
-        "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
         "dcheck_always_on": true,
         "devtools_skip_typecheck": false,
         "ffmpeg_branding": "Chrome",
@@ -167,7 +160,6 @@
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 0,
-        "use_clang_coverage": true,
         "use_dummy_lastchange": true,
         "use_goma": false,
         "use_remoteexec": false
@@ -177,29 +169,27 @@
   "siso-comparison-win10": {
     "reclent": {
       "gn_args": {
-        "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
         "dcheck_always_on": true,
+        "enable_precompiled_headers": false,
         "enable_resource_allowlist_generation": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 0,
-        "use_clang_coverage": true,
         "use_remoteexec": true
       }
     },
     "siso": {
       "gn_args": {
-        "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
         "dcheck_always_on": true,
+        "enable_precompiled_headers": false,
         "enable_resource_allowlist_generation": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
         "is_debug": false,
         "proprietary_codecs": true,
         "symbol_level": 0,
-        "use_clang_coverage": true,
         "use_goma": false,
         "use_remoteexec": false
       }
