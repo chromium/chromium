@@ -1062,6 +1062,21 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The amount of time it takes to probe hardware components.</summary>
 </histogram>
 
+<histogram name="ChromeOS.HaTS.{Survey}" enum="HaTSSurvey"
+    expires_after="2023-10-06">
+  <owner>aalsum@chromium.org</owner>
+  <owner>jackshira@google.com</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    Records the responses for HaTS questions, to be analyzed against other OS
+    metrics like performance or number of crashes. Emitted during the lifecycle
+    of a survey and when a user answers any question on a HaTS survey.
+  </summary>
+  <token key="Survey">
+    <variant name="Stability"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.IioService.SensorClientConcurrent" units="clients"
     expires_after="2023-05-01">
   <owner>chenghaoyang@chromium.org</owner>

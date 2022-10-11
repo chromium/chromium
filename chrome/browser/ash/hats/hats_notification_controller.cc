@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -52,6 +53,9 @@ const char kNotifierHats[] = "ash.hats";
 // Minimum amount of time before the notification is displayed again after a
 // user has interacted with it.
 constexpr base::TimeDelta kHatsThreshold = base::Days(60);
+
+// The state specific UMA enumerations
+const int kSurveyTriggeredEnumeration = 1;
 
 // TODO(jackshira): Migrate this to a manager class.
 // Delimiters used to join the separate device info elements into a single
@@ -135,6 +139,14 @@ HatsNotificationController::HatsNotificationController(
       hats_config_(hats_config),
       product_specific_data_(product_specific_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (features::IsHatsUseNewHistogramsEnabled()) {
+    std::string histogram_name =
+        HatsFinchHelper::GetHistogramName(hats_config_);
+    if (!histogram_name.empty()) {
+      base::UmaHistogramSparse(histogram_name, kSurveyTriggeredEnumeration);
+    }
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
@@ -274,7 +286,9 @@ void HatsNotificationController::ShowDialog(const std::string& site_context) {
     return;
   }
 
-  HatsDialog::Show(HatsFinchHelper::GetTriggerID(hats_config_), site_context);
+  HatsDialog::Show(HatsFinchHelper::GetTriggerID(hats_config_),
+                   HatsFinchHelper::GetHistogramName(hats_config_),
+                   site_context);
 }
 
 // message_center::NotificationDelegate override:

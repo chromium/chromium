@@ -6,6 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -30,10 +31,37 @@ const char HatsFinchHelper::kSurveyStartDateMsParam[] = "survey_start_date_ms";
 // static
 const char HatsFinchHelper::kTriggerIdParam[] = "trigger_id";
 
+const char HatsFinchHelper::kHistogramNameParam[] = "histogram_name";
+
 std::string HatsFinchHelper::GetTriggerID(const HatsConfig& hats_config) {
   DCHECK(base::FeatureList::IsEnabled(hats_config.feature));
   return base::GetFieldTrialParamValueByFeature(hats_config.feature,
                                                 kTriggerIdParam);
+}
+
+// To enable UMA collection for a specific survey, the Finch configuration
+// file for this survey should be updated to include a `histogram_name`
+// parameter along side the `trigger_id` parameter. Without this
+// `histogram_name` parameter specified, no survey-specific UMA data will be
+// collected.
+std::string HatsFinchHelper::GetHistogramName(const HatsConfig& hats_config) {
+  DCHECK(base::FeatureList::IsEnabled(hats_config.feature));
+  // Fetch the histogram name from the feature parameters, if it is assigned.
+  // An empty string will be returned if the parameter is not set in Finch.
+  // This value should be a valid histogram that has been registered in the
+  // histograms.xml file, otherwise it will not be ingested by UMA.
+  std::string histogram_name = base::GetFieldTrialParamValueByFeature(
+      hats_config.feature, kHistogramNameParam);
+
+  // Valid histogram names for HaTS/UMA integration must start with the
+  // prefix "ChromeOS.HaTS.". This corresponds to the histogram definition
+  // in the histograms.xml file.
+  if (!base::StartsWith(histogram_name, "ChromeOS.HaTS.")) {
+    LOG(ERROR) << "Invalid HaTS histogram name: " << histogram_name;
+    return std::string();
+  }
+
+  return histogram_name;
 }
 
 std::string HatsFinchHelper::GetCustomClientDataAsString(
@@ -63,7 +91,7 @@ HatsFinchHelper::HatsFinchHelper(Profile* profile,
   CheckForDeviceSelection();
 }
 
-HatsFinchHelper::~HatsFinchHelper() {}
+HatsFinchHelper::~HatsFinchHelper() = default;
 
 void HatsFinchHelper::LoadFinchParamValues(const HatsConfig& hats_config) {
   if (!base::FeatureList::IsEnabled(hats_config.feature))
