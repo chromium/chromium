@@ -47,7 +47,7 @@ class KioskAppExternalLoader : public extensions::ExternalLoader {
 
   // Sends |prefs| through to the external loader owner (using
   // extensions::ExternalLoader interface).
-  void SendPrefs(base::DictionaryValue prefs);
+  void SendPrefs(base::Value::Dict prefs);
 
   // The class of kiosk apps this external extensions loader handles.
   const AppClass app_class_;

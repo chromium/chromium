@@ -23,7 +23,7 @@ namespace ash {
 class ChromeKioskExternalLoaderBroker {
  public:
   using InstallDataChangeCallback =
-      base::RepeatingCallback<void(base::DictionaryValue)>;
+      base::RepeatingCallback<void(base::Value::Dict)>;
 
   static ChromeKioskExternalLoaderBroker* Get();
 
@@ -46,8 +46,8 @@ class ChromeKioskExternalLoaderBroker {
   void TriggerSecondaryAppInstall(std::vector<std::string> secondary_app_ids);
 
  private:
-  base::DictionaryValue CreatePrimaryAppLoaderPrefs() const;
-  base::DictionaryValue CreateSecondaryAppLoaderPrefs() const;
+  base::Value::Dict CreatePrimaryAppLoaderPrefs() const;
+  base::Value::Dict CreateSecondaryAppLoaderPrefs() const;
 
   absl::optional<crosapi::mojom::AppInstallParams> primary_app_install_data_;
   absl::optional<std::vector<std::string>> secondary_app_ids_;

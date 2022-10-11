@@ -64,41 +64,38 @@ void ChromeKioskExternalLoaderBroker::TriggerSecondaryAppInstall(
     secondary_apps_changed_handler_.Run(CreateSecondaryAppLoaderPrefs());
 }
 
-base::DictionaryValue
-ChromeKioskExternalLoaderBroker::CreatePrimaryAppLoaderPrefs() const {
+base::Value::Dict ChromeKioskExternalLoaderBroker::CreatePrimaryAppLoaderPrefs()
+    const {
   DCHECK(primary_app_install_data_.has_value());
 
   const std::string& id = primary_app_install_data_.value().id;
-  base::DictionaryValue prefs;
+  base::Value::Dict prefs;
 
-  base::Value extension_entry(base::Value::Type::DICTIONARY);
+  base::Value::Dict extension_entry;
   if (primary_app_install_data_.value().is_store_app)
-    extension_entry.SetBoolKey(
-        extensions::ExternalProviderImpl::kIsFromWebstore, true);
+    extension_entry.Set(extensions::ExternalProviderImpl::kIsFromWebstore,
+                        true);
 
-  extension_entry.SetStringKey(
-      extensions::ExternalProviderImpl::kExternalVersion,
-      primary_app_install_data_.value().version);
-  extension_entry.SetStringKey(
-      extensions::ExternalProviderImpl::kExternalCrx,
-      primary_app_install_data_.value().crx_file_location);
-  prefs.SetKey(id, std::move(extension_entry));
+  extension_entry.Set(extensions::ExternalProviderImpl::kExternalVersion,
+                      primary_app_install_data_.value().version);
+  extension_entry.Set(extensions::ExternalProviderImpl::kExternalCrx,
+                      primary_app_install_data_.value().crx_file_location);
+  prefs.Set(id, std::move(extension_entry));
   return prefs;
 }
 
-base::DictionaryValue
+base::Value::Dict
 ChromeKioskExternalLoaderBroker::CreateSecondaryAppLoaderPrefs() const {
   DCHECK(secondary_app_ids_.has_value());
 
-  base::DictionaryValue prefs;
+  base::Value::Dict prefs;
   for (const std::string& id : secondary_app_ids_.value()) {
-    base::Value extension_entry(base::Value::Type::DICTIONARY);
-    extension_entry.SetStringKey(
-        extensions::ExternalProviderImpl::kExternalUpdateUrl,
-        extension_urls::GetWebstoreUpdateUrl().spec());
-    extension_entry.SetBoolKey(
-        extensions::ExternalProviderImpl::kIsFromWebstore, true);
-    prefs.SetKey(id, std::move(extension_entry));
+    base::Value::Dict extension_entry;
+    extension_entry.Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                        extension_urls::GetWebstoreUpdateUrl().spec());
+    extension_entry.Set(extensions::ExternalProviderImpl::kIsFromWebstore,
+                        true);
+    prefs.Set(id, std::move(extension_entry));
   }
   return prefs;
 }
