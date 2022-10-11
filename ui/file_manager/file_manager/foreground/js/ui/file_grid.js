@@ -767,10 +767,6 @@ export class FileGrid extends Grid {
       this.decorateThumbnailBox_(assertInstanceof(li, HTMLLIElement), entry);
     }
 
-    const badge = li.ownerDocument.createElement('div');
-    badge.className = 'badge';
-    frame.appendChild(badge);
-
     const bottom = li.ownerDocument.createElement('div');
     bottom.className = 'thumbnail-bottom';
     const mimeType =

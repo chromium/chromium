@@ -1101,8 +1101,7 @@ html.focus-outline-visible .dialog-header.files-ng cr-toggle:focus {
 
 html.focus-outline-visible .dialog-footer .primary:focus,
 html.focus-outline-visible .dialog-footer .secondary:focus,
-html.focus-outline-visible .dialog-footer select:focus,
-html.focus-outline-visible #cloud-import-details cr-button:focus {
+html.focus-outline-visible .dialog-footer select:focus {
   outline: 2px solid var(--cros-focus-ring-color);
   outline-offset: 2px;
 }
@@ -1533,39 +1532,6 @@ body:not(.check-select) .thumbnail-grid.image-dominant
   display: none;
 }
 
-.badge {
-  background-color: var(--cros-bg-color);
-  background-position: center;
-  background-repeat: no-repeat;
-  border-radius: 2px;
-  display: none;
-  height: 20px;
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  width: 20px;
-}
-
-html[dir='rtl'] .badge {
-  left: 10px;
-  right: auto;
-}
-
-.copied .badge {
-  background-image: url(../images/files/ui/cloud_import_syncing.svg);
-  display: block;
-}
-
-.imported .badge {
-  background-image: url(../images/volumes/service_drive.svg);
-  display: block;
-}
-
-.imported .filename-label,
-.copied .filename-label {
-  margin-inline-end: 14px;
-}
-
 /* Padding counterweights negative margins of items, thus eliminating scroll
    bar when it's not needed. Max height is set to fit 8 items before showing
    scroll bar. */
@@ -1779,8 +1745,7 @@ body.files-ng #list-container input.rename {
   margin-inline-end: 4px;
 }
 
-li[renaming=''] .filename-label,
-li[renaming=''] .badge {
+li[renaming=''] .filename-label {
   display: none;
 }
 

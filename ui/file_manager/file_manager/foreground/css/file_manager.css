@@ -1553,21 +1553,6 @@ html[dir='rtl'] .badge {
   right: auto;
 }
 
-.copied .badge {
-  background-image: url(../images/files/ui/cloud_import_syncing.svg);
-  display: block;
-}
-
-.imported .badge {
-  background-image: url(../images/volumes/service_drive.svg);
-  display: block;
-}
-
-.imported .filename-label,
-.copied .filename-label {
-  margin-inline-end: 14px;
-}
-
 /* Padding counterweights negative margins of items, thus eliminating scroll
    bar when it's not needed. Max height is set to fit 8 items before showing
    scroll bar. */
@@ -1781,8 +1766,7 @@ body.files-ng #list-container input.rename {
   margin-inline-end: 4px;
 }
 
-li[renaming=''] .filename-label,
-li[renaming=''] .badge {
+li[renaming=''] .filename-label {
   display: none;
 }
 
