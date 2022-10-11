@@ -29008,8 +29008,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Impression_FromPostDeviceRestoreSigninPromo">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of the metric.</description>
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Recorded when showing sign in after the post restore signin promo.
+  </description>
 </action>
 
 <action name="Signin_Impression_FromRecentTabs" not_user_triggered="true">
@@ -29634,8 +29637,12 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromPostDeviceRestoreSigninPromo">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <description>Please enter the description of the metric.</description>
+  <owner>scottyoder@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO.
+  </description>
 </action>
 
 <action name="Signin_Signin_FromRecentTabs">
