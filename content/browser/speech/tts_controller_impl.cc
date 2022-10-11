@@ -769,10 +769,10 @@ void TtsControllerImpl::PopulateParsedText(std::string* parsed_text,
   if (!children || !children->is_list())
     return;
 
-  for (size_t i = 0; i < children->GetListDeprecated().size(); ++i) {
+  for (const auto& entry : children->GetList()) {
     // We need to iterate over all children because some text elements are
     // nested within other types of elements, such as <emphasis> tags.
-    PopulateParsedText(parsed_text, &children->GetListDeprecated()[i]);
+    PopulateParsedText(parsed_text, &entry);
   }
 }
 
