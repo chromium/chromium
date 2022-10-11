@@ -18287,7 +18287,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileFreUMALinkTapped">
-  <owner>arthurmilchior@google.com</owner>
+  <owner>arthurmilchior@chromium.org</owner>
   <owner>jlebel@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <description>
