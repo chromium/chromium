@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {pdfCreateOutOfProcessPlugin, PDFPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
+import {pdfCreateOutOfProcessPlugin, PdfPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 export type ViewportChangedCallback =
@@ -22,7 +22,7 @@ export interface PluginProxy {
    * @param index The preview index to load.
    * @return The created plugin.
    */
-  createPlugin(previewUid: number, index: number): PDFPlugin;
+  createPlugin(previewUid: number, index: number): PdfPlugin;
 
   /**
    * @param previewUid Unique identifier of preview.
@@ -74,7 +74,7 @@ export interface PluginProxy {
 }
 
 export class PluginProxyImpl implements PluginProxy {
-  private plugin_: PDFPlugin|null = null;
+  private plugin_: PdfPlugin|null = null;
 
   pluginReady() {
     return !!this.plugin_;

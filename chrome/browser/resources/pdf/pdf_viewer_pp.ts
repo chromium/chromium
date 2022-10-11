@@ -17,12 +17,12 @@ import {MessageData, PluginController, PrintPreviewParams} from './controller.js
 import {ViewerPageIndicatorElement} from './elements/viewer-page-indicator.js';
 import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
 import {deserializeKeyEvent, LoadState, serializeKeyEvent} from './pdf_scripting_api.js';
-import {KeyEventData, PDFViewerBaseElement} from './pdf_viewer_base.js';
+import {KeyEventData, PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {getTemplate} from './pdf_viewer_pp.html.js';
 import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 import {ToolbarManager} from './toolbar_manager.js';
 
-export interface PDFViewerPPElement {
+export interface PdfViewerPpElement {
   $: {
     content: HTMLElement,
     pageIndicator: ViewerPageIndicatorElement,
@@ -31,7 +31,7 @@ export interface PDFViewerPPElement {
   };
 }
 
-export class PDFViewerPPElement extends PDFViewerBaseElement {
+export class PdfViewerPpElement extends PdfViewerBaseElement {
   static get is() {
     return 'pdf-viewer-pp';
   }
@@ -350,8 +350,8 @@ const PRINT_PREVIEW_DARK_BACKGROUND_COLOR: number = 0xff5f6368;
 
 declare global {
   interface HTMLElementTagNameMap {
-    'pdf-viewer-pp': PDFViewerPPElement;
+    'pdf-viewer-pp': PdfViewerPpElement;
   }
 }
 
-customElements.define(PDFViewerPPElement.is, PDFViewerPPElement);
+customElements.define(PdfViewerPpElement.is, PdfViewerPpElement);

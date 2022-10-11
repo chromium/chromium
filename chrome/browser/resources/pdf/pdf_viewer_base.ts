@@ -35,7 +35,7 @@ function getScrollbarWidth(): number {
 
 export type KeyEventData = MessageData&{keyEvent: SerializedKeyEvent};
 
-export abstract class PDFViewerBaseElement extends PolymerElement {
+export abstract class PdfViewerBaseElement extends PolymerElement {
   static get properties(): any {
     return {
       showErrorDialog: {
@@ -256,7 +256,7 @@ export abstract class PDFViewerBaseElement extends PolymerElement {
   }
 
   /**
-   * Sends a 'documentLoaded' message to the PDFScriptingAPI if the document has
+   * Sends a 'documentLoaded' message to the PdfScriptingApi if the document has
    * finished loading.
    */
   sendDocumentLoadedMessage() {
@@ -297,7 +297,7 @@ export abstract class PDFViewerBaseElement extends PolymerElement {
 
   /**
    * Handles a scripting message from outside the extension (typically sent by
-   * PDFScriptingAPI in a page containing the extension) to interact with the
+   * PdfScriptingApi in a page containing the extension) to interact with the
    * plugin.
    * @return Whether the message was handled.
    */
@@ -469,7 +469,7 @@ export abstract class PDFViewerBaseElement extends PolymerElement {
 
   /**
    * Send a scripting message outside the extension (typically to
-   * PDFScriptingAPI in a page containing the extension).
+   * PdfScriptingApi in a page containing the extension).
    */
   protected sendScriptingMessage(message: any) {
     if (this.parentWindow_ && this.parentOrigin_) {

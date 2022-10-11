@@ -5,7 +5,7 @@
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AnnotationTool} from '../annotation_tool.js';
-import {InkAPI} from '../ink/ink_api.js';
+import {InkApi} from '../ink/ink_api.js';
 import {record, UserAction} from '../metrics.js';
 import {PAGE_SHADOW, Viewport} from '../viewport.js';
 
@@ -50,7 +50,7 @@ export class ViewerInkHostElement extends PolymerElement {
   private allowTouchStartTimeStamp_: number|null = null;
   private buffer_: ArrayBuffer|null = null;
   private fileName_: string|null = null;
-  private ink_: InkAPI|null = null;
+  private ink_: InkApi|null = null;
   private lastZoom_: number|null = null;
   private penMode_: boolean = false;
 
@@ -313,7 +313,7 @@ export class ViewerInkHostElement extends PolymerElement {
     this.ink_!.setBorderImage(canvas.toDataURL());
   }
 
-  getInkApiForTesting(): InkAPI {
+  getInkApiForTesting(): InkApi {
     return this.ink_!;
   }
 
@@ -324,7 +324,7 @@ export class ViewerInkHostElement extends PolymerElement {
 
 declare global {
   interface Window {
-    initInk(): Promise<InkAPI>;
+    initInk(): Promise<InkApi>;
   }
 
   interface HTMLElementTagNameMap {

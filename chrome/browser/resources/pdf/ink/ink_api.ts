@@ -8,7 +8,7 @@ import {AnnotationTool} from '../annotation_tool.js';
  * Wraps the Ink component with an API that can be called
  * across an IFrame boundary.
  */
-export class InkAPI {
+export class InkApi {
   private canvas_: drawings.Canvas;
   private camera_: drawings.Box|null = null;
 
@@ -80,5 +80,5 @@ export class InkAPI {
 
 window.initInk = async function() {
   const canvas = await drawings.Canvas.execute(document.body);
-  return new InkAPI(canvas);
+  return new InkApi(canvas);
 };

@@ -57,7 +57,7 @@ function vectorDelta(p1: Point, p2: Point): Point {
   return {x: p2.x - p1.x, y: p2.y - p1.y};
 }
 
-type HTMLElementWithExtras = HTMLElement&{
+type HtmlElementWithExtras = HTMLElement&{
   scrollCallback(): void,
   resizeCallback(): void,
 };
@@ -152,12 +152,12 @@ export class Viewport implements ViewportInterface {
       this.scrollContent_.setEventTarget(window);
       // The following line is only used in tests, since they expect
       // |scrollCallback| to be called on the mock |window_| object (legacy).
-      (this.window_ as HTMLElementWithExtras).scrollCallback =
+      (this.window_ as HtmlElementWithExtras).scrollCallback =
           this.updateViewport_.bind(this);
       window.addEventListener('resize', this.resizeWrapper_.bind(this));
       // The following line is only used in tests, since they expect
       // |resizeCallback| to be called on the mock |window_| object (legacy).
-      (this.window_ as HTMLElementWithExtras).resizeCallback =
+      (this.window_ as HtmlElementWithExtras).resizeCallback =
           this.resizeWrapper_.bind(this);
     } else {
       // Standard PDF viewer

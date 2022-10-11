@@ -6,7 +6,7 @@ type ViewportChangedCallback =
     (pageX: number, pageY: number, pageWidth: number, viewportWidth: number,
      viewportHeight: number) => void;
 
-export interface PDFPlugin extends HTMLIFrameElement {
+export interface PdfPlugin extends HTMLIFrameElement {
   darkModeChanged(darkMode: boolean): void;
   hideToolbar(): void;
   loadPreviewPage(url: string, index: number): void;
@@ -76,7 +76,7 @@ export enum LoadState {
 
 // Provides a scripting interface to the PDF viewer so that it can be customized
 // by things like print preview.
-export class PDFScriptingAPI {
+export class PdfScriptingApi {
   private loadState_: LoadState = LoadState.LOADING;
   private pendingScriptingMessages_: Array<{type: string}> = [];
 
@@ -151,7 +151,7 @@ export class PDFScriptingAPI {
 
   /**
    * Sets the plugin element containing the PDF viewer. The element will usually
-   * be passed into the PDFScriptingAPI constructor but may also be set later.
+   * be passed into the PdfScriptingApi constructor but may also be set later.
    * @param plugin the plugin element containing the PDF viewer.
    */
   setPlugin(plugin: Window|null) {
@@ -289,9 +289,9 @@ export class PDFScriptingAPI {
  * @return The iframe element containing the PDF viewer.
  */
 export function pdfCreateOutOfProcessPlugin(
-    src: string, baseUrl: string): PDFPlugin {
-  const client = new PDFScriptingAPI(window, null);
-  const iframe = window.document.createElement('iframe') as PDFPlugin;
+    src: string, baseUrl: string): PdfPlugin {
+  const client = new PdfScriptingApi(window, null);
+  const iframe = window.document.createElement('iframe') as PdfPlugin;
   iframe.setAttribute('src', baseUrl + '/index.html?' + src);
 
   iframe.onload = function() {

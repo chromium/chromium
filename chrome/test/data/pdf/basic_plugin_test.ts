@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PDFScriptingAPI, PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {PdfScriptingApi, PdfViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 /**
  * These tests require that the PDF plugin be available to run correctly.
@@ -12,7 +12,7 @@ chrome.test.runTests([
    * Test that the page is sized to the size of the document.
    */
   function testPageSize() {
-    const viewer = document.body.querySelector<PDFViewerElement>('#viewer')!;
+    const viewer = document.body.querySelector<PdfViewerElement>('#viewer')!;
     // Verify that the initial zoom is less than or equal to 100%.
     chrome.test.assertTrue(viewer.viewport.getZoom() <= 1);
 
@@ -23,7 +23,7 @@ chrome.test.runTests([
   },
 
   function testGetSelectedText() {
-    const client = new PDFScriptingAPI(window, window);
+    const client = new PdfScriptingApi(window, window);
     client.selectAll();
     client.getSelectedText(function(selectedText) {
       chrome.test.assertEq('this is some text\nsome more text', selectedText);

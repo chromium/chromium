@@ -263,7 +263,7 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   // true if it loads successfully or false if it fails. If it doesn't finish
   // loading the test will hang. This is done from outside of the BrowserPlugin
   // guest to ensure sending messages to/from the plugin works correctly from
-  // there, since the PDFScriptingAPI relies on doing this as well.
+  // there, since the PdfScriptingApi relies on doing this as well.
   testing::AssertionResult LoadPdf(const GURL& url) {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     WebContents* web_contents = GetActiveWebContents();

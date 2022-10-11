@@ -9,7 +9,7 @@ import 'chrome://print/pdf/elements/viewer-page-indicator.js';
 import 'chrome://print/pdf/pdf_viewer_wrapper.js';
 
 import {pdfCreateOutOfProcessPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
-import {PDFViewerPPElement} from 'chrome://print/pdf/pdf_viewer_pp.js';
+import {PdfViewerPpElement} from 'chrome://print/pdf/pdf_viewer_pp.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -38,7 +38,7 @@ suite(pdf_viewer_test.suiteName, function() {
     document.body.appendChild(plugin);
     await loaded;
     assertTrue(!!plugin.contentDocument);
-    const viewer: PDFViewerPPElement|null =
+    const viewer: PdfViewerPpElement|null =
         plugin.contentDocument.querySelector('pdf-viewer-pp');
     assertTrue(!!viewer);
     assertTrue(plugin.contentDocument.documentElement.hasAttribute(

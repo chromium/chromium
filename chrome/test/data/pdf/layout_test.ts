@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PDFScriptingAPI, PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {PdfScriptingApi, PdfViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 
 // Tests common to all PDFs.
 const tests = [
   function testLayoutOptions() {
-    const viewer = document.body.querySelector<PDFViewerElement>('#viewer')!;
+    const viewer = document.body.querySelector<PdfViewerElement>('#viewer')!;
     chrome.test.assertEq(
         {
           direction: 2,
@@ -23,7 +23,7 @@ const tests = [
 const perLayoutTests: {[name: string]: Array<() => void>} = {
   'test-layout3.pdf': [
     function testDimensions3() {
-      const viewer = document.body.querySelector<PDFViewerElement>('#viewer')!;
+      const viewer = document.body.querySelector<PdfViewerElement>('#viewer')!;
       chrome.test.assertEq(
           {
             width: 103,
@@ -36,7 +36,7 @@ const perLayoutTests: {[name: string]: Array<() => void>} = {
 
   'test-layout4.pdf': [
     function testDimensions4() {
-      const viewer = document.body.querySelector<PDFViewerElement>('#viewer')!;
+      const viewer = document.body.querySelector<PdfViewerElement>('#viewer')!;
       chrome.test.assertEq(
           {
             width: 143,
@@ -48,7 +48,7 @@ const perLayoutTests: {[name: string]: Array<() => void>} = {
   ],
 };
 
-const scriptingAPI = new PDFScriptingAPI(window, window);
+const scriptingAPI = new PdfScriptingApi(window, window);
 scriptingAPI.setLoadCompleteCallback((success) => {
   if (success && document.title in perLayoutTests) {
     chrome.test.runTests(tests.concat(perLayoutTests[document.title]!));
