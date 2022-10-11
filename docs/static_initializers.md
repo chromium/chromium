@@ -25,30 +25,21 @@ Common fixes include:
 
 ## Listing Static Initializers
 
-### Step 1 - Use objdump to report them
+### Option 1 - dump-static-initializers.py
 For Linux:
 
     tools/linux/dump-static-initializers.py out/Release/chrome
 
-For Android (from easiest to hardest):
+For Android:
 
     # Build with: is_official_build=true is_chrome_branded=true
     # This will dump the list of SI's only when they don't match the expected
     # number in static_initializers.gni (this is what the bots use).
     ninja chrome/android:monochrome_static_initializers
-    # or:
-    tools/binary_size/diagnose_bloat.py HEAD  # See README.md for flags.
-    # or (the other two use this under the hood):
-    tools/linux/dump-static-initializers.py --toolchain-prefix third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/arm-linux-androideabi- out/Release/lib.unstripped/libmonochrome.so
-    # arm32 ^^ vv arm64
-    tools/linux/dump-static-initializers.py --toolchain-prefix third_party/android_ndk/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android- out/Release/lib.unstripped/libmonochrome.so
-    # Note: For arm64, having use_thin_lto=true seems to dump a couple extra
-    #     initializers that don't actually exist.
+    # or, to dump directly:
+    tools/linux/dump-static-initializers.py out/Release/lib.unstripped/libmonochrome.so
 
-The last one may actually be the easiest if you've already properly built
-`libmonochrome.so` with `is_official_build=true`.
-
-### Step 2 - Ask compiler to report them
+### Option 2 - Ask compiler to report them
 
 If the source of the new initializers is not obvious from Step 1, you can ask the
 compiler to pinpoint the exact source line.
@@ -68,11 +59,9 @@ More details in [crbug/1136086](https://bugs.chromium.org/p/chromium/issues/deta
 * For more information about `diagnose_bloat.py`, refer to its [README.md](/tools/binary_size/README.md#diagnose_bloat.py)
 * List of existing static initializers documented in [static_initializers.gni](/chrome/android/static_initializers.gni)
 
-### Step 3 - Manual Verification
+### Option 3 - Manual Verification
 
-If the source of the new initializers is not revealed with
-`dump-static-initializers.py` (e.g. for static initializers introduced in
-compiler-rt), there's a manual option.
+You can manually go through the steps that `dump-static-initializers.py` does.
 
 1. Locate the address range of the .init_array section with:
 ```
@@ -103,20 +92,4 @@ within the relocation table. To find the address:
 $ third_party/llvm-build/Release+Asserts/bin/llvm-readelf \
     --relocations out/Release/lib.unstripped/libmonochrome.so | grep 0x04064624
 03dfb7b0  00000017 R_ARM_RELATIVE                    0
-```
-
-### Step 4 - Compiler Naming Heuristics
-
-You might be able to find the static initialzer functions by listing symbols:
-
-```sh
-nm out/Release/lib.unstripped/libmonochrome.so | grep " _GLOBAL__"
-```
-
-This currently yields:
-```
-0214ea45 t _GLOBAL__I_000101
-00cb2315 t _GLOBAL__sub_I_base_logging.cc
-0214eca5 t _GLOBAL__sub_I_iostream.cpp
-01c01219 t _GLOBAL__sub_I_token.cc
 ```
