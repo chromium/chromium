@@ -59,12 +59,13 @@ bool IsCommandlessCyrillicLayout(NSString* layoutId) {
          [layoutId isEqualToString:@"com.apple.keylayout.Mongolian-Cyrillic"];
 }
 
-void ExpectKeyFiresItemEq(bool result,
+void ExpectKeyFiresItemEq(bool expected_result,
                           NSEvent* key,
                           NSMenuItem* item,
                           bool compareCocoa) {
-  EXPECT_EQ(result, [item cr_firesForKeyEquivalentEvent:key]) << key << '\n'
-                                                              << item;
+  EXPECT_EQ(expected_result, [item cr_firesForKeyEquivalentEvent:key])
+      << key << '\n'
+      << item;
 
   // Make sure that Cocoa does in fact agree with our expectations. However,
   // in some cases cocoa behaves weirdly (if you create e.g. a new event that
@@ -77,7 +78,8 @@ void ExpectKeyFiresItemEq(bool result,
     [menu setAutoenablesItems:NO];
     EXPECT_FALSE([menu performKeyEquivalent:key]);
     [menu addItem:item];
-    EXPECT_EQ(result, [menu performKeyEquivalent:key]) << key << '\n' << item;
+    EXPECT_EQ(expected_result, [menu performKeyEquivalent:key]) << key << '\n'
+                                                                << item;
   }
 }
 
@@ -486,6 +488,18 @@ TEST(NSMenuItemAdditionsTest, TestFiresForKeyEvent) {
   key = KeyEvent(0x100108, @"é", @"é", 19);
   ExpectKeyFiresItem(key, MenuItem(@"2", NSEventModifierFlagCommand),
                      /*compareCocoa=*/false);
+
+  // In Hebrew layout, make sure Cmd-q works.
+  key = KeyEvent(0x100110, @"q", @"/", 12);
+  ExpectKeyDoesntFireItem(key, MenuItem(@"q", NSEventModifierFlagCommand),
+                          /*compareCocoa=*/false);
+
+  SetIsInputSourceCommandHebrewForTesting(true);
+
+  ExpectKeyFiresItem(key, MenuItem(@"q", NSEventModifierFlagCommand),
+                     /*compareCocoa=*/false);
+
+  SetIsInputSourceCommandHebrewForTesting(false);
 }
 
 NSString* keyCodeToCharacter(NSUInteger keyCode,

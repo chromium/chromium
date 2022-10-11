@@ -16,6 +16,7 @@ namespace cocoa {
 namespace {
 bool g_is_input_source_command_qwerty = false;
 bool g_is_input_source_dvorak_right_or_left = false;
+bool g_is_input_source_command_hebrew = false;
 }  // namespace
 
 void SetIsInputSourceCommandQwertyForTesting(bool is_command_qwerty) {
@@ -26,6 +27,10 @@ void SetIsInputSourceDvorakRightOrLeftForTesting(bool is_dvorak_right_or_left) {
   g_is_input_source_dvorak_right_or_left = is_dvorak_right_or_left;
 }
 
+void SetIsInputSourceCommandHebrewForTesting(bool is_command_hebrew) {
+  g_is_input_source_command_hebrew = is_command_hebrew;
+}
+
 bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
   return [layout_id isEqualToString:@"com.apple.keylayout.DVORAK-QWERTYCMD"] ||
          [layout_id isEqualToString:@"com.apple.keylayout.Dhivehi-QWERTY"];
@@ -34,6 +39,12 @@ bool IsKeyboardLayoutCommandQwerty(NSString* layout_id) {
 bool IsKeyboardLayoutDvorakRightOrLeft(NSString* layout_id) {
   return [layout_id isEqualToString:@"com.apple.keylayout.Dvorak-Right"] ||
          [layout_id isEqualToString:@"com.apple.keylayout.Dvorak-Left"];
+}
+
+bool IsKeyboardLayoutCommandHebrew(NSString* layout_id) {
+  // com.apple.keylayout.Hebrew, com.apple.keylayout.Hebrew-PC,
+  // com.apple.keylayout.Hebrew-QWERTY.
+  return [layout_id hasPrefix:@"com.apple.keylayout.Hebrew"];
 }
 
 NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
@@ -98,6 +109,8 @@ NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
       ui::cocoa::IsKeyboardLayoutCommandQwerty(layoutId);
   ui::cocoa::g_is_input_source_dvorak_right_or_left =
       ui::cocoa::IsKeyboardLayoutDvorakRightOrLeft(layoutId);
+  ui::cocoa::g_is_input_source_command_hebrew =
+      ui::cocoa::IsKeyboardLayoutCommandHebrew(layoutId);
 }
 
 - (void)inputSourceDidChange:(NSNotification*)notification {
@@ -134,12 +147,29 @@ NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
   // a weird char as "charactersWithoutModifiers" with a cyrillic layout. Oh,
   // Cocoa! Instead of getting the current layout from Text Input Services,
   // and then requesting the kTISPropertyUnicodeKeyLayoutData and looking in
-  // there, let's try a pragmatic hack.
-  if ([eventString length] == 0 ||
-      ([eventString characterAtIndex:0] > 0x7f &&
-       [[event characters] length] > 0 &&
-       [[event characters] characterAtIndex:0] <= 0x7f)) {
-    eventString = [event characters];
+  // there, let's go with a pragmatic hack.
+  bool useEventCharacters = [eventString length] == 0;
+  NSString* eventCharacters = [event characters];
+  if ([eventString length] > 0 && [eventCharacters length] > 0) {
+    if ([eventString characterAtIndex:0] > 0x7f &&
+        [eventCharacters characterAtIndex:0] <= 0x7f) {
+      useEventCharacters = true;
+    } else if (ui::cocoa::g_is_input_source_command_hebrew &&
+               [eventString isEqualToString:@"/"] &&
+               [eventCharacters isEqualToString:@"q"]) {
+      // Our pragmatic hack works very well except for the "q" key in Hebrew
+      // layouts. In this case, the first char of eventString ("/") is
+      // not < 0x7f, so the hack doesn't choose eventCharacters (which is
+      // "q"). This causes Cmd-q to not take the normal processing path which
+      // includes a warning to hold "Cmd q" to quit (if that option is set).
+      // Instead, the Cmd-q likely travels to the renderer and upon its return
+      // triggers -[NSApplication terminate:], the selector associated with
+      // Chrome -> Quit. We handle this special case here.
+      useEventCharacters = true;
+    }
+  }
+  if (useEventCharacters) {
+    eventString = eventCharacters;
 
     // Process the shift if necessary.
     if (eventModifiers & NSEventModifierFlagShift)
