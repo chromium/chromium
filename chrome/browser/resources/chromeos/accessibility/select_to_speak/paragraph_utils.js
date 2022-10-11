@@ -23,6 +23,12 @@ export class ParagraphUtils {
         (node.parent && node.parent.role !== RoleType.SVG_ROOT)) {
       return true;
     }
+    // Look at the SVGs in a single group as a block, even if they are inline.
+    // Google Docs with Canvas has this structure.
+    if (node.role === RoleType.GROUP && node.parent &&
+        node.parent.role === RoleType.SVG_ROOT) {
+      return true;
+    }
     return false;
   }
 

@@ -221,6 +221,50 @@ AX_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUi', function() {
   assertEquals(0, highlightRects.length);
 });
 
+// This represents how Google Docs renders Canvas accessibility as of
+// October 2022.
+AX_TEST_F(
+    'SelectToSpeakUiManagerUnitTest', 'UpdatesUiMultipleNodesInBlock',
+    function() {
+      const root = {
+        role: 'svgRoot',
+        location: {left: 0, top: 0, width: 500, height: 50},
+      };
+      const group = {
+        role: 'group',
+        parent: root,
+        display: 'inline',
+        location: {left: 20, top: 10, width: 200, height: 10},
+      };
+      const text1 = {
+        role: 'inlineTextBox',
+        name: '1973',
+        parent: group,
+        location: {left: 20, top: 10, width: 100, height: 10},
+      };
+      const text2 = {
+        role: 'inlineTextBox',
+        name: 'Roe',
+        parent: group,
+        location: {left: 120, top: 10, width: 100, height: 10},
+      };
+      const nodeGroup = ParagraphUtils.buildNodeGroup(
+          [text1, text2], /*index=*/ 0, {splitOnLanguage: false});
+
+      assertEquals(group, nodeGroup.blockParent);
+
+      this.uiManager.update(
+          nodeGroup, text1, null,
+          {showPanel: true, paused: false, speechRateMultiplier: 1});
+
+      // When there are multiple nodes in a group, the parent should be
+      // highlighted instead of the individual node.
+      focusRings = this.mockAccessibilityPrivate.getFocusRings();
+      assertEquals(1, focusRings.length);
+      assertEquals(1, focusRings[0].rects.length);
+      assertEquals(group.location, focusRings[0].rects[0]);
+    });
+
 AX_TEST_F('SelectToSpeakUiManagerUnitTest', 'UpdatesUiNoPanel', function() {
   const textNode = {
     role: 'staticText',

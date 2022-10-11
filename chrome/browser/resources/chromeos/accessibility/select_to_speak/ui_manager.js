@@ -333,15 +333,12 @@ export class UiManager {
    */
   update(nodeGroup, node, currentWord, panelState) {
     const {showPanel, paused, speechRateMultiplier} = panelState;
-    // Show the parent element of the currently verbalized node with the
-    // focus ring. This is a nicer user-facing behavior than jumping from
-    // node to node, as nodes may not correspond well to paragraphs or
-    // blocks.
-    // TODO: Better test: has no siblings in the group, highlight just
-    // the one node. if it has siblings, highlight the parent.
+    // Show the block parent of the currently verbalized node with the
+    // focus ring. If the node has no siblings in the group, highlight just
+    // the one node.
     let focusRingRect;
     const currentBlockParent = nodeGroup.blockParent;
-    if (currentBlockParent !== null && node.role === RoleType.INLINE_TEXT_BOX) {
+    if (currentBlockParent !== null && nodeGroup.nodes.length > 1) {
       focusRingRect = currentBlockParent.location;
     } else {
       focusRingRect = node.location;

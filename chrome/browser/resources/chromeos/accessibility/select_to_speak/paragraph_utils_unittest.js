@@ -46,6 +46,24 @@ AX_TEST_F(
       assertTrue(ParagraphUtils.inSameParagraph(inline1, inline2));
     });
 
+AX_TEST_F(
+    'SelectToSpeakParagraphUnitTest', 'GroupInSVGRootIsBlock', function() {
+      // This represents how Google Docs renders Canvas accessibility as of
+      // October 2022.
+      const root = {role: 'rootWebArea'};
+      const svgRoot = {role: 'svgRoot', parent: root, root};
+      const group1 = {role: 'group', parent: svgRoot, root};
+      const text1 = {role: 'graphicsSymbol', parent: group1, root};
+      const text2 = {role: 'graphicsSymbol', parent: group1, root};
+      const group2 = {role: 'group', parent: svgRoot, root};
+      const text3 = {role: 'graphicsSymbol', parent: group2, root};
+      assertEquals(group1, ParagraphUtils.getFirstBlockAncestor(text1));
+      assertEquals(group1, ParagraphUtils.getFirstBlockAncestor(text2));
+      assertEquals(group2, ParagraphUtils.getFirstBlockAncestor(text3));
+      assertTrue(ParagraphUtils.inSameParagraph(text1, text2));
+      assertFalse(ParagraphUtils.inSameParagraph(text1, text3));
+    });
+
 AX_TEST_F('SelectToSpeakParagraphUnitTest', 'InSameParagraph', function() {
   const root = {role: 'rootWebArea'};
   const paragraph1 =
