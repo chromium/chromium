@@ -14,11 +14,16 @@
 @implementation PushNotificationUtil
 
 + (void)registerDeviceWithAPNS {
-  // iOS instructs that registering the device with APNS must be done on the
-  // main thread. Otherwise, a runtime warning is generated.
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [[UIApplication sharedApplication] registerForRemoteNotifications];
-  });
+  [PushNotificationUtil
+      getPermissionSettings:^(UNNotificationSettings* settings) {
+        if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+          // iOS instructs that registering the device with APNS must be done on
+          // the main thread. Otherwise, a runtime warning is generated.
+          dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] registerForRemoteNotifications];
+          });
+        }
+      }];
 }
 
 + (void)registerActionableNotifications:
