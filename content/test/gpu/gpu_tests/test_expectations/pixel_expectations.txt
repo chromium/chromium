@@ -454,11 +454,6 @@ crbug.com/1353189 [ android android-nexus-5 ] Pixel_VideoStreamFromWebGLAlphaCan
 # Crash on Linux FYI Release (NVIDIA) using SkiaRenderer/Vulkan
 crbug.com/1353189 [ linux renderer-skia-vulkan nvidia-0x2184 ] Pixel_VideoStreamFromWebGLAlphaCanvas_TwoCopy_CpuReadback [ Failure ]
 
-crbug.com/1372173 [ fuchsia ] Pixel_MediaRecorderFrom2DCanvas [ Failure ]
-crbug.com/1372173 [ fuchsia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableReadbackFromTexture [ Failure ]
-crbug.com/1372173 [ fuchsia ] Pixel_VideoStreamFrom2DCanvas [ Failure ]
-crbug.com/1372173 [ fuchsia ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
-
 # Currently expected to fail on non-rooted devices since minidump collection
 # does not work yet, meaning that we can't verify that we crashed exactly once
 # as expected.
