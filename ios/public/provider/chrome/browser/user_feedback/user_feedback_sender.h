@@ -7,12 +7,14 @@
 
 // Indicates where is this feedback coming from.
 enum class UserFeedbackSender {
-  // Set from tools overflow menu.
+  // Sent from tools overflow menu.
   ToolsMenu = 0,
   // Sent from a Sad Tab.
   SadTab,
   // Sent from Discover Feed.
   Feed,
+  // Sent from a keyboard command.
+  KeyCommand,
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_USER_FEEDBACK_USER_FEEDBACK_SENDER_H_
