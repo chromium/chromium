@@ -73,6 +73,7 @@
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
@@ -1155,8 +1156,7 @@ void ToggleFloating() {
   DCHECK(chromeos::wm::features::IsFloatWindowEnabled());
   aura::Window* window = window_util::GetActiveWindow();
   DCHECK(window);
-  // TODO(sammiequon|shidi): Add some UI like a bounce if a window cannot be
-  // floated.
+  DCHECK(chromeos::wm::CanFloatWindow(window));
   Shell::Get()->float_controller()->ToggleFloat(window);
   base::RecordAction(base::UserMetricsAction("Accel_Toggle_Floating"));
 }

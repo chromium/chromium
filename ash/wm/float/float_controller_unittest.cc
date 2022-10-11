@@ -30,6 +30,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -242,6 +243,15 @@ TEST_F(WindowFloatTest, WindowFloatingResize) {
   // Window back to snapped state.
   EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
             window_state2->GetStateType());
+}
+
+// Test that the float acclerator does not work on a non-floatable window.
+TEST_F(WindowFloatTest, CantFloatAccelerator) {
+  // Test window is NON_APP by default, which cannot be floated.
+  auto window = CreateTestWindow();
+  EXPECT_EQ(window.get(), window_util::GetActiveWindow());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_FALSE(WindowState::Get(window.get())->IsFloated());
 }
 
 // Tests that after we drag a floated window to another display and then
