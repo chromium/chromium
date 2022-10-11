@@ -232,7 +232,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6333502561965082103">Beste eragiketa bat egiten ari da Chromium. Saiatu berriro geroago.</translation>
 <translation id="6334986366598267305">Errazagoa da Chromium erabiltzea Google-ko kontuarekin eta partekatutako ordenagailuetan.</translation>
 <translation id="6373523479360886564">Ziur Chromium desinstalatu nahi duzula?</translation>
-<translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Nola erabiltzen ditugu datu horiek?<ph name="END_BOLD" /> Chromium-ek gutxi gorabehera igar ditzake zure interesak. Beranduago, bisitatzen duzun webgune batek zure interesak ikusteko eska diezaioke Chromium-i, agertzen zaizkizun iragarkiak pertsonalizatze aldera.</translation>
+<translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Nola erabiltzen ditugu datu horiek?<ph name="END_BOLD" /> Chromium-ek zure interesak estima ditzake. Beranduago, bisitatzen duzun webgune batek zure interesak ikusteko eska diezaioke Chromium-i, agertzen zaizkizun iragarkiak pertsonalizatze aldera.</translation>
 <translation id="6403826409255603130">Web-orriak eta aplikazioak tximista bezain azkar abiarazten dituen web-arakatzailea da Chromium. Bizkorra, egonkorra eta erabiltzeko erraza da. Chromium-ek malwarearen eta phishingaren aurka dituen babes inkorporatuei esker, seguruago ibiliko zara Interneten.</translation>
 <translation id="6442900851116057561">Berrabiarazi Chromium OS</translation>
 <translation id="6455857529632101747">Ongi etorri Chromium-eko profiletara</translation>
@@ -292,7 +292,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7483335560992089831">Ezin da instalatu une honetan abian den Chromium-en bertsio bera. Itxi Chromium eta saiatu berriro.</translation>
 <translation id="753534427205733210">{0,plural, =1{1 minutu barru berrabiaraziko da Chromium}other{# minutu barru berrabiaraziko da Chromium}}</translation>
 <translation id="7561906087460245826">Halaber, garbitu Chromium-eko datuak (<ph name="URL" />)</translation>
-<translation id="7582945390259497898">Chromium-ek gutxi gorabehera igar ditzake zure interesak. Beranduago, bisitatzen duzun webgune batek zure interesak ikusteko eska diezaioke Chromium-i, agertzen zaizkizun iragarkiak pertsonalizatze aldera.</translation>
+<translation id="7582945390259497898">Chromium-ek zure interesak estima ditzake. Beranduago, bisitatzen duzun webgune batek zure interesak ikusteko eska diezaioke Chromium-i, agertzen zaizkizun iragarkiak pertsonalizatze aldera.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> zerbitzuaren instalatzailea</translation>
 <translation id="7597596667193879455">Arakatze seguru hobetua aktibatu duzu kontuan. Orain, eskura ezazu Chromium-erako.</translation>
 <translation id="761356813943268536">Chromium kamera eta mikrofonoa erabiltzen ari da.</translation>
@@ -350,7 +350,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="8880203542552872219">Hala bada, editatu Chromium-en gordetako pasahitza, berriarekin bat etor dadin.</translation>
 <translation id="8897323336392112261">Chromium abiarazten duzunean edo Hasiera botoia sakatzen duzunean erakusten den orria ere kontrolatzen du.</translation>
 <translation id="8907580949721785412">Chromium pasahitzak erakusten saiatzen ari da. Hori baimentzeko, idatzi Windows pasahitza.</translation>
-<translation id="8931379085695076764">Azken asteetako arakatze-historian oinarrituta igar ditzake gutxi gorabehera zure interesak Chromium-ek. Informazio hori gailuan gelditzen da.</translation>
+<translation id="8931379085695076764">Azken asteetako arakatze-historian oinarrituta estima ditzake gutxi gorabehera zure interesak Chromium-ek. Informazio hori gailuan gelditzen da.</translation>
 <translation id="8941642502866065432">Ezin da eguneratu Chromium</translation>
 <translation id="897581876605952338">Chromium Enterprise-ren logotipoa</translation>
 <translation id="8986207147630327271">Arakatzaile honetan laneko profila gehitzera zoaz, eta laneko profilaren gaineko kontrola soilik emango diozu administratzaileari.</translation>

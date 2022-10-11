@@ -123,7 +123,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1555130319947370107">Sininen</translation>
 <translation id="1570871743947603115">Laita Bluetooth päälle tai pois päältä. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">nähdä kaikki tämän käyttökerran toimintosi</translation>
-<translation id="1610778689852195798">"Kumoa"</translation>
+<translation id="1610778689852195798">Kumoa</translation>
 <translation id="1611993646327628135">Päällä</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Kytkimen käytön voi laittaa pois päältä kohdassa Asetukset &gt; Esteettömyys.</translation>
@@ -284,7 +284,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2620016719323068571">Hae <ph name="CATEGORY" />, tiedostoista, sovelluksista ja muista.</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
 <translation id="2621713457727696555">Suojattu</translation>
-<translation id="263399434338050016">"Valitse kaikki"</translation>
+<translation id="263399434338050016">Valitse kaikki</translation>
 <translation id="2645435784669275700">Chrome-käyttöjärjestelmä</translation>
 <translation id="2653019840645008922">Ikkunan tallennus</translation>
 <translation id="2653659639078652383">Lähetä</translation>
@@ -303,7 +303,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2727175239389218057">Vastaa</translation>
 <translation id="2727977024730340865">Pienitehoinen laturi kytketty. Akku ei ehkä lataudu luotettavasti.</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
-<translation id="2750932254614666392">"Poista"</translation>
+<translation id="2750932254614666392">Poista</translation>
 <translation id="2750941250130734256">Aktiivinen ikkuna irrotettu</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />: ylläpitäjä on <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Sulje tallennustila</translation>
@@ -626,7 +626,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4565377596337484307">Piilota salasana</translation>
 <translation id="4566144812051858745">En ole kiinnostunut ehdotuksista</translation>
 <translation id="4570957409596482333">Teksti puhuttuna ‑painike</translation>
-<translation id="4573176682887762361">"Kirjoita [sana tai lause]"</translation>
+<translation id="4573176682887762361">Kirjoita [sana tai lause]</translation>
 <translation id="4577274620589681794">Aika loppui · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Näytä esikatselut</translation>
 <translation id="4578196883126898996">Mikrofoni ei ole päällä. Laita päälle laitteen mikrofonipainike.</translation>
@@ -1356,7 +1356,7 @@ Uusi asennus</translation>
 <translation id="8785070478575117577">Yhdistä: <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>
 <translation id="8806053966018712535">Kansio <ph name="FOLDER_NAME" /></translation>
-<translation id="880709030178078220">"Ohje"</translation>
+<translation id="880709030178078220">Ohje</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="881757059229893486">Syöttötapojen asetukset</translation>
 <translation id="8818320199597151042">Poistetaan profiilia. Odota muutama minuutti.</translation>
