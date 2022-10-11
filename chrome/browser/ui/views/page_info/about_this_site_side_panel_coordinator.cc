@@ -118,8 +118,12 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
     return;
   }
 
+  auto* browser_view = GetBrowserView();
+  if (!browser_view)
+    return;
+
   // If the side panel is open and shows the AboutThisSide panel, close it.
-  auto* side_panel_coordinator = GetBrowserView()->side_panel_coordinator();
+  auto* side_panel_coordinator = browser_view->side_panel_coordinator();
   if (side_panel_coordinator->GetCurrentEntryId() ==
       SidePanelEntry::Id::kAboutThisSite) {
     side_panel_coordinator->Close();
