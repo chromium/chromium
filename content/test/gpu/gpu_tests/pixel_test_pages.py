@@ -215,7 +215,7 @@ class PixelTestPages():
                       test_rect=[0, 0, 300, 300]),
         PixelTestPage('pixel_background.html',
                       base_name + '_SolidColorBackground',
-                      test_rect=[500, 500, 100, 100]),
+                      test_rect=[500, 500, 600, 600]),
         PixelTestPage(
             'pixel_video_mp4.html?width=240&height=135&use_timer=1',
             base_name + '_Video_MP4',
