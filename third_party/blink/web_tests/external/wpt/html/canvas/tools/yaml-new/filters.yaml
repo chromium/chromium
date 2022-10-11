@@ -189,7 +189,7 @@
         let outputColor = getColor(color, slopes, intercepts);
         ctx.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
         ctx.fillRect(0, 0, 10, 10);
-        _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
+        _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, 2);
     }
 
 - name: 2d.filter.canvasFilterObject.componentTransfer.identity.tentative
@@ -212,7 +212,7 @@
     for (const color of inputColors) {
         ctx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, 1)`,
         ctx.fillRect(0, 0, 10, 10);
-        _assertPixel(canvas, 5, 5, color[0],color[1],color[2],255, "5,5", `${color[0]},${color[1]},${color[2]}`);
+        _assertPixel(canvas, 5, 5, color[0],color[1],color[2],255);
     }
 
 - name: 2d.filter.canvasFilterObject.componentTransfer.gamma.tentative
@@ -248,7 +248,7 @@
         let outputColor = getColor(color, amplitudes, exponents, offsets);
         ctx.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
         ctx.fillRect(0, 0, 10, 10);
-        _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
+        _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, 2);
     }
 
 - name: 2d.filter.canvasFilterObject.componentTransfer.table.tentative
@@ -293,7 +293,7 @@
         let outputColor = getColor(color, [tableValuesR, tableValuesG, tableValuesB]);
         ctx.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
         ctx.fillRect(0, 0, 10, 10);
-        _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
+        _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, 2);
     }
 
 - name: 2d.filter.canvasFilterObject.componentTransfer.discrete.tentative
@@ -338,7 +338,7 @@
         let outputColor = getColor(color, [tableValuesR, tableValuesG, tableValuesB]);
         ctx.fillStyle = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
         ctx.fillRect(0, 0, 10, 10);
-        _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, "5,5", `${outputColor[0]},${outputColor[1]},${outputColor[2]}`, 2);
+        _assertPixelApprox(canvas, 5, 5, outputColor[0],outputColor[1],outputColor[2],255, 2);
     }
 
 - name: 2d.filter.canvasFilterObject.turbulence.inputTypes.tentative

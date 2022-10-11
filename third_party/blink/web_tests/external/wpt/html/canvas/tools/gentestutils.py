@@ -200,15 +200,15 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
         code = re.sub(r'@nonfinite ([^(]+)\(([^)]+)\)(.*)', lambda m: expand_nonfinite(m.group(1), m.group(2), m.group(3)), code) # must come before '@assert throws'
 
         code = re.sub(r'@assert pixel (\d+,\d+) == (\d+,\d+,\d+,\d+);',
-                    r'_assertPixel(canvas, \1, \2, "\1", "\2");',
+                    r'_assertPixel(canvas, \1, \2);',
                     code)
 
         code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+);',
-                    r'_assertPixelApprox(canvas, \1, \2, "\1", "\2", 2);',
+                    r'_assertPixelApprox(canvas, \1, \2, 2);',
                     code)
 
         code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+) \+/- (\d+);',
-                    r'_assertPixelApprox(canvas, \1, \2, "\1", "\2", \3);',
+                    r'_assertPixelApprox(canvas, \1, \2, \3);',
                     code)
 
         code = re.sub(r'@assert throws (\S+_ERR) (.*);',

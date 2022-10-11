@@ -16,7 +16,7 @@ t.step(function() {
 var canvas = new OffscreenCanvas(100, 50);
 var ctx = canvas.getContext('2d');
 
-_assertPixel(canvas, 20,20, 0,0,0,0, "20,20", "0,0,0,0");
+_assertPixel(canvas, 20,20, 0,0,0,0);
 t.done();
 
 });

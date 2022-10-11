@@ -47,7 +47,7 @@ _addTest(function(canvas, ctx) {
       ctx.reset();
       ctx.filter = makeFilter(tc.input);
       ctx.fillRect(0, 0, 100, 100);
-      _assertPixelApprox(canvas, 5, 5, tc.result,0,0,255, "5,5", `${tc.result},0,0,255`, 2);
+      _assertPixelApprox(canvas, 5, 5, tc.result,0,0,255, 2);
     }
   }
   t.done();
