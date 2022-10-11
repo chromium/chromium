@@ -23,7 +23,7 @@ import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {getTemplate} from './input_method_options_page.html.js';
-import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isNumberValue, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, SubmenuButton, UiType} from './input_method_util.js';
+import {generateOptions, getFirstPartyInputMethodEngineId, getOptionLabelName, getOptionMenuItems, getOptionSubtitleName, getOptionUiType, getOptionUrl, getSubmenuButtonType, getUntranslatedOptionLabelName, hasOptionsPageInSettings, isOptionLabelTranslated, OPTION_DEFAULT, OptionType, shouldStoreNumberAsString, SubmenuButton, UiType} from './input_method_util.js';
 import {LanguageHelper} from './languages_types.js';
 
 /**
@@ -267,10 +267,7 @@ class SettingsInputMethodOptionsPageElement extends
     if (!(this.engineId_ in updatedSettings)) {
       updatedSettings[this.engineId_] = {};
     }
-    // The value of dropdown in html is always string, but some of the prefs
-    // values are used as integer or enum by IME, so we need to store numbers
-    // for them to function correctly.
-    if (isNumberValue(optionName)) {
+    if (shouldStoreNumberAsString(optionName)) {
       newValue = parseInt(newValue, 10);
     }
     updatedSettings[this.engineId_][optionName] = newValue;

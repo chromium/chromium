@@ -131,7 +131,7 @@ export const OPTION_DEFAULT = {
       JAPANESE_SHIFT_KEY_MODE_STYLE.ALPHANUMERIC,
   [OptionType.JAPANESE_USE_INPUT_HISTORY]: true,
   [OptionType.JAPANESE_USE_SYSTEM_DICTIONARY]: true,
-  [OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS]: '3',
+  [OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS]: 3,
   [OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 0,
   [OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
   [OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING]: true,
@@ -832,31 +832,31 @@ export function getOptionMenuItems(option) {
     case OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS:
       return [
         {
-          value: '1',
+          value: 1,
         },
         {
-          value: '2',
+          value: 2,
         },
         {
-          value: '3',
+          value: 3,
         },
         {
-          value: '4',
+          value: 4,
         },
         {
-          value: '5',
+          value: 5,
         },
         {
-          value: '6',
+          value: 6,
         },
         {
-          value: '7',
+          value: 7,
         },
         {
-          value: '8',
+          value: 8,
         },
         {
-          value: '9',
+          value: 9,
         },
       ];
     case OptionType.KOREAN_KEYBOARD_LAYOUT:
@@ -875,16 +875,14 @@ export function getOptionMenuItems(option) {
   }
 }
 
+
 /**
  * @param {!OptionType} option The option type.
  * @return {boolean} true if the value for |option| is a number.
  */
-export function isNumberValue(option) {
-  return option === OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL ||
-      option === OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL ||
-      option === OptionType.JAPANESE_NUMBER_OF_SUGGESTIONS;
+export function shouldStoreNumberAsString(option) {
+  return option === OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL;
 }
-
 /**
  * @param {!OptionType} option The option type.
  * @return {Route|undefined} The url to open for |option|, returns
