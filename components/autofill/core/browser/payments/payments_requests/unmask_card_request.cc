@@ -91,10 +91,16 @@ void ParseAsCvcChallengeOption(
   // American Express card.
   const auto* cvc_position =
       defined_challenge_option->FindStringKey("cvc_position");
-  parsed_challenge_option->cvc_position =
-      cvc_position && (*cvc_position == "CVC_POSITION_FRONT")
-          ? CvcPosition::kFrontOfCard
-          : CvcPosition::kBackOfCard;
+  if (cvc_position) {
+    if (*cvc_position == "CVC_POSITION_FRONT") {
+      parsed_challenge_option->cvc_position = CvcPosition::kFrontOfCard;
+    } else if (*cvc_position == "CVC_POSITION_BACK") {
+      parsed_challenge_option->cvc_position = CvcPosition::kBackOfCard;
+    } else {
+      NOTREACHED();
+      parsed_challenge_option->cvc_position = CvcPosition::kUnknown;
+    }
+  }
 }
 
 CardUnmaskChallengeOption ParseCardUnmaskChallengeOption(
