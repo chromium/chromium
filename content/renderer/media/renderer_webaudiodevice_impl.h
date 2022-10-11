@@ -29,6 +29,9 @@ class SilentSinkSuspender;
 }
 
 namespace content {
+
+// The actual implementation of Blink "WebAudioDevice" that handles the
+// connection between Blink Web Audio API and the media renderer.
 class CONTENT_EXPORT RendererWebAudioDeviceImpl
     : public blink::WebAudioDevice,
       public media::AudioRendererSink::RenderCallback {
@@ -41,7 +44,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
   static std::unique_ptr<RendererWebAudioDeviceImpl> Create(
       media::ChannelLayout layout,
-      int channels,
+      int number_of_output_channels,
       const blink::WebAudioLatencyHint& latency_hint,
       blink::WebAudioDevice::RenderCallback* callback,
       const base::UnguessableToken& session_id);
@@ -66,7 +69,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
   void OnRenderError() override;
 
-  void SetSuspenderTaskRunnerForTesting(
+  void SetSilentSinkTaskRunnerForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   const media::AudioParameters& get_sink_params_for_testing() {
@@ -84,7 +87,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   using RenderFrameTokenCallback = base::OnceCallback<blink::LocalFrameToken()>;
 
   RendererWebAudioDeviceImpl(media::ChannelLayout layout,
-                             int channels,
+                             int number_of_output_channels,
                              const blink::WebAudioLatencyHint& latency_hint,
                              blink::WebAudioDevice::RenderCallback* callback,
                              const base::UnguessableToken& session_id,
@@ -92,7 +95,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
                              RenderFrameTokenCallback render_frame_token_cb);
 
  private:
-  scoped_refptr<base::SingleThreadTaskRunner> GetSuspenderTaskRunner();
+  scoped_refptr<base::SingleThreadTaskRunner> GetSilentSinkTaskRunner();
 
   void SendLogMessage(const std::string& message);
 
@@ -117,13 +120,14 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   const base::UnguessableToken session_id_;
 
   // Used to suspend |sink_| usage when silence has been detected for too long.
-  std::unique_ptr<media::SilentSinkSuspender> webaudio_suspender_;
+  std::unique_ptr<media::SilentSinkSuspender> silent_sink_suspender_;
 
   // Render frame token for the current context.
   blink::LocalFrameToken frame_token_;
 
-  // Allow unit tests to set a custom TaskRunner for |webaudio_suspender_|.
-  scoped_refptr<base::SingleThreadTaskRunner> suspender_task_runner_;
+  // An alternative task runner for `silent_sink_suspender_` or a silent audio
+  // sink.
+  scoped_refptr<base::SingleThreadTaskRunner> silent_sink_task_runner_;
 
   // Used to trigger one single textlog indicating that rendering started as
   // intended. Set to true once in the first call to the Render callback.

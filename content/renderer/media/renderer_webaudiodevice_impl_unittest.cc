@@ -74,7 +74,7 @@ class RendererWebAudioDeviceImplTest
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
         media::CHANNEL_LAYOUT_MONO, 1, latencyHint, this,
         base::UnguessableToken());
-    webaudio_device_->SetSuspenderTaskRunnerForTesting(
+    webaudio_device_->SetSilentSinkTaskRunnerForTesting(
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
@@ -84,7 +84,7 @@ class RendererWebAudioDeviceImplTest
         blink::WebAudioLatencyHint(
             blink::WebAudioLatencyHint::kCategoryInteractive),
         this, base::UnguessableToken());
-    webaudio_device_->SetSuspenderTaskRunnerForTesting(
+    webaudio_device_->SetSilentSinkTaskRunnerForTesting(
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
