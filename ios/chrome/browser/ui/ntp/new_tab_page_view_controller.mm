@@ -392,6 +392,21 @@
 }
 
 - (void)setContentOffsetToTop {
+  // There are many instances during NTP startup where the NTP layout is reset
+  // (e.g. calling -updateNTPLayout), which involves resetting the scroll
+  // offset. Some come from mutliple layout calls from the BVC, some come from
+  // an ambifuous source (likely the Feed). Particularly, the mediator's
+  // -setContentOffsetForWebState: call happens late in the cycle, which can
+  // clash with an already focused omnibox state. That call to reset the content
+  // offset to the top is important since the MVTiles and Google doodle are aync
+  // fetched/displayed, thus needed a reset. However, in the instance where the
+  // omnibox is focused, it is more important to keep that focused state and not
+  // show a "double" omibox state.
+  // TODO(crbug.com/1371261): Replace the -setContentOffsetForWebState: call
+  // with calls directly from all async updates to the NTP.
+  if (self.headerController.isOmniboxFocused) {
+    return;
+  }
   [self setContentOffset:-[self heightAboveFeed]];
   [self setInitialFakeOmniboxConstraints];
   if ([self.ntpContentDelegate isContentHeaderSticky]) {

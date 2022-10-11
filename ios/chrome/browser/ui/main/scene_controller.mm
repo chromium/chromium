@@ -157,7 +157,7 @@ namespace {
 // existing NTP. See http://crbug.com/1363375 for details.
 const base::Feature kForceNewTabForIntentSearch(
     "ForceNewTabForIntentSearch",
-    base::FEATURE_ENABLED_BY_DEFAULT);
+    base::FEATURE_DISABLED_BY_DEFAULT);
 
 // A rough estimate of the expected duration of a view controller transition
 // animation. It's used to temporarily disable mutally exclusive chrome
