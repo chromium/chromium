@@ -109,12 +109,10 @@ class CRWWKHTTPCookieStoreTest : public PlatformTest {
 
 // Tests that getting cookies are cached correctly for consecutive calls.
 TEST_F(CRWWKHTTPCookieStoreTest, GetCookiesCachedCorrectly) {
-  EXPECT_TRUE(SetCookie(test_cookie_1_));
-
   OCMExpect([mock_http_cookie_store_ getAllCookies:[OCMArg any]])
       .andForwardToRealObject();
   NSArray<NSHTTPCookie*>* result_1 = GetCookies();
-  EXPECT_EQ(1U, result_1.count);
+  EXPECT_EQ(0U, result_1.count);
 
   // Internal getAllCookies shouldn't be called again.
   [[mock_http_cookie_store_ reject] getAllCookies:[OCMArg any]];
