@@ -657,7 +657,7 @@ void DedicatedWorkerHost::CreateWebTransportConnector(
       std::make_unique<WebTransportConnectorImpl>(
           worker_process_host_->GetID(),
           ancestor_render_frame_host->GetWeakPtr(), GetStorageKey().origin(),
-          isolation_info_.network_isolation_key()),
+          isolation_info_.network_anonymization_key()),
       std::move(receiver));
 }
 

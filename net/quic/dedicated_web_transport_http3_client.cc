@@ -66,7 +66,7 @@ class ChromiumWebTransportFingerprintProofVerifier
 };
 
 std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
-    const NetworkIsolationKey& isolation_key,
+    const NetworkAnonymizationKey& anonymization_key,
     URLRequestContext* context,
     const WebTransportParameters& parameters) {
   if (parameters.server_certificate_fingerprints.empty()) {
@@ -75,7 +75,7 @@ std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
         context->transport_security_state(), context->sct_auditing_delegate(),
         HostsFromOrigins(
             context->quic_context()->params()->origins_to_force_quic_on),
-        isolation_key);
+        anonymization_key);
   }
 
   auto verifier =
@@ -260,12 +260,12 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
     const GURL& url,
     const url::Origin& origin,
     WebTransportClientVisitor* visitor,
-    const NetworkIsolationKey& isolation_key,
+    const NetworkAnonymizationKey& anonymization_key,
     URLRequestContext* context,
     const WebTransportParameters& parameters)
     : url_(url),
       origin_(origin),
-      isolation_key_(isolation_key),
+      anonymization_key_(anonymization_key),
       context_(context),
       visitor_(visitor),
       quic_context_(context->quic_context()),
@@ -279,13 +279,15 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
       // (currently, all certificate verification errors result in "TLS
       // handshake error" even when more detailed message is available).  This
       // requires implementing ProofHandler::OnProofVerifyDetailsAvailable.
-      crypto_config_(CreateProofVerifier(isolation_key_, context, parameters),
-                     /* session_cache */ nullptr) {
+      crypto_config_(
+          CreateProofVerifier(anonymization_key_, context, parameters),
+          /* session_cache */ nullptr) {
   net_log_.BeginEvent(
       NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_ALIVE, [&] {
         base::Value::Dict dict;
         dict.Set("url", url.possibly_invalid_spec());
-        dict.Set("network_isolation_key", isolation_key.ToDebugString());
+        dict.Set("network_anonymization_key",
+                 anonymization_key.ToDebugString());
         return base::Value(std::move(dict));
       });
 }
@@ -421,7 +423,7 @@ int DedicatedWebTransportHttp3Client::DoInit() {
 int DedicatedWebTransportHttp3Client::DoCheckProxy() {
   next_connect_state_ = CONNECT_STATE_CHECK_PROXY_COMPLETE;
   return context_->proxy_resolution_service()->ResolveProxy(
-      url_, /* method */ "CONNECT", isolation_key_, &proxy_info_,
+      url_, /* method */ "CONNECT", anonymization_key_, &proxy_info_,
       base::BindOnce(&DedicatedWebTransportHttp3Client::DoLoop,
                      base::Unretained(this)),
       &proxy_resolution_request_, net_log_);
@@ -443,10 +445,7 @@ int DedicatedWebTransportHttp3Client::DoResolveHost() {
   next_connect_state_ = CONNECT_STATE_RESOLVE_HOST_COMPLETE;
   HostResolver::ResolveHostParameters parameters;
   resolve_host_request_ = context_->host_resolver()->CreateRequest(
-      url::SchemeHostPort(url_),
-      net::NetworkAnonymizationKey::
-          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(isolation_key_),
-      net_log_, absl::nullopt);
+      url::SchemeHostPort(url_), anonymization_key_, net_log_, absl::nullopt);
   return resolve_host_request_->Start(base::BindOnce(
       &DedicatedWebTransportHttp3Client::DoLoop, base::Unretained(this)));
 }

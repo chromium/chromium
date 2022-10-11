@@ -755,7 +755,7 @@ int HttpStreamFactory::JobController::DoResolveProxy() {
   CompletionOnceCallback io_callback =
       base::BindOnce(&JobController::OnIOComplete, base::Unretained(this));
   return session_->proxy_resolution_service()->ResolveProxy(
-      origin_url, request_info_.method, request_info_.network_isolation_key,
+      origin_url, request_info_.method, request_info_.network_anonymization_key,
       &proxy_info_, std::move(io_callback), &proxy_resolve_request_, net_log_);
 }
 

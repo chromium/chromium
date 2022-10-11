@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "url/gurl.h"
@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyLookupRequest {
   ProxyLookupRequest(
       mojo::PendingRemote<mojom::ProxyLookupClient> proxy_lookup_client,
       NetworkContext* network_context,
-      const net::NetworkIsolationKey& network_isolation_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key);
 
   ProxyLookupRequest(const ProxyLookupRequest&) = delete;
   ProxyLookupRequest& operator=(const ProxyLookupRequest&) = delete;
@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyLookupRequest {
   void DestroySelf();
 
   const raw_ptr<NetworkContext> network_context_;
-  const net::NetworkIsolationKey network_isolation_key_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
   mojo::Remote<mojom::ProxyLookupClient> proxy_lookup_client_;
 
   net::ProxyInfo proxy_info_;

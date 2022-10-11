@@ -294,11 +294,11 @@ class CapturingMojoProxyResolverFactory
   // proxy_resolver::mojom::ProxyResolver:
   void GetProxyForUrl(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverRequestClient>
           client) override {
     url_ = url;
-    network_isolation_key_ = network_isolation_key;
+    network_anonymization_key_ = network_anonymization_key;
 
     mojo::Remote<proxy_resolver::mojom::ProxyResolverRequestClient>
         resolver_request_client(std::move(client));
@@ -312,8 +312,8 @@ class CapturingMojoProxyResolverFactory
   // Return the GURL and NetworkIsolationKey passed to the most recent
   // GetProxyForUrl() call.
   const GURL& url() const { return url_; }
-  const net::NetworkIsolationKey& network_isolation_key() const {
-    return network_isolation_key_;
+  const net::NetworkAnonymizationKey& network_anonymization_key() const {
+    return network_anonymization_key_;
   }
 
  private:
@@ -323,7 +323,7 @@ class CapturingMojoProxyResolverFactory
   std::string pac_script_;
 
   GURL url_;
-  net::NetworkIsolationKey network_isolation_key_;
+  net::NetworkAnonymizationKey network_anonymization_key_;
 };
 
 // ProxyLookupClient that drives proxy lookups and can wait for the responses to
@@ -2190,10 +2190,10 @@ TEST_F(NetworkContextTest, LookupServerBasicAuthCredentials) {
   GURL origin("http://foo.test");
   GURL origin2("http://bar.test");
   GURL origin3("http://baz.test");
-  net::NetworkAnonymizationKey network_isolation_key1(
+  net::NetworkAnonymizationKey network_anonymization_key1(
       net::SchemefulSite(url::Origin::Create(origin)),
       net::SchemefulSite(url::Origin::Create(origin)));
-  net::NetworkAnonymizationKey network_isolation_key2(
+  net::NetworkAnonymizationKey network_anonymization_key2(
       net::SchemefulSite(url::Origin::Create(origin2)),
       net::SchemefulSite(url::Origin::Create(origin2)));
   std::unique_ptr<NetworkContext> network_context =
@@ -2207,26 +2207,25 @@ TEST_F(NetworkContextTest, LookupServerBasicAuthCredentials) {
   std::u16string user = u"user";
   std::u16string password = u"pass";
   cache->Add(url::SchemeHostPort(origin), net::HttpAuth::AUTH_SERVER, "Realm",
-             net::HttpAuth::AUTH_SCHEME_BASIC, network_isolation_key1,
+             net::HttpAuth::AUTH_SCHEME_BASIC, network_anonymization_key1,
              "basic realm=Realm", net::AuthCredentials(user, password), "/");
   cache->Add(url::SchemeHostPort(origin2), net::HttpAuth::AUTH_PROXY, "Realm",
-             net::HttpAuth::AUTH_SCHEME_BASIC, network_isolation_key1,
+             net::HttpAuth::AUTH_SCHEME_BASIC, network_anonymization_key1,
              "basic realm=Realm", net::AuthCredentials(user, password), "/");
-
   absl::optional<net::AuthCredentials> result =
-      GetAuthCredentials(network_context.get(), origin, network_isolation_key1);
+      GetAuthCredentials(network_context.get(), origin, network_anonymization_key1);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(user, result->username());
   EXPECT_EQ(password, result->password());
 
   // Nothing should be returned when using a different NIK.
-  EXPECT_FALSE(
-      GetAuthCredentials(network_context.get(), origin, network_isolation_key2)
-          .has_value());
+  EXPECT_FALSE(GetAuthCredentials(network_context.get(), origin,
+                                  network_anonymization_key2)
+                   .has_value());
 
   // Proxy credentials should not be returned
   result = GetAuthCredentials(network_context.get(), origin2,
-                              network_isolation_key1);
+                              network_anonymization_key1);
   EXPECT_FALSE(result.has_value());
 }
 
@@ -3011,6 +3010,9 @@ TEST_F(NetworkContextTest, ProxyLookupWithNetworkIsolationKey) {
   const GURL kUrl("http://bar.test/");
   const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          kNetworkIsolationKey);
   // Pac scripts must contain this string to be passed to the
   // ProxyResolverFactory.
   const std::string kPacScript("FindProxyForURL");
@@ -3046,8 +3048,8 @@ TEST_F(NetworkContextTest, ProxyLookupWithNetworkIsolationKey) {
 
   EXPECT_EQ(kPacScript, proxy_resolver_factory.pac_script());
   EXPECT_EQ(kUrl, proxy_resolver_factory.url());
-  EXPECT_EQ(kNetworkIsolationKey,
-            proxy_resolver_factory.network_isolation_key());
+  EXPECT_EQ(kNetworkAnonymizationKey,
+            proxy_resolver_factory.network_anonymization_key());
 }
 
 // Test mojom::ProxyResolver that completes calls to GetProxyForUrl() with a
@@ -3064,7 +3066,7 @@ class MockMojoProxyResolver : public proxy_resolver::mojom::ProxyResolver {
   // Overridden from proxy_resolver::mojom::ProxyResolver:
   void GetProxyForUrl(
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverRequestClient>
           pending_client) override {
     // Report a Javascript error and then complete the request successfully,
@@ -3632,7 +3634,10 @@ TEST_F(NetworkContextTest, ResolveHost_Failure_Async) {
 TEST_F(NetworkContextTest, ResolveHost_NetworkIsolationKey) {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
   const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
-
+  net::NetworkAnonymizationKey kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          kNetworkIsolationKey);
+  
   auto resolver = std::make_unique<net::MockHostResolver>();
   resolver->rules()->AddRule("nik.test", "1.2.3.4");
   net::MockHostResolver* raw_resolver = resolver.get();
@@ -3663,8 +3668,8 @@ TEST_F(NetworkContextTest, ResolveHost_NetworkIsolationKey) {
       testing::UnorderedElementsAre(CreateExpectedEndPoint("1.2.3.4", 160)));
   EXPECT_EQ(0u,
             network_context->GetNumOutstandingResolveHostRequestsForTesting());
-  EXPECT_EQ(kNetworkIsolationKey,
-            raw_resolver->last_request_network_isolation_key());
+  EXPECT_EQ(kNetworkAnonymizationKey,
+            raw_resolver->last_request_network_anonymization_key());
 }
 
 TEST_F(NetworkContextTest, ResolveHost_NoControlHandle) {

@@ -32,7 +32,7 @@ class NET_EXPORT_PRIVATE SOCKSSocketParams
   SOCKSSocketParams(scoped_refptr<TransportSocketParams> proxy_server_params,
                     bool socks_v5,
                     const HostPortPair& host_port_pair,
-                    const NetworkIsolationKey& network_isolation_key,
+                    const NetworkAnonymizationKey& network_anonymization_key,
                     const NetworkTrafficAnnotationTag& traffic_annotation);
 
   SOCKSSocketParams(const SOCKSSocketParams&) = delete;
@@ -43,8 +43,8 @@ class NET_EXPORT_PRIVATE SOCKSSocketParams
   }
   const HostPortPair& destination() const { return destination_; }
   bool is_socks_v5() const { return socks_v5_; }
-  const NetworkIsolationKey& network_isolation_key() {
-    return network_isolation_key_;
+  const NetworkAnonymizationKey& network_isolation_key() {
+    return network_anonymization_key_;
   }
 
   const NetworkTrafficAnnotationTag traffic_annotation() {
@@ -60,7 +60,7 @@ class NET_EXPORT_PRIVATE SOCKSSocketParams
   // This is the HTTP destination.
   const HostPortPair destination_;
   const bool socks_v5_;
-  const NetworkIsolationKey network_isolation_key_;
+  const NetworkAnonymizationKey network_anonymization_key_;
 
   NetworkTrafficAnnotationTag traffic_annotation_;
 };

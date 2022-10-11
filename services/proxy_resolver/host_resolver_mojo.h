@@ -17,7 +17,7 @@
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }  // namespace net
 
 namespace proxy_resolver {
@@ -32,7 +32,7 @@ class HostResolverMojo : public ProxyHostResolver {
     virtual void ResolveDns(
         const std::string& hostname,
         net::ProxyResolveDnsOperation operation,
-        const net::NetworkIsolationKey& network_isolation_key,
+        const net::NetworkAnonymizationKey& network_anonymization_key,
         mojo::PendingRemote<mojom::HostResolverRequestClient> client) = 0;
   };
 
@@ -48,7 +48,7 @@ class HostResolverMojo : public ProxyHostResolver {
   std::unique_ptr<Request> CreateRequest(
       const std::string& hostname,
       net::ProxyResolveDnsOperation operation,
-      const net::NetworkIsolationKey& network_isolation_key) override;
+      const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
  private:
   class Job;

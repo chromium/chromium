@@ -297,7 +297,7 @@ class CapturingProxyResolver : public ProxyResolver {
  public:
   struct LookupInfo {
     GURL url;
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
   };
 
   CapturingProxyResolver()
@@ -309,13 +309,13 @@ class CapturingProxyResolver : public ProxyResolver {
   ~CapturingProxyResolver() override = default;
 
   int GetProxyForURL(const GURL& url,
-                     const NetworkIsolationKey& network_isolation_key,
+                     const NetworkAnonymizationKey& network_anonymization_key,
                      ProxyInfo* results,
                      CompletionOnceCallback callback,
                      std::unique_ptr<Request>* request,
                      const NetLogWithSource& net_log) override {
     results->UseProxyServer(proxy_server_);
-    lookup_info_.push_back(LookupInfo{url, network_isolation_key});
+    lookup_info_.push_back(LookupInfo{url, network_anonymization_key});
     return OK;
   }
 
@@ -617,13 +617,14 @@ class HttpNetworkTransactionTest : public PlatformTest,
 
   const CommonConnectJobParams dummy_connect_job_params_;
 
+  const net::NetworkAnonymizationKey kNetworkAnonymizationKey =
+      NetworkAnonymizationKey(SchemefulSite(GURL("https://foo.test/")),
+                              SchemefulSite(GURL("https://bar.test/")));
+
   const net::NetworkIsolationKey kNetworkIsolationKey =
       NetworkIsolationKey(SchemefulSite(GURL("https://foo.test/")),
                           SchemefulSite(GURL("https://bar.test/")));
 
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey =
-      NetworkAnonymizationKey(SchemefulSite(GURL("https://foo.test/")),
-                              SchemefulSite(GURL("https://bar.test/")));
   // These clocks are defined here, even though they're only used in the
   // Reporting tests below, since they need to be destroyed after
   // |session_deps_|.
@@ -4545,23 +4546,23 @@ TEST_F(HttpNetworkTransactionTest, BasicAuthProxyMatchesServerAuthNoTunnel) {
 
 // Test the no-tunnel HTTP auth case where proxy and server origins and realms
 // are the same, but the user/passwords are different, and with different
-// NetworkIsolationKeys. Sends one request with a NIK, response to both proxy
-// and auth challenges, sends another request with another NIK, expecting only
-// the proxy credentials to be cached, and thus sees only a server auth
+// NetworkAnonymizationKeys. Sends one request with a NIK, response to both
+// proxy and auth challenges, sends another request with another NIK, expecting
+// only the proxy credentials to be cached, and thus sees only a server auth
 // challenge. Then sends a request with the original NIK, expecting cached proxy
 // and auth credentials that match the ones used in the first request.
 //
 // Serves to verify credentials are correctly separated based on
-// HttpAuth::Target and NetworkIsolationKeys, but NetworkIsolationKey only
-// affects server credentials, not proxy credentials.
+// HttpAuth::Target and NetworkAnonymizationKeys, but NetworkAnonymizationKey
+// only affects server credentials, not proxy credentials.
 TEST_F(HttpNetworkTransactionTest,
-       BasicAuthProxyMatchesServerAuthWithNetworkIsolationKeyNoTunnel) {
+       BasicAuthProxyMatchesServerAuthWithNetworkAnonymizationKeyNoTunnel) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   // This test would need to use a single socket without this option enabled.
   // Best to use this option when it would affect a test, as it will eventually
@@ -4635,7 +4636,7 @@ TEST_F(HttpNetworkTransactionTest,
   session_deps_.socket_factory->AddSocketDataProvider(&data);
 
   MockWrite data_writes2[] = {
-      // Initial request using a different NetworkIsolationKey includes the
+      // Initial request using a different NetworkAnonymizationKey includes the
       // cached proxy credentials, but not server credentials.
       MockWrite("GET http://myproxy:70/ HTTP/1.1\r\n"
                 "Host: myproxy:70\r\n"
@@ -4710,7 +4711,7 @@ TEST_F(HttpNetworkTransactionTest,
   EXPECT_EQ("hello", response_data);
 
   // Check that the proxy credentials were cached correctly. The should be
-  // accessible with any NetworkIsolationKey.
+  // accessible with any NetworkAnonymizationKey.
   HttpAuthCache::Entry* entry = session->http_auth_cache()->Lookup(
       url::SchemeHostPort(url::SchemeHostPort(GURL("http://myproxy:70"))),
       HttpAuth::AUTH_PROXY, "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
@@ -4724,21 +4725,22 @@ TEST_F(HttpNetworkTransactionTest,
                        HttpAuth::AUTH_SCHEME_BASIC, kNetworkAnonymizationKey2));
 
   // Check that the server credentials were cached correctly. The should be
-  // accessible with only kNetworkIsolationKey1.
+  // accessible with only kNetworkAnonymizationKey1.
   entry = session->http_auth_cache()->Lookup(
       url::SchemeHostPort(GURL("http://myproxy:70")), HttpAuth::AUTH_SERVER,
       "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkAnonymizationKey1);
   ASSERT_TRUE(entry);
   ASSERT_EQ(kFoo2, entry->credentials().username());
   ASSERT_EQ(kBar2, entry->credentials().password());
-  // Looking up the server entry with another NetworkIsolationKey should fail.
+  // Looking up the server entry with another NetworkAnonymizationKey should
+  // fail.
   EXPECT_FALSE(session->http_auth_cache()->Lookup(
       url::SchemeHostPort(GURL("http://myproxy:70")), HttpAuth::AUTH_SERVER,
       "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkAnonymizationKey2));
 
-  // Make another request with a different NetworkIsolationKey. It should use
-  // another socket, reuse the cached proxy credentials, but result in a server
-  // auth challenge.
+  // Make another request with a different NetworkAnonymizationKey. It should
+  // use another socket, reuse the cached proxy credentials, but result in a
+  // server auth challenge.
   request.network_isolation_key = kNetworkIsolationKey2;
   request.network_anonymization_key = kNetworkAnonymizationKey2;
 
@@ -4779,7 +4781,7 @@ TEST_F(HttpNetworkTransactionTest,
                        HttpAuth::AUTH_SCHEME_BASIC, kNetworkAnonymizationKey2));
 
   // Check that the correct server credentials are cached for each
-  // NetworkIsolationKey.
+  // NetworkAnonymizationKey.
   entry = session->http_auth_cache()->Lookup(
       url::SchemeHostPort(GURL("http://myproxy:70")), HttpAuth::AUTH_SERVER,
       "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkAnonymizationKey1);
@@ -4793,8 +4795,8 @@ TEST_F(HttpNetworkTransactionTest,
   ASSERT_EQ(kFoo3, entry->credentials().username());
   ASSERT_EQ(kBar3, entry->credentials().password());
 
-  // Make a request with the original NetworkIsolationKey. It should reuse the
-  // first socket, and the proxy credentials sent on the first socket.
+  // Make a request with the original NetworkAnonymizationKey. It should reuse
+  // the first socket, and the proxy credentials sent on the first socket.
   request.network_isolation_key = kNetworkIsolationKey1;
   request.network_anonymization_key = kNetworkAnonymizationKey1;
   trans =
@@ -4815,13 +4817,13 @@ TEST_F(HttpNetworkTransactionTest,
 
 // Much like the test above, but uses tunnelled connections.
 TEST_F(HttpNetworkTransactionTest,
-       BasicAuthProxyMatchesServerAuthWithNetworkIsolationKeyWithTunnel) {
+       BasicAuthProxyMatchesServerAuthWithNetworkAnonymizationKeyWithTunnel) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   // This test would need to use a single socket without this option enabled.
   // Best to use this option when it would affect a test, as it will eventually
@@ -4904,7 +4906,7 @@ TEST_F(HttpNetworkTransactionTest,
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl2);
 
   MockWrite data_writes2[] = {
-      // Initial request using a different NetworkIsolationKey includes the
+      // Initial request using a different NetworkAnonymizationKey includes the
       // cached proxy credentials when establishing a tunnel.
       MockWrite("CONNECT myproxy:70 HTTP/1.1\r\n"
                 "Host: myproxy:70\r\n"
@@ -4989,7 +4991,7 @@ TEST_F(HttpNetworkTransactionTest,
   EXPECT_EQ("hello", response_data);
 
   // Check that the proxy credentials were cached correctly. The should be
-  // accessible with any NetworkIsolationKey.
+  // accessible with any NetworkAnonymizationKey.
   HttpAuthCache::Entry* entry = session->http_auth_cache()->Lookup(
       url::SchemeHostPort(url::SchemeHostPort(GURL("https://myproxy:70"))),
       HttpAuth::AUTH_PROXY, "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
@@ -5003,7 +5005,7 @@ TEST_F(HttpNetworkTransactionTest,
                        HttpAuth::AUTH_SCHEME_BASIC, kNetworkAnonymizationKey2));
 
   // Check that the server credentials were cached correctly. The should be
-  // accessible with only kNetworkIsolationKey1.
+  // accessible with only kNetworkAnonymizationKey1.
   entry = session->http_auth_cache()->Lookup(
       url::SchemeHostPort(GURL("https://myproxy:70")), HttpAuth::AUTH_SERVER,
       "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, kNetworkAnonymizationKey1);
@@ -5975,7 +5977,7 @@ class SameProxyWithDifferentSchemesProxyResolver : public ProxyResolver {
 
   // ProxyResolver implementation.
   int GetProxyForURL(const GURL& url,
-                     const NetworkIsolationKey& network_isolation_key,
+                     const NetworkAnonymizationKey& network_anonymization_key,
                      ProxyInfo* results,
                      CompletionOnceCallback callback,
                      std::unique_ptr<Request>* request,
@@ -6426,8 +6428,8 @@ TEST_F(HttpNetworkTransactionTest, HttpProxyLoadTimingWithPacTwoRequests) {
   session->CloseAllConnections(ERR_FAILED, "Very good reason");
 }
 
-// Make sure that NetworkIsolationKeys are passed down to the proxy layer.
-TEST_F(HttpNetworkTransactionTest, ProxyResolvedWithNetworkIsolationKey) {
+// Make sure that NetworkAnonymizationKeys are passed down to the proxy layer.
+TEST_F(HttpNetworkTransactionTest, ProxyResolvedWithNetworkAnonymizationKey) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
 
   ProxyConfig proxy_config;
@@ -13626,13 +13628,13 @@ TEST_F(HttpNetworkTransactionTest, HonorAlternativeServiceHeader) {
 }
 
 TEST_F(HttpNetworkTransactionTest,
-       HonorAlternativeServiceHeaderWithNetworkIsolationKey) {
+       HonorAlternativeServiceHeaderWithNetworkAnonymizationKey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       // enabled_features
       {features::kPartitionHttpServerPropertiesByNetworkIsolationKey,
-       // Need to partition connections by NetworkIsolationKey for
-       // SpdySessionKeys to include NetworkIsolationKeys.
+       // Need to partition connections by NetworkAnonymizationKey for
+       // SpdySessionKeys to include NetworkAnonymizationKeys.
        features::kPartitionConnectionsByNetworkIsolationKey},
       // disabled_features
       {});
@@ -13642,11 +13644,11 @@ TEST_F(HttpNetworkTransactionTest,
       std::make_unique<HttpServerProperties>();
 
   const SchemefulSite kSite1(GURL("https://foo.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const SchemefulSite kSite2(GURL("https://bar.test/"));
-  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
 
   MockRead data_reads[] = {
       MockRead("HTTP/1.1 200 OK\r\n"),
@@ -20381,7 +20383,7 @@ class HttpNetworkTransactionNetworkErrorLoggingTest
     const NetworkErrorLoggingService::RequestDetails& error =
         network_error_logging_service()->errors()[index];
     EXPECT_EQ(url_, error.uri);
-    EXPECT_EQ(kNetworkIsolationKey, error.network_anonymization_key);
+    EXPECT_EQ(kNetworkAnonymizationKey, error.network_anonymization_key);
     EXPECT_EQ(kReferrer, error.referrer);
     EXPECT_EQ(kUserAgent, error.user_agent);
     EXPECT_EQ(server_ip, error.server_ip);
@@ -22683,10 +22685,10 @@ TEST_F(HttpNetworkTransactionTest, ClientCertSocketReuse) {
 TEST_F(HttpNetworkTransactionTest, NetworkIsolation) {
   const SchemefulSite kSite1(GURL("http://origin1/"));
   const SchemefulSite kSite2(GURL("http://origin2/"));
-  NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
-  NetworkIsolationKey network_isolation_key2(kSite2, kSite2);
   NetworkAnonymizationKey network_anonymization_key1(kSite1, kSite1);
   NetworkAnonymizationKey network_anonymization_key2(kSite2, kSite2);
+  NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
+  NetworkIsolationKey network_isolation_key2(kSite2, kSite2);
 
   for (bool partition_connections : {false, true}) {
     SCOPED_TRACE(partition_connections);
@@ -22836,10 +22838,10 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolation) {
 TEST_F(HttpNetworkTransactionTest, NetworkIsolationH2) {
   const SchemefulSite kSite1(GURL("http://origin1/"));
   const SchemefulSite kSite2(GURL("http://origin2/"));
-  NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
-  NetworkIsolationKey network_isolation_key2(kSite2, kSite2);
   NetworkAnonymizationKey network_anonymization_key1(kSite1, kSite1);
   NetworkAnonymizationKey network_anonymization_key2(kSite2, kSite2);
+  NetworkIsolationKey network_isolation_key1(kSite1, kSite1);
+  NetworkIsolationKey network_isolation_key2(kSite2, kSite2);
 
   // Whether to use an H2 proxy. When false, uses HTTPS H2 requests without a
   // proxy, when true, uses HTTP requests over an H2 proxy. It's unnecessary to
@@ -23056,9 +23058,9 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationH2) {
   }
 }
 
-// Preconnect two sockets with different NetworkIsolationKeys when
-// features::kPartitionConnectionsByNetworkIsolationKey is enabled. Then issue a
-// request and make sure the correct socket is used. Loops three times,
+// Preconnect two sockets with different NetworkAnonymizationKeys when
+// features::kPartitionConnectionsByNetworkIsolationKey is enabled. Then
+// issue a request and make sure the correct socket is used. Loops three times,
 // expecting to use the first preconnect, second preconnect, and neither.
 TEST_F(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
   base::test::ScopedFeatureList feature_list;
@@ -23074,12 +23076,12 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
   const SchemefulSite kSite1(GURL("http://origin1/"));
   const SchemefulSite kSite2(GURL("http://origin2/"));
   const SchemefulSite kSite3(GURL("http://origin3/"));
-  NetworkIsolationKey preconnect1_isolation_key(kSite1, kSite1);
-  NetworkIsolationKey preconnect2_isolation_key(kSite2, kSite2);
-  NetworkIsolationKey not_preconnected_isolation_key(kSite3, kSite3);
   NetworkAnonymizationKey preconnect1_anonymization_key(kSite1, kSite1);
   NetworkAnonymizationKey preconnect2_anonymization_key(kSite2, kSite2);
   NetworkAnonymizationKey not_preconnected_anonymization_key(kSite3, kSite3);
+  NetworkIsolationKey preconnect1_isolation_key(kSite1, kSite1);
+  NetworkIsolationKey preconnect2_isolation_key(kSite2, kSite2);
+  NetworkIsolationKey not_preconnected_isolation_key(kSite3, kSite3);
   // Test that only preconnects with
   for (TestCase test_case :
        {TestCase::kUseFirstPreconnect, TestCase::kUseSecondPreconnect,
@@ -23115,8 +23117,8 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
                                          base::span<const MockRead>(),
                                          base::span<const MockWrite>());
 
-    NetworkIsolationKey network_isolation_key_for_request;
     NetworkAnonymizationKey network_anonymization_key_for_request;
+    NetworkIsolationKey network_isolation_key_for_request;
 
     switch (test_case) {
       case TestCase::kUseFirstPreconnect:
@@ -23192,8 +23194,8 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationPreconnect) {
   }
 }
 
-// Test that the NetworkIsolationKey is passed down to SSLConfig so the session
-// cache is isolated.
+// Test that the NetworkAnonymizationKey is passed down to SSLConfig so the
+// session cache is isolated.
 TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSL) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -23203,10 +23205,10 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSL) {
 
   const SchemefulSite kSite1(GURL("http://origin1/"));
   const SchemefulSite kSite2(GURL("http://origin2/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
   const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // The server always sends Connection: close, so each request goes over a
@@ -23257,7 +23259,7 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSL) {
   ssl_data1.expected_network_isolation_key = kNetworkIsolationKey1;
   SSLSocketDataProvider ssl_data2(ASYNC, OK);
   ssl_data2.expected_host_and_port = HostPortPair("foo.test", 443);
-  ssl_data2.expected_network_isolation_key = kNetworkIsolationKey2;
+  ssl_data2.expected_network_isolation_key = kNetworkAnonymizationKey2;
   SSLSocketDataProvider ssl_data3(ASYNC, OK);
   ssl_data3.expected_host_and_port = HostPortPair("foo.test", 443);
   ssl_data3.expected_network_isolation_key = kNetworkIsolationKey1;
@@ -23316,8 +23318,8 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSL) {
   trans3.reset();
 }
 
-// Test that the NetworkIsolationKey is passed down to SSLConfig so the session
-// cache is isolated, for both origins and proxies.
+// Test that the NetworkAnonymizationKey is passed down to SSLConfig so the
+// session cache is isolated, for both origins and proxies.
 TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSLProxy) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -23331,10 +23333,10 @@ TEST_F(HttpNetworkTransactionTest, NetworkIsolationSSLProxy) {
 
   const SchemefulSite kSite1(GURL("http://origin1/"));
   const SchemefulSite kSite2(GURL("http://origin2/"));
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
-  const net::NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite1, kSite1);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const net::NetworkIsolationKey kNetworkIsolationKey1(kSite1, kSite1);
+  const net::NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // Make both a tunneled and non-tunneled request.

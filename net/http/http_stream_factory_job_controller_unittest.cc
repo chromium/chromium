@@ -3762,7 +3762,7 @@ void HttpStreamFactoryJobControllerTestBase::TestAltSvcVersionSelection(
   auto headers = base::MakeRefCounted<HttpResponseHeaders>("");
   headers->AddHeader("alt-svc", alt_svc_header);
   session_->http_stream_factory()->ProcessAlternativeServices(
-      session_.get(), network_isolation_key, headers.get(), origin);
+      session_.get(), network_anonymization_key, headers.get(), origin);
   AlternativeServiceInfo alt_svc_info =
       JobControllerPeer::GetAlternativeServiceInfoFor(
           job_controller_, request_info, &request_delegate_,

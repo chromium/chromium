@@ -93,9 +93,9 @@ std::unique_ptr<SOCKSClientSocket> SOCKSClientSocketTest::BuildMockSocket(
   // non-owning pointer to it.
   tcp_sock_ = socket.get();
   return std::make_unique<SOCKSClientSocket>(
-      std::move(socket), HostPortPair(hostname, port), NetworkIsolationKey(),
-      DEFAULT_PRIORITY, host_resolver, SecureDnsPolicy::kAllow,
-      TRAFFIC_ANNOTATION_FOR_TESTS);
+      std::move(socket), HostPortPair(hostname, port),
+      NetworkAnonymizationKey(), DEFAULT_PRIORITY, host_resolver,
+      SecureDnsPolicy::kAllow, TRAFFIC_ANNOTATION_FOR_TESTS);
 }
 
 // Tests a complete handshake and the disconnection.
@@ -437,7 +437,7 @@ TEST_F(SOCKSClientSocketTest, Tag) {
   MockHostResolver host_resolver;
   SOCKSClientSocket socket(
       std::move(tagging_sock), HostPortPair("localhost", 80),
-      NetworkIsolationKey(), DEFAULT_PRIORITY, &host_resolver,
+      NetworkAnonymizationKey(), DEFAULT_PRIORITY, &host_resolver,
       SecureDnsPolicy::kAllow, TRAFFIC_ANNOTATION_FOR_TESTS);
 
   EXPECT_EQ(tagging_sock_ptr->tag(), SocketTag());
@@ -454,11 +454,12 @@ TEST_F(SOCKSClientSocketTest, SetSecureDnsPolicy) {
     StaticSocketDataProvider data;
     MockHostResolver host_resolver;
     host_resolver.rules()->AddRule("doh.test", "127.0.0.1");
-    SOCKSClientSocket socket(
-        std::make_unique<MockTCPClientSocket>(address_list_, NetLog::Get(),
-                                              &data),
-        HostPortPair("doh.test", 80), NetworkIsolationKey(), DEFAULT_PRIORITY,
-        &host_resolver, secure_dns_policy, TRAFFIC_ANNOTATION_FOR_TESTS);
+    SOCKSClientSocket socket(std::make_unique<MockTCPClientSocket>(
+                                 address_list_, NetLog::Get(), &data),
+                             HostPortPair("doh.test", 80),
+                             NetworkAnonymizationKey(), DEFAULT_PRIORITY,
+                             &host_resolver, secure_dns_policy,
+                             TRAFFIC_ANNOTATION_FOR_TESTS);
 
     EXPECT_EQ(ERR_IO_PENDING, socket.Connect(callback_.callback()));
     EXPECT_EQ(secure_dns_policy, host_resolver.last_secure_dns_policy());

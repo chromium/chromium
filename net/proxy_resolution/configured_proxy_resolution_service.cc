@@ -26,7 +26,7 @@
 #include "build/chromeos_buildflags.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_info_source_list.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
@@ -185,7 +185,7 @@ class ProxyResolverNull : public ProxyResolver {
 
   // ProxyResolver implementation.
   int GetProxyForURL(const GURL& url,
-                     const NetworkIsolationKey& network_isolation_key,
+                     const NetworkAnonymizationKey& network_anonymization_key,
                      ProxyInfo* results,
                      CompletionOnceCallback callback,
                      std::unique_ptr<Request>* request,
@@ -202,7 +202,7 @@ class ProxyResolverFromPacString : public ProxyResolver {
       : pac_string_(pac_string) {}
 
   int GetProxyForURL(const GURL& url,
-                     const NetworkIsolationKey& network_isolation_key,
+                     const NetworkAnonymizationKey& network_anonymization_key,
                      ProxyInfo* results,
                      CompletionOnceCallback callback,
                      std::unique_ptr<Request>* request,
@@ -892,7 +892,7 @@ ConfiguredProxyResolutionService::CreateFixedFromAutoDetectedPacResultForTest(
 int ConfiguredProxyResolutionService::ResolveProxy(
     const GURL& raw_url,
     const std::string& method,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     ProxyInfo* result,
     CompletionOnceCallback callback,
     std::unique_ptr<ProxyResolutionRequest>* out_request,
@@ -927,7 +927,7 @@ int ConfiguredProxyResolutionService::ResolveProxy(
   }
 
   auto req = std::make_unique<ConfiguredProxyResolutionRequest>(
-      this, url, method, network_isolation_key, result, std::move(callback),
+      this, url, method, network_anonymization_key, result, std::move(callback),
       net_log);
 
   if (current_state_ == STATE_READY) {

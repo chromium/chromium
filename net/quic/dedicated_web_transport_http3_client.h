@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -45,12 +45,13 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
       public QuicChromiumPacketWriter::Delegate {
  public:
   // |visitor| and |context| must outlive this object.
-  DedicatedWebTransportHttp3Client(const GURL& url,
-                                   const url::Origin& origin,
-                                   WebTransportClientVisitor* visitor,
-                                   const NetworkIsolationKey& isolation_key,
-                                   URLRequestContext* context,
-                                   const WebTransportParameters& parameters);
+  DedicatedWebTransportHttp3Client(
+      const GURL& url,
+      const url::Origin& origin,
+      WebTransportClientVisitor* visitor,
+      const NetworkAnonymizationKey& anonymization_key,
+      URLRequestContext* context,
+      const WebTransportParameters& parameters);
   ~DedicatedWebTransportHttp3Client() override;
 
   WebTransportState state() const { return state_; }
@@ -141,7 +142,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
 
   const GURL url_;
   const url::Origin origin_;
-  const NetworkIsolationKey isolation_key_;
+  const NetworkAnonymizationKey anonymization_key_;
   const raw_ptr<URLRequestContext> context_;          // Unowned.
   const raw_ptr<WebTransportClientVisitor> visitor_;  // Unowned.
 

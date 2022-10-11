@@ -40,7 +40,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/dns_alias_utility.h"
 #include "net/dns/dns_util.h"
@@ -771,7 +771,7 @@ HostCache* MockHostResolverBase::GetHostCache() {
 
 int MockHostResolverBase::LoadIntoCache(
     const Host& endpoint,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const absl::optional<ResolveHostParameters>& optional_parameters) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(cache_);
@@ -783,7 +783,7 @@ int MockHostResolverBase::LoadIntoCache(
   std::set<std::string> aliases;
   absl::optional<HostCache::EntryStaleness> stale_info;
   int rv = ResolveFromIPLiteralOrCache(
-      endpoint, network_isolation_key, parameters.dns_query_type,
+      endpoint, network_anonymization_key, parameters.dns_query_type,
       ParametersToHostResolverFlags(parameters), parameters.source,
       parameters.cache_usage, &endpoints, &aliases, &stale_info);
   if (rv != ERR_DNS_CACHE_MISS) {
@@ -799,7 +799,7 @@ int MockHostResolverBase::LoadIntoCache(
   RequestImpl request(endpoint,
                       net::NetworkAnonymizationKey::
                           CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                              network_isolation_key),
+                              network_anonymization_key),
                       optional_parameters, AsWeakPtr());
   return DoSynchronousResolution(request);
 }
@@ -849,7 +849,7 @@ RequestPriority MockHostResolverBase::request_priority(size_t id) {
 }
 
 const NetworkAnonymizationKey&
-MockHostResolverBase::request_network_isolation_key(size_t id) {
+MockHostResolverBase::request_network_anonymization_key(size_t id) {
   DCHECK(request(id));
   return request(id)->network_anonymization_key();
 }
@@ -927,7 +927,8 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   last_request_priority_ = request->parameters().initial_priority;
-  last_request_network_isolation_key_ = request->network_anonymization_key();
+  last_request_network_anonymization_key_ =
+      request->network_anonymization_key();
   last_secure_dns_policy_ = request->parameters().secure_dns_policy;
   state_->IncrementNumResolve();
   std::vector<HostResolverEndpointResult> endpoints;
@@ -978,7 +979,7 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
 
 int MockHostResolverBase::ResolveFromIPLiteralOrCache(
     const Host& endpoint,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     DnsQueryType dns_query_type,
     HostResolverFlags flags,
     HostResolverSource source,
@@ -1032,7 +1033,7 @@ int MockHostResolverBase::ResolveFromIPLiteralOrCache(
         source == HostResolverSource::LOCAL_ONLY ? HostResolverSource::ANY
                                                  : source;
     HostCache::Key key(GetCacheHost(endpoint), dns_query_type, flags,
-                       effective_source, network_isolation_key);
+                       effective_source, network_anonymization_key);
     const std::pair<const HostCache::Key, HostCache::Entry>* cache_result;
     HostCache::EntryStaleness stale_info = HostCache::kNotStale;
     if (cache_usage ==
@@ -1517,7 +1518,7 @@ HangingHostResolver::CreateRequest(
     const NetLogWithSource& source_net_log,
     const absl::optional<ResolveHostParameters>& optional_parameters) {
   last_host_ = host;
-  last_network_isolation_key_ = network_anonymization_key;
+  last_network_anonymization_key_ = network_anonymization_key;
 
   if (shutting_down_)
     return CreateFailingRequest(ERR_CONTEXT_SHUT_DOWN);

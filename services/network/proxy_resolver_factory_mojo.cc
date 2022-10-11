@@ -24,7 +24,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -39,7 +39,7 @@
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
 namespace net {
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 }
 
 namespace network {
@@ -122,7 +122,7 @@ class ClientMixin : public ClientInterface {
   void ResolveDns(
       const std::string& hostname,
       net::ProxyResolveDnsOperation operation,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       mojo::PendingRemote<proxy_resolver::mojom::HostResolverRequestClient>
           client) override {
     bool is_ex = operation == net::ProxyResolveDnsOperation::DNS_RESOLVE_EX ||
@@ -135,7 +135,7 @@ class ClientMixin : public ClientInterface {
           base::BindOnce(&DoMyIpAddressOnWorker, is_ex, std::move(client)));
     } else {
       // Request was for dnsResolve() or dnsResolveEx().
-      host_resolver_.Resolve(hostname, network_isolation_key, is_ex,
+      host_resolver_.Resolve(hostname, network_anonymization_key, is_ex,
                              std::move(client));
     }
   }
@@ -191,12 +191,13 @@ class ProxyResolverMojo : public net::ProxyResolver {
   ~ProxyResolverMojo() override;
 
   // ProxyResolver implementation:
-  int GetProxyForURL(const GURL& url,
-                     const net::NetworkIsolationKey& network_isolation_key,
-                     net::ProxyInfo* results,
-                     net::CompletionOnceCallback callback,
-                     std::unique_ptr<Request>* request,
-                     const net::NetLogWithSource& net_log) override;
+  int GetProxyForURL(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      net::ProxyInfo* results,
+      net::CompletionOnceCallback callback,
+      std::unique_ptr<Request>* request,
+      const net::NetLogWithSource& net_log) override;
 
  private:
   class Job;
@@ -223,7 +224,7 @@ class ProxyResolverMojo::Job
  public:
   Job(ProxyResolverMojo* resolver,
       const GURL& url,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
       net::ProxyInfo* results,
       net::CompletionOnceCallback callback,
       const net::NetLogWithSource& net_log);
@@ -258,7 +259,7 @@ class ProxyResolverMojo::Job
 ProxyResolverMojo::Job::Job(
     ProxyResolverMojo* resolver,
     const GURL& url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     net::ProxyInfo* results,
     net::CompletionOnceCallback callback,
     const net::NetLogWithSource& net_log)
@@ -271,7 +272,7 @@ ProxyResolverMojo::Job::Job(
       results_(results),
       callback_(std::move(callback)) {
   resolver->mojo_proxy_resolver_remote_->GetProxyForUrl(
-      url_, network_isolation_key, receiver_.BindNewPipeAndPassRemote());
+      url_, network_anonymization_key, receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &ProxyResolverMojo::Job::OnMojoDisconnect, base::Unretained(this)));
 }
@@ -336,7 +337,7 @@ void ProxyResolverMojo::OnMojoDisconnect() {
 
 int ProxyResolverMojo::GetProxyForURL(
     const GURL& url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     net::ProxyInfo* results,
     net::CompletionOnceCallback callback,
     std::unique_ptr<Request>* request,
@@ -346,8 +347,8 @@ int ProxyResolverMojo::GetProxyForURL(
   if (!mojo_proxy_resolver_remote_)
     return net::ERR_PAC_SCRIPT_TERMINATED;
 
-  *request = std::make_unique<Job>(this, url, network_isolation_key, results,
-                                   std::move(callback), net_log);
+  *request = std::make_unique<Job>(this, url, network_anonymization_key,
+                                   results, std::move(callback), net_log);
 
   return net::ERR_IO_PENDING;
 }

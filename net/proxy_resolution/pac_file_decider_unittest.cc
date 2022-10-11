@@ -399,8 +399,8 @@ TEST_F(PacFileDeciderQuickCheckTest, AsyncSuccess) {
   // as the PacFileFetcher, so wpad fetches can reuse the DNS lookup result from
   // the wpad quick check, if it succeeds.
   ASSERT_EQ(1u, host_resolver().last_id());
-  EXPECT_EQ(fetcher_.isolation_info().network_isolation_key(),
-            host_resolver().request_network_isolation_key(1));
+  EXPECT_EQ(fetcher_.isolation_info().network_anonymization_key(),
+            host_resolver().request_network_anonymization_key(1));
 
   host_resolver().ResolveAllPending();
   callback_.WaitForResult();
@@ -423,8 +423,8 @@ TEST_F(PacFileDeciderQuickCheckTest, AsyncFail) {
   // as the PacFileFetcher, so wpad fetches can reuse the DNS lookup result from
   // the wpad quick check, if it succeeds.
   ASSERT_EQ(1u, host_resolver().last_id());
-  EXPECT_EQ(fetcher_.isolation_info().network_isolation_key(),
-            host_resolver().request_network_isolation_key(1));
+  EXPECT_EQ(fetcher_.isolation_info().network_anonymization_key(),
+            host_resolver().request_network_anonymization_key(1));
 
   host_resolver().ResolveAllPending();
   callback_.WaitForResult();

@@ -1266,7 +1266,7 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
             server_cert_verify_result_.public_key_hashes, server_cert_.get(),
             server_cert_verify_result_.verified_cert.get(),
             TransportSecurityState::ENABLE_PIN_REPORTS,
-            ssl_config_.network_anonymization_key, &pinning_failure_log_);
+             ssl_config_.network_anonymization_key, &pinning_failure_log_);
     switch (pin_validity) {
       case TransportSecurityState::PKPStatus::VIOLATED:
         server_cert_verify_result_.cert_status |=

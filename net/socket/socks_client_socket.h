@@ -33,10 +33,10 @@ class NET_EXPORT_PRIVATE SOCKSClientSocket : public StreamSocket {
  public:
   // |destination| contains the hostname and port to which the socket above will
   // communicate to via the socks layer. For testing the referrer is optional.
-  // |network_isolation_key| is used for host resolution.
+  // |network_anonymization_key| is used for host resolution.
   SOCKSClientSocket(std::unique_ptr<StreamSocket> transport_socket,
                     const HostPortPair& destination,
-                    const NetworkIsolationKey& network_isolation_key,
+                    const NetworkAnonymizationKey& network_anonymization_key,
                     RequestPriority priority,
                     HostResolver* host_resolver,
                     SecureDnsPolicy secure_dns_policy,
@@ -147,7 +147,7 @@ class NET_EXPORT_PRIVATE SOCKSClientSocket : public StreamSocket {
   SecureDnsPolicy secure_dns_policy_;
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_host_request_;
   const HostPortPair destination_;
-  const NetworkIsolationKey network_isolation_key_;
+  const NetworkAnonymizationKey network_anonymization_key_;
   RequestPriority priority_;
   ResolveErrorInfo resolve_error_info_;
 

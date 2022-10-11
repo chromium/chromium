@@ -48,7 +48,7 @@ class NET_EXPORT WindowsSystemProxyResolutionService
   // ProxyResolutionService implementation
   int ResolveProxy(const GURL& url,
                    const std::string& method,
-                   const NetworkIsolationKey& network_isolation_key,
+                   const NetworkAnonymizationKey& network_anonymization_key,
                    ProxyInfo* results,
                    CompletionOnceCallback callback,
                    std::unique_ptr<ProxyResolutionRequest>* request,
