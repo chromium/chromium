@@ -145,6 +145,7 @@ ts_library("build_ts") {
     ":preprocess_generated_image_loader",
     ":preprocess_static",
     ":preprocess_static_image_loader",
+    "//ash/webui/common/resources:generate_definitions",
   ]
 
   deps = [ "//ui/webui/resources:library" ]
