@@ -14,10 +14,10 @@ source_set("field_trial") {
   ]
   deps = [
     ":field_trial_constants",
+    ":field_trial_ids",
     "//base",
     "//components/prefs",
     "//components/signin/ios/browser:features",
-    "//components/variations",
     "//components/version_info",
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/first_run",
@@ -33,6 +33,18 @@ source_set("field_trial_constants") {
   sources = [
     "field_trial_constants.cc",
     "field_trial_constants.h",
+  ]
+}
+
+source_set("field_trial_ids") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "field_trial_ids.cc",
+    "field_trial_ids.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/variations",
   ]
 }
 
@@ -210,6 +222,7 @@ source_set("unit_tests") {
   deps = [
     ":field_trial",
     ":field_trial_constants",
+    ":field_trial_ids",
     ":first_run",
     ":utils",
     "//base",
@@ -218,7 +231,6 @@ source_set("unit_tests") {
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//components/variations",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui:feature_flags",

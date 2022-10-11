@@ -11,6 +11,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/variations/variations_associated_data.h"
 #import "ios/chrome/browser/ui/first_run/field_trial_constants.h"
+#import "ios/chrome/browser/ui/first_run/field_trial_ids.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "testing/platform_test.h"
 
@@ -25,14 +26,6 @@ using ::base::FeatureList;
 using ::base::FieldTrialList;
 using ::fre_field_trial::testing::
     CreateNewMICeAndDefaultBrowserFRETrialForTesting;
-using ::variations::VariationID;
-
-// Experiment IDs defined for field trial groups.
-const VariationID kControlTrialID = 3348210;
-const VariationID kFREDefaultBrowserPromoAtFirstRunOnlyID = 3348842;
-const VariationID kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosID =
-    3348843;
-const VariationID kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID = 3348844;
 
 }  // namespace
 
@@ -41,10 +34,11 @@ const VariationID kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID = 3348844;
 class FREFieldTrialTest : public PlatformTest {
  protected:
   void SetUp() override {
-    weight_by_id_ = {{kControlTrialID, 0},
-                     {kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosID, 0},
-                     {kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID, 0},
-                     {kFREDefaultBrowserPromoAtFirstRunOnlyID, 0}};
+    weight_by_id_ = {
+        {kControlTrialID, 0},          {kTangibleSyncAFRETrialID, 0},
+        {kTangibleSyncBFRETrialID, 0}, {kTangibleSyncCFRETrialID, 0},
+        {kTwoStepsMICEFRETrialID, 0},
+    };
   }
 
   void TearDown() override {
@@ -56,6 +50,23 @@ class FREFieldTrialTest : public PlatformTest {
   std::map<variations::VariationID, int> weight_by_id_;
   base::MockEntropyProvider low_entropy_provider_;
 };
+
+// Tests default MICe FRE field trial.
+TEST_F(FREFieldTrialTest, TestDefault) {
+  // Create the FRE trial with an empty feature list.
+  auto feature_list = std::make_unique<FeatureList>();
+  CreateNewMICeAndDefaultBrowserFRETrialForTesting(
+      weight_by_id_, low_entropy_provider_, feature_list.get());
+
+  // Substitute the existing feature list with the one with field trial
+  // configurations we are testing, and check assertions.
+  scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  ASSERT_TRUE(
+      FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
+  EXPECT_TRUE(FeatureList::IsEnabled(kEnableFREUIModuleIOS));
+  EXPECT_EQ(NewMobileIdentityConsistencyFRE::kOld,
+            GetNewMobileIdentityConsistencyFRE());
+}
 
 // Tests control FRE field trial.
 TEST_F(FREFieldTrialTest, TestFREControl) {
@@ -71,15 +82,15 @@ TEST_F(FREFieldTrialTest, TestFREControl) {
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
   EXPECT_TRUE(FeatureList::IsEnabled(kEnableFREUIModuleIOS));
-  EXPECT_EQ(NewDefaultBrowserPromoFRE::kDisabled,
-            GetFREDefaultBrowserScreenPromoFRE());
+  EXPECT_EQ(NewMobileIdentityConsistencyFRE::kOld,
+            GetNewMobileIdentityConsistencyFRE());
 }
 
-// Tests default browser promo (first run) FRE field trial.
-TEST_F(FREFieldTrialTest, TestFREDefaultBrowserPromoFirstRun) {
+// Tests MICe (TangibleSync A) FRE field trial.
+TEST_F(FREFieldTrialTest, TestTangibleSyncA) {
   // Create the FRE trial with an empty feature list.
   auto feature_list = std::make_unique<FeatureList>();
-  weight_by_id_[kFREDefaultBrowserPromoAtFirstRunOnlyID] = 100;
+  weight_by_id_[kTangibleSyncAFRETrialID] = 100;
   CreateNewMICeAndDefaultBrowserFRETrialForTesting(
       weight_by_id_, low_entropy_provider_, feature_list.get());
 
@@ -89,15 +100,15 @@ TEST_F(FREFieldTrialTest, TestFREDefaultBrowserPromoFirstRun) {
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
   EXPECT_TRUE(FeatureList::IsEnabled(kEnableFREUIModuleIOS));
-  EXPECT_EQ(NewDefaultBrowserPromoFRE::kFirstRunOnly,
-            GetFREDefaultBrowserScreenPromoFRE());
+  EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTangibleSyncA,
+            GetNewMobileIdentityConsistencyFRE());
 }
 
-// Tests default browser promo (default delay) FRE field trial.
-TEST_F(FREFieldTrialTest, TestFREDefaultBrowserPromoDefaultDelay) {
+// Tests MICe (TangibleSync B) FRE field trial.
+TEST_F(FREFieldTrialTest, TestTangibleSyncB) {
   // Create the FRE trial with an empty feature list.
   auto feature_list = std::make_unique<FeatureList>();
-  weight_by_id_[kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosID] = 100;
+  weight_by_id_[kTangibleSyncBFRETrialID] = 100;
   CreateNewMICeAndDefaultBrowserFRETrialForTesting(
       weight_by_id_, low_entropy_provider_, feature_list.get());
 
@@ -107,15 +118,15 @@ TEST_F(FREFieldTrialTest, TestFREDefaultBrowserPromoDefaultDelay) {
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
   EXPECT_TRUE(FeatureList::IsEnabled(kEnableFREUIModuleIOS));
-  EXPECT_EQ(NewDefaultBrowserPromoFRE::kDefaultDelay,
-            GetFREDefaultBrowserScreenPromoFRE());
+  EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTangibleSyncB,
+            GetNewMobileIdentityConsistencyFRE());
 }
 
-// Tests default browser promo (short delay) FRE field trial.
-TEST_F(FREFieldTrialTest, TestFREDefaultBrowserPromoSmallDelay) {
+// Tests MICe (TangibleSync C) FRE field trial.
+TEST_F(FREFieldTrialTest, TestTangibleSyncC) {
   // Create the FRE trial with an empty feature list.
   auto feature_list = std::make_unique<FeatureList>();
-  weight_by_id_[kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID] = 100;
+  weight_by_id_[kTangibleSyncCFRETrialID] = 100;
   CreateNewMICeAndDefaultBrowserFRETrialForTesting(
       weight_by_id_, low_entropy_provider_, feature_list.get());
 
@@ -125,8 +136,26 @@ TEST_F(FREFieldTrialTest, TestFREDefaultBrowserPromoSmallDelay) {
   ASSERT_TRUE(
       FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
   EXPECT_TRUE(FeatureList::IsEnabled(kEnableFREUIModuleIOS));
-  EXPECT_EQ(NewDefaultBrowserPromoFRE::kShortDelay,
-            GetFREDefaultBrowserScreenPromoFRE());
+  EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTangibleSyncC,
+            GetNewMobileIdentityConsistencyFRE());
+}
+
+// Tests MICe (Two steps) FRE field trial.
+TEST_F(FREFieldTrialTest, TestTwoSteps) {
+  // Create the FRE trial with an empty feature list.
+  auto feature_list = std::make_unique<FeatureList>();
+  weight_by_id_[kTwoStepsMICEFRETrialID] = 100;
+  CreateNewMICeAndDefaultBrowserFRETrialForTesting(
+      weight_by_id_, low_entropy_provider_, feature_list.get());
+
+  // Substitute the existing feature list with the one with field trial
+  // configurations we are testing, and check assertions.
+  scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+  ASSERT_TRUE(
+      FieldTrialList::IsTrialActive(kIOSMICeAndDefaultBrowserTrialName));
+  EXPECT_TRUE(FeatureList::IsEnabled(kEnableFREUIModuleIOS));
+  EXPECT_EQ(NewMobileIdentityConsistencyFRE::kTwoSteps,
+            GetNewMobileIdentityConsistencyFRE());
 }
 
 }  // namespace fre_field_trial
