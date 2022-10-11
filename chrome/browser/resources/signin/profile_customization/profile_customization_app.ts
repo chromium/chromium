@@ -216,6 +216,10 @@ export class ProfileCustomizationAppElement extends
   private closeSelectAvatar_() {
     this.$.viewManager.switchView('customizeDialog', 'fade-in', 'fade-out');
   }
+
+  private validateInputOnBlur_() {
+    this.$.nameInput.validate();
+  }
 }
 
 declare global {
