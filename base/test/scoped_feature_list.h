@@ -19,8 +19,7 @@
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
-namespace base {
-namespace test {
+namespace base::test {
 
 // A reference to a base::Feature and field trial params that should be force
 // enabled and overwritten for test purposes.
@@ -60,9 +59,8 @@ class FeatureRef {
 // instance and restores the original instance upon destruction. When using the
 // non-deprecated APIs, a corresponding FieldTrialList is also created.
 //
-// Note: Re-using the same object is not allowed. To reset the feature
-// list and initialize it anew, destroy an existing scoped list and init
-// a new one.
+// Note: Re-using the same object is allowed. To reset the feature list and
+// initialize it anew, call `Reset` and then one of the `Init` methods.
 //
 // If multiple instances of this class are used in a nested fashion, they
 // should be destroyed in the opposite order of their Init*() methods being
@@ -215,7 +213,6 @@ class ScopedFeatureList final {
   std::unique_ptr<base::FieldTrialList> field_trial_list_;
 };
 
-}  // namespace test
-}  // namespace base
+}  // namespace base::test
 
 #endif  // BASE_TEST_SCOPED_FEATURE_LIST_H_
