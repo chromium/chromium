@@ -45,8 +45,11 @@ class UI_TOUCH_SELECTION_EXPORT TouchHandleDrawableAura
   gfx::RectF GetVisibleBounds() const override;
   float GetDrawableHorizontalPaddingRatio() const override;
 
-  raw_ptr<aura_extra::ImageWindowDelegate, DanglingUntriaged> window_delegate_;
   std::unique_ptr<aura::Window> window_;
+  // `window_delegate_` self destroys when`OnWindowDestroyed()` is invoked
+  // during the destruction of `window_`. It must be declared last and cleared
+  // first to avoid holding a ptr to freed memory.
+  raw_ptr<aura_extra::ImageWindowDelegate> window_delegate_;
   bool enabled_;
   float alpha_;
   ui::TouchHandleOrientation orientation_;

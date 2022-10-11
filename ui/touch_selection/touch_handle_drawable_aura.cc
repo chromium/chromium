@@ -58,8 +58,10 @@ bool IsNearlyZero(float value) {
 }  // namespace
 
 TouchHandleDrawableAura::TouchHandleDrawableAura(aura::Window* parent)
-    : window_delegate_(new aura_extra::ImageWindowDelegate),
-      window_(new aura::Window(window_delegate_)),
+    : window_(
+          std::make_unique<aura::Window>(new aura_extra::ImageWindowDelegate)),
+      window_delegate_(
+          static_cast<aura_extra::ImageWindowDelegate*>(window_->delegate())),
       enabled_(false),
       alpha_(0),
       orientation_(TouchHandleOrientation::UNDEFINED) {
@@ -100,6 +102,7 @@ void TouchHandleDrawableAura::SetOrientation(TouchHandleOrientation orientation,
                                              bool mirror_vertical,
                                              bool mirror_horizontal) {
   // TODO(AviD): Implement adaptive handle orientation logic for Aura
+  DCHECK(window_delegate_);
   DCHECK(!mirror_vertical);
   DCHECK(!mirror_horizontal);
 
