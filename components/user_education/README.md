@@ -220,18 +220,30 @@ Tutorial, you will need to:
   1. Declare a [TutorialIdentifier](./common/tutorial_identifier.h) in an
      accessible location.
   2. Register the `TutorialIdentifier` and
-     [TutorialDescription](./common/tutorial_description.h); details will be
-     provided below.
-  3. Create an entry point for the Tutorial:
-     * Directly call `TutorialService::StartTutorial()`, or...
-     * Register an IPH using the `CreateForTutorialPromo()` factory method.
+     [TutorialDescription](./common/tutorial_description.h)
+     ([Defining and registering your tutorial](#Defining-and-registering-your-Tutorial)).
+  3. Create an entry point for the Tutorial, either by:
+     * Directly calling `TutorialService::StartTutorial()`
+     * Or registering an IPH using the `CreateForTutorialPromo()` factory
+     method. This IPH will prompt the user to start your tutorial.
+
+Notice that compared to an IPH, the tutorial itself does not require any
+`base::Feature`, FE configuration, or Finch configuration. This is
+because the tutorial is always initiated by the user. However, the IPH
+that launches your tutorial will need to be implemented and configured
+as outlined above ([In-Produce Help (IPH)](#in_product-help-iph)).
 
 ### Defining and registering your Tutorial
 
-A [TutorialDescription](./common/tutorial_description.h) is the template from
-which a [Tutorial](./common/tutorial.h) is built. A `Tutorial` is a stateful,
-executable object that "runs" the Tutorial itself; since they can't be reused,
-one needs to be created every time the Tutorial is started.
+A [Tutorial](./common/tutorial.h) is a stateful, executable object that
+"runs" the Tutorial itself; since they can't be reused, one needs to be
+created every time the Tutorial is started.
+
+A [TutorialDescription](./common/tutorial_description.h) is the template
+from which a `Tutorial` is built. It describes each step your tutorial
+will show the user, similar to the `FeaturePromoSpecification` used to
+create an IPH. A `TutorialDescription` can be restarted, i.e. rebuilt
+into a new `Tutorial`, if you choose to allow it.
 
 There are only a few fields in a `TutorialDescription`:
   * **steps** - Contains a sequence of user actions, UI changes, and the help
