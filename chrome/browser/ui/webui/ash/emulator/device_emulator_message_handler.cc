@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/emulator/device_emulator_message_handler.h"
+#include "chrome/browser/ui/webui/ash/emulator/device_emulator_message_handler.h"
 
 #include <stdint.h>
 
@@ -74,7 +74,7 @@ bool GetString(const base::Value::Dict& dict,
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class DeviceEmulatorMessageHandler::BluetoothObserver
     : public bluez::BluetoothDeviceClient::Observer {
@@ -91,14 +91,14 @@ class DeviceEmulatorMessageHandler::BluetoothObserver
     owner_->fake_bluetooth_device_client_->RemoveObserver(this);
   }
 
-  // chromeos::BluetoothDeviceClient::Observer.
+  // bluez::BluetoothDeviceClient::Observer.
   void DeviceAdded(const dbus::ObjectPath& object_path) override;
 
-  // chromeos::BluetoothDeviceClient::Observer.
+  // bluez::BluetoothDeviceClient::Observer.
   void DevicePropertyChanged(const dbus::ObjectPath& object_path,
                              const std::string& property_name) override;
 
-  // chromeos::BluetoothDeviceClient::Observer.
+  // bluez::BluetoothDeviceClient::Observer.
   void DeviceRemoved(const dbus::ObjectPath& object_path) override;
 
  private:
@@ -156,7 +156,7 @@ class DeviceEmulatorMessageHandler::CrasAudioObserver
 };
 
 class DeviceEmulatorMessageHandler::PowerObserver
-    : public PowerManagerClient::Observer {
+    : public chromeos::PowerManagerClient::Observer {
  public:
   explicit PowerObserver(DeviceEmulatorMessageHandler* owner) : owner_(owner) {
     owner_->fake_power_manager_client_->AddObserver(this);
@@ -679,4 +679,4 @@ void DeviceEmulatorMessageHandler::UpdateAudioNodes() {
   FireWebUIListener(kAudioNodesUpdated, audio_nodes);
 }
 
-}  // namespace chromeos
+}  // namespace ash

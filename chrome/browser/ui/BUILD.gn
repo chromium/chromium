@@ -3337,10 +3337,10 @@ static_library("ui") {
     if (!is_official_build) {
       if (!use_real_dbus_clients) {
         sources += [
-          "webui/chromeos/emulator/device_emulator_message_handler.cc",
-          "webui/chromeos/emulator/device_emulator_message_handler.h",
-          "webui/chromeos/emulator/device_emulator_ui.cc",
-          "webui/chromeos/emulator/device_emulator_ui.h",
+          "webui/ash/emulator/device_emulator_message_handler.cc",
+          "webui/ash/emulator/device_emulator_message_handler.h",
+          "webui/ash/emulator/device_emulator_ui.cc",
+          "webui/ash/emulator/device_emulator_ui.h",
         ]
       }
       deps += [ "//ash/webui/sample_system_web_app_ui" ]

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_EMULATOR_DEVICE_EMULATOR_MESSAGE_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_EMULATOR_DEVICE_EMULATOR_MESSAGE_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_EMULATOR_DEVICE_EMULATOR_MESSAGE_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_EMULATOR_DEVICE_EMULATOR_MESSAGE_HANDLER_H_
 
 #include <memory>
 
@@ -14,6 +14,10 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
+namespace chromeos {
+class FakePowerManagerClient;
+}
+
 namespace dbus {
 class ObjectPath;
 }  // namespace dbus
@@ -22,14 +26,12 @@ namespace bluez {
 class FakeBluetoothDeviceClient;
 }
 
-namespace chromeos {
-
-class FakePowerManagerClient;
+namespace ash {
 
 // Handler class for the Device Emulator page operations.
-class DeviceEmulatorMessageHandler :
-    public system::PointerDeviceObserver::Observer,
-    public content::WebUIMessageHandler {
+class DeviceEmulatorMessageHandler
+    : public system::PointerDeviceObserver::Observer,
+      public content::WebUIMessageHandler {
  public:
   DeviceEmulatorMessageHandler();
 
@@ -134,7 +136,7 @@ class DeviceEmulatorMessageHandler :
 
   std::unique_ptr<CrasAudioObserver> cras_audio_observer_;
 
-  FakePowerManagerClient* fake_power_manager_client_;
+  chromeos::FakePowerManagerClient* fake_power_manager_client_;
   std::unique_ptr<PowerObserver> power_observer_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
@@ -142,6 +144,6 @@ class DeviceEmulatorMessageHandler :
   base::WeakPtrFactory<DeviceEmulatorMessageHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_EMULATOR_DEVICE_EMULATOR_MESSAGE_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_EMULATOR_DEVICE_EMULATOR_MESSAGE_HANDLER_H_

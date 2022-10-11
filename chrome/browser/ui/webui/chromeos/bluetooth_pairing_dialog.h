@@ -75,4 +75,9 @@ class BluetoothPairingDialogUI : public ui::MojoWebDialogUI {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::BluetoothPairingDialog;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_BLUETOOTH_PAIRING_DIALOG_H_

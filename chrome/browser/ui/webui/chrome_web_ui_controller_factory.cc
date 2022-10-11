@@ -306,7 +306,7 @@
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
-#include "chrome/browser/ui/webui/chromeos/emulator/device_emulator_ui.h"
+#include "chrome/browser/ui/webui/ash/emulator/device_emulator_ui.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1142,7 +1142,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #if !defined(USE_REAL_DBUS_CLIENTS)
   if (!base::SysInfo::IsRunningOnChromeOS()) {
     if (url.host_piece() == chrome::kChromeUIDeviceEmulatorHost)
-      return &NewWebUI<DeviceEmulatorUI>;
+      return &NewWebUI<ash::DeviceEmulatorUI>;
   }
 #endif  // !defined(USE_REAL_DBUS_CLIENTS)
 #endif  // !defined(OFFICIAL_BUILD)
