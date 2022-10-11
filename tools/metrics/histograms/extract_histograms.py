@@ -573,9 +573,9 @@ def _ExtractHistogramsFromXmlTree(tree, enums):
         have_errors = True
     else:
       logging.error(
-          'Your histogram must have an expiry date. If you are marking a '
+          'Your histogram %s must have an expiry date. If you are marking a '
           'histogram as obsolete, please set the expiry date to the current '
-          'date.')
+          'date.', name)
       have_errors = True
 
     # Find <owner> tag.
