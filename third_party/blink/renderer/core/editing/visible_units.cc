@@ -77,6 +77,33 @@ static PositionType CanonicalizeCandidate(const PositionType& candidate) {
   return candidate;
 }
 
+static bool InSameBlock(const Node* original_node,
+                        const Node* new_position_node) {
+  DCHECK(new_position_node);
+  if (!original_node) {
+    return false;
+  }
+
+  // If ｜new_position_node｜ is child node of ｜original_node｜, they must be in
+  // the same block flow element.
+  if (new_position_node->IsDescendantOf(original_node)) {
+    return true;
+  }
+
+  Element* const original_block = EnclosingBlockFlowElement(*original_node);
+  // If both nodes are in editable elements, whether they are in the same block
+  // flow element depends on DOM hierarchy.
+  // Note: tests [1][2] require this.
+  // [1] editing/execCommand/indent-pre-list.html
+  // [2] editing/execCommand/indent-pre.html
+  if ((IsEditable(*original_node) && IsEditable(*new_position_node))) {
+    return new_position_node->IsDescendantOf(original_block) ||
+           new_position_node == original_block;
+  }
+
+  return original_block == EnclosingBlockFlowElement(*new_position_node);
+}
+
 template <typename PositionType>
 static PositionType CanonicalPosition(const PositionType& position) {
   // Sometimes updating selection positions can be extremely expensive and
@@ -144,13 +171,9 @@ static PositionType CanonicalPosition(const PositionType& position) {
     return PositionType();
 
   // The new position should be in the same block flow element. Favor that.
-  Element* const original_block =
-      node ? EnclosingBlockFlowElement(*node) : nullptr;
-  const bool next_is_outside_original_block =
-      !next_node->IsDescendantOf(original_block) && next_node != original_block;
-  const bool prev_is_outside_original_block =
-      !prev_node->IsDescendantOf(original_block) && prev_node != original_block;
-  if (next_is_outside_original_block && !prev_is_outside_original_block)
+  const bool next_is_same_original_block = InSameBlock(node, next_node);
+  const bool prev_is_same_original_block = InSameBlock(node, prev_node);
+  if (prev_is_same_original_block && !next_is_same_original_block)
     return prev;
 
   return next;
