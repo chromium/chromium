@@ -209,6 +209,7 @@ void MimeSniffingURLLoader::OnBodyReadable(MojoResult) {
       CompleteSniffing();
       return;
     case MOJO_RESULT_SHOULD_WAIT:
+      buffered_body_.resize(start_size);
       body_consumer_watcher_.ArmOrNotify();
       return;
     default:
