@@ -30,31 +30,30 @@ _INCLUDE_REGEX = '#include='
 _SCHEME_REGEX = '#scheme='
 _TYPE_REGEX = '#type='
 
-_STYLE_TEMPLATE = """import \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
+_STYLE_TEMPLATE = """import {html} from \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
 %(imports)s
 
 const styleMod = document.createElement(\'dom-module\');
-styleMod.innerHTML = `
+styleMod.appendChild(html`
   <template>
     <style%(include)s>
 %(content)s
     </style>
   </template>
-`;
+`.content);
 styleMod.register(\'%(id)s\');"""
 
-_VARS_TEMPLATE = """import \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
+_VARS_TEMPLATE = """import {html} from \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
 %(imports)s
 
-const $_documentContainer = document.createElement('template');
-$_documentContainer.innerHTML = `
+const template = html`
 <custom-style>
   <style>
 %(content)s
   </style>
 </custom-style>
 `;
-document.head.appendChild($_documentContainer.content);"""
+document.head.appendChild(template.content);"""
 
 
 def _parse_style_line(line, metadata):

@@ -1,9 +1,8 @@
-import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import './other1.css.js';
 import './other2.css.js';
 
-const $_documentContainer = document.createElement('template');
-$_documentContainer.innerHTML = `
+const template = html`
 <custom-style>
   <style>
 
@@ -19,4 +18,4 @@ html {
   </style>
 </custom-style>
 `;
-document.head.appendChild($_documentContainer.content);
+document.head.appendChild(template.content);
