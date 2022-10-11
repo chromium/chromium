@@ -1635,67 +1635,47 @@ static bool CanAccessAncestor(const SecurityOrigin& active_security_origin,
   return false;
 }
 
-// `initiating_frame` - The frame that CanNavigate was initially requested for.
-// `source_frame` - The frame that is currently being tested to see if it can
-//                  navigate `target_frame`.
-// `target_frame` - The frame to be navigated.
-// `destination_url` - The URL to navigate to on `target_frame`.
-static bool CanNavigateHelper(LocalFrame& initiating_frame,
-                              const Frame& source_frame,
-                              const Frame& target_frame,
-                              const KURL& destination_url) {
-  // The only time the helper is called with a different `initiating_frame` from
-  // its `source_frame` is to recursively check if ancestors can navigate the
-  // top frame.
-  DCHECK(&initiating_frame == &source_frame ||
-         target_frame ==
-             initiating_frame.Tree().Top(FrameTreeBoundary::kIgnoreFence));
-
-  // Only report navigation blocking on the initial call to CanNavigateHelper,
-  // not the recursive calls.
-  bool should_report = &initiating_frame == &source_frame;
-
-  if (&target_frame == &source_frame)
+bool LocalFrame::CanNavigate(const Frame& target_frame,
+                             const KURL& destination_url) {
+  // https://html.spec.whatwg.org/multipage/browsers.html#allowed-to-navigate
+  // If source is target, then return true.
+  if (&target_frame == this)
     return true;
 
   // Navigating window.opener cross origin, without user activation. See
   // https://crbug.com/813643.
-  if (should_report && source_frame.Opener() == target_frame &&
-      !source_frame.HasTransientUserActivation() &&
+  if (Opener() == target_frame && !HasTransientUserActivation(this) &&
       !target_frame.GetSecurityContext()->GetSecurityOrigin()->CanAccess(
           SecurityOrigin::Create(destination_url).get())) {
-    UseCounter::Count(initiating_frame.GetDocument(),
+    UseCounter::Count(GetDocument(),
                       WebFeature::kOpenerNavigationWithoutGesture);
   }
 
   const bool target_escapes_fenced_frame =
-      source_frame.IsInFencedFrameTree() &&
-      (source_frame.Tree().Top(FrameTreeBoundary::kFenced) !=
-       target_frame.Tree().Top(FrameTreeBoundary::kFenced));
+      IsInFencedFrameTree() && (Tree().Top(FrameTreeBoundary::kFenced) !=
+                                Tree().Top(FrameTreeBoundary::kFenced));
 
   // If the target frame is outside the fenced frame, the only way that should
   // be possible is through the '_unfencedTop' reserved frame name.
   if (target_escapes_fenced_frame) {
-    CHECK(target_frame == source_frame.Tree().Top());
+    CHECK(target_frame == Tree().Top());
   }
 
   if (destination_url.ProtocolIsJavaScript() &&
-      (!source_frame.GetSecurityContext()->GetSecurityOrigin()->CanAccess(
+      (!GetSecurityContext()->GetSecurityOrigin()->CanAccess(
            target_frame.GetSecurityContext()->GetSecurityOrigin()) ||
        target_escapes_fenced_frame)) {
-    if (should_report) {
-      initiating_frame.PrintNavigationErrorMessage(
-          target_frame,
-          target_escapes_fenced_frame
-              ? "The frame attempting navigation must be in the same fenced "
-                "frame tree as the target if navigating to a javascript: url"
-              : "The frame attempting navigation must be same-origin with the "
-                "target if navigating to a javascript: url");
-    }
+    PrintNavigationErrorMessage(
+        target_frame,
+        target_escapes_fenced_frame
+            ? "The frame attempting navigation must be in the same fenced "
+              "frame tree as the target if navigating to a javascript: url"
+            : "The frame attempting navigation must be same-origin with the "
+              "target if navigating to a javascript: url");
     return false;
   }
 
-  if (source_frame.GetSecurityContext()->IsSandboxed(
+  if (GetSecurityContext()->IsSandboxed(
           network::mojom::blink::WebSandboxFlags::kNavigation)) {
     // 'allow-top-navigation' and 'allow-top-navigation-by-user-activation'
     // allow the outermost frame navigations. They don't allow root fenced frame
@@ -1704,18 +1684,16 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
         target_frame.IsMainFrame() &&
         !target_frame.GetPage()->IsMainFrameFencedFrameRoot();
 
-    if (!target_frame.Tree().IsDescendantOf(&source_frame) &&
+    if (!target_frame.Tree().IsDescendantOf(this) &&
         !target_is_outermost_frame) {
-      if (should_report) {
-        initiating_frame.PrintNavigationErrorMessage(
-            target_frame,
-            source_frame.IsInFencedFrameTree()
-                ? "The frame attempting navigation is in a fenced frame tree, "
-                  "and is therefore disallowed from navigating its ancestors."
-                : "The frame attempting navigation is sandboxed, and is "
-                  "therefore "
-                  "disallowed from navigating its ancestors.");
-      }
+      PrintNavigationErrorMessage(
+          target_frame,
+          IsInFencedFrameTree()
+              ? "The frame attempting navigation is in a fenced frame tree, "
+                "and is therefore disallowed from navigating its ancestors."
+              : "The frame attempting navigation is sandboxed, and is "
+                "therefore "
+                "disallowed from navigating its ancestors.");
       return false;
     }
 
@@ -1723,21 +1701,18 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
     // 'allow-sandbox-escape-via-popup' flag is specified, or if
     // 'allow-popups' flag is specified and the popup's opener is the frame.
     if (target_is_outermost_frame &&
-        target_frame !=
-            source_frame.Tree().Top(FrameTreeBoundary::kIgnoreFence) &&
-        source_frame.GetSecurityContext()->IsSandboxed(
+        target_frame != Tree().Top(FrameTreeBoundary::kIgnoreFence) &&
+        GetSecurityContext()->IsSandboxed(
             network::mojom::blink::WebSandboxFlags::
                 kPropagatesToAuxiliaryBrowsingContexts) &&
-        (source_frame.GetSecurityContext()->IsSandboxed(
+        (GetSecurityContext()->IsSandboxed(
              network::mojom::blink::WebSandboxFlags::kPopups) ||
-         target_frame.Opener() != &source_frame)) {
-      if (should_report) {
-        initiating_frame.PrintNavigationErrorMessage(
-            target_frame,
-            "The frame attempting navigation is sandboxed and is trying "
-            "to navigate a popup, but is not the popup's opener and is not "
-            "set to propagate sandboxing to popups.");
-      }
+         target_frame.Opener() != this)) {
+      PrintNavigationErrorMessage(
+          target_frame,
+          "The frame attempting navigation is sandboxed and is trying "
+          "to navigate a popup, but is not the popup's opener and is not "
+          "set to propagate sandboxing to popups.");
       return false;
     }
 
@@ -1745,45 +1720,40 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
     // then if the ancestor chain allowed to navigate the top frame.
     // Note: We don't check root fenced frames for kTop* flags since the kTop*
     // flags imply the actual top-level page.
-    if ((target_frame ==
-         source_frame.Tree().Top(FrameTreeBoundary::kIgnoreFence)) &&
+    if ((target_frame == Tree().Top(FrameTreeBoundary::kIgnoreFence)) &&
         !target_frame.GetPage()->IsMainFrameFencedFrameRoot()) {
-      if (source_frame.GetSecurityContext()->IsSandboxed(
+      if (GetSecurityContext()->IsSandboxed(
               network::mojom::blink::WebSandboxFlags::kTopNavigation) &&
-          source_frame.GetSecurityContext()->IsSandboxed(
+          GetSecurityContext()->IsSandboxed(
               network::mojom::blink::WebSandboxFlags::
                   kTopNavigationByUserActivation)) {
-        if (should_report) {
-          initiating_frame.PrintNavigationErrorMessage(
-              target_frame,
-              "The frame attempting navigation of the top-level window is "
-              "sandboxed, but the flag of 'allow-top-navigation' or "
-              "'allow-top-navigation-by-user-activation' is not set.");
-        }
+        PrintNavigationErrorMessage(
+            target_frame,
+            "The frame attempting navigation of the top-level window is "
+            "sandboxed, but the flag of 'allow-top-navigation' or "
+            "'allow-top-navigation-by-user-activation' is not set.");
         return false;
       }
 
       // With only 'allow-top-navigation-by-user-activation' (but not
       // 'allow-top-navigation'), top navigation requires a user gesture.
-      if (source_frame.GetSecurityContext()->IsSandboxed(
+      if (GetSecurityContext()->IsSandboxed(
               network::mojom::blink::WebSandboxFlags::kTopNavigation) &&
-          !source_frame.GetSecurityContext()->IsSandboxed(
+          !GetSecurityContext()->IsSandboxed(
               network::mojom::blink::WebSandboxFlags::
                   kTopNavigationByUserActivation)) {
         // If there is no user activation, fail.
-        if (!source_frame.HasTransientUserActivation()) {
-          if (should_report) {
-            initiating_frame.GetLocalFrameHostRemote().DidBlockNavigation(
-                destination_url, initiating_frame.GetDocument()->Url(),
-                mojom::NavigationBlockedReason::
-                    kRedirectWithNoUserGestureSandbox);
-            initiating_frame.PrintNavigationErrorMessage(
-                target_frame,
-                "The frame attempting navigation of the top-level window is "
-                "sandboxed with the 'allow-top-navigation-by-user-activation' "
-                "flag, but has no user activation (aka gesture). See "
-                "https://www.chromestatus.com/feature/5629582019395584.");
-          }
+        if (!HasTransientUserActivation(this)) {
+          GetLocalFrameHostRemote().DidBlockNavigation(
+              destination_url, GetDocument()->Url(),
+              mojom::blink::NavigationBlockedReason::
+                  kRedirectWithNoUserGestureSandbox);
+          PrintNavigationErrorMessage(
+              target_frame,
+              "The frame attempting navigation of the top-level window is "
+              "sandboxed with the 'allow-top-navigation-by-user-activation' "
+              "flag, but has no user activation (aka gesture). See "
+              "https://www.chromestatus.com/feature/5629582019395584.");
           return false;
         }
 
@@ -1798,33 +1768,30 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
       }
 
       // With only 'allow-top-navigation':
-      // If the nearest non-sandboxed ancestor frame is not allowed to navigate,
-      // then this sandboxed frame can't either. This prevents a cross-origin
-      // frame from embedding a sandboxed iframe with kTopNavigate from
-      // navigating the top frame. See (crbug.com/1145553)
-      if (Frame* parent_frame = source_frame.Tree().Parent()) {
-        bool parent_can_navigate = CanNavigateHelper(
-            initiating_frame, *parent_frame, target_frame, destination_url);
-        if (!parent_can_navigate) {
-          if (should_report) {
-            String message =
-                "The frame attempting navigation of the top-level window is "
-                "sandboxed and is not allowed to navigate since its ancestor "
-                "frame " +
-                FrameDescription(*parent_frame) +
-                " is unable to navigate the top frame.\n";
-            initiating_frame.PrintNavigationErrorMessage(target_frame, message);
-          }
-          return false;
-        }
+      // This is a "last line of defense" to prevent a cross-origin document
+      // from escalating its own top-navigation privileges. See
+      // `PolicyContainerPolicies::can_navigate_top_without_user_gesture`
+      // for the cases where this would be allowed or disallowed.
+      // See (crbug.com/1145553) and (crbug.com/1251790).
+      if (!DomWindow()
+               ->GetExecutionContext()
+               ->GetPolicyContainer()
+               ->GetPolicies()
+               .can_navigate_top_without_user_gesture &&
+          !HasStickyUserActivation()) {
+        String message =
+            "The frame attempting to navigate the top-level window is "
+            "cross-origin and either it or one of its ancestors is not "
+            "allowed to navigate the top frame.\n";
+        PrintNavigationErrorMessage(target_frame, message);
+        return false;
       }
       return true;
     }
   }
 
-  DCHECK(source_frame.GetSecurityContext()->GetSecurityOrigin());
-  const SecurityOrigin& origin =
-      *source_frame.GetSecurityContext()->GetSecurityOrigin();
+  DCHECK(GetSecurityContext()->GetSecurityOrigin());
+  const SecurityOrigin& origin = *GetSecurityContext()->GetSecurityOrigin();
 
   // This is the normal case. A document can navigate its decendant frames,
   // or, more generally, a document can navigate a frame if the document is
@@ -1848,17 +1815,17 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
   // and/or "parent" relation). Requiring some sort of relation prevents a
   // document from navigating arbitrary, unrelated top-level frames.
   if (!target_frame.Tree().Parent()) {
-    if (target_frame == source_frame.Opener())
+    if (target_frame == Opener())
       return true;
     if (CanAccessAncestor(origin, target_frame.Opener()))
       return true;
   }
 
-  if (target_frame == source_frame.Tree().Top()) {
+  if (target_frame == Tree().Top()) {
     // A frame navigating its top may blocked if the document initiating
     // the navigation has never received a user gesture and the navigation
     // isn't same-origin with the target.
-    if (source_frame.HasStickyUserActivation() ||
+    if (HasStickyUserActivation() ||
         target_frame.GetSecurityContext()->GetSecurityOrigin()->CanAccess(
             SecurityOrigin::Create(destination_url).get())) {
       return true;
@@ -1878,42 +1845,27 @@ static bool CanNavigateHelper(LocalFrame& initiating_frame,
       return true;
     }
 
-    // We skip this check for recursive calls on remote frames, in which case
-    // we're less permissive.
-    if (const LocalFrame* local_frame = DynamicTo<LocalFrame>(&source_frame)) {
-      if (auto* settings_client =
-              local_frame->Client()->GetContentSettingsClient()) {
-        if (settings_client->AllowPopupsAndRedirects(false /* default_value*/))
-          return true;
-      }
+    if (auto* settings_client = Client()->GetContentSettingsClient()) {
+      if (settings_client->AllowPopupsAndRedirects(false /* default_value*/))
+        return true;
     }
-
-    if (should_report) {
-      initiating_frame.PrintNavigationErrorMessage(
-          target_frame,
-          "The frame attempting navigation is targeting its top-level window, "
-          "but is neither same-origin with its target nor has it received a "
-          "user gesture. See "
-          "https://www.chromestatus.com/feature/5851021045661696.");
-      initiating_frame.GetLocalFrameHostRemote().DidBlockNavigation(
-          destination_url, initiating_frame.GetDocument()->Url(),
-          mojom::NavigationBlockedReason::kRedirectWithNoUserGesture);
-    }
+    PrintNavigationErrorMessage(
+        target_frame,
+        "The frame attempting navigation is targeting its top-level window, "
+        "but is neither same-origin with its target nor has it received a "
+        "user gesture. See "
+        "https://www.chromestatus.com/feature/5851021045661696.");
+    GetLocalFrameHostRemote().DidBlockNavigation(
+        destination_url, GetDocument()->Url(),
+        mojom::blink::NavigationBlockedReason::kRedirectWithNoUserGesture);
 
   } else {
-    if (should_report) {
-      initiating_frame.PrintNavigationErrorMessage(
-          target_frame,
-          "The frame attempting navigation is neither same-origin with the "
-          "target, nor is it the target's parent or opener.");
-    }
+    PrintNavigationErrorMessage(
+        target_frame,
+        "The frame attempting navigation is neither same-origin with the "
+        "target, nor is it the target's parent or opener.");
   }
   return false;
-}
-
-bool LocalFrame::CanNavigate(const Frame& target_frame,
-                             const KURL& destination_url) {
-  return CanNavigateHelper(*this, *this, target_frame, destination_url);
 }
 
 ContentCaptureManager* LocalFrame::GetOrResetContentCaptureManager() {

@@ -23,6 +23,7 @@ std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
           in->policies->is_anonymous,
           in->policies->sandbox_flags,
           in->policies->ip_address_space,
+          in->policies->can_navigate_top_without_user_gesture,
       },
       std::move(in->remote));
 }

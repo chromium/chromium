@@ -48,7 +48,8 @@ PolicyContainerPolicies MakeTestPolicies() {
       /*is_web_secure_context=*/true, std::move(csp_list),
       network::CrossOriginOpenerPolicy(), network::CrossOriginEmbedderPolicy(),
       network::mojom::WebSandboxFlags::kNone,
-      /*is_anonymous=*/false);
+      /*is_anonymous=*/false,
+      /*can_navigate_top_without_user_gesture=*/true);
 }
 
 // Shorthand.

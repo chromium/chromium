@@ -39,7 +39,8 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       network::mojom::WebSandboxFlags sandbox_flags,
-      bool is_anonymous);
+      bool is_anonymous,
+      bool can_navigate_top_without_user_gesture);
 
   explicit PolicyContainerPolicies(
       const blink::mojom::PolicyContainerPolicies& policies);
@@ -117,6 +118,14 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // True for window framed inside an anonymous iframe, directly or indirectly
   // by one of its ancestors
   bool is_anonymous = false;
+
+  // Tracks if a document is allowed to navigate the top-level frame without
+  // sticky user activation. A document loses this ability when it is
+  // cross-origin with the top-level frame. An exception is made if the parent
+  // embeds the child with sandbox="allow-top-navigation", as opposed to not
+  // using sandboxing. A document that is same-origin to the top-level frame
+  // will always have this value set to true.
+  bool can_navigate_top_without_user_gesture = true;
 };
 
 // PolicyContainerPolicies structs are comparable for equality.
@@ -223,6 +232,10 @@ class CONTENT_EXPORT PolicyContainerHost
   }
 
   void SetIsAnonymous() { policies_.is_anonymous = true; }
+
+  void SetCanNavigateTopWithoutUserGesture(bool value) {
+    policies_.can_navigate_top_without_user_gesture = value;
+  }
 
   // Return a PolicyContainer containing copies of the policies and a pending
   // mojo remote that can be used to update policies in this object. If called a

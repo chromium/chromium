@@ -29,6 +29,7 @@ struct WebPolicyContainerPolicies {
       network::mojom::WebSandboxFlags::kNone;
   network::mojom::IPAddressSpace ip_address_space =
       network::mojom::IPAddressSpace::kUnknown;
+  bool can_navigate_top_without_user_gesture = true;
 };
 
 // TODO(antoniosartori): Remove this when CommitNavigation IPC will be handled

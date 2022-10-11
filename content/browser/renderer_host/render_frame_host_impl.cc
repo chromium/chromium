@@ -1207,7 +1207,7 @@ bool ValidateUnfencedTopNavigation(
   }
 
   // Perform checks that normally would be performed in
-  // `blink::CanNavigateHelper` but that we skipped because the target
+  // `blink::CanNavigate` but that we skipped because the target
   // frame wasn't available in the renderer.
   // TODO(crbug.com/1123606): Change these checks to send a BadMessage
   // when the renderer-side refactor is complete.
@@ -3137,7 +3137,8 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
             parent_policies.cross_origin_opener_policy,
             parent_policies.cross_origin_embedder_policy,
             network::mojom::WebSandboxFlags::kNone,
-            /*is_anonymous=*/false)));
+            /*is_anonymous=*/false,
+            /*can_navigate_top_without_user_gesture=*/true)));
   } else if (frame_tree_node_->opener()) {
     // During a `window.open(...)` without `noopener`, a new popup is created
     // and always starts from the initial empty document. The opener has

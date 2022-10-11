@@ -258,6 +258,15 @@ PolicyContainerPolicies NavigationPolicyContainerBuilder::ComputeFinalPolicies(
     IncorporateDeliveredPolicies(url, policies);
   }
 
+  // `can_navigate_top_without_user_gesture` is inherited from the parent.
+  // Later in `NavigationRequest::CommitNavigation()` it will either be made
+  // less strict for same-origin navigations, or stricter for cross-origin
+  // navigations that do not explicitly allow top-level navigation without user
+  // gesture.
+  policies.can_navigate_top_without_user_gesture =
+      parent_policies_ ? parent_policies_->can_navigate_top_without_user_gesture
+                       : true;
+
   ComputeSandboxFlags(is_inside_mhtml, frame_sandbox_flags, policies);
   policies.is_anonymous = is_anonymous;
   return policies;
@@ -276,6 +285,11 @@ void NavigationPolicyContainerBuilder::ComputePolicies(
 
 bool NavigationPolicyContainerBuilder::HasComputedPolicies() const {
   return host_ != nullptr;
+}
+
+void NavigationPolicyContainerBuilder::SetAllowTopNavigationWithoutUserGesture(
+    bool allow_top) {
+  host_->SetCanNavigateTopWithoutUserGesture(allow_top);
 }
 
 void NavigationPolicyContainerBuilder::SetFinalPolicies(

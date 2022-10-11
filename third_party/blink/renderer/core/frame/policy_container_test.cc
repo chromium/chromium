@@ -20,7 +20,8 @@ TEST(PolicyContainerTest, MembersAreSetDuringConstruction) {
       network::mojom::blink::ReferrerPolicy::kNever,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,
-      network::mojom::blink::IPAddressSpace::kUnknown);
+      network::mojom::blink::IPAddressSpace::kUnknown,
+      /*can_navigate_top_without_user_gesture=*/true);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
                                    std::move(policies));
 
@@ -35,7 +36,8 @@ TEST(PolicyContainerTest, UpdateReferrerPolicyIsPropagated) {
       network::mojom::blink::ReferrerPolicy::kAlways,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       /*anonymous=*/false, network::mojom::WebSandboxFlags::kNone,
-      network::mojom::blink::IPAddressSpace::kUnknown);
+      network::mojom::blink::IPAddressSpace::kUnknown,
+      /*can_navigate_top_without_user_gesture=*/true);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
                                    std::move(policies));
 

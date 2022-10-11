@@ -177,6 +177,10 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // been called yet.
   bool HasComputedPolicies() const;
 
+  // Modifies the bit that would allow top-level navigation without sticky
+  // user activation.
+  void SetAllowTopNavigationWithoutUserGesture(bool allow_top);
+
  private:
   // Sets `delivered_policies_.is_web_secure_context` to its final value.
   //

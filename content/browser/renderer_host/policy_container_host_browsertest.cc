@@ -427,10 +427,13 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForMainFrame) {
 
 namespace {
 
-bool EqualsExceptCOOP(const PolicyContainerPolicies& lhs,
-                      const PolicyContainerPolicies& rhs) {
+bool EqualsExceptCOOPAndTopNavigation(const PolicyContainerPolicies& lhs,
+                                      const PolicyContainerPolicies& rhs) {
   PolicyContainerPolicies rhs_modulo_coop = rhs.Clone();
   rhs_modulo_coop.cross_origin_opener_policy = lhs.cross_origin_opener_policy;
+  rhs_modulo_coop.can_navigate_top_without_user_gesture =
+      lhs.can_navigate_top_without_user_gesture;
+
   return lhs == rhs_modulo_coop;
 }
 
@@ -494,7 +497,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   // The new document inherits from the navigation initiator, except for COOP.
-  EXPECT_TRUE(EqualsExceptCOOP(
+  EXPECT_TRUE(EqualsExceptCOOPAndTopNavigation(
       main_frame_new_policies,
       child->current_frame_host()->policy_container_host()->policies()));
 
@@ -516,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
   ASSERT_TRUE(WaitForLoadStop(web_contents()));
 
   // The policies have not changed.
-  EXPECT_TRUE(EqualsExceptCOOP(
+  EXPECT_TRUE(EqualsExceptCOOPAndTopNavigation(
       main_frame_new_policies,
       child->current_frame_host()->policy_container_host()->policies()));
   ASSERT_EQ(2, controller.GetEntryCount());
@@ -542,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   // The new document inherits from the navigation initiator.
-  EXPECT_TRUE(EqualsExceptCOOP(
+  EXPECT_TRUE(EqualsExceptCOOPAndTopNavigation(
       policies_a,
       child->current_frame_host()->policy_container_host()->policies()));
 
@@ -585,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
   ASSERT_NE(nullptr, child);
 
   // The correct referrer policy should be restored from history.
-  EXPECT_TRUE(EqualsExceptCOOP(
+  EXPECT_TRUE(EqualsExceptCOOPAndTopNavigation(
       policies_a,
       child->current_frame_host()->policy_container_host()->policies()));
 
@@ -602,7 +605,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   // The correct referrer policy should be restored from history.
-  EXPECT_TRUE(EqualsExceptCOOP(
+  EXPECT_TRUE(EqualsExceptCOOPAndTopNavigation(
       main_frame_new_policies,
       child->current_frame_host()->policy_container_host()->policies()));
 
@@ -616,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForChildFrame) {
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
   // The correct referrer policy should be restored from history.
-  EXPECT_TRUE(EqualsExceptCOOP(
+  EXPECT_TRUE(EqualsExceptCOOPAndTopNavigation(
       main_frame_new_policies,
       child->current_frame_host()->policy_container_host()->policies()));
 

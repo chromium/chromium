@@ -5083,6 +5083,27 @@ void NavigationRequest::CommitNavigation() {
     }
   }
 
+  // Determine if top-level navigation is allowed without sticky user
+  // activation. This is used to fix the exploit in https://crbug.com/1251790.
+  // If a child document is cross-origin with its parent, it loses its ability
+  // to navigate top without user gesture. One notable exception is made if its
+  // parent embeds it using sandbox="allow-top-navigation". Please note this is
+  // quite unusual, because it means using sandbox brings new capabilities, as
+  // opposed to new restrictions.
+  using WebSandboxFlags = network::mojom::WebSandboxFlags;
+  const bool embedder_allows_top_navigation_explicitly =
+      ((commit_params_->frame_policy.sandbox_flags != WebSandboxFlags::kNone) &&
+       (commit_params_->frame_policy.sandbox_flags &
+        WebSandboxFlags::kTopNavigation) == WebSandboxFlags::kNone);
+  const bool is_same_origin_to_top =
+      GetOriginToCommit() ==
+      GetRenderFrameHost()->GetMainFrame()->GetLastCommittedOrigin();
+  if (is_same_origin_to_top) {
+    policy_container_builder_->SetAllowTopNavigationWithoutUserGesture(true);
+  } else if (!IsInMainFrame() && !embedder_allows_top_navigation_explicitly) {
+    policy_container_builder_->SetAllowTopNavigationWithoutUserGesture(false);
+  }
+
   // If this is a result of an ad auction, need to pass its ad component URLs to
   // the renderer.
   if (fenced_frame_properties_ &&
