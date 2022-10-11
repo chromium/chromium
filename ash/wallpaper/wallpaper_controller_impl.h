@@ -301,7 +301,6 @@ class ASH_EXPORT WallpaperControllerImpl
   void AddObserver(WallpaperControllerObserver* observer) override;
   void RemoveObserver(WallpaperControllerObserver* observer) override;
   gfx::ImageSkia GetWallpaperImage() override;
-  const std::vector<SkColor>& GetWallpaperColors() override;
   bool IsWallpaperBlurredForLockState() const override;
   bool IsActiveUserWallpaperControlledByPolicy() override;
   bool IsWallpaperControlledByPolicy(

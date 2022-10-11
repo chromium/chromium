@@ -148,7 +148,6 @@ class WallpaperControllerClientImpl
   void AddObserver(ash::WallpaperControllerObserver* observer);
   void RemoveObserver(ash::WallpaperControllerObserver* observer);
   gfx::ImageSkia GetWallpaperImage();
-  const std::vector<SkColor>& GetWallpaperColors();
   bool IsWallpaperBlurred();
   bool IsActiveUserWallpaperControlledByPolicy();
   absl::optional<ash::WallpaperInfo> GetActiveUserWallpaperInfo();

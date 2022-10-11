@@ -171,7 +171,6 @@ class ASH_EXPORT AppListControllerImpl
   void ViewShown(int64_t display_id) override;
   bool AppListTargetVisibility() const override;
   void ViewClosing() override;
-  const std::vector<SkColor>& GetWallpaperProminentColors() override;
   void ActivateItem(const std::string& id,
                     int event_flags,
                     AppListLaunchedFrom launched_from) override;

@@ -306,9 +306,6 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Returns the wallpaper image currently being shown.
   virtual gfx::ImageSkia GetWallpaperImage() = 0;
 
-  // Returns the wallpaper prominent colors.
-  virtual const std::vector<SkColor>& GetWallpaperColors() = 0;
-
   // Returns whether the current wallpaper is blurred on lock/login screen.
   virtual bool IsWallpaperBlurredForLockState() const = 0;
 

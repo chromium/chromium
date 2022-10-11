@@ -259,12 +259,6 @@ gfx::ImageSkia TestWallpaperController::GetWallpaperImage() {
   return current_wallpaper;
 }
 
-const std::vector<SkColor>& TestWallpaperController::GetWallpaperColors() {
-  NOTIMPLEMENTED();
-  static std::vector<SkColor> kColors;
-  return kColors;
-}
-
 bool TestWallpaperController::IsWallpaperBlurredForLockState() const {
   NOTIMPLEMENTED();
   return false;

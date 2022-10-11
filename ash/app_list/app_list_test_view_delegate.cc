@@ -93,11 +93,6 @@ void AppListTestViewDelegate::SetShouldShowSuggestedContentInfo(
   should_show_suggested_content_info_ = should_show;
 }
 
-const std::vector<SkColor>&
-AppListTestViewDelegate::GetWallpaperProminentColors() {
-  return wallpaper_prominent_colors_;
-}
-
 void AppListTestViewDelegate::ActivateItem(
     const std::string& id,
     int event_flags,

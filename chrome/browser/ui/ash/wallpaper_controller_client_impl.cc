@@ -476,11 +476,6 @@ gfx::ImageSkia WallpaperControllerClientImpl::GetWallpaperImage() {
   return wallpaper_controller_->GetWallpaperImage();
 }
 
-const std::vector<SkColor>&
-WallpaperControllerClientImpl::GetWallpaperColors() {
-  return wallpaper_controller_->GetWallpaperColors();
-}
-
 bool WallpaperControllerClientImpl::IsWallpaperBlurred() {
   return wallpaper_controller_->IsWallpaperBlurredForLockState();
 }

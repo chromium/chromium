@@ -81,7 +81,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   void ViewShown(int64_t display_id) override {}
   void DismissAppList() override;
   void ViewClosing() override {}
-  const std::vector<SkColor>& GetWallpaperProminentColors() override;
   void ActivateItem(const std::string& id,
                     int event_flags,
                     ash::AppListLaunchedFrom launched_from) override;
@@ -152,7 +151,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   AppListModelProvider model_provider_;
   std::unique_ptr<AppListTestModel> model_;
   std::unique_ptr<SearchModel> search_model_;
-  std::vector<SkColor> wallpaper_prominent_colors_;
 };
 
 }  // namespace test

@@ -1345,11 +1345,6 @@ void AppListControllerImpl::ViewClosing() {
   split_view_observation_.Reset();
 }
 
-const std::vector<SkColor>&
-AppListControllerImpl::GetWallpaperProminentColors() {
-  return Shell::Get()->wallpaper_controller()->GetWallpaperColors();
-}
-
 void AppListControllerImpl::ActivateItem(const std::string& id,
                                          int event_flags,
                                          AppListLaunchedFrom launched_from) {

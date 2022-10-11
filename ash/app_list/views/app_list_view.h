@@ -385,8 +385,6 @@ class ASH_EXPORT AppListView : public views::WidgetDelegateView,
   // Overridden from views::WidgetDelegateView:
   views::View* GetInitiallyFocusedView() override;
 
-  const std::vector<SkColor>& GetWallpaperProminentColors();
-
   // Returns true if scroll events should be ignored.
   bool ShouldIgnoreScrollEvents();
 
