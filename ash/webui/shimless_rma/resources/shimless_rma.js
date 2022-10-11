@@ -29,12 +29,31 @@ import './wrapup_restock_page.js';
 import './wrapup_wait_for_manual_wp_enable_page.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
-import {ErrorObserverInterface, ErrorObserverReceiver, RmadErrorCode, ShimlessRmaServiceInterface, State, StateResult} from './shimless_rma_types.js';
+import {ErrorObserverInterface, ErrorObserverReceiver, ExternalDiskStateObserverInterface, ExternalDiskStateObserverReceiver, RmadErrorCode, SaveLogResponse, ShimlessRmaServiceInterface, State, StateResult} from './shimless_rma_types.js';
+
+/**
+ * Enum for the state of USB used for saving logs. The states are transitioned
+ * through as the user plugs in a USB then attempts to save the log.
+ * @enum {number}
+ */
+const USBLogState = {
+  USB_UNPLUGGED: 0,
+  USB_READY: 1,
+  SAVING_LOGS: 2,
+  LOG_SAVE_SUCCESS: 3,
+  LOG_SAVE_FAIL: 4,
+};
+
+/**
+ * The starting USB state for the logs dialog.
+ * @type {!USBLogState}
+ */
+const DEFAULT_USB_LOG_STATE = USBLogState.USB_READY;
 
 /**
  * Enum for button states.
@@ -334,6 +353,27 @@ export class ShimlessRma extends ShimlessRmaBase {
         type: Boolean,
         value: false,
       },
+
+      /** @protected */
+      log_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * Tracks the current status of the USB and log saving.
+       * @protected {!USBLogState}
+       */
+      usbLogState_: {
+        type: Number,
+        value: DEFAULT_USB_LOG_STATE,
+      },
+
+      /** @protected */
+      logSavedStatusText_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -351,6 +391,13 @@ export class ShimlessRma extends ShimlessRmaBase {
 
     this.shimlessRmaService_.observeError(
         this.errorObserverReceiver_.$.bindNewPipeAndPassRemote());
+
+    /** @private {!ExternalDiskStateObserverReceiver} */
+    this.externalDiskStateReceiver_ = new ExternalDiskStateObserverReceiver(
+        /** @type {!ExternalDiskStateObserverInterface} */ (this));
+
+    this.shimlessRmaService_.observeExternalDiskState(
+        this.externalDiskStateReceiver_.$.bindNewPipeAndPassRemote());
 
     /**
      * transitionState_ is used by page elements to trigger state transition
@@ -446,6 +493,14 @@ export class ShimlessRma extends ShimlessRmaBase {
       };
       this.showState_(errorState);
     };
+
+    /**
+     * Opens the logs dialog.
+     * @private {?Function}
+     */
+    this.openLogsDialogCallback_ = () => {
+      this.openLogsDialog_();
+    };
   }
 
   /** @override */
@@ -464,6 +519,7 @@ export class ShimlessRma extends ShimlessRmaBase {
     window.addEventListener('click-next-button', this.nextButtonCallback_);
     window.addEventListener(
         'fatal-hardware-error', this.fatalHardwareErrorCallback_);
+    window.addEventListener('open-logs-dialog', this.openLogsDialogCallback_);
   }
 
   /** @override */
@@ -482,6 +538,8 @@ export class ShimlessRma extends ShimlessRmaBase {
     window.removeEventListener('click-next-button', this.nextButtonCallback_);
     window.removeEventListener(
         'fatal-hardware-error', this.fatalHardwareErrorCallback_);
+    window.removeEventListener(
+        'open-logs-dialog', this.openLogsDialogCallback_);
   }
 
   /** @override */
@@ -826,6 +884,112 @@ export class ShimlessRma extends ShimlessRmaBase {
         this.currentPage_.buttonExitLabelKey ?
             this.currentPage_.buttonExitLabelKey :
             'exitButtonLabel');
+  }
+
+  /** @protected */
+  openLogsDialog_() {
+    this.shimlessRmaService_.getLog().then((res) => this.log_ = res.log);
+    const dialog = /** @type {!CrDialogElement} */ (
+        this.shadowRoot.querySelector('#logsDialog'));
+    if (!dialog.open) {
+      dialog.showModal();
+    }
+  }
+
+  /** @private */
+  saveLog_() {
+    this.shimlessRmaService_.saveLog().then(
+        /*@type {!SaveLogResponse}*/ (result) => {
+          if (result.error === RmadErrorCode.kOk) {
+            this.logSavedStatusText_ =
+                this.i18n('rmaLogsSaveSuccessText', result.savePath.path);
+            this.usbLogState_ = USBLogState.LOG_SAVE_SUCCESS;
+          } else {
+            this.logSavedStatusText_ = this.i18n('rmaLogsSaveFailText');
+            this.usbLogState_ = USBLogState.LOG_SAVE_FAIL;
+          }
+        });
+  }
+
+  /** @protected */
+  onSaveLogClick_() {
+    this.saveLog_();
+  }
+
+  /** @protected */
+  retrySaveLogs_() {
+    this.saveLog_();
+  }
+
+  /** @protected */
+  closeLogsDialog_() {
+    this.shadowRoot.querySelector('#logsDialog').close();
+
+    // Reset the USB state back to the default.
+    this.usbLogState_ = DEFAULT_USB_LOG_STATE;
+  }
+
+  /**
+   * Implements ExternalDiskStateObserver.onExternalDiskStateChanged()
+   * @param {boolean} detected
+   */
+  onExternalDiskStateChanged(detected) {
+    if (!detected) {
+      this.usbLogState_ = USBLogState.USB_UNPLUGGED;
+      return;
+    }
+
+    if (this.usbLogState_ === USBLogState.USB_UNPLUGGED) {
+      this.usbLogState_ = USBLogState.USB_READY;
+    }
+  }
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  shouldShowSaveToUsbButton_() {
+    return this.usbLogState_ === USBLogState.USB_READY;
+  }
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  shouldShowLogSaveAttemptContainer_() {
+    return this.usbLogState_ === USBLogState.LOG_SAVE_SUCCESS ||
+        this.usbLogState_ === USBLogState.LOG_SAVE_FAIL;
+  }
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  shouldShowRetryButton_() {
+    return this.usbLogState_ === USBLogState.LOG_SAVE_FAIL;
+  }
+
+  /**
+   * @return {boolean}
+   * @protected
+   */
+  shouldShowLogUsbMessageContainer_() {
+    return this.usbLogState_ === USBLogState.USB_UNPLUGGED;
+  }
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getSaveLogResultIcon_() {
+    switch (this.usbLogState_) {
+      case USBLogState.LOG_SAVE_SUCCESS:
+        return 'shimless-icon:check';
+      case USBLogState.LOG_SAVE_FAIL:
+        return 'shimless-icon:warning';
+      default:
+        return '';
+    }
   }
 }
 

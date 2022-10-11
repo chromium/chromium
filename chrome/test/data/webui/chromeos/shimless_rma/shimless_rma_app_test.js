@@ -103,6 +103,27 @@ export function shimlessRMAAppTest() {
     return flushTasks();
   }
 
+  /**
+   * @param {string} buttonNameSelector
+   * @return {!Promise}
+   */
+  function clickButton(buttonNameSelector) {
+    assertTrue(!!component);
+
+    const button = component.shadowRoot.querySelector(buttonNameSelector);
+    button.click();
+    return flushTasks();
+  }
+
+  /** @return {!Promise} */
+  function openLogsDialog() {
+    component.dispatchEvent(new CustomEvent(
+        'open-logs-dialog',
+        {bubbles: true, composed: true},
+        ));
+    return flushTasks();
+  }
+
   test('ShimlessRMALoaded', async () => {
     await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
     assertNavButtons();
@@ -630,5 +651,148 @@ export function shimlessRMAAppTest() {
     // Confirm transition to the reboot page.
     const rebootPage = component.shadowRoot.querySelector('reboot-page');
     assertTrue(!!rebootPage);
+  });
+
+  test('SaveLogsToUsb', async () => {
+    const resolver = new PromiseResolver();
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+    service.triggerExternalDiskObserver(true, 0);
+    await flushTasks();
+
+    let callCount = 0;
+    service.saveLog = () => {
+      callCount++;
+      return resolver.promise;
+    };
+
+    await openLogsDialog();
+    assertTrue(
+        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
+
+    // Attempt to save the logs.
+    await clickButton('#saveLogDialogButton');
+    const savePath = 'save/path';
+    resolver.resolve({savePath: {path: savePath}, error: RmadErrorCode.kOk});
+    await flushTasks();
+
+    assertEquals(1, callCount);
+
+    // The save log button should be replaced by the done button.
+    assertFalse(
+        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
+    assertTrue(isVisible(
+        component.shadowRoot.querySelector('#logSaveDoneDialogButton')));
+    assertEquals(
+        loadTimeData.getStringF('rmaLogsSaveSuccessText', savePath),
+        component.shadowRoot.querySelector('#logSavedStatusText')
+            .textContent.trim());
+
+    // Close the logs dialog.
+    await clickButton('#logSaveDoneDialogButton');
+    await flushTasks();
+
+    // Open the logs dialog and verify we are at the original state with the
+    // Save Log button displayed.
+    await openLogsDialog();
+    assertTrue(
+        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
+  });
+
+  test('SaveLogFails', async () => {
+    const resolver = new PromiseResolver();
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+    service.triggerExternalDiskObserver(true, 0);
+    await flushTasks();
+
+    let callCount = 0;
+    service.saveLog = () => {
+      callCount++;
+      return resolver.promise;
+    };
+
+    await openLogsDialog();
+    assertTrue(
+        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
+
+    // Attempt to save the logs but it fails.
+    await clickButton('#saveLogDialogButton');
+    resolver.resolve(
+        {savePath: 'save/path', error: RmadErrorCode.kCannotSaveLog});
+    await flushTasks();
+
+    assertEquals(1, callCount);
+
+    // The save log button should be replaced by the done button and the retry
+    // button.
+    assertFalse(
+        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
+    assertTrue(isVisible(
+        component.shadowRoot.querySelector('#logSaveDoneDialogButton')));
+    assertTrue(
+        isVisible(component.shadowRoot.querySelector('#logRetryDialogButton')));
+    assertEquals(
+        loadTimeData.getString('rmaLogsSaveFailText'),
+        component.shadowRoot.querySelector('#logSavedStatusText')
+            .textContent.trim());
+
+    // Click the retry button and verify that it retries saving the logs.
+    await clickButton('#logRetryDialogButton');
+    resolver.resolve(
+        {savePath: 'save/path', error: RmadErrorCode.kCannotSaveLog});
+    await flushTasks();
+
+    assertEquals(2, callCount);
+  });
+
+  test('ExternalDiskConnectedShowsUsbActionButtons', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+    service.triggerExternalDiskObserver(true, 0);
+    await flushTasks();
+
+    const logConnectUsbMessageContainer =
+        component.shadowRoot.querySelector('#logConnectUsbMessageContainer');
+    assertTrue(!!logConnectUsbMessageContainer);
+    assertTrue(logConnectUsbMessageContainer.hidden);
+
+    const saveLogButtonContainer =
+        component.shadowRoot.querySelector('#saveLogButtonContainer');
+    assertTrue(!!saveLogButtonContainer);
+    assertFalse(saveLogButtonContainer.hidden);
+
+    const logSaveAttemptButtonContainer =
+        component.shadowRoot.querySelector('#logSaveAttemptButtonContainer');
+    assertTrue(!!logSaveAttemptButtonContainer);
+    assertTrue(logSaveAttemptButtonContainer.hidden);
+  });
+
+  test('ExternalDiskDisconnectedShowsMissingUsbMessage', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+    service.triggerExternalDiskObserver(false, 0);
+    await flushTasks();
+
+    const logConnectUsbMessageContainer =
+        component.shadowRoot.querySelector('#logConnectUsbMessageContainer');
+    assertTrue(!!logConnectUsbMessageContainer);
+    assertFalse(logConnectUsbMessageContainer.hidden);
+
+    const saveLogButtonContainer =
+        component.shadowRoot.querySelector('#saveLogButtonContainer');
+    assertTrue(!!saveLogButtonContainer);
+    assertTrue(saveLogButtonContainer.hidden);
+
+    const logSaveAttemptButtonContainer =
+        component.shadowRoot.querySelector('#logSaveAttemptButtonContainer');
+    assertTrue(!!logSaveAttemptButtonContainer);
+    assertTrue(logSaveAttemptButtonContainer.hidden);
+  });
+
+  test('LogsDialogCloses', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+    await openLogsDialog();
+    await clickButton('#closeLogDialogButton');
+
+    const logsDialog = component.shadowRoot.querySelector('#logsDialog');
+    assertTrue(!!logsDialog);
+    assertFalse(logsDialog.open);
   });
 }

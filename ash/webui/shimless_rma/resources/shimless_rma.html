@@ -86,6 +86,51 @@
   :host([show-busy-state-overlay_]) #busyStateOverlay {
     display: block;
   }
+
+  #logsDialog::part(dialog) {
+    width: 512px;
+  }
+
+  #logsDialog::part(wrapper) {
+    height: 480px;
+  }
+
+  #logsDialog [slot=button-container] {
+    padding-bottom: 24px;
+    padding-top: 24px;
+  }
+
+  #logsDialog [slot=title] {
+    align-items: center;
+    display: flex;
+    font-size: 15px;
+    height: 32px;
+    justify-content: center;
+    padding: 0 24px 0 24px;
+  }
+
+  #logText {
+    white-space: pre-line;
+  }
+
+  #logSaveAttemptButtonContainer {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #logSavedIconText {
+    align-items: center;
+    display: flex;
+  }
+
+  #connectUsbIcon {
+    color: var(--cros-icon-color-secondary);
+  }
+
+  #connectUsbInstructions {
+    color: var(--cros-text-color-primary);
+  }
 </style>
 
 <div id="shimlessRMAContainer">
@@ -151,5 +196,53 @@
         on-click="onConfirmExitButtonClicked_">
       [[i18n('exitButtonLabel')]]
     </cr-button>
+  </div>
+</cr-dialog>
+<cr-dialog id="logsDialog" close-text="close" on-cancel="closeLogsDialog_">
+  <div slot="title">
+    [[i18n('rmaLogsTitleText')]]
+  </div>
+  <div slot="body">
+    <div id="logText">[[log_]]</div>
+  </div>
+  <div id="saveLogButtonContainer" class="dialog-footer" slot="button-container"
+      hidden="[[!shouldShowSaveToUsbButton_(usbLogState_)]]">
+    <cr-button id="closeLogDialogButton" on-click="closeLogsDialog_">
+      [[i18n('rmaLogsCancelButtonText')]]
+    </cr-button>
+    <cr-button id="saveLogDialogButton" class="text-button action-button"
+        on-click="onSaveLogClick_">
+      [[i18n('rmaLogsSaveToUsbButtonText')]]
+    </cr-button>
+  </div>
+  <div id="logSaveAttemptButtonContainer" class="dialog-footer"
+        slot="button-container"
+        hidden="[[!shouldShowLogSaveAttemptContainer_(usbLogState_)]]">
+    <div id="logSavedIconText">
+      <iron-icon id="verificationIcon" class="small-icon"
+          icon="[[getSaveLogResultIcon_(usbLogState_)]]">
+      </iron-icon>
+      <span id="logSavedStatusText">[[logSavedStatusText_]]</span>
+    </div>
+    <cr-button id="logRetryDialogButton" class="text-button action-button"
+        on-click="retrySaveLogs_"
+        hidden="[[!shouldShowRetryButton_(usbLogState_)]]">
+        [[i18n('retryButtonLabel')]]
+    </cr-button>
+    <cr-button id="logSaveDoneDialogButton" class="text-button action-button"
+        on-click="closeLogsDialog_">
+      [[i18n('doneButtonLabel')]]
+    </cr-button>
+  </div>
+  <div id="logConnectUsbMessageContainer" class="dialog-footer"
+        slot="button-container"
+        hidden="[[!shouldShowLogUsbMessageContainer_(usbLogState_)]]">
+    <div id="logSavedIconText">
+      <iron-icon id="connectUsbIcon" class="small-icon"
+          icon="shimless-icon:warning"></iron-icon>
+      <span id="connectUsbInstructions" class="instructions">
+        [[i18n('rmaLogsMissingUsbMessageText')]]
+      </span>
+    </div>
   </div>
 </cr-dialog>

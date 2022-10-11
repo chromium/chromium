@@ -328,101 +328,16 @@ export function wrapupRepairCompletePageTest() {
 
   test('OpensRmaLogDialog', async () => {
     await initializeRepairCompletePage();
-    await clickButton('#rmaLogButton');
 
-    const logsDialog = component.shadowRoot.querySelector('#logsDialog');
-    assertTrue(!!logsDialog);
-    assertTrue(logsDialog.open);
-  });
-
-  test('SaveLogButtonSavesTheLog', async () => {
-    const resolver = new PromiseResolver();
-    await initializeRepairCompletePage();
-
-    let callCount = 0;
-    service.saveLog = () => {
-      callCount++;
-      return resolver.promise;
+    let openLogsDialogEventFired = false;
+    const eventHandler = (event) => {
+      openLogsDialogEventFired = true;
     };
+    component.addEventListener('open-logs-dialog', eventHandler);
 
-    // Open the logs dialog.
     await clickButton('#rmaLogButton');
-    assertTrue(
-        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
 
-    // Attempt to save the logs.
-    await clickButton('#saveLogDialogButton');
-    const savePath = 'save/path';
-    resolver.resolve({savePath: {path: savePath}, error: RmadErrorCode.kOk});
-    await flushTasks();
-
-    assertEquals(1, callCount);
-
-    // The save log button should be replaced by the done button.
-    assertFalse(
-        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
-    assertTrue(isVisible(
-        component.shadowRoot.querySelector('#logSaveDoneDialogButton')));
-    assertEquals(
-        loadTimeData.getStringF('rmaLogsSaveSuccessText', savePath),
-        component.shadowRoot.querySelector('#logSavedStatusText')
-            .textContent.trim());
-
-    // Close the logs dialog.
-    await clickButton('#logSaveDoneDialogButton');
-    await flushTasks();
-
-    // Open the logs dialog and verify we are at the original state with the
-    // Save Log button displayed.
-    await clickButton('#rmaLogButton');
-    resolver.resolve({savePath: 'save/path', error: RmadErrorCode.kOk});
-    assertTrue(
-        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
-  });
-
-  test('SaveLogFails', async () => {
-    const resolver = new PromiseResolver();
-    await initializeRepairCompletePage();
-
-    let callCount = 0;
-    service.saveLog = () => {
-      callCount++;
-      return resolver.promise;
-    };
-
-    // Open the logs dialog.
-    await clickButton('#rmaLogButton');
-    assertTrue(
-        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
-
-    // Attempt to save the logs but it fails.
-    await clickButton('#saveLogDialogButton');
-    resolver.resolve(
-        {savePath: 'save/path', error: RmadErrorCode.kCannotSaveLog});
-    await flushTasks();
-
-    assertEquals(1, callCount);
-
-    // The save log button should be replaced by the done button and the retry
-    // button.
-    assertFalse(
-        isVisible(component.shadowRoot.querySelector('#saveLogDialogButton')));
-    assertTrue(isVisible(
-        component.shadowRoot.querySelector('#logSaveDoneDialogButton')));
-    assertTrue(
-        isVisible(component.shadowRoot.querySelector('#logRetryDialogButton')));
-    assertEquals(
-        loadTimeData.getString('rmaLogsSaveFailText'),
-        component.shadowRoot.querySelector('#logSavedStatusText')
-            .textContent.trim());
-
-    // Click the retry button and verify that it retries saving the logs.
-    await clickButton('#logRetryDialogButton');
-    resolver.resolve(
-        {savePath: 'save/path', error: RmadErrorCode.kCannotSaveLog});
-    await flushTasks();
-
-    assertEquals(2, callCount);
+    assertTrue(openLogsDialogEventFired);
   });
 
   test('BatteryCutButtonDisabledByDefault', async () => {
@@ -451,60 +366,6 @@ export function wrapupRepairCompletePageTest() {
 
     assertTrue(!!button);
     assertFalse(button.disabled);
-  });
-
-  test('ExternalDiskStateTrueShowsSaveLogsAndCancelButtons', async () => {
-    await initializeRepairCompletePage();
-    service.triggerExternalDiskObserver(true, 0);
-    await flushTasks();
-
-    const logConnectUsbMessageContainer =
-        component.shadowRoot.querySelector('#logConnectUsbMessageContainer');
-    assertTrue(!!logConnectUsbMessageContainer);
-    assertTrue(logConnectUsbMessageContainer.hidden);
-
-    const saveLogButtonContainer =
-        component.shadowRoot.querySelector('#saveLogButtonContainer');
-    assertTrue(!!saveLogButtonContainer);
-    assertFalse(saveLogButtonContainer.hidden);
-
-    const logSaveAttemptButtonContainer =
-        component.shadowRoot.querySelector('#logSaveAttemptButtonContainer');
-    assertTrue(!!logSaveAttemptButtonContainer);
-    assertTrue(logSaveAttemptButtonContainer.hidden);
-  });
-
-  test('ExternalDiskStateFalseShowsMissingUsbMessage', async () => {
-    await initializeRepairCompletePage();
-    service.triggerExternalDiskObserver(false, 0);
-    await flushTasks();
-
-    const logConnectUsbMessageContainer =
-        component.shadowRoot.querySelector('#logConnectUsbMessageContainer');
-    assertTrue(!!logConnectUsbMessageContainer);
-    assertFalse(logConnectUsbMessageContainer.hidden);
-
-    const saveLogButtonContainer =
-        component.shadowRoot.querySelector('#saveLogButtonContainer');
-    assertTrue(!!saveLogButtonContainer);
-    assertTrue(saveLogButtonContainer.hidden);
-
-    const logSaveAttemptButtonContainer =
-        component.shadowRoot.querySelector('#logSaveAttemptButtonContainer');
-    assertTrue(!!logSaveAttemptButtonContainer);
-    assertTrue(logSaveAttemptButtonContainer.hidden);
-  });
-
-  test('DialogCloses', async () => {
-    await initializeRepairCompletePage();
-    await clickButton('#rmaLogButton');
-    await clickButton('#closeLogDialogButton');
-
-    const logsDialog = component.shadowRoot.querySelector('#logsDialog');
-    assertTrue(!!logsDialog);
-    assertFalse(logsDialog.open);
-
-    await clickButton('#batteryCutButton');
   });
 
   test('PowerwashCancelButtonClosesPowerwashDialog', async () => {
