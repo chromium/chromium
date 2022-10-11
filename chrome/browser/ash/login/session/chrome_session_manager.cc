@@ -306,6 +306,27 @@ void ChromeSessionManager::Initialize(
     }
   }
 
+  // This check has to happen before `StartKioskSession()` or
+  // `StartLoginOobeSession()` so that Ash can enter profile migration mode.
+  if (parsed_command_line.HasSwitch(switches::kBrowserDataMigrationForUser)) {
+    LOG(WARNING) << "Ash is running to do browser data migration.";
+    // Show UI for browser data migration. The migration itself will be started
+    // in `LacrosDataMigrationScreen::ShowImpl`.
+    ShowLoginWizard(LacrosDataMigrationScreenView::kScreenId);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          ash::features::kLacrosProfileBackwardMigration) &&
+      parsed_command_line.HasSwitch(
+          switches::kForceBrowserDataBackwardMigration)) {
+    LOG(WARNING) << "Ash is running to do browser data backward migration.";
+    // Show UI for browser data backward migration. The backward migration
+    // itself will be started in `LacrosDataBackwardMigrationScreen::ShowImpl`.
+    ShowLoginWizard(LacrosDataBackwardMigrationScreenView::kScreenId);
+    return;
+  }
+
   // Tests should be able to tune login manager before showing it. Thus only
   // show login UI (login and out-of-box) in normal (non-testing) mode with
   // --login-manager switch and if test passed --force-login-manager-in-tests.
@@ -323,25 +344,6 @@ void ChromeSessionManager::Initialize(
                                g_browser_process->local_state())) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
     StartKioskSession();
-    return;
-  }
-
-  if (parsed_command_line.HasSwitch(switches::kBrowserDataMigrationForUser)) {
-    VLOG(1) << "Ash is running to do browser data migration.";
-    // Show UI for browser data migration. The migration itself will be started
-    // in `LacrosDataMigrationScreen::ShowImpl`.
-    ShowLoginWizard(LacrosDataMigrationScreenView::kScreenId);
-    return;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          ash::features::kLacrosProfileBackwardMigration) &&
-      parsed_command_line.HasSwitch(
-          switches::kForceBrowserDataBackwardMigration)) {
-    VLOG(1) << "Ash is running to do browser data backward migration.";
-    // Show UI for browser data backward migration. The backward migration
-    // itself will be started in `LacrosDataBackwardMigrationScreen::ShowImpl`.
-    ShowLoginWizard(LacrosDataBackwardMigrationScreenView::kScreenId);
     return;
   }
 

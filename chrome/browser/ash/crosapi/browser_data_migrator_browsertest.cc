@@ -13,8 +13,10 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/move_migrator.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
@@ -41,6 +43,39 @@ const char kGaiaID[] = "22222";
 
 constexpr char kUserIdHash[] = "abcdefg";
 
+// This creates <profile directory>/Preferences file for the account so that
+// when `Profile` instance is created, it is considered a profile for an
+// existing user. This is to avoid profile migration being marked as completed
+// for a new user.
+bool CreatePreferenceFileForProfile(const AccountId& account_id) {
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  const base::FilePath profile_data_dir =
+      ProfileHelper::GetProfilePathByUserIdHash(
+          user_manager::FakeUserManager::GetFakeUsernameHash(account_id));
+  {
+    base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+    if (!(base::CreateDirectory(user_data_dir) &&
+          base::CreateDirectory(profile_data_dir) &&
+          base::WriteFile(profile_data_dir.Append("Preferences"), "{}"))) {
+      LOG(ERROR) << "Creating `Preferences` file failed.";
+      return false;
+    }
+  }
+
+  return true;
+}
+
+void SetLacrosAvailability(
+    crosapi::browser_util::LacrosAvailability lacros_availability) {
+  policy::PolicyMap policy;
+  policy.Set(policy::key::kLacrosAvailability, policy::POLICY_LEVEL_MANDATORY,
+             policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+             base::Value(GetLacrosAvailabilityPolicyName(lacros_availability)),
+             /*external_data_fetcher=*/nullptr);
+  crosapi::browser_util::CacheLacrosAvailability(policy);
+}
+
 }  // namespace
 
 // Used to test whether migration gets triggered during the signin flow.
@@ -59,27 +94,8 @@ class BrowserDataMigratorOnSignIn : public ash::LoginManagerTest {
       AccountId::FromUserEmailGaiaId(kUserEmail, kGaiaID)};
 
   bool LoginAsExistingRegularUser() {
-    // Create `<profile_dir>/Preferences` before calling
-    // `ExistingUserController::Login()` so that when `Profile` instance is
-    // created, it is considered a profile for an existing user. This is to
-    // avoid profile migration being marked as completed for a new user.
-    base::FilePath user_data_dir;
-    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-    const base::FilePath profile_data_dir =
-        ProfileHelper::GetProfilePathByUserIdHash(
-            user_manager::FakeUserManager::GetFakeUsernameHash(
-                regular_user_.account_id));
-    {
-      base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-      if (!(base::CreateDirectory(user_data_dir) &&
-            base::CreateDirectory(profile_data_dir) &&
-            base::WriteFile(profile_data_dir.Append("Preferences"), "{}"))) {
-        LOG(ERROR) << "Creating `Preferences` file failed.";
-        return false;
-      }
-    }
-
-    return LoginAsRegularUser();
+    return CreatePreferenceFileForProfile(regular_user_.account_id) &&
+           LoginAsRegularUser();
   }
 
   bool LoginAsRegularUser() {
@@ -183,17 +199,6 @@ class BrowserDataMigratorMoveMigrateOnSignInByPolicy
         {ash::features::kLacrosProfileMigrationForAnyUser}, {});
 
     BrowserDataMigratorOnSignIn::SetUp();
-  }
-
-  void SetLacrosAvailability(
-      crosapi::browser_util::LacrosAvailability lacros_availability) {
-    policy::PolicyMap policy;
-    policy.Set(
-        policy::key::kLacrosAvailability, policy::POLICY_LEVEL_MANDATORY,
-        policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-        base::Value(GetLacrosAvailabilityPolicyName(lacros_availability)),
-        /*external_data_fetcher=*/nullptr);
-    crosapi::browser_util::CacheLacrosAvailability(policy);
   }
 
  private:
@@ -464,6 +469,47 @@ IN_PROC_BROWSER_TEST_F(BrowserDataMigratorResumeRestartInSession,
   EXPECT_EQ(FakeSessionManagerClient::Get()
                 ->request_browser_data_migration_mode_value(),
             "move");
+}
+
+class BrowserDataMigratorForKiosk : public KioskBaseTest {
+ public:
+  BrowserDataMigratorForKiosk() = default;
+  BrowserDataMigratorForKiosk(BrowserDataMigratorForKiosk&) = delete;
+  BrowserDataMigratorForKiosk& operator=(BrowserDataMigratorForKiosk&) = delete;
+  ~BrowserDataMigratorForKiosk() override = default;
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {ash::features::kLacrosSupport,
+         ash::features::kLacrosProfileMigrationForAnyUser},
+        {});
+
+    KioskBaseTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserDataMigratorForKiosk, MigrateOnKioskLaunch) {
+  SetLacrosAvailability(crosapi::browser_util::LacrosAvailability::kUserChoice);
+
+  // Call this so that the test app is registered with `KioskAppManager` and
+  // thus the `AccountId` can be retrieved.
+  PrepareAppLaunch();
+  KioskAppManager::App app;
+  CHECK(KioskAppManager::Get());
+  CHECK(KioskAppManager::Get()->GetApp(test_app_id(), &app));
+  CreatePreferenceFileForProfile(app.account_id);
+
+  base::RunLoop run_loop;
+  ScopedRestartAttemptForTesting scoped_restart_attempt(
+      base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
+  StartAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+  run_loop.Run();
+  EXPECT_TRUE(
+      FakeSessionManagerClient::Get()->request_browser_data_migration_called());
 }
 
 }  // namespace ash
