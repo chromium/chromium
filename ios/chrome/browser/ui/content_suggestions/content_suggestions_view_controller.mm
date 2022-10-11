@@ -506,6 +506,7 @@ CGFloat ModuleVerticalSpacing() {
     index++;
   }
   [self populateMostVisitedModule];
+  base::RecordAction(base::UserMetricsAction("MobileNTPShowMostVisited"));
 }
 
 - (void)setShortcutTilesWithConfigs:

@@ -540,9 +540,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 // Tests that when navigating back to the NTP while having the omnibox focused
 // and moved up, the scroll position restored is the position before the omnibox
 // is selected.
-// Disable the test due to waterfall failure.
-// TODO(crbug.com/1243222): enable the test with fix.
-- (void)DISABLED_testPositionRestoredWithOmniboxFocused {
+- (void)testPositionRestoredWithShiftingOffset {
   [self addMostVisitedTile];
 
   // Add suggestions to be able to scroll on iPad.
@@ -551,7 +549,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Scroll to have a position to restored.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 50)];
 
   // Save the position before navigating.
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
@@ -573,6 +571,46 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   GREYAssertEqual(
       previousPosition, collectionView.contentOffset.y,
       @"NTP is not at the same position as before tapping the omnibox");
+}
+
+// Tests that when navigating back to the NTP while having the omnibox focused
+// does not consider the shifting offset, since the omnibox was already pinned
+// before focusing.
+// TODO(crbug.com/1364725): Fix small jump when focusing pinned omnibox.
+- (void)DISABLED_testPositionRestoredWithoutShiftingOffset {
+  [self addMostVisitedTile];
+
+  // Add suggestions to be able to scroll on iPad.
+  [NewTabPageAppInterface addNumberOfSuggestions:15
+                        additionalSuggestionsURL:nil];
+
+  // Scroll enough to naturally pin the omnibox to the top.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
+
+  // Save the position before navigating.
+  UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
+  CGFloat previousPosition = collectionView.contentOffset.y;
+
+  // Tap the omnibox to focus it.
+  [self focusFakebox];
+
+  // Ensure that focusing the omnibox doesn't change the scroll position.
+  GREYAssertEqual(previousPosition, collectionView.contentOffset.y,
+                  @"Focusing the omnibox changed the scroll position.");
+
+  // Navigate and come back.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::StaticTextWithAccessibilityLabel(
+                     base::SysUTF8ToNSString(kPageTitle))]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
+  [ChromeEarlGrey goBack];
+
+  // Check that the new position is the same.
+  collectionView = [NewTabPageAppInterface collectionView];
+  GREYAssertEqual(previousPosition, collectionView.contentOffset.y,
+                  @"NTP is not at the same position");
 }
 
 // Tests that tapping the fake omnibox focuses the real omnibox.
