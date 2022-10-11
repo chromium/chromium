@@ -95,6 +95,8 @@ const AllSitesElementBase = AllSitesElementBaseTemp as unknown as {
       SiteSettingsMixinInterface & RouteObserverMixinInterface,
 };
 
+const FPS_RELATED_SEARCH_PREFIX: string = 'related:';
+
 export class AllSitesElement extends AllSitesElementBase {
   static get is() {
     return 'all-sites';
@@ -320,7 +322,7 @@ export class AllSitesElement extends AllSitesElementBase {
       siteGroupMap: Map<string, SiteGroup>, searchQuery: string): SiteGroup[] {
     const result = [];
     for (const [_etldPlus1, siteGroup] of siteGroupMap) {
-      if (this.filter.startsWith('related:')) {
+      if (this.filter.startsWith(FPS_RELATED_SEARCH_PREFIX)) {
         const fpsOwnerFilter =
             this.filter.substring(this.filter.indexOf(':') + 1);
         // Checking `siteGroup.fpsOwner` to ensure that we're not matching with
@@ -475,16 +477,17 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   private shouldShowFpsLearnMore_(): boolean {
-    return this.filter.startsWith('related:') && this.filteredList_ &&
-        this.filteredList_.length > 0;
+    return this.filter.startsWith(FPS_RELATED_SEARCH_PREFIX) &&
+        this.filteredList_ && this.filteredList_.length > 0;
   }
 
   private onShowRelatedSites_() {
+    this.browserProxy.recordAction(AllSitesAction2.FILTER_BY_FPS_OWNER);
     this.$.menu.get().close();
     const siteGroup = this.filteredList_[this.actionMenuModel_!.index];
     const searchParams = new URLSearchParams(
         'searchSubpage=' +
-        encodeURIComponent('related:' + siteGroup.fpsOwner!));
+        encodeURIComponent(FPS_RELATED_SEARCH_PREFIX + siteGroup.fpsOwner!));
     const currentRoute = Router.getInstance().getCurrentRoute();
     Router.getInstance().navigateTo(currentRoute, searchParams);
   }
@@ -1098,7 +1101,9 @@ export class AllSitesElement extends AllSitesElementBase {
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
     const installed = anyAppsInstalled ? 'Installed' : '';
     this.recordUserAction_([...scopes, installed, 'Confirm']);
-
+    if (this.filter.startsWith(FPS_RELATED_SEARCH_PREFIX)) {
+      this.browserProxy.recordAction(AllSitesAction2.DELETE_FOR_ENTIRE_FPS);
+    }
     for (let index = this.filteredList_.length - 1; index >= 0; index--) {
       this.clearDataForSiteGroupIndex_(index);
     }

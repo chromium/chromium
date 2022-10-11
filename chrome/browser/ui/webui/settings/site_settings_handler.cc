@@ -129,7 +129,9 @@ enum class AllSitesAction2 {
   kRemoveSiteGroup = 7,
   kRemoveOrigin = 8,
   kRemoveOriginPartitioned = 9,
-  kMaxValue = kRemoveOriginPartitioned,
+  kFilterByFpsOwner = 10,
+  kDeleteForEntireFps = 11,
+  kMaxValue = kDeleteForEntireFps,
 };
 
 // Return an appropriate API Permission ID for the given string name.
