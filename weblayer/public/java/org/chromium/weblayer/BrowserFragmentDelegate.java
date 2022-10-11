@@ -20,6 +20,7 @@ import org.chromium.browserfragment.interfaces.IFragmentParams;
 import org.chromium.browserfragment.interfaces.ITabCallback;
 import org.chromium.browserfragment.interfaces.ITabListObserverDelegate;
 import org.chromium.browserfragment.interfaces.ITabParams;
+import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 
@@ -32,9 +33,7 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
 
     private Context mContext;
     private WebLayer mWebLayer;
-
-    // TODO(rayankans): Create an event handler instead of using the weblayer fragment directly.
-    private BrowserFragment mFragment;
+    private BrowserFragmentEventHandler mEventHandler;
 
     private BrowserFragmentTabListDelegate mBrowserDelegate;
 
@@ -51,10 +50,25 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
                                                            .setPersistenceId(params.persistenceId)
                                                            .setIsIncognito(params.isIncognito)
                                                            .build();
-        mHandler.post(() -> {
-            mFragment = (BrowserFragment) WebLayer.createBrowserFragmentWithParams(createParams);
-            mFragment.ignoreViewModel();
-        });
+        mHandler.post(() -> { mEventHandler = createBrowserFragmentEventHandler(createParams); });
+    }
+
+    private BrowserFragmentEventHandler createBrowserFragmentEventHandler(
+            BrowserFragmentCreateParams params) {
+        ThreadCheck.ensureOnUiThread();
+        String profileName = Profile.sanitizeProfileName(params.getProfileName());
+        boolean isIncognito = params.isIncognito() || "".equals(profileName);
+        // Support for named incognito profiles was added in 87. Checking is done in
+        // BrowserFragment, as this code should not trigger loading WebLayer.
+        Bundle args = new Bundle();
+        args.putString(BrowserFragmentArgs.PROFILE_NAME, profileName);
+        if (params.getPersistenceId() != null) {
+            args.putString(BrowserFragmentArgs.PERSISTENCE_ID, params.getPersistenceId());
+        }
+        args.putBoolean(BrowserFragmentArgs.IS_INCOGNITO, isIncognito);
+        args.putBoolean(BrowserFragmentArgs.USE_VIEW_MODEL, params.getUseViewModel());
+
+        return new BrowserFragmentEventHandler(args);
     }
 
     @Override
@@ -74,7 +88,7 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
         mSurfaceControlViewHost =
                 new SurfaceControlViewHost(mContext, window.getDefaultDisplay(), hostToken);
 
-        mFragment.getBrowser().setSurfaceControlViewHost(mSurfaceControlViewHost);
+        mEventHandler.getBrowser().setSurfaceControlViewHost(mSurfaceControlViewHost);
         try {
             mClient.onSurfacePackageReady(mSurfaceControlViewHost.getSurfacePackage());
         } catch (RemoteException e) {
@@ -86,7 +100,7 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
         mHandler.post(() -> {
             try {
                 mClient.onContentViewRenderViewReady(
-                        ObjectWrapper.wrap(mFragment.getBrowser().getContentViewRenderView()));
+                        ObjectWrapper.wrap(mEventHandler.getBrowser().getContentViewRenderView()));
             } catch (RemoteException e) {
             }
         });
@@ -104,7 +118,7 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     @Override
     public void getActiveTab(ITabCallback tabCallback) {
         mHandler.post(() -> {
-            Tab activeTab = mFragment.getBrowser().getActiveTab();
+            Tab activeTab = mEventHandler.getBrowser().getActiveTab();
             try {
                 if (activeTab != null) {
                     ITabParams tabParams = TabParams.buildParcelable(activeTab);
@@ -119,20 +133,20 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
 
     @Override
     public void onAttach() {
-        mHandler.post(() -> mFragment.onAttach(mContext));
+        mHandler.post(() -> mEventHandler.onAttach(mContext));
     }
 
     @Override
     public void onAttachWithContext(IObjectWrapper context) {
-        mHandler.post(() -> mFragment.onAttach(ObjectWrapper.unwrap(context, Context.class)));
+        mHandler.post(() -> mEventHandler.onAttach(ObjectWrapper.unwrap(context, Context.class)));
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         mHandler.post(() -> {
-            mFragment.onCreate(savedInstanceState, mBrowserDelegate);
+            mEventHandler.onCreate(savedInstanceState, mBrowserDelegate);
 
-            Profile profile = mFragment.getBrowser().getProfile();
+            Profile profile = mEventHandler.getBrowser().getProfile();
             try {
                 mClient.onCookieManagerReady(new CookieManagerDelegate(profile.getCookieManager()));
             } catch (RemoteException e) {
@@ -142,13 +156,13 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
 
     @Override
     public void onDestroy() {
-        mHandler.post(() -> mFragment.onDestroy(/* force= */ true));
+        mHandler.post(() -> mEventHandler.onDestroy());
     }
 
     @Override
     public void onDetach() {
         mHandler.post(() -> {
-            mFragment.onDetach();
+            mEventHandler.onDetach();
             if (mSurfaceControlViewHost != null) {
                 mSurfaceControlViewHost.release();
                 mSurfaceControlViewHost = null;
@@ -159,11 +173,11 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     @Override
     public void onStart() {
         mHandler.post(() -> {
-            mFragment.onStart();
+            mEventHandler.onStart();
 
             // Retrieve the instance state.
             Bundle instanceState = new Bundle();
-            mFragment.onSaveInstanceState(instanceState);
+            mEventHandler.onSaveInstanceState(instanceState);
 
             try {
                 mClient.onStarted(instanceState);
@@ -174,17 +188,17 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
 
     @Override
     public void onStop() {
-        mHandler.post(() -> mFragment.onStop());
+        mHandler.post(() -> mEventHandler.onStop());
     }
 
     @Override
     public void onResume() {
-        mHandler.post(() -> mFragment.onResume());
+        mHandler.post(() -> mEventHandler.onResume());
     }
 
     @Override
     public void onPause() {
-        mHandler.post(() -> mFragment.onPause());
+        mHandler.post(() -> mEventHandler.onPause());
     }
 
     @Override
@@ -195,7 +209,7 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     @Override
     public void tryNavigateBack(IBooleanCallback callback) {
         mHandler.post(() -> {
-            mFragment.getBrowser().tryNavigateBack(didNavigate -> {
+            mEventHandler.getBrowser().tryNavigateBack(didNavigate -> {
                 try {
                     callback.onResult(didNavigate);
                 } catch (RemoteException e) {
@@ -207,7 +221,7 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     @Override
     public void createTab(ITabCallback callback) {
         mHandler.post(() -> {
-            Tab newTab = mFragment.getBrowser().createTab();
+            Tab newTab = mEventHandler.getBrowser().createTab();
             try {
                 callback.onResult(TabParams.buildParcelable(newTab));
             } catch (RemoteException e) {

@@ -80,6 +80,13 @@ class Profile {
         return profiles;
     }
 
+    static String sanitizeProfileName(String profileName) {
+        if ("".equals(profileName)) {
+            throw new IllegalArgumentException("Profile path cannot be empty");
+        }
+        return profileName == null ? "" : profileName;
+    }
+
     private final String mName;
     private final boolean mIsIncognito;
     private IProfile mImpl;
