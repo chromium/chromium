@@ -99,6 +99,9 @@ namespace printing {
 
 using testing::_;
 
+using OnDidCreatePrintJobCallback =
+    base::RepeatingCallback<void(PrintJob* print_job)>;
+
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 using OnUseDefaultSettingsCallback = base::RepeatingCallback<void()>;
 using OnGetSettingsWithUICallback = base::RepeatingCallback<void()>;
@@ -573,6 +576,10 @@ class TestPrintViewManager : public PrintViewManager {
  public:
   explicit TestPrintViewManager(content::WebContents* web_contents)
       : PrintViewManager(web_contents) {}
+  TestPrintViewManager(content::WebContents* web_contents,
+                       OnDidCreatePrintJobCallback callback)
+      : PrintViewManager(web_contents),
+        on_did_create_print_job_(std::move(callback)) {}
   TestPrintViewManager(const TestPrintViewManager&) = delete;
   TestPrintViewManager& operator=(const TestPrintViewManager&) = delete;
   ~TestPrintViewManager() override = default;
@@ -616,6 +623,13 @@ class TestPrintViewManager : public PrintViewManager {
     return *print_now_result_;
   }
   void ShowInvalidPrinterSettingsError() override {}
+  bool CreateNewPrintJob(std::unique_ptr<PrinterQuery> query) override {
+    if (!PrintViewManager::CreateNewPrintJob(std::move(query)))
+      return false;
+    if (on_did_create_print_job_)
+      on_did_create_print_job_.Run(print_job_.get());
+    return true;
+  }
 
  protected:
   base::RunLoop* run_loop_ = nullptr;
@@ -647,6 +661,7 @@ class TestPrintViewManager : public PrintViewManager {
 
   std::unique_ptr<PrintSettings> snooped_settings_;
   absl::optional<bool> print_now_result_;
+  OnDidCreatePrintJobCallback on_did_create_print_job_;
 };
 
 class TestPrintViewManagerForDLP : public TestPrintViewManager {
@@ -2558,7 +2573,8 @@ class TestPrintJobWorkerOop : public PrintJobWorkerOop {
 };
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
-class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
+class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
+                                                public PrintJob::Observer {
  public:
   SystemAccessProcessPrintBrowserTestBase() = default;
   ~SystemAccessProcessPrintBrowserTestBase() override = default;
@@ -2665,12 +2681,27 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
     }
     PrintBackendServiceManager::ResetForTesting();
 #endif
+    ASSERT_EQ(print_job_construction_count(), print_job_destruction_count());
+  }
+
+  void OnDestruction() override {
+    ++print_job_destruction_count_;
+    CheckForQuit();
+  }
+
+  void OnCreatedPrintJob(PrintJob* print_job) {
+    ++print_job_construction_count_;
+    print_job->AddObserver(*this);
   }
 
   void SetUpPrintViewManager(content::WebContents* web_contents) {
     web_contents->SetUserData(
         PrintViewManager::UserDataKey(),
-        std::make_unique<TestPrintViewManager>(web_contents));
+        std::make_unique<TestPrintViewManager>(
+            web_contents,
+            base::BindRepeating(
+                &SystemAccessProcessPrintBrowserTestBase::OnCreatedPrintJob,
+                base::Unretained(this))));
   }
 
   void PrintAfterPreviewIsReadyAndLoaded() {
@@ -2787,6 +2818,13 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
 
   bool stop_invoked() const { return stop_invoked_; }
 
+  int print_job_construction_count() const {
+    return print_job_construction_count_;
+  }
+  int print_job_destruction_count() const {
+    return print_job_destruction_count_;
+  }
+
  private:
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
   std::unique_ptr<PrintJobWorker> CreatePrintJobWorker(
@@ -2873,10 +2911,7 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
     CheckForQuit();
   }
 
-  void OnDidStop() {
-    stop_invoked_ = true;
-    CheckForQuit();
-  }
+  void OnDidStop() { stop_invoked_ = true; }
 
   void ResetForNoAccessDeniedErrors() {
     // Don't do the reset if test scenario is repeatedly return errors.
@@ -2923,6 +2958,8 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
   mojom::ResultCode document_done_result_ = mojom::ResultCode::kFailed;
   bool error_dialog_shown_ = false;
   bool stop_invoked_ = false;
+  int print_job_construction_count_ = 0;
+  int print_job_destruction_count_ = 0;
 };
 
 class SystemAccessProcessSandboxedServicePrintBrowserTest
@@ -3048,9 +3085,9 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   SetUpPrintViewManager(web_contents);
 
   // The test will succeed to start the print job, render a page/document of
-  // content, and complete with document done.  Wait for a call to `Stop()` to
-  // ensure print job wrap-up finished cleanly before completing the test.
-  // This results in a total of 4 expected calls.
+  // content, and complete with document done.  Wait for the one print job to
+  // be destroyed to ensure printing finished cleanly before completing the
+  // test.  This results in a total of 4 expected calls.
   SetNumExpectedMessages(/*num=*/4);
   PrintAfterPreviewIsReadyAndLoaded();
 
@@ -3064,7 +3101,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-  EXPECT_TRUE(stop_invoked());
+  EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
@@ -3082,10 +3119,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   SetUpPrintViewManager(web_contents);
 
   // The test will succeed to start the print job, render 3 pages of document
-  // content, and complete with document done.  Wait for a call to `Stop()` to
-  // ensure print job wrap-up finished cleanly before completing the test.
-  // This results in a total of 6 expected calls for Windows GDI printing, or
-  // 4 expected calls for all other cases.
+  // content, and complete with document done.  Wait for the one print job to
+  // be destroyed to ensure printing finished cleanly before completing the
+  // test.  This results in a total of 6 expected calls for Windows GDI
+  // printing, or 4 expected calls for all other cases.
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1008222)  Include Windows coverage of
   // RenderPrintedDocument() once XPS print pipeline is added.
@@ -3105,7 +3142,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-  EXPECT_TRUE(stop_invoked());
+  EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
@@ -3127,16 +3164,16 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   // to spool a page/document fails on a shared memory error.  The test will
   // succeed to start the print job, and fails in spooling when it is preparing
   // to send the data for rendering.  This will cause a printing error dialog
-  // to be displayed.  Wait for a call to `Stop()` to ensure print job wrap-up
-  // finished cleanly before completing the test.  This results in a total of 3
-  // expected calls.
+  // to be displayed.  Wait for the one print job to be destroyed to ensure
+  // printing finished cleanly before completing the test.  This results in a
+  // total of 3 expected calls.
   SetNumExpectedMessages(/*num=*/3);
 
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
   EXPECT_TRUE(error_dialog_shown());
-  EXPECT_TRUE(stop_invoked());
+  EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
@@ -3156,9 +3193,9 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 
   // The test will retry to print after getting an access-denied error when
   // trying to start printing.  After that the printing will succeed to start,
-  // render a page/document of content, and complete.  Wait for a call to
-  // `Stop()` to ensure print job wrap-up finished cleanly - resulting in 5
-  // calls.
+  // render a page/document of content, and complete.  Wait for the one print
+  // job to be destroyed to ensure printing finished cleanly before completing
+  // the test.  This results in 5 calls.
   SetNumExpectedMessages(/*num=*/5);
 
   PrintAfterPreviewIsReadyAndLoaded();
@@ -3173,7 +3210,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-  EXPECT_TRUE(stop_invoked());
+  EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
@@ -3195,15 +3232,16 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // Test of a misbehaving printer driver which only returns access-denied
   // errors.  The test will retry printing once but will abort when it is
   // seen again.  This will cause a printing error dialog to be displayed.
-  // Wait for a call to `Stop()` to ensure print job wrap-up finished cleanly
-  // before completing the test.  This results in a total of 4 expected calls.
+  // Wait for the one print job to be destroyed to ensure printing finished
+  // cleanly before completing the test.  This results in a total of 4
+  // expected calls.
   SetNumExpectedMessages(/*num=*/4);
 
   PrintAfterPreviewIsReadyAndLoaded();
 
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kAccessDenied);
   EXPECT_TRUE(error_dialog_shown());
-  EXPECT_TRUE(stop_invoked());
+  EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -3225,9 +3263,9 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // No attempt to retry is made if an access-denied error occurs when trying
   // to render a page.  The test will fail after starting the print job and
   // rendering a page of content.  This will cause a printing error dialog to
-  // be displayed.  Wait for a call to `Stop()` to ensure print job wrap-up
-  // finished cleanly before completing the test.  This results in a total of
-  // 4 expected calls.
+  // be displayed.  Wait for the one print job to be destroyed to ensure
+  // printing finished cleanly before completing the test.  This results in a
+  // total of 4 expected calls.
   SetNumExpectedMessages(/*num=*/4);
 
   PrintAfterPreviewIsReadyAndLoaded();
@@ -3236,7 +3274,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kAccessDenied);
   EXPECT_EQ(render_printed_page_count(), 0);
   EXPECT_TRUE(error_dialog_shown());
-  EXPECT_TRUE(stop_invoked());
+  EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
 // TODO(crbug.com/1326580):  Enable test once use-after-free after a failed
@@ -3295,7 +3333,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // No attempt to retry is made if an access-denied error occurs when trying
   // to render a document.  The test will fail after starting the print job and
   // rendering the document.  This will cause a printing error dialog to be
-  // displayed.  Wait for a call to `Stop()` to ensure print job wrap-up
+  // displayed.  Wait for the one print job to be destroyed to ensure printing
   // finished cleanly before completing the test.  This results in a total of 4
   // expected calls.
   SetNumExpectedMessages(/*num=*/4);
@@ -3305,7 +3343,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kAccessDenied);
   EXPECT_TRUE(error_dialog_shown());
-  EXPECT_TRUE(stop_invoked());
+  EXPECT_EQ(print_job_destruction_count(), 1);
 }
 #endif  // !BUILDFLAG(IS_WIN)
 
@@ -3327,9 +3365,9 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   // No attempt to retry is made if an access-denied error occurs when trying
   // do wrap-up a rendered document.  The test will fail after starting the
   // print job, rendering a page of content, and calling for document done.
-  // This will cause a printing error dialog to be displayed.  Wait for a call
-  // to `Stop()` to ensure print job wrap-up finished cleanly before completing
-  // the test.  This results in a total of 5 expected calls.
+  // This will cause a printing error dialog to be displayed.  Wait for the one
+  // print job to be destroyed to ensure printing finished cleanly before
+  // completing the test.  This results in a total of 5 expected calls.
   SetNumExpectedMessages(/*num=*/5);
 
   PrintAfterPreviewIsReadyAndLoaded();
@@ -3345,7 +3383,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
 #endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kAccessDenied);
   EXPECT_TRUE(error_dialog_shown());
-  EXPECT_TRUE(stop_invoked());
+  EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
 // TODO(crbug.com/809738)  Extend to Linux once Wayland can be made to support
@@ -3367,9 +3405,9 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
   // The test will get the default settings followed by asking the user for
   // settings.  After that a print job will be started, with a page getting
-  // rendered, and finally the document done notification.  Wait for a call to
-  // `Stop()` to ensure print job wrap-up finished cleanly before completing
-  // the test.  This results in a total of 6 calls.
+  // rendered, and finally the document done notification.  Wait for the one
+  // print job to be destroyed to ensure printing finished cleanly before
+  // completing the test.  This results in a total of 6 calls.
   SetNumExpectedMessages(/*num=*/6);
 
   StartBasicPrint(web_contents);
@@ -3384,7 +3422,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 1);
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
-  EXPECT_TRUE(stop_invoked());
+  EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
@@ -3404,10 +3442,10 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
 
   // The test will get the default settings followed by asking the user for
   // settings.  Since this pretends the user canceled from that, no further
-  // printing calls are made.  Wait for a call to `Stop()` to ensure print job
-  // wrap-up finished cleanly before completing the test.  This results in a
-  // total of 3 expected calls.
-  SetNumExpectedMessages(/*num=*/3);
+  // printing calls are made.  No print job is created because of such an early
+  // cancel, so no need to wait any further.  This results in a total of 2
+  // expected calls.
+  SetNumExpectedMessages(/*num=*/2);
 
   StartBasicPrint(web_contents);
 
@@ -3415,7 +3453,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
 
   EXPECT_TRUE(did_use_default_settings());
   EXPECT_TRUE(did_get_settings_with_ui());
-  EXPECT_TRUE(stop_invoked());
+  EXPECT_EQ(print_job_destruction_count(), 0);
 
   // `PrintBackendService` should never be used when printing in-browser.
   EXPECT_FALSE(print_backend_service_use_detected());
@@ -3438,10 +3476,10 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
   // The test will get the default settings followed by asking the user for
   // settings.  Since this pretends the user canceled from that, no further
-  // printing calls are made.  Wait for a call to `Stop()` to ensure print job
-  // wrap-up finished cleanly before completing the test.  This results in a
-  // total of 3 expected calls.
-  SetNumExpectedMessages(/*num=*/3);
+  // printing calls are made.  No print job is created because of such an early
+  // cancel, so no need to wait any further.  This results in a total of 2
+  // expected calls.
+  SetNumExpectedMessages(/*num=*/2);
 
   StartBasicPrint(web_contents);
 
@@ -3449,7 +3487,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
 
   EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(ask_user_for_settings_result(), mojom::ResultCode::kCanceled);
-  EXPECT_TRUE(stop_invoked());
+  EXPECT_EQ(print_job_construction_count(), 0);
 }
 
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
@@ -3499,8 +3537,8 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   SetUpPrintViewManager(web_contents);
 
   // The test will fail getting the default settings, aborting the rest of
-  // printing.  Wait for a call to `Stop()` to ensure print job wrap-up
-  // finished cleanly before completing the test. This results in a total of
+  // printing.  Wait for the one print job to be destroyed to ensure printing
+  // finished cleanly before completing the test.  This results in a total of
   // 2 calls.
   SetNumExpectedMessages(/*num=*/2);
 
@@ -3509,7 +3547,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   WaitUntilCallbackReceived();
 
   EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kFailed);
-  EXPECT_TRUE(stop_invoked());
+  EXPECT_EQ(print_job_construction_count(), 1);
 }
 
 #endif  //  BUILDFLAG(ENABLE_OOP_PRINTING)

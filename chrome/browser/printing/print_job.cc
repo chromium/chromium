@@ -117,6 +117,10 @@ PrintJob::~PrintJob() {
   DCHECK(!is_job_pending_);
   DCHECK(!is_canceling_);
   DCHECK(!worker_ || !worker_->IsRunning());
+
+  for (auto& observer : observers_) {
+    observer.OnDestruction();
+  }
 }
 
 void PrintJob::Initialize(std::unique_ptr<PrinterQuery> query,

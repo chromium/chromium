@@ -54,6 +54,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
     virtual void OnDocDone(int job_id, PrintedDocument* document) {}
     virtual void OnJobDone() {}
     virtual void OnFailed() {}
+    virtual void OnDestruction() {}
   };
 
 #if BUILDFLAG(IS_CHROMEOS)
