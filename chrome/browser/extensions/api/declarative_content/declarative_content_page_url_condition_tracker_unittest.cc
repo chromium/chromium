@@ -85,8 +85,8 @@ class DeclarativeContentPageUrlConditionTrackerTest
   void CreatePredicateImpl(const std::string& value,
                            std::unique_ptr<const ContentPredicate>* predicate) {
     std::string error;
-    *predicate = tracker_.CreatePredicate(
-        nullptr, *base::test::ParseJsonDeprecated(value), &error);
+    *predicate =
+        tracker_.CreatePredicate(nullptr, base::test::ParseJson(value), &error);
     EXPECT_EQ("", error);
     ASSERT_TRUE(*predicate);
   }
@@ -97,8 +97,8 @@ TEST(DeclarativeContentPageUrlPredicateTest, WrongPageUrlDatatype) {
   std::string error;
   std::unique_ptr<DeclarativeContentPageUrlPredicate> predicate =
       DeclarativeContentPageUrlPredicate::Create(
-          nullptr, matcher.condition_factory(),
-          *base::test::ParseJsonDeprecated("[]"), &error);
+          nullptr, matcher.condition_factory(), base::test::ParseJson("[]"),
+          &error);
   EXPECT_THAT(error, HasSubstr("invalid type"));
   EXPECT_FALSE(predicate);
 
@@ -111,8 +111,7 @@ TEST(DeclarativeContentPageUrlPredicateTest, PageUrlPredicate) {
   std::unique_ptr<DeclarativeContentPageUrlPredicate> predicate =
       DeclarativeContentPageUrlPredicate::Create(
           nullptr, matcher.condition_factory(),
-          *base::test::ParseJsonDeprecated("{\"hostSuffix\": \"example.com\"}"),
-          &error);
+          base::test::ParseJson("{\"hostSuffix\": \"example.com\"}"), &error);
   EXPECT_EQ("", error);
   ASSERT_TRUE(predicate);
 

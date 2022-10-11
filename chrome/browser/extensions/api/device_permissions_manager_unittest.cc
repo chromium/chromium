@@ -44,15 +44,15 @@ class DevicePermissionsManagerTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     env_ = std::make_unique<extensions::TestExtensionEnvironment>();
-    extension_ = env_->MakeExtension(*base::test::ParseJsonDeprecated(
-        "{"
-        "  \"app\": {"
-        "    \"background\": {"
-        "      \"scripts\": [\"background.js\"]"
-        "    }"
-        "  },"
-        "  \"permissions\": [ \"hid\", \"usb\" ]"
-        "}"));
+    extension_ = env_->MakeExtension(
+        base::test::ParseJson("{"
+                              "  \"app\": {"
+                              "    \"background\": {"
+                              "      \"scripts\": [\"background.js\"]"
+                              "    }"
+                              "  },"
+                              "  \"permissions\": [ \"hid\", \"usb\" ]"
+                              "}"));
 
     // Set fake device manager for extensions::UsbDeviceManager.
     mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager;
@@ -290,7 +290,7 @@ TEST_F(DevicePermissionsManagerTest, UpdateLastUsed) {
 }
 
 TEST_F(DevicePermissionsManagerTest, LoadPrefs) {
-  std::unique_ptr<base::Value> prefs_value = base::test::ParseJsonDeprecated(
+  base::Value prefs_value = base::test::ParseJson(
       "["
       "  {"
       "    \"manufacturer_string\": \"Test Manufacturer\","
@@ -308,8 +308,9 @@ TEST_F(DevicePermissionsManagerTest, LoadPrefs) {
       "    \"vendor_id\": 0"
       "  }"
       "]");
-  env_->GetExtensionPrefs()->UpdateExtensionPref(extension_->id(), "devices",
-                                                 std::move(prefs_value));
+  env_->GetExtensionPrefs()->UpdateExtensionPref(
+      extension_->id(), "devices",
+      base::Value::ToUniquePtrValue(std::move(prefs_value)));
 
   DevicePermissionsManager* manager =
       DevicePermissionsManager::Get(env_->profile());
