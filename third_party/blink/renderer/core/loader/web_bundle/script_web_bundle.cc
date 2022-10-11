@@ -7,17 +7,18 @@
 #include "base/unguessable_token.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/web_bundle_loader.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/subresource_web_bundle_list.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -229,9 +230,13 @@ void ScriptWebBundle::WillReleaseBundleLoaderAndUnregister() {
   // https://docs.google.com/document/d/1GEJ3wTERGEeTG_4J0QtAwaNXhPTza0tedd00A7vPVsw/edit#heading=h.y88lpjmx2ndn
   will_be_released_ = true;
   element_ = nullptr;
-  auto task = std::make_unique<ReleaseResourceTask>(*this);
-  Microtask::EnqueueMicrotask(
-      WTF::BindOnce(&ReleaseResourceTask::Run, std::move(task)));
+  if (element_document_) {
+    auto task = std::make_unique<ReleaseResourceTask>(*this);
+    element_document_->GetAgent()->event_loop()->EnqueueMicrotask(
+        WTF::BindOnce(&ReleaseResourceTask::Run, std::move(task)));
+  } else {
+    ReleaseBundleLoaderAndUnregister();
+  }
 }
 
 // This function updates the WebBundleRule, element_ and cancels the release
