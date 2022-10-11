@@ -20,6 +20,7 @@
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_testing_support.h"
@@ -106,7 +107,8 @@ const char* WebNavigationTypeToString(blink::WebNavigationType type) {
       return kBackForwardString;
     case blink::kWebNavigationTypeReload:
       return kReloadString;
-    case blink::kWebNavigationTypeFormResubmitted:
+    case blink::kWebNavigationTypeFormResubmittedBackForward:
+    case blink::kWebNavigationTypeFormResubmittedReload:
       return kFormResubmittedString;
     case blink::kWebNavigationTypeOther:
       return kOtherString;

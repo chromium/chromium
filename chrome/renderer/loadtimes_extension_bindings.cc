@@ -11,6 +11,7 @@
 #include "net/http/http_response_info.h"
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_performance.h"
 #include "v8/include/v8-extension.h"
 #include "v8/include/v8-isolate.h"
@@ -91,7 +92,8 @@ class LoadTimesExtensionWrapper : public v8::Extension {
         return "BackForward";
       case blink::kWebNavigationTypeReload:
         return "Reload";
-      case blink::kWebNavigationTypeFormResubmitted:
+      case blink::kWebNavigationTypeFormResubmittedBackForward:
+      case blink::kWebNavigationTypeFormResubmittedReload:
         return "Resubmitted";
       case blink::kWebNavigationTypeOther:
         return "Other";
@@ -103,7 +105,8 @@ class LoadTimesExtensionWrapper : public v8::Extension {
     switch (nav_type) {
       case blink::kWebNavigationTypeLinkClicked:
       case blink::kWebNavigationTypeFormSubmitted:
-      case blink::kWebNavigationTypeFormResubmitted:
+      case blink::kWebNavigationTypeFormResubmittedBackForward:
+      case blink::kWebNavigationTypeFormResubmittedReload:
         return kTransitionLink;
       case blink::kWebNavigationTypeBackForward:
         return kTransitionForwardBack;

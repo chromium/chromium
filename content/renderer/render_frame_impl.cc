@@ -212,6 +212,7 @@
 #include "third_party/blink/public/web/web_navigation_control.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_navigation_timings.h"
+#include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_performance.h"
 #include "third_party/blink/public/web/web_picture_in_picture_window_options.h"
 #include "third_party/blink/public/web/web_plugin.h"
@@ -359,7 +360,8 @@ ui::PageTransition GetTransitionType(ui::PageTransition default_transition,
   }
   bool is_form_submit =
       navigation_type == blink::kWebNavigationTypeFormSubmitted ||
-      navigation_type == blink::kWebNavigationTypeFormResubmitted;
+      navigation_type == blink::kWebNavigationTypeFormResubmittedBackForward ||
+      navigation_type == blink::kWebNavigationTypeFormResubmittedReload;
   if (ui::PageTransitionCoreTypeIs(default_transition,
                                    ui::PAGE_TRANSITION_LINK) &&
       is_form_submit) {
@@ -5667,8 +5669,10 @@ void RenderFrameImpl::BeginNavigationInternal(
          info->frame_type == blink::mojom::RequestContextFrameType::kNested);
 
   bool is_form_submission =
-      info->navigation_type == blink::kWebNavigationTypeFormSubmitted ||
-      info->navigation_type == blink::kWebNavigationTypeFormResubmitted;
+      (info->navigation_type == blink::kWebNavigationTypeFormSubmitted ||
+       info->navigation_type ==
+           blink::kWebNavigationTypeFormResubmittedBackForward ||
+       info->navigation_type == blink::kWebNavigationTypeFormResubmittedReload);
 
   bool was_initiated_by_link_click =
       info->navigation_type == blink::kWebNavigationTypeLinkClicked;

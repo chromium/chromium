@@ -2956,7 +2956,8 @@ bool DocumentLoader::IsReloadedOrFormSubmitted() const {
   switch (navigation_type_) {
     case WebNavigationType::kWebNavigationTypeReload:
     case WebNavigationType::kWebNavigationTypeFormSubmitted:
-    case WebNavigationType::kWebNavigationTypeFormResubmitted:
+    case WebNavigationType::kWebNavigationTypeFormResubmittedBackForward:
+    case WebNavigationType::kWebNavigationTypeFormResubmittedReload:
       return true;
     default:
       return false;

@@ -92,6 +92,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_navigation_timings.h"
+#include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_range.h"
@@ -7710,7 +7711,7 @@ TEST_F(WebFrameTest, ReloadPost) {
 
   frame_test_helpers::ReloadFrame(frame);
   EXPECT_EQ(mojom::FetchCacheMode::kValidateCache, client.GetCacheMode());
-  EXPECT_EQ(kWebNavigationTypeFormResubmitted,
+  EXPECT_EQ(kWebNavigationTypeFormResubmittedReload,
             frame->GetDocumentLoader()->GetNavigationType());
 }
 

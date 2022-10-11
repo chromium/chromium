@@ -15,7 +15,6 @@
 
 namespace blink {
 
-class Document;
 class DocumentTiming;
 class DocumentLoader;
 class DocumentLoadTiming;
@@ -72,7 +71,7 @@ class CORE_EXPORT PerformanceNavigationTiming final
  private:
   friend class PerformanceNavigationTimingActivationStart;
 
-  static AtomicString GetNavigationType(WebNavigationType, const Document*);
+  static AtomicString GetNavigationType(WebNavigationType);
 
   const DocumentTiming* GetDocumentTiming() const;
   DocumentLoader* GetDocumentLoader() const;

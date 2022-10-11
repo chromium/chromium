@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/timing/performance_navigation_timing.h"
 
 #include "base/containers/contains.h"
+#include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
@@ -128,16 +129,16 @@ uint64_t PerformanceNavigationTiming::GetDecodedBodySize() const {
 }
 
 AtomicString PerformanceNavigationTiming::GetNavigationType(
-    WebNavigationType type,
-    const Document* document) {
+    WebNavigationType type) {
   switch (type) {
     case kWebNavigationTypeReload:
+    case kWebNavigationTypeFormResubmittedReload:
       return "reload";
     case kWebNavigationTypeBackForward:
+    case kWebNavigationTypeFormResubmittedBackForward:
       return "back_forward";
     case kWebNavigationTypeLinkClicked:
     case kWebNavigationTypeFormSubmitted:
-    case kWebNavigationTypeFormResubmitted:
     case kWebNavigationTypeOther:
       return "navigate";
   }
@@ -254,8 +255,7 @@ DOMHighResTimeStamp PerformanceNavigationTiming::loadEventEnd() const {
 
 AtomicString PerformanceNavigationTiming::type() const {
   if (DomWindow()) {
-    return GetNavigationType(GetDocumentLoader()->GetNavigationType(),
-                             DomWindow()->document());
+    return GetNavigationType(GetDocumentLoader()->GetNavigationType());
   }
   return "navigate";
 }
@@ -386,4 +386,5 @@ void PerformanceNavigationTiming::BuildJSONValue(
                 notRestoredReasons(builder.GetScriptState()));
   }
 }
+
 }  // namespace blink
