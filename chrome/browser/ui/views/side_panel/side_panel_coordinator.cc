@@ -432,9 +432,11 @@ void SidePanelCoordinator::PopulateSidePanel(
   auto* previous_entry = current_entry_.get();
   current_entry_ = entry->GetWeakPtr();
   entry->OnEntryShown();
-  if (previous_entry)
+  if (previous_entry) {
     previous_entry->OnEntryHidden();
-
+  } else {
+    header_combobox_->RequestFocus();
+  }
   header_open_in_new_tab_button_->SetVisible(
       current_entry_->GetOpenInNewTabURL().is_valid());
 }
