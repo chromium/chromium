@@ -37,10 +37,26 @@ AshCrosapiTestEnv::AshCrosapiTestEnv() {
   CHECK(!g_instance) << "AshCrosapiTestEnv is already created.";
   g_instance = this;
 
+  // If the user has specified a path for the ash-chrome binary, use the path.
+  // Note that both absolute and relative paths are accepted, and the last path
+  // component should be 'chrome', 'test_ash_chrome' or equivalent.
+  // The chrome passed should be built, and if you use some test-specific
+  // features such as TestController crosapi, you need to pass
+  // 'test_ash_chrome',
+  base::FilePath ash_chrome_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          "ash-chrome-path");
+
+  // By default, 'test_ash_chrome' is built and used under the directory that
+  // contains application assets.
+  if (ash_chrome_path.empty()) {
+    CHECK(base::PathService::Get(base::DIR_ASSETS, &ash_chrome_path));
+    ash_chrome_path = ash_chrome_path.Append("test_ash_chrome");
+  }
+
+  CHECK(base::PathExists(ash_chrome_path));
   // Sets chrome binary file to run ash process.
-  base::FilePath path;
-  CHECK(base::PathService::Get(base::DIR_ASSETS, &path));
-  base::CommandLine command_line(path.Append("test_ash_chrome"));
+  base::CommandLine command_line(ash_chrome_path);
 
   // Sets a socket path.
   base::ScopedTempDir temp_dir;
