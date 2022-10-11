@@ -62,6 +62,8 @@ constexpr char kUPMActiveHistogram[] =
     "PasswordManager.UnifiedPasswordManager.ActiveStatus";
 constexpr char kUptimeOnAPIErrorHistogram[] =
     "PasswordManager.PasswordStoreAndroidBackend.UptimeOnAPIError";
+constexpr char kRetryHistogramBase[] =
+    "PasswordManager.PasswordStoreAndroidBackend.Retry";
 constexpr AndroidBackendErrorType kExternalErrorType =
     AndroidBackendErrorType::kExternalError;
 constexpr int kInternalApiErrorCode =
@@ -878,6 +880,18 @@ TEST_F(
       kErrorCodeMetric, AndroidBackendErrorType::kExternalError, 1);
   histogram_tester.ExpectBucketCount(kAPIErrorMetric, kNetworkErrorCode, 1);
   histogram_tester.ExpectBucketCount(kUnenrollmentHistogram, true, 1);
+
+  // Per-operation retry histograms
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.APIError"}), 0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.Attempt"}), 0);
+
+  // Aggregated retry histograms
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kRetryHistogramBase, ".APIError"}), 0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kRetryHistogramBase, ".Attempt"}), 0);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,
@@ -940,6 +954,31 @@ TEST_F(PasswordStoreAndroidBackendTest,
   histogram_tester.ExpectBucketCount(
       kAPIErrorMetric,
       static_cast<int>(AndroidBackendAPIErrorCode::kNetworkError), 1);
+
+  // Per-operation retry histograms
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.APIError"}),
+      static_cast<int>(AndroidBackendAPIErrorCode::kNetworkError), 5);
+
+  for (int attempt = 1; attempt < 6; attempt++) {
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.Attempt"}),
+        attempt, 1);
+  }
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.Attempt"}), 5);
+
+  // Aggregated retry histograms
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kRetryHistogramBase, ".APIError"}),
+      static_cast<int>(AndroidBackendAPIErrorCode::kNetworkError), 5);
+
+  for (int attempt = 1; attempt < 6; attempt++) {
+    histogram_tester.ExpectBucketCount(
+        base::StrCat({kRetryHistogramBase, ".Attempt"}), attempt, 1);
+  }
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kRetryHistogramBase, ".Attempt"}), 5);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,
@@ -952,6 +991,8 @@ TEST_F(PasswordStoreAndroidBackendTest,
          {password_manager::features::kIgnoredGmsApiErrors.name, ""},
          {password_manager::features::kRetriableGmsApiErrors.name, "7"}}}},
       {});
+
+  base::HistogramTester histogram_tester;
 
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
@@ -987,6 +1028,26 @@ TEST_F(PasswordStoreAndroidBackendTest,
   consumer().OnCompleteWithLogins(kSucceedJobId,
                                   UnwrapForms(CreateTestLogins()));
   task_environment_.FastForwardUntilNoTasksRemain();
+
+  // Per-operation retry histograms
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.APIError"}),
+      static_cast<int>(AndroidBackendAPIErrorCode::kNetworkError), 1);
+
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.Attempt"}), 1, 1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kRetryHistogramBase, ".GetAllLoginsAsync.Attempt"}), 1);
+
+  // Aggregated retry histograms
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kRetryHistogramBase, ".APIError"}),
+      static_cast<int>(AndroidBackendAPIErrorCode::kNetworkError), 1);
+
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kRetryHistogramBase, ".Attempt"}), 1, 1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kRetryHistogramBase, ".Attempt"}), 1);
 }
 
 TEST_F(PasswordStoreAndroidBackendTest,
