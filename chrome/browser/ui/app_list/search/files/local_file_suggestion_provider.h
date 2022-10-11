@@ -59,7 +59,7 @@ class LocalFileSuggestionProvider
   void OnValidationComplete(std::pair<std::vector<LocalFileData>,
                                       std::vector<base::FilePath>> results);
 
-  const Profile* profile_;
+  Profile* const profile_;
 
   // Any file not modified at least as recently as `max_last_modified_time_` ago
   // will be filtered out of results.
@@ -81,6 +81,11 @@ class LocalFileSuggestionProvider
   base::ScopedObservation<file_manager::file_tasks::FileTasksNotifier,
                           file_manager::file_tasks::FileTasksObserver>
       file_tasks_observer_{this};
+
+  // A list of paths that represent absolute locations for enabled trash folders
+  // on the users system. This list is only used if the Trash feature and
+  // enterprise policy are enabled.
+  std::vector<base::FilePath> trash_paths_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

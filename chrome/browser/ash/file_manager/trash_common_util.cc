@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "components/prefs/pref_service.h"
 
 namespace file_manager::trash {
 
@@ -34,6 +37,14 @@ TrashLocation::~TrashLocation() = default;
 
 TrashLocation::TrashLocation(TrashLocation&& other) = default;
 TrashLocation& TrashLocation::operator=(TrashLocation&& other) = default;
+
+bool IsTrashEnabledForProfile(Profile* profile) {
+  if (!profile || !profile->GetPrefs()) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(chromeos::features::kFilesTrash) &&
+         profile->GetPrefs()->GetBoolean(ash::prefs::kFilesAppTrashEnabled);
+}
 
 const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,
                                        const std::string& subdir,

@@ -79,6 +79,12 @@ struct TrashLocation {
   bool require_setup = false;
 };
 
+// Verify whether trash is enabled by feature flag and whether the enterprise
+// policy is not disabling the feature. The policy has dynamic refresh, so
+// so this should be checked every time the operation this is guarding is
+// executed.
+bool IsTrashEnabledForProfile(Profile* profile);
+
 // Helper to create a destination path for a file in one of the .Trash folders.
 const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,
                                        const std::string& subdir,

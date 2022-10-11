@@ -8,8 +8,6 @@
 #include <cmath>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/i18n/case_conversion.h"
@@ -26,7 +24,6 @@
 #include "chrome/browser/ash/input_method/diacritics_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
-#include "components/prefs/pref_service.h"
 
 namespace app_list {
 
@@ -131,17 +128,6 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
   return matched_paths;
 }
 
-// Verify whether trash is enabled by feature flag and whether the enterprise
-// policy is not disabling the feature. This can dynamically disable the trash
-// functionality, so verify it every time.
-bool IsTrashEnabled(Profile* profile) {
-  if (!profile || !profile->GetPrefs()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(chromeos::features::kFilesTrash) &&
-         profile->GetPrefs()->GetBoolean(ash::prefs::kFilesAppTrashEnabled);
-}
-
 }  // namespace
 
 FileSearchProvider::FileSearchProvider(Profile* profile)
@@ -186,10 +172,10 @@ void FileSearchProvider::Start(const std::u16string& query) {
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(
-          SearchFilesByPattern, root_path_, query, query_start_time_,
-          (IsTrashEnabled(profile_) ? trash_paths_
-                                    : std::vector<base::FilePath>())),
+      base::BindOnce(SearchFilesByPattern, root_path_, query, query_start_time_,
+                     (file_manager::trash::IsTrashEnabledForProfile(profile_)
+                          ? trash_paths_
+                          : std::vector<base::FilePath>())),
       base::BindOnce(&FileSearchProvider::OnSearchComplete,
                      weak_factory_.GetWeakPtr()));
 }

@@ -12,8 +12,9 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggestion_provider.h"
@@ -35,7 +36,8 @@ constexpr base::TimeDelta kSuggestionNotificationDebounce =
 std::pair<std::vector<LocalFileSuggestionProvider::LocalFileData>,
           std::vector<base::FilePath>>
 ValidateFiles(const std::vector<std::pair<std::string, float>>& ranker_results,
-              const base::TimeDelta& max_last_modified_time) {
+              const base::TimeDelta& max_last_modified_time,
+              std::vector<base::FilePath> trash_paths) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -48,6 +50,16 @@ ValidateFiles(const std::vector<std::pair<std::string, float>>& ranker_results,
     // LocalFileSuggestionProvider is only used on ChromeOS, for which filepaths
     // are UTF8.
     const auto& path = base::FilePath::FromUTF8Unsafe(path_score.first);
+
+    // Exclude any paths that are parented at an enabled trash location.
+    if (base::ranges::any_of(trash_paths,
+                             [&path](const base::FilePath& trash_path) {
+                               return trash_path.IsParent(path);
+                             })) {
+      invalid_results.emplace_back(path);
+      continue;
+    }
+
     base::File::Info info;
     if (base::PathExists(path) && base::GetFileInfo(path, &info) &&
         (now - info.last_modified <= max_last_modified_time)) {
@@ -71,6 +83,8 @@ LocalFileSuggestionProvider::LocalFileSuggestionProvider(
           ash::features::kProductivityLauncher,
           "max_last_modified_time",
           kDefaultMaxLastModifiedTimeInDays))) {
+  DCHECK(profile_);
+
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_BLOCKING, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -116,10 +130,25 @@ void LocalFileSuggestionProvider::GetSuggestFileData(
 
   on_validation_complete_callback_list_.AddUnsafe(std::move(callback));
 
+  // Generate the trash paths on the first get suggestion of file data. This is
+  // to enable unit tests to mock out the trash paths appropriately.
+  if (trash_paths_.empty()) {
+    auto enabled_trash_locations =
+        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
+            profile_, /*base_path=*/base::FilePath());
+    for (const auto& it : enabled_trash_locations) {
+      trash_paths_.emplace_back(
+          it.first.Append(it.second.relative_folder_path));
+    }
+  }
+
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ValidateFiles, files_ranker_->GetAll(),
-                     max_last_modified_time_),
+                     max_last_modified_time_,
+                     (file_manager::trash::IsTrashEnabledForProfile(profile_)
+                          ? trash_paths_
+                          : std::vector<base::FilePath>())),
       base::BindOnce(&LocalFileSuggestionProvider::OnValidationComplete,
                      weak_factory_.GetWeakPtr()));
 }
