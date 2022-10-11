@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/util/animation_util.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/grit/ios_strings.h"

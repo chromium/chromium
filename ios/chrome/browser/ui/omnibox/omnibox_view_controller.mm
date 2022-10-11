@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_change_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
