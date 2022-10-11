@@ -367,6 +367,7 @@
 <translation id="4290535918735525311">1 mappa megosztva Linuxszal</translation>
 <translation id="4299729908419173967">brazil</translation>
 <translation id="4302605047395093221">Aki az eszközt szeretné használni, meg kell adnia a PIN-kódot a mobilhálózathoz való csatlakozáshoz</translation>
+<translation id="4303531889494116116">A hálózat le van terhelve. Próbálja újra később.</translation>
 <translation id="4309915981827077375">Általános információk</translation>
 <translation id="432252891123397018">román, hagyományos billentyűzettel</translation>
 <translation id="4325128273762811722">szlovén</translation>
@@ -646,6 +647,7 @@
 <translation id="642282551015776456">Ezt a nevet nem lehet mappa fájlneveként használni</translation>
 <translation id="6423031066725912715">vietnámi, TCVN-billentyűzettel</translation>
 <translation id="6430271654280079150">1 próbálkozási lehetősége maradt.</translation>
+<translation id="643243556292470964">A törölt fájlok most a kukába kerülnek</translation>
 <translation id="6485131920355264772">A helyinformációk lekérése sikertelen</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, a rendszergazdája kezeli, részletek</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> kicsomagolása ide: <ph name="FOLDER_NAME" /></translation>

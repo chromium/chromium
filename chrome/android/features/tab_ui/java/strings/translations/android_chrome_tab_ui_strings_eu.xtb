@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">balorazioa</translation>
 <translation id="3291470810748040983">Alerta bat jasoko duzu irekita daukazun fitxa bateko produkturen baten prezioa jaisten denean</translation>
 <translation id="3328308545011660196">Iradokizuna: <ph name="NUMBER_OF_TABS" /> fitxa erlazionatuta daude. Taldekatu nahi al dituzu?</translation>
+<translation id="3499853001094440183">Desegin fitxen taldea</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Tolestu <ph name="TABS_COUNT_ONE" /> fitxa.}other{Tolestu <ph name="TABS_COUNT_MANY" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea.}}</translation>
 <translation id="3882834874697329510">Irekita daukazun fitxa bateko produkturen baten prezioa jaisten denean alerta bat jaso nahi baduzu, aktibatu jakinarazpenak Ezarpenak atalean.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Hautatu fitxak</translation>
 <translation id="6228793724645064692">(dendaren balorazioa)</translation>
 <translation id="6333260925957816943">Denda honi buruzko informazioa</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Desegin hautatutako <ph name="TABS_COUNT_ONE" /> fitxaren taldea}other{Desegin hautatutako <ph name="TABS_COUNT_MANY" /> fitxen taldea}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fitxa}other{<ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
 <translation id="6510648526783655549">Itxi fitxen zinta</translation>
 <translation id="6549021453810473782">Ikusi dendari buruzko informazioa</translation>
 <translation id="6562820390860419811">Eraman fitxa ezkerrera</translation>

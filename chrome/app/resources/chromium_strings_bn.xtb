@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">Chromium সম্পর্কে</translation>
 <translation id="1203500561924088507">ইনস্টল করার জন্য ধন্যবাদ। <ph name="BUNDLE_NAME" /> ব্যবহার করার আগে আপনাকে অবশ্যই ব্রাউজার রিস্টার্ট করতে হবে।</translation>
 <translation id="1231839967188101156">চালু থাকাকালীন, Chromium ইনঅ্যাক্টিভ ট্যাব থেকে মেমরি খালি করে। এটি অ্যাক্টিভ ট্যাব এবং অন্যান্য অ্যাপ্লিকেশনের জন্য আরও কম্পিউটার রিসোর্স প্রদান করে এবং Chromium-এর স্পিড বেশি রাখে। আপনার ইনঅ্যাক্টিভ ট্যাবগুলি আবার ব্যবহার করা শুরু করলে অটোমেটিক সেগুলি অ্যাক্টিভ হয়ে যাবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">'মেমরি সেভার' ফিচার Chromium-কে আরও দ্রুত করে তুলেছে</translation>
 <translation id="1315551408014407711">আপনার নতুন Chromium প্রোফাইল সেট আপ করুন</translation>
 <translation id="1385859895174722837">Chromium-এ Google Assistant</translation>
 <translation id="1396446129537741364">Chromium পাসওয়ার্ডগুলি দেখানোর চেষ্টা করছে৷</translation>
@@ -209,6 +210,7 @@
 <translation id="6055895534982063517">Chromium-এর একটি নতুন ভার্সন উপলভ্য আছে৷ এবং এটি আগের তুলনায় আরও দ্রুত৷</translation>
 <translation id="6063093106622310249">Chromium এ খুলুন</translation>
 <translation id="6072279588547424923">Chromium-এ <ph name="EXTENSION_NAME" /> যোগ করা হয়েছে</translation>
+<translation id="6072463441809498330">Chromium-এর ব্যবহার আরও দ্রুত করে তোলা</translation>
 <translation id="608006075545470555">এই ব্রাউজারে অফিস প্রোফাইল যোগ করুন</translation>
 <translation id="6096348254544841612">Chromium কে কাস্টমাইজ এবং নিয়ন্ত্রণ করুন৷ আপডেট পাওয়া যাবে৷</translation>
 <translation id="6119438414301547735">Chromium টুলবারে অ্যাক্সেস সংক্রান্ত অনুরোধ দেখাতে এক্সটেনশনকে অনুমতি দিন</translation>

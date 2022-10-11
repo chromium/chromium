@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">note</translation>
 <translation id="3291470810748040983">Vous serez averti en cas de prix inférieur dans un onglet ouvert</translation>
 <translation id="3328308545011660196">Suggestion : <ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper ?</translation>
+<translation id="3499853001094440183">Dégrouper les onglets</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Réduisez <ph name="TABS_COUNT_ONE" /> onglet.}one{Réduisez le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Réduisez le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="3882834874697329510">Pour être averti en cas de prix inférieur dans un onglet ouvert, accédez aux paramètres, puis activez les notifications.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Sélectionner des onglets</translation>
 <translation id="6228793724645064692">(note du magasin)</translation>
 <translation id="6333260925957816943">Infos sur ce magasin</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Dégrouper <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Dégrouper <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Dégrouper <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet}one{<ph name="TABS_COUNT_MANY" /> onglet}other{<ph name="TABS_COUNT_MANY" /> onglets}}</translation>
 <translation id="6510648526783655549">Fermer la barre d'onglets</translation>
 <translation id="6549021453810473782">Afficher les infos sur le magasin</translation>
 <translation id="6562820390860419811">Déplacer l'onglet vers la gauche</translation>

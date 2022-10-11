@@ -13,6 +13,7 @@
 <translation id="1185134272377778587">Пра Chromium</translation>
 <translation id="1203500561924088507">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце браўзер.</translation>
 <translation id="1231839967188101156">Калі гэта налада ўключана, Chromium ачышчае аператыўную памяць, выдзеленую для неактыўных укладак. Гэта дазваляе вызваляць рэсурсы камп'ютара для актыўных укладак і іншых праграм і падтрымліваць хуткасць работы Chromium. Неактыўныя ўкладкі зноў робяцца актыўнымі, калі вы на іх пераходзіце. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Дзякуючы Эканоміі памяці браўзер Chromium стаў працаваць яшчэ хутчэй</translation>
 <translation id="1315551408014407711">Наладзьце свой профіль Chromium</translation>
 <translation id="1385859895174722837">Памочнік Google у браўзеры Chromium</translation>
 <translation id="1396446129537741364">Chromium спрабуе паказаць паролі.</translation>
@@ -211,6 +212,7 @@
 <translation id="6055895534982063517">Даступная новая версія Chromium. Яшчэ хутчэйшая.</translation>
 <translation id="6063093106622310249">&amp;Адкрыць у Chromium</translation>
 <translation id="6072279588547424923">Пашырэнне <ph name="EXTENSION_NAME" /> дададзена да Chromium</translation>
+<translation id="6072463441809498330">Паскорце работу Chromium</translation>
 <translation id="608006075545470555">Дадаванне працоўнага профілю ў гэты браўзер</translation>
 <translation id="6096348254544841612">Наладжвайце Chromium і кіруйце ім. Ёсць абнаўленне.</translation>
 <translation id="6119438414301547735">Дазволіць пашырэнню паказваць запыты на доступ на панэлі інструментаў Chromium</translation>

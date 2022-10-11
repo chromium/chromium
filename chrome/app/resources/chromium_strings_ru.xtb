@@ -10,6 +10,7 @@
 <translation id="1131805035311359397">Чтобы проверить, защищены ли ваши пароли от утечки данных и прочих проблем с безопасностью, <ph name="BEGIN_LINK" />войдите в Chromium<ph name="END_LINK" />.</translation>
 <translation id="1185134272377778587">О Chromium</translation>
 <translation id="1203500561924088507">Спасибо, что установили <ph name="BUNDLE_NAME" />. Чтобы изменения вступили в силу, перезапустите браузер.</translation>
+<translation id="1261119230216066228">В режиме экономии памяти Chromium работает ещё быстрее</translation>
 <translation id="1315551408014407711">Создайте профиль Chromium</translation>
 <translation id="1385859895174722837">Google Ассистент в Chromium</translation>
 <translation id="1396446129537741364">Вводимые пароли будут отображаться в Chromium.</translation>
@@ -206,6 +207,7 @@
 <translation id="6055895534982063517">Доступна новая версия Chromium, которая стала еще быстрее.</translation>
 <translation id="6063093106622310249">&amp;Открыть в Chromium</translation>
 <translation id="6072279588547424923">Расширение "<ph name="EXTENSION_NAME" />" добавлено в Chromium</translation>
+<translation id="6072463441809498330">Chromium может работать ещё быстрее</translation>
 <translation id="608006075545470555">Добавление рабочего профиля в браузер</translation>
 <translation id="6096348254544841612">Новая версия Chromium уже вышла!</translation>
 <translation id="6119438414301547735">Разрешить расширению показывать запросы доступа на панели инструментов Chromium</translation>

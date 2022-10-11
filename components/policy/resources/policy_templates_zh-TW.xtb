@@ -729,6 +729,7 @@
 <translation id="1705215165572785706">將最上排按鍵設為媒體鍵，但允許使用者變更</translation>
 <translation id="1708496595873025510">設定變異版本種子的擷取限制</translation>
 <translation id="1709154322133526432">啟用啟動時的預設瀏覽器檢查功能</translation>
+<translation id="1710245398478550276">為清單中的第三方網域啟用 Desk API</translation>
 <translation id="1713829924716792485">如果將這項政策設為啟用或不設定，使用者可連線至遠端存取主機，以便在用戶端和主機之間傳輸檔案。遠端協助連線不支援檔案傳輸功能，因此不適用這項政策。
 
       如果將這項政策設為停用，使用者就無法傳輸檔案。</translation>
@@ -1140,6 +1141,17 @@
 <translation id="2135335181634291106">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> 政策來指定預設搜尋引擎的網站小圖示網址。
 
       如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> 政策，搜尋引擎不會有任何圖示。</translation>
+<translation id="2138370265180425265">在登入畫面和螢幕鎖定畫面上針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
+
+      你可以透過這項政策指定要讓哪些網址加入認證流程，接收裝置傳送的信號。
+
+      如果不設定這項政策或留空，就表示沒有端點能啟動認證流程，以及接收裝置傳送的信號。
+
+      附註：可以使用萬用字元 <ph name="WILDCARD_VALUE" />。
+
+      這項政策只會影響登入畫面和螢幕鎖定畫面上的認證流程。如要變更工作階段中認證流程，請使用 <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> 政策。
+
+      如要進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://www.chromium.org/administrators/url-blocklist-filter-format。</translation>
 <translation id="2144236546337326489">允許啟用 Phone Hub 工作接續</translation>
 <translation id="2145735238144543545">必須提供用戶端憑證</translation>
 <translation id="2146103669166779785">系統會根據這個十六進位顏色產生主題，並套用至瀏覽器。</translation>
@@ -1384,19 +1396,6 @@
 <translation id="2384233438419344179">如果將這項政策設為啟用，網頁元素只要不屬於瀏覽器網址列中的網域，就無法設定 Cookie。如果將這項政策設為停用，這類元素將可設定 Cookie，且使用者無法變更這項設定。
 
       如果不設定，系統會啟用第三方 Cookie，但使用者可以變更這項設定。</translation>
-<translation id="2384553027681594203">在登入畫面和螢幕鎖定畫面上針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
-
-      你可以透過這項政策指定要讓哪些網址加入認證流程，接收裝置傳送的信號。
-
-      如果不設定這項政策或留空，就表示沒有端點能啟動認證流程，以及接收裝置傳送的信號。
-
-      網址必須採用 HTTPS 架構，例如「https://example.com」。
-
-      附註：可以使用萬用字元 <ph name="WILDCARD_VALUE" />。
-
-      這項政策只會影響登入畫面和螢幕鎖定畫面上的認證流程。如要變更工作階段中認證流程，請使用 <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> 政策。
-
-      如果想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="2386362615870139244">允許使用螢幕喚醒鎖</translation>
 <translation id="2387469539700985783">這項政策對 Android 應用程式製作的報表沒有影響。</translation>
 <translation id="238885588439957890">裝置使用交流電源為電池充電的時間 (根據裝置當地時區)。</translation>
@@ -2490,6 +2489,17 @@
       如果不設定，系統會使用 0 毫秒做為逾時時間。
 
       如果不設定 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策，則這項政策不會有任何作用。</translation>
+<translation id="3395409052977893716">針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
+
+      你可以透過這項政策指定要讓哪些網址加入認證流程，以接收裝置傳送的信號。
+
+      如果不設定這項政策或留空，就表示沒有端點能啟動認證流程，以及接收裝置傳送的信號。
+
+      附註：可以使用萬用字元 <ph name="WILDCARD_VALUE" />。
+
+      對 ChromeOS 而言，這項政策與遠端認證相關，其中的憑證會自動產生並上傳至裝置管理伺服器。
+
+      如要進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://www.chromium.org/administrators/url-blocklist-filter-format。</translation>
 <translation id="3397883909301547525">不要在 <ph name="PRODUCT_OS_NAME" /> 啟動器中顯示推薦應用程式</translation>
 <translation id="3398051852031115795">系統預設行為 (視螢幕大小而定)</translation>
 <translation id="3399859571630358395">強制停用快速配對功能 (快速藍牙配對)。</translation>
@@ -2896,19 +2906,6 @@
 
       使用者無法移除透過政策註冊的通訊協定處理常式，但可透過安裝新的預設處理常式，變更透過政策安裝的通訊協定處理常式。</translation>
 <translation id="3851443303439635700">控制巢狀閾值，系統會在達到此閾值之前延遲啟動 JavaScript setTimeout() 函式</translation>
-<translation id="3857816702027059082">針對清單中的網址啟用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
-
-      透過這項政策，你可以指定要讓哪些網址加入認證流程，接收裝置傳送的信號。
-
-      如果不設定這項政策或設為空白，就沒有端點能啟動認證流程，以及接收裝置傳送的信號。
-
-      網址必須採用 HTTPS 架構，例如「https://example.com」。
-
-      注意：可以使用萬用字元 <ph name="WILDCARD_VALUE" />。
-
-      就 Chrome 作業系統而言，與這項政策相關的是遠端認證，其中的憑證會自動產生並上傳至裝置管理伺服器。
-
-      如果想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="3858128774616573616">如果將這項政策設為啟用，系統會在工具列或溢位選單上顯示 Cast 工具列圖示，且使用者無法將其移除。
 
       如果將這項政策設為停用或不設定，使用者可以透過內容選單來固定或移除該圖示。
@@ -5052,8 +5049,6 @@
 <translation id="6172896675583897796">如果將這項政策設為啟用，Google 助理將可存取畫面內容，並將該項資料傳送給伺服器。如果將這項政策設為停用，Google 助理無法存取畫面內容。
 
       如果未設定這項政策，使用者可自行決定要啟用或停用這項功能。</translation>
-<translation id="6174065452773547810">如果將這項政策設為 Enabled 或不設定，裝置就能取得精細回報控制項。
-      如果將這項政策設為 Disabled，表示已註冊的裝置不會取得精細回報控制項。</translation>
 <translation id="6178075938488052838">這項政策可控管哪些使用者能夠啟動 <ph name="PRODUCT_OS_NAME" />工作階段，但不會禁止使用者在 Android 應用程式中登入其他 Google 帳戶。如要禁止使用者登入其他 Google 帳戶，你可以在 <ph name="ARC_POLICY_POLICY_NAME" /> 中設定 Android 專屬的 <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> 政策。</translation>
 <translation id="6181304954168534748">桌面範本的 SHA-256 雜湊。</translation>
 <translation id="6181618732396778048">不允許任何網站要求檔案和目錄的寫入權限。</translation>
@@ -6887,6 +6882,7 @@
 
           指定政策值時需以毫秒為單位。設定值必須小於或等於閒置延遲時間。</translation>
 <translation id="7992613144342460685">允許這些網站取得視窗放置權限</translation>
+<translation id="7994034037344330969">在清單中指定哪些第三方網頁應用程式網域可使用 Desk API 操控 ChromeOS 桌面。清單中的網址模式必須符合 https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference 中的「matches」屬性定義的格式</translation>
 <translation id="7995610550667275367">掃描 (自 87 版起開始支援)</translation>
 <translation id="7999023147219236247">這項政策可控管如何授予應用程式要求的權限。PERMISSION_POLICY_UNSPECIFIED：未指定政策。如未針對任何層級的權限指定政策，系統會預設採取「PROMPT」值對應的行為。PROMPT：提示使用者授予權限。GRANT：自動授予權限。DENY：自動拒絕授予權限。</translation>
 <translation id="7999336306414770162">停用裝置 VPD 資訊回報功能</translation>

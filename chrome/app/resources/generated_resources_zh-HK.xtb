@@ -1374,6 +1374,7 @@
 <translation id="2251809247798634662">新增無痕式視窗</translation>
 <translation id="2252017960592955005">檢視保護 (Beta 版本)</translation>
 <translation id="225240747099314620">允許受保護內容的識別碼 (可能需要重新啟動電腦)</translation>
+<translation id="2252617660166797081">進一步瞭解自動密碼變更</translation>
 <translation id="2255077166240162850">此裝置已鎖定使用其他網域或模式。</translation>
 <translation id="2255317897038918278">Microsoft 時間戳記</translation>
 <translation id="2256115617011615191">立即重新啟動</translation>
@@ -1507,6 +1508,7 @@
 <translation id="2348176352564285430">應用程式：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 要求咗權限，㩒 Ctrl + Forward 就可以回覆</translation>
 <translation id="234889437187286781">載入資料時發生錯誤</translation>
+<translation id="2348939752188770364">清除個人化資料…</translation>
 <translation id="2349610121459545414">繼續允許此網站存取您的位置</translation>
 <translation id="2349896577940037438">如果您已開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在您的 Google 帳戶中。您可以前往 account.google.com 查看和刪除資料，以及變更帳戶設定。</translation>
 <translation id="2350133097354918058">已重新載入</translation>
@@ -1923,6 +1925,7 @@
 <translation id="274029851662193272">內凹</translation>
 <translation id="2740363334137520315">在「搜尋分頁」部分加入新部分，即可輕鬆找出正在播放音訊或影片的分頁。輕按瀏覽器右上角的按鈕即可存取此功能。</translation>
 <translation id="2740531572673183784">確定</translation>
+<translation id="2740876196999178364">這些密碼金鑰只會儲存在這部裝置上，不會儲存到你的 Google 帳戶。</translation>
 <translation id="2741713322780029189">開啟復原終端機</translation>
 <translation id="2741912629735277980">在登入畫面上顯示使用者介面</translation>
 <translation id="2742448780373473567">安裝 <ph name="DEVICE_OS" /> 會覆寫裝置上的所有資料。</translation>
@@ -3662,6 +3665,7 @@
 <translation id="4409697491990005945">邊界</translation>
 <translation id="4410545552906060960">您可以使用數字 (PIN) 來解鎖裝置。如要稍後才設定 PIN，請前往「設定」。</translation>
 <translation id="4411578466613447185">程式碼簽署者</translation>
+<translation id="4411719918614785832">這些密碼金鑰會儲存在這部電腦的 Windows Hello 上，不會儲存到你的 Google 帳戶。</translation>
 <translation id="4412698727486357573">說明中心</translation>
 <translation id="44141919652824029">允許「<ph name="APP_NAME" />」取得已連結 USB 裝置的清單嗎？</translation>
 <translation id="4414232939543644979">新增無痕式視窗(&amp;I)</translation>
@@ -4397,6 +4401,7 @@
 <translation id="5130675701626084557">無法下載設定檔。請稍候再試，或向流動網絡供應商尋求協助。</translation>
 <translation id="5131591206283983824">觸控板輕按拖曳</translation>
 <translation id="5135533361271311778">無法建立書籤項目。</translation>
+<translation id="5135828720964881054">自動密碼變更</translation>
 <translation id="5136343472380336530">請確保兩部裝置都已解鎖並放在一起，且已開啟藍牙功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">刪除此項目</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />，使用 <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 的搜查結果</translation>
@@ -5492,7 +5497,6 @@
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6196854373336333322">您的 Proxy 設定已受到擴充功能「<ph name="EXTENSION_NAME" />」控制，該擴充功能可變更、中斷、或監視您在網上的行為。如果您不確定這項變更為何發生，建議您停用該擴充功能。</translation>
 <translation id="6197128521826316819">為此頁面建立 QR 碼</translation>
-<translation id="6197223946499512637">這些密鑰會儲存在此電腦上的 Windows Hello，並未儲存至您的 Google 帳戶。</translation>
 <translation id="6198252989419008588">變更 PIN</translation>
 <translation id="6200047250927636406">捨棄檔案</translation>
 <translation id="6200151268994853226">管理擴充程式</translation>

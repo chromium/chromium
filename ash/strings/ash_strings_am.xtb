@@ -159,6 +159,15 @@
 <translation id="1797271123677381264">የይለፍ ቃል ረሱ</translation>
 <translation id="181103072419391116">የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />፣ በየእርስዎ አስተዳዳሪ የሚተዳደር</translation>
 <translation id="1812997170047690955">ማያ ገጼ ላይ ምን አለ?</translation>
+<translation id="1823280932251546115">የሁኔታ ትሪ፣ ሰዓት <ph name="TIME" />፣
+        <ph name="BATTERY" />
+        <ph name="CHANNEL" />
+        <ph name="NETWORK" />፣
+        <ph name="PRIVACY" />፣
+        <ph name="MANAGED" />
+        <ph name="NOTIFICATION" />፣
+        <ph name="IME" />
+        <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">ኤተርኔት፦ <ph name="ADDRESS" /></translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ተላቋል</translation>
 <translation id="1836215606488044471">ረዳት (በመጫን ላይ...)</translation>
@@ -459,6 +468,8 @@
 <translation id="3600061223661453002">ጠፍቷል</translation>
 <translation id="3604801046548457007">ዴስክ <ph name="DESK_TITILE" /> ተፈጥሯል</translation>
 <translation id="3606978283550408104">የብሬይል ማሳያ ተገናኝቷል።</translation>
+<translation id="3609301425104788351"><ph name="MIC" />፣
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">የተንቀሳቃሽ ስልክ ውሂብን ማንቃት ብሉቱዝን ያነቃል</translation>
 <translation id="3616883743181209306">ምናሌ ወደ ማያ ገጹ የላይኛው ቀኝ ጥግ ተወስዷል።</translation>
 <translation id="3619536907358025872">የማያ ገጽ ቀረጻ ቅንብሮች</translation>
@@ -1095,7 +1106,6 @@
 <translation id="7305884605064981971">ኤጅ</translation>
 <translation id="7313193732017069507">ካሜራን ዘርጋ</translation>
 <translation id="731589979057211264">የመደርደሪያ ፓርቲ በርቷል።</translation>
-<translation id="7319740667687257810">ማስጀመሪያ፣ ከፊል እይታ</translation>
 <translation id="7346909386216857016">እሺ፣ ገባኝ</translation>
 <translation id="7348093485538360975">የታይታ የቁልፍ ሰሌዳ</translation>
 <translation id="735745346212279324">የቪ ፒ ኤን ግንኙነት ተቋርጧል</translation>

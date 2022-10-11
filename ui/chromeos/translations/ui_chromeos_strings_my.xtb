@@ -367,6 +367,7 @@
 <translation id="4290535918735525311">Linux နှင့် မျှဝေထားသည့် ဖိုင်တွဲ ၁ ခု</translation>
 <translation id="4299729908419173967">ဘရာဇီးလ်</translation>
 <translation id="4302605047395093221">ဤစက်သုံးသူတိုင်းသည် ယခုမိုဘိုင်းကွန်ရက်နှင့် ချိတ်ဆက်ရန် ပင်နံပါတ်ထည့်ရပါမည်</translation>
+<translation id="4303531889494116116">ဤကွန်ရက် မအားပါ။ နောက်မှထပ်စမ်းပါ။</translation>
 <translation id="4309915981827077375">အထွေထွေ အချက်အလက်</translation>
 <translation id="432252891123397018">စံကီးဘုတ်ဖြင့် ရိုမေးနီးယား</translation>
 <translation id="4325128273762811722">ဆလိုဗေးနီးယား</translation>
@@ -645,6 +646,7 @@
 <translation id="642282551015776456">ဒီအမည်ကို ဖိုင် သို့မဟုတ် ဖိုလ်ဒါ အမည် အဖြစ် သုံးမရနိုင်</translation>
 <translation id="6423031066725912715">TCVN ကီးဘုတ်ဖြင့် ဗီယက်နမ်</translation>
 <translation id="6430271654280079150">သင့်တွင် ကြိုးစားခွင့် ၁ ကြိမ် ကျန်သည်။</translation>
+<translation id="643243556292470964">ဖျက်လိုက်သည့်ဖိုင်များကို အမှိုက်ပုံးထဲ ယခုရွှေ့လိုက်သည်</translation>
 <translation id="6485131920355264772">နေရာခြားအချက်လက် ရယူခြင်း မအောင်မြင်ပါ</translation>
 <translation id="6495925982925244349">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />% သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ အသေးစိတ်များ</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> တွင် ထုတ်ယူနေသည်</translation>

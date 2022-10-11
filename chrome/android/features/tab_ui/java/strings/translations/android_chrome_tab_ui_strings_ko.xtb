@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">평점</translation>
 <translation id="3291470810748040983">열려 있는 탭에 더 낮은 가격이 있으면 알림이 전송됩니다.</translation>
 <translation id="3328308545011660196">제안: 탭 <ph name="NUMBER_OF_TABS" />개가 서로 관련된 것으로 보입니다. 그룹화할까요?</translation>
+<translation id="3499853001094440183">탭 그룹 해제</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개를 접습니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 접습니다.}}</translation>
 <translation id="3882834874697329510">열린 탭에서 더 낮은 가격이 발견되었을 때 알림을 받으려면 설정에서 알림을 사용 설정하세요.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">탭 선택</translation>
 <translation id="6228793724645064692">(매장 평점)</translation>
 <translation id="6333260925957816943">매장에 관한 정보</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{선택한 탭 <ph name="TABS_COUNT_ONE" />개 그룹 해제}other{선택한 탭 <ph name="TABS_COUNT_MANY" />개 그룹 해제}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="6510648526783655549">탭 표시줄 닫기</translation>
 <translation id="6549021453810473782">매장 정보 보기</translation>
 <translation id="6562820390860419811">탭을 왼쪽으로 이동</translation>

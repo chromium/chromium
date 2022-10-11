@@ -13,6 +13,7 @@
 <translation id="1185134272377778587">Chromium-ի մասին</translation>
 <translation id="1203500561924088507">Շնորհակալություն տեղադրելու համար։ Նախքան <ph name="BUNDLE_NAME" />-ն օգտագործելը դուք պետք է վերագործարկեք ձեր դիտարկիչը։</translation>
 <translation id="1231839967188101156">Երբ այս կարգավորումը միացված է, Chromium-ն ազատում է ոչ ակտիվ ներդիրների հիշողությունը։ Դրա շնորհիվ ակտիվ ներդիրներն ու մյուս հավելվածները համակարգչի ավելի շատ ռեսուրսներից են կարողանում օգտվել, իսկ Chromium-ն ավելի արագ է աշխատում։ Ոչ ակտիվ ներդիրներն ավտոմատ կակտիվանան, երբ նորից սկսեք օգտագործել դրանք։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Հիշողության տնտեսման շնորհիվ Chromium-ն ավելի արագ է դարձել</translation>
 <translation id="1315551408014407711">Կարգավորեք Chromium-ի ձեր նոր պրոֆիլը</translation>
 <translation id="1385859895174722837">Google Օգնականը Chromium-ում</translation>
 <translation id="1396446129537741364">Chromium-ը փորձում է ցուցադրել գաղտնաբառերը:</translation>
@@ -211,6 +212,7 @@
 <translation id="6055895534982063517">Մատչելի է Chromium-ի նոր տարբերակ, որը շատ ավելի արագ է:</translation>
 <translation id="6063093106622310249">&amp;Բացել Chromium-ում</translation>
 <translation id="6072279588547424923">«<ph name="EXTENSION_NAME" />» ընդլայնումն ավելացվել է Chromium-ին</translation>
+<translation id="6072463441809498330">Արագացրեք Chromium-ի աշխատանքը</translation>
 <translation id="608006075545470555">Աշխատանքային պրոֆիլի ավելացում այս դիտարկիչում</translation>
 <translation id="6096348254544841612">Հասանելի է Chromium-ի նոր տարբերակը։</translation>
 <translation id="6119438414301547735">Թույլատրել ընդլայնմանը մուտքի հարցումներ ցուցադրել Chromium-ի գործիքագոտում</translation>

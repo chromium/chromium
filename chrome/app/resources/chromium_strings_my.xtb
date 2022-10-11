@@ -13,6 +13,7 @@
 <translation id="1185134272377778587">Chromium အကြောင်း</translation>
 <translation id="1203500561924088507">ထည့်သွင်းသည့်အတွက် ကျေးဇူးတင်ပါသည်။ <ph name="BUNDLE_NAME" /> အသုံးမပြုမီ သင့်ဘရောင်ဇာကို ပြန်စရမည်။</translation>
 <translation id="1231839967188101156">ဖွင့်ထားပါက Chromium သည် အသုံးမပြုသည့်တဘ်များရှိ မှတ်ဉာဏ်ကို နေရာလွတ်ပြုလုပ်သည်။ ၎င်းက အသုံးပြုနေသည့်တဘ်နှင့် အခြားအက်ပ်များအား ကွန်ပျူတာရင်းမြစ် ပိုပေးပြီး Chromium ကို မြန်ဆန်စေသည်။ အသုံးမပြုသည့်တဘ်များသို့ ပြန်သွားသောအခါ ၎င်းတို့က အလိုအလျောက် ပြန်လည်လုပ်ဆောင်လာမည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">မှတ်ဉာဏ်ချွေတာစနစ်က Chromium ကို ပိုမြန်စေသည်</translation>
 <translation id="1315551408014407711">သင်၏ Chromium ပရိုဖိုင်အသစ်ကို စနစ်ထည့်သွင်းပါ</translation>
 <translation id="1385859895174722837">Chromium ရှိ Google Assistant</translation>
 <translation id="1396446129537741364">Chromium က စကားဝှက်များကို ပြရန် ကြိုးစားနေသည်။</translation>
@@ -213,6 +214,7 @@
 <translation id="6055895534982063517">Chromium ဗားရှင်း အသစ် ရရှိနိုင်ရာ မကြုံစဖူး မြန်လှပါသည်။</translation>
 <translation id="6063093106622310249">&amp;Chromium တွင် ဖွင့်ရန်</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> ကို Chromium သို့ ထည့်ပြီးပါပြီ</translation>
+<translation id="6072463441809498330">Chromium ပိုမြန်အောင်လုပ်ခြင်း</translation>
 <translation id="608006075545470555">ဤဘရောင်ဇာတွင် အလုပ်ပရိုဖိုင်ထည့်ခြင်း</translation>
 <translation id="6096348254544841612">Chromium ကို စိတ်ကြိုက်လုပ်ပြီး ထိန်းချုပ်ပါ။ အပ်ဒိတ် ရရှိပါပြီ။</translation>
 <translation id="6119438414301547735">Chromium ကိရိယာဘားတွင် သုံးခွင့်တောင်းဆိုချက်များ ပြရန် နောက်ဆက်တွဲကို ခွင့်ပြုပါ</translation>

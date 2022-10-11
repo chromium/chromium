@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">التقييم</translation>
 <translation id="3291470810748040983">سيصلك تنبيه عندما يتم رصد انخفاض في سعر أحد المنتجات ضِمن علامة تبويب مفتوحة.</translation>
 <translation id="3328308545011660196">اقتراح: يبدو أن هناك <ph name="NUMBER_OF_TABS" /> من علامات التبويب متشابهة. هل تريد تجميعها؟</translation>
+<translation id="3499853001094440183">إلغاء تجميع علامات التبويب</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{تصغير علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{تصغير مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="3882834874697329510">لتلقِّي تنبيه عندما يتم رصد انخفاض في سعر أحد المنتجات ضِمن علامة تبويب مفتوحة، فعِّل الإشعارات في الإعدادات.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">اختيار علامات التبويب</translation>
 <translation id="6228793724645064692">(تقييم المتجر)</translation>
 <translation id="6333260925957816943">المعلومات حول هذا المتجر</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{إلغاء تجميع علامة التبويب (<ph name="TABS_COUNT_ONE" />) المحدّدة}zero{إلغاء تجميع علامات التبويب المحدّدة البالغ عددها <ph name="TABS_COUNT_MANY" />}two{إلغاء تجميع علامتَي التبويب (<ph name="TABS_COUNT_MANY" />) المحدّدتين}few{إلغاء تجميع علامات التبويب المحدّدة البالغ عددها <ph name="TABS_COUNT_MANY" />}many{إلغاء تجميع علامات التبويب المحدّدة البالغ عددها <ph name="TABS_COUNT_MANY" />}other{إلغاء تجميع علامات التبويب المحدّدة البالغ عددها <ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{<ph name="TABS_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />)}few{<ph name="TABS_COUNT_MANY" /> علامات تبويب}many{<ph name="TABS_COUNT_MANY" /> علامة تبويب}other{<ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="6510648526783655549">إغلاق شريط علامات التبويب</translation>
 <translation id="6549021453810473782">عرض معلومات المتجر</translation>
 <translation id="6562820390860419811">نقل علامة التبويب إلى اليمين</translation>

@@ -33,6 +33,7 @@
 <translation id="3194464645767632461">бағасы</translation>
 <translation id="3291470810748040983">Баға төмендеген кезде жаңа қойындыға хабарландыру келеді.</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
+<translation id="3499853001094440183">Қойындыларды топтан шығару</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="TITLE_OF_GROUP" /> қойындылар тобын жию.}}</translation>
 <translation id="3882834874697329510">Ашық қойындыда төмен баға болған кезде, хабарландыру алу үшін "Параметрлер" бөлімінен хабарландыруларды қосыңыз.</translation>
@@ -66,6 +67,8 @@
 <translation id="6193448654517602979">Қойындыларды таңдау</translation>
 <translation id="6228793724645064692">(дүкен рейтингісі)</translation>
 <translation id="6333260925957816943">Бұл дүкен туралы ақпарат</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны топтан шығару}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны топтан шығару}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойынды}other{<ph name="TABS_COUNT_MANY" /> қойынды}}</translation>
 <translation id="6510648526783655549">Қойындылар жолағын жабу</translation>
 <translation id="6549021453810473782">Дүкен туралы ақпаратты көру</translation>
 <translation id="6562820390860419811">Қойындыны солға жылжыту</translation>

@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Құжатты сканерлеу</translation>
 <translation id="1309250603447638106">Құжатты сканерлеу функциясының жаңа нұсқалары жүктеп алынуда.</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Пайдалану үшін Search + сол жаққа бағыттауыш перне тіркесімін пайдаланыңыз.</translation>
+<translation id="1417314334557041815"><ph name="INDEX" />-бет мәліметтерін өзгерту</translation>
 <translation id="1430915738399379752">Басып шығару</translation>
 <translation id="1467231725790366244"><ph name="CAMERA" /> ажыратылды.</translation>
 <translation id="1473110567575736769">3 секундтық таймер</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Ештеңе жазылмады.</translation>
 <translation id="1838104802459806957">Жоғары қарай еңкейту</translation>
+<translation id="1843105061469674856">Тағы бір бет сканерлеу</translation>
 <translation id="1851169887664797861">Камераның қосымша басқару элементтері қолжетімді.</translation>
 <translation id="1851616744363735765">КІДІРТІЛДІ</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> файлы экспортталмады.</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Бұл камера ажыратымдылықты өзгерте алмайды.</translation>
 <translation id="4269820728363426813">Сілтеме мекенжайын көшіру</translation>
 <translation id="4281620174117014503">Орташа ажыратымдылық</translation>
+<translation id="428234092390943511">Беттің нобайы</translation>
 <translation id="4329152592498422850">Шаршы сурет түсіруге ауысу</translation>
 <translation id="4340659173795395806">Енді көп бетті PDF файлын жасай аласыз.</translation>
 <translation id="4383571725254449280">Жұмысты тіркеу журналдарын басып шығару</translation>

@@ -11,6 +11,7 @@
 <translation id="1185134272377778587">Всичко за Chromium</translation>
 <translation id="1203500561924088507">Благодарим ви, че инсталирахте <ph name="BUNDLE_NAME" />. Трябва да рестартирате браузъра си, преди да използвате това приложение.</translation>
 <translation id="1231839967188101156">Когато функцията е включена, Chromium освобождава памет от неактивните раздели. Така активните раздели и другите приложения разполагат с повече компютърни ресурси и Chromium не се забавя. Неактивните ви раздели автоматично се активират отново, когато се върнете към тях. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
+<translation id="1261119230216066228">Функцията за икономия на памет ускори работата на Chromium</translation>
 <translation id="1315551408014407711">Настройване на новия ви потребителски профил в Chromium</translation>
 <translation id="1385859895174722837">Google Асистент в Chromium</translation>
 <translation id="1396446129537741364">Chromium опитва да покаже паролите.</translation>
@@ -207,6 +208,7 @@
 <translation id="6055895534982063517">Налице е нова версия на Chromium, която е по-бърза от всякога.</translation>
 <translation id="6063093106622310249">&amp;Отваряне в Chromium</translation>
 <translation id="6072279588547424923">Разширението <ph name="EXTENSION_NAME" /> бе добавено към Chromium</translation>
+<translation id="6072463441809498330">Ускорете Chromium</translation>
 <translation id="608006075545470555">Добавяне на служебен потребителски профил към този браузър</translation>
 <translation id="6096348254544841612">Персонализиране и управление на Chromium. Налице е актуализация.</translation>
 <translation id="6119438414301547735">Разрешаване на разширението да показва заявки за достъп в лентата с инструменти на Chromium</translation>
