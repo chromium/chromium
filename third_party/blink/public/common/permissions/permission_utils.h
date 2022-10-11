@@ -63,6 +63,9 @@ enum class PermissionType {
 BLINK_COMMON_EXPORT mojom::PermissionStatus ToPermissionStatus(
     const std::string& status);
 
+// Converts `PermissionType` into a string.
+BLINK_COMMON_EXPORT std::string GetPermissionString(PermissionType permission);
+
 // Get a list of all permission types.
 BLINK_COMMON_EXPORT const std::vector<PermissionType>& GetAllPermissionTypes();
 

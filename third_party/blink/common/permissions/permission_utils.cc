@@ -25,6 +25,70 @@ mojom::PermissionStatus ToPermissionStatus(const std::string& status) {
   return mojom::PermissionStatus::DENIED;
 }
 
+std::string GetPermissionString(PermissionType permission) {
+  switch (permission) {
+    case PermissionType::GEOLOCATION:
+      return "Geolocation";
+    case PermissionType::NOTIFICATIONS:
+      return "Notifications";
+    case PermissionType::MIDI_SYSEX:
+      return "MidiSysEx";
+    case PermissionType::DURABLE_STORAGE:
+      return "DurableStorage";
+    case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
+      return "ProtectedMediaIdentifier";
+    case PermissionType::AUDIO_CAPTURE:
+      return "AudioCapture";
+    case PermissionType::VIDEO_CAPTURE:
+      return "VideoCapture";
+    case PermissionType::MIDI:
+      return "Midi";
+    case PermissionType::BACKGROUND_SYNC:
+      return "BackgroundSync";
+    case PermissionType::SENSORS:
+      return "Sensors";
+    case PermissionType::ACCESSIBILITY_EVENTS:
+      return "AccessibilityEvents";
+    case PermissionType::CLIPBOARD_READ_WRITE:
+      return "ClipboardReadWrite";
+    case PermissionType::CLIPBOARD_SANITIZED_WRITE:
+      return "ClipboardSanitizedWrite";
+    case PermissionType::PAYMENT_HANDLER:
+      return "PaymentHandler";
+    case PermissionType::BACKGROUND_FETCH:
+      return "BackgroundFetch";
+    case PermissionType::IDLE_DETECTION:
+      return "IdleDetection";
+    case PermissionType::PERIODIC_BACKGROUND_SYNC:
+      return "PeriodicBackgroundSync";
+    case PermissionType::WAKE_LOCK_SCREEN:
+      return "WakeLockScreen";
+    case PermissionType::WAKE_LOCK_SYSTEM:
+      return "WakeLockSystem";
+    case PermissionType::NFC:
+      return "NFC";
+    case PermissionType::VR:
+      return "VR";
+    case PermissionType::AR:
+      return "AR";
+    case PermissionType::STORAGE_ACCESS_GRANT:
+      return "StorageAccess";
+    case PermissionType::CAMERA_PAN_TILT_ZOOM:
+      return "CameraPanTiltZoom";
+    case PermissionType::WINDOW_PLACEMENT:
+      return "WindowPlacement";
+    case PermissionType::LOCAL_FONTS:
+      return "LocalFonts";
+    case PermissionType::DISPLAY_CAPTURE:
+      return "DisplayCapture";
+    case PermissionType::NUM:
+      NOTREACHED();
+      return std::string();
+  }
+  NOTREACHED();
+  return std::string();
+}
+
 const std::vector<PermissionType>& GetAllPermissionTypes() {
   static const base::NoDestructor<std::vector<PermissionType>>
       kAllPermissionTypes([] {

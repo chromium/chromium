@@ -10,12 +10,16 @@
 #include "content/browser/permissions/permission_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/origin.h"
 
@@ -68,6 +72,102 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::GEOLOCATION:
       return absl::nullopt;
   }
+}
+
+const char kPermissionBlockedPortalsMessage[] =
+    "%s permission has been blocked because it was requested inside a "
+    "portal. "
+    "Portals don't currently support permission requests.";
+
+const char kPermissionBlockedFencedFrameMessage[] =
+    "%s permission has been blocked because it was requested inside a fenced "
+    "frame. Fenced frames don't currently support permission requests.";
+
+void LogPermissionBlockedMessage(PermissionType permission,
+                                 content::RenderFrameHost* rfh,
+                                 const char* message) {
+  rfh->GetOutermostMainFrame()->AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kWarning,
+      base::StringPrintf(message,
+                         blink::GetPermissionString(permission).c_str()));
+}
+
+content::PermissionResult VerifyContextOfCurrentDocument(
+    PermissionType permission,
+    content::RenderFrameHost* render_frame_host) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+
+  DCHECK(web_contents);
+
+  // Permissions are denied for portals.
+  if (web_contents->IsPortal()) {
+    return PermissionResult(blink::mojom::PermissionStatus::DENIED,
+                            PermissionStatusSource::PORTAL);
+  }
+
+  // Permissions are denied for fenced frames.
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    return PermissionResult(blink::mojom::PermissionStatus::DENIED,
+                            PermissionStatusSource::FENCED_FRAME);
+  }
+
+  return PermissionResult(blink::mojom::PermissionStatus::ASK,
+                          PermissionStatusSource::UNSPECIFIED);
+}
+
+bool IsRequestAllowed(
+    const std::vector<blink::PermissionType>& permissions,
+    RenderFrameHost* render_frame_host,
+    base::OnceCallback<
+        void(const std::vector<blink::mojom::PermissionStatus>&)>& callback) {
+  if (!render_frame_host) {
+    // Permission request is not allowed without a valid RenderFrameHost.
+    std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
+        permissions.size(), blink::mojom::PermissionStatus::ASK));
+    return false;
+  }
+
+  // Verifies and evicts `render_frame_host` from BFcache. Returns true if
+  // render_frame_host was evicted, returns false otherwise.
+  if (render_frame_host->IsInactiveAndDisallowActivation(
+          content::DisallowActivationReasonId::kRequestPermission)) {
+    std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
+        permissions.size(), blink::mojom::PermissionStatus::ASK));
+    return false;
+  }
+
+  // Verify each permission independently to generate proper warning messages.
+  bool is_permission_allowed = true;
+  for (PermissionType permission : permissions) {
+    PermissionResult result =
+        VerifyContextOfCurrentDocument(permission, render_frame_host);
+
+    if (result.status == blink::mojom::PermissionStatus::DENIED) {
+      switch (result.source) {
+        case PermissionStatusSource::PORTAL:
+          LogPermissionBlockedMessage(permission, render_frame_host,
+                                      kPermissionBlockedPortalsMessage);
+          break;
+        case PermissionStatusSource::FENCED_FRAME:
+          LogPermissionBlockedMessage(permission, render_frame_host,
+                                      kPermissionBlockedFencedFrameMessage);
+          break;
+        default:
+          break;
+      }
+
+      is_permission_allowed = false;
+    }
+  }
+
+  if (!is_permission_allowed) {
+    std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
+        permissions.size(), blink::mojom::PermissionStatus::DENIED));
+    return false;
+  }
+
+  return true;
 }
 
 void NotifySchedulerAboutPermissionRequest(RenderFrameHost* render_frame_host,
@@ -282,6 +382,10 @@ void PermissionControllerImpl::RequestPermissions(
     bool user_gesture,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
+  if (!IsRequestAllowed(permissions, render_frame_host, callback)) {
+    return;
+  }
+
   for (PermissionType permission : permissions)
     NotifySchedulerAboutPermissionRequest(render_frame_host, permission);
 
@@ -335,6 +439,9 @@ void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
     bool user_gesture,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
+  if (!IsRequestAllowed(permissions, render_frame_host, callback))
+    return;
+
   for (PermissionType permission : permissions)
     NotifySchedulerAboutPermissionRequest(render_frame_host, permission);
 
@@ -429,6 +536,12 @@ PermissionControllerImpl::GetPermissionStatusForCurrentDocument(
       browser_context_->GetPermissionControllerDelegate();
   if (!delegate)
     return blink::mojom::PermissionStatus::DENIED;
+
+  if (VerifyContextOfCurrentDocument(permission, render_frame_host).status ==
+      blink::mojom::PermissionStatus::DENIED) {
+    return blink::mojom::PermissionStatus::DENIED;
+  }
+
   return delegate->GetPermissionStatusForCurrentDocument(permission,
                                                          render_frame_host);
 }
@@ -448,6 +561,11 @@ PermissionControllerImpl::GetPermissionResultForCurrentDocument(
   if (!delegate)
     return PermissionResult(blink::mojom::PermissionStatus::DENIED,
                             PermissionStatusSource::UNSPECIFIED);
+
+  PermissionResult result =
+      VerifyContextOfCurrentDocument(permission, render_frame_host);
+  if (result.status == blink::mojom::PermissionStatus::DENIED)
+    return result;
 
   return delegate->GetPermissionResultForCurrentDocument(permission,
                                                          render_frame_host);

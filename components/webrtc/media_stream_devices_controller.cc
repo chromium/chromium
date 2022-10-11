@@ -102,8 +102,12 @@ void MediaStreamDevicesController::RequestPermissions(
     if (permission_status.status == blink::mojom::PermissionStatus::DENIED) {
       controller->denial_reason_ =
           blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
-      controller->RunCallback(permission_status.source ==
-                              content::PermissionStatusSource::FEATURE_POLICY);
+      // If `rfh` is a fenced frame, it will have no permission policy as well.
+      controller->RunCallback(
+          permission_status.source ==
+              content::PermissionStatusSource::FEATURE_POLICY ||
+          permission_status.source ==
+              content::PermissionStatusSource::FENCED_FRAME);
       return;
     }
 
@@ -116,8 +120,12 @@ void MediaStreamDevicesController::RequestPermissions(
     if (permission_status.status == blink::mojom::PermissionStatus::DENIED) {
       controller->denial_reason_ =
           blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
-      controller->RunCallback(permission_status.source ==
-                              content::PermissionStatusSource::FEATURE_POLICY);
+      // If `rfh` is a fenced frame, it will have no permission policy as well.
+      controller->RunCallback(
+          permission_status.source ==
+              content::PermissionStatusSource::FEATURE_POLICY ||
+          permission_status.source ==
+              content::PermissionStatusSource::FENCED_FRAME);
       return;
     }
 
