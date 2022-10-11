@@ -79,12 +79,8 @@ import re
 import shlex
 import shutil
 import subprocess
-import six
 
-if six.PY2:
-  from urllib2 import urlopen
-else:
-  from urllib.request import urlopen
+from urllib.request import urlopen
 
 sys.path.append(
     os.path.join(
