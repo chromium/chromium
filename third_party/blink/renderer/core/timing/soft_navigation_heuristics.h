@@ -62,6 +62,9 @@ class SoftNavigationHeuristics
       potential_soft_navigation_task_ids_;
   FlagTypeSet flag_set_;
   String url_;
+  // The timestamp just before the click event responding to the user's click
+  // started processing.
+  base::TimeTicks user_click_timestamp_;
   uint32_t soft_navigation_count_ = 0;
 };
 

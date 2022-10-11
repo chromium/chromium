@@ -80,6 +80,7 @@ void SoftNavigationHeuristics::UserInitiatedClick(ScriptState* script_state) {
   ResetHeuristic();
   scheduler->GetTaskAttributionTracker()->RegisterObserver(this);
   SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
+  user_click_timestamp_ = base::TimeTicks::Now();
 }
 
 bool SoftNavigationHeuristics::IsCurrentTaskDescendantOfClickEventHandler(
@@ -150,7 +151,8 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
   if (LocalDOMWindow* window = frame->DomWindow()) {
     auto* performance = DOMWindowPerformance::performance(*window);
     DCHECK(!url_.IsNull());
-    performance->AddSoftNavigationEntry(AtomicString(url_));
+    performance->AddSoftNavigationEntry(AtomicString(url_),
+                                        user_click_timestamp_);
 
     if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled()) {
       if (Document* document = window->document()) {

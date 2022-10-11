@@ -655,12 +655,13 @@ void WindowPerformance::AddVisibilityStateEntry(bool is_visible,
     visibility_state_buffer_.push_back(entry);
 }
 
-void WindowPerformance::AddSoftNavigationEntry(const AtomicString& name) {
+void WindowPerformance::AddSoftNavigationEntry(const AtomicString& name,
+                                               base::TimeTicks timestamp) {
   if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled()) {
     return;
   }
   SoftNavigationEntry* entry = MakeGarbageCollected<SoftNavigationEntry>(
-      name, MonotonicTimeToDOMHighResTimeStamp(base::TimeTicks::Now()),
+      name, MonotonicTimeToDOMHighResTimeStamp(timestamp),
       PerformanceEntry::GetNavigationId(GetExecutionContext()));
 
   if (HasObserverFor(PerformanceEntry::kSoftNavigation))

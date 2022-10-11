@@ -140,7 +140,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void AddLayoutShiftEntry(LayoutShift*);
   void AddVisibilityStateEntry(bool is_visible, base::TimeTicks start_time);
-  void AddSoftNavigationEntry(const AtomicString& name);
+  void AddSoftNavigationEntry(const AtomicString& name,
+                              base::TimeTicks start_time);
 
   // PageVisibilityObserver
   void PageVisibilityChanged() override;
