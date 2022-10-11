@@ -165,8 +165,12 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   friend class SearchResultListView;
   friend class SearchResultViewWidgetTest;
 
-  void set_multi_line_label_height_for_test(int height) {
-    multi_line_label_height_ = height;
+  void set_multi_line_details_height_for_test(int height) {
+    multi_line_details_height_ = height;
+  }
+
+  void set_multi_line_title_height_for_test(int height) {
+    multi_line_title_height_ = height;
   }
 
   int PreferredHeight() const;
@@ -288,9 +292,13 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
   // layout weight calculations.
   int non_elided_details_label_width_ = 0;
 
-  // Search result view can have one multi-line label. Cache its height for
-  // calculating PreferredHeight() and SecondaryTextHeight().
-  int multi_line_label_height_ = 0;
+  // Search result view can have one multi-line title label. Cache its height
+  // for calculating PreferredHeight() and PrimaryTextHeight().
+  int multi_line_title_height_ = 0;
+
+  // Search result view can have one multi-line details label. Cache its height
+  // for calculating PreferredHeight() and SecondaryTextHeight().
+  int multi_line_details_height_ = 0;
 
   base::WeakPtrFactory<SearchResultView> weak_ptr_factory_{this};
 };

@@ -78,10 +78,16 @@ class SearchResultViewWidgetTest : public views::test::WidgetTest {
     return merged_string;
   }
 
-  void SetSearchResultViewMultilineLabelHeight(
+  void SetSearchResultViewMultilineDetailsHeight(
       SearchResultView* search_result_view,
       int height) {
-    search_result_view->set_multi_line_label_height_for_test(height);
+    search_result_view->set_multi_line_details_height_for_test(height);
+  }
+
+  void SetSearchResultViewMultilineTitleHeight(
+      SearchResultView* search_result_view,
+      int height) {
+    search_result_view->set_multi_line_title_height_for_test(height);
   }
 
   int SearchResultViewPreferredHeight(SearchResultView* search_result_view) {
@@ -174,19 +180,55 @@ TEST_F(SearchResultViewWidgetTest, TitleAndDetailsContainerOrientationTest) {
 
 TEST_F(SearchResultViewWidgetTest, PreferredHeight) {
   static constexpr struct TestCase {
-    int multi_line_label_height;
+    int multi_line_details_height;
+    int multi_line_title_height;
     int preferred_height;
-  } kTestCases[] = {{.multi_line_label_height = 0, .preferred_height = 80},
-                    {.multi_line_label_height = 18, .preferred_height = 80},
-                    {.multi_line_label_height = 36, .preferred_height = 98},
-                    {.multi_line_label_height = 54, .preferred_height = 116}};
-
+  } kTestCases[] = {{.multi_line_details_height = 0,
+                     .multi_line_title_height = 0,
+                     .preferred_height = 80},
+                    {.multi_line_details_height = 0,
+                     .multi_line_title_height = 20,
+                     .preferred_height = 80},
+                    {.multi_line_details_height = 0,
+                     .multi_line_title_height = 40,
+                     .preferred_height = 100},
+                    {.multi_line_details_height = 18,
+                     .multi_line_title_height = 0,
+                     .preferred_height = 80},
+                    {.multi_line_details_height = 18,
+                     .multi_line_title_height = 20,
+                     .preferred_height = 80},
+                    {.multi_line_details_height = 18,
+                     .multi_line_title_height = 40,
+                     .preferred_height = 100},
+                    {.multi_line_details_height = 36,
+                     .multi_line_title_height = 0,
+                     .preferred_height = 98},
+                    {.multi_line_details_height = 36,
+                     .multi_line_title_height = 20,
+                     .preferred_height = 98},
+                    {.multi_line_details_height = 36,
+                     .multi_line_title_height = 40,
+                     .preferred_height = 118},
+                    {.multi_line_details_height = 54,
+                     .multi_line_title_height = 0,
+                     .preferred_height = 116},
+                    {.multi_line_details_height = 54,
+                     .multi_line_title_height = 20,
+                     .preferred_height = 116},
+                    {.multi_line_details_height = 54,
+                     .multi_line_title_height = 40,
+                     .preferred_height = 136}};
   for (auto& test_case : kTestCases) {
     SCOPED_TRACE(testing::Message()
-                 << "Test case: {multi_line_label_height: "
-                 << test_case.multi_line_label_height << "}");
-    SetSearchResultViewMultilineLabelHeight(answer_card_view(),
-                                            test_case.multi_line_label_height);
+                 << "Test case: {multi_line_details_height: "
+                 << test_case.multi_line_details_height
+                 << " multi_line_title_height: "
+                 << test_case.multi_line_title_height << "}");
+    SetSearchResultViewMultilineDetailsHeight(
+        answer_card_view(), test_case.multi_line_details_height);
+    SetSearchResultViewMultilineTitleHeight(answer_card_view(),
+                                            test_case.multi_line_title_height);
     EXPECT_EQ(test_case.preferred_height,
               SearchResultViewPreferredHeight(answer_card_view()));
   }

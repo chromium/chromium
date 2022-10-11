@@ -58,6 +58,13 @@ void SearchResult::SetTitleTextVector(const TextVector& vector) {
     observer.OnMetadataChanged();
 }
 
+void SearchResult::SetMultilineTitle(bool multiline_title) {
+  DCHECK(metadata_->title_vector.size() <= 1 || !multiline_title);
+  metadata_->multiline_title = multiline_title;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
 void SearchResult::SetDetails(const std::u16string& details) {
   metadata_->details = details;
   for (auto& observer : observers_)

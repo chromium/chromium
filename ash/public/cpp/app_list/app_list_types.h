@@ -638,6 +638,12 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // The details of the result, supports embedded icons.
   std::vector<SearchResultTextItem> details_vector;
 
+  // Whether or not the title field can be split over multiple lines. UI
+  // implementation does not support multiline if the title vector has more
+  // than one text item, so if multiline_title is set then title_vector
+  // cannot have more than one element.
+  bool multiline_title = false;
+
   // Whether or not the details field can be split over multiple lines. UI
   // implementation does not support multiline if the details vector has more
   // than one text item, so if multiline_details is set then details_vector

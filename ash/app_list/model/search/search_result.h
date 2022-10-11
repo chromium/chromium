@@ -71,6 +71,9 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   }
   void SetTitleTextVector(const TextVector& vector);
 
+  bool multiline_title() const { return metadata_->multiline_title; }
+  void SetMultilineTitle(bool multiline_title);
+
   const std::u16string& details() const { return metadata_->details; }
   void SetDetails(const std::u16string& details);
 

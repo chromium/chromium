@@ -462,18 +462,27 @@ int SearchResultView::PreferredHeight() const {
         return kKeyboardShortcutViewHeight;
       return kDefaultViewHeight;
     case SearchResultViewType::kAnswerCard:
-      if (multi_line_label_height_ > 0) {
+      int height = kDefaultAnswerCardViewHeight;
+      if (multi_line_details_height_ > 0) {
         // kDefaultAnswerCardViewHeight is adjusted to accommodate multi-line
         // result's height. The assumed kAnswerCardDetailsLineHeight is replaced
         // with the multi-line label's height.
-        return kDefaultAnswerCardViewHeight + multi_line_label_height_ -
-               kAnswerCardDetailsLineHeight;
+        height =
+            height + multi_line_details_height_ - kAnswerCardDetailsLineHeight;
       }
-      return kDefaultAnswerCardViewHeight;
+      if (multi_line_title_height_ > 0) {
+        // kDefaultAnswerCardViewHeight is adjusted to accommodate multi-line
+        // title's height. The assumed kPrimaryTextHeight is replaced
+        // with the multi-line label's height.
+        height = height + multi_line_title_height_ - kPrimaryTextHeight;
+      }
+      return height;
   }
 }
 
 int SearchResultView::PrimaryTextHeight() const {
+  if (multi_line_title_height_ > 0)
+    return multi_line_title_height_;
   switch (view_type_) {
     case SearchResultViewType::kClassic:
     case SearchResultViewType::kDefault:
@@ -485,8 +494,8 @@ int SearchResultView::PrimaryTextHeight() const {
 int SearchResultView::SecondaryTextHeight() const {
   if (has_keyboard_shortcut_contents_)
     return kPrimaryTextHeight;
-  if (multi_line_label_height_ > 0)
-    return multi_line_label_height_;
+  if (multi_line_details_height_ > 0)
+    return multi_line_details_height_;
   switch (view_type_) {
     case SearchResultViewType::kClassic:
     case SearchResultViewType::kAnswerCard:
@@ -653,11 +662,21 @@ SearchResultView::SetupContainerViewForTextVector(
           non_elided_details_label_width_ = label->GetPreferredSize().width();
         }
         if (is_multi_line) {
-          // Each search result can have up to one non-elided label in its
-          // details text.
-          DCHECK_EQ(label_type, LabelType::kDetails);
-          multi_line_label_height_ =
-              label->GetHeightForWidth(kMultilineLabelWidth);
+          switch (label_type) {
+            case LabelType::kDetails:
+              multi_line_details_height_ =
+                  label->GetHeightForWidth(kMultilineLabelWidth);
+              break;
+            case LabelType::kTitle:
+              multi_line_title_height_ =
+                  label->GetHeightForWidth(kMultilineLabelWidth);
+              break;
+            case LabelType::kBigTitle:
+            case LabelType::kBigTitleSuperscript:
+            case LabelType::kKeyboardShortcut:
+              // Multiline behavior is not supported for these label types.
+              break;
+          }
         }
 
         label_tags.push_back(LabelAndTag(label, span.GetTextTags()));
@@ -751,6 +770,8 @@ void SearchResultView::UpdateBigTitleSuperscriptContainer() {
 }
 
 void SearchResultView::UpdateTitleContainer() {
+  // Updating the title label should reset `multi_line_details_height_`.
+  multi_line_title_height_ = 0;
   title_container_->RemoveAllChildViews();
   title_label_tags_.clear();
   if (!result() || result()->title_text_vector().empty()) {
@@ -763,7 +784,7 @@ void SearchResultView::UpdateTitleContainer() {
     title_label_tags_ = SetupContainerViewForTextVector(
         title_container_, result()->title_text_vector(), LabelType::kTitle,
         has_keyboard_shortcut_contents_,
-        /*is_multi_line=*/false);
+        /*is_multi_line=*/result()->multiline_title());
     StyleTitleContainer();
     text_container_->SetVisible(true);
     title_and_details_container_->SetVisible(true);
@@ -773,9 +794,9 @@ void SearchResultView::UpdateTitleContainer() {
 
 void SearchResultView::UpdateDetailsContainer() {
   should_show_result_text_separator_label_ = false;
-  // Updating the details label should reset `multi_line_label_height_` and
+  // Updating the details label should reset `multi_line_details_height_` and
   // `non_elided_details_label_width_`.
-  multi_line_label_height_ = 0;
+  multi_line_details_height_ = 0;
   non_elided_details_label_width_ = 0;
   details_container_->RemoveAllChildViews();
   details_label_tags_.clear();
