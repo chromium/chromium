@@ -790,10 +790,10 @@ void PageLoadTracker::UpdatePageEndInternal(
   page_end_reason_ = page_end_reason;
   page_end_time_ = timestamp;
   // A client redirect can never be user initiated. Due to the way Blink
-  // implements user gesture tracking, where all events that occur within 1
-  // second after a user interaction are considered to be triggered by user
-  // activation (based on HTML spec:
-  // https://html.spec.whatwg.org/multipage/interaction.html#triggered-by-user-activation),
+  // implements user gesture tracking, where all events that occur within a few
+  // seconds after a user interaction are considered to be triggered by user
+  // activation (based on the HTML spec:
+  // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation),
   // these navs may sometimes be reported as user initiated by Blink. Thus, we
   // explicitly filter these types of aborts out when deciding if the abort was
   // user initiated.

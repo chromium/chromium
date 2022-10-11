@@ -78,8 +78,8 @@
          * Trigger user interaction in order to grant additional privileges to
          * a provided function.
          *
-         * See `triggered by user activation
-         * <https://html.spec.whatwg.org/#triggered-by-user-activation>`_.
+         * See `Tracking user activation
+         * <https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation>`_.
          *
          * @example
          * var mediaElement = document.createElement('video');
