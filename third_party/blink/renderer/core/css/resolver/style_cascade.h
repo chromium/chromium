@@ -299,6 +299,9 @@ class CORE_EXPORT StyleCascade {
                           CascadePriority,
                           CascadeOrigin&,
                           CascadeResolver&);
+  const CSSValue* ResolveSubstitutions(const CSSProperty&,
+                                       const CSSValue&,
+                                       CascadeResolver&);
   const CSSValue* ResolveCustomProperty(const CSSProperty&,
                                         const CSSCustomPropertyDeclaration&,
                                         CascadeResolver&);

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
@@ -59,14 +60,6 @@ bool ConsumeComma(CSSParserTokenRange& range) {
     return true;
   }
   return false;
-}
-
-// TODO(crbug.com/1105782): It is currently unclear how to handle 'revert'
-// and 'revert-layer' at computed-value-time. For now we treat it as 'unset'.
-const CSSValue* TreatRevertAsUnset(const CSSValue* value) {
-  if (value && (value->IsRevertValue() || value->IsRevertLayerValue()))
-    return cssvalue::CSSUnsetValue::Create();
-  return value;
 }
 
 const CSSValue* Parse(const CSSProperty& property,
@@ -773,11 +766,23 @@ const CSSValue* StyleCascade::Resolve(const CSSProperty& property,
                                       CascadeOrigin& origin,
                                       CascadeResolver& resolver) {
   DCHECK(!property.IsSurrogate());
-  if (value.IsRevertValue())
-    return ResolveRevert(property, value, origin, resolver);
-  if (value.IsRevertLayerValue())
-    return ResolveRevertLayer(property, value, priority, origin, resolver);
+
+  const CSSValue* result = ResolveSubstitutions(property, value, resolver);
+  DCHECK(result);
+
+  if (result->IsRevertValue())
+    return ResolveRevert(property, *result, origin, resolver);
+  if (result->IsRevertLayerValue())
+    return ResolveRevertLayer(property, *result, priority, origin, resolver);
+
   resolver.CollectFlags(property, origin);
+
+  return result;
+}
+
+const CSSValue* StyleCascade::ResolveSubstitutions(const CSSProperty& property,
+                                                   const CSSValue& value,
+                                                   CascadeResolver& resolver) {
   if (const auto* v = DynamicTo<CSSCustomPropertyDeclaration>(value))
     return ResolveCustomProperty(property, *v, resolver);
   if (const auto* v = DynamicTo<CSSVariableReferenceValue>(value))
@@ -818,6 +823,19 @@ const CSSValue* StyleCascade::ResolveCustomProperty(
   if (data == &decl.Value())
     return &decl;
 
+  // If a declaration, once all var() functions are substituted in, contains
+  // only a CSS-wide keyword (and possibly whitespace), its value is determined
+  // as if that keyword were its specified value all along.
+  //
+  // https://drafts.csswg.org/css-variables/#substitute-a-var
+  {
+    CSSParserTokenRange range = data->TokenRange();
+    range.ConsumeWhitespace();
+    CSSValue* value = css_parsing_utils::ConsumeCSSWideKeyword(range);
+    if (value && range.AtEnd())
+      return value;
+  }
+
   return MakeGarbageCollected<CSSCustomPropertyDeclaration>(
       data, decl.ParserContext());
 }
@@ -843,7 +861,7 @@ const CSSValue* StyleCascade::ResolveVariableReference(
   if (ResolveTokensInto(CSSParserTokenRange{data->Tokens()}, resolver,
                         sequence)) {
     if (const auto* parsed = Parse(property, sequence.TokenRange(), context))
-      return TreatRevertAsUnset(parsed);
+      return parsed;
   }
 
   return cssvalue::CSSUnsetValue::Create();
@@ -910,7 +928,7 @@ const CSSValue* StyleCascade::ResolvePendingSubstitution(
     // When using var() in a css-logical shorthand (e.g. margin-inline),
     // the longhands here will also be logical.
     if (unvisited_property == &ResolveSurrogate(longhand))
-      return TreatRevertAsUnset(parsed);
+      return parsed;
   }
 
   NOTREACHED();
