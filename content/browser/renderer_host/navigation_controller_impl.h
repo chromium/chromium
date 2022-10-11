@@ -457,6 +457,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       NavigationControllerBrowserTest,
       PostThenBrowserInitiatedFragmentNavigationThenReload);
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerBrowserTest, PostSubframe);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerBrowserTest,
+                           ResetPendingLoadTypeWhenCancelPendingReload);
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerDisableHistoryIntervention,
                            GoToOffsetWithSkippingDisableHistoryIntervention);
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,

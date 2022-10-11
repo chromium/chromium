@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
+import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.TimeUnit;
@@ -41,15 +42,29 @@ public class AwContentsClientOnFormResubmissionTest {
         // Whether to resubmit Post data on reload.
         private boolean mResubmit;
 
+        // Whether to do resend/dontResend automatically;
+        private boolean mAutoProcess;
+
         public int getResubmissions() {
             return mResubmissions;
         }
+
         public void setResubmit(boolean resubmit) {
             mResubmit = resubmit;
         }
+
+        public void setAutoProcess(boolean autoProcess) {
+            mAutoProcess = autoProcess;
+        }
+
         @Override
         public void onFormResubmission(Message dontResend, Message resend) {
+            super.onFormResubmission(dontResend, resend);
             mResubmissions++;
+            if (!mAutoProcess) {
+                return;
+            }
+
             if (mResubmit) {
                 resend.sendToTarget();
             } else {
@@ -91,6 +106,7 @@ public class AwContentsClientOnFormResubmissionTest {
     @SmallTest
     @Feature({"AndroidWebView", "Navigation"})
     public void testResend() throws Throwable {
+        mContentsClient.setAutoProcess(true);
         mContentsClient.setResubmit(true);
         doReload();
         Assert.assertEquals(1, mContentsClient.getResubmissions());
@@ -101,10 +117,52 @@ public class AwContentsClientOnFormResubmissionTest {
     @SmallTest
     @Feature({"AndroidWebView", "Navigation"})
     public void testDontResend() throws Throwable {
+        mContentsClient.setAutoProcess(true);
         mContentsClient.setResubmit(false);
         doReload();
         Assert.assertEquals(1, mContentsClient.getResubmissions());
         Assert.assertEquals("Load", mActivityTestRule.getTitleOnUiThread(mAwContents));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Navigation"})
+    public void testPendingResubmit() throws Throwable {
+        mContentsClient.setResubmit(true);
+        mContentsClient.setAutoProcess(false);
+        String url = mServer.setResponse("/form", LOAD_RESPONSE, null);
+        String postData = "content=blabla";
+        byte[] data = Base64.encode(postData.getBytes("UTF-8"), Base64.DEFAULT);
+        mActivityTestRule.postUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), url, data);
+        Assert.assertEquals(0, mContentsClient.getResubmissions());
+        Assert.assertEquals("Load", mActivityTestRule.getTitleOnUiThread(mAwContents));
+        // Verify reload works as expected.
+        mServer.setResponse("/form", RELOAD_RESPONSE, null);
+        TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
+                mContentsClient.getOnPageFinishedHelper();
+        Assert.assertEquals(1, onPageFinishedHelper.getCallCount());
+        TestAwContentsClient.OnFormResubmissionHelper onFormResubmissionHelper =
+                mContentsClient.getOnFormResubmissionHelper();
+        // Run reload on UI thread.
+        mActivityTestRule.runOnUiThread(() -> mAwContents.getNavigationController().reload(true));
+        // Load another url to cancel form resubmission.
+        mActivityTestRule.loadUrlSync(
+                mAwContents, onPageFinishedHelper, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        Assert.assertEquals(2, onPageFinishedHelper.getCallCount());
+        Assert.assertEquals(1, mContentsClient.getResubmissions());
+
+        // Doing a resend, but expecting to fail.
+        onFormResubmissionHelper.resend();
+        try {
+            // Wait for page finished callback.
+            onPageFinishedHelper.waitForNext();
+        } catch (TimeoutException e) {
+            // Exception expected from pending resubmission case.
+        }
+
+        // Resend expects to fail, so onPageFinished will not be triggered again.
+        Assert.assertEquals(2, onPageFinishedHelper.getCallCount());
     }
 
     protected void doReload() throws Throwable {

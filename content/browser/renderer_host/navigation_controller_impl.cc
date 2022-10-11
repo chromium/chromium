@@ -920,17 +920,17 @@ void NavigationControllerImpl::Reload(ReloadType reload_type,
 }
 
 void NavigationControllerImpl::CancelPendingReload() {
-  DCHECK(pending_reload_ != ReloadType::NONE);
   pending_reload_ = ReloadType::NONE;
 }
 
 void NavigationControllerImpl::ContinuePendingReload() {
+  // If the pending reload type has been cleared by another navigation
+  // committing, then do not proceed to reload after a form repost dialog.
   if (pending_reload_ == ReloadType::NONE) {
-    NOTREACHED();
-  } else {
-    Reload(pending_reload_, false);
-    pending_reload_ = ReloadType::NONE;
+    return;
   }
+  Reload(pending_reload_, false);
+  pending_reload_ = ReloadType::NONE;
 }
 
 bool NavigationControllerImpl::IsInitialNavigation() {
@@ -1341,6 +1341,10 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // effects of the navigation have already occurred.
 
   is_initial_navigation_ = false;
+
+  // Any pending request to repost a form submission is no longer valid, since a
+  // different NavigationEntry is committing.
+  pending_reload_ = ReloadType::NONE;
 
   // Save the previous state before we clobber it.
   bool overriding_user_agent_changed = false;

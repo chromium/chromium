@@ -182,8 +182,6 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
         final int msgContinuePendingReload = 1;
         final int msgCancelPendingReload = 2;
 
-        // TODO(sgurun) Remember the URL to cancel the reload behavior
-        // if it is different than the most recent NavigationController entry.
         final Handler handler = new Handler(ThreadUtils.getUiThreadLooper()) {
             @Override
             public void handleMessage(Message msg) {

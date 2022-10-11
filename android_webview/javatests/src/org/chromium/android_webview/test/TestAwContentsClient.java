@@ -7,6 +7,7 @@ package org.chromium.android_webview.test;
 import android.graphics.Bitmap;
 import android.graphics.Picture;
 import android.net.http.SslError;
+import android.os.Message;
 
 import androidx.annotation.NonNull;
 
@@ -60,6 +61,7 @@ public class TestAwContentsClient extends NullContentsClient {
     private final TouchIconHelper mTouchIconHelper;
     private final RenderProcessGoneHelper mRenderProcessGoneHelper;
     private final ShowFileChooserHelper mShowFileChooserHelper;
+    private final OnFormResubmissionHelper mOnFormResubmissionHelper;
 
     public TestAwContentsClient() {
         super(ThreadUtils.getUiThreadLooper());
@@ -74,6 +76,7 @@ public class TestAwContentsClient extends NullContentsClient {
         mOnEvaluateJavaScriptResultHelper = new OnEvaluateJavaScriptResultHelper();
         mAddMessageToConsoleHelper = new AddMessageToConsoleHelper();
         mOnScaleChangedHelper = new OnScaleChangedHelper();
+        mOnFormResubmissionHelper = new OnFormResubmissionHelper();
         mOnReceivedTitleHelper = new OnReceivedTitleHelper();
         mPictureListenerHelper = new PictureListenerHelper();
         mShouldOverrideUrlLoadingHelper = new ShouldOverrideUrlLoadingHelper();
@@ -162,6 +165,42 @@ public class TestAwContentsClient extends NullContentsClient {
 
     public ShowFileChooserHelper getShowFileChooserHelper() {
         return mShowFileChooserHelper;
+    }
+
+    public OnFormResubmissionHelper getOnFormResubmissionHelper() {
+        return mOnFormResubmissionHelper;
+    }
+
+    /**
+     * Callback helper for onFormResubmission.
+     */
+    public static class OnFormResubmissionHelper extends CallbackHelper {
+        // Number of times onFormResubmit is called.
+        private int mResubmissions;
+        private Message mResend;
+        private Message mDontResend;
+
+        public void notifyCalled(Message dontResend, Message resend) {
+            mResend = resend;
+            mDontResend = dontResend;
+            mResubmissions++;
+        }
+
+        public int getResubmissions() {
+            return mResubmissions;
+        }
+
+        public void resend() {
+            if (mResend != null) {
+                mResend.sendToTarget();
+            }
+        }
+
+        public void dontResend() {
+            if (mDontResend != null) {
+                mDontResend.sendToTarget();
+            }
+        }
     }
 
     /**
@@ -861,5 +900,11 @@ public class TestAwContentsClient extends NullContentsClient {
         if (TRACE) Log.i(TAG, "onRenderProcessGone");
         mRenderProcessGoneHelper.notifyCalled(detail);
         return mRenderProcessGoneHelper.getResponse();
+    }
+
+    @Override
+    public void onFormResubmission(Message dontResend, Message resend) {
+        if (TRACE) Log.i(TAG, "onFormResubmission");
+        mOnFormResubmissionHelper.notifyCalled(dontResend, resend);
     }
 }

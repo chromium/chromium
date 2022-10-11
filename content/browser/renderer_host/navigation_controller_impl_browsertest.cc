@@ -15887,6 +15887,44 @@ class CountRepostFormWarningWebContentsDelegate : public WebContentsDelegate {
   int repost_form_warning_count_ = 0;
 };
 
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       ResetPendingLoadTypeWhenCancelPendingReload) {
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  auto delegate = std::make_unique<CountRepostFormWarningWebContentsDelegate>();
+  contents()->SetDelegate(delegate.get());
+  GURL start_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), start_url));
+
+  // Create a form in the page then submit it to create a POST request.
+  GURL form_submit_url(embedded_test_server()->GetURL("/title2.html"));
+  const int64_t form_post_id = CreateAndSubmitForm(form_submit_url);
+  EXPECT_EQ(0, delegate->repost_form_warning_count());
+
+  // Reload. We should show a repost warning dialog.
+  {
+    NavigationControllerImpl::ScopedShowRepostDialogForTesting show_repost;
+    controller.Reload(ReloadType::NORMAL, true /* check_for_repost */);
+    EXPECT_TRUE(WaitForLoadStop(contents()));
+    EXPECT_EQ(form_submit_url, contents()->GetLastCommittedURL());
+    EXPECT_TRUE(controller.GetLastCommittedEntry()->GetHasPostData());
+    EXPECT_EQ(form_post_id, controller.GetLastCommittedEntry()->GetPostID());
+  }
+  EXPECT_EQ(ReloadType::NORMAL, controller.pending_reload_);
+  EXPECT_EQ(1, delegate->repost_form_warning_count());
+
+  // Trigger a new navigation to cancel pending reload.
+  const GURL url1(embedded_test_server()->GetURL("/title3.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_EQ(url1, contents()->GetLastCommittedURL());
+  EXPECT_EQ(ReloadType::NONE, controller.pending_reload_);
+
+  // |pending_reload_| has been cleared and no new pending entry will be
+  // created.
+  controller.ContinuePendingReload();
+  EXPECT_FALSE(controller.GetPendingEntry());
+}
+
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, PostThenReload) {
   NavigationControllerImpl& controller =
       static_cast<NavigationControllerImpl&>(contents()->GetController());
