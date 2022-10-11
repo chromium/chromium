@@ -70,31 +70,12 @@
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/ozone/buildflags.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-
 using extensions::AppWindow;
 using extensions::ExtensionsAPIClient;
 using guest_view::GuestViewBase;
 using guest_view::GuestViewManager;
 using guest_view::TestGuestViewManager;
 using guest_view::TestGuestViewManagerFactory;
-
-// The build flag OZONE_PLATFORM_WAYLAND is only available on
-// Linux or ChromeOS, so this simplifies the next set of ifdefs.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#define OZONE_PLATFORM_WAYLAND
-#endif  // BUILDFLAG(OZONE_PLATFORM_WAYLAND)
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !defined(OZONE_PLATFORM_WAYLAND) && !BUILDFLAG(IS_CHROMEOS_LACROS)
-// Some test helpers, like ui_test_utils::SendMouseMoveSync, don't work properly
-// on some platforms. Tests that require these helpers need to be skipped for
-// these cases.
-#define SUPPORTS_SYNC_MOUSE_UTILS
-#endif
 
 #if BUILDFLAG(IS_MAC)
 // This class observes the RenderWidgetHostViewCocoa corresponding to the outer
@@ -652,15 +633,10 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
     ASSERT_TRUE(move_listener2.WaitUntilSatisfied());
   }
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if defined(SUPPORTS_SYNC_MOUSE_UTILS)
-#define MAYBE_PointerLockFocus PointerLockFocus
-#else
-#define MAYBE_PointerLockFocus DISABLED_PointerLockFocus
-#endif
+// flaky http://crbug.com/412086
 IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
-                       MAYBE_PointerLockFocus) {
+                       DISABLED_PointerLockFocus) {
   SetupTest("web_view/pointer_lock_focus",
             "/extensions/platform_apps/web_view/pointer_lock_focus/guest.html");
 
@@ -680,6 +656,8 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
   // Wait for page to receive (successful) mouse unlock response.
   ASSERT_TRUE(unlocked_listener.WaitUntilSatisfied());
 }
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Tests that if a <webview> is focused before navigation then the guest starts
 // off focused.
