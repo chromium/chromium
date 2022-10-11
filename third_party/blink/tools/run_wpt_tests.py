@@ -161,7 +161,7 @@ class WPTAdapter(wpt_common.BaseWptScriptAdapter):
         if self.options.flag_specific:
             configs = self.port.flag_specific_configs()
             rest_args.extend('--binary-arg=%s' % arg
-                             for arg in configs[self.options.flag_specific])
+                             for arg in configs[self.options.flag_specific][0])
 
         if self.options.test_filter:
             for pattern in self.options.test_filter.split(':'):
