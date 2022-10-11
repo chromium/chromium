@@ -31,16 +31,25 @@ consoles.list_view(
 try_.builder(
     name = "android-official",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/android-official",
+    ],
 )
 
 try_.builder(
     name = "fuchsia-official",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    mirrors = [
+        "ci/fuchsia-official",
+    ],
 )
 
 try_.builder(
     name = "linux-official",
     branch_selector = branches.STANDARD_MILESTONE,
+    mirrors = [
+        "ci/linux-official",
+    ],
 )
 
 try_.builder(
