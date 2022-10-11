@@ -61,9 +61,9 @@ class BlobURLTokenImpl : public blink::mojom::BlobURLToken {
   const base::UnguessableToken token_;
 };
 
-BlobURLStoreImpl::BlobURLStoreImpl(const url::Origin& origin,
+BlobURLStoreImpl::BlobURLStoreImpl(const blink::StorageKey& storage_key,
                                    base::WeakPtr<BlobUrlRegistry> registry)
-    : origin_(origin), registry_(std::move(registry)) {}
+    : storage_key_(storage_key), registry_(std::move(registry)) {}
 
 BlobURLStoreImpl::~BlobURLStoreImpl() {
   if (registry_) {
@@ -148,10 +148,11 @@ void BlobURLStoreImpl::ResolveForNavigation(
 bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
                                       const char* method) const {
   // TODO(crbug.com/1278268): Remove crash keys.
+  url::Origin storage_key_origin = storage_key_.origin();
   static crash_reporter::CrashKeyString<256> origin_key("origin");
   static crash_reporter::CrashKeyString<256> url_key("url");
   crash_reporter::ScopedCrashKeyString scoped_origin_key(
-      &origin_key, origin_.GetDebugString());
+      &origin_key, storage_key_origin.GetDebugString());
   crash_reporter::ScopedCrashKeyString scoped_url_key(
       &url_key, url.possibly_invalid_spec());
 
@@ -171,12 +172,13 @@ bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
   // on Android also the content scheme.
   bool valid_origin = true;
   if (url_origin.scheme() == url::kFileScheme) {
-    valid_origin = origin_.scheme() == url::kFileScheme;
+    valid_origin = storage_key_origin.scheme() == url::kFileScheme;
   } else if (url_origin.opaque()) {
-    valid_origin = origin_.opaque() ||
-                   base::Contains(url::GetLocalSchemes(), origin_.scheme());
+    valid_origin =
+        storage_key_origin.opaque() ||
+        base::Contains(url::GetLocalSchemes(), storage_key_origin.scheme());
   } else {
-    valid_origin = origin_ == url_origin;
+    valid_origin = storage_key_origin == url_origin;
   }
   if (!valid_origin) {
     mojo::ReportBadMessage(base::StrCat(

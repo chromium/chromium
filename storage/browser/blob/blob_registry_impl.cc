@@ -633,8 +633,8 @@ void BlobRegistryImpl::URLStoreForOrigin(
              base::WeakPtr<BlobUrlRegistry> url_registry) {
             auto self_owned_associated_receiver =
                 mojo::MakeSelfOwnedAssociatedReceiver(
-                    std::make_unique<BlobURLStoreImpl>(origin,
-                                                       std::move(url_registry)),
+                    std::make_unique<BlobURLStoreImpl>(
+                        blink::StorageKey(origin), std::move(url_registry)),
                     std::move(receiver));
             if (g_url_store_creation_hook)
               g_url_store_creation_hook->Run(self_owned_associated_receiver);

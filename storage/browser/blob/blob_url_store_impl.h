@@ -13,6 +13,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/blob/blob_url_registry.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 #include "url/origin.h"
 
@@ -23,7 +24,7 @@ class BlobUrlRegistry;
 class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
     : public blink::mojom::BlobURLStore {
  public:
-  BlobURLStoreImpl(const url::Origin& origin,
+  BlobURLStoreImpl(const blink::StorageKey& storage_key,
                    base::WeakPtr<BlobUrlRegistry> registry);
 
   BlobURLStoreImpl(const BlobURLStoreImpl&) = delete;
@@ -54,7 +55,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   // Returns false and reports a bad mojo message if not.
   bool BlobUrlIsValid(const GURL& url, const char* method) const;
 
-  const url::Origin origin_;
+  const blink::StorageKey storage_key_;
+
   base::WeakPtr<BlobUrlRegistry> registry_;
 
   std::set<GURL> urls_;
