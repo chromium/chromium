@@ -124,8 +124,8 @@ public class TouchToFillIntegrationTest {
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        pollUiThread(() -> getCredentials().getChildAt(2) != null);
-        TouchCommon.singleClickView(getCredentials().getChildAt(2));
+        pollUiThread(() -> getCredentials().getChildAt(1) != null);
+        TouchCommon.singleClickView(getCredentials().getChildAt(1));
 
         waitForEvent(mMockBridge).onWebAuthnCredentialSelected(sCam);
         verify(mMockBridge, never()).onDismissed();

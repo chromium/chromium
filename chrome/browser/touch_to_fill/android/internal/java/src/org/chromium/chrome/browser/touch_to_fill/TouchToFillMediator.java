@@ -63,8 +63,8 @@ class TouchToFillMediator {
     private PropertyModel mModel;
     private LargeIconBridge mLargeIconBridge;
     private @Px int mDesiredIconSize;
-    private List<Credential> mCredentials;
     private List<WebAuthnCredential> mWebAuthnCredentials;
+    private List<Credential> mCredentials;
 
     void initialize(TouchToFillComponent.Delegate delegate, PropertyModel model,
             LargeIconBridge largeIconBridge, @Px int desiredIconSize) {
@@ -99,16 +99,6 @@ class TouchToFillMediator {
                         .with(IMAGE_DRAWABLE_ID, resourceProvider.getHeaderImageDrawableId())
                         .build()));
 
-        mCredentials = credentials;
-        for (Credential credential : credentials) {
-            final PropertyModel model = createModel(credential, triggerSubmission);
-            sheetItems.add(new ListItem(TouchToFillProperties.ItemType.CREDENTIAL, model));
-            if (shouldCreateConfirmationButton(credentials, webAuthnCredentials)) {
-                sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
-            }
-            requestIconOrFallbackImage(model, url);
-        }
-
         mWebAuthnCredentials = webAuthnCredentials;
         for (WebAuthnCredential credential : webAuthnCredentials) {
             final PropertyModel model = createWebAuthnModel(credential);
@@ -117,6 +107,16 @@ class TouchToFillMediator {
                 sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
             }
             requestWebAuthnIconOrFallbackImage(model, url);
+        }
+
+        mCredentials = credentials;
+        for (Credential credential : credentials) {
+            final PropertyModel model = createModel(credential, triggerSubmission);
+            sheetItems.add(new ListItem(TouchToFillProperties.ItemType.CREDENTIAL, model));
+            if (shouldCreateConfirmationButton(credentials, webAuthnCredentials)) {
+                sheetItems.add(new ListItem(TouchToFillProperties.ItemType.FILL_BUTTON, model));
+            }
+            requestIconOrFallbackImage(model, url);
         }
 
         mModel.set(VISIBLE, true);
