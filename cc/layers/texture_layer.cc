@@ -261,7 +261,7 @@ SharedBitmapIdRegistration TextureLayer::RegisterSharedBitmapId(
   // notification instead of forcing it to happen as a side effect of this
   // method.
   SetNeedsPushProperties();
-  return SharedBitmapIdRegistration(weak_ptr_factory_.GetWeakPtr(), id);
+  return SharedBitmapIdRegistration(weak_ptr_factory_.GetMutableWeakPtr(), id);
 }
 
 void TextureLayer::UnregisterSharedBitmapId(viz::SharedBitmapId id) {

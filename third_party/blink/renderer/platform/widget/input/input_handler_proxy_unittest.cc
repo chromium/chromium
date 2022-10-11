@@ -137,7 +137,7 @@ class MockInputHandler : public cc::InputHandler {
 
   ~MockInputHandler() override = default;
 
-  base::WeakPtr<InputHandler> AsWeakPtr() const override {
+  base::WeakPtr<InputHandler> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 

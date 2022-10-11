@@ -70,7 +70,7 @@ InputHandler::~InputHandler() = default;
 // =========== InputHandler Interface
 //
 
-base::WeakPtr<InputHandler> InputHandler::AsWeakPtr() const {
+base::WeakPtr<InputHandler> InputHandler::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

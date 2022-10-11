@@ -249,7 +249,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
     HANDLER_ON_SCROLLING_LAYER
   };
 
-  virtual base::WeakPtr<InputHandler> AsWeakPtr() const;
+  virtual base::WeakPtr<InputHandler> AsWeakPtr();
 
   // Binds a client to this handler to receive notifications. Only one client
   // can be bound to an InputHandler. The client must live at least until the
