@@ -42,9 +42,6 @@ from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.android import (ANDROID_DISABLED_TESTS,
                                             ANDROID_WEBLAYER)
 from blinkpy.web_tests.port.factory import platform_options
-from blinkpy.web_tests.port.linux import LinuxPort
-from blinkpy.web_tests.port.mac import MacPort
-from blinkpy.web_tests.port.win import WinPort
 
 from functools import reduce
 
@@ -362,19 +359,13 @@ def check_virtual_test_suites(host, options):
 
 def check_smoke_tests(host, options):
     port = host.port_factory.get(options=options)
-    smoke_tests_files = [
-        host.filesystem.join(port.web_tests_dir(), 'SmokeTests',
-                             'Default.txt'),
-        host.filesystem.join(port.web_tests_dir(), 'SmokeTests', 'Mac.txt')
-    ]
+    path = host.filesystem.join(port.web_tests_dir(), 'SmokeTests')
+    smoke_tests_files = host.filesystem.listdir(path)
     failures = []
     for smoke_tests_file in smoke_tests_files:
-        if not host.filesystem.exists(smoke_tests_file):
-            failure = 'Smoke test file does not exist: %s' % smoke_tests_file
-            failures.append(failure)
-            continue
-
-        smoke_tests = host.filesystem.read_text_file(smoke_tests_file)
+        smoke_tests = host.filesystem.read_text_file(
+            host.filesystem.join(port.web_tests_dir(), 'SmokeTests',
+                                 smoke_tests_file))
         line_number = 0
         parsed_lines = {}
         for line in smoke_tests.split('\n'):
