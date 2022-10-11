@@ -93892,6 +93892,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="kShaderCache"/>
   <int value="7" label="kPluginPrivate"/>
   <int value="8" label="kConversions"/>
+  <int value="9" label="kAggregationService"/>
+  <int value="10" label="kSharedStorage"/>
   <int value="11" label="kGpuCache"/>
   <int value="12" label="kPrivateAggregation"/>
   <int value="13" label="kInterestGroups"/>
