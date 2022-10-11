@@ -293,6 +293,8 @@ void RTCIceTransport::gather(RTCIceGatherOptions* options,
   }
   cricket::ServerAddresses stun_servers;
   std::vector<cricket::RelayServerConfig> turn_servers;
+  // TODO(bugs.webrtc.org/14539): re-enable after WebRTC roll.
+  /*
   webrtc::RTCErrorType error_type = webrtc::ParseIceServers(
       ice_servers.ReleaseVector(), &stun_servers, &turn_servers);
   if (error_type != webrtc::RTCErrorType::NONE) {
@@ -301,6 +303,7 @@ void RTCIceTransport::gather(RTCIceGatherOptions* options,
         exception_state);
     return;
   }
+  */
   gathering_state_ = cricket::kIceGatheringGathering;
   proxy_->StartGathering(ConvertIceParameters(local_parameters_).value(),
                          stun_servers, turn_servers,
