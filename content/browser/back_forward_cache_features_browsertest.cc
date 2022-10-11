@@ -3877,15 +3877,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebMidiNotCached) {
       {}, {}, {}, FROM_HERE);
 }
 
-// TODO(https://crbug.com/1286474): This test is flaking on some Android bots.
-// TODO(crbug.com/1297406): Also flaky on Mac and Linux.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_PresentationConnectionClosed DISABLED_PresentationConnectionClosed
-#else
-#define MAYBE_PresentationConnectionClosed PresentationConnectionClosed
-#endif  // BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_PresentationConnectionClosed) {
+                       PresentationConnectionClosed) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
   GURL url_a(https_server()->GetURL(
       "a.test", "/back_forward_cache/presentation_controller.html"));
@@ -3901,6 +3894,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_CALL(mock_presentation_service_delegate, StartPresentation(_, _, _));
   EXPECT_TRUE(ExecJs(rfh_a, "presentationRequest.start().then(setConnection)",
                      EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  // Ensure that the above script runs before continuing.
+  EXPECT_TRUE(ExecJs(rfh_a, "var foo = 42;"));
 
   // Send a mock connection to the renderer.
   MockPresentationConnection mock_controller_connection;
