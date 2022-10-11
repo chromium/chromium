@@ -123,7 +123,8 @@ export class PhotoCaptureCandidate extends Camera3CaptureCandidate {
 export class VideoCaptureCandidate extends Camera3CaptureCandidate {
   constructor(
       deviceId: string, resolution: Resolution,
-      previewResolutions: Resolution[], readonly constFps: number|null) {
+      previewResolutions: Resolution[], readonly constFps: number|null,
+      readonly hasAudio: boolean) {
     super(deviceId, resolution, previewResolutions);
   }
 
@@ -136,7 +137,7 @@ export class VideoCaptureCandidate extends Camera3CaptureCandidate {
     return [
       {
         deviceId: this.deviceId,
-        audio: true,
+        audio: this.hasAudio,
         video: {
           frameRate,
           width,
@@ -154,8 +155,9 @@ export class VideoCaptureCandidate extends Camera3CaptureCandidate {
 export class MultiStreamVideoCaptureCandidate extends VideoCaptureCandidate {
   constructor(
       deviceId: string, resolution: Resolution,
-      previewResolutions: Resolution[], constFps: number|null) {
-    super(deviceId, resolution, previewResolutions, constFps);
+      previewResolutions: Resolution[], constFps: number|null,
+      hasAudio: boolean) {
+    super(deviceId, resolution, previewResolutions, constFps, hasAudio);
   }
 
   override getStreamConstraintsCandidates(): StreamConstraints[] {
@@ -163,7 +165,7 @@ export class MultiStreamVideoCaptureCandidate extends VideoCaptureCandidate {
         this.constFps === null ? {min: 20, ideal: 30} : {exact: this.constFps};
     return this.previewResolutions.map(({width, height}) => ({
                                          deviceId: this.deviceId,
-                                         audio: true,
+                                         audio: this.hasAudio,
                                          video: {
                                            frameRate,
                                            width,
@@ -176,14 +178,16 @@ export class MultiStreamVideoCaptureCandidate extends VideoCaptureCandidate {
 export class FakeCameraCaptureCandidate implements CaptureCandidate {
   readonly resolution = null;
 
-  constructor(readonly deviceId: string, private readonly videoMode: boolean) {}
+  constructor(
+      readonly deviceId: string, private readonly videoMode: boolean,
+      private readonly hasAudio: boolean) {}
 
   getStreamConstraintsCandidates(): StreamConstraints[] {
     const frameRate = {min: 20, ideal: 30};
     return [
       {
         deviceId: this.deviceId,
-        audio: this.videoMode,
+        audio: this.hasAudio,
         video: {
           aspectRatio: {ideal: this.videoMode ? 1.7777777778 : 1.3333333333},
           width: {min: 1280},
@@ -192,7 +196,7 @@ export class FakeCameraCaptureCandidate implements CaptureCandidate {
       },
       {
         deviceId: this.deviceId,
-        audio: this.videoMode,
+        audio: this.hasAudio,
         video: {
           width: {min: 640},
           frameRate,
