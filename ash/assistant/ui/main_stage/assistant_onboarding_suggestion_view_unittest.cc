@@ -133,7 +133,6 @@ TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightTheme) {
 }
 
 TEST_F(AssistantOnboardingSuggestionViewTest, DarkAndLightModeFlagOff) {
-  // ProductivityLauncher uses DarkLightMode colors.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{

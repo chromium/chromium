@@ -46,11 +46,7 @@ constexpr base::TimeDelta kChipFadeOutDuration = base::Milliseconds(200);
 constexpr char kAssistantSuggestionChipHistogram[] =
     "Ash.Assistant.AnimationSmoothness.SuggestionChip";
 
-// Returns the preferred height in DIPs. Not named GetPreferredHeight() so it
-// looks less like a views::View method.
-int GetPreferredHeightDip() {
-  return features::IsProductivityLauncherEnabled() ? 64 : 48;
-}
+constexpr int kPreferredHeightDip = 64;
 
 }  // namespace
 
@@ -128,7 +124,7 @@ gfx::Size SuggestionContainerView::CalculatePreferredSize() const {
 }
 
 int SuggestionContainerView::GetHeightForWidth(int width) const {
-  return GetPreferredHeightDip();
+  return kPreferredHeightDip;
 }
 
 void SuggestionContainerView::OnContentsPreferredSizeChanged(
@@ -137,7 +133,7 @@ void SuggestionContainerView::OnContentsPreferredSizeChanged(
   // showing conversation starters we will be center aligned.
   const int width =
       std::max(content_view->GetPreferredSize().width(), this->width());
-  content_view->SetSize(gfx::Size(width, GetPreferredHeightDip()));
+  content_view->SetSize(gfx::Size(width, kPreferredHeightDip));
 }
 
 void SuggestionContainerView::OnAssistantControllerDestroying() {
