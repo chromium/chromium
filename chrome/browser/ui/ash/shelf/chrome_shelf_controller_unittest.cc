@@ -34,6 +34,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shelf/shelf_application_menu_model.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/auto_reset.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -59,6 +60,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
+#include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
@@ -69,7 +71,11 @@
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
+#include "chrome/browser/ash/web_applications/camera_app/camera_system_web_app_info.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -408,11 +414,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   ChromeShelfControllerTestBase()
       : BrowserWithTestWindowTest(Browser::TYPE_NORMAL) {}
 
-  ChromeShelfControllerTestBase(const ChromeShelfControllerTestBase&) = delete;
-  ChromeShelfControllerTestBase& operator=(
-      const ChromeShelfControllerTestBase&) = delete;
-  ~ChromeShelfControllerTestBase() override = default;
-
   void SetUp() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kUseFirstDisplayAsInternal);
@@ -539,6 +540,18 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     provider->Start();
 
     system_web_app_manager->ScheduleStart();
+  }
+
+  // Note that this resets previously installed SWAs.
+  void InstallSystemWebApp(
+      std::unique_ptr<ash::SystemWebAppDelegate> delegate) {
+    auto* system_web_app_manager =
+        ash::SystemWebAppManager::GetForTest(profile());
+
+    ash::SystemWebAppDelegateMap swa_map;
+    swa_map.emplace(delegate->GetType(), std::move(delegate));
+    system_web_app_manager->SetSystemAppsForTesting(std::move(swa_map));
+    system_web_app_manager->InstallSystemAppsForTesting();
   }
 
   ui::BaseWindow* GetLastActiveWindowForItemController(
@@ -3413,6 +3426,8 @@ TEST_F(ChromeShelfControllerTest,
 }
 
 TEST_F(ChromeShelfControllerTest, Policy) {
+  InstallSystemWebApp(std::make_unique<CameraSystemAppDelegate>(profile()));
+
   extension_service_->AddExtension(extension2_.get());
   AddWebApp(web_app::kGmailAppId);
 
@@ -3420,6 +3435,9 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   base::Value::List policy_value;
   AppendPrefValue(policy_value, extension1_->id());
   AppendPrefValue(policy_value, extension2_->id());
+  AppendPrefValue(policy_value,
+                  std::string{*apps_util::GetPolicyIdForSystemWebAppType(
+                      ash::SystemWebAppType::CAMERA)});
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
 
@@ -3428,19 +3446,19 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   // Only |extension2_| should get pinned. |extension1_| is specified but not
   // installed, and Gmail is part of the default set, but that
   // shouldn't take effect when the policy override is in place.
-  EXPECT_EQ("Chrome, App2", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App2, Camera", GetPinnedAppStatus());
 
   // Installing |extension1_| should add it to the shelf. Note, App1 goes
   // before App2 that is aligned with the pin order in policy.
   AddExtension(extension1_.get());
-  EXPECT_EQ("Chrome, App1, App2", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App1, App2, Camera", GetPinnedAppStatus());
 
   // Removing |extension1_| from the policy should not be reflected in the
   // shelf and pin will exist.
   policy_value.erase(policy_value.begin());
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
-  EXPECT_EQ("Chrome, App1, App2", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, App1, App2, Camera", GetPinnedAppStatus());
 }
 
 TEST_F(ChromeShelfControllerTest, UnpinWithUninstall) {
