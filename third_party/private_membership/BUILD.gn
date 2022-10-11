@@ -23,12 +23,15 @@ config("library_impl_config") {
   defines = [ "IS_PRIVATE_MEMBERSHIP_LIBRARY_IMPL" ]
 }
 
-config("private_membership_config") {
+config("private_membership_internal_config") {
   # TODO(crbug.com/1072732) Reenable the deprecated warning, after updating the upstream.
   cflags = [
     "-Wno-deprecated-declarations",
     "-Wno-defaulted-function-deleted",
   ]
+}
+
+config("private_membership_config") {
   defines = []
   if (is_win) {
     # TODO(crbug.com/1302848): Re-enable after solving other linking issues.
@@ -85,6 +88,7 @@ if (is_chromeos_ash) {
     configs += [
       "//build/config/compiler:no_chromium_code",
       ":library_impl_config",
+      ":private_membership_internal_config",
     ]
 
     public = [
