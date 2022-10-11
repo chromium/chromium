@@ -119,6 +119,17 @@ base::StringPiece ContentOrderToString(ContentOrder content_order) {
   }
 }
 
+FeedSortType GetSortTypeFromContentOrder(ContentOrder content_order) {
+  switch (content_order) {
+    case ContentOrder::kUnspecified:
+      return FeedSortType::kUnspecifiedSortType;
+    case ContentOrder::kGrouped:
+      return FeedSortType::kGroupedByPublisher;
+    case ContentOrder::kReverseChron:
+      return FeedSortType::kSortedByLatest;
+  }
+}
+
 void ReportLoadLatencies(std::unique_ptr<LoadLatencyTimes> latencies) {
   for (const LoadLatencyTimes::Step& step : latencies->steps()) {
     // TODO(crbug/1152592): Add a WebFeed-specific histogram for this.
@@ -407,11 +418,20 @@ void MetricsReporter::RecordEngagement(const StreamType& stream_type,
             ReportCombinedSubscriptionCountAtEngagementTime(sc);
           },
           stream_type));
+
       combined_stats_.engaged_reported = true;
     } else {
       // Reports subscription count for the specific feed only.
       delegate_->SubscribedWebFeedCount(base::BindOnce(
           &ReportSubscriptionCountAtEngagementTime, stream_type));
+    }
+
+    // Record sorting order for web feed when engaged.
+    if (stream_type.IsWebFeed()) {
+      FeedSortType sort_type =
+          GetSortTypeFromContentOrder(delegate_->GetContentOrder(stream_type));
+      base::UmaHistogramEnumeration(
+          "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged", sort_type);
     }
   }
 }

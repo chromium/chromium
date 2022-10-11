@@ -45,6 +45,8 @@ class MetricsReporter {
         base::OnceCallback<void(int)> callback) = 0;
     virtual void RegisterFeedUserSettingsFieldTrial(
         base::StringPiece group) = 0;
+    virtual ContentOrder GetContentOrder(
+        const StreamType& stream_type) const = 0;
   };
 
   explicit MetricsReporter(PrefService* profile_prefs);

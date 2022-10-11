@@ -52,6 +52,8 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
         (base::Time::Now().LocalMidnight() + base::Days(1)) -
         base::Time::Now() + base::Seconds(1));
 
+    test_content_order_ = ContentOrder::kGrouped;
+
     RecreateMetricsReporter();
   }
   std::map<FeedEngagementType, int> ReportedEngagementType(
@@ -92,6 +94,9 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
     register_feed_user_settings_field_trial_calls_.push_back(
         static_cast<std::string>(group));
   }
+  ContentOrder GetContentOrder(const StreamType& stream_type) const override {
+    return test_content_order_;
+  }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -101,6 +106,7 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
   base::UserActionTester user_actions_;
   std::vector<std::string> register_feed_user_settings_field_trial_calls_;
   base::test::ScopedFeatureList feature_list_;
+  ContentOrder test_content_order_;
 };
 
 TEST_F(MetricsReporterTest, SliceViewedReportsSuggestionShown) {
@@ -142,6 +148,8 @@ TEST_F(MetricsReporterTest, ScrollingSmall) {
       "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2", 0);
   histogram_.ExpectTotalCount(
       "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", 0);
+  histogram_.ExpectTotalCount(
+      "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged", 0);
 }
 
 TEST_F(MetricsReporterTest, ScrollingCanTriggerEngaged) {
@@ -164,6 +172,36 @@ TEST_F(MetricsReporterTest, ScrollingCanTriggerEngaged) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
       1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged",
+      test_content_order_, 0);
+}
+
+TEST_F(MetricsReporterTest, WebFeedEngagementRecordsSortType) {
+  test_content_order_ = ContentOrder::kReverseChron;
+  reporter_->StreamScrolled(StreamType(StreamKind::kFollowing), 161);
+
+  std::map<FeedEngagementType, int> want({
+      {FeedEngagementType::kFeedScrolled, 1},
+      {FeedEngagementType::kFeedEngaged, 1},
+      {FeedEngagementType::kFeedEngagedSimple, 1},
+  });
+  EXPECT_EQ(want, ReportedEngagementType(StreamType(StreamKind::kFollowing)));
+  EXPECT_EQ(want, ReportedEngagementType(kCombinedStreams));
+  histogram_.ExpectTotalCount("ContentSuggestions.Feed.FollowCount.Engaged2",
+                              0);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged2",
+      kSubscriptionCount, 1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.AllFeeds.FollowCount.Engaged2",
+      kSubscriptionCount, 1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
+      1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged",
+      test_content_order_, 1);
 }
 
 TEST_F(MetricsReporterTest, OpeningContentIsInteracting) {
@@ -290,6 +328,9 @@ TEST_F(MetricsReporterTest, InteractedWithBothFeeds) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
       1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged",
+      test_content_order_, 1);
 
   task_environment_.FastForwardBy(base::Minutes(5) + kEpsilon);
   reporter_->OpenAction(StreamType(StreamKind::kForYou), 0,
@@ -324,6 +365,9 @@ TEST_F(MetricsReporterTest, InteractedWithBothFeeds) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
       2);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged",
+      test_content_order_, 1);
 }
 
 TEST_F(MetricsReporterTest, ReportsLoadStreamStatus) {
@@ -616,6 +660,9 @@ TEST_F(MetricsReporterTest, OpenAction) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
       1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged",
+      test_content_order_, 0);
 }
 
 TEST_F(MetricsReporterTest, OpenActionWebFeed) {
@@ -645,6 +692,9 @@ TEST_F(MetricsReporterTest, OpenActionWebFeed) {
   histogram_.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.FollowCount.Engaged", kSubscriptionCount,
       1);
+  histogram_.ExpectUniqueSample(
+      "ContentSuggestions.Feed.WebFeed.SortTypeWhenEngaged",
+      test_content_order_, 1);
 }
 
 TEST_F(MetricsReporterTest, OpenInNewTabAction) {
