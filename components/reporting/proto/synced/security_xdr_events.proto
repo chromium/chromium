@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package reporting;
+package cros_xdr.reporting;
 
 // The building blocks for the event types.
 
@@ -81,28 +81,42 @@ message Namespaces {
 
 // Event emitted at the start of execution of an agent process.
 message AgentStartEvent {
-  optional CommonEventDataFields common = 1;
-  optional TcbAttributes tcb = 2;
+  optional TcbAttributes tcb = 1;
 }
 
 // Periodic event to indicate that an agent is running.
 message AgentHeartbeatEvent {
+  optional TcbAttributes tcb = 1;
+}
+
+// Agent Events wrapper.
+message AgentEvent {
   optional CommonEventDataFields common = 1;
-  optional TcbAttributes tcb = 2;
+  oneof message_type {
+    AgentStartEvent agent_start = 2;
+    AgentHeartbeatEvent agent_heartbeat = 3;
+  }
 }
 
 // Acting process (forked and) exec'd a new child process.
 message ProcessExecEvent {
-  optional CommonEventDataFields common = 1;
-  optional Process parent_process = 2;
-  optional Process process = 3;
-  optional Process spawn_process = 4;
-  optional Namespaces spawn_namespaces = 5;
+  optional Process parent_process = 1;
+  optional Process process = 2;
+  optional Process spawn_process = 3;
+  optional Namespaces spawn_namespaces = 4;
 }
 
 // Acting process (was) terminated.
 message ProcessTerminateEvent {
+  optional Process parent_process = 1;
+  optional Process process = 2;
+}
+
+// Process Events wrapper.
+message ProcessEvent {
   optional CommonEventDataFields common = 1;
-  optional Process parent_process = 2;
-  optional Process process = 3;
+  oneof message_type {
+    ProcessExecEvent process_exec = 2;
+    ProcessTerminateEvent process_terminate = 3;
+  }
 }
