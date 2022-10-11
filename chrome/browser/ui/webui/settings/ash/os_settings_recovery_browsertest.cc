@@ -16,8 +16,10 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-test-utils.h"
+#include "components/user_manager/user_names.h"
 
 namespace {
 
@@ -28,30 +30,38 @@ const char kAuthToken[] = "123";
 
 namespace ash::settings {
 
-class OSSettingsRecoveryTestWithoutFeature
-    : public MixinBasedInProcessBrowserTest {
+class OSSettingsRecoveryTest : public MixinBasedInProcessBrowserTest {
+ public:
+  OSSettingsRecoveryTest() = default;
+
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    const auto account = AccountId::FromUserEmail(user_manager::kStubUserEmail);
+    cryptohome_.MarkUserAsExisting(account);
+    cryptohome_.AddGaiaPassword(account, kPassword);
+  }
+
+ protected:
+  CryptohomeMixin cryptohome_{&mixin_host_};
+  OSSettingsBrowserTestMixin os_settings_{&mixin_host_};
+};
+
+class OSSettingsRecoveryTestWithoutFeature : public OSSettingsRecoveryTest {
  public:
   OSSettingsRecoveryTestWithoutFeature() {
     feature_list_.InitAndDisableFeature(
         ash::features::kCryptohomeRecoverySetup);
   }
 
- protected:
-  OSSettingsBrowserTestMixin os_settings_{&mixin_host_};
-
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-class OSSettingsRecoveryTestWithFeature
-    : public MixinBasedInProcessBrowserTest {
+class OSSettingsRecoveryTestWithFeature : public OSSettingsRecoveryTest {
  public:
   OSSettingsRecoveryTestWithFeature() {
     feature_list_.InitAndEnableFeature(ash::features::kCryptohomeRecoverySetup);
   }
-
- protected:
-  OSSettingsBrowserTestMixin os_settings_{&mixin_host_};
 
  private:
   base::test::ScopedFeatureList feature_list_;
