@@ -60,6 +60,8 @@ namespace net {
 
 class NET_EXPORT NetworkAnonymizationKey {
  public:
+  // TODO(crbug/1372123): Consider having the constructor not pass
+  // `is_cross_site` since this may be unnecessary and confusing to consumers.
   NetworkAnonymizationKey(
       const SchemefulSite& top_frame_site,
       const absl::optional<SchemefulSite>& frame_site = absl::nullopt,

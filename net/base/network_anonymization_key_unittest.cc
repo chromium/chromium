@@ -304,10 +304,6 @@ TEST_P(NetworkAnonymizationKeyTest, IsTransient) {
                                          /*frame_site=*/kDataSite,
                                          /*is_cross_site=*/false,
                                          /*nonce=*/absl::nullopt);
-  NetworkAnonymizationKey populated_double_key(/*top_frame_site=*/kTestSiteA,
-                                               /*frame_site=*/absl::nullopt,
-                                               /*is_cross_site=*/false,
-                                               /*nonce=*/absl::nullopt);
 
   NetworkAnonymizationKey from_create_transient =
       NetworkAnonymizationKey::CreateTransient();
@@ -315,16 +311,18 @@ TEST_P(NetworkAnonymizationKeyTest, IsTransient) {
   EXPECT_TRUE(empty_key.IsTransient());
   EXPECT_FALSE(populated_key.IsTransient());
   EXPECT_TRUE(data_top_frame_key.IsTransient());
-  EXPECT_TRUE(data_top_frame_key.IsTransient());
   EXPECT_TRUE(populated_key_with_nonce.IsTransient());
   EXPECT_TRUE(from_create_transient.IsTransient());
 
   if (IsDoubleKeyNetworkAnonymizationKeyEnabled() || IsCrossSiteFlagEnabled()) {
+    NetworkAnonymizationKey populated_double_key(/*top_frame_site=*/kTestSiteA,
+                                                 /*frame_site=*/absl::nullopt,
+                                                 /*is_cross_site=*/false,
+                                                 /*nonce=*/absl::nullopt);
     EXPECT_FALSE(data_frame_key.IsTransient());
     EXPECT_FALSE(populated_double_key.IsTransient());
   } else {
     EXPECT_TRUE(data_frame_key.IsTransient());
-    EXPECT_TRUE(populated_double_key.IsTransient());
   }
 }
 
@@ -334,10 +332,6 @@ TEST_P(NetworkAnonymizationKeyTest, IsFullyPopulated) {
                                         /*frame_site=*/kTestSiteB,
                                         /*is_cross_site=*/false,
                                         /*nonce=*/absl::nullopt);
-  NetworkAnonymizationKey empty_frame_site_key(/*top_frame_site=*/kTestSiteA,
-                                               /*frame_site=*/absl::nullopt,
-                                               /*is_cross_site=*/false,
-                                               /*nonce=*/absl::nullopt);
   NetworkAnonymizationKey empty_cross_site_flag_key(
       /*top_frame_site=*/kTestSiteA,
       /*frame_site=*/kTestSiteB,
@@ -346,17 +340,46 @@ TEST_P(NetworkAnonymizationKeyTest, IsFullyPopulated) {
   EXPECT_TRUE(populated_key.IsFullyPopulated());
   EXPECT_FALSE(empty_key.IsFullyPopulated());
   if (IsDoubleKeyNetworkAnonymizationKeyEnabled() || IsCrossSiteFlagEnabled()) {
+    NetworkAnonymizationKey empty_frame_site_key(/*top_frame_site=*/kTestSiteA,
+                                                 /*frame_site=*/absl::nullopt,
+                                                 /*is_cross_site=*/false,
+                                                 /*nonce=*/absl::nullopt);
     EXPECT_TRUE(empty_frame_site_key.IsFullyPopulated());
-  } else {
-    EXPECT_FALSE(empty_frame_site_key.IsFullyPopulated());
   }
 
   // is_cross_site is required when
   // `kEnableCrossSiteFlagNetworkAnonymizationKey` is enabled.
+  // Since we have both the top_frame_site and frame_site values the constructor
+  // should calculate and set `is_cross_site`.
+  EXPECT_TRUE(empty_cross_site_flag_key.IsFullyPopulated());
+}
+
+TEST_P(NetworkAnonymizationKeyTest, IsCrossSiteFlagCalculatedInConstructor) {
   if (IsCrossSiteFlagEnabled()) {
-    EXPECT_FALSE(empty_cross_site_flag_key.IsFullyPopulated());
-  } else {
-    EXPECT_TRUE(empty_cross_site_flag_key.IsFullyPopulated());
+    NetworkAnonymizationKey cross_site_key(/*top_frame_site=*/kTestSiteA,
+                                           /*frame_site=*/kTestSiteB,
+                                           /*is_cross_site=*/true);
+    NetworkAnonymizationKey equal_cross_site_key(/*top_frame_site=*/kTestSiteA,
+                                                 /*frame_site=*/kTestSiteB);
+
+    NetworkAnonymizationKey same_site_key(/*top_frame_site=*/kTestSiteA,
+                                          /*frame_site=*/kTestSiteA,
+                                          /*is_cross_site=*/false);
+    NetworkAnonymizationKey equal_same_site_key(/*top_frame_site=*/kTestSiteA,
+                                                /*frame_site=*/kTestSiteA);
+
+    NetworkAnonymizationKey double_key_cross_site(/*top_frame_site=*/kTestSiteA,
+                                                  /*frame_site=*/absl::nullopt,
+                                                  true);
+    EXPECT_EQ(cross_site_key.GetIsCrossSite().value(), true);
+    EXPECT_EQ(equal_cross_site_key.GetIsCrossSite().value(), true);
+    EXPECT_EQ(cross_site_key, equal_cross_site_key);
+
+    EXPECT_EQ(same_site_key.GetIsCrossSite().value(), false);
+    EXPECT_EQ(equal_same_site_key.GetIsCrossSite().value(), false);
+    EXPECT_EQ(same_site_key, equal_same_site_key);
+
+    EXPECT_EQ(double_key_cross_site.GetIsCrossSite().value(), true);
   }
 }
 
