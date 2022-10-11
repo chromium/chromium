@@ -132,7 +132,6 @@ source_set("browser") {
     "//content/browser/devtools:protocol_sources",
     "//content/browser/download:proto",
     "//content/browser/file_system_access:proto",
-    "//content/browser/indexed_db:mojo_bindings",
     "//content/browser/notifications:notification_proto",
     "//content/browser/payments:payment_app_proto",
     "//content/browser/preloading/prerender:mojo_bindings",
