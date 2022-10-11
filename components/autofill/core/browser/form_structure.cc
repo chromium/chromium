@@ -806,36 +806,45 @@ void FormStructure::RetrieveFromCache(
     const FormStructure& cached_form,
     const bool should_keep_cached_value,
     const bool only_server_and_autofill_state) {
+  // Build a table to lookup AutofillFields by their FieldGlobalId.
   std::map<FieldGlobalId, const AutofillField*> cached_fields_by_id;
-  for (size_t i = 0; i < cached_form.field_count(); ++i) {
-    auto* const field = cached_form.field(i);
-    cached_fields_by_id[field->global_id()] = field;
-  }
+  for (const std::unique_ptr<autofill::AutofillField>& field : cached_form)
+    cached_fields_by_id[field->global_id()] = field.get();
+
+  // Lookup field by global_id in cached_fields_by_id.
+  auto find_field_by_id = [&cached_fields_by_id](FieldGlobalId global_id) {
+    const auto& it = cached_fields_by_id.find(global_id);
+    return it != cached_fields_by_id.end() ? it->second : nullptr;
+  };
+
+  // Lookup field by field signature and return it in case only a single field
+  // with the signature exists.
+  auto find_field_with_unique_field_signature =
+      [&cached_fields_by_id](
+          FieldSignature field_signature) -> const AutofillField* {
+    const AutofillField* match = nullptr;
+    // Iterate over the fields to find the field with the same form signature.
+    for (const auto& entry : cached_fields_by_id) {
+      if (entry.second->GetFieldSignature() == field_signature) {
+        // If there are multiple matches, do not retrieve the field and stop
+        // the process.
+        if (match)
+          return nullptr;
+        match = entry.second;
+      }
+    }
+    return match;
+  };
+
   for (auto& field : *this) {
-    const AutofillField* cached_field = nullptr;
-    const auto& it = cached_fields_by_id.find(field->global_id());
-    if (it != cached_fields_by_id.end())
-      cached_field = it->second;
+    const AutofillField* cached_field = find_field_by_id(field->global_id());
 
     // If the unique renderer id (or the name) is not stable due to some Java
     // Script magic in the website, use the field signature as a fallback
     // solution to find the field in the cached form.
     if (!cached_field) {
-      // Iterates over the fields to find the field with the same form
-      // signature.
-      for (size_t i = 0; i < cached_form.field_count(); ++i) {
-        auto* const cfield = cached_form.field(i);
-        if (field->GetFieldSignature() == cfield->GetFieldSignature()) {
-          // If there are multiple matches, do not retrieve the field and stop
-          // the process.
-          if (cached_field) {
-            cached_field = nullptr;
-            break;
-          } else {
-            cached_field = cfield;
-          }
-        }
-      }
+      cached_field =
+          find_field_with_unique_field_signature(field->GetFieldSignature());
     }
 
     if (cached_field) {
