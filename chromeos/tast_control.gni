@@ -305,6 +305,12 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.PhysicalKeyboardCantoneseTyping",
   "inputs.PhysicalKeyboardCantoneseTyping.lacros",
   "inputs.VirtualKeyboardChangeInput.a11y",
+
+  # https://crbug.com/1373329
+  "lockscreen.CloseLid",
+  "peripherals.LaunchAppFromSettings.scan",
+  "policy.AllowedLanguages",
+  "terminal.Crosh",
 ]
 
 # To create filters to be used on specific builders add them like this:
