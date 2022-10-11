@@ -4610,8 +4610,9 @@ IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, FocusAccessibility) {
 // focus when requested by accessibility. Previously the root
 // BrowserAccessibilityManager would not be updated due to how we were updating
 // the AXTreeData.
+// The test was disabled. See crbug.com/1141313.
 IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest,
-                       FocusAccessibilityNestedFrame) {
+                       DISABLED_FocusAccessibilityNestedFrame) {
   LoadAppWithGuest("web_view/focus_accessibility");
   content::WebContents* web_contents = GetFirstAppWindowWebContents();
   content::EnableAccessibilityForWebContents(web_contents);
