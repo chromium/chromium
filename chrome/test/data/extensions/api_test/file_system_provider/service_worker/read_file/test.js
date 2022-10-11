@@ -1,7 +1,7 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {mountTestFileSystem, openFile, readTextFromBlob, remoteProvider, startReadTextFromBlob} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {mountTestFileSystem, openFile, readTextFromFile, remoteProvider, startReadTextFromFile} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -18,7 +18,7 @@ async function main() {
             {create: false},
         );
         const file = await openFile(fileEntry);
-        const text = await readTextFromBlob(file);
+        const text = await readTextFromFile(file);
         chrome.test.assertEq(TestFileSystemProvider.INITIAL_TEXT, text);
         chrome.test.succeed();
       } catch (e) {
@@ -38,7 +38,7 @@ async function main() {
           const fileEntry = await fileSystem.getFileEntry(
               TestFileSystemProvider.FILE_STALL_READ, {create: false});
           const file = await openFile(fileEntry);
-          reads.push(readTextFromBlob(file));
+          reads.push(readTextFromFile(file));
         }
         // All reads will be stalled, unblock them one by one.
         // In theory there is a race: it is possible (although unlikely) for
@@ -73,7 +73,7 @@ async function main() {
         );
         const file = await openFile(fileEntry);
         try {
-          await readTextFromBlob(file);
+          await readTextFromFile(file);
           chrome.test.fail('Unexpectedly succeeded to read a broken file.');
         } catch (e) {
           chrome.test.assertEq('NotReadableError', e.name);
@@ -94,7 +94,7 @@ async function main() {
             {create: false},
         );
         const file = await openFile(fileEntry);
-        const {promise, reader} = startReadTextFromBlob(file);
+        const {promise, reader} = startReadTextFromFile(file);
         // Wait until the read request made it to the FSP.
         await remoteProvider.waitForEvent('onReadFileRequested');
         chrome.test.assertEq(1, await remoteProvider.getOpenedFiles());
@@ -125,7 +125,7 @@ async function main() {
             {create: false, exclusive: false},
         );
         const file = await openFile(fileEntry);
-        const {promise, reader} = startReadTextFromBlob(file);
+        const {promise, reader} = startReadTextFromFile(file);
         // Wait until the read request made it to the FSP.
         await remoteProvider.waitForEvent('onReadFileRequested');
         chrome.test.assertEq(1, await remoteProvider.getOpenedFiles());
@@ -161,8 +161,8 @@ async function main() {
             {create: false, exclusive: false},
         );
         // Start reading both files, the first should get stuck on open.
-        const read1 = startReadTextFromBlob(await openFile(fileEntry1));
-        const read2 = startReadTextFromBlob(await openFile(fileEntry2));
+        const read1 = startReadTextFromFile(await openFile(fileEntry1));
+        const read2 = startReadTextFromFile(await openFile(fileEntry2));
         const openRequest1 =
             await remoteProvider.waitForEvent('onOpenFileRequested');
         // Wait until the request is blocked inside the open call and abort the

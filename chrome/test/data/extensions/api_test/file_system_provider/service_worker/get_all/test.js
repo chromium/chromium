@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {mountTestFileSystem, openFile, remoteProvider, startReadTextFromBlob} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {mountTestFileSystem, openFile, remoteProvider, startReadTextFromFile} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
 
@@ -47,7 +47,7 @@ async function main() {
         const fileEntry = await fileSystem.getFileEntry(
             TestFileSystemProvider.FILE_BLOCKS_FOREVER, {create: false});
         const file = await openFile(fileEntry);
-        startReadTextFromBlob(file);
+        startReadTextFromFile(file);
         await remoteProvider.waitForEvent('onOpenFileRequested');
 
         const fsInfos = await getAllFsInfos();
