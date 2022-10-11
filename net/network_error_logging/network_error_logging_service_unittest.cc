@@ -62,7 +62,7 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
   }
 
   NetworkErrorLoggingService::RequestDetails MakeRequestDetails(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const GURL& url,
       Error error_type,
       std::string method = "GET",
@@ -70,7 +70,7 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
       IPAddress server_ip = IPAddress()) {
     NetworkErrorLoggingService::RequestDetails details;
 
-    details.network_isolation_key = network_isolation_key;
+    details.network_anonymization_key = network_anonymization_key;
     details.uri = url;
     details.referrer = kReferrer_;
     details.user_agent = kUserAgent_;
@@ -86,7 +86,7 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
 
   NetworkErrorLoggingService::SignedExchangeReportDetails
   MakeSignedExchangeReportDetails(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       bool success,
       const std::string& type,
       const GURL& outer_url,
@@ -94,7 +94,7 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
       const GURL& cert_url,
       const IPAddress& server_ip_address) {
     NetworkErrorLoggingService::SignedExchangeReportDetails details;
-    details.network_isolation_key = network_isolation_key;
+    details.network_anonymization_key = network_anonymization_key;
     details.success = success;
     details.type = type;
     details.outer_url = outer_url;
@@ -116,26 +116,26 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
   }
 
   // These methods are design so that using them together will create unique
-  // Origin, NetworkIsolationKey pairs, but they do return repeated values when
-  // called separately, so they can be used to ensure that reports are keyed on
-  // both NIK and Origin.
+  // Origin, NetworkAnonymizationKey pairs, but they do return repeated values
+  // when called separately, so they can be used to ensure that reports are
+  // keyed on both NIK and Origin.
   url::Origin MakeOrigin(size_t index) {
     GURL url(base::StringPrintf("https://example%zd.com/", index / 2));
     return url::Origin::Create(url);
   }
-  NetworkIsolationKey MakeNetworkIsolationKey(size_t index) {
+  NetworkAnonymizationKey MakeNetworkAnonymizationKey(size_t index) {
     SchemefulSite site(
         GURL(base::StringPrintf("https://example%zd.com/", (index + 1) / 2)));
-    return NetworkIsolationKey(site, site);
+    return NetworkAnonymizationKey(site, site);
   }
 
   NetworkErrorLoggingService::NelPolicy MakePolicy(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
       base::Time expires = base::Time(),
       base::Time last_used = base::Time()) {
     NetworkErrorLoggingService::NelPolicy policy;
-    policy.key = NelPolicyKey(network_isolation_key, origin);
+    policy.key = NelPolicyKey(network_anonymization_key, origin);
     policy.expires = expires;
     policy.last_used = last_used;
 
@@ -143,14 +143,14 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
   }
 
   // Returns whether the NetworkErrorLoggingService has a policy corresponding
-  // to |network_isolation_key| and |origin|. Returns true if so, even if the
-  // policy is expired.
-  bool HasPolicy(const NetworkIsolationKey& network_isolation_key,
+  // to |network_anonymization_key| and |origin|. Returns true if so, even if
+  // the policy is expired.
+  bool HasPolicy(const NetworkAnonymizationKey& network_anonymization_key,
                  const url::Origin& origin) {
     std::set<NelPolicyKey> all_policy_keys =
         service_->GetPolicyKeysForTesting();
-    return all_policy_keys.find(NelPolicyKey(network_isolation_key, origin)) !=
-           all_policy_keys.end();
+    return all_policy_keys.find(NelPolicyKey(network_anonymization_key,
+                                             origin)) != all_policy_keys.end();
   }
 
   size_t PolicyCount() { return service_->GetPolicyKeysForTesting().size(); }
@@ -181,11 +181,11 @@ class NetworkErrorLoggingServiceTest : public ::testing::TestWithParam<bool> {
   const url::Origin kOriginDifferentHost_ =
       url::Origin::Create(kUrlDifferentHost_);
   const url::Origin kOriginEtld_ = url::Origin::Create(kUrlEtld_);
-  const NetworkIsolationKey kNik_ =
-      NetworkIsolationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
-  const NetworkIsolationKey kOtherNik_ =
-      NetworkIsolationKey(SchemefulSite(kOriginDifferentHost_),
-                          SchemefulSite(kOriginDifferentHost_));
+  const NetworkAnonymizationKey kNik_ =
+      NetworkAnonymizationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
+  const NetworkAnonymizationKey kOtherNik_ =
+      NetworkAnonymizationKey(SchemefulSite(kOriginDifferentHost_),
+                              SchemefulSite(kOriginDifferentHost_));
 
   const std::string kHeader_ = "{\"report_to\":\"group\",\"max_age\":86400}";
   const std::string kHeaderSuccessFraction0_ =
@@ -277,7 +277,7 @@ TEST_P(NetworkErrorLoggingServiceTest, PolicyKeyMatchesNikAndOrigin) {
       MakeRequestDetails(kNik_, kUrl_, ERR_CONNECTION_REFUSED));
   EXPECT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(kNik_, reports()[0].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[0].network_anonymization_key);
   EXPECT_EQ(kUserAgent_, reports()[0].user_agent);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
@@ -315,7 +315,7 @@ TEST_P(NetworkErrorLoggingServiceTest,
       MakeRequestDetails(kNik_, kUrl_, ERR_CONNECTION_REFUSED));
   EXPECT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(kNik_, reports()[0].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[0].network_anonymization_key);
   EXPECT_EQ(kUserAgent_, reports()[0].user_agent);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
@@ -325,13 +325,13 @@ TEST_P(NetworkErrorLoggingServiceTest,
       MakeRequestDetails(kNik_, kUrl_, ERR_CONNECTION_REFUSED));
   EXPECT_EQ(2u, reports().size());
   EXPECT_EQ(kUrl_, reports()[1].url);
-  EXPECT_EQ(kNik_, reports()[1].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[1].network_anonymization_key);
   EXPECT_EQ(kUserAgent_, reports()[1].user_agent);
   EXPECT_EQ(kGroup_, reports()[1].group);
   EXPECT_EQ(kType_, reports()[1].type);
 }
 
-TEST_P(NetworkErrorLoggingServiceTest, NetworkIsolationKeyDisabled) {
+TEST_P(NetworkErrorLoggingServiceTest, NetworkAnonymizationKeyDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kPartitionNelAndReportingByNetworkIsolationKey);
@@ -352,7 +352,7 @@ TEST_P(NetworkErrorLoggingServiceTest, NetworkIsolationKeyDisabled) {
       MakeRequestDetails(kOtherNik_, kUrl_, ERR_CONNECTION_REFUSED));
   EXPECT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(NetworkIsolationKey(), reports()[0].network_isolation_key);
+  EXPECT_EQ(NetworkAnonymizationKey(), reports()[0].network_anonymization_key);
   EXPECT_EQ(kUserAgent_, reports()[0].user_agent);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
@@ -422,7 +422,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued) {
 
   ASSERT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(kNik_, reports()[0].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[0].network_anonymization_key);
   EXPECT_EQ(kUserAgent_, reports()[0].user_agent);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
@@ -467,7 +467,7 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued) {
 
   ASSERT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(kNik_, reports()[0].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[0].network_anonymization_key);
   EXPECT_EQ(kUserAgent_, reports()[0].user_agent);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
@@ -559,7 +559,7 @@ TEST_P(NetworkErrorLoggingServiceTest, HttpErrorReportQueued) {
 
   ASSERT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(kNik_, reports()[0].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[0].network_anonymization_key);
   EXPECT_EQ(kUserAgent_, reports()[0].user_agent);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
@@ -602,7 +602,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportDowngraded) {
 
   ASSERT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(kNik_, reports()[0].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[0].network_anonymization_key);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
   EXPECT_EQ(0, reports()[0].depth);
@@ -643,7 +643,7 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportDowngraded) {
 
   ASSERT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(kNik_, reports()[0].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[0].network_anonymization_key);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
   EXPECT_EQ(0, reports()[0].depth);
@@ -684,7 +684,7 @@ TEST_P(NetworkErrorLoggingServiceTest, HttpErrorReportDowngraded) {
 
   ASSERT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(kNik_, reports()[0].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[0].network_anonymization_key);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
   EXPECT_EQ(0, reports()[0].depth);
@@ -725,7 +725,7 @@ TEST_P(NetworkErrorLoggingServiceTest, DNSFailureReportNotDowngraded) {
 
   ASSERT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(kNik_, reports()[0].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[0].network_anonymization_key);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
   EXPECT_EQ(0, reports()[0].depth);
@@ -765,7 +765,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessPOSTReportQueued) {
 
   ASSERT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(kNik_, reports()[0].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[0].network_anonymization_key);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
   EXPECT_EQ(0, reports()[0].depth);
@@ -1151,7 +1151,7 @@ TEST_P(NetworkErrorLoggingServiceTest, StatusAsValue) {
       {
         "originPolicies": [
           {
-            "networkIsolationKey": "https://example.com https://example.com",
+            "NetworkAnonymizationKey": "https://example.com https://example.com",
             "origin": "https://example.com",
             "includeSubdomains": false,
             "expires": "86400000",
@@ -1160,7 +1160,7 @@ TEST_P(NetworkErrorLoggingServiceTest, StatusAsValue) {
             "failureFraction": 1.0,
           },
           {
-            "networkIsolationKey": "https://example.com https://example.com",
+            "NetworkAnonymizationKey": "https://example.com https://example.com",
             "origin": "https://invalid-types.example.com",
             "includeSubdomains": false,
             "expires": "86400000",
@@ -1169,7 +1169,7 @@ TEST_P(NetworkErrorLoggingServiceTest, StatusAsValue) {
             "failureFraction": 1.0,
           },
           {
-            "networkIsolationKey": "https://example.com https://example.com",
+            "NetworkAnonymizationKey": "https://example.com https://example.com",
             "origin": "https://somewhere-else.com",
             "includeSubdomains": false,
             "expires": "86400000",
@@ -1178,7 +1178,7 @@ TEST_P(NetworkErrorLoggingServiceTest, StatusAsValue) {
             "failureFraction": 1.0,
           },
           {
-            "networkIsolationKey": "https://somewhere-else.com https://somewhere-else.com",
+            "NetworkAnonymizationKey": "https://somewhere-else.com https://somewhere-else.com",
             "origin": "https://subdomain.example.com",
             "includeSubdomains": true,
             "expires": "86400000",
@@ -1246,7 +1246,7 @@ TEST_P(NetworkErrorLoggingServiceTest, SuccessReportQueued_SignedExchange) {
       kNik_, true, "ok", kUrl_, kInnerUrl_, kCertUrl_, kServerIP_));
   ASSERT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(kNik_, reports()[0].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[0].network_anonymization_key);
   EXPECT_EQ(kUserAgent_, reports()[0].user_agent);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
@@ -1300,7 +1300,7 @@ TEST_P(NetworkErrorLoggingServiceTest, FailureReportQueued_SignedExchange) {
       kNik_, false, "sxg.failed", kUrl_, kInnerUrl_, kCertUrl_, kServerIP_));
   ASSERT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(kNik_, reports()[0].network_isolation_key);
+  EXPECT_EQ(kNik_, reports()[0].network_anonymization_key);
   EXPECT_EQ(kUserAgent_, reports()[0].user_agent);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
@@ -1369,7 +1369,7 @@ TEST_P(NetworkErrorLoggingServiceTest, MismatchingIPAddress_SignedExchange) {
 }
 
 TEST_P(NetworkErrorLoggingServiceTest,
-       SignedExchangeNetworkIsolationKeyDisabled) {
+       SignedExchangeNetworkAnonymizationKeyDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kPartitionNelAndReportingByNetworkIsolationKey);
@@ -1391,7 +1391,7 @@ TEST_P(NetworkErrorLoggingServiceTest,
 
   ASSERT_EQ(1u, reports().size());
   EXPECT_EQ(kUrl_, reports()[0].url);
-  EXPECT_EQ(NetworkIsolationKey(), reports()[0].network_isolation_key);
+  EXPECT_EQ(NetworkAnonymizationKey(), reports()[0].network_anonymization_key);
   EXPECT_EQ(kUserAgent_, reports()[0].user_agent);
   EXPECT_EQ(kGroup_, reports()[0].group);
   EXPECT_EQ(kType_, reports()[0].type);
@@ -1406,8 +1406,8 @@ TEST_P(NetworkErrorLoggingServiceTest, EvictAllExpiredPoliciesFirst) {
 
   // Add 100 policies then make them expired.
   for (size_t i = 0; i < 100; ++i) {
-    service()->OnHeader(MakeNetworkIsolationKey(i), MakeOrigin(i), kServerIP_,
-                        kHeader_);
+    service()->OnHeader(MakeNetworkAnonymizationKey(i), MakeOrigin(i),
+                        kServerIP_, kHeader_);
   }
   // Make the rest of the test run synchronously.
   FinishLoading(true /* load_success */);
@@ -1419,8 +1419,8 @@ TEST_P(NetworkErrorLoggingServiceTest, EvictAllExpiredPoliciesFirst) {
 
   // Reach the max policy limit.
   for (size_t i = 100; i < NetworkErrorLoggingService::kMaxPolicies; ++i) {
-    service()->OnHeader(MakeNetworkIsolationKey(i), MakeOrigin(i), kServerIP_,
-                        kHeader_);
+    service()->OnHeader(MakeNetworkAnonymizationKey(i), MakeOrigin(i),
+                        kServerIP_, kHeader_);
   }
   EXPECT_EQ(NetworkErrorLoggingService::kMaxPolicies, PolicyCount());
 
@@ -1435,8 +1435,8 @@ TEST_P(NetworkErrorLoggingServiceTest, EvictLeastRecentlyUsedPolicy) {
 
   // A policy's |last_used| is updated when it is added
   for (size_t i = 0; i < NetworkErrorLoggingService::kMaxPolicies; ++i) {
-    service()->OnHeader(MakeNetworkIsolationKey(i), MakeOrigin(i), kServerIP_,
-                        kHeader_);
+    service()->OnHeader(MakeNetworkAnonymizationKey(i), MakeOrigin(i),
+                        kServerIP_, kHeader_);
     clock.Advance(base::Seconds(1));
   }
   // Make the rest of the test run synchronously.
@@ -1452,11 +1452,11 @@ TEST_P(NetworkErrorLoggingServiceTest, EvictLeastRecentlyUsedPolicy) {
   EXPECT_EQ(PolicyCount(), NetworkErrorLoggingService::kMaxPolicies);
 
   EXPECT_FALSE(
-      HasPolicy(MakeNetworkIsolationKey(0), MakeOrigin(0)));  // evicted
+      HasPolicy(MakeNetworkAnonymizationKey(0), MakeOrigin(0)));  // evicted
   std::set<NelPolicyKey> all_policy_keys = service()->GetPolicyKeysForTesting();
   for (size_t i = 1; i < NetworkErrorLoggingService::kMaxPolicies; ++i) {
     // Avoid n calls to HasPolicy(), which would be O(n^2).
-    NelPolicyKey key(MakeNetworkIsolationKey(i), MakeOrigin(i));
+    NelPolicyKey key(MakeNetworkAnonymizationKey(i), MakeOrigin(i));
     EXPECT_EQ(1u, all_policy_keys.count(key));
   }
   EXPECT_TRUE(HasPolicy(kNik_, kOrigin_));
@@ -1468,7 +1468,7 @@ TEST_P(NetworkErrorLoggingServiceTest, EvictLeastRecentlyUsedPolicy) {
       MakeRequestDetails(kNik_, kOrigin_.GetURL(), ERR_CONNECTION_REFUSED));
   clock.Advance(base::Seconds(1));
   for (size_t i = NetworkErrorLoggingService::kMaxPolicies - 1; i >= 1; --i) {
-    service()->OnRequest(MakeRequestDetails(MakeNetworkIsolationKey(i),
+    service()->OnRequest(MakeRequestDetails(MakeNetworkAnonymizationKey(i),
                                             MakeOrigin(i).GetURL(),
                                             ERR_CONNECTION_REFUSED));
     clock.Advance(base::Seconds(1));
@@ -1480,7 +1480,7 @@ TEST_P(NetworkErrorLoggingServiceTest, EvictLeastRecentlyUsedPolicy) {
   all_policy_keys = service()->GetPolicyKeysForTesting();
   for (size_t i = NetworkErrorLoggingService::kMaxPolicies - 1; i >= 1; --i) {
     // Avoid n calls to HasPolicy(), which would be O(n^2).
-    NelPolicyKey key(MakeNetworkIsolationKey(i), MakeOrigin(i));
+    NelPolicyKey key(MakeNetworkAnonymizationKey(i), MakeOrigin(i));
     EXPECT_EQ(1u, all_policy_keys.count(key));
   }
   EXPECT_TRUE(HasPolicy(kNik_, kOriginSubdomain_));  // most recently added

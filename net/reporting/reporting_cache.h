@@ -59,7 +59,7 @@ class NET_EXPORT ReportingCache {
 
   // Adds a report to the cache.
   //
-  // |reporting_source| and |network_isolation_key| will be used when the
+  // |reporting_source| and |network_anonymization_key| will be used when the
   // report is delivered, to determine which endpoints are eligible to receive
   // this report, and which other reports this report can be batched with.
   //
@@ -67,7 +67,7 @@ class NET_EXPORT ReportingCache {
   // fields in ReportingReport.
   virtual void AddReport(
       const absl::optional<base::UnguessableToken>& reporting_source,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const GURL& url,
       const std::string& user_agent,
       const std::string& group_name,
@@ -166,7 +166,7 @@ class NET_EXPORT ReportingCache {
   // to match the new header. All values are assumed to be valid as they have
   // passed through the ReportingHeaderParser.
   virtual void OnParsedHeader(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
       std::vector<ReportingEndpointGroup> parsed_header) = 0;
 
@@ -186,8 +186,9 @@ class NET_EXPORT ReportingCache {
 
   // Remove client for the given (NIK, origin) pair, if it exists in the cache.
   // All endpoint groups and endpoints for that client are also removed.
-  virtual void RemoveClient(const NetworkIsolationKey& network_isolation_key,
-                            const url::Origin& origin) = 0;
+  virtual void RemoveClient(
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::Origin& origin) = 0;
 
   // Remove all clients for the given |origin|, if any exists in the cache.
   // All endpoint groups and endpoints for |origin| are also removed.
@@ -282,7 +283,7 @@ class NET_EXPORT ReportingCache {
 
   // Returns whether a client for the given (NIK, Origin) exists.
   virtual bool ClientExistsForTesting(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin) const = 0;
 
   // Returns number of endpoint groups.

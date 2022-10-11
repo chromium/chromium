@@ -16,7 +16,7 @@ namespace net {
 
 ReportingReport::ReportingReport(
     const absl::optional<base::UnguessableToken>& reporting_source,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const GURL& url,
     const std::string& user_agent,
     const std::string& group,
@@ -26,7 +26,7 @@ ReportingReport::ReportingReport(
     base::TimeTicks queued,
     int attempts)
     : reporting_source(reporting_source),
-      network_isolation_key(network_isolation_key),
+      network_anonymization_key(network_anonymization_key),
       id(base::UnguessableToken::Create()),
       url(url),
       user_agent(user_agent),
@@ -46,7 +46,7 @@ ReportingReport& ReportingReport::operator=(ReportingReport&& other) = default;
 ReportingReport::~ReportingReport() = default;
 
 ReportingEndpointGroupKey ReportingReport::GetGroupKey() const {
-  return ReportingEndpointGroupKey(network_isolation_key, reporting_source,
+  return ReportingEndpointGroupKey(network_anonymization_key, reporting_source,
                                    url::Origin::Create(url), group);
 }
 

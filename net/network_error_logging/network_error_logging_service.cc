@@ -167,7 +167,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
   // NetworkErrorLoggingService implementation:
 
-  void OnHeader(const NetworkIsolationKey& network_isolation_key,
+  void OnHeader(const NetworkAnonymizationKey& network_anonymization_key,
                 const url::Origin& origin,
                 const IPAddress& received_ip_address,
                 const std::string& value) override {
@@ -181,8 +181,8 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     // task_backlog_, so the callback will not outlive |*this|.
     DoOrBacklogTask(base::BindOnce(
         &NetworkErrorLoggingServiceImpl::DoOnHeader, base::Unretained(this),
-        respect_network_isolation_key_ ? network_isolation_key
-                                       : NetworkIsolationKey(),
+        respect_network_anonymization_key_ ? network_anonymization_key
+                                           : NetworkAnonymizationKey(),
         origin, received_ip_address, value, header_received_time));
   }
 
@@ -193,8 +193,8 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     if (!reporting_service_)
       return;
 
-    if (!respect_network_isolation_key_)
-      details.network_isolation_key = NetworkIsolationKey();
+    if (!respect_network_anonymization_key_)
+      details.network_anonymization_key = NetworkAnonymizationKey();
 
     base::Time request_received_time = clock_->Now();
     // base::Unretained is safe because the callback gets stored in
@@ -216,8 +216,8 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
       return;
     }
 
-    if (!respect_network_isolation_key_)
-      details.network_isolation_key = NetworkIsolationKey();
+    if (!respect_network_anonymization_key_)
+      details.network_anonymization_key = NetworkAnonymizationKey();
 
     base::Time request_received_time = clock_->Now();
     // base::Unretained is safe because the callback gets stored in
@@ -254,8 +254,8 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
       const NelPolicyKey& key = key_and_policy.first;
       const NelPolicy& policy = key_and_policy.second;
       base::Value::Dict policy_dict;
-      policy_dict.Set("networkIsolationKey",
-                      key.network_isolation_key.ToDebugString());
+      policy_dict.Set("NetworkAnonymizationKey",
+                      key.network_anonymization_key.ToDebugString());
       policy_dict.Set("origin", key.origin.Serialize());
       policy_dict.Set("includeSubdomains", policy.include_subdomains);
       policy_dict.Set("reportTo", policy.report_to);
@@ -293,8 +293,8 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   // true.
   //
   // Wildcard policies are accessed by domain name, not full origin. The key
-  // consists of the NetworkIsolationKey of the policy, plus a string which is
-  // the host part of the policy's origin.
+  // consists of the NetworkAnonymizationKey of the policy, plus a string which
+  // is the host part of the policy's origin.
   //
   // Looking up a wildcard policy for a domain yields the wildcard policy with
   // the longest host part (most specific subdomain) that is a substring of the
@@ -335,7 +335,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
   // Set based on features::kPartitionNelAndReportingByNetworkIsolationKey on
   // construction.
-  bool respect_network_isolation_key_ = base::FeatureList::IsEnabled(
+  bool respect_network_anonymization_key_ = base::FeatureList::IsEnabled(
       features::kPartitionNelAndReportingByNetworkIsolationKey);
 
   base::WeakPtrFactory<NetworkErrorLoggingServiceImpl> weak_factory_{this};
@@ -368,7 +368,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     task_backlog_.clear();
   }
 
-  void DoOnHeader(const NetworkIsolationKey& network_isolation_key,
+  void DoOnHeader(const NetworkAnonymizationKey& network_anonymization_key,
                   const url::Origin& origin,
                   const IPAddress& received_ip_address,
                   const std::string& value,
@@ -376,7 +376,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     DCHECK(initialized_);
 
     NelPolicy policy;
-    policy.key = NelPolicyKey(network_isolation_key, origin);
+    policy.key = NelPolicyKey(network_anonymization_key, origin);
     policy.received_ip_address = received_ip_address;
     policy.last_used = header_received_time;
 
@@ -418,12 +418,12 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     DCHECK(reporting_service_);
     DCHECK(initialized_);
 
-    if (!respect_network_isolation_key_)
-      details.network_isolation_key = NetworkIsolationKey();
+    if (!respect_network_anonymization_key_)
+      details.network_anonymization_key = NetworkAnonymizationKey();
 
     auto report_origin = url::Origin::Create(details.uri);
     const NelPolicy* policy =
-        FindPolicyForReport(details.network_isolation_key, report_origin);
+        FindPolicyForReport(details.network_anonymization_key, report_origin);
     if (!policy)
       return;
 
@@ -488,7 +488,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     // A null reporting source token is used since this report is not associated
     // with any particular document.
     reporting_service_->QueueReport(
-        details.uri, absl::nullopt, details.network_isolation_key,
+        details.uri, absl::nullopt, details.network_anonymization_key,
         details.user_agent, policy->report_to, kReportType,
         CreateReportBody(phase_string, type_string, sampling_fraction.value(),
                          details),
@@ -501,7 +501,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 
     const auto report_origin = url::Origin::Create(details.outer_url);
     const NelPolicy* policy =
-        FindPolicyForReport(details.network_isolation_key, report_origin);
+        FindPolicyForReport(details.network_anonymization_key, report_origin);
     if (!policy) {
       RecordSignedExchangeRequestOutcome(
           RequestOutcome::kDiscardedNoOriginPolicy);
@@ -538,7 +538,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     // A null reporting source token is used since this report is not associated
     // with any particular document.
     reporting_service_->QueueReport(
-        details.outer_url, absl::nullopt, details.network_isolation_key,
+        details.outer_url, absl::nullopt, details.network_anonymization_key,
         details.user_agent, policy->report_to, kReportType,
         CreateSignedExchangeReportBody(details, sampling_fraction.value()),
         0 /* depth */);
@@ -636,19 +636,19 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   }
 
   const NelPolicy* FindPolicyForReport(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& report_origin) const {
     DCHECK(initialized_);
 
     auto it =
-        policies_.find(NelPolicyKey(network_isolation_key, report_origin));
+        policies_.find(NelPolicyKey(network_anonymization_key, report_origin));
     if (it != policies_.end() && clock_->Now() < it->second.expires)
       return &it->second;
 
     std::string domain = report_origin.host();
     const NelPolicy* wildcard_policy = nullptr;
     while (!wildcard_policy && !domain.empty()) {
-      wildcard_policy = FindWildcardPolicy(network_isolation_key, domain);
+      wildcard_policy = FindWildcardPolicy(network_anonymization_key, domain);
       domain = GetSuperdomain(domain);
     }
 
@@ -656,12 +656,12 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   }
 
   const NelPolicy* FindWildcardPolicy(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const std::string& domain) const {
     DCHECK(!domain.empty());
 
     auto it = wildcard_policies_.find(
-        WildcardNelPolicyKey(network_isolation_key, domain));
+        WildcardNelPolicyKey(network_anonymization_key, domain));
     if (it == wildcard_policies_.end())
       return nullptr;
 
@@ -886,23 +886,23 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
 NetworkErrorLoggingService::NelPolicyKey::NelPolicyKey() = default;
 
 NetworkErrorLoggingService::NelPolicyKey::NelPolicyKey(
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const url::Origin& origin)
-    : network_isolation_key(network_isolation_key), origin(origin) {}
+    : network_anonymization_key(network_anonymization_key), origin(origin) {}
 
 NetworkErrorLoggingService::NelPolicyKey::NelPolicyKey(
     const NelPolicyKey& other) = default;
 
 bool NetworkErrorLoggingService::NelPolicyKey::operator<(
     const NelPolicyKey& other) const {
-  return std::tie(network_isolation_key, origin) <
-         std::tie(other.network_isolation_key, other.origin);
+  return std::tie(network_anonymization_key, origin) <
+         std::tie(other.network_anonymization_key, other.origin);
 }
 
 bool NetworkErrorLoggingService::NelPolicyKey::operator==(
     const NelPolicyKey& other) const {
-  return std::tie(network_isolation_key, origin) ==
-         std::tie(other.network_isolation_key, other.origin);
+  return std::tie(network_anonymization_key, origin) ==
+         std::tie(other.network_anonymization_key, other.origin);
 }
 
 bool NetworkErrorLoggingService::NelPolicyKey::operator!=(
@@ -916,13 +916,13 @@ NetworkErrorLoggingService::WildcardNelPolicyKey::WildcardNelPolicyKey() =
     default;
 
 NetworkErrorLoggingService::WildcardNelPolicyKey::WildcardNelPolicyKey(
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const std::string& domain)
-    : network_isolation_key(network_isolation_key), domain(domain) {}
+    : network_anonymization_key(network_anonymization_key), domain(domain) {}
 
 NetworkErrorLoggingService::WildcardNelPolicyKey::WildcardNelPolicyKey(
     const NelPolicyKey& origin_key)
-    : WildcardNelPolicyKey(origin_key.network_isolation_key,
+    : WildcardNelPolicyKey(origin_key.network_anonymization_key,
                            origin_key.origin.host()) {}
 
 NetworkErrorLoggingService::WildcardNelPolicyKey::WildcardNelPolicyKey(
@@ -930,8 +930,8 @@ NetworkErrorLoggingService::WildcardNelPolicyKey::WildcardNelPolicyKey(
 
 bool NetworkErrorLoggingService::WildcardNelPolicyKey::operator<(
     const WildcardNelPolicyKey& other) const {
-  return std::tie(network_isolation_key, domain) <
-         std::tie(other.network_isolation_key, other.domain);
+  return std::tie(network_anonymization_key, domain) <
+         std::tie(other.network_anonymization_key, other.domain);
 }
 
 NetworkErrorLoggingService::WildcardNelPolicyKey::~WildcardNelPolicyKey() =

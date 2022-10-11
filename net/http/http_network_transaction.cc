@@ -155,7 +155,7 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
   net_log_ = net_log;
   request_ = request_info;
   url_ = request_->url;
-  network_isolation_key_ = request_->network_isolation_key;
+  network_isolation_key_ = request_->network_anonymization_key;
 #if BUILDFLAG(ENABLE_REPORTING)
   // Store values for later use in NEL report generation.
   request_method_ = request_->method;
@@ -939,7 +939,7 @@ int HttpNetworkTransaction::DoGenerateProxyAuthToken() {
   HttpAuth::Target target = HttpAuth::AUTH_PROXY;
   if (!auth_controllers_[target].get())
     auth_controllers_[target] = base::MakeRefCounted<HttpAuthController>(
-        target, AuthURL(target), request_->network_isolation_key,
+        target, AuthURL(target), request_->network_anonymization_key,
         session_->http_auth_cache(), session_->http_auth_handler_factory(),
         session_->host_resolver());
   return auth_controllers_[target]->MaybeGenerateAuthToken(request_,
@@ -959,7 +959,7 @@ int HttpNetworkTransaction::DoGenerateServerAuthToken() {
   HttpAuth::Target target = HttpAuth::AUTH_SERVER;
   if (!auth_controllers_[target].get()) {
     auth_controllers_[target] = base::MakeRefCounted<HttpAuthController>(
-        target, AuthURL(target), request_->network_isolation_key,
+        target, AuthURL(target), request_->network_anonymization_key,
         session_->http_auth_cache(), session_->http_auth_handler_factory(),
         session_->host_resolver());
     if (request_->load_flags & LOAD_DO_NOT_USE_EMBEDDED_IDENTITY)
@@ -1408,8 +1408,12 @@ void HttpNetworkTransaction::ProcessReportToHeader() {
   if (IsCertStatusError(response_.ssl_info.cert_status))
     return;
 
-  reporting_service->ProcessReportToHeader(url::Origin::Create(url_),
-                                           network_isolation_key_, value);
+  reporting_service->ProcessReportToHeader(
+      url::Origin::Create(url_),
+      NetworkAnonymizationKey::
+          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+              network_isolation_key_),
+      value);
 }
 
 void HttpNetworkTransaction::ProcessNetworkErrorLoggingHeader() {
@@ -1439,9 +1443,11 @@ void HttpNetworkTransaction::ProcessNetworkErrorLoggingHeader() {
   if (remote_endpoint_.address().empty())
     return;
 
-  network_error_logging_service->OnHeader(network_isolation_key_,
-                                          url::Origin::Create(url_),
-                                          remote_endpoint_.address(), value);
+  network_error_logging_service->OnHeader(
+      NetworkAnonymizationKey::
+          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+              network_isolation_key_),
+      url::Origin::Create(url_), remote_endpoint_.address(), value);
 }
 
 void HttpNetworkTransaction::GenerateNetworkErrorLoggingReportIfError(int rv) {
@@ -1480,7 +1486,9 @@ void HttpNetworkTransaction::GenerateNetworkErrorLoggingReport(int rv) {
 
   NetworkErrorLoggingService::RequestDetails details;
 
-  details.network_isolation_key = network_isolation_key_;
+  details.network_anonymization_key = net::NetworkAnonymizationKey::
+      CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+          network_isolation_key_);
   details.uri = url_;
   if (!request_referrer_.empty())
     details.referrer = GURL(request_referrer_);

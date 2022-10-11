@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_report.h"
@@ -43,15 +43,15 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
 
   // TODO(chlily): Take NIK.
   void AddReport(const GURL& url) {
-    cache()->AddReport(absl::nullopt, NetworkIsolationKey(), url, kUserAgent_,
-                       kGroup_, kType_, base::Value::Dict(), 0,
+    cache()->AddReport(absl::nullopt, NetworkAnonymizationKey(), url,
+                       kUserAgent_, kGroup_, kType_, base::Value::Dict(), 0,
                        tick_clock()->NowTicks(), 0);
   }
 
   // TODO(chlily): Take NIK.
   void SetEndpoint(const url::Origin& origin) {
     SetEndpointInCache(
-        ReportingEndpointGroupKey(NetworkIsolationKey(), origin, kGroup_),
+        ReportingEndpointGroupKey(NetworkAnonymizationKey(), origin, kGroup_),
         kEndpoint_, base::Time::Now() + base::Days(7));
   }
 
@@ -155,10 +155,10 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveSomeClients) {
                      /* host= */ kUrl1_.host());
   EXPECT_EQ(2u, report_count());
   EXPECT_FALSE(FindEndpointInCache(
-      ReportingEndpointGroupKey(NetworkIsolationKey(), kOrigin1_, kGroup_),
+      ReportingEndpointGroupKey(NetworkAnonymizationKey(), kOrigin1_, kGroup_),
       kEndpoint_));
   EXPECT_TRUE(FindEndpointInCache(
-      ReportingEndpointGroupKey(NetworkIsolationKey(), kOrigin2_, kGroup_),
+      ReportingEndpointGroupKey(NetworkAnonymizationKey(), kOrigin2_, kGroup_),
       kEndpoint_));
 }
 

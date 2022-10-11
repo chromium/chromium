@@ -16,20 +16,20 @@ namespace net {
 ReportingEndpointGroupKey::ReportingEndpointGroupKey() = default;
 
 ReportingEndpointGroupKey::ReportingEndpointGroupKey(
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const url::Origin& origin,
     const std::string& group_name)
-    : ReportingEndpointGroupKey(network_isolation_key,
+    : ReportingEndpointGroupKey(network_anonymization_key,
                                 absl::nullopt,
                                 origin,
                                 group_name) {}
 
 ReportingEndpointGroupKey::ReportingEndpointGroupKey(
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     absl::optional<base::UnguessableToken> reporting_source,
     const url::Origin& origin,
     const std::string& group_name)
-    : network_isolation_key(network_isolation_key),
+    : network_anonymization_key(network_anonymization_key),
       reporting_source(std::move(reporting_source)),
       origin(origin),
       group_name(group_name) {
@@ -41,7 +41,7 @@ ReportingEndpointGroupKey::ReportingEndpointGroupKey(
 ReportingEndpointGroupKey::ReportingEndpointGroupKey(
     const ReportingEndpointGroupKey& other,
     const absl::optional<base::UnguessableToken>& reporting_source)
-    : ReportingEndpointGroupKey(other.network_isolation_key,
+    : ReportingEndpointGroupKey(other.network_anonymization_key,
                                 reporting_source,
                                 other.origin,
                                 other.group_name) {}
@@ -60,10 +60,10 @@ ReportingEndpointGroupKey::~ReportingEndpointGroupKey() = default;
 
 bool operator==(const ReportingEndpointGroupKey& lhs,
                 const ReportingEndpointGroupKey& rhs) {
-  return std::tie(lhs.reporting_source, lhs.network_isolation_key, lhs.origin,
-                  lhs.group_name) == std::tie(rhs.reporting_source,
-                                              rhs.network_isolation_key,
-                                              rhs.origin, rhs.group_name);
+  return std::tie(lhs.reporting_source, lhs.network_anonymization_key,
+                  lhs.origin, lhs.group_name) ==
+         std::tie(rhs.reporting_source, rhs.network_anonymization_key,
+                  rhs.origin, rhs.group_name);
 }
 
 bool operator!=(const ReportingEndpointGroupKey& lhs,
@@ -73,24 +73,24 @@ bool operator!=(const ReportingEndpointGroupKey& lhs,
 
 bool operator<(const ReportingEndpointGroupKey& lhs,
                const ReportingEndpointGroupKey& rhs) {
-  return std::tie(lhs.reporting_source, lhs.network_isolation_key, lhs.origin,
-                  lhs.group_name) < std::tie(rhs.reporting_source,
-                                             rhs.network_isolation_key,
-                                             rhs.origin, rhs.group_name);
+  return std::tie(lhs.reporting_source, lhs.network_anonymization_key,
+                  lhs.origin, lhs.group_name) <
+         std::tie(rhs.reporting_source, rhs.network_anonymization_key,
+                  rhs.origin, rhs.group_name);
 }
 
 bool operator>(const ReportingEndpointGroupKey& lhs,
                const ReportingEndpointGroupKey& rhs) {
-  return std::tie(lhs.reporting_source, lhs.network_isolation_key, lhs.origin,
-                  lhs.group_name) > std::tie(rhs.reporting_source,
-                                             rhs.network_isolation_key,
-                                             rhs.origin, rhs.group_name);
+  return std::tie(lhs.reporting_source, lhs.network_anonymization_key,
+                  lhs.origin, lhs.group_name) >
+         std::tie(rhs.reporting_source, rhs.network_anonymization_key,
+                  rhs.origin, rhs.group_name);
 }
 
 std::string ReportingEndpointGroupKey::ToString() const {
   return "Source: " +
          (reporting_source ? reporting_source->ToString() : "null") +
-         "; NIK: " + network_isolation_key.ToDebugString() +
+         "; NIK: " + network_anonymization_key.ToDebugString() +
          "; Origin: " + origin.Serialize() + "; Group name: " + group_name;
 }
 

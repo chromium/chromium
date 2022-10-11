@@ -19,7 +19,7 @@ class TickClock;
 
 namespace net {
 
-class NetworkIsolationKey;
+class NetworkAnonymizationKey;
 class ReportingCache;
 class ReportingDelegate;
 struct ReportingEndpoint;
@@ -59,7 +59,7 @@ class NET_EXPORT ReportingEndpointManager {
   // Informs the EndpointManager of a successful or unsuccessful request made to
   // |endpoint| so it can manage exponential backoff of failing endpoints.
   virtual void InformOfEndpointRequest(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const GURL& endpoint,
       bool succeeded) = 0;
 };

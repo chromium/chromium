@@ -44,7 +44,7 @@ class ReportingCacheImpl : public ReportingCache {
 
   // ReportingCache implementation
   void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
-                 const NetworkIsolationKey& network_isolation_key,
+                 const NetworkAnonymizationKey& network_anonymization_key,
                  const GURL& url,
                  const std::string& user_agent,
                  const std::string& group_name,
@@ -84,7 +84,7 @@ class ReportingCacheImpl : public ReportingCache {
   bool IsReportPendingForTesting(const ReportingReport* report) const override;
   bool IsReportDoomedForTesting(const ReportingReport* report) const override;
   void OnParsedHeader(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
       std::vector<ReportingEndpointGroup> parsed_header) override;
   void OnParsedReportingEndpointsHeader(
@@ -92,7 +92,7 @@ class ReportingCacheImpl : public ReportingCache {
       const IsolationInfo& isolation_info,
       std::vector<ReportingEndpoint> parsed_header) override;
   std::set<url::Origin> GetAllOrigins() const override;
-  void RemoveClient(const NetworkIsolationKey& network_isolation_key,
+  void RemoveClient(const NetworkAnonymizationKey& network_anonymization_key,
                     const url::Origin& origin) override;
   void RemoveClientsForOrigin(const url::Origin& origin) override;
   void RemoveAllClients() override;
@@ -118,8 +118,9 @@ class ReportingCacheImpl : public ReportingCache {
   bool EndpointGroupExistsForTesting(const ReportingEndpointGroupKey& group_key,
                                      OriginSubdomains include_subdomains,
                                      base::Time expires) const override;
-  bool ClientExistsForTesting(const NetworkIsolationKey& network_isolation_key,
-                              const url::Origin& origin) const override;
+  bool ClientExistsForTesting(
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::Origin& origin) const override;
   size_t GetEndpointGroupCountForTesting() const override;
   size_t GetClientCountForTesting() const override;
   size_t GetReportingSourceCountForTesting() const override;
@@ -139,7 +140,7 @@ class ReportingCacheImpl : public ReportingCache {
  private:
   // Represents the entire Report-To configuration for a (NIK, origin) pair.
   struct Client {
-    Client(const NetworkIsolationKey& network_isolation_key,
+    Client(const NetworkAnonymizationKey& network_anonymization_key,
            const url::Origin& origin);
 
     Client(const Client& other);
@@ -152,7 +153,7 @@ class ReportingCacheImpl : public ReportingCache {
 
     // NIK of the context associated with this client. Needed to prevent leaking
     // third party contexts across sites.
-    NetworkIsolationKey network_isolation_key;
+    NetworkAnonymizationKey network_anonymization_key;
 
     // Origin that configured this client.
     url::Origin origin;
@@ -204,10 +205,10 @@ class ReportingCacheImpl : public ReportingCache {
                                 EndpointMap::const_iterator endpoint_it) const;
 #endif  // DCHECK_IS_ON()
 
-  // Finds iterator to the client with the given |network_isolation_key| and
+  // Finds iterator to the client with the given |network_anonymization_key| and
   // |origin|, if one exists. Returns |clients_.end()| if none is found.
   ClientMap::iterator FindClientIt(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin);
 
   // Overload that takes a ReportingEndpointGroupKey and finds the client
@@ -245,7 +246,7 @@ class ReportingCacheImpl : public ReportingCache {
   // in |groups_to_keep_names|. Does not guarantee that all the groups in
   // |groups_to_keep_names| exist in the cache for that client.
   void RemoveEndpointGroupsForClientOtherThan(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
       const std::set<std::string>& groups_to_keep_names);
 

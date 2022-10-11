@@ -9,7 +9,7 @@ import "url/mojom/origin.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "services/network/public/mojom/network_isolation_key.mojom";
+import "services/network/public/mojom/network_anonymization_key.mojom";
 
 // The status of a Reporting API report.
 enum ReportingApiReportStatus {
@@ -67,9 +67,9 @@ struct ReportingApiEndpoint {
   url.mojom.Origin origin;
   // Name of the endpoint group (defaults to "default" during header parsing).
   string group_name;
-  // The NetworkIsolationKey the group is scoped to. Needed to prevent leaking
+  // The NetworkAnonymizationKey the group is scoped to. Needed to prevent leaking
   // third party contexts across sites.
-  NetworkIsolationKey network_isolation_key;
+  NetworkAnonymizationKey network_anonymization_key;
   // Source token for the document or worker which configured this endpoint.
   mojo_base.mojom.UnguessableToken? reporting_source;
 };

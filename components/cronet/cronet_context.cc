@@ -484,7 +484,7 @@ void CronetContext::NetworkTasks::SetSharedURLRequestContextConfig(
     for (const auto& preloaded_header :
          context_config_->preloaded_report_to_headers) {
       context->reporting_service()->ProcessReportToHeader(
-          preloaded_header.origin, net::NetworkIsolationKey(),
+          preloaded_header.origin, net::NetworkAnonymizationKey(),
           preloaded_header.value);
     }
   }
@@ -493,8 +493,8 @@ void CronetContext::NetworkTasks::SetSharedURLRequestContextConfig(
     for (const auto& preloaded_header :
          context_config_->preloaded_nel_headers) {
       context->network_error_logging_service()->OnHeader(
-          net::NetworkIsolationKey(), preloaded_header.origin, net::IPAddress(),
-          preloaded_header.value);
+          net::NetworkAnonymizationKey(), preloaded_header.origin,
+          net::IPAddress(), preloaded_header.value);
     }
   }
 #endif  // BUILDFLAG(ENABLE_REPORTING)

@@ -17,7 +17,7 @@
 #include "base/rand_util.h"
 #include "base/time/tick_clock.h"
 #include "net/base/backoff_entry.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/rand_callback.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_delegate.h"
@@ -83,7 +83,7 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
       // This brings each match to the front of the MRU cache, so if an entry
       // frequently matches requests, it's more likely to stay in the cache.
       auto endpoint_backoff_it = endpoint_backoff_.Get(EndpointBackoffKey(
-          group_key.network_isolation_key, endpoint.info.url));
+          group_key.network_anonymization_key, endpoint.info.url));
       if (endpoint_backoff_it != endpoint_backoff_.end() &&
           endpoint_backoff_it->second->ShouldRejectRequest()) {
         continue;
@@ -124,10 +124,12 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
     return ReportingEndpoint();
   }
 
-  void InformOfEndpointRequest(const NetworkIsolationKey& network_isolation_key,
-                               const GURL& endpoint,
-                               bool succeeded) override {
-    EndpointBackoffKey endpoint_backoff_key(network_isolation_key, endpoint);
+  void InformOfEndpointRequest(
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const GURL& endpoint,
+      bool succeeded) override {
+    EndpointBackoffKey endpoint_backoff_key(network_anonymization_key,
+                                            endpoint);
     // This will bring the entry to the front of the cache, if it exists.
     auto endpoint_backoff_it = endpoint_backoff_.Get(endpoint_backoff_key);
     if (endpoint_backoff_it == endpoint_backoff_.end()) {

@@ -15,7 +15,7 @@
 #include "base/values.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/reporting/mock_persistent_reporting_store.h"
 #include "net/reporting/reporting_browsing_data_remover.h"
@@ -55,10 +55,11 @@ class ReportingServiceTest : public ::testing::TestWithParam<bool>,
   const std::string kType_ = "type";
   const absl::optional<base::UnguessableToken> kReportingSource_ =
       base::UnguessableToken::Create();
-  const NetworkIsolationKey kNik_ =
-      NetworkIsolationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
-  const NetworkIsolationKey kNik2_ =
-      NetworkIsolationKey(SchemefulSite(kOrigin2_), SchemefulSite(kOrigin2_));
+  const NetworkAnonymizationKey kNik_ =
+      NetworkAnonymizationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
+  const NetworkAnonymizationKey kNik2_ =
+      NetworkAnonymizationKey(SchemefulSite(kOrigin2_),
+                              SchemefulSite(kOrigin2_));
   const ReportingEndpointGroupKey kGroupKey_ =
       ReportingEndpointGroupKey(kNik_, kOrigin_, kGroup_);
   const ReportingEndpointGroupKey kGroupKey2_ =
@@ -120,7 +121,7 @@ TEST_P(ReportingServiceTest, QueueReport) {
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(kUrl_, reports[0]->url);
-  EXPECT_EQ(kNik_, reports[0]->network_isolation_key);
+  EXPECT_EQ(kNik_, reports[0]->network_anonymization_key);
   EXPECT_EQ(kUserAgent_, reports[0]->user_agent);
   EXPECT_EQ(kGroup_, reports[0]->group);
   EXPECT_EQ(kType_, reports[0]->type);
@@ -137,7 +138,7 @@ TEST_P(ReportingServiceTest, QueueReportSanitizeUrl) {
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
   EXPECT_EQ(kUrl_, reports[0]->url);
-  EXPECT_EQ(kNik_, reports[0]->network_isolation_key);
+  EXPECT_EQ(kNik_, reports[0]->network_anonymization_key);
   EXPECT_EQ(kUserAgent_, reports[0]->user_agent);
   EXPECT_EQ(kGroup_, reports[0]->group);
   EXPECT_EQ(kType_, reports[0]->type);
@@ -171,9 +172,9 @@ TEST_P(ReportingServiceTest, QueueReportNetworkIsolationKeyDisabled) {
   context()->cache()->GetReports(&reports);
   ASSERT_EQ(1u, reports.size());
 
-  // NetworkIsolationKey should be empty, instead of kNik_;
-  EXPECT_EQ(NetworkIsolationKey(), reports[0]->network_isolation_key);
-  EXPECT_NE(kNik_, reports[0]->network_isolation_key);
+  // NetworkAnonymizationKey should be empty, instead of kNik_;
+  EXPECT_EQ(NetworkAnonymizationKey(), reports[0]->network_anonymization_key);
+  EXPECT_NE(kNik_, reports[0]->network_anonymization_key);
 
   EXPECT_EQ(kUrl_, reports[0]->url);
   EXPECT_EQ(kUserAgent_, reports[0]->user_agent);
@@ -215,7 +216,7 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
   EXPECT_TRUE(cached_endpoint);
 
   // Ensure that the NIK is stored properly with the endpoint group.
-  EXPECT_FALSE(cached_endpoint.group_key.network_isolation_key.IsEmpty());
+  EXPECT_FALSE(cached_endpoint.group_key.network_anonymization_key.IsEmpty());
 }
 
 TEST_P(ReportingServiceTest,
@@ -243,7 +244,7 @@ TEST_P(ReportingServiceTest,
   EXPECT_TRUE(cached_endpoint);
 
   // When isolation is disabled, cached endpoints should have a null NIK.
-  EXPECT_TRUE(cached_endpoint.group_key.network_isolation_key.IsEmpty());
+  EXPECT_TRUE(cached_endpoint.group_key.network_anonymization_key.IsEmpty());
 }
 
 TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
@@ -425,7 +426,7 @@ TEST_P(ReportingServiceTest, ProcessReportToHeaderNetworkIsolationKeyDisabled) {
   EXPECT_FALSE(context()->cache()->GetEndpointForTesting(
       ReportingEndpointGroupKey(kNik_, kOrigin_, kGroup_), kEndpoint_));
   EXPECT_TRUE(context()->cache()->GetEndpointForTesting(
-      ReportingEndpointGroupKey(NetworkIsolationKey(), kOrigin_, kGroup_),
+      ReportingEndpointGroupKey(NetworkAnonymizationKey(), kOrigin_, kGroup_),
       kEndpoint_));
 }
 

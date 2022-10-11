@@ -18,7 +18,7 @@
 #include "net/base/backoff_entry.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_report.h"
@@ -56,12 +56,12 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   }
 
   void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
-                 const NetworkIsolationKey& network_isolation_key,
+                 const NetworkAnonymizationKey& network_anonymization_key,
                  const GURL& url,
                  const std::string& group) {
     base::Value::Dict report_body;
     report_body.Set("key", "value");
-    cache()->AddReport(reporting_source, network_isolation_key, url,
+    cache()->AddReport(reporting_source, network_anonymization_key, url,
                        kUserAgent_, group, kType_, std::move(report_body),
                        0 /* depth */, tick_clock()->NowTicks() /* queued */,
                        0 /* attempts */);
@@ -73,11 +73,11 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
   // immediately resolve a dummy report to prime the delivery timer.
   void UploadFirstReportAndStartTimer() {
     ReportingEndpointGroupKey dummy_group(
-        NetworkIsolationKey(), url::Origin::Create(GURL("https://dummy.test")),
-        "dummy");
+        NetworkAnonymizationKey(),
+        url::Origin::Create(GURL("https://dummy.test")), "dummy");
     ASSERT_TRUE(SetEndpointInCache(
         dummy_group, GURL("https://dummy.test/upload"), kExpires_));
-    AddReport(absl::nullopt, dummy_group.network_isolation_key,
+    AddReport(absl::nullopt, dummy_group.network_anonymization_key,
               dummy_group.origin.GetURL(), dummy_group.group_name);
 
     ASSERT_EQ(1u, pending_uploads().size());
@@ -94,7 +94,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
         url::Origin::Create(GURL("https://dummy.test")), "dummy");
     SetV1EndpointInCache(dummy_group, kDocumentReportingSource_,
                          kIsolationInfo_, GURL("https://dummy.test/upload"));
-    AddReport(kDocumentReportingSource_, dummy_group.network_isolation_key,
+    AddReport(kDocumentReportingSource_, dummy_group.network_anonymization_key,
               dummy_group.origin.GetURL(), dummy_group.group_name);
 
     ASSERT_EQ(1u, pending_uploads().size());
@@ -119,11 +119,11 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
       absl::nullopt;
   const base::UnguessableToken kDocumentReportingSource_ =
       base::UnguessableToken::Create();
-  const NetworkIsolationKey kNik_ =
-      NetworkIsolationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
-  const NetworkIsolationKey kOtherNik_ =
-      NetworkIsolationKey(SchemefulSite(kOtherOrigin_),
-                          SchemefulSite(kOtherOrigin_));
+  const NetworkAnonymizationKey kNik_ =
+      NetworkAnonymizationKey(SchemefulSite(kOrigin_), SchemefulSite(kOrigin_));
+  const NetworkAnonymizationKey kOtherNik_ =
+      NetworkAnonymizationKey(SchemefulSite(kOtherOrigin_),
+                              SchemefulSite(kOtherOrigin_));
   const IsolationInfo kIsolationInfo_ =
       IsolationInfo::Create(IsolationInfo::RequestType::kOther,
                             kOrigin_,

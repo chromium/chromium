@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_endpoint.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -45,7 +45,7 @@ struct NET_EXPORT ReportingReport {
   // TODO(chlily): Remove |attempts| argument as it is (almost?) always 0.
   ReportingReport(
       const absl::optional<base::UnguessableToken>& reporting_source,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const GURL& url,
       const std::string& user_agent,
       const std::string& group,
@@ -87,9 +87,9 @@ struct NET_EXPORT ReportingReport {
   // (Not included in the delivered report.)
   absl::optional<base::UnguessableToken> reporting_source;
 
-  // The NIK of the request that triggered this report. (Not included in the
+  // The NAK of the request that triggered this report. (Not included in the
   // delivered report.)
-  NetworkIsolationKey network_isolation_key;
+  NetworkAnonymizationKey network_anonymization_key;
 
   // The id of the report, used by DevTools to identify and tell apart
   // individual reports.

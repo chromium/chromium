@@ -15,7 +15,7 @@
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -200,11 +200,12 @@ class ReportingUploaderImpl : public ReportingUploader, URLRequest::Delegate {
     upload->request->set_site_for_cookies(
         upload->isolation_info.site_for_cookies());
     // Prior to using `isolation_info` directly here we built the
-    // `upload->network_isolation_key` to create the set the `isolation_info`.
-    // As experiments roll out to determine whether network partitions should be
-    // double or triple keyed the isolation_info might have a null value for
-    // `frame_origin`. Thus we should again get it from `network_isolation_key`
-    // until we can trust `isolation_info::frame_origin`.
+    // `upload->network_anonymization_key` to create the set the
+    // `isolation_info`. As experiments roll out to determine whether network
+    // partitions should be double or triple keyed the isolation_info might have
+    // a null value for `frame_origin`. Thus we should again get it from
+    // `network_anonymization_key` until we can trust
+    // `isolation_info::frame_origin`.
     upload->request->set_initiator(upload->report_origin);
     upload->request->set_isolation_info(upload->isolation_info);
 

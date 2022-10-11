@@ -12,7 +12,7 @@
 #include "base/unguessable_token.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/isolation_info.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_endpoint.h"
@@ -41,7 +41,7 @@ class TestReportingCache : public ReportingCache {
   ~TestReportingCache() override = default;
 
   void SetEndpoint(const ReportingEndpoint& reporting_endpoint) {
-    reporting_endpoints_[reporting_endpoint.group_key.network_isolation_key]
+    reporting_endpoints_[reporting_endpoint.group_key.network_anonymization_key]
         .push_back(reporting_endpoint);
   }
 
@@ -51,12 +51,12 @@ class TestReportingCache : public ReportingCache {
       const ReportingEndpointGroupKey& group_key) override {
     EXPECT_EQ(expected_origin_, group_key.origin);
     EXPECT_EQ(expected_group_, group_key.group_name);
-    return reporting_endpoints_[group_key.network_isolation_key];
+    return reporting_endpoints_[group_key.network_anonymization_key];
   }
 
   // Everything below is NOTREACHED.
   void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
-                 const NetworkIsolationKey& network_isolation_key,
+                 const NetworkAnonymizationKey& network_anonymization_key,
                  const GURL& url,
                  const std::string& user_agent,
                  const std::string& group_name,
@@ -139,7 +139,7 @@ class TestReportingCache : public ReportingCache {
     return false;
   }
   void OnParsedHeader(
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const url::Origin& origin,
       std::vector<ReportingEndpointGroup> parsed_header) override {
     NOTREACHED();
@@ -154,7 +154,7 @@ class TestReportingCache : public ReportingCache {
     NOTREACHED();
     return std::set<url::Origin>();
   }
-  void RemoveClient(const NetworkIsolationKey& network_isolation_key,
+  void RemoveClient(const NetworkAnonymizationKey& network_anonymization_key,
                     const url::Origin& origin) override {
     NOTREACHED();
   }
@@ -204,8 +204,9 @@ class TestReportingCache : public ReportingCache {
     NOTREACHED();
     return false;
   }
-  bool ClientExistsForTesting(const NetworkIsolationKey& network_isolation_key,
-                              const url::Origin& origin) const override {
+  bool ClientExistsForTesting(
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::Origin& origin) const override {
     NOTREACHED();
     return false;
   }
@@ -245,7 +246,7 @@ class TestReportingCache : public ReportingCache {
   const url::Origin expected_origin_;
   const std::string expected_group_;
 
-  std::map<NetworkIsolationKey, std::vector<ReportingEndpoint>>
+  std::map<NetworkAnonymizationKey, std::vector<ReportingEndpoint>>
       reporting_endpoints_;
   base::flat_set<base::UnguessableToken> expired_sources_;
 };
@@ -272,16 +273,16 @@ class ReportingEndpointManagerTest : public testing::Test {
       const GURL& endpoint,
       int priority = ReportingEndpoint::EndpointInfo::kDefaultPriority,
       int weight = ReportingEndpoint::EndpointInfo::kDefaultWeight,
-      const NetworkIsolationKey& network_isolation_key =
-          NetworkIsolationKey()) {
+      const NetworkAnonymizationKey& network_anonymization_key =
+          NetworkAnonymizationKey()) {
     ReportingEndpointGroupKey group_key(kGroupKey);
-    group_key.network_isolation_key = network_isolation_key;
+    group_key.network_anonymization_key = network_anonymization_key;
     cache_.SetEndpoint(ReportingEndpoint(
         group_key,
         ReportingEndpoint::EndpointInfo{endpoint, priority, weight}));
   }
 
-  const NetworkIsolationKey kNik;
+  const NetworkAnonymizationKey kNik;
   const url::Origin kOrigin = url::Origin::Create(GURL("https://origin/"));
   const SchemefulSite kSite = SchemefulSite(kOrigin);
   const std::string kGroup = "group";
@@ -319,8 +320,8 @@ TEST_F(ReportingEndpointManagerTest, BackedOffEndpoint) {
 
   SetEndpoint(kEndpoint);
 
-  endpoint_manager_->InformOfEndpointRequest(NetworkIsolationKey(), kEndpoint,
-                                             false);
+  endpoint_manager_->InformOfEndpointRequest(NetworkAnonymizationKey(),
+                                             kEndpoint, false);
 
   // After one failure, endpoint is in exponential backoff.
   ReportingEndpoint endpoint =
@@ -335,8 +336,8 @@ TEST_F(ReportingEndpointManagerTest, BackedOffEndpoint) {
   ASSERT_TRUE(endpoint2);
   EXPECT_EQ(kEndpoint, endpoint2.info.url);
 
-  endpoint_manager_->InformOfEndpointRequest(NetworkIsolationKey(), kEndpoint,
-                                             false);
+  endpoint_manager_->InformOfEndpointRequest(NetworkAnonymizationKey(),
+                                             kEndpoint, false);
 
   // After a second failure, endpoint is backed off again.
   ReportingEndpoint endpoint3 =
@@ -358,15 +359,15 @@ TEST_F(ReportingEndpointManagerTest, BackedOffEndpoint) {
   ASSERT_TRUE(endpoint5);
   EXPECT_EQ(kEndpoint, endpoint5.info.url);
 
-  endpoint_manager_->InformOfEndpointRequest(NetworkIsolationKey(), kEndpoint,
-                                             true);
-  endpoint_manager_->InformOfEndpointRequest(NetworkIsolationKey(), kEndpoint,
-                                             true);
+  endpoint_manager_->InformOfEndpointRequest(NetworkAnonymizationKey(),
+                                             kEndpoint, true);
+  endpoint_manager_->InformOfEndpointRequest(NetworkAnonymizationKey(),
+                                             kEndpoint, true);
 
   // Two more successful requests should reset the backoff to the initial delay
   // again.
-  endpoint_manager_->InformOfEndpointRequest(NetworkIsolationKey(), kEndpoint,
-                                             false);
+  endpoint_manager_->InformOfEndpointRequest(NetworkAnonymizationKey(),
+                                             kEndpoint, false);
 
   ReportingEndpoint endpoint6 =
       endpoint_manager_->FindEndpointForDelivery(kGroupKey);
@@ -429,7 +430,7 @@ TEST_F(ReportingEndpointManagerTest, Priority) {
   // The backoff policy we set up in the constructor means that a single failed
   // upload will take the primary endpoint out of contention.  This should cause
   // us to choose the backend endpoint.
-  endpoint_manager_->InformOfEndpointRequest(NetworkIsolationKey(),
+  endpoint_manager_->InformOfEndpointRequest(NetworkAnonymizationKey(),
                                              kPrimaryEndpoint, false);
   ReportingEndpoint endpoint2 =
       endpoint_manager_->FindEndpointForDelivery(kGroupKey);
@@ -510,21 +511,21 @@ TEST_F(ReportingEndpointManagerTest, ZeroWeights) {
   EXPECT_EQ(5, endpoint2_count);
 }
 
-// Check that ReportingEndpointManager distinguishes NetworkIsolationKeys.
-TEST_F(ReportingEndpointManagerTest, NetworkIsolationKey) {
+// Check that ReportingEndpointManager distinguishes NetworkAnonymizationKeys.
+TEST_F(ReportingEndpointManagerTest, NetworkAnonymizationKey) {
   const SchemefulSite kSite2(GURL("https://origin2/"));
 
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite, kSite);
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
-  const ReportingEndpointGroupKey kGroupKey1(kNetworkIsolationKey1, kOrigin,
+  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite, kSite);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const ReportingEndpointGroupKey kGroupKey1(kNetworkAnonymizationKey1, kOrigin,
                                              kGroup);
-  const ReportingEndpointGroupKey kGroupKey2(kNetworkIsolationKey2, kOrigin,
+  const ReportingEndpointGroupKey kGroupKey2(kNetworkAnonymizationKey2, kOrigin,
                                              kGroup);
 
-  // An Endpoint set for kNetworkIsolationKey1 should not affect
-  // kNetworkIsolationKey2.
+  // An Endpoint set for kNetworkAnonymizationKey1 should not affect
+  // kNetworkAnonymizationKey2.
   SetEndpoint(kEndpoint, ReportingEndpoint::EndpointInfo::kDefaultPriority,
-              0 /* weight */, kNetworkIsolationKey1);
+              0 /* weight */, kNetworkAnonymizationKey1);
   ReportingEndpoint endpoint =
       endpoint_manager_->FindEndpointForDelivery(kGroupKey1);
   ASSERT_TRUE(endpoint);
@@ -532,10 +533,10 @@ TEST_F(ReportingEndpointManagerTest, NetworkIsolationKey) {
   EXPECT_FALSE(endpoint_manager_->FindEndpointForDelivery(kGroupKey2));
   EXPECT_FALSE(endpoint_manager_->FindEndpointForDelivery(kGroupKey));
 
-  // Set the same Endpoint for kNetworkIsolationKey2, so both should be
+  // Set the same Endpoint for kNetworkAnonymizationKey2, so both should be
   // reporting to the same URL.
   SetEndpoint(kEndpoint, ReportingEndpoint::EndpointInfo::kDefaultPriority,
-              0 /* weight */, kNetworkIsolationKey2);
+              0 /* weight */, kNetworkAnonymizationKey2);
   endpoint = endpoint_manager_->FindEndpointForDelivery(kGroupKey1);
   ASSERT_TRUE(endpoint);
   EXPECT_EQ(kEndpoint, endpoint.info.url);
@@ -544,11 +545,11 @@ TEST_F(ReportingEndpointManagerTest, NetworkIsolationKey) {
   EXPECT_EQ(kEndpoint, endpoint.info.url);
   EXPECT_FALSE(endpoint_manager_->FindEndpointForDelivery(kGroupKey));
 
-  // An error reporting to that URL in the context of kNetworkIsolationKey1
+  // An error reporting to that URL in the context of kNetworkAnonymizationKey1
   // should only affect the Endpoint retrieved in the context of
-  // kNetworkIsolationKey1.
-  endpoint_manager_->InformOfEndpointRequest(kNetworkIsolationKey1, kEndpoint,
-                                             false);
+  // kNetworkAnonymizationKey1.
+  endpoint_manager_->InformOfEndpointRequest(kNetworkAnonymizationKey1,
+                                             kEndpoint, false);
   EXPECT_FALSE(endpoint_manager_->FindEndpointForDelivery(kGroupKey1));
   endpoint = endpoint_manager_->FindEndpointForDelivery(kGroupKey2);
   ASSERT_TRUE(endpoint);
@@ -556,14 +557,15 @@ TEST_F(ReportingEndpointManagerTest, NetworkIsolationKey) {
   EXPECT_FALSE(endpoint_manager_->FindEndpointForDelivery(kGroupKey));
 }
 
-TEST_F(ReportingEndpointManagerTest, NetworkIsolationKeyWithMultipleEndpoints) {
+TEST_F(ReportingEndpointManagerTest,
+       NetworkAnonymizationKeyWithMultipleEndpoints) {
   const SchemefulSite kSite2(GURL("https://origin2/"));
 
-  const NetworkIsolationKey kNetworkIsolationKey1(kSite, kSite);
-  const NetworkIsolationKey kNetworkIsolationKey2(kSite2, kSite2);
-  const ReportingEndpointGroupKey kGroupKey1(kNetworkIsolationKey1, kOrigin,
+  const NetworkAnonymizationKey kNetworkAnonymizationKey1(kSite, kSite);
+  const NetworkAnonymizationKey kNetworkAnonymizationKey2(kSite2, kSite2);
+  const ReportingEndpointGroupKey kGroupKey1(kNetworkAnonymizationKey1, kOrigin,
                                              kGroup);
-  const ReportingEndpointGroupKey kGroupKey2(kNetworkIsolationKey2, kOrigin,
+  const ReportingEndpointGroupKey kGroupKey2(kNetworkAnonymizationKey2, kOrigin,
                                              kGroup);
 
   const GURL kEndpoint1("https://endpoint1/");
@@ -571,23 +573,24 @@ TEST_F(ReportingEndpointManagerTest, NetworkIsolationKeyWithMultipleEndpoints) {
   const GURL kEndpoint3("https://endpoint3/");
   const int kMaxAttempts = 20;
 
-  // Add two Endpoints for kNetworkIsolationKey1, and a different one for
-  // kNetworkIsolationKey2.
+  // Add two Endpoints for kNetworkAnonymizationKey1, and a different one for
+  // kNetworkAnonymizationKey2.
   SetEndpoint(kEndpoint1, ReportingEndpoint::EndpointInfo::kDefaultPriority,
               ReportingEndpoint::EndpointInfo::kDefaultWeight,
-              kNetworkIsolationKey1);
+              kNetworkAnonymizationKey1);
   SetEndpoint(kEndpoint2, ReportingEndpoint::EndpointInfo::kDefaultPriority,
               ReportingEndpoint::EndpointInfo::kDefaultWeight,
-              kNetworkIsolationKey1);
+              kNetworkAnonymizationKey1);
   SetEndpoint(kEndpoint3, ReportingEndpoint::EndpointInfo::kDefaultPriority,
               ReportingEndpoint::EndpointInfo::kDefaultWeight,
-              kNetworkIsolationKey2);
+              kNetworkAnonymizationKey2);
 
   bool endpoint1_seen = false;
   bool endpoint2_seen = false;
 
-  // Make sure that calling FindEndpointForDelivery() with kNetworkIsolationKey1
-  // can return both of its endpoints, but not kNetworkIsolationKey2's endpoint.
+  // Make sure that calling FindEndpointForDelivery() with
+  // kNetworkAnonymizationKey1 can return both of its endpoints, but not
+  // kNetworkAnonymizationKey2's endpoint.
   for (int i = 0; i < kMaxAttempts; ++i) {
     ReportingEndpoint endpoint =
         endpoint_manager_->FindEndpointForDelivery(kGroupKey1);
@@ -629,40 +632,40 @@ TEST_F(ReportingEndpointManagerTest, CacheEviction) {
     EXPECT_TRUE(endpoint);
     EXPECT_FALSE(seen_endpoints.count(endpoint.info.url));
     seen_endpoints.insert(endpoint.info.url);
-    endpoint_manager_->InformOfEndpointRequest(NetworkIsolationKey(),
+    endpoint_manager_->InformOfEndpointRequest(NetworkAnonymizationKey(),
                                                endpoint.info.url, false);
   }
   // All endpoints should now be marked as bad.
   EXPECT_FALSE(endpoint_manager_->FindEndpointForDelivery(kGroupKey));
 
-  // Add another endpoint with a different NetworkIsolationKey;
-  const NetworkIsolationKey kDifferentNetworkIsolationKey(kSite, kSite);
+  // Add another endpoint with a different NetworkAnonymizationKey;
+  const NetworkAnonymizationKey kDifferentNetworkAnonymizationKey(kSite, kSite);
   const ReportingEndpointGroupKey kDifferentGroupKey(
-      kDifferentNetworkIsolationKey, kOrigin, kGroup);
+      kDifferentNetworkAnonymizationKey, kOrigin, kGroup);
   SetEndpoint(kEndpoint, ReportingEndpoint::EndpointInfo::kDefaultPriority,
               ReportingEndpoint::EndpointInfo::kDefaultWeight,
-              kDifferentNetworkIsolationKey);
-  // All endpoints associated with the empty NetworkIsolationKey should still be
-  // marked as bad.
+              kDifferentNetworkAnonymizationKey);
+  // All endpoints associated with the empty NetworkAnonymizationKey should
+  // still be marked as bad.
   EXPECT_FALSE(endpoint_manager_->FindEndpointForDelivery(kGroupKey));
 
-  // Make the endpoint added for the kDifferentNetworkIsolationKey as bad.
-  endpoint_manager_->InformOfEndpointRequest(kDifferentNetworkIsolationKey,
+  // Make the endpoint added for the kDifferentNetworkAnonymizationKey as bad.
+  endpoint_manager_->InformOfEndpointRequest(kDifferentNetworkAnonymizationKey,
                                              kEndpoint, false);
-  // The only endpoint for kDifferentNetworkIsolationKey should still be marked
-  // as bad.
+  // The only endpoint for kDifferentNetworkAnonymizationKey should still be
+  // marked as bad.
   EXPECT_FALSE(endpoint_manager_->FindEndpointForDelivery(kDifferentGroupKey));
-  // One of the endpoints for the empty NetworkIsolationKey should no longer be
-  // marked as bad, due to eviction.
+  // One of the endpoints for the empty NetworkAnonymizationKey should no longer
+  // be marked as bad, due to eviction.
   ReportingEndpoint endpoint =
       endpoint_manager_->FindEndpointForDelivery(kGroupKey);
   EXPECT_TRUE(endpoint);
 
   // Reporting a success for the (only) good endpoint for the empty
-  // NetworkIsolationKey should evict the entry for kNetworkIsolationKey, since
-  // the most recent FindEndpointForDelivery() call visited all of the empty
-  // NetworkIsolationKey's cached bad entries.
-  endpoint_manager_->InformOfEndpointRequest(NetworkIsolationKey(),
+  // NetworkAnonymizationKey should evict the entry for
+  // kNetworkAnonymizationKey, since the most recent FindEndpointForDelivery()
+  // call visited all of the empty NetworkAnonymizationKey's cached bad entries.
+  endpoint_manager_->InformOfEndpointRequest(NetworkAnonymizationKey(),
                                              endpoint.info.url, true);
 
   EXPECT_TRUE(endpoint_manager_->FindEndpointForDelivery(kDifferentGroupKey));
