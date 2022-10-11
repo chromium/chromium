@@ -115,28 +115,17 @@ std::string EscapeQueryParamValue(base::StringPiece text, bool use_plus) {
 absl::optional<base::FilePath> GetBaseDataDirectory(UpdaterScope scope) {
   absl::optional<base::FilePath> app_data_dir;
 #if BUILDFLAG(IS_WIN)
-  base::FilePath path;
-  if (!base::PathService::Get(scope == UpdaterScope::kSystem
-                                  ? base::DIR_PROGRAM_FILES
-                                  : base::DIR_LOCAL_APP_DATA,
-                              &path)) {
-    LOG(ERROR) << "Can't retrieve app data directory.";
-    return absl::nullopt;
-  }
-  app_data_dir = path;
+  app_data_dir = GetApplicationDataDirectory(scope);
 #elif BUILDFLAG(IS_MAC)
   app_data_dir = GetApplicationSupportDirectory(scope);
-  if (!app_data_dir) {
-    LOG(ERROR) << "Can't retrieve app data directory.";
-    return absl::nullopt;
-  }
 #elif BUILDFLAG(IS_LINUX)
   app_data_dir = GetApplicationDataDirectory(scope);
+#endif
   if (!app_data_dir) {
     LOG(ERROR) << "Can't retrieve app data directory.";
     return absl::nullopt;
   }
-#endif
+
   const auto product_data_dir =
       app_data_dir->AppendASCII(COMPANY_SHORTNAME_STRING)
           .AppendASCII(PRODUCT_FULLNAME_STRING);

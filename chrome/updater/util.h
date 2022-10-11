@@ -73,6 +73,12 @@ absl::optional<base::FilePath> GetVersionedInstallDirectory(UpdaterScope scope);
 // Does not create the directory if it does not exist.
 absl::optional<base::FilePath> GetBaseInstallDirectory(UpdaterScope scope);
 
+#if BUILDFLAG(IS_WIN)
+// Returns the program files directory for system scope or the local application
+// data directory for user scope.
+absl::optional<base::FilePath> GetApplicationDataDirectory(UpdaterScope scope);
+#endif
+
 #if BUILDFLAG(IS_MAC)
 // For example: ~/Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app
 absl::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope);
