@@ -5,14 +5,19 @@
 #include "third_party/blink/renderer/core/animation/view_timeline.h"
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_timeline_options.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 
 namespace blink {
+
+using InsetValueSequence =
+    const HeapVector<Member<V8UnionCSSNumericValueOrString>>;
 
 namespace {
 
@@ -79,6 +84,43 @@ LayoutUnit ComputeInset(const Length& inset, LayoutUnit viewport_size) {
   return MinimumValueForLength(inset, viewport_size);
 }
 
+Length ParseLength(const InsetValueSequence& array,
+                   wtf_size_t index,
+                   Length default_value,
+                   ExceptionState& exception_state) {
+  if (index >= array.size())
+    return default_value;
+
+  V8UnionCSSNumericValueOrString* value = array[index];
+  if (value->IsString()) {
+    if (value->GetAsString() != "auto") {
+      exception_state.ThrowTypeError("inset must be CSSNumericValue or auto");
+    }
+    // TODO(crbug.com/1317765): Not the correct default value.
+    // "auto" indicates to use the value of scroll-padding.
+    // Resolve once handled in pure CSS implementation.
+    return default_value;
+  } else {
+    CSSNumericValue* numeric_value = value->GetAsCSSNumericValue();
+    CSSUnitValue* value_as_percentage =
+        numeric_value->to(CSSPrimitiveValue::UnitType::kPercentage);
+    if (value_as_percentage)
+      return Length(value_as_percentage->value(), Length::Type::kPercent);
+
+    CSSUnitValue* value_as_px =
+        numeric_value->to(CSSPrimitiveValue::UnitType::kPixels);
+    if (value_as_px)
+      return Length(value_as_px->value(), Length::Type::kFixed);
+
+    // TODO(crbug.com/1317765): Support other length units and calc?
+    // Resolve once handled in pure CSS implementation.
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Unsupported inset: value must be percent or px");
+    return default_value;
+  }
+}
+
 }  // end namespace
 
 ViewTimeline* ViewTimeline::Create(Document& document,
@@ -98,8 +140,21 @@ ViewTimeline* ViewTimeline::Create(Document& document,
     document.UpdateStyleAndLayoutForNode(subject,
                                          DocumentUpdateReason::kJavaScript);
   }
+
+  // Parse insets.
+  const InsetValueSequence inset_array = options->inset();
+  if (inset_array.size() > 2) {
+    exception_state.ThrowTypeError("Invalid inset");
+    return nullptr;
+  }
+  Inset inset;
+  inset.start_side = ParseLength(inset_array, 0, Length(Length::Type::kFixed),
+                                 exception_state);
+  inset.end_side =
+      ParseLength(inset_array, 1, inset.start_side, exception_state);
+
   ViewTimeline* view_timeline = MakeGarbageCollected<ViewTimeline>(
-      &document, subject, orientation, Inset());
+      &document, subject, orientation, inset);
   view_timeline->SnapshotState();
   return view_timeline;
 }

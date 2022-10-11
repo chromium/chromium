@@ -7,4 +7,6 @@
 dictionary ViewTimelineOptions {
     Element subject;
     ScrollDirection axis = "block";
+    // DOMString is for keyword "auto".
+    sequence<(DOMString or CSSNumericValue)> inset = [];
 };

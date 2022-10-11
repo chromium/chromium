@@ -37,7 +37,7 @@
     container.scrollLeft = 0;
     await waitForNextFrame();
 
-    const anim = CreateViewTimelineOpacityAnimation(t, target, 'block');
+    const anim = CreateViewTimelineOpacityAnimation(t, target, {axis: 'block'});
     const timeline = anim.timeline;
     await anim.ready;
 

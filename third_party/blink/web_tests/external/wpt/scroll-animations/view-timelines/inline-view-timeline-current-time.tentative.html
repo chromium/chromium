@@ -48,7 +48,8 @@
     container.scrollLeft = 0;
     await waitForNextFrame();
 
-    const anim = CreateViewTimelineOpacityAnimation(t, target, 'inline');
+    const anim = CreateViewTimelineOpacityAnimation(t, target,
+                                                    {axis: 'inline'});
     const timeline = anim.timeline;
     await anim.ready;
 
@@ -118,7 +119,8 @@
     container.scrollLeft = 0;
     await waitForNextFrame();
 
-    const anim = CreateViewTimelineOpacityAnimation(t, target, 'inline');
+    const anim = CreateViewTimelineOpacityAnimation(t, target,
+                                                    {axis: 'inline'});
     const timeline = anim.timeline;
     await anim.ready;
 
@@ -174,7 +176,8 @@
     container.scrollLeft = 0;
     await waitForNextFrame();
 
-    const anim = CreateViewTimelineOpacityAnimation(t, target, 'inline');
+    const anim = CreateViewTimelineOpacityAnimation(t, target,
+                                                    {axis: 'inline'});
     const timeline = anim.timeline;
     await anim.ready;
 
@@ -226,7 +229,8 @@
     });
     await waitForNextFrame();
 
-    const anim = CreateViewTimelineOpacityAnimation(t, target, 'inline');
+    const anim = CreateViewTimelineOpacityAnimation(t, target,
+                                                    {axis: 'inline'});
     const timeline = anim.timeline;
     await anim.ready;
 
