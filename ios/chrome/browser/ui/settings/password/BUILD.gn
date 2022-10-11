@@ -86,6 +86,7 @@ source_set("password_ui") {
   ]
   deps = [
     ":password_constants",
+    ":title_view",
     "//base",
     "//components/autofill/core/common",
     "//components/google/core/common",
@@ -140,6 +141,27 @@ source_set("password_constants") {
   deps = [
     "//base",
     "//ios/chrome/browser/ui/list_model:list_model",
+  ]
+}
+
+source_set("title_view") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "branded_navigation_item_title_view.h",
+    "branded_navigation_item_title_view.mm",
+    "create_password_manager_title_view.h",
+    "create_password_manager_title_view.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/public/provider/chrome/browser/font:font_api",
+    "//ui/base",
+  ]
+  frameworks = [
+    "UIKit.framework",
+    "Foundation.framework",
   ]
 }
 

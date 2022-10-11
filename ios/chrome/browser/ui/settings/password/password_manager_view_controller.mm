@@ -38,6 +38,8 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/branded_navigation_item_title_view.h"
+#import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/password_exporter.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller_presentation_delegate.h"
@@ -318,12 +320,6 @@ bool ShouldShowSettingsUI() {
     _sharedPasswordAutoFillStatusManager =
         [PasswordAutoFillStatusManager sharedManager];
 
-    int titleStringID =
-        base::FeatureList::IsEnabled(
-            password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
-            ? IDS_IOS_PASSWORD_MANAGER
-            : IDS_IOS_PASSWORDS;
-    self.title = l10n_util::GetNSString(titleStringID);
     self.shouldDisableDoneButtonOnEdit = YES;
     self.searchTerm = @"";
     _passwordManagerEnabled = [[PrefBackedBoolean alloc]
@@ -361,12 +357,7 @@ bool ShouldShowSettingsUI() {
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  // Configure this now, rather than at initialization, because the superclass
-  // viewDidLoad will wipe out our value if we set it too early.
-  if (!ShouldShowSettingsUI()) {
-    self.navigationItem.largeTitleDisplayMode =
-        UINavigationItemLargeTitleDisplayModeAlways;
-  }
+  [self setUpTitle];
 
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
   self.tableView.accessibilityIdentifier = kPasswordsTableViewId;
@@ -1959,6 +1950,22 @@ bool ShouldShowSettingsUI() {
   return !(_browserState->GetPrefs()->IsManagedPreference(
                password_manager::prefs::kCredentialsEnableService) &&
            ![_passwordManagerEnabled value]);
+}
+
+// Configures the title of this ViewController. Results may vary based on
+// feature flags.
+- (void)setUpTitle {
+  int titleStringID =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
+          ? IDS_IOS_PASSWORD_MANAGER
+          : IDS_IOS_PASSWORDS;
+  self.title = l10n_util::GetNSString(titleStringID);
+
+  if (!ShouldShowSettingsUI()) {
+    self.navigationItem.titleView =
+        password_manager::CreatePasswordManagerTitleView(/*title=*/self.title);
+  }
 }
 
 #pragma mark - UITableViewDelegate

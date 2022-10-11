@@ -1806,6 +1806,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         <message name="IDS_IOS_PASSWORD_MANAGER_UPDATE_PASSWORD_TITLE" desc="Infobar title to update a password. [Length: 70em]">
         Update password
       </message>
+        <message name="IDS_IOS_PASSWORD_MANAGER_TITLE_VIEW_ACCESSIBILITY_LABEL" desc="The accessibility announcement read by Voice Over for the navigation bar title of the Password Manager.">
+          Google Password Manager
+        </message>
       <message name="IDS_IOS_SAFE_BROWSING_NO_PROTECTION_CONFIRMATION_DIALOG_TITLE" desc="Title for Safe Browsing no protection confirmation dialog.">
         Turn Off Safe Browsing?
       </message>
