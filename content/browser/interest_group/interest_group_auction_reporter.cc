@@ -110,25 +110,13 @@ void InterestGroupAuctionReporter::OnSellerWorkletFatalError(
     const SellerWinningBidInfo* seller_info,
     AuctionWorkletManager::FatalErrorType fatal_error_type,
     const std::vector<std::string>& errors) {
-  seller_worklet_handle_.reset();
-  switch (fatal_error_type) {
-    case AuctionWorkletManager::FatalErrorType::kScriptLoadFailed:
-      OnSellerReportResultComplete(seller_info,
-                                   /*signals_for_winner=*/absl::nullopt,
-                                   /*seller_report_url=*/absl::nullopt,
-                                   /*seller_ad_beacon_map=*/{},
-                                   /*pa_requests=*/{}, errors);
-      break;
-    case AuctionWorkletManager::FatalErrorType::kWorkletCrash:
-      // TODO(mmenke): Advance to the next worklet instead of failing.
-      OnReportingComplete(
-          false,
-          // Ignore default error message in case of crash. Instead, use a more
-          // specific one.
-          {base::StrCat({seller_info->auction_config->decision_logic_url.spec(),
-                         " crashed while trying to run reportResult()."})});
-      break;
-  }
+  // On a seller load failure or crash, act as if the worklet returned no
+  // results to advance to the next worklet.
+  OnSellerReportResultComplete(seller_info,
+                               /*signals_for_winner=*/absl::nullopt,
+                               /*seller_report_url=*/absl::nullopt,
+                               /*seller_ad_beacon_map=*/{},
+                               /*pa_requests=*/{}, errors);
 }
 
 void InterestGroupAuctionReporter::OnSellerWorkletReceived(
@@ -324,23 +312,11 @@ void InterestGroupAuctionReporter::OnBidderWorkletReceived(
 void InterestGroupAuctionReporter::OnBidderWorkletFatalError(
     AuctionWorkletManager::FatalErrorType fatal_error_type,
     const std::vector<std::string>& errors) {
-  bidder_worklet_handle_.reset();
-  // Crashes are considered fatal errors, while load errors currently are not.
-  if (fatal_error_type ==
-      AuctionWorkletManager::FatalErrorType::kWorkletCrash) {
-    // TODO(mmenke): Send reports instead of failing.
-    OnReportingComplete(
-        false,
-        // Ignore default error message in case of crash. Instead, use a more
-        // specific one.
-        {base::StrCat({winning_bid_info_.storage_interest_group->interest_group
-                           .bidding_url->spec(),
-                       " crashed while trying to run reportWin()."})});
-  } else {
-    OnBidderReportWinComplete(/*bidder_report_url=*/absl::nullopt,
-                              /*bidder_ad_beacon_map=*/{},
-                              /*pa_requests=*/{}, errors);
-  }
+  // Nothing more to do. Act as if the worklet completed as normal, with no
+  // results.
+  OnBidderReportWinComplete(/*bidder_report_url=*/absl::nullopt,
+                            /*bidder_ad_beacon_map=*/{},
+                            /*pa_requests=*/{}, errors);
 }
 
 void InterestGroupAuctionReporter::OnBidderReportWinComplete(

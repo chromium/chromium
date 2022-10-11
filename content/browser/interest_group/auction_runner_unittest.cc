@@ -6010,7 +6010,8 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
 }
 
 // If the winning bidder crashes while coming up with the reporting URL, the
-// auction should succeed, but reporting information should be dropped.
+// auction should succeed. While the bidder cannot provide any reporting
+// information, the seller's reporting information is respected.
 TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   StartStandardAuctionWithMockService();
 
@@ -6102,7 +6103,7 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   // Bidder1 crashes while running ReportWin.
   seller_worklet->WaitForReportResult();
   seller_worklet->InvokeReportResultCallback(
-      /*report_url=*/absl::nullopt,
+      /*report_url=*/GURL("https://seller.report.test/"),
       /*ad_beacon_map=*/{}, std::move(report_result_pa_requests));
   mock_auction_process_manager_->WaitForWinningBidderReload();
   bidder1_worklet =
@@ -6112,15 +6113,27 @@ TEST_F(AuctionRunnerTest, WinningBidderCrashWhileReporting) {
   auction_run_loop_->Run();
 
   EXPECT_THAT(result_.errors, testing::ElementsAre(base::StringPrintf(
-                                  "%s crashed while trying to run reportWin().",
-                                  kBidder1Url.spec().c_str())));
+                                  "%s crashed.", kBidder1Url.spec().c_str())));
   EXPECT_EQ(InterestGroupKey(kBidder1, kBidder1Name), result_.winning_group_id);
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
   EXPECT_TRUE(result_.ad_component_urls.empty());
-  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre(
+                                       GURL("https://seller.report.test/")));
   EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
-  EXPECT_THAT(result_.private_aggregation_requests,
-              testing::UnorderedElementsAre());
+  EXPECT_THAT(
+      result_.private_aggregation_requests,
+      testing::UnorderedElementsAre(
+          testing::Pair(kBidder1,
+                        ElementsAreRequests(
+                            kExpectedGenerateBidPrivateAggregationRequest)),
+          testing::Pair(kBidder2,
+                        ElementsAreRequests(
+                            kExpectedGenerateBidPrivateAggregationRequest)),
+          testing::Pair(kSeller,
+                        ElementsAreRequests(
+                            kExpectedScoreAdPrivateAggregationRequest,
+                            kExpectedScoreAdPrivateAggregationRequest,
+                            kExpectedReportResultPrivateAggregationRequest))));
   EXPECT_EQ(6, result_.bidder1_bid_count);
   EXPECT_EQ(4u, result_.bidder1_prev_wins.size());
   EXPECT_EQ(6, result_.bidder2_bid_count);
@@ -6164,11 +6177,11 @@ TEST_F(AuctionRunnerTest, ForDebuggingOnlyReporting) {
 
 // If the seller crashes before all bids are scored, the auction fails. If
 // the seller crashes during the reporting phase, the auction completes
-// successfully, but the bidder's reportWin() method is never invoked, and
-// reports are dropped. Seller load failures look the same to auctions, so this
-// test also covers load failures in the same places. Note that a seller worklet
-// load error while waiting for bidder worklet processes is covered in another
-// test, and looks exactly like a crash at the same point to the AuctionRunner.
+// successfully, and the bidder's reportWin() method is invoked. Seller load
+// failures look the same to auctions, so this test also covers load failures in
+// the same places. Note that a seller worklet load error while waiting for
+// bidder worklet processes is covered in another test, and looks exactly like a
+// crash at the same point to the AuctionRunner.
 TEST_F(AuctionRunnerTest, SellerCrash) {
   enum class CrashPhase {
     kLoad,
@@ -6247,8 +6260,16 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
               /*errors=*/{});
 
       seller_worklet->WaitForReportResult();
+      // Crash the seller.
       DCHECK_EQ(CrashPhase::kReportResult, crash_phase);
       seller_worklet.reset();
+
+      mock_auction_process_manager_->WaitForWinningBidderReload();
+      bidder2_worklet =
+          mock_auction_process_manager_->TakeBidderWorklet(kBidder2Url);
+      bidder2_worklet->WaitForReportWin();
+      bidder2_worklet->InvokeReportWinCallback(
+          /*report_url=*/GURL("https://bidder.report.test/"));
       break;
     }
 
@@ -6277,15 +6298,16 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
     } else {
       EXPECT_THAT(result_.errors,
                   testing::ElementsAre(base::StringPrintf(
-                      "%s crashed while trying to run reportResult().",
-                      kSellerUrl.spec().c_str())));
+                      "%s crashed.", kSellerUrl.spec().c_str())));
       // If the seller worklet crashes while calculating the report URL, the
       // auction completes, but reporting information is discarded.
       EXPECT_EQ(InterestGroupKey(kBidder2, kBidder2Name),
                 result_.winning_group_id);
       EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_url);
       EXPECT_TRUE(result_.ad_component_urls.empty());
-      EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+      EXPECT_THAT(
+          result_.report_urls,
+          testing::UnorderedElementsAre(GURL("https://bidder.report.test/")));
       EXPECT_TRUE(result_.ad_beacon_map.metadata.empty());
       EXPECT_TRUE(result_.private_aggregation_requests.empty());
       EXPECT_EQ(6, result_.bidder1_bid_count);
@@ -6449,7 +6471,8 @@ TEST_F(AuctionRunnerTest, ComponentAuctionOneBidderCrashesBeforeBidding) {
 // * Load failure
 // * Error running the script.
 //
-// The auction should always complete successfully.
+// The auction should always complete successfully, running the bidder report
+// script.
 TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
   interest_group_buyers_.emplace();
   // It's simpler to start a two bidder auction and throw away one of the
@@ -6538,41 +6561,23 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
         false);
     ASSERT_TRUE(component_seller_worklet);
     component_seller_worklet->WaitForReportResult();
+    std::string expected_error;
+
     if (test_case == TestCase::kCrash) {
       // A crash in the winning component seller worklet will cause the
       // reporting phase to abort, but the auction will otherwise complete
       // successfully.
       component_seller_worklet.reset();
-      auction_run_loop_->Run();
 
-      EXPECT_THAT(result_.errors,
-                  testing::UnorderedElementsAre(base::StringPrintf(
-                      "%s crashed while trying to run reportResult().",
-                      kComponentSeller1Url.spec().c_str())));
-      EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
-      EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+      expected_error = base::StringPrintf("%s crashed.",
+                                          kComponentSeller1Url.spec().c_str());
     } else if (test_case == TestCase::kLoadError) {
+      const char kLoadError[] = "Load error";
       // A load error in the winning component seller worklet will cause the
       // auction to continue to completion.
-      component_seller_worklet->ResetReceiverWithReason(
-          "Component seller reset reason");
+      component_seller_worklet->ResetReceiverWithReason(kLoadError);
 
-      // Winning bidder worklet should be reloaded and ReportWin() invoked.
-      mock_auction_process_manager_->WaitForWinningBidderReload();
-      bidder1_worklet =
-          mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-      bidder1_worklet->WaitForReportWin();
-      bidder1_worklet->InvokeReportWinCallback(GURL("https://report3.test/"));
-
-      // Auction completes.
-      auction_run_loop_->Run();
-
-      EXPECT_THAT(result_.errors, testing::UnorderedElementsAre(
-                                      "Component seller reset reason"));
-      EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
-      EXPECT_THAT(result_.report_urls,
-                  testing::UnorderedElementsAre(GURL("https://report1.test/"),
-                                                GURL("https://report3.test/")));
+      expected_error = kLoadError;
     } else if (test_case == TestCase::kScriptError) {
       // A script error in the winning component seller worklet will cause the
       // auction to continue to completion.
@@ -6581,23 +6586,25 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersReportResultFails) {
       component_seller_worklet->InvokeReportResultCallback(
           /*report_url=*/absl::nullopt, /*ad_beacon_map=*/{},
           /*pa_requests=*/{}, {kScriptError});
+      expected_error = kScriptError;
+    }
 
       // Winning bidder worklet should be reloaded and ReportWin() invoked.
-      mock_auction_process_manager_->WaitForWinningBidderReload();
-      bidder1_worklet =
-          mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
-      bidder1_worklet->WaitForReportWin();
-      bidder1_worklet->InvokeReportWinCallback(GURL("https://report3.test/"));
+    mock_auction_process_manager_->WaitForWinningBidderReload();
+    bidder1_worklet =
+        mock_auction_process_manager_->TakeBidderWorklet(kBidder1Url);
+    bidder1_worklet->WaitForReportWin();
+    bidder1_worklet->InvokeReportWinCallback(GURL("https://report3.test/"));
 
-      // Auction completes.
-      auction_run_loop_->Run();
+    // Auction completes.
+    auction_run_loop_->Run();
 
-      EXPECT_THAT(result_.errors, testing::UnorderedElementsAre(kScriptError));
-      EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
-      EXPECT_THAT(result_.report_urls,
-                  testing::UnorderedElementsAre(GURL("https://report1.test/"),
-                                                GURL("https://report3.test/")));
-    }
+    EXPECT_THAT(result_.errors, testing::UnorderedElementsAre(expected_error));
+    EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);
+    EXPECT_THAT(result_.report_urls,
+                testing::UnorderedElementsAre(GURL("https://report1.test/"),
+                                              GURL("https://report3.test/")));
+
     EXPECT_EQ(6, result_.bidder1_bid_count);
     CheckHistograms(InterestGroupAuction::AuctionResult::kSuccess,
                     /*expected_interest_groups=*/2, /*expected_owners=*/2,
