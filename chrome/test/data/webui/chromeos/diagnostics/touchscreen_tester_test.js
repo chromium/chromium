@@ -4,7 +4,9 @@
 
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertTrue} from '../../chai_assert.js';
+
+const SCREEN_MAX_LENGTH = 9999;
 
 export function touchscreenTesterTestSuite() {
   /** @type {?TouchscreenTesterElement} */
@@ -52,5 +54,9 @@ export function touchscreenTesterTestSuite() {
 
     const canvasDialog = touchscreenTesterElement.getDialog('canvas-dialog');
     assertTrue(canvasDialog.open);
+
+    const canvas = canvasDialog.querySelector('canvas');
+    assertEquals(canvas.width, SCREEN_MAX_LENGTH);
+    assertEquals(canvas.height, SCREEN_MAX_LENGTH);
   });
 }

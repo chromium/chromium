@@ -11,6 +11,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './touchscreen_tester.html.js';
 
+// To ensure the tester works when the user rotates their screen, we
+// need to set both the canvas width and height to be the larger number.
+// Rather than looking for the correct display and find their size
+// from backend, we take a simpler approach to set it as a very large
+// number. The number is based on largest known supported resolution.
+const SCREEN_MAX_LENGTH = 9999;
+
 const TouchscreenTesterElementBase = I18nMixin(PolymerElement);
 
 export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
@@ -61,6 +68,27 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
   private onStartClick(): void {
     this.getDialog('intro-dialog').close();
     this.getDialog('canvas-dialog').showModal();
+
+    this.setupCanvas();
+  }
+
+  /**
+   * Set up canvas width, height and drawing context.
+   */
+  private setupCanvas(): void {
+    const canvas =
+        this.shadowRoot!.querySelector('canvas') as HTMLCanvasElement;
+    assert(canvas);
+
+    canvas.width = SCREEN_MAX_LENGTH;
+    canvas.height = SCREEN_MAX_LENGTH;
+
+    // CSS in .html file does not have access to this element,
+    // therefore adjust it here to make the canvas cover the whole screen.
+    const topContainer =
+        this.getDialog('canvas-dialog')!.shadowRoot!.querySelector(
+            '.top-container') as HTMLElement;
+    topContainer!.style.display = 'none';
   }
 }
 
