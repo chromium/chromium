@@ -608,11 +608,33 @@ void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
     return;
   }
 
+  // Scrolling down during video fullscreen letterboxing will change the
+  // position of the whole clipped_onscreen_rect, which makes it not cover
+  // the whole screen with its black bar surroundings. In this case, the
+  // adjustment should be stopped. (http://crbug.com/1371976)
+  bool is_onscreen_rect_x_near_0 = IsWithinMargin(clipped_onscreen_rect.x(), 0);
+  if (is_onscreen_rect_x_near_0 &&
+      !IsWithinMargin(
+          clipped_onscreen_rect.y() * 2 + clipped_onscreen_rect.height(),
+          monitor_size.height())) {
+    // Not fullscreen letterboxing mode.
+    return;
+  }
+
+  bool is_onscreen_rect_y_near_0 = IsWithinMargin(clipped_onscreen_rect.y(), 0);
+  if (is_onscreen_rect_y_near_0 &&
+      !IsWithinMargin(
+          clipped_onscreen_rect.x() * 2 + clipped_onscreen_rect.width(),
+          monitor_size.width())) {
+    // Not fullscreen letterboxing mode.
+    return;
+  }
+
   // Adjust the onscreen rect to touch two screen borders, and also make sure
   // the onscreen rect be right in the center.
   // At the same time, make sure the origin position for clipped_onscreen_rect
   // with round-up integer so that no extra blank bar shows up.
-  if (IsWithinMargin(clipped_onscreen_rect.x(), 0)) {
+  if (is_onscreen_rect_x_near_0) {
     clipped_onscreen_rect.set_x(0);
     clipped_onscreen_rect.set_width(monitor_size.width());
     // Make clipped_onscreen_rect height even.
@@ -621,7 +643,8 @@ void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
     clipped_onscreen_rect.set_y(
         (monitor_size.height() - clipped_onscreen_rect.height()) / 2);
   }
-  if (IsWithinMargin(clipped_onscreen_rect.y(), 0)) {
+
+  if (is_onscreen_rect_y_near_0) {
     clipped_onscreen_rect.set_y(0);
     clipped_onscreen_rect.set_height(monitor_size.height());
     // Make clipped_onscreen_rect width even.
