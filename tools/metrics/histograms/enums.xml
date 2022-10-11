@@ -61332,6 +61332,7 @@ from previous Chrome versions.
   <int value="710700286" label="ImmersiveFullscreen:disabled"/>
   <int value="711424932" label="enable-cloud-print-xps"/>
   <int value="713946324" label="OmniboxSearchReadyIncognito:disabled"/>
+  <int value="714714531" label="VcControlsUi:enabled"/>
   <int value="714871827" label="FastPairSoftwareScanning:enabled"/>
   <int value="715617684" label="OriginTrials:disabled"/>
   <int value="715957869" label="SendTabToSelfSigninPromo:disabled"/>
@@ -62354,6 +62355,7 @@ from previous Chrome versions.
   <int value="1320450434" label="ArcUsbStorageUI:disabled"/>
   <int value="1323808967" label="PlaybackSpeedButton:disabled"/>
   <int value="1324043544" label="SyncSettingsCategorization:enabled"/>
+  <int value="1324080668" label="VcControlsUi:disabled"/>
   <int value="1324623677"
       label="SessionRestorePrioritizesBackgroundUseCases:enabled"/>
   <int value="1325459977" label="HandwritingGestureEditing:disabled"/>

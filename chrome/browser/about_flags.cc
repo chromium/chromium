@@ -9725,6 +9725,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHoldingSpaceSuggestionsName,
      flag_descriptions::kHoldingSpaceSuggestionsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHoldingSpaceSuggestions)},
+    {"vc-controls-ui", flag_descriptions::kVcControlsUiName,
+     flag_descriptions::kVcControlsUiDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kVcControlsUi)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

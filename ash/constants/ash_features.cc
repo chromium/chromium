@@ -2013,6 +2013,9 @@ BASE_FEATURE(kUserActivityPrediction,
              "UserActivityPrediction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable or disable the ChromeOS video conferencing controls UI.
+BASE_FEATURE(kVcControlsUi, "VcControlsUi", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable bordered key for virtual keyboard on ChromeOS.
 BASE_FEATURE(kVirtualKeyboardBorderedKey,
              "VirtualKeyboardBorderedKey",
@@ -3022,6 +3025,10 @@ bool IsUseStorkSmdsServerAddressEnabled() {
 
 bool IsVCBackgroundBlurEnabled() {
   return base::FeatureList::IsEnabled(kVCBackgroundBlur);
+}
+
+bool IsVcControlsUiEnabled() {
+  return base::FeatureList::IsEnabled(kVcControlsUi);
 }
 
 bool IsWallpaperFastRefreshEnabled() {

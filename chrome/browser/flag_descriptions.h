@@ -3900,6 +3900,9 @@ extern const char kDisableLacrosTtsSupportName[];
 extern const char kDisableLacrosTtsSupportDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+extern const char kVcControlsUiName[];
+extern const char kVcControlsUiDescription[];
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order. See top instructions for more.

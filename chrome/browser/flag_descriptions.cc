@@ -6769,6 +6769,10 @@ const char kDisableLacrosTtsSupportName[] = "Disable lacros tts support";
 const char kDisableLacrosTtsSupportDescription[] =
     "Disable lacros support for text to speech.";
 
+const char kVcControlsUiName[] = "Video conferencing controls UI";
+const char kVcControlsUiDescription[] =
+    "Enables the built-in video conference controls UI";
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // ============================================================================

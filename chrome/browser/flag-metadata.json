@@ -6855,6 +6855,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "vc-controls-ui",
+    "owners": [ "rtinkoff", "cros-status-area-eng@google.com" ],
+    "expiry_milestone": 117
+  },
+  {
     "name": "verbose-logging-in-nacl",
     "owners": [ "fabiansommer", "native-client-dev@googlegroups.com" ],
     // This flag is useful for debugging NaCl-related issues.
