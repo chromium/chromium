@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend.h"
 
 #include <jni.h>
+#include <cmath>
 #include <list>
 #include <memory>
 #include <utility>
@@ -56,6 +57,8 @@ namespace {
 // Tasks that are older than this timeout are cleaned up whenever Chrome starts
 // a new foreground session since it's likely that Chrome missed the response.
 constexpr base::TimeDelta kAsyncTaskTimeout = base::Seconds(30);
+constexpr char kRetryHistogramBase[] =
+    "PasswordManager.PasswordStoreAndroidBackend.Retry";
 constexpr char kUPMActiveHistogram[] =
     "PasswordManager.UnifiedPasswordManager.ActiveStatus";
 constexpr char kAliveAfterApiNotConnectedHistogram[] =
@@ -64,6 +67,7 @@ constexpr char kAliveAfterConnectionSuspendedHistogram[] =
     "PasswordManager.AliveAfterConnectionSuspendedError";
 constexpr base::TimeDelta kReportAliveAfterErrorDelay = base::Seconds(10);
 constexpr base::TimeDelta kTaskRetryTimeout = base::Seconds(16);
+constexpr int kMaxReportedRetryAttempts = 10;
 
 using base::UTF8ToUTF16;
 using password_manager::GetExpressionForFederatedMatching;
@@ -315,6 +319,62 @@ bool IsRetriableOperation(PasswordStoreOperation operation) {
   }
   NOTREACHED() << "Operation code not handled";
   return false;
+}
+
+std::string GetOperationName(PasswordStoreOperation operation) {
+  switch (operation) {
+    case PasswordStoreOperation::kGetAllLoginsAsync:
+      return "GetAllLoginsAsync";
+    case PasswordStoreOperation::kGetAutofillableLoginsAsync:
+      return "GetAutofillableLoginsAsync";
+    case PasswordStoreOperation::kGetAllLoginsForAccountAsync:
+      return "GetAllLoginsForAccountAsync";
+    case PasswordStoreOperation::kFillMatchingLoginsAsync:
+      return "FillMatchingLoginsAsync";
+    case PasswordStoreOperation::kAddLoginAsync:
+      return "AddLoginAsync";
+    case PasswordStoreOperation::kUpdateLoginAsync:
+      return "UpdateLoginAsync";
+    case PasswordStoreOperation::kRemoveLoginForAccount:
+      return "RemoveLoginForAccount";
+    case PasswordStoreOperation::kRemoveLoginAsync:
+      return "RemoveLoginAsync";
+    case PasswordStoreOperation::kRemoveLoginsByURLAndTimeAsync:
+      return "RemoveLoginsByURLAndTimeAsync";
+    case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
+      return "RemoveLoginsCreatedBetweenAsync";
+    case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
+      return "DisableAutoSignInForOriginsAsync";
+    case PasswordStoreOperation::kClearAllLocalPasswords:
+      return "ClearAllLocalPasswords";
+  }
+  NOTREACHED() << "Operation code not handled";
+  return "";
+}
+
+void RecordRetryHistograms(PasswordStoreOperation operation,
+                           AndroidBackendAPIErrorCode api_error_code,
+                           base::TimeDelta delay) {
+  // Delays are exponential (powers of 2). Original operation delay is 0.
+  int attempt = 1;
+  if (delay.InSeconds() >= 1)
+    attempt = log2(delay.InSeconds()) + 2;
+
+  // Record per-operation metrics
+  base::UmaHistogramSparse(
+      base::StrCat(
+          {kRetryHistogramBase, ".", GetOperationName(operation), ".APIError"}),
+      static_cast<int>(api_error_code));
+  base::UmaHistogramExactLinear(
+      base::StrCat(
+          {kRetryHistogramBase, ".", GetOperationName(operation), ".Attempt"}),
+      attempt, kMaxReportedRetryAttempts);
+
+  // Record aggregated metrics
+  base::UmaHistogramSparse(base::StrCat({kRetryHistogramBase, ".APIError"}),
+                           static_cast<int>(api_error_code));
+  base::UmaHistogramExactLinear(base::StrCat({kRetryHistogramBase, ".Attempt"}),
+                                attempt, kMaxReportedRetryAttempts);
 }
 
 bool IsUnrecoverableBackendError(AndroidBackendAPIErrorCode api_error_code,
@@ -1018,6 +1078,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
     // was retriable and the time limit was not reached.
     base::TimeDelta delay = reply->GetDelay();
     if (ShouldRetryOperation(operation, api_error, delay)) {
+      RecordRetryHistograms(operation, api_error_code, delay);
       switch (operation) {
         case PasswordStoreOperation::kGetAllLoginsAsync:
           RetryOperation(
