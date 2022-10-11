@@ -534,7 +534,6 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
       ntp_custom_background_service_(
           NtpCustomBackgroundServiceFactory::GetForProfile(profile_)),
-      web_contents_(web_ui->GetWebContents()),
       // We initialize navigation_start_time_ to a reasonable value to account
       // for the unlikely case where the NewTabPageHandler is created before we
       // received the DidStartNavigation event.
@@ -584,7 +583,7 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   // Create and register customize chrome entry on unified side panel
   if (customize_chrome::IsSidePanelEnabled()) {
     auto* customize_chrome_tab_helper =
-        CustomizeChromeTabHelper::FromWebContents(web_contents_);
+        CustomizeChromeTabHelper::FromWebContents(web_contents());
     customize_chrome_tab_helper->CreateAndRegisterEntry();
   }
 
@@ -600,7 +599,7 @@ NewTabPageUI::~NewTabPageUI() {
   // Deregister customize chrome entry on unified side panel
   if (customize_chrome::IsSidePanelEnabled()) {
     auto* customize_chrome_tab_helper =
-        CustomizeChromeTabHelper::FromWebContents(web_contents_);
+        CustomizeChromeTabHelper::FromWebContents(web_contents());
     customize_chrome_tab_helper->DeregisterEntry();
   }
 }
@@ -669,7 +668,7 @@ void NewTabPageUI::BindInterface(
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<realbox::mojom::PageHandler> pending_page_handler) {
   realbox_handler_ = std::make_unique<RealboxHandler>(
-      std::move(pending_page_handler), profile_, web_contents_);
+      std::move(pending_page_handler), profile_, web_contents());
 }
 
 void NewTabPageUI::BindInterface(
@@ -714,7 +713,7 @@ void NewTabPageUI::BindInterface(
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<photos::mojom::PhotosHandler> pending_receiver) {
   photos_handler_ = std::make_unique<PhotosHandler>(std::move(pending_receiver),
-                                                    profile_, web_contents_);
+                                                    profile_, web_contents());
 }
 
 void NewTabPageUI::BindInterface(
@@ -734,7 +733,7 @@ void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<chrome_cart::mojom::CartHandler>
         pending_page_handler) {
   cart_handler_ = std::make_unique<CartHandler>(std::move(pending_page_handler),
-                                                profile_, web_contents_);
+                                                profile_, web_contents());
 }
 
 void NewTabPageUI::CreatePageHandler(
@@ -745,7 +744,7 @@ void NewTabPageUI::CreatePageHandler(
   page_handler_ = std::make_unique<NewTabPageHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       ntp_custom_background_service_, theme_service_,
-      LogoServiceFactory::GetForProfile(profile_), web_contents_,
+      LogoServiceFactory::GetForProfile(profile_), web_contents(),
       navigation_start_time_);
 }
 
@@ -755,7 +754,7 @@ void NewTabPageUI::CreateCustomizeThemesHandler(
     mojo::PendingReceiver<customize_themes::mojom::CustomizeThemesHandler>
         pending_handler) {
   customize_themes_handler_ = std::make_unique<ChromeCustomizeThemesHandler>(
-      std::move(pending_client), std::move(pending_handler), web_contents_,
+      std::move(pending_client), std::move(pending_handler), web_contents(),
       profile_);
 }
 
@@ -779,15 +778,17 @@ void NewTabPageUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
   most_visited_page_handler_ = std::make_unique<MostVisitedHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
-      web_contents_, GURL(chrome::kChromeUINewTabPageURL),
+      web_contents(), GURL(chrome::kChromeUINewTabPageURL),
       navigation_start_time_);
   most_visited_page_handler_->EnableCustomLinks(IsCustomLinksEnabled());
   most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
 }
 
 void NewTabPageUI::OnColorProviderChanged() {
+  if (!web_contents())
+    return;
   base::Value::Dict update;
-  const ui::ColorProvider& color_provider = web_contents_->GetColorProvider();
+  const ui::ColorProvider& color_provider = web_contents()->GetColorProvider();
   auto background_color = color_provider.GetColor(kColorNewTabPageBackground);
   update.Set("backgroundColor", skia::SkColorToHexString(background_color));
   content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
