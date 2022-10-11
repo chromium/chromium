@@ -1,4 +1,5 @@
-<style include="settings-shared md-select iron-flex iron-flex-alignment">
+<style include="cr-shared-style settings-shared md-select iron-flex
+  iron-flex-alignment">
   .indented {
     align-self: stretch;
     margin-inline-start: var(--cr-section-indent-padding);
@@ -328,6 +329,7 @@
     </div>
     <settings-dropdown-menu
         id="nightLightScheduleTypeDropDown"
+        class="cr-row-gap"
         label="$i18n{displayNightLightScheduleLabel}"
         aria-describedby="nightLightScheduleSubLabel"
         pref="{{prefs.ash.night_light.schedule_type}}"
