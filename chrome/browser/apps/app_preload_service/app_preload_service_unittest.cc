@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
+#include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -31,7 +32,7 @@ static constexpr char kApsStateManager[] =
     "apps.app_preload_service.state_manager";
 
 static constexpr char kServerUrl[] =
-    "http://localhost:9876/v1/app_provisioning/apps";
+    "http://localhost:9876/v1/app_provisioning/apps?alt=proto";
 
 const base::Value::Dict& GetStateManager(Profile* profile) {
   return profile->GetPrefs()->GetDict(kApsStateManager);
@@ -111,8 +112,12 @@ TEST_F(AppPreloadServiceTest, ServiceAccessPerProfile) {
 }
 
 TEST_F(AppPreloadServiceTest, FirstLoginPrefSet) {
-  // TODO: flesh out the response as response processing code is added.
-  url_loader_factory_.AddResponse(kServerUrl, "empty content");
+  proto::AppProvisioningResponse response;
+  auto* app = response.add_apps_to_install();
+  auto* app_group = app->mutable_app_group();
+  app_group->set_name("Peanut Types");
+
+  url_loader_factory_.AddResponse(kServerUrl, response.SerializeAsString());
 
   auto flow_completed =
       GetStateManager(GetProfile()).FindBool(kFirstLoginFlowCompletedKey);

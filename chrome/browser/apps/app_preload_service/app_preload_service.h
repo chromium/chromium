@@ -25,6 +25,8 @@ namespace apps {
 
 class DeviceInfoManager;
 
+class PreloadAppDefinition;
+
 struct DeviceInfo;
 
 class AppPreloadService : public KeyedService {
@@ -50,7 +52,7 @@ class AppPreloadService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(AppPreloadServiceTest, FirstLoginPrefSet);
 
   // Processes the list of apps retrieved by the server connector.
-  void OnGetAppsForFirstLoginCompleted();
+  void OnGetAppsForFirstLoginCompleted(std::vector<PreloadAppDefinition> apps);
 
   const base::Value::Dict& GetStateManager() const;
 

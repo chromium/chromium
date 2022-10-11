@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
+#include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -74,7 +75,8 @@ void AppPreloadService::StartAppInstallationForFirstLogin(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AppPreloadService::OnGetAppsForFirstLoginCompleted() {
+void AppPreloadService::OnGetAppsForFirstLoginCompleted(
+    std::vector<PreloadAppDefinition> apps) {
   ScopedDictPrefUpdate(profile_->GetPrefs(), prefs::kApsStateManager)
       ->Set(kFirstLoginFlowCompletedKey, true);
 

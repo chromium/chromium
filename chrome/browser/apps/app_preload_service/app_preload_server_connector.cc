@@ -8,14 +8,17 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
+#include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
+#include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace {
 
 // TODO(b/249427934): Temporary test data.
 static constexpr char kServerUrl[] =
-    "http://localhost:9876/v1/app_provisioning/apps";
+    "http://localhost:9876/v1/app_provisioning/apps?alt=proto";
 
 // TODO(b/244500232): Temporary placeholder value. To be updated once server
 // design is completed. Maximum accepted size of an APS Response. 1MB.
@@ -96,7 +99,43 @@ void AppPreloadServerConnector::GetAppsForFirstLogin(
 void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
     GetInitialAppsCallback callback,
     std::unique_ptr<std::string> response_body) {
-  std::move(callback).Run();
+  int response_code = 0;
+  if (loader_->ResponseInfo()) {
+    response_code = loader_->ResponseInfo()->headers->response_code();
+  }
+  const int net_error = loader_->NetError();
+  loader_.reset();
+
+  // TODO(b/249646015): Pass error states to the caller to handle.
+  if (net_error == net::Error::ERR_INSUFFICIENT_RESOURCES) {
+    LOG(ERROR) << "Network request failed due to insufficent resources.";
+    std::move(callback).Run({});
+    return;
+  }
+
+  // HTTP error codes in the 500-599 range represent server errors.
+  const bool server_error =
+      net_error != net::OK || (response_code >= 500 && response_code < 600);
+  if (server_error || response_body->empty()) {
+    LOG(ERROR) << "Server error.";
+    std::move(callback).Run({});
+    return;
+  }
+
+  proto::AppProvisioningResponse response;
+
+  if (!response.ParseFromString(*response_body)) {
+    LOG(ERROR) << "Parsing failed";
+    std::move(callback).Run(std::vector<PreloadAppDefinition>());
+    return;
+  }
+
+  std::vector<PreloadAppDefinition> apps;
+  for (const auto& app : response.apps_to_install()) {
+    apps.emplace_back(app);
+  }
+
+  std::move(callback).Run(std::move(apps));
 }
 
 }  // namespace apps
