@@ -108,7 +108,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   LayoutUnit MainAxisContentExtent(LayoutUnit sum_hypothetical_main_size) const;
 
   void HandleOutOfFlowPositionedItems(
-      const HeapVector<Member<LayoutBox>>& oof_children);
+      HeapVector<Member<LayoutBox>>& oof_children);
 
   void AdjustButtonBaseline(LayoutUnit final_content_cross_size);
 

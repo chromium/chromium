@@ -242,19 +242,35 @@ AxisEdge CrossAxisStaticPositionEdge(const ComputedStyle& style,
 }  // namespace
 
 void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
-    const HeapVector<Member<LayoutBox>>& oof_children) {
+    HeapVector<Member<LayoutBox>>& oof_children) {
+  HeapVector<Member<LayoutBox>> oofs;
+  std::swap(oofs, oof_children);
+
+  bool should_process_block_end = true;
+  bool should_process_block_center = true;
+  const LayoutUnit previous_consumed_block_size =
+      BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
+
   // If fragmentation is present we place all the OOF candidates within the
   // last fragment. The last fragment has the most up-to-date container sizing
   // info.
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    if (container_builder_.DidBreakSelf() ||
-        container_builder_.HasChildBreakInside())
-      return;
-    // Recompute the total block size in case |total_intrinsic_block_size_|
-    // changed as a result of fragmentation.
-    total_block_size_ = ComputeBlockSizeForFragment(
-        ConstraintSpace(), Style(), BorderPadding(),
-        total_intrinsic_block_size_, container_builder_.InlineSize());
+    should_process_block_end = !container_builder_.DidBreakSelf() &&
+                               !container_builder_.HasChildBreakInside();
+    if (should_process_block_end) {
+      // Recompute the total block size in case |total_intrinsic_block_size_|
+      // changed as a result of fragmentation. Note that center aligned OOFs
+      // may receive an incorrect static position if the total block size is
+      // different as a result of fragmentation since we only update this once
+      // we reach the last fragment.
+      total_block_size_ = ComputeBlockSizeForFragment(
+          ConstraintSpace(), Style(), BorderPadding(),
+          total_intrinsic_block_size_, container_builder_.InlineSize());
+    } else {
+      LayoutUnit center = total_block_size_ / 2;
+      should_process_block_center = center - previous_consumed_block_size <=
+                                    FragmentainerCapacity(ConstraintSpace());
+    }
   }
 
   using InlineEdge = NGLogicalStaticPosition::InlineEdge;
@@ -264,14 +280,12 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   border_scrollbar_padding.block_start =
       OriginalBorderScrollbarPaddingBlockStart();
 
-  const LayoutUnit previous_consumed_block_size =
-      BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
   LogicalSize total_fragment_size = {container_builder_.InlineSize(),
                                      total_block_size_};
   total_fragment_size =
       ShrinkLogicalSize(total_fragment_size, border_scrollbar_padding);
 
-  for (LayoutBox* oof_child : oof_children) {
+  for (LayoutBox* oof_child : oofs) {
     NGBlockNode child(oof_child);
 
     AxisEdge main_axis_edge = MainAxisStaticPositionEdge(Style(), is_column_);
@@ -279,40 +293,44 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
         CrossAxisStaticPositionEdge(Style(), child.Style());
 
     // This code block just collects UMA stats.
-    const auto& style = Style();
-    const auto& child_style = child.Style();
-    const PhysicalToLogical<Length> insets_in_flexbox_writing_mode(
-        Style().GetWritingDirection(), child_style.Top(), child_style.Right(),
-        child_style.Bottom(), child_style.Left());
-    if (is_column_) {
-      const ItemPosition normalized_alignment =
-          FlexLayoutAlgorithm::AlignmentForChild(style, child_style);
-      const ItemPosition default_justify_self_behavior =
-          child.IsReplaced() ? ItemPosition::kStart : ItemPosition::kStretch;
-      const ItemPosition normalized_justify =
-          FlexLayoutAlgorithm::TranslateItemPosition(
-              style, child_style,
-              child_style.ResolvedJustifySelf(default_justify_self_behavior)
-                  .GetPosition());
+    if (!IsResumingLayout(BreakToken())) {
+      const auto& style = Style();
+      const auto& child_style = child.Style();
+      const PhysicalToLogical<Length> insets_in_flexbox_writing_mode(
+          Style().GetWritingDirection(), child_style.Top(), child_style.Right(),
+          child_style.Bottom(), child_style.Left());
+      if (is_column_) {
+        const ItemPosition normalized_alignment =
+            FlexLayoutAlgorithm::AlignmentForChild(style, child_style);
+        const ItemPosition default_justify_self_behavior =
+            child.IsReplaced() ? ItemPosition::kStart : ItemPosition::kStretch;
+        const ItemPosition normalized_justify =
+            FlexLayoutAlgorithm::TranslateItemPosition(
+                style, child_style,
+                child_style.ResolvedJustifySelf(default_justify_self_behavior)
+                    .GetPosition());
 
-      const bool are_cross_axis_insets_auto =
-          insets_in_flexbox_writing_mode.InlineStart().IsAuto() &&
-          insets_in_flexbox_writing_mode.InlineEnd().IsAuto();
+        const bool are_cross_axis_insets_auto =
+            insets_in_flexbox_writing_mode.InlineStart().IsAuto() &&
+            insets_in_flexbox_writing_mode.InlineEnd().IsAuto();
 
-      if (normalized_alignment != normalized_justify &&
-          are_cross_axis_insets_auto) {
-        UseCounter::Count(Node().GetDocument(), WebFeature::kFlexboxNewAbsPos);
+        if (normalized_alignment != normalized_justify &&
+            are_cross_axis_insets_auto) {
+          UseCounter::Count(Node().GetDocument(),
+                            WebFeature::kFlexboxNewAbsPos);
+        }
       }
-    }
-    if (main_axis_edge != AxisEdge::kStart) {
-      const bool are_main_axis_insets_auto =
-          is_column_ ? insets_in_flexbox_writing_mode.BlockStart().IsAuto() &&
-                           insets_in_flexbox_writing_mode.BlockEnd().IsAuto()
-                     : insets_in_flexbox_writing_mode.InlineStart().IsAuto() &&
-                           insets_in_flexbox_writing_mode.InlineEnd().IsAuto();
-      if (are_main_axis_insets_auto) {
-        UseCounter::Count(Node().GetDocument(),
-                          WebFeature::kFlexboxAbsPosJustifyContent);
+      if (main_axis_edge != AxisEdge::kStart) {
+        const bool are_main_axis_insets_auto =
+            is_column_
+                ? insets_in_flexbox_writing_mode.BlockStart().IsAuto() &&
+                      insets_in_flexbox_writing_mode.BlockEnd().IsAuto()
+                : insets_in_flexbox_writing_mode.InlineStart().IsAuto() &&
+                      insets_in_flexbox_writing_mode.InlineEnd().IsAuto();
+        if (are_main_axis_insets_auto) {
+          UseCounter::Count(Node().GetDocument(),
+                            WebFeature::kFlexboxAbsPosJustifyContent);
+        }
       }
     }
 
@@ -324,6 +342,25 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
     LogicalOffset offset = border_scrollbar_padding.StartOffset();
 
     // Determine the static-position based off the axis-edge.
+    if (block_axis_edge == AxisEdge::kStart) {
+      DCHECK(!IsResumingLayout(BreakToken()));
+      block_edge = BlockEdge::kBlockStart;
+    } else if (block_axis_edge == AxisEdge::kCenter) {
+      if (!should_process_block_center) {
+        oof_children.emplace_back(oof_child);
+        continue;
+      }
+      block_edge = BlockEdge::kBlockCenter;
+      offset.block_offset += total_fragment_size.block_size / 2;
+    } else {
+      if (!should_process_block_end) {
+        oof_children.emplace_back(oof_child);
+        continue;
+      }
+      block_edge = BlockEdge::kBlockEnd;
+      offset.block_offset += total_fragment_size.block_size;
+    }
+
     if (inline_axis_edge == AxisEdge::kStart) {
       inline_edge = InlineEdge::kInlineStart;
     } else if (inline_axis_edge == AxisEdge::kCenter) {
@@ -332,16 +369,6 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
     } else {
       inline_edge = InlineEdge::kInlineEnd;
       offset.inline_offset += total_fragment_size.inline_size;
-    }
-
-    if (block_axis_edge == AxisEdge::kStart) {
-      block_edge = BlockEdge::kBlockStart;
-    } else if (block_axis_edge == AxisEdge::kCenter) {
-      block_edge = BlockEdge::kBlockCenter;
-      offset.block_offset += total_fragment_size.block_size / 2;
-    } else {
-      block_edge = BlockEdge::kBlockEnd;
-      offset.block_offset += total_fragment_size.block_size;
     }
 
     // Make the child offset relative to our fragment.
