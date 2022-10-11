@@ -11,6 +11,7 @@
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point.h"
@@ -392,6 +393,10 @@ void PrintTo(const Vector2dF& vector, ::std::ostream* os) {
 
 void PrintTo(const Vector3dF& vector, ::std::ostream* os) {
   *os << vector.ToString();
+}
+
+void PrintTo(const MaskFilterInfo& info, ::std::ostream* os) {
+  *os << info.ToString();
 }
 
 }  // namespace gfx

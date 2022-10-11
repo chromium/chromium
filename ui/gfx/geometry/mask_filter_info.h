@@ -13,6 +13,7 @@
 
 namespace gfx {
 
+class AxisTransform2d;
 class Transform;
 
 // This class defines a mask filter to be applied to the given rect.
@@ -57,9 +58,12 @@ class GEOMETRY_SKIA_EXPORT MaskFilterInfo {
   // True if this contains no effective mask information.
   bool IsEmpty() const { return rounded_corner_bounds_.IsEmpty(); }
 
-  // Transform the mask information. Returns false if the transform
+  // Transform the mask filter information. Returns false if the transform
   // cannot be applied.
-  bool Transform(const gfx::Transform& transform);
+  bool ApplyTransform(const Transform& transform);
+
+  // Transform the mask filter information. This form always succeeds.
+  void ApplyTransform(const AxisTransform2d& transform);
 
   std::string ToString() const;
 
@@ -80,6 +84,11 @@ inline bool operator==(const MaskFilterInfo& lhs, const MaskFilterInfo& rhs) {
 inline bool operator!=(const MaskFilterInfo& lhs, const MaskFilterInfo& rhs) {
   return !(lhs == rhs);
 }
+
+// This is declared here for use in gtest-based unit tests but is defined in
+// the //ui/gfx:test_support target. Depend on that to use this in your unit
+// test. This should not be used in production code - call ToString() instead.
+void PrintTo(const MaskFilterInfo&, ::std::ostream* os);
 
 }  // namespace gfx
 

@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -65,12 +66,12 @@ TEST(LinearGradientTest, Reverse) {
   EXPECT_EQ(gradient.steps()[2].alpha, 0);
 }
 
-TEST(LinearGradientTest, Rotate) {
+TEST(LinearGradientTest, ApplyTransform) {
   {
     LinearGradient gradient(45);
     gfx::Transform transform;
     transform.Translate(10, 50);
-    gradient.Transform(transform);
+    gradient.ApplyTransform(transform);
     EXPECT_EQ(45, gradient.angle());
   }
   // Scale can change the angle.
@@ -78,15 +79,33 @@ TEST(LinearGradientTest, Rotate) {
     LinearGradient gradient(45);
     gfx::Transform transform;
     transform.Scale(1, 10);
-    gradient.Transform(transform);
+    gradient.ApplyTransform(transform);
     EXPECT_EQ(84, gradient.angle());
   }
   {
     LinearGradient gradient(45);
     gfx::Transform transform;
     transform.Rotate(45);
-    gradient.Transform(transform);
+    gradient.ApplyTransform(transform);
     EXPECT_EQ(0, gradient.angle());
+  }
+}
+
+TEST(LinearGradientTest, ApplyAxisTransform2d) {
+  {
+    LinearGradient gradient(45);
+    auto transform = AxisTransform2d::FromScaleAndTranslation(
+        Vector2dF(1, 1), Vector2dF(10, 50));
+    gradient.ApplyTransform(transform);
+    EXPECT_EQ(45, gradient.angle());
+  }
+  // Scale can change the angle.
+  {
+    LinearGradient gradient(45);
+    auto transform = AxisTransform2d::FromScaleAndTranslation(
+        Vector2dF(1, 10), Vector2dF(10, 50));
+    gradient.ApplyTransform(transform);
+    EXPECT_EQ(84, gradient.angle());
   }
 }
 

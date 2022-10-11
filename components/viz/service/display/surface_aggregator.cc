@@ -58,9 +58,7 @@ struct MaskFilterInfoExt {
                     const gfx::Transform target_transform)
       : mask_filter_info(mask_filter_info_arg),
         is_fast_rounded_corner(is_fast_rounded_corner_arg) {
-    if (mask_filter_info.IsEmpty())
-      return;
-    bool success = mask_filter_info.Transform(target_transform);
+    bool success = mask_filter_info.ApplyTransform(target_transform);
     DCHECK(success);
   }
 

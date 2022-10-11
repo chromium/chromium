@@ -2479,11 +2479,8 @@ TEST_P(WaylandBufferManagerTest, CanSetRoundedCorners) {
           // If submission in px is allowed, there is no need to convert px to
           // dip.
           if (!is_in_px) {
-            gfx::Transform scale_transform;
             // Ozone/Wayland applies ceiled scale factor if it's fractional.
-            scale_transform.Scale(1.f / std::ceil(scale_factor),
-                                  1.f / std::ceil(scale_factor));
-            scale_transform.TransformRRectF(&rounded_clip_bounds_dip);
+            rounded_clip_bounds_dip.Scale(1.f / std::ceil(scale_factor));
           }
 
           EXPECT_EQ(mock_surface_of_subsurface->augmented_surface()

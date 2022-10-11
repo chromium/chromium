@@ -9,7 +9,6 @@
 #include <string>
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkM44.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/matrix44.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -20,7 +19,6 @@ class AxisTransform2d;
 class BoxF;
 class Rect;
 class RectF;
-class RRectF;
 class Point;
 class PointF;
 class Point3F;
@@ -344,10 +342,6 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // TODO(crbug.com/1359528): Remove these in favor of MapRect().
   void TransformRect(RectF* rect) const;
-
-  // Applies transformation on the given |rrect|. Returns false if the transform
-  // matrix cannot be applied to rrect.
-  bool TransformRRectF(RRectF* rrect) const;
 
   // Returns the box with transformation applied on the given box. The returned
   // box will be the smallest axis aligned bounding box containing the

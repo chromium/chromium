@@ -19,7 +19,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quad_f.h"
-#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -2793,41 +2792,6 @@ TEST(XFormTest, InverseMapIntRect) {
 
   auto singular = Transform::MakeScale(0.f);
   EXPECT_FALSE(singular.InverseMapRect(Rect(1, 2, 3, 4)));
-}
-
-TEST(XFormTest, TransformRRectF) {
-  Transform translation;
-  translation.Translate(-3.f, -7.f);
-  RRectF rrect(1.f, 2.f, 20.f, 25.f, 5.f);
-  RRectF expected(-2.f, -5.f, 20.f, 25.f, 5.f);
-  EXPECT_TRUE(translation.TransformRRectF(&rrect));
-  EXPECT_EQ(expected.ToString(), rrect.ToString());
-
-  auto rotation_90_clock = Transform::Make90degRotation();
-
-  rrect = RRectF(gfx::RectF(0, 0, 20.f, 25.f),
-                 gfx::RoundedCornersF(1.f, 2.f, 3.f, 4.f));
-  expected = RRectF(gfx::RectF(-25.f, 0, 25.f, 20.f),
-                    gfx::RoundedCornersF(4.f, 1.f, 2.f, 3.f));
-  EXPECT_TRUE(rotation_90_clock.TransformRRectF(&rrect));
-  EXPECT_EQ(expected.ToString(), rrect.ToString());
-
-  Transform rotation_90_unrounded;
-  rotation_90_unrounded.Rotate(90.0);
-  rrect = RRectF(gfx::RectF(0, 0, 20.f, 25.f),
-                 gfx::RoundedCornersF(1.f, 2.f, 3.f, 4.f));
-  EXPECT_TRUE(rotation_90_unrounded.Preserves2dAxisAlignment());
-  EXPECT_TRUE(rotation_90_unrounded.TransformRRectF(&rrect));
-  EXPECT_EQ(expected.ToString(), rrect.ToString());
-
-  Transform scale;
-  scale.Scale(2.f, 2.f);
-  rrect = RRectF(gfx::RectF(0, 0, 20.f, 25.f),
-                 gfx::RoundedCornersF(1.f, 2.f, 3.f, 4.f));
-  expected = RRectF(gfx::RectF(0, 0, 40.f, 50.f),
-                    gfx::RoundedCornersF(2.f, 4.f, 6.f, 8.f));
-  EXPECT_TRUE(scale.TransformRRectF(&rrect));
-  EXPECT_EQ(expected.ToString(), rrect.ToString());
 }
 
 TEST(XFormTest, MapBox) {

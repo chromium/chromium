@@ -1459,9 +1459,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
     auto rounded_corners_rect = state_.rounded_corners_bounds;
 
     // Convert from dip to px.
-    gfx::Transform scale_transform;
-    scale_transform.Scale(device_scale_factor, device_scale_factor);
-    scale_transform.TransformRRectF(&rounded_corners_rect);
+    rounded_corners_rect.Scale(device_scale_factor);
 
     // Set the mask.
     msk = gfx::MaskFilterInfo(rounded_corners_rect);

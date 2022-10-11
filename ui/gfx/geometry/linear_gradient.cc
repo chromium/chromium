@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/geometry/angle_conversions.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -48,17 +49,28 @@ void LinearGradient::ReverseSteps() {
     steps_[i].fraction = 1.f - steps_[i].fraction;
 }
 
-void LinearGradient::Transform(const gfx::Transform& transform) {
-  if (transform.IsIdentity())
+void LinearGradient::ApplyTransform(const Transform& transform) {
+  if (transform.IsIdentityOrTranslation())
     return;
 
-  float radian = gfx::DegToRad(static_cast<float>(angle_));
+  float radian = DegToRad(static_cast<float>(angle_));
   float y = -sin(radian);
   float x = cos(radian);
-  gfx::PointF origin = transform.MapPoint(gfx::PointF());
-  gfx::PointF end = transform.MapPoint(gfx::PointF(x, y));
-  gfx::Vector2dF diff = end - origin;
+  PointF origin = transform.MapPoint(PointF());
+  PointF end = transform.MapPoint(PointF(x, y));
+  Vector2dF diff = end - origin;
   float new_angle = gfx::RadToDeg(atan2(diff.y(), diff.x()));
+  angle_ = -static_cast<int16_t>(std::round(new_angle));
+}
+
+void LinearGradient::ApplyTransform(const AxisTransform2d& transform) {
+  if (transform.scale().x() == transform.scale().y())
+    return;
+
+  float radian = DegToRad(static_cast<float>(angle_));
+  float y = -sin(radian) * transform.scale().y();
+  float x = cos(radian) * transform.scale().x();
+  float new_angle = gfx::RadToDeg(atan2(y, x));
   angle_ = -static_cast<int16_t>(std::round(new_angle));
 }
 

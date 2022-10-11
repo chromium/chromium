@@ -505,10 +505,7 @@ void WaylandSurface::ApplyPendingState() {
     if (augmented_surface_get_version(get_augmented_surface()) >=
         AUGMENTED_SURFACE_SET_ROUNDED_CLIP_BOUNDS_SINCE_VERSION) {
       gfx::RRectF rounded_clip_bounds = pending_state_.rounded_clip_bounds;
-      gfx::Transform scale_transform;
-      scale_transform.Scale(1.f / pending_state_.buffer_scale,
-                            1.f / pending_state_.buffer_scale);
-      scale_transform.TransformRRectF(&rounded_clip_bounds);
+      rounded_clip_bounds.Scale(1.f / pending_state_.buffer_scale);
 
       augmented_surface_set_rounded_clip_bounds(
           get_augmented_surface(), rounded_clip_bounds.rect().x(),

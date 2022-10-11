@@ -94,15 +94,6 @@ namespace {
 // was chosen to match that used by gl_renderer.
 static const float kAAEpsilon = 1.0f / 1024.0f;
 
-#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-SkScalar remove_epsilon(SkScalar v) {
-  return v < std::numeric_limits<SkScalar>::epsilon() &&
-                 v > -std::numeric_limits<SkScalar>::epsilon()
-             ? 0
-             : v;
-}
-#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
-
 // The gfx::QuadF draw_region passed to DoDrawQuad, converted to Skia types
 struct SkDrawRegion {
   SkDrawRegion() = default;
@@ -1603,30 +1594,10 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
   // space to window space to make batching and canvas preparation easier
   // (otherwise we'd have to separate those two matrices in the CDT).
   if (ShouldApplyRoundedCorner(quad) || ShouldApplyGradientMask(quad)) {
+    params.mask_filter_info.emplace(quad->shared_quad_state->mask_filter_info);
     // Transform by the window and projection matrix to go from target to
     // device space, which should always be a scale+translate.
-    SkRRect corner_bounds = static_cast<SkRRect>(
-        quad->shared_quad_state->mask_filter_info.rounded_corner_bounds());
-    SkMatrix to_device = gfx::AxisTransform2dToSkMatrix(target_to_device);
-
-    // SkRRect::transform should always succeed here, since we know
-    // corner_bounds is not empty and 'to_device' should just be scale+translate
-    SkRRect device_bounds;
-    if (!corner_bounds.transform(to_device, &device_bounds)) {
-      // TODO(crbug/1220004): We used to assert transform succeeded, but an
-      // unreproduceable fuzzer test case could trip it. To be safe, and to
-      // match the most likely scenario that the device transform has scale=0,
-      // just force the clip to empty so we don't draw anything.
-      params.mask_filter_info.emplace(gfx::RRectF(SkRRect::MakeEmpty()));
-    } else {
-      if (ShouldApplyGradientMask(quad)) {
-        params.mask_filter_info.emplace(
-            gfx::RRectF(device_bounds),
-            quad->shared_quad_state->mask_filter_info.gradient_mask().value());
-      } else {
-        params.mask_filter_info.emplace(gfx::RRectF(device_bounds));
-      }
-    }
+    params.mask_filter_info->ApplyTransform(target_to_device);
   }
 
   return params;
@@ -3397,18 +3368,8 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   // The |mask_filter_info| is in the device coordinate and with all transforms
   // (translation, scaling, rotation, etc), so remove them.
   if (!shared_quad_state->mask_filter_info.IsEmpty()) {
-    auto result = shared_quad_state->mask_filter_info.Transform(
+    bool result = shared_quad_state->mask_filter_info.ApplyTransform(
         *quad_to_target_transform_inverse);
-    if (!result) {
-      // Skia cannot transform a SkRRect with a matrix which contains epsilons,
-      // workaround the problem by removing epsilons in the matrix.
-      gfx::Transform t = *quad_to_target_transform_inverse;
-      t.set_rc(0, 0, remove_epsilon(t.rc(0, 0)));
-      t.set_rc(0, 1, remove_epsilon(t.rc(0, 1)));
-      t.set_rc(1, 0, remove_epsilon(t.rc(1, 0)));
-      t.set_rc(1, 1, remove_epsilon(t.rc(1, 1)));
-      result = shared_quad_state->mask_filter_info.Transform(t);
-    }
     DCHECK(result) << "shared_quad_state->mask_filter_info.Transform() failed.";
   }
 
@@ -3520,7 +3481,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
 
     // Also adjust the |rounded_corner_bounds| to the new location.
     if (params.mask_filter_info) {
-      params.mask_filter_info->Transform(params.content_device_transform);
+      params.mask_filter_info->ApplyTransform(params.content_device_transform);
     }
 
     // When Render Pass has a single quad inside we would draw that directly.

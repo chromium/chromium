@@ -686,6 +686,7 @@ test("gfx_unittests") {
     "font_names_testing.h",
     "font_unittest.cc",
     "geometry/linear_gradient_unittest.cc",
+    "geometry/mask_filter_info_unittest.cc",
     "geometry/rrect_f_unittest.cc",
     "geometry/transform_operations_unittest.cc",
     "geometry/transform_unittest.cc",
