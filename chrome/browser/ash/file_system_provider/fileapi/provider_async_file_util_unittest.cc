@@ -151,17 +151,16 @@ class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
     const ProvidedFileSystemInfo& file_system_info =
         service->GetProvidedFileSystem(kProviderId, kFileSystemId)
             ->GetFileSystemInfo();
-    const std::string mount_point_name =
-        file_system_info.mount_path().BaseName().AsUTF8Unsafe();
+    mount_point_name_ = file_system_info.mount_path().BaseName().AsUTF8Unsafe();
 
     file_url_ = CreateFileSystemURL(
-        mount_point_name,
+        mount_point_name_,
         base::FilePath(kFakeFilePath + 1 /* No leading slash. */));
     ASSERT_TRUE(file_url_.is_valid());
     directory_url_ = CreateFileSystemURL(
-        mount_point_name, base::FilePath(FILE_PATH_LITERAL("hello")));
+        mount_point_name_, base::FilePath(FILE_PATH_LITERAL("hello")));
     ASSERT_TRUE(directory_url_.is_valid());
-    root_url_ = CreateFileSystemURL(mount_point_name, base::FilePath());
+    root_url_ = CreateFileSystemURL(mount_point_name_, base::FilePath());
     ASSERT_TRUE(root_url_.is_valid());
   }
 
@@ -177,6 +176,7 @@ class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
   TestingProfile* profile_;  // Owned by TestingProfileManager.
   std::unique_ptr<storage::AsyncFileUtil> async_file_util_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
+  std::string mount_point_name_;
   storage::FileSystemURL file_url_;
   storage::FileSystemURL directory_url_;
   storage::FileSystemURL root_url_;
@@ -265,6 +265,24 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, CreateDirectory) {
   EXPECT_EQ(base::File::FILE_OK, *logger.result());
 }
 
+TEST_F(FileSystemProviderProviderAsyncFileUtilTest,
+       CreateDirectoryRecursively) {
+  EventLogger logger;
+  base::FilePath dir = base::FilePath(FILE_PATH_LITERAL("path/to/directory"));
+  storage::FileSystemURL dir_url = CreateFileSystemURL(mount_point_name_, dir);
+
+  // First setup the directories.
+  async_file_util_->CreateDirectory(
+      CreateOperationContext(), dir_url,
+      false,  // exclusive
+      true,   // recursive
+      base::BindOnce(&EventLogger::OnStatus, base::Unretained(&logger)));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(logger.result());
+  EXPECT_EQ(base::File::FILE_OK, *logger.result());
+}
+
 TEST_F(FileSystemProviderProviderAsyncFileUtilTest, GetFileInfo) {
   EventLogger logger;
 
@@ -338,11 +356,13 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, Truncate) {
 
 TEST_F(FileSystemProviderProviderAsyncFileUtilTest, CopyFileLocal) {
   EventLogger logger;
+  storage::FileSystemURL dest_url = CreateFileSystemURL(
+      mount_point_name_, base::FilePath(FILE_PATH_LITERAL("dest/file.txt")));
 
   async_file_util_->CopyFileLocal(
       CreateOperationContext(),
       file_url_,  // src_url
-      file_url_,  // dst_url
+      dest_url,   // dst_url
       storage::FileSystemOperation::CopyOrMoveOptionSet(),
       base::BindRepeating(&EventLogger::OnCopyFileProgress,
                           base::Unretained(&logger)),
@@ -355,11 +375,13 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, CopyFileLocal) {
 
 TEST_F(FileSystemProviderProviderAsyncFileUtilTest, MoveFileLocal) {
   EventLogger logger;
+  storage::FileSystemURL dest_url = CreateFileSystemURL(
+      mount_point_name_, base::FilePath(FILE_PATH_LITERAL("dest/file.txt")));
 
   async_file_util_->MoveFileLocal(
       CreateOperationContext(),
       file_url_,  // src_url
-      file_url_,  // dst_url
+      dest_url,   // dst_url
       storage::FileSystemOperation::CopyOrMoveOptionSet(),
       base::BindOnce(&EventLogger::OnStatus, base::Unretained(&logger)));
   base::RunLoop().RunUntilIdle();
@@ -396,6 +418,17 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, DeleteFile) {
 TEST_F(FileSystemProviderProviderAsyncFileUtilTest, DeleteDirectory) {
   EventLogger logger;
 
+  // First setup the directory.
+  async_file_util_->CreateDirectory(
+      CreateOperationContext(), directory_url_,
+      false,  // exclusive
+      false,  // recursive
+      base::BindOnce(&EventLogger::OnStatus, base::Unretained(&logger)));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(logger.result());
+  EXPECT_EQ(base::File::FILE_OK, *logger.result());
+
   async_file_util_->DeleteDirectory(
       CreateOperationContext(), directory_url_,
       base::BindOnce(&EventLogger::OnStatus, base::Unretained(&logger)));
@@ -407,14 +440,59 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest, DeleteDirectory) {
 
 TEST_F(FileSystemProviderProviderAsyncFileUtilTest, DeleteRecursively) {
   EventLogger logger;
+  base::FilePath dir = base::FilePath(FILE_PATH_LITERAL("path"));
+  base::FilePath sub_dir = dir.AppendASCII("to").AppendASCII("directory");
+  storage::FileSystemURL dir_url = CreateFileSystemURL(mount_point_name_, dir);
+  storage::FileSystemURL sub_dir_url =
+      CreateFileSystemURL(mount_point_name_, sub_dir);
 
-  async_file_util_->DeleteRecursively(
-      CreateOperationContext(), directory_url_,
+  // First setup the directories.
+  async_file_util_->CreateDirectory(
+      CreateOperationContext(), sub_dir_url,
+      false,  // exclusive
+      true,   // recursive
       base::BindOnce(&EventLogger::OnStatus, base::Unretained(&logger)));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(logger.result());
   EXPECT_EQ(base::File::FILE_OK, *logger.result());
+
+  async_file_util_->DeleteRecursively(
+      CreateOperationContext(), dir_url,
+      base::BindOnce(&EventLogger::OnStatus, base::Unretained(&logger)));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(logger.result());
+  EXPECT_EQ(base::File::FILE_OK, *logger.result());
+}
+
+TEST_F(FileSystemProviderProviderAsyncFileUtilTest,
+       DeleteNonRecursivelyInvalid) {
+  EventLogger logger;
+  base::FilePath dir = base::FilePath(FILE_PATH_LITERAL("path"));
+  base::FilePath sub_dir = dir.AppendASCII("to").AppendASCII("directory");
+  storage::FileSystemURL dir_url = CreateFileSystemURL(mount_point_name_, dir);
+  storage::FileSystemURL sub_dir_url =
+      CreateFileSystemURL(mount_point_name_, sub_dir);
+
+  // First setup the directories.
+  async_file_util_->CreateDirectory(
+      CreateOperationContext(), sub_dir_url,
+      false,  // exclusive
+      true,   // recursive
+      base::BindOnce(&EventLogger::OnStatus, base::Unretained(&logger)));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(logger.result());
+  EXPECT_EQ(base::File::FILE_OK, *logger.result());
+
+  async_file_util_->DeleteDirectory(
+      CreateOperationContext(), dir_url,
+      base::BindOnce(&EventLogger::OnStatus, base::Unretained(&logger)));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(logger.result());
+  EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION, *logger.result());
 }
 
 TEST_F(FileSystemProviderProviderAsyncFileUtilTest, CreateSnapshotFile) {
