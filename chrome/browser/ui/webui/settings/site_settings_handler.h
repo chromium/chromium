@@ -147,9 +147,14 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            HandleBlockNotificationPermissionForOrigin);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
+                           HandleAllowNotificationPermissionForOrigin);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            HandleResetNotificationPermissionForOrigin);
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest,
                            PopulateNotificationPermissionReviewData);
+  FRIEND_TEST_ALL_PREFIXES(
+      SiteSettingsHandlerTest,
+      HandleUndoIgnoreOriginForNotificationPermissionReview);
 
   // Creates the CookiesTreeModel if necessary.
   void EnsureCookiesTreeModelCreated();
@@ -260,6 +265,16 @@ class SiteSettingsHandler
 
   // Handles blocking a notification permission for a given origin.
   void HandleBlockNotificationPermissionForOrigin(
+      const base::Value::List& args);
+
+  // Handles allowing a notification permission for a given origin.
+  void HandleAllowNotificationPermissionForOrigin(
+      const base::Value::List& args);
+
+  // Handles reverting the action of ignoring an origin for review notification
+  // permissions feature by removing it from the notification permission
+  // verification blocklist.
+  void HandleUndoIgnoreOriginForNotificationPermissionReview(
       const base::Value::List& args);
 
   // Returns whether a given string is a valid origin.

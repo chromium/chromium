@@ -456,8 +456,17 @@ export interface SiteSettingsPrefsBrowserProxy {
   /** Blocks the notification permission for the origin. */
   blockNotificationPermissionForOrigin(origin: string): void;
 
+  /** Allows the notification permission for the origin. */
+  allowNotificationPermissionForOrigin(origin: string): void;
+
   /** Adds the origin to blocklist for the notification permissions feature. */
   ignoreNotificationPermissionForOrigin(origin: string): void;
+
+  /**
+   * Removes the origin from the blocklist for the notification permissions
+   * feature.
+   */
+  undoIgnoreNotificationPermissionForOrigin(origin: string): void;
 
   /** Resets the notification permission for the origin. */
   resetNotificationPermissionForOrigin(origin: string): void;
@@ -625,8 +634,20 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     ]);
   }
 
+  allowNotificationPermissionForOrigin(origin: string) {
+    chrome.send('allowNotificationPermissionForOrigin', [
+      origin,
+    ]);
+  }
+
   ignoreNotificationPermissionForOrigin(origin: string) {
     chrome.send('ignoreNotificationPermissionReviewForOrigin', [
+      origin,
+    ]);
+  }
+
+  undoIgnoreNotificationPermissionForOrigin(origin: string) {
+    chrome.send('undoIgnoreNotificationPermissionReviewForOrigin', [
       origin,
     ]);
   }

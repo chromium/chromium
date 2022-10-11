@@ -7,7 +7,6 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {SettingsReviewNotificationPermissionsElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrActionMenuElement} from 'chrome://settings/settings.js';
-import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
@@ -29,16 +28,30 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
   function assertNotification(
       toastShouldBeOpen: boolean, toastText?: string): void {
-    const undoToast =
-        testElement.shadowRoot!.getElementById('undoToast') as CrToastElement;
+    const undoToast = testElement.$.undoToast;
     if (!toastShouldBeOpen) {
       assertFalse(undoToast.open);
       return;
     }
     assertTrue(undoToast.open);
-    const notification = testElement.shadowRoot!.getElementById(
-                             'undoNotification') as HTMLElement;
-    assertEquals(notification.textContent!.trim(), toastText);
+    assertEquals(testElement.$.undoNotification.textContent!.trim(), toastText);
+  }
+
+  /**
+   * Clicks the Undo button and verifies that the correct origin is given to the
+   * browser proxy call.
+   */
+  async function assertUndo(expectedProxyCall: string, index: number) {
+    const entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    const expectedOrigin =
+        entries[index]!.querySelector(
+                           '.site-representation')!.textContent!.trim();
+    browserProxy.resetResolver(expectedProxyCall);
+    testElement.$.undoToast.querySelector('cr-button')!.click();
+    const origin = await browserProxy.whenCalled(expectedProxyCall);
+    assertEquals(origin, expectedOrigin);
+
+    assertNotification(false);
   }
 
   setup(function() {
@@ -126,10 +139,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     // Ensure the browser proxy call is done.
     const expectedOrigin =
         entries[0]!.querySelector('.site-representation')!.textContent!.trim();
-    await browserProxy.whenCalled('blockNotificationPermissionForOrigin')
-        .then(function([origin]) {
-          assertEquals(origin, expectedOrigin);
-        });
+    const origin =
+        await browserProxy.whenCalled('blockNotificationPermissionForOrigin');
+    assertEquals(origin, expectedOrigin);
     assertNotification(
         true,
         testElement.i18n(
@@ -159,10 +171,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     // Ensure the browser proxy call is done.
     const expectedOrigin =
         entries[0]!.querySelector('.site-representation')!.textContent!.trim();
-    await browserProxy.whenCalled('ignoreNotificationPermissionForOrigin')
-        .then(function([origin]) {
-          assertEquals(origin, expectedOrigin);
-        });
+    const origin =
+        await browserProxy.whenCalled('ignoreNotificationPermissionForOrigin');
+    assertEquals(origin, expectedOrigin);
     assertNotification(
         true,
         testElement.i18n(
@@ -196,10 +207,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     // Ensure the browser proxy call is done.
     const expectedOrigin =
         entries[0]!.querySelector('.site-representation')!.textContent!.trim();
-    await browserProxy.whenCalled('resetNotificationPermissionForOrigin')
-        .then(function([origin]) {
-          assertEquals(origin, expectedOrigin);
-        });
+    const origin =
+        await browserProxy.whenCalled('resetNotificationPermissionForOrigin');
+    assertEquals(origin, expectedOrigin);
     assertNotification(
         true,
         testElement.i18n(
@@ -210,5 +220,58 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
         CrActionMenuElement;
     const dialog = menu.getDialog() as HTMLDialogElement;
     assertFalse(isVisible(dialog));
+  });
+
+  /**
+   * Tests whether clicking the Undo button after blocking a site correctly
+   * resets the site to allow notifications and makes the toast element
+   * disappear.
+   */
+  test('Undo Block Click', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+
+    // Click block button
+    testElement.shadowRoot!.querySelector<HTMLElement>(
+                               '.cr-row #block')!.click();
+    await browserProxy.whenCalled('blockNotificationPermissionForOrigin');
+
+    await assertUndo('allowNotificationPermissionForOrigin', 0);
+  });
+
+  /**
+   * Tests whether clicking the Undo button after ignoring notification a site
+   * for permission review correctly removes the site from the blocklist
+   * and makes the toast element disappear.
+   */
+  test('Undo Ignore Click', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+
+    openActionMenu(0);
+    // Click ignore button.
+    testElement.shadowRoot!.querySelector<HTMLElement>('#ignore')!.click();
+
+    await browserProxy.whenCalled('ignoreNotificationPermissionForOrigin');
+
+    await assertUndo('undoIgnoreNotificationPermissionForOrigin', 0);
+  });
+
+  /**
+   * Tests whether clicking the Undo button after resetting notification
+   * permissions for a site correctly resets the site to allow notifications
+   * and makes the toast element disappear.
+   */
+  test('Undo Reset Click', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+
+    openActionMenu(0);
+    // Click reset button.
+    testElement.shadowRoot!.querySelector<HTMLElement>('#reset')!.click();
+
+    await browserProxy.whenCalled('resetNotificationPermissionForOrigin');
+
+    await assertUndo('allowNotificationPermissionForOrigin', 0);
   });
 });

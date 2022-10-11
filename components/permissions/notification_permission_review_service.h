@@ -44,10 +44,16 @@ class NotificationPermissionsReviewService : public KeyedService {
   // Returns a list containing the sites that send a lot of notifications.
   std::vector<NotificationPermissions> GetNotificationSiteListForReview();
 
-  // Add given pattern pair to the blocklist for review notification permissions
-  // feature. The patterns in blocklist will not be suggested to be reviewed to
-  // user again.
+  // Add given pattern pair to the blocklist for the "Review notification
+  // permission" feature. The patterns in blocklist will not be suggested to be
+  // reviewed by the user again.
   void AddPatternToNotificationPermissionReviewBlocklist(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern);
+
+  // Removes given origin from the blocklist for the "Review notification
+  // permission" feature. The pattern may be suggested again for review.
+  void RemovePatternFromNotificationPermissionReviewBlocklist(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
 

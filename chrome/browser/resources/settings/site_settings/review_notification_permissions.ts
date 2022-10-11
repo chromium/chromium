@@ -29,6 +29,7 @@ export interface SettingsReviewNotificationPermissionsElement {
     tooltip: PaperTooltipElement,
     actionMenu: CrLazyRenderElement<CrActionMenuElement>,
     undoToast: CrToastElement,
+    undoNotification: HTMLElement,
   };
 }
 
@@ -36,7 +37,7 @@ export interface SettingsReviewNotificationPermissionsElement {
  * The list of actions that a user can take with regards to the permissions of
  * notifications.
  */
-enum ACTIONS {
+enum Actions {
   BLOCK = 'block',
   IGNORE = 'ignore',
   RESET = 'reset'
@@ -63,16 +64,16 @@ export class SettingsReviewNotificationPermissionsElement extends
         value: () => [],
       },
 
-      /* The site for the currently open action menu. */
-      actionMenuSite_: Object,
+      /* The last origin that the user interacted with. */
+      lastOrigin_: String,
     };
   }
 
   private notificationPermissionReviewList_: NotificationPermission[];
   private browserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
-  private actionMenuSite_: NotificationPermission|null;
-  private lastUserAction_: ACTIONS|null;
+  private lastOrigin_: string;
+  private lastUserAction_: Actions|null;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -104,7 +105,7 @@ export class SettingsReviewNotificationPermissionsElement extends
 
   /* Show action menu when clicked to three dot menu. */
   private onShowActionMenuClick_(e: DomRepeatEvent<NotificationPermission>) {
-    this.actionMenuSite_ = e.model.item;
+    this.lastOrigin_ = e.model.item.origin;
     this.$.actionMenu.get().showAt(e.target as HTMLElement);
   }
 
@@ -113,25 +114,23 @@ export class SettingsReviewNotificationPermissionsElement extends
     event.stopPropagation();
     const item = event.model.item;
     this.browserProxy_.blockNotificationPermissionForOrigin(item.origin);
-    this.lastUserAction_ = ACTIONS.BLOCK;
-    this.actionMenuSite_ = item;
+    this.lastUserAction_ = Actions.BLOCK;
+    this.lastOrigin_ = item.origin;
     this.showUndoToast_();
   }
 
   private onIgnoreClick_(e: DomRepeatEvent<NotificationPermission>) {
     e.stopPropagation();
-    this.browserProxy_.ignoreNotificationPermissionForOrigin(
-        this.actionMenuSite_!.origin);
-    this.lastUserAction_ = ACTIONS.IGNORE;
+    this.browserProxy_.ignoreNotificationPermissionForOrigin(this.lastOrigin_);
+    this.lastUserAction_ = Actions.IGNORE;
     this.showUndoToast_();
     this.$.actionMenu.get().close();
   }
 
   private onResetClick_(e: DomRepeatEvent<NotificationPermission>) {
     e.stopPropagation();
-    this.browserProxy_.resetNotificationPermissionForOrigin(
-        this.actionMenuSite_!.origin);
-    this.lastUserAction_ = ACTIONS.RESET;
+    this.browserProxy_.resetNotificationPermissionForOrigin(this.lastOrigin_);
+    this.lastUserAction_ = Actions.RESET;
     this.showUndoToast_();
     this.$.actionMenu.get().close();
   }
@@ -163,28 +162,24 @@ export class SettingsReviewNotificationPermissionsElement extends
   }
 
   private getUndoNotificationText_(): string {
-    if (!this.lastUserAction_ || !this.actionMenuSite_) {
+    if (!this.lastUserAction_ || !this.lastOrigin_) {
       return '';
     }
     switch (this.lastUserAction_) {
-      case ACTIONS.BLOCK: {
+      case Actions.BLOCK:
         return this.i18n(
             'safetyCheckNotificationPermissionReviewBlockedToastLabel',
-            this.actionMenuSite_!.origin);
-      }
-      case ACTIONS.IGNORE: {
+            this.lastOrigin_);
+      case Actions.IGNORE:
         return this.i18n(
             'safetyCheckNotificationPermissionReviewIgnoredToastLabel',
-            this.actionMenuSite_!.origin);
-      }
-      case ACTIONS.RESET: {
+            this.lastOrigin_);
+      case Actions.RESET:
         return this.i18n(
             'safetyCheckNotificationPermissionReviewResetToastLabel',
-            this.actionMenuSite_!.origin);
-      }
-      default: {
+            this.lastOrigin_);
+      default:
         assertNotReached();
-      }
     }
   }
 
@@ -198,7 +193,20 @@ export class SettingsReviewNotificationPermissionsElement extends
 
   private onUndoButtonClick_(e: Event) {
     e.stopPropagation();
-    // TODO(crbug/1345920) add functionality to undo user action
+    switch (this.lastUserAction_) {
+      // As BLOCK and RESET actions just change the notification permission,
+      // undoing them only requires allowing notification permissions again.
+      case Actions.BLOCK:
+      case Actions.RESET:
+        this.browserProxy_.allowNotificationPermissionForOrigin(
+            this.lastOrigin_);
+        break;
+      case Actions.IGNORE:
+        this.browserProxy_.undoIgnoreNotificationPermissionForOrigin(
+            this.lastOrigin_);
+        break;
+    }
+    this.$.undoToast.hide();
   }
 
   /**

@@ -54,6 +54,7 @@
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -709,6 +710,17 @@ void SiteSettingsHandler::RegisterMessages() {
       "blockNotificationPermissionForOrigin",
       base::BindRepeating(
           &SiteSettingsHandler::HandleBlockNotificationPermissionForOrigin,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "allowNotificationPermissionForOrigin",
+      base::BindRepeating(
+          &SiteSettingsHandler::HandleAllowNotificationPermissionForOrigin,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "undoIgnoreNotificationPermissionReviewForOrigin",
+      base::BindRepeating(
+          &SiteSettingsHandler::
+              HandleUndoIgnoreOriginForNotificationPermissionReview,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "isOriginValid",
@@ -1639,6 +1651,37 @@ void SiteSettingsHandler::HandleBlockNotificationPermissionForOrigin(
                                     ContentSettingsPattern::Wildcard(),
                                     ContentSettingsType::NOTIFICATIONS,
                                     CONTENT_SETTING_BLOCK);
+
+  FireWebUIListener("notification-permission-review-list-changed",
+                    PopulateNotificationPermissionReviewData());
+}
+
+void SiteSettingsHandler::HandleAllowNotificationPermissionForOrigin(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& origin = args[0].GetString();
+
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  map->SetContentSettingCustomScope(ContentSettingsPattern::FromString(origin),
+                                    ContentSettingsPattern::Wildcard(),
+                                    ContentSettingsType::NOTIFICATIONS,
+                                    CONTENT_SETTING_ALLOW);
+
+  FireWebUIListener("notification-permission-review-list-changed",
+                    PopulateNotificationPermissionReviewData());
+}
+
+void SiteSettingsHandler::HandleUndoIgnoreOriginForNotificationPermissionReview(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const ContentSettingsPattern& primary_pattern =
+      ContentSettingsPattern::FromString(args[0].GetString());
+
+  auto* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  service->RemovePatternFromNotificationPermissionReviewBlocklist(
+      primary_pattern, ContentSettingsPattern::Wildcard());
 
   FireWebUIListener("notification-permission-review-list-changed",
                     PopulateNotificationPermissionReviewData());

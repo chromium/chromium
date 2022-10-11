@@ -12,7 +12,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/notifications_engagement_service.h"
-#include "url/gurl.h"
 
 namespace permissions {
 
@@ -158,6 +157,15 @@ void NotificationPermissionsReviewService::
       primary_pattern, secondary_pattern,
       ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW,
       base::Value(std::move(permission_dict)));
+}
+
+void NotificationPermissionsReviewService::
+    RemovePatternFromNotificationPermissionReviewBlocklist(
+        const ContentSettingsPattern& primary_pattern,
+        const ContentSettingsPattern& secondary_pattern) {
+  hcsm_->SetWebsiteSettingCustomScope(
+      primary_pattern, secondary_pattern,
+      ContentSettingsType::NOTIFICATION_PERMISSION_REVIEW, {});
 }
 
 }  // namespace permissions

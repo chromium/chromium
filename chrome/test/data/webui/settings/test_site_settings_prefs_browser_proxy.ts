@@ -71,6 +71,8 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'blockNotificationPermissionForOrigin',
       'ignoreNotificationPermissionForOrigin',
       'resetNotificationPermissionForOrigin',
+      'allowNotificationPermissionForOrigin',
+      'undoIgnoreNotificationPermissionForOrigin',
     ]);
 
 
@@ -615,14 +617,22 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
   }
 
   blockNotificationPermissionForOrigin(origin: string): void {
-    this.methodCalled('blockNotificationPermissionForOrigin', [origin]);
+    this.methodCalled('blockNotificationPermissionForOrigin', origin);
   }
 
   ignoreNotificationPermissionForOrigin(origin: string): void {
-    this.methodCalled('ignoreNotificationPermissionForOrigin', [origin]);
+    this.methodCalled('ignoreNotificationPermissionForOrigin', origin);
   }
 
   resetNotificationPermissionForOrigin(origin: string): void {
-    this.methodCalled('resetNotificationPermissionForOrigin', [origin]);
+    this.methodCalled('resetNotificationPermissionForOrigin', origin);
+  }
+
+  allowNotificationPermissionForOrigin(origin: string): void {
+    this.methodCalled('allowNotificationPermissionForOrigin', origin);
+  }
+
+  undoIgnoreNotificationPermissionForOrigin(origin: string): void {
+    this.methodCalled('undoIgnoreNotificationPermissionForOrigin', origin);
   }
 }

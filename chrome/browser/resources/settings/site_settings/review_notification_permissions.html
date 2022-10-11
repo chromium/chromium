@@ -97,7 +97,7 @@
 </cr-lazy-render>
 <cr-toast id="undoToast" duration="5000">
   <div id="undoNotification">
-    [[getUndoNotificationText_(lastUserAction_, actionMenuSite_)]]
+    [[getUndoNotificationText_(lastUserAction_, lastOrigin_)]]
   </div>
   <cr-button aria-label="$i18n{undoDescription}"
       on-click="onUndoButtonClick_">
