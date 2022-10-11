@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/nearby_sharing/client/nearby_share_client.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_http_result.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/certificate_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/encrypted_metadata.pb.h"
@@ -51,8 +53,29 @@ enum GetDecryptedPublicCertificateResult {
   kMaxValue = kStorageFailure
 };
 
+// Check for a command-line override for number of certificates, otherwise
+// return the default |kNearbyShareNumPrivateCertificates|.
+size_t NumPrivateCertificates() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kNearbyShareNumPrivateCertificates)) {
+    return kNearbyShareNumPrivateCertificates;
+  }
+
+  std::string num_certificates_str = command_line->GetSwitchValueASCII(
+      switches::kNearbyShareNumPrivateCertificates);
+  int num_certificates = 0;
+  if (!base::StringToInt(num_certificates_str, &num_certificates) ||
+      num_certificates < 1) {
+    NS_LOG(ERROR) << __func__
+                  << ": Invalid value provided with num certificates override.";
+    return kNearbyShareNumPrivateCertificates;
+  }
+
+  return static_cast<size_t>(num_certificates);
+}
+
 size_t NumExpectedPrivateCertificates() {
-  return kVisibilities.size() * kNearbyShareNumPrivateCertificates;
+  return kVisibilities.size() * NumPrivateCertificates();
 }
 
 absl::optional<std::string> GetBluetoothMacAddress(
@@ -471,17 +494,19 @@ void NearbyShareCertificateManagerImpl::FinishPrivateCertificateRefresh(
   }
 
   // Add new certificates if necessary. Each visibility should have
-  // kNearbyShareNumPrivateCertificates.
+  // kNearbyShareNumPrivateCertificates (unless overridden by a command-line
+  // switch).
+  size_t num_certificates = NumPrivateCertificates();
   NS_LOG(INFO)
       << __func__ << ": Creating "
-      << kNearbyShareNumPrivateCertificates -
+      << num_certificates -
              num_valid_certs[nearby_share::mojom::Visibility::kAllContacts]
       << " all-contacts visibility and "
-      << kNearbyShareNumPrivateCertificates -
+      << num_certificates -
              num_valid_certs[nearby_share::mojom::Visibility::kSelectedContacts]
       << " selected-contacts visibility private certificates.";
   for (nearby_share::mojom::Visibility visibility : kVisibilities) {
-    while (num_valid_certs[visibility] < kNearbyShareNumPrivateCertificates) {
+    while (num_valid_certs[visibility] < num_certificates) {
       certs.emplace_back(visibility,
                          /*not_before=*/latest_not_after[visibility],
                          *metadata);

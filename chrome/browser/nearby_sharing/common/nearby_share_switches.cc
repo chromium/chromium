@@ -10,6 +10,11 @@ namespace switches {
 // by Nearby Share
 const char kNearbyShareHTTPHost[] = "nearbysharing-http-host";
 
+// Overrides the default number of private certificates generated. Value must be
+// larger than 0.
+const char kNearbyShareNumPrivateCertificates[] =
+    "nearby-share-num-private-certificates";
+
 // Enables verbose logging level for Nearby Share.
 const char kNearbyShareVerboseLogging[] = "nearby-share-verbose-logging";
 
