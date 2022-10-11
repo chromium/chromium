@@ -1696,7 +1696,8 @@ int HttpCache::Transaction::DoCacheWriteUpdatedPrefetchResponse(int result) {
   // transaction then metadata will be written to cache twice. If prefetching
   // becomes more common, consider combining the writes.
   TransitionToState(STATE_WRITE_UPDATED_PREFETCH_RESPONSE_COMPLETE);
-  return WriteResponseInfoToEntry(*updated_prefetch_response_.get(), false);
+  return WriteResponseInfoToEntry(*updated_prefetch_response_.get(),
+                                  truncated_);
 }
 
 int HttpCache::Transaction::DoCacheWriteUpdatedPrefetchResponseComplete(

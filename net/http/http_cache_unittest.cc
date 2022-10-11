@@ -2004,6 +2004,82 @@ TEST_F(HttpCacheTest, SimpleGET_UnusedSincePrefetchWriteError) {
       NetLogWithSource::Make(NetLogSourceType::NONE), nullptr);
 }
 
+// Make sure that if a prefetch entry is truncated, then an attempt to re-use it
+// gets aborted in connected handler that truncated bit is not lost.
+TEST_F(HttpCacheTest, PrefetchTruncateCancelInConnectedCallback) {
+  MockHttpCache cache;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.response_headers =
+      "Last-Modified: Wed, 28 Nov 2007 00:40:09 GMT\n"
+      "Content-Length: 20\n"
+      "Etag: \"foopy\"\n";
+  transaction.data = "01234567890123456789";
+  transaction.load_flags |= LOAD_PREFETCH | LOAD_CAN_USE_RESTRICTED_PREFETCH;
+
+  // Do a truncated read of a prefetch request.
+  {
+    MockHttpRequest request(transaction);
+    Context c;
+
+    int rv = cache.CreateTransaction(&c.trans);
+    ASSERT_THAT(rv, IsOk());
+
+    rv = c.callback.GetResult(
+        c.trans->Start(&request, c.callback.callback(), NetLogWithSource()));
+    ASSERT_THAT(rv, IsOk());
+
+    // Read less than the whole thing.
+    scoped_refptr<IOBufferWithSize> buf =
+        base::MakeRefCounted<IOBufferWithSize>(10);
+    rv = c.callback.GetResult(
+        c.trans->Read(buf.get(), buf->size(), c.callback.callback()));
+    EXPECT_EQ(buf->size(), rv);
+
+    // Destroy the transaction.
+    c.trans.reset();
+    base::RunLoop().RunUntilIdle();
+
+    VerifyTruncatedFlag(&cache, request.CacheKey(), /*flag_value=*/true,
+                        /*data_size=*/10);
+  }
+
+  // Do a fetch that can use prefetch that aborts in connected handler.
+  transaction.load_flags &= ~LOAD_PREFETCH;
+  {
+    MockHttpRequest request(transaction);
+    Context c;
+
+    int rv = cache.CreateTransaction(&c.trans);
+    ASSERT_THAT(rv, IsOk());
+    c.trans->SetConnectedCallback(base::BindRepeating(
+        [](const TransportInfo& info, CompletionOnceCallback callback) -> int {
+          return net::ERR_ABORTED;
+        }));
+    rv = c.callback.GetResult(
+        c.trans->Start(&request, c.callback.callback(), NetLogWithSource()));
+    EXPECT_EQ(net::ERR_ABORTED, rv);
+
+    // Destroy the transaction.
+    c.trans.reset();
+    base::RunLoop().RunUntilIdle();
+
+    VerifyTruncatedFlag(&cache, request.CacheKey(), /*flag_value=*/true,
+                        /*data_size=*/10);
+  }
+
+  // Now try again without abort.
+  {
+    MockHttpRequest request(transaction);
+    RunTransactionTestWithRequest(cache.http_cache(), transaction, request,
+                                  /*response_info=*/nullptr);
+    base::RunLoop().RunUntilIdle();
+
+    VerifyTruncatedFlag(&cache, request.CacheKey(), /*flag_value=*/false,
+                        /*data_size=*/20);
+  }
+}
+
 static void PreserveRequestHeaders_Handler(const HttpRequestInfo* request,
                                            std::string* response_status,
                                            std::string* response_headers,
