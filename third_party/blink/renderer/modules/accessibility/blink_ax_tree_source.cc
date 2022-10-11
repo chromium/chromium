@@ -76,10 +76,10 @@ bool BlinkAXTreeSource::ShouldLoadInlineTextBoxes(const AXObject* obj) const {
 
   AXObject* focused_object = GetFocusedObject();
   AXID focus_id = -1;
-  if (focused_object)
+  if (focused_object && !focused_object->IsDetached())
     focus_id = focused_object->AXObjectID();
   const AXObject* ancestor = obj;
-  while (ancestor) {
+  while (ancestor && !ancestor->IsDetached()) {
     AXID ancestor_id = ancestor->AXObjectID();
     if (load_inline_text_boxes_ids_.Contains(ancestor_id) ||
         (ancestor_id == focus_id && ancestor->IsEditable())) {
@@ -136,11 +136,11 @@ void BlinkAXTreeSource::Selection(
   focus_offset = -1;
   focus_affinity = ax::mojom::blink::TextAffinity::kDownstream;
 
-  if (!obj)
+  if (!obj || obj->IsDetached())
     return;
 
   AXObject* focus = GetFocusedObject();
-  if (!focus)
+  if (!focus || focus->IsDetached())
     return;
 
   const auto ax_selection =
@@ -180,6 +180,7 @@ static ui::AXTreeID GetAXTreeID(LocalFrame* local_frame) {
 }
 
 bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
+  CHECK(frozen_);
   AXObject* root = GetRoot();
   tree_data->doctype = "html";
   tree_data->loaded = root->IsLoaded();
@@ -348,6 +349,8 @@ AXObject* BlinkAXTreeSource::GetParent(AXObject* node) const {
 }
 
 bool BlinkAXTreeSource::IsIgnored(AXObject* node) const {
+  if (!node || node->IsDetached())
+    return false;
   return node->AccessibilityIsIgnored();
 }
 
@@ -364,6 +367,8 @@ AXObject* BlinkAXTreeSource::GetNull() const {
 }
 
 std::string BlinkAXTreeSource::GetDebugString(AXObject* node) const {
+  if (!node || node->IsDetached())
+    return "";
   return node->ToString(true).Utf8();
 }
 
@@ -380,14 +385,16 @@ void BlinkAXTreeSource::SerializeNode(AXObject* src,
       ax_object_cache_->GetDocument().Lifecycle());
 #endif
 
-  dst->id = src->AXObjectID();
-  dst->role = src->RoleValue();
-
   if (!src || src->IsDetached() || !src->AccessibilityIsIncludedInTree()) {
     dst->AddState(ax::mojom::blink::State::kIgnored);
+    dst->id = -1;
+    dst->role = ax::mojom::blink::Role::kUnknown;
     NOTREACHED();
     return;
   }
+
+  dst->id = src->AXObjectID();
+  dst->role = src->RoleValue();
 
   // TODO(crbug.com/1068668): AX onion soup - finish migrating the rest of
   // this function inside of AXObject::Serialize and removing
