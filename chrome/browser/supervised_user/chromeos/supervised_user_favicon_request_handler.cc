@@ -5,14 +5,28 @@
 #include "chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.h"
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/favicon/favicon_utils.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace {
 constexpr int kMinIconSize = 16;
 constexpr int kDesiredIconSize = 24;
+constexpr int kMonogramSize = 20;
+
+const char kFaviconAvailabilityHistogramName[] =
+    "SupervisedUsers.FaviconAvailability";
 }  // namespace
+
+// static
+const char* SupervisedUserFaviconRequestHandler::
+    GetFaviconAvailabilityHistogramForTesting() {
+  return kFaviconAvailabilityHistogramName;
+}
 
 SupervisedUserFaviconRequestHandler::SupervisedUserFaviconRequestHandler(
     const GURL& url,
@@ -39,8 +53,14 @@ void SupervisedUserFaviconRequestHandler::FetchFaviconFromCache() {
 }
 
 gfx::ImageSkia SupervisedUserFaviconRequestHandler::GetFaviconOrFallback() {
-  // TODO(b/195316776): Construct monogram fallback icon if favicon is not
-  // fetched yet.
+  if (favicon_.isNull()) {
+    base::UmaHistogramEnumeration(kFaviconAvailabilityHistogramName,
+                                  FaviconAvailability::kUnavailable);
+    return gfx::ImageSkia::CreateFrom1xBitmap(favicon::GenerateMonogramFavicon(
+        page_url_, kMonogramSize, kDesiredIconSize));
+  }
+  base::UmaHistogramEnumeration(kFaviconAvailabilityHistogramName,
+                                FaviconAvailability::kAvailable);
   return favicon_;
 }
 
@@ -50,7 +70,7 @@ void SupervisedUserFaviconRequestHandler::OnGetFaviconFromCacheFinished(
   if (!result.image.IsEmpty()) {
     large_icon_service_->TouchIconFromGoogleServer(result.icon_url);
     favicon_ = result.image.AsImageSkia();
-    std::move(favicon_fetched_callback_).Run(favicon_);
+    std::move(favicon_fetched_callback_).Run(GetFaviconOrFallback());
     return;
   }
 

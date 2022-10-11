@@ -21,6 +21,19 @@ class LargeIconService;
 // retrieved, then a fallback monogram icon is created.
 class SupervisedUserFaviconRequestHandler {
  public:
+  // These enum values represent whether the favicon was ready at the time it
+  // was requested. These values are logged to UMA. Entries should not be
+  // renumbered and numeric values should never be reused. Please keep in sync
+  // with "SupervisedUserFaviconAvailability" in
+  // src/tools/metrics/histograms/enums.xml.
+  enum class FaviconAvailability {
+    kAvailable = 0,
+    kUnavailable = 1,
+    // Used for UMA. Update kMaxValue to the last value. Add future entries
+    // above this comment. Sync with enums.xml.
+    kMaxValue = kUnavailable,
+  };
+
   SupervisedUserFaviconRequestHandler(
       const GURL& url,
       favicon::LargeIconService* large_icon_service);
@@ -29,6 +42,8 @@ class SupervisedUserFaviconRequestHandler {
   SupervisedUserFaviconRequestHandler& operator=(
       const SupervisedUserFaviconRequestHandler&) = delete;
   ~SupervisedUserFaviconRequestHandler();
+
+  static const char* GetFaviconAvailabilityHistogramForTesting();
 
   void StartFaviconFetch(
       base::OnceCallback<void(const gfx::ImageSkia&)> callback);

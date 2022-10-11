@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -122,6 +123,7 @@ class SupervisedUserFaviconRequestHandlerTest : public ::testing::Test {
 };
 
 TEST_F(SupervisedUserFaviconRequestHandlerTest, GetUncachedFavicon) {
+  base::HistogramTester histogram_tester;
   const GURL page_url = GURL("https://www.example.com");
   MockLargeIconService large_icon_service;
   SupervisedUserFaviconRequestHandler handler(page_url, &large_icon_service);
@@ -146,9 +148,14 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetUncachedFavicon) {
   run_loop.Run();
 
   EXPECT_EQ(favicon_result().bitmap(), large_icon_service.favicon().bitmap());
+  histogram_tester.ExpectUniqueSample(
+      SupervisedUserFaviconRequestHandler::
+          GetFaviconAvailabilityHistogramForTesting(),
+      SupervisedUserFaviconRequestHandler::FaviconAvailability::kAvailable, 1);
 }
 
 TEST_F(SupervisedUserFaviconRequestHandlerTest, GetCachedFavicon) {
+  base::HistogramTester histogram_tester;
   const GURL page_url = GURL("https://www.example.com");
   MockLargeIconService large_icon_service;
   large_icon_service.StoreIconInCache();
@@ -174,4 +181,37 @@ TEST_F(SupervisedUserFaviconRequestHandlerTest, GetCachedFavicon) {
   run_loop.Run();
 
   EXPECT_EQ(favicon_result().bitmap(), large_icon_service.favicon().bitmap());
+  histogram_tester.ExpectUniqueSample(
+      SupervisedUserFaviconRequestHandler::
+          GetFaviconAvailabilityHistogramForTesting(),
+      SupervisedUserFaviconRequestHandler::FaviconAvailability::kAvailable, 1);
+}
+
+TEST_F(SupervisedUserFaviconRequestHandlerTest, GetFallbackFavicon) {
+  base::HistogramTester histogram_tester;
+  const GURL page_url = GURL("https://www.example.com");
+  MockLargeIconService large_icon_service;
+  large_icon_service.StoreIconInCache();
+  SupervisedUserFaviconRequestHandler handler(page_url, &large_icon_service);
+
+  // Confirm that the favicon is not fetched from a network request or from the
+  // cache.
+  EXPECT_CALL(large_icon_service,
+              GetLargeIconImageOrFallbackStyleForPageUrl(page_url, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(large_icon_service,
+              GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
+                  page_url, _, _, _, _))
+      .Times(0);
+  EXPECT_CALL(large_icon_service,
+              TouchIconFromGoogleServer(large_icon_service.kIconUrl))
+      .Times(0);
+
+  // Expect an icon to still be generated, even if it is not fetched.
+  EXPECT_FALSE(handler.GetFaviconOrFallback().isNull());
+  histogram_tester.ExpectUniqueSample(
+      SupervisedUserFaviconRequestHandler::
+          GetFaviconAvailabilityHistogramForTesting(),
+      SupervisedUserFaviconRequestHandler::FaviconAvailability::kUnavailable,
+      1);
 }

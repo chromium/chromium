@@ -635,6 +635,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SupervisedUsers.FaviconAvailability"
+    enum="SupervisedUserFaviconAvailability" expires_after="2023-01-20">
+  <owner>courtneywong@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    Records whether the favicon is available when it is being requested. The
+    favicon is requested for UI related to supervised users, including the local
+    web approvals parent access dialog. This metric is only recorded on
+    ChromeOS.
+  </summary>
+</histogram>
+
 <histogram name="SupervisedUsers.ParentPermissionDialog"
     enum="SupervisedUserParentPermissionDialog" expires_after="2023-01-20">
   <owner>tobyhuang@chromium.org</owner>

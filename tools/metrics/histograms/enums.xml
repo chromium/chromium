@@ -94405,6 +94405,11 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Child Canceled"/>
 </enum>
 
+<enum name="SupervisedUserFaviconAvailability">
+  <int value="0" label="Favicon Available"/>
+  <int value="1" label="Favicon Unavailable"/>
+</enum>
+
 <enum name="SupervisedUserParentPermissionDialog">
   <summary>
     Tracks the actions of a parent on the Parent Permission Dialog.
