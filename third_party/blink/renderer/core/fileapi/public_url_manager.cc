@@ -174,52 +174,51 @@ void PublicURLManager::Resolve(
     }
   }
 
+  auto metrics_callback = [](ExecutionContext* execution_context,
+                             const absl::optional<base::UnguessableToken>&
+                                 unsafe_agent_cluster_id,
+                             const absl::optional<BlinkSchemefulSite>&
+                                 unsafe_top_level_site) {
+    if (execution_context->GetAgentClusterID() != unsafe_agent_cluster_id) {
+      execution_context->CountUse(
+          WebFeature::
+              kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory);
+    }
+    // Determining top-level site in a worker is non-trivial. Since this is only
+    // used to calculate metrics it should be okay to not track top-level site
+    // in that case, as long as the count for unknown top-level sites ends up
+    // low enough compared to overall usage.
+    absl::optional<BlinkSchemefulSite> top_level_site;
+    if (execution_context->IsWindow()) {
+      auto* window = To<LocalDOMWindow>(execution_context);
+      if (window->top() && window->top()->GetFrame()) {
+        top_level_site = BlinkSchemefulSite(window->top()
+                                                ->GetFrame()
+                                                ->GetSecurityContext()
+                                                ->GetSecurityOrigin());
+      }
+    }
+    if ((!top_level_site || !unsafe_top_level_site) &&
+        execution_context->GetAgentClusterID() != unsafe_agent_cluster_id) {
+      // Either the registration or resolve happened in a context where it's not
+      // easy to determine the top-level site, and agent cluster doesn't match
+      // either (if agent cluster matches, by definition top-level site would
+      // also match, so this only records page loads where there is a chance
+      // that top-level site doesn't match).
+      execution_context->CountUse(
+          WebFeature::kBlobStoreAccessUnknownTopLevelSite);
+    } else if (top_level_site != unsafe_top_level_site) {
+      // Blob URL lookup happened with a different top-level site than Blob URL
+      // registration.
+      execution_context->CountUse(
+          WebFeature::kBlobStoreAccessAcrossTopLevelSite);
+    }
+  };
+
   url_store_->ResolveAsURLLoaderFactory(
       url, std::move(factory_receiver),
-      WTF::BindOnce(
-          [](ExecutionContext* execution_context,
-             const absl::optional<base::UnguessableToken>&
-                 unsafe_agent_cluster_id,
-             const absl::optional<BlinkSchemefulSite>& unsafe_top_level_site) {
-            if (execution_context->GetAgentClusterID() !=
-                unsafe_agent_cluster_id) {
-              execution_context->CountUse(
-                  WebFeature::
-                      kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory);
-            }
-            // Determining top-level site in a worker is non-trivial. Since this
-            // is only used to calculate metrics it should be okay to not track
-            // top-level site in that case, as long as the count for unknown
-            // top-level sites ends up low enough compared to overall usage.
-            absl::optional<BlinkSchemefulSite> top_level_site;
-            if (execution_context->IsWindow()) {
-              auto* window = To<LocalDOMWindow>(execution_context);
-              if (window->top() && window->top()->GetFrame()) {
-                top_level_site = BlinkSchemefulSite(window->top()
-                                                        ->GetFrame()
-                                                        ->GetSecurityContext()
-                                                        ->GetSecurityOrigin());
-              }
-            }
-            if ((!top_level_site || !unsafe_top_level_site) &&
-                execution_context->GetAgentClusterID() !=
-                    unsafe_agent_cluster_id) {
-              // Either the registration or resolve happened in a context where
-              // it's not easy to determine the top-level site, and agent
-              // cluster doesn't match either (if agent cluster matches, by
-              // definition top-level site would also match, so this only
-              // records page loads where there is a chance that top-level site
-              // doesn't match).
-              execution_context->CountUse(
-                  WebFeature::kBlobStoreAccessUnknownTopLevelSite);
-            } else if (top_level_site != unsafe_top_level_site) {
-              // Blob URL lookup happened with a different top-level site than
-              // Blob URL registration.
-              execution_context->CountUse(
-                  WebFeature::kBlobStoreAccessAcrossTopLevelSite);
-            }
-          },
-          WrapPersistent(GetExecutionContext())));
+      WTF::BindOnce(std::move(metrics_callback),
+                    WrapPersistent(GetExecutionContext())));
 }
 
 void PublicURLManager::Resolve(
@@ -247,20 +246,20 @@ void PublicURLManager::Resolve(
     }
   }
 
+  auto metrics_callback = [](ExecutionContext* execution_context,
+                             const absl::optional<base::UnguessableToken>&
+                                 unsafe_agent_cluster_id) {
+    if (execution_context->GetAgentClusterID() != unsafe_agent_cluster_id) {
+      execution_context->CountUse(
+          WebFeature::
+              kBlobStoreAccessAcrossAgentClustersInResolveForNavigation);
+    }
+  };
+
   url_store_->ResolveForNavigation(
       url, std::move(token_receiver),
-      WTF::BindOnce(
-          [](ExecutionContext* execution_context,
-             const absl::optional<base::UnguessableToken>&
-                 unsafe_agent_cluster_id) {
-            if (execution_context->GetAgentClusterID() !=
-                unsafe_agent_cluster_id) {
-              execution_context->CountUse(
-                  WebFeature::
-                      kBlobStoreAccessAcrossAgentClustersInResolveForNavigation);
-            }
-          },
-          WrapPersistent(GetExecutionContext())));
+      WTF::BindOnce(std::move(metrics_callback),
+                    WrapPersistent(GetExecutionContext())));
 }
 
 void PublicURLManager::ContextDestroyed() {
