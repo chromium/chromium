@@ -46,7 +46,7 @@ interface EndOfLifeInfo {
   aboutPageEndOfLifeMessage?: string;
 }
 
-export interface TPMFirmwareUpdateStatusChangedEvent {
+export interface TpmFirmwareUpdateStatusChangedEvent {
   updateAvailable: boolean;
 }
 

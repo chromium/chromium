@@ -7,7 +7,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {BioEnrollDialogPage, CredentialManagementDialogPage, CrIconButtonElement, CrInputElement, Ctap2Status, ResetDialogPage, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPINBrowserProxy, SecurityKeysPINBrowserProxyImpl, SecurityKeysResetBrowserProxy, SecurityKeysResetBrowserProxyImpl, SetPINDialogPage, SettingsSecurityKeysBioEnrollDialogElement, SettingsSecurityKeysCredentialManagementDialogElement, SettingsSecurityKeysResetDialogElement, SettingsSecurityKeysSetPinDialogElement} from 'chrome://settings/lazy_load.js';
+import {BioEnrollDialogPage, CredentialManagementDialogPage, CrIconButtonElement, CrInputElement, Ctap2Status, ResetDialogPage, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPinBrowserProxy, SecurityKeysPinBrowserProxyImpl, SecurityKeysResetBrowserProxy, SecurityKeysResetBrowserProxyImpl, SetPinDialogPage, SettingsSecurityKeysBioEnrollDialogElement, SettingsSecurityKeysCredentialManagementDialogElement, SettingsSecurityKeysResetDialogElement, SettingsSecurityKeysSetPinDialogElement} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -53,8 +53,8 @@ class TestSecurityKeysBrowserProxy extends TestBrowserProxy {
   }
 }
 
-class TestSecurityKeysPINBrowserProxy extends TestSecurityKeysBrowserProxy
-    implements SecurityKeysPINBrowserProxy {
+class TestSecurityKeysPinBrowserProxy extends TestSecurityKeysBrowserProxy
+    implements SecurityKeysPinBrowserProxy {
   constructor() {
     super([
       'startSetPIN',
@@ -326,15 +326,15 @@ suite('SecurityKeysSetPINDialog', function() {
 
   let dialog: SettingsSecurityKeysSetPinDialogElement;
   let allDivs: string[];
-  let browserProxy: TestSecurityKeysPINBrowserProxy;
+  let browserProxy: TestSecurityKeysPinBrowserProxy;
 
   setup(function() {
-    browserProxy = new TestSecurityKeysPINBrowserProxy();
-    SecurityKeysPINBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSecurityKeysPinBrowserProxy();
+    SecurityKeysPinBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML =
         window.trustedTypes!.emptyHTML as unknown as string;
     dialog = document.createElement('settings-security-keys-set-pin-dialog');
-    allDivs = Object.values(SetPINDialogPage);
+    allDivs = Object.values(SetPinDialogPage);
   });
 
   function assertComplete() {

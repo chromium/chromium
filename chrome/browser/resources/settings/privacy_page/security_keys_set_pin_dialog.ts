@@ -24,10 +24,10 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SecurityKeysPINBrowserProxy, SecurityKeysPINBrowserProxyImpl} from './security_keys_browser_proxy.js';
+import {SecurityKeysPinBrowserProxy, SecurityKeysPinBrowserProxyImpl} from './security_keys_browser_proxy.js';
 import {getTemplate} from './security_keys_set_pin_dialog.html.js';
 
-export enum SetPINDialogPage {
+export enum SetPinDialogPage {
   INITIAL = 'initial',
   NO_PIN_SUPPORT = 'noPINSupport',
   REINSERT = 'reinsert',
@@ -169,7 +169,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
        */
       shown_: {
         type: String,
-        value: SetPINDialogPage.INITIAL,
+        value: SetPinDialogPage.INITIAL,
       },
 
       /**
@@ -202,12 +202,12 @@ export class SettingsSecurityKeysSetPinDialogElement extends
   private newPINError_: string;
   private confirmPINError_: string;
   private complete_: boolean;
-  private shown_: SetPINDialogPage;
+  private shown_: SetPinDialogPage;
   private pinsVisible_: boolean;
   private title_: string;
   private newPINDialogDescription_: string;
-  private browserProxy_: SecurityKeysPINBrowserProxy =
-      SecurityKeysPINBrowserProxyImpl.getInstance();
+  private browserProxy_: SecurityKeysPinBrowserProxy =
+      SecurityKeysPinBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -221,23 +221,23 @@ export class SettingsSecurityKeysSetPinDialogElement extends
             // Operation is complete. error is a CTAP error code. See
             // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#error-responses
             if (error === 1 /* INVALID_COMMAND */) {
-              this.shown_ = SetPINDialogPage.NO_PIN_SUPPORT;
+              this.shown_ = SetPinDialogPage.NO_PIN_SUPPORT;
               this.finish_();
             } else if (error === 52 /* temporarily locked */) {
-              this.shown_ = SetPINDialogPage.REINSERT;
+              this.shown_ = SetPinDialogPage.REINSERT;
               this.finish_();
             } else if (error === 50 /* locked */) {
-              this.shown_ = SetPINDialogPage.LOCKED;
+              this.shown_ = SetPinDialogPage.LOCKED;
               this.finish_();
             } else {
               this.errorCode_ = error;
-              this.shown_ = SetPINDialogPage.ERROR;
+              this.shown_ = SetPinDialogPage.ERROR;
               this.finish_();
             }
           } else if (retries === 0) {
             // A device can also signal that it is locked by returning zero
             // retries.
-            this.shown_ = SetPINDialogPage.LOCKED;
+            this.shown_ = SetPinDialogPage.LOCKED;
             this.finish_();
           } else {
             // Need to prompt for a pin. Initially set the text boxes to valid
@@ -264,7 +264,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
               this.title_ = this.i18n('securityKeysSetPINChangeTitle');
             }
 
-            this.shown_ = SetPINDialogPage.PIN_PROMPT;
+            this.shown_ = SetPinDialogPage.PIN_PROMPT;
             // Focus cannot be set directly from within a backend callback.
             window.setTimeout(function() {
               focusTarget.focus();
@@ -433,13 +433,13 @@ export class SettingsSecurityKeysSetPinDialogElement extends
       // true. error is a CTAP2 error code. See
       // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#error-responses
       if (error === 0 /* SUCCESS */) {
-        this.shown_ = SetPINDialogPage.SUCCESS;
+        this.shown_ = SetPinDialogPage.SUCCESS;
         this.finish_();
       } else if (error === 52 /* temporarily locked */) {
-        this.shown_ = SetPINDialogPage.REINSERT;
+        this.shown_ = SetPinDialogPage.REINSERT;
         this.finish_();
       } else if (error === 50 /* locked */) {
-        this.shown_ = SetPINDialogPage.LOCKED;
+        this.shown_ = SetPinDialogPage.LOCKED;
         this.finish_();
       } else if (error === 49 /* PIN_INVALID */) {
         this.currentPINValid_ = false;
@@ -451,7 +451,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
       } else {
         // Unknown error.
         this.errorCode_ = error;
-        this.shown_ = SetPINDialogPage.ERROR;
+        this.shown_ = SetPinDialogPage.ERROR;
         this.finish_();
       }
     });

@@ -24,7 +24,7 @@ import {getTemplate} from './security_keys_pin_field.html.js';
  * resolves with null if the PIN was correct, or with the number of retries
  * remaining otherwise.
  */
-type PINFieldSubmitFunc = (pin: string) => Promise<number|null>;
+type PinFieldSubmitFunc = (pin: string) => Promise<number|null>;
 
 export interface SettingsSecurityKeysPinFieldElement {
   $: {
@@ -93,7 +93,7 @@ export class SettingsSecurityKeysPinFieldElement extends
    * to show an error if the PIN was incorrect.
    * @return A Promise that resolves if the PIN was correct, else rejects.
    */
-  trySubmit(submitFunc: PINFieldSubmitFunc): Promise<void> {
+  trySubmit(submitFunc: PinFieldSubmitFunc): Promise<void> {
     if (!this.validate_()) {
       this.focus();
       return Promise.reject();

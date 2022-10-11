@@ -37,10 +37,10 @@ import {CaptionsBrowserProxyImpl} from './captions_browser_proxy.js';
 
 // </if>
 
-const SettingsA11YPageElementBase =
+const SettingsA11yPageElementBase =
     WebUIListenerMixin(BaseMixin(PolymerElement));
 
-class SettingsA11YPageElement extends SettingsA11YPageElementBase {
+class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   static get is() {
     return 'settings-a11y-page';
   }
@@ -209,4 +209,4 @@ class SettingsA11YPageElement extends SettingsA11YPageElementBase {
   }
 }
 
-customElements.define(SettingsA11YPageElement.is, SettingsA11YPageElement);
+customElements.define(SettingsA11yPageElement.is, SettingsA11yPageElement);

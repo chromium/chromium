@@ -92,11 +92,11 @@ export interface Enrollment {
 }
 
 /**
- * SetPINResponse represents the response to startSetPIN and setPIN requests.
+ * SetPinResponse represents the response to startSetPIN and setPIN requests.
  *
  * @see chrome/browser/ui/webui/settings/settings_security_key_handler.cc
  */
-export interface SetPINResponse {
+export interface SetPinResponse {
   done: boolean;
   error?: number;
   currentMinPinLength?: number;
@@ -126,7 +126,7 @@ export interface CredentialManagementResponse {
   message: string;
 }
 
-export interface SecurityKeysPINBrowserProxy {
+export interface SecurityKeysPinBrowserProxy {
   /**
    * Starts a PIN set/change operation by flashing all security keys. Resolves
    * with a pair of numbers. The first is one if the process has immediately
@@ -136,7 +136,7 @@ export interface SecurityKeysPINBrowserProxy {
    * remaining to correctly specify the current PIN, or else null to indicate
    * that no PIN is currently set.
    */
-  startSetPIN(): Promise<SetPINResponse>;
+  startSetPIN(): Promise<SetPinResponse>;
 
   /**
    * Attempts a PIN set/change operation. Resolves with a pair of numbers
@@ -144,7 +144,7 @@ export interface SecurityKeysPINBrowserProxy {
    * always be 1 to indicate that the process has completed and thus the
    * second will be the CTAP error code.
    */
-  setPIN(oldPIN: string, newPIN: string): Promise<SetPINResponse>;
+  setPIN(oldPIN: string, newPIN: string): Promise<SetPinResponse>;
 
   /** Cancels all outstanding operations. */
   close(): void;
@@ -333,8 +333,8 @@ export interface SecurityKeysPhonesBrowserProxy {
   rename(publicKey: string, newName: string): Promise<void>;
 }
 
-export class SecurityKeysPINBrowserProxyImpl implements
-    SecurityKeysPINBrowserProxy {
+export class SecurityKeysPinBrowserProxyImpl implements
+    SecurityKeysPinBrowserProxy {
   startSetPIN() {
     return sendWithPromise('securityKeyStartSetPIN');
   }
@@ -347,17 +347,17 @@ export class SecurityKeysPINBrowserProxyImpl implements
     return chrome.send('securityKeyPINClose');
   }
 
-  static getInstance(): SecurityKeysPINBrowserProxy {
+  static getInstance(): SecurityKeysPinBrowserProxy {
     return pinBrowserProxyInstance ||
-        (pinBrowserProxyInstance = new SecurityKeysPINBrowserProxyImpl());
+        (pinBrowserProxyInstance = new SecurityKeysPinBrowserProxyImpl());
   }
 
-  static setInstance(obj: SecurityKeysPINBrowserProxy) {
+  static setInstance(obj: SecurityKeysPinBrowserProxy) {
     pinBrowserProxyInstance = obj;
   }
 }
 
-let pinBrowserProxyInstance: SecurityKeysPINBrowserProxy|null = null;
+let pinBrowserProxyInstance: SecurityKeysPinBrowserProxy|null = null;
 
 export class SecurityKeysCredentialBrowserProxyImpl implements
     SecurityKeysCredentialBrowserProxy {
