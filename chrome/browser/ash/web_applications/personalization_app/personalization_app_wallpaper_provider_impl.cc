@@ -346,10 +346,10 @@ void PersonalizationAppWallpaperProviderImpl::SetWallpaperObserver(
   if (!wallpaper_controller_observer_.IsObserving())
     wallpaper_controller_observer_.Observe(ash::WallpaperController::Get());
   // Call it once to send the first wallpaper.
-  OnWallpaperChanged();
+  OnWallpaperResized();
 }
 
-void PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged() {
+void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
   wallpaper_attribution_info_fetcher_.reset();
   attribution_weak_ptr_factory_.InvalidateWeakPtrs();
 
@@ -439,9 +439,9 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged() {
 void PersonalizationAppWallpaperProviderImpl::OnWallpaperPreviewEnded() {
   DCHECK(wallpaper_observer_remote_.is_bound());
   wallpaper_observer_remote_->OnWallpaperPreviewEnded();
-  // Make sure to fire another |OnWallpaperChanged| after preview is over so
+  // Make sure to fire another |OnWallpaperResized| after preview is over so
   // that personalization app ends up with correct wallpaper state.
-  OnWallpaperChanged();
+  OnWallpaperResized();
 }
 
 void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(

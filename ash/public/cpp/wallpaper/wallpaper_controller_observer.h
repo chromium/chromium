@@ -28,6 +28,9 @@ class ASH_PUBLIC_EXPORT WallpaperControllerObserver {
   // Invoked when the wallpaper is changed.
   virtual void OnWallpaperChanged() {}
 
+  // Invoked when the wallpaper is resized.
+  virtual void OnWallpaperResized() {}
+
   // Invoked when the colors extracted from the current wallpaper change.
   virtual void OnWallpaperColorsChanged() {}
 

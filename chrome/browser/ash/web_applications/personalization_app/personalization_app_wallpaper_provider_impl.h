@@ -125,7 +125,7 @@ class PersonalizationAppWallpaperProviderImpl
           observer) override;
 
   // ash::WallpaperControllerObserver:
-  void OnWallpaperChanged() override;
+  void OnWallpaperResized() override;
 
   // ash::WallpaperControllerObserver:
   void OnWallpaperPreviewEnded() override;
