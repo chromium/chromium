@@ -350,6 +350,14 @@ class HistoryService : public KeyedService {
       QueryMostVisitedURLsCallback callback,
       base::CancelableTaskTracker* tracker);
 
+  // Request `result_count` of the most repeated queries for the given keyword.
+  // Used by TopSites.
+  base::CancelableTaskTracker::TaskId QueryMostRepeatedQueriesForKeyword(
+      KeywordID keyword_id,
+      size_t result_count,
+      base::OnceCallback<void(KeywordSearchTermVisitList)> callback,
+      base::CancelableTaskTracker* tracker);
+
   // Statistics ----------------------------------------------------------------
 
   // Gets the number of URLs as seen in chrome://history within the time range

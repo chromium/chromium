@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/query_parser/query_parser.h"
@@ -30,7 +31,6 @@ namespace history {
 
 class KeywordSearchTermVisitEnumerator;
 struct KeywordSearchTermRow;
-struct KeywordSearchTermVisit;
 
 class VisitDatabase;  // For friend statement.
 
@@ -221,11 +221,10 @@ class URLDatabase {
   // keyword.
   // TODO(crbug.com/1119654): Remove this in favor of the enumerator-based
   // function below after experimentation.
-  void GetMostRecentKeywordSearchTerms(
-      KeywordID keyword_id,
-      const std::u16string& prefix,
-      int max_count,
-      std::vector<std::unique_ptr<KeywordSearchTermVisit>>* visits);
+  void GetMostRecentKeywordSearchTerms(KeywordID keyword_id,
+                                       const std::u16string& prefix,
+                                       int max_count,
+                                       KeywordSearchTermVisitList* visits);
 
   // Returns an enumerator to enumerate all the KeywordSearchTermVisits starting
   // with `prefix` for the specified keyword. The visits are ordered first by
@@ -239,10 +238,9 @@ class URLDatabase {
   // the specified keyword.
   // TODO(crbug.com/1119654): Remove this in favor of the enumerator-based
   // function below after experimentation.
-  void GetMostRecentKeywordSearchTerms(
-      KeywordID keyword_id,
-      base::Time age_threshold,
-      std::vector<std::unique_ptr<KeywordSearchTermVisit>>* visits);
+  void GetMostRecentKeywordSearchTerms(KeywordID keyword_id,
+                                       base::Time age_threshold,
+                                       KeywordSearchTermVisitList* visits);
 
   // Returns an enumerator to enumerate all the KeywordSearchTermVisits no older
   // than `age_threshold` for the given keyword. The visits are ordered first by

@@ -577,7 +577,7 @@ void URLDatabase::GetMostRecentKeywordSearchTerms(
     KeywordID keyword_id,
     const std::u16string& prefix,
     int max_count,
-    std::vector<std::unique_ptr<KeywordSearchTermVisit>>* visits) {
+    KeywordSearchTermVisitList* visits) {
   // NOTE: the keyword_id can be zero if on first run the user does a query
   // before the TemplateURLService has finished loading. As the chances of this
   // occurring are small, we ignore it.
@@ -661,7 +661,7 @@ URLDatabase::CreateKeywordSearchTermVisitEnumerator(
 void URLDatabase::GetMostRecentKeywordSearchTerms(
     KeywordID keyword_id,
     base::Time age_threshold,
-    std::vector<std::unique_ptr<KeywordSearchTermVisit>>* visits) {
+    KeywordSearchTermVisitList* visits) {
   // NOTE: the keyword_id can be zero if on first run the user does a query
   // before the TemplateURLService has finished loading. As the chances of this
   // occurring are small, we ignore it.

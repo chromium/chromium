@@ -5,8 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_KEYWORD_SEARCH_TERM_UTIL_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_KEYWORD_SEARCH_TERM_UTIL_H_
 
-#include <memory>
-#include <vector>
+#include "components/history/core/browser/history_types.h"
 
 namespace base {
 class Time;
@@ -16,7 +15,6 @@ class TimeDelta;
 namespace history {
 
 class KeywordSearchTermVisitEnumerator;
-struct KeywordSearchTermVisit;
 
 enum class SearchTermRankingPolicy {
   kRecency,  // From the most recent to the least recent.
@@ -50,7 +48,7 @@ void GetAutocompleteSearchTermsFromEnumerator(
     KeywordSearchTermVisitEnumerator& enumerator,
     bool ignore_duplicate_visits,
     SearchTermRankingPolicy ranking_policy,
-    std::vector<std::unique_ptr<KeywordSearchTermVisit>>* search_terms);
+    KeywordSearchTermVisitList* search_terms);
 
 // Returns keyword search terms ordered by descending frecency scores
 // accumulated across days for use in the Most Visited tiles. |enumerator|
@@ -59,7 +57,7 @@ void GetAutocompleteSearchTermsFromEnumerator(
 // ascending order, i.e., from the oldest to the newest.
 void GetMostRepeatedSearchTermsFromEnumerator(
     KeywordSearchTermVisitEnumerator& enumerator,
-    std::vector<std::unique_ptr<KeywordSearchTermVisit>>* search_terms);
+    KeywordSearchTermVisitList* search_terms);
 
 }  // namespace history
 

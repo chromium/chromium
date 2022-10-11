@@ -1824,6 +1824,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.QueryMostRepeatedQueriesCount" units="counts"
+    expires_after="2023-10-10">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The number of search terms extracted from the HistoryDatabase db_ in
+    HistoryBackend::QueryMostRepeatedQueriesForKeyword() to produce the most
+    repeated search terms. Excludes the case where local HistoryDatabase db_ is
+    unavailable, i.e. where the query doesn't really happen. Emitted on NTP load
+    and on omnibox popup shown on Android where the repeatable queries are
+    requested to be shown in the Most Visited tiles.
+  </summary>
+</histogram>
+
+<histogram name="History.QueryMostRepeatedQueriesTime" units="ms"
+    expires_after="2023-10-10">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The amount of time for HistoryBackend::QueryMostRepeatedQueriesForKeyword()
+    to extract the search terms from the HistoryDatabase db_ and sort them by
+    frecency scores to produce the most repeated search terms. Excludes the case
+    where local HistoryDatabase db_ is unavailable, i.e. where the query doesn't
+    really happen. Emitted on NTP load and on omnibox popup shown on Android
+    where the repeatable queries are requested to be shown in the Most Visited
+    tiles.
+  </summary>
+</histogram>
+
 <histogram name="History.QueryMostVisitedURLsTime" units="ms"
     expires_after="M81">
   <owner>chengx@chromium.org</owner>
@@ -1857,8 +1886,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.TopSites.QueryFromHistoryTime" units="ms"
+    expires_after="2023-10-10">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The amount of time it takes to asynchronously query the most visited URLs
+    and the most repeated queries, if applicable, from the history service.
+    Excludes the case where local HistoryDatabase db_ is unavailable, i.e. where
+    the query doesn't really happen. Emitted on NTP load and on omnibox popup
+    shown on Android where the Most Visited tiles are shown.
+  </summary>
+</histogram>
+
 <histogram name="History.TopSites.SearchTermsExtractedCount" units="counts"
     expires_after="2023-02-19">
+  <obsolete>
+    Deprecated in M108 in favor of History.QueryMostRepeatedQueriesCount
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
@@ -1871,6 +1916,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="History.TopSites.SearchTermsExtractionTime" units="ms"
     expires_after="2022-10-16">
+  <obsolete>
+    Deprecated in M108 in favor of History.QueryMostRepeatedQueriesTime
+  </obsolete>
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>

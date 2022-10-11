@@ -1104,6 +1104,21 @@ base::CancelableTaskTracker::TaskId HistoryService::QueryMostVisitedURLs(
       std::move(callback));
 }
 
+base::CancelableTaskTracker::TaskId
+HistoryService::QueryMostRepeatedQueriesForKeyword(
+    KeywordID keyword_id,
+    size_t result_count,
+    base::OnceCallback<void(KeywordSearchTermVisitList)> callback,
+    base::CancelableTaskTracker* tracker) {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::QueryMostRepeatedQueriesForKeyword,
+                     history_backend_, keyword_id, result_count),
+      std::move(callback));
+}
+
 void HistoryService::Cleanup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!backend_task_runner_) {

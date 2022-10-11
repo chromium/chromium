@@ -136,7 +136,20 @@ class HistoryServiceTest : public testing::Test {
           run_loop.Quit();
         }),
         &tracker_);
-    run_loop.Run();  // Will be exited in *QueryComplete.
+    run_loop.Run();  // Will be exited in callback on query complete.
+  }
+
+  void QueryMostRepeatedQueriesForKeyword(KeywordID keyword_id,
+                                          size_t result_count) {
+    base::RunLoop run_loop;
+    history_service_->QueryMostRepeatedQueriesForKeyword(
+        keyword_id, result_count,
+        base::BindLambdaForTesting([&](KeywordSearchTermVisitList queries) {
+          most_repeated_queries_ = std::move(queries);
+          run_loop.Quit();
+        }),
+        &tracker_);
+    run_loop.Run();  // Will be exited in callback on query complete.
   }
 
   base::ScopedTempDir temp_dir_;
@@ -144,6 +157,8 @@ class HistoryServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   MostVisitedURLList most_visited_urls_;
+
+  KeywordSearchTermVisitList most_repeated_queries_;
 
   // When non-NULL, this will be deleted on tear down and we will block until
   // the backend thread has completed. This allows tests for the history
@@ -549,6 +564,117 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
   EXPECT_EQ(url2, most_visited_urls_[1].url);
   EXPECT_EQ(url0, most_visited_urls_[2].url);
   EXPECT_EQ(url3, most_visited_urls_[3].url);
+}
+
+TEST_F(HistoryServiceTest, QueryMostRepeatedQueriesForKeyword) {
+  ASSERT_TRUE(history_service_.get());
+
+  const KeywordID first_keyword_id = 1;
+  const KeywordID second_keyword_id = 2;
+
+  struct PageData {
+    const GURL url;
+    const std::u16string term;
+    base::Time time;
+    const KeywordID keyword_id;
+  } pages[] = {{GURL("http://www.search.com/?q=First"), u"First",
+                base::Time::Now() - base::Days(4), first_keyword_id},
+               {GURL("http://www.search.com/?q=Second"), u"Second",
+                base::Time::Now() - base::Days(3), first_keyword_id},
+               {GURL("http://www.search.com/?q=Third"), u"Third",
+                base::Time::Now() - base::Days(2), first_keyword_id},
+               {GURL("http://www.search.com/?q=Fourth"), u"Fourth",
+                base::Time::Now() - base::Days(1), second_keyword_id}};
+
+  // Add first page for first keyword.
+  history_service_->AddPage(pages[0].url, pages[0].time,
+                            history::SOURCE_BROWSED);
+  history_service_->SetKeywordSearchTermsForURL(
+      pages[0].url, pages[0].keyword_id, pages[0].term);
+
+  // Add second page for first keyword.
+  history_service_->AddPage(pages[1].url, pages[1].time,
+                            history::SOURCE_BROWSED);
+  history_service_->SetKeywordSearchTermsForURL(
+      pages[1].url, pages[1].keyword_id, pages[1].term);
+
+  {
+    base::HistogramTester histogram_tester;
+    QueryMostRepeatedQueriesForKeyword(first_keyword_id, 1);
+
+    ASSERT_EQ(1U, most_repeated_queries_.size());
+    EXPECT_EQ(u"second", most_repeated_queries_[0]->normalized_term);
+
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
+                                      1);
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
+                                      1);
+    histogram_tester.ExpectUniqueSample("History.QueryMostRepeatedQueriesCount",
+                                        2, 1);
+  }
+
+  // Add third page for first keyword.
+  history_service_->AddPage(pages[2].url, pages[2].time,
+                            history::SOURCE_BROWSED);
+  history_service_->SetKeywordSearchTermsForURL(
+      pages[2].url, pages[2].keyword_id, pages[2].term);
+
+  {
+    base::HistogramTester histogram_tester;
+    QueryMostRepeatedQueriesForKeyword(first_keyword_id, 1);
+
+    ASSERT_EQ(1U, most_repeated_queries_.size());
+    EXPECT_EQ(u"third", most_repeated_queries_[0]->normalized_term);
+
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
+                                      1);
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
+                                      1);
+    histogram_tester.ExpectUniqueSample("History.QueryMostRepeatedQueriesCount",
+                                        3, 1);
+  }
+
+  // Revisit second page for first keyword, making it the top page.
+  history_service_->AddPage(pages[1].url, pages[1].time,
+                            history::SOURCE_BROWSED);
+  history_service_->SetKeywordSearchTermsForURL(
+      pages[1].url, pages[1].keyword_id, pages[1].term);
+
+  {
+    base::HistogramTester histogram_tester;
+    QueryMostRepeatedQueriesForKeyword(first_keyword_id, 1);
+
+    ASSERT_EQ(1U, most_repeated_queries_.size());
+    EXPECT_EQ(u"second", most_repeated_queries_[0]->normalized_term);
+
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
+                                      1);
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
+                                      1);
+    histogram_tester.ExpectUniqueSample("History.QueryMostRepeatedQueriesCount",
+                                        3, 1);
+  }
+
+  // Add forth page for second keyword. This does not change the top page.
+  history_service_->AddPage(pages[3].url, pages[3].time,
+                            history::SOURCE_BROWSED);
+  history_service_->SetKeywordSearchTermsForURL(
+      pages[3].url, pages[3].keyword_id, pages[3].term);
+
+  {
+    base::HistogramTester histogram_tester;
+    QueryMostRepeatedQueriesForKeyword(first_keyword_id, 1);
+
+    ASSERT_EQ(1U, most_repeated_queries_.size());
+    EXPECT_EQ(u"second", most_repeated_queries_[0]->normalized_term);
+
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesTime",
+                                      1);
+    histogram_tester.ExpectTotalCount("History.QueryMostRepeatedQueriesCount",
+                                      1);
+    histogram_tester.ExpectUniqueSample("History.QueryMostRepeatedQueriesCount",
+                                        3, 1);
+  }
 }
 
 namespace {

@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -36,6 +37,7 @@ class FilePath;
 namespace history {
 
 class TopSitesImplTest;
+struct SitesAndQueriesRequest;
 
 // How many top sites to store in the cache.
 static constexpr size_t kTopSitesNumber = 10;
@@ -108,9 +110,12 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
 
   using PendingCallbacks = std::vector<PendingCallback>;
 
-  // Starts to query most visited URLs from history database instantly. Also
-  // cancels any pending queries requested in a delayed manner by canceling the
-  // timer.
+  // Queries the most visited URLs followed by the most repeated queries, if
+  // applicable, from the history service. `OnGotMostVisitedURLsFromHistory()`
+  // and `OnGotMostRepeatedQueriesFromHistory()` are called when the respective
+  // queries complete. Those in turn call `SetTopSitesFromHistory()` when all
+  // the requested data is available.
+  // Cancels any pending requests in a delayed manner by canceling the timer.
   void StartQueryForMostVisited();
 
   // Generates the diff of things that happened between "old" and "new."
@@ -124,9 +129,6 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
   static void DiffMostVisited(const MostVisitedURLList& old_list,
                               const MostVisitedURLList& new_list,
                               TopSitesDelta* delta);
-
-  // Adds the most repeated search terms to TopSites and returns a new list.
-  MostVisitedURLList AddMostRepeatedQueries(const MostVisitedURLList& urls);
 
   // Adds prepopulated pages to TopSites. Returns true if any pages were added.
   bool AddPrepopulatedPages(MostVisitedURLList* urls) const;
@@ -163,8 +165,22 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
   // the UI thread.
   void OnGotMostVisitedURLs(MostVisitedURLList sites);
 
-  // Called when history service returns a list of top URLs.
-  void OnTopSitesAvailableFromHistory(MostVisitedURLList data);
+  // Called when history service returns a list of the most visited sites.
+  // Calls `SetTopSitesFromHistory()` with `request` if it has completed.
+  void OnGotMostVisitedURLsFromHistory(
+      scoped_refptr<SitesAndQueriesRequest> request,
+      MostVisitedURLList sites);
+
+  // Called when history service returns a list of the most repeated queries.
+  // Calls `SetTopSitesFromHistory()` with `request` if it has completed.
+  void OnGotMostRepeatedQueriesFromHistory(
+      scoped_refptr<SitesAndQueriesRequest> request,
+      KeywordSearchTermVisitList queries);
+
+  // Called when history service returns both the most visited sites and the
+  // most repeated queries.
+  // Calls `SetTopSites()` with a new combined list, if applicable.
+  void SetTopSitesFromHistory(scoped_refptr<SitesAndQueriesRequest> request);
 
   // history::HistoryServiceObserver:
   void OnURLsDeleted(HistoryService* history_service,

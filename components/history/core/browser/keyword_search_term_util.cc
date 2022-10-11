@@ -141,7 +141,7 @@ void GetAutocompleteSearchTermsFromEnumerator(
     KeywordSearchTermVisitEnumerator& enumerator,
     bool ignore_duplicate_visits,
     SearchTermRankingPolicy ranking_policy,
-    std::vector<std::unique_ptr<KeywordSearchTermVisit>>* search_terms) {
+    KeywordSearchTermVisitList* search_terms) {
   SearchTermHelper helper;
   const base::Time now = base::Time::Now();
   while (auto search_term = helper.GetNextSearchTermFromEnumerator(
@@ -254,7 +254,7 @@ class MostRepeatedSearchTermHelper {
 
 void GetMostRepeatedSearchTermsFromEnumerator(
     KeywordSearchTermVisitEnumerator& enumerator,
-    std::vector<std::unique_ptr<KeywordSearchTermVisit>>* search_terms) {
+    KeywordSearchTermVisitList* search_terms) {
   MostRepeatedSearchTermHelper helper;
   const base::Time now = base::Time::Now();
   while (auto search_term =

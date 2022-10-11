@@ -219,7 +219,7 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_Prefix) {
   // that generated the normalized search terms.
   // In fact we get near-duplicate matches if different search terms generated
   // the same normalized search term.
-  std::vector<std::unique_ptr<KeywordSearchTermVisit>> matches;
+  KeywordSearchTermVisitList matches;
   GetMostRecentKeywordSearchTerms(keyword_id, u"f", 10, &matches);
   ASSERT_EQ(4U, matches.size());
   EXPECT_EQ(u"Food", matches[0]->term);
@@ -257,7 +257,7 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_Prefix) {
   // the visits to unique normalized search terms.
   auto enumerator = CreateKeywordSearchTermVisitEnumerator(keyword_id, u"f");
   ASSERT_TRUE(enumerator);
-  std::vector<std::unique_ptr<KeywordSearchTermVisit>> matches_v2;
+  KeywordSearchTermVisitList matches_v2;
   GetAutocompleteSearchTermsFromEnumerator(
       *enumerator, /*ignore_duplicate_visits=*/false,
       SearchTermRankingPolicy::kRecency, &matches_v2);
@@ -349,7 +349,7 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_ZeroPrefix) {
 
   // Make sure we get both "foo" and "bar" back. "bar" should come first since
   // it was searched for most recently.
-  std::vector<std::unique_ptr<KeywordSearchTermVisit>> matches;
+  KeywordSearchTermVisitList matches;
   GetMostRecentKeywordSearchTerms(
       keyword_id, history::AutocompleteAgeThreshold(), &matches);
   ASSERT_EQ(2U, matches.size());
@@ -367,7 +367,7 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_ZeroPrefix) {
   auto enumerator = CreateKeywordSearchTermVisitEnumerator(
       keyword_id, history::AutocompleteAgeThreshold());
   ASSERT_TRUE(enumerator);
-  std::vector<std::unique_ptr<KeywordSearchTermVisit>> matches_v2;
+  KeywordSearchTermVisitList matches_v2;
   GetAutocompleteSearchTermsFromEnumerator(
       *enumerator, /*ignore_duplicate_visits=*/true,
       SearchTermRankingPolicy::kFrecency, &matches_v2);
@@ -489,7 +489,7 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_MostRepeated) {
   auto enumerator = CreateKeywordSearchTermVisitEnumerator(
       keyword_id, history::AutocompleteAgeThreshold());
   ASSERT_TRUE(enumerator);
-  std::vector<std::unique_ptr<KeywordSearchTermVisit>> matches;
+  KeywordSearchTermVisitList matches;
   GetMostRepeatedSearchTermsFromEnumerator(*enumerator, &matches);
   ASSERT_EQ(2U, matches.size());
   EXPECT_EQ(matches[0]->score, matches[1]->score);
@@ -535,7 +535,7 @@ TEST_F(URLDatabaseTest, DeleteURLDeletesKeywordSearchTermVisit) {
   ASSERT_TRUE(DeleteURLRow(url_id));
 
   // Make sure the keyword visit was deleted.
-  std::vector<std::unique_ptr<KeywordSearchTermVisit>> matches;
+  KeywordSearchTermVisitList matches;
   GetMostRecentKeywordSearchTerms(1, u"visit", 10, &matches);
   ASSERT_EQ(0U, matches.size());
 }

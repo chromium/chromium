@@ -311,6 +311,12 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // redirects leading to each of these URLs. Used by TopSites.
   MostVisitedURLList QueryMostVisitedURLs(int result_count);
 
+  // Request `result_count` of the most repeated queries for the given keyword.
+  // Used by TopSites.
+  KeywordSearchTermVisitList QueryMostRepeatedQueriesForKeyword(
+      KeywordID keyword_id,
+      size_t result_count);
+
   // Statistics ----------------------------------------------------------------
 
   // Gets the number of URLs as seen in chrome://history within the time range
