@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
@@ -240,7 +241,8 @@ class CONTENT_EXPORT FrameTree {
 
   Type type() const { return type_; }
 
-  FrameTreeNode* root() const { return root_; }
+  FrameTreeNode* root() { return &root_; }
+  const FrameTreeNode* root() const { return &root_; }
 
   bool is_prerendering() const { return type_ == FrameTree::Type::kPrerender; }
 
@@ -573,15 +575,6 @@ class CONTENT_EXPORT FrameTree {
   // Indicates type of frame tree.
   const Type type_;
 
-  // This is an owned ptr to the root FrameTreeNode, which never changes over
-  // the lifetime of the FrameTree. It is not a scoped_ptr because we need the
-  // pointer to remain valid even while the FrameTreeNode is being destroyed,
-  // since it's common for a node to test whether it's the root node.
-  //
-  // TODO(crbug.com/1298696): content_browsertests breaks with MTECheckedPtr
-  // enabled. Triage.
-  raw_ptr<FrameTreeNode, DanglingUntriagedDegradeToNoOpWhenMTE> root_;
-
   int focused_frame_tree_node_id_;
 
   // Overall load progress.
@@ -601,6 +594,13 @@ class CONTENT_EXPORT FrameTree {
   // Whether Shutdown() was called.
   bool was_shut_down_ = false;
 #endif
+
+  // The root FrameTreeNode.
+  //
+  // Note: It is common for a node to test whether it's the root node, via the
+  // `root()` method, even while `root_` is running its destructor.
+  // For that reason, we want to destroy |root_| before any other fields.
+  FrameTreeNode root_;
 
   base::WeakPtrFactory<FrameTree> weak_ptr_factory_{this};
 };

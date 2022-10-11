@@ -1742,7 +1742,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // TODO(creis): This should take in a FrameTreeNode to know which node's
   // render manager to return.  For now, we just return the root's.
-  RenderFrameHostManager* GetRenderManager() const;
+  RenderFrameHostManager* GetRenderManager();
 
   // Removes browser plugin embedder if there is one.
   void RemoveBrowserPluginEmbedder();

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/devtools/protocol/handler_helpers.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 
 namespace content {

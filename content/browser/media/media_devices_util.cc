@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

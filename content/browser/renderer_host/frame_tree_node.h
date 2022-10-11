@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
-#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_discard_reason.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -41,6 +40,7 @@ namespace content {
 class NavigationRequest;
 class RenderFrameHostImpl;
 class NavigationEntryImpl;
+class FrameTree;
 
 // When a page contains iframes, its renderer process maintains a tree structure
 // of those frames. We are mirroring this tree in the browser process. This
@@ -119,7 +119,7 @@ class CONTENT_EXPORT FrameTreeNode {
   void ResetForNavigation();
 
   FrameTree* frame_tree() const { return frame_tree_; }
-  Navigator& navigator() { return frame_tree()->navigator(); }
+  Navigator& navigator();
 
   RenderFrameHostManager* render_manager() { return &render_manager_; }
   const RenderFrameHostManager* render_manager() const {

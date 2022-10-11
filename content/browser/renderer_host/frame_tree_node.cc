@@ -20,6 +20,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
@@ -339,6 +340,10 @@ void FrameTreeNode::RemoveObserver(Observer* observer) {
 
 bool FrameTreeNode::IsMainFrame() const {
   return frame_tree_->root() == this;
+}
+
+Navigator& FrameTreeNode::navigator() {
+  return frame_tree()->navigator();
 }
 
 bool FrameTreeNode::IsOutermostMainFrame() {
