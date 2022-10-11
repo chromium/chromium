@@ -24,6 +24,7 @@ typedef NS_ENUM(NSInteger, PopupMenuAction) {
   PopupMenuActionReportIssue,
   PopupMenuActionHelp,
   PopupMenuActionTextZoom,
+  PopupMenuActionPriceNotifications,
 #if !defined(NDEBUG)
   PopupMenuActionViewSource,
 #endif  // !defined(NDEBUG)

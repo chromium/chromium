@@ -94,5 +94,7 @@ extern NSString* const kToolsMenuClearBrowsingData;
 extern NSString* const kToolsMenuShareChromeId;
 // WhatsNew item accessibility Identifier.
 extern NSString* const kToolsMenuWhatsNewId;
+// Open Price Notifications accessibility Identifier.
+extern NSString* const kToolsMenuPriceNotifications;
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_CONSTANTS_H_

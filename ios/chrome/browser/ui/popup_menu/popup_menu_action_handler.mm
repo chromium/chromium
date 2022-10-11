@@ -239,6 +239,12 @@ using base::UserMetricsAction;
           openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:
                                                  GURL(kChromeUIManagementURL)]];
       break;
+    case PopupMenuActionPriceNotifications:
+      RecordAction(UserMetricsAction("MobileMenuPriceNotifications"));
+      // TODO(crbug.com/1371166) Once the Price Notifications coordinator has
+      // been merged into the codebase, access that coordinator to display the
+      // Price Notifications UI.
+      break;
     default:
       NOTREACHED() << "Unexpected identifier";
       break;

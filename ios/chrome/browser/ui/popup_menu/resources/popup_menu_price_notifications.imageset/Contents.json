@@ -3,17 +3,17 @@
         {
           "idiom": "universal",
           "scale": "1x",
-          "filename": "popup_menu_open_price_notifications.png"
+          "filename": "popup_menu_price_notifications.png"
         },
         {
             "idiom": "universal",
             "scale": "2x",
-            "filename": "popup_menu_open_price_notifications@2x.png"
+            "filename": "popup_menu_price_notifications@2x.png"
         },
         {
             "idiom": "universal",
             "scale": "3x",
-            "filename": "popup_menu_open_price_notifications@3x.png"
+            "filename": "popup_menu_price_notifications@3x.png"
         }
     ],
     "info": {

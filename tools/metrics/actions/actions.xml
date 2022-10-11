@@ -18619,6 +18619,12 @@ should be able to be added at any place in this file.
   <description>User pressed 'Paste and Go' in the app menu.</description>
 </action>
 
+<action name="MobileMenuPriceNotifications">
+  <owner>danieltwhite@google.com</owner>
+  <owner>ajuma@chromium.org</owner>
+  <description>User pressed 'Track Price' in the app menu.</description>
+</action>
+
 <action name="MobileMenuPrint">
   <owner>aurimas@chromium.org</owner>
   <description>User pressed 'Print' in the app menu.</description>
