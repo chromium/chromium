@@ -18,6 +18,8 @@ js_library("service_worker") {
   sources = [
     "copy_entry/sw.js",
     "copy_entry/test.js",
+    "create_file/sw.js",
+    "create_file/test.js",
     "delete_entry/sw.js",
     "delete_entry/test.js",
     "get_all/sw.js",

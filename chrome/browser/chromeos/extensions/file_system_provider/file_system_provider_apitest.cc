@@ -394,4 +394,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, WriteFile) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, CreateFile) {
+  ASSERT_TRUE(RunExtensionTest(
+      "file_system_provider/service_worker/create_file",
+      {.extension_url = "test.html"}, {.load_as_component = true}))
+      << message_;
+}
+
 }  // namespace extensions
