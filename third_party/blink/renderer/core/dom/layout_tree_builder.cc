@@ -91,6 +91,19 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
   if (!node_->LayoutObjectIsNeeded(*style_))
     return;
 
+  // Table internals require the same writing-mode and direction for
+  // the whole table.
+  const ComputedStyle& parent_style = parent_layout_object->StyleRef();
+  if (style_->IsDisplayTableInternalType() &&
+      style_->GetWritingDirection() != parent_style.GetWritingDirection()) {
+    scoped_refptr<ComputedStyle> new_style = ComputedStyle::Clone(*style_);
+    new_style->SetWritingMode(parent_style.GetWritingMode());
+    new_style->SetDirection(parent_style.Direction());
+    new_style->SetTextOrientation(parent_style.GetTextOrientation());
+    new_style->UpdateFontOrientation();
+    style_ = std::move(new_style);
+  }
+
   LayoutObject* new_layout_object = node_->CreateLayoutObject(*style_, legacy_);
   if (!new_layout_object)
     return;

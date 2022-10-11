@@ -616,21 +616,6 @@ static void AdjustStyleForDisplay(ComputedStyle& style,
       style.StyleType() == kPseudoIdNone &&
       style.GetWritingMode() != layout_parent_style.GetWritingMode())
     style.SetDisplay(EDisplay::kInlineBlock);
-
-  // writing-mode does not apply to table row groups, table column groups, table
-  // rows, and table columns.
-  // TODO(crbug.com/736072): Borders specified with logical css properties will
-  // not change to reflect new writing mode. ex: border-block-start.
-  if (style.Display() == EDisplay::kTableColumn ||
-      style.Display() == EDisplay::kTableColumnGroup ||
-      style.Display() == EDisplay::kTableFooterGroup ||
-      style.Display() == EDisplay::kTableHeaderGroup ||
-      style.Display() == EDisplay::kTableRow ||
-      style.Display() == EDisplay::kTableRowGroup) {
-    style.SetWritingMode(layout_parent_style.GetWritingMode());
-    style.SetTextOrientation(layout_parent_style.GetTextOrientation());
-    style.UpdateFontOrientation();
-  }
 }
 
 bool StyleAdjuster::IsEditableElement(Element* element,

@@ -127,6 +127,8 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
   if (old_style == new_style)
     return;
 
+  const bool is_writing_direction_equal =
+      old_style->GetWritingDirection() == new_style->GetWritingDirection();
   const bool is_orthogonal = old_style->IsHorizontalWritingMode() !=
                              new_style->IsHorizontalWritingMode();
 
@@ -135,19 +137,31 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
   // however, inherit the computed value, which is unaffected by the
   // propagated used value from body.
   for (Node* node = firstChild(); node; node = node->nextSibling()) {
-    if (!node->IsTextNode() || node->NeedsReattachLayoutTree())
+    if (node->NeedsReattachLayoutTree())
       continue;
-    LayoutObject* const layout_text = node->GetLayoutObject();
-    if (!layout_text)
+    auto* child_layout_object = node->GetLayoutObject();
+    if (!child_layout_object)
       continue;
-    if (is_orthogonal) {
-      // If the old and new writing-modes are orthogonal, reattach the layout
-      // objects to make sure we create or remove any LayoutNGTextCombine.
+
+    // Tables need all their internals parts to have a consistent writing-mode
+    // and direction, force a reattach.
+    if (!is_writing_direction_equal &&
+        child_layout_object->StyleRef().IsDisplayTableType()) {
       node->SetNeedsReattachLayoutTree();
       continue;
     }
-    auto* const text_combine =
-        DynamicTo<LayoutNGTextCombine>(layout_text->Parent());
+
+    auto* layout_text = DynamicTo<LayoutText>(child_layout_object);
+    if (!layout_text)
+      continue;
+
+    // Upon an orthogonal writing-mode change text-combines may be
+    // inserted/destroyed, force a reattach.
+    if (is_orthogonal) {
+      node->SetNeedsReattachLayoutTree();
+      continue;
+    }
+    auto* text_combine = DynamicTo<LayoutNGTextCombine>(layout_text->Parent());
     if (UNLIKELY(text_combine)) {
       layout_text->SetStyle(text_combine->Style());
       continue;
