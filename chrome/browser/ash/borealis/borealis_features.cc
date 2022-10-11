@@ -58,8 +58,7 @@ class FullChecker : public TokenHardwareChecker {
     // Tokens provide more fine-grained control over whether borealis can be run
     // on a specific device. The different kinds of token are:
     //  * "Super" token: Allows borealis on any device.
-    //  * "Test" token: Allows borealis on any device with sufficient hardware
-    //    (where *-borealis boards are always considered sufficient).
+    //  * "Test" token: Allows borealis on any device with sufficient hardware.
     //  * /board token: Similar to the super token, but only works for a subset
     //  of boards.
     //
@@ -81,15 +80,7 @@ class FullChecker : public TokenHardwareChecker {
     }
 
     // The board-specific tokens.
-    if (BoardIn({"hatch-borealis", "puff-borealis", "zork-borealis",
-                 "volteer-borealis", "aurora-borealis"})) {
-      if (TokenHashMatches("MXlY+SFZ!2,P_k^02]hK",
-                           "FbxB2mxNa/uqskX4X+NqHhAE6ebHeWC0u+Y+UlGEB/4=")) {
-        LOG(WARNING) << "Dogfooder token provided, bypassing hardware checks.";
-        return AllowStatus::kAllowed;
-      }
-      return AllowStatus::kIncorrectToken;
-    } else if (IsBoard("volteer")) {
+    if (IsBoard("volteer")) {
       if (TokenHashMatches("w/8GMLXyB.EOkFaP/-AA",
                            "waiTIRjxZCFjFIRkuUVlnAbiDOMBSzyp3iSJl5x3YwA=")) {
         LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
