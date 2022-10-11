@@ -443,7 +443,10 @@ int DedicatedWebTransportHttp3Client::DoResolveHost() {
   next_connect_state_ = CONNECT_STATE_RESOLVE_HOST_COMPLETE;
   HostResolver::ResolveHostParameters parameters;
   resolve_host_request_ = context_->host_resolver()->CreateRequest(
-      url::SchemeHostPort(url_), isolation_key_, net_log_, absl::nullopt);
+      url::SchemeHostPort(url_),
+      net::NetworkAnonymizationKey::
+          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(isolation_key_),
+      net_log_, absl::nullopt);
   return resolve_host_request_->Start(base::BindOnce(
       &DedicatedWebTransportHttp3Client::DoLoop, base::Unretained(this)));
 }

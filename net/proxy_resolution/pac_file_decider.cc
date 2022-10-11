@@ -283,7 +283,7 @@ int PacFileDecider::DoQuickCheck() {
       pac_file_fetcher_->GetRequestContext()->host_resolver();
   resolve_request_ = host_resolver->CreateRequest(
       HostPortPair(host, 80),
-      pac_file_fetcher_->isolation_info().network_isolation_key(), net_log_,
+      pac_file_fetcher_->isolation_info().network_anonymization_key(), net_log_,
       parameters);
 
   CompletionRepeatingCallback callback = base::BindRepeating(

@@ -241,7 +241,7 @@ TEST_F(URLRequestContextBuilderTest, ShutdownHostResolverWithPendingRequest) {
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request =
       context->host_resolver()->CreateRequest(
-          HostPortPair("example.com", 1234), NetworkIsolationKey(),
+          HostPortPair("example.com", 1234), NetworkAnonymizationKey(),
           NetLogWithSource(), absl::nullopt);
   TestCompletionCallback callback;
   int rv = request->Start(callback.callback());

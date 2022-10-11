@@ -39,12 +39,18 @@ void MockHostResolver::ResolveHost(
   internal_request_ =
       host->is_host_port_pair()
           ? internal_resolver_->CreateRequest(
-                host->get_host_port_pair(), network_isolation_key,
+                host->get_host_port_pair(),
+                net::NetworkAnonymizationKey::
+                    CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                        network_isolation_key),
                 net::NetLogWithSource::Make(net::NetLog::Get(),
                                             net::NetLogSourceType::NONE),
                 absl::nullopt)
           : internal_resolver_->CreateRequest(
-                host->get_scheme_host_port(), network_isolation_key,
+                host->get_scheme_host_port(),
+                net::NetworkAnonymizationKey::
+                    CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                        network_isolation_key),
                 net::NetLogWithSource::Make(net::NetLog::Get(),
                                             net::NetLogSourceType::NONE),
                 absl::nullopt);

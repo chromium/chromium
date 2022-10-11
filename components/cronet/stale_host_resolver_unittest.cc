@@ -271,7 +271,7 @@ class StaleHostResolverTest : public testing::Test {
     EXPECT_FALSE(resolve_pending_);
 
     request_ = resolver_->CreateRequest(
-        net::HostPortPair(kHostname, kPort), net::NetworkIsolationKey(),
+        net::HostPortPair(kHostname, kPort), net::NetworkAnonymizationKey(),
         net::NetLogWithSource(), optional_parameters);
     resolve_pending_ = true;
     resolve_complete_ = false;

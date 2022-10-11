@@ -12,7 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
@@ -69,7 +69,7 @@ void ContextHostResolver::OnShutdown() {
 std::unique_ptr<HostResolver::ResolveHostRequest>
 ContextHostResolver::CreateRequest(
     url::SchemeHostPort host,
-    NetworkIsolationKey network_isolation_key,
+    NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource source_net_log,
     absl::optional<ResolveHostParameters> optional_parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -78,7 +78,7 @@ ContextHostResolver::CreateRequest(
     return HostResolver::CreateFailingRequest(ERR_CONTEXT_SHUT_DOWN);
 
   return manager_->CreateRequest(
-      std::move(host), std::move(network_isolation_key),
+      std::move(host), std::move(network_anonymization_key),
       std::move(source_net_log), std::move(optional_parameters),
       resolve_context_.get(), resolve_context_->host_cache());
 }
@@ -86,7 +86,7 @@ ContextHostResolver::CreateRequest(
 std::unique_ptr<HostResolver::ResolveHostRequest>
 ContextHostResolver::CreateRequest(
     const HostPortPair& host,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const NetLogWithSource& source_net_log,
     const absl::optional<ResolveHostParameters>& optional_parameters) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -94,9 +94,9 @@ ContextHostResolver::CreateRequest(
   if (shutting_down_)
     return HostResolver::CreateFailingRequest(ERR_CONTEXT_SHUT_DOWN);
 
-  return manager_->CreateRequest(host, network_isolation_key, source_net_log,
-                                 optional_parameters, resolve_context_.get(),
-                                 resolve_context_->host_cache());
+  return manager_->CreateRequest(
+      host, network_anonymization_key, source_net_log, optional_parameters,
+      resolve_context_.get(), resolve_context_->host_cache());
 }
 
 std::unique_ptr<HostResolver::ProbeRequest>

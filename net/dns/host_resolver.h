@@ -17,8 +17,8 @@
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_handle.h"
-#include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/public/dns_config_overrides.h"
@@ -396,7 +396,7 @@ class NET_EXPORT HostResolver {
   // defaults will be used if passed |nullptr|.
   virtual std::unique_ptr<ResolveHostRequest> CreateRequest(
       url::SchemeHostPort host,
-      NetworkIsolationKey network_isolation_key,
+      NetworkAnonymizationKey network_anonymization_key,
       NetLogWithSource net_log,
       absl::optional<ResolveHostParameters> optional_parameters) = 0;
 
@@ -404,7 +404,7 @@ class NET_EXPORT HostResolver {
   // TODO(crbug.com/1206799): Rename to discourage use when scheme is known.
   virtual std::unique_ptr<ResolveHostRequest> CreateRequest(
       const HostPortPair& host,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const NetLogWithSource& net_log,
       const absl::optional<ResolveHostParameters>& optional_parameters) = 0;
 

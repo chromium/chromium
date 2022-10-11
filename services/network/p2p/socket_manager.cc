@@ -121,8 +121,12 @@ class P2PSocketManager::DnsRequest {
     if (family.has_value()) {
       parameters.dns_query_type = FamilyToDnsQueryType(family.value());
     }
-    request_ = resolver_->CreateRequest(host, network_isolation_key,
-                                        net::NetLogWithSource(), parameters);
+    request_ = resolver_->CreateRequest(
+        host,
+        net::NetworkAnonymizationKey::
+            CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                network_isolation_key),
+        net::NetLogWithSource(), parameters);
 
     int result = request_->Start(base::BindOnce(
         &P2PSocketManager::DnsRequest::OnDone, base::Unretained(this)));

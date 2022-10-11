@@ -269,6 +269,19 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void set_isolation_info(const IsolationInfo& isolation_info) {
     isolation_info_ = isolation_info;
   }
+
+  // This will convert the passed NetworkAnonymizationKey to an IsolationInfo.
+  // This IsolationInfo mmay be assigned an inaccurate frame origin because the
+  // NetworkAnonymizationKey might not contain all the information to populate
+  // it. Additionally the NetworkAnonymizationKey uses sites which will be
+  // converted to origins when set on the IsolationInfo. If using this method it
+  // is required to skip the cache and not use credentials. Before starting the
+  // request, it must have the LoadFlag LOAD_DISABLE_CACHE set, and must be set
+  // to not allow credentials, to ensure that the inaccurate frame origin has no
+  // impact. The request will DCHECK otherwise.
+  void set_isolation_info_from_network_anonymization_key(
+      const NetworkAnonymizationKey& network_anonymization_key);
+
   const IsolationInfo& isolation_info() const { return isolation_info_; }
 
   // Indicate whether SameSite cookies should be attached even though the
@@ -538,6 +551,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   // Access the LOAD_* flags modifying this request (see load_flags.h).
   int load_flags() const { return load_flags_; }
+
+  bool is_created_from_network_anonymization_key() const {
+    return is_created_from_network_anonymization_key_;
+  }
 
   // Returns the Secure DNS Policy for the request.
   SecureDnsPolicy secure_dns_policy() const { return secure_dns_policy_; }
@@ -910,6 +927,11 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // checking.
   void RecordReferrerGranularityMetrics(bool request_is_same_origin) const;
 
+  // Creates a partial IsolationInfo with the information accessible from the
+  // NetworkAnonymiationKey.
+  net::IsolationInfo CreateIsolationInfoFromNetworkAnonymizationKey(
+      const NetworkAnonymizationKey& network_anonymization_key);
+
   // Contextual information used for this request. Cannot be NULL. This contains
   // most of the dependencies which are shared between requests (disk cache,
   // cookie store, socket pool, etc.)
@@ -971,6 +993,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // the appropriate error code and never change again. If multiple failures
   // have been encountered, this will be the first error encountered.
   int status_ = OK;
+
+  bool is_created_from_network_anonymization_key_ = false;
 
   // The HTTP response info, lazily initialized.
   HttpResponseInfo response_info_;

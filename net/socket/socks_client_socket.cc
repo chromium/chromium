@@ -303,7 +303,11 @@ int SOCKSClientSocket::DoResolveHost() {
   parameters.initial_priority = priority_;
   parameters.secure_dns_policy = secure_dns_policy_;
   resolve_host_request_ = host_resolver_->CreateRequest(
-      destination_, network_isolation_key_, net_log_, parameters);
+      destination_,
+      net::NetworkAnonymizationKey::
+          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+              network_isolation_key_),
+      net_log_, parameters);
 
   return resolve_host_request_->Start(
       base::BindOnce(&SOCKSClientSocket::OnIOComplete, base::Unretained(this)));

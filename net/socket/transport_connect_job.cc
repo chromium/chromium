@@ -259,11 +259,17 @@ int TransportConnectJob::DoResolveHost() {
   if (absl::holds_alternative<url::SchemeHostPort>(params_->destination())) {
     request_ = host_resolver()->CreateRequest(
         absl::get<url::SchemeHostPort>(params_->destination()),
-        params_->network_isolation_key(), net_log(), parameters);
+        net::NetworkAnonymizationKey::
+            CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                params_->network_isolation_key()),
+        net_log(), parameters);
   } else {
     request_ = host_resolver()->CreateRequest(
         absl::get<HostPortPair>(params_->destination()),
-        params_->network_isolation_key(), net_log(), parameters);
+        net::NetworkAnonymizationKey::
+            CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+                params_->network_isolation_key()),
+        net_log(), parameters);
   }
 
   return request_->Start(base::BindOnce(&TransportConnectJob::OnIOComplete,

@@ -103,9 +103,12 @@ MojoHostResolverImpl::Job::Job(
   net::HostResolver::ResolveHostParameters parameters;
   if (!is_ex)
     parameters.dns_query_type = net::DnsQueryType::A;
-  request_ =
-      resolver->CreateRequest(net::HostPortPair(hostname_, 0),
-                              network_isolation_key, net_log, parameters);
+  request_ = resolver->CreateRequest(
+      net::HostPortPair(hostname_, 0),
+      net::NetworkAnonymizationKey::
+          CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
+              network_isolation_key),
+      net_log, parameters);
 }
 
 void MojoHostResolverImpl::Job::Start() {

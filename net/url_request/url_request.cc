@@ -476,6 +476,14 @@ void URLRequest::set_site_for_cookies(const SiteForCookies& site_for_cookies) {
   site_for_cookies_ = site_for_cookies;
 }
 
+void URLRequest::set_isolation_info_from_network_anonymization_key(
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  set_isolation_info(URLRequest::CreateIsolationInfoFromNetworkAnonymizationKey(
+      network_anonymization_key));
+
+  is_created_from_network_anonymization_key_ = true;
+}
+
 void URLRequest::set_first_party_url_policy(
     RedirectInfo::FirstPartyURLPolicy first_party_url_policy) {
   DCHECK(!is_pending_);
@@ -624,6 +632,10 @@ void URLRequest::BeforeRequestComplete(int error) {
 void URLRequest::StartJob(std::unique_ptr<URLRequestJob> job) {
   DCHECK(!is_pending_);
   DCHECK(!job_);
+  if (is_created_from_network_anonymization_key_) {
+    DCHECK(load_flags_ & LOAD_DISABLE_CACHE);
+    DCHECK(!allow_credentials_);
+  }
 
   net_log_.BeginEvent(NetLogEventType::URL_REQUEST_START_JOB, [&] {
     return NetLogURLRequestStartParams(
@@ -1159,6 +1171,48 @@ void URLRequest::RecordReferrerGranularityMetrics(
         "Net.URLRequest.ReferrerHasInformativePath.CrossOrigin",
         referrer_more_descriptive_than_its_origin);
   }
+}
+
+IsolationInfo URLRequest::CreateIsolationInfoFromNetworkAnonymizationKey(
+    const NetworkAnonymizationKey& network_anonymization_key) {
+  if (!network_anonymization_key.IsFullyPopulated()) {
+    return IsolationInfo();
+  }
+
+  url::Origin top_frame_origin =
+      network_anonymization_key.GetTopFrameSite()->site_as_origin_;
+
+  absl::optional<url::Origin> frame_origin;
+  if (NetworkAnonymizationKey::IsFrameSiteEnabled() &&
+      network_anonymization_key.GetFrameSite().has_value()) {
+    // If frame site is set on the network anonymization key, use it to set the
+    // frame origin on the isolation info.
+    frame_origin = network_anonymization_key.GetFrameSite()->site_as_origin_;
+  } else if (NetworkAnonymizationKey::IsCrossSiteFlagSchemeEnabled() &&
+             network_anonymization_key.GetIsCrossSite().value()) {
+    // If frame site is not set on the network anonymization key but we know
+    // that it is cross site to the top level site, create an empty origin to
+    // use as the frame origin for the isolation info. This should be cross site
+    // with the top level origin.
+    frame_origin = url::Origin();
+  } else {
+    // If frame sit is not set on the network anonymization key and we don't
+    // know that it's cross site to the top level site, use the top frame site
+    // to set the frame origin.
+    frame_origin = top_frame_origin;
+  }
+
+  const base::UnguessableToken* nonce =
+      network_anonymization_key.GetNonce()
+          ? &network_anonymization_key.GetNonce().value()
+          : nullptr;
+
+  auto isolation_info = IsolationInfo::Create(
+      IsolationInfo::RequestType::kOther, top_frame_origin,
+      frame_origin.value(), SiteForCookies(),
+      /*party_context=*/absl::nullopt, nonce);
+  // TODO(crbug/1343856): DCHECK isolation info is fully populated.
+  return isolation_info;
 }
 
 ConnectionAttempts URLRequest::GetConnectionAttempts() const {

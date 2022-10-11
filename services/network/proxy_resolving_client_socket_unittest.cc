@@ -100,7 +100,9 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
   net::NetworkIsolationKey kNetworkIsolationKey(
       kNetworkIsolationKeyOrigin /* top_frame_origin */,
       kNetworkIsolationKeyOrigin /* frame_origin */);
-
+  net::NetworkAnonymizationKey kNetworkAnonymizationKey =
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          kNetworkIsolationKey);
   auto url_request_context = CreateBuilder("DIRECT")->Build();
 
   const GURL kDestination("https://dest.test/");
@@ -126,7 +128,7 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
   params.source = net::HostResolverSource::LOCAL_ONLY;
   std::unique_ptr<net::HostResolver::ResolveHostRequest> request1 =
       url_request_context->host_resolver()->CreateRequest(
-          kDestinationHostPortPair, kNetworkIsolationKey,
+          kDestinationHostPortPair, kNetworkAnonymizationKey,
           net::NetLogWithSource(), params);
   net::TestCompletionCallback callback2;
   int result = request1->Start(callback2.callback());
@@ -134,14 +136,15 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyDirect) {
 
   // Check that the hostname is not in the DNS cache for other possible NIKs.
   const url::Origin kDestinationOrigin = url::Origin::Create(kDestination);
-  const net::NetworkIsolationKey kOtherNiks[] = {
-      net::NetworkIsolationKey(),
-      net::NetworkIsolationKey(kDestinationOrigin /* top_frame_origin */,
-                               kDestinationOrigin /* frame_origin */)};
-  for (const auto& other_nik : kOtherNiks) {
+  const net::NetworkAnonymizationKey kOtherNaks[] = {
+      net::NetworkAnonymizationKey(),
+      net::NetworkAnonymizationKey(
+          net::SchemefulSite(kDestinationOrigin) /* top_frame_origin */,
+          net::SchemefulSite(kDestinationOrigin) /* frame_origin */)};
+  for (const auto& other_nak : kOtherNaks) {
     std::unique_ptr<net::HostResolver::ResolveHostRequest> request2 =
         url_request_context->host_resolver()->CreateRequest(
-            kDestinationHostPortPair, other_nik, net::NetLogWithSource(),
+            kDestinationHostPortPair, other_nak, net::NetLogWithSource(),
             params);
     net::TestCompletionCallback callback3;
     result = request2->Start(callback3.callback());
@@ -173,7 +176,12 @@ TEST_P(ProxyResolvingClientSocketTest, NetworkIsolationKeyWithH2Proxy) {
       net::NetworkIsolationKey::CreateTransient();
   net::NetworkIsolationKey kNetworkIsolationKey2 =
       net::NetworkIsolationKey::CreateTransient();
-
+  net::NetworkAnonymizationKey kNetworkAnonymizationKey1 =
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          kNetworkIsolationKey1);
+  net::NetworkIsolationKey kNetworkAnonymizationKey2 =
+      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+          kNetworkIsolationKey2);
   const GURL kDestination1("https://dest1.test/");
   const GURL kDestination2("https://dest2.test/");
   const GURL kDestination3("https://dest3.test/");
