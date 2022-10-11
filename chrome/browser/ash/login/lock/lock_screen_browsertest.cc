@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,8 +47,13 @@ class LockScreenInputsTest : public LockScreenBaseTest {
   LockScreenInputsTest() {
     // The test is flaky when the darklight mode is enabled.
     // https://crbug.com/1334877
-    scoped_feature_list_.InitAndDisableFeature(
-        chromeos::features::kDarkLightMode);
+    //
+    // TODO(b/241259026): This test currently relies on StubAuthenticator,
+    // which doesn't work well with UseAuthFactors. We should instead use
+    // FakeUserDataAuth, which is a mock at a lower level.
+    scoped_feature_list_.InitWithFeatures(
+        {} /*enabled_features*/,
+        {chromeos::features::kDarkLightMode, features::kUseAuthFactors});
 
     login_manager_.AppendRegularUsers(2);
     user_input_methods_.push_back("xkb:fr::fra");
