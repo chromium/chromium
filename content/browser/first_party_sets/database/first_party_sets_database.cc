@@ -124,16 +124,6 @@ void RecordInitializationStatus(FirstPartySetsDatabase::InitStatus status) {
   base::UmaHistogramEnumeration("FirstPartySets.Database.InitStatus", status);
 }
 
-absl::optional<net::SiteType> DeserializeSiteType(int value) {
-  switch (value) {
-    case static_cast<int>(net::SiteType::kPrimary):
-      return net::SiteType::kPrimary;
-    case static_cast<int>(net::SiteType::kAssociated):
-      return net::SiteType::kAssociated;
-  }
-  return absl::nullopt;
-}
-
 }  // namespace
 
 FirstPartySetsDatabase::FirstPartySetsDatabase(base::FilePath db_path)
@@ -394,7 +384,7 @@ net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
             statement.ColumnString(1), /*emit_errors=*/false);
 
     absl::optional<net::SiteType> site_type =
-        DeserializeSiteType(statement.ColumnInt(2));
+        net::FirstPartySetEntry::DeserializeSiteType(statement.ColumnInt(2));
 
     // TODO(crbug.com/1314039): Invalid entries should be rare case but
     // possible. Consider deleting them from DB.
@@ -574,7 +564,7 @@ FirstPartySetsDatabase::FetchManualSets(const std::string& browser_context_id) {
             statement.ColumnString(1), /*emit_errors=*/false);
 
     absl::optional<net::SiteType> site_type =
-        DeserializeSiteType(statement.ColumnInt(2));
+        net::FirstPartySetEntry::DeserializeSiteType(statement.ColumnInt(2));
 
     // TODO(crbug.com/1314039): Invalid entries should be rare case but
     // possible. Consider deleting them from DB.

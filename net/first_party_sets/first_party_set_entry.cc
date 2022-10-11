@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/notreached.h"
 #include "net/base/schemeful_site.h"
 
 namespace net {
@@ -59,6 +60,22 @@ bool FirstPartySetEntry::operator==(const FirstPartySetEntry& other) const {
 
 bool FirstPartySetEntry::operator!=(const FirstPartySetEntry& other) const {
   return !(*this == other);
+}
+
+// static
+absl::optional<net::SiteType> FirstPartySetEntry::DeserializeSiteType(
+    int value) {
+  switch (value) {
+    case static_cast<int>(net::SiteType::kPrimary):
+      return net::SiteType::kPrimary;
+    case static_cast<int>(net::SiteType::kAssociated):
+      return net::SiteType::kAssociated;
+    case static_cast<int>(net::SiteType::kService):
+      return net::SiteType::kService;
+    default:
+      NOTREACHED() << "Unknown SiteType: " << value;
+  }
+  return absl::nullopt;
 }
 
 std::ostream& operator<<(std::ostream& os,

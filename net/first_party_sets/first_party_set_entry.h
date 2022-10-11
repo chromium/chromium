@@ -20,6 +20,8 @@ enum class SiteType {
   // The First-Party Set declaration listed this site as a service site in the
   // set.
   kService,
+
+  // Update FirstPartySetEntry::DeserializeSiteType if new SiteType is added.
 };
 
 // This class bundles together metadata associated with an entry in a
@@ -58,6 +60,8 @@ class NET_EXPORT FirstPartySetEntry {
 
   bool operator==(const FirstPartySetEntry& other) const;
   bool operator!=(const FirstPartySetEntry& other) const;
+
+  static absl::optional<net::SiteType> DeserializeSiteType(int value);
 
   const SchemefulSite& primary() const { return primary_; }
 

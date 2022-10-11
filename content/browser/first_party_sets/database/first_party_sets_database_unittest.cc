@@ -1000,9 +1000,11 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
   const std::string browser_context_id = "b";
   const net::SchemefulSite primary(GURL("https://aaa.test"));
   const net::SchemefulSite associated_site(GURL("https://bbb.test"));
+  const net::SchemefulSite service_site(GURL("https://ccc.test"));
 
-  const net::SchemefulSite manual_primary(GURL("https://ccc.test"));
-  const net::SchemefulSite manual_associated_site(GURL("https://ddd.test"));
+  const net::SchemefulSite manual_primary(GURL("https://ddd.test"));
+  const net::SchemefulSite manual_associated_site(GURL("https://eee.test"));
+  const net::SchemefulSite manual_service_site(GURL("https://fff.test"));
 
   const net::SchemefulSite config_primary_site(GURL("https://example.test"));
   const net::SchemefulSite config_site_member1(GURL("https://member1.test"));
@@ -1012,6 +1014,9 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
       /*entries=*/{{associated_site,
                     net::FirstPartySetEntry(primary, net::SiteType::kAssociated,
                                             absl::nullopt)},
+                   {service_site,
+                    net::FirstPartySetEntry(primary, net::SiteType::kService,
+                                            absl::nullopt)},
                    {primary,
                     net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
                                             absl::nullopt)}},
@@ -1019,6 +1024,9 @@ TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
   base::flat_map<net::SchemefulSite, net::FirstPartySetEntry> manual_sets = {
       {manual_associated_site,
        net::FirstPartySetEntry(manual_primary, net::SiteType::kAssociated,
+                               absl::nullopt)},
+      {manual_service_site,
+       net::FirstPartySetEntry(manual_primary, net::SiteType::kService,
                                absl::nullopt)},
       {manual_primary,
        net::FirstPartySetEntry(manual_primary, net::SiteType::kPrimary,
