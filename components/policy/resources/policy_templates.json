@@ -3986,7 +3986,7 @@
         },
         {
           'value': False,
-          'caption': 'Do not report information about about extended detection and response (XDR) events',
+          'caption': 'Do not report information about extended detection and response (XDR) events',
         },
       ],
       'example_value': False,
