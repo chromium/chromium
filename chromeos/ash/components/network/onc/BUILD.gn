@@ -17,6 +17,7 @@ source_set("onc") {
 
   configs += [ "//chromeos/ash/components/network:network_config" ]
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/components/onc",
     "//components/account_id",

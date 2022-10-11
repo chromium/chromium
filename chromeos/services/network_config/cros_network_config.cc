@@ -1241,12 +1241,30 @@ mojom::ApnPropertiesPtr GetApnProperties(const base::Value* dict) {
 
   if (ash::features::IsApnRevampEnabled()) {
     apn->id = GetString(dict, ::onc::cellular_apn::kId);
-    apn->authentication_type = OncApnAuthenticationTypeToMojo(
-        GetRequiredString(dict, ::onc::cellular_apn::kAuthenticationType));
-    apn->ip_type = OncApnIpTypeToMojo(
-        GetRequiredString(dict, ::onc::cellular_apn::kIpType));
-    apn->apn_types = OncApnTypesToMojo(
-        GetRequiredStringList(dict, ::onc::cellular_apn::kApnTypes));
+    // TODO(b/162365553) Remove missing value checking after Shill implements
+    // the interface.
+    if (!GetString(dict, ::onc::cellular_apn::kAuthenticationType)) {
+      apn->authentication_type = mojom::ApnAuthenticationType::kAutomatic;
+    } else {
+      apn->authentication_type = OncApnAuthenticationTypeToMojo(
+          GetRequiredString(dict, ::onc::cellular_apn::kAuthenticationType));
+    }
+    // TODO(b/162365553) Remove missing value checking after Shill implements
+    // the interface.
+    if (!GetString(dict, ::onc::cellular_apn::kIpType)) {
+      apn->ip_type = mojom::ApnIpType::kAutomatic;
+    } else {
+      apn->ip_type = OncApnIpTypeToMojo(
+          GetRequiredString(dict, ::onc::cellular_apn::kIpType));
+    }
+    // TODO(b/162365553) Remove missing value checking after Shill implements
+    // the interface.
+    if (!GetStringList(dict, ::onc::cellular_apn::kApnTypes)) {
+      apn->apn_types = {mojom::ApnType::kDefault};
+    } else {
+      apn->apn_types = OncApnTypesToMojo(
+          GetRequiredStringList(dict, ::onc::cellular_apn::kApnTypes));
+    }
   }
 
   return apn;
@@ -3119,15 +3137,33 @@ std::vector<mojom::ApnPropertiesPtr> CrosNetworkConfig::GetCustomAPNList(
 
     if (ash::features::IsApnRevampEnabled()) {
       mojo_apn->id = GetString(&apn, ::onc::cellular_apn::kId);
-      const auto state = GetString(&apn, ::onc::cellular_apn::kState);
       mojo_apn->state = OncApnStateTypeToMojo(
           base::OptionalToPtr(GetString(&apn, ::onc::cellular_apn::kState)));
-      mojo_apn->authentication_type = OncApnAuthenticationTypeToMojo(
-          GetRequiredString(&apn, ::onc::cellular_apn::kAuthenticationType));
-      mojo_apn->ip_type = OncApnIpTypeToMojo(
-          GetRequiredString(&apn, ::onc::cellular_apn::kIpType));
-      mojo_apn->apn_types = OncApnTypesToMojo(
-          GetRequiredStringList(&apn, ::onc::cellular_apn::kApnTypes));
+      // TODO(b/162365553) Remove missing value checking after Shill implements
+      // the interface.
+      if (!GetString(&apn, ::onc::cellular_apn::kAuthenticationType)) {
+        mojo_apn->authentication_type =
+            mojom::ApnAuthenticationType::kAutomatic;
+      } else {
+        mojo_apn->authentication_type = OncApnAuthenticationTypeToMojo(
+            GetRequiredString(&apn, ::onc::cellular_apn::kAuthenticationType));
+      }
+      // TODO(b/162365553) Remove missing value checking after Shill implements
+      // the interface.
+      if (!GetString(&apn, ::onc::cellular_apn::kIpType)) {
+        mojo_apn->ip_type = mojom::ApnIpType::kAutomatic;
+      } else {
+        mojo_apn->ip_type = OncApnIpTypeToMojo(
+            GetRequiredString(&apn, ::onc::cellular_apn::kIpType));
+      }
+      // TODO(b/162365553) Remove missing value checking after Shill implements
+      // the interface.
+      if (!GetStringList(&apn, ::onc::cellular_apn::kApnTypes)) {
+        mojo_apn->apn_types = {mojom::ApnType::kDefault};
+      } else {
+        mojo_apn->apn_types = OncApnTypesToMojo(
+            GetRequiredStringList(&apn, ::onc::cellular_apn::kApnTypes));
+      }
     }
 
     mojo_custom_apns.push_back(std::move(mojo_apn));

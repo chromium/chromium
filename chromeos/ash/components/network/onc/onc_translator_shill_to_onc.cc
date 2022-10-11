@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
@@ -126,6 +127,7 @@ class ShillToONCTranslator {
   void TranslateWiFiWithState();
   void TranslateCellularWithState();
   void TranslateCellularDevice();
+  void TranslateApnProperties();
   void TranslateNetworkWithState();
   void TranslateIPConfig();
   void TranslateSavedOrStaticIPConfig();
@@ -236,6 +238,9 @@ base::Value ShillToONCTranslator::CreateTranslatedONCObject() {
     TranslateStaticIPConfig();
   } else if (onc_signature_ == &chromeos::onc::kEAPSignature) {
     TranslateEap();
+  } else if (ash::features::IsApnRevampEnabled() &&
+             onc_signature_ == &chromeos::onc::kCellularApnSignature) {
+    TranslateApnProperties();
   } else {
     CopyPropertiesAccordingToSignature();
   }
@@ -580,6 +585,27 @@ void ShillToONCTranslator::TranslateCellularDevice() {
     TranslateAndAddListOfObjects(::onc::cellular::kFoundNetworks,
                                  *shill_found_networks);
   }
+}
+
+// TODO(b/162365553) Add translation for the other APN properties when they are
+// added to Shill
+void ShillToONCTranslator::TranslateApnProperties() {
+  DCHECK(ash::features::IsApnRevampEnabled());
+  CopyPropertiesAccordingToSignature();
+  std::string shill_apn_ip_type =
+      FindStringKeyOrEmpty(shill_dictionary_, shill::kApnIpTypeProperty);
+  std::string ip_type;
+  if (shill_apn_ip_type == shill::kApnIpTypeV4) {
+    ip_type = ::onc::cellular_apn::kIpTypeIpv4;
+  } else if (shill_apn_ip_type == shill::kApnIpTypeV6) {
+    ip_type = ::onc::cellular_apn::kIpTypeIpv6;
+  } else if (shill_apn_ip_type == shill::kApnIpTypeV4V6) {
+    ip_type = ::onc::cellular_apn::kIpTypeIpv4Ipv6;
+  } else {
+    return;  // Ignore unhandled ApnIpType types
+  }
+
+  onc_object_.SetKey(::onc::cellular_apn::kIpType, base::Value(ip_type));
 }
 
 void ShillToONCTranslator::TranslateNetworkWithState() {
