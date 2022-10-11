@@ -1948,8 +1948,29 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     public void onUrlFocusChange(final boolean hasFocus) {
         super.onUrlFocusChange(hasFocus);
 
+        updateBackground(hasFocus);
+
         if (mToggleTabStackButton != null) mToggleTabStackButton.setClickable(!hasFocus);
         triggerUrlFocusAnimation(hasFocus);
+    }
+
+    /**
+     * @param hasFocus Whether the URL field has gained focus.
+     */
+    private void updateBackground(final boolean hasFocus) {
+        if (hasFocus) {
+            mActiveLocationBarBackground = mLocationBarBackground;
+        } else if (isLocationBarShownInNTP()) {
+            updateToNtpBackground();
+        }
+    }
+
+    private void updateToNtpBackground() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            NtpSearchBoxDrawable ntpSearchBox = new NtpSearchBoxDrawable(getContext(), this);
+            getToolbarDataProvider().getNewTabPageDelegate().setSearchBoxBackground(ntpSearchBox);
+            mActiveLocationBarBackground = ntpSearchBox;
+        }
     }
 
     /**
@@ -2131,12 +2152,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         resetNtpAnimationValues();
         ntpDelegate.setSearchBoxScrollListener(this::onNtpScrollChanged);
         if (ntpDelegate.isLocationBarShown()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                NtpSearchBoxDrawable ntpSearchBox = new NtpSearchBoxDrawable(getContext(), this);
-                ntpDelegate.setSearchBoxBackground(ntpSearchBox);
-                mActiveLocationBarBackground = ntpSearchBox;
-            }
-
+            updateToNtpBackground();
             requestLayout();
         } else if (wasShowingNtp) {
             // Convert the previous NTP scroll progress to URL focus progress because that
