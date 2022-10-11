@@ -169,7 +169,7 @@ BASE_FEATURE(kAutofillFillAndImportFromMoreFields,
 // TODO(crbug.com/1326244): Cleanup when launched.
 BASE_FEATURE(kAutofillFillCreditCardAsPerFormatString,
              "AutofillFillCreditCardAsPerFormatString",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for Autofill filling.
 BASE_FEATURE(kAutofillDisableFilling,
