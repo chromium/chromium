@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -97,6 +99,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
       [[InstructionView alloc] initWithList:dataTypeNames
                                       style:InstructionViewStyleDefault
                                       icons:dataTypeIcons];
+  instructionView.tapListener = self;
   instructionView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.specificContentView addSubview:instructionView];
   [NSLayoutConstraint activateConstraints:@[
@@ -135,6 +138,30 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
         primaryIdentityAvatarAccessibilityLabel;
     self.avatarAccessibilityLabel = primaryIdentityAvatarAccessibilityLabel;
   }
+}
+
+#pragma mark - InstructionLineTappedListener
+
+// Sends histogram indicating that a line is tapped.
+- (void)tappedOnLineNumber:(NSInteger)index {
+  // TODO(crbug.com/1371062) Potentially open the settings menu
+  signin_metrics::SigninSyncConsentDataRow enumIndex =
+      signin_metrics::SigninSyncConsentDataRow::kBookmarksRowTapped;
+  switch (index) {
+    case 0:
+      enumIndex = signin_metrics::SigninSyncConsentDataRow::kBookmarksRowTapped;
+      break;
+    case 1:
+      enumIndex = signin_metrics::SigninSyncConsentDataRow::kAutofillRowTapped;
+      break;
+    case 2:
+      enumIndex = signin_metrics::SigninSyncConsentDataRow::kHistoryRowTapped;
+      break;
+    default:
+      NOTREACHED();
+  }
+  base::UmaHistogramEnumeration("Signin.SyncConsentScreen.DataRowClicked",
+                                enumIndex);
 }
 
 @end

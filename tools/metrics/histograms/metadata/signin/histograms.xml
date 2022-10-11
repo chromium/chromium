@@ -1119,11 +1119,12 @@ kept as long as profile signout is possible -->
 
 <histogram name="Signin.SyncConsentScreen.DataRowClicked"
     enum="SigninSyncConsentDataRow" expires_after="2023-08-18">
+  <owner>arthurmilchior@chromium.org</owner>
   <owner>triploblastic@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     This histogram records which sync data row was clicked by the user on the
-    tangible sync consent page on Android.
+    tangible sync consent page on Android and iOS.
   </summary>
 </histogram>
 

@@ -61,16 +61,17 @@ constexpr CGFloat kIconLabelWidth = 30;
     stackView.axis = UILayoutConstraintAxisVertical;
     UIView* firstBulletPoint = useIcon ? [self createIconView:icons[0]]
                                        : [self createStepNumberView:1];
-    [stackView
-        addArrangedSubview:[self createLineInstruction:instructionList[0]
-                                       bulletPointView:firstBulletPoint]];
+    [stackView addArrangedSubview:[self createLineInstruction:instructionList[0]
+                                              bulletPointView:firstBulletPoint
+                                                        index:0]];
     for (NSUInteger i = 1; i < [instructionList count]; i++) {
       UIView* bulletPoint = useIcon ? [self createIconView:icons[i]]
                                     : [self createStepNumberView:i + 1];
       [stackView addArrangedSubview:[self createLineSeparator]];
       [stackView
           addArrangedSubview:[self createLineInstruction:instructionList[i]
-                                         bulletPointView:bulletPoint]];
+                                         bulletPointView:bulletPoint
+                                                   index:i]];
     }
     [self addSubview:stackView];
     AddSameConstraints(self, stackView);
@@ -133,7 +134,8 @@ constexpr CGFloat kIconLabelWidth = 30;
 // Creates an instruction line with a bullet point view followed by
 // instructions.
 - (UIView*)createLineInstruction:(NSString*)instruction
-                 bulletPointView:(UIView*)bulletPointView {
+                 bulletPointView:(UIView*)bulletPointView
+                           index:(NSInteger)index {
   UILabel* instructionLabel = [[UILabel alloc] init];
   instructionLabel.textColor = [UIColor colorNamed:kGrey800Color];
   instructionLabel.font =
@@ -193,6 +195,15 @@ constexpr CGFloat kIconLabelWidth = 30;
                                                     constant:-kTrailingMargin]
   ]];
 
+  line.tag = index;
+  [line
+      addGestureRecognizer:[[UITapGestureRecognizer alloc]
+                               initWithTarget:self
+                                       action:@selector
+                                       (tappedOnALineWithGestureRecognizer:)]];
+  // Don't set the accessibility traits indicating that it is tappable as we do
+  // not actually expect any action, instead, we just want to measure how many
+  // people believe it’s tappable.
   return line;
 }
 
@@ -260,6 +271,11 @@ constexpr CGFloat kIconLabelWidth = 30;
           [UIColor colorNamed:kPrimaryBackgroundColor].CGColor;
       break;
   }
+}
+
+- (void)tappedOnALineWithGestureRecognizer:
+    (UITapGestureRecognizer*)gestureRecognizer {
+  [self.tapListener tappedOnLineNumber:gestureRecognizer.view.tag];
 }
 
 @end

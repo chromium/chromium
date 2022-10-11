@@ -7,13 +7,15 @@
 
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_consumer.h"
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
 @protocol TangibleSyncViewControllerDelegate;
 
 // View controller for tangible sync.
 @interface TangibleSyncViewController
-    : PromoStyleViewController <TangibleSyncConsumer>
+    : PromoStyleViewController <InstructionLineTappedListener,
+                                TangibleSyncConsumer>
 
 @property(nonatomic, weak) id<TangibleSyncViewControllerDelegate> delegate;
 
