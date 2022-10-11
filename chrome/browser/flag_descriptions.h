@@ -1485,6 +1485,10 @@ extern const char kSidePanelJourneysFlagId[];
 extern const char kSidePanelJourneysName[];
 extern const char kSidePanelJourneysDescription[];
 
+extern const char kSidePanelJourneysQuerylessFlagId[];
+extern const char kSidePanelJourneysQuerylessName[];
+extern const char kSidePanelJourneysQuerylessDescription[];
+
 extern const char kSidePanelWebViewName[];
 extern const char kSidePanelWebViewDescription[];
 

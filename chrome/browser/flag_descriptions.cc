@@ -2657,6 +2657,12 @@ const char kSidePanelJourneysName[] = "Side panel journeys";
 const char kSidePanelJourneysDescription[] =
     "Enables Journeys within the side panel.";
 
+const char kSidePanelJourneysQuerylessFlagId[] =
+    "side-panel-journeys-queryless";
+const char kSidePanelJourneysQuerylessName[] = "Side panel journeys queryless";
+const char kSidePanelJourneysQuerylessDescription[] =
+    "Enables Journeys queryless view within the side panel.";
+
 const char kSidePanelWebViewName[] = "Side panel webview";
 const char kSidePanelWebViewDescription[] =
     "Adds a side panel option to load arbitrary web content, with a URL bar.";

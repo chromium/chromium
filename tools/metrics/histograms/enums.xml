@@ -61359,6 +61359,7 @@ from previous Chrome versions.
   <int value="725870294" label="RequestUnbufferedDispatch:disabled"/>
   <int value="726764779" label="WebXRGamepadSupport:enabled"/>
   <int value="726958205" label="ToolbarMicIphAndroid:enabled"/>
+  <int value="727134828" label="SidePanelJourneysQueryless:disabled"/>
   <int value="727270087" label="PromosOnLocalNtp:enabled"/>
   <int value="727571565" label="PasswordForceSaving"/>
   <int value="728064595" label="RevampedContextMenu:disabled"/>
@@ -61717,6 +61718,7 @@ from previous Chrome versions.
   <int value="948351976" label="WallpaperWebUI:disabled"/>
   <int value="948521531" label="StylusHandwriting:disabled"/>
   <int value="951111587" label="MediaAppPhotosIntegrationVideo:disabled"/>
+  <int value="951338017" label="SidePanelJourneysQueryless:enabled"/>
   <int value="952558794" label="enable-remote-assistance"/>
   <int value="952625847"
       label="AboutThisSitePersistentSidePanelEntry:disabled"/>

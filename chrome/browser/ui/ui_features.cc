@@ -165,6 +165,10 @@ BASE_FEATURE(kSidePanelJourneys,
 const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox{
     &kSidePanelJourneys, "SidePanelJourneysOpensFromOmnibox", false};
 
+BASE_FEATURE(kSidePanelJourneysQueryless,
+             "SidePanelJourneysQueryless",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables tabs to scroll in the tabstrip. https://crbug.com/951078
 BASE_FEATURE(kScrollableTabStrip,
              "ScrollableTabStrip",

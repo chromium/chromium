@@ -5959,6 +5959,11 @@ const FeatureEntry kFeatureEntries[] = {
          kSidePanelJourneysOpensFromOmniboxVariations,
          "SidePanelJourneys")},
 
+    {flag_descriptions::kSidePanelJourneysQuerylessFlagId,
+     flag_descriptions::kSidePanelJourneysQuerylessName,
+     flag_descriptions::kSidePanelJourneysQuerylessDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSidePanelJourneysQueryless)},
+
     {"side-panel-web-view", flag_descriptions::kSidePanelWebViewName,
      flag_descriptions::kSidePanelWebViewDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSidePanelWebView)},
