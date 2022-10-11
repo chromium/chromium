@@ -20,6 +20,8 @@
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -404,10 +406,11 @@ bool SelectFileDialogHolder::SelectFile(
     return false;
   }
 
-  // TODO(niwa): Pass search query as well.
   SelectFileDialogExtension::Owner owner;
   owner.window = owner_window;
   owner.android_task_id = task_id;
+  owner.dialog_caller = policy::DlpFilesController::DlpFileDestination(
+      policy::DlpRulesManager::Component::kArc);
   select_file_dialog_->SelectFileWithFileManagerParams(
       type,
       /*title=*/std::u16string(), default_path, file_types,
