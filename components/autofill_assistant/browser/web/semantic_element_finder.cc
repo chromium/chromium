@@ -50,7 +50,8 @@ SemanticElementFinder::SemanticElementFinder(
     DevtoolsClient* devtools_client,
     AnnotateDomModelService* annotate_dom_model_service,
     const Selector& selector)
-    : web_contents_(web_contents),
+    : WebContentsObserver(web_contents),
+      web_contents_(web_contents),
       devtools_client_(devtools_client),
       annotate_dom_model_service_(annotate_dom_model_service),
       selector_(selector) {
@@ -131,37 +132,47 @@ ElementFinderInfoProto SemanticElementFinder::GetLogInfo() const {
 
 void SemanticElementFinder::RunAnnotateDomModel(
     content::RenderFrameHost* start_frame) {
-  std::vector<content::GlobalRenderFrameHostId> host_ids;
-  start_frame->ForEachRenderFrameHost(
-      [&host_ids](content::RenderFrameHost* host) {
-        host_ids.push_back(host->GetGlobalId());
-      });
+  DCHECK(expected_frame_ids_.empty());
 
-  const auto run_on_frame =
-      base::BarrierCallback<std::vector<GlobalBackendNodeId>>(
-          host_ids.size(),
-          base::BindOnce(&SemanticElementFinder::OnRunAnnotateDomModel,
-                         weak_ptr_factory_.GetWeakPtr()));
-  for (const auto& host_id : host_ids) {
-    RunAnnotateDomModelOnFrame(host_id, run_on_frame);
+  start_frame->ForEachRenderFrameHost([this](content::RenderFrameHost* host) {
+    if (host->IsRenderFrameLive()) {
+      expected_frame_ids_.insert(host->GetGlobalId());
+    }
+  });
+
+  if (expected_frame_ids_.empty()) {
+    GiveUpWithError(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+    return;
+  }
+
+  timer_ = std::make_unique<base::OneShotTimer>();
+  timer_->Start(FROM_HERE, base::Milliseconds(filter_.model_timeout_ms()),
+                base::BindOnce(&SemanticElementFinder::OnTimeout,
+                               weak_ptr_factory_.GetWeakPtr()));
+
+  for (const auto& host_id : expected_frame_ids_) {
+    RunAnnotateDomModelOnFrame(host_id);
   }
 }
 
+void SemanticElementFinder::OnTimeout() {
+  VLOG(1) << "AnnotateDomModel timeout.";
+  Finalize();
+}
+
 void SemanticElementFinder::RunAnnotateDomModelOnFrame(
-    const content::GlobalRenderFrameHostId& host_id,
-    base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback) {
+    const content::GlobalRenderFrameHostId& host_id) {
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(host_id);
   if (!render_frame_host) {
-    std::move(callback).Run(std::vector<GlobalBackendNodeId>());
+    GiveUpWithError(ClientStatus(ELEMENT_RESOLUTION_FAILED));
     return;
   }
 
   auto* driver = ContentAutofillAssistantDriver::GetOrCreateForRenderFrameHost(
       render_frame_host, annotate_dom_model_service_);
   if (!driver) {
-    NOTREACHED();
-    std::move(callback).Run(std::vector<GlobalBackendNodeId>());
+    GiveUpWithError(ClientStatus(ELEMENT_RESOLUTION_FAILED));
     return;
   }
 
@@ -169,27 +180,32 @@ void SemanticElementFinder::RunAnnotateDomModelOnFrame(
       filter_.role(), filter_.objective(), filter_.ignore_objective(),
       base::Milliseconds(filter_.model_timeout_ms()),
       base::BindOnce(&SemanticElementFinder::OnRunAnnotateDomModelOnFrame,
-                     weak_ptr_factory_.GetWeakPtr(), host_id,
-                     std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), host_id));
 }
 
 void SemanticElementFinder::OnRunAnnotateDomModelOnFrame(
     const content::GlobalRenderFrameHostId& host_id,
-    base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback,
     mojom::NodeDataStatus status,
     const std::vector<NodeData>& node_data) {
+  if (!IsRenderFrameExpected(host_id)) {
+    // This can occur if the callback is called after the timeout.
+    return;
+  }
+
   node_data_frame_status_.emplace_back(status);
 
   std::vector<GlobalBackendNodeId> node_ids;
   for (const auto& node : node_data) {
     node_ids.emplace_back(GlobalBackendNodeId(host_id, node.backend_node_id));
   }
-  std::move(callback).Run(node_ids);
+
+  received_results_.emplace(host_id, std::move(node_ids));
+
+  MarkRenderFrameProcessed(host_id);
 }
 
-void SemanticElementFinder::OnRunAnnotateDomModel(
-    const std::vector<std::vector<GlobalBackendNodeId>>& all_nodes) {
-  for (const auto& node_ids : all_nodes) {
+void SemanticElementFinder::OnRunAnnotateDomModel() {
+  for (const auto& [backend_id, node_ids] : received_results_) {
     semantic_node_results_.insert(semantic_node_results_.end(),
                                   node_ids.begin(), node_ids.end());
   }
@@ -200,11 +216,17 @@ void SemanticElementFinder::OnRunAnnotateDomModel(
   if (semantic_node_results_.size() > 1) {
     VLOG(1) << __func__ << " Got " << semantic_node_results_.size()
             << " matches for " << selector_ << ", when only 1 was expected.";
+    expected_frame_ids_.clear();
     GiveUpWithError(ClientStatus(TOO_MANY_ELEMENTS));
     return;
   }
   if (semantic_node_results_.empty()) {
-    GiveUpWithError(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+    if (expected_frame_ids_.empty()) {
+      GiveUpWithError(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+    } else {
+      expected_frame_ids_.clear();
+      GiveUpWithError(ClientStatus(TIMED_OUT));
+    }
     return;
   }
   const auto& semantic_node_result = semantic_node_results_[0];
@@ -217,10 +239,13 @@ void SemanticElementFinder::OnRunAnnotateDomModel(
   std::string devtools_frame_id;
   auto* frame =
       content::RenderFrameHost::FromID(semantic_node_result.host_id());
-  if (frame != nullptr && web_contents_->GetPrimaryMainFrame()->GetProcess() !=
-                              frame->GetProcess()) {
+  if (frame != nullptr && frame->IsRenderFrameLive() &&
+      web_contents_->GetPrimaryMainFrame()->GetProcess() !=
+          frame->GetProcess()) {
     devtools_frame_id = frame->GetDevToolsFrameToken().ToString();
   }
+
+  expected_frame_ids_.clear();
 
   devtools_client_->GetDOM()->ResolveNode(
       dom::ResolveNodeParams::Builder()
@@ -243,6 +268,42 @@ void SemanticElementFinder::OnResolveNodeForAnnotateDom(
   }
   SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED),
              ElementFinderResult::EmptyResult());
+}
+
+void SemanticElementFinder::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  const content::GlobalRenderFrameHostId host_id =
+      render_frame_host->GetGlobalId();
+  MarkRenderFrameProcessed(host_id);
+}
+
+void SemanticElementFinder::MarkRenderFrameProcessed(
+    content::GlobalRenderFrameHostId host_id) {
+  auto it = expected_frame_ids_.find(host_id);
+
+  if (it != expected_frame_ids_.end()) {
+    expected_frame_ids_.erase(it);
+    if (expected_frame_ids_.empty()) {
+      Finalize();
+    }
+  }
+}
+
+void SemanticElementFinder::Finalize() {
+  if (!timer_) {
+    // Do nothing if annotation has not been started.
+    NOTREACHED();
+    return;
+  }
+  timer_->Stop();
+
+  OnRunAnnotateDomModel();
+}
+
+bool SemanticElementFinder::IsRenderFrameExpected(
+    content::GlobalRenderFrameHostId host_id) {
+  auto it = expected_frame_ids_.find(host_id);
+  return it != expected_frame_ids_.end();
 }
 
 }  // namespace autofill_assistant
