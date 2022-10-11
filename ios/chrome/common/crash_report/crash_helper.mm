@@ -38,8 +38,14 @@ void SetUserEnabledUploading(bool enabled) {
 }
 
 bool CanUseCrashpad() {
-  static bool can_use_crashpad = [app_group::GetGroupUserDefaults()
-      boolForKey:base::SysUTF8ToNSString(kCrashpadStartOnNextRun)];
+  static const bool can_use_crashpad = ([]() {
+    @autoreleasepool {
+      NSNumber* ns_value = [app_group::GetGroupUserDefaults()
+          objectForKey:base::SysUTF8ToNSString(kCrashpadStartOnNextRun)];
+      // CrashpadIOSEnabler is enabled by default, so treat nil as enabled.
+      return ns_value == nil || ns_value.boolValue;
+    }
+  })();
   return can_use_crashpad;
 }
 

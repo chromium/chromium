@@ -5570,21 +5570,6 @@
             ]
         }
     ],
-    "IOSCrashpad": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrashpadIOSEnabler"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSDefaultBrowserFullscreenPromoExperiment": [
         {
             "platforms": [

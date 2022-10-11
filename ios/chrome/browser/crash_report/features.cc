@@ -12,7 +12,7 @@
 // after startup.
 BASE_FEATURE(kCrashpadIOS,
              "CrashpadIOSEnabler",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMetrickitCrashReport,
              "MetrickitCrashReport",
