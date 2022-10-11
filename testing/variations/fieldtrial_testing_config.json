@@ -6630,6 +6630,29 @@
             ]
         }
     ],
+    "LinkCapturingPostNavUXStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithNewFlowAndIPH_V2",
+                    "enable_features": [
+                        "AppIconInIntentChip",
+                        "IPH_IntentChip",
+                        "IntentChipSkipsPicker",
+                        "LinkCapturingInfoBar",
+                        "LinkCapturingUiUpdate"
+                    ],
+                    "disable_features": [
+                        "LinkCapturingAutoDisplayIntentPicker"
+                    ]
+                }
+            ]
+        }
+    ],
     "LiteralBufferCreateStringWithEncoding": [
         {
             "platforms": [
