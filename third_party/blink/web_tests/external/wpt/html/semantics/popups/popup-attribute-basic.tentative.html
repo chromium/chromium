@@ -241,6 +241,85 @@
     }
   });
 
+  const validTypes = ["auto","hint","manual"];
+  function interpretedType(typeString,method) {
+    if (validTypes.includes(typeString))
+      return typeString;
+    if (typeString === undefined)
+      return "invalid-value-undefined";
+    if (method === "idl" && typeString === null)
+      return "invalid-value-idl-null";
+    return "manual"; // Invalid types default to "manual"
+  }
+  function setPopUpValue(popUp,type,method) {
+    switch (method) {
+      case "attr":
+        if (type === undefined) {
+          popUp.removeAttribute('popup');
+        } else {
+          popUp.setAttribute('popup',type);
+        }
+        break;
+      case "idl":
+        popUp.popUp = type;
+        break;
+      default:
+        assert_notreached();
+    }
+  }
+  ["attr","idl"].forEach(method => {
+    validTypes.forEach(type => {
+      [...validTypes,"invalid",null,undefined].forEach(newType => {
+        [...validTypes,"invalid",null,undefined].forEach(inEventType => {
+          test((t) => {
+            const popUp = createPopUp(t);
+            setPopUpValue(popUp,type,method);
+            popUp.showPopUp();
+            assert_true(popUp.matches(':open'));
+            let gotEvent = false;
+            popUp.addEventListener('popuphide',() => {
+              gotEvent = true;
+              setPopUpValue(popUp,inEventType,method);
+            },{once:true});
+            setPopUpValue(popUp,newType,method);
+            if (type===interpretedType(newType,method)) {
+              // Keeping the type the same should not hide it or fire events.
+              assert_true(popUp.matches(':open'),'pop-up should remain open when not changing the type');
+              assert_false(gotEvent);
+              popUp.hidePopUp(); // Cleanup
+            } else {
+              // Changing the type at all should hide the pop-up. The hide event
+              // handler should run, set a new type, and that type should end up
+              // as the final result.
+              assert_false(popUp.matches(':open'));
+              if (inEventType === undefined || (method ==="idl" && inEventType === null)) {
+                assert_throws_dom("NotSupportedError",() => popUp.showPopUp(),'We should have removed the popup attribute, so showPopUp should throw');
+              } else {
+                // Make sure the attribute is correct.
+                assert_equals(popUp.getAttribute('popup'),String(inEventType),'Content attribute');
+                assert_equals(popUp.popUp, interpretedType(inEventType,method),'IDL attribute');
+                // Make sure the type is really correct, via behavior.
+                popUp.showPopUp(); // Show it
+                assert_true(popUp.matches(':open'),'Pop-up should function');
+                document.body.dispatchEvent(new Event('mouseup')); // Try to light dismiss
+                switch (interpretedType(inEventType,method)) {
+                  case 'manual':
+                    assert_true(popUp.matches(':open'),'A popup=manual should not light-dismiss');
+                    popUp.hidePopUp();
+                    break;
+                  case 'auto':
+                  case 'hint':
+                    assert_false(popUp.matches(':open'),'A popup=auto/hint should light-dismiss');
+                    break;
+                }
+              }
+            }
+          },`Changing a pop-up from ${type} to ${newType} (via ${method}), and then ${inEventType} during 'popuphide' works`);
+        });
+      });
+    });
+  });
+
   promise_test(async () => {
     const popUp = document.querySelector('[popup].animated');
     assert_true(!!popUp);

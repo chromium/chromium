@@ -2364,6 +2364,23 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   }
 }
 
+namespace {
+PopupValueType GetPopUpTypeFromAttributeValue(String value) {
+  if (EqualIgnoringASCIICase(value, kPopupTypeValueAuto) ||
+      (!value.IsNull() && value.empty())) {
+    return PopupValueType::kAuto;
+  } else if (EqualIgnoringASCIICase(value, kPopupTypeValueHint)) {
+    return PopupValueType::kHint;
+  } else if (EqualIgnoringASCIICase(value, kPopupTypeValueManual)) {
+    return PopupValueType::kManual;
+  } else if (!value.IsNull()) {
+    // Invalid values default to popup=manual.
+    return PopupValueType::kManual;
+  }
+  return PopupValueType::kNone;
+}
+}  // namespace
+
 void Element::UpdatePopupAttribute(String value) {
   if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
           GetDocument().GetExecutionContext())) {
@@ -2374,29 +2391,22 @@ void Element::UpdatePopupAttribute(String value) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kError,
-        "Found a 'popup' attribute. If you are testing the popup API, you must "
-        "enable Experimental Web Platform Features. If not, note that custom "
-        "attributes must start with 'data-': "
+        "Found a 'popup' attribute. If you are testing the pop-up API, you "
+        "must enable Experimental Web Platform Features. If not, note that "
+        "custom attributes must start with 'data-': "
         "https://html.spec.whatwg.org/multipage/"
         "dom.html#custom-data-attribute. This usage will *likely cause site "
-        "breakage* when the popup API ships: "
+        "breakage* when the pop-up API ships: "
         "https://chromestatus.com/feature/5463833265045504.");
     console_message->SetNodes(document.GetFrame(),
                               {DOMNodeIds::IdForNode(this)});
     document.AddConsoleMessage(console_message);
     return;
   }
-  PopupValueType type = PopupValueType::kNone;
-  if (EqualIgnoringASCIICase(value, kPopupTypeValueAuto) ||
-      (!value.IsNull() && value.empty())) {
-    type = PopupValueType::kAuto;
-  } else if (EqualIgnoringASCIICase(value, kPopupTypeValueHint)) {
-    type = PopupValueType::kHint;
-  } else if (EqualIgnoringASCIICase(value, kPopupTypeValueManual)) {
-    type = PopupValueType::kManual;
-  } else if (!value.IsNull()) {
-    // Invalid values default to popup=manual.
-    type = PopupValueType::kManual;
+
+  PopupValueType type = GetPopUpTypeFromAttributeValue(value);
+  if (type == PopupValueType::kManual &&
+      !EqualIgnoringASCIICase(value, kPopupTypeValueManual)) {
     // TODO(masonf) This console message might be too much log spam. Though
     // in case there's a namespace collision with something the developer is
     // doing with e.g. a function called 'popup', this will be helpful to
@@ -2409,10 +2419,18 @@ void Element::UpdatePopupAttribute(String value) {
   if (HasPopupAttribute()) {
     if (PopupType() == type)
       return;
+    String original_type = FastGetAttribute(html_names::kPopupAttr);
     // If the popup type is changing, hide it.
     if (popupOpen()) {
       HidePopUpInternal(HidePopupFocusBehavior::kFocusPreviousElement,
                         HidePopupForcingLevel::kHideAfterAnimations);
+      // Event handlers could have changed the pop-up, including by removing
+      // the popup attribute, or changing its value. If that happened, defer
+      // to the change that already happened, and don't reset it again here.
+      if (!isConnected() || !HasPopupAttribute() ||
+          original_type != FastGetAttribute(html_names::kPopupAttr)) {
+        return;
+      }
     }
   }
   if (type == PopupValueType::kNone) {
@@ -2423,6 +2441,8 @@ void Element::UpdatePopupAttribute(String value) {
     return;
   }
   UseCounter::Count(GetDocument(), WebFeature::kValidPopupAttribute);
+  DCHECK_EQ(type, GetPopUpTypeFromAttributeValue(
+                      FastGetAttribute(html_names::kPopupAttr)));
   EnsureElementRareData().EnsurePopupData().setType(type);
 }
 
