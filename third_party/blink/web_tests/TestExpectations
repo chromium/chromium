@@ -7247,3 +7247,7 @@ crbug.com/1373206 [ Win ] external/wpt/css/css-fonts/font-palette-vs-shorthand.h
 
 crbug.com/1370050 http/tests/devtools/debugger/stop-on-debugger-from-detached-iframe.js [ Skip ]
 crbug.com/1370050 http/tests/devtools/sources/debugger-ui/debugger-save-to-temp-var.js [ Skip ]
+
+# Temporarily disable tests till frontend part of this CL lands
+crbug.com/1349331 http/tests/devtools/storage-panel-dom-storage-update.js [ Skip ]
+crbug.com/1349331 http/tests/devtools/storage-panel-dom-storage.js [ Skip ]
