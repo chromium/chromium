@@ -940,10 +940,6 @@ config("compiler_cpu_abi") {
         cflags += [ "--target=aarch64-linux-gnu" ]
         ldflags += [ "--target=aarch64-linux-gnu" ]
       }
-      if (is_android) {
-        # Outline atomics crash on Exynos 9810. http://crbug.com/1272795
-        cflags += [ "-mno-outline-atomics" ]
-      }
     } else if (current_cpu == "mipsel" && !is_nacl) {
       ldflags += [ "-Wl,--hash-style=sysv" ]
       if (custom_toolchain == "") {

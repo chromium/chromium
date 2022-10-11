@@ -27,12 +27,10 @@ if (current_toolchain == default_toolchain &&
   #   __ThumbV7PILongThunk___cxa_atexit
   expected_static_initializer_count = 1
 
-  # From v8 I think:
-  # token.cc (initializer offset 0x27f024c size 0x11c)
+  # v8/src/parsing/token.cc
   expected_static_initializer_count += 1
 
-  # This one is from //third_party/gvr-android-sdk
-  # base_logging.cc (initializer offset 0x9a4b0c size 0x48)
+  # From //third_party/gvr-android-sdk: _GLOBAL__sub_I_base_logging.cc
   expected_static_initializer_count += 1
 
   if (build_with_internal_optimization_guide) {
@@ -50,6 +48,11 @@ if (current_toolchain == default_toolchain &&
   }
   if (use_clang_coverage) {
     # InstrProfilingRuntime.cpp, Only in coverage builds, not production.
+    expected_static_initializer_count += 1
+  }
+  if (target_cpu == "arm64") {
+    # Caused by "outline atomics". https://crbug.com/1272795
+    # cpu_model.c:815:0 name=init_have_lse_atomics
     expected_static_initializer_count += 1
   }
 }
