@@ -21,7 +21,6 @@
 #include "media/mojo/mojom/audio_processing.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/loopback_coordinator.h"
 #include "services/audio/realtime_audio_thread.h"
 
@@ -123,8 +122,6 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
   const raw_ptr<media::AecdumpRecordingManager> aecdump_recording_manager_;
 
   mojo::ReceiverSet<media::mojom::AudioStreamFactory> receivers_;
-
-  ConcurrentStreamMetricReporter stream_count_metric_reporter_;
 
   // Order of the following members is important for a clean shutdown.
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

@@ -43,7 +43,6 @@ class AudioProcessorHandler;
 class AudioCallback;
 class OutputTapper;
 class DeviceOutputListener;
-class InputStreamActivityMonitor;
 class ProcessingAudioFifo;
 
 // Only do power monitoring for non-mobile platforms to save resources.
@@ -182,7 +181,6 @@ class InputController final : public StreamMonitor {
       EventHandler* event_handler,
       SyncWriter* sync_writer,
       media::UserInputMonitor* user_input_monitor,
-      InputStreamActivityMonitor* activity_monitor,
       DeviceOutputListener* device_output_listener,
       media::AecdumpRecordingManager* aecdump_recording_manager,
       media::mojom::AudioProcessingConfigPtr processing_config,
@@ -235,7 +233,6 @@ class InputController final : public StreamMonitor {
   InputController(EventHandler* event_handler,
                   SyncWriter* sync_writer,
                   media::UserInputMonitor* user_input_monitor,
-                  InputStreamActivityMonitor* activity_monitor,
                   DeviceOutputListener* device_output_listener,
                   media::AecdumpRecordingManager* aecdump_recording_manager,
                   media::mojom::AudioProcessingConfigPtr processing_config,
@@ -344,9 +341,6 @@ class InputController final : public StreamMonitor {
 #endif
 
   const raw_ptr<media::UserInputMonitor> user_input_monitor_;
-
-  // Notified when the stream starts/stops recording.
-  const raw_ptr<InputStreamActivityMonitor> activity_monitor_;
 
 #if defined(AUDIO_POWER_MONITORING)
   // Whether the silence state and microphone levels should be checked and sent

@@ -40,8 +40,6 @@ class AudioParameters;
 }  // namespace media
 
 namespace audio {
-class OutputStreamActivityMonitor;
-
 class OutputStream final : public media::mojom::AudioOutputStream,
                            public OutputController::EventHandler {
  public:
@@ -61,7 +59,6 @@ class OutputStream final : public media::mojom::AudioOutputStream,
           observer,
       mojo::PendingRemote<media::mojom::AudioLog> log,
       media::AudioManager* audio_manager,
-      OutputStreamActivityMonitor* activity_monitor,
       const std::string& output_device_id,
       const media::AudioParameters& params,
       LoopbackCoordinator* coordinator,

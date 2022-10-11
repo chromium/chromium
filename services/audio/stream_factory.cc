@@ -94,7 +94,6 @@ void StreamFactory::CreateInputStream(
       std::move(stream_receiver), std::move(client), std::move(observer),
       std::move(pending_log), audio_manager_, aecdump_recording_manager_,
       UserInputMonitor::Create(std::move(key_press_count_buffer)),
-      &stream_count_metric_reporter_,
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
       output_device_mixer_manager_.get(), std::move(processing_config),
 #else
@@ -166,8 +165,7 @@ void StreamFactory::CreateOutputStream(
       std::move(created_callback), std::move(deleter_callback),
       std::move(managed_device_output_stream_create_callback),
       std::move(stream_receiver), std::move(observer), std::move(log),
-      audio_manager_, &stream_count_metric_reporter_, device_id_or_group_id,
-      params, &coordinator_, group_id));
+      audio_manager_, device_id_or_group_id, params, &coordinator_, group_id));
 }
 
 void StreamFactory::BindMuter(

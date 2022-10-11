@@ -11,8 +11,6 @@ import("//testing/test.gni")
 source_set("audio") {
   sources = [
     "audio_manager_power_user.h",
-    "concurrent_stream_metric_reporter.cc",
-    "concurrent_stream_metric_reporter.h",
     "debug_recording.cc",
     "debug_recording.h",
     "delay_buffer.cc",

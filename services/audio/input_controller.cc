@@ -32,7 +32,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
 #include "services/audio/audio_manager_power_user.h"
-#include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/device_output_listener.h"
 #include "services/audio/output_tapper.h"
 #include "services/audio/processing_audio_fifo.h"
@@ -185,7 +184,6 @@ InputController::InputController(
     EventHandler* event_handler,
     SyncWriter* sync_writer,
     media::UserInputMonitor* user_input_monitor,
-    InputStreamActivityMonitor* activity_monitor,
     DeviceOutputListener* device_output_listener,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
@@ -197,12 +195,10 @@ InputController::InputController(
       stream_(nullptr),
       sync_writer_(sync_writer),
       type_(type),
-      user_input_monitor_(user_input_monitor),
-      activity_monitor_(activity_monitor) {
+      user_input_monitor_(user_input_monitor) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(event_handler_);
   DCHECK(sync_writer_);
-  DCHECK(activity_monitor_);
   weak_this_ = weak_ptr_factory_.GetWeakPtr();
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
@@ -298,7 +294,6 @@ std::unique_ptr<InputController> InputController::Create(
     EventHandler* event_handler,
     SyncWriter* sync_writer,
     media::UserInputMonitor* user_input_monitor,
-    InputStreamActivityMonitor* activity_monitor,
     DeviceOutputListener* device_output_listener,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
@@ -307,7 +302,6 @@ std::unique_ptr<InputController> InputController::Create(
     bool enable_agc) {
   DCHECK(audio_manager);
   DCHECK(audio_manager->GetTaskRunner()->BelongsToCurrentThread());
-  DCHECK(activity_monitor);
   DCHECK(sync_writer);
   DCHECK(event_handler);
   DCHECK(params.IsValid());
@@ -321,12 +315,11 @@ std::unique_ptr<InputController> InputController::Create(
   // Create the InputController object and ensure that it runs on
   // the audio-manager thread.
   // Using `new` to access a non-public constructor.
-  std::unique_ptr<InputController> controller =
-      base::WrapUnique(new InputController(
-          event_handler, sync_writer, user_input_monitor, activity_monitor,
-          device_output_listener, aecdump_recording_manager,
-          std::move(processing_config), params, device_params,
-          ParamsToStreamType(params)));
+  std::unique_ptr<InputController> controller = base::WrapUnique(
+      new InputController(event_handler, sync_writer, user_input_monitor,
+                          device_output_listener, aecdump_recording_manager,
+                          std::move(processing_config), params, device_params,
+                          ParamsToStreamType(params)));
 
   controller->DoCreate(audio_manager, params, device_id, enable_agc);
   return controller;
@@ -373,7 +366,6 @@ void InputController::Record() {
 #endif
 
   stream_->Start(audio_callback_.get());
-  activity_monitor_->OnInputStreamActive();
   return;
 }
 
@@ -406,8 +398,6 @@ void InputController::Close() {
       processing_fifo_.reset();
     }
 #endif
-
-    activity_monitor_->OnInputStreamInactive();
 
     // Sometimes a stream (and accompanying audio track) is created and
     // immediately closed or discarded. In this case they are registered as

@@ -21,7 +21,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/device_output_listener.h"
 #include "services/audio/processing_audio_fifo.h"
 #include "services/audio/reference_output.h"
@@ -101,14 +100,6 @@ class MockUserInputMonitor : public media::UserInputMonitor {
   MOCK_METHOD0(DisableKeyPressMonitoring, void());
 };
 
-class MockInputStreamActivityMonitor : public InputStreamActivityMonitor {
- public:
-  MockInputStreamActivityMonitor() = default;
-
-  MOCK_METHOD0(OnInputStreamActive, void());
-  MOCK_METHOD0(OnInputStreamInactive, void());
-};
-
 template <base::test::TaskEnvironment::TimeSource TimeSource =
               base::test::TaskEnvironment::TimeSource::MOCK_TIME>
 class TimeSourceInputControllerTest
@@ -155,7 +146,7 @@ class TimeSourceInputControllerTest
   virtual void CreateAudioController() {
     controller_ = InputController::Create(
         audio_manager_.get(), &event_handler_, &sync_writer_,
-        &user_input_monitor_, &mock_stream_activity_monitor_,
+        &user_input_monitor_,
         /*device_output_listener =*/nullptr, &aecdump_recording_manager_,
         /*processing_config =*/nullptr, params_,
         media::AudioDeviceDescription::kDefaultDeviceId, false);
@@ -178,7 +169,6 @@ class TimeSourceInputControllerTest
   MockInputControllerEventHandler event_handler_;
   MockSyncWriter sync_writer_;
   MockUserInputMonitor user_input_monitor_;
-  StrictMock<MockInputStreamActivityMonitor> mock_stream_activity_monitor_;
   media::AudioParameters params_;
 };
 
@@ -215,8 +205,6 @@ TEST_P(InputControllerTest, CreateAndCloseWithoutRecording) {
 // that thread, and thus we must use SYSTEM_TIME.
 TEST_P(SystemTimeInputControllerTest, CreateRecordAndClose) {
   EXPECT_CALL(event_handler_, OnCreated(_));
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
   CreateAudioController();
   ASSERT_TRUE(controller_.get());
 
@@ -246,8 +234,6 @@ TEST_P(SystemTimeInputControllerTest, CreateRecordAndClose) {
 
 TEST_P(InputControllerTest, RecordTwice) {
   EXPECT_CALL(event_handler_, OnCreated(_));
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
   CreateAudioController();
   ASSERT_TRUE(controller_.get());
 
@@ -262,8 +248,6 @@ TEST_P(InputControllerTest, RecordTwice) {
 
 TEST_P(InputControllerTest, CloseTwice) {
   EXPECT_CALL(event_handler_, OnCreated(_));
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
   CreateAudioController();
   ASSERT_TRUE(controller_.get());
 
@@ -376,10 +360,9 @@ class TimeSourceInputControllerTestWithDeviceListener
     // https://stackoverflow.com/q/4643074
     this->controller_ = InputController::Create(
         this->audio_manager_.get(), &this->event_handler_, &this->sync_writer_,
-        &this->user_input_monitor_, &this->mock_stream_activity_monitor_,
-        &this->device_output_listener_, &this->aecdump_recording_manager_,
-        std::move(processing_config_), this->params_,
-        media::AudioDeviceDescription::kDefaultDeviceId, false);
+        &this->user_input_monitor_, &this->device_output_listener_,
+        &this->aecdump_recording_manager_, std::move(processing_config_),
+        this->params_, media::AudioDeviceDescription::kDefaultDeviceId, false);
 
     helper_ =
         std::make_unique<InputControllerTestHelper>(this->controller_.get());
@@ -501,8 +484,6 @@ TEST_P(
     CreateWithAudioProcessingConfig_DoesNotListenForPlayoutReferenceIfNotRequired) {
   base::test::ScopedFeatureList features;
   const std::string kOutputDeviceId = "0x123";
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
 
   EXPECT_CALL(device_output_listener_, StartListening(_, _)).Times(0);
   EXPECT_CALL(device_output_listener_, StopListening(_)).Times(0);
@@ -525,8 +506,6 @@ TEST_P(
 
 TEST_P(InputControllerTestWithDeviceListener, RecordBeforeSetOutputForAec) {
   const std::string kOutputDeviceId = "0x123";
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
 
   // Calling Record() will start listening to the "" device by default.
   EXPECT_CALL(device_output_listener_, StartListening(_, "")).Times(1);
@@ -553,8 +532,6 @@ TEST_P(InputControllerTestWithDeviceListener, RecordBeforeSetOutputForAec) {
 
 TEST_P(InputControllerTestWithDeviceListener, RecordAfterSetOutputForAec) {
   const std::string kOutputDeviceId = "0x123";
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
   EXPECT_CALL(device_output_listener_, StartListening(_, kOutputDeviceId))
       .Times(1);
   EXPECT_CALL(device_output_listener_, StopListening(_)).Times(1);
@@ -579,8 +556,6 @@ TEST_P(InputControllerTestWithDeviceListener, RecordAfterSetOutputForAec) {
 TEST_P(InputControllerTestWithDeviceListener, ChangeOutputForAec) {
   const std::string kOutputDeviceId = "0x123";
   const std::string kOtherOutputDeviceId = "0x987";
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
 
   // Each output ID should receive one call to StartListening().
   EXPECT_CALL(device_output_listener_, StartListening(_, kOutputDeviceId))
@@ -609,8 +584,6 @@ TEST_P(InputControllerTestWithDeviceListener, ChangeOutputForAec) {
 // that thread, and thus we must use SYSTEM_TIME.
 TEST_P(SystemTimeInputControllerTestWithDeviceListener, CreateRecordAndClose) {
   EXPECT_CALL(event_handler_, OnCreated(_));
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamActive()).Times(1);
-  EXPECT_CALL(mock_stream_activity_monitor_, OnInputStreamInactive()).Times(1);
   SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
   CreateAudioController();
 

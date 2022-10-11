@@ -74,7 +74,6 @@ InputStream::InputStream(
     media::AudioManager* audio_manager,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     std::unique_ptr<UserInputMonitor> user_input_monitor,
-    InputStreamActivityMonitor* activity_monitor,
     DeviceOutputListener* device_output_listener,
     media::mojom::AudioProcessingConfigPtr processing_config,
     const std::string& device_id,
@@ -98,7 +97,6 @@ InputStream::InputStream(
           &foreign_socket_)),
       user_input_monitor_(std::move(user_input_monitor)) {
   DCHECK(audio_manager);
-  DCHECK(activity_monitor);
   DCHECK(receiver_.is_bound());
   DCHECK(client_);
   DCHECK(created_callback_);
@@ -137,7 +135,7 @@ InputStream::InputStream(
 
   controller_ = InputController::Create(
       audio_manager, this, writer_.get(), user_input_monitor_.get(),
-      activity_monitor, device_output_listener, aecdump_recording_manager,
+      device_output_listener, aecdump_recording_manager,
       std::move(processing_config), params, device_id, enable_agc);
 }
 
