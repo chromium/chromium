@@ -191,7 +191,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     cell.detailText = item.subtitle;
     cell.sectionTitle =
         l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_CHROME_TIP_TITLE);
-    cell.bannerImage = item.bannerImage;
+    cell.bannerImage = item.heroBannerImage;
     cell.isBannerAtBottom = YES;
     return cell;
   }
@@ -205,7 +205,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   cell.detailText = item.subtitle;
   cell.sectionTitle =
       l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_FEATURED_TITLE);
-  cell.bannerImage = item.bannerImage;
+  cell.bannerImage = item.heroBannerImage;
   cell.isBannerAtBottom = NO;
   return cell;
 }

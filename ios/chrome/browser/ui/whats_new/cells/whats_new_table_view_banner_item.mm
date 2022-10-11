@@ -46,10 +46,16 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
   [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
 
   cell.sectionTextLabel.text = self.sectionTitle;
-  cell.bannerImageView.image = self.bannerImage;
   cell.textLabel.text = self.title;
   cell.detailTextLabel.text = self.detailText;
 
+  if (!self.bannerImage) {
+    cell.bannerImageView.hidden = YES;
+    [cell setEmptyBannerImage];
+    return;
+  }
+
+  cell.bannerImageView.image = self.bannerImage;
   if (self.isBannerAtBottom) {
     [cell setBannerImageAtBottom];
   }
@@ -146,20 +152,23 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
           constraintEqualToAnchor:_stackView.leadingAnchor
                          constant:kItemLeadingMargin],
       [_sectionTextLabel.trailingAnchor
-          constraintEqualToAnchor:_stackView.trailingAnchor],
+          constraintEqualToAnchor:_stackView.trailingAnchor
+                         constant:-kItemLeadingMargin],
 
       // Text label constraints.
       [_textLabel.leadingAnchor constraintEqualToAnchor:_stackView.leadingAnchor
                                                constant:kItemLeadingMargin],
       [_textLabel.trailingAnchor
-          constraintEqualToAnchor:_stackView.trailingAnchor],
+          constraintEqualToAnchor:_stackView.trailingAnchor
+                         constant:-kItemLeadingMargin],
 
       // detail text label constraints.
       [_detailTextLabel.leadingAnchor
           constraintEqualToAnchor:_stackView.leadingAnchor
                          constant:kItemLeadingMargin],
       [_detailTextLabel.trailingAnchor
-          constraintEqualToAnchor:_stackView.trailingAnchor],
+          constraintEqualToAnchor:_stackView.trailingAnchor
+                         constant:-kItemLeadingMargin],
 
       // Stack view constraints.
       [_stackView.leadingAnchor
@@ -193,6 +202,12 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
   self.isBannerAtBottom = NO;
 }
 
+- (void)setEmptyBannerImage {
+  // Add margin at the top and bottom of the stack view.
+  self.stackViewTopAnchorConstraint.constant = kStackViewMargin;
+  self.stackViewBottomAnchorConstraint.constant = -kStackViewMargin;
+}
+
 #pragma mark - UITableViewCell
 
 - (void)prepareForReuse {
@@ -202,10 +217,8 @@ const CGFloat kStackViewVerticalSpacings = 10.0;
   self.bannerImageView.image = nil;
   self.textLabel.text = nil;
   self.detailTextLabel.text = nil;
-
-  if (self.isBannerAtBottom) {
-    [self setBannerImageAtTop];
-  }
+  self.bannerImageView.hidden = NO;
+  [self setBannerImageAtTop];
 }
 
 #pragma mark - Private

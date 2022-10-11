@@ -35,6 +35,7 @@ NSString* const kDictionaryTitleKey = @"Title";
 NSString* const kDictionarySubtitleKey = @"Subtitle";
 NSString* const kDictionaryIsSymbolKey = @"IsSymbol";
 NSString* const kDictionaryBannerImageKey = @"BannerImageName";
+NSString* const kDictionaryHeroBannerImageKey = @"HeroBannerImageName";
 NSString* const kDictionaryIconImageKey = @"IconImageName";
 NSString* const kDictionaryBackgroundColorKey = @"IconBackgroundColor";
 NSString* const kDictionaryInstructionsKey = @"InstructionSteps";
@@ -157,6 +158,12 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
     return nil;
   }
   whats_new_item.subtitle = l10n_util::GetNSString([subtitle intValue]);
+
+  // Load the entry hero banner image.
+  NSString* hero_banner_image = entry[kDictionaryHeroBannerImageKey];
+  whats_new_item.heroBannerImage =
+      [hero_banner_image length] == 0 ? nil
+                                      : GenerateImage(false, hero_banner_image);
 
   // Load the entry banner image.
   whats_new_item.bannerImage =

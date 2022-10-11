@@ -11,6 +11,8 @@
             <string>IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_TITLE</string>
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_SUBTITLE</string>
+            <key>HeroBannerImageName</key>
+            <string>search_tabs_hero_banner</string>
             <key>BannerImageName</key>
             <string>search_tabs_banner</string>
             <key>IconImageName</key>
@@ -39,6 +41,8 @@
             <string>IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_TITLE</string>
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_SUBTITLE</string>
+            <key>HeroBannerImageName</key>
+            <string></string>
             <key>BannerImageName</key>
             <string>new_overflow_menu_banner</string>
             <key>IconImageName</key>
@@ -66,6 +70,8 @@
             <string>IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_TITLE</string>
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_SHARE_HIGHLIGHT_SUBTITLE</string>
+            <key>HeroBannerImageName</key>
+            <string></string>
             <key>BannerImageName</key>
             <string>shared_highlighting_banner</string>
             <key>IconImageName</key>
@@ -94,6 +100,8 @@
             <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_TITLE</string>
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_SUBTITLE</string>
+            <key>HeroBannerImageName</key>
+            <string></string>
             <key>BannerImageName</key>
             <string>add_passwords_manually_banner</string>
             <key>IconImageName</key>
@@ -125,6 +133,8 @@
             <string>IDS_IOS_WHATS_CHROME_TIP_CHROME_DEFAULT_TITLE</string>
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_SUBTITLE</string>
+            <key>HeroBannerImageName</key>
+            <string>chrome_by_default_hero_banner</string>
             <key>BannerImageName</key>
             <string>use_chrome_by_default_banner</string>
             <key>IconImageName</key>
@@ -153,6 +163,8 @@
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_TITLE</string>
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_SUBTITLE</string>
+            <key>HeroBannerImageName</key>
+            <string>passwords_in_other_apps_hero_banner</string>
             <key>BannerImageName</key>
             <string>passwords_in_other_apps_banner</string>
             <key>IconImageName</key>
@@ -180,6 +192,8 @@
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_TITLE</string>
             <key>Subtitle</key>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_AUTOFILL_SUBTITLE</string>
+            <key>HeroBannerImageName</key>
+            <string>autofill_hero_banner</string>
             <key>BannerImageName</key>
             <string>autofill_banner</string>
             <key>IconImageName</key>

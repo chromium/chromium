@@ -53,6 +53,9 @@
 // at the bottom of the cell.
 - (void)setBannerImageAtBottom;
 
+// Method to update some constraints and the stack view with no banner image.
+- (void)setEmptyBannerImage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_CELLS_WHATS_NEW_TABLE_VIEW_BANNER_ITEM_H_
