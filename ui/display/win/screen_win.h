@@ -32,8 +32,11 @@ class Size;
 namespace display {
 namespace win {
 
-class DisplayInfo;
 class ScreenWinDisplay;
+
+namespace internal {
+class DisplayInfo;
+}  // namespace internal
 
 class DISPLAY_EXPORT ScreenWin : public Screen,
                                  public ColorProfileReader::Client,
@@ -196,7 +199,8 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // ColorProfileReader::Client:
   void OnColorProfilesChanged() override;
 
-  void UpdateFromDisplayInfos(const std::vector<DisplayInfo>& display_infos);
+  void UpdateFromDisplayInfos(
+      const std::vector<internal::DisplayInfo>& display_infos);
 
   // Virtual to support mocking by unit tests.
   virtual MONITORINFOEX MonitorInfoFromScreenPoint(

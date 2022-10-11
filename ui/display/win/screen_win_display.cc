@@ -10,7 +10,8 @@ namespace display {
 namespace win {
 namespace {
 
-Display CreateDisplayFromDisplayInfo(const DisplayInfo& display_info) {
+Display CreateDisplayFromDisplayInfo(
+    const internal::DisplayInfo& display_info) {
   Display display(display_info.id());
   float scale_factor = display_info.device_scale_factor();
   display.set_device_scale_factor(scale_factor);
@@ -28,12 +29,12 @@ Display CreateDisplayFromDisplayInfo(const DisplayInfo& display_info) {
 
 ScreenWinDisplay::ScreenWinDisplay() = default;
 
-ScreenWinDisplay::ScreenWinDisplay(const DisplayInfo& display_info)
+ScreenWinDisplay::ScreenWinDisplay(const internal::DisplayInfo& display_info)
     : ScreenWinDisplay(CreateDisplayFromDisplayInfo(display_info),
                        display_info) {}
 
 ScreenWinDisplay::ScreenWinDisplay(const Display& display,
-                                   const DisplayInfo& display_info)
+                                   const internal::DisplayInfo& display_info)
     : display_(display),
       pixel_bounds_(display_info.screen_rect()),
       pixels_per_inch_(display_info.pixels_per_inch()),

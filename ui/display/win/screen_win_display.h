@@ -13,16 +13,18 @@
 namespace display {
 namespace win {
 
+namespace internal {
 class DisplayInfo;
+}  // namespace internal
 
 // A display used by ScreenWin.
 // It holds a display and additional parameters used for DPI calculations.
 class ScreenWinDisplay final {
  public:
   ScreenWinDisplay();
-  explicit ScreenWinDisplay(const DisplayInfo& display_info);
+  explicit ScreenWinDisplay(const internal::DisplayInfo& display_info);
   ScreenWinDisplay(const Display& display,
-                   const DisplayInfo& display_info);
+                   const internal::DisplayInfo& display_info);
 
   const Display& display() const { return display_; }
   const gfx::Rect& pixel_bounds() const { return pixel_bounds_; }

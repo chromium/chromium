@@ -7,8 +7,7 @@
 #include "base/hash/hash.h"
 #include "base/strings/utf_string_conversions.h"
 
-namespace display {
-namespace win {
+namespace display::win::internal {
 
 DisplayInfo::DisplayInfo(
     const MONITORINFOEX& monitor_info,
@@ -62,5 +61,4 @@ bool DisplayInfo::operator==(const DisplayInfo& rhs) const {
          output_technology_ == rhs.output_technology_ && label_ == rhs.label_;
 }
 
-}  // namespace win
-}  // namespace display
+}  // namespace display::win::internal

@@ -11,8 +11,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_export.h"
 
-namespace display {
-namespace win {
+namespace display::win::internal {
 
 // Gathers the parameters necessary to create a win::ScreenWinDisplay.
 class DISPLAY_EXPORT DisplayInfo final {
@@ -66,7 +65,6 @@ class DISPLAY_EXPORT DisplayInfo final {
   std::string label_;
 };
 
-}  // namespace win
-}  // namespace display
+}  // namespace display::win::internal
 
 #endif  // UI_DISPLAY_WIN_DISPLAY_INFO_H_

@@ -85,7 +85,8 @@ int ScaleOffset(int unscaled_length, float scale_factor, int unscaled_offset) {
 namespace display {
 namespace win {
 
-bool DisplayInfosTouch(const DisplayInfo& a, const DisplayInfo& b) {
+bool DisplayInfosTouch(const internal::DisplayInfo& a,
+                       const internal::DisplayInfo& b) {
   const gfx::Rect& a_rect = a.screen_rect();
   const gfx::Rect& b_rect = b.screen_rect();
   int max_left = std::max(a_rect.x(), b_rect.x());
@@ -101,8 +102,8 @@ bool DisplayInfosTouch(const DisplayInfo& a, const DisplayInfo& b) {
 }
 
 DisplayPlacement::Position CalculateDisplayPosition(
-    const DisplayInfo& parent,
-    const DisplayInfo& current) {
+    const internal::DisplayInfo& parent,
+    const internal::DisplayInfo& current) {
   const gfx::Rect& parent_rect = parent.screen_rect();
   const gfx::Rect& current_rect = current.screen_rect();
   int max_left = std::max(parent_rect.x(), current_rect.x());
@@ -138,8 +139,9 @@ DisplayPlacement::Position CalculateDisplayPosition(
   return DisplayPlacement::Position::RIGHT;
 }
 
-DisplayPlacement CalculateDisplayPlacement(const DisplayInfo& parent,
-                                           const DisplayInfo& current) {
+DisplayPlacement CalculateDisplayPlacement(
+    const internal::DisplayInfo& parent,
+    const internal::DisplayInfo& current) {
   DCHECK(DisplayInfosTouch(parent, current)) << "DisplayInfos must touch.";
 
   DisplayPlacement placement;

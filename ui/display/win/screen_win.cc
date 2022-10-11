@@ -208,14 +208,14 @@ DisplaySettings GetDisplaySettingsForDevice(const wchar_t* device_name) {
           static_cast<int>(mode.dmDisplayFrequency)};
 }
 
-std::vector<DisplayInfo> FindAndRemoveTouchingDisplayInfos(
-    const DisplayInfo& parent_info,
-    std::vector<DisplayInfo>* display_infos) {
+std::vector<internal::DisplayInfo> FindAndRemoveTouchingDisplayInfos(
+    const internal::DisplayInfo& parent_info,
+    std::vector<internal::DisplayInfo>* display_infos) {
   const auto first_touching_it = std::partition(
       display_infos->begin(), display_infos->end(),
       [&](const auto& info) { return !DisplayInfosTouch(parent_info, info); });
-  std::vector<DisplayInfo> touching_display_infos(first_touching_it,
-                                                  display_infos->end());
+  std::vector<internal::DisplayInfo> touching_display_infos(
+      first_touching_it, display_infos->end());
   display_infos->erase(first_touching_it, display_infos->end());
   return touching_display_infos;
 }
@@ -305,7 +305,7 @@ gfx::DisplayColorSpaces GetForcedDisplayColorSpaces() {
 }
 
 Display CreateDisplayFromDisplayInfo(
-    const DisplayInfo& display_info,
+    const internal::DisplayInfo& display_info,
     const ColorProfileReader* color_profile_reader,
     const gfx::mojom::DXGIOutputDesc* dxgi_output_desc,
     bool hdr_enabled_on_any_display) {
@@ -363,26 +363,27 @@ Display CreateDisplayFromDisplayInfo(
 // map to multiple screen points due to overlap. The first discovered screen
 // will take precedence.
 std::vector<ScreenWinDisplay> DisplayInfosToScreenWinDisplays(
-    const std::vector<DisplayInfo>& display_infos,
+    const std::vector<internal::DisplayInfo>& display_infos,
     ColorProfileReader* color_profile_reader,
     gfx::mojom::DXGIInfo* dxgi_info) {
   if (display_infos.empty()) {
     return {};
   }
   // Find and extract the primary display.
-  std::vector<DisplayInfo> display_infos_remaining = display_infos;
+  std::vector<internal::DisplayInfo> display_infos_remaining = display_infos;
   auto primary_display_iter = base::ranges::find_if(
-      display_infos_remaining, [](const DisplayInfo& display_info) {
+      display_infos_remaining, [](const internal::DisplayInfo& display_info) {
         return display_info.screen_rect().origin().IsOrigin();
       });
   DCHECK(primary_display_iter != display_infos_remaining.end());
 
   // Build the tree and determine DisplayPlacements along the way.
   DisplayLayoutBuilder builder(primary_display_iter->id());
-  std::vector<DisplayInfo> available_parents = {*primary_display_iter};
+  std::vector<internal::DisplayInfo> available_parents = {
+      *primary_display_iter};
   display_infos_remaining.erase(primary_display_iter);
   while (!available_parents.empty()) {
-    const DisplayInfo parent = available_parents.back();
+    const internal::DisplayInfo parent = available_parents.back();
     available_parents.pop_back();
     for (const auto& child :
          FindAndRemoveTouchingDisplayInfos(parent, &display_infos_remaining)) {
@@ -397,7 +398,7 @@ std::vector<ScreenWinDisplay> DisplayInfosToScreenWinDisplays(
   if (dxgi_info) {
     for (const auto& dxgi_output_desc : dxgi_info->output_descs) {
       hdr_enabled_on_any_display |= dxgi_output_desc->hdr_enabled;
-      dxgi_output_descs[DisplayInfo::DeviceIdFromDeviceName(
+      dxgi_output_descs[internal::DisplayInfo::DeviceIdFromDeviceName(
           dxgi_output_desc->device_name.c_str())] = dxgi_output_desc.get();
     }
   }
@@ -493,7 +494,8 @@ BOOL CALLBACK EnumMonitorForDisplayInfoCallback(HMONITOR monitor,
           GetDefaultMonitorPhysicalPixelsPerInch());
   const auto path_info = GetPathInfo(monitor);
 
-  auto* display_infos = reinterpret_cast<std::vector<DisplayInfo>*>(data);
+  auto* display_infos =
+      reinterpret_cast<std::vector<internal::DisplayInfo>*>(data);
   DCHECK(display_infos);
   display_infos->emplace_back(
       monitor_info, GetMonitorScaleFactor(monitor), GetSDRWhiteLevel(path_info),
@@ -502,8 +504,8 @@ BOOL CALLBACK EnumMonitorForDisplayInfoCallback(HMONITOR monitor,
   return TRUE;
 }
 
-std::vector<DisplayInfo> GetDisplayInfosFromSystem() {
-  std::vector<DisplayInfo> display_infos;
+std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
+  std::vector<internal::DisplayInfo> display_infos;
   EnumDisplayMonitors(nullptr, nullptr, EnumMonitorForDisplayInfoCallback,
                       reinterpret_cast<LPARAM>(&display_infos));
   DCHECK_EQ(::GetSystemMetrics(SM_CMONITORS),
@@ -725,7 +727,8 @@ ScreenWinDisplay ScreenWin::GetScreenWinDisplayWithDisplayId(int64_t id) {
 
 // static
 int64_t ScreenWin::DeviceIdFromDeviceName(const wchar_t* device_name) {
-  return display::win::DisplayInfo::DeviceIdFromDeviceName(device_name);
+  return display::win::internal::DisplayInfo::DeviceIdFromDeviceName(
+      device_name);
 }
 
 HWND ScreenWin::GetHWNDFromNativeWindow(gfx::NativeWindow window) const {
@@ -839,7 +842,7 @@ gfx::Rect ScreenWin::DIPToScreenRectInWindow(gfx::NativeWindow window,
 }
 
 void ScreenWin::UpdateFromDisplayInfos(
-    const std::vector<DisplayInfo>& display_infos) {
+    const std::vector<internal::DisplayInfo>& display_infos) {
   screen_win_displays_ = DisplayInfosToScreenWinDisplays(
       display_infos, color_profile_reader_.get(), dxgi_info_.get());
   displays_ = ScreenWinDisplaysToDisplays(screen_win_displays_);
@@ -983,7 +986,8 @@ ScreenWinDisplay ScreenWin::GetPrimaryScreenWinDisplay() const {
 
 ScreenWinDisplay ScreenWin::GetScreenWinDisplay(
     const MONITORINFOEX& monitor_info) const {
-  const int64_t id = DisplayInfo::DeviceIdFromDeviceName(monitor_info.szDevice);
+  const int64_t id =
+      internal::DisplayInfo::DeviceIdFromDeviceName(monitor_info.szDevice);
   const auto it = base::ranges::find(
       screen_win_displays_, id,
       [](const auto& display) { return display.display().id(); });

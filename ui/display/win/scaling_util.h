@@ -19,8 +19,8 @@ namespace display {
 namespace win {
 
 // Whether or not |a| shares an edge with |b|.
-DISPLAY_EXPORT bool DisplayInfosTouch(const DisplayInfo& a,
-                                      const DisplayInfo& b);
+DISPLAY_EXPORT bool DisplayInfosTouch(const internal::DisplayInfo& a,
+                                      const internal::DisplayInfo& b);
 
 // Returns a DisplayPlacement for |current| relative to |parent|.
 // Note that DisplayPlacement's are always in DIPs, so this also performs the
@@ -103,9 +103,9 @@ DISPLAY_EXPORT bool DisplayInfosTouch(const DisplayInfo& a,
 // |        |        |            bottom-right of the DisplayInfo.
 // |        |        |
 // +--------+--------+
-DISPLAY_EXPORT DisplayPlacement CalculateDisplayPlacement(
-    const DisplayInfo& parent,
-    const DisplayInfo& current);
+DISPLAY_EXPORT DisplayPlacement
+CalculateDisplayPlacement(const internal::DisplayInfo& parent,
+                          const internal::DisplayInfo& current);
 
 // Returns the squared distance between two rects.
 // The distance between two rects is the length of the shortest segment that can

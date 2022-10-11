@@ -15,14 +15,17 @@ namespace {
 
 const wchar_t kFakeDisplayName[] = L"Fake Display";
 
-DisplayInfo CreateDisplayInfo(int x, int y, int width, int height,
-                              float scale_factor) {
+internal::DisplayInfo CreateDisplayInfo(int x,
+                                        int y,
+                                        int width,
+                                        int height,
+                                        float scale_factor) {
   MONITORINFOEX monitor_info = CreateMonitorInfo(gfx::Rect(x, y, width, height),
                                                  gfx::Rect(x, y, width, height),
                                                  kFakeDisplayName);
-  return DisplayInfo(monitor_info, scale_factor, 1.0f, Display::ROTATE_0, 60,
-                     gfx::Vector2dF(), DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER,
-                     std::string());
+  return internal::DisplayInfo(
+      monitor_info, scale_factor, 1.0f, Display::ROTATE_0, 60, gfx::Vector2dF(),
+      DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string());
 }
 
 ::testing::AssertionResult AssertOffsetsEqual(
