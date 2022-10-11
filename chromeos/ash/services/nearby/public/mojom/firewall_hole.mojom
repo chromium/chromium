@@ -1,0 +1,20 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module sharing.mojom;
+
+import "chromeos/ash/services/nearby/public/mojom/tcp_server_socket_port.mojom";
+
+// Represents the firewall hole owned by the browser process. Consumer closes
+// the firewall hole by destroying the remote endpoint.
+interface FirewallHole {};
+
+// Opens a port in the Chrome OS system firewall. A firewall hole is necessary
+// for a TCP server socket to accept connections.
+interface FirewallHoleFactory {
+  // Opens a TCP firewall hole on |port|. The firewall hole's lifetime mirrors
+  // that of |firewall_hole|. Returns null on failure.
+  OpenFirewallHole(TcpServerSocketPort port)
+      => (pending_remote<FirewallHole>? firewall_hole);
+};

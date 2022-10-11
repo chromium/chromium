@@ -9,12 +9,12 @@
 #include <memory>
 #include <vector>
 
-#include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
-#include "ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

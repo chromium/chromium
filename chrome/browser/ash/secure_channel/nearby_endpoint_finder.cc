@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder.h"
-#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
 namespace ash {
 namespace secure_channel {

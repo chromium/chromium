@@ -16,9 +16,9 @@ source_set("sharing") {
   ]
 
   public_deps = [
-    "//ash/services/nearby/public/mojom",
     "//base",
     "//chrome/services/sharing/public/cpp",
+    "//chromeos/ash/services/nearby/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
 }
@@ -33,8 +33,8 @@ source_set("unit_tests") {
     "nearby",
     "nearby/test_support",
     "//ash/public/cpp",
-    "//ash/services/nearby/public/cpp:test_support",
     "//base/test:test_support",
+    "//chromeos/ash/services/nearby/public/cpp:test_support",
     "//chromeos/services/network_config/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",

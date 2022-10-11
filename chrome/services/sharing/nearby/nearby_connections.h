@@ -8,11 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
-#include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "ash/services/nearby/public/mojom/sharing.mojom.h"
-#include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
-#include "ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
@@ -24,6 +19,11 @@
 #include "base/thread_annotations.h"
 #include "chrome/services/sharing/nearby/nearby_connections_stream_buffer_manager.h"
 #include "chrome/services/sharing/nearby/nearby_shared_remotes.h"
+#include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

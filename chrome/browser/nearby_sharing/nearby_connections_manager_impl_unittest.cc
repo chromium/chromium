@@ -7,9 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/services/nearby/public/cpp/mock_nearby_connections.h"
-#include "ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
-#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
@@ -20,6 +17,9 @@
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/nearby_connection_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
+#include "chromeos/ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/mock_network_change_notifier.h"

@@ -10,9 +10,9 @@
 #include <stdint.h>
 #include <memory>
 
-#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

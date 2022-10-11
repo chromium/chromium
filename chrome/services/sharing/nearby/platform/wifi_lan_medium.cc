@@ -4,7 +4,6 @@
 
 #include "chrome/services/sharing/nearby/platform/wifi_lan_medium.h"
 
-#include "ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
@@ -15,6 +14,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

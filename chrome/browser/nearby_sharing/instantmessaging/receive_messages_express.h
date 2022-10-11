@@ -7,7 +7,6 @@
 
 #include <cstdint>
 
-#include "ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -16,6 +15,7 @@
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/stream_parser.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/token_fetcher.h"
+#include "chromeos/ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"

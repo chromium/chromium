@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_ENDPOINT_FINDER_H_
 #define CHROME_BROWSER_ASH_SECURE_CHANNEL_NEARBY_ENDPOINT_FINDER_H_
 
-#include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 
 namespace ash {
 namespace secure_channel {

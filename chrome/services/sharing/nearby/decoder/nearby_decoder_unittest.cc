@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -17,6 +16,7 @@
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/cpp/conversions.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

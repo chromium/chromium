@@ -6,11 +6,6 @@
 
 #include <memory>
 
-#include "ash/services/nearby/public/cpp/fake_firewall_hole.h"
-#include "ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
-#include "ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
-#include "ash/services/nearby/public/cpp/tcp_server_socket_port.h"
-#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
@@ -19,6 +14,11 @@
 #include "chromeos/ash/components/network/network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
+#include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole.h"
+#include "chromeos/ash/services/nearby/public/cpp/fake_firewall_hole_factory.h"
+#include "chromeos/ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
+#include "chromeos/ash/services/nearby/public/cpp/tcp_server_socket_port.h"
+#include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"

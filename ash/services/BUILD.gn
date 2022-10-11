@@ -20,7 +20,6 @@ source_set("unit_tests") {
     "//ash/services/ime:services_unittests",
     "//ash/services/ime:unit_tests",
     "//ash/services/multidevice_setup:unit_tests",
-    "//ash/services/nearby/public/cpp:unit_tests",
     "//ash/services/secure_channel:unit_tests",
   ]
 }

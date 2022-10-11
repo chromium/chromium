@@ -5,12 +5,12 @@
 #include "chrome/services/sharing/nearby/platform/webrtc.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom-shared.h"
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/webrtc/ipc_network_manager.h"
 #include "chrome/services/sharing/webrtc/ipc_packet_socket_factory.h"
 #include "chrome/services/sharing/webrtc/mdns_responder_adapter.h"
 #include "chrome/services/sharing/webrtc/p2p_port_allocator.h"
+#include "chromeos/ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom-shared.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_PAYLOAD_TRACKER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_PAYLOAD_TRACKER_H_
 
-#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Listens for incoming or outgoing transfer updates from Nearby Connections and

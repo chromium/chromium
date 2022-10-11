@@ -92,6 +92,7 @@ include_rules = [
   "+chromeos/ash/services/assistant/test_support",
   "+chromeos/ash/services/bluetooth_config",
   "+chromeos/ash/services/libassistant/public",
+  "+chromeos/ash/services/nearby/public",
   "+chromeos/services/machine_learning/public",
   "+chromeos/services/network_config/public",
   "+chromeos/services/power/public",

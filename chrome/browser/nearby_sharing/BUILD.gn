@@ -19,10 +19,10 @@ source_set("share_target") {
   ]
 
   deps = [
-    "//ash/services/nearby/public/mojom",
-    "//ash/services/nearby/public/mojom:nearby_share_target_types",
     "//base",
     "//chrome/browser/ui/webui/nearby_share:share_type",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_target_types",
     "//components/drive",
     "//net",
     "//url",

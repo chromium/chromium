@@ -184,7 +184,6 @@ static_library("utility") {
     deps += [
       "//ash/services/ime:lib",
       "//ash/services/ime/public/mojom",
-      "//ash/services/nearby/public/mojom:mojom",
       "//ash/services/recording",
       "//chrome/services/file_util",
       "//chrome/services/sharing",
@@ -193,6 +192,7 @@ static_library("utility") {
       "//chromeos/ash/components/local_search_service/public/mojom",
       "//chromeos/ash/components/trash_service",
       "//chromeos/ash/components/trash_service/public/mojom",
+      "//chromeos/ash/services/nearby/public/mojom:mojom",
       "//chromeos/ash/services/quick_pair",
       "//chromeos/services/tts",
       "//chromeos/services/tts/public/mojom",

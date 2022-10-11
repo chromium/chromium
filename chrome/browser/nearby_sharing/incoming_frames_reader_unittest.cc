@@ -6,13 +6,13 @@
 
 #include <vector>
 
-#include "ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
-#include "ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
+#include "chromeos/ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
+#include "chromeos/ash/services/nearby/public/cpp/mock_nearby_sharing_decoder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

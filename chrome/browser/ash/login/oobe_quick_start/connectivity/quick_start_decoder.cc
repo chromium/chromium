@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/quick_start_decoder.h"
 
-#include "ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "base/callback.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_tree.h"
 #include "base/logging.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "sandbox/policy/sandbox.h"

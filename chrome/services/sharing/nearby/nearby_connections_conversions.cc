@@ -6,10 +6,10 @@
 
 #include <utility>
 
-#include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
-#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
 namespace location {
 namespace nearby {

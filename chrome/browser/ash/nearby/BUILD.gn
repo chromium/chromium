@@ -16,8 +16,8 @@ source_set("bluetooth_adapter_manager") {
   ]
 
   deps = [
-    "//ash/services/nearby/public/cpp",
     "//base",
+    "//chromeos/ash/services/nearby/public/cpp",
     "//dbus",
     "//device/bluetooth",
     "//device/bluetooth:deprecated_experimental_mojo",

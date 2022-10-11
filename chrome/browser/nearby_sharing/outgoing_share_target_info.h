@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chrome/browser/nearby_sharing/share_target_info.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A description of the outgoing connection to a remote device.

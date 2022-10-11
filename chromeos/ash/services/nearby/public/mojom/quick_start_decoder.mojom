@@ -1,0 +1,21 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.quick_start.mojom;
+
+import "sandbox/policy/mojom/sandbox.mojom";
+
+import "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom";
+
+// Decode raw input data from Android device during Quick Start
+// into readable structs to allow for Wifi Credential sharing
+// and FIDO assertion.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+interface QuickStartDecoder {
+  // Decode a FIDO CTAP2 GetAssertionResponse from the phone into a struct
+  // that details fields we need to pass along to GAIA as well as error
+  // codes from the CBOR decoding step and from the phone.
+  DecodeGetAssertionResponse(array<uint8> data) => (
+    GetAssertionResponse response);
+};

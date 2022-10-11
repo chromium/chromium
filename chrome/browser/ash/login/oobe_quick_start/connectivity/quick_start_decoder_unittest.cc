@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/quick_start_decoder.h"
 
-#include "ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "mojo/public/cpp/bindings/remote.h"

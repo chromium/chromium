@@ -6,11 +6,11 @@
 
 #include <utility>
 
-#include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/services/sharing/nearby/decoder/nearby_decoder.h"
 #include "chrome/services/sharing/nearby/nearby_connections.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 
 namespace sharing {
 

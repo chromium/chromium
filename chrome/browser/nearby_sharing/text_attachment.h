@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Represents a text attachment.

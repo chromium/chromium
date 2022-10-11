@@ -7,10 +7,10 @@
 #include <memory>
 #include <string>
 
-#include "ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"

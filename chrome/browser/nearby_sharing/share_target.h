@@ -9,11 +9,11 @@
 #include <string>
 #include <vector>
 
-#include "ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "chrome/browser/nearby_sharing/wifi_credentials_attachment.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 

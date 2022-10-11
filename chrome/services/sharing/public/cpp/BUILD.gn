@@ -17,9 +17,9 @@ source_set("cpp") {
   ]
 
   public_deps = [
-    "//ash/services/nearby/public/mojom",
     "//base",
     "//chrome/services/sharing/public/proto",
+    "//chromeos/ash/services/nearby/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
 }

@@ -11,10 +11,10 @@
 #include <utility>
 #include <vector>
 
-#include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyConnection;

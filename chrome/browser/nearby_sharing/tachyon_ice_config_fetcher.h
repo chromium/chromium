@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_TACHYON_ICE_CONFIG_FETCHER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_TACHYON_ICE_CONFIG_FETCHER_H_
 
-#include "ash/services/nearby/public/mojom/webrtc.mojom.h"
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/nearby/public/mojom/webrtc.mojom.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"

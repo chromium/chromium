@@ -1,5 +1,5 @@
 include_rules = [
-  "+ash/services/nearby/public/cpp/nearby_client_uuids.h",
+  "+chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h",
   "+components/session_manager/core",
   "+components/sync_preferences/testing_pref_service_syncable.h",
   "+components/user_manager",

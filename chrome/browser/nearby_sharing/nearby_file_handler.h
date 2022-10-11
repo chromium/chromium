@@ -8,12 +8,12 @@
 #include <stdint.h>
 #include <vector>
 
-#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom-forward.h"
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom-forward.h"
 
 // This class manages async File IO for Nearby Share file payloads. Opening and
 // releasing files need to run on a MayBlock task runner.

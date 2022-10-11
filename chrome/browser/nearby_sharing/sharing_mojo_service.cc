@@ -4,7 +4,7 @@
 
 #include "chrome/browser/nearby_sharing/sharing_mojo_service.h"
 
-#include "ash/services/nearby/public/mojom/sharing.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
 namespace sharing {

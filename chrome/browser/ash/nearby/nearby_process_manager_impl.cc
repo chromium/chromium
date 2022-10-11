@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/nearby/nearby_process_manager_impl.h"
 
-#include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/sharing_mojo_service.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace ash {

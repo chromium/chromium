@@ -69,10 +69,10 @@ source_set("platform") {
 
   deps = [
     "//ash/constants",
-    "//ash/services/nearby/public/cpp:tcp_server_socket_port",
-    "//ash/services/nearby/public/mojom",
     "//base",
     "//chrome/services/sharing/webrtc",
+    "//chromeos/ash/services/nearby/public/cpp:tcp_server_socket_port",
+    "//chromeos/ash/services/nearby/public/mojom",
     "//chromeos/services/network_config/public/mojom",
     "//components/webrtc:thread_wrapper",
     "//crypto",
@@ -115,11 +115,11 @@ source_set("unit_tests") {
 
   deps = [
     ":platform",
-    "//ash/services/nearby/public/cpp:tcp_server_socket_port",
-    "//ash/services/nearby/public/cpp:test_support",
-    "//ash/services/nearby/public/mojom",
     "//base/test:test_support",
     "//chrome/services/sharing/nearby/test_support",
+    "//chromeos/ash/services/nearby/public/cpp:tcp_server_socket_port",
+    "//chromeos/ash/services/nearby/public/cpp:test_support",
+    "//chromeos/ash/services/nearby/public/mojom",
     "//chromeos/login/login_state",
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/cpp:test_support",

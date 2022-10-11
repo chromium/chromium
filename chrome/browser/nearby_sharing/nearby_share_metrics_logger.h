@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_
 
-#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
-#include "ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
-#include "ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_usage_metrics.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // These values are persisted to logs. Entries should not be renumbered and

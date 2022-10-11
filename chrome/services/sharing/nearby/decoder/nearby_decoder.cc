@@ -8,11 +8,11 @@
 #include <string>
 #include <utility>
 
-#include "ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "base/callback.h"
 #include "chrome/services/sharing/nearby/decoder/advertisement_decoder.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sharing {

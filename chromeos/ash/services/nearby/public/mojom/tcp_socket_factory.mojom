@@ -1,0 +1,50 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module sharing.mojom;
+
+import "chromeos/ash/services/nearby/public/mojom/tcp_server_socket_port.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/address_list.mojom";
+import "services/network/public/mojom/ip_address.mojom";
+import "services/network/public/mojom/ip_endpoint.mojom";
+import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
+import "services/network/public/mojom/tcp_socket.mojom";
+
+// Wraps TCP socket creation functions from
+// //services/network/public/mojom/network_context.mojom. We need this wrapper
+// to create TCP sockets from the Nearby Connections utility process because
+// network::mojom::NetworkContext can only be used by the browser process.
+interface TcpSocketFactory {
+  // See //services/network/public/mojom/network_context.mojom. One slight
+  // modification is the use of sharing.mojom.TcpServerSocketPort; this
+  // restricts the range of allowed ports.
+  CreateTCPServerSocket(
+      network.mojom.IPAddress local_addr,
+      TcpServerSocketPort port,
+      uint32 backlog,
+      network.mojom.MutableNetworkTrafficAnnotationTag traffic_annotation,
+      pending_receiver<network.mojom.TCPServerSocket> socket)
+      => (int32 result, network.mojom.IPEndPoint? local_addr_out);
+
+  // See //services/network/public/mojom/network_context.mojom. One
+  // modification is a user-defined |timeout|. There is timeout logic in the
+  // networking stack, but it is not configurable and can be too long in
+  // practice (over 2 minutes). The networking stack timeout can still be
+  // triggered if |timeout| is too long.
+  CreateTCPConnectedSocket(
+      mojo_base.mojom.TimeDelta timeout,
+      network.mojom.IPEndPoint? local_addr,
+      network.mojom.AddressList remote_addr_list,
+      network.mojom.TCPConnectedSocketOptions? tcp_connected_socket_options,
+      network.mojom.MutableNetworkTrafficAnnotationTag traffic_annotation,
+      pending_receiver<network.mojom.TCPConnectedSocket> socket,
+      pending_remote<network.mojom.SocketObserver>? observer)
+      => (int32 result,
+          network.mojom.IPEndPoint? local_addr,
+          network.mojom.IPEndPoint? peer_addr,
+          handle<data_pipe_consumer>? receive_stream,
+          handle<data_pipe_producer>? send_stream);
+};
+

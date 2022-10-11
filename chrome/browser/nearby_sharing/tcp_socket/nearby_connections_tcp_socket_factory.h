@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_TCP_SOCKET_NEARBY_CONNECTIONS_TCP_SOCKET_FACTORY_H_
 #define CHROME_BROWSER_NEARBY_SHARING_TCP_SOCKET_NEARBY_CONNECTIONS_TCP_SOCKET_FACTORY_H_
 
-#include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"

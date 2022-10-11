@@ -45,8 +45,8 @@ source_set("decoder") {
   ]
 
   deps = [
-    "//ash/services/nearby/public/mojom",
     "//base",
+    "//chromeos/ash/services/nearby/public/mojom",
     "//components/cbor",
     "//mojo/public/cpp/bindings",
     "//sandbox/policy",
@@ -68,9 +68,9 @@ source_set("unit_tests") {
   deps = [
     ":connectivity",
     ":decoder",
-    "//ash/services/nearby/public/mojom",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/services/nearby/public/mojom",
     "//chromeos/constants",
     "//components/cbor",
     "//device/bluetooth:mocks",

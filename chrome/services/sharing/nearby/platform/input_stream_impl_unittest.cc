@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -15,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace location {

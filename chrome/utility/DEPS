@@ -1,7 +1,6 @@
 include_rules = [
   "+ash/services/ime/ime_service.h",
   "+ash/services/ime/public/mojom",
-  "+ash/services/nearby",
   "+ash/services/recording/recording_service.h",
   "+chrome/grit",
   "+chrome/installer/util",
@@ -35,6 +34,7 @@ include_rules = [
   "+chromeos/ash/services/assistant",
   "+chromeos/ash/services/assistant/audio_decoder",
   "+chromeos/ash/services/libassistant/libassistant_service.h",
+  "+chromeos/ash/services/nearby",
   "+chromeos/ash/services/quick_pair/quick_pair_service.h",
   "+chromeos/components/quick_answers/public",
   "+chromeos/services/tts",

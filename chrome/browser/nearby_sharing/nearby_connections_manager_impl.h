@@ -7,8 +7,6 @@
 
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 
-#include "ash/services/nearby/public/cpp/nearby_process_manager.h"
-#include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
@@ -17,6 +15,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/nearby_sharing/nearby_connection_impl.h"
 #include "chrome/browser/nearby_sharing/nearby_file_handler.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 

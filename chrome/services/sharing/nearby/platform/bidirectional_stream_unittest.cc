@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
@@ -17,6 +16,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/services/sharing/nearby/platform/input_stream_impl.h"
 #include "chrome/services/sharing/nearby/platform/output_stream_impl.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace location {

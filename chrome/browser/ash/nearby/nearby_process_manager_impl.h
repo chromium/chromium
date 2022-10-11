@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace ash {

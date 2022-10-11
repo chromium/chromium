@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sharing {

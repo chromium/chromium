@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,6 +14,7 @@
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/ash/services/bluetooth_config/fake_bluetooth_device_status_observer.h"
 #include "chromeos/ash/services/bluetooth_config/fake_device_cache.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"

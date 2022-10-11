@@ -120,7 +120,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/services/ime/ime_service.h"
 #include "ash/services/ime/public/mojom/input_engine.mojom.h"
-#include "ash/services/nearby/public/mojom/sharing.mojom.h"  // nogncheck
 #include "ash/services/recording/recording_service.h"
 #include "chrome/services/sharing/sharing_impl.h"
 #include "chromeos/ash/components/assistant/buildflags.h"  // nogncheck
@@ -128,6 +127,7 @@
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"
 #include "chromeos/ash/components/trash_service/trash_service_impl.h"
+#include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"  // nogncheck
 #include "chromeos/ash/services/quick_pair/quick_pair_service.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_service.h"

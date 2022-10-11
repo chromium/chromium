@@ -6,11 +6,11 @@
 
 #include <vector>
 
-#include "ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/bluetooth_config/device_cache.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"

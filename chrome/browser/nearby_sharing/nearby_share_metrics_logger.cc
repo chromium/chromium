@@ -4,11 +4,11 @@
 
 #include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
 
-#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
-#include "ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 

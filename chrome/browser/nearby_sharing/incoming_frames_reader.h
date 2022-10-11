@@ -8,13 +8,13 @@
 #include <map>
 #include <vector>
 
-#include "ash/services/nearby/public/cpp/nearby_process_manager.h"
-#include "ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyConnection;

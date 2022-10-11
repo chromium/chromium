@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 
 namespace ash {
 class FirewallHole;
