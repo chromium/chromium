@@ -8,7 +8,6 @@
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
-#include "ui/gfx/color_analysis.h"
 
 namespace ash {
 
