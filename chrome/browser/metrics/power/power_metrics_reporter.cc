@@ -381,8 +381,8 @@ void PowerMetricsReporter::ReportBatteryUKMs(
       interval_data.uptime_at_interval_end.InSeconds()));
   builder.SetBatteryDischargeMode(static_cast<int64_t>(battery_discharge.mode));
   if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
-    DCHECK(battery_discharge.rate.has_value());
-    builder.SetBatteryDischargeRate(*battery_discharge.rate);
+    DCHECK(battery_discharge.rate_relative.has_value());
+    builder.SetBatteryDischargeRate(*battery_discharge.rate_relative);
   }
   builder.SetCPUTimeMs(metrics.cpu_usage * interval_duration.InMilliseconds());
 #if BUILDFLAG(IS_MAC)

@@ -21,10 +21,12 @@ constexpr const char* kBatteryDischargeRateHistogramName =
 constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode2";
 
-constexpr const char* kAlignedBatteryDischargeRateHistogramName =
-    "Power.BatteryDischargeRate3";
+constexpr const char* kAlignedBatteryDischargeRateMilliwattsHistogramName =
+    "Power.BatteryDischargeRateMilliwatts4";
+constexpr const char* kAlignedBatteryDischargeRateRelativeHistogramName =
+    "Power.BatteryDischargeRateRelative4";
 constexpr const char* kAlignedBatteryDischargeModeHistogramName =
-    "Power.BatteryDischargeMode3";
+    "Power.BatteryDischargeMode4";
 
 #if BUILDFLAG(IS_MAC)
 // Reports `proportion` of a time used to a histogram in permyriad (1/100 %).
@@ -64,6 +66,56 @@ void ReportAggregatedProcessMetricsHistograms(
     RecordProcessHistograms(complete_suffix.c_str(),
                             aggregated_process_metrics);
   }
+}
+
+// Returns the discharge rate in milliwatts.
+int64_t CalculateDischargeRateMilliwatts(
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        previous_battery_state,
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        new_battery_state,
+    base::TimeDelta interval_duration) {
+  DCHECK(previous_battery_state &&
+         previous_battery_state->charge_unit ==
+             base::BatteryLevelProvider::BatteryLevelUnit::kMWh);
+  DCHECK(new_battery_state &&
+         previous_battery_state->charge_unit ==
+             base::BatteryLevelProvider::BatteryLevelUnit::kMWh);
+  const uint64_t previous_capacity =
+      previous_battery_state->current_capacity.value();
+  const uint64_t new_capacity = new_battery_state->current_capacity.value();
+  // The capacity is in mWh. Divide by hours to get mW. Note that there is no
+  // InHoursF() method.
+  const double interval_duration_in_hours =
+      interval_duration.InSecondsF() / base::Time::kSecondsPerHour;
+
+  return (previous_capacity - new_capacity) / interval_duration_in_hours;
+}
+
+// Returns the discharge rate in one hundredth of a percent of full capacity per
+// minute.
+int64_t CalculateDischargeRateRelative(
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        previous_battery_state,
+    const absl::optional<base::BatteryLevelProvider::BatteryState>&
+        new_battery_state,
+    base::TimeDelta interval_duration) {
+  // The battery discharge rate is reported per minute with 1/10000 of full
+  // charge resolution.
+  static constexpr int64_t kDischargeRateFactor = 10000;
+
+  const double previous_level =
+      static_cast<double>(previous_battery_state->current_capacity.value()) /
+      previous_battery_state->full_charged_capacity.value();
+  const double new_level =
+      static_cast<double>(new_battery_state->current_capacity.value()) /
+      new_battery_state->full_charged_capacity.value();
+
+  const double interval_duration_in_minutes =
+      interval_duration.InSecondsF() / base::Time::kSecondsPerMinute;
+
+  return (previous_level - new_level) * kDischargeRateFactor /
+         interval_duration_in_minutes;
 }
 
 BatteryDischarge GetBatteryDischargeDuringInterval(
@@ -120,23 +172,15 @@ BatteryDischarge GetBatteryDischargeDuringInterval(
     return {BatteryDischargeMode::kFullChargedCapacityIsZero, absl::nullopt};
   }
 
-  // The battery discharge rate is reported per minute with 1/10000 of full
-  // charge resolution.
-  static constexpr int64_t kDischargeRateFactor =
-      10000 * base::Minutes(1).InSecondsF();
+  const auto discharge_rate_relative = CalculateDischargeRateRelative(
+      previous_battery_state, new_battery_state, interval_duration);
+  const auto discharge_rate_mw = CalculateDischargeRateMilliwatts(
+      previous_battery_state, new_battery_state, interval_duration);
 
-  const double previous_level =
-      static_cast<double>(previous_battery_state->current_capacity.value()) /
-      previous_battery_state->full_charged_capacity.value();
-  const double new_level =
-      static_cast<double>(new_battery_state->current_capacity.value()) /
-      new_battery_state->full_charged_capacity.value();
-  const double discharge_rate = (previous_level - new_level) *
-                                kDischargeRateFactor /
-                                interval_duration.InSeconds();
-  if (discharge_rate < 0)
+  if (discharge_rate_relative < 0 || discharge_rate_mw < 0)
     return {BatteryDischargeMode::kBatteryLevelIncreased, absl::nullopt};
-  return {BatteryDischargeMode::kDischarging, discharge_rate};
+  return {BatteryDischargeMode::kDischarging, discharge_rate_mw,
+          discharge_rate_relative};
 }
 
 void ReportBatteryHistograms(
@@ -149,10 +193,10 @@ void ReportBatteryHistograms(
         battery_discharge.mode);
 
     if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
-      DCHECK(battery_discharge.rate.has_value());
+      DCHECK(battery_discharge.rate_relative.has_value());
       base::UmaHistogramCounts1000(
           base::StrCat({kBatteryDischargeRateHistogramName, scenario_suffix}),
-          *battery_discharge.rate);
+          *battery_discharge.rate_relative);
     }
   }
 }
@@ -173,11 +217,16 @@ void ReportAlignedBatteryHistograms(
           battery_discharge.mode);
 
       if (battery_discharge.mode == BatteryDischargeMode::kDischarging) {
-        DCHECK(battery_discharge.rate.has_value());
+        DCHECK(battery_discharge.rate_milliwatts.has_value());
         base::UmaHistogramCounts1000(
-            base::StrCat({kAlignedBatteryDischargeRateHistogramName,
+            base::StrCat({kAlignedBatteryDischargeRateMilliwattsHistogramName,
                           scenario_suffix, interval_type_suffix}),
-            *battery_discharge.rate);
+            *battery_discharge.rate_milliwatts);
+        DCHECK(battery_discharge.rate_relative.has_value());
+        base::UmaHistogramCounts1000(
+            base::StrCat({kAlignedBatteryDischargeRateRelativeHistogramName,
+                          scenario_suffix, interval_type_suffix}),
+            *battery_discharge.rate_relative);
       }
     }
   }

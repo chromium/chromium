@@ -42,8 +42,10 @@ enum class BatteryDischargeMode {
 
 struct BatteryDischarge {
   BatteryDischargeMode mode;
-  // Discharge rate in 1/10000 of full capacity per minute.
-  absl::optional<int64_t> rate;
+  // Discharge rate in milliwatts.
+  absl::optional<int64_t> rate_milliwatts;
+  // Discharge rate in hundredth of a percent per minute.
+  absl::optional<int64_t> rate_relative;
 };
 
 // Computes and returns the battery discharge mode and rate during the interval.

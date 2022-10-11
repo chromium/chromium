@@ -19,9 +19,11 @@
 namespace {
 
 constexpr const char* kBatteryDischargeModeHistogramName =
-    "Power.BatteryDischargeMode3";
-constexpr const char* kBatteryDischargeRateHistogramName =
-    "Power.BatteryDischargeRate3";
+    "Power.BatteryDischargeMode4";
+constexpr const char* kBatteryDischargeRateMilliwattsHistogramName =
+    "Power.BatteryDischargeRateMilliwatts4";
+constexpr const char* kBatteryDischargeRateRelativeHistogramName =
+    "Power.BatteryDischargeRateRelative4";
 
 constexpr base::TimeDelta kTolerableDrift = base::Seconds(1);
 constexpr int kFullBatteryChargeLevel = 10000;
@@ -126,17 +128,23 @@ TEST_F(BatteryDischargeReporterTest, Simple) {
   battery_discharge_reporter.OnBatteryStateSampled(
       MakeBatteryState(kHalfBatteryChargeLevel - 10));
 
-  const int64_t kExpectedDischargeRate = 10;
+  // 10 mWh discharge over 1 minute equals 600 mW.
+  const int64_t kExpectedDischargeRate = 600;
+  // 10 mWh discharge when capacity is 10000 mWh is 10 hundredth of a percent.
+  const int64_t kExpectedDischargeRateRelative = 10;
 
   const std::vector<const char*> suffixes(
-      {"", ".Initial", ".ZeroWindow.Initial"});
+      {"", ".Initial", ".ZeroWindow", ".ZeroWindow.Initial"});
   ExpectHistogramSamples(
       &histogram_tester_, suffixes,
       {{kBatteryDischargeModeHistogramName,
         static_cast<int64_t>(BatteryDischargeMode::kDischarging)}});
   ExpectHistogramSamples(
       &histogram_tester_, suffixes,
-      {{kBatteryDischargeRateHistogramName, kExpectedDischargeRate}});
+      {{kBatteryDischargeRateMilliwattsHistogramName, kExpectedDischargeRate}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes,
+                         {{kBatteryDischargeRateRelativeHistogramName,
+                           kExpectedDischargeRateRelative}});
 }
 
 TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsTooLate) {
@@ -159,7 +167,10 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsTooLate) {
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
                                        BatteryDischargeMode::kInvalidInterval,
                                        1);
-  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(
+      kBatteryDischargeRateMilliwattsHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateRelativeHistogramName,
+                                     0);
 }
 
 TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsLate) {
@@ -183,7 +194,10 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsLate) {
   // No rate because the interval is invalid.
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
                                        BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(
+      kBatteryDischargeRateMilliwattsHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateRelativeHistogramName,
+                                     1);
 }
 
 TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsTooEarly) {
@@ -207,7 +221,10 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsTooEarly) {
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
                                        BatteryDischargeMode::kInvalidInterval,
                                        1);
-  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(
+      kBatteryDischargeRateMilliwattsHistogramName, 0);
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateRelativeHistogramName,
+                                     0);
 }
 
 TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsEarly) {
@@ -231,5 +248,8 @@ TEST_F(BatteryDischargeReporterTest, BatteryDischargeCaptureIsEarly) {
   // No rate because the interval is invalid.
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeModeHistogramName,
                                        BatteryDischargeMode::kDischarging, 1);
-  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(
+      kBatteryDischargeRateMilliwattsHistogramName, 1);
+  histogram_tester_.ExpectTotalCount(kBatteryDischargeRateRelativeHistogramName,
+                                     1);
 }
