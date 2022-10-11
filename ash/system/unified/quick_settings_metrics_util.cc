@@ -7,7 +7,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "ui/events/event.h"
 
 namespace ash {
@@ -99,17 +98,17 @@ void RecordVisibleQsFeature(QsFeatureCatalogName feature_catalog_name) {
 
 void RecordQsFeaturePodCount(int feature_pod_count, bool is_tablet) {
   if (is_tablet) {
-    UMA_HISTOGRAM_COUNTS_100(features::IsQsRevampEnabled()
-                                 ? kQuickSettingsTabletFeaturePodCount
-                                 : kUnifiedViewTabletFeaturePodCount,
-                             feature_pod_count);
+    base::UmaHistogramCounts100(features::IsQsRevampEnabled()
+                                    ? kQuickSettingsTabletFeaturePodCount
+                                    : kUnifiedViewTabletFeaturePodCount,
+                                feature_pod_count);
     return;
   }
 
-  UMA_HISTOGRAM_COUNTS_100(features::IsQsRevampEnabled()
-                               ? kQuickSettingsFeaturePodCount
-                               : kUnifiedViewFeaturePodCount,
-                           feature_pod_count);
+  base::UmaHistogramCounts100(features::IsQsRevampEnabled()
+                                  ? kQuickSettingsFeaturePodCount
+                                  : kUnifiedViewFeaturePodCount,
+                              feature_pod_count);
 }
 
 void RecordQsSliderValueChange(QsSliderCatalogName slider_catalog_name,
