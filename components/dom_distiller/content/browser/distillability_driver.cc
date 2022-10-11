@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -18,6 +19,30 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace dom_distiller {
+namespace {
+class DistillabilityResultPageData
+    : public content::PageUserData<DistillabilityResultPageData> {
+ public:
+  explicit DistillabilityResultPageData(content::Page& page);
+
+  DistillabilityResultPageData(const DistillabilityResultPageData&) = delete;
+  DistillabilityResultPageData& operator=(const DistillabilityResultPageData&) =
+      delete;
+
+  ~DistillabilityResultPageData() override;
+
+  DistillabilityResult distillability_result;
+
+  PAGE_USER_DATA_KEY_DECL();
+};
+
+DistillabilityResultPageData::DistillabilityResultPageData(content::Page& page)
+    : PageUserData<DistillabilityResultPageData>(page) {}
+DistillabilityResultPageData::~DistillabilityResultPageData() = default;
+
+PAGE_USER_DATA_KEY_IMPL(DistillabilityResultPageData);
+
+}  // namespace
 
 // Implementation of the Mojo DistillabilityService. This is called by the
 // renderer to notify the browser that a page is distillable.
@@ -48,7 +73,8 @@ class DistillabilityServiceImpl : public mojom::DistillabilityService {
 };
 
 DistillabilityDriver::DistillabilityDriver(content::WebContents* web_contents)
-    : content::WebContentsUserData<DistillabilityDriver>(*web_contents) {}
+    : content::WebContentsUserData<DistillabilityDriver>(*web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 DistillabilityDriver::~DistillabilityDriver() = default;
 
@@ -62,6 +88,14 @@ void DistillabilityDriver::CreateDistillabilityService(
 void DistillabilityDriver::SetIsSecureCallback(
     base::RepeatingCallback<bool(content::WebContents*)> is_secure_check) {
   is_secure_check_ = std::move(is_secure_check);
+}
+
+void DistillabilityDriver::PrimaryPageChanged(content::Page& page) {
+  DistillabilityResultPageData* page_data =
+      DistillabilityResultPageData::GetForPage(page);
+  if (page_data) {
+    OnDistillability(page_data->distillability_result);
+  }
 }
 
 void DistillabilityDriver::OnDistillability(
@@ -80,6 +114,13 @@ void DistillabilityDriver::OnDistillability(
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  DistillabilityResultPageData::CreateForPage(
+      GetWebContents().GetPrimaryPage());
+  DistillabilityResultPageData* page_data =
+      DistillabilityResultPageData::GetForPage(
+          GetWebContents().GetPrimaryPage());
+  page_data->distillability_result = result;
   latest_result_ = result;
   for (auto& observer : observers_)
     observer.OnResult(result);
