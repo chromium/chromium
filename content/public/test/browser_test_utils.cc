@@ -120,6 +120,7 @@
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/blob/blob_url_store.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -3864,6 +3865,36 @@ void UpdateUserActivationStateInterceptor::UpdateUserActivationState(
   GetForwardingInterface()->UpdateUserActivationState(update_type,
                                                       notification_type);
 }
+
+// static
+void BlobURLStoreInterceptor::Intercept(
+    GURL target_url,
+    mojo::SelfOwnedAssociatedReceiverRef<blink::mojom::BlobURLStore> receiver) {
+  auto interceptor = base::WrapUnique(new BlobURLStoreInterceptor(target_url));
+  auto* raw_interceptor = interceptor.get();
+  auto impl = receiver->SwapImplForTesting(std::move(interceptor));
+  raw_interceptor->url_store_ = std::move(impl);
+}
+
+blink::mojom::BlobURLStore* BlobURLStoreInterceptor::GetForwardingInterface() {
+  return url_store_.get();
+}
+
+void BlobURLStoreInterceptor::Register(
+    mojo::PendingRemote<blink::mojom::Blob> blob,
+    const GURL& url,
+    // TODO(https://crbug.com/1224926): Remove these once experiment is over.
+    const base::UnguessableToken& unsafe_agent_cluster_id,
+    const absl::optional<net::SchemefulSite>& unsafe_top_level_site,
+    RegisterCallback callback) {
+  GetForwardingInterface()->Register(
+      std::move(blob), target_url_, unsafe_agent_cluster_id,
+      unsafe_top_level_site, std::move(callback));
+}
+
+BlobURLStoreInterceptor::BlobURLStoreInterceptor(GURL target_url)
+    : target_url_(target_url) {}
+BlobURLStoreInterceptor::~BlobURLStoreInterceptor() = default;
 
 namespace {
 
