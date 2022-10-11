@@ -463,21 +463,6 @@ void ScrollTimeline::Trace(Visitor* visitor) const {
   AnimationTimeline::Trace(visitor);
 }
 
-void ScrollTimeline::InvalidateCompositingState(Node* node) {
-  ScrollTimelineSet& set = GetScrollTimelineSet();
-  auto it = set.find(node);
-  if (it == set.end())
-    return;
-
-  for (auto& timeline : *it->value) {
-    for (const WeakMember<WorkletAnimationBase>& worklet_animation :
-         timeline->attached_worklet_animations_) {
-      node->GetDocument().GetWorkletAnimationController().InvalidateAnimation(
-          *worklet_animation);
-    }
-  }
-}
-
 void ScrollTimeline::Invalidate(Node* node) {
   ScrollTimelineSet& set = GetScrollTimelineSet();
   auto it = set.find(node);
