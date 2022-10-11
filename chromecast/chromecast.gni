@@ -139,9 +139,6 @@ declare_args() {
   # True to use the Chromium runtime for cast rendering.
   enable_chromium_runtime_cast_renderer = false
 
-  # True to link in alternate build targets for the Cast Media Runtime.
-  enable_cast_media_runtime = false
-
   # True to use the remoting implementation of cast streaming for the cast web
   # runtime (as opposed to the mirroring-only implementation).
   enable_remoting_for_cwr = false
@@ -251,7 +248,3 @@ set_defaults("cast_loadable_module") {
 set_defaults("cast_source_set") {
   configs = default_compiler_configs
 }
-
-assert(
-    !enable_cast_media_runtime || cast_streaming_enable_remoting,
-    "In order to support playback control (specifically starting playback), the cast remoting functionality is used, so this flag must be enabled. To control this feature for  the cast_core code, instead use the enable_remoting_for_cwr flag.")

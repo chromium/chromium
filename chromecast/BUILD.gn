@@ -538,20 +538,13 @@ if (!is_fuchsia) {
 
   group("cast_shell_lib_simple") {
     deps = [
+      ":cast_shell_lib_base",
       "//chromecast/browser:prefs_simple",
+      "//chromecast/browser:simple_client",
       "//chromecast/browser:simple_main_parts",
+      "//chromecast/renderer:simple_client",
       "//chromecast/utility:simple_client",
     ]
-
-    if (enable_cast_media_runtime) {
-      deps += [ "//chromecast/cast_core:core_runtime_lib_simple" ]
-    } else {
-      deps += [
-        ":cast_shell_lib_base",
-        "//chromecast/browser:simple_client",
-        "//chromecast/renderer:simple_client",
-      ]
-    }
   }
 
   cast_executable("cast_shell") {
@@ -665,7 +658,6 @@ buildflag_header("chromecast_buildflags") {
     "USE_ANDROID_USER_AGENT=$use_android_user_agent",
     "USE_CHROMECAST_CDMS=$use_chromecast_cdms",
     "ENABLE_CHROMIUM_RUNTIME_CAST_RENDERER=$enable_chromium_runtime_cast_renderer",
-    "ENABLE_CAST_MEDIA_RUNTIME=$enable_cast_media_runtime",
   ]
 }
 

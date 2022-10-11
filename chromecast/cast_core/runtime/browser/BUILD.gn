@@ -262,24 +262,6 @@ cast_source_set("runtime_application_dispatcher_grpc") {
   ]
 }
 
-cast_source_set("core_browser_cast_service") {
-  sources = [
-    "core_browser_cast_service.cc",
-    "core_browser_cast_service.h",
-  ]
-
-  public_deps = [
-    ":runtime_application_dispatcher",
-    ":runtime_application_dispatcher_grpc",
-    "//base",
-    "//chromecast/browser",
-    "//chromecast/cast_core:cast_core_switches",
-    "//chromecast/metrics:cast_event_builder_simple",
-    "//chromecast/service",
-    "//components/cast_receiver/browser",
-  ]
-}
-
 cast_source_set("browser") {
   sources = [
     "cast_core_switches.h",
@@ -288,10 +270,12 @@ cast_source_set("browser") {
   ]
 
   deps = [
-    ":core_browser_cast_service",
+    ":runtime_application_dispatcher",
+    ":runtime_application_dispatcher_grpc",
     "//base",
-    "//chromecast/cast_core/runtime/common:cors_exempt_headers",
+    "//chromecast/cast_core:cast_core_switches",
     "//chromecast/media/base:video_plane_controller",
+    "//chromecast/metrics:cast_event_builder_simple",
     "//components/url_rewrite/browser",
     "//components/url_rewrite/common",
     "//content/public/common",
@@ -303,18 +287,15 @@ cast_source_set("browser") {
     "//chromecast/browser",
     "//components/cast_receiver/browser",
   ]
-
-  if (enable_cast_media_runtime) {
-    sources += [ "cast_content_browser_client_factory.cc" ]
-  } else {
-    deps += [ "//chromecast/browser:simple_client" ]
-  }
 }
 
 cast_source_set("browser_simple") {
   sources = [ "cast_runtime_content_browser_client_simple.cc" ]
 
-  deps = [ ":browser" ]
+  deps = [
+    ":browser",
+    "//chromecast/common:cors_exempt_headers",
+  ]
 }
 
 # TODO(b/194439829): Upstream additional metrics unit tests.

@@ -32,14 +32,14 @@ class CastWebService;
 // A gRPC-based implementation of RuntimeApplicationDispatcherPlatform for use
 // with Cast Core.
 class RuntimeApplicationDispatcherPlatformGrpc final
-    : public RuntimeApplicationDispatcherPlatform {
+    : public RuntimeApplicationDispatcherPlatform,
+      public CastRuntimeMetricsRecorder::EventBuilderFactory {
  public:
   // |application_client| is expected to persist for the lifetime of this
   // instance.
   RuntimeApplicationDispatcherPlatformGrpc(
       RuntimeApplicationDispatcherPlatform::Client& client,
       CastWebService* web_service,
-      CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
       std::string runtime_id,
       std::string runtime_service_endpoint);
   ~RuntimeApplicationDispatcherPlatformGrpc() override;
@@ -47,6 +47,9 @@ class RuntimeApplicationDispatcherPlatformGrpc final
   // RuntimeApplicationDispatcherPlatform implementation.
   bool Start() override;
   void Stop() override;
+
+  // CastRuntimeMetricsRecorder::EventBuilderFactory overrides:
+  std::unique_ptr<CastEventBuilder> CreateEventBuilder() override;
 
  private:
   // RuntimeService gRPC handlers:
@@ -108,7 +111,7 @@ class RuntimeApplicationDispatcherPlatformGrpc final
   // Allows metrics, histogram, action recording, which can be reported by
   // CastRuntimeMetricsRecorderService if Cast Core starts it.
   CastRuntimeMetricsRecorder metrics_recorder_;
-  CastRuntimeActionRecorder action_recorder_;
+  absl::optional<CastRuntimeActionRecorder> action_recorder_;
 
   absl::optional<cast::utils::GrpcServer> grpc_server_;
   absl::optional<cast::metrics::MetricsRecorderServiceStub>

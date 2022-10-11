@@ -17,10 +17,8 @@
 #include "chromecast/cast_core/runtime/browser/runtime_application_platform_grpc.h"
 #include "chromecast/cast_core/runtime/browser/streaming_runtime_application.h"
 #include "chromecast/cast_core/runtime/browser/web_runtime_application.h"
+#include "chromecast/metrics/cast_event_builder_simple.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
-#include "third_party/grpc/src/include/grpcpp/channel.h"
-#include "third_party/grpc/src/include/grpcpp/create_channel.h"
-#include "third_party/grpc/src/include/grpcpp/server_builder.h"
 #include "third_party/openscreen/src/cast/common/public/cast_streaming_app_ids.h"
 
 namespace chromecast {
@@ -43,14 +41,13 @@ RuntimeApplicationDispatcherPlatformGrpc::
     RuntimeApplicationDispatcherPlatformGrpc(
         RuntimeApplicationDispatcherPlatform::Client& client,
         CastWebService* web_service,
-        CastRuntimeMetricsRecorder::EventBuilderFactory* event_builder_factory,
         std::string runtime_id,
         std::string runtime_service_endpoint)
     : client_(client),
       runtime_id_(std::move(runtime_id)),
       runtime_service_endpoint_(std::move(runtime_service_endpoint)),
       task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      metrics_recorder_(event_builder_factory) {
+      metrics_recorder_(this) {
   heartbeat_timer_.SetTaskRunner(task_runner_);
 }
 
@@ -116,6 +113,8 @@ bool RuntimeApplicationDispatcherPlatformGrpc::Start() {
 void RuntimeApplicationDispatcherPlatformGrpc::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  action_recorder_.reset();
+
   if (heartbeat_reactor_) {
     heartbeat_timer_.Stop();
     heartbeat_reactor_->Write(grpc::Status::OK);
@@ -132,6 +131,11 @@ void RuntimeApplicationDispatcherPlatformGrpc::Stop() {
     grpc_server_.reset();
     LOG(INFO) << "Runtime service stopped";
   }
+}
+
+std::unique_ptr<CastEventBuilder>
+RuntimeApplicationDispatcherPlatformGrpc::CreateEventBuilder() {
+  return std::make_unique<CastEventBuilderSimple>();
 }
 
 void RuntimeApplicationDispatcherPlatformGrpc::HandleLoadApplication(
@@ -265,10 +269,14 @@ void RuntimeApplicationDispatcherPlatformGrpc::HandleStartMetricsRecorder(
     return;
   }
 
+  if (!action_recorder_) {
+    action_recorder_.emplace();
+  }
+
   metrics_recorder_stub_.emplace(
       request.metrics_recorder_service_info().grpc_endpoint());
   metrics_recorder_service_.emplace(
-      &metrics_recorder_, &action_recorder_,
+      &metrics_recorder_, &*action_recorder_,
       base::BindRepeating(
           &RuntimeApplicationDispatcherPlatformGrpc::RecordMetrics,
           weak_factory_.GetWeakPtr()),

@@ -256,9 +256,6 @@ group("default_create_sys_info") {
     public_deps = [ ":android_create_sys_info" ]
   } else if (chromecast_branding == "public") {
     public_deps = [ ":dummy_create_sys_info" ]
-  } else if (enable_cast_media_runtime) {
-    # TODO(b/200723084): Replace the dummy implementation with real one.
-    public_deps = [ ":dummy_create_sys_info" ]
   } else {
     public_deps = [ ":shlib_create_sys_info" ]
   }

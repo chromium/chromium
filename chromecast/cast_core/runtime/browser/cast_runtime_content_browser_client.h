@@ -22,23 +22,16 @@ struct VideoTransformation;
 
 namespace chromecast {
 
-class CoreBrowserCastService;
-class CastFeatureListCreator;
 class RuntimeApplication;
+class RuntimeApplicationDispatcher;
 
 class CastRuntimeContentBrowserClient
     : public shell::CastContentBrowserClient,
       public cast_receiver::ApplicationClient {
  public:
-  static std::unique_ptr<CastRuntimeContentBrowserClient> Create(
-      CastFeatureListCreator* feature_list_creator);
-
   explicit CastRuntimeContentBrowserClient(
       CastFeatureListCreator* feature_list_creator);
   ~CastRuntimeContentBrowserClient() override;
-
-  // Returns an instance of |CoreBrowserCastService|.
-  virtual CoreBrowserCastService* GetCastService();
 
   // CastContentBrowserClient overrides:
   std::unique_ptr<CastService> CreateCastService(
@@ -58,6 +51,9 @@ class CastRuntimeContentBrowserClient
 
   // cast_receiver::ApplicationClient overrides:
   NetworkContextGetter GetNetworkContextGetter() override;
+
+ protected:
+  void InitializeCoreComponents(CastWebService* web_service);
 
  private:
   class ApplicationClientObservers
@@ -92,10 +88,7 @@ class CastRuntimeContentBrowserClient
 
   // Wrapper around the observers used with the cast_receiver component.
   ApplicationClientObservers application_client_observers_;
-
-  // An instance of |CoreBrowserCastService| created once during the lifetime of
-  // the runtime.
-  CoreBrowserCastService* core_browser_cast_service_ = nullptr;
+  std::unique_ptr<RuntimeApplicationDispatcher> app_dispatcher_;
 };
 
 }  // namespace chromecast

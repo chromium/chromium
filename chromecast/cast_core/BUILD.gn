@@ -8,34 +8,37 @@ cast_source_set("cast_core_switches") {
   sources = [ "cast_core_switches.h" ]
 }
 
-# When built for use with Cast Core, enble_cast_media_runtime must be true.
 cast_source_set("core_runtime_lib_simple") {
   data_deps = [ "//chromecast:cast_shell_pak" ]
 
   deps = [
+    "//chromecast:cast_shell_lib_base",
     "//chromecast/base:default_create_sys_info",
-    "//chromecast/browser",
+    "//chromecast/browser:prefs_simple",
+    "//chromecast/browser:simple_main_parts",
     "//chromecast/cast_core/runtime/browser:browser_simple",
     "//chromecast/cast_core/runtime/renderer:renderer_simple",
+    "//chromecast/utility:simple_client",
   ]
 }
 
-# When built for use with Cast Core, enble_cast_media_runtime must be true.
-cast_executable("core_runtime_simple") {
+cast_source_set("cast_runtime_main") {
   sources = [ "cast_runtime_main.cc" ]
 
   deps = [
-    ":core_runtime_lib_simple",
-    "//chromecast:chromecast_locales_pak",
     "//chromecast/app",
-    "//chromecast/browser:prefs_simple",
-    "//chromecast/browser:simple_main_parts",
-    "//chromecast/utility:simple_client",
     "//content/public/app",
   ]
 }
 
-# A group of all unit test targets to be linked internally.
+cast_executable("core_runtime_simple") {
+  deps = [
+    ":cast_runtime_main",
+    ":core_runtime_lib_simple",
+    "//chromecast:chromecast_locales_pak",
+  ]
+}
+
 group("all_unit_tests") {
   testonly = true
 
@@ -43,17 +46,13 @@ group("all_unit_tests") {
     "//chromecast/cast_core/grpc:unit_tests",
     "//chromecast/cast_core/runtime/browser:unit_tests",
     "//chromecast/cast_core/runtime/browser/url_rewrite:unit_tests",
-    "//chromecast/cast_core/runtime/common:unit_tests",
   ]
 }
 
 test("cast_cast_core_unittests") {
   deps = [
     ":all_unit_tests",
-    "//chromecast/browser:prefs_simple",
-    "//chromecast/browser:simple_main_parts",
-    "//chromecast/cast_core/runtime/browser:browser_simple",
-    "//chromecast/cast_core/runtime/renderer",
+    ":core_runtime_lib_simple",
     "//mojo/core/test:run_all_unittests",
   ]
 }
