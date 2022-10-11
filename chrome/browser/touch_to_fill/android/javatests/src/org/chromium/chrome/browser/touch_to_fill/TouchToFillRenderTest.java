@@ -11,7 +11,8 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.Cr
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SINGLE_CREDENTIAL;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MANAGE_BUTTON_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
@@ -148,8 +149,13 @@ public class TouchToFillRenderTest {
     @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
     public void testShowsOneCredentialOld() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            addHeader();
+            addHeader(mActivityTestRule.getActivity().getString(
+                    org.chromium.chrome.browser.touch_to_fill.R.string
+                            .touch_to_fill_sheet_uniform_title));
             mModel.get(SHEET_ITEMS).addAll(asList(buildCredentialItem(ARON)));
+            mModel.set(MANAGE_BUTTON_TEXT,
+                    mActivityTestRule.getActivity().getString(
+                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
             addButton(ARON);
             mModel.set(VISIBLE, true);
         });
@@ -166,10 +172,15 @@ public class TouchToFillRenderTest {
     @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
     public void testShowsTwoCredentialsOld() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            addHeader();
+            addHeader(mActivityTestRule.getActivity().getString(
+                    org.chromium.chrome.browser.touch_to_fill.R.string
+                            .touch_to_fill_sheet_uniform_title));
             mModel.get(SHEET_ITEMS);
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB)));
+            mModel.set(MANAGE_BUTTON_TEXT,
+                    mActivityTestRule.getActivity().getString(
+                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
             mModel.set(VISIBLE, true);
         });
 
@@ -185,8 +196,13 @@ public class TouchToFillRenderTest {
     @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
     public void testShowsOneCredentialModern() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            addHeader();
+            addHeader(mActivityTestRule.getActivity().getString(
+                    org.chromium.chrome.browser.touch_to_fill.R.string
+                            .touch_to_fill_sheet_uniform_title));
             mModel.get(SHEET_ITEMS).addAll(asList(buildCredentialItem(ARON)));
+            mModel.set(MANAGE_BUTTON_TEXT,
+                    mActivityTestRule.getActivity().getString(
+                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
             addButton(ARON);
             mModel.set(VISIBLE, true);
         });
@@ -203,10 +219,15 @@ public class TouchToFillRenderTest {
     @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
     public void testShowsTwoCredentialsModern() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            addHeader();
+            addHeader(mActivityTestRule.getActivity().getString(
+                    org.chromium.chrome.browser.touch_to_fill.R.string
+                            .touch_to_fill_sheet_uniform_title));
             mModel.get(SHEET_ITEMS);
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB)));
+            mModel.set(MANAGE_BUTTON_TEXT,
+                    mActivityTestRule.getActivity().getString(
+                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
             mModel.set(VISIBLE, true);
         });
 
@@ -222,10 +243,15 @@ public class TouchToFillRenderTest {
     @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
     public void testShowsThreeCredentialsModern() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            addHeader();
+            addHeader(mActivityTestRule.getActivity().getString(
+                    org.chromium.chrome.browser.touch_to_fill.R.string
+                            .touch_to_fill_sheet_uniform_title));
             mModel.get(SHEET_ITEMS)
                     .addAll(asList(buildCredentialItem(ARON), buildCredentialItem(BOB),
                             buildCredentialItem(MARIAM)));
+            mModel.set(MANAGE_BUTTON_TEXT,
+                    mActivityTestRule.getActivity().getString(
+                            org.chromium.chrome.browser.touch_to_fill.R.string.manage_passwords));
             mModel.set(VISIBLE, true);
         });
 
@@ -252,11 +278,11 @@ public class TouchToFillRenderTest {
                         .build());
     }
 
-    private void addHeader() {
+    private void addHeader(String title) {
         mModel.get(SHEET_ITEMS)
                 .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
                         new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                                .with(SINGLE_CREDENTIAL, true)
+                                .with(TITLE, title)
                                 .with(FORMATTED_URL, TEST_URL.getSpec())
                                 .with(ORIGIN_SECURE, true)
                                 .with(IMAGE_DRAWABLE_ID,

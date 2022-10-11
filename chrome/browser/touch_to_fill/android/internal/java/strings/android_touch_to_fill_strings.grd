@@ -211,6 +211,12 @@ found in the LICENSE file.
       <message name="IDS_MANAGE_PASSWORDS" desc="Title of the button at the end of a touch to fill sheet that will open the password preferences when tapped.">
         Manage passwords
       </message>
+      <message name="IDS_MANAGE_PASSKEYS" desc="Title of the button at the end of a touch to fill sheet that will open the native password management screen when tapped. Used when only passkeys are present on the sheet.">
+        Manage passkeys
+      </message>
+      <message name="IDS_MANAGE_PASSWORDS_AND_PASSKEYS" desc="Title of the button at the end of a touch to fill sheet that will open the native password management screen when tapped. Used when passkeys and passwords are both present on the sheet.">
+        Manage passwords and passkeys
+      </message>
       <message name="IDS_TOUCH_TO_FILL_CONTINUE" desc="Title of the button that continues filling with the only available credential.">
         Continue
       </message>
@@ -218,10 +224,10 @@ found in the LICENSE file.
         Sign in
       </message>
       <message name="IDS_TOUCH_TO_FILL_SHEET_TITLE_PASSKEY" desc="Header for Touch To Fill sheet where users can pick a Passkey credential to sign in to a website.">
-        Used saved passkey?
+        Use saved passkey?
       </message>
       <message name="IDS_TOUCH_TO_FILL_SHEET_TITLE_PASSWORD_OR_PASSKEY" desc="Header for Touch To Fill sheet where users can pick a password or Passkey credential to sign in to a website.">
-        Used saved password or passkey?
+        Use saved password or passkey?
       </message>
       <message name="IDS_TOUCH_TO_FILL_SHEET_WEBAUTHN_CREDENTIAL_CONTEXT" desc="Context string for second line of a Passkey on the Touch To Fill sheet, beneath the username.">
         Use your screen lock

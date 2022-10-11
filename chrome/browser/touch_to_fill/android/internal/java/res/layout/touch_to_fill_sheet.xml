@@ -54,7 +54,6 @@ found in the LICENSE file.
 
       <TextView
           android:id="@+id/touch_to_fill_sheet_manage_passwords"
-          android:text="@string/manage_passwords"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginBottom="8dp"

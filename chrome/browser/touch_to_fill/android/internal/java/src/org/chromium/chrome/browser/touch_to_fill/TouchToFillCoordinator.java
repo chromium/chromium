@@ -33,7 +33,7 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
     @Override
     public void initialize(Context context, BottomSheetController sheetController,
             TouchToFillComponent.Delegate delegate) {
-        mMediator.initialize(delegate, mModel,
+        mMediator.initialize(context, delegate, mModel,
                 new LargeIconBridge(Profile.getLastUsedRegularProfile()),
                 context.getResources().getDimensionPixelSize(usesUnifiedPasswordManagerUI()
                                 ? R.dimen.touch_to_fill_favicon_size_modern

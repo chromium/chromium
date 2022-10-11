@@ -33,8 +33,11 @@ class TouchToFillProperties {
             new PropertyModel.ReadableObjectPropertyKey<>("dismiss_handler");
     static final PropertyModel.WritableObjectPropertyKey<Runnable> ON_CLICK_MANAGE =
             new PropertyModel.WritableObjectPropertyKey<>("on_click_manage");
+    static final PropertyModel.WritableObjectPropertyKey<String> MANAGE_BUTTON_TEXT =
+            new PropertyModel.WritableObjectPropertyKey<>("manage_button_text");
     static PropertyModel createDefaultModel(Callback<Integer> handler) {
-        return new PropertyModel.Builder(VISIBLE, SHEET_ITEMS, DISMISS_HANDLER, ON_CLICK_MANAGE)
+        return new PropertyModel
+                .Builder(VISIBLE, SHEET_ITEMS, DISMISS_HANDLER, ON_CLICK_MANAGE, MANAGE_BUTTON_TEXT)
                 .with(VISIBLE, false)
                 .with(SHEET_ITEMS, new ListModel<>())
                 .with(DISMISS_HANDLER, handler)
@@ -117,20 +120,11 @@ class TouchToFillProperties {
                 new PropertyModel.ReadableBooleanPropertyKey("origin_secure");
         static final PropertyModel.ReadableIntPropertyKey IMAGE_DRAWABLE_ID =
                 new PropertyModel.ReadableIntPropertyKey("image_drawable_id");
+        static final PropertyModel.ReadableObjectPropertyKey<String> TITLE =
+                new PropertyModel.ReadableObjectPropertyKey<>("title");
 
-        // TODO(https://crbug.com/1359047): These three computed properties are all used to
-        // determine the sheet title. Instead, TouchToFillMediator should select the right string
-        // resource to use.
-        static final PropertyModel.ReadableBooleanPropertyKey SINGLE_CREDENTIAL =
-                new PropertyModel.ReadableBooleanPropertyKey("single_credential");
-        static final PropertyModel.ReadableBooleanPropertyKey PASSWORD_CRED_PRESENT =
-                new PropertyModel.ReadableBooleanPropertyKey("password_cred_present");
-        static final PropertyModel.ReadableBooleanPropertyKey WEBAUTHN_CRED_PRESENT =
-                new PropertyModel.ReadableBooleanPropertyKey("webauthn_cred_present");
-
-        static final PropertyKey[] ALL_KEYS = {SHOW_SUBMIT_SUBTITLE, SINGLE_CREDENTIAL,
-                FORMATTED_URL, ORIGIN_SECURE, IMAGE_DRAWABLE_ID, PASSWORD_CRED_PRESENT,
-                WEBAUTHN_CRED_PRESENT};
+        static final PropertyKey[] ALL_KEYS = {
+                SHOW_SUBMIT_SUBTITLE, FORMATTED_URL, ORIGIN_SECURE, IMAGE_DRAWABLE_ID, TITLE};
 
         private HeaderProperties() {}
     }

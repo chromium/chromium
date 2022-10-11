@@ -21,7 +21,8 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.He
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SINGLE_CREDENTIAL;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MANAGE_BUTTON_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
@@ -137,7 +138,9 @@ public class TouchToFillViewTest {
             mModel.get(SHEET_ITEMS)
                     .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
                             new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                                    .with(SINGLE_CREDENTIAL, true)
+                                    .with(TITLE,
+                                            getActivity().getString(
+                                                    R.string.touch_to_fill_sheet_title_single))
                                     .with(FORMATTED_URL, "www.example.org")
                                     .with(ORIGIN_SECURE, true)
                                     .with(IMAGE_DRAWABLE_ID,
@@ -155,67 +158,15 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION,
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
-    public void
-    testMultiCredentialTitleDisplayedWithSubmissionDisabled() {
-        // TODO(crbug.com/1283004): Remove the test once TOUCH_TO_FILL_PASSWORD_SUBMISSION is fully
-        // launched.
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
+    public void testTitlePropagatesToView() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
                             new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                                    .with(SINGLE_CREDENTIAL, false)
-                                    .with(FORMATTED_URL, "www.example.org")
-                                    .with(ORIGIN_SECURE, true)
-                                    .with(IMAGE_DRAWABLE_ID,
-                                            mResourceProvider.getHeaderImageDrawableId())
-                                    .build()));
-            mModel.set(VISIBLE, true);
-        });
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-        TextView title =
-                mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_title);
-
-        assertThat(
-                title.getText(), is(getActivity().getString(R.string.touch_to_fill_sheet_title)));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
-    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
-    public void testSingleCredentialTitleDisplayed() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.get(SHEET_ITEMS)
-                    .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
-                            new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                                    .with(SINGLE_CREDENTIAL, true)
-                                    .with(FORMATTED_URL, "www.example.org")
-                                    .with(ORIGIN_SECURE, true)
-                                    .with(IMAGE_DRAWABLE_ID,
-                                            mResourceProvider.getHeaderImageDrawableId())
-                                    .build()));
-            mModel.set(VISIBLE, true);
-        });
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-        TextView title =
-                mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_title);
-
-        assertThat(title.getText(),
-                is(getActivity().getString(R.string.touch_to_fill_sheet_uniform_title)));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION})
-    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
-    public void testMultiCredentialTitleDisplayed() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.get(SHEET_ITEMS)
-                    .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
-                            new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                                    .with(SINGLE_CREDENTIAL, false)
+                                    .with(TITLE,
+                                            getActivity().getString(
+                                                    R.string.touch_to_fill_sheet_uniform_title))
                                     .with(FORMATTED_URL, "www.example.org")
                                     .with(ORIGIN_SECURE, true)
                                     .with(IMAGE_DRAWABLE_ID,
@@ -234,49 +185,29 @@ public class TouchToFillViewTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
-    public void testSingleCredentialTitleDisplayedWithUnifiedPasswordManager() {
+    public void testManageButtonTextPropagatesToView() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mModel.get(SHEET_ITEMS)
                     .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
                             new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                                    .with(SINGLE_CREDENTIAL, true)
+                                    .with(TITLE,
+                                            getActivity().getString(
+                                                    R.string.touch_to_fill_sheet_uniform_title))
                                     .with(FORMATTED_URL, "www.example.org")
                                     .with(ORIGIN_SECURE, true)
                                     .with(IMAGE_DRAWABLE_ID,
                                             mResourceProvider.getHeaderImageDrawableId())
                                     .build()));
             mModel.set(VISIBLE, true);
+            mModel.set(MANAGE_BUTTON_TEXT,
+                    getActivity().getString(R.string.manage_passwords_and_passkeys));
         });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-        TextView title =
-                mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_title);
+        TextView manageButtonText = mTouchToFillView.getContentView().findViewById(
+                R.id.touch_to_fill_sheet_manage_passwords);
 
-        assertThat(title.getText(),
-                is(getActivity().getString(R.string.touch_to_fill_sheet_uniform_title)));
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID})
-    public void testMultiCredentialTitleDisplayedWithUnifiedPasswordManager() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.get(SHEET_ITEMS)
-                    .add(new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.HEADER,
-                            new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                                    .with(SINGLE_CREDENTIAL, false)
-                                    .with(FORMATTED_URL, "www.example.org")
-                                    .with(ORIGIN_SECURE, true)
-                                    .with(IMAGE_DRAWABLE_ID,
-                                            mResourceProvider.getHeaderImageDrawableId())
-                                    .build()));
-            mModel.set(VISIBLE, true);
-        });
-        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
-        TextView title =
-                mTouchToFillView.getContentView().findViewById(R.id.touch_to_fill_sheet_title);
-
-        assertThat(title.getText(),
-                is(getActivity().getString(R.string.touch_to_fill_sheet_uniform_title)));
+        assertThat(manageButtonText.getText(),
+                is(getActivity().getString(R.string.manage_passwords_and_passkeys)));
     }
 
     @Test

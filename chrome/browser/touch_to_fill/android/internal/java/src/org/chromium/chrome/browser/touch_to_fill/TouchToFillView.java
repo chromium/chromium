@@ -15,6 +15,7 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -210,6 +211,11 @@ class TouchToFillView implements BottomSheetContent {
     void setOnManagePasswordClick(Runnable runnable) {
         mContentView.findViewById(R.id.touch_to_fill_sheet_manage_passwords)
                 .setOnClickListener((v) -> runnable.run());
+    }
+
+    void setManagePasswordText(String buttonText) {
+        TextView view = mContentView.findViewById(R.id.touch_to_fill_sheet_manage_passwords);
+        view.setText(buttonText);
     }
 
     @Override

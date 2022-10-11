@@ -14,10 +14,9 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.DI
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.FORMATTED_URL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.ORIGIN_SECURE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.PASSWORD_CRED_PRESENT;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SHOW_SUBMIT_SUBTITLE;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.SINGLE_CREDENTIAL;
-import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.WEBAUTHN_CRED_PRESENT;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties.TITLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MANAGE_BUTTON_TEXT;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
@@ -37,7 +36,6 @@ import android.widget.TextView;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
@@ -74,6 +72,8 @@ class TouchToFillViewBinder {
             }
         } else if (propertyKey == ON_CLICK_MANAGE) {
             view.setOnManagePasswordClick(model.get(ON_CLICK_MANAGE));
+        } else if (propertyKey == MANAGE_BUTTON_TEXT) {
+            view.setManagePasswordText(model.get(MANAGE_BUTTON_TEXT));
         } else if (propertyKey == SHEET_ITEMS) {
             view.setSheetItemListAdapter(
                     new RecyclerViewAdapter<>(new SimpleRecyclerViewMcp<>(model.get(SHEET_ITEMS),
@@ -252,29 +252,6 @@ class TouchToFillViewBinder {
     }
 
     /**
-     * Helper function to infer the title of Touch To Fill sheet.
-     * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
-     * @param context The {@link Context} of the header to update.
-     * @return The title of Touch To Fill sheet.
-     */
-    private static String getTitle(PropertyModel model, Context context) {
-        if (model.get(WEBAUTHN_CRED_PRESENT)) {
-            return model.get(PASSWORD_CRED_PRESENT)
-                    ? context.getString(R.string.touch_to_fill_sheet_title_password_or_passkey)
-                    : context.getString(R.string.touch_to_fill_sheet_title_passkey);
-        }
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION)
-                || PasswordManagerHelper.usesUnifiedPasswordManagerUI()) {
-            return context.getString(R.string.touch_to_fill_sheet_uniform_title);
-        }
-
-        return context.getString(model.get(SINGLE_CREDENTIAL)
-                        ? R.string.touch_to_fill_sheet_title_single
-                        : R.string.touch_to_fill_sheet_title);
-    }
-
-    /**
      * Helper function to infer the subtitle of Touch To Fill sheet.
      * @param model The observed {@link PropertyModel}. Its data need to be reflected in the view.
      * @param context The {@link Context} of the header to update.
@@ -304,11 +281,10 @@ class TouchToFillViewBinder {
      * @param key The {@link PropertyKey} which changed.
      */
     private static void bindHeaderView(PropertyModel model, View view, PropertyKey key) {
-        if (key == SHOW_SUBMIT_SUBTITLE || key == SINGLE_CREDENTIAL || key == FORMATTED_URL
-                || key == ORIGIN_SECURE || key == IMAGE_DRAWABLE_ID || key == WEBAUTHN_CRED_PRESENT
-                || key == PASSWORD_CRED_PRESENT) {
+        if (key == SHOW_SUBMIT_SUBTITLE || key == TITLE || key == FORMATTED_URL
+                || key == ORIGIN_SECURE || key == IMAGE_DRAWABLE_ID) {
             TextView sheetTitleText = view.findViewById(R.id.touch_to_fill_sheet_title);
-            sheetTitleText.setText(getTitle(model, view.getContext()));
+            sheetTitleText.setText(model.get(TITLE));
 
             TextView sheetSubtitleText = view.findViewById(R.id.touch_to_fill_sheet_subtitle);
             sheetSubtitleText.setText(getSubtitle(model, view.getContext()));
