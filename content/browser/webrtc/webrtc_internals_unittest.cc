@@ -249,8 +249,8 @@ TEST_F(WebRtcInternalsTest, EnsureNoLogWhenNoObserver) {
   EXPECT_EQ("update-all-peer-connections", observer.event_name());
 
   ASSERT_TRUE(observer.event_data()->is_list());
-  EXPECT_EQ(1U, observer.event_data()->GetListDeprecated().size());
-  base::Value& dict = observer.event_data()->GetListDeprecated()[0];
+  EXPECT_EQ(1U, observer.event_data()->GetList().size());
+  base::Value& dict = observer.event_data()->GetList()[0];
   ASSERT_TRUE(dict.is_dict());
   ASSERT_FALSE(dict.FindPath("log"));
 
@@ -276,8 +276,8 @@ TEST_F(WebRtcInternalsTest, EnsureLogIsRemovedWhenObserverIsRemoved) {
   EXPECT_EQ("update-all-peer-connections", observer.event_name());
 
   ASSERT_TRUE(observer.event_data()->is_list());
-  EXPECT_EQ(1U, observer.event_data()->GetListDeprecated().size());
-  base::Value& dict = observer.event_data()->GetListDeprecated()[0];
+  EXPECT_EQ(1U, observer.event_data()->GetList().size());
+  base::Value& dict = observer.event_data()->GetList()[0];
   ASSERT_TRUE(dict.is_dict());
   ASSERT_TRUE(dict.FindPath("log")->is_list());
 
@@ -287,8 +287,8 @@ TEST_F(WebRtcInternalsTest, EnsureLogIsRemovedWhenObserverIsRemoved) {
   EXPECT_EQ("update-all-peer-connections", observer.event_name());
 
   ASSERT_TRUE(observer.event_data()->is_list());
-  EXPECT_EQ(1U, observer.event_data()->GetListDeprecated().size());
-  base::Value& updated_dict = observer.event_data()->GetListDeprecated()[0];
+  EXPECT_EQ(1U, observer.event_data()->GetList().size());
+  base::Value& updated_dict = observer.event_data()->GetList()[0];
   ASSERT_TRUE(updated_dict.is_dict());
   ASSERT_FALSE(updated_dict.FindPath("log"));
 
@@ -492,7 +492,7 @@ TEST_F(WebRtcInternalsTest, SendAllUpdatesWithPeerConnectionUpdate) {
   ASSERT_TRUE(observer.event_data());
 
   ASSERT_TRUE(observer.event_data()->is_list());
-  base::Value::ConstListView list = observer.event_data()->GetListDeprecated();
+  const base::Value::List& list = observer.event_data()->GetList();
   EXPECT_EQ(1U, list.size());
 
   ASSERT_TRUE(list.begin()->is_dict());
