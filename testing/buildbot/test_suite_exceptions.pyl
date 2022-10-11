@@ -968,6 +968,9 @@
       },
       'Mac11 Tests': {
         'ci_only': True,
+        'swarming': {
+          'shards': 20,  # crbug.com/1366016
+        },
       },
       'Mac12 Tests': {
         'ci_only': True,
