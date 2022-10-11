@@ -135,6 +135,7 @@ const cacheableShowRequestHeaders = function(origin, uuid) {
 // {
 //   host: (optional) Sets the returned URL's `host` property. Useful for
 //     cross-origin executors.
+//   protocol: (optional) Sets the returned URL's `protocol` property.
 // }
 function remoteExecutorUrl(uuid, options) {
   const url = new URL("/common/dispatcher/remote-executor.html", location);
@@ -142,6 +143,10 @@ function remoteExecutorUrl(uuid, options) {
 
   if (options?.host) {
     url.host = options.host;
+  }
+
+  if (options?.protocol) {
+    url.protocol = options.protocol;
   }
 
   return url;
