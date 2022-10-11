@@ -104,7 +104,7 @@ bool IsValidThemeColor(uint32_t theme_color) {
   return SkColorGetA(theme_color) == SK_AlphaOPAQUE;
 }
 
-const std::string WindowIdToAppId(int window_id) {
+const std::string WrapSessionAppIdFromWindowId(int window_id) {
   return std::string("org.chromium.arc.session.") +
          base::NumberToString(window_id);
 }

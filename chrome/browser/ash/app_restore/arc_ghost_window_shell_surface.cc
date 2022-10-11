@@ -115,9 +115,9 @@ std::unique_ptr<ArcGhostWindowShellSurface> ArcGhostWindowShellSurface::Create(
 
   auto surface = std::make_unique<exo::Surface>();
   std::unique_ptr<ArcGhostWindowShellSurface> shell_surface(
-      new ArcGhostWindowShellSurface(std::move(surface), container,
-                                     scale_factor.value(),
-                                     WindowIdToAppId(window_id), type));
+      new ArcGhostWindowShellSurface(
+          std::move(surface), container, scale_factor.value(),
+          WrapSessionAppIdFromWindowId(window_id), type));
 
   // TODO(sstan): Add set_surface_destroyed_callback.
   shell_surface->set_delegate(std::make_unique<ArcGhostWindowDelegate>(

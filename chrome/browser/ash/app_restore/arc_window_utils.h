@@ -29,7 +29,7 @@ apps::WindowInfoPtr HandleArcWindowInfo(apps::WindowInfoPtr window_info);
 // cannot be a topic color.
 bool IsValidThemeColor(uint32_t theme_color);
 
-const std::string WindowIdToAppId(int window_id);
+const std::string WrapSessionAppIdFromWindowId(int window_id);
 
 }  // namespace ash::full_restore
 
