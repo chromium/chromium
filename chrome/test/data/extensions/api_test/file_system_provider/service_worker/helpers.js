@@ -80,25 +80,25 @@ export async function openFile(fileEntry) {
 }
 
 /**
- * @param {!File} file
+ * @param {!Blob} blob
  * @returns {!Promise<string>}
  */
-export async function readTextFromFile(file) {
-  const {promise} = startReadTextFromFile(file);
+export async function readTextFromBlob(blob) {
+  const {promise} = startReadTextFromBlob(blob);
   return promise;
 }
 
 /**
- * @param {!File} file
+ * @param {!Blob} blob
  * @returns {{promise: !Promise<string>, reader: !FileReader}}
  */
-export function startReadTextFromFile(file) {
+export function startReadTextFromBlob(blob) {
   const reader = new FileReader();
   const promise = new Promise((resolve, reject) => {
     reader.onload = e => resolve(reader.result);
     reader.onerror = e => reject(reader.error);
     reader.onabort = e => reject(reader.error);
-    reader.readAsText(file);
+    reader.readAsText(blob);
   });
   return {reader, promise};
 }
