@@ -25,7 +25,8 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Coordinator for password edit dialog. */
 class PasswordEditDialogCoordinator {
@@ -169,7 +170,7 @@ class PasswordEditDialogCoordinator {
             String[] usernames, int selectedUsernameIndex, String password, String account) {
         PropertyModel.Builder dialogViewModelBuilder =
                 new PropertyModel.Builder(PasswordEditDialogProperties.ALL_KEYS)
-                        .with(PasswordEditDialogProperties.USERNAMES, Arrays.asList(usernames))
+                        .with(PasswordEditDialogProperties.USERNAMES, removeEmptyStrings(usernames))
                         .with(PasswordEditDialogProperties.USERNAME,
                                 usernames[selectedUsernameIndex])
                         .with(PasswordEditDialogProperties.USERNAME_CHANGED_CALLBACK,
@@ -222,6 +223,14 @@ class PasswordEditDialogCoordinator {
         } else {
             return R.string.password_edit_dialog_synced_footer_google;
         }
+    }
+
+    private static List<String> removeEmptyStrings(String[] strings) {
+        List<String> nonEmptyStrings = new ArrayList<>();
+        for (String str : strings) {
+            if (!str.isEmpty()) nonEmptyStrings.add(str);
+        }
+        return nonEmptyStrings;
     }
 
     @VisibleForTesting

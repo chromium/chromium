@@ -296,6 +296,21 @@ public class PasswordEditDialogControllerTest {
         Mockito.verify(mDelegateMock).onDialogDismissed(false);
     }
 
+    /** Tests that empty username is not listed in the model's list. */
+    @Test
+    @EnableFeatures(ChromeFeatureList.PASSWORD_EDIT_DIALOG_WITH_DETAILS)
+    public void testEmptyUsernameNotListed() {
+        mDialogCoordinator = new PasswordEditDialogCoordinator(RuntimeEnvironment.getApplication(),
+                mModalDialogManager, mDialogViewMock, mDelegateMock);
+        mDialogCoordinator.showUpdatePasswordDialog(
+                new String[] {INITIAL_USERNAME, ""}, 0, INITIAL_PASSWORD, ACCOUNT_NAME);
+
+        mCustomViewModel = mDialogCoordinator.getDialogViewModelForTesting();
+
+        Assert.assertThat(mCustomViewModel.get(PasswordEditDialogProperties.USERNAMES),
+                contains(INITIAL_USERNAME));
+    }
+
     /**
      * Helper function that creates {@link PasswordEditDialogCoordinator},
      * and captures property models for modal dialog and custom dialog view.

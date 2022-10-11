@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
+#include <utility>
 
 #include "base/callback.h"
 #include "base/check.h"
@@ -334,14 +335,24 @@ unsigned int SaveUpdatePasswordMessageDelegate::GetDisplayUsernames(
     // If multiple credentials can be updated, we display a dropdown with all
     // the corresponding usernames.
     for (const auto& form : password_forms) {
-      usernames->push_back(GetDisplayUsername(*form));
+      const std::u16string username =
+          base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)
+              ? form->username_value
+              : GetDisplayUsername(*form);
+      usernames->push_back(std::move(username));
       if (form->username_value == default_username) {
         selected_username_index = usernames->size() - 1;
       }
     }
   } else {
-    usernames->push_back(GetDisplayUsername(
-        passwords_state_.form_manager()->GetPendingCredentials()));
+    const std::u16string username =
+        base::FeatureList::IsEnabled(kPasswordEditDialogWithDetails)
+            ? passwords_state_.form_manager()
+                  ->GetPendingCredentials()
+                  .username_value
+            : GetDisplayUsername(
+                  passwords_state_.form_manager()->GetPendingCredentials());
+    usernames->push_back(username);
   }
   return selected_username_index;
 }
