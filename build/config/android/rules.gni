@@ -7,12 +7,13 @@
 
 import("//build/config/android/channel.gni")
 import("//build/config/android/config.gni")
-import("//build/config/android/internal_rules.gni")
+import("//build/config/android/copy_ex.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/python.gni")
 import("//build/config/rts.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/zip.gni")
 import("//build/toolchain/toolchain.gni")
 
@@ -20,6 +21,16 @@ assert(is_android)
 
 declare_args() {
   enable_jni_tracing = false
+}
+
+# Use a dedicated include dir so that files can #include headers from other
+# toolchains without affecting non-JNI #includes.
+if (target_os == "android") {
+  jni_headers_dir = "$root_build_dir/gen/jni_headers"
+} else {
+  # Chrome OS builds cannot share gen/ directories because is_android=false
+  # within default_toolchain.
+  jni_headers_dir = "$root_gen_dir/jni_headers"
 }
 
 if (target_cpu == "arm") {
@@ -124,11 +135,13 @@ template("create_native_executable_dist") {
 }
 
 if (enable_java_templates) {
-  import("//build/config/sanitizers/sanitizers.gni")
+  import("//build/config/android/internal_rules.gni")
 
   # JNI target implementation. See generate_jni or generate_jar_jni for usage.
   template("generate_jni_impl") {
-    _jni_output_dir = "${target_gen_dir}/${target_name}"
+    _prev_jni_output_dir = "$target_gen_dir/$target_name"
+    _subdir = rebase_path(target_gen_dir, root_gen_dir)
+    _jni_output_dir = "$jni_headers_dir/$_subdir/$target_name"
     if (defined(invoker.jni_generator_include)) {
       _jni_generator_include = invoker.jni_generator_include
       _jni_generator_include_deps = []
@@ -160,9 +173,18 @@ if (enable_java_templates) {
         public_deps = []
       }
       public_deps += _jni_generator_include_deps
+
+      public_configs = [ "//build/config/android:jni_include_dir" ]
       inputs = []
       args = [
         "--ptr_type=long",
+
+        # TODO(agrieve): --prev_output_dir used only to make incremental builds
+        #     work. Remove --prev_output_dir at some point after 2022.
+        "--prev_output_dir",
+        rebase_path(_prev_jni_output_dir, root_build_dir),
+        "--output_dir",
+        rebase_path(_jni_output_dir, root_build_dir),
         "--includes",
         rebase_path(_jni_generator_include, _jni_output_dir),
       ]
@@ -208,17 +230,16 @@ if (enable_java_templates) {
 
       outputs = []
       foreach(_name, _input_names) {
-        _name_part = get_path_info(_name, "name")
-        outputs += [ "${_jni_output_dir}/${_name_part}_jni.h" ]
-      }
+        _name = get_path_info(_name, "name") + "_jni.h"
+        outputs += [ "$_jni_output_dir/$_name" ]
 
-      # Avoid passing GN lists because not all webrtc embedders use //build.
-      foreach(_output, outputs) {
+        # Avoid passing GN lists because not all webrtc embedders use //build.
         args += [
-          "--output_file",
-          rebase_path(_output, root_build_dir),
+          "--output_name",
+          _name,
         ]
       }
+
       foreach(_input, _input_args) {
         args += [ "--input_file=$_input" ]
       }
@@ -228,6 +249,30 @@ if (enable_java_templates) {
       }
       if (enable_jni_tracing) {
         args += [ "--enable_tracing" ]
+      }
+      if (current_toolchain != default_toolchain && target_os == "android") {
+        # Rather than regenerating .h files in secondary toolchains, re-use the
+        # ones from the primary toolchain by depending on it and adding the
+        # root gen directory to the include paths.
+        # https://crbug.com/1369398
+        inputs = []
+        outputs = []
+        _stamp = "$target_gen_dir/$target_name.stamp"
+        outputs = [ _stamp ]
+
+        # Since we used to generate the .h files rather than delegate, the
+        # script will delete all .h files it finds in --prev_output_dir.
+        # TODO(agrieve): --prev_output_dir used only to make incremental builds
+        #     work. Convert to group() target at some point after 2022.
+        args += [
+          "--stamp",
+          rebase_path(_stamp, root_build_dir),
+        ]
+        public_deps = []
+        public_deps = [ ":$target_name($default_toolchain)" ]
+      } else if (defined(visibility)) {
+        # Allow dependency on ourselves from secondary toolchain.
+        visibility += [ ":$target_name" ]
       }
     }
   }

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/sanitizers/sanitizers.gni")
@@ -160,6 +160,10 @@ config("default_orderfile_instrumentation") {
       ldflags = [ "-Wl,-u,__cyg_profile_func_enter_bare" ]
     }
   }
+}
+
+config("jni_include_dir") {
+  include_dirs = [ jni_headers_dir ]
 }
 
 if (current_toolchain == default_toolchain) {
