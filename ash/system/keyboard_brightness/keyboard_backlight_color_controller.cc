@@ -97,12 +97,6 @@ void KeyboardBacklightColorController::OnActiveUserPrefServiceChanged(
   DisplayBacklightColor(backlight_color);
 }
 
-void KeyboardBacklightColorController::OnUserSessionUpdated(
-    const AccountId& account_id) {
-  const auto backlight_color = GetBacklightColor(account_id);
-  DisplayBacklightColor(backlight_color);
-}
-
 void KeyboardBacklightColorController::OnWallpaperColorsChanged() {
   const auto backlight_color = GetBacklightColor(GetActiveAccountId());
   if (backlight_color != personalization_app::mojom::BacklightColor::kWallpaper)

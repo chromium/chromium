@@ -47,9 +47,6 @@ class ASH_EXPORT KeyboardBacklightColorController
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
-  // b/239967737: |OnActiveUserPrefServiceChanged| doesn't get triggered when
-  // chrome restarts.
-  void OnUserSessionUpdated(const AccountId& account_id) override;
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // WallpaperControllerObserver:
