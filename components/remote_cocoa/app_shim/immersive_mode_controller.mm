@@ -11,6 +11,20 @@
 #include "components/remote_cocoa/app_shim/immersive_mode_delegate_mac.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 
+namespace {
+
+// TODO(https://crbug.com/1373552): use constraints / autoresizingmask instead
+// of manually setting the frame size.
+void PropagateFrameSizeToViewsSubviews(NSView* view) {
+  for (NSView* sub_view in view.subviews) {
+    if ([sub_view isKindOfClass:[BridgedContentView class]]) {
+      [sub_view setFrameSize:view.frame.size];
+    }
+  }
+}
+
+}  // namespace
+
 // A stub NSWindowDelegate class that will be used to map the AppKit controlled
 // NSWindow to the overlay view widget's NSWindow. The delegate will be used to
 // help with input routing.
@@ -41,12 +55,7 @@
 
 - (void)viewWillAppear {
   [super viewWillAppear];
-
-  for (NSView* view in self.view.subviews) {
-    if ([view isKindOfClass:[BridgedContentView class]]) {
-      [view setFrameSize:self.view.frame.size];
-    }
-  }
+  PropagateFrameSizeToViewsSubviews(self.view);
 
   if (!_view_will_appear_callback.is_null()) {
     std::move(_view_will_appear_callback).Run();
@@ -247,9 +256,11 @@ void ImmersiveModeController::OnTopViewBoundsChanged(const gfx::Rect& bounds) {
 
   // Set the height of the AppKit fullscreen view. The width will be
   // automatically handled by AppKit.
-  NSSize size = immersive_mode_titlebar_view_controller_.get().view.frame.size;
+  NSView* overlay_view = immersive_mode_titlebar_view_controller_.get().view;
+  NSSize size = overlay_view.frame.size;
   size.height = frame.size.height;
-  [immersive_mode_titlebar_view_controller_.get().view setFrameSize:size];
+  [overlay_view setFrameSize:size];
+  PropagateFrameSizeToViewsSubviews(overlay_view);
 }
 
 void ImmersiveModeController::UpdateToolbarVisibility(bool always_show) {
