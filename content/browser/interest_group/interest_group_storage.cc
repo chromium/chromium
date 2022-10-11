@@ -207,7 +207,7 @@ absl::optional<std::vector<std::string>> DeserializeStringVector(
   if (!list || !list->is_list())
     return absl::nullopt;
   std::vector<std::string> result;
-  for (const auto& value : list->GetListDeprecated())
+  for (const auto& value : list->GetList())
     result.push_back(value.GetString());
   return result;
 }
