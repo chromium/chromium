@@ -43,7 +43,7 @@ constexpr char kSaltForPrefStorage[] = "/!RoFN8,nDxiVgTI6CvU";
 
 // Regex used for CPU checks on intel processors, this means "any 11th
 // generation or greater i5/i7 processor".
-constexpr char kBorealisCapableIntelCpuRegex[] = "[1-9][1-9].. Gen.*i[57]-";
+constexpr char kBorealisCapableIntelCpuRegex[] = "[1-9][1-9].. Gen.*i[357]-";
 
 // Checks the current hardware+token configuration to determine if the user
 // should be able to run borealis.
@@ -106,7 +106,7 @@ class FullChecker : public TokenHardwareChecker {
         LOG(WARNING) << "Vendor token provided, bypassing hardware checks.";
         return AllowStatus::kAllowed;
       }
-      return ReleasedBoardChecks("Ryzen [57]");
+      return ReleasedBoardChecks("Ryzen [357]");
     } else if (IsBoard("draco")) {
       return AllowStatus::kAllowed;
     }
@@ -124,12 +124,8 @@ class FullChecker : public TokenHardwareChecker {
     if (!HasMemory(7 * kGibi)) {
       return AllowStatus::kHardwareChecksFailed;
     }
-    return CpuRegexMatches(cpu_regex) ||
-                   TokenHashMatches(
-                       "XIS4WQ+,^OZ5E,RG",
-                       "r37i7j1MV0mNmgAz0k/ItNjwLdupxYhFiYSjjRHSkWI=")
-               ? AllowStatus::kAllowed
-               : AllowStatus::kHardwareChecksFailed;
+    return CpuRegexMatches(cpu_regex) ? AllowStatus::kAllowed
+                                      : AllowStatus::kHardwareChecksFailed;
   }
 };
 
