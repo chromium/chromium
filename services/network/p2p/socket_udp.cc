@@ -128,11 +128,12 @@ P2PSocketUdp::P2PSocketUdp(Delegate* Delegate,
 
 P2PSocketUdp::~P2PSocketUdp() = default;
 
-void P2PSocketUdp::Init(const net::IPEndPoint& local_address,
-                        uint16_t min_port,
-                        uint16_t max_port,
-                        const P2PHostAndIPEndPoint& remote_address,
-                        const net::NetworkIsolationKey& network_isolation_key) {
+void P2PSocketUdp::Init(
+    const net::IPEndPoint& local_address,
+    uint16_t min_port,
+    uint16_t max_port,
+    const P2PHostAndIPEndPoint& remote_address,
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK(!socket_);
   DCHECK((min_port == 0 && max_port == 0) || min_port > 0);
   DCHECK_LE(min_port, max_port);

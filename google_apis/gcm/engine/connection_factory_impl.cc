@@ -359,13 +359,14 @@ void ConnectionFactoryImpl::StartConnection() {
   network::mojom::ProxyResolvingSocketOptionsPtr options =
       network::mojom::ProxyResolvingSocketOptions::New();
   options->use_tls = true;
-  // |current_endpoint| is always a Google URL, so this NetworkIsolationKey will
-  // be the same for all callers, and will allow pooling all connections to GCM
-  // in one socket connection, if an H2 or QUIC proxy is in use.
-  auto origin = url::Origin::Create(current_endpoint);
-  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  // |current_endpoint| is always a Google URL, so this NetworkAnonymizationKey
+  // will be the same for all callers, and will allow pooling all connections to
+  // GCM in one socket connection, if an H2 or QUIC proxy is in use.
+  auto site = net::SchemefulSite(current_endpoint);
+  net::NetworkAnonymizationKey network_anonymization_key(site, site);
   socket_factory_->CreateProxyResolvingSocket(
-      current_endpoint, std::move(network_isolation_key), std::move(options),
+      current_endpoint, std::move(network_anonymization_key),
+      std::move(options),
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
       socket_.BindNewPipeAndPassReceiver(), mojo::NullRemote() /* observer */,
       base::BindOnce(&ConnectionFactoryImpl::OnConnectDone,

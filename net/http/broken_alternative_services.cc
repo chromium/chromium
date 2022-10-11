@@ -59,19 +59,19 @@ base::TimeDelta ComputeBrokenAlternativeServiceExpirationDelay(
 
 BrokenAlternativeService::BrokenAlternativeService(
     const AlternativeService& alternative_service,
-    const NetworkIsolationKey& network_isolation_key,
-    bool use_network_isolation_key)
+    const NetworkAnonymizationKey& network_anonymization_key,
+    bool use_network_anonymization_key)
     : alternative_service(alternative_service),
-      network_isolation_key(use_network_isolation_key ? network_isolation_key
-                                                      : NetworkIsolationKey()) {
-}
+      network_anonymization_key(use_network_anonymization_key
+                                    ? network_anonymization_key
+                                    : NetworkAnonymizationKey()) {}
 
 BrokenAlternativeService::~BrokenAlternativeService() = default;
 
 bool BrokenAlternativeService::operator<(
     const BrokenAlternativeService& other) const {
-  return std::tie(alternative_service, network_isolation_key) <
-         std::tie(other.alternative_service, other.network_isolation_key);
+  return std::tie(alternative_service, network_anonymization_key) <
+         std::tie(other.alternative_service, other.network_anonymization_key);
 }
 
 BrokenAlternativeServices::BrokenAlternativeServices(
@@ -378,7 +378,7 @@ void BrokenAlternativeServices::ExpireBrokenAlternateProtocolMappings() {
     }
 
     delegate_->OnExpireBrokenAlternativeService(
-        it->first.alternative_service, it->first.network_isolation_key);
+        it->first.alternative_service, it->first.network_anonymization_key);
 
     broken_alternative_service_map_.erase(it->first);
     broken_alternative_service_list_.erase(it);

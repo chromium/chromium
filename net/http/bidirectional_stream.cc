@@ -259,7 +259,7 @@ void BidirectionalStream::OnHeadersReceived(
   load_timing_info_.receive_headers_end = base::TimeTicks::Now();
   read_end_time_ = load_timing_info_.receive_headers_end;
   session_->http_stream_factory()->ProcessAlternativeServices(
-      session_, net::NetworkIsolationKey(), response_info.headers.get(),
+      session_, net::NetworkAnonymizationKey(), response_info.headers.get(),
       url::SchemeHostPort(request_info_->url));
   delegate_->OnHeadersReceived(response_headers);
 }

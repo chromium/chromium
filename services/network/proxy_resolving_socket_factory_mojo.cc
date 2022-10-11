@@ -23,14 +23,14 @@ ProxyResolvingSocketFactoryMojo::~ProxyResolvingSocketFactoryMojo() {}
 
 void ProxyResolvingSocketFactoryMojo::CreateProxyResolvingSocket(
     const GURL& url,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     mojom::ProxyResolvingSocketOptionsPtr options,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     mojo::PendingReceiver<mojom::ProxyResolvingSocket> receiver,
     mojo::PendingRemote<mojom::SocketObserver> observer,
     CreateProxyResolvingSocketCallback callback) {
   std::unique_ptr<net::StreamSocket> net_socket = factory_impl_.CreateSocket(
-      url, network_isolation_key, options && options->use_tls);
+      url, network_anonymization_key, options && options->use_tls);
   if (options && options->fake_tls_handshake) {
     DCHECK(!options->use_tls);
     net_socket =

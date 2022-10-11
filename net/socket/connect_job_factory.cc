@@ -11,7 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/host_port_pair.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
@@ -114,15 +114,16 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     const OnHostResolutionCallback& resolution_callback,
     RequestPriority request_priority,
     SocketTag socket_tag,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     const CommonConnectJobParams* common_connect_job_params,
     ConnectJob::Delegate* delegate) const {
-  return CreateConnectJob(
-      Endpoint(std::move(endpoint)), proxy_server, proxy_annotation_tag,
-      ssl_config_for_origin, ssl_config_for_proxy, force_tunnel, privacy_mode,
-      resolution_callback, request_priority, socket_tag, network_isolation_key,
-      secure_dns_policy, common_connect_job_params, delegate);
+  return CreateConnectJob(Endpoint(std::move(endpoint)), proxy_server,
+                          proxy_annotation_tag, ssl_config_for_origin,
+                          ssl_config_for_proxy, force_tunnel, privacy_mode,
+                          resolution_callback, request_priority, socket_tag,
+                          network_anonymization_key, secure_dns_policy,
+                          common_connect_job_params, delegate);
 }
 
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
@@ -137,16 +138,17 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     const OnHostResolutionCallback& resolution_callback,
     RequestPriority request_priority,
     SocketTag socket_tag,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     const CommonConnectJobParams* common_connect_job_params,
     ConnectJob::Delegate* delegate) const {
   SchemelessEndpoint schemeless_endpoint{using_ssl, std::move(endpoint)};
-  return CreateConnectJob(
-      std::move(schemeless_endpoint), proxy_server, proxy_annotation_tag,
-      ssl_config_for_origin, ssl_config_for_proxy, force_tunnel, privacy_mode,
-      resolution_callback, request_priority, socket_tag, network_isolation_key,
-      secure_dns_policy, common_connect_job_params, delegate);
+  return CreateConnectJob(std::move(schemeless_endpoint), proxy_server,
+                          proxy_annotation_tag, ssl_config_for_origin,
+                          ssl_config_for_proxy, force_tunnel, privacy_mode,
+                          resolution_callback, request_priority, socket_tag,
+                          network_anonymization_key, secure_dns_policy,
+                          common_connect_job_params, delegate);
 }
 
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
@@ -160,7 +162,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     const OnHostResolutionCallback& resolution_callback,
     RequestPriority request_priority,
     SocketTag socket_tag,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     const CommonConnectJobParams* common_connect_job_params,
     ConnectJob::Delegate* delegate) const {
@@ -173,7 +175,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     // `SchemeHostPort`, so proxies can participate in ECH? Note doing so with
     // `SCHEME_HTTP` requires handling the HTTPS record upgrade.
     auto proxy_tcp_params = base::MakeRefCounted<TransportSocketParams>(
-        proxy_server.host_port_pair(), proxy_dns_network_isolation_key_,
+        proxy_server.host_port_pair(), proxy_dns_network_anonymization_key_,
         secure_dns_policy, resolution_callback,
         proxy_server.is_secure_http_like()
             ? SupportedProtocolsFromSSLConfig(*ssl_config_for_proxy)
@@ -187,10 +189,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
         ssl_params = base::MakeRefCounted<SSLSocketParams>(
             std::move(proxy_tcp_params), nullptr, nullptr,
             proxy_server.host_port_pair(), *ssl_config_for_proxy,
-            PRIVACY_MODE_DISABLED,
-            NetworkAnonymizationKey::
-                CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                    network_isolation_key));
+            PRIVACY_MODE_DISABLED, network_anonymization_key);
         proxy_tcp_params = nullptr;
       }
 
@@ -200,7 +199,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
           std::move(proxy_tcp_params), std::move(ssl_params),
           proxy_server.is_quic(), ToHostPortPair(endpoint),
           force_tunnel || UsingSsl(endpoint), *proxy_annotation_tag,
-          network_isolation_key);
+          network_anonymization_key);
     } else {
       DCHECK(proxy_server.is_socks());
       // TODO(crbug.com/1206799): Pass `endpoint` directly (preserving scheme
@@ -208,7 +207,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
       socks_params = base::MakeRefCounted<SOCKSSocketParams>(
           std::move(proxy_tcp_params),
           proxy_server.scheme() == ProxyServer::SCHEME_SOCKS5,
-          ToHostPortPair(endpoint), network_isolation_key,
+          ToHostPortPair(endpoint), network_anonymization_key,
           *proxy_annotation_tag);
     }
   }
@@ -219,7 +218,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     scoped_refptr<TransportSocketParams> ssl_tcp_params;
     if (proxy_server.is_direct()) {
       ssl_tcp_params = base::MakeRefCounted<TransportSocketParams>(
-          ToTransportEndpoint(endpoint), network_isolation_key,
+          ToTransportEndpoint(endpoint), network_anonymization_key,
           secure_dns_policy, resolution_callback,
           SupportedProtocolsFromSSLConfig(*ssl_config_for_origin));
     }
@@ -228,10 +227,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     auto ssl_params = base::MakeRefCounted<SSLSocketParams>(
         std::move(ssl_tcp_params), std::move(socks_params),
         std::move(http_proxy_params), ToHostPortPair(endpoint),
-        *ssl_config_for_origin, privacy_mode,
-        NetworkAnonymizationKey::
-            CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                network_isolation_key));
+        *ssl_config_for_origin, privacy_mode, network_anonymization_key);
     return ssl_connect_job_factory_->Create(
         request_priority, socket_tag, common_connect_job_params,
         std::move(ssl_params), delegate, /*net_log=*/nullptr);
@@ -252,8 +248,8 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
   // Only SSL/TLS-based endpoints have ALPN protocols.
   DCHECK(proxy_server.is_direct());
   auto tcp_params = base::MakeRefCounted<TransportSocketParams>(
-      ToTransportEndpoint(endpoint), network_isolation_key, secure_dns_policy,
-      resolution_callback, no_alpn_protocols);
+      ToTransportEndpoint(endpoint), network_anonymization_key,
+      secure_dns_policy, resolution_callback, no_alpn_protocols);
   return transport_connect_job_factory_->Create(
       request_priority, socket_tag, common_connect_job_params, tcp_params,
       delegate, /*net_log=*/nullptr);

@@ -11,7 +11,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -34,17 +34,17 @@ class BrokenAlternativeServicesTest
         broken_services_(50, this, broken_services_clock_) {
     SchemefulSite site1(GURL("http://foo.test"));
     SchemefulSite site2(GURL("http://bar.test"));
-    network_isolation_key1_ = NetworkIsolationKey(site1, site1);
-    network_isolation_key2_ = NetworkIsolationKey(site2, site2);
+    network_anonymization_key1_ = NetworkAnonymizationKey(site1, site1);
+    network_anonymization_key2_ = NetworkAnonymizationKey(site2, site2);
   }
 
   // BrokenAlternativeServices::Delegate implementation
   void OnExpireBrokenAlternativeService(
       const AlternativeService& expired_alternative_service,
-      const NetworkIsolationKey& network_isolation_key) override {
+      const NetworkAnonymizationKey& network_anonymization_key) override {
     expired_alt_svcs_.emplace_back(expired_alternative_service,
-                                   network_isolation_key,
-                                   true /* use_network_isolation_key */);
+                                   network_anonymization_key,
+                                   true /* use_network_anonymization_key */);
   }
 
   void TestExponentialBackoff(base::TimeDelta initial_delay,
@@ -61,20 +61,20 @@ class BrokenAlternativeServicesTest
 
   std::vector<BrokenAlternativeService> expired_alt_svcs_;
 
-  NetworkIsolationKey network_isolation_key1_;
-  NetworkIsolationKey network_isolation_key2_;
+  NetworkAnonymizationKey network_anonymization_key1_;
+  NetworkAnonymizationKey network_anonymization_key2_;
 };
 
 TEST_F(BrokenAlternativeServicesTest, MarkBroken) {
   const BrokenAlternativeService alternative_service1(
-      AlternativeService(kProtoHTTP2, "foo", 443), network_isolation_key1_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoHTTP2, "foo", 443), network_anonymization_key1_,
+      true /* use_network_anonymization_key */);
   const BrokenAlternativeService alternative_service2(
-      AlternativeService(kProtoHTTP2, "foo", 1234), network_isolation_key1_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoHTTP2, "foo", 1234), network_anonymization_key1_,
+      true /* use_network_anonymization_key */);
   const BrokenAlternativeService alternative_service3(
-      AlternativeService(kProtoHTTP2, "foo", 443), network_isolation_key2_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoHTTP2, "foo", 443), network_anonymization_key2_,
+      true /* use_network_anonymization_key */);
 
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
@@ -121,14 +121,14 @@ TEST_F(BrokenAlternativeServicesTest, MarkBroken) {
 
 TEST_F(BrokenAlternativeServicesTest, MarkBrokenUntilDefaultNetworkChanges) {
   const BrokenAlternativeService alternative_service1(
-      AlternativeService(kProtoHTTP2, "foo", 443), network_isolation_key1_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoHTTP2, "foo", 443), network_anonymization_key1_,
+      true /* use_network_anonymization_key */);
   const BrokenAlternativeService alternative_service2(
-      AlternativeService(kProtoHTTP2, "foo", 1234), network_isolation_key1_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoHTTP2, "foo", 1234), network_anonymization_key1_,
+      true /* use_network_anonymization_key */);
   const BrokenAlternativeService alternative_service3(
-      AlternativeService(kProtoHTTP2, "foo", 443), network_isolation_key2_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoHTTP2, "foo", 443), network_anonymization_key2_,
+      true /* use_network_anonymization_key */);
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service2));
@@ -189,11 +189,11 @@ TEST_F(BrokenAlternativeServicesTest, MarkBrokenUntilDefaultNetworkChanges) {
 
 TEST_F(BrokenAlternativeServicesTest, MarkRecentlyBroken) {
   const BrokenAlternativeService alternative_service1(
-      AlternativeService(kProtoHTTP2, "foo", 443), network_isolation_key1_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoHTTP2, "foo", 443), network_anonymization_key1_,
+      true /* use_network_anonymization_key */);
   const BrokenAlternativeService alternative_service2(
-      AlternativeService(kProtoHTTP2, "foo", 443), network_isolation_key2_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoHTTP2, "foo", 443), network_anonymization_key2_,
+      true /* use_network_anonymization_key */);
 
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service1));
@@ -227,14 +227,14 @@ TEST_F(BrokenAlternativeServicesTest, MarkRecentlyBroken) {
 
 TEST_F(BrokenAlternativeServicesTest, OnDefaultNetworkChanged) {
   BrokenAlternativeService alternative_service1(
-      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key1_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), network_anonymization_key1_,
+      true /* use_network_anonymization_key */);
   BrokenAlternativeService alternative_service2(
-      AlternativeService(kProtoQUIC, "bar", 443), network_isolation_key1_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "bar", 443), network_anonymization_key1_,
+      true /* use_network_anonymization_key */);
   BrokenAlternativeService alternative_service3(
-      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key2_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), network_anonymization_key2_,
+      true /* use_network_anonymization_key */);
 
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service1));
   EXPECT_FALSE(broken_services_.WasRecentlyBroken(alternative_service1));
@@ -310,8 +310,8 @@ TEST_F(BrokenAlternativeServicesTest, OnDefaultNetworkChanged) {
 TEST_F(BrokenAlternativeServicesTest,
        ExpireBrokenAlternativeServiceOnDefaultNetwork) {
   BrokenAlternativeService alternative_service(
-      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key1_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), network_anonymization_key1_,
+      true /* use_network_anonymization_key */);
 
   broken_services_.MarkBrokenUntilDefaultNetworkChanges(alternative_service);
 
@@ -338,15 +338,15 @@ TEST_F(BrokenAlternativeServicesTest,
   EXPECT_EQ(1u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service.alternative_service,
             expired_alt_svcs_[0].alternative_service);
-  EXPECT_EQ(alternative_service.network_isolation_key,
-            expired_alt_svcs_[0].network_isolation_key);
+  EXPECT_EQ(alternative_service.network_anonymization_key,
+            expired_alt_svcs_[0].network_anonymization_key);
   EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service));
 }
 
 TEST_F(BrokenAlternativeServicesTest, ExpireBrokenAlternateProtocolMappings) {
   BrokenAlternativeService alternative_service(
-      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key1_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), network_anonymization_key1_,
+      true /* use_network_anonymization_key */);
 
   broken_services_.MarkBroken(alternative_service);
 
@@ -373,16 +373,16 @@ TEST_F(BrokenAlternativeServicesTest, ExpireBrokenAlternateProtocolMappings) {
   EXPECT_EQ(1u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service.alternative_service,
             expired_alt_svcs_[0].alternative_service);
-  EXPECT_EQ(alternative_service.network_isolation_key,
-            expired_alt_svcs_[0].network_isolation_key);
+  EXPECT_EQ(alternative_service.network_anonymization_key,
+            expired_alt_svcs_[0].network_anonymization_key);
   EXPECT_TRUE(broken_services_.WasRecentlyBroken(alternative_service));
 }
 
 TEST_F(BrokenAlternativeServicesTest, IsBroken) {
   // Tests the IsBroken() methods.
   BrokenAlternativeService alternative_service(
-      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
   base::TimeTicks brokenness_expiration;
 
   EXPECT_FALSE(broken_services_.IsBroken(alternative_service));
@@ -425,8 +425,8 @@ TEST_F(BrokenAlternativeServicesTest, IsBroken) {
 // - brokenness expires after two intervals.
 TEST_F(BrokenAlternativeServicesTest, BrokenAfterBrokenOnDefaultNetwork) {
   BrokenAlternativeService alternative_service(
-      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
 
   // Mark the alternative service broken on the default network.
   broken_services_.MarkBrokenUntilDefaultNetworkChanges(alternative_service);
@@ -475,8 +475,8 @@ TEST_F(BrokenAlternativeServicesTest, BrokenAfterBrokenOnDefaultNetwork) {
 // - (signal received that default network changes);
 TEST_F(BrokenAlternativeServicesTest, BrokenOnDefaultNetworkAfterBroken) {
   BrokenAlternativeService alternative_service(
-      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
 
   // Mark the alternative service broken.
   broken_services_.MarkBroken(alternative_service);
@@ -518,8 +518,8 @@ TEST_F(BrokenAlternativeServicesTest, BrokenOnDefaultNetworkAfterBroken) {
 TEST_F(BrokenAlternativeServicesTest,
        BrokenUntilDefaultNetworkChangeWithExponentialBackoff) {
   BrokenAlternativeService alternative_service(
-      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
 
   // Mark the alternative service broken on the default network.
   broken_services_.MarkBrokenUntilDefaultNetworkChanges(alternative_service);
@@ -578,8 +578,8 @@ TEST_F(BrokenAlternativeServicesTest, ExponentialBackoff) {
   // longer apply.
 
   BrokenAlternativeService alternative_service(
-      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
 
   broken_services_.MarkBroken(alternative_service);
   test_task_runner_->FastForwardBy(base::Minutes(5) - base::Seconds(1));
@@ -667,8 +667,8 @@ void BrokenAlternativeServicesTest::TestExponentialBackoff(
                                   exponential_backoff_on_initial_delay);
 
   BrokenAlternativeService alternative_service(
-      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
 
   broken_services_.MarkBroken(alternative_service);
   test_task_runner_->FastForwardBy(initial_delay - base::Seconds(1));
@@ -739,11 +739,11 @@ TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {
   // expire before A.
 
   BrokenAlternativeService alternative_service1(
-      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key1_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), network_anonymization_key1_,
+      true /* use_network_anonymization_key */);
   BrokenAlternativeService alternative_service2(
-      AlternativeService(kProtoQUIC, "bar", 443), network_isolation_key2_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "bar", 443), network_anonymization_key2_,
+      true /* use_network_anonymization_key */);
 
   // Repeately mark |alternative_service1| broken and let brokenness expire.
   // Do this a few times.
@@ -754,8 +754,8 @@ TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {
   EXPECT_EQ(1u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service1.alternative_service,
             expired_alt_svcs_.back().alternative_service);
-  EXPECT_EQ(alternative_service1.network_isolation_key,
-            expired_alt_svcs_.back().network_isolation_key);
+  EXPECT_EQ(alternative_service1.network_anonymization_key,
+            expired_alt_svcs_.back().network_anonymization_key);
 
   broken_services_.MarkBroken(alternative_service1);
   EXPECT_EQ(1u, test_task_runner_->GetPendingTaskCount());
@@ -763,8 +763,8 @@ TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {
   EXPECT_EQ(2u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service1.alternative_service,
             expired_alt_svcs_.back().alternative_service);
-  EXPECT_EQ(alternative_service1.network_isolation_key,
-            expired_alt_svcs_.back().network_isolation_key);
+  EXPECT_EQ(alternative_service1.network_anonymization_key,
+            expired_alt_svcs_.back().network_anonymization_key);
 
   broken_services_.MarkBroken(alternative_service1);
   EXPECT_EQ(1u, test_task_runner_->GetPendingTaskCount());
@@ -772,8 +772,8 @@ TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {
   EXPECT_EQ(3u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service1.alternative_service,
             expired_alt_svcs_.back().alternative_service);
-  EXPECT_EQ(alternative_service1.network_isolation_key,
-            expired_alt_svcs_.back().network_isolation_key);
+  EXPECT_EQ(alternative_service1.network_anonymization_key,
+            expired_alt_svcs_.back().network_anonymization_key);
 
   expired_alt_svcs_.clear();
 
@@ -803,8 +803,8 @@ TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {
   EXPECT_EQ(1u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service2.alternative_service,
             expired_alt_svcs_[0].alternative_service);
-  EXPECT_EQ(alternative_service2.network_isolation_key,
-            expired_alt_svcs_[0].network_isolation_key);
+  EXPECT_EQ(alternative_service2.network_anonymization_key,
+            expired_alt_svcs_[0].network_anonymization_key);
 
   // Advance time until one time quantum before |alternative_service1|'s
   // brokenness expires
@@ -816,8 +816,8 @@ TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {
   EXPECT_EQ(1u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service2.alternative_service,
             expired_alt_svcs_[0].alternative_service);
-  EXPECT_EQ(alternative_service2.network_isolation_key,
-            expired_alt_svcs_[0].network_isolation_key);
+  EXPECT_EQ(alternative_service2.network_anonymization_key,
+            expired_alt_svcs_[0].network_anonymization_key);
 
   // Advance time by one time quantum.  |alternative_service1| should no longer
   // be broken.
@@ -828,24 +828,24 @@ TEST_F(BrokenAlternativeServicesTest, RemoveExpiredBrokenAltSvc) {
   EXPECT_EQ(2u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service2.alternative_service,
             expired_alt_svcs_[0].alternative_service);
-  EXPECT_EQ(alternative_service2.network_isolation_key,
-            expired_alt_svcs_[0].network_isolation_key);
+  EXPECT_EQ(alternative_service2.network_anonymization_key,
+            expired_alt_svcs_[0].network_anonymization_key);
   EXPECT_EQ(alternative_service1.alternative_service,
             expired_alt_svcs_[1].alternative_service);
-  EXPECT_EQ(alternative_service1.network_isolation_key,
-            expired_alt_svcs_[1].network_isolation_key);
+  EXPECT_EQ(alternative_service1.network_anonymization_key,
+            expired_alt_svcs_[1].network_anonymization_key);
 }
 
 // Same as above, but checks a single alternative service with two different
-// NetworkIsolationKeys.
+// NetworkAnonymizationKeys.
 TEST_F(BrokenAlternativeServicesTest,
-       RemoveExpiredBrokenAltSvcWithNetworkIsolationKey) {
+       RemoveExpiredBrokenAltSvcWithNetworkAnonymizationKey) {
   BrokenAlternativeService alternative_service1(
-      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key1_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), network_anonymization_key1_,
+      true /* use_network_anonymization_key */);
   BrokenAlternativeService alternative_service2(
-      AlternativeService(kProtoQUIC, "foo", 443), network_isolation_key2_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), network_anonymization_key2_,
+      true /* use_network_anonymization_key */);
 
   // Repeately mark |alternative_service1| broken and let brokenness expire.
   // Do this a few times.
@@ -856,8 +856,8 @@ TEST_F(BrokenAlternativeServicesTest,
   EXPECT_EQ(1u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service1.alternative_service,
             expired_alt_svcs_.back().alternative_service);
-  EXPECT_EQ(alternative_service1.network_isolation_key,
-            expired_alt_svcs_.back().network_isolation_key);
+  EXPECT_EQ(alternative_service1.network_anonymization_key,
+            expired_alt_svcs_.back().network_anonymization_key);
 
   broken_services_.MarkBroken(alternative_service1);
   EXPECT_EQ(1u, test_task_runner_->GetPendingTaskCount());
@@ -865,8 +865,8 @@ TEST_F(BrokenAlternativeServicesTest,
   EXPECT_EQ(2u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service1.alternative_service,
             expired_alt_svcs_.back().alternative_service);
-  EXPECT_EQ(alternative_service1.network_isolation_key,
-            expired_alt_svcs_.back().network_isolation_key);
+  EXPECT_EQ(alternative_service1.network_anonymization_key,
+            expired_alt_svcs_.back().network_anonymization_key);
 
   broken_services_.MarkBroken(alternative_service1);
   EXPECT_EQ(1u, test_task_runner_->GetPendingTaskCount());
@@ -874,8 +874,8 @@ TEST_F(BrokenAlternativeServicesTest,
   EXPECT_EQ(3u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service1.alternative_service,
             expired_alt_svcs_.back().alternative_service);
-  EXPECT_EQ(alternative_service1.network_isolation_key,
-            expired_alt_svcs_.back().network_isolation_key);
+  EXPECT_EQ(alternative_service1.network_anonymization_key,
+            expired_alt_svcs_.back().network_anonymization_key);
 
   expired_alt_svcs_.clear();
 
@@ -905,8 +905,8 @@ TEST_F(BrokenAlternativeServicesTest,
   EXPECT_EQ(1u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service2.alternative_service,
             expired_alt_svcs_[0].alternative_service);
-  EXPECT_EQ(alternative_service2.network_isolation_key,
-            expired_alt_svcs_[0].network_isolation_key);
+  EXPECT_EQ(alternative_service2.network_anonymization_key,
+            expired_alt_svcs_[0].network_anonymization_key);
 
   // Advance time until one time quantum before |alternative_service1|'s
   // brokenness expires
@@ -918,8 +918,8 @@ TEST_F(BrokenAlternativeServicesTest,
   EXPECT_EQ(1u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service2.alternative_service,
             expired_alt_svcs_[0].alternative_service);
-  EXPECT_EQ(alternative_service2.network_isolation_key,
-            expired_alt_svcs_[0].network_isolation_key);
+  EXPECT_EQ(alternative_service2.network_anonymization_key,
+            expired_alt_svcs_[0].network_anonymization_key);
 
   // Advance time by one time quantum.  |alternative_service1| should no longer
   // be broken.
@@ -930,21 +930,21 @@ TEST_F(BrokenAlternativeServicesTest,
   EXPECT_EQ(2u, expired_alt_svcs_.size());
   EXPECT_EQ(alternative_service2.alternative_service,
             expired_alt_svcs_[0].alternative_service);
-  EXPECT_EQ(alternative_service2.network_isolation_key,
-            expired_alt_svcs_[0].network_isolation_key);
+  EXPECT_EQ(alternative_service2.network_anonymization_key,
+            expired_alt_svcs_[0].network_anonymization_key);
   EXPECT_EQ(alternative_service1.alternative_service,
             expired_alt_svcs_[1].alternative_service);
-  EXPECT_EQ(alternative_service1.network_isolation_key,
-            expired_alt_svcs_[1].network_isolation_key);
+  EXPECT_EQ(alternative_service1.network_anonymization_key,
+            expired_alt_svcs_[1].network_anonymization_key);
 }
 
 TEST_F(BrokenAlternativeServicesTest, SetBrokenAlternativeServices) {
   BrokenAlternativeService alternative_service1(
-      AlternativeService(kProtoQUIC, "foo1", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo1", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
   BrokenAlternativeService alternative_service2(
-      AlternativeService(kProtoQUIC, "foo2", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo2", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
 
   base::TimeDelta delay1 = base::Minutes(1);
 
@@ -1000,14 +1000,14 @@ TEST_F(BrokenAlternativeServicesTest, SetBrokenAlternativeServices) {
 TEST_F(BrokenAlternativeServicesTest,
        SetBrokenAlternativeServicesWithExisting) {
   BrokenAlternativeService alternative_service1(
-      AlternativeService(kProtoQUIC, "foo1", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo1", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
   BrokenAlternativeService alternative_service2(
-      AlternativeService(kProtoQUIC, "foo2", 443), network_isolation_key1_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo2", 443), network_anonymization_key1_,
+      true /* use_network_anonymization_key */);
   BrokenAlternativeService alternative_service3(
-      AlternativeService(kProtoQUIC, "foo3", 443), network_isolation_key2_,
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo3", 443), network_anonymization_key2_,
+      true /* use_network_anonymization_key */);
 
   std::unique_ptr<BrokenAlternativeServiceList> broken_list =
       std::make_unique<BrokenAlternativeServiceList>();
@@ -1080,18 +1080,18 @@ TEST_F(BrokenAlternativeServicesTest,
   auto it = broken_services_.recently_broken_alternative_services().begin();
   EXPECT_EQ(alternative_service2.alternative_service,
             it->first.alternative_service);
-  EXPECT_EQ(alternative_service2.network_isolation_key,
-            it->first.network_isolation_key);
+  EXPECT_EQ(alternative_service2.network_anonymization_key,
+            it->first.network_anonymization_key);
   ++it;
   EXPECT_EQ(alternative_service1.alternative_service,
             it->first.alternative_service);
-  EXPECT_EQ(alternative_service1.network_isolation_key,
-            it->first.network_isolation_key);
+  EXPECT_EQ(alternative_service1.network_anonymization_key,
+            it->first.network_anonymization_key);
   ++it;
   EXPECT_EQ(alternative_service3.alternative_service,
             it->first.alternative_service);
-  EXPECT_EQ(alternative_service3.network_isolation_key,
-            it->first.network_isolation_key);
+  EXPECT_EQ(alternative_service3.network_anonymization_key,
+            it->first.network_anonymization_key);
 }
 
 TEST_F(BrokenAlternativeServicesTest, ScheduleExpireTaskAfterExpire) {
@@ -1099,11 +1099,11 @@ TEST_F(BrokenAlternativeServicesTest, ScheduleExpireTaskAfterExpire) {
   // is scheduled for the next broken alt svc in the expiration queue.
 
   BrokenAlternativeService alternative_service1(
-      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
   BrokenAlternativeService alternative_service2(
-      AlternativeService(kProtoQUIC, "bar", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "bar", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
 
   // Mark |alternative_service1| broken and let brokenness expire. This will
   // increase its expiration delay the next time it's marked broken.
@@ -1128,11 +1128,11 @@ TEST_F(BrokenAlternativeServicesTest, ScheduleExpireTaskAfterExpire) {
 
 TEST_F(BrokenAlternativeServicesTest, Clear) {
   BrokenAlternativeService alternative_service1(
-      AlternativeService(kProtoQUIC, "foo", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "foo", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
   BrokenAlternativeService alternative_service2(
-      AlternativeService(kProtoQUIC, "bar", 443), NetworkIsolationKey(),
-      true /* use_network_isolation_key */);
+      AlternativeService(kProtoQUIC, "bar", 443), NetworkAnonymizationKey(),
+      true /* use_network_anonymization_key */);
 
   broken_services_.MarkBroken(alternative_service1);
   broken_services_.MarkRecentlyBroken(alternative_service2);

@@ -582,16 +582,13 @@ bool HttpServerProperties::IsInitialized() const {
 
 void HttpServerProperties::OnExpireBrokenAlternativeService(
     const AlternativeService& expired_alternative_service,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   // Remove every occurrence of |expired_alternative_service| from
   // |alternative_service_map_|.
   for (auto map_it = server_info_map_.begin();
        map_it != server_info_map_.end();) {
     if (!map_it->second.alternative_services.has_value() ||
-        map_it->first.network_anonymization_key !=
-            NetworkAnonymizationKey::
-                CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                    network_isolation_key)) {
+        map_it->first.network_anonymization_key != network_anonymization_key) {
       ++map_it;
       continue;
     }
@@ -614,11 +611,8 @@ void HttpServerProperties::OnExpireBrokenAlternativeService(
     // from both |canonical_alt_svc_map_| and
     // |alternative_service_map_|.
     if (service_info->empty()) {
-      RemoveAltSvcCanonicalHost(
-          map_it->first.server,
-          NetworkAnonymizationKey::
-              CreateFromNetworkIsolationKeyTemporaryMigrationHelper(
-                  network_isolation_key));
+      RemoveAltSvcCanonicalHost(map_it->first.server,
+                                network_anonymization_key);
       map_it->second.alternative_services.reset();
       map_it = server_info_map_.EraseIfEmpty(map_it);
       continue;

@@ -437,7 +437,7 @@ class NET_EXPORT HttpServerProperties
   // BrokenAlternativeServices::Delegate method.
   void OnExpireBrokenAlternativeService(
       const AlternativeService& expired_alternative_service,
-      const NetworkIsolationKey& network_isolation_key) override;
+      const NetworkAnonymizationKey& network_anonymization_key) override;
 
   static base::TimeDelta GetUpdatePrefsDelayForTesting();
 

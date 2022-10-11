@@ -27,7 +27,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_address.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/socket_test_util.h"
@@ -256,8 +256,9 @@ void GCMConnectionHandlerImplTest::BuildSocket(const ReadList& read_list,
   const url::Origin kOrigin = url::Origin::Create(kDestination);
   mojo_socket_factory_remote_->CreateProxyResolvingSocket(
       kDestination,
-      net::NetworkIsolationKey(kOrigin /* top_frame_origin */,
-                               kOrigin /* frame_origin */),
+      net::NetworkAnonymizationKey(
+          /*top_frame_site=*/net::SchemefulSite(kOrigin),
+          /*frame_site=*/net::SchemefulSite(kOrigin)),
       std::move(options),
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       mojo_socket_remote_.BindNewPipeAndPassReceiver(),

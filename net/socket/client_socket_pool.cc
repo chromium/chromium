@@ -186,24 +186,20 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
     resolution_callback = base::BindRepeating(
         &OnHostResolution, common_connect_job_params_->spdy_session_pool,
         // TODO(crbug.com/1206799): Pass along as SchemeHostPort.
-        SpdySessionKey(
-            HostPortPair::FromSchemeHostPort(group_id.destination()),
-            proxy_server, group_id.privacy_mode(),
-            SpdySessionKey::IsProxySession::kFalse, socket_tag,
-            net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-                group_id.network_anonymization_key()),
-            group_id.secure_dns_policy()),
+        SpdySessionKey(HostPortPair::FromSchemeHostPort(group_id.destination()),
+                       proxy_server, group_id.privacy_mode(),
+                       SpdySessionKey::IsProxySession::kFalse, socket_tag,
+                       group_id.network_anonymization_key(),
+                       group_id.secure_dns_policy()),
         is_for_websockets_);
   } else if (proxy_server.is_https()) {
     resolution_callback = base::BindRepeating(
         &OnHostResolution, common_connect_job_params_->spdy_session_pool,
-        SpdySessionKey(
-            proxy_server.host_port_pair(), ProxyServer::Direct(),
-            group_id.privacy_mode(), SpdySessionKey::IsProxySession::kTrue,
-            socket_tag,
-            net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-                group_id.network_anonymization_key()),
-            group_id.secure_dns_policy()),
+        SpdySessionKey(proxy_server.host_port_pair(), ProxyServer::Direct(),
+                       group_id.privacy_mode(),
+                       SpdySessionKey::IsProxySession::kTrue, socket_tag,
+                       group_id.network_anonymization_key(),
+                       group_id.secure_dns_policy()),
         is_for_websockets_);
   }
 

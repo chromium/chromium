@@ -109,7 +109,7 @@ class ProxyResolvingSocketTestBase {
     options->use_tls = use_tls_;
     options->fake_tls_handshake = fake_tls_handshake_;
     factory_remote_->CreateProxyResolvingSocket(
-        url, net::NetworkIsolationKey(), std::move(options),
+        url, net::NetworkAnonymizationKey(), std::move(options),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         std::move(receiver), std::move(socket_observer),
         base::BindLambdaForTesting(
@@ -387,7 +387,7 @@ TEST_F(ProxyResolvingSocketMojoTest, SocketDestroyedBeforeConnectCompletes) {
   base::RunLoop run_loop;
   int net_error = net::OK;
   factory()->CreateProxyResolvingSocket(
-      kDestination, net::NetworkIsolationKey(), nullptr,
+      kDestination, net::NetworkAnonymizationKey(), nullptr,
       net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
       socket.InitWithNewPipeAndPassReceiver(),
       mojo::NullRemote() /* observer */,

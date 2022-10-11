@@ -20,7 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/socket/socket_test_util.h"
 #include "net/socket/stream_socket.h"
@@ -532,7 +532,7 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Basic) {
   P2PHostAndIPEndPoint dest;
   dest.ip_address = server_addr;
   host.Init(net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0), 0, 0, dest,
-            net::NetworkIsolationKey());
+            net::NetworkAnonymizationKey());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -540,7 +540,7 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Basic) {
 }
 
 // Test the case where P2PHostAndIPEndPoint::hostname is populated. Make sure
-// there's a DNS lookup using the right hostname and NetworkIsolationKey.
+// there's a DNS lookup using the right hostname and NetworkAnonymizationKey.
 TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
@@ -590,13 +590,10 @@ TEST(P2PSocketTcpWithPseudoTlsTest, Hostname) {
   P2PHostAndIPEndPoint dest;
   dest.ip_address = server_addr;
   dest.hostname = kHostname;
-  net::NetworkIsolationKey network_isolation_key =
-      net::NetworkIsolationKey::CreateTransient();
   net::NetworkAnonymizationKey network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
-          network_isolation_key);
+      net::NetworkAnonymizationKey::CreateTransient();
   host.Init(net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0), 0, 0, dest,
-            network_isolation_key);
+            network_anonymization_key);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data_provider.AllReadDataConsumed());
@@ -690,7 +687,7 @@ TEST_P(P2PSocketTcpWithTlsTest, Basic) {
   P2PHostAndIPEndPoint dest;
   dest.ip_address = server_addr;
   host->Init(net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0), 0, 0, dest,
-             net::NetworkIsolationKey());
+             net::NetworkAnonymizationKey());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(data_provider.AllReadDataConsumed());

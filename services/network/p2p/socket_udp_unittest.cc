@@ -22,7 +22,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_server_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -236,7 +236,7 @@ class P2PSocketUdpTest : public testing::Test {
         local_address_, 0, 0,
         P2PHostAndIPEndPoint(std::string(),
                              ParseAddress(kTestIpAddress1, kTestPort1)),
-        net::NetworkIsolationKey());
+        net::NetworkAnonymizationKey());
     socket_ = GetSocketFromHost(socket_impl_.get());
 
     dest1_ = ParseAddress(kTestIpAddress1, kTestPort1);
@@ -581,7 +581,7 @@ TEST_F(P2PSocketUdpTest, PortRangeImplicitPort) {
         local_address, min_port, max_port,
         P2PHostAndIPEndPoint(std::string(),
                              ParseAddress(kTestIpAddress1, kTestPort1)),
-        net::NetworkIsolationKey());
+        net::NetworkAnonymizationKey());
 
     FakeDatagramServerSocket* datagram_socket =
         GetSocketFromHost(socket_impl.get());
@@ -607,7 +607,7 @@ TEST_F(P2PSocketUdpTest, PortRangeImplicitPort) {
       local_address, min_port, max_port,
       P2PHostAndIPEndPoint(std::string(),
                            ParseAddress(kTestIpAddress1, kTestPort1)),
-      net::NetworkIsolationKey());
+      net::NetworkAnonymizationKey());
 
   base::RunLoop().RunUntilIdle();
 
@@ -645,7 +645,7 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictValidPort) {
       local_address, min_port, max_port,
       P2PHostAndIPEndPoint(std::string(),
                            ParseAddress(kTestIpAddress1, kTestPort1)),
-      net::NetworkIsolationKey());
+      net::NetworkAnonymizationKey());
 
   FakeDatagramServerSocket* fake_socket = GetSocketFromHost(socket_host.get());
   net::IPEndPoint bound_address;
@@ -687,7 +687,7 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictInvalidPort) {
       local_address, min_port, max_port,
       P2PHostAndIPEndPoint(std::string(),
                            ParseAddress(kTestIpAddress1, kTestPort1)),
-      net::NetworkIsolationKey());
+      net::NetworkAnonymizationKey());
 
   base::RunLoop().RunUntilIdle();
 

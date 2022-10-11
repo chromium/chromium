@@ -14,7 +14,7 @@
 #include "components/webrtc/fake_ssl_client_socket.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/ssl_client_socket.h"
@@ -84,7 +84,7 @@ void P2PSocketTcpBase::Init(
     uint16_t min_port,
     uint16_t max_port,
     const P2PHostAndIPEndPoint& remote_address,
-    const net::NetworkIsolationKey& network_isolation_key) {
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK(!socket_);
 
   remote_address_ = remote_address;
@@ -108,8 +108,8 @@ void P2PSocketTcpBase::Init(
   // a problem on multi-homed host.
 
   socket_ = proxy_resolving_socket_factory_->CreateSocket(
-      GURL("https://" + dest_host_port_pair.ToString()), network_isolation_key,
-      IsTlsClientSocket(type_));
+      GURL("https://" + dest_host_port_pair.ToString()),
+      network_anonymization_key, IsTlsClientSocket(type_));
 
   if (IsPseudoTlsClientSocket(type_)) {
     socket_ = std::make_unique<webrtc::FakeSSLClientSocket>(std::move(socket_));

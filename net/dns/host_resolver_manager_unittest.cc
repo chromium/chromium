@@ -4552,7 +4552,6 @@ TEST_F(HostResolverManagerDnsTest, DisableAndEnableInsecureDnsClient) {
       /*additional_dns_types_enabled*/ false);
   ResolveHostResponseHelper response_proc(resolver_->CreateRequest(
       HostPortPair("nx_succeed", 1212), NetworkAnonymizationKey(),
-
       NetLogWithSource(), absl::nullopt, resolve_context_.get(),
       resolve_context_->host_cache()));
   EXPECT_THAT(response_proc.result_error(), IsOk());
@@ -6152,6 +6151,7 @@ TEST_F(HostResolverManagerDnsTest, SecureDnsMode_Automatic) {
       HostPortPair("nx_succeed", 80), NetworkAnonymizationKey(),
       NetLogWithSource(), absl::nullopt, resolve_context_.get(),
       resolve_context_->host_cache()));
+
   proc_->SignalMultiple(1u);
   EXPECT_THAT(response_proc.result_error(), IsOk());
   EXPECT_THAT(response_proc.request()->GetAddressResults()->endpoints(),
