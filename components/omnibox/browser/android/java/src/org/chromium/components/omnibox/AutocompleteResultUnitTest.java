@@ -4,6 +4,11 @@
 
 package org.chromium.components.omnibox;
 
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_COLLAPSED_NO_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_EXPANDED_NO_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_EXPANDED_WITH_HEADER;
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_EXPANDED_WITH_HEADER;
+
 import android.util.SparseArray;
 
 import org.junit.Assert;
@@ -33,14 +38,6 @@ public class AutocompleteResultUnitTest {
                 .build();
     }
 
-    private GroupConfig buildGroupConfig(String headerText, boolean isHidden) {
-        return GroupConfig.newBuilder()
-                .setHeaderText(headerText)
-                .setVisibility(isHidden ? GroupConfig.Visibility.HIDDEN
-                                        : GroupConfig.Visibility.DEFAULT_VISIBLE)
-                .build();
-    }
-
     @Test
     public void autocompleteResult_sameContentsAreEqual() {
         List<AutocompleteMatch> list1 = Arrays.asList(
@@ -62,11 +59,17 @@ public class AutocompleteResultUnitTest {
         SparseArray<GroupConfig> groupsDetails1 = new SparseArray<>();
         SparseArray<GroupConfig> groupsDetails2 = new SparseArray<>();
 
-        groupsDetails1.put(10, buildGroupConfig("Hello", false));
-        groupsDetails1.put(20, buildGroupConfig("Test", true));
+        groupsDetails1.put(10, SECTION_1_EXPANDED_NO_HEADER);
+        groupsDetails1.put(20, SECTION_2_EXPANDED_WITH_HEADER);
+        groupsDetails1.put(30, SECTION_3_EXPANDED_WITH_HEADER);
 
-        groupsDetails2.put(10, buildGroupConfig("Hello", false));
-        groupsDetails2.put(20, buildGroupConfig("Test", true));
+        // Make explicit copies of the original protos listed above.
+        groupsDetails2.put(
+                10, GroupConfig.newBuilder().mergeFrom(SECTION_1_EXPANDED_NO_HEADER).build());
+        groupsDetails2.put(
+                20, GroupConfig.newBuilder().mergeFrom(SECTION_2_EXPANDED_WITH_HEADER).build());
+        groupsDetails2.put(
+                30, GroupConfig.newBuilder().mergeFrom(SECTION_3_EXPANDED_WITH_HEADER).build());
 
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
@@ -85,11 +88,11 @@ public class AutocompleteResultUnitTest {
         SparseArray<GroupConfig> groupsDetails1 = new SparseArray<>();
         SparseArray<GroupConfig> groupsDetails2 = new SparseArray<>();
 
-        groupsDetails1.put(10, buildGroupConfig("Hello", false));
-        groupsDetails1.put(20, buildGroupConfig("Test", true));
+        groupsDetails1.put(10, SECTION_1_EXPANDED_NO_HEADER);
+        groupsDetails1.put(20, SECTION_2_EXPANDED_WITH_HEADER);
 
-        groupsDetails2.put(10, buildGroupConfig("Hello", false));
-        groupsDetails2.put(20, buildGroupConfig("Test", true));
+        groupsDetails2.put(10, SECTION_1_EXPANDED_NO_HEADER);
+        groupsDetails2.put(20, SECTION_2_EXPANDED_WITH_HEADER);
 
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
@@ -108,10 +111,10 @@ public class AutocompleteResultUnitTest {
         SparseArray<GroupConfig> groupsDetails1 = new SparseArray<>();
         SparseArray<GroupConfig> groupsDetails2 = new SparseArray<>();
 
-        groupsDetails1.put(10, buildGroupConfig("Hello", true));
-        groupsDetails1.put(20, buildGroupConfig("Test", false));
+        groupsDetails1.put(10, SECTION_1_EXPANDED_NO_HEADER);
+        groupsDetails1.put(20, SECTION_2_EXPANDED_WITH_HEADER);
 
-        groupsDetails2.put(10, buildGroupConfig("Hello", true));
+        groupsDetails2.put(10, SECTION_1_EXPANDED_NO_HEADER);
 
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
@@ -130,11 +133,11 @@ public class AutocompleteResultUnitTest {
         SparseArray<GroupConfig> groupsDetails1 = new SparseArray<>();
         SparseArray<GroupConfig> groupsDetails2 = new SparseArray<>();
 
-        groupsDetails1.put(10, buildGroupConfig("Hello", false));
-        groupsDetails1.put(20, buildGroupConfig("Test", true));
+        groupsDetails1.put(10, SECTION_1_EXPANDED_NO_HEADER);
+        groupsDetails1.put(20, SECTION_2_EXPANDED_WITH_HEADER);
 
-        groupsDetails2.put(10, buildGroupConfig("Hello", false));
-        groupsDetails2.put(20, buildGroupConfig("Test", false));
+        groupsDetails2.put(10, SECTION_1_COLLAPSED_NO_HEADER);
+        groupsDetails2.put(20, SECTION_2_EXPANDED_WITH_HEADER);
 
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
@@ -153,12 +156,12 @@ public class AutocompleteResultUnitTest {
         SparseArray<GroupConfig> groupsDetails1 = new SparseArray<>();
         SparseArray<GroupConfig> groupsDetails2 = new SparseArray<>();
 
-        groupsDetails1.put(10, buildGroupConfig("Hello", false));
-        groupsDetails1.put(20, buildGroupConfig("Test", false));
+        groupsDetails1.put(10, SECTION_1_EXPANDED_NO_HEADER);
+        groupsDetails1.put(20, SECTION_2_EXPANDED_WITH_HEADER);
 
-        groupsDetails2.put(10, buildGroupConfig("Hello", false));
-        groupsDetails2.put(20, buildGroupConfig("Test", false));
-        groupsDetails2.put(30, buildGroupConfig("Yikes", false));
+        groupsDetails2.put(10, SECTION_1_EXPANDED_NO_HEADER);
+        groupsDetails2.put(20, SECTION_2_EXPANDED_WITH_HEADER);
+        groupsDetails2.put(30, SECTION_3_EXPANDED_WITH_HEADER);
 
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
@@ -190,14 +193,19 @@ public class AutocompleteResultUnitTest {
         SparseArray<GroupConfig> groupsDetails2 = new SparseArray<>();
         SparseArray<GroupConfig> groupsDetails3 = new SparseArray<>();
 
-        groupsDetails1.put(10, buildGroupConfig("Hello", false));
-        groupsDetails1.put(20, buildGroupConfig("Test", false));
+        groupsDetails1.put(10, SECTION_1_EXPANDED_NO_HEADER);
+        groupsDetails1.put(20, SECTION_2_EXPANDED_WITH_HEADER);
 
-        groupsDetails2.put(10, buildGroupConfig("Hello", false));
-        groupsDetails2.put(15, buildGroupConfig("Test", false));
+        groupsDetails2.put(10, SECTION_1_EXPANDED_NO_HEADER);
+        groupsDetails2.put(15, SECTION_2_EXPANDED_WITH_HEADER);
 
-        groupsDetails3.put(10, buildGroupConfig("Hello", false));
-        groupsDetails3.put(20, buildGroupConfig("Test 2", false));
+        groupsDetails3.put(10, SECTION_1_EXPANDED_NO_HEADER);
+        ;
+        groupsDetails3.put(20,
+                GroupConfig.newBuilder()
+                        .mergeFrom(SECTION_2_EXPANDED_WITH_HEADER)
+                        .setHeaderText("Woooo")
+                        .build());
 
         AutocompleteResult res1 = AutocompleteResult.fromCache(list, groupsDetails1);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list, groupsDetails2);

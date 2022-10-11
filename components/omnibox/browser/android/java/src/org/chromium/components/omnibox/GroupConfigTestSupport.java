@@ -50,6 +50,13 @@ public class GroupConfigTestSupport {
     public static GroupConfig SECTION_2_COLLAPSED_WITH_HEADER =
             buildGroupConfig(GroupSection.SECTION_REMOTE_ZPS_2, "Section #2", false);
 
+    /** Suggestions with headers, expanded, section 3. */
+    public static GroupConfig SECTION_3_EXPANDED_WITH_HEADER =
+            buildGroupConfig(GroupSection.SECTION_REMOTE_ZPS_3, "Section #3", true);
+
+    /** Suggestions with headers, collapsed, section 3. */
+    public static GroupConfig SECTION_3_COLLAPSED_WITH_HEADER =
+            buildGroupConfig(GroupSection.SECTION_REMOTE_ZPS_3, "Section #3", false);
     /**
      * Create a simple GroupConfig instance with supplied text and visibility.
      *

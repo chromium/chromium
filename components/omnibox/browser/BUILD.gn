@@ -467,6 +467,7 @@ if (is_android) {
       ":junit_test_support",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/junit:junit",
       "//url:gurl_junit_shadows",
