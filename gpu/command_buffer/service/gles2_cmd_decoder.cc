@@ -10545,9 +10545,6 @@ bool GLES2DecoderImpl::DoBindOrCopyTexImageIfNeeded(Texture* texture,
     Texture::ImageState old_image_state;
     gl::GLImage* image = texture->GetLevelImage(textarget, 0, &old_image_state);
     if (image && old_image_state == Texture::UNBOUND) {
-      // Record this instance of lazy binding as we are trying to track down the
-      // last causes of lazy binding (crbug.com/1323341).
-      base::debug::DumpWithoutCrashing();
       UMA_HISTOGRAM_BOOLEAN(
           "GPU.GLES2DecoderImplLazyBindingCheck.WasBindNecessary", true);
 

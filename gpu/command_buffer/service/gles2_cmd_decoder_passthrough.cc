@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
@@ -2099,9 +2098,7 @@ void GLES2DecoderPassthroughImpl::BindOnePendingImage(
 
   // Because the binding is deferred, this texture may not be currently bound
   // any more. Bind it again.
-  // Record this instance of lazy binding as we are trying to track down the
-  // last causes of lazy binding (crbug.com/1323341).
-  base::debug::DumpWithoutCrashing();
+
   UMA_HISTOGRAM_BOOLEAN(
       "GPU.GLES2DecoderPassthroughImplLazyBindingCheck.WasBindNecessary", true);
 
