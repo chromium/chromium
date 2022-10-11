@@ -1045,7 +1045,12 @@ void RenderViewContextMenu::InitMenu() {
   if (base::FeatureList::IsEnabled(translate::kDesktopPartialTranslate) &&
       content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_PARTIAL_TRANSLATE)) {
-    AppendPartialTranslateItem();
+    ChromeTranslateClient* chrome_translate_client =
+        ChromeTranslateClient::FromWebContents(embedder_web_contents_);
+    if (chrome_translate_client &&
+        chrome_translate_client->IsTranslatableURL(params_.page_url)) {
+      AppendPartialTranslateItem();
+    }
   }
 
   // Spell check and writing direction options are not currently supported by
