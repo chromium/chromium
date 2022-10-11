@@ -20,7 +20,8 @@
     width: calc(100% + 8px);
   }
 
-  :host([is-dragging_]) {
+  :host([is-dragging_]), 
+  :host([is-loading_]) {
     --upload-dialog-drag-drop-background: var(--google-blue-50);
   }
 
@@ -208,6 +209,19 @@
     --upload-dialog-input-submit-border-color: var(--google-grey-300);
     --upload-dialog-input-submit-color: var(--google-blue-600);
   }
+
+  #loadingContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+  }
+
+  #loadingSpinner {
+    display: block;
+    margin-bottom: 12px;
+  }
 </style>
 
 <div id="dialog" hidden$="{{isHidden_}}" tabindex="-1" lang="$i18n{language}">
@@ -255,6 +269,16 @@
           </div>
         </div>
       </template>
+      <!-- Loading state -->
+      <template is="dom-if" if="{{isLoading_}}">
+        <div id="loadingContainer">
+          <paper-spinner-lite id="loadingSpinner" active>
+          </paper-spinner-lite>
+          <div class="drag-drop-title">
+            $i18n{lensSearchUploadDialogLoadingText}
+          </div>
+        </div>
+      </template>
     </div>
-  </div>
+  </div>  
 </div>
