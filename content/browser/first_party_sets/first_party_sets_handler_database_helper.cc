@@ -117,4 +117,14 @@ FirstPartySetsHandlerDatabaseHelper::GetPersistedGlobalSets(
   return db_->GetGlobalSets(browser_context_id);
 }
 
+// Wraps FirstPartySetsDatabase::HasEntryInBrowserContextsClearedForTesting.
+bool FirstPartySetsHandlerDatabaseHelper::
+    HasEntryInBrowserContextsClearedForTesting(
+        const std::string& browser_context_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!browser_context_id.empty());
+  return db_->HasEntryInBrowserContextsClearedForTesting(  // IN-TEST
+      browser_context_id);
+}
+
 }  // namespace content

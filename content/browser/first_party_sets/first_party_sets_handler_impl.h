@@ -131,6 +131,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       const std::string& browser_context_id,
       base::OnceCallback<void(absl::optional<net::GlobalFirstPartySets>)>
           callback);
+  void HasBrowserContextClearedForTesting(
+      const std::string& browser_context_id,
+      base::OnceCallback<void(absl::optional<bool>)> callback);
 
   // Computes information needed by the FirstPartySetsAccessDelegate in order
   // to update the browser's list of First-Party Sets to respect a profile's
@@ -173,6 +176,13 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // needed to apply `policy` to `global_sets_`.
   net::FirstPartySetsContextConfig GetContextConfigForPolicyInternal(
       const base::Value::Dict& policy) const;
+
+  void OnGetSitesToClear(
+      base::RepeatingCallback<BrowserContext*()> browser_context_getter,
+      const std::string& browser_context_id,
+      net::FirstPartySetsContextConfig context_config,
+      base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback,
+      std::vector<net::SchemefulSite> sites_to_clear) const;
 
   // `failed_data_types` is a bitmask used to indicate data types from
   // BrowsingDataRemover::DataType enum that were failed to remove. 0 indicates

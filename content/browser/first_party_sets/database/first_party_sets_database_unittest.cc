@@ -1002,6 +1002,27 @@ TEST_F(FirstPartySetsDatabaseTest, GetGlobalSets) {
                                             absl::nullopt))));
 }
 
+TEST_F(FirstPartySetsDatabaseTest,
+       HasEntryInBrowserContextsClearedForTesting_NoPreExistingDB) {
+  OpenDatabase();
+  EXPECT_FALSE(db()->HasEntryInBrowserContextsClearedForTesting("b"));
+}
+
+TEST_F(FirstPartySetsDatabaseTest, HasEntryInBrowserContextsClearedForTesting) {
+  ASSERT_TRUE(
+      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
+
+  // Verify data in the pre-existing DB.
+  {
+    sql::Database db;
+    EXPECT_TRUE(db.Open(db_path()));
+    EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
+  }
+
+  OpenDatabase();
+  EXPECT_TRUE(db()->HasEntryInBrowserContextsClearedForTesting("b0"));
+}
+
 TEST_F(FirstPartySetsDatabaseTest, PersistSets_FormatCheck) {
   const base::Version version("0.0.1");
   const std::string browser_context_id = "b";

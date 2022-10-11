@@ -35,6 +35,7 @@
 
 using ::testing::Eq;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
@@ -66,6 +67,14 @@ absl::optional<net::GlobalFirstPartySets> GetPersistedGlobalSetsAndWait(
     const std::string& browser_context_id) {
   base::test::TestFuture<absl::optional<net::GlobalFirstPartySets>> future;
   FirstPartySetsHandlerImpl::GetInstance()->GetPersistedGlobalSetsForTesting(
+      browser_context_id, future.GetCallback());
+  return future.Take();
+}
+
+absl::optional<bool> HasEntryInBrowserContextsClearedAndWait(
+    const std::string& browser_context_id) {
+  base::test::TestFuture<absl::optional<bool>> future;
+  FirstPartySetsHandlerImpl::GetInstance()->HasBrowserContextClearedForTesting(
       browser_context_id, future.GetCallback());
   return future.Take();
 }
@@ -289,6 +298,10 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
   FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
                                                  LocalSetDeclaration());
+
+  EXPECT_THAT(HasEntryInBrowserContextsClearedAndWait(browser_context_id),
+              Optional(false));
+
   ASSERT_THAT(GetSetsAndWait().FindEntries({foo, associated},
                                            net::FirstPartySetsContextConfig()),
               UnorderedElementsAre(
@@ -317,6 +330,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           Pair(associated,
                net::FirstPartySetEntry(foo, net::SiteType::kAssociated,
                                        absl::nullopt))));
+  EXPECT_THAT(HasEntryInBrowserContextsClearedAndWait(browser_context_id),
+              Optional(true));
 
   histogram.ExpectUniqueSample(
       kFirstPartySetsClearSiteDataOutcomeHistogram,

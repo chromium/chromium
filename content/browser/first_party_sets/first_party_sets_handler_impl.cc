@@ -228,6 +228,22 @@ void FirstPartySetsHandlerImpl::GetPersistedGlobalSetsForTesting(
       .Then(std::move(callback));
 }
 
+void FirstPartySetsHandlerImpl::HasBrowserContextClearedForTesting(
+    const std::string& browser_context_id,
+    base::OnceCallback<void(absl::optional<bool>)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!browser_context_id.empty());
+  if (db_helper_.is_null()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  db_helper_
+      .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::
+                     HasEntryInBrowserContextsClearedForTesting)  // IN-TEST
+      .WithArgs(browser_context_id)
+      .Then(std::move(callback));
+}
+
 void FirstPartySetsHandlerImpl::SetCompleteSets(
     net::GlobalFirstPartySets sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -316,8 +332,33 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
     return;
   }
 
-  // TODO(crbug.com/1219656): Make async call to FirstPartySetsDatabaseHelper to
-  // get the sites to clear.
+  // Extract the callback into a variable and pass it into DB async call args,
+  // to prevent the case that `context_config` gets used after it's moved. This
+  // is because C++ does not have a defined evaluation order for function
+  // parameters.
+  base::OnceCallback<void(std::vector<net::SchemefulSite>)>
+      on_get_sites_to_clear = base::BindOnce(
+          &FirstPartySetsHandlerImpl::OnGetSitesToClear,
+          // base::Unretained(this) is safe here because this
+          // is a static singleton.
+          base::Unretained(this), browser_context_getter, browser_context_id,
+          context_config.Clone(), std::move(callback));
+
+  db_helper_
+      .AsyncCall(&FirstPartySetsHandlerDatabaseHelper::
+                     UpdateAndGetSitesToClearForContext)
+      .WithArgs(browser_context_id, global_sets_->Clone(),
+                std::move(context_config))
+      .Then(std::move(on_get_sites_to_clear));
+}
+
+void FirstPartySetsHandlerImpl::OnGetSitesToClear(
+    base::RepeatingCallback<BrowserContext*()> browser_context_getter,
+    const std::string& browser_context_id,
+    net::FirstPartySetsContextConfig context_config,
+    base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback,
+    std::vector<net::SchemefulSite> sites_to_clear) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   BrowserContext* browser_context = browser_context_getter.Run();
   if (!browser_context) {
@@ -330,7 +371,7 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
   }
 
   FirstPartySetsSiteDataRemover::RemoveSiteData(
-      *browser_context->GetBrowsingDataRemover(), {},
+      *browser_context->GetBrowsingDataRemover(), std::move(sites_to_clear),
       base::BindOnce(
           &FirstPartySetsHandlerImpl::DidClearSiteDataOnChangedSetsForContext,
           // base::Unretained(this) is safe here because
@@ -350,8 +391,12 @@ void FirstPartySetsHandlerImpl::DidClearSiteDataOnChangedSetsForContext(
   ClearSiteDataOutcomeType outcome =
       ComputeClearSiteDataOutcome(failed_data_types);
   RecordClearSiteDataOutcome(outcome);
-
-  // TODO(crbug.com/1219656): Update DB with the clear status if successful.
+  if (outcome == ClearSiteDataOutcomeType::kSuccess) {
+    db_helper_
+        .AsyncCall(
+            &FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext)
+        .WithArgs(browser_context_id);
+  }
 
   db_helper_.AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistSets)
       .WithArgs(browser_context_id, version_, global_sets_->Clone(),

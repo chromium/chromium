@@ -116,6 +116,10 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   [[nodiscard]] net::FirstPartySetsContextConfig FetchPolicyModifications(
       const std::string& browser_context_id);
 
+  // Check whether the `browser_context_id`  has performed clearing.
+  [[nodiscard]] bool HasEntryInBrowserContextsClearedForTesting(
+      const std::string& browser_context_id);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsDatabaseTest,
                            SetPublicSets_InvalidVersion);

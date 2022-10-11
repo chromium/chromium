@@ -546,6 +546,26 @@ FirstPartySetsDatabase::FetchPolicyModifications(
   return net::FirstPartySetsContextConfig(std::move(results));
 }
 
+bool FirstPartySetsDatabase::HasEntryInBrowserContextsClearedForTesting(
+    const std::string& browser_context_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!browser_context_id.empty());
+
+  if (!LazyInit())
+    return {};
+
+  static constexpr char kSelectSql[] =
+      // clang-format off
+      "SELECT 1 FROM browser_contexts_cleared "
+      "WHERE browser_context_id=? LIMIT 1";
+  // clang-format on
+
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  statement.BindString(0, browser_context_id);
+
+  return statement.Step() && statement.Succeeded();
+}
+
 base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>
 FirstPartySetsDatabase::FetchManualSets(const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

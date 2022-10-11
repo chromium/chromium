@@ -90,6 +90,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   net::GlobalFirstPartySets GetPersistedGlobalSets(
       const std::string& browser_context_id);
 
+  // Wraps FirstPartySetsDatabase::HasEntryInBrowserContextClearedForTesting.
+  bool HasEntryInBrowserContextsClearedForTesting(
+      const std::string& browser_context_id);
+
  private:
   std::unique_ptr<FirstPartySetsDatabase> db_
       GUARDED_BY_CONTEXT(sequence_checker_);
