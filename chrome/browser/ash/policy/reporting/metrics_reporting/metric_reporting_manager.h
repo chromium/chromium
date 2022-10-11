@@ -53,6 +53,10 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
     bool IsAffiliated(Profile* profile) const override;
 
     virtual bool IsDeprovisioned() const;
+
+    virtual std::unique_ptr<Sampler> GetHttpsLatencySampler() const;
+
+    virtual std::unique_ptr<Sampler> GetNetworkTelemetrySampler() const;
   };
 
   static std::unique_ptr<MetricReportingManager> Create(
@@ -149,6 +153,9 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   void InitPeripheralsCollectors();
 
   void InitDisplayCollectors();
+
+  std::vector<ConfiguredSampler*> GetTelemetrySamplersFromSetting(
+      base::StringPiece setting_name);
 
   CrosReportingSettings reporting_settings_;
 
