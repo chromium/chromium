@@ -71,12 +71,12 @@ void WebTestTtsPlatform::Shutdown() {}
 void WebTestTtsPlatform::FinalizeVoiceOrdering(
     std::vector<content::VoiceData>& voices) {}
 
-void WebTestTtsPlatform::GetVoicesForBrowserContext(
-    content::BrowserContext* browser_context,
-    const GURL& source_url,
-    std::vector<content::VoiceData>* out_voices) {}
-
 void WebTestTtsPlatform::RefreshVoices() {}
+
+content::ExternalPlatformDelegate*
+WebTestTtsPlatform::GetExternalPlatformDelegate() {
+  return nullptr;
+}
 
 WebTestTtsPlatform::WebTestTtsPlatform() = default;
 

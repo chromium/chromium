@@ -59,4 +59,8 @@ void TtsPlatformImpl::Shutdown() {}
 
 void TtsPlatformImpl::FinalizeVoiceOrdering(std::vector<VoiceData>& voices) {}
 
+ExternalPlatformDelegate* TtsPlatformImpl::GetExternalPlatformDelegate() {
+  return nullptr;
+}
+
 }  // namespace content

@@ -22,7 +22,6 @@ class TtsPlatformImpl : public TtsPlatform {
 
   // TtsPlatform overrides.
   void LoadBuiltInTtsEngine(BrowserContext* browser_context) override;
-  void Enqueue(std::unique_ptr<TtsUtterance> utterance) override {}
   void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                    const VoiceData& voice_data) override;
   std::string GetError() override;
@@ -30,11 +29,9 @@ class TtsPlatformImpl : public TtsPlatform {
   void SetError(const std::string& error) override;
   void Shutdown() override;
   void FinalizeVoiceOrdering(std::vector<VoiceData>& voices) override;
-  void GetVoicesForBrowserContext(
-      content::BrowserContext* browser_context,
-      const GURL& source_url,
-      std::vector<content::VoiceData>* out_voices) override {}
   void RefreshVoices() override {}
+
+  ExternalPlatformDelegate* GetExternalPlatformDelegate() override;
 
  protected:
   TtsPlatformImpl() {}

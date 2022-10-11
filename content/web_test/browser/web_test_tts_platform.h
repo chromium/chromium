@@ -28,7 +28,6 @@ class WebTestTtsPlatform : public content::TtsPlatform {
              const content::VoiceData& voice,
              const content::UtteranceContinuousParameters& params,
              base::OnceCallback<void(bool)> on_speak_finished) override;
-  void Enqueue(std::unique_ptr<content::TtsUtterance> utterance) override {}
   bool StopSpeaking() override;
   bool IsSpeaking() override;
   void GetVoices(std::vector<content::VoiceData>* out_voices) override;
@@ -42,11 +41,8 @@ class WebTestTtsPlatform : public content::TtsPlatform {
   void SetError(const std::string& error) override;
   void Shutdown() override;
   void FinalizeVoiceOrdering(std::vector<content::VoiceData>& voices) override;
-  void GetVoicesForBrowserContext(
-      content::BrowserContext* browser_context,
-      const GURL& source_url,
-      std::vector<content::VoiceData>* out_voices) override;
   void RefreshVoices() override;
+  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override;
 
  private:
   WebTestTtsPlatform();

@@ -66,7 +66,6 @@ class MockTtsPlatformImpl : public TtsPlatform {
       out_voices->push_back(voice);
   }
   void LoadBuiltInTtsEngine(BrowserContext* browser_context) override {}
-  void Enqueue(std::unique_ptr<content::TtsUtterance> utterance) override {}
   void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                    const VoiceData& voice_data) override {}
   void SetError(const std::string& error) override { error_ = error; }
@@ -74,11 +73,10 @@ class MockTtsPlatformImpl : public TtsPlatform {
   void ClearError() override { error_.clear(); }
   void Shutdown() override {}
   void FinalizeVoiceOrdering(std::vector<VoiceData>& voices) override {}
-  void GetVoicesForBrowserContext(
-      content::BrowserContext* browser_context,
-      const GURL& source_url,
-      std::vector<content::VoiceData>* out_voices) override {}
   void RefreshVoices() override {}
+  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override {
+    return nullptr;
+  }
 
   void SetPlatformImplSupported(bool state) { platform_supported_ = state; }
   void SetPlatformImplInitialized(bool state) { platform_initialized_ = state; }
@@ -298,22 +296,6 @@ class TtsControllerTest : public testing::Test {
 #endif
   MockVoicesChangedDelegate voices_changed_;
 };
-
-TEST_F(TtsControllerTest, TestTtsControllerShutdown) {
-  std::unique_ptr<TtsUtterance> utterance1 = TtsUtterance::Create();
-  utterance1->SetShouldClearQueue(false);
-  utterance1->SetSrcId(1);
-  controller()->SpeakOrEnqueue(std::move(utterance1));
-
-  std::unique_ptr<TtsUtterance> utterance2 = TtsUtterance::Create();
-  utterance2->SetShouldClearQueue(false);
-  utterance2->SetSrcId(2);
-  controller()->SpeakOrEnqueue(std::move(utterance2));
-
-  // Make sure that deleting the controller when there are pending
-  // utterances doesn't cause a crash.
-  ReleaseTtsController();
-}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(TtsControllerTest, TestBrowserContextRemoved) {
@@ -600,6 +582,22 @@ TEST_F(TtsControllerTest, TestGetMatchingVoice) {
 // TODO(crbug.com/1227543): Add new tests for lacros with tts support feature
 // being enabled.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(TtsControllerTest, TestTtsControllerShutdown) {
+  std::unique_ptr<TtsUtterance> utterance1 = TtsUtterance::Create();
+  utterance1->SetShouldClearQueue(false);
+  utterance1->SetSrcId(1);
+  controller()->SpeakOrEnqueue(std::move(utterance1));
+
+  std::unique_ptr<TtsUtterance> utterance2 = TtsUtterance::Create();
+  utterance2->SetShouldClearQueue(false);
+  utterance2->SetSrcId(2);
+  controller()->SpeakOrEnqueue(std::move(utterance2));
+
+  // Make sure that deleting the controller when there are pending
+  // utterances doesn't cause a crash.
+  ReleaseTtsController();
+}
+
 TEST_F(TtsControllerTest, StopsWhenWebContentsDestroyed) {
   std::unique_ptr<WebContents> web_contents = CreateWebContents();
   std::unique_ptr<TtsUtteranceImpl> utterance =

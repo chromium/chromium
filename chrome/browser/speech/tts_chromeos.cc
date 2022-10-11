@@ -179,9 +179,13 @@ void TtsPlatformImplChromeOs::RefreshVoices() {
   tts->RefreshVoices();
 }
 
+content::ExternalPlatformDelegate*
+TtsPlatformImplChromeOs::GetExternalPlatformDelegate() {
+  return nullptr;
+}
+
 // static
-TtsPlatformImplChromeOs*
-TtsPlatformImplChromeOs::GetInstance() {
+TtsPlatformImplChromeOs* TtsPlatformImplChromeOs::GetInstance() {
   static base::NoDestructor<TtsPlatformImplChromeOs> tts_platform;
   return tts_platform.get();
 }

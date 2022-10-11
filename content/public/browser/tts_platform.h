@@ -13,6 +13,29 @@
 
 namespace content {
 
+// Interface for TTS functionality provided by the platform (e.g. on ChromeOS
+// by Ash while being used for LaCrOS).
+class CONTENT_EXPORT ExternalPlatformDelegate {
+ public:
+  virtual ~ExternalPlatformDelegate() = default;
+
+  // Returns a list of all available voices for |browser_context|, including
+  // the ones registered with the external TtsController living in another
+  // browser process. The voices include both the native voice, if supported,
+  // and all voices registered by engines.
+  // |source_url| will be used for policy decisions by engines to determine
+  // which voices to return.
+  virtual void GetVoicesForBrowserContext(
+      BrowserContext* browser_context,
+      const GURL& source_url,
+      std::vector<VoiceData>* out_voices) = 0;
+
+  // Enqueues the given utterance to the external TtsController. The
+  // utterance will be added to the utterance queue of the external
+  // TtsController and processed in sequence.
+  virtual void Enqueue(std::unique_ptr<TtsUtterance> utterance) = 0;
+};
+
 // Abstract class that defines the native platform TTS interface,
 // subclassed by specific implementations on Win, Mac, etc.
 class CONTENT_EXPORT TtsPlatform {
@@ -35,13 +58,6 @@ class CONTENT_EXPORT TtsPlatform {
   // Will call TtsController::RetrySpeakingQueuedUtterances when
   // the engine finishes loading.
   virtual void LoadBuiltInTtsEngine(BrowserContext* browser_context) = 0;
-
-  // Enqueue the given utterance when the TtsController, which
-  // processes the utterances, lives outside of the current browser process.
-  // It eventually passes the given utterance to the TtsController, so that
-  // the uttenance will be addeded to the controller's utterance queue and
-  // processed in sequence.
-  virtual void Enqueue(std::unique_ptr<TtsUtterance> utterance) = 0;
 
   // Speak the given utterance using the native voice provided by the platform
   // with the given parameters if possible.
@@ -73,15 +89,6 @@ class CONTENT_EXPORT TtsPlatform {
   // to |out_voices|.
   virtual void GetVoices(std::vector<VoiceData>* out_voices) = 0;
 
-  // Returns a list of all available voices for |browser_context|, including
-  // the native voice, if supported, and all voices registered by engines.
-  // |source_url| will be used for policy decisions by engines to determine
-  // which voices to return.
-  virtual void GetVoicesForBrowserContext(
-      BrowserContext* browser_context,
-      const GURL& source_url,
-      std::vector<VoiceData>* out_voices) = 0;
-
   // Pause the current utterance, if any, until a call to Resume,
   // Speak, or StopSpeaking.
   virtual void Pause() = 0;
@@ -109,6 +116,9 @@ class CONTENT_EXPORT TtsPlatform {
   // Triggers the TtsPlatform to update its list of voices and relay that update
   // through VoicesChanged.
   virtual void RefreshVoices() = 0;
+
+  // Gets the delegate that routes TTS requests to the external TtsController.
+  virtual ExternalPlatformDelegate* GetExternalPlatformDelegate() = 0;
 };
 
 }  // namespace content

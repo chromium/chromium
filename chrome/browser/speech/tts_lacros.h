@@ -39,11 +39,7 @@ class TtsPlatformImplLacros : public content::TtsPlatform,
   // TtsPlatform :
   bool PlatformImplSupported() override;
   bool PlatformImplInitialized() override;
-  void GetVoicesForBrowserContext(
-      content::BrowserContext* browser_context,
-      const GURL& source_url,
-      std::vector<content::VoiceData>* out_voices) override;
-  void Enqueue(std::unique_ptr<content::TtsUtterance> utterance) override;
+  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override;
 
   // Unimplemented.
   void LoadBuiltInTtsEngine(content::BrowserContext* browser_context) override {
@@ -77,6 +73,8 @@ class TtsPlatformImplLacros : public content::TtsPlatform,
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
+
+  content::ExternalPlatformDelegate* external_platform_delegate_ = nullptr;
 
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};

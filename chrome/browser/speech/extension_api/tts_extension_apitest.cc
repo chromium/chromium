@@ -132,8 +132,6 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
 
   void Shutdown() override {}
 
-  void Enqueue(std::unique_ptr<content::TtsUtterance> utterance) override {}
-
   void FinalizeVoiceOrdering(std::vector<content::VoiceData>& voices) override {
     // Prefer non-native voices.
     std::stable_partition(
@@ -143,10 +141,9 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
 
   void RefreshVoices() override {}
 
-  void GetVoicesForBrowserContext(
-      content::BrowserContext* browser_context,
-      const GURL& source_url,
-      std::vector<content::VoiceData>* out_voices) override {}
+  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override {
+    return nullptr;
+  }
 
   void set_should_fake_get_voices(bool val) { should_fake_get_voices_ = val; }
 

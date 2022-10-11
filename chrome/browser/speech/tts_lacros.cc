@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/tts_client_lacros.h"
 #include "chrome/browser/speech/tts_crosapi_util.h"
+#include "chrome/browser/speech/tts_external_platform_delegate_impl_lacros.h"
 #include "content/public/browser/tts_utterance.h"
 
 namespace {
@@ -27,8 +28,11 @@ void TtsPlatformImplLacros::EnablePlatformSupportForTesting() {
 }
 
 TtsPlatformImplLacros::TtsPlatformImplLacros() {
-  if (PlatformImplSupported())
+  if (PlatformImplSupported()) {
+    external_platform_delegate_ =
+        ExternalPlatformDelegateImplLacros::GetInstance();
     profile_manager_observation_.Observe(g_browser_process->profile_manager());
+  }
 }
 
 TtsPlatformImplLacros::~TtsPlatformImplLacros() = default;
@@ -51,18 +55,9 @@ bool TtsPlatformImplLacros::PlatformImplInitialized() {
   return true;
 }
 
-void TtsPlatformImplLacros::GetVoicesForBrowserContext(
-    content::BrowserContext* browser_context,
-    const GURL& source_url,
-    std::vector<content::VoiceData>* out_voices) {
-  TtsClientLacros::GetForBrowserContext(browser_context)
-      ->GetAllVoices(out_voices);
-}
-
-void TtsPlatformImplLacros::Enqueue(
-    std::unique_ptr<content::TtsUtterance> utterance) {
-  TtsClientLacros::GetForBrowserContext(utterance->GetBrowserContext())
-      ->SpeakOrEnqueue(std::move(utterance));
+content::ExternalPlatformDelegate*
+TtsPlatformImplLacros::GetExternalPlatformDelegate() {
+  return external_platform_delegate_;
 }
 
 std::string TtsPlatformImplLacros::GetError() {
