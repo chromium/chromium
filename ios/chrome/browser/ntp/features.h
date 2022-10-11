@@ -45,6 +45,9 @@ extern const char kBackgroundRefreshMaxAgeInSeconds[];
 // Whether the Following Feed is enabled on NTP.
 bool IsWebChannelsEnabled();
 
+// Whether the Discover service is created early, alongside the app creation.
+bool IsDiscoverFeedServiceCreatedEarly();
+
 // Whether feed background refresh is enabled. Returns the value in
 // NSUserDefaults set by `SaveFeedBackgroundRefreshEnabledForNextColdStart()`.
 // This function always returns false if the `IOS_BACKGROUND_MODE_ENABLED`
