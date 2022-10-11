@@ -15,7 +15,7 @@ namespace autofill_assistant {
 const char* kSitePerProcess = "site-per-process";
 
 BaseBrowserTest::BaseBrowserTest() = default;
-BaseBrowserTest::~BaseBrowserTest() {}
+BaseBrowserTest::~BaseBrowserTest() = default;
 
 void BaseBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(kSitePerProcess);
@@ -41,6 +41,12 @@ void BaseBrowserTest::SetUpOnMainThread() {
       "components/test/data/autofill_assistant/html");
   ASSERT_TRUE(http_server_->Start(8080));
   ASSERT_TRUE(NavigateToURL(shell(), http_server_->GetURL(kTargetWebsitePath)));
+}
+
+void BaseBrowserTest::TearDown() {
+  ASSERT_TRUE(http_server_->ShutdownAndWaitUntilComplete());
+  ASSERT_TRUE(http_server_iframe_->ShutdownAndWaitUntilComplete());
+  ContentBrowserTest::TearDown();
 }
 
 }  // namespace autofill_assistant
