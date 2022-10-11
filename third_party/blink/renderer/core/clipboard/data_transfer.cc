@@ -355,7 +355,13 @@ void DataTransfer::setDragImage(Element* image, int x, int y) {
   if (!IsForDragAndDrop())
     return;
 
-  gfx::Point location(x, y);
+  // Convert `drag_loc_` from CSS px to physical pixels.
+  // `LocalFrame::PageZoomFactor` converts from CSS px to physical px by taking
+  // into account both device scale factor and page zoom.
+  LocalFrame* frame = image->GetDocument().GetFrame();
+  gfx::Point location =
+      gfx::ScaleToRoundedPoint(gfx::Point(x, y), frame->PageZoomFactor());
+
   auto* html_image_element = DynamicTo<HTMLImageElement>(image);
   if (html_image_element && !image->isConnected())
     SetDragImageResource(html_image_element->CachedImage(), location);
@@ -439,16 +445,11 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImage(
     gfx::Point& loc,
     float device_scale_factor,
     LocalFrame* frame) const {
+  loc = drag_loc_;
   if (drag_image_element_) {
-    // Convert `drag_loc_` from CSS px to physical pixels. This makes it
-    // match the units used in the rendered image below.
-    // `LocalFrame::PageZoomFactor` converts from CSS px to physical px by
-    // taking into account both device scale factor and page zoom.
-    loc = gfx::ScaleToRoundedPoint(drag_loc_, frame->PageZoomFactor());
     return NodeImage(*frame, *drag_image_element_);
   }
   if (drag_image_) {
-    loc = drag_loc_;
     std::unique_ptr<DragImage> drag_image =
         DragImage::Create(drag_image_->GetImage());
     drag_image.get()->Scale(device_scale_factor, device_scale_factor);
