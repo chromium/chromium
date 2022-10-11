@@ -102,21 +102,12 @@ namespace feedbackPrivate {
     boolean? showQuestionnaire;
   };
 
-  // Possible statuses that can result from sending feedback.
+  // Status of the sending of a feedback report.
   enum Status {success, delayed};
 
-  // Landing page types that can be shown after sending feedback.
+  // The type of the landing page shown to the user when the feedback report is
+  // successfully sent, if one should be shown.
   enum LandingPageType {normal, techstop, noLandingPage};
-
-  // Result returned from a $(ref:sendFeedback) call.
-  dictionary SendFeedbackResult {
-    // Status of the sending of a feedback report.
-    Status status;
-
-    // The type of landing page shown to the use when the feedback report is
-    // successfully sent, if one should be shown.
-    LandingPageType landingPageType;
-  };
 
   // Allowed log sources on Chrome OS.
   enum LogSource {
@@ -198,7 +189,7 @@ namespace feedbackPrivate {
   callback GetUserEmailCallback = void(DOMString email);
   callback GetSystemInformationCallback =
       void(SystemInformation[] systemInformation);
-  callback SendFeedbackCallback = void(SendFeedbackResult result);
+  callback SendFeedbackCallback = void(Status status, LandingPageType type);
   callback ReadLogSourceCallback = void (ReadLogSourceResult result);
 
   interface Functions {
@@ -215,10 +206,10 @@ namespace feedbackPrivate {
     // information is slow.
     // |formOpenTime|: The epoch time when the feedback form was opened. This is
     // used for metrics.
-    [supportsPromises] static void sendFeedback(FeedbackInfo feedback,
-                                                optional boolean loadSystemInfo,
-                                                optional double formOpenTime,
-                                                SendFeedbackCallback callback);
+    static void sendFeedback(FeedbackInfo feedback,
+                             optional boolean loadSystemInfo,
+                             optional double formOpenTime,
+                             SendFeedbackCallback callback);
 
     // Reads from a log source indicated by <code>source</code>.
     // <p>If <code>incremental</code> is false:

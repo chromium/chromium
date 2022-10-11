@@ -26,9 +26,9 @@ chrome.test.runTests([
       sendHistograms: false
     };
     chrome.feedbackPrivate.sendFeedback(
-        feedbackInfo, chrome.test.callbackPass(function(status) {
+        feedbackInfo, chrome.test.callbackPass(function(response) {
           chrome.test.assertEq(
-              chrome.feedbackPrivate.Status.SUCCESS, status);
+              response, chrome.feedbackPrivate.Status.SUCCESS);
     }));
   }
 ]);
