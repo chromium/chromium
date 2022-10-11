@@ -107,6 +107,7 @@ enum class TransportAvailabilityParam {
   kHasCableV1Extension,
   kHasCableV2Extension,
   kPreferNativeAPI,
+  kRequireResidentKey,
 };
 
 base::StringPiece TransportAvailabilityParamToString(
@@ -128,6 +129,8 @@ base::StringPiece TransportAvailabilityParamToString(
       return "kHasCableV2Extension";
     case TransportAvailabilityParam::kPreferNativeAPI:
       return "kPreferNativeAPI";
+    case TransportAvailabilityParam::kRequireResidentKey:
+      return "kRequireResidentKey";
   }
 }
 
@@ -173,7 +176,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto one_cred = TransportAvailabilityParam::kOneRecognizedCred;
   const auto two_cred = TransportAvailabilityParam::kTwoRecognizedCreds;
   const auto empty_al = TransportAvailabilityParam::kEmptyAllowList;
-  const auto native = TransportAvailabilityParam::kPreferNativeAPI;
+  const auto rk = TransportAvailabilityParam::kRequireResidentKey;
   using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
   using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
   const auto winapi =
@@ -262,34 +265,34 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {p("a"), p("b"), t(usb), add},
        mss},
 
-      // On Windows, if there are linked phones we'll show a selection sheet.
-      {mc, {cable}, {has_winapi}, {"a"}, {winapi, p("a"), add}, mss},
-      {ga, {cable}, {has_winapi}, {"a"}, {winapi, p("a"), add}, mss},
-      // ... unless the `prefer_native_api` flag is set because Chrome
-      // remembered that the last successful security key operation was via the
-      // Windows API. In that case we'll still jump directly to the native UI.
-      {mc,
-       {cable},
-       {has_winapi, native},
-       {"a"},
-       {winapi, p("a"), add},
-       plat_ui},
-      {ga,
-       {cable},
-       {has_winapi, native},
-       {"a"},
-       {winapi, p("a"), add},
-       plat_ui},
-      // Even without `prefer_native_api`, if there aren't any linked phones
-      // we'll still jump directly to the native UI, at least until we enable
-      // the "Add phone" option.
-      {mc, {cable}, {has_winapi}, {}, {winapi}, plat_ui},
-      {ga, {cable}, {has_winapi}, {}, {winapi}, plat_ui},
-
       // If this is a Conditional UI request, don't offer the platform
       // authenticator.
       {ga, {usb, internal}, {}, {}, {t(usb)}, usb_ui, true},
       {ga, {usb, internal, cable}, {}, {"a"}, {p("a"), t(usb), add}, mss, true},
+
+      // On Windows, mc with rk=required shows mechanism selection, unless caBLE
+      // isn't an option.
+      {mc, {cable}, {has_winapi, rk}, {}, {winapi, add}, mss},
+      {mc, {}, {has_winapi, rk}, {}, {winapi}, plat_ui},
+      // But for rk=discouraged, always jump to Windows UI.
+      {mc, {cable}, {has_winapi}, {}, {winapi, add}, plat_ui},
+      {mc, {}, {has_winapi}, {}, {winapi}, plat_ui},
+
+      // On Windows, ga with empty allow list shows mechanism selection, unless
+      // caBLE isn't an option.
+      {ga, {cable}, {has_winapi, empty_al}, {}, {winapi, add}, mss},
+      {ga, {}, {has_winapi, empty_al}, {}, {winapi}, plat_ui},
+      // But with a non-empty allow list, always jump to Windows UI.
+      {ga, {cable}, {has_winapi}, {}, {winapi, add}, plat_ui},
+      {ga, {}, {has_winapi}, {}, {winapi}, plat_ui},
+      // Except when the request is legacy cable.
+      {ga, {cable, aoa}, {has_winapi, v1}, {}, {winapi, t(cable)}, cable_ui},
+      {ga,
+       {cable, aoa},
+       {has_winapi, v2},
+       {},
+       {winapi, t(aoa), t(cable)},
+       cable_ui},
   };
 
   unsigned test_num = 0;
@@ -333,7 +336,13 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
             TransportAvailabilityParam::kHasWinNativeAuthenticator)) {
       transports_info.has_win_native_api_authenticator = true;
       transports_info.win_native_api_authenticator_id = "some_authenticator_id";
+      transports_info.win_native_ui_shows_resident_credential_notice = true;
     }
+    transports_info.resident_key_requirement =
+        base::Contains(test.params,
+                       TransportAvailabilityParam::kRequireResidentKey)
+            ? device::ResidentKeyRequirement::kRequired
+            : device::ResidentKeyRequirement::kDiscouraged;
 
     AuthenticatorRequestDialogModel model(/*render_frame_host=*/nullptr);
 
@@ -349,7 +358,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       has_v2_cable_extension = true;
     }
 
-    if (has_v2_cable_extension.has_value() || !test.phone_names.empty()) {
+    if (has_v2_cable_extension.has_value() || !test.phone_names.empty() ||
+        base::Contains(test.transports,
+                       device::FidoTransportProtocol::kHybrid)) {
       std::vector<AuthenticatorRequestDialogModel::PairedPhone> phones;
       for (const auto& name : test.phone_names) {
         std::array<uint8_t, device::kP256X962Length> public_key = {0};
@@ -392,22 +403,27 @@ TEST_F(AuthenticatorRequestDialogModelTest, WinCancel) {
   // Simulate the user canceling the Windows native UI, both with and without
   // that UI being immediately triggered. If it was immediately triggered then
   // canceling it should show the mechanism selection UI.
-  for (const bool prefer_native_api : {false, true}) {
-    SCOPED_TRACE(prefer_native_api);
+  for (const bool is_passkey_request : {false, true}) {
+    SCOPED_TRACE(is_passkey_request);
 
     AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+    tai.request_type = device::FidoRequestType::kMakeCredential;
     tai.has_win_native_api_authenticator = true;
     tai.win_native_api_authenticator_id = "ID";
     tai.available_transports.insert(device::FidoTransportProtocol::kHybrid);
+    tai.resident_key_requirement =
+        is_passkey_request ? device::ResidentKeyRequirement::kRequired
+                           : device::ResidentKeyRequirement::kDiscouraged;
 
     AuthenticatorRequestDialogModel model(/*web_contents=*/nullptr);
     model.set_cable_transport_info(absl::nullopt, {}, base::DoNothing(),
                                    "fido:/1234");
 
     model.StartFlow(std::move(tai),
-                    /*is_conditional_mediation=*/false, prefer_native_api);
+                    /*is_conditional_mediation=*/false,
+                    /*prefer_native_api=*/false);
 
-    if (prefer_native_api) {
+    if (!is_passkey_request) {
       // The Windows native UI should have been triggered.
       EXPECT_EQ(model.current_step(), Step::kNotStarted);
       // Canceling the Windows native UI should be handled.

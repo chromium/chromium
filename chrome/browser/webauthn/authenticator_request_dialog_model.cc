@@ -1162,16 +1162,36 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
   if (win_native_api_enabled()) {
     const std::u16string desc = l10n_util::GetStringUTF16(
         IDS_WEBAUTHN_TRANSPORT_POPUP_DIFFERENT_AUTHENTICATOR_WIN);
+    bool win_api_should_be_priority;
+    if (base::FeatureList::IsEnabled(
+            device::kWebAuthnNewDiscoverableCredentialsUi)) {
+      // Prefer going straight to Windows native UI for requests that are not
+      // clearly passkeys related, i.e. getAssertion with a non-empty allow
+      // list and makeCredential with rk=false except for:
+      //  - conditional UI
+      //  - "legacy" caBLE (caBLEv1 and server-link caBLEv2 on a.g.c)
+      bool is_legacy_cable =
+          cable_ui_type_ && cable_ui_type_ != CableUIType::CABLE_V2_2ND_FACTOR;
+      win_api_should_be_priority =
+          !use_conditional_mediation_ && !is_legacy_cable &&
+          ((is_get_assertion &&
+            !transport_availability_.has_empty_allow_list) ||
+           (!is_get_assertion &&
+            resident_key_requirement() ==
+                device::ResidentKeyRequirement::kDiscouraged));
+    } else {
+      // The Windows API should have priority when requested unless caBLE does
+      // because it's v1 or server-link.
+      win_api_should_be_priority =
+          prefer_native_api ||
+          (!include_add_phone_option && paired_phone_names().empty());
+    }
     mechanisms_.emplace_back(
         Mechanism::WindowsAPI(/*unused*/ true), desc, desc,
         GetTransportIcon(AuthenticatorTransport::kUsbHumanInterfaceDevice),
         base::BindRepeating(&AuthenticatorRequestDialogModel::StartWinNativeApi,
                             base::Unretained(this), mechanisms_.size()),
-        // The Windows API should have priority when requested unless caBLE does
-        // because it's v1 or server-link.
-        !priority_transport.has_value() &&
-            (prefer_native_api ||
-             (!include_add_phone_option && paired_phone_names().empty())));
+        !priority_transport.has_value() && win_api_should_be_priority);
   }
 
   if (base::Contains(transport_availability_.available_transports, kCable)) {

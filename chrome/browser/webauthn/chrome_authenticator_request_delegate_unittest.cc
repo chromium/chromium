@@ -461,6 +461,11 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, ShouldPromptForAttestationWin) {
 class ChromeAuthenticatorRequestDelegateWindowsBehaviorTest
     : public ChromeAuthenticatorRequestDelegateTest {
  public:
+  ChromeAuthenticatorRequestDelegateWindowsBehaviorTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        device::kWebAuthnNewDiscoverableCredentialsUi);
+  }
+
   void CreateObjectsUnderTest() {
     delegate_.emplace(main_rfh());
     delegate_->SetRelyingPartyId("example.com");
@@ -474,6 +479,8 @@ class ChromeAuthenticatorRequestDelegateWindowsBehaviorTest
 
   absl::optional<ChromeAuthenticatorRequestDelegate> delegate_;
   absl::optional<TestAuthenticatorModelObserver> observer_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ChromeAuthenticatorRequestDelegateWindowsBehaviorTest,
