@@ -107,7 +107,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
-#include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -1736,25 +1735,10 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
     const WebApp& web_app) const {
   const auto& app_id = web_app.app_id();
 
-  std::vector<std::string> policy_ids;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (swa_manager_ && swa_manager_->IsSystemWebApp(app_id)) {
-    const auto& swa_data = web_app.client_data().system_web_app_data;
-    DCHECK(swa_data);
-
-    const ash::SystemWebAppType swa_type = swa_data->system_app_type;
-    const absl::optional<base::StringPiece> swa_policy_id =
-        apps_util::GetPolicyIdForSystemWebAppType(swa_type);
-    if (swa_policy_id) {
-      policy_ids.emplace_back(*swa_policy_id);
-    }
-
-    // File Manager SWA uses File Manager Extension's ID for policy.
-    if (swa_type == ash::SystemWebAppType::FILE_MANAGER) {
-      policy_ids.push_back(file_manager::kFileManagerAppId);
-    }
-
-    return policy_ids;
+  // File Manager SWA uses File Manager Extension's ID for policy.
+  if (app_id == file_manager::kFileManagerSwaAppId) {
+    return {file_manager::kFileManagerAppId};
   }
 #endif
 
@@ -1770,6 +1754,7 @@ std::vector<std::string> WebAppPublisherHelper::GetPolicyIds(
     const auto& install_urls = it->second;
     DCHECK(!install_urls.empty());
 
+    std::vector<std::string> policy_ids;
     base::ranges::transform(install_urls, std::back_inserter(policy_ids),
                             &GURL::spec);
     return policy_ids;
