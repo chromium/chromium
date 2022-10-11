@@ -306,6 +306,8 @@ void AutocompleteResult::SortAndCull(
   {
     ACMatches::iterator top_match = matches_.end();
 
+    // TODO(manukh) Ranking and preserving the default suggestion should be done
+    //  by the grouping framework.
     // If we are trying to keep a default match from a previous pass stable,
     // search the current results for it, and if found, make it the top match.
     if (preserve_default_match) {
@@ -338,6 +340,9 @@ void AutocompleteResult::SortAndCull(
       matches_[0].ComputeStrippedDestinationURL(input, template_url_service);
   }
 
+  // TODO(manukh): Limiting (history clusters, zero suggest, max URL
+  //  suggestions, max suggestions, and max keyword suggestions) should be done
+  //  by the grouping framework.
   // Limit history cluster suggestions to 1. This has to be done before limiting
   // URL matches below so that a to-be-removed history cluster suggestion
   // doesn't waste a URL slot.
@@ -380,6 +385,9 @@ void AutocompleteResult::SortAndCull(
 #else
   if (matches_.size() > 2) {
 #endif
+    // TODO(manukh): Grouping search v URL (actually
+    //  `GroupSuggestionsBySearchVsURL` now groups by other types as well)
+    //  should be done by the grouping framework.
     GroupSuggestionsBySearchVsURL(std::next(matches_.begin()), matches_.end());
   }
 
@@ -403,6 +411,7 @@ void AutocompleteResult::SortAndCull(
     }
   }
 
+#if DCHECK_IS_ON()
   // If the user explicitly typed a scheme, the default match should have the
   // same scheme. This doesn't apply in these cases:
   //  - If the default match has no |destination_url|. An example of this is the
@@ -427,6 +436,7 @@ void AutocompleteResult::SortAndCull(
     DCHECK(url_formatter::IsEquivalentScheme(in_scheme, dest_scheme))
         << debug_info;
   }
+#endif
 }
 
 void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
@@ -461,20 +471,20 @@ void AutocompleteResult::GroupAndDemoteMatchesInGroups() {
     return;
   }
 
-  // Sort the matches based on the order in which their groups should appear
-  // while preserving the existing order of matches within the same section.
-  std::stable_sort(
-      matches_.begin(), matches_.end(), [this](const auto& a, const auto& b) {
-        // Note that matches not in a group must appear before the matches in
-        // one; thus the order of the following two early checks is important.
-        if (!b.suggestion_group_id.has_value()) {
-          return false;
-        }
-        if (!a.suggestion_group_id.has_value()) {
-          return true;
-        }
-        return GetSectionForSuggestionGroup(a.suggestion_group_id.value()) <
-               GetSectionForSuggestionGroup(b.suggestion_group_id.value());
+  // Sort matches by their groups' section while preserving the existing order
+  // within sections. Matches not in a group are ranked above matches in one.
+  // 1) Suggestions without a group will be sorted first.
+  // 2) Suggestions in SECTION_DEFAULT (0) and suggestions whose groups are not
+  //    in `suggestion_groups_map_` are sorted 2nd.
+  // 3) Remaining suggestions are sorted by section.
+  base::ranges::stable_sort(
+      matches_, [](int a, int b) { return a < b; },
+      [&](const auto& m) {
+        return m.suggestion_group_id.has_value()
+                   ? GetSectionForSuggestionGroup(m.suggestion_group_id.value())
+                   // -1 makes sure suggestions without a group are sorted
+                   // before suggestions in the default section (0).
+                   : -1;
       });
 }
 

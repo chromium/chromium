@@ -689,6 +689,9 @@ struct AutocompleteMatch {
   //
   // Use omnibox::GROUP_INVALID in place of a missing value when converting
   // this to a primitive type.
+  // TODO(manukh): Seems redundant to prefix a suggestion field with
+  //  'suggestion_'. Check if it makes sense to rename to 'group_id', and
+  //  likewise for the associated methods and local variables.
   absl::optional<omnibox::GroupId> suggestion_group_id;
 
   // If true, UI-level code should swap the contents and description fields
