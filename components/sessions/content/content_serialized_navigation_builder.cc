@@ -149,11 +149,14 @@ ContentSerializedNavigationBuilder::ToNavigationEntry(
                             navigation->encoded_page_state_),
                         restore_context);
 
-    // |navigation|-level referrer information is redundant wrt PageState, but
-    // they should be consistent / in-sync.
-    DCHECK_EQ(navigation->referrer_url(), entry->GetReferrer().url);
-    DCHECK_EQ(navigation->referrer_policy(),
-              static_cast<int>(entry->GetReferrer().policy));
+    // In theory the referrer information in the PageState should exactly match
+    // the `navigation`-level data, but there are sometimes discrepancies in
+    // practice (e.g. see https://crbug.com/1362322).
+    //
+    // TODO(https://crbug.com/1373216): Reintroduce DCHECKs that verify
+    // consistency between `navigation->referrer_url()` and
+    // `entry->GetReferrer().url` (and between referrer policies restored in
+    // `entry` and remembered in `navigation`).
   }
 
   entry->SetTitle(navigation->title_);
