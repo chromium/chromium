@@ -109,6 +109,16 @@ class CertBuilder {
   static std::string SignatureAlgorithmToDer(
       SignatureAlgorithm signature_algorithm);
 
+  // Generates |num_bytes| random bytes, and then returns the hex encoding of
+  // those bytes.
+  static std::string MakeRandomHexString(size_t num_bytes);
+
+  // Builds a DER encoded X.501 Name TLV containing a commonName of
+  // |common_name| with type |common_name_tag|.
+  static std::vector<uint8_t> BuildNameWithCommonNameOfType(
+      base::StringPiece common_name,
+      unsigned common_name_tag);
+
   // Sets a value for the indicated X.509 (v3) extension.
   void SetExtension(const der::Input& oid,
                     std::string value,
@@ -137,6 +147,11 @@ class CertBuilder {
   // Sets a cRLDistributionPoints extension with a single DistributionPoint
   // with |urls| in distributionPoints.fullName.
   void SetCrlDistributionPointUrls(const std::vector<GURL>& urls);
+
+  // Sets the issuer bytes that will be encoded into the generated certificate.
+  // If this is not called, or |issuer_tlv| is empty, the subject field from
+  // the issuer CertBuilder will be used.
+  void SetIssuerTLV(base::span<const uint8_t> issuer_tlv);
 
   // Sets the subject to a Name with a single commonName attribute with
   // the value |common_name| tagged as a UTF8String.
@@ -334,6 +349,7 @@ class CertBuilder {
   };
 
   std::string validity_tlv_;
+  absl::optional<std::string> issuer_tlv_;
   std::string subject_tlv_;
   absl::optional<SignatureAlgorithm> signature_algorithm_;
   std::string outer_signature_algorithm_tlv_;

@@ -95,9 +95,6 @@ unit tests.
      characters such as '=' and '"' that would normally be escaped when
      converting a subject/issuer name to their stringized form.
 
-- ocsp-test-root.pem : A root certificate for the code in
-      net/data/ssl/scripts/minica.py and net::EmbeddedTestServer.
-
 - websocket_cacert.pem : The testing root CA for testing WebSocket client
      certificate authentication.
      This file is used in SSLUITest.TestWSSClientCert.
@@ -337,13 +334,3 @@ unit tests.
 - key_usage_p256_both.pem
      Self-signed P-256 certificates with various combinations of keyUsage
      flags. Their private key is key_usage_p256.key.
-
-===== From net/data/ssl/scripts/generate-name-normalization-certs.py
-- name-normalization-printable-utf8.pem
-     Leaf's issuer CN is PrintableString, intermediate's subject CN is
-     UTF8String.
-- name-normalization-case-folding.pem
-     Leaf's issuer CN and intermediate's subject CN are both PrintableString
-     but have differing case on the first character.
-- name-normalization-byteequal.pem
-     Names are byte-equal.
