@@ -89,7 +89,8 @@ def main():
     logging.info('Downloading GN SDK from CIPD...')
     ensure_file = '%s%s-%s %s' % (args.cipd_prefix, host_plat, _GetHostArch(),
                                   args.version)
-    subprocess.run(('cipd', 'ensure', '-ensure-file', '-', '-root', SDK_ROOT),
+    subprocess.run(('cipd', 'ensure', '-ensure-file', '-', '-root', SDK_ROOT,
+                    '-log-level', 'warning'),
                    check=True,
                    text=True,
                    input=ensure_file)
