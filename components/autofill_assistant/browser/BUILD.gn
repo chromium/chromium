@@ -647,6 +647,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/autofill_assistant/browser/public:password_change",
+    "//components/autofill_assistant/browser/public:proto",
     "//components/autofill_assistant/browser/public:public",
     "//components/autofill_assistant/browser/public:unit_test_support",
     "//components/consent_auditor:test_support",

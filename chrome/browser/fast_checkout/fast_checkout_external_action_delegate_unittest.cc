@@ -97,9 +97,12 @@ TEST_F(FastCheckoutExternalActionDelegateTest,
   EXPECT_TRUE(result.has_selected_credit_card());
   EXPECT_EQ(result.selected_credit_card().instrument_id(), kInstrumentId);
   EXPECT_GT(result.selected_profiles_size(), 0);
-  EXPECT_EQ(
-      result.selected_profiles().at(kProfileName).values().at(kServerFieldType),
-      base::UTF16ToUTF8(kName));
+  EXPECT_EQ(result.selected_profiles()
+                .at(kProfileName)
+                .data()
+                .values()
+                .at(kServerFieldType),
+            base::UTF16ToUTF8(kName));
   EXPECT_FALSE(result.has_result_info());
 }
 
@@ -134,8 +137,11 @@ TEST_F(FastCheckoutExternalActionDelegateTest,
   EXPECT_TRUE(result.has_selected_credit_card());
   EXPECT_EQ(result.selected_credit_card().instrument_id(), kInstrumentId);
   EXPECT_GT(result.selected_profiles_size(), 0);
-  EXPECT_EQ(
-      result.selected_profiles().at(kProfileName).values().at(kServerFieldType),
-      base::UTF16ToUTF8(kName));
+  EXPECT_EQ(result.selected_profiles()
+                .at(kProfileName)
+                .data()
+                .values()
+                .at(kServerFieldType),
+            base::UTF16ToUTF8(kName));
   EXPECT_FALSE(result.has_result_info());
 }

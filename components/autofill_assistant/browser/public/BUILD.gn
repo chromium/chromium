@@ -14,6 +14,8 @@ static_library("public") {
     "autofill_assistant.h",
     "autofill_assistant_factory.h",
     "external_action_delegate.h",
+    "external_action_util.cc",
+    "external_action_util.h",
     "headless_onboarding_result.h",
     "headless_script_controller.h",
     "prefs.cc",
@@ -31,6 +33,7 @@ static_library("public") {
 
   deps = [
     ":proto",
+    "//components/autofill/core/browser:browser",
     "//components/autofill/core/common:common",
     "//components/autofill_assistant/browser/public/fast_checkout/proto:proto",
     "//components/autofill_assistant/browser/public/password_change/proto:proto",

@@ -11,7 +11,6 @@
 #include "chrome/browser/fast_checkout/fast_checkout_external_action_delegate.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/browser/fast_checkout/fast_checkout_prefs.h"
-#include "chrome/browser/fast_checkout/fast_checkout_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -19,6 +18,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/fast_checkout_delegate.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant_factory.h"
+#include "components/autofill_assistant/browser/public/external_action_util.h"
 #include "components/autofill_assistant/browser/public/headless_onboarding_result.h"
 #include "components/autofill_assistant/browser/public/public_script_parameters.h"
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
@@ -51,7 +51,8 @@ std::vector<autofill::AutofillProfile*> GetValidAddressProfiles(
       pdm->GetProfilesToSuggest();
 
   base::EraseIf(profiles, [&pdm](const autofill::AutofillProfile* profile) {
-    return !fast_checkout::IsCompleteAddressProfile(profile, pdm->app_locale());
+    return !autofill_assistant::IsCompleteAddressProfile(profile,
+                                                         pdm->app_locale());
   });
   return profiles;
 }

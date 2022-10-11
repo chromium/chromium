@@ -35,6 +35,10 @@ class FormGroup {
   virtual void GetNonEmptyTypes(const std::string& app_locale,
                                 ServerFieldTypeSet* non_empty_types) const;
 
+  // Returns a set of server field types for which this FormGroup has non-empty
+  // raw data. This method is additive on `non_empty_types`.
+  virtual void GetNonEmptyRawTypes(ServerFieldTypeSet* non_empty_types) const;
+
   // Returns the string associated with |type|, without canonicalizing the
   // returned value. For user-visible strings, use GetInfo() instead.
   virtual std::u16string GetRawInfo(ServerFieldType type) const = 0;

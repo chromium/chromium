@@ -17,14 +17,16 @@ namespace {
 
 void SetInfoOnAutofillDataModel(
     const google::protobuf::Map<google::protobuf::int32, std::string>&
-        server_field_type_int_to_value,
-    const std::string locale,
+        type_to_value,
+    const google::protobuf::Map<google::protobuf::int32,
+                                google::protobuf::int32>& type_to_status,
     autofill::AutofillDataModel* model) {
-  for (const auto& [server_field_type_int, value] :
-       server_field_type_int_to_value) {
-    model->SetInfo(
-        static_cast<autofill::ServerFieldType>(server_field_type_int),
-        base::UTF8ToUTF16(value), locale);
+  for (const auto& [type, value] : type_to_value) {
+    DCHECK(type_to_status.contains(type));
+    model->SetRawInfoWithVerificationStatus(
+        static_cast<autofill::ServerFieldType>(type), base::UTF8ToUTF16(value),
+        static_cast<autofill::structured_address::VerificationStatus>(
+            type_to_status.at(type)));
   }
 }
 
@@ -230,9 +232,15 @@ void ExternalAction::SetSelectedProfiles(
                                 autofill_assistant::external::ProfileProto>&
         profiles_proto) {
   for (const auto& [profile_name, profile_proto] : profiles_proto) {
-    auto autofill_profile = std::make_unique<autofill::AutofillProfile>();
+    DCHECK(profile_proto.data().has_guid() &&
+           profile_proto.data().has_origin());
 
-    SetInfoOnAutofillDataModel(profile_proto.values(), delegate_->GetLocale(),
+    auto autofill_profile = std::make_unique<autofill::AutofillProfile>(
+        /* guid= */ profile_proto.data().guid(),
+        /* origin= */ profile_proto.data().origin());
+
+    SetInfoOnAutofillDataModel(profile_proto.data().values(),
+                               profile_proto.data().verification_statuses(),
                                autofill_profile.get());
 
     autofill_profile->FinalizeAfterImport();
@@ -245,9 +253,15 @@ void ExternalAction::SetSelectedProfiles(
 
 void ExternalAction::SetSelectedCreditCard(
     const autofill_assistant::external::CreditCardProto& credit_card_proto) {
-  auto credit_card = std::make_unique<autofill::CreditCard>();
+  DCHECK(credit_card_proto.data().has_guid() &&
+         credit_card_proto.data().has_origin());
 
-  SetInfoOnAutofillDataModel(credit_card_proto.values(), delegate_->GetLocale(),
+  auto credit_card = std::make_unique<autofill::CreditCard>(
+      /* guid= */ credit_card_proto.data().guid(),
+      /* origin= */ credit_card_proto.data().origin());
+
+  SetInfoOnAutofillDataModel(credit_card_proto.data().values(),
+                             credit_card_proto.data().verification_statuses(),
                              credit_card.get());
 
   if (credit_card_proto.has_record_type()) {

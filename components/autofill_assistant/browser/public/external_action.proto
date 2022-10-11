@@ -32,27 +32,42 @@ message ActionInfo {
   extensions 100 to max;
 }
 
-// Proto representation of autofill::AutofillProfile.
-message ProfileProto {
+message AutofillDataModelProto {
   // The values, where the key is one of autofill::ServerFieldType.
   map<int32, string> values = 1;
+  // Verification statuses of the `values`. The key is one of
+  // autofill::ServerFieldType, the value is one of
+  // autofill::structured_address::VerificationStatus.
+  map<int32, int32> verification_statuses = 2;
+  // The unique ID of this autofill::AutofillDataModel.
+  optional string guid = 3;
+  // The origin of this autofill::AutofillDataModel.
+  optional string origin = 4;
+}
+
+// Proto representation of autofill::AutofillProfile.
+message ProfileProto {
+  // The data of the underlying autofill::AutofillDataModel covered by
+  // autofill::ServerFieldType and to identify the object.
+  optional AutofillDataModelProto data = 1;
 }
 
 // Proto representation of autofill:CreditCard.
 message CreditCardProto {
-  // The values for the card, where the key is one of autofill::ServerFieldType.
-  map<int32, string> values = 1;
+  // The data of the underlying autofill::AutofillDataModel covered by
+  // autofill::ServerFieldType and to identify the object.
+  optional AutofillDataModelProto data = 1;
   // Remaining autofill::CreditCard fields not in autofill::ServerFieldType :
   // Specifies e.g. if a card is local, one of autofill::CreditCard::RecordType.
-  optional int64 record_type = 2;
+  optional int64 record_type = 4;
   // The payments instrument id used to identify and unmask the credit card.
-  optional int64 instrument_id = 3;
+  optional int64 instrument_id = 5;
   // The network of the card.
-  optional string network = 4;
+  optional string network = 6;
   // Server ID of the card.
   // TODO(crbug.com/1121806): Remove after autofill::CreditCard::server_id_ was
   // removed.
-  optional string server_id = 5 [deprecated = true];
+  optional string server_id = 7 [deprecated = true];
 }
 
 // The result of the execution of |Action|.

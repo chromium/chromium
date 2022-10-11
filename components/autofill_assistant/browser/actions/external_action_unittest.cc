@@ -18,6 +18,8 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/actions/wait_for_dom_test_base.h"
 #include "components/autofill_assistant/browser/mock_user_model.h"
+#include "components/autofill_assistant/browser/public/external_action.pb.h"
+#include "components/autofill_assistant/browser/public/external_action_util.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,7 +27,10 @@
 namespace autofill_assistant {
 namespace {
 
+constexpr char kProfileName[] = "SHIPPING";
+
 using ::autofill::ServerFieldType;
+using ::autofill::structured_address::VerificationStatus;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
@@ -36,22 +41,6 @@ using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::UnorderedElementsAre;
 using ::testing::WithArgs;
-
-namespace {
-
-constexpr char kCreditCardNumber[] = "4111111111111111";
-constexpr char kProfileName[] = "SHIPPING";
-constexpr char kFirstName[] = "John";
-constexpr char kLastName[] = "Doe";
-constexpr char kEmail[] = "jd@example.com";
-constexpr char kAddressLine1[] = "Erika-Mann-Str. 33";
-constexpr char kAddressCity[] = "Munich";
-constexpr char kAddressZip[] = "80636";
-constexpr int64_t kInstrumentId = 123;
-constexpr char kServerId[] = "server id";
-constexpr autofill::CreditCard::RecordType kRecordType =
-    autofill::CreditCard::RecordType::LOCAL_CARD;
-}  // namespace
 
 class ExternalActionTest : public WaitForDomTestBase {
  public:
@@ -210,42 +199,143 @@ TEST_F(ExternalActionTest, ExternalActionWithSelectedProfileAndCreditCard) {
   proto_.mutable_info();
   proto_.set_allow_interrupt(false);
 
+  // Credit card expiration date
   base::Time credit_card_exp_date =
       autofill::AutofillClock::Now() + base::Days(31);
   base::Time::Exploded credit_card_exp_date_exploded;
   credit_card_exp_date.UTCExplode(&credit_card_exp_date_exploded);
 
+  std::u16string credit_card_exp_month = base::UTF8ToUTF16(
+      (credit_card_exp_date_exploded.month < 10 ? "0" : "") +
+      base::NumberToString(credit_card_exp_date_exploded.month));
+  std::u16string credit_card_exp_year_4_digits = base::UTF8ToUTF16(
+      base::NumberToString(credit_card_exp_date_exploded.year));
+  std::u16string credit_card_exp_year_2_digits =
+      credit_card_exp_year_4_digits.substr(2, 2);
+  std::u16string credit_card_exp_month_year_4_digits =
+      credit_card_exp_month + u"/" + credit_card_exp_year_4_digits;
+  std::u16string credit_card_exp_month_year_2_digits =
+      credit_card_exp_month + u"/" + credit_card_exp_year_2_digits;
+
   // Result proto
   external::Result result = MakeResult(/* success= */ true);
 
-  // Credit card proto
-  auto credit_card_proto = std::make_unique<external::CreditCardProto>();
-  (*credit_card_proto->mutable_values())[ServerFieldType::CREDIT_CARD_NUMBER] =
-      kCreditCardNumber;
-  (*credit_card_proto
-        ->mutable_values())[ServerFieldType::CREDIT_CARD_EXP_MONTH] =
-      base::NumberToString(credit_card_exp_date_exploded.month);
-  (*credit_card_proto
-        ->mutable_values())[ServerFieldType::CREDIT_CARD_EXP_4_DIGIT_YEAR] =
-      base::NumberToString(credit_card_exp_date_exploded.year);
-  credit_card_proto->set_record_type(kRecordType);
-  credit_card_proto->set_instrument_id(kInstrumentId);
-  credit_card_proto->set_server_id(kServerId);
-  result.set_allocated_selected_credit_card(credit_card_proto.get());
-  credit_card_proto.release();
+  // Original profile
+  std::unique_ptr<autofill::AutofillProfile> original_autofill_profile =
+      std::make_unique<autofill::AutofillProfile>();
+  {
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::NAME_FIRST, u"First", VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::NAME_LAST, u"Last", VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::NAME_FULL, u"First Last",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::EMAIL_ADDRESS, u"first.last@example.com",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::PHONE_HOME_NUMBER, u"5555555",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::PHONE_HOME_CITY_CODE, u"919",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::PHONE_HOME_CITY_AND_NUMBER, u"9195555555",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::PHONE_HOME_WHOLE_NUMBER, u"9195555555",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::ADDRESS_HOME_LINE1, u"100 Some Way",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::ADDRESS_HOME_CITY, u"Knighttown",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::ADDRESS_HOME_STATE, u"NC",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::ADDRESS_HOME_ZIP, u"12345",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::ADDRESS_HOME_COUNTRY, u"UNITED STATES",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::ADDRESS_HOME_STREET_ADDRESS, u"100 Some Way",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::ADDRESS_HOME_STREET_NAME, u"Some Way",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::ADDRESS_HOME_HOUSE_NUMBER, u"100",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::NAME_LAST_SECOND, u"Last",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX, u"919",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX,
+        u"9195555555", VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::PHONE_HOME_NUMBER_PREFIX, u"555",
+        VerificationStatus::kObserved);
+    original_autofill_profile->SetRawInfoWithVerificationStatus(
+        ServerFieldType::PHONE_HOME_NUMBER_SUFFIX, u"5555",
+        VerificationStatus::kObserved);
+  }
+
+  // Original card
+  std::unique_ptr<autofill::CreditCard> original_card =
+      std::make_unique<autofill::CreditCard>();
+  {
+    original_card->SetRawInfoWithVerificationStatus(
+        ServerFieldType::CREDIT_CARD_NAME_FULL, u"First Last",
+        VerificationStatus::kObserved);
+    original_card->SetRawInfoWithVerificationStatus(
+        ServerFieldType::CREDIT_CARD_NUMBER, u"4111111111111111",
+        VerificationStatus::kObserved);
+    original_card->SetRawInfoWithVerificationStatus(
+        ServerFieldType::CREDIT_CARD_EXP_MONTH, credit_card_exp_month,
+        VerificationStatus::kObserved);
+    original_card->SetRawInfoWithVerificationStatus(
+        ServerFieldType::CREDIT_CARD_EXP_2_DIGIT_YEAR,
+        credit_card_exp_year_2_digits, VerificationStatus::kObserved);
+    original_card->SetRawInfoWithVerificationStatus(
+        ServerFieldType::CREDIT_CARD_EXP_4_DIGIT_YEAR,
+        credit_card_exp_year_4_digits, VerificationStatus::kObserved);
+    original_card->SetRawInfoWithVerificationStatus(
+        ServerFieldType::CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+        credit_card_exp_month_year_2_digits, VerificationStatus::kObserved);
+    original_card->SetRawInfoWithVerificationStatus(
+        ServerFieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+        credit_card_exp_month_year_4_digits, VerificationStatus::kObserved);
+    original_card->SetRawInfoWithVerificationStatus(
+        ServerFieldType::CREDIT_CARD_TYPE, u"Visa",
+        VerificationStatus::kObserved);
+    original_card->SetRawInfoWithVerificationStatus(
+        ServerFieldType::CREDIT_CARD_NAME_FIRST, u"First",
+        VerificationStatus::kObserved);
+    original_card->SetRawInfoWithVerificationStatus(
+        ServerFieldType::CREDIT_CARD_NAME_LAST, u"Last",
+        VerificationStatus::kObserved);
+    original_card->set_origin("Chrome settings");
+    original_card->set_record_type(
+        autofill::CreditCard::RecordType::LOCAL_CARD);
+    original_card->set_instrument_id(0);
+  }
 
   // Profile proto
-  auto profile_proto = std::make_unique<external::ProfileProto>();
-  (*profile_proto->mutable_values())[ServerFieldType::NAME_FIRST] = kFirstName;
-  (*profile_proto->mutable_values())[ServerFieldType::NAME_LAST] = kLastName;
-  (*profile_proto->mutable_values())[ServerFieldType::EMAIL_ADDRESS] = kEmail;
-  (*profile_proto->mutable_values())[ServerFieldType::ADDRESS_HOME_LINE1] =
-      kAddressLine1;
-  (*profile_proto->mutable_values())[ServerFieldType::ADDRESS_HOME_CITY] =
-      kAddressCity;
-  (*profile_proto->mutable_values())[ServerFieldType::ADDRESS_HOME_ZIP] =
-      kAddressZip;
-  (result.mutable_selected_profiles())->insert({kProfileName, *profile_proto});
+  external::ProfileProto profile_proto =
+      CreateProfileProto(*original_autofill_profile);
+  (result.mutable_selected_profiles())->insert({kProfileName, profile_proto});
+
+  // Card proto
+  std::unique_ptr<external::CreditCardProto> card_proto(
+      new external::CreditCardProto(CreateCreditCardProto(*original_card)));
+  result.set_allocated_selected_credit_card(card_proto.release());
 
   EXPECT_CALL(mock_action_delegate_, RequestExternalAction)
       .WillOnce(
@@ -259,12 +349,6 @@ TEST_F(ExternalActionTest, ExternalActionWithSelectedProfileAndCreditCard) {
             std::move(end_action_callback).Run(result);
           });
   EXPECT_CALL(mock_action_delegate_, WaitForDom).Times(0);
-  std::unique_ptr<autofill::CreditCard> credit_card;
-  EXPECT_CALL(*GetMockUserModel(),
-              SetSelectedCreditCard(::testing::NotNull(), _))
-      .WillOnce([&credit_card](std::unique_ptr<autofill::CreditCard> cc, auto) {
-        credit_card = std::move(cc);
-      });
   std::unique_ptr<autofill::AutofillProfile> autofill_profile;
   EXPECT_CALL(*GetMockUserModel(),
               SetSelectedAutofillProfile(kProfileName, ::testing::NotNull(), _))
@@ -272,45 +356,21 @@ TEST_F(ExternalActionTest, ExternalActionWithSelectedProfileAndCreditCard) {
                     auto, std::unique_ptr<autofill::AutofillProfile> ap, auto) {
         autofill_profile = std::move(ap);
       });
+  std::unique_ptr<autofill::CreditCard> card;
+  EXPECT_CALL(*GetMockUserModel(),
+              SetSelectedCreditCard(::testing::NotNull(), _))
+      .WillOnce([&card](std::unique_ptr<autofill::CreditCard> cc, auto) {
+        card = std::move(cc);
+      });
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
 
   Run();
 
-  // Verify credit card data
-  EXPECT_EQ(credit_card->expiration_month(),
-            credit_card_exp_date_exploded.month);
-  EXPECT_EQ(credit_card->expiration_year(), credit_card_exp_date_exploded.year);
-  EXPECT_EQ(base::UTF16ToUTF8(credit_card->number()), kCreditCardNumber);
-  EXPECT_EQ(credit_card->record_type(), kRecordType);
-  EXPECT_EQ(credit_card->instrument_id(), kInstrumentId);
-  EXPECT_EQ(credit_card->server_id(), kServerId);
-
-  // Verify profile data
-  EXPECT_EQ(
-      base::UTF16ToUTF8(autofill_profile->GetInfo(
-          ServerFieldType::NAME_FIRST, mock_action_delegate_.GetLocale())),
-      kFirstName);
-  EXPECT_EQ(base::UTF16ToUTF8(autofill_profile->GetInfo(
-                ServerFieldType::NAME_LAST, mock_action_delegate_.GetLocale())),
-            kLastName);
-  EXPECT_EQ(
-      base::UTF16ToUTF8(autofill_profile->GetInfo(
-          ServerFieldType::EMAIL_ADDRESS, mock_action_delegate_.GetLocale())),
-      kEmail);
-  EXPECT_EQ(base::UTF16ToUTF8(
-                autofill_profile->GetInfo(ServerFieldType::ADDRESS_HOME_LINE1,
-                                          mock_action_delegate_.GetLocale())),
-            kAddressLine1);
-  EXPECT_EQ(base::UTF16ToUTF8(
-                autofill_profile->GetInfo(ServerFieldType::ADDRESS_HOME_CITY,
-                                          mock_action_delegate_.GetLocale())),
-            kAddressCity);
-  EXPECT_EQ(base::UTF16ToUTF8(
-                autofill_profile->GetInfo(ServerFieldType::ADDRESS_HOME_ZIP,
-                                          mock_action_delegate_.GetLocale())),
-            kAddressZip);
+  // Verify profile and card data
+  EXPECT_EQ(*original_autofill_profile, *autofill_profile);
+  EXPECT_EQ(*original_card, *card);
 }
 
 TEST_F(ExternalActionTest, DoesNotStartWaitForDomIfDomChecksAreNotRequested) {

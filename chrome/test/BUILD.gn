@@ -6436,7 +6436,6 @@ test("unit_tests") {
       "../browser/fast_checkout/fast_checkout_client_impl_unittest.cc",
       "../browser/fast_checkout/fast_checkout_external_action_delegate_unittest.cc",
       "../browser/fast_checkout/fast_checkout_prefs_unittest.cc",
-      "../browser/fast_checkout/fast_checkout_util_unittest.cc",
       "../browser/feedback/android/family_info_feedback_source_unittest.cc",
       "../browser/long_screenshots/long_screenshots_tab_service_unittest.cc",
       "../browser/media/android/cdm/media_drm_origin_id_manager_unittest.cc",

@@ -24,6 +24,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::UTF8ToUTF16;
@@ -1754,6 +1755,34 @@ TEST(AutofillProfileTest, RemoveInaccessibleProfileValues) {
   expected_profile = actual_profile;
   EXPECT_FALSE(RemoveInaccessibleProfileValues(actual_profile));
   EXPECT_EQ(actual_profile.Compare(expected_profile), 0);
+}
+
+TEST(AutofillProfileTest, GetNonEmptyRawTypes) {
+  AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
+  test::SetProfileInfo(&profile, "Marion", nullptr, "Morrison",
+                       "johnwayne@me.xyz", nullptr, "123 Zoo St.", nullptr,
+                       "Hollywood", "CA", "91601", "US", "14155678910");
+
+  std::vector<ServerFieldType> expected_raw_types{NAME_FIRST,
+                                                  NAME_LAST,
+                                                  NAME_FULL,
+                                                  EMAIL_ADDRESS,
+                                                  PHONE_HOME_WHOLE_NUMBER,
+                                                  ADDRESS_HOME_LINE1,
+                                                  ADDRESS_HOME_CITY,
+                                                  ADDRESS_HOME_STATE,
+                                                  ADDRESS_HOME_ZIP,
+                                                  ADDRESS_HOME_COUNTRY,
+                                                  ADDRESS_HOME_STREET_ADDRESS,
+                                                  ADDRESS_HOME_STREET_NAME,
+                                                  ADDRESS_HOME_HOUSE_NUMBER,
+                                                  NAME_LAST_SECOND};
+
+  ServerFieldTypeSet non_empty_raw_types;
+  profile.GetNonEmptyRawTypes(&non_empty_raw_types);
+
+  EXPECT_THAT(non_empty_raw_types,
+              testing::UnorderedElementsAreArray(expected_raw_types));
 }
 
 enum Expectation { GREATER, LESS, EQUAL };

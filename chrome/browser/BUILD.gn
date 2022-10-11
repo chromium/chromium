@@ -3054,8 +3054,6 @@ static_library("browser") {
       "fast_checkout/fast_checkout_prefs.h",
       "fast_checkout/fast_checkout_tab_helper.cc",
       "fast_checkout/fast_checkout_tab_helper.h",
-      "fast_checkout/fast_checkout_util.cc",
-      "fast_checkout/fast_checkout_util.h",
       "feature_guide/notifications/android/feature_notification_guide_bridge.cc",
       "feature_guide/notifications/android/feature_notification_guide_bridge.h",
       "feature_guide/notifications/android/feature_notification_guide_service_factory_android.cc",
