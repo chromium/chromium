@@ -457,9 +457,12 @@ bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
 
   // .lnk and .scf files may be used to execute arbitrary code (see
   // https://nvd.nist.gov/vuln/detail/CVE-2010-2568 and
-  // https://crbug.com/1227995, respectively).
+  // https://crbug.com/1227995, respectively). '.url' files can be used to read
+  // arbitrary files (see https://crbug.com/1307930 and
+  // https://crbug.com/1354518).
   if (extension_lower == FILE_PATH_LITERAL("lnk") ||
-      extension_lower == FILE_PATH_LITERAL("scf")) {
+      extension_lower == FILE_PATH_LITERAL("scf") ||
+      extension_lower == FILE_PATH_LITERAL("url")) {
     return true;
   }
 

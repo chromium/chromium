@@ -150,6 +150,7 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, IsSafePathComponent) {
       "My Computer.{20D04FE0-3AEA-1069-A2D8-08002B30309D}",
       "a\\a",
       "a.lnk",
+      "a.url",
       "a/a",
       "C:\\",
       "C:/",
@@ -205,8 +206,8 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries) {
   constexpr const char* kSafeNames[] = {"a", "a.txt", "My Computer", "lnk.txt",
                                         "a.local"};
   constexpr const char* kUnsafeNames[] = {
-      "con",  "con.zip", "NUL",   "a.",
-      "a\"a", "a . .",   "a.lnk", "My Computer.{a}",
+      "con",   "con.zip",         "NUL",   "a.", "a\"a", "a . .",
+      "a.lnk", "My Computer.{a}", "a.url",
   };
   for (const char* name : kSafeNames) {
     ASSERT_TRUE(base::WriteFile(dir_.GetPath().AppendASCII(name), "data"))
