@@ -1088,6 +1088,11 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Used to trigger and manage row change animations.
   std::unique_ptr<AppsGridRowChangeAnimator> row_change_animator_;
 
+  // Tracks the animation smoothness of item reorders during drag. Gets
+  // triggered by AnimateToIdealBounds(), which is mainly caused
+  // by app dragging reorders. This does not track reorders due to sort.
+  absl::optional<ui::ThroughputTracker> item_reorder_animation_tracker_;
+
   base::WeakPtrFactory<AppsGridView> weak_factory_{this};
 };
 

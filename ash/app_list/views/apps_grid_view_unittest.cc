@@ -53,6 +53,7 @@
 #include "ash/shell.h"
 #include "ash/style/system_shadow.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/utility/haptics_tracking_test_input_controller.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -68,6 +69,7 @@
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
+#include "ui/compositor/test/test_utils.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/animation/bounds_animator.h"
@@ -5289,6 +5291,56 @@ TEST_P(AppsGridViewClamshellAndTabletTest, QuickDragToRemoveItemFromFolder) {
     auto* item_view = apps_grid_view_->view_model()->view_at(i);
     EXPECT_TRUE(item_view->layer()->GetAnimator()->is_animating() ||
                 apps_grid_view_->IsAnimatingView(item_view));
+  }
+}
+
+TEST_P(AppsGridViewClamshellAndTabletTest, ReorderDragAnimationMetrics) {
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  base::HistogramTester histogram_tester;
+  const int kAppsInGrid = 9;
+  model_->PopulateApps(kAppsInGrid);
+  UpdateLayout();
+
+  // Begin item drag.
+  auto* dragged_item = apps_grid_view_->GetItemViewAt(0);
+  GetEventGenerator()->MoveMouseTo(
+      dragged_item->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->PressLeftButton();
+  dragged_item->FireMouseDragTimerForTest();
+  GetEventGenerator()->MoveMouseBy(10, 10);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(apps_grid_view_->drag_item());
+  ASSERT_TRUE(apps_grid_view_->IsDragging());
+  ASSERT_EQ(dragged_item->item(), apps_grid_view_->drag_item());
+
+  // Drag item to the last slot
+  const gfx::Point drop_point = apps_grid_view_->GetItemViewAt(kAppsInGrid - 1)
+                                    ->GetIconBoundsInScreen()
+                                    .right_center() +
+                                gfx::Vector2d(100, 10);
+  GetEventGenerator()->MoveMouseTo(drop_point);
+  ASSERT_TRUE(apps_grid_view_->reorder_timer_for_test()->IsRunning());
+  apps_grid_view_->reorder_timer_for_test()->FireNow();
+
+  // Let the animations play out.
+  test_api_->WaitForItemMoveAnimationDone();
+
+  // Release drag.
+  GetEventGenerator()->ReleaseLeftButton();
+
+  // Ensure there is one more frame presented after animation finishes to allow
+  // animation throughput data to be passed from cc to ui.
+  EXPECT_TRUE(ui::WaitForNextFrameToBePresented(
+      apps_grid_view_->GetWidget()->GetCompositor()));
+
+  if (create_as_tablet_mode_) {
+    histogram_tester.ExpectTotalCount(
+        kTabletDragReorderAnimationSmoothnessHistogram, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        kClamshellDragReorderAnimationSmoothnessHistogram, 1);
   }
 }
 
