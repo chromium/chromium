@@ -433,7 +433,9 @@ NSString* const kDomain2 = @"domain2.com";
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
       tapToolsMenuAction:grey_accessibilityID(kTextMenuEnterpriseInfo)];
-  [ChromeEarlGrey waitForPageToFinishLoading];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                        IDS_IOS_MANAGEMENT_UI_DESC)];
 
   // Check the navigation.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
