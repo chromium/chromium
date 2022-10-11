@@ -30,6 +30,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_launcher.h"
 
 namespace ash {
 
@@ -61,6 +62,13 @@ base::FilePath GetBasicSystemExtensionDir() {
   base::FilePath test_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir);
   return test_dir.Append("system_extensions").Append("basic_system_extension");
+}
+
+base::FilePath GetOemDiagnosticsAndControlExtensionDir() {
+  base::FilePath test_dir;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir);
+  return test_dir.Append("system_extensions")
+      .Append("oem_diagnostics_and_control_extension");
 }
 
 // Wrapper around base::OneShotEvent that allows callers to signal with
@@ -326,6 +334,23 @@ class SystemExtensionsSwitchBrowserTest : public SystemExtensionsBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+class SystemExtensionsBrowserTestWithOemFeaturePreTest
+    : public SystemExtensionsBrowserTest {
+ public:
+  SystemExtensionsBrowserTestWithOemFeaturePreTest() {
+    // Only enable the feature flag if this is the pre-test.
+    if (content::IsPreTest()) {
+      feature_list_.InitAndEnableFeature(
+          features::kSystemExtensionsOemDiagnosticsAndControl);
+    }
+  }
+
+  ~SystemExtensionsBrowserTestWithOemFeaturePreTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTest, InstallFromDir_Success) {
@@ -512,6 +537,41 @@ IN_PROC_BROWSER_TEST_F(SystemExtensionsSwitchBrowserTest, ExtensionInstalled) {
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
   TestInstalledTestExtensionWorks();
+}
+
+IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTestWithOemFeaturePreTest,
+                       PRE_SystemExtensionsOemDiagnosticsAndControl) {
+  auto& provider = SystemExtensionsProvider::Get(browser()->profile());
+  auto& install_manager = provider.install_manager();
+
+  TestInstallationEventsWaiter waiter(provider);
+
+  {
+    // Install and wait for the service worker to be registered.
+    base::RunLoop run_loop;
+    install_manager.InstallUnpackedExtensionFromDir(
+        GetOemDiagnosticsAndControlExtensionDir(),
+        base::BindLambdaForTesting(
+            [&](InstallStatusOrSystemExtensionId result) { run_loop.Quit(); }));
+    run_loop.Run();
+    waiter.WaitForServiceWorkerRegistered();
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTestWithOemFeaturePreTest,
+                       SystemExtensionsOemDiagnosticsAndControl) {
+  auto& provider = SystemExtensionsProvider::Get(browser()->profile());
+  auto& install_manager = provider.install_manager();
+
+  // Wait for previously persisted System Extensions to be registered.
+  base::RunLoop run_loop;
+  install_manager.on_register_previously_persisted_finished().Post(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  auto& registry = provider.registry();
+  EXPECT_TRUE(registry.GetIds().empty());
+  EXPECT_FALSE(registry.GetById(kTestSystemExtensionId));
 }
 
 }  // namespace ash

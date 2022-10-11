@@ -1,0 +1,7 @@
+{
+    "name": "Sample OEM Diagnostics and control extension",
+    "short_name": "Sample SWX",
+    "service_worker_url": "/sw.js",
+    "id": "01020304",
+    "type": "oem-diagnostics-control"
+}

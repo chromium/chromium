@@ -14,6 +14,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
+    "//ash/constants",
     "//chrome/browser/ash/system_extensions/api/test_support",
     "//content/test:test_support",
     "//testing/gtest:gtest",

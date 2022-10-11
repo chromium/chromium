@@ -1880,6 +1880,11 @@ BASE_FEATURE(kSystemExtensions,
              "SystemExtensions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the OEM diagnostics and control System Extensions type.
+BASE_FEATURE(kSystemExtensionsOemDiagnosticsAndControl,
+             "SystemExtensionsOemDiagnosticsAndControl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables using the system input engine for physical typing in
 // Japanese.
 BASE_FEATURE(kSystemJapanesePhysicalTyping,

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/system_extensions/system_extensions_sandboxed_unpacker.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -58,12 +60,24 @@ GURL GetBaseURL(const std::string& id, SystemExtensionType type) {
 }
 
 SystemExtensionType* GetTypeFromString(base::StringPiece type_str) {
-  static base::NoDestructor<base::flat_map<std::string, SystemExtensionType>>
-      kStrToType(
-          {{"window-management", SystemExtensionType::kWindowManagement},
-           {"peripheral-prototype", SystemExtensionType::kPeripheralPrototype},
-           {"oem-diagnostics-control",
-            SystemExtensionType::kOemDiagnosticsAndControl}});
+  static base::NoDestructor<
+      base::flat_map<base::StringPiece, SystemExtensionType>>
+      kStrToType([]() {
+        std::vector<std::pair<base::StringPiece, SystemExtensionType>>
+            str_to_type_list;
+        str_to_type_list.emplace_back("window-management",
+                                      SystemExtensionType::kWindowManagement);
+        str_to_type_list.emplace_back(
+            "peripheral-prototype", SystemExtensionType::kPeripheralPrototype);
+
+        if (base::FeatureList::IsEnabled(
+                features::kSystemExtensionsOemDiagnosticsAndControl)) {
+          str_to_type_list.emplace_back(
+              "oem-diagnostics-control",
+              SystemExtensionType::kOemDiagnosticsAndControl);
+        }
+        return str_to_type_list;
+      }());
 
   auto it = kStrToType->find(type_str);
   if (it == kStrToType->end())

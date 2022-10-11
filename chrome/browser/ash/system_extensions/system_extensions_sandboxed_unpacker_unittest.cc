@@ -338,6 +338,22 @@ TEST_P(SystemExtensionsSandboxedUnpackerFromDirTest, Failure_NoManifest) {
   EXPECT_EQ(Status::kFailedManifestReadError, result.status());
 }
 
+// Tests that the "oem-diagnostics-control" type can't be parsed since it is
+// only available with a feature flag that is disabled by default.
+TEST_P(SystemExtensionsSandboxedUnpackerTest,
+       Failure_ParseOemDiagnosticsAndControlType) {
+  static constexpr const char kSystemExtensionManifest[] = R"({
+    "id": "01020304",
+    "type": "oem-diagnostics-control",
+    "service_worker_url": "/sw.js",
+    "name": "Long Test",
+    "short_name": "Test"
+  })";
+
+  auto result = CallGetSystemExtensionFrom(kSystemExtensionManifest);
+  EXPECT_FALSE(result.ok());
+}
+
 INSTANTIATE_TEST_SUITE_P(CreateFromDir,
                          SystemExtensionsSandboxedUnpackerFromDirTest,
                          testing::Values(TestMethod::kFromDir),
