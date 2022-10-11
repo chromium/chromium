@@ -75,6 +75,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'cr_input/cr_input_demo.html',
             },
             {
+              name: 'Navigation menus',
+              path: 'nav-menus',
+              src: 'nav_menu/index.html',
+            },
+            {
               name: 'Progress indicators, Polymer',
               path: 'progress-polymer',
               src: 'progress_indicator_polymer_demo.html',

@@ -1,0 +1,29 @@
+<link rel="stylesheet" href="../demo.css">
+<style include="cr-hidden-style cr-nav-menu-item-style">
+  nav-menu {
+    display: block;
+    width: 100%;
+  }
+</style>
+
+<h1>Navigation menus</h1>
+<div class="demos">
+  <cr-checkbox checked="{{showIcons_}}">Show icons</cr-checkbox>
+  <cr-checkbox checked="{{showRipples_}}">Show ripples on click</cr-checkbox>
+  <cr-button on-click="showDrawerMenu_">Show menu in a drawer</cr-button>
+  <nav-menu hidden$="[[isDrawerOpen_]]"
+      show-icons="[[showIcons_]]" show-ripples="[[showRipples_]]"
+      selected-index="[[selectedIndex_]]"
+      on-selected-index-changed="onSelectedIndexChanged_">
+  </nav-menu>
+  <div>Selected index: [[selectedIndex_]]</div>
+</div>
+
+<cr-drawer id="drawer" heading="Drawer" on-close="onDrawerClose_">
+  <div slot="body">
+    <nav-menu
+        show-icons="[[showIcons_]]"
+        selected-index="[[selectedIndex_]]"
+        on-selected-index-changed="onSelectedIndexChanged_"></nav-menu>
+  </div>
+</cr-drawer>

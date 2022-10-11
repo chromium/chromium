@@ -16,6 +16,8 @@ web_component_files = [
   "demos/cr_toast/cr_toast_demo_component.ts",
   "demos/cr_toolbar/cr_toolbar_demo_component.ts",
   "demos/md_select/md_select_demo_component.ts",
+  "demos/nav_menu/nav_menu.ts",
+  "demos/nav_menu/nav_menu_demo.ts",
   "demos/scroll_view/scroll_view_demo_component.ts",
 ]
 
