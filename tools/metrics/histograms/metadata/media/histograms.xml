@@ -4437,7 +4437,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderFallbackReason.{Codecs}"
-    enum="RTCVideoDecoderFallbackReason" expires_after="2022-10-10">
+    enum="RTCVideoDecoderFallbackReason" expires_after="2023-10-10">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
@@ -4507,7 +4507,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RTCVideoDecoderReinitializationLatencyMs" units="ms"
-    expires_after="2022-10-10">
+    expires_after="2023-10-10">
   <owner>kron@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
