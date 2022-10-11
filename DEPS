@@ -103,6 +103,9 @@ vars = {
   # restricted to Googlers only.
   'checkout_chromium_fsc_test_dependencies': False,
 
+  # By default, src-internal checks out //clank.
+  'checkout_clank_via_src_internal': True,
+
   # By default, do not check out Google Benchmark. The library is only used by a
   # few specialized benchmarks that most developers do not interact with. Will
   # be overridden by gclient variables.
@@ -812,6 +815,12 @@ deps = {
 
   'src/chrome/test/data/xr/webvr_info':
     Var('chromium_git') + '/external/github.com/toji/webvr.info.git' + '@' + 'c58ae99b9ff9e2aa4c524633519570bf33536248',
+
+  'src/clank': {
+    'url': 'https://chrome-internal.googlesource.com/clank/internal/apps.git' + '@' +
+    '752cb09caa8825656c8f55a8bf528f9edf8db130',
+    'condition': 'checkout_android and checkout_src_internal and not checkout_clank_via_src_internal',
+  },
 
   'src/docs/website': {
     'url': Var('chromium_git') + '/website.git' + '@' + 'edf5c24df12ed4a064fb76205ffae95c39ed796a',
@@ -4997,4 +5006,7 @@ recursedeps = [
   'src/third_party/vulkan-deps',
   # src-internal has its own DEPS file to pull additional internal repos
   'src-internal',
+  # clank has its own DEPS file. This needs to be enabled only when it is
+  # removed from src-internal's recursedeps.
+  #'src/clank',
 ]
