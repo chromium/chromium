@@ -10,16 +10,18 @@
 
 namespace net {
 
+// These values are persisted to DB. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class SiteType {
   // The First-Party Set declaration listed this site as the "primary" site for
   // the set.
-  kPrimary,
+  kPrimary = 0,
   // The First-Party Set declaration listed this site as an associated site in
   // the set.
-  kAssociated,
+  kAssociated = 1,
   // The First-Party Set declaration listed this site as a service site in the
   // set.
-  kService,
+  kService = 2,
 
   // Update FirstPartySetEntry::DeserializeSiteType if new SiteType is added.
 };
