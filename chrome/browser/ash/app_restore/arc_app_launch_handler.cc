@@ -444,6 +444,16 @@ void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {
         window_handler_->LaunchArcGhostWindow(app_id, arc_session_id,
                                               app_restore_data.get())) {
       launch_ghost_window = true;
+
+      // Update ARC app states immediately, since the app states may already
+      // changed from original state.
+      ArcAppListPrefs* prefs = ArcAppListPrefs::Get(handler_->profile());
+      if (prefs) {
+        auto app_info = prefs->GetApp(app_id);
+        if (app_info)
+          window_handler_->OnAppStatesUpdate(app_id, app_info->ready,
+                                             app_info->need_fixup);
+      }
     } else {
       // Only record bounds state when no ghost window launch.
       RecordLaunchBoundsState(app_restore_data->bounds_in_root.has_value(),
