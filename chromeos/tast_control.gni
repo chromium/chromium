@@ -33,6 +33,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/251877133
   "policy.DisableScreenshotsHotkey",
   "policy.DeveloperToolsAvailability",
+  "policy.DownloadRestrictions",
+  "policy.ManagedBookmarks",
+  "policy.NewTabPageLocation",
 
   # b/251877700
   "policy.DefaultSearchProviderEnabled",
