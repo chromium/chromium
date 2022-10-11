@@ -26,6 +26,7 @@
 #include "content/browser/accessibility/browser_accessibility_manager_mac.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
+#include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
 #include "content/public/common/content_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -47,13 +48,13 @@ using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 using StringAttribute = ax::mojom::StringAttribute;
 using content::AccessibilityMatchPredicate;
 using content::BrowserAccessibility;
-using content::BrowserAccessibilityDelegate;
 using content::BrowserAccessibilityManager;
 using content::BrowserAccessibilityManagerMac;
 using content::ContentClient;
 using content::OneShotAccessibilityTreeSearch;
-using ui::AXNodeData;
+using content::WebAXPlatformTreeManagerDelegate;
 using ui::AXActionHandlerRegistry;
+using ui::AXNodeData;
 using ui::AXPositionToAXTextMarker;
 using ui::AXRangeToAXTextMarkerRange;
 using ui::AXTextMarkerRangeToAXRange;
@@ -1182,7 +1183,7 @@ bool content::IsNSRange(id value) {
 
   // Get the delegate for the topmost BrowserAccessibilityManager, because
   // that's the only one that can convert points to their origin in the screen.
-  BrowserAccessibilityDelegate* delegate =
+  WebAXPlatformTreeManagerDelegate* delegate =
       _owner->manager()->GetDelegateFromRootManager();
   if (delegate) {
     return gfx::ScreenRectToNSRect(

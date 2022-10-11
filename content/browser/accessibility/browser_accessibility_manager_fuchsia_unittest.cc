@@ -15,6 +15,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_registry.h"
 
@@ -30,10 +33,11 @@ class MockBrowserAccessibilityDelegate
 
   void AccessibilityHitTest(
       const gfx::Point& point_in_frame_pixels,
-      ax::mojom::Event opt_event_to_fire,
+      const ax::mojom::Event& opt_event_to_fire,
       int opt_request_id,
-      base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
-                              int hit_node_id)> opt_callback) override {
+      base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
+                              ui::AXNodeID hit_node_id)> opt_callback)
+      override {
     last_hit_test_point_ = point_in_frame_pixels;
     last_request_id_ = opt_request_id;
   }

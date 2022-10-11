@@ -5,11 +5,15 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_TEST_BROWSER_ACCESSIBILITY_DELEGATE_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_TEST_BROWSER_ACCESSIBILITY_DELEGATE_H_
 
-#include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
+#include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 
 namespace content {
 
-class TestBrowserAccessibilityDelegate : public BrowserAccessibilityDelegate {
+// TODO(nektar): Rename this class to `TestWebAXPlatformTreeManagerDelegate`.
+class TestBrowserAccessibilityDelegate
+    : public WebAXPlatformTreeManagerDelegate {
  public:
   TestBrowserAccessibilityDelegate();
 
@@ -23,15 +27,15 @@ class TestBrowserAccessibilityDelegate : public BrowserAccessibilityDelegate {
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessibleForWindow()
       override;
-  RenderFrameHostImpl* AccessibilityRenderFrameHost() override;
-  bool AccessibilityIsRootFrame() override;
   void AccessibilityHitTest(
       const gfx::Point& point_in_frame_pixels,
-      ax::mojom::Event opt_event_to_fire,
+      const ax::mojom::Event& opt_event_to_fire,
       int opt_request_id,
-      base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
-                              int hit_node_id)> opt_callback) override;
+      base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
+                              ui::AXNodeID hit_node_id)> opt_callback) override;
+  bool AccessibilityIsRootFrame() const override;
   WebContentsAccessibility* AccessibilityGetWebContentsAccessibility() override;
+  RenderFrameHostImpl* AccessibilityRenderFrameHost() override;
 
   bool is_root_frame_;
   gfx::AcceleratedWidget accelerated_widget_;

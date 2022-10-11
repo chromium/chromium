@@ -15,7 +15,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 
 using ::testing::ContainerEq;
 
@@ -60,12 +62,12 @@ class TestTouchPassthroughManager : public TouchPassthroughManager {
 
   void SendHitTest(
       const gfx::Point& point_in_frame_pixels,
-      base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
-                              int hit_node_id)> callback) override {
+      base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
+                              ui::AXNodeID hit_node_id)> callback) override {
     BrowserAccessibility* result =
         browser_accessibility_manager_->GetBrowserAccessibilityRoot()
             ->ApproximateHitTest(point_in_frame_pixels);
-    int hit_node_id = result ? result->GetId() : 0;
+    ui::AXNodeID hit_node_id = result ? result->GetId() : ui::kInvalidAXNodeID;
     std::move(callback).Run(browser_accessibility_manager_.get(), hit_node_id);
   }
 

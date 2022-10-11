@@ -13,6 +13,7 @@
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree.h"
 
 namespace base {
@@ -21,7 +22,7 @@ class RunLoop;
 
 namespace content {
 
-class BrowserAccessibilityDelegate;
+class RenderFrameHost;
 class RenderFrameHostImpl;
 class WebContents;
 
@@ -106,9 +107,9 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
                             int event_target_id);
 
   // Callback from BrowserAccessibilityManager for all generated events.
-  void OnGeneratedEvent(BrowserAccessibilityDelegate* delegate,
+  void OnGeneratedEvent(RenderFrameHostImpl* render_frame_host,
                         ui::AXEventGenerator::Event event,
-                        int event_target_id);
+                        ui::AXNodeID event_target_id);
 
   // Callback from BrowserAccessibilityManager when locations / bounding
   // boxes change.

@@ -20,12 +20,13 @@
 namespace content {
 
 class BrowserAccessibilityCocoaBrowserTest;
+class WebAXPlatformTreeManagerDelegate;
 
 class CONTENT_EXPORT BrowserAccessibilityManagerMac
     : public BrowserAccessibilityManager {
  public:
   BrowserAccessibilityManagerMac(const ui::AXTreeUpdate& initial_tree,
-                                 BrowserAccessibilityDelegate* delegate);
+                                 WebAXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerMac(const BrowserAccessibilityManagerMac&) =
       delete;

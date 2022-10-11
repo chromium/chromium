@@ -16,12 +16,19 @@
 #include "ui/gfx/geometry/point.h"
 
 namespace base {
+
 class TimeTicks;
-}
+
+}  // namespace base
+
+namespace ui {
+
+class AXPlatformTreeManager;
+
+}  // namespace ui
 
 namespace content {
 
-class BrowserAccessibilityManager;
 class RenderFrameHostImpl;
 class SyntheticGestureController;
 class SyntheticGestureTarget;
@@ -75,8 +82,8 @@ class CONTENT_EXPORT TouchPassthroughManager {
   // These are virtual protected for unit-testing.
   virtual void SendHitTest(
       const gfx::Point& point_in_frame_pixels,
-      base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
-                              int hit_node_id)> callback);
+      base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
+                              ui::AXNodeID hit_node_id)> callback);
   virtual void CancelTouchesAndDestroyTouchDriver();
   virtual void SimulatePress(const gfx::Point& point,
                              const base::TimeTicks& time);
@@ -110,10 +117,10 @@ class CONTENT_EXPORT TouchPassthroughManager {
   void OnHitTestResult(int event_id,
                        base::TimeTicks event_time,
                        gfx::Point location,
-                       BrowserAccessibilityManager* hit_manager,
-                       int hit_node_id);
-  bool IsTouchPassthroughNode(BrowserAccessibilityManager* hit_manager,
-                              int hit_node_id);
+                       ui::AXPlatformTreeManager* hit_manager,
+                       ui::AXNodeID hit_node_id);
+  bool IsTouchPassthroughNode(ui::AXPlatformTreeManager* hit_manager,
+                              ui::AXNodeID hit_node_id);
   gfx::Point ToCSSPoint(gfx::Point point_in_frame_pixels);
 
   base::WeakPtrFactory<TouchPassthroughManager> weak_ptr_factory_{this};

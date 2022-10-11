@@ -14,13 +14,15 @@
 namespace content {
 
 class BrowserAccessibilityFuchsia;
+class WebAXPlatformTreeManagerDelegate;
 
 // Manages a tree of BrowserAccessibilityFuchsia objects.
 class CONTENT_EXPORT BrowserAccessibilityManagerFuchsia
     : public BrowserAccessibilityManager {
  public:
-  BrowserAccessibilityManagerFuchsia(const ui::AXTreeUpdate& initial_tree,
-                                     BrowserAccessibilityDelegate* delegate);
+  BrowserAccessibilityManagerFuchsia(
+      const ui::AXTreeUpdate& initial_tree,
+      WebAXPlatformTreeManagerDelegate* delegate);
   ~BrowserAccessibilityManagerFuchsia() override;
 
   BrowserAccessibilityManagerFuchsia(

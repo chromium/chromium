@@ -152,7 +152,7 @@ BrowserAccessibilityFindInPageInfo::BrowserAccessibilityFindInPageInfo()
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
-    BrowserAccessibilityDelegate* delegate) {
+    WebAXPlatformTreeManagerDelegate* delegate) {
   BrowserAccessibilityManager* manager =
       new BrowserAccessibilityManager(delegate);
   manager->Initialize(initial_tree);
@@ -161,7 +161,7 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    BrowserAccessibilityDelegate* delegate) {
+    WebAXPlatformTreeManagerDelegate* delegate) {
   BrowserAccessibilityManager* manager =
       new BrowserAccessibilityManager(delegate);
   manager->Initialize(BrowserAccessibilityManager::GetEmptyDocument());
@@ -178,7 +178,7 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::FromID(
 }
 
 BrowserAccessibilityManager::BrowserAccessibilityManager(
-    BrowserAccessibilityDelegate* delegate)
+    WebAXPlatformTreeManagerDelegate* delegate)
     : AXPlatformTreeManager(ui::AXTreeIDUnknown(),
                             std::make_unique<ui::AXSerializableTree>()),
       WebContentsObserver(delegate
@@ -313,8 +313,8 @@ void BrowserAccessibilityManager::FireGeneratedEvent(
     ui::AXEventGenerator::Event event_type,
     const ui::AXNode* node) {
   if (!generated_event_callback_for_testing_.is_null()) {
-    generated_event_callback_for_testing_.Run(delegate(), event_type,
-                                              node->id());
+    generated_event_callback_for_testing_.Run(
+        delegate()->AccessibilityRenderFrameHost(), event_type, node->id());
   }
 }
 
@@ -859,7 +859,7 @@ std::vector<BrowserAccessibility*> BrowserAccessibilityManager::GetAriaControls(
 }
 
 bool BrowserAccessibilityManager::NativeViewHasFocus() {
-  BrowserAccessibilityDelegate* delegate = GetDelegateFromRootManager();
+  WebAXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
   return delegate && delegate->AccessibilityViewHasFocus();
 }
 
@@ -1184,7 +1184,7 @@ void BrowserAccessibilityManager::HitTest(const gfx::Point& frame_point,
 
 gfx::Rect BrowserAccessibilityManager::GetViewBoundsInScreenCoordinates()
     const {
-  BrowserAccessibilityDelegate* delegate = GetDelegateFromRootManager();
+  WebAXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
   if (delegate) {
     gfx::Rect bounds = delegate->AccessibilityGetViewBounds();
 
@@ -1778,7 +1778,7 @@ ui::AXTreeManager* BrowserAccessibilityManager::GetParentManager() const {
   return parent;
 }
 
-BrowserAccessibilityDelegate*
+WebAXPlatformTreeManagerDelegate*
 BrowserAccessibilityManager::GetDelegateFromRootManager() const {
   BrowserAccessibilityManager* root_manager = GetManagerForRootFrame();
   if (root_manager)
@@ -2019,7 +2019,8 @@ bool BrowserAccessibilityManager::ShouldFireEventForNode(
   // If the root delegate isn't the main-frame, this may be a new frame that
   // hasn't yet been swapped in or added to the frame tree. Suppress firing
   // events until then.
-  BrowserAccessibilityDelegate* root_delegate = GetDelegateFromRootManager();
+  WebAXPlatformTreeManagerDelegate* root_delegate =
+      GetDelegateFromRootManager();
   if (!root_delegate)
     return false;
   if (!root_delegate->AccessibilityIsRootFrame())

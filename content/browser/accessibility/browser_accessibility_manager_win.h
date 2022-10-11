@@ -17,7 +17,9 @@
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
 namespace content {
+
 class BrowserAccessibilityWin;
+class WebAXPlatformTreeManagerDelegate;
 
 using UiaRaiseActiveTextPositionChangedEventFunction =
     HRESULT(WINAPI*)(IRawElementProviderSimple*, ITextRangeProvider*);
@@ -27,7 +29,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
     : public BrowserAccessibilityManager {
  public:
   BrowserAccessibilityManagerWin(const ui::AXTreeUpdate& initial_tree,
-                                 BrowserAccessibilityDelegate* delegate);
+                                 WebAXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerWin(const BrowserAccessibilityManagerWin&) =
       delete;

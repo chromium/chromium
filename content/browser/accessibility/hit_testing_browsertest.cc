@@ -30,7 +30,9 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/accessibility/ax_clipping_behavior.h"
 #include "ui/accessibility/ax_coordinate_system.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
@@ -165,10 +167,11 @@ AccessibilityHitTestingBrowserTest::AsyncHitTestAndWaitForCallback(
 
   gfx::Point target_point = CSSToFramePoint(point);
   base::RunLoop run_loop;
-  BrowserAccessibilityManager* hit_manager = nullptr;
-  int hit_node_id = 0;
+  ui::AXPlatformTreeManager* hit_manager = nullptr;
+  ui::AXNodeID hit_node_id = ui::kInvalidAXNodeID;
 
-  auto callback = [&](BrowserAccessibilityManager* manager, int node_id) {
+  auto callback = [&](ui::AXPlatformTreeManager* manager,
+                      ui::AXNodeID node_id) {
     hit_manager = manager;
     hit_node_id = node_id;
     run_loop.QuitClosure().Run();
@@ -178,7 +181,9 @@ AccessibilityHitTestingBrowserTest::AsyncHitTestAndWaitForCallback(
       base::BindLambdaForTesting(callback));
   run_loop.Run();
 
-  BrowserAccessibility* hit_node = hit_manager->GetFromID(hit_node_id);
+  BrowserAccessibility* hit_node =
+      static_cast<BrowserAccessibilityManager*>(hit_manager)
+          ->GetFromID(hit_node_id);
   return hit_node;
 }
 

@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_utils.h"
@@ -193,17 +194,18 @@ void AccessibilityNotificationWaiter::BindOnLocationsChanged(
 }
 
 void AccessibilityNotificationWaiter::OnGeneratedEvent(
-    BrowserAccessibilityDelegate* delegate,
+    RenderFrameHostImpl* render_frame_host,
     ui::AXEventGenerator::Event event,
-    int event_target_id) {
-  DCHECK(event_target_id);
+    ui::AXNodeID event_target_id) {
+  DCHECK(render_frame_host);
+  DCHECK_NE(event_target_id, ui::kInvalidAXNodeID);
 
   if (IsAboutBlank())
     return;
 
   if (generated_event_to_wait_for_ == event) {
     event_target_id_ = event_target_id;
-    event_render_frame_host_ = static_cast<RenderFrameHostImpl*>(delegate);
+    event_render_frame_host_ = render_frame_host;
     notification_received_ = true;
     loop_runner_quit_closure_.Run();
   }
@@ -225,7 +227,7 @@ void AccessibilityNotificationWaiter::OnFocusChanged() {
   const BrowserAccessibilityManager* manager =
       web_contents_impl->GetRootBrowserAccessibilityManager();
   if (manager && manager->delegate() && manager->GetFocus()) {
-    OnGeneratedEvent(manager->delegate(),
+    OnGeneratedEvent(manager->delegate()->AccessibilityRenderFrameHost(),
                      ui::AXEventGenerator::Event::FOCUS_CHANGED,
                      manager->GetFocus()->GetId());
   }

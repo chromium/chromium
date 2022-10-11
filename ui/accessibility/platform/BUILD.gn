@@ -32,14 +32,19 @@ source_set("platform") {
   visibility = [ "//ui/accessibility" ]
 
   sources = [
-    # Used by by browser_accessibility_state_impl.cc.
+    # Used by web_ax_platform_tree_manager_delegate.cc.
+    "ax_platform_tree_manager_delegate.h",
+
+    # Used by browser_accessibility_state_impl.cc.
     "ax_platform_node.cc",
     "ax_platform_node.h",
     "ax_platform_node_delegate.cc",
     "ax_platform_node_delegate.h",
 
-    # Used by browser_accessibility.cc.
+    # Used by browser_accessibility_manager.cc.
     "ax_platform_tree_manager.h",
+
+    # Used by browser_accessibility.cc.
     "ax_unique_id.cc",
     "ax_unique_id.h",
 

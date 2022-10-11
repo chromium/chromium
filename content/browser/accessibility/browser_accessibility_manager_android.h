@@ -12,10 +12,14 @@
 #include "third_party/blink/public/mojom/render_accessibility.mojom-forward.h"
 
 namespace ui {
+
 class MotionEventAndroid;
-}
+
+}  // namespace ui
 
 namespace content {
+
+class WebAXPlatformTreeManagerDelegate;
 
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.browser.accessibility
@@ -44,7 +48,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   BrowserAccessibilityManagerAndroid(
       const ui::AXTreeUpdate& initial_tree,
       base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility,
-      BrowserAccessibilityDelegate* delegate);
+      WebAXPlatformTreeManagerDelegate* delegate);
 
   BrowserAccessibilityManagerAndroid(
       const BrowserAccessibilityManagerAndroid&) = delete;

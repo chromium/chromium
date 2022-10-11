@@ -16,6 +16,7 @@
 #include "base/win/windows_version.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
+#include "content/browser/accessibility/web_ax_platform_tree_manager_delegate.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -58,13 +59,13 @@ BrowserAccessibility* GetUiaTextPatternProvider(BrowserAccessibility& node) {
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     const ui::AXTreeUpdate& initial_tree,
-    BrowserAccessibilityDelegate* delegate) {
+    WebAXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerWin(initial_tree, delegate);
 }
 
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
-    BrowserAccessibilityDelegate* delegate) {
+    WebAXPlatformTreeManagerDelegate* delegate) {
   return new BrowserAccessibilityManagerWin(
       BrowserAccessibilityManagerWin::GetEmptyDocument(), delegate);
 }
@@ -76,7 +77,7 @@ BrowserAccessibilityManager::ToBrowserAccessibilityManagerWin() {
 
 BrowserAccessibilityManagerWin::BrowserAccessibilityManagerWin(
     const ui::AXTreeUpdate& initial_tree,
-    BrowserAccessibilityDelegate* delegate)
+    WebAXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(delegate) {
   ui::win::CreateATLModuleIfNeeded();
   Initialize(initial_tree);
@@ -97,7 +98,7 @@ ui::AXTreeUpdate BrowserAccessibilityManagerWin::GetEmptyDocument() {
 }
 
 HWND BrowserAccessibilityManagerWin::GetParentHWND() {
-  BrowserAccessibilityDelegate* delegate = GetDelegateFromRootManager();
+  WebAXPlatformTreeManagerDelegate* delegate = GetDelegateFromRootManager();
   if (!delegate)
     return NULL;
   return delegate->AccessibilityGetAcceleratedWidget();

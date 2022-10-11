@@ -40,6 +40,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 
 // This file contains back/forward-cache tests that test or use internal
 // features, e.g. cache-flushing, crashes, verifying proxies and other
@@ -3459,9 +3460,10 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   // fired.
   BrowserAccessibilityManager* manager =
       rfh_a->GetOrCreateBrowserAccessibilityManager();
-  manager->SetGeneratedEventCallbackForTesting(base::BindRepeating(
-      [](BrowserAccessibilityDelegate* delegate,
-         ui::AXEventGenerator::Event event, int event_target_id) { FAIL(); }));
+  manager->SetGeneratedEventCallbackForTesting(
+      base::BindRepeating([](RenderFrameHostImpl* render_frame_host,
+                             ui::AXEventGenerator::Event event,
+                             ui::AXNodeID event_target_id) { FAIL(); }));
   // Generate an event.
   blink::mojom::AXUpdatesAndEventsPtr updates_and_events =
       blink::mojom::AXUpdatesAndEvents::New();

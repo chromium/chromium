@@ -43,21 +43,21 @@ gfx::NativeViewAccessible TestBrowserAccessibilityDelegate::
   return nullptr;
 }
 
+void TestBrowserAccessibilityDelegate::AccessibilityHitTest(
+    const gfx::Point& point_in_frame_pixels,
+    const ax::mojom::Event& opt_event_to_fire,
+    int opt_request_id,
+    base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
+                            ui::AXNodeID hit_node_id)> opt_callback) {}
+
+bool TestBrowserAccessibilityDelegate::AccessibilityIsRootFrame() const {
+  return is_root_frame_;
+}
+
 RenderFrameHostImpl*
 TestBrowserAccessibilityDelegate::AccessibilityRenderFrameHost() {
   return nullptr;
 }
-
-bool TestBrowserAccessibilityDelegate::AccessibilityIsRootFrame() {
-  return is_root_frame_;
-}
-
-void TestBrowserAccessibilityDelegate::AccessibilityHitTest(
-    const gfx::Point& point_in_frame_pixels,
-    ax::mojom::Event opt_event_to_fire,
-    int opt_request_id,
-    base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
-                            int hit_node_id)> opt_callback) {}
 
 WebContentsAccessibility*
 TestBrowserAccessibilityDelegate::AccessibilityGetWebContentsAccessibility() {

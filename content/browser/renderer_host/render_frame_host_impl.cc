@@ -3050,16 +3050,12 @@ RenderFrameHostImpl::AccessibilityGetNativeViewAccessibleForWindow() {
   return nullptr;
 }
 
-RenderFrameHostImpl* RenderFrameHostImpl::AccessibilityRenderFrameHost() {
-  return this;
-}
-
 void RenderFrameHostImpl::AccessibilityHitTest(
     const gfx::Point& point_in_frame_pixels,
-    ax::mojom::Event opt_event_to_fire,
+    const ax::mojom::Event& opt_event_to_fire,
     int opt_request_id,
-    base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
-                            int hit_node_id)> opt_callback) {
+    base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
+                            ui::AXNodeID hit_node_id)> opt_callback) {
   // This is called by BrowserAccessibilityManager. During teardown it's
   // possible that render_accessibility_ is null but the corresponding
   // BrowserAccessibilityManager still exists and could call this.
@@ -3077,7 +3073,7 @@ void RenderFrameHostImpl::AccessibilityHitTest(
                      opt_event_to_fire, std::move(opt_callback)));
 }
 
-bool RenderFrameHostImpl::AccessibilityIsRootFrame() {
+bool RenderFrameHostImpl::AccessibilityIsRootFrame() const {
   // Do not use is_main_frame() or IsOutermostMainFrame().
   // Frame trees may be nested so it can be the case that is_main_frame() is
   // true, but is not the outermost RenderFrameHost (it only checks for nullity
@@ -3086,6 +3082,10 @@ bool RenderFrameHostImpl::AccessibilityIsRootFrame() {
   // does not escape guest views. Therefore, we must check for any kind of
   // parent document or embedder.
   return !GetParentOrOuterDocumentOrEmbedder();
+}
+
+RenderFrameHostImpl* RenderFrameHostImpl::AccessibilityRenderFrameHost() {
+  return this;
 }
 
 WebContentsAccessibility*
@@ -10418,8 +10418,8 @@ ui::AXTreeData RenderFrameHostImpl::GetAXTreeData() {
 void RenderFrameHostImpl::AccessibilityHitTestCallback(
     int request_id,
     ax::mojom::Event event_to_fire,
-    base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
-                            int hit_node_id)> opt_callback,
+    base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
+                            ui::AXNodeID hit_node_id)> opt_callback,
     blink::mojom::HitTestResponsePtr hit_test_response) {
   if (!hit_test_response) {
     if (opt_callback)
