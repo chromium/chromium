@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/browser/interest_group/interest_group_storage.h"
@@ -75,7 +76,7 @@ InterestGroupAuctionReporter::InterestGroupAuctionReporter(
 
 InterestGroupAuctionReporter ::~InterestGroupAuctionReporter() = default;
 
-void InterestGroupAuctionReporter::Start(ReporterCallback callback) {
+void InterestGroupAuctionReporter::Start(base::OnceClosure callback) {
   DCHECK(!callback_);
 
   callback_ = std::move(callback);
@@ -121,14 +122,7 @@ void InterestGroupAuctionReporter::OnSellerWorkletFatalError(
     case AuctionWorkletManager::FatalErrorType::kWorkletCrash:
       // TODO(mmenke): Advance to the next worklet instead of failing.
       OnReportingComplete(
-          // Thee different errors here are for legacy reasons.
-          //
-          // TODO(mmenke): Remove InterestGroupAuction::AuctionResult from this
-          // class entirely.
-          seller_info == &top_level_seller_winning_bid_info_
-              ? InterestGroupAuction::AuctionResult::kSellerWorkletCrashed
-              : InterestGroupAuction::AuctionResult::
-                    kWinningComponentSellerWorkletCrashed,
+          false,
           // Ignore default error message in case of crash. Instead, use a more
           // specific one.
           {base::StrCat({seller_info->auction_config->decision_logic_url.spec(),
@@ -214,7 +208,7 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
             {"Invalid seller beacon URL for '", element.first, "'"}));
         // TODO(mmenke): Call into other worklets, despite failure.
         OnReportingComplete(
-            InterestGroupAuction::AuctionResult::kBadMojoMessage);
+            /*success=*/false);
         return;
       }
     }
@@ -232,7 +226,7 @@ void InterestGroupAuctionReporter::OnSellerReportResultComplete(
     if (!IsEventLevelReportingUrlValid(*seller_report_url)) {
       mojo::ReportBadMessage("Invalid seller report URL");
       // TODO(mmenke): Call into other worklets, despite failure.
-      OnReportingComplete(InterestGroupAuction::AuctionResult::kBadMojoMessage);
+      OnReportingComplete(/*success=*/false);
       return;
     }
 
@@ -336,7 +330,7 @@ void InterestGroupAuctionReporter::OnBidderWorkletFatalError(
       AuctionWorkletManager::FatalErrorType::kWorkletCrash) {
     // TODO(mmenke): Send reports instead of failing.
     OnReportingComplete(
-        InterestGroupAuction::AuctionResult::kWinningBidderWorkletCrashed,
+        false,
         // Ignore default error message in case of crash. Instead, use a more
         // specific one.
         {base::StrCat({winning_bid_info_.storage_interest_group->interest_group
@@ -382,7 +376,7 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
         mojo::ReportBadMessage(base::StrCat(
             {"Invalid bidder beacon URL for '", element.first, "'"}));
         OnReportingComplete(
-            InterestGroupAuction::AuctionResult::kBadMojoMessage);
+            /*success=*/false);
         return;
       }
     }
@@ -393,21 +387,26 @@ void InterestGroupAuctionReporter::OnBidderReportWinComplete(
   if (bidder_report_url) {
     if (!IsEventLevelReportingUrlValid(*bidder_report_url)) {
       mojo::ReportBadMessage("Invalid bidder report URL");
-      OnReportingComplete(InterestGroupAuction::AuctionResult::kBadMojoMessage);
+      OnReportingComplete(/*success=*/false);
       return;
     }
 
     report_urls_.push_back(*bidder_report_url);
   }
 
-  OnReportingComplete(InterestGroupAuction::AuctionResult::kSuccess, errors);
+  OnReportingComplete(/*success=*/true, errors);
 }
 
 void InterestGroupAuctionReporter::OnReportingComplete(
-    InterestGroupAuction::AuctionResult auction_result,
+    bool success,
     const std::vector<std::string>& errors) {
+  if (!success) {
+    private_aggregation_requests_.clear();
+    ad_beacon_map_ = ReportingMetadata();
+    report_urls_.clear();
+  }
   errors_.insert(errors_.end(), errors.begin(), errors.end());
-  std::move(callback_).Run(auction_result);
+  std::move(callback_).Run();
 }
 
 const InterestGroupAuctionReporter::SellerWinningBidInfo&

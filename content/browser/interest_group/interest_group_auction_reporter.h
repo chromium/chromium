@@ -17,7 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "content/browser/interest_group/interest_group_auction.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -44,8 +45,6 @@ class AuctionWorkletManager;
 // them, as needed.
 class CONTENT_EXPORT InterestGroupAuctionReporter {
  public:
-  using ReporterCallback =
-      base::OnceCallback<void(InterestGroupAuction::AuctionResult result)>;
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
@@ -123,7 +122,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   InterestGroupAuctionReporter& operator=(const InterestGroupAuctionReporter&) =
       delete;
 
-  void Start(ReporterCallback callback);
+  void Start(base::OnceClosure callback);
 
   // Accessors so the owner can pass along the results of the auction.
   //
@@ -192,7 +191,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
 
   // Invokes `callback_`.
   void OnReportingComplete(
-      InterestGroupAuction::AuctionResult auction_result,
+      bool success,
       const std::vector<std::string>& errors = std::vector<std::string>());
 
   // Retrieves the SellerWinningBidInfo of the auction the bidder was
@@ -206,7 +205,7 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   const SellerWinningBidInfo top_level_seller_winning_bid_info_;
   const absl::optional<SellerWinningBidInfo> component_seller_winning_bid_info_;
 
-  ReporterCallback callback_;
+  base::OnceClosure callback_;
 
   // Handle used for the seller worklet. First used for the top-level seller,
   // and then the component-seller, if needed.

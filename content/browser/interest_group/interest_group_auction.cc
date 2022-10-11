@@ -1214,8 +1214,8 @@ void InterestGroupAuction::StartReportingPhase(
       std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
       std::move(private_aggregation_requests_));
-  reporter_->Start(base::BindOnce(&InterestGroupAuction::OnReporterComplete,
-                                  base::Unretained(this)));
+  reporter_->Start(base::BindOnce(
+      &InterestGroupAuction::OnReportingPhaseComplete, base::Unretained(this)));
   // The seller worklet handle is no longer needed. It's useful to keep it
   // alive until this point so that the InterestGroupAuctionReporter can reuse
   // it.
@@ -1684,13 +1684,7 @@ void InterestGroupAuction::OnSellerWorkletFatalError(
       break;
   }
 
-  // The seller worklet can crash in either the bidding or selling phase. Call
-  // the appropriate method depending on the current phase.
-  if (bidding_and_scoring_phase_callback_) {
-    OnBiddingAndScoringComplete(result, errors);
-    return;
-  }
-  OnReportingPhaseComplete(result, errors);
+  OnBiddingAndScoringComplete(result, errors);
 }
 
 void InterestGroupAuction::OnComponentAuctionComplete(
@@ -2065,7 +2059,12 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
   std::move(bidding_and_scoring_phase_callback_).Run(success);
 }
 
-void InterestGroupAuction::OnReporterComplete(AuctionResult auction_result) {
+void InterestGroupAuction::OnReportingPhaseComplete() {
+  DCHECK(reporting_phase_callback_);
+  DCHECK(!final_auction_result_);
+
+  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "reporting_phase", trace_id_);
+
   // Extract all results from the reporter, and then destroy it.
   errors_.insert(errors_.end(), reporter_->errors().begin(),
                  reporter_->errors().end());
@@ -2074,19 +2073,7 @@ void InterestGroupAuction::OnReporterComplete(AuctionResult auction_result) {
   report_urls_ = reporter_->TakeReportUrls();
   reporter_.reset();
 
-  OnReportingPhaseComplete(auction_result);
-}
-
-void InterestGroupAuction::OnReportingPhaseComplete(
-    AuctionResult auction_result,
-    const std::vector<std::string>& errors) {
-  DCHECK(reporting_phase_callback_);
-  DCHECK(!final_auction_result_);
-
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "reporting_phase", trace_id_);
-
-  errors_.insert(errors_.end(), errors.begin(), errors.end());
-  final_auction_result_ = auction_result;
+  final_auction_result_ = AuctionResult::kSuccess;
   // If there's a winning bid, set its auction result as well. If the winning
   // bid came from a component auction, this will set that component auction's
   // result as well. This is needed for auction result accessors.
@@ -2095,13 +2082,12 @@ void InterestGroupAuction::OnReportingPhaseComplete(
   // and have it handle reporting only if auction results are loaded in a frame,
   // or if there's no result.
   if (top_bid_)
-    top_bid_->bid->auction->final_auction_result_ = auction_result;
+    top_bid_->bid->auction->final_auction_result_ = AuctionResult::kSuccess;
 
   // Close all pipes, as they're no longer needed.
   ClosePipes();
 
-  std::move(reporting_phase_callback_)
-      .Run(auction_result == AuctionResult::kSuccess);
+  std::move(reporting_phase_callback_).Run(/*success=*/true);
 }
 
 auction_worklet::mojom::ComponentAuctionOtherSellerPtr

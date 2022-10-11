@@ -135,9 +135,8 @@ class CONTENT_EXPORT InterestGroupAuction
     // The seller worklet rejected all bids (of which there was at least one).
     kAllBidsRejected = 7,
 
-    // The winning bidder worklet crashed. The bidder must have successfully
-    // bid, and the seller must have accepted the bid for this to be logged.
-    kWinningBidderWorkletCrashed = 8,
+    // Obsolete:
+    // kWinningBidderWorkletCrashed = 8,
 
     // The seller is not allowed to use the interest group API.
     kSellerRejected = 9,
@@ -146,11 +145,10 @@ class CONTENT_EXPORT InterestGroupAuction
     // top-level auction.
     kComponentLostAuction = 10,
 
-    // The component seller worklet with the winning bidder crashed during the
-    // reporting phase.
-    kWinningComponentSellerWorkletCrashed = 11,
+    // Obsolete:
+    // kWinningComponentSellerWorkletCrashed = 11,
 
-    kMaxValue = kWinningComponentSellerWorkletCrashed
+    kMaxValue = kComponentLostAuction
   };
 
   struct BidState {
@@ -597,14 +595,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // worklet to report a win. Will ultimately invoke
   // `reporting_phase_callback_`, which will delete the auction.
   void ReportSellerResult(absl::optional<std::string> top_seller_signals);
-  void OnReporterComplete(AuctionResult auction_result);
-
-  // Called when the final phase of the auction completes. Unconditionally
-  // sets `final_auction_result`, even if `auction_result` is
-  // AuctionResult::kSuccess, unlike other phase completion methods. Appends
-  // `errors` to `errors_`.
-  void OnReportingPhaseComplete(AuctionResult auction_result,
-                                const std::vector<std::string>& errors = {});
+  void OnReportingPhaseComplete();
 
   // -----------------------------------
   // Methods not associated with a phase
