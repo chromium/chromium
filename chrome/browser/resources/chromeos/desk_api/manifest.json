@@ -2,9 +2,7 @@
   "manifest_version": 3,
   "name": "Desk API Component Extension",
   "externally_connectable": {
-    "matches": [
-      "https://*.google.com/*"
-    ],
+    "matches": [ "$DOMAIN_LIST" ],
     "accepts_tls_channel_id": false
   },
   "version": "0.2.1",

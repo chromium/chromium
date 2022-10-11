@@ -37,7 +37,8 @@ class DeskApiExtensionManager : public KeyedService {
     virtual ~Delegate() = default;
 
     virtual void InstallExtension(
-        ::extensions::ComponentLoader* component_loader);
+        ::extensions::ComponentLoader* component_loader,
+        const std::string& manifest_content);
     virtual void UninstallExtension(
         ::extensions::ComponentLoader* component_loader);
     virtual bool IsProfileAffiliated(Profile* profile) const;
@@ -60,6 +61,13 @@ class DeskApiExtensionManager : public KeyedService {
   // Boolean helper that decides if the component extension can be installed.
   bool CanInstallExtension() const;
 
+  // Gets component extension's manifest with domain allowlist controlled
+  // through enterprise policy. If the policy does not contain any valid
+  // domains, this method returns empty string. Otherwise this method returns a
+  // valid Chrome extension Manifest V3. See
+  // https://developer.chrome.com/docs/extensions/mv3/intro/
+  std::string GetManifest() const;
+
  private:
   // Retrieves the factory instance for the
   // `DeskApiExtensionManager`.
@@ -71,6 +79,10 @@ class DeskApiExtensionManager : public KeyedService {
 
   // Callback triggered when the value of the relevant pref changes.
   void OnPrefChanged();
+
+  // Loads or unloads the component extension depends whether the component
+  // extension can be installed.
+  void LoadOrUnloadExtension();
 
   // Removes the component extension if it is already installed.
   void RemoveExtensionIfInstalled();
