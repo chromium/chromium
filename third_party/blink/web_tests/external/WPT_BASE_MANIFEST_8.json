@@ -72537,6 +72537,32 @@
         {}
        ]
       ],
+      "inline-table-inline-block-baseline-vert-rl.html": [
+       "c0a6e2f12cb3cb51368416f5e79bd305cfe6a8a2",
+       [
+        null,
+        [
+         [
+          "/css/css-align/baseline-rules/inline-table-inline-block-baseline-vert-rl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "inline-table-inline-block-baseline.html": [
+       "be9acc58cd548ab75f036df5e11c2299122c76ac",
+       [
+        null,
+        [
+         [
+          "/css/css-align/baseline-rules/inline-table-inline-block-baseline-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "synthesized-baseline-table-cell-001.html": [
        "a7119b8dc556a77a6ec2f133053c123f4a3a75f4",
        [
@@ -266616,6 +266642,14 @@
        "e6d2786c5ef471e56b76ae5042c07dc9d0e1c05f",
        []
       ],
+      "inline-table-inline-block-baseline-ref.html": [
+       "a255bee30f4c8006f4a689b5f7abb4aa00a5ba12",
+       []
+      ],
+      "inline-table-inline-block-baseline-vert-rl-ref.html": [
+       "37abf9d4af25d22f2cda05d59ddd03e9a69a3d0b",
+       []
+      ],
       "synthesized-baseline-table-cell-001-ref.html": [
        "a63d2c9d685292a7fb6f54b4fb380a246a0ff46a",
        []
@@ -345885,6 +345919,10 @@
     "support": {
      "HTMLScriptElement-internal-slot-support.html": [
       "b9a0ceefae22a7becb4552e0aadc7e9bfc24cd24",
+      []
+     ],
+     "HTMLScriptElement-internal-slot-support.js": [
+      "7d574a6a1387a9e7bdaaf596f46e9d616ca94988",
       []
      ],
      "WorkerGlobalScope-eval.https.js": [
@@ -458031,6 +458069,13 @@
          {}
         ]
        ],
+       "javascript-url-task-queuing.html": [
+        "1bb05bfb190d2e69576a13dcd8cbddd8f3903037",
+        [
+         null,
+         {}
+        ]
+       ],
        "multiple-globals": {
         "context-for-location-assign.html": [
          "cb2984d4093286fd44fd8ff85f039a1002ea4814",
@@ -497790,13 +497835,6 @@
         ],
         "028.html": [
          "e383d4f1a648917d068b6fdfd4aa0f6e5edec2f5",
-         [
-          null,
-          {}
-         ]
-        ],
-        "029.html": [
-         "33548e566ac67823f9c19af7785a13e394c4964b",
          [
           null,
           {}
@@ -559203,7 +559241,7 @@
      ]
     ],
     "HTMLElement-generic.tentative.html": [
-     "3ec6cfa60da6d86e6be2e3ce68ae227441e6c5bb",
+     "8e54fa9c570fa9ff15002f38460ebb8565311abf",
      [
       null,
       {}
@@ -559217,7 +559255,7 @@
      ]
     ],
     "HTMLScriptElement-internal-slot.tentative.html": [
-     "4f523bb4e4eec2c048d44b1beeab2a94b9e7bd31",
+     "3a4b905f462f3f19f8d22424e80d01ea1e702b58",
      [
       null,
       {}
