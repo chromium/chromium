@@ -2790,3 +2790,47 @@ TEST_F(ZeroSuggestProviderTest, TestDeleteMatchClearsPrefsBasedCache) {
   ASSERT_TRUE(
       prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL).empty());
 }
+
+TEST_F(ZeroSuggestProviderTest, TestDeleteMatchClearsInMemoryCache) {
+  EXPECT_CALL(*client_, IsAuthenticated())
+      .WillRepeatedly(testing::Return(true));
+
+  // Enable in-memory ZPS caching.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(omnibox::kZeroSuggestInMemoryCaching);
+
+  // Set up the in-memory cache with the response from the previous run.
+  std::string json_response(
+      R"(["",["search1", "search2", "search3"],)"
+      R"([],[],{"google:suggestrelevance":[602, 601, 600],)"
+      R"("google:verbatimrelevance":1300,)"
+      R"("google:suggestdetail":)"
+      R"([{"du": "https://www.google.com/s1"},)"
+      R"({"du": "https://www.google.com/s2"},)"
+      R"({"du": "https://www.google.com/s3"}]}])");
+
+  ZeroSuggestCacheService* cache_svc = client_->GetZeroSuggestCacheService();
+  cache_svc->StoreZeroSuggestResponse("", json_response);
+  cache_svc->StoreZeroSuggestResponse("https://www.google.com", json_response);
+
+  AutocompleteInput input = OnFocusInputForNTP();
+  provider_->Start(input, false);
+  ASSERT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL,
+            provider_->GetResultTypeRunningForTesting());
+
+  // Expect that matches get populated synchronously out of the cache.
+  ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
+  EXPECT_EQ(u"search1", provider_->matches()[0].contents);
+  EXPECT_EQ(u"search2", provider_->matches()[1].contents);
+  EXPECT_EQ(u"search3", provider_->matches()[2].contents);
+
+  // Ensure that both cache entries have non-empty values.
+  ASSERT_FALSE(cache_svc->ReadZeroSuggestResponse("").empty());
+  ASSERT_FALSE(
+      cache_svc->ReadZeroSuggestResponse("https://www.google.com").empty());
+
+  provider_->DeleteMatch(provider_->matches()[0]);
+
+  // Verify that the entire cache has been cleared.
+  ASSERT_TRUE(cache_svc->IsCacheEmpty());
+}

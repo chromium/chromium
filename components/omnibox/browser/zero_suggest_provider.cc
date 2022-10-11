@@ -530,10 +530,18 @@ void ZeroSuggestProvider::DeleteMatch(const AutocompleteMatch& match) {
   // Remove the deleted match from the cache, so it is not shown to the user
   // again. Since the deleted result might have been surfaced as a suggestion on
   // both NTP and SRP/Web, blow away the entire cache.
-  client()->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
-                                  std::string());
-  client()->GetPrefs()->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
-                                base::Value::Dict());
+  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
+    auto* zero_suggest_cache_service = client()->GetZeroSuggestCacheService();
+    if (zero_suggest_cache_service) {
+      zero_suggest_cache_service->ClearCache();
+    }
+  } else {
+    client()->GetPrefs()->SetString(omnibox::kZeroSuggestCachedResults,
+                                    std::string());
+    client()->GetPrefs()->SetDict(omnibox::kZeroSuggestCachedResultsWithURL,
+                                  base::Value::Dict());
+  }
+
   BaseSearchProvider::DeleteMatch(match);
 }
 

@@ -111,6 +111,7 @@
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/origin_trials/browser/prefservice_persistence_provider.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/mock_field_info_store.h"
@@ -2071,7 +2072,11 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_TRUE(tester.HasOrigin(autofill::kSettingsOrigin));
 }
 
-TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestCacheClear) {
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestPrefsBasedCacheClear) {
+  // Disable in-memory ZPS caching.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(omnibox::kZeroSuggestInMemoryCaching);
+
   const std::string page_url = "https://google.com/search?q=chrome";
   const std::string response = R"(["", ["foo", "bar"]])";
 
@@ -2080,10 +2085,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestCacheClear) {
                                                          response);
   omnibox::SetUserPreferenceForZeroSuggestCachedResponse(prefs, "", response);
 
-  ZeroSuggestCacheService* zero_suggest_cache_service =
-      ZeroSuggestCacheServiceFactory::GetForProfile(GetProfile());
-  zero_suggest_cache_service->StoreZeroSuggestResponse(page_url, response);
-  zero_suggest_cache_service->StoreZeroSuggestResponse("", response);
+  // Verify that the cache is initially non-empty.
+  EXPECT_FALSE(prefs->GetString(omnibox::kZeroSuggestCachedResults).empty());
+  EXPECT_FALSE(
+      prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL).empty());
 
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 content::BrowsingDataRemover::DATA_TYPE_COOKIES,
@@ -2093,11 +2098,39 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestCacheClear) {
   EXPECT_TRUE(prefs->GetString(omnibox::kZeroSuggestCachedResults).empty());
   EXPECT_TRUE(
       prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL).empty());
+  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_COOKIES, GetRemovalMask());
+  EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+            GetOriginTypeMask());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestInMemoryCacheClear) {
+  // Enable in-memory ZPS caching.
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(omnibox::kZeroSuggestInMemoryCaching);
+
+  const std::string page_url = "https://google.com/search?q=chrome";
+  const std::string response = R"(["", ["foo", "bar"]])";
+
+  ZeroSuggestCacheService* zero_suggest_cache_service =
+      ZeroSuggestCacheServiceFactory::GetForProfile(GetProfile());
+  zero_suggest_cache_service->StoreZeroSuggestResponse(page_url, response);
+  zero_suggest_cache_service->StoreZeroSuggestResponse("", response);
+
+  // Verify that the cache is initially non-empty.
+  EXPECT_FALSE(zero_suggest_cache_service->IsCacheEmpty());
+
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+                                false);
+
+  // Expect the cache to be cleared when cookies are removed.
   EXPECT_TRUE(zero_suggest_cache_service->IsCacheEmpty());
   EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_COOKIES, GetRemovalMask());
   EXPECT_EQ(content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             GetOriginTypeMask());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
