@@ -3644,6 +3644,7 @@ TEST_F(CollectUserDataActionTest, LogsUkmCreditCardsCount) {
 }
 
 TEST_F(CollectUserDataActionTest, ProfilesNotDeduplicatedWithDisabledFlag) {
+  base::HistogramTester histogram_tester;
   scoped_feature_list_.InitAndDisableFeature(
       features::kAutofillAssistantCudFilterProfiles);
   ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
@@ -3693,9 +3694,17 @@ TEST_F(CollectUserDataActionTest, ProfilesNotDeduplicatedWithDisabledFlag) {
       ElementsAreArray({ToHumanReadableEntry(
           source_id_, kCompleteShippingProfilesCount,
           static_cast<int64_t>(Metrics::UserDataEntryCount::FIVE_OR_MORE))}));
+
+  histogram_tester.ExpectTotalCount(
+      "Android.AutofillAssistant.Cud.AutofillProfileDeduplicatedAddress",
+      1u);
+  histogram_tester.ExpectTotalCount(
+      "Android.AutofillAssistant.Cud.AutofillProfileDeduplicatedContact",
+      1u);
 }
 
 TEST_F(CollectUserDataActionTest, ProfilesDeduplicatedWithEnabledFlag) {
+  base::HistogramTester histogram_tester;
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillAssistantCudFilterProfiles);
   ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
@@ -3743,6 +3752,13 @@ TEST_F(CollectUserDataActionTest, ProfilesDeduplicatedWithEnabledFlag) {
               ElementsAreArray({ToHumanReadableEntry(
                   source_id_, kCompleteShippingProfilesCount,
                   static_cast<int64_t>(Metrics::UserDataEntryCount::ONE))}));
+
+  histogram_tester.ExpectTotalCount(
+      "Android.AutofillAssistant.Cud.AutofillProfileDeduplicatedAddress",
+      1u);
+  histogram_tester.ExpectTotalCount(
+      "Android.AutofillAssistant.Cud.AutofillProfileDeduplicatedContact",
+      1u);
 }
 
 TEST_F(CollectUserDataActionTest, LogsUkmMoreThanFiveProfilesCount) {

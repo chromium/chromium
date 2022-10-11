@@ -369,6 +369,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.AutofillAssistant.Cud.AutofillProfileDeduplicatedAddress"
+    enum="AutofillAssistantUserDataEntryCount" expires_after="2023-08-12">
+  <owner>ozgeneren@google.com</owner>
+  <owner>autofill_assistant+watch@google.com</owner>
+  <summary>
+    Reports the number of address profiles deduplicated by autofill assistant at
+    the step of user data collection. This is recorded every time the user goes
+    through CollectUserData step.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.AutofillAssistant.Cud.AutofillProfileDeduplicatedContact"
+    enum="AutofillAssistantUserDataEntryCount" expires_after="2023-08-12">
+  <owner>ozgeneren@google.com</owner>
+  <owner>autofill_assistant+watch@google.com</owner>
+  <summary>
+    Reports the number of contact profiles deduplicated by autofill assistant at
+    the step of user data collection. This is recorded every time the user goes
+    through CollectUserData step.
+  </summary>
+</histogram>
+
 <histogram name="Android.AutofillAssistant.CupRpcVerificationEvent"
     enum="AutofillAssistantCupRpcVerificationEvent" expires_after="2023-02-02">
   <owner>sergiovila@google.com</owner>

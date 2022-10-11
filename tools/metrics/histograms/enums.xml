@@ -6288,7 +6288,7 @@ others/histograms.xml -->
   <int value="2" label="Two"/>
   <int value="3" label="Three"/>
   <int value="4" label="Four"/>
-  <int value="5" label="Five"/>
+  <int value="5" label="Five or more"/>
 </enum>
 
 <enum name="AutofillAssistantUserDataSelectionState">
