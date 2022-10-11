@@ -164,9 +164,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // Updates chip icon, text and theme with model.
   void SyncChipWithModel();
 
-  // NOP method used for callbacks.
-  void DoNothing() {}
-
   // Opens the Page Info Dialog.
   void ShowPageInfoDialog();
 

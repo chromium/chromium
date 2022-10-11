@@ -214,14 +214,13 @@ void ChipController::ResetChip() {
 }
 
 void ChipController::ResetChipCallbacks() {
-  chip_->SetCallback(
-      base::BindRepeating(&ChipController::DoNothing, base::Unretained(this)));
+  chip_->SetCallback(base::RepeatingCallback<void()>(base::DoNothing()));
   chip_->SetCollapseEndedCallback(
-      base::BindRepeating(&ChipController::DoNothing, base::Unretained(this)));
+      base::RepeatingCallback<void()>(base::DoNothing()));
   chip_->SetExpandAnimationEndedCallback(
-      base::BindRepeating(&ChipController::DoNothing, base::Unretained(this)));
+      base::RepeatingCallback<void()>(base::DoNothing()));
   chip_->SetVisibilityChangedCallback(
-      base::BindRepeating(&ChipController::DoNothing, base::Unretained(this)));
+      base::RepeatingCallback<void()>(base::DoNothing()));
 }
 
 void ChipController::RemoveBubbleObserverAndResetTimersAndChipCallbacks() {
