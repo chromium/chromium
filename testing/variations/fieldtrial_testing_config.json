@@ -2933,6 +2933,29 @@
             ]
         }
     ],
+    "CombinedMicroOps": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableSsePathForCopyLCharsX86",
+                        "LiteralBufferCreateStringWithEncoding",
+                        "UseHtmlAttributeNameLookup"
+                    ]
+                }
+            ]
+        }
+    ],
     "CombinedNavigationOptimizations2": [
         {
             "platforms": [
@@ -4512,28 +4535,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ShoppingPDPMetrics"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableSsePathForCopyLCharsX86": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableSsePathForCopyLCharsX86"
                     ]
                 }
             ]
@@ -6633,28 +6634,6 @@
                     ],
                     "disable_features": [
                         "LinkCapturingAutoDisplayIntentPicker"
-                    ]
-                }
-            ]
-        }
-    ],
-    "LiteralBufferCreateStringWithEncoding": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LiteralBufferCreateStringWithEncoding"
                     ]
                 }
             ]
@@ -10913,28 +10892,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UseGetrandomForRandBytes"
-                    ]
-                }
-            ]
-        }
-    ],
-    "UseHtmlAttributeNameLookup": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "UseHtmlAttributeNameLookup",
-                    "enable_features": [
-                        "UseHtmlAttributeNameLookup"
                     ]
                 }
             ]
