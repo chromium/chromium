@@ -232,11 +232,26 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearSilentWebm) {
 
 // We don't expect android devices to support highbit yet.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearHighBitDepthVP9) {
+
+// TODO(https://crbug.com/1373513): DEMUXER_ERROR_NO_SUPPORTED_STREAMS error on
+// Fuchsia Arm64.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
+#define MAYBE_VideoBearHighBitDepthVP9 DISABLED_VideoBearHighBitDepthVP9
+#else
+#define MAYBE_VideoBearHighBitDepthVP9 VideoBearHighBitDepthVP9
+#endif
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_VideoBearHighBitDepthVP9) {
   PlayVideo("bear-320x180-hi10p-vp9.webm");
 }
 
-IN_PROC_BROWSER_TEST_P(MediaTest, VideoBear12DepthVP9) {
+// TODO(https://crbug.com/1373513): DEMUXER_ERROR_NO_SUPPORTED_STREAMS error on
+// Fuchsia Arm64.
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64)
+#define MAYBE_VideoBear12DepthVP9 DISABLED_VideoBear12DepthVP9
+#else
+#define MAYBE_VideoBear12DepthVP9 VideoBear12DepthVP9
+#endif
+IN_PROC_BROWSER_TEST_P(MediaTest, MAYBE_VideoBear12DepthVP9) {
   // Hardware decode on does not reliably support 12-bit.
   if (is_accelerated())
     return;
