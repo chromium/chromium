@@ -7,10 +7,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ParentAccessController} from './parent_access_controller.js';
-import {GetOAuthTokenStatus, ParentAccessServerMessageType, ParentAccessUIHandler} from './parent_access_ui.mojom-webui.js';
+import {GetOAuthTokenStatus, ParentAccessServerMessageType} from './parent_access_ui.mojom-webui.js';
+import {getParentAccessUIHandler} from './parent_access_ui_handler.js';
 import {WebviewManager} from './webview_manager.js';
-
-const parentAccessUIHandler = ParentAccessUIHandler.getRemote();
 
 /**
  * List of URL hosts that can be requested by the webview. The
@@ -29,6 +28,7 @@ class ParentAccessUi extends PolymerElement {
     super();
     this.webview_manager_ = null;
     this.server = null;
+    this.parentAccessUIHandler = getParentAccessUIHandler();
   }
 
   static get is() {
@@ -95,7 +95,7 @@ class ParentAccessUi extends PolymerElement {
 
     const eventOriginFilter = loadTimeData.getString('eventOriginFilter');
 
-    const oauthFetchResult = await parentAccessUIHandler.getOAuthToken();
+    const oauthFetchResult = await this.parentAccessUIHandler.getOAuthToken();
     if (oauthFetchResult.status != GetOAuthTokenStatus.kSuccess) {
       // TODO(b/200187536): show error page.
       return;
@@ -140,7 +140,7 @@ class ParentAccessUi extends PolymerElement {
       // Notify ParentAccessUIHandler that we received a ParentAccessCallback.
       // The handler will attempt to parse the callback and return the status.
       const parentAccessServerMessage =
-          await parentAccessUIHandler.onParentAccessCallbackReceived(
+          await this.parentAccessUIHandler.onParentAccessCallbackReceived(
               parentAccessCallback);
 
       // If the parentAccessCallback couldn't be parsed, then an initialization

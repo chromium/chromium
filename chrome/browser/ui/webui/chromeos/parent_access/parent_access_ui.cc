@@ -118,6 +118,8 @@ void ParentAccessUI::SetUpResources() {
                           IDR_PARENT_ACCESS_CONTROLLER_JS);
   source->AddResourcePath("parent_access_app.js", IDR_PARENT_ACCESS_APP_JS);
   source->AddResourcePath("parent_access_ui.js", IDR_PARENT_ACCESS_UI_JS);
+  source->AddResourcePath("parent_access_ui_handler.js",
+                          IDR_PARENT_ACCESS_UI_HANDLER_JS);
   source->AddResourcePath("parent_access_after.js", IDR_PARENT_ACCESS_AFTER_JS);
   source->AddResourcePath("flows/local_web_approvals_after.js",
                           IDR_LOCAL_WEB_APPROVALS_AFTER_JS);
