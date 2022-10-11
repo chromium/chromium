@@ -149,7 +149,7 @@ void EyeDropper::EyeDropperResponseHandler(ScriptPromiseResolver* resolver,
     ColorSelectionResult* result = ColorSelectionResult::Create();
     // TODO(https://1351544): The EyeDropper should return a Color or an
     // SkColor4f, instead of an SkColor.
-    result->setSRGBHex(Color::FromRGBA32(color).SerializeAsCSSColor());
+    result->setSRGBHex(Color::FromRGBA32(color).SerializeAsCanvasColor());
     resolver->Resolve(result);
   } else {
     RejectPromiseHelper(DOMExceptionCode::kAbortError,
