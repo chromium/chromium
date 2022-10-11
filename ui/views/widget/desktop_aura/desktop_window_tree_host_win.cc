@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
@@ -197,6 +198,13 @@ void DesktopWindowTreeHostWin::Init(const Widget::InitParams& params) {
   OnAcceleratedWidgetAvailable();
   InitHost();
   window()->Show();
+
+  if (base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
+    // Stack immedately above its parent so that it does not cover other
+    // root-level windows.
+    if (params.parent)
+      StackAbove(params.parent);
+  }
 }
 
 void DesktopWindowTreeHostWin::OnNativeWidgetCreated(

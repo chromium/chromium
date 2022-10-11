@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -39,6 +40,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -189,8 +191,10 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
   // On Mac, having a parent window creates a permanent stacking order, so
   // there's no need to do this. Also, calling StackAbove() on Mac shows the
   // bubble implicitly, for which the bubble is currently not ready.
-  if (bubble->has_parent() && parent)
-    bubble_widget->StackAbove(parent);
+  if (!base::FeatureList::IsEnabled(views::features::kWidgetLayering)) {
+    if (bubble->has_parent() && parent)
+      bubble_widget->StackAbove(parent);
+  }
 #endif
   return bubble_widget;
 }
