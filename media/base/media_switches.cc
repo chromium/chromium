@@ -740,6 +740,11 @@ BASE_FEATURE(kHardwareSecureDecryption,
              "HardwareSecureDecryption",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// By default, a codec is not supported for hardware secure decryption if it
+// does not support clear lead. This option forces the support for testing.
+const base::FeatureParam<bool> kHardwareSecureDecryptionForceSupportClearLead{
+    &kHardwareSecureDecryption, "force_support_clear_lead", false};
+
 // Same as `kHardwareSecureDecryption` above, but only enable experimental
 // sub key systems. Which sub key system is experimental is key system specific.
 BASE_FEATURE(kHardwareSecureDecryptionExperiment,

@@ -141,7 +141,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     disabled_features_.push_back(features::kChromeWhatsNewUI);
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    enabled_features_.push_back(media::kPlatformHEVCDecoderSupport);
+    EnableFeature(media::kPlatformHEVCDecoderSupport);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
     audio_webm_codecs_.push_back("vorbis");
@@ -240,6 +240,11 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
 
   const CodecVector& invalid_codecs() const { return invalid_codecs_; }
 
+  // Enables a feature without parameters.
+  void EnableFeature(const base::Feature& feature) {
+    enabled_features_.push_back({feature, {}});
+  }
+
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     base::CommandLine default_command_line(base::CommandLine::NO_PROGRAM);
@@ -248,7 +253,8 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
         default_command_line, switches::kDisableComponentUpdate, command_line);
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-    feature_list_.InitWithFeatures(enabled_features_, disabled_features_);
+    feature_list_.InitWithFeaturesAndParameters(enabled_features_,
+                                                disabled_features_);
   }
 
   void SetUpOnMainThread() override {
@@ -471,7 +477,8 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
  protected:
   // Features to enable or disable for the test. Must be updated in the test
   // constructor (before SetUpDefaultCommandLine()) to take effect.
-  std::vector<base::test::FeatureRef> enabled_features_;
+  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+      enabled_features_;
   std::vector<base::test::FeatureRef> disabled_features_;
   base::test::ScopedFeatureList feature_list_;
 
@@ -508,7 +515,7 @@ class EncryptedMediaSupportedTypesExternalClearKeyTest
  protected:
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   EncryptedMediaSupportedTypesExternalClearKeyTest() {
-    enabled_features_.push_back(media::kExternalClearKeyForTesting);
+    EnableFeature(media::kExternalClearKeyForTesting);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -569,7 +576,7 @@ class EncryptedMediaSupportedTypesWidevineHwSecureTest
 
  protected:
   EncryptedMediaSupportedTypesWidevineHwSecureTest() {
-    enabled_features_.push_back(media::kHardwareSecureDecryption);
+    EnableFeature(media::kHardwareSecureDecryption);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -583,11 +590,30 @@ class EncryptedMediaSupportedTypesWidevineHwSecureTest
   }
 };
 
+class EncryptedMediaSupportedTypesWidevineHwSecureForceClearLeadSupportTest
+    : public EncryptedMediaSupportedTypesWidevineTest {
+ protected:
+  EncryptedMediaSupportedTypesWidevineHwSecureForceClearLeadSupportTest() {
+    enabled_features_.push_back({media::kHardwareSecureDecryption,
+                                 {{"force_support_clear_lead", "true"}}});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaSupportedTypesWidevineTest::SetUpCommandLine(command_line);
+    // Pretend that we support hardware secure decryption for vp8 and vp9 with
+    // clearlead fix supported and av01 without clear lead support.  This will
+    // also pretend that there is support for vorbis audio.
+    command_line->AppendSwitchASCII(
+        switches::kOverrideHardwareSecureCodecsForTesting,
+        "vp8,vp9,av01-no-clearlead,vorbis");
+  }
+};
+
 class EncryptedMediaSupportedTypesWidevineHwSecureExperimentTest
     : public EncryptedMediaSupportedTypesWidevineTest {
  protected:
   EncryptedMediaSupportedTypesWidevineHwSecureExperimentTest() {
-    enabled_features_.push_back(media::kHardwareSecureDecryptionExperiment);
+    EnableFeature(media::kHardwareSecureDecryptionExperiment);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -605,8 +631,8 @@ class EncryptedMediaSupportedTypesWidevineHwSecureDefaultAndExperimentTest
     : public EncryptedMediaSupportedTypesWidevineTest {
  protected:
   EncryptedMediaSupportedTypesWidevineHwSecureDefaultAndExperimentTest() {
-    enabled_features_.push_back(media::kHardwareSecureDecryption);
-    enabled_features_.push_back(media::kHardwareSecureDecryptionExperiment);
+    EnableFeature(media::kHardwareSecureDecryption);
+    EnableFeature(media::kHardwareSecureDecryptionExperiment);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -634,7 +660,7 @@ class EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest
 
  protected:
   EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest() {
-    enabled_features_.push_back(media::kExternalClearKeyForTesting);
+    EnableFeature(media::kExternalClearKeyForTesting);
   }
 
   ~EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest()
@@ -1352,7 +1378,6 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
   EXPECT_UNSUPPORTED(IsVideoEncryptionSchemeSupported(kWidevine, ""));
 }
 
-//
 // EncryptedMediaSupportedTypesWidevineHwSecureTest tests Widevine with hardware
 // secure decryption support.
 // - ChromeOS: HW_SECURE_ALL are supported by default which is not affected by
@@ -1550,6 +1575,19 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
       IsAudioRobustnessSupported(kWidevineExperiment, "SW_SECURE_CRYPTO"));
   EXPECT_UNSUPPORTED(
       IsAudioRobustnessSupported(kWidevineExperiment, "HW_SECURE_CRYPTO"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    EncryptedMediaSupportedTypesWidevineHwSecureForceClearLeadSupportTest,
+    SupportedCodecs) {
+  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoWebMMimeType,
+                                   video_webm_codecs(), SessionType::kTemporary,
+                                   "HW_SECURE_ALL"));
+  // AV1 codec does not have clear lead support, but is still supported by the
+  // default Widevine key system since `force_support_clear_lead` is specified.
+  EXPECT_WV_AV1(IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType,
+                                       av1_codecs(), SessionType::kTemporary,
+                                       "HW_SECURE_ALL"));
 }
 
 IN_PROC_BROWSER_TEST_F(

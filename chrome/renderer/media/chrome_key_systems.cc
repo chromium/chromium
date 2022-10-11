@@ -310,10 +310,14 @@ bool AddWidevine(const media::mojom::KeySystemCapabilityPtr& capability,
   }
 
   if (capability->hw_secure_capability) {
-    hw_secure_codecs =
-        GetSupportedCodecs(capability->hw_secure_capability.value());
+    // For the default Widevine key system, we support a codec only when it
+    // supports clear lead, unless `force_support_clear_lead` is set to true.
+    const bool force_support_clear_lead =
+        media::kHardwareSecureDecryptionForceSupportClearLead.Get();
+    hw_secure_codecs = GetSupportedCodecs(
+        capability->hw_secure_capability.value(), !force_support_clear_lead);
 #if BUILDFLAG(IS_WIN)
-    // In Chrome, for the experimental key system, we do not have to filter the
+    // For the experimental Widevine key system, we do not have to filter the
     // hardware secure codecs by whether they support clear lead or not.
     hw_secure_codecs_clear_lead_support_not_required =
         GetSupportedCodecs(capability->hw_secure_capability.value(),
