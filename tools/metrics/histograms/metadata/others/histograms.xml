@@ -3485,6 +3485,11 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Conversions.AggregatableReport.TimeFromTriggerToReportAssembly"
     units="minutes" expires_after="M117">
+  <obsolete>
+    Replaced with
+    Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2 due to
+    histogram interpretation change, October 2022.
+  </obsolete>
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3492,6 +3497,32 @@ chromium-metrics-reviews@google.com.
     Records the time between a trigger and its assembly. This is emitted
     whenever an aggregatable report is to be assembled by the aggregation
     service.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2"
+    units="ms" expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time between a trigger and its assembly. This is emitted
+    whenever an aggregatable report is to be assembled by the aggregation
+    service.
+  </summary>
+</histogram>
+
+<histogram
+    name="Conversions.AggregatableReport.TimeFromTriggerToReportSentSuccessfully"
+    units="ms" expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time between a trigger and its reporting. This is emitted only
+    when an aggregatable report is sent succeessfully to the reporting endpoint,
+    and not emitted for debug reports.
   </summary>
 </histogram>
 
@@ -4088,6 +4119,18 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time between a conversion and its reporting. This is emitted
     whenever a conversion report is sent.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.TimeFromTriggerToReportSentSuccessfully"
+    units="hours" expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time between a trigger and its reporting. This is emitted only
+    when an event-level report is sent successfully to the reporting endpoint,
+    and not emitted for debug reports.
   </summary>
 </histogram>
 

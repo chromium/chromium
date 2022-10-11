@@ -214,9 +214,10 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
     case AttributionReport::Type::kAggregatableAttribution: {
       base::TimeDelta time_from_conversion_to_report_assembly =
           report.report_time() - report.attribution_info().time;
-      UMA_HISTOGRAM_COUNTS_1000(
-          "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
-          time_from_conversion_to_report_assembly.InMinutes());
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2",
+          time_from_conversion_to_report_assembly, base::Minutes(1),
+          base::Days(24), 50);
       break;
     }
   }
@@ -235,6 +236,27 @@ void LogMetricsOnReportCompleted(const AttributionReport& report,
       base::UmaHistogramEnumeration(
           "Conversions.AggregatableReport.ReportSendOutcome2",
           ConvertToConversionReportSendOutcome(status));
+      break;
+  }
+}
+
+// Called when `report` is sent successfully.
+void LogMetricsOnReportSent(const AttributionReport& report) {
+  base::TimeDelta time_from_conversion_to_report_sent =
+      base::Time::Now() - report.attribution_info().time;
+
+  switch (report.GetReportType()) {
+    case AttributionReport::Type::kEventLevel:
+      UMA_HISTOGRAM_COUNTS_1000(
+          "Conversions.TimeFromTriggerToReportSentSuccessfully",
+          time_from_conversion_to_report_sent.InHours());
+      break;
+    case AttributionReport::Type::kAggregatableAttribution:
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          "Conversions.AggregatableReport."
+          "TimeFromTriggerToReportSentSuccessfully",
+          time_from_conversion_to_report_sent, base::Minutes(1), base::Days(24),
+          50);
       break;
   }
 }
@@ -808,6 +830,9 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
       .Then(std::move(then));
 
   LogMetricsOnReportCompleted(report, info.status);
+
+  if (info.status == SendResult::Status::kSent)
+    LogMetricsOnReportSent(report);
 
   NotifyReportSent(/*is_debug_report=*/false, std::move(report), info);
 }

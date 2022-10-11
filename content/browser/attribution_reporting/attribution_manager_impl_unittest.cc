@@ -526,6 +526,9 @@ TEST_F(AttributionManagerImplTest,
 
   // kFailed = 1.
   histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 1, 1);
+
+  histograms.ExpectTotalCount(
+      "Conversions.TimeFromTriggerToReportSentSuccessfully", 0);
 }
 
 TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
@@ -593,6 +596,9 @@ TEST_F(AttributionManagerImplTest,
 
   // kFailed = 1.
   histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 1, 1);
+
+  histograms.ExpectTotalCount(
+      "Conversions.TimeFromTriggerToReportSentSuccessfully", 0);
 }
 
 TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
@@ -637,6 +643,9 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
 
   // kFailed = 1.
   histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 1, 1);
+
+  histograms.ExpectTotalCount(
+      "Conversions.TimeFromTriggerToReportSentSuccessfully", 0);
 }
 
 TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
@@ -1436,6 +1445,13 @@ TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
 
   histograms.ExpectUniqueSample("Conversions.TimeFromConversionToReportSend",
                                 kFirstReportingWindow.InHours(), 1);
+
+  task_environment_.FastForwardBy(base::Hours(1));
+  report_sender_->RunCallback(0, SendResult::Status::kSent);
+
+  histograms.ExpectUniqueSample(
+      "Conversions.TimeFromTriggerToReportSentSuccessfully",
+      kFirstReportingWindow.InHours() + 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
@@ -1808,15 +1824,20 @@ TEST_F(AttributionManagerImplTest,
 
   // One event-level report, one aggregatable report.
   EXPECT_THAT(report_sender_->calls(), SizeIs(2));
+
+  task_environment_.FastForwardBy(base::Minutes(1));
   report_sender_->RunCallbacksAndReset(
       {SendResult::Status::kSent, SendResult::Status::kSent});
 
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.AssembleReportStatus",
       AssembleAggregatableReportStatus::kSuccess, 1);
-  histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
-      kFirstReportingWindow.InMinutes(), 1);
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2",
+      kFirstReportingWindow, 1);
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.AggregatableReport.TimeFromTriggerToReportSentSuccessfully",
+      kFirstReportingWindow + base::Minutes(1), 1);
   // kSent = 0.
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.ReportSendOutcome2", 0, 1);
@@ -1871,9 +1892,12 @@ TEST_F(AttributionManagerImplTest,
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.AssembleReportStatus",
       AssembleAggregatableReportStatus::kAssembleReportFailed, 1);
-  histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
-      kFirstReportingWindow.InMinutes(), 1);
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2",
+      kFirstReportingWindow, 1);
+  histograms.ExpectTotalCount(
+      "Conversions.AggregatableReport.TimeFromTriggerToReportSentSuccessfully",
+      0);
   // kFailedToAssemble = 3.
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.ReportSendOutcome2", 3, 1);
@@ -1896,9 +1920,12 @@ TEST_F(AttributionManagerImplTest, AggregationServiceDisabled_ReportNotSent) {
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.AssembleReportStatus",
       AssembleAggregatableReportStatus::kAggregationServiceUnavailable, 1);
-  histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly",
-      kFirstReportingWindow.InMinutes(), 1);
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2",
+      kFirstReportingWindow, 1);
+  histograms.ExpectTotalCount(
+      "Conversions.AggregatableReport.TimeFromTriggerToReportSentSuccessfully",
+      0);
   // kFailedToAssemble = 3.
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.ReportSendOutcome2", 3, 1);
