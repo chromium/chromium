@@ -38,7 +38,6 @@
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/partition_tag_types.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/check_op.h"
 #endif  // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(IS_WIN)
@@ -211,7 +210,7 @@ struct MTECheckedPtrImpl {
     // Disambiguation: UntagPtr removes the hardware MTE tag, whereas this
     // function is responsible for adding the software MTE tag.
     uintptr_t addr = partition_alloc::UntagPtr(ptr);
-    DCHECK_EQ(ExtractTag(addr), 0ull);
+    DCHECK(ExtractTag(addr) == 0ull);
 
     // Return a not-wrapped |addr|, if it's either nullptr or if the protection
     // for this pointer is disabled.
