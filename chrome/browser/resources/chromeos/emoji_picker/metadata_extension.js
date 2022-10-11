@@ -36,7 +36,7 @@ function _MakeGroupTabs(categories, categoryBaseEmojis) {
     groupTabs.push(
         {
           name: RECENTLY_USED_NAME,
-          icon: 'emoji_picker:schedule',
+          icon: 'emoji_picker_v2:emoji_recent',
           category: category,
           groupId: `${category}-history`,
           active: false,
@@ -71,17 +71,17 @@ function _MakeGroupTabs(categories, categoryBaseEmojis) {
 export const CATEGORY_METADATA = [
   {
     name: 'emoji',
-    icon: 'emoji_picker:insert_emoticon',
+    icon: 'emoji_picker_v2:emoji_emojis',
     active: true,
   },
   {
     name: 'symbol',
-    icon: 'emoji_picker_v2:symbol_omega',
+    icon: 'emoji_picker_v2:emoji_symbols',
     active: false,
   },
   {
     name: 'emoticon',
-    icon: 'emoji_picker_v2:emoticon_gssmiley',
+    icon: 'emoji_picker_v2:emoji_emoticons',
     active: false,
   },
 ];
@@ -90,7 +90,7 @@ const CATEGORY_TABS = {
   'emoji': [
     {
       name: 'Smileys & Emotions',
-      icon: 'emoji_picker:insert_emoticon',
+      icon: 'emoji_picker_v2:emoji_emojis',
       pagination: 1,
     },
     {
