@@ -2713,17 +2713,8 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_FALSE(current_si->GetSiteInfo().requires_origin_keyed_process());
 }
 
-// This test is flaky on Win, Mac, Linux and ChromeOS: https://crbug.com/1125998
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_CrossOriginIsolatedSiteInstance_MainFrame \
-  DISABLED_CrossOriginIsolatedSiteInstance_MainFrame
-#else
-#define MAYBE_CrossOriginIsolatedSiteInstance_MainFrame \
-  CrossOriginIsolatedSiteInstance_MainFrame
-#endif
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
-                       MAYBE_CrossOriginIsolatedSiteInstance_MainFrame) {
+                       CrossOriginIsolatedSiteInstance_MainFrame) {
   GURL isolated_page(
       https_server()->GetURL("a.test",
                              "/set-header?"
