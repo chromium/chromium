@@ -17,13 +17,29 @@ namespace gfx {
 using Weight = Font::Weight;
 
 TEST(PlatformFontMacTest, DeriveFont) {
+  // macOS 13 bug: For non-system fonts with 0-valued traits,
+  // `kCFBooleanFalse` is used instead of a `CFNumberRef` of 0. See
+  // https://crbug.com/1372420. Filed as FB11673021.
+  auto GetValueFromDictionaryAndWorkAroundMacOS13Bug = [](CFDictionaryRef dict,
+                                                          CFStringRef key) {
+    CFTypeRef value = CFDictionaryGetValue(dict, key);
+    if (value == kCFBooleanFalse) {
+      CGFloat zero = 0;
+      return (CFNumberRef)CFAutorelease(
+          CFNumberCreate(nullptr, kCFNumberCGFloatType, &zero));
+    }
+
+    return base::mac::GetValueFromDictionary<CFNumberRef>(dict, key);
+  };
+
   // |weight_tri| is either -1, 0, or 1 meaning "light", "normal", or "bold".
-  auto CheckExpected = [](const Font& font, int weight_tri, bool isItalic) {
+  auto CheckExpected = [GetValueFromDictionaryAndWorkAroundMacOS13Bug](
+                           const Font& font, int weight_tri, bool isItalic) {
     base::ScopedCFTypeRef<CFDictionaryRef> traits(
         CTFontCopyTraits(base::mac::NSToCFCast(font.GetNativeFont())));
     DCHECK(traits);
 
-    CFNumberRef cf_slant = base::mac::GetValueFromDictionary<CFNumberRef>(
+    CFNumberRef cf_slant = GetValueFromDictionaryAndWorkAroundMacOS13Bug(
         traits, kCTFontSlantTrait);
     CGFloat slant;
     CFNumberGetValue(cf_slant, kCFNumberCGFloatType, &slant);
@@ -32,7 +48,7 @@ TEST(PlatformFontMacTest, DeriveFont) {
     else
       EXPECT_EQ(slant, 0);
 
-    CFNumberRef cf_weight = base::mac::GetValueFromDictionary<CFNumberRef>(
+    CFNumberRef cf_weight = GetValueFromDictionaryAndWorkAroundMacOS13Bug(
         traits, kCTFontWeightTrait);
     CGFloat weight;
     CFNumberGetValue(cf_weight, kCFNumberCGFloatType, &weight);
