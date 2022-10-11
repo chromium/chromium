@@ -7,6 +7,7 @@
 #include <memory>
 #include <numeric>
 
+#include "base/numerics/checked_math.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -22,6 +23,9 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 
 namespace blink {
+
+const uint32_t kSquareRootOfSizeMax =
+    base::saturated_cast<uint32_t>(std::sqrt(SIZE_MAX));
 
 class MLGraphBuilderTest : public testing::Test {
  public:
@@ -136,7 +140,7 @@ TEST_F(MLGraphBuilderTest, InputTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Invalid operand descriptor: All dimensions should be positive");
+              "Invalid operand descriptor: All dimensions should be positive.");
   }
   {
     // Test throwing exception if the dimensions is empty.
@@ -151,18 +155,31 @@ TEST_F(MLGraphBuilderTest, InputTest) {
               "Invalid operand descriptor: The dimensions is empty.");
   }
   {
-    // Test throwing exception if the dimensions is too large.
+    // Test throwing exception if the number of elements is too large.
     auto* desc = MLOperandDescriptor::Create();
-    desc->setDimensions({2147483600, 102834, 2347816});
+    // Set the dimensions that let the number of elements be 2 * SIZE_MAX.
+    desc->setDimensions({1, 2, kSquareRootOfSizeMax, kSquareRootOfSizeMax});
     desc->setType(V8MLOperandType::Enum::kFloat32);
     auto* input = builder->input("input", desc, scope.GetExceptionState());
     EXPECT_EQ(input, nullptr);
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
-    EXPECT_EQ(
-        scope.GetExceptionState().Message(),
-        "Invalid operand descriptor: The elements number of the dimensions is "
-        "too large.");
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Invalid operand descriptor: The number of elements is "
+              "too large.");
+  }
+  {
+    // Test throwing exception if the byte length is too large.
+    auto* desc = MLOperandDescriptor::Create();
+    // Set the dimensions and type that let the byte length be 4 * SIZE_MAX.
+    desc->setDimensions({1, 1, kSquareRootOfSizeMax, kSquareRootOfSizeMax});
+    desc->setType(V8MLOperandType::Enum::kFloat32);
+    auto* input = builder->input("input", desc, scope.GetExceptionState());
+    EXPECT_EQ(input, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Invalid operand descriptor: The byte length is too large.");
   }
 }
 
@@ -195,7 +212,7 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
-              "Invalid operand descriptor: All dimensions should be positive");
+              "Invalid operand descriptor: All dimensions should be positive.");
   }
   {
     // Test throwing exception if buffer view type doesn't match the operand
@@ -228,6 +245,39 @@ TEST_F(MLGraphBuilderTest, ConstantTest) {
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "The buffer view byte length (32) doesn't match the expected "
               "byte length (16).");
+  }
+  {
+    // Test throwing exception if the number of elements is too large.
+    auto* desc = MLOperandDescriptor::Create();
+    // Set the dimensions that let the number of elements be 2 * SIZE_MAX.
+    desc->setDimensions({1, 2, kSquareRootOfSizeMax, kSquareRootOfSizeMax});
+    desc->setType(V8MLOperandType::Enum::kFloat32);
+    NotShared<DOMArrayBufferView> buffer_view =
+        CreateDOMArrayBufferView(1, V8MLOperandType::Enum::kFloat32);
+    auto* constant =
+        builder->constant(desc, buffer_view, scope.GetExceptionState());
+    EXPECT_EQ(constant, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Invalid operand descriptor: The number of elements is "
+              "too large.");
+  }
+  {
+    // Test throwing exception if the byte length is too large.
+    auto* desc = MLOperandDescriptor::Create();
+    // Set the dimensions and type that let the byte length be 4 * SIZE_MAX.
+    desc->setDimensions({1, 1, kSquareRootOfSizeMax, kSquareRootOfSizeMax});
+    desc->setType(V8MLOperandType::Enum::kFloat32);
+    NotShared<DOMArrayBufferView> buffer_view =
+        CreateDOMArrayBufferView(1, V8MLOperandType::Enum::kFloat32);
+    auto* constant =
+        builder->constant(desc, buffer_view, scope.GetExceptionState());
+    EXPECT_EQ(constant, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Invalid operand descriptor: The byte length is too large.");
   }
 }
 
@@ -454,6 +504,44 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
     auto* output = BuildConv2d(scope, builder, input, filter, options);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 3, 1}));
   }
+  {
+    // Test throwing exception if the output operand's number of elements is too
+    // large.
+    // Set the input and filter dimensions that let the output's number of
+    // lements be 2 * SIZE_MAX.
+    auto* input =
+        BuildInput(scope, builder, "input",
+                   {1, 1, kSquareRootOfSizeMax / 2, kSquareRootOfSizeMax / 2},
+                   V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {8, 1, 1, 1},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* output = builder->conv2d(input, filter, MLConv2dOptions::Create(),
+                                   scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Invalid output operand: The number of elements "
+              "is too large.");
+  }
+  {
+    // Test throwing exception if the output operand's byte length is too large.
+    // Set the dimensions and type of input and filter that let the output's
+    // byte length be 4 * SIZE_MAX.
+    auto* input =
+        BuildInput(scope, builder, "input",
+                   {1, 1, kSquareRootOfSizeMax / 2, kSquareRootOfSizeMax / 2},
+                   V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {4, 1, 1, 1},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* output = builder->conv2d(input, filter, MLConv2dOptions::Create(),
+                                   scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Invalid output operand: The byte length is too large.");
+  }
 }
 
 enum class Pool2dKind { kAverage, kMax };
@@ -642,6 +730,35 @@ TEST_F(MLGraphBuilderTest, Pool2dTest) {
       options->setLayout(V8MLInputOperandLayout::Enum::kNhwc);
       auto* output = BuildPool2d(scope, builder, pool2d_kind, input, options);
       EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 3, 3, 2}));
+    }
+    {
+      // Test throwing exception if the output operand's byte length is too
+      // large.
+      // Set the type and sizes of input, padding and window that let the output
+      // operands' byte length be greater than SIZE_MAX.
+      auto* input =
+          BuildInput(scope, builder, "input",
+                     {1, 1, kSquareRootOfSizeMax / 2, kSquareRootOfSizeMax / 2},
+                     V8MLOperandType::Enum::kFloat32);
+      auto* options = MLPool2dOptions::Create();
+      options->setWindowDimensions({1, 1});
+      options->setPadding({2, 2, 2, 2});
+      MLOperand* output = nullptr;
+      switch (pool2d_kind) {
+        case Pool2dKind::kAverage:
+          output =
+              builder->averagePool2d(input, options, scope.GetExceptionState());
+          break;
+        case Pool2dKind::kMax:
+          output =
+              builder->maxPool2d(input, options, scope.GetExceptionState());
+          break;
+      }
+      EXPECT_EQ(output, nullptr);
+      EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+                DOMExceptionCode::kDataError);
+      EXPECT_EQ(scope.GetExceptionState().Message(),
+                "Invalid output operand: The byte length is too large.");
     }
   }
 }
@@ -958,6 +1075,22 @@ TEST_F(MLGraphBuilderTest, GemmTest) {
     EXPECT_EQ(
         scope.GetExceptionState().Message(),
         "The third input tensor should be either a scalar or a 2-D tensor.");
+  }
+  {
+    // Test throwing exception if the output operand's byte length is too large.
+    // Set the type and dimensions of inputs that let the output operand's byte
+    // length be 4 * SIZE_MAX.
+    auto* a = BuildInput(scope, builder, "a", {kSquareRootOfSizeMax, 2},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {2, kSquareRootOfSizeMax},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* output =
+        builder->gemm(a, b, MLGemmOptions::Create(), scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(ToExceptionCode(DOMExceptionCode::kDataError),
+              scope.GetExceptionState().Code());
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Invalid output operand: The byte length is too large.");
   }
 }
 

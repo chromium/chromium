@@ -34,85 +34,6 @@ bool IsFloatingPointType(V8MLOperandType::Enum operand_type) {
   }
 }
 
-DOMArrayBufferView::ViewType GetArrayBufferViewType(
-    V8MLOperandType::Enum operand_type) {
-  switch (operand_type) {
-    case V8MLOperandType::Enum::kFloat32:
-      return DOMArrayBufferView::ViewType::kTypeFloat32;
-    case V8MLOperandType::Enum::kFloat16:
-      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
-      // https://github.com/webmachinelearning/webnn/issues/127
-      return DOMArrayBufferView::ViewType::kTypeUint16;
-    case V8MLOperandType::Enum::kInt32:
-      return DOMArrayBufferView::ViewType::kTypeInt32;
-    case V8MLOperandType::Enum::kUint32:
-      return DOMArrayBufferView::ViewType::kTypeUint32;
-    case V8MLOperandType::Enum::kInt8:
-      return DOMArrayBufferView::ViewType::kTypeInt8;
-    case V8MLOperandType::Enum::kUint8:
-      return DOMArrayBufferView::ViewType::kTypeUint8;
-  }
-}
-
-size_t GetBytesPerElement(V8MLOperandType::Enum operand_type) {
-  switch (operand_type) {
-    case V8MLOperandType::Enum::kFloat32:
-      return sizeof(float);
-    case V8MLOperandType::Enum::kFloat16:
-      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
-      // https://github.com/webmachinelearning/webnn/issues/127
-      return sizeof(uint16_t);
-    case V8MLOperandType::Enum::kInt32:
-      return sizeof(int32_t);
-    case V8MLOperandType::Enum::kUint32:
-      return sizeof(uint32_t);
-    case V8MLOperandType::Enum::kInt8:
-      return sizeof(int8_t);
-    case V8MLOperandType::Enum::kUint8:
-      return sizeof(uint8_t);
-  }
-}
-
-absl::optional<size_t> ValidateAndCalculateElementsNumber(
-    const Vector<uint32_t>& dimensions,
-    String& error_message) {
-  if (dimensions.empty()) {
-    error_message = "The dimensions is empty.";
-    return absl::nullopt;
-  }
-  base::CheckedNumeric<size_t> checked_elements_number = 1;
-  for (auto& d : dimensions) {
-    if (d == 0) {
-      error_message = "All dimensions should be positive";
-      return absl::nullopt;
-    }
-    checked_elements_number *= d;
-  }
-  if (!checked_elements_number.IsValid()) {
-    error_message = "The elements number of the dimensions is too large.";
-    return absl::nullopt;
-  }
-  return checked_elements_number.ValueOrDie();
-}
-
-absl::optional<size_t> ValidateAndCalculateByteLength(
-    V8MLOperandType::Enum type,
-    const Vector<uint32_t>& dimensions,
-    String& error_message) {
-  absl::optional<size_t> elements_num =
-      ValidateAndCalculateElementsNumber(dimensions, error_message);
-  if (!elements_num) {
-    return absl::nullopt;
-  }
-  base::CheckedNumeric<size_t> checked_byte_length =
-      elements_num.value() * GetBytesPerElement(type);
-  if (!checked_byte_length.IsValid()) {
-    error_message = "The byte length of the dimensions is too large.";
-    return absl::nullopt;
-  }
-  return checked_byte_length.ValueOrDie();
-}
-
 bool ValidateClampOptions(const MLClampOptions* options,
                           ExceptionState& exception_state) {
   // The generated code of MLClampOptions uses blink::ToRestrictedFloat to
@@ -187,8 +108,14 @@ MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
     return nullptr;
   }
   auto* binary = MakeGarbageCollected<MLOperator>(builder, kind);
-  auto* output =
-      MLOperand::CreateOutput(builder, a->Type(), dims_output.value(), binary);
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      builder, a->Type(), dims_output.value(), binary, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
   binary->Connect({a, b}, {output});
   return output;
 }
@@ -579,8 +506,14 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
   // Create pool2d operator and its output operand. Connect the pool2d operator
   // to its input and output operands.
   auto* pool2d = MakeGarbageCollected<MLOperator>(builder, kind, options);
-  auto* output = MLOperand::CreateOutput(builder, input->Type(),
-                                         std::move(output_shape), pool2d);
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      builder, input->Type(), std::move(output_shape), pool2d, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
   pool2d->Connect({input}, {output});
   return output;
 }
@@ -604,57 +537,35 @@ void MLGraphBuilder::Trace(Visitor* visitor) const {
 MLOperand* MLGraphBuilder::input(String name,
                                  const MLOperandDescriptor* desc,
                                  ExceptionState& exception_state) {
-  if (name.empty()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      "The name is empty.");
-    return nullptr;
-  }
-  V8MLOperandType::Enum type = desc->type().AsEnum();
+  String error_message;
   // If no dimensions, it represents a scalar. Set dimensions to {1}.
   Vector<uint32_t> dimensions = desc->getDimensionsOr({1});
-  String error_message;
-  if (!ValidateAndCalculateByteLength(type, dimensions, error_message)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "Invalid operand descriptor: " + error_message);
+  auto* input_operand = MLOperand::ValidateAndCreateInput(
+      this, desc->type().AsEnum(), std::move(dimensions), std::move(name),
+      error_message);
+  if (!input_operand) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
     return nullptr;
   }
-  return MLOperand::CreateInput(this, type, std::move(dimensions),
-                                std::move(name));
+  return input_operand;
 }
 
 MLOperand* MLGraphBuilder::constant(const MLOperandDescriptor* desc,
                                     NotShared<DOMArrayBufferView> buffer_view,
                                     ExceptionState& exception_state) {
-  if (GetArrayBufferViewType(desc->type().AsEnum()) != buffer_view->GetType()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "The buffer view type doesn't match the operand type.");
-    return nullptr;
-  }
-  V8MLOperandType::Enum type = desc->type().AsEnum();
+  String error_message;
   // If no dimensions, it represents a scalar. Set dimensions to {1}.
   Vector<uint32_t> dimensions = desc->getDimensionsOr({1});
-  String error_message;
-  absl::optional<size_t> expected_byte_length =
-      ValidateAndCalculateByteLength(type, dimensions, error_message);
-  if (!expected_byte_length) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "Invalid operand descriptor: " + error_message);
+  auto* constant_operand = MLOperand::ValidateAndCreateConstant(
+      this, desc->type().AsEnum(), std::move(dimensions), buffer_view.Get(),
+      error_message);
+  if (!constant_operand) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
     return nullptr;
   }
-  if (expected_byte_length.value() != buffer_view->byteLength()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        String::Format("The buffer view byte length (%zu) doesn't match the "
-                       "expected byte length (%zu).",
-                       buffer_view->byteLength(),
-                       expected_byte_length.value()));
-    return nullptr;
-  }
-  return MLOperand::CreateConstant(this, type, std::move(dimensions),
-                                   buffer_view.Get());
+  return constant_operand;
 }
 
 MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
@@ -668,8 +579,14 @@ MLOperand* MLGraphBuilder::clamp(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-clamp, the output tensor of
   // clamp has the same type and dimensions as its input.
-  auto* output =
-      MLOperand::CreateOutput(this, input->Type(), input->Dimensions(), clamp);
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), input->Dimensions(), clamp, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
   clamp->Connect({input}, {output});
   return output;
 }
@@ -832,8 +749,14 @@ MLOperand* MLGraphBuilder::conv2d(const MLOperand* input,
   if (options->hasBias()) {
     inputs.push_back(options->bias());
   }
-  auto* output = MLOperand::CreateOutput(this, input->Type(),
-                                         std::move(output_shape), conv2d);
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), std::move(output_shape), conv2d, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
   conv2d->Connect(std::move(inputs), {output});
   return output;
 }
@@ -931,8 +854,14 @@ MLOperand* MLGraphBuilder::gemm(const MLOperand* a,
   if (options->hasC()) {
     inputs.push_back(options->c());
   }
-  auto* output =
-      MLOperand::CreateOutput(this, a->Type(), std::move(output_shape), gemm);
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, a->Type(), std::move(output_shape), gemm, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
   gemm->Connect(std::move(inputs), {output});
   return output;
 }
@@ -953,8 +882,14 @@ MLOperand* MLGraphBuilder::hardSwish(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-hard-swish, the output
   // tensor of hard-swish has the same type and dimensions as its input.
-  auto* output = MLOperand::CreateOutput(this, input->Type(),
-                                         input->Dimensions(), hard_swish);
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), input->Dimensions(), hard_swish, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
   hard_swish->Connect({input}, {output});
   return output;
 }
@@ -987,8 +922,14 @@ MLOperand* MLGraphBuilder::relu(const MLOperand* input,
   // According to WebNN spec
   // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-relu, the output tensor of
   // relu has the same type and dimensions as its input.
-  auto* output =
-      MLOperand::CreateOutput(this, input->Type(), input->Dimensions(), relu);
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), input->Dimensions(), relu, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
   relu->Connect({input}, {output});
   return output;
 }
@@ -1002,18 +943,9 @@ MLOperator* MLGraphBuilder::relu(ExceptionState& exception_state) {
 MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
                                    const Vector<int32_t>& new_shape,
                                    ExceptionState& exception_state) {
-  String error_message;
-  absl::optional<size_t> input_elements_num =
-      ValidateAndCalculateElementsNumber(input->Dimensions(), error_message);
-  if (!input_elements_num) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "Invalid input operand: " + error_message);
-    return nullptr;
-  }
   bool has_minus1 = false;
   wtf_size_t minus1_dim_index;
-  base::CheckedNumeric<size_t> checked_newshape_elements_num = 1;
+  base::CheckedNumeric<size_t> checked_newshape_number_of_elements = 1;
   Vector<uint32_t> output_shape;
   if (new_shape.size() == 0) {
     // The empty new shape means reshaping to scalar, set output shape to {1}.
@@ -1040,35 +972,36 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
         has_minus1 = true;
         minus1_dim_index = i;
       } else {
-        checked_newshape_elements_num *= d;
+        checked_newshape_number_of_elements *= d;
         output_shape[i] = d;
       }
     }
   }
-  size_t newshape_elements_num;
-  if (!checked_newshape_elements_num.AssignIfValid(&newshape_elements_num)) {
+  size_t newshape_number_of_elements;
+  if (!checked_newshape_number_of_elements.AssignIfValid(
+          &newshape_number_of_elements)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
         "The number of elements implied by new shape is too large.");
     return nullptr;
   }
-  DCHECK_NE(newshape_elements_num, size_t(0));
+  DCHECK_NE(newshape_number_of_elements, size_t(0));
   if (has_minus1) {
     // The size of the dimension with the value -1 is computed so that the total
     // size remains constant.
-    if (input_elements_num.value() % newshape_elements_num != size_t(0)) {
+    if (input->NumberOfElements() % newshape_number_of_elements != size_t(0)) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataError,
           String::Format(
               "The number of elements (%zu) in the input tensor can't be "
               "divided evenly by the number of elements (%zu) implied by new "
               "shape.",
-              input_elements_num.value(), newshape_elements_num));
+              input->NumberOfElements(), newshape_number_of_elements));
       return nullptr;
     }
     // Check whether the quotient of type size_t is in the range of dimension of
     // type uint32_t.
-    if (!base::CheckDiv(input_elements_num.value(), newshape_elements_num)
+    if (!base::CheckDiv(input->NumberOfElements(), newshape_number_of_elements)
              .AssignIfValid(&output_shape[minus1_dim_index])) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataError,
@@ -1078,20 +1011,26 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
   } else {
     // The number of elements implied by new shape must be the same as the
     // number of elements in the input tensor.
-    if (input_elements_num.value() != newshape_elements_num) {
+    if (input->NumberOfElements() != newshape_number_of_elements) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataError,
           String::Format(
               "The number of elements (%zu) implied by new shape doesn't match "
               "the number of elements (%zu) in the input tensor.",
-              newshape_elements_num, input_elements_num.value()));
+              newshape_number_of_elements, input->NumberOfElements()));
       return nullptr;
     }
   }
   auto* reshape = MakeGarbageCollected<MLOperator>(
       this, MLOperator::OperatorKind::kReshape);
-  auto* output = MLOperand::CreateOutput(this, input->Type(),
-                                         std::move(output_shape), reshape);
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), std::move(output_shape), reshape, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
   reshape->Connect({input}, {output});
   return output;
 }
@@ -1116,8 +1055,14 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
   auto* softmax = MakeGarbageCollected<MLOperator>(
       this, MLOperator::OperatorKind::kSoftmax);
   // The output tensor has the same shape as the input tensor.
-  auto* output = MLOperand::CreateOutput(this, input->Type(),
-                                         input->Dimensions(), softmax);
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      this, input->Type(), input->Dimensions(), softmax, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
   softmax->Connect({input}, {output});
   return output;
 }

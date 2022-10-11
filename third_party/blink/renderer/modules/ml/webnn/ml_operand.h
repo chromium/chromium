@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERAND_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_OPERAND_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
@@ -24,18 +25,24 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
  public:
   enum OperandKind { kInput, kConstant, kOutput };
 
-  static MLOperand* CreateInput(MLGraphBuilder* builder,
-                                const V8MLOperandType::Enum type,
-                                Vector<uint32_t> dimensions,
-                                String name);
-  static MLOperand* CreateConstant(MLGraphBuilder* builder,
-                                   const V8MLOperandType::Enum type,
-                                   Vector<uint32_t> dimensions,
-                                   const DOMArrayBufferView* array_buffer_view);
-  static MLOperand* CreateOutput(MLGraphBuilder* builder,
-                                 const V8MLOperandType::Enum type,
-                                 Vector<uint32_t> dimensions,
-                                 const MLOperator* ml_operator);
+  // Validate and create different kinds of operand if there are no errors.
+  // Otherwise return nullptr and set the corresponding error message.
+  static MLOperand* ValidateAndCreateInput(MLGraphBuilder* builder,
+                                           const V8MLOperandType::Enum type,
+                                           Vector<uint32_t> dimensions,
+                                           String name,
+                                           String& error_message);
+  static MLOperand* ValidateAndCreateConstant(
+      MLGraphBuilder* builder,
+      const V8MLOperandType::Enum type,
+      Vector<uint32_t> dimensions,
+      const DOMArrayBufferView* array_buffer_view,
+      String& error_message);
+  static MLOperand* ValidateAndCreateOutput(MLGraphBuilder* builder,
+                                            const V8MLOperandType::Enum type,
+                                            Vector<uint32_t> dimensions,
+                                            const MLOperator* ml_operator,
+                                            String& error_message);
 
   // The constructor shouldn't be called directly. The callers should use
   // Create* methods instead.
@@ -58,6 +65,15 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   const String& Name() const;
   const DOMArrayBufferView* ArrayBufferView() const;
   const MLOperator* Operator() const;
+
+  // The total number of elements in the operand. Its value is the product of
+  // all values of the dimensions. For scalar operand, the number of elements
+  // is 1.
+  size_t NumberOfElements() const;
+
+  // The byte length of the oprand. It is defined by WebNN spec as:
+  // https://www.w3.org/TR/webnn/#mloperanddescriptor-byte-length
+  size_t ByteLength() const;
 
  private:
   Member<MLGraphBuilder> builder_;
