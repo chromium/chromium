@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal.h"
 #include <sstream>
+#include "chrome/browser/safe_browsing/extension_telemetry/extension_signal_util.h"
 
 namespace safe_browsing {
 
@@ -22,8 +23,9 @@ CookiesGetAllSignal::CookiesGetAllSignal(
       path_(path),
       secure_(secure),
       store_id_(store_id),
-      url_(url),
-      is_session_(is_session) {}
+      is_session_(is_session) {
+  url_ = SanitizeURLWithoutFilename(url);
+}
 
 CookiesGetAllSignal::~CookiesGetAllSignal() = default;
 

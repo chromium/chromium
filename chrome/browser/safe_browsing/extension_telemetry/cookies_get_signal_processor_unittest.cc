@@ -22,7 +22,8 @@ constexpr const char* kExtensionId[] = {"aaaaaaaabbbbbbbbccccccccdddddddd",
                                         "eeeeeeeeffffffffgggggggghhhhhhhh"};
 constexpr const char* names[] = {"cookie-1", "cookie-2"};
 constexpr const char* store_ids[] = {"store-1", "store-2"};
-constexpr const char* urls[] = {"www.example1.com", "www.example2.com"};
+constexpr const char* urls[] = {"http://www.example1.com/",
+                                "https://www.example2.com/"};
 
 class CookiesGetSignalProcessorTest : public ::testing::Test {
  protected:

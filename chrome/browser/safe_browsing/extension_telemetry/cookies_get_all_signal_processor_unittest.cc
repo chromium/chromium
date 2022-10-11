@@ -25,7 +25,8 @@ constexpr const char* names[] = {"cookie-1", "cookie-2"};
 constexpr const char* paths[] = {"/path1", "/path2"};
 constexpr bool is_secure_cookie_values[] = {true, false};
 constexpr const char* store_ids[] = {"store-1", "store-2"};
-constexpr const char* urls[] = {"www.example1.com", "www.example2.com"};
+constexpr const char* urls[] = {"http://www.example1.com/",
+                                "https://www.example2.com/"};
 constexpr bool is_session_cookie_values[] = {false, true};
 
 class CookiesGetAllSignalProcessorTest : public ::testing::Test {

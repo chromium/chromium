@@ -9,13 +9,23 @@ namespace safe_browsing {
 
 namespace {
 
+TEST(CookiesGetSignalTest, StripUrlCorrectly) {
+  CookiesGetSignal signal = CookiesGetSignal(
+      /*extension_id=*/"ext-0",
+      /*name=*/"cookie-1",
+      /*store_id=*/"store-1",
+      /*url=*/"http://www.example.com/path1/path2/index.html?q=test&id=5");
+  EXPECT_EQ(signal.url(), "http://www.example.com/path1/path2/");
+}
+
 TEST(CookiesGetSignalTest, ConcatFieldsWithArgs) {
   CookiesGetSignal signal = CookiesGetSignal(
       /*extension_id=*/"ext-0",
       /*name=*/"cookie-1",
       /*store_id=*/"store-1",
-      /*url=*/"www.example.com");
-  EXPECT_EQ(signal.getUniqueArgSetId(), "cookie-1store-1www.example.com");
+      /*url=*/"http://www.example.com/");
+  EXPECT_EQ(signal.getUniqueArgSetId(),
+            "cookie-1store-1http://www.example.com/");
 }
 
 TEST(CookiesGetSignalTest, ConcatFieldsWithDefaultArgs) {

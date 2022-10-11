@@ -267,6 +267,8 @@ static_library("safe_browsing") {
         "extension_telemetry/cookies_get_signal_processor.h",
         "extension_telemetry/extension_signal.h",
         "extension_telemetry/extension_signal_processor.h",
+        "extension_telemetry/extension_signal_util.cc",
+        "extension_telemetry/extension_signal_util.h",
         "extension_telemetry/extension_telemetry_persister.cc",
         "extension_telemetry/extension_telemetry_persister.h",
         "extension_telemetry/extension_telemetry_service.cc",
