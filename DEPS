@@ -209,10 +209,6 @@ vars = {
   # found in tools/rust/README.md.
   'crubit_revision': '2c34caee7c3b4c2dfbcb0e935efcbc05ebc0f61d',
 
-  # Run 'vpython_common' hook if this is set.
-  # TODO(crbug.com/1329052): remove this when we remove .vpython.
-  'enable_vpython_common_crbug_1329052': True,
-
   # By default, download the fuchsia sdk from the public sdk directory.
   'fuchsia_sdk_cipd_prefix': 'fuchsia/sdk/gn/',
 
