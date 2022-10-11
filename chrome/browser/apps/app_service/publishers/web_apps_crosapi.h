@@ -76,6 +76,8 @@ class WebAppsCrosapi : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(StandaloneBrowserPublisherTest,
                            WebAppsCrosapiUpdated);
   FRIEND_TEST_ALL_PREFIXES(StandaloneBrowserPublisherTest,
+                           WebAppsCrosapiUpdatedCapability);
+  FRIEND_TEST_ALL_PREFIXES(StandaloneBrowserPublisherTest,
                            WebAppsNotInitializedIfRegisterFirst);
   FRIEND_TEST_ALL_PREFIXES(StandaloneBrowserPublisherTest,
                            WebAppsInitializedForEmptyList);
@@ -184,16 +186,23 @@ class WebAppsCrosapi : public KeyedService,
                           apps::LoadIconCallback callback,
                           IconValuePtr icon_value);
   void PublishImpl(std::vector<AppPtr> deltas);
+  void PublishCapabilityAccessesImpl(std::vector<CapabilityAccessPtr> deltas);
 
   // Stores a copy of the app deltas, which haven't been published to
   // AppRegistryCache yet. When the crosapi is bound or changed from disconnect
   // to bound, we need to publish all app deltas in this cache to
   // AppRegistryCache.
-  std::vector<AppPtr> delta_cache_;
+  std::vector<AppPtr> delta_app_cache_;
+
+  // Stores a copy of the capability access deltas, which haven't been published
+  // to AppRegistryCache yet. When the crosapi is bound or changed from
+  // disconnect to bound, we need to publish all capability access deltas in
+  // this cache to AppRegistryCache.
+  std::vector<CapabilityAccessPtr> delta_capability_access_cache_;
 
   // Record if OnApps interface been called from the Lacros. If it is called
   // before Lacros web app controller registration, we should publish the
-  // |delta_cache_| to initialize the web app AppType even it is empty.
+  // |delta_app_cache_| to initialize the web app AppType even it is empty.
   bool on_initial_apps_received_ = false;
 
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;

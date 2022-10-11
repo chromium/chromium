@@ -156,6 +156,18 @@ apps::Permissions MakeFakePermissions() {
       /*is_managed*/ false));
   return permissions;
 }
+
+apps::CapabilityAccessPtr MakeCapabilityAccess(
+    const std::string& app_id,
+    absl::optional<bool> camera,
+    absl::optional<bool> microphone) {
+  apps::CapabilityAccessPtr access =
+      std::make_unique<apps::CapabilityAccess>(app_id);
+  access->camera = std::move(camera);
+  access->microphone = std::move(microphone);
+  return access;
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 apps::IntentFilters CreateIntentFilters() {
@@ -446,6 +458,15 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
         });
     EXPECT_EQ(camera, accessing_camera);
     EXPECT_EQ(microphone, accessing_microphone);
+  }
+
+  void VerifyNoCapabilityAccess(const std::string& app_id) {
+    ASSERT_FALSE(
+        apps::AppServiceProxyFactory::GetForProfile(profile())
+            ->AppCapabilityAccessCache()
+            .ForOneApp(app_id, [](const apps::CapabilityAccessUpdate& update) {
+              NOTREACHED();
+            }));
   }
 
  protected:
@@ -991,20 +1012,40 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdated) {
       AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
   AppRegistryCacheObserver observer(&cache);
 
-  std::vector<AppPtr> apps1;
   std::string app_id1 = "a";
   std::string app_id2 = "b";
-  apps1.push_back(MakeApp(AppType::kWeb, app_id1,
-                          /*name=*/"TestApp", Readiness::kReady));
-  apps1.push_back(MakeApp(AppType::kWeb, app_id2,
-                          /*name=*/"TestApp", Readiness::kReady));
-  web_apps_crosapi->OnApps(std::move(apps1));
+  {
+    std::vector<AppPtr> apps1;
+    apps1.push_back(MakeApp(AppType::kWeb, app_id1,
+                            /*name=*/"TestApp", Readiness::kReady));
+    apps1.push_back(MakeApp(AppType::kWeb, app_id2,
+                            /*name=*/"TestApp", Readiness::kReady));
+    web_apps_crosapi->OnApps(std::move(apps1));
 
-  std::vector<AppPtr> apps2;
+    std::vector<CapabilityAccessPtr> capability_access1;
+    capability_access1.push_back(MakeCapabilityAccess(app_id1,
+                                                      /*camera=*/absl::nullopt,
+                                                      /*microphone=*/true));
+    capability_access1.push_back(
+        MakeCapabilityAccess(app_id2,
+                             /*camera=*/true,
+                             /*microphone=*/absl::nullopt));
+    web_apps_crosapi->OnCapabilityAccesses(std::move(capability_access1));
+  }
+
   std::string app_id3 = "c";
-  apps2.push_back(MakeApp(AppType::kWeb, app_id3,
-                          /*name=*/"TestApp", Readiness::kReady));
-  web_apps_crosapi->OnApps(std::move(apps2));
+  {
+    std::vector<AppPtr> apps2;
+    apps2.push_back(MakeApp(AppType::kWeb, app_id3,
+                            /*name=*/"TestApp", Readiness::kReady));
+    web_apps_crosapi->OnApps(std::move(apps2));
+
+    std::vector<CapabilityAccessPtr> capability_access2;
+    capability_access2.push_back(MakeCapabilityAccess(app_id3,
+                                                      /*camera=*/true,
+                                                      /*microphone=*/true));
+    web_apps_crosapi->OnCapabilityAccesses(std::move(capability_access2));
+  }
 
   // Verify no app updated, since Crosapi is not ready yet.
   EXPECT_EQ(AppType::kUnknown, cache.GetAppType(app_id1));
@@ -1012,6 +1053,9 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdated) {
   EXPECT_EQ(AppType::kUnknown, cache.GetAppType(app_id3));
   EXPECT_TRUE(observer.app_types().empty());
   EXPECT_TRUE(observer.updated_ids().empty());
+  VerifyNoCapabilityAccess(app_id1);
+  VerifyNoCapabilityAccess(app_id2);
+  VerifyNoCapabilityAccess(app_id3);
 
   // Register Crosapi, which should publish apps.
   mojo::PendingReceiver<crosapi::mojom::AppController> pending_receiver1;
@@ -1028,30 +1072,53 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdated) {
   EXPECT_EQ(app_id1, observer.updated_ids()[0]);
   EXPECT_EQ(app_id2, observer.updated_ids()[1]);
   EXPECT_EQ(app_id3, observer.updated_ids()[2]);
+  VerifyCapabilityAccess(app_id1,
+                         /*accessing_camera=*/absl::nullopt,
+                         /*accessing_microphone=*/true);
+  VerifyCapabilityAccess(app_id2,
+                         /*accessing_camera=*/true,
+                         /*accessing_microphone=*/absl::nullopt);
+  VerifyCapabilityAccess(app_id3,
+                         /*accessing_camera=*/true,
+                         /*accessing_microphone=*/true);
 
   // Add more apps after register Crosapi.
-  std::vector<AppPtr> apps3;
   std::string app_id4 = "d";
-  apps3.push_back(MakeApp(AppType::kWeb, app_id4,
-                          /*name=*/"TestApp", Readiness::kReady));
-  web_apps_crosapi->OnApps(std::move(apps3));
+  {
+    std::vector<AppPtr> apps3;
+    apps3.push_back(MakeApp(AppType::kWeb, app_id4,
+                            /*name=*/"TestApp", Readiness::kReady));
+    web_apps_crosapi->OnApps(std::move(apps3));
+
+    std::vector<CapabilityAccessPtr> capability_access3;
+    capability_access3.push_back(
+        MakeCapabilityAccess(app_id4,
+                             /*camera=*/true,
+                             /*microphone=*/absl::nullopt));
+    web_apps_crosapi->OnCapabilityAccesses(std::move(capability_access3));
+  }
 
   EXPECT_EQ(AppType::kWeb, cache.GetAppType(app_id4));
   ASSERT_EQ(4u, observer.updated_ids().size());
   EXPECT_EQ(app_id4, observer.updated_ids()[3]);
+  VerifyCapabilityAccess(app_id4,
+                         /*accessing_camera=*/true,
+                         /*accessing_microphone=*/absl::nullopt);
 
   // Disconnect crosapi.
   web_apps_crosapi->OnControllerDisconnected();
 
   // Add more apps after Crosapi disconnect.
-  std::vector<AppPtr> apps4;
   std::string app_id5 = "e";
-  apps4.push_back(MakeApp(AppType::kWeb, app_id5,
-                          /*name=*/"TestApp", Readiness::kReady));
   std::string app_id6 = "f";
-  apps4.push_back(MakeApp(AppType::kWeb, app_id6,
-                          /*name=*/"TestApp", Readiness::kReady));
-  web_apps_crosapi->OnApps(std::move(apps4));
+  {
+    std::vector<AppPtr> apps4;
+    apps4.push_back(MakeApp(AppType::kWeb, app_id5,
+                            /*name=*/"TestApp", Readiness::kReady));
+    apps4.push_back(MakeApp(AppType::kWeb, app_id6,
+                            /*name=*/"TestApp", Readiness::kReady));
+    web_apps_crosapi->OnApps(std::move(apps4));
+  }
 
   // Simulate Crosapi reconnect, which should publish apps.
   mojo::PendingReceiver<crosapi::mojom::AppController> pending_receiver2;
@@ -1065,6 +1132,62 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdated) {
   ASSERT_EQ(6u, observer.updated_ids().size());
   EXPECT_EQ(app_id5, observer.updated_ids()[4]);
   EXPECT_EQ(app_id6, observer.updated_ids()[5]);
+  VerifyNoCapabilityAccess(app_id5);
+  VerifyNoCapabilityAccess(app_id6);
+}
+
+// Verify capability access may arrive without app.
+TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiUpdatedCapability) {
+  WebAppsCrosapi* web_apps_crosapi =
+      WebAppsCrosapiFactory::GetForProfile(profile());
+
+  std::string app_id1 = "a";
+  std::string app_id2 = "b";
+  {
+    std::vector<CapabilityAccessPtr> capability_access1;
+    capability_access1.push_back(MakeCapabilityAccess(app_id1,
+                                                      /*camera=*/absl::nullopt,
+                                                      /*microphone=*/true));
+    capability_access1.push_back(
+        MakeCapabilityAccess(app_id2,
+                             /*camera=*/true,
+                             /*microphone=*/absl::nullopt));
+    web_apps_crosapi->OnCapabilityAccesses(std::move(capability_access1));
+  }
+
+  // Verify no capability access occurred, since Crosapi is not ready yet.
+  VerifyNoCapabilityAccess(app_id1);
+  VerifyNoCapabilityAccess(app_id2);
+
+  // Register Crosapi, which should publish capability access.
+  mojo::PendingReceiver<crosapi::mojom::AppController> pending_receiver1;
+  mojo::PendingRemote<crosapi::mojom::AppController> pending_remote1 =
+      pending_receiver1.InitWithNewPipeAndPassRemote();
+  web_apps_crosapi->RegisterAppController(std::move(pending_remote1));
+
+  VerifyCapabilityAccess(app_id1,
+                         /*accessing_camera=*/absl::nullopt,
+                         /*accessing_microphone=*/true);
+  VerifyCapabilityAccess(app_id2,
+                         /*accessing_camera=*/true,
+                         /*accessing_microphone=*/absl::nullopt);
+
+  // Add more capability access after register Crosapi.
+  std::string app_id3 = "c";
+  {
+    std::vector<CapabilityAccessPtr> capability_access2;
+    capability_access2.push_back(MakeCapabilityAccess(app_id3,
+                                                      /*camera=*/true,
+                                                      /*microphone=*/true));
+    web_apps_crosapi->OnCapabilityAccesses(std::move(capability_access2));
+  }
+
+  VerifyCapabilityAccess(app_id3,
+                         /*accessing_camera=*/true,
+                         /*accessing_microphone=*/true);
+
+  // Disconnect crosapi.
+  web_apps_crosapi->OnControllerDisconnected();
 }
 
 // Verify if OnApps was never called, the registration of AppController will not

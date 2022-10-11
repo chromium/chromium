@@ -48,10 +48,6 @@ WebAppsCrosapi::~WebAppsCrosapi() = default;
 
 void WebAppsCrosapi::RegisterWebAppsCrosapiHost(
     mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver) {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    RegisterPublisher(AppType::kWeb);
-  }
-
   // At the moment the app service publisher will only accept one client
   // publishing apps to ash chrome. Any extra clients will be ignored.
   // TODO(crbug.com/1174246): Support SxS lacros.
@@ -424,11 +420,11 @@ void WebAppsCrosapi::OnApps(std::vector<AppPtr> deltas) {
   on_initial_apps_received_ = true;
 
   if (!controller_.is_bound()) {
-    // If `controller_` is not bound, add `deltas` to `delta_cache_` to wait for
-    // registering the crosapi controller to publish all deltas saved in
-    // `delta_cache_`.
+    // If `controller_` is not bound, add `deltas` to `delta_app_cache_` to wait
+    // for registering the crosapi controller to publish all deltas saved in
+    // `delta_app_cache_`.
     for (auto& delta : deltas) {
-      delta_cache_.push_back(std::move(delta));
+      delta_app_cache_.push_back(std::move(delta));
     }
     return;
   }
@@ -438,19 +434,24 @@ void WebAppsCrosapi::OnApps(std::vector<AppPtr> deltas) {
 
 void WebAppsCrosapi::RegisterAppController(
     mojo::PendingRemote<crosapi::mojom::AppController> controller) {
+  DCHECK(web_app::IsWebAppsCrosapiEnabled());
   if (controller_.is_bound()) {
     return;
   }
   controller_.Bind(std::move(controller));
   controller_.set_disconnect_handler(base::BindOnce(
       &WebAppsCrosapi::OnControllerDisconnected, base::Unretained(this)));
+  RegisterPublisher(AppType::kWeb);
 
-  if (!on_initial_apps_received_) {
-    return;
+  if (on_initial_apps_received_) {
+    PublishImpl(std::move(delta_app_cache_));
+    delta_app_cache_.clear();
   }
 
-  PublishImpl(std::move(delta_cache_));
-  delta_cache_.clear();
+  if (!delta_capability_access_cache_.empty()) {
+    PublishCapabilityAccessesImpl(std::move(delta_capability_access_cache_));
+    delta_capability_access_cache_.clear();
+  }
 }
 
 void WebAppsCrosapi::OnCapabilityAccesses(
@@ -459,16 +460,18 @@ void WebAppsCrosapi::OnCapabilityAccesses(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          apps::kAppServiceCapabilityAccessWithoutMojom)) {
-    proxy()->OnCapabilityAccesses(std::move(deltas));
+  if (!controller_.is_bound()) {
+    // If `controller_` is not bound, add `deltas` to
+    // `delta_capability_access_cache_` to wait for registering the crosapi
+    // controller to publish all deltas saved in
+    // `delta_capability_access_cache_`.
+    for (auto& delta : deltas) {
+      delta_capability_access_cache_.push_back(std::move(delta));
+    }
     return;
   }
 
-  for (auto& subscriber : subscribers_) {
-    subscriber->OnCapabilityAccesses(
-        apps::ConvertCapabilityAccessesToMojomCapabilityAccesses(deltas));
-  }
+  PublishCapabilityAccessesImpl(std::move(deltas));
 }
 
 bool WebAppsCrosapi::LogIfNotConnected(const base::Location& from_here) {
@@ -533,6 +536,20 @@ void WebAppsCrosapi::PublishImpl(std::vector<AppPtr> deltas) {
                        apps::mojom::AppType::kWeb, should_notify_initialized_);
   }
   should_notify_initialized_ = false;
+}
+
+void WebAppsCrosapi::PublishCapabilityAccessesImpl(
+    std::vector<CapabilityAccessPtr> deltas) {
+  if (base::FeatureList::IsEnabled(
+          apps::kAppServiceCapabilityAccessWithoutMojom)) {
+    proxy()->OnCapabilityAccesses(std::move(deltas));
+    return;
+  }
+
+  for (auto& subscriber : subscribers_) {
+    subscriber->OnCapabilityAccesses(
+        apps::ConvertCapabilityAccessesToMojomCapabilityAccesses(deltas));
+  }
 }
 
 }  // namespace apps
