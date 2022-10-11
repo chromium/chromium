@@ -142,7 +142,10 @@ source_set("metrics_protocols") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "popup_menu_mediator_unittest.mm" ]
+  sources = [
+    "popup_menu_coordinator_unittest.mm",
+    "popup_menu_mediator_unittest.mm",
+  ]
   deps = [
     ":constants",
     ":popup_menu",
@@ -168,9 +171,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/policy",
     "//ios/chrome/browser/policy:test_support",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/popup_menu/cells",
+    "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/ui/popup_menu/public:popup_menu_ui",
     "//ios/chrome/browser/ui/toolbar/test",
+    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/browser/web:web_internal",
