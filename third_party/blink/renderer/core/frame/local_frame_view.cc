@@ -3341,19 +3341,8 @@ void LocalFrameView::ForceLayoutForPagination(
   // Dumping externalRepresentation(m_frame->layoutObject()).ascii() is a good
   // trick to see the state of things before and after the layout
   if (LayoutView* layout_view = GetLayoutView()) {
-    float page_logical_width = layout_view->StyleRef().IsHorizontalWritingMode()
-                                   ? page_size.width()
-                                   : page_size.height();
-    float page_logical_height =
-        layout_view->StyleRef().IsHorizontalWritingMode() ? page_size.height()
-                                                          : page_size.width();
-
-    LayoutUnit floored_page_logical_width =
-        static_cast<LayoutUnit>(page_logical_width);
-    LayoutUnit floored_page_logical_height =
-        static_cast<LayoutUnit>(page_logical_height);
-    layout_view->SetLogicalWidth(floored_page_logical_width);
-    layout_view->SetPageLogicalHeight(floored_page_logical_height);
+    layout_view->SetPageSize(
+        {LayoutUnit(page_size.width()), LayoutUnit(page_size.height())});
     layout_view->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kPrintingChanged);
     frame_->GetDocument()->UpdateStyleAndLayout(
@@ -3370,6 +3359,8 @@ void LocalFrameView::ForceLayoutForPagination(
     LayoutUnit doc_logical_width = horizontal_writing_mode
                                        ? document_rect.Width()
                                        : document_rect.Height();
+    float page_logical_width =
+        horizontal_writing_mode ? page_size.width() : page_size.height();
     if (doc_logical_width > page_logical_width) {
       // ResizePageRectsKeepingRatio would truncate the expected page size,
       // while we want it rounded -- so make sure it's rounded here.
@@ -3382,14 +3373,8 @@ void LocalFrameView::ForceLayoutForPagination(
           original_page_size, expected_page_size);
       page_logical_width = horizontal_writing_mode ? max_page_size.width()
                                                    : max_page_size.height();
-      page_logical_height = horizontal_writing_mode ? max_page_size.height()
-                                                    : max_page_size.width();
-
-      floored_page_logical_width = static_cast<LayoutUnit>(page_logical_width);
-      floored_page_logical_height =
-          static_cast<LayoutUnit>(page_logical_height);
-      layout_view->SetLogicalWidth(floored_page_logical_width);
-      layout_view->SetPageLogicalHeight(floored_page_logical_height);
+      layout_view->SetPageSize({LayoutUnit(max_page_size.width()),
+                                LayoutUnit(max_page_size.height())});
       layout_view
           ->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
               layout_invalidation_reason::kPrintingChanged);

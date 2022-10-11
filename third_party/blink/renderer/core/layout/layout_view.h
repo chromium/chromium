@@ -204,11 +204,11 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   LayoutUnit PageLogicalHeight() const {
     NOT_DESTROYED();
-    return page_logical_height_;
+    return IsHorizontalWritingMode() ? page_size_.height : page_size_.width;
   }
-  void SetPageLogicalHeight(LayoutUnit height) {
+  void SetPageSize(PhysicalSize size) {
     NOT_DESTROYED();
-    page_logical_height_ = height;
+    page_size_ = size;
   }
 
   virtual AtomicString NamedPageAtIndex(wtf_size_t page_index) const;
@@ -393,10 +393,10 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   Member<LocalFrameView> frame_view_;
   Member<DeferredShapingController> deferred_shaping_controller_;
 
-  // The page logical height.
+  // The page size.
   // This is only used during printing to split the content into pages.
-  // Outside of printing, this is 0.
-  LayoutUnit page_logical_height_;
+  // Outside of printing, this is 0x0.
+  PhysicalSize page_size_;
 
   // LayoutState is an optimization used during layout.
   // |m_layoutState| will be nullptr outside of layout.

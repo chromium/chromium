@@ -346,7 +346,7 @@ void LayoutView::UpdateBlockLayout(bool relayout_children) {
 void LayoutView::UpdateLayout() {
   NOT_DESTROYED();
   if (!GetDocument().Printing()) {
-    SetPageLogicalHeight(LayoutUnit());
+    page_size_ = PhysicalSize();
     named_pages_mapper_ = nullptr;
   }
 
@@ -763,14 +763,8 @@ PhysicalRect LayoutView::DocumentRect() const {
 gfx::Size LayoutView::GetLayoutSize(
     IncludeScrollbarsInRect scrollbar_inclusion) const {
   NOT_DESTROYED();
-  if (ShouldUsePrintingLayout()) {
-    LayoutSize size = Size();
-    if (StyleRef().IsHorizontalWritingMode())
-      size.SetHeight(PageLogicalHeight());
-    else
-      size.SetWidth(PageLogicalHeight());
-    return ToFlooredSize(size);
-  }
+  if (ShouldUsePrintingLayout())
+    return ToFlooredSize(page_size_);
 
   if (!frame_view_)
     return gfx::Size();
