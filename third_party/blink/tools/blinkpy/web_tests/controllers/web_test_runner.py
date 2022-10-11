@@ -31,13 +31,15 @@ import copy
 import itertools
 import logging
 import math
-import six
 import time
 
 from blinkpy.common import message_pool
 from blinkpy.tool import grammar
 from blinkpy.web_tests.controllers import single_test_runner
-from blinkpy.web_tests.models.test_run_results import TestRunResults
+from blinkpy.web_tests.models.test_run_results import (
+    InterruptReason,
+    TestRunResults,
+)
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models import test_results
 from blinkpy.web_tests.models.typ_types import ResultType
@@ -48,13 +50,12 @@ _log = logging.getLogger(__name__)
 class TestRunInterruptedException(Exception):
     """Raised when a test run should be stopped immediately."""
 
-    def __init__(self, reason):
-        Exception.__init__(self)
+    def __init__(self, msg: str, reason: InterruptReason):
+        super().__init__(msg)
         self.reason = reason
-        self.msg = reason
 
     def __reduce__(self):
-        return self.__class__, (self.reason, )
+        return self.__class__, (str(self), self.reason)
 
 
 class WebTestRunner(object):
@@ -142,25 +143,21 @@ class WebTestRunner(object):
 
             if self._shards_to_redo:
                 num_workers -= len(self._shards_to_redo)
-                if num_workers > 0:
-                    with message_pool.get(self, self._worker_factory,
-                                          num_workers,
-                                          self._port.host) as pool:
-                        pool.run(('test_list', shard.name, shard.test_inputs,
-                                  batch_size)
-                                 for shard in self._shards_to_redo)
-                else:
-                    self._mark_interrupted_tests_as_skipped(
-                        self._current_run_results)
+                if num_workers <= 0:
                     raise TestRunInterruptedException(
-                        'All workers have device failures. Exiting.')
+                        'All workers have device failures. Exiting.',
+                        InterruptReason.ALL_WORKERS_FAILED)
+                with message_pool.get(self, self._worker_factory, num_workers,
+                                      self._port.host) as pool:
+                    pool.run(('test_list', shard.name, shard.test_inputs,
+                              batch_size) for shard in self._shards_to_redo)
         except TestRunInterruptedException as error:
-            _log.warning(error.reason)
-            test_run_results.interrupted = True
+            _log.warning('%s', error)
+            test_run_results.interrupt_reason = error.reason
         except KeyboardInterrupt:
             self._printer.flush()
             self._printer.writeln('Interrupted, exiting ...')
-            test_run_results.keyboard_interrupted = True
+            test_run_results.interrupt_reason = InterruptReason.EXTERNAL_SIGNAL
         except Exception as error:
             _log.debug('%s("%s") raised, exiting', error.__class__.__name__,
                        error)
@@ -168,6 +165,8 @@ class WebTestRunner(object):
         finally:
             test_run_results.run_time = time.time() - start_time
 
+        if test_run_results.interrupted:
+            self._mark_interrupted_tests_as_skipped(test_run_results)
         return test_run_results
 
     def _reorder_tests_by_args(self, shards):
@@ -205,7 +204,8 @@ class WebTestRunner(object):
                 message += ' %d tests run.' % (
                     test_run_results.expected + test_run_results.unexpected)
                 self._mark_interrupted_tests_as_skipped(test_run_results)
-                raise TestRunInterruptedException(message)
+                raise TestRunInterruptedException(
+                    message, InterruptReason.TOO_MANY_FAILURES)
 
         interrupt_if_at_failure_limit(
             self._options.exit_after_n_failures,
@@ -515,7 +515,7 @@ class Sharder(object):
             tests_by_dir.setdefault(directory, [])
             tests_by_dir[directory].append(test_input)
 
-        for directory, test_inputs in six.iteritems(tests_by_dir):
+        for directory, test_inputs in tests_by_dir.items():
             shard = TestShard(directory, test_inputs)
             if test_inputs[0].requires_lock:
                 locked_shards.append(shard)

@@ -28,14 +28,22 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import collections
+import enum
 import logging
 import time
+from typing import Optional
 
 from blinkpy.web_tests.models import test_expectations
 from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.models.typ_types import ResultType
 
 _log = logging.getLogger(__name__)
+
+
+class InterruptReason(enum.Enum):
+    TOO_MANY_FAILURES = enum.auto()
+    EXTERNAL_SIGNAL = enum.auto()
+    ALL_WORKERS_FAILED = enum.auto()
 
 
 class TestRunException(Exception):
@@ -82,8 +90,11 @@ class TestRunResults(object):
             self.tests_by_expectation[expected_result] = set()
 
         self.slow_tests = set()
-        self.interrupted = False
-        self.keyboard_interrupted = False
+        self.interrupt_reason: Optional[InterruptReason] = None
+
+    @property
+    def interrupted(self) -> bool:
+        return self.interrupt_reason is not None
 
     def add(self, test_result, expected, test_is_slow):
         result_type_for_stats = test_result.type

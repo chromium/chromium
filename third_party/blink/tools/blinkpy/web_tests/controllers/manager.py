@@ -220,7 +220,8 @@ class Manager(object):
 
             self._copy_results_html_file(self._artifacts_directory,
                                          'results.html')
-            if initial_results.keyboard_interrupted:
+            if (initial_results.interrupt_reason is
+                    test_run_results.InterruptReason.EXTERNAL_SIGNAL):
                 exit_code = exit_codes.INTERRUPTED_EXIT_STATUS
             else:
                 if initial_results.interrupted:
@@ -285,9 +286,8 @@ class Manager(object):
             self._options.iterations, num_workers)
 
         # Don't retry failures when interrupted by user or failures limit exception.
-        should_retry_failures = should_retry_failures and not (
-            initial_results.interrupted
-            or initial_results.keyboard_interrupted)
+        should_retry_failures = (should_retry_failures
+                                 and not initial_results.interrupted)
 
         tests_to_retry = self._tests_to_retry(initial_results)
         all_retry_results = []

@@ -43,7 +43,10 @@ from blinkpy.web_tests.controllers.web_test_runner import (
 )
 from blinkpy.web_tests.models import test_expectations
 from blinkpy.web_tests.models import test_failures
-from blinkpy.web_tests.models.test_run_results import TestRunResults
+from blinkpy.web_tests.models.test_run_results import (
+    TestRunResults,
+    InterruptReason,
+)
 from blinkpy.web_tests.models.test_input import TestInput
 from blinkpy.web_tests.models.test_results import TestResult
 from blinkpy.web_tests.port.test import TestPort
@@ -169,7 +172,9 @@ class WebTestRunnerTests(unittest.TestCase):
                                        tests_to_skip=[],
                                        num_workers=1,
                                        retry_attempt=0)
-        self.assertEqual(results.keyboard_interrupted, True)
+        self.assertEqual(results.interrupted, True)
+        self.assertIs(results.interrupt_reason,
+                      InterruptReason.EXTERNAL_SIGNAL)
 
     def test_update_summary_with_result(self):
         runner = self._runner()
