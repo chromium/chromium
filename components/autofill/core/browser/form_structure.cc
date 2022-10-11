@@ -847,52 +847,52 @@ void FormStructure::RetrieveFromCache(
           find_field_with_unique_field_signature(field->GetFieldSignature());
     }
 
-    if (cached_field) {
-      if (!only_server_and_autofill_state) {
-        // Transfer attributes of the cached AutofillField to the newly created
-        // AutofillField.
-        for (int i = 0; i <= static_cast<int>(PatternSource::kMaxValue); ++i) {
-          PatternSource s = static_cast<PatternSource>(i);
-          field->set_heuristic_type(s, cached_field->heuristic_type(s));
-        }
-        field->SetHtmlType(cached_field->html_type(),
-                           cached_field->html_mode());
-        field->section = cached_field->section;
-        field->set_only_fill_when_focused(
-            cached_field->only_fill_when_focused());
+    // Skip fields that we could not find.
+    if (!cached_field)
+      continue;
+
+    if (!only_server_and_autofill_state) {
+      // Transfer attributes of the cached AutofillField to the newly created
+      // AutofillField.
+      for (int i = 0; i <= static_cast<int>(PatternSource::kMaxValue); ++i) {
+        PatternSource s = static_cast<PatternSource>(i);
+        field->set_heuristic_type(s, cached_field->heuristic_type(s));
       }
+      field->SetHtmlType(cached_field->html_type(), cached_field->html_mode());
+      field->section = cached_field->section;
+      field->set_only_fill_when_focused(cached_field->only_fill_when_focused());
+    }
+    if (should_keep_cached_value) {
+      field->is_autofilled = cached_field->is_autofilled;
+    }
+    if (field->form_control_type != "select-one") {
       if (should_keep_cached_value) {
-        field->is_autofilled = cached_field->is_autofilled;
+        field->value = cached_field->value;
+        value_from_dynamic_change_form_ = true;
+      } else if (field->value == cached_field->value &&
+                 (field->server_type() != ADDRESS_HOME_COUNTRY &&
+                  field->server_type() != ADDRESS_HOME_STATE)) {
+        // From the perspective of learning user data, text fields containing
+        // default values are equivalent to empty fields.
+        // Since a website can prefill country and state values basedw on
+        // GeoIp, the mechanism is deactivated for state and country fields.
+        field->value = std::u16string();
       }
-      if (field->form_control_type != "select-one") {
-        if (should_keep_cached_value) {
-          field->value = cached_field->value;
-          value_from_dynamic_change_form_ = true;
-        } else if (field->value == cached_field->value &&
-                   (field->server_type() != ADDRESS_HOME_COUNTRY &&
-                    field->server_type() != ADDRESS_HOME_STATE)) {
-          // From the perspective of learning user data, text fields containing
-          // default values are equivalent to empty fields.
-          // Since a website can prefill country and state values basedw on
-          // GeoIp, the mechanism is deactivated for state and country fields.
-          field->value = std::u16string();
-        }
-      }
-      field->set_server_predictions(cached_field->server_predictions());
-      field->set_previously_autofilled(cached_field->previously_autofilled());
+    }
+    field->set_server_predictions(cached_field->server_predictions());
+    field->set_previously_autofilled(cached_field->previously_autofilled());
 
-      if (cached_field->value_not_autofilled_over_existing_value_hash()) {
-        field->set_value_not_autofilled_over_existing_value_hash(
-            *cached_field->value_not_autofilled_over_existing_value_hash());
-      }
+    if (cached_field->value_not_autofilled_over_existing_value_hash()) {
+      field->set_value_not_autofilled_over_existing_value_hash(
+          *cached_field->value_not_autofilled_over_existing_value_hash());
+    }
 
-      // Only retrieve an overall prediction from cache if a server prediction
-      // is set.
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillRetrieveOverallPredictionsFromCache) &&
-          field->server_type() != NO_SERVER_DATA) {
-        field->SetTypeTo(cached_field->Type());
-      }
+    // Only retrieve an overall prediction from cache if a server prediction
+    // is set.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillRetrieveOverallPredictionsFromCache) &&
+        field->server_type() != NO_SERVER_DATA) {
+      field->SetTypeTo(cached_field->Type());
     }
   }
 
