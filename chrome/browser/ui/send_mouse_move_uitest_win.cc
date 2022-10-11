@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(SendMouseMoveUITest, Probe) {
                  << "(" << point.x() << ", " << point.y() << ")");
     // Move the pointer.
     base::RunLoop run_loop;
-    EXPECT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
+    ASSERT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
         point.x(), point.y(), run_loop.QuitClosure()));
     run_loop.Run();
 
