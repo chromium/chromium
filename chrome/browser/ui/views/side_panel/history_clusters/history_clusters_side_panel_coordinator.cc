@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/history_clusters/core/url_constants.h"
+#include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -108,8 +110,12 @@ bool HistoryClustersSidePanelCoordinator::Show(const std::string& query) {
 }
 
 GURL HistoryClustersSidePanelCoordinator::GetOpenInNewTabURL() const {
-  // TODO(tommycli): Pass through the most recent query state too.
-  return GURL(chrome::kChromeUIHistoryClustersURL);
+  std::string query;
+  if (history_clusters_ui_)
+    query = history_clusters_ui_->GetLastQueryIssued();
+
+  return query.empty() ? GURL(history_clusters::kChromeUIHistoryClustersURL)
+                       : history_clusters::GetFullJourneysUrlForQuery(query);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryClustersSidePanelCoordinator);

@@ -364,6 +364,8 @@ void HistoryClustersHandler::ToggleVisibility(
 
 void HistoryClustersHandler::StartQueryClusters(const std::string& query,
                                                 bool recluster) {
+  last_query_issued_ = query;
+
   if (!query.empty()) {
     // If the query string is not empty, we assume that this clusters query
     // is user generated.

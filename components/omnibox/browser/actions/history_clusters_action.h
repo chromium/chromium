@@ -40,6 +40,9 @@ bool IsNavigationIntent(int top_search_relevance,
                         int top_navigation_relevance,
                         int navigation_intent_score_threshold);
 
+// Gets the Journeys WebUI URL for `query`, i.e. chrome://history/journeys?q=%s.
+GURL GetFullJourneysUrlForQuery(const std::string& query);
+
 // Made public for testing.
 class HistoryClustersAction : public OmniboxAction {
  public:

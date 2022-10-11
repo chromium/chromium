@@ -38,6 +38,10 @@ class HistoryClustersSidePanelUI : public ui::MojoBubbleWebUIController,
   // Sets the side panel UI to show `query`.
   void SetQuery(const std::string& query);
 
+  // Gets the last query issued by the WebUI, regardless if it was initiated
+  // from the omnibox action or within the Side Panel WebUI itself.
+  std::string GetLastQueryIssued() const;
+
   // Sets the metrics initial state for logging. We need this because we can't
   // start making logs until the WebUI has finished navigating.
   void set_metrics_initial_state(

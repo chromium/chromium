@@ -79,6 +79,12 @@ void HistoryClustersSidePanelUI::SetQuery(const std::string& query) {
   }
 }
 
+std::string HistoryClustersSidePanelUI::GetLastQueryIssued() const {
+  return history_clusters_handler_
+             ? history_clusters_handler_->last_query_issued()
+             : std::string();
+}
+
 void HistoryClustersSidePanelUI::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame()) {

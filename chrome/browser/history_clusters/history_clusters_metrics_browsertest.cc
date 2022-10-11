@@ -22,6 +22,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history_clusters/core/features.h"
+#include "components/history_clusters/core/url_constants.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/active_field_trials.h"
 #include "content/public/browser/navigation_handle.h"
@@ -116,7 +117,7 @@ class HistoryClustersMetricsBrowserTest : public InProcessBrowserTest {
   // Navigates to the history clusters UI with `PAGE_TRANSITION_RELOAD`. Assumes
   // the current URL is also the history clusters UI.
   void RefreshHistoryClusters() {
-    NavigateParams params(browser(), GURL(chrome::kChromeUIHistoryClustersURL),
+    NavigateParams params(browser(), GURL(kChromeUIHistoryClustersURL),
                           ui::PAGE_TRANSITION_RELOAD);
     ui_test_utils::NavigateToURL(&params);
   }
@@ -153,8 +154,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
                        MAYBE_DirectNavigationNoInteraction) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(kChromeUIHistoryClustersURL)));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
   auto entries =
       ukm_recorder.GetEntriesByName(ukm::builders::HistoryClusters::kEntryName);
@@ -182,8 +183,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(kChromeUIHistoryClustersURL)));
   EXPECT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
   history_clusters::HistoryClustersHandler* page_handler =
@@ -229,8 +230,8 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(kChromeUIHistoryClustersURL)));
   ToggleToUi(UiTab::kBasicHistory);
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("https://foo.com")));
@@ -254,8 +255,8 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(chrome::kChromeUIHistoryClustersURL)));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(kChromeUIHistoryClustersURL)));
   ToggleToUi(UiTab::kBasicHistory);
   ToggleToUi(UiTab::kClustersUi);
 

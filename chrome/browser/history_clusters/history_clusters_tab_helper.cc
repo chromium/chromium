@@ -23,6 +23,7 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/history_clusters/core/history_clusters_service.h"
+#include "components/history_clusters/core/url_constants.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -278,7 +279,7 @@ void HistoryClustersTabHelper::DidStartNavigation(
   // The remaining logic only pertains to if the previously committed navigation
   // was the HistoryClusters UI.
   if (!IsHistoryPage(navigation_handle->GetWebContents()->GetLastCommittedURL(),
-                     GURL(chrome::kChromeUIHistoryClustersURL))) {
+                     GURL(history_clusters::kChromeUIHistoryClustersURL))) {
     return;
   }
 
@@ -311,7 +312,7 @@ void HistoryClustersTabHelper::DidFinishNavigation(
   }
 
   if (!IsHistoryPage(navigation_handle->GetURL(),
-                     GURL(chrome::kChromeUIHistoryClustersURL))) {
+                     GURL(history_clusters::kChromeUIHistoryClustersURL))) {
     return;
   }
 

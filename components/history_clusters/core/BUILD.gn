@@ -68,6 +68,8 @@ static_library("core") {
     "single_domain_cluster_finalizer.h",
     "single_visit_cluster_finalizer.cc",
     "single_visit_cluster_finalizer.h",
+    "url_constants.cc",
+    "url_constants.h",
   ]
   deps = [
     "//base",
