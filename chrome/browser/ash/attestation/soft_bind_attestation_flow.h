@@ -73,6 +73,8 @@ class SoftBindAttestationFlow {
     const AccountId account_id_;
     std::string user_key_;
     int max_retries_ = 3;
+    base::WeakPtrFactory<SoftBindAttestationFlow::Session> weak_ptr_factory_{
+        this};
   };
 
   void GetCertificateInternal(bool force_new_key,
