@@ -63,8 +63,8 @@ class HTMLDocumentParserTest
   HTMLDocumentParser* CreateParser(HTMLDocument& document) {
     auto* parser =
         MakeGarbageCollected<HTMLDocumentParser>(document, GetParam());
-    std::unique_ptr<TextResourceDecoder> decoder(
-        BuildTextResourceDecoderFor(&document, "text/html", g_null_atom));
+    std::unique_ptr<TextResourceDecoder> decoder(BuildTextResourceDecoder(
+        document.GetFrame(), document.Url(), "text/html", g_null_atom));
     parser->SetDecoder(std::move(decoder));
     return parser;
   }
@@ -199,8 +199,8 @@ class HTMLDocumentParserProcessImmediatelyTest : public PageTestBase {
   HTMLDocumentParser* CreateParser(HTMLDocument& document) {
     auto* parser = MakeGarbageCollected<HTMLDocumentParser>(
         document, kAllowDeferredParsing);
-    std::unique_ptr<TextResourceDecoder> decoder(
-        BuildTextResourceDecoderFor(&document, "text/html", g_null_atom));
+    std::unique_ptr<TextResourceDecoder> decoder(BuildTextResourceDecoder(
+        document.GetFrame(), document.Url(), "text/html", g_null_atom));
     parser->SetDecoder(std::move(decoder));
     return parser;
   }

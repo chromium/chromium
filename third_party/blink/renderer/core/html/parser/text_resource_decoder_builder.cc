@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -101,14 +100,13 @@ TextResourceDecoderOptions::ContentType DetermineContentType(
 
 }  // namespace
 
-std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoderFor(
-    Document* document,
+std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoder(
+    LocalFrame* frame,
+    const KURL& url,
     const AtomicString& mime_type,
     const AtomicString& encoding) {
-  const WTF::TextEncoding encoding_from_domain =
-      GetEncodingFromDomain(document->Url());
+  const WTF::TextEncoding encoding_from_domain = GetEncodingFromDomain(url);
 
-  LocalFrame* frame = document->GetFrame();
   LocalFrame* parent_frame = nullptr;
   if (frame)
     parent_frame = DynamicTo<LocalFrame>(frame->Tree().Parent());
@@ -151,7 +149,7 @@ std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoderFor(
       decoder = std::make_unique<TextResourceDecoder>(
           TextResourceDecoderOptions::CreateWithAutoDetection(
               DetermineContentType(mime_type), default_encoding, hint_encoding,
-              document->Url()));
+              url));
     }
   } else {
     decoder = std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(

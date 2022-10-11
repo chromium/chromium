@@ -487,4 +487,11 @@ String TextResourceDecoder::Flush() {
   return result;
 }
 
+WebEncodingData TextResourceDecoder::GetEncodingData() const {
+  return WebEncodingData{
+      .encoding = String(encoding_.GetName()),
+      .was_detected_heuristically = EncodingWasDetectedHeuristically(),
+      .saw_decoding_error = SawError()};
+}
+
 }  // namespace blink

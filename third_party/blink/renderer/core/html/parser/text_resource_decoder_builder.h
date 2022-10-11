@@ -38,10 +38,11 @@
 
 namespace blink {
 
-class Document;
+class LocalFrame;
 
-CORE_EXPORT std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoderFor(
-    Document*,
+CORE_EXPORT std::unique_ptr<TextResourceDecoder> BuildTextResourceDecoder(
+    LocalFrame* frame,
+    const KURL& url,
     const AtomicString& mime_type,
     const AtomicString& encoding);
 

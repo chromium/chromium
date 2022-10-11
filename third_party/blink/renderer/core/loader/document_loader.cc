@@ -1000,7 +1000,7 @@ void DocumentLoader::BodyDataReceived(base::span<const char> data) {
 
 void DocumentLoader::DecodedBodyDataReceived(
     const WebString& data,
-    const WebTextDecoder::EncodingData& encoding_data,
+    const WebEncodingData& encoding_data,
     base::span<const char> encoded_data) {
   // Decoding has already happened, we don't need the decoder anymore.
   parser_->SetDecoder(nullptr);

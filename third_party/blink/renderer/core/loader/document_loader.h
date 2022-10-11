@@ -514,10 +514,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   // WebNavigationBodyLoader::Client
   void BodyDataReceived(base::span<const char> data) override;
-  void DecodedBodyDataReceived(
-      const WebString& data,
-      const WebTextDecoder::EncodingData& encoding_data,
-      base::span<const char> encoded_data) override;
+  void DecodedBodyDataReceived(const WebString& data,
+                               const WebEncodingData& encoding_data,
+                               base::span<const char> encoded_data) override;
   void BodyLoadingFinished(base::TimeTicks completion_time,
                            int64_t total_encoded_data_length,
                            int64_t total_encoded_body_length,

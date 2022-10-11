@@ -13,12 +13,12 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
-#include "third_party/blink/public/platform/web_text_decoder.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 
 namespace blink {
 
 class ResourceLoadInfoNotifierWrapper;
+struct WebEncodingData;
 struct WebNavigationParams;
 
 // This class is used to load the body of main resource during navigation.
@@ -39,10 +39,9 @@ class BLINK_EXPORT WebNavigationBodyLoader {
     // BodyDataReceived() if the data is able to be decoded off thread.
     // |encoded_data| will contain the original data if
     // |should_keep_encoded_data| was passed to StartLoadingBodyInBackground().
-    virtual void DecodedBodyDataReceived(
-        const WebString& data,
-        const WebTextDecoder::EncodingData& encoding_data,
-        base::span<const char> encoded_data) {
+    virtual void DecodedBodyDataReceived(const WebString& data,
+                                         const WebEncodingData& encoding_data,
+                                         base::span<const char> encoded_data) {
       NOTREACHED();
     }
 
@@ -84,16 +83,6 @@ class BLINK_EXPORT WebNavigationBodyLoader {
   // Starts loading the body. Client must be non-null, and will receive the
   // body, and final result.
   virtual void StartLoadingBody(Client*) = 0;
-
-  // Starts reading and decoding the body on a background thread. Client
-  // callbacks will not be called until StartLoadingBody() is called. If
-  // |should_keep_encoded_data| is true, the original data will be copied from
-  // the background thread and passed to DecodedBodyDataReceived().
-  virtual void StartLoadingBodyInBackground(
-      std::unique_ptr<WebTextDecoder> decoder,
-      bool should_keep_encoded_data) {
-    NOTREACHED();
-  }
 };
 
 }  // namespace blink

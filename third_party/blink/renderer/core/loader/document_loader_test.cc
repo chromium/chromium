@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_encoding_data.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url_loader_client.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
@@ -49,13 +50,12 @@ class DecodedBodyLoader : public StaticDataNavigationBodyLoader {
     void BodyDataReceived(base::span<const char> data) override {
       client_->DecodedBodyDataReceived(
           String(data.data(), data.size()).UpperASCII(),
-          WebTextDecoder::EncodingData{.encoding = "utf-8"}, data);
+          WebEncodingData{.encoding = "utf-8"}, data);
     }
 
-    void DecodedBodyDataReceived(
-        const WebString& data,
-        const WebTextDecoder::EncodingData& encoding_data,
-        base::span<const char> encoded_data) override {
+    void DecodedBodyDataReceived(const WebString& data,
+                                 const WebEncodingData& encoding_data,
+                                 base::span<const char> encoded_data) override {
       client_->DecodedBodyDataReceived(data, encoding_data, encoded_data);
     }
 

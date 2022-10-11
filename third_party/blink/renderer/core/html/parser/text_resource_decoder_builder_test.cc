@@ -17,7 +17,8 @@ static const WTF::TextEncoding DefaultEncodingForUrlAndContentType(
   auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   Document& document = page_holder->GetDocument();
   document.SetURL(KURL(NullURL(), url));
-  return BuildTextResourceDecoderFor(&document, content_type, g_null_atom)
+  return BuildTextResourceDecoder(document.GetFrame(), document.Url(),
+                                  content_type, g_null_atom)
       ->Encoding();
 }
 
