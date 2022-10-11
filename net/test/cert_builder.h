@@ -270,6 +270,16 @@ class CertBuilder {
   // Returns a copy of the certificate's DER.
   std::string GetDER();
 
+  // Returns a copy of the certificate as PEM encoded DER.
+  // Convenience method for debugging, to more easily log what cert is being
+  // created.
+  std::string GetPEM();
+
+  // Returns the full chain (including root) as PEM.
+  // Convenience method for debugging, to more easily log what certs are being
+  // created.
+  std::string GetPEMFullChain();
+
  private:
   // Initializes the CertBuilder, if |orig_cert| is non-null it will be used as
   // a template. If |issuer| is null then the generated certificate will be

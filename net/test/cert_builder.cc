@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "crypto/ec_private_key.h"
 #include "crypto/openssl_util.h"
@@ -839,6 +840,24 @@ scoped_refptr<X509Certificate> CertBuilder::GetX509CertificateChain() {
 
 std::string CertBuilder::GetDER() {
   return std::string(x509_util::CryptoBufferAsStringPiece(GetCertBuffer()));
+}
+
+std::string CertBuilder::GetPEM() {
+  std::string pem_encoded;
+  EXPECT_TRUE(X509Certificate::GetPEMEncoded(GetCertBuffer(), &pem_encoded));
+  return pem_encoded;
+}
+
+std::string CertBuilder::GetPEMFullChain() {
+  std::vector<std::string> pems;
+  CertBuilder* cert = this;
+  while (cert) {
+    pems.push_back(cert->GetPEM());
+    if (cert == cert->issuer_)
+      break;
+    cert = cert->issuer_;
+  }
+  return base::JoinString(pems, "\n");
 }
 
 CertBuilder::CertBuilder(CRYPTO_BUFFER* orig_cert,
