@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// IMPORTANT NOTE: All QtUi members that use `shim_` must be decorated
+// with DISABLE_CFI_VCALL.
+
 #include "ui/qt/qt_ui.h"
 
 #include <dlfcn.h>
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -93,6 +97,7 @@ class QtNativeTheme : public ui::NativeThemeAura {
   ~QtNativeTheme() override = default;
 
   // ui::NativeTheme:
+  DISABLE_CFI_VCALL
   void PaintFrameTopArea(cc::PaintCanvas* canvas,
                          State state,
                          const gfx::Rect& rect,
@@ -160,6 +165,8 @@ ui::SelectFileDialog* QtUi::CreateSelectFileDialog(
                             : nullptr;
 }
 
+DISABLE_CFI_DLSYM
+DISABLE_CFI_VCALL
 bool QtUi::Initialize() {
   base::FilePath path;
   if (!base::PathService::Get(base::DIR_MODULE, &path))
@@ -204,30 +211,37 @@ bool QtUi::GetDisplayProperty(int id, int* result) const {
   }
 }
 
+DISABLE_CFI_VCALL
 SkColor QtUi::GetFocusRingColor() const {
   return shim_->GetColor(ColorType::kHighlightBg, ColorState::kNormal);
 }
 
+DISABLE_CFI_VCALL
 SkColor QtUi::GetActiveSelectionBgColor() const {
   return shim_->GetColor(ColorType::kHighlightBg, ColorState::kNormal);
 }
 
+DISABLE_CFI_VCALL
 SkColor QtUi::GetActiveSelectionFgColor() const {
   return shim_->GetColor(ColorType::kHighlightFg, ColorState::kNormal);
 }
 
+DISABLE_CFI_VCALL
 SkColor QtUi::GetInactiveSelectionBgColor() const {
   return shim_->GetColor(ColorType::kHighlightBg, ColorState::kInactive);
 }
 
+DISABLE_CFI_VCALL
 SkColor QtUi::GetInactiveSelectionFgColor() const {
   return shim_->GetColor(ColorType::kHighlightFg, ColorState::kInactive);
 }
 
+DISABLE_CFI_VCALL
 base::TimeDelta QtUi::GetCursorBlinkInterval() const {
   return base::Milliseconds(shim_->GetCursorBlinkIntervalMs());
 }
 
+DISABLE_CFI_VCALL
 gfx::Image QtUi::GetIconForContentType(const std::string& content_type,
                                        int size,
                                        float scale) const {
@@ -263,15 +277,18 @@ QtUi::WindowFrameAction QtUi::GetWindowFrameAction(
   }
 }
 
+DISABLE_CFI_VCALL
 float QtUi::GetDeviceScaleFactor() const {
   return shim_->GetScaleFactor();
 }
 
+DISABLE_CFI_VCALL
 bool QtUi::PreferDarkTheme() const {
   return color_utils::IsDark(
       shim_->GetColor(ColorType::kWindowBg, ColorState::kNormal));
 }
 
+DISABLE_CFI_VCALL
 bool QtUi::AnimationsEnabled() const {
   return shim_->GetAnimationDurationMs() > 0;
 }
@@ -323,6 +340,7 @@ gfx::Size QtUi::GetPdfPaperSize(printing::PrintingContextLinux* context) {
 }
 #endif
 
+DISABLE_CFI_VCALL
 void QtUi::FontChanged() {
   auto params = shim_->GetFontRenderParams();
   auto desc = shim_->GetFontDescription();
@@ -361,6 +379,7 @@ void QtUi::ThemeChanged() {
   native_theme_->NotifyOnNativeThemeUpdated();
 }
 
+DISABLE_CFI_VCALL
 void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
                                const ui::ColorProviderManager::Key& key) {
   if (key.system_theme != ui::SystemTheme::kQt)
@@ -425,6 +444,7 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
       shim_->GetFrameColor(ColorState::kInactive, true)};
 }
 
+DISABLE_CFI_VCALL
 absl::optional<SkColor> QtUi::GetColor(int id, bool use_custom_frame) const {
   switch (id) {
     case ThemeProperties::COLOR_LOCATION_BAR_BORDER:

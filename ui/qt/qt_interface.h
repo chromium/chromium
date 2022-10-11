@@ -7,6 +7,12 @@
 
 // This file shouldn't include any standard C++ headers (directly or indirectly)
 
+#if defined(__has_attribute) && __has_attribute(no_sanitize)
+#define DISABLE_CFI_VCALL __attribute__((no_sanitize("cfi-vcall")))
+#else
+#define DISABLE_CFI_VCALL
+#endif
+
 #include <stdint.h>
 #include <stdlib.h>
 

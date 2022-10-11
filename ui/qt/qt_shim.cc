@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// IMPORTANT NOTE: All QtShim members that use `delegate_` must be decorated
+// with DISABLE_CFI_VCALL.
+
 #include "ui/qt/qt_shim.h"
 
 #include <stdio.h>
@@ -270,10 +273,12 @@ int QtShim::GetAnimationDurationMs() const {
   return app_.style()->styleHint(QStyle::SH_Widget_Animation_Duration);
 }
 
+DISABLE_CFI_VCALL
 void QtShim::FontChanged(const QFont& font) {
   delegate_->FontChanged();
 }
 
+DISABLE_CFI_VCALL
 void QtShim::PaletteChanged(const QPalette& palette) {
   delegate_->ThemeChanged();
 }
