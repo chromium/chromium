@@ -27,44 +27,26 @@ void RunGetSelectedSegmentCallback(
                       CreateJavaSegmentSelectionResult(env, result));
 }
 
-void OnProductInfoReceived(
-    Profile* profile,
-    segmentation_platform::SegmentationPlatformService::SegmentSelectionCallback
-        segment_selection_callback,
-    const GURL& url,
-    const absl::optional<commerce::ProductInfo>& product_info) {
-  bool can_track_price = product_info.has_value();
-
-  scoped_refptr<segmentation_platform::InputContext> input_context =
-      base::MakeRefCounted<segmentation_platform::InputContext>();
-  input_context->metadata_args.emplace("is_price_tracking",
-                                       static_cast<float>(can_track_price));
-  input_context->metadata_args.emplace("url", url);
-  segmentation_platform::SegmentationPlatformService*
-      segmentation_platform_service = segmentation_platform::
-          SegmentationPlatformServiceFactory::GetForProfile(profile);
-  segmentation_platform_service->GetSelectedSegmentOnDemand(
-      segmentation_platform::kContextualPageActionsKey, input_context,
-      std::move(segment_selection_callback));
-}
-
 static void JNI_ContextualPageActionController_ComputeContextualPageAction(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     const JavaParamRef<jobject>& j_url,
+    jboolean j_can_track_price,
     const JavaParamRef<jobject>& j_callback) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
   DCHECK(profile);
   auto url = url::GURLAndroid::ToNativeGURL(env, j_url);
 
-  commerce::ShoppingService* shopping_service =
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
-  DCHECK(shopping_service);
-
-  auto segment_selection_callback =
+  scoped_refptr<segmentation_platform::InputContext> input_context =
+      base::MakeRefCounted<segmentation_platform::InputContext>();
+  input_context->metadata_args.emplace("is_price_tracking",
+                                       static_cast<float>(j_can_track_price));
+  input_context->metadata_args.emplace("url", *url);
+  segmentation_platform::SegmentationPlatformService*
+      segmentation_platform_service = segmentation_platform::
+          SegmentationPlatformServiceFactory::GetForProfile(profile);
+  segmentation_platform_service->GetSelectedSegmentOnDemand(
+      segmentation_platform::kContextualPageActionsKey, input_context,
       base::BindOnce(&RunGetSelectedSegmentCallback,
-                     base::android::ScopedJavaGlobalRef<jobject>(j_callback));
-  shopping_service->GetProductInfoForUrl(
-      *url, base::BindOnce(&OnProductInfoReceived, profile,
-                           std::move(segment_selection_callback)));
+                     base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
 }

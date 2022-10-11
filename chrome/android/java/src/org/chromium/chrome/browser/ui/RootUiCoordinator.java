@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
@@ -1160,8 +1161,11 @@ public class RootUiCoordinator
                     AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.PRICE_TRACKING, priceTrackingButtonController);
-            mContextualPageActionController = new ContextualPageActionController(
-                    mProfileSupplier, mActivityTabProvider, adaptiveToolbarButtonController);
+            mContextualPageActionController = new ContextualPageActionController(mProfileSupplier,
+                    mActivityTabProvider, adaptiveToolbarButtonController,
+                    ()
+                            -> ShoppingServiceFactory.getForProfile(mProfileSupplier.get()),
+                    mBookmarkModelSupplier);
             mButtonDataProviders =
                     Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
 

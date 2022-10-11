@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.segmentation_platform;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -15,6 +18,8 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonControl
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.segmentation_platform.SegmentSelectionResult;
 import org.chromium.url.GURL;
 
@@ -26,6 +31,8 @@ import org.chromium.url.GURL;
 public class ContextualPageActionController {
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final ObservableSupplier<Tab> mTabSupplier;
+    private final Supplier<ShoppingService> mShoppingServiceSupplier;
+    private final Supplier<BookmarkModel> mBookmarkModelSupplier;
     private final AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
     private CurrentTabObserver mCurrentTabObserver;
 
@@ -38,9 +45,13 @@ public class ContextualPageActionController {
      */
     public ContextualPageActionController(ObservableSupplier<Profile> profileSupplier,
             ObservableSupplier<Tab> tabSupplier,
-            AdaptiveToolbarButtonController adaptiveToolbarButtonController) {
+            AdaptiveToolbarButtonController adaptiveToolbarButtonController,
+            Supplier<ShoppingService> shoppingServiceSupplier,
+            Supplier<BookmarkModel> bookmarkModelSupplier) {
         mProfileSupplier = profileSupplier;
         mTabSupplier = tabSupplier;
+        mShoppingServiceSupplier = shoppingServiceSupplier;
+        mBookmarkModelSupplier = bookmarkModelSupplier;
         mAdaptiveToolbarButtonController = adaptiveToolbarButtonController;
         profileSupplier.addObserver(profile -> {
             if (profile.isOffTheRecord()) return;
@@ -84,9 +95,29 @@ public class ContextualPageActionController {
                     AdaptiveToolbarButtonVariant.UNKNOWN);
             return;
         }
+        collectSignals(tab);
+    }
 
+    private void collectSignals(Tab tab) {
+        final BookmarkModel bookmarkModel = mBookmarkModelSupplier.get();
+        bookmarkModel.finishLoadingBookmarkModel(() -> {
+            BookmarkId bookmarkId = bookmarkModel.getUserBookmarkIdForTab(tab);
+            boolean isAlreadyPriceTracked =
+                    PowerBookmarkUtils.isBookmarkPriceTracked(bookmarkModel, bookmarkId);
+            if (isAlreadyPriceTracked) {
+                findBestAction(tab, /*canTrackPrice=*/false);
+            } else {
+                mShoppingServiceSupplier.get().getProductInfoForUrl(tab.getUrl(), (url, info) -> {
+                    boolean canTrackPrice = info != null;
+                    findBestAction(tab, canTrackPrice);
+                });
+            }
+        });
+    }
+
+    private void findBestAction(Tab tab, boolean canTrackPrice) {
         ContextualPageActionControllerJni.get().computeContextualPageAction(
-                mProfileSupplier.get(), tab.getUrl(), result -> {
+                mProfileSupplier.get(), tab.getUrl(), canTrackPrice, result -> {
                     if (tab.isDestroyed()) return;
 
                     boolean isSameTab =
@@ -103,7 +134,7 @@ public class ContextualPageActionController {
 
     @NativeMethods
     interface Natives {
-        void computeContextualPageAction(
-                Profile profile, GURL url, Callback<SegmentSelectionResult> callback);
+        void computeContextualPageAction(Profile profile, GURL url, boolean canTrackPrice,
+                Callback<SegmentSelectionResult> callback);
     }
 }
