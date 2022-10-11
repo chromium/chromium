@@ -370,26 +370,25 @@ void GinJavaBridgeDispatcherHost::OnInvokeMethod(
     int routing_id,
     GinJavaBoundObject::ObjectID object_id,
     const std::string& method_name,
-    const base::ListValue& arguments,
-    base::ListValue* wrapped_result,
+    const base::Value::List& arguments,
+    base::Value::List* wrapped_result,
     content::GinJavaBridgeError* error_code) {
   DCHECK(JavaBridgeThread::CurrentlyOn());
   DCHECK(routing_id != MSG_ROUTING_NONE);
   scoped_refptr<GinJavaBoundObject> object = FindObject(object_id);
   if (!object.get()) {
-    wrapped_result->GetList().Append(base::Value());
+    wrapped_result->Append(base::Value());
     *error_code = kGinJavaBridgeUnknownObjectId;
     return;
   }
-  scoped_refptr<GinJavaMethodInvocationHelper> result =
-      new GinJavaMethodInvocationHelper(
-          std::make_unique<GinJavaBoundObjectDelegate>(object), method_name,
-          arguments);
+  auto result = base::MakeRefCounted<GinJavaMethodInvocationHelper>(
+      std::make_unique<GinJavaBoundObjectDelegate>(object), method_name,
+      arguments);
   result->Init(this);
   result->Invoke();
   *error_code = result->GetInvocationError();
   if (result->HoldsPrimitiveResult()) {
-    wrapped_result->GetList() = result->GetPrimitiveResult().Clone();
+    *wrapped_result = result->GetPrimitiveResult().Clone();
   } else if (!result->GetObjectResult().is_null()) {
     GinJavaBoundObject::ObjectID returned_object_id;
     if (FindObjectId(result->GetObjectResult(), &returned_object_id)) {

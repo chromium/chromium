@@ -52,14 +52,14 @@ v8::Local<v8::Value> GinJavaFunctionInvocationHelper::Invoke(
     return v8::Undefined(args->isolate());
   }
 
-  content::GinJavaBridgeObject* object = NULL;
+  content::GinJavaBridgeObject* object = nullptr;
   if (!args->GetHolder(&object) || !object) {
     args->isolate()->ThrowException(v8::Exception::Error(gin::StringToV8(
         args->isolate(), kMethodInvocationOnNonInjectedObjectDisallowed)));
     return v8::Undefined(args->isolate());
   }
 
-  base::ListValue arguments;
+  base::Value::List arguments;
   {
     v8::HandleScope handle_scope(args->isolate());
     v8::Local<v8::Context> context = args->isolate()->GetCurrentContext();

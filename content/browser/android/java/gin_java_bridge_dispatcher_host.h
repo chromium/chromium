@@ -15,13 +15,10 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/values.h"
 #include "content/browser/android/java/gin_java_bound_object.h"
 #include "content/browser/android/java/gin_java_method_invocation_helper.h"
 #include "content/public/browser/web_contents_observer.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace content {
 
@@ -72,8 +69,8 @@ class GinJavaBridgeDispatcherHost
   void OnInvokeMethod(int routing_id,
                       GinJavaBoundObject::ObjectID object_id,
                       const std::string& method_name,
-                      const base::ListValue& arguments,
-                      base::ListValue* result,
+                      const base::Value::List& arguments,
+                      base::Value::List* result,
                       content::GinJavaBridgeError* error_code);
   void OnObjectWrapperDeleted(int routing_id,
                               GinJavaBoundObject::ObjectID object_id);

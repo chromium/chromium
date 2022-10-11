@@ -48,7 +48,7 @@ IPC_SYNC_MESSAGE_ROUTED2_1(GinJavaBridgeHostMsg_HasMethod,
                            bool /* result */)
 
 // Sent from renderer to browser to invoke a method. Method arguments
-// are chained into |arguments| list. base::ListValue is used for |result| as
+// are chained into |arguments| list. base::Value::List is used for |result| as
 // a container to work around immutability of base::Value.
 // Empty result list indicates that an error has happened on the Java side
 // (either bridge-induced error or an unhandled Java exception) and an exception
@@ -59,8 +59,8 @@ IPC_SYNC_MESSAGE_ROUTED2_1(GinJavaBridgeHostMsg_HasMethod,
 IPC_SYNC_MESSAGE_ROUTED3_2(GinJavaBridgeHostMsg_InvokeMethod,
                            int32_t /* object_id */,
                            std::string /* method_name */,
-                           base::ListValue /* arguments */,
-                           base::ListValue /* result */,
+                           base::Value::List /* arguments */,
+                           base::Value::List /* result */,
                            content::GinJavaBridgeError /* error_code */)
 
 // Sent from renderer to browser in two cases:

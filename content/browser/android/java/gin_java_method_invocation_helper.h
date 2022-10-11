@@ -58,7 +58,7 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
 
   GinJavaMethodInvocationHelper(std::unique_ptr<ObjectDelegate> object,
                                 const std::string& method_name,
-                                const base::ListValue& arguments);
+                                const base::Value::List& arguments);
 
   GinJavaMethodInvocationHelper(const GinJavaMethodInvocationHelper&) = delete;
   GinJavaMethodInvocationHelper& operator=(
@@ -79,9 +79,9 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
   ~GinJavaMethodInvocationHelper();
 
   void BuildObjectRefsFromListValue(DispatcherDelegate* dispatcher,
-                                    const base::Value& list_value);
+                                    const base::Value::List& list_value);
   void BuildObjectRefsFromDictionaryValue(DispatcherDelegate* dispatcher,
-                                          const base::Value& dict_value);
+                                          const base::Value::Dict& dict_value);
 
   bool AppendObjectRef(DispatcherDelegate* dispatcher,
                        const base::Value& raw_value);
@@ -102,7 +102,7 @@ class CONTENT_EXPORT GinJavaMethodInvocationHelper
 
   std::unique_ptr<ObjectDelegate> object_;
   const std::string method_name_;
-  base::Value arguments_;
+  base::Value::List arguments_;
   ObjectRefs object_refs_;
   bool holds_primitive_result_;
   std::unique_ptr<base::Value::List> primitive_result_;

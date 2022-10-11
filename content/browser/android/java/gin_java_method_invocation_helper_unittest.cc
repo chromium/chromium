@@ -21,12 +21,12 @@ namespace {
 class NullObjectDelegate
     : public GinJavaMethodInvocationHelper::ObjectDelegate {
  public:
-  NullObjectDelegate() {}
+  NullObjectDelegate() = default;
 
   NullObjectDelegate(const NullObjectDelegate&) = delete;
   NullObjectDelegate& operator=(const NullObjectDelegate&) = delete;
 
-  ~NullObjectDelegate() override {}
+  ~NullObjectDelegate() override = default;
 
   base::android::ScopedJavaLocalRef<jobject> GetLocalRef(JNIEnv* env) override {
     return base::android::ScopedJavaLocalRef<jobject>();
@@ -39,7 +39,7 @@ class NullObjectDelegate
 
   const JavaMethod* FindMethod(const std::string& method_name,
                                size_t num_parameters) override {
-    return NULL;
+    return nullptr;
   }
 
   bool IsObjectGetClassMethod(const JavaMethod* method) override {
@@ -57,12 +57,12 @@ class NullObjectDelegate
 class NullDispatcherDelegate
     : public GinJavaMethodInvocationHelper::DispatcherDelegate {
  public:
-  NullDispatcherDelegate() {}
+  NullDispatcherDelegate() = default;
 
   NullDispatcherDelegate(const NullDispatcherDelegate&) = delete;
   NullDispatcherDelegate& operator=(const NullDispatcherDelegate&) = delete;
 
-  ~NullDispatcherDelegate() override {}
+  ~NullDispatcherDelegate() override = default;
 
   JavaObjectWeakGlobalRef GetObjectWeakRef(
       GinJavaBoundObject::ObjectID object_id) override {
@@ -80,13 +80,13 @@ namespace {
 class CountingDispatcherDelegate
     : public GinJavaMethodInvocationHelper::DispatcherDelegate {
  public:
-  CountingDispatcherDelegate() {}
+  CountingDispatcherDelegate() = default;
 
   CountingDispatcherDelegate(const CountingDispatcherDelegate&) = delete;
   CountingDispatcherDelegate& operator=(const CountingDispatcherDelegate&) =
       delete;
 
-  ~CountingDispatcherDelegate() override {}
+  ~CountingDispatcherDelegate() override = default;
 
   JavaObjectWeakGlobalRef GetObjectWeakRef(
       GinJavaBoundObject::ObjectID object_id) override {
@@ -112,23 +112,20 @@ class CountingDispatcherDelegate
 }  // namespace
 
 TEST_F(GinJavaMethodInvocationHelperTest, RetrievalOfObjectsNoObjects) {
-  base::ListValue no_objects;
+  base::Value::List no_objects;
   for (int i = 0; i < 10; ++i) {
     no_objects.Append(i);
   }
 
-  scoped_refptr<GinJavaMethodInvocationHelper> helper =
-      new GinJavaMethodInvocationHelper(
-          std::unique_ptr<GinJavaMethodInvocationHelper::ObjectDelegate>(
-              new NullObjectDelegate()),
-          "foo", no_objects);
+  auto helper = base::MakeRefCounted<GinJavaMethodInvocationHelper>(
+      std::make_unique<NullObjectDelegate>(), "foo", no_objects);
   CountingDispatcherDelegate counter;
   helper->Init(&counter);
   counter.AssertInvocationsCount(0, 0);
 }
 
 TEST_F(GinJavaMethodInvocationHelperTest, RetrievalOfObjectsHaveObjects) {
-  base::ListValue objects;
+  base::Value::List objects;
   objects.Append(100);
   objects.Append(base::Value::FromUniquePtrValue(
       GinJavaBridgeValue::CreateObjectIDValue(1)));
@@ -136,30 +133,27 @@ TEST_F(GinJavaMethodInvocationHelperTest, RetrievalOfObjectsHaveObjects) {
   sub_list.Append(200);
   sub_list.Append(base::Value::FromUniquePtrValue(
       GinJavaBridgeValue::CreateObjectIDValue(2)));
-  objects.Append(base::Value(std::move(sub_list)));
+  objects.Append(std::move(sub_list));
   base::Value::Dict sub_dict;
   sub_dict.Set("1", 300);
   sub_dict.Set("2", base::Value::FromUniquePtrValue(
                         GinJavaBridgeValue::CreateObjectIDValue(3)));
-  objects.Append(base::Value(std::move(sub_dict)));
+  objects.Append(std::move(sub_dict));
   base::Value::List sub_list_with_dict;
   base::Value::Dict sub_sub_dict;
   sub_sub_dict.Set("1", base::Value::FromUniquePtrValue(
                             GinJavaBridgeValue::CreateObjectIDValue(4)));
   sub_list_with_dict.Append(std::move(sub_sub_dict));
-  objects.Append(base::Value(std::move(sub_list_with_dict)));
+  objects.Append(std::move(sub_list_with_dict));
   base::Value::Dict sub_dict_with_list;
   base::Value::List sub_sub_list;
   sub_sub_list.Append(base::Value::FromUniquePtrValue(
       GinJavaBridgeValue::CreateObjectIDValue(5)));
   sub_dict_with_list.Set("1", std::move(sub_sub_list));
-  objects.Append(base::Value(std::move(sub_dict_with_list)));
+  objects.Append(std::move(sub_dict_with_list));
 
-  scoped_refptr<GinJavaMethodInvocationHelper> helper =
-      new GinJavaMethodInvocationHelper(
-          std::unique_ptr<GinJavaMethodInvocationHelper::ObjectDelegate>(
-              new NullObjectDelegate()),
-          "foo", objects);
+  auto helper = base::MakeRefCounted<GinJavaMethodInvocationHelper>(
+      std::make_unique<NullObjectDelegate>(), "foo", objects);
   CountingDispatcherDelegate counter;
   helper->Init(&counter);
   counter.AssertInvocationsCount(1, 6);
@@ -189,7 +183,7 @@ class ObjectIsGoneObjectDelegate : public NullObjectDelegate {
   ObjectIsGoneObjectDelegate& operator=(const ObjectIsGoneObjectDelegate&) =
       delete;
 
-  ~ObjectIsGoneObjectDelegate() override {}
+  ~ObjectIsGoneObjectDelegate() override = default;
 
   base::android::ScopedJavaLocalRef<jobject> GetLocalRef(JNIEnv* env) override {
     get_local_ref_called_ = true;
@@ -213,14 +207,12 @@ class ObjectIsGoneObjectDelegate : public NullObjectDelegate {
 }  // namespace
 
 TEST_F(GinJavaMethodInvocationHelperTest, HandleObjectIsGone) {
-  base::ListValue no_objects;
-  ObjectIsGoneObjectDelegate* object_delegate =
-      new ObjectIsGoneObjectDelegate();
-  scoped_refptr<GinJavaMethodInvocationHelper> helper =
-      new GinJavaMethodInvocationHelper(
-          std::unique_ptr<GinJavaMethodInvocationHelper::ObjectDelegate>(
-              object_delegate),
-          object_delegate->get_method_name(), no_objects);
+  base::Value::List no_objects;
+  auto object_delegate_unique = std::make_unique<ObjectIsGoneObjectDelegate>();
+  ObjectIsGoneObjectDelegate* object_delegate = object_delegate_unique.get();
+  auto helper = base::MakeRefCounted<GinJavaMethodInvocationHelper>(
+      std::move(object_delegate_unique), object_delegate->get_method_name(),
+      no_objects);
   NullDispatcherDelegate dispatcher;
   helper->Init(&dispatcher);
   EXPECT_FALSE(object_delegate->get_local_ref_called());
@@ -242,7 +234,7 @@ class MethodNotFoundObjectDelegate : public NullObjectDelegate {
   MethodNotFoundObjectDelegate& operator=(const MethodNotFoundObjectDelegate&) =
       delete;
 
-  ~MethodNotFoundObjectDelegate() override {}
+  ~MethodNotFoundObjectDelegate() override = default;
 
   base::android::ScopedJavaLocalRef<jobject> GetLocalRef(JNIEnv* env) override {
     return base::android::ScopedJavaLocalRef<jobject>(
@@ -252,7 +244,7 @@ class MethodNotFoundObjectDelegate : public NullObjectDelegate {
   const JavaMethod* FindMethod(const std::string& method_name,
                                size_t num_parameters) override {
     find_method_called_ = true;
-    return NULL;
+    return nullptr;
   }
 
   bool find_method_called() const { return find_method_called_; }
@@ -264,14 +256,12 @@ class MethodNotFoundObjectDelegate : public NullObjectDelegate {
 }  // namespace
 
 TEST_F(GinJavaMethodInvocationHelperTest, HandleMethodNotFound) {
-  base::ListValue no_objects;
-  MethodNotFoundObjectDelegate* object_delegate =
-      new MethodNotFoundObjectDelegate();
-  scoped_refptr<GinJavaMethodInvocationHelper> helper =
-      new GinJavaMethodInvocationHelper(
-          std::unique_ptr<GinJavaMethodInvocationHelper::ObjectDelegate>(
-              object_delegate),
-          "foo", no_objects);
+  base::Value::List no_objects;
+  auto object_delegate_unique =
+      std::make_unique<MethodNotFoundObjectDelegate>();
+  MethodNotFoundObjectDelegate* object_delegate = object_delegate_unique.get();
+  auto helper = base::MakeRefCounted<GinJavaMethodInvocationHelper>(
+      std::move(object_delegate_unique), "foo", no_objects);
   NullDispatcherDelegate dispatcher;
   helper->Init(&dispatcher);
   EXPECT_FALSE(object_delegate->find_method_called());
@@ -292,7 +282,7 @@ class GetClassObjectDelegate : public MethodNotFoundObjectDelegate {
   GetClassObjectDelegate(const GetClassObjectDelegate&) = delete;
   GetClassObjectDelegate& operator=(const GetClassObjectDelegate&) = delete;
 
-  ~GetClassObjectDelegate() override {}
+  ~GetClassObjectDelegate() override = default;
 
   const JavaMethod* FindMethod(const std::string& method_name,
                                size_t num_parameters) override {
@@ -321,14 +311,11 @@ const JavaMethod* GetClassObjectDelegate::kFakeGetClass =
 }  // namespace
 
 TEST_F(GinJavaMethodInvocationHelperTest, HandleGetClassInvocation) {
-  base::ListValue no_objects;
-  GetClassObjectDelegate* object_delegate =
-      new GetClassObjectDelegate();
-  scoped_refptr<GinJavaMethodInvocationHelper> helper =
-      new GinJavaMethodInvocationHelper(
-          std::unique_ptr<GinJavaMethodInvocationHelper::ObjectDelegate>(
-              object_delegate),
-          "foo", no_objects);
+  base::Value::List no_objects;
+  auto object_delegate_unique = std::make_unique<GetClassObjectDelegate>();
+  GetClassObjectDelegate* object_delegate = object_delegate_unique.get();
+  auto helper = base::MakeRefCounted<GinJavaMethodInvocationHelper>(
+      std::move(object_delegate_unique), "foo", no_objects);
   NullDispatcherDelegate dispatcher;
   helper->Init(&dispatcher);
   EXPECT_FALSE(object_delegate->find_method_called());

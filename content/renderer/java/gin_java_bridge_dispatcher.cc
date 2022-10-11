@@ -95,9 +95,9 @@ bool GinJavaBridgeDispatcher::HasJavaMethod(ObjectID object_id,
 std::unique_ptr<base::Value> GinJavaBridgeDispatcher::InvokeJavaMethod(
     ObjectID object_id,
     const std::string& method_name,
-    const base::ListValue& arguments,
+    const base::Value::List& arguments,
     GinJavaBridgeError* error) {
-  base::ListValue result_wrapper;
+  base::Value::List result_wrapper;
   render_frame()->Send(
       new GinJavaBridgeHostMsg_InvokeMethod(routing_id(),
                                             object_id,
@@ -105,10 +105,9 @@ std::unique_ptr<base::Value> GinJavaBridgeDispatcher::InvokeJavaMethod(
                                             arguments,
                                             &result_wrapper,
                                             error));
-  const auto& list = result_wrapper.GetListDeprecated();
-  if (list.empty())
+  if (result_wrapper.empty())
     return nullptr;
-  return base::Value::ToUniquePtrValue(list[0].Clone());
+  return base::Value::ToUniquePtrValue(result_wrapper[0].Clone());
 }
 
 GinJavaBridgeObject* GinJavaBridgeDispatcher::GetObject(ObjectID object_id) {
