@@ -81,9 +81,10 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   popup_ = SubtleNotificationView::CreatePopupWidget(
       bubble_view_context_->GetBubbleParentView(), std::move(content_view));
 
-  gfx::Size size = GetPopupRect(true).size();
+  gfx::Rect popup_rect = GetPopupRect();
+  gfx::Size size = popup_rect.size();
   // Bounds are in screen coordinates.
-  popup_->SetBounds(GetPopupRect(false));
+  popup_->SetBounds(popup_rect);
   // Why is this special enough to require the "security surface" level? A
   // decision was made a long time ago to not require confirmation when a site
   // asks to go fullscreen, and that's not changing. However, a site going
@@ -155,9 +156,8 @@ void ExclusiveAccessBubbleViews::UpdateContent(
   }
   UpdateViewContent(bubble_type_);
 
-  gfx::Size size = GetPopupRect(true).size();
-  view_->SetSize(size);
-  popup_->SetBounds(GetPopupRect(false));
+  view_->SizeToPreferredSize();
+  popup_->SetBounds(GetPopupRect());
   Show();
 
   // Stop watching the mouse even if UpdateMouseWatcher() will start watching
@@ -204,7 +204,7 @@ void ExclusiveAccessBubbleViews::UpdateMouseWatcher() {
 }
 
 void ExclusiveAccessBubbleViews::UpdateBounds() {
-  gfx::Rect popup_rect(GetPopupRect(false));
+  gfx::Rect popup_rect(GetPopupRect());
   if (!popup_rect.IsEmpty()) {
     popup_->SetBounds(popup_rect);
     view_->SetY(popup_rect.height() - view_->height());
@@ -266,8 +266,7 @@ void ExclusiveAccessBubbleViews::AnimationEnded(
   AnimationProgressed(animation);
 }
 
-gfx::Rect ExclusiveAccessBubbleViews::GetPopupRect(
-    bool ignore_animation_state) const {
+gfx::Rect ExclusiveAccessBubbleViews::GetPopupRect() const {
   gfx::Size size(view_->GetPreferredSize());
   gfx::Rect widget_bounds = bubble_view_context_->GetClientAreaBoundsInScreen();
   int x = widget_bounds.x() + (widget_bounds.width() - size.width()) / 2;

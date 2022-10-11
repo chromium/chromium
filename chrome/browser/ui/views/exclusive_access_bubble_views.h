@@ -92,7 +92,7 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   // ExclusiveAccessBubble:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
-  gfx::Rect GetPopupRect(bool ignore_animation_state) const override;
+  gfx::Rect GetPopupRect() const override;
   gfx::Point GetCursorScreenPoint() override;
   bool WindowContainsPoint(gfx::Point pos) override;
   bool IsWindowActive() override;
