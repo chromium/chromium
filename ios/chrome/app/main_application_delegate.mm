@@ -24,6 +24,7 @@
 #import "ios/chrome/app/main_application_delegate_testing.h"
 #import "ios/chrome/app/main_controller.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/download/background_service/background_download_service_factory.h"
 #import "ios/chrome/browser/push_notification/push_notification_delegate.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
@@ -142,16 +143,18 @@ const int kMainIntentCheckDelay = 1;
              name:UIApplicationWillEnterForegroundNotification
            object:nil];
 
-  UNUserNotificationCenter* center =
-      UNUserNotificationCenter.currentNotificationCenter;
-  center.delegate = _pushNotificationDelegate;
+  if (IsPriceNotificationsEnabled()) {
+    UNUserNotificationCenter* center =
+        UNUserNotificationCenter.currentNotificationCenter;
+    center.delegate = _pushNotificationDelegate;
 
-  [PushNotificationUtil
-      getPermissionSettings:^(UNNotificationSettings* settings) {
-        if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
-          [PushNotificationUtil registerDeviceWithAPNS];
-        }
-      }];
+    [PushNotificationUtil
+        getPermissionSettings:^(UNNotificationSettings* settings) {
+          if (settings.authorizationStatus == UNAuthorizationStatusAuthorized) {
+            [PushNotificationUtil registerDeviceWithAPNS];
+          }
+        }];
+  }
 
   return requiresHandling;
 }
