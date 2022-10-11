@@ -143,7 +143,7 @@ class CONTENT_EXPORT PluginList {
   // States whether we will load the plugin list the next time we try to access
   // it, whether we are currently in the process of loading it, or whether we
   // consider it up to date.
-  LoadingState loading_state_ GUARDED_BY(lock_);
+  LoadingState loading_state_ GUARDED_BY(lock_) = LOADING_STATE_NEEDS_REFRESH;
 
   // Extra plugin paths that we want to search when loading.
   std::vector<base::FilePath> extra_plugin_paths_ GUARDED_BY(lock_);

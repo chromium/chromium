@@ -123,7 +123,7 @@ bool PluginList::ReadPluginInfo(const base::FilePath& filename,
   return false;
 }
 
-PluginList::PluginList() : loading_state_(LOADING_STATE_NEEDS_REFRESH) {}
+PluginList::PluginList() = default;
 
 bool PluginList::PrepareForPluginLoading() {
   base::AutoLock lock(lock_);

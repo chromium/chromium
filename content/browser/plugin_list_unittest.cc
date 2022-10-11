@@ -49,8 +49,8 @@ class PluginListTest : public testing::Test {
 
   void SetUp() override {
     plugin_list_.RegisterInternalPlugin(bar_plugin_, false);
-    foo_plugin_.mime_types.push_back(
-        WebPluginMimeType(kFooMimeType, kFooFileType, std::string()));
+    foo_plugin_.mime_types.emplace_back(kFooMimeType, kFooFileType,
+                                        std::string());
     plugin_list_.RegisterInternalPlugin(foo_plugin_, false);
   }
 
