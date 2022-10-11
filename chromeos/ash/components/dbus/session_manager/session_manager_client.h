@@ -271,7 +271,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
   // successful. The callback is passed true if the DBus call is successful and
   // false otherwise.
   // This method is blocking. Do not use unless necessary.
-  virtual bool RequestBrowserDataMigration(
+  virtual bool BlockingRequestBrowserDataMigration(
       const cryptohome::AccountIdentifier& cryptohome_id,
       const std::string& mode) = 0;
 

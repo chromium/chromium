@@ -441,7 +441,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
         login_manager::kSessionManagerHandleLockScreenDismissed);
   }
 
-  bool RequestBrowserDataMigration(
+  bool BlockingRequestBrowserDataMigration(
       const cryptohome::AccountIdentifier& cryptohome_id,
       const std::string& mode) override {
     dbus::MethodCall method_call(
@@ -455,7 +455,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
         blocking_method_caller_->CallMethodAndBlockWithError(&method_call,
                                                              &error);
     if (!response) {
-      LOG(ERROR) << "RequestBrowserDataMigration failed"
+      LOG(ERROR) << "BlockingRequestBrowserDataMigration failed"
                  << (error.is_set()
                          ? base::StringPrintf(" :%s:%s", error.name(),
                                               error.message())

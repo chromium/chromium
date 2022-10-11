@@ -426,7 +426,7 @@ void FakeSessionManagerClient::NotifyLockScreenDismissed() {
   screen_is_locked_ = false;
 }
 
-bool FakeSessionManagerClient::RequestBrowserDataMigration(
+bool FakeSessionManagerClient::BlockingRequestBrowserDataMigration(
     const cryptohome::AccountIdentifier& cryptohome_id,
     const std::string& mode) {
   request_browser_data_migration_called_ = true;

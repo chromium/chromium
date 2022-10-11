@@ -176,11 +176,12 @@ bool BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
   if (step != MigrationStep::kCheckStep) {
     switch (step) {
       case MigrationStep::kRestartCalled:
-        LOG(ERROR) << "RestartToMigrate() was called but Migrate() was not. "
-                      "This indicates that eitehr "
-                      "SessionManagerClient::RequestBrowserDataMigration() "
-                      "failed or ash crashed before reaching Migrate(). Check "
-                      "the previous chrome log and the one before.";
+        LOG(ERROR)
+            << "RestartToMigrate() was called but Migrate() was not. "
+               "This indicates that either "
+               "SessionManagerClient::BlockingRequestBrowserDataMigration() "
+               "failed or ash crashed before reaching Migrate(). Check "
+               "the previous chrome log and the one before.";
         break;
       case MigrationStep::kStarted:
         LOG(ERROR) << "Migrate() was called but "
@@ -336,12 +337,14 @@ bool BrowserDataMigratorImpl::RestartToMigrate(
   // TODO(crbug.com/1277848): Once `BrowserDataMigrator` stabilises, remove
   // this log message.
   LOG(WARNING) << "Making a dbus method call to session_manager";
-  bool success = SessionManagerClient::Get()->RequestBrowserDataMigration(
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id), mode);
+  bool success =
+      SessionManagerClient::Get()->BlockingRequestBrowserDataMigration(
+          cryptohome::CreateAccountIdentifierFromAccountId(account_id), mode);
 
   // TODO(crbug.com/1261730): Add an UMA.
   if (!success) {
-    LOG(ERROR) << "SessionManagerClient::RequestBrowserDataMigration() failed.";
+    LOG(ERROR) << "SessionManagerClient::BlockingRequestBrowserDataMigration() "
+                  "failed.";
     return false;
   }
 
