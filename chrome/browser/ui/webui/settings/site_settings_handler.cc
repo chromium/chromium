@@ -51,6 +51,7 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -326,7 +327,7 @@ bool IsPatternValidForType(const std::string& pattern_string,
   return true;
 }
 
-void UpdateDataFromCookiesTree(
+void UpdateDataFromModel(
     std::map<std::string, std::set<std::pair<std::string, bool>>>*
         all_sites_map,
     std::map<std::string, int64_t>* origin_size_map,
@@ -872,6 +873,12 @@ void SiteSettingsHandler::OnGetUsageInfo() {
                     base::Value(fps_string), base::Value(fpsPolicy));
 }
 
+void SiteSettingsHandler::BrowsingDataModelCreated(
+    std::unique_ptr<BrowsingDataModel> model) {
+  browsing_data_model_ = std::move(model);
+  ModelBuilt();
+}
+
 void SiteSettingsHandler::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
@@ -949,12 +956,7 @@ void SiteSettingsHandler::HandleFetchUsageTotal(const base::Value::List& args) {
   usage_host_ = args[0].GetString();
 
   update_site_details_ = true;
-  if (cookies_tree_model_ && !send_sites_list_ &&
-      !tree_model_set_for_testing_) {
-    cookies_tree_model_->RemoveCookiesTreeObserver(this);
-    cookies_tree_model_.reset();
-  }
-  EnsureCookiesTreeModelCreated();
+  RebuildModels();
 }
 
 void SiteSettingsHandler::HandleGetFpsMembershipLabel(
@@ -983,6 +985,12 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
   if (origin.opaque())
     return;
   AllowJavascript();
+
+  // TODO(crbug.com/1368048): This code assumes that model pointers are valid.
+  // This assumption requires specific front-end behavior which is not strictly
+  // enforced.
+  DCHECK(browsing_data_model_);
+  DCHECK(cookies_tree_model_);
 
   RemoveMatchingNodes(cookies_tree_model_.get(), origin_string, absl::nullopt);
 
@@ -1125,10 +1133,8 @@ void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
   // Recreate the cookies tree model to refresh the usage information.
   // This happens in the background and will call TreeModelEndBatch() when
   // finished. At that point we send usage data to the page.
-  if (cookies_tree_model_)
-    cookies_tree_model_->RemoveCookiesTreeObserver(this);
-  cookies_tree_model_.reset();
-  EnsureCookiesTreeModelCreated();
+  send_sites_list_ = true;
+  RebuildModels();
 
   base::Value::List result;
 
@@ -1137,8 +1143,6 @@ void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
                             profile, cookies_tree_model_.get());
 
   LogAllSitesAction(AllSitesAction2::kLoadPage);
-
-  send_sites_list_ = true;
 
   ResolveJavascriptCallback(base::Value(callback_id), result);
 }
@@ -1863,11 +1867,56 @@ void SiteSettingsHandler::HandleSetBlockAutoplayEnabled(
   profile_->GetPrefs()->SetBoolean(prefs::kBlockAutoplayEnabled, value);
 }
 
-void SiteSettingsHandler::EnsureCookiesTreeModelCreated() {
-  if (cookies_tree_model_)
+void SiteSettingsHandler::RebuildModels() {
+  // The handler services two requests async once models have been built.
+  DCHECK(update_site_details_ || send_sites_list_);
+
+  // Tests will directly fire the appropriate service method.
+  if (models_set_for_testing_)
     return;
+
+  // Don't do anything if the models are already in the process of being built.
+  // Requests will be serviced when the existing build process finishes.
+  if (num_models_being_built_ > 0)
+    return;
+
+  // Reset any existing models.
+  // TODO(crbug.com/1368048) The implicit semantics of the handler require the
+  // models to be reset every time, but this is not required for all operations.
+  // A stronger call ordering enforcement, or stronger guarantees around when
+  // the models exist, could remove the requirement for this.
+  cookies_tree_model_.reset();
+  browsing_data_model_.reset();
+
+  num_models_being_built_ = 2;
+
+  BrowsingDataModel::BuildFromDisk(
+      profile_, base::BindOnce(&SiteSettingsHandler::BrowsingDataModelCreated,
+                               weak_ptr_factory_.GetWeakPtr()));
+
   cookies_tree_model_ = CookiesTreeModel::CreateForProfileDeprecated(profile_);
   cookies_tree_model_->AddCookiesTreeObserver(this);
+}
+
+void SiteSettingsHandler::ModelBuilt() {
+  DCHECK(num_models_being_built_ > 0);
+  num_models_being_built_--;
+
+  if (num_models_being_built_ == 0)
+    ServicePendingRequests();
+}
+
+void SiteSettingsHandler::ServicePendingRequests() {
+  if (!IsJavascriptAllowed())
+    return;
+
+  if (send_sites_list_)
+    OnStorageFetched();
+  if (update_site_details_)
+    OnGetUsageInfo();
+
+  send_sites_list_ = false;
+  update_site_details_ = false;
 }
 
 void SiteSettingsHandler::ObserveSourcesForProfile(Profile* profile) {
@@ -1940,15 +1989,7 @@ void SiteSettingsHandler::TreeNodeChanged(ui::TreeModel* model,
                                           ui::TreeModelNode* node) {}
 
 void SiteSettingsHandler::TreeModelEndBatch(CookiesTreeModel* model) {
-  // The WebUI may have shut down before we get the data.
-  if (!IsJavascriptAllowed())
-    return;
-  if (send_sites_list_)
-    OnStorageFetched();
-  if (update_site_details_)
-    OnGetUsageInfo();
-  send_sites_list_ = false;
-  update_site_details_ = false;
+  ModelBuilt();
 }
 
 void SiteSettingsHandler::GetOriginStorage(
@@ -1961,8 +2002,20 @@ void SiteSettingsHandler::GetOriginStorage(
     int64_t size = site->InclusiveSize();
     if (size == 0)
       continue;
-    UpdateDataFromCookiesTree(all_sites_map, origin_size_map,
-                              site->GetDetailedInfo().origin.GetURL(), size);
+    UpdateDataFromModel(all_sites_map, origin_size_map,
+                        site->GetDetailedInfo().origin.GetURL(), size);
+  }
+
+  for (const auto& entry : *browsing_data_model_) {
+    if (entry.data_details.storage_size == 0)
+      continue;
+
+    // Convert the primary host to an HTTPS url to match expecations for this
+    // code.
+    GURL host_url(std::string(url::kHttpsScheme) +
+                  url::kStandardSchemeSeparator + entry.primary_host + "/");
+    UpdateDataFromModel(all_sites_map, origin_size_map, host_url,
+                        entry.data_details.storage_size);
   }
 }
 
@@ -1973,6 +2026,8 @@ void SiteSettingsHandler::GetOriginCookies(
         origin_cookie_map) {
   CHECK(cookies_tree_model_.get());
   // Get sites that don't have data but have cookies.
+  // TODO(crbug.com/1271155): Query the Browsing Data Model instead when cookie
+  // information is available there.
   for (const auto& site : cookies_tree_model_->GetRoot()->children()) {
     GURL url = site->GetDetailedInfo().origin.GetURL();
     if (!site->NumberOfCookies())
@@ -2085,7 +2140,9 @@ void SiteSettingsHandler::RemoveNonTreeModelData(
   }
   remover->RemoveWithFilter(
       base::Time::Min(), base::Time::Max(),
-      content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX,
+      content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX &
+          // Part of BrowsingDataModel:
+          ~content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
       content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
       std::move(filter));
 
@@ -2098,13 +2155,22 @@ void SiteSettingsHandler::RemoveNonTreeModelData(
       browsing_topics_service->ClearTopicsDataForOrigin(origin);
     }
   }
+
+  // Remove any Browsing Data Model data associated with the origins host.
+  // TODO(crbug.com/1271155) - When the browsing data model supports all storage
+  // types, re-work this handler to work directly with primary hosts as defined
+  // by the model.
+  for (const auto& origin : origins)
+    browsing_data_model_->RemoveBrowsingData(origin.host(), base::DoNothing());
 }
 
-void SiteSettingsHandler::SetCookiesTreeModelForTesting(
-    std::unique_ptr<CookiesTreeModel> cookies_tree_model) {
-  cookies_tree_model_ = std::move(cookies_tree_model);
-  tree_model_set_for_testing_ = true;
+void SiteSettingsHandler::SetModelsForTesting(
+    std::unique_ptr<CookiesTreeModel> cookies_tree_model,
+    std::unique_ptr<BrowsingDataModel> browsing_data_model) {
   request_started_time_ = base::TimeTicks::Now();
+  cookies_tree_model_ = std::move(cookies_tree_model);
+  browsing_data_model_ = std::move(browsing_data_model);
+  models_set_for_testing_ = true;
 }
 
 void SiteSettingsHandler::ClearAllSitesMapForTesting() {

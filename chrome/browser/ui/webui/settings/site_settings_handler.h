@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -27,6 +28,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class BrowsingDataModel;
 class PrefChangeRegistrar;
 
 namespace settings {
@@ -54,6 +56,8 @@ class SiteSettingsHandler
 
   // Usage info.
   void OnGetUsageInfo();
+
+  void BrowsingDataModelCreated(std::unique_ptr<BrowsingDataModel> model);
 
   // CookiesTreeModel::Observer:
   // TODO(https://crbug.com/835712): Listen for backend data changes and notify
@@ -156,8 +160,11 @@ class SiteSettingsHandler
       SiteSettingsHandlerTest,
       HandleUndoIgnoreOriginForNotificationPermissionReview);
 
-  // Creates the CookiesTreeModel if necessary.
-  void EnsureCookiesTreeModelCreated();
+  // Rebuilds the BrowsingDataModel & CookiesTreeModel. Pending requests are
+  // serviced when both models are built.
+  void RebuildModels();
+  void ModelBuilt();
+  void ServicePendingRequests();
 
   // Add or remove this class as an observer for content settings and chooser
   // contexts corresponding to |profile|.
@@ -319,8 +326,9 @@ class SiteSettingsHandler
   // CookiesTreeModel is deprecated.
   void RemoveNonTreeModelData(const std::vector<url::Origin>& origins);
 
-  void SetCookiesTreeModelForTesting(
-      std::unique_ptr<CookiesTreeModel> cookies_tree_model);
+  void SetModelsForTesting(
+      std::unique_ptr<CookiesTreeModel> cookies_tree_model,
+      std::unique_ptr<BrowsingDataModel> browsing_data_model);
 
   void ClearAllSitesMapForTesting();
 
@@ -361,13 +369,17 @@ class SiteSettingsHandler
   // Change observer for prefs.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
+  // Models which power the UI.
   std::unique_ptr<CookiesTreeModel> cookies_tree_model_;
+  std::unique_ptr<BrowsingDataModel> browsing_data_model_;
 
-  // Whether the tree model was set for testing. Allows the handler to avoid
-  // resetting the tree model.
-  bool tree_model_set_for_testing_ = false;
+  int num_models_being_built_ = 0;
 
-  // Whether to send all sites list on cookie tree model update.
+  // Whether the models was set for testing. Allows the handler to avoid
+  // resetting the models.
+  bool models_set_for_testing_ = false;
+
+  // Whether to send all sites list on model update.
   bool send_sites_list_ = false;
 
   // Populated every time the user reloads the All Sites page.
@@ -376,12 +388,14 @@ class SiteSettingsHandler
   // Store the origins that has permission settings.
   std::set<std::string> origin_permission_set_;
 
-  // Whether to send site detail data on cookie tree model update.
+  // Whether to send site detail data on model update.
   bool update_site_details_ = false;
 
   // Time when all sites list was requested. Used to record metrics on how long
   // does it take to fetch storage.
   base::TimeTicks request_started_time_;
+
+  base::WeakPtrFactory<SiteSettingsHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace settings

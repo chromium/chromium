@@ -45,6 +45,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/browsing_data/content/browsing_data_model.h"
+#include "components/browsing_data/content/fake_browsing_data_model.h"
 #include "components/browsing_data/content/mock_cookie_helper.h"
 #include "components/browsing_data/content/mock_local_storage_helper.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -561,7 +563,7 @@ class SiteSettingsHandlerTest : public testing::Test,
 
   // TODO(https://crbug.com/835712): Currently only set up the cookies and local
   // storage nodes, will update all other nodes in the future.
-  void SetUpCookiesTreeModel() {
+  void SetupModels() {
     scoped_refptr<browsing_data::MockCookieHelper>
         mock_browsing_data_cookie_helper;
     scoped_refptr<browsing_data::MockLocalStorageHelper>
@@ -590,10 +592,6 @@ class SiteSettingsHandlerTest : public testing::Test,
             "https://www.example.com/"),
         2);
 
-    mock_browsing_data_local_storage_helper->AddLocalStorageForStorageKey(
-        blink::StorageKey::CreateFromStringForTesting(
-            "https://www.google.com/"),
-        50000000000);
     mock_browsing_data_local_storage_helper->Notify();
 
     mock_browsing_data_cookie_helper->AddCookieSamples(
@@ -636,13 +634,23 @@ class SiteSettingsHandlerTest : public testing::Test,
 
     mock_browsing_data_cookie_helper->Notify();
 
-    handler()->SetCookiesTreeModelForTesting(
-        std::move(mock_cookies_tree_model));
+    auto fake_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
+    fake_browsing_data_model->AddBrowsingData(
+        url::Origin::Create(GURL("https://www.google.com")),
+        BrowsingDataModel::StorageType::kTrustTokens, 50000000000);
+
+    handler()->SetModelsForTesting(std::move(mock_cookies_tree_model),
+                                   std::move(fake_browsing_data_model));
   }
 
   base::Value::List GetOnStorageFetchedSentList() {
     handler()->ClearAllSitesMapForTesting();
-    handler()->OnStorageFetched();
+
+    base::Value::List get_all_sites_args;
+    get_all_sites_args.Append(kCallbackId);
+    handler()->HandleGetAllSites(get_all_sites_args);
+    handler()->ServicePendingRequests();
+
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     return data.arg2()->GetList().Clone();
   }
@@ -1027,11 +1035,11 @@ TEST_F(SiteSettingsHandlerTest, GetRecentSitePermissions) {
 }
 
 TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
-  SetUpCookiesTreeModel();
+  SetupModels();
 
   handler()->ClearAllSitesMapForTesting();
-
   handler()->OnStorageFetched();
+
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
 
@@ -1200,7 +1208,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
 TEST_F(SiteSettingsHandlerTest, InstalledApps) {
   InstallWebApp(profile(), GURL("http://abc.example.com/path"));
 
-  SetUpCookiesTreeModel();
+  SetupModels();
 
   base::Value::List storage_and_cookie_list = GetOnStorageFetchedSentList();
   EXPECT_EQ(4U, storage_and_cookie_list.size());
@@ -2593,9 +2601,9 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
 }
 
 TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
-  SetUpCookiesTreeModel();
+  SetupModels();
 
-  EXPECT_EQ(31u,
+  EXPECT_EQ(28u,
             handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   auto verify_site_group = [](const base::Value& site_group,
@@ -2637,7 +2645,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
     }
   }
 
-  EXPECT_EQ(22u,
+  EXPECT_EQ(19u,
             handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   storage_and_cookie_list = GetOnStorageFetchedSentList();
@@ -2693,15 +2701,20 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
 }
 
 TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
-  SetUpCookiesTreeModel();
+  SetupModels();
 
-  EXPECT_EQ(31u,
+  EXPECT_EQ(28u,
             handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(1, std::distance(handler()->browsing_data_model_->begin(),
+                             handler()->browsing_data_model_->end()));
 
   base::Value::List args;
   args.Append(GetParam() ? "https://www.example.com/"
                          : "http://www.example.com/");
   handler()->HandleClearUnpartitionedUsage(args);
+
+  EXPECT_EQ(1, std::distance(handler()->browsing_data_model_->begin(),
+                             handler()->browsing_data_model_->end()));
 
   // Confirm that only the unpartitioned items for example.com have been
   // cleared.
@@ -2736,12 +2749,19 @@ TEST_P(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
   const auto& cookie_node = cookies_node->children()[0];
   const auto& cookie = cookie_node->GetDetailedInfo().cookie;
   EXPECT_TRUE(cookie->IsPartitioned());
+
+  args = base::Value::List();
+  args.Append("https://www.google.com/");
+  handler()->HandleClearUnpartitionedUsage(args);
+
+  EXPECT_EQ(0, std::distance(handler()->browsing_data_model_->begin(),
+                             handler()->browsing_data_model_->end()));
 }
 
 TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
   // Confirm that when the user clears unpartitioned storage, or the eTLD+1
   // group, client hints are also cleared.
-  SetUpCookiesTreeModel();
+  SetupModels();
   handler()->OnStorageFetched();
 
   GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
@@ -2824,7 +2844,7 @@ TEST_F(SiteSettingsHandlerTest, ClearClientHints) {
 TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
   // Confirm that when the user clears unpartitioned storage, or the eTLD+1
   // group, reduce accept language are also cleared.
-  SetUpCookiesTreeModel();
+  SetupModels();
   handler()->OnStorageFetched();
 
   GURL hosts[] = {GURL("https://example.com/"), GURL("https://www.example.com"),
@@ -2903,9 +2923,11 @@ TEST_F(SiteSettingsHandlerTest, ClearReducedAcceptLanguage) {
 TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
   // Confirm that removing unpartitioned storage correctly removes the
   // appropriate nodes.
-  SetUpCookiesTreeModel();
-  EXPECT_EQ(31u,
+  SetupModels();
+  EXPECT_EQ(28u,
             handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(1, std::distance(handler()->browsing_data_model_->begin(),
+                             handler()->browsing_data_model_->end()));
 
   base::Value::List args;
   args.Append("https://www.example.com/");
@@ -2937,6 +2959,12 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
                 CookieTreeNode::DetailedInfo::TYPE_LOCAL_STORAGES);
     }
   }
+
+  // Should not have affected the browsing data model.
+  // TODO(crbug.com/1271155): Update when partitioned storage is represented
+  // by the browsing data model.
+  EXPECT_EQ(1, std::distance(handler()->browsing_data_model_->begin(),
+                             handler()->browsing_data_model_->end()));
 }
 
 TEST_F(SiteSettingsHandlerTest, CookieSettingDescription) {
@@ -3076,42 +3104,44 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
       .WillRepeatedly(Return(true));
 
   // Confirm that usage info only returns unpartitioned storage.
-  SetUpCookiesTreeModel();
+  SetupModels();
 
-  EXPECT_EQ(31u,
+  EXPECT_EQ(28u,
             handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(1, std::distance(handler()->browsing_data_model_->begin(),
+                             handler()->browsing_data_model_->end()));
 
   base::Value::List args;
   args.Append("www.example.com");
   handler()->HandleFetchUsageTotal(args);
-  handler()->OnGetUsageInfo();
+  handler()->ServicePendingRequests();
   ValidateUsageInfo("www.example.com", "2 B", "1 cookie",
                     "Allowed for 1 example.com site", true);
 
   args.clear();
   args.Append("example.com");
   handler()->HandleFetchUsageTotal(args);
-  handler()->OnGetUsageInfo();
+  handler()->ServicePendingRequests();
   ValidateUsageInfo("example.com", "", "1 cookie",
                     "Allowed for 1 example.com site", true);
 
   args.clear();
   args.Append("google.com");
   handler()->HandleFetchUsageTotal(args);
-  handler()->OnGetUsageInfo();
+  handler()->ServicePendingRequests();
   ValidateUsageInfo("google.com", "", "2 cookies",
                     "Allowed for 2 google.com sites", false);
   args.clear();
   args.Append("ungrouped.com");
   handler()->HandleFetchUsageTotal(args);
-  handler()->OnGetUsageInfo();
+  handler()->ServicePendingRequests();
   ValidateUsageInfo("ungrouped.com", "", "1 cookie", "", false);
 }
 
 TEST_F(SiteSettingsHandlerTest, NonTreeModelDeletion) {
   // Confirm that a BrowsingDataRemover task is started to remove Privacy
   // Sandbox APIs that are not integrated with the tree model.
-  SetUpCookiesTreeModel();
+  SetupModels();
 
   base::Value::List storage_and_cookie_list = GetOnStorageFetchedSentList();
   EXPECT_EQ(4U, storage_and_cookie_list.size());
@@ -3127,7 +3157,8 @@ TEST_F(SiteSettingsHandlerTest, NonTreeModelDeletion) {
   handler()->HandleClearEtldPlus1DataAndCookies(args);
 
   auto* browsing_data_remover = profile()->GetBrowsingDataRemover();
-  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX,
+  EXPECT_EQ(content::BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX &
+                ~content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS,
             browsing_data_remover->GetLastUsedRemovalMaskForTesting());
   EXPECT_EQ(base::Time::Min(),
             browsing_data_remover->GetLastUsedBeginTimeForTesting());
@@ -3147,7 +3178,7 @@ TEST_F(SiteSettingsHandlerTest, FirstPartySetsMembership) {
       .Times(1)
       .WillOnce(Return(true));
 
-  SetUpCookiesTreeModel();
+  SetupModels();
 
   handler()->ClearAllSitesMapForTesting();
 

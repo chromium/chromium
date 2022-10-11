@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_MODEL_H_
 #define COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_MODEL_H_
 
+#include <iterator>
 #include <map>
 
 #include "base/callback_forward.h"
@@ -101,7 +102,14 @@ class BrowsingDataModel {
     bool operator==(const Iterator& other) const;
     bool operator!=(const Iterator& other) const;
 
-    // Input iterator functionality:
+    // Input iterator functionality. These declarations allow STL functions to
+    // make use of the iterator interface.
+    // More details: https://en.cppreference.com/w/cpp/iterator/iterator_tags
+    using iterator_category = std::input_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = BrowsingDataEntryView;
+    using pointer = BrowsingDataEntryView*;
+    using reference = BrowsingDataEntryView&;
     BrowsingDataEntryView operator*() const;
     Iterator& operator++();
 
@@ -119,7 +127,7 @@ class BrowsingDataModel {
   Iterator begin() const;
   Iterator end() const;
 
-  ~BrowsingDataModel();
+  virtual ~BrowsingDataModel();
 
   // Consults supported storage backends to create and populate a Model based
   // on the current state of `browser_context`.
@@ -149,10 +157,11 @@ class BrowsingDataModel {
   // The in-memory representation of the model is updated immediately, while
   // actual deletion from disk occurs async, completion reported by `completed`.
   // Invalidates any iterators.
-  void RemoveBrowsingData(const std::string& primary_host,
-                          base::OnceClosure completed);
+  // Virtual to allow an in-memory only fake to be created.
+  virtual void RemoveBrowsingData(const std::string& primary_host,
+                                  base::OnceClosure completed);
 
- private:
+ protected:
   friend class BrowsingDataModelTest;
 
   // Private as one of the static BuildX functions should be used instead.
@@ -162,7 +171,8 @@ class BrowsingDataModel {
   );
 
   // Pulls information from disk and populate the model.
-  void PopulateFromDisk(base::OnceClosure finished_callback);
+  // Virtual to allow an in-memory only fake to be created.
+  virtual void PopulateFromDisk(base::OnceClosure finished_callback);
 
   // Backing data structure for this model. Is a map from primary hosts to a
   // list of tuples (stored as a map) of <DataKey, DataDetails>. Building the

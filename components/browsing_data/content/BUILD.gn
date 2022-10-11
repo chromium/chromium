@@ -82,6 +82,8 @@ source_set("test_support") {
   sources = [
     "browsing_data_model_test_util.cc",
     "browsing_data_model_test_util.h",
+    "fake_browsing_data_model.cc",
+    "fake_browsing_data_model.h",
     "mock_cache_storage_helper.cc",
     "mock_cache_storage_helper.h",
     "mock_cookie_helper.cc",
