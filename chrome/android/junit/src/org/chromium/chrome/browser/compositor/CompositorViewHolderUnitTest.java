@@ -331,7 +331,7 @@ public class CompositorViewHolderUnitTest {
     @EnableFeatures(ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT)
     public void testWebContentResizeWhenInOSKResizeVisualMode() {
         // Ensure the default virtual keyboard mode is used.
-        mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.RESIZE_VISUAL);
+        mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_VISUAL);
         // show the keyboard and set height of the webcontent.
         // totalAdjustedHeight = height passed to #setSize (200).
         // The reduced height is because of the keyboard taking up the bottom space.
@@ -342,7 +342,7 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.setSize(
                 mWebContents, mContainerView, totalAdjustedWidth, totalAdjustedHeight);
 
-        // In RESIZE_VISUAL mode, the virtual keyboard will not resize the web contents.
+        // In RESIZES_VISUAL mode, the virtual keyboard will not resize the web contents.
         int expectedWebContentsHeight = 941;
         verify(mWebContents, times(1)).setSize(totalAdjustedWidth, expectedWebContentsHeight);
         verify(mCompositorViewHolder, times(0))
@@ -352,7 +352,7 @@ public class CompositorViewHolderUnitTest {
     @Test
     public void testWebContentResizeWhenInOSKResizeLayoutMode() {
         // Ensure the default virtual keyboard mode is used.
-        mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.RESIZE_LAYOUT);
+        mCompositorViewHolder.updateVirtualKeyboardMode(VirtualKeyboardMode.RESIZES_CONTENT);
         // show the keyboard and set height of the webcontent.
         // totalAdjustedHeight = height passed to #setSize (200).
         // The reduced height is because of the keyboard taking up the bottom space.
@@ -363,7 +363,7 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.setSize(
                 mWebContents, mContainerView, totalAdjustedWidth, totalAdjustedHeight);
 
-        // In RESIZE_LAYOUT mode, the web contents are resized to exclude the keyboard height.
+        // In RESIZES_CONTENT mode, the web contents are resized to exclude the keyboard height.
         int expectedWebContentsHeight = totalAdjustedHeight;
         verify(mWebContents, times(1)).setSize(totalAdjustedWidth, expectedWebContentsHeight);
         verify(mCompositorViewHolder, times(0))

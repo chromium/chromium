@@ -215,14 +215,15 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
-     * Tests the <meta name="viewport" content="interactive-widgets=resize-visual"> tag causes the
+     * Tests the <meta name="viewport" content="interactive-widget=resizes-visual"> tag causes the
      * page to resize only the visual viewport.
      */
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT})
-    public void testResizeVisualMetaTag() throws Throwable {
-        startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html?resize-visual");
+    public void testResizesVisualMetaTag() throws Throwable {
+        startMainActivityWithURL(
+                "/chrome/test/data/android/page_with_editable.html?resizes-visual");
 
         int initialHeight = getPageInnerHeight();
         double initialVVHeight = getVisualViewportHeight();
@@ -257,8 +258,9 @@ public class VirtualKeyboardResizeTest {
     @MediumTest
     @DisableFeatures({ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT})
     @CommandLineFlags.Add({"enable-blink-features=ViewportMetaInteractiveWidgetProperty"})
-    public void testResizeVisualMetaTagFlagDisabled() throws Throwable {
-        startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html?resize-visual");
+    public void testResizesVisualMetaTagFlagDisabled() throws Throwable {
+        startMainActivityWithURL(
+                "/chrome/test/data/android/page_with_editable.html?resizes-visual");
 
         int initialHeight = getPageInnerHeight();
         double initialVVHeight = getVisualViewportHeight();
@@ -283,14 +285,15 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
-     * Tests the <meta name="viewport" content="interactive-widgets=resize-layout"> tag opts the
+     * Tests the <meta name="viewport" content="interactive-widget=resizes-content"> tag opts the
      * page back into a mode where the keyboard resizes layout.
      */
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT})
-    public void testResizeLayoutMetaTag() throws Throwable {
-        startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html?resize-layout");
+    public void testResizesLayoutMetaTag() throws Throwable {
+        startMainActivityWithURL(
+                "/chrome/test/data/android/page_with_editable.html?resizes-content");
         int initialHeight = getPageInnerHeight();
         double initialVVHeight = getVisualViewportHeight();
 
@@ -316,7 +319,7 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
-     * Tests the <meta name="viewport" content="interactive-widgets=overlays-content"> tag causes
+     * Tests the <meta name="viewport" content="interactive-widget=overlays-content"> tag causes
      * the page to avoid resizing any viewports.
      */
     @Test
@@ -356,20 +359,20 @@ public class VirtualKeyboardResizeTest {
         Assert.assertEquals(mActivityTestRule.getActivity()
                                     .getCompositorViewHolderForTesting()
                                     .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.RESIZE_VISUAL);
+                VirtualKeyboardMode.RESIZES_VISUAL);
 
-        navigateToURL("/chrome/test/data/android/page_with_editable.html?resize-layout");
+        navigateToURL("/chrome/test/data/android/page_with_editable.html?resizes-content");
         Assert.assertEquals(mActivityTestRule.getActivity()
                                     .getCompositorViewHolderForTesting()
                                     .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.RESIZE_LAYOUT);
+                VirtualKeyboardMode.RESIZES_CONTENT);
 
         navigateToURL("/chrome/test/data/android/page_with_editable.html");
 
         Assert.assertEquals(mActivityTestRule.getActivity()
                                     .getCompositorViewHolderForTesting()
                                     .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.RESIZE_VISUAL);
+                VirtualKeyboardMode.RESIZES_VISUAL);
 
         navigateToURL("/chrome/test/data/android/page_with_editable.html?overlays-content");
 
@@ -378,11 +381,11 @@ public class VirtualKeyboardResizeTest {
                                     .getVirtualKeyboardModeForTesting(),
                 VirtualKeyboardMode.OVERLAYS_CONTENT);
 
-        openInNewTab("/chrome/test/data/android/page_with_editable.html?resize-layout");
+        openInNewTab("/chrome/test/data/android/page_with_editable.html?resizes-content");
         Assert.assertEquals(mActivityTestRule.getActivity()
                                     .getCompositorViewHolderForTesting()
                                     .getVirtualKeyboardModeForTesting(),
-                VirtualKeyboardMode.RESIZE_LAYOUT);
+                VirtualKeyboardMode.RESIZES_CONTENT);
 
         // Ensure showing the keyboard and going through the resize flow uses the current virtual
         // keyboard mode.

@@ -333,10 +333,10 @@ blink::mojom::ViewportFit HTMLMetaElement::ParseViewportFitValueAsEnum(
 // static
 absl::optional<ui::mojom::blink::VirtualKeyboardMode>
 HTMLMetaElement::ParseVirtualKeyboardValueAsEnum(const String& value) {
-  if (EqualIgnoringASCIICase(value, "resize-layout"))
-    return ui::mojom::blink::VirtualKeyboardMode::kResizeLayout;
-  else if (EqualIgnoringASCIICase(value, "resize-visual"))
-    return ui::mojom::blink::VirtualKeyboardMode::kResizeVisual;
+  if (EqualIgnoringASCIICase(value, "resizes-content"))
+    return ui::mojom::blink::VirtualKeyboardMode::kResizesContent;
+  else if (EqualIgnoringASCIICase(value, "resizes-visual"))
+    return ui::mojom::blink::VirtualKeyboardMode::kResizesVisual;
   else if (EqualIgnoringASCIICase(value, "overlays-content"))
     return ui::mojom::blink::VirtualKeyboardMode::kOverlaysContent;
 
@@ -404,7 +404,7 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
     // Ignore vendor-specific argument.
   } else if (RuntimeEnabledFeatures::
                  ViewportMetaInteractiveWidgetPropertyEnabled() &&
-             key_string == "interactive-widgets") {
+             key_string == "interactive-widget") {
     absl::optional<ui::mojom::blink::VirtualKeyboardMode> resize_type =
         ParseVirtualKeyboardValueAsEnum(value_string);
 

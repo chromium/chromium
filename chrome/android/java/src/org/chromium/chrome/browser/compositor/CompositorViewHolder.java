@@ -197,8 +197,8 @@ public class CompositorViewHolder extends FrameLayout
     @VirtualKeyboardMode.EnumType
     private int mVirtualKeyboardMode =
             ChromeFeatureList.sOSKResizesVisualViewportByDefault.isEnabled()
-            ? VirtualKeyboardMode.RESIZE_VISUAL
-            : VirtualKeyboardMode.RESIZE_LAYOUT;
+            ? VirtualKeyboardMode.RESIZES_VISUAL
+            : VirtualKeyboardMode.RESIZES_CONTENT;
 
     private OnscreenContentProvider mOnscreenContentProvider;
 
@@ -918,7 +918,7 @@ public class CompositorViewHolder extends FrameLayout
         // UNSET means the author hasn't explicitly set a preference but the mode should have been
         // set to the default in that case.
         assert mVirtualKeyboardMode != VirtualKeyboardMode.UNSET;
-        return mVirtualKeyboardMode == VirtualKeyboardMode.RESIZE_VISUAL;
+        return mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL;
     }
 
     /**
@@ -1550,8 +1550,8 @@ public class CompositorViewHolder extends FrameLayout
     void updateVirtualKeyboardMode(@VirtualKeyboardMode.EnumType int newMode) {
         if (newMode == VirtualKeyboardMode.UNSET) {
             newMode = ChromeFeatureList.sOSKResizesVisualViewportByDefault.isEnabled()
-                    ? VirtualKeyboardMode.RESIZE_VISUAL
-                    : VirtualKeyboardMode.RESIZE_LAYOUT;
+                    ? VirtualKeyboardMode.RESIZES_VISUAL
+                    : VirtualKeyboardMode.RESIZES_CONTENT;
         }
 
         if (mVirtualKeyboardMode == newMode) return;
@@ -1563,8 +1563,8 @@ public class CompositorViewHolder extends FrameLayout
         // If we're going into or out of the default OSK resizes visual viewport mode
         // we're changing whether the ApplicationViewportInsetSupplier needs to listen to
         // the keyboard since its responsible for insetting the visual viewport.
-        if (oldMode == VirtualKeyboardMode.RESIZE_VISUAL
-                || newMode == VirtualKeyboardMode.RESIZE_VISUAL) {
+        if (oldMode == VirtualKeyboardMode.RESIZES_VISUAL
+                || newMode == VirtualKeyboardMode.RESIZES_VISUAL) {
             updateApplicationViewportInsetSuppliers();
         }
     }

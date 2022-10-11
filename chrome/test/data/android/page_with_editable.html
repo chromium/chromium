@@ -4,12 +4,12 @@
     <script>
       const params = new URLSearchParams(window.location.search);
       let metaTagContent = 'width=device-width';
-      if (params.has('resize-layout'))
-        metaTagContent += ',interactive-widgets=resize-layout';
-      else if (params.has('resize-visual'))
-        metaTagContent += ',interactive-widgets=resize-visual';
+      if (params.has('resizes-content'))
+        metaTagContent += ',interactive-widget=resizes-content';
+      else if (params.has('resizes-visual'))
+        metaTagContent += ',interactive-widget=resizes-visual';
       else if (params.has('overlays-content')) {
-        metaTagContent += ',interactive-widgets=overlays-content';
+        metaTagContent += ',interactive-widget=overlays-content';
 
         window.numGeometryChangeEvents = 0;
         navigator.virtualKeyboard.addEventListener('geometrychange', () => {
