@@ -16,6 +16,8 @@ from flake_suppressor_common import tag_utils
 
 from typ import expectations_parser
 
+CHROMIUM_SRC_DIR = os.path.realpath(
+    os.path.join(os.path.dirname(__file__), '..', '..'))
 GITILES_URL = 'https://chromium.googlesource.com/chromium/src/+/refs/heads/main'
 TEXT_FORMAT_ARG = '?format=TEXT'
 
@@ -120,12 +122,10 @@ class ExpectationProcessor():
           fraction = failure_count / total_count
           if fraction < ignore_threshold:
             continue
-          if fraction < flaky_threshold:
-            expected_result = 'RetryOnFailure'
-          else:
-            expected_result = 'Failure'
-          self.ModifyFileForResult(suite, test, typ_tags, '', expected_result,
-                                   group_by_tags, include_all_tags)
+          expected_result = self.GetExpectedResult(fraction, flaky_threshold)
+          if expected_result:
+            self.ModifyFileForResult(suite, test, typ_tags, '', expected_result,
+                                     group_by_tags, include_all_tags)
 
   # pylint: enable=too-many-locals,too-many-arguments
 
@@ -279,6 +279,8 @@ class ExpectationProcessor():
     bug = '%s ' % bug if bug else bug
 
     def AppendExpectationToEnd():
+      # TODO(crbug/1358735) : Process the tags to capitalize the first letter
+      # for web tests before writing.
       expectation_line = '%s[ %s ] %s [ %s ]\n' % (bug, ' '.join(typ_tags),
                                                    test, expected_result)
       with open(expectation_file, 'a') as outfile:
@@ -299,6 +301,8 @@ class ExpectationProcessor():
         insertion_line -= 1
         tags_to_use = list(tags_to_use)
         tags_to_use.sort()
+        # TODO(crbug/1358735) : Process the tags to capitalize the first letter
+        # for web tests before writing.
         expectation_line = '%s[ %s ] %s [ %s ]\n' % (bug, ' '.join(tags_to_use),
                                                      test, expected_result)
         with open(expectation_file) as infile:
@@ -335,10 +339,7 @@ class ExpectationProcessor():
     with open(expectation_file) as infile:
       contents = infile.read()
 
-    tag_groups = []
-    for match in TAG_GROUP_REGEX.findall(contents):
-      tag_groups.append(match.strip().replace('#', '').split())
-
+    tag_groups = self.GetTagGroups(contents)
     num_matches = 0
     tags_in_same_group = collections.defaultdict(list)
     for tag in typ_tags:
@@ -408,43 +409,49 @@ class ExpectationProcessor():
           best_insertion_line = e.lineno
     return best_insertion_line, best_matching_tags
 
-  def GetExpectationFilesFromOrigin(self) -> Dict[str, str]:
+  def GetOriginExpectationFileContents(self) -> Dict[str, str]:
     """Gets expectation file contents from origin/main.
 
     Returns:
       A dict of expectation file name (str) -> expectation file contents (str)
-      that are available on origin/main.
+      that are available on origin/main. File paths are relative to the
+      Chromium src dir and are OS paths.
     """
     # Get the path to the expectation file directory in gitiles, i.e. the POSIX
     # path relative to the Chromium src directory.
     origin_file_contents = {}
-    expectation_files = self.GetExpectationFileListFromOrigin()
+    expectation_files = self.ListOriginExpectationFiles()
     for f in expectation_files:
-      origin_filepath_url = posixpath.join(GITILES_URL, f) + TEXT_FORMAT_ARG
+      filepath_posix = f.replace(os.sep, '/')
+      origin_filepath_url = posixpath.join(GITILES_URL,
+                                           filepath_posix) + TEXT_FORMAT_ARG
       response = urllib.request.urlopen(origin_filepath_url).read()
       decoded_text = base64.b64decode(response).decode('utf-8')
+      # After the URL access maintain all the paths as os paths.
       origin_file_contents[f] = decoded_text
 
     return origin_file_contents
 
-  def GetExpectationFilesFromLocalCheckout(self) -> Dict[str, str]:
-    """Gets expectaiton file contents from the local checkout.
+  def GetLocalCheckoutExpectationFileContents(self) -> Dict[str, str]:
+    """Gets expectation file contents from the local checkout.
 
     Returns:
       A dict of expectation file name (str) -> expectation file contents (str)
-      that are available from the local checkout.
+      that are available from the local checkout. File paths are relative to
+      the Chromium src dir and are OS paths.
     """
     local_file_contents = {}
-    expectation_files = self.GetExpectationFileListFromLocal()
+    expectation_files = self.ListLocalCheckoutExpectationFiles()
     for f in expectation_files:
-      with open(f) as infile:
+      absolute_filepath = os.path.join(CHROMIUM_SRC_DIR, f)
+      with open(absolute_filepath) as infile:
         local_file_contents[f] = infile.read()
     return local_file_contents
 
   def AssertCheckoutIsUpToDate(self) -> None:
     """Confirms that the local checkout's expectations are up to date."""
-    origin_file_contents = self.GetExpectationFilesFromOrigin()
-    local_file_contents = self.GetExpectationFilesFromLocalCheckout()
+    origin_file_contents = self.GetOriginExpectationFileContents()
+    local_file_contents = self.GetLocalCheckoutExpectationFileContents()
     if origin_file_contents != local_file_contents:
       raise RuntimeError(
           'Local Chromium checkout expectations are out of date. Please '
@@ -465,11 +472,52 @@ class ExpectationProcessor():
     """
     raise NotImplementedError
 
+  def ListGitilesDirectory(self, origin_dir: str) -> List[str]:
+    """Gets the list of all files from origin/main under origin_dir.
+
+    Args:
+      origin_dir: A string containing the path to the directory containing
+      expectation files. Path is relative to the Chromium src dir.
+
+    Returns:
+      A list of filename strings under origin_dir.
+    """
+    origin_dir_url = posixpath.join(GITILES_URL, origin_dir) + TEXT_FORMAT_ARG
+    response = urllib.request.urlopen(origin_dir_url).read()
+    # Response is a base64 encoded, newline-separated list of files in the
+    # directory in the format: `mode file_type hash name`
+    files = []
+    decoded_text = base64.b64decode(response).decode('utf-8')
+    for line in decoded_text.splitlines():
+      files.append(line.split()[-1])
+    return files
+
   def IsSuiteUnsupported(self, suite: str) -> bool:
     raise NotImplementedError
 
-  def GetExpectationFileListFromLocal(self) -> List[str]:
+  def ListLocalCheckoutExpectationFiles(self) -> List[str]:
+    """Finds the list of all expectation files from the local checkout.
+
+    Returns:
+      A list of strings containing relative file paths to expectation files.
+      OS paths relative to Chromium src dir are returned.
+    """
     raise NotImplementedError
 
-  def GetExpectationFileListFromOrigin(self) -> List[str]:
+  def ListOriginExpectationFiles(self) -> List[str]:
+    """Finds the list of all expectation files from origin/main.
+
+    Returns:
+      A list of strings containing relative file paths to expectation files.
+      OS paths are relative to Chromium src directory.
+    """
+    raise NotImplementedError
+
+  def GetTagGroups(self, contents: str) -> List[str]:
+    tag_groups = []
+    for match in TAG_GROUP_REGEX.findall(contents):
+      tag_groups.append(match.strip().replace('#', '').split())
+    return tag_groups
+
+  def GetExpectedResult(self, fraction: float, flaky_threshold: float) -> str:
     raise NotImplementedError

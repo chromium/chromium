@@ -2,11 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import base64
 import os
-import posixpath
 from typing import List
-import urllib.request
 
 from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import expectations as expectations_module
@@ -38,31 +35,21 @@ class GpuExpectationProcessor(expectations_module.ExpectationProcessor):
   def IsSuiteUnsupported(self, suite: str) -> bool:
     return suite in UNSUPPORTED_SUITES
 
-  def GetExpectationFileListFromOrigin(self) -> List[str]:
-    origin_dir = RELATIVE_EXPECTATION_FILE_DIRECTORY.replace(os.sep, '/')
-    origin_dir_url = posixpath.join(
-        expectations_module.GITILES_URL,
-        origin_dir) + expectations_module.TEXT_FORMAT_ARG
-    response = urllib.request.urlopen(origin_dir_url).read()
-    # Response is a base64 encoded, newline-separated list of files in the
-    # directory in the format: `mode file_type hash name`
-    files = []
-    decoded_text = base64.b64decode(response).decode('utf-8')
-    for line in decoded_text.splitlines():
-      files.append(line.split()[-1])
+  def ListOriginExpectationFiles(self) -> List[str]:
+    origin_dir_posix = RELATIVE_EXPECTATION_FILE_DIRECTORY.replace(os.sep, '/')
+    files = self.ListGitilesDirectory(origin_dir_posix)
 
     efs = []
     for f in (f for f in files if f.endswith('.txt')):
-      origin_file_path = posixpath.join(origin_dir, f)
+      origin_file_path = os.path.join(RELATIVE_EXPECTATION_FILE_DIRECTORY, f)
       efs.append(origin_file_path)
-
     return efs
 
-  def GetExpectationFileListFromLocal(self) -> List[str]:
+  def ListLocalCheckoutExpectationFiles(self) -> List[str]:
     files = os.listdir(ABSOLUTE_EXPECTATION_FILE_DIRECTORY)
     efs = []
     for f in (f for f in files if f.endswith('.txt')):
-      efs.append(os.path.join(ABSOLUTE_EXPECTATION_FILE_DIRECTORY, f))
+      efs.append(os.path.join(RELATIVE_EXPECTATION_FILE_DIRECTORY, f))
     return efs
 
   def GetExpectationFileForSuite(self, suite: str,
@@ -78,3 +65,8 @@ class GpuExpectationProcessor(expectations_module.ExpectationProcessor):
     expectation_file = os.path.join(ABSOLUTE_EXPECTATION_FILE_DIRECTORY,
                                     expectation_file)
     return expectation_file
+
+  def GetExpectedResult(self, fraction: float, flaky_threshold: float) -> str:
+    if fraction < flaky_threshold:
+      return 'RetryOnFailure'
+    return 'Failure'

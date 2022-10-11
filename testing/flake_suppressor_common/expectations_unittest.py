@@ -572,12 +572,12 @@ class AssertCheckoutIsUpToDateUnittest(unittest.TestCase):
     self._expectations = uu.UnitTestExpectationProcessor()
     self._origin_patcher = mock.patch(
         'flake_suppressor_common.expectations.ExpectationProcessor.'
-        'GetExpectationFilesFromOrigin')
+        'GetOriginExpectationFileContents')
     self._origin_mock = self._origin_patcher.start()
     self.addCleanup(self._origin_patcher.stop)
     self._local_patcher = mock.patch(
         'flake_suppressor_common.expectations.' +
-        'ExpectationProcessor.GetExpectationFilesFromLocalCheckout')
+        'ExpectationProcessor.GetLocalCheckoutExpectationFileContents')
     self._local_mock = self._local_patcher.start()
     self.addCleanup(self._local_patcher.stop)
 

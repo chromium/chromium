@@ -94,5 +94,9 @@ class UnitTestExpectationProcessor(expectations_module.ExpectationProcessor):
   def IsSuiteUnsupported(self, suite) -> bool:
     return False
 
+  def GetExpectedResult(self, fraction: float, flaky_threshold: float) -> str:
+    if fraction < flaky_threshold:
+      return 'RetryOnFailure'
+    return 'Failure'
 
 # pylint: enable=unused-argument

@@ -37,7 +37,7 @@ class BaseResultsUnittest(unittest.TestCase):
     self._results = uu.UnitTestResultProcessor(expectations_processor)
     self._local_patcher = mock.patch(
         'flake_suppressor_common.results.expectations.'
-        'ExpectationProcessor.GetExpectationFilesFromLocalCheckout')
+        'ExpectationProcessor.GetLocalCheckoutExpectationFileContents')
     self._local_mock = self._local_patcher.start()
     self._local_mock.return_value = {}
     self.addCleanup(self._local_patcher.stop)

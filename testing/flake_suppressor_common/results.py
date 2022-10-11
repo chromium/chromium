@@ -80,7 +80,7 @@ class ResultProcessor():
     """
     # Get all the expectations.
     origin_expectation_contents = (
-        self._expectations_processor.GetExpectationFilesFromLocalCheckout())
+        self._expectations_processor.GetLocalCheckoutExpectationFileContents())
     origin_expectations = collections.defaultdict(list)
     for filename, contents in origin_expectation_contents.items():
       list_parser = expectations_parser.TaggedTestListParser(contents)
