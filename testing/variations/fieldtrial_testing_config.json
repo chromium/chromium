@@ -7973,6 +7973,7 @@
                 "chromeos_lacros",
                 "fuchsia",
                 "linux",
+                "mac",
                 "windows"
             ],
             "experiments": [
