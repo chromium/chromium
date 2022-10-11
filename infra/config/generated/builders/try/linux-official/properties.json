@@ -1,4 +1,44 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "linux-official",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "config": "chromium",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "checkout_pgo_profiles",
+                  "enable_reclient"
+                ],
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "linux-official",
+          "project": "chromium"
+        }
+      ]
+    }
+  },
   "$build/goma": {
     "enable_ats": true,
     "rpc_extra_params": "?prod",

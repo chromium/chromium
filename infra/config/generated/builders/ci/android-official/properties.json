@@ -1,4 +1,54 @@
 {
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "android-official",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_android_config": {
+                "config": "main_builder"
+              },
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "config": "android",
+                "target_arch": "arm",
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android",
+                  "enable_reclient"
+                ],
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "android-official",
+          "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-official",
+          "group": "tryserver.chromium"
+        }
+      ]
+    }
+  },
   "$build/reclient": {
     "instance": "rbe-chromium-trusted",
     "jobs": 500,
