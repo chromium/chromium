@@ -31,7 +31,6 @@ constexpr char kWebrtcIceSdpRestartAction[] = "webrtcIceSdpRestartAction";
 
 // Host supports creating one video-stream per monitor.
 constexpr char kMultiStreamCapability[] = "multiStream";
-constexpr char kMultiStreamOldCapability[] = "multiStream_inProgress";
 
 // Host supports display layouts controlled by the client.
 constexpr char kClientControlledLayoutCapability[] = "clientControlledLayout";
