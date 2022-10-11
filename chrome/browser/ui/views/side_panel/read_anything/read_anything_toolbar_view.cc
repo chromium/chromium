@@ -69,7 +69,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   colors_combobox->SetModel(delegate_->GetColorsModel());
   colors_combobox->SetTooltipTextAndAccessibleName(
       l10n_util::GetStringUTF16(IDS_READ_ANYTHING_COLORS_COMBOBOX_LABEL));
-  colors_combobox->SetSizeToLargestLabel(true);
+  colors_combobox->SetSizeToLargestLabel(false);
   colors_combobox->SetCallback(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeColorsCallback,
                           weak_pointer_factory_.GetWeakPtr()));
@@ -81,7 +81,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   lines_combobox->SetModel(delegate_->GetLineSpacingModel());
   lines_combobox->SetTooltipTextAndAccessibleName(
       l10n_util::GetStringUTF16(IDS_READ_ANYTHING_LINE_SPACING_COMBOBOX_LABEL));
-  lines_combobox->SetSizeToLargestLabel(true);
+  lines_combobox->SetSizeToLargestLabel(false);
   lines_combobox->SetCallback(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeLineSpacingCallback,
                           weak_pointer_factory_.GetWeakPtr()));
@@ -94,7 +94,7 @@ ReadAnythingToolbarView::ReadAnythingToolbarView(
   letter_spacing_combobox->SetTooltipTextAndAccessibleName(
       l10n_util::GetStringUTF16(
           IDS_READ_ANYTHING_LETTER_SPACING_COMBOBOX_LABEL));
-  letter_spacing_combobox->SetSizeToLargestLabel(true);
+  letter_spacing_combobox->SetSizeToLargestLabel(false);
   letter_spacing_combobox->SetCallback(
       base::BindRepeating(&ReadAnythingToolbarView::ChangeLetterSpacingCallback,
                           weak_pointer_factory_.GetWeakPtr()));
