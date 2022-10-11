@@ -10,7 +10,7 @@ for dir in */ ; do
   cd "$dir"
 
   if [ -f generate-chains.py ]; then
-    python generate-chains.py
+    python3 generate-chains.py
 
     # Cleanup temporary files.
     rm -rf */*.pyc
