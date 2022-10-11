@@ -87,13 +87,12 @@ extern const wchar_t kLegacyExeName[];
 
 // crbug.com/1259178: there is a race condition on activating the COM service
 // and the service shutdown. The race condition is likely to occur when a new
-// instance of an updater coclass is created right after the last reference
-// to an object hosted by the COM service is released. The execution flow inside
-// the updater is sequential, for the most part. Therefore, introducing a slight
-// delay before creating coclasses reduces (but it does not eliminate) the
-// probability of running into this race condition, until a better soulution is
-// found.
-inline constexpr int kCreateUpdaterInstanceDelayMs = 100;
+// instance of an updater coclass is created right after the last reference to
+// an object hosted by the COM service is released. Therefore, introducing a
+// slight delay before creating coclasses reduces (but it does not eliminate)
+// the probability of running into this race condition, until a better
+// solution is found.
+inline constexpr int kCreateUpdaterInstanceDelayMs = 200;
 
 }  // namespace updater
 
