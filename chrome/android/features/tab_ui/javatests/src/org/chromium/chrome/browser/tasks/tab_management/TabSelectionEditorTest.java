@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -510,6 +511,67 @@ public class TabSelectionEditorTest {
         mRobot.actionRobot.clickToolbarActionView(closeId);
 
         assertEquals(3, getTabsInCurrentTabModel().size());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    public void testToolbarMenuItem_GroupActionAndUndo() throws Exception {
+        prepareBlankTab(2, false);
+        prepareBlankTabGroup(3, false);
+        prepareBlankTabGroup(1, false);
+        prepareBlankTabGroup(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModelFilter();
+        List<Tab> beforeTabOrder = getTabsInCurrentTabModel();
+
+        Tab selectedTab = beforeTabOrder.get(4);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTabModelSelector.getCurrentModel().setIndex(4, TabSelectionType.FROM_USER, false);
+        });
+        assertEquals(selectedTab, mTabModelSelector.getCurrentTab());
+
+        TabUiTestHelper.enterTabSwitcher(sActivityTestRule.getActivity());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            List<TabSelectionEditorAction> actions = new ArrayList<>();
+            actions.add(TabSelectionEditorGroupAction.createAction(sActivityTestRule.getActivity(),
+                    ShowMode.IF_ROOM, ButtonType.TEXT, IconPosition.START));
+
+            mTabSelectionEditorController.configureToolbarWithMenuItems(actions, null);
+            mTabSelectionEditorController.show(tabs);
+        });
+
+        final int groupId = R.id.tab_selection_editor_group_menu_item;
+        mRobot.resultRobot.verifyToolbarActionViewDisabled(groupId);
+
+        mRobot.actionRobot.clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(1)
+                .clickItemAtAdapterPosition(2)
+                .clickItemAtAdapterPosition(3)
+                .clickItemAtAdapterPosition(4);
+
+        mRobot.resultRobot.verifyToolbarActionViewEnabled(groupId).verifyToolbarSelectionText(
+                "8 tabs");
+
+        View group = mTabSelectionEditorLayout.getToolbar().findViewById(groupId);
+        assertEquals("Group 8 selected tabs", group.getContentDescription());
+        mRenderTestRule.render(mTabSelectionEditorLayout, "groups_before_undo");
+
+        mRobot.actionRobot.clickToolbarActionView(groupId);
+
+        mRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        TabUiTestHelper.verifyTabSwitcherCardCount(sActivityTestRule.getActivity(), 1);
+
+        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
+        TabUiTestHelper.verifyTabSwitcherCardCount(sActivityTestRule.getActivity(), 5);
+
+        assertEquals(selectedTab, mTabModelSelector.getCurrentTab());
+        List<Tab> finalTabs = getTabsInCurrentTabModel();
+        assertEquals(beforeTabOrder.size(), finalTabs.size());
+        assertEquals(beforeTabOrder, finalTabs);
+        List<Tab> finalRootTabs = getTabsInCurrentTabModelFilter();
+        assertEquals(tabs.size(), finalRootTabs.size());
+        assertEquals(tabs, finalRootTabs);
     }
 
     @Test
