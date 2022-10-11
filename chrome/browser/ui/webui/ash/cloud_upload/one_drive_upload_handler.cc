@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 
 #include "base/check_op.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
@@ -24,11 +23,6 @@ using storage::FileSystemURL;
 
 namespace ash::cloud_upload {
 namespace {
-
-const char kODFSExtensionId[] = "ajdgmkbkgifbokednjgbmieaemeighkg";
-
-// The default folder where the file should be uploaded.
-const char kDestinationFolder[] = "from Chromebook";
 
 // Runs the callback provided to `OneDriveUploadHandler::Upload`.
 void OnUploadDone(scoped_refptr<OneDriveUploadHandler> one_drive_upload_handler,

@@ -24,12 +24,6 @@
 class Profile;
 
 namespace ash::cloud_upload {
-namespace {
-
-// The default folder where the file should be uploaded.
-const char kDestinationFolder[] = "from Chromebook";
-
-}  // namespace
 
 // Manages the "upload to Drive" workflow after user confirmation on the upload
 // dialog. Instantiated by the static `Upload` method. Starts with moving the
