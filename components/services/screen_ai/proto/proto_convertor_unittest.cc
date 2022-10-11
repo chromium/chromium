@@ -57,6 +57,7 @@ ui::AXTreeUpdate CreateAXTreeUpdateFromTemplate(int root_id,
     node.id = nodes_template[i].node_id;
     for (int j = 0; j < nodes_template[i].child_count; j++)
       node.child_ids.push_back(nodes_template[i].child_ids[j]);
+    node.relative_bounds.bounds = gfx::RectF(0, 0, 100, 100);
     update.nodes.push_back(node);
   }
   return update;
@@ -362,9 +363,8 @@ TEST_F(ProtoConvertorTest, ScreenAIVisualAnnotationToAXTreeUpdate_OcrResults) {
   }
 }
 
-// TODO(https://crbug.com/1278249): Enable after the AXTree bug is fixed.
 // Tests if the given tree is properly traversed and new ids are assigned.
-TEST_F(ProtoConvertorTest, DISABLED_PreOrderTreeGeneration) {
+TEST_F(ProtoConvertorTest, PreOrderTreeGeneration) {
   // Input Tree:
   // +-- 1
   //     +-- 2
@@ -428,8 +428,7 @@ INSTANTIATE_TEST_SUITE_P(TestCases,
                          ProtoConvertorViewHierarchyTest,
                          testing::Range(0, kProtoConversionTestCasesCount));
 
-// TODO(https://crbug.com/1278249): Enable after the AXTree bug is fixed.
-TEST_P(ProtoConvertorViewHierarchyTest, DISABLED_AxTreeJsonToProtoTest) {
+TEST_P(ProtoConvertorViewHierarchyTest, AxTreeJsonToProtoTest) {
   const base::FilePath kInputJsonPath = GetInputFilePath();
   const base::FilePath kExpectedProtoPath = GetExpectedFilePath();
 

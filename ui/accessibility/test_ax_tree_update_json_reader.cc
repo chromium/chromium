@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/test_ax_tree_update_json_reader.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/numerics/clamped_math.h"
@@ -335,6 +337,10 @@ AXTreeUpdate AXTreeUpdateFromJSON(const base::Value& json,
 
   tree_update.root_id =
       AddNode(tree_update, json.GetList().front(), role_conversions);
+
+  // |AddNode| adds child nodes before parent nodes, while AXTree deserializer
+  // expects parents first.
+  std::reverse(tree_update.nodes.begin(), tree_update.nodes.end());
 
   return tree_update;
 }
