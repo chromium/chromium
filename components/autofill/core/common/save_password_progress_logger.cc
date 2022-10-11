@@ -18,7 +18,6 @@
 #include "components/autofill/core/common/signatures.h"
 
 using base::checked_cast;
-using base::DictionaryValue;
 using base::NumberToString;
 using base::Value;
 
@@ -93,10 +92,10 @@ void SavePasswordProgressLogger::LogHTMLForm(
     SavePasswordProgressLogger::StringID label,
     const std::string& name_or_id,
     const GURL& action) {
-  DictionaryValue log;
-  log.SetString(GetStringFromID(STRING_NAME_OR_ID), ScrubElementID(name_or_id));
-  log.SetString(GetStringFromID(STRING_ACTION), ScrubURL(action));
-  LogValue(label, log);
+  Value::Dict log;
+  log.Set(GetStringFromID(STRING_NAME_OR_ID), ScrubElementID(name_or_id));
+  log.Set(GetStringFromID(STRING_ACTION), ScrubURL(action));
+  LogValue(label, Value(std::move(log)));
 }
 
 void SavePasswordProgressLogger::LogURL(
