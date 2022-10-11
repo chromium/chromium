@@ -51,6 +51,11 @@ const char kEnableDoNotTrack[] = "enable_do_not_track";
 // Number of times the First Follow UI has been shown.
 const char kFirstFollowUIShownCount[] = "follow.first_follow_ui_modal_count";
 
+// A dictionary mapping push notification enabled features to their permission
+// to send notifications to the user.
+const char kFeaturePushNotificationPermissions[] =
+    "push_notifications.feature_permissions";
+
 // Prefs for persisting HttpServerProperties.
 const char kHttpServerProperties[] = "net.http_server_properties";
 

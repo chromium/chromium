@@ -53,6 +53,10 @@ class PushNotificationClientManager {
   // during application startup.
   void RegisterActionableNotifications();
 
+  // This function returns a list of `PushNotificationClientId` for the features
+  // that support push notifications.
+  static std::vector<PushNotificationClientId> GetClients();
+
  private:
   // A list of features that support push notifications.
   std::unordered_map<PushNotificationClientId,

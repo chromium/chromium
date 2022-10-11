@@ -9,12 +9,17 @@
 
 #import "ios/chrome/browser/push_notification/push_notification_configuration.h"
 
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 class PushNotificationClientManager;
 
 // Service responsible for establishing connection and interacting
 // with the push notification server.
 class PushNotificationService {
  public:
+  using CompletionHandler = void (^)(NSError* error);
+
   PushNotificationService();
   virtual ~PushNotificationService();
 
@@ -22,12 +27,25 @@ class PushNotificationService {
   // notification server. `completion_handler` is invoked asynchronously when
   // the operation successfully or unsuccessfully completes.
   virtual void RegisterDevice(PushNotificationConfiguration* config,
-                              void (^completion_handler)(NSError* error)) = 0;
+                              CompletionHandler completion_handler) = 0;
 
   // Disassociates the device to its previously associated accounts on the push
   // notification server. `completion_handler` is invoked asynchronously when
   // the operation successfully or unsuccessfully completes.
-  virtual void UnregisterDevice(void (^completion_handler)(NSError* error)) = 0;
+  virtual void UnregisterDevice(CompletionHandler completion_handler) = 0;
+
+  // Updates the current user's push notification preferences with the push
+  // notification server.
+  void UpdateFeaturePushNotificationPreferences(
+      NSString* account_id,
+      NSDictionary<NSString*, NSNumber*>* preference_map,
+      CompletionHandler completion_handler) {}
+
+  // Registers each PushNotificationClient's prefs. Each
+  // PushNotificationClient's ability to send push notifications to the user is
+  // disabled by default.
+  static void RegisterBrowserStatePrefs(
+      user_prefs::PrefRegistrySyncable* registry);
 
   // Returns PushNotificationService's PushNotificationClientManager.
   PushNotificationClientManager* GetPushNotificationClientManager();

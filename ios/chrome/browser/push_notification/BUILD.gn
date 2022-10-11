@@ -19,8 +19,11 @@ source_set("push_notification_service") {
   deps = [
     ":push_notification_client",
     "//base",
-    "//ios/chrome/browser/application_context:application_context",
-    "//ios/chrome/browser/browser_state:browser_state",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/prefs:pref_names",
   ]
 }
 

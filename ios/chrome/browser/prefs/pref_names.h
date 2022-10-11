@@ -18,6 +18,7 @@ extern const char kClearBrowsingDataHistoryNoticeShownTimes[];
 extern const char kContextualSearchEnabled[];
 extern const char kDefaultCharset[];
 extern const char kEnableDoNotTrack[];
+extern const char kFeaturePushNotificationPermissions[];
 extern const char kFirstFollowUIShownCount[];
 extern const char kHttpServerProperties[];
 extern const char kIncognitoModeAvailability[];

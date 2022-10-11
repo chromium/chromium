@@ -90,6 +90,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/net",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/prerender:prerender_pref",
+    "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication",

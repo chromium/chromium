@@ -5,14 +5,18 @@
 #import "ios/chrome/browser/push_notification/push_notification_delegate.h"
 
 #import "base/check.h"
+#import "base/files/file_path.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
+#import "base/values.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/push_notification_configuration.h"
 #import "ios/chrome/browser/push_notification/push_notification_delegate.h"
@@ -30,7 +34,46 @@ constexpr base::TimeDelta kTimeRangeIncomingNotificationHistogramMax =
     base::Seconds(30);
 // Number of buckets for the time range histograms.
 constexpr int kTimeRangeHistogramBucketCount = 30;
-}  // namespace
+
+// This function creates a dictionary that maps signed-in user's GAIA IDs to a
+// map of each user's preferences for each push notification enabled feature.
+GaiaIdToPushNotificationPreferenceMap*
+GaiaIdToPushNotificationPreferenceMapFromCache(
+    BrowserStateInfoCache* info_cache) {
+  size_t number_of_browser_states = info_cache->GetNumberOfBrowserStates();
+  NSMutableDictionary* account_preference_map =
+      [[NSMutableDictionary alloc] init];
+
+  for (size_t i = 0; i < number_of_browser_states; i++) {
+    NSString* gaia_id =
+        base::SysUTF8ToNSString(info_cache->GetGAIAIdOfBrowserStateAtIndex(i));
+    if (!gaia_id.length) {
+      continue;
+    }
+
+    base::FilePath path = info_cache->GetPathOfBrowserStateAtIndex(i);
+    PrefService* pref_service = GetApplicationContext()
+                                    ->GetChromeBrowserStateManager()
+                                    ->GetBrowserState(path)
+                                    ->GetPrefs();
+
+    NSMutableDictionary<NSString*, NSNumber*>* preference_map =
+        [[NSMutableDictionary alloc] init];
+    const base::Value::Dict& permissions =
+        pref_service->GetDict(prefs::kFeaturePushNotificationPermissions);
+
+    for (const auto pair : permissions) {
+      preference_map[base::SysUTF8ToNSString(pair.first)] =
+          [NSNumber numberWithBool:pair.second.GetBool()];
+    }
+
+    account_preference_map[gaia_id] = preference_map;
+  }
+
+  return account_preference_map;
+}
+
+}  // anonymous namespace
 
 @implementation PushNotificationDelegate
 
@@ -96,42 +139,35 @@ constexpr int kTimeRangeHistogramBucketCount = 30;
 }
 
 - (void)applicationDidRegisterWithAPNS:(NSData*)deviceToken {
-  BrowserStateInfoCache* info_cache = GetApplicationContext()
-                                          ->GetChromeBrowserStateManager()
-                                          ->GetBrowserStateInfoCache();
+  BrowserStateInfoCache* infoCache = GetApplicationContext()
+                                         ->GetChromeBrowserStateManager()
+                                         ->GetBrowserStateInfoCache();
 
-  size_t number_of_browser_states = info_cache->GetNumberOfBrowserStates();
-  NSMutableArray* account_ids = [[NSMutableArray alloc] init];
-
-  for (size_t i = 0; i < number_of_browser_states; i++) {
-    NSString* gaia_id =
-        base::SysUTF8ToNSString(info_cache->GetGAIAIdOfBrowserStateAtIndex(i));
-    if (![gaia_id isEqualToString:@""]) {
-      [account_ids addObject:gaia_id];
-    }
-  }
+  GaiaIdToPushNotificationPreferenceMap* accountPreferenceMap =
+      GaiaIdToPushNotificationPreferenceMapFromCache(infoCache);
 
   // Return early if no accounts are signed into Chrome.
-  if (![account_ids count]) {
+  if (!accountPreferenceMap.count) {
     return;
   }
 
-  PushNotificationService* notification_service =
+  PushNotificationService* notificationService =
       GetApplicationContext()->GetPushNotificationService();
 
   // Registers Chrome's PushNotificationClients' Actionable Notifications with
   // iOS.
-  notification_service->GetPushNotificationClientManager()
+  notificationService->GetPushNotificationClientManager()
       ->RegisterActionableNotifications();
 
   PushNotificationConfiguration* config =
       [[PushNotificationConfiguration alloc] init];
 
-  config.accountIDs = account_ids;
+  config.accountIDs = accountPreferenceMap.allKeys;
+  config.preferenceMap = accountPreferenceMap;
   config.deviceToken = deviceToken;
   config.ssoService = GetApplicationContext()->GetSSOService();
 
-  notification_service->RegisterDevice(config, ^(NSError* error) {
+  notificationService->RegisterDevice(config, ^(NSError* error) {
     if (error) {
       base::UmaHistogramBoolean("IOS.PushNotification.ChimeDeviceRegistration",
                                 false);

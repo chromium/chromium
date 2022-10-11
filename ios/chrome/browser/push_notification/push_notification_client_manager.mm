@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
 
 #import <Foundation/Foundation.h>
+#import <vector>
 
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
 
@@ -69,4 +70,11 @@ void PushNotificationClientManager::RegisterActionableNotifications() {
   }
 
   [PushNotificationUtil registerActionableNotifications:categorySet];
+}
+
+std::vector<PushNotificationClientId>
+PushNotificationClientManager::GetClients() {
+  // TODO(crbug.com/1353801): Once Chrome has a push notification enabled
+  // feature, add that feature's PushNotificationClientId to this vector.
+  return {};
 }
