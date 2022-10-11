@@ -4,7 +4,7 @@
 
 import {isChromeOS, isLacros, isLinux, isMac, isWindows} from 'chrome://resources/js/cr.m.js';
 import {getFavicon, getFaviconForPageURL, getFileIconUrl} from 'chrome://resources/js/icon.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('IconModuleTest', function() {
   test('GetFaviconForPageURL', function() {
@@ -28,6 +28,18 @@ suite('IconModuleTest', function() {
     assertEquals(getExpectedImageSet(16), getFaviconForPageURL(url, false));
     assertEquals(
         getExpectedImageSet(24), getFaviconForPageURL(url, false, '', 24));
+  });
+
+  test('GetFaviconForPageURL_ForceLightMode', () => {
+    const url = 'http://foo.com';
+    assertFalse(
+        getFaviconForPageURL(url, false, '', 16).includes('forceLightMode'));
+    assertFalse(
+        getFaviconForPageURL(url, false, '', 16, /* forceLightMode */ false)
+            .includes('forceLightMode'));
+    assertTrue(
+        getFaviconForPageURL(url, false, '', 16, /* forceLightMode */ true)
+            .includes('forceLightMode=true'));
   });
 
   test('GetFavicon', function() {
