@@ -24,27 +24,6 @@ namespace {
 
 using AssistantZeroStateViewUnittest = AssistantAshTestBase;
 
-TEST_F(AssistantZeroStateViewUnittest, Theme) {
-  // ProductivityLauncher uses DarkLightMode colors.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
-          features::kProductivityLauncher});
-  ui::ColorProviderManager::Get().ResetColorProviderCache();
-
-  ShowAssistantUi();
-
-  const views::Label* greeting_label = static_cast<views::Label*>(
-      page_view()->GetViewByID(AssistantViewID::kGreetingLabel));
-
-  EXPECT_EQ(greeting_label->GetBackgroundColor(), SK_ColorWHITE);
-  EXPECT_EQ(greeting_label->GetEnabledColor(), kTextColorPrimary);
-
-  // Avoid test teardown issues by explicitly closing the launcher.
-  CloseAssistantUi();
-}
-
 TEST_F(AssistantZeroStateViewUnittest, ThemeDarkLightMode) {
   base::test::ScopedFeatureList scoped_feature_list(
       chromeos::features::kDarkLightMode);

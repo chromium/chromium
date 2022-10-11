@@ -204,43 +204,6 @@ TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
                       ColorProvider::ControlsLayerType::kFocusRingColor))));
 }
 
-TEST_F(SuggestionChipViewTest, DarkAndLightModeFlagOff) {
-  // ProductivityLauncher uses DarkLightMode colors.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
-          features::kProductivityLauncher});
-  // ColorProvider cache needs to be cleared to update for the feature flags.
-  ui::ColorProviderManager::Get().ResetColorProviderCache();
-
-  auto widget = CreateFramelessTestWidget();
-  auto* suggestion_chip_view =
-      widget->SetContentsView(std::make_unique<SuggestionChipView>(
-          /*delegate=*/nullptr,
-          CreateSuggestionWithIconUrl(
-              "googleassistant://resource?type=icon&name=assistant")));
-
-  views::Label* label = static_cast<views::Label*>(
-      suggestion_chip_view->GetViewByID(kSuggestionChipViewLabel));
-  EXPECT_EQ(label->GetEnabledColor(), kTextColorSecondary);
-
-  suggestion_chip_view->SetSize(kSuggestionChipViewSize);
-
-  EXPECT_EQ(suggestion_chip_view->GetBackground()->get_color(),
-            SK_ColorTRANSPARENT);
-  EXPECT_TRUE(cc::ExactPixelComparator(/*discard_alpha=*/false)
-                  .Compare(GetSuggestionChipViewBitmap(suggestion_chip_view),
-                           GetBitmapWithInnerRoundedRect(
-                               kSuggestionChipViewSize, /*stroke_width=*/1,
-                               SkColorSetA(gfx::kGoogleGrey900, 0x24))));
-
-  // Background color will change when it's get focused.
-  suggestion_chip_view->RequestFocus();
-  EXPECT_EQ(suggestion_chip_view->GetBackground()->get_color(),
-            SkColorSetA(gfx::kGoogleGrey900, 0x14));
-}
-
 TEST_F(SuggestionChipViewTest, FontWeight) {
   auto widget = CreateFramelessTestWidget();
   auto* suggestion_chip_view =

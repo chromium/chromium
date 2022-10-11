@@ -522,27 +522,5 @@ TEST_F(AssistantOnboardingViewTest, DarkAndLightTheme) {
   EXPECT_EQ(intro_label_color, text_primary_color);
 }
 
-TEST_F(AssistantOnboardingViewTest, DarkAndLightModeFlagOff) {
-  // ProductivityLauncher uses DarkLightMode colors.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
-          features::kProductivityLauncher});
-  // Cache needs to be reset to get the colors for the feature flags.
-  ui::ColorProviderManager::Get().ResetColorProviderCache();
-
-  // Reset ColorProvider's cache to reflect the flag value changes above.
-  ui::ColorProviderManager::Get().ResetColorProviderCache();
-
-  ShowAssistantUi();
-
-  EXPECT_EQ(greeting_label()->GetEnabledColor(), kTextColorPrimary);
-  EXPECT_EQ(intro_label()->GetEnabledColor(), kTextColorPrimary);
-
-  // Avoid test teardown issues by explicitly closing the launcher.
-  CloseAssistantUi();
-}
-
 }  // namespace
 }  // namespace ash

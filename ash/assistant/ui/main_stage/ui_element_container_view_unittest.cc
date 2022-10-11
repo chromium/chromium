@@ -64,26 +64,6 @@ TEST_F(UiElementContainerViewTest, DarkAndLightTheme) {
                 ColorProvider::ContentLayerType::kSeparatorColor));
 }
 
-TEST_F(UiElementContainerViewTest, DarkAndLightModeFlagOff) {
-  // ProductivityLauncher uses DarkLightMode colors.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
-          features::kProductivityLauncher});
-
-  ShowAssistantUi();
-
-  views::View* ui_element_container_view =
-      page_view()->GetViewByID(kUiElementContainer);
-  views::View* indicator =
-      ui_element_container_view->GetViewByID(kOverflowIndicator);
-  EXPECT_EQ(indicator->GetBackground()->get_color(), gfx::kGoogleGrey300);
-
-  // Avoid test teardown issues by explicitly closing the launcher.
-  CloseAssistantUi();
-}
-
 TEST_F(UiElementContainerViewTest, CustomOverflowIndicator) {
   ShowAssistantUi();
 

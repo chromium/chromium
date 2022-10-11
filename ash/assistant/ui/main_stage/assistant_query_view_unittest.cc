@@ -77,34 +77,5 @@ TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
                                 /*use_debug_colors=*/false));
 }
 
-TEST_F(AssistantQueryViewUnittest, Theme) {
-  // ProductivityLauncher uses DarkLightMode colors.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
-          features::kProductivityLauncher});
-  // Colors depend on feature flags. Cache needs to be cleared.
-  ui::ColorProviderManager::Get().ResetColorProviderCache();
-
-  ShowAssistantUi();
-
-  const views::View* query_view =
-      page_view()->GetViewByID(AssistantViewID::kQueryView);
-  const views::Label* high_confidence_label = static_cast<views::Label*>(
-      page_view()->GetViewByID(AssistantViewID::kHighConfidenceLabel));
-  const views::Label* low_confidence_label = static_cast<views::Label*>(
-      page_view()->GetViewByID(AssistantViewID::kLowConfidenceLabel));
-
-  EXPECT_FALSE(query_view->background());
-  ASSERT_TRUE(query_view->layer());
-  EXPECT_FALSE(query_view->layer()->fills_bounds_opaquely());
-  EXPECT_EQ(high_confidence_label->GetEnabledColor(), kTextColorPrimary);
-  EXPECT_EQ(low_confidence_label->GetEnabledColor(), kTextColorSecondary);
-
-  // Avoid some cleanup during test teardown by explicitly closing the launcher.
-  CloseAssistantUi();
-}
-
 }  // namespace
 }  // namespace ash
