@@ -16,11 +16,11 @@ BASE_FEATURE(kDefaultChromeAppsMigration,
 
 BASE_FEATURE(kLoginEventReporting,
              "LoginEventReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPasswordBreachEventReporting,
              "PasswordBreachEventReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableUserCloudSigninRestrictionPolicyFetcher,
              "UserCloudSigninRestrictionPolicyFetcher",
