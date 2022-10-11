@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -29,6 +30,7 @@
 
 using ::testing::_;
 using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
@@ -214,18 +216,13 @@ TEST_F(FirstPartySetsAccessDelegateDisabledTest, ComputeMetadata) {
                                                /*frame_entry=*/nullptr,
                                                /*top_frame_entry=*/nullptr);
 
-  EXPECT_THAT(delegate().ComputeMetadata(
-                  kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
-                  base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
-              Optional(std::ref(expected_metadata)));
+  EXPECT_EQ(ComputeMetadataAndWait(kSet1Member1, &kSet1Member1,
+                                   {kSet1Member1, kSet1Owner}),
+            expected_metadata);
 }
 
 TEST_F(FirstPartySetsAccessDelegateDisabledTest, FindEntries) {
-  EXPECT_THAT(
-      delegate().FindEntries(
-          {kSet1Member1, kSet2Member1},
-          base::BindOnce([](FirstPartySetsManager::EntriesResult) { FAIL(); })),
-      Optional(IsEmpty()));
+  EXPECT_THAT(FindEntriesAndWait({kSet1Member1, kSet2Member1}), IsEmpty());
 }
 
 TEST_F(FirstPartySetsAccessDelegateDisabledTest, GetCacheFilterMatchInfo) {
@@ -382,7 +379,7 @@ class FirstPartySetsAccessDelegateSetToDisabledTest
     : public FirstPartySetsAccessDelegateTest {
  public:
   FirstPartySetsAccessDelegateSetToDisabledTest()
-      : FirstPartySetsAccessDelegateTest(true) {}
+      : FirstPartySetsAccessDelegateTest(/*enabled=*/true) {}
 };
 
 TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
@@ -391,74 +388,65 @@ TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
                                             /*frame_entry=*/nullptr,
                                             /*top_frame_entry=*/nullptr);
 
-  EXPECT_FALSE(delegate().ComputeMetadata(
-      kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
-      base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })));
+  base::test::TestFuture<net::FirstPartySetMetadata> future;
+  EXPECT_FALSE(delegate().ComputeMetadata(kSet1Member1, &kSet1Member1,
+                                          {kSet1Member1, kSet1Owner},
+                                          future.GetCallback()));
 
   delegate().SetEnabled(false);
 
   // All queries received when the delegate is disabled receive empty responses.
-  EXPECT_THAT(delegate().ComputeMetadata(
-                  kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
-                  base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
-              Optional(std::ref(empty_metadata)));
+  EXPECT_EQ(ComputeMetadataAndWait(kSet1Member1, &kSet1Member1,
+                                   {kSet1Member1, kSet1Owner}),
+            empty_metadata);
+
   delegate().NotifyReady(mojom::FirstPartySetsReadyEvent::New());
-  EXPECT_THAT(delegate().ComputeMetadata(
-                  kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
-                  base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
-              Optional(std::ref(empty_metadata)));
+
+  // Queries received when the delegate is enabled receive non-empty responses
+  // once the config is ready.
+  EXPECT_NE(future.Take(), empty_metadata);
+
+  EXPECT_EQ(ComputeMetadataAndWait(kSet1Member1, &kSet1Member1,
+                                   {kSet1Member1, kSet1Owner}),
+            empty_metadata);
 }
 
 TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
        DisabledThenReady_FindEntries) {
-  EXPECT_FALSE(delegate().FindEntries(
-      {kSet1Member1},
-      base::BindOnce(
-          [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })));
+  base::test::TestFuture<
+      base::flat_map<net::SchemefulSite, net::FirstPartySetEntry>>
+      future;
+  EXPECT_FALSE(delegate().FindEntries({kSet1Member1}, future.GetCallback()));
 
   delegate().SetEnabled(false);
 
   // All queries received when the delegate is disabled receive empty responses.
-  EXPECT_THAT(
-      delegate().FindEntries(
-          {kSet1Member1},
-          base::BindOnce(
-              [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })),
-      Optional(IsEmpty()));
+  EXPECT_THAT(FindEntriesAndWait({kSet1Member1}), IsEmpty());
+
   delegate().NotifyReady(mojom::FirstPartySetsReadyEvent::New());
-  EXPECT_THAT(
-      delegate().FindEntries(
-          {kSet1Member1},
-          base::BindOnce(
-              [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })),
-      Optional(IsEmpty()));
+
+  // Queries received when the delegate is enabled receive non-empty responses
+  // once the config is ready.
+  EXPECT_THAT(future.Take(), Not(IsEmpty()));
+
+  EXPECT_THAT(FindEntriesAndWait({kSet1Member1}), IsEmpty());
 }
 
 TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
        DisabledThenReady_GetCacheFilterMatchInfo) {
   net::FirstPartySetsCacheFilter::MatchInfo match_info;
 
-  EXPECT_FALSE(delegate().GetCacheFilterMatchInfo(
-      kSet1Member1,
-      base::BindOnce(
-          [](net::FirstPartySetsCacheFilter::MatchInfo) { FAIL(); })));
+  base::test::TestFuture<net::FirstPartySetsCacheFilter::MatchInfo> future;
+  EXPECT_FALSE(
+      delegate().GetCacheFilterMatchInfo(kSet1Member1, future.GetCallback()));
 
   delegate().SetEnabled(false);
 
   // All queries received when the delegate is disabled receive empty responses.
-  EXPECT_THAT(delegate().GetCacheFilterMatchInfo(
-                  kSet1Member1,
-                  base::BindOnce([](net::FirstPartySetsCacheFilter::MatchInfo) {
-                    FAIL();
-                  })),
-              Optional(std::ref(match_info)));
+  EXPECT_EQ(GetCacheFilterMatchInfoAndWait(kSet1Member1), match_info);
   delegate().NotifyReady(mojom::FirstPartySetsReadyEvent::New());
-  EXPECT_THAT(delegate().GetCacheFilterMatchInfo(
-                  kSet1Member1,
-                  base::BindOnce([](net::FirstPartySetsCacheFilter::MatchInfo) {
-                    FAIL();
-                  })),
-              Optional(std::ref(match_info)));
+  EXPECT_TRUE(future.Wait());
+  EXPECT_EQ(GetCacheFilterMatchInfoAndWait(kSet1Member1), match_info);
 }
 
 TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
@@ -474,18 +462,17 @@ TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
   EXPECT_EQ(future.Get(),
             net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
                                        &entry, &entry));
-  EXPECT_TRUE(delegate().ComputeMetadata(
-      kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
-      base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })));
+
+  ComputeMetadataAndWait(kSet1Member1, &kSet1Member1,
+                         {kSet1Member1, kSet1Owner});
 
   delegate().SetEnabled(false);
   net::FirstPartySetMetadata empty_metadata(net::SamePartyContext(),
                                             /*frame_entry=*/nullptr,
                                             /*top_frame_entry=*/nullptr);
-  EXPECT_THAT(delegate().ComputeMetadata(
-                  kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
-                  base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
-              Optional(std::ref(empty_metadata)));
+  EXPECT_EQ(ComputeMetadataAndWait(kSet1Member1, &kSet1Member1,
+                                   {kSet1Member1, kSet1Owner}),
+            empty_metadata);
 }
 
 TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
@@ -499,18 +486,10 @@ TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
       FirstPartySetsAccessDelegate::EntriesResult(
           {{kSet1Member1, net::FirstPartySetEntry(
                               kSet1Owner, net::SiteType::kAssociated, 0)}}));
-  EXPECT_TRUE(delegate().FindEntries(
-      {kSet1Member1},
-      base::BindOnce(
-          [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })));
+  FindEntriesAndWait({kSet1Member1});
 
   delegate().SetEnabled(false);
-  EXPECT_THAT(
-      delegate().FindEntries(
-          {kSet1Member1},
-          base::BindOnce(
-              [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })),
-      Optional(IsEmpty()));
+  EXPECT_THAT(FindEntriesAndWait({kSet1Member1}), IsEmpty());
 }
 
 TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
@@ -524,12 +503,7 @@ TEST_F(FirstPartySetsAccessDelegateSetToDisabledTest,
   EXPECT_EQ(future.Get(), match_info);
 
   delegate().SetEnabled(false);
-  EXPECT_THAT(delegate().GetCacheFilterMatchInfo(
-                  kSet1Member1,
-                  base::BindOnce([](net::FirstPartySetsCacheFilter::MatchInfo) {
-                    FAIL();
-                  })),
-              Optional(std::ref(match_info)));
+  EXPECT_EQ(GetCacheFilterMatchInfoAndWait(kSet1Member1), match_info);
 }
 
 // Verifies the behaviors of the delegate when First-Party Sets are initially
@@ -540,7 +514,7 @@ class FirstPartySetsAccessDelegateSetToEnabledTest
     : public FirstPartySetsAccessDelegateTest {
  public:
   FirstPartySetsAccessDelegateSetToEnabledTest()
-      : FirstPartySetsAccessDelegateTest(false) {}
+      : FirstPartySetsAccessDelegateTest(/*enabled=*/false) {}
 };
 
 // This scenario might not be reproducible in production code but it's worth
@@ -551,10 +525,9 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
   net::FirstPartySetMetadata empty_metadata(net::SamePartyContext(),
                                             /*frame_entry=*/nullptr,
                                             /*top_frame_entry=*/nullptr);
-  EXPECT_THAT(delegate().ComputeMetadata(
-                  kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
-                  base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
-              Optional(std::ref(empty_metadata)));
+  EXPECT_EQ(ComputeMetadataAndWait(kSet1Member1, &kSet1Member1,
+                                   {kSet1Member1, kSet1Owner}),
+            empty_metadata);
 
   delegate().SetEnabled(true);
 
@@ -574,18 +547,13 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
   EXPECT_EQ(future.Get(),
             net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
                                        &primary_entry, &associated_entry));
-  EXPECT_TRUE(delegate().ComputeMetadata(
-      kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
-      base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })));
+  ComputeMetadataAndWait(kSet1Member1, &kSet1Member1,
+                         {kSet1Member1, kSet1Owner});
 }
 
 TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
        EnabledThenReady_FindEntries) {
-  EXPECT_EQ(delegate().FindEntries(
-                {kSet1Member1},
-                base::BindOnce([](FirstPartySetsAccessDelegate::EntriesResult) {
-                  FAIL();
-                })),
+  EXPECT_EQ(FindEntriesAndWait({kSet1Member1}),
             FirstPartySetsAccessDelegate::EntriesResult());
 
   delegate().SetEnabled(true);
@@ -603,10 +571,7 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
       FirstPartySetsAccessDelegate::EntriesResult(
           {{kSet1Member1, net::FirstPartySetEntry(
                               kSet2Owner, net::SiteType::kAssociated, 0)}}));
-  EXPECT_TRUE(delegate().FindEntries(
-      {kSet1Member1},
-      base::BindOnce(
-          [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })));
+  FindEntriesAndWait({kSet1Member1});
 }
 
 TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
@@ -614,51 +579,36 @@ TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
   net::FirstPartySetMetadata empty_metadata(net::SamePartyContext(),
                                             /*frame_entry=*/nullptr,
                                             /*top_frame_entry=*/nullptr);
-  EXPECT_THAT(delegate().ComputeMetadata(
-                  kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
-                  base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })),
-              Optional(std::ref(empty_metadata)));
+  EXPECT_EQ(ComputeMetadataAndWait(kSet1Member1, &kSet1Member1,
+                                   {kSet1Member1, kSet1Owner}),
+            empty_metadata);
   delegate().NotifyReady(mojom::FirstPartySetsReadyEvent::New());
   delegate().SetEnabled(true);
 
-  EXPECT_FALSE(delegate().ComputeMetadata(
-      kSet1Member1, &kSet1Member1, {kSet1Member1, kSet1Owner},
-      base::BindOnce([](net::FirstPartySetMetadata) { FAIL(); })));
+  EXPECT_NE(ComputeMetadataAndWait(kSet1Member1, &kSet1Member1,
+                                   {kSet1Member1, kSet1Owner}),
+            empty_metadata);
 }
 
 TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
        ReadyThenEnabled_FindEntries) {
-  EXPECT_EQ(delegate().FindEntries(
-                {kSet1Member1},
-                base::BindOnce([](FirstPartySetsAccessDelegate::EntriesResult) {
-                  FAIL();
-                })),
+  EXPECT_EQ(FindEntriesAndWait({kSet1Member1}),
             FirstPartySetsAccessDelegate::EntriesResult());
   delegate().NotifyReady(mojom::FirstPartySetsReadyEvent::New());
   delegate().SetEnabled(true);
 
-  EXPECT_FALSE(delegate().FindEntries(
-      {kSet1Member1},
-      base::BindOnce(
-          [](FirstPartySetsAccessDelegate::EntriesResult) { FAIL(); })));
+  EXPECT_THAT(FindEntriesAndWait({kSet1Member1}),
+              UnorderedElementsAre(Pair(kSet1Member1, _)));
 }
 
 TEST_F(FirstPartySetsAccessDelegateSetToEnabledTest,
        ReadyThenEnabled_GetCacheFilterMatchInfo) {
   net::FirstPartySetsCacheFilter::MatchInfo match_info;
-  EXPECT_THAT(delegate().GetCacheFilterMatchInfo(
-                  kSet1Member1,
-                  base::BindOnce([](net::FirstPartySetsCacheFilter::MatchInfo) {
-                    FAIL();
-                  })),
-              Optional(std::ref(match_info)));
+  EXPECT_EQ(GetCacheFilterMatchInfoAndWait(kSet1Member1), match_info);
   delegate().NotifyReady(mojom::FirstPartySetsReadyEvent::New());
   delegate().SetEnabled(true);
 
-  EXPECT_FALSE(delegate().GetCacheFilterMatchInfo(
-      kSet1Member1,
-      base::BindOnce(
-          [](net::FirstPartySetsCacheFilter::MatchInfo) { FAIL(); })));
+  EXPECT_EQ(GetCacheFilterMatchInfoAndWait(kSet1Member1), match_info);
 }
 
 }  // namespace network

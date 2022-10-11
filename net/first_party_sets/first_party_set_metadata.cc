@@ -32,6 +32,11 @@ bool FirstPartySetMetadata::operator==(
          std::tie(other.context_, other.frame_entry_, other.top_frame_entry_);
 }
 
+bool FirstPartySetMetadata::operator!=(
+    const FirstPartySetMetadata& other) const {
+  return !(*this == other);
+}
+
 std::ostream& operator<<(std::ostream& os,
                          const FirstPartySetMetadata& metadata) {
   os << "{" << metadata.context() << ", "

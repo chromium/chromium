@@ -236,17 +236,7 @@ TEST_F(FirstPartySetsPolicyServiceTest,
   // called with the config.
   EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
 
-  base::RunLoop loop;
-  network::mojom::FirstPartySetsReadyEventPtr actual;
-  EXPECT_CALL(mock_delegate, NotifyReady(_))
-      .WillOnce([&](network::mojom::FirstPartySetsReadyEventPtr ptr) {
-        actual = std::move(ptr);
-        loop.Quit();
-      });
-  loop.Run();
-
-  EXPECT_FALSE(actual.is_null());
-  EXPECT_EQ(actual->config, test_config);
+  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
 }
 
 TEST_F(FirstPartySetsPolicyServiceTest,

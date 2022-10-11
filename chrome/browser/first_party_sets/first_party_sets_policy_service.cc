@@ -99,9 +99,6 @@ void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
   // enabled before the config is ready to be to be sent to the delegates.
   for (auto& delegate : access_delegates_) {
     delegate->SetEnabled(enabled);
-    if (enabled && config_.has_value()) {
-      delegate->NotifyReady(MakeReadyEvent(config_.value().Clone()));
-    }
   }
 }
 

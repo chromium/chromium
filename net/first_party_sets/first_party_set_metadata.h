@@ -31,6 +31,7 @@ class NET_EXPORT FirstPartySetMetadata {
   ~FirstPartySetMetadata();
 
   bool operator==(const FirstPartySetMetadata& other) const;
+  bool operator!=(const FirstPartySetMetadata& other) const;
 
   const SamePartyContext& context() const { return context_; }
 
