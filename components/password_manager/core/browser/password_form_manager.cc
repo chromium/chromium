@@ -700,8 +700,8 @@ void PasswordFormManager::OnFetchCompleted() {
       std::unique_ptr<PasswordForm> password_form =
           parser_.Parse(*observed_form(), FormDataParser::Mode::kFilling);
       client_->ShowPasswordManagerErrorMessage(
-          password_form->IsLikelySignupForm() ||
-                  password_form->IsLikelyChangePasswordForm()
+          password_form && (password_form->IsLikelySignupForm() ||
+                  password_form->IsLikelyChangePasswordForm())
               ? password_manager::ErrorMessageFlowType::kSaveFlow
               : password_manager::ErrorMessageFlowType::kFillFlow,
           backend_error->type);
