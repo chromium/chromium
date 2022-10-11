@@ -69,14 +69,13 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean("unifiedSidePanel",
                      base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
 
-  source->AddBoolean(
-      "showPowerBookmarks",
-      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel));
-
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
-  const int resource = IDR_SIDE_PANEL_BOOKMARKS_BOOKMARKS_HTML;
+  const int resource =
+      base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel)
+          ? IDR_SIDE_PANEL_BOOKMARKS_POWER_BOOKMARKS_HTML
+          : IDR_SIDE_PANEL_BOOKMARKS_BOOKMARKS_HTML;
   webui::SetupWebUIDataSource(
       source, base::make_span(kSidePanelResources, kSidePanelResourcesSize),
       resource);

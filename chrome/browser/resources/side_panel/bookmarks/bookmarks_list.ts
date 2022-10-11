@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 import './commerce/shopping_list.js';
-import './power_bookmark_row.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -43,11 +41,6 @@ export class BookmarksListElement extends PolymerElement {
 
   static get properties() {
     return {
-      topLevelBookmarks_: {
-        type: Array,
-        value: () => [],
-      },
-
       folders_: {
         type: Array,
         value: () => [],
@@ -62,21 +55,9 @@ export class BookmarksListElement extends PolymerElement {
         type: Array,
         value: () => [],
       },
-
-      showPowerBookmarks_: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value: loadTimeData.getBoolean('showPowerBookmarks'),
-      },
-
-      compact_: {
-        type: Boolean,
-        value: true,
-      },
     };
   }
 
-  private topLevelBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
   private shoppingListApi_: ShoppingListApiProxy =
@@ -90,9 +71,6 @@ export class BookmarksListElement extends PolymerElement {
   hoverVisible: boolean;
   private openFolders_: string[];
   private shoppingListenerIds_: number[] = [];
-  private showPowerBookmarks_: boolean;
-  private compact_: boolean;
-  private descriptions_ = new Map<string, string>();
 
   override ready() {
     super.ready();
@@ -108,18 +86,12 @@ export class BookmarksListElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
     this.setAttribute('role', 'tree');
-    this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
     if (loadTimeData.getBoolean('unifiedSidePanel')) {
       listenOnce(this.$.bookmarksContainer, 'dom-change', () => {
         setTimeout(() => this.bookmarksApi_.showUI(), 0);
       });
     }
-    this.bookmarksApi_.getTopLevelBookmarks().then(topLevelBookmarks => {
-      this.topLevelBookmarks_ = topLevelBookmarks;
-      this.topLevelBookmarks_.forEach(bookmark => {
-        this.findBookmarkDescriptions_(bookmark);
-      });
-    });
+    this.focusOutlineManager_ = FocusOutlineManager.forDocument(document);
     this.bookmarksApi_.getFolders().then(folders => {
       this.folders_ = folders;
 
@@ -224,45 +196,6 @@ export class BookmarksListElement extends PolymerElement {
   private addListener_(eventName: string, callback: Function): void {
     this.bookmarksApi_.callbackRouter[eventName]!.addListener(callback);
     this.listeners_.set(eventName, callback);
-  }
-
-  /**
-   * Assigns a text description for the given bookmark and all descendants, to
-   * be displayed following the bookmark title.
-   */
-  private findBookmarkDescriptions_(bookmark:
-                                        chrome.bookmarks.BookmarkTreeNode) {
-    if (bookmark.children && this.compact_) {
-      PluralStringProxyImpl.getInstance()
-          .getPluralString('bookmarkFolderChildCount', bookmark.children.length)
-          .then(pluralString => {
-            this.set(`descriptions_.${bookmark.id}`, pluralString);
-          });
-    } else if (bookmark.url && !this.compact_) {
-      const url = new URL(bookmark.url);
-      // Show chrome:// if it's a chrome internal url
-      if (url.protocol === 'chrome:') {
-        this.set(`descriptions_.${bookmark.id}`, 'chrome://' + url.hostname);
-      }
-      this.set(`descriptions_.${bookmark.id}`, url.hostname);
-    } else {
-      this.set(`descriptions_.${bookmark.id}`, '');
-    }
-    if (bookmark.children) {
-      bookmark.children.forEach(child => this.findBookmarkDescriptions_(child));
-    }
-  }
-
-  private getBookmarkDescription_(bookmark: chrome.bookmarks.BookmarkTreeNode) {
-    return this.get(`descriptions_.${bookmark.id}`);
-  }
-
-  /**
-   * Whether the given price-tracked bookmark should display as if discounted.
-   */
-  private showDiscountedPrice_(): boolean {
-    // TODO: Incorporate actual price tracking data here
-    return true;
   }
 
   /**

@@ -108,6 +108,7 @@ generate_grd("build_grd") {
     "images/read_later_empty.svg",
     "reading_list/reading_list.html",
     "bookmarks/bookmarks.html",
+    "bookmarks/power_bookmarks.html",
     "read_anything/read_anything.html",
     "side_panel.html",
   ]
