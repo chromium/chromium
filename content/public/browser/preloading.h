@@ -184,6 +184,11 @@ enum class PreloadingTriggeringOutcome {
   // kSuccess reason which only tracks when the navigation directly uses the
   // Prefetch. Please note that this doesn't ensure Prerender was successful.
   kTriggeredButUpgradedToPrerender = 8,
+
+  // Preloading was triggered but was pending for starting its initial
+  // navigation. This outcome should not be recorded when
+  // `kPrerender2SequentialPrerendering` is disabled.
+  kTriggeredButPending = 9,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

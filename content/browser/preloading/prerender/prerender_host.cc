@@ -128,6 +128,17 @@ PrerenderHost::PrerenderHost(const PrerenderAttributes& attributes,
     // DCHECK_NE(attributes.initiator_frame_tree_node_id,
     //           RenderFrameHost::kNoFrameTreeNodeId);
   }
+
+  // When `kPrerender2SequentialPrerendering` feature is enabled, the prerender
+  // host can be pending until the host starts or is cancelled. So the outcome
+  // is set here to track the pending status.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPrerender2SequentialPrerendering) &&
+      attempt_) {
+    attempt_->SetTriggeringOutcome(
+        PreloadingTriggeringOutcome::kTriggeredButPending);
+  }
+
   CreatePageHolder(*static_cast<WebContentsImpl*>(&web_contents));
 }
 
@@ -730,12 +741,15 @@ void PrerenderHost::SetFailureReason(FinalStatus status) {
   switch (status) {
     // When adding a new failure reason, consider whether it should be
     // propagated to `attempt_`. Most values should be propagated, but we
-    // explicitly do not propagate failure reasons if the prerender was actually
-    // successful (kActivated), or if prerender was successfully prepared but
-    // then destroyed because it wasn't needed for a subsequent navigation
-    // (kTriggerDestroyed).
+    // explicitly do not propagate failure reasons if:
+    // 1. the prerender was actually successful (kActivated).
+    // 2. prerender was successfully prepared but then destroyed because it
+    //    wasn't needed for a subsequent navigation (kTriggerDestroyed).
+    // 3. the prerender was still pending for its initial navigation when it was
+    //    activated (kActivatedBeforeStarted).
     case FinalStatus::kActivated:
     case FinalStatus::kTriggerDestroyed:
+    case FinalStatus::kActivatedBeforeStarted:
       return;
     case FinalStatus::kDestroyed:
     case FinalStatus::kLowEndDevice:
@@ -770,7 +784,6 @@ void PrerenderHost::SetFailureReason(FinalStatus status) {
     case FinalStatus::kFailToGetMemoryUsage:
     case FinalStatus::kDataSaverEnabled:
     case FinalStatus::kHasEffectiveUrl:
-    case FinalStatus::kActivatedBeforeStarted:
     case FinalStatus::kInactivePageRestriction:
     case FinalStatus::kStartFailed:
     case FinalStatus::kTimeoutBackgrounded:

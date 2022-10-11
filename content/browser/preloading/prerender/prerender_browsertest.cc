@@ -4052,9 +4052,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
             ukm_source_id, PreloadingType::kPrerender,
             PreloadingEligibility::kEligible,
             PreloadingHoldbackStatus::kAllowed,
-            PreloadingTriggeringOutcome::kFailure,
-            ToPreloadingFailureReason(
-                PrerenderHost::FinalStatus::kActivatedBeforeStarted),
+            PreloadingTriggeringOutcome::kTriggeredButPending,
+            PreloadingFailureReason::kUnspecified,
             /*accurate=*/true),
     };
 
@@ -4286,9 +4285,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 }
 
 // Test that a pending prerender should have the
-// `PreloadingTriggeringOutcome::kUnspecified`.
-// TODO(crbug.com/1355151): Add another outcome for the pending prerender like
-// PreloadingTriggeringOutcome::kTriggeredButPending if necessary.
+// `PreloadingTriggeringOutcome::kTriggeredButPending`.
 IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
                        PreloadingTriggeringOutcomeForPendingPrerender) {
   net::test_server::ControllableHttpResponse response1(
@@ -4311,14 +4308,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   // Stop the first prerendering initial navigation.
   response1.WaitForRequest();
 
-  // The pending host should have `PreloadingTriggeringOutcome::kUnspecified`.
+  // The pending host should have
+  // `PreloadingTriggeringOutcome::kTriggeredButPending`.
   PrerenderHost* prerender2_host =
       web_contents_impl()->GetPrerenderHostRegistry()->FindHostByUrlForTesting(
           kPrerender2);
   auto* preloading_attempt_impl = static_cast<PreloadingAttemptImpl*>(
       prerender2_host->preloading_attempt().get());
   EXPECT_EQ(preloading_attempt_impl->get_triggering_outcome_for_testing(),
-            PreloadingTriggeringOutcome::kUnspecified);
+            PreloadingTriggeringOutcome::kTriggeredButPending);
 
   NavigationHandleObserver activation_observer(web_contents(), kPrerender1);
   test::PrerenderHostObserver prerender1_observer(*web_contents(),
@@ -4349,9 +4347,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   primary_page_manager.WaitForNavigationFinished();
   prerender1_observer.WaitForActivation();
 
-  // The prerender1 should succeed in activation and have kSuccess outcome.
-  // The prerender2 should start right after the activation but get destroyed by
-  // the change of the primary page soon, so it should result in the kRunning
+  // The prerender1 should succeed in activation and have kSuccess outcome. The
+  // prerender2 should start right after the activation but get destroyed by the
+  // change of the primary page soon, so it should result in the kRunning
   // outcome.
   {
     ukm::SourceId ukm_source_id = activation_observer.next_page_ukm_source_id();
@@ -4360,6 +4358,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
         Preloading_Attempt::kEntryName, test::kPreloadingAttemptUkmMetrics);
     EXPECT_EQ(ukm_entries.size(), 2u);
 
+    // TODO(crbug.com/1355151): Cancel other pending hosts right after the
+    // activation request arrival so that the cancelled host that was pending
+    // records PreloadingTriggeringOutcome::kTriggeredButPending instead of
+    // kRunning.
     std::vector<UkmEntry> expected_entries = {
         attempt_ukm_entry_builder().BuildEntry(
             ukm_source_id, PreloadingType::kPrerender,
@@ -4385,10 +4387,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
 }
 
 // Test that when the running prerender is destroyed due to the activation of
-// another already prerendered page, some pending prerender's outcome is
-// recorded as `kUnspecified`.
-// TODO(crbug.com/1355151): Record kTriggeredButPending instead in
-// this case once the outcome value is newly supported.
+// another already prerendered page, other pending prerender's outcome is
+// recorded as `kTriggeredButPending`.
 IN_PROC_BROWSER_TEST_F(
     PrerenderSequentialPrerenderingBrowserTest,
     PreloadingTriggeringOutcomeForStartingPrerenderBeforeDestruction) {
@@ -4451,7 +4451,7 @@ IN_PROC_BROWSER_TEST_F(
             ukm_source_id, PreloadingType::kPrerender,
             PreloadingEligibility::kEligible,
             PreloadingHoldbackStatus::kAllowed,
-            PreloadingTriggeringOutcome::kUnspecified,
+            PreloadingTriggeringOutcome::kTriggeredButPending,
             PreloadingFailureReason::kUnspecified,
             /*accurate=*/false),
     };
