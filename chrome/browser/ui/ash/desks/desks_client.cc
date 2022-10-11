@@ -73,6 +73,7 @@ constexpr char kCantCloseDeskError[] = "The desk cannot be closed.";
 constexpr char kCantGetAllDesksError[] = "Unable to retrieve all desks.";
 constexpr char kNoSuchWindowError[] = "The window cannot be found.";
 constexpr char kInvalidWindowIdError[] = "The window identifier is not valid.";
+constexpr char kDeskBeingModified[] = "The desk is currently being modified";
 
 // Timeout time used in LaunchPerformanceTracker.
 constexpr base::TimeDelta kLaunchPerformanceTimeout = base::Minutes(3);
@@ -358,6 +359,13 @@ void DesksClient::LaunchEmptyDesk(LaunchDeskCallback callback,
     return;
   }
 
+  // Don't launch desk if desk is being modified(activated/removed/switched) or
+  // desk animation is in progress.
+  if (desks_controller_->AreDesksBeingModified()) {
+    std::move(callback).Run(kDeskBeingModified, {});
+    return;
+  }
+
   const ash::Desk* new_desk = CreateEmptyDeskAndActivate(customized_desk_name);
   std::move(callback).Run(/*error=*/"", new_desk->uuid());
 }
@@ -375,6 +383,13 @@ void DesksClient::RemoveDesk(const base::GUID& desk_uuid,
   // Can't clean up desk when desk identifier is incorrect.
   if (!desk) {
     std::move(callback).Run(kNoSuchDeskError);
+    return;
+  }
+
+  // Don't remove desk if desk is being modified(activated/removed/switched) or
+  // desk animation is in progress.
+  if (desks_controller_->AreDesksBeingModified()) {
+    std::move(callback).Run(kDeskBeingModified);
     return;
   }
 
@@ -539,8 +554,13 @@ std::string DesksClient::SwitchDesk(const base::GUID& desk_uuid) {
   if (!desk) {
     return kNoSuchDeskError;
   }
-  // Clear the current animation if there is any before activate desk.
-  desks_controller_->ResetAnimation();
+
+  // Don't switch desk if desk is being modified(activated/removed/switched) or
+  // desk animation is in progress.
+  if (desks_controller_->AreDesksBeingModified()) {
+    return kDeskBeingModified;
+  }
+
   desks_controller_->ActivateDesk(desk, ash::DesksSwitchSource::kApiSwitch);
   return {};
 }

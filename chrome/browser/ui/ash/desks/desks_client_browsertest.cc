@@ -2486,6 +2486,27 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SetWindowProperties) {
   loop2.Run();
 }
 
+// Tests immediate desk action should be throttled.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, ThrottleImmediateDeskAction) {
+  base::GUID new_desk_id;
+  ash::DeskSwitchAnimationWaiter waiter;
+  DesksClient::Get()->LaunchEmptyDesk(base::BindLambdaForTesting(
+      [&](std::string error, const base::GUID& desk_uuid) {
+        new_desk_id = desk_uuid;
+      }));
+  DesksClient::Get()->RemoveDesk(
+      new_desk_id, false, base::BindLambdaForTesting([](std::string error) {
+        EXPECT_EQ("The desk is currently being modified", error);
+      }));
+  DesksClient::Get()->LaunchEmptyDesk(base::BindLambdaForTesting(
+      [&](std::string error, const base::GUID& desk_uuid) {
+        EXPECT_EQ("The desk is currently being modified", error);
+      }));
+  std::string error = DesksClient::Get()->SwitchDesk(new_desk_id);
+  EXPECT_EQ("The desk is currently being modified", error);
+  waiter.Wait();
+}
+
 // Tests save an active desk to library and remove it from desk list.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SaveActiveDesk) {
   // Create a new browser and add a few tabs to it.
