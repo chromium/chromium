@@ -20,7 +20,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/location.h"
@@ -278,6 +277,7 @@ bool IsNsswitchConfigCompatible(
       case NsswitchReader::Service::kMdns4:
       case NsswitchReader::Service::kMdns6:
       case NsswitchReader::Service::kResolve:
+      case NsswitchReader::Service::kNis:
         RecordIncompatibleNsswitchReason(
             IncompatibleNsswitchReason::kIncompatibleService,
             specification.service);
@@ -301,7 +301,6 @@ bool IsNsswitchConfigCompatible(
         break;
 
       case NsswitchReader::Service::kMyHostname:
-      case NsswitchReader::Service::kNis:
         // Similar enough to Chrome behavior (or unlikely to matter for Chrome
         // resolutions) to be considered compatible unless the actions do
         // something very weird to skip remaining services without a result.
@@ -474,10 +473,6 @@ class DnsConfigServiceLinux::ConfigReader : public SerialWorker {
             !IsNsswitchConfigCompatible(nsswitch_hosts);
         base::UmaHistogramBoolean("Net.DNS.DnsConfig.Nsswitch.Compatible",
                                   !dns_config_->unhandled_options);
-        base::UmaHistogramBoolean(
-            "Net.DNS.DnsConfig.Nsswitch.NisServiceInHosts",
-            base::Contains(nsswitch_hosts, NsswitchReader::Service::kNis,
-                           &NsswitchReader::ServiceSpecification::service));
       }
     }
 

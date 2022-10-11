@@ -697,7 +697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsConfig.Nsswitch.IncompatibleService"
-    enum="NsswitchService" expires_after="2023-02-12">
+    enum="NsswitchService" expires_after="2023-10-07">
   <owner>ericorth@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -712,6 +712,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.DNS.DnsConfig.Nsswitch.NisServiceInHosts"
     enum="BooleanIncluded" expires_after="2023-02-19">
+  <obsolete>
+    Deprecated 2022-20. As of M108, NIS is treated as incompatible. Instances
+    where it was the cause of incompatibility will be recorded in
+    Net.DNS.DnsConfig.Nsswitch.IncompatibleService.
+  </obsolete>
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
