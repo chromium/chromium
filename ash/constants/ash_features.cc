@@ -1312,11 +1312,6 @@ BASE_FEATURE(kMacAddressRandomization,
              "MacAddressRandomization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the redesigned managed device info UI in the system tray.
-BASE_FEATURE(kManagedDeviceUIRedesign,
-             "ManagedDeviceUIRedesign",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the custom color picker and recent colors UI in the media app.
 BASE_FEATURE(kMediaAppCustomColors,
              "MediaAppCustomColors",
@@ -2667,10 +2662,6 @@ bool IsProductivityLauncherImageSearchEnabled() {
 
 bool IsMacAddressRandomizationEnabled() {
   return base::FeatureList::IsEnabled(kMacAddressRandomization);
-}
-
-bool IsManagedDeviceUIRedesignEnabled() {
-  return base::FeatureList::IsEnabled(kManagedDeviceUIRedesign);
 }
 
 bool IsManagedTermsOfServiceEnabled() {

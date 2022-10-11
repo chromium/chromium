@@ -326,10 +326,7 @@ void EnterpriseManagedView::Update() {
   SessionControllerImpl* session_controller =
       Shell::Get()->session_controller();
   std::string enterprise_domain_manager = model->enterprise_domain_manager();
-  std::string account_domain_manager =
-      features::IsManagedDeviceUIRedesignEnabled()
-          ? model->account_domain_manager()
-          : std::string();
+  std::string account_domain_manager = model->account_domain_manager();
 
   bool visible = session_controller->ShouldDisplayManagedUI() ||
                  model->active_directory_managed() ||
@@ -339,18 +336,6 @@ void EnterpriseManagedView::Update() {
 
   if (!visible)
     return;
-
-  if (!features::IsManagedDeviceUIRedesignEnabled()) {
-    if (model->active_directory_managed()) {
-      SetTooltipText(l10n_util::GetStringFUTF16(
-          IDS_ASH_ENTERPRISE_DEVICE_MANAGED, ui::GetChromeOSDeviceName()));
-    } else if (!model->enterprise_domain_manager().empty()) {
-      SetTooltipText(l10n_util::GetStringFUTF16(
-          IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
-          base::UTF8ToUTF16(model->enterprise_domain_manager())));
-    }
-    return;
-  }
 
   // Display both device and user management if the feature is enabled.
   std::u16string managed_string;

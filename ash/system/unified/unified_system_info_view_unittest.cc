@@ -23,40 +23,13 @@
 
 namespace ash {
 
-// `UnifiedSystemInfoView` contains a set of "baseline" UI elements that are
-// always visible, but some elements are visible only under certain conditions.
-// To verify that these "conditional" UI elements are visible or not-visible
-// only when expected, each `UnifiedSystemInfoViewTest` test case is executed
-// with every possible combination of the following flags, passed as a
-// parameter.
-enum class TestFlags : uint8_t {
-  // No conditional UI flags are set.
-  kNone = 0b00000000,
-
-  // Enterprise/management status display is enabled.
-  kManagedDeviceUi = 0b00000001,
-
-  // Release track UI is visible if two conditions are met: (1) the feature that
-  // guards its display is enabled (kReleaseTrackUi) and (2) the release track
-  // itself is a value other than "stable" (kReleaseTrackNotStable). Each
-  // combination of one, none, or both of these conditions is a valid scenario.
-  kReleaseTrackUi = 0b00000010,
-  kReleaseTrackNotStable = 0b00000100,
-};
-
-TestFlags operator&(TestFlags a, TestFlags b) {
-  return static_cast<TestFlags>(static_cast<uint8_t>(a) &
-                                static_cast<uint8_t>(b));
-}
-
-TestFlags operator|(TestFlags a, TestFlags b) {
-  return static_cast<TestFlags>(static_cast<uint8_t>(a) |
-                                static_cast<uint8_t>(b));
-}
-
+// Tests are parameterized by the release track UI:
+// - Whether the release track UI feature is enabled, and
+// - Whether the release track is a value other than "stable"
+// The release track UI only shows if both conditions are met.
 class UnifiedSystemInfoViewTest
     : public AshTestBase,
-      public testing::WithParamInterface<TestFlags> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   UnifiedSystemInfoViewTest() = default;
   UnifiedSystemInfoViewTest(const UnifiedSystemInfoViewTest&) = delete;
@@ -73,19 +46,10 @@ class UnifiedSystemInfoViewTest
       shell_delegate->set_channel(version_info::Channel::BETA);
     AshTestBase::SetUp(std::move(shell_delegate));
 
-    // Enable/disable of the two features we care about is conditional on the
-    // passed-in parameter.
+    // Enable/disable features based on the passed-in parameter.
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
-    if (IsManagedDeviceUIRedesignEnabled())
-      enabled_features.push_back(features::kManagedDeviceUIRedesign);
-    else
-      disabled_features.push_back(features::kManagedDeviceUIRedesign);
-    if (IsReleaseTrackUiEnabled())
-      enabled_features.push_back(features::kReleaseTrackUi);
-    else
-      disabled_features.push_back(features::kReleaseTrackUi);
-    scoped_feature_list_->InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_->InitWithFeatureState(features::kReleaseTrackUi,
+                                               IsReleaseTrackUiEnabled());
 
     // Instantiate members.
     model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
@@ -93,17 +57,9 @@ class UnifiedSystemInfoViewTest
     info_view_ = std::make_unique<UnifiedSystemInfoView>(controller_.get());
   }
 
-  bool IsManagedDeviceUIRedesignEnabled() const {
-    return (GetParam() & TestFlags::kManagedDeviceUi) != TestFlags::kNone;
-  }
+  bool IsReleaseTrackUiEnabled() const { return std::get<0>(GetParam()); }
 
-  bool IsReleaseTrackUiEnabled() const {
-    return (GetParam() & TestFlags::kReleaseTrackUi) != TestFlags::kNone;
-  }
-
-  bool IsReleaseTrackNotStable() const {
-    return (GetParam() & TestFlags::kReleaseTrackNotStable) != TestFlags::kNone;
-  }
+  bool IsReleaseTrackNotStable() const { return std::get<1>(GetParam()); }
 
   views::View* GetDateButton() {
     return info_view_->GetViewByID(VIEW_ID_QS_DATE_VIEW_BUTTON);
@@ -146,21 +102,9 @@ class UnifiedSystemInfoViewTest
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-// Execute each test case with every possible combination of `TestFlags`.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    UnifiedSystemInfoViewTest,
-    testing::Values(TestFlags::kNone,
-                    TestFlags::kManagedDeviceUi,
-                    TestFlags::kReleaseTrackUi,
-                    TestFlags::kManagedDeviceUi | TestFlags::kReleaseTrackUi,
-                    TestFlags::kReleaseTrackNotStable,
-                    TestFlags::kManagedDeviceUi |
-                        TestFlags::kReleaseTrackNotStable,
-                    TestFlags::kReleaseTrackUi |
-                        TestFlags::kReleaseTrackNotStable,
-                    TestFlags::kManagedDeviceUi | TestFlags::kReleaseTrackUi |
-                        TestFlags::kReleaseTrackNotStable));
+INSTANTIATE_TEST_SUITE_P(All,
+                         UnifiedSystemInfoViewTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 TEST_P(UnifiedSystemInfoViewTest, ButtonNameAndVisibility) {
   // By default, EnterpriseManagedView is not shown.
@@ -223,9 +167,8 @@ TEST_P(UnifiedSystemInfoViewTest, EnterpriseUserManagedVisible) {
   // Simulate enterprise information becoming available.
   enterprise_domain()->SetEnterpriseAccountDomainInfo("example.com");
 
-  // EnterpriseManagedView should be shown if the feature is enabled.
-  EXPECT_EQ(IsManagedDeviceUIRedesignEnabled(),
-            GetManagedButton()->GetVisible());
+  // EnterpriseManagedView should be shown.
+  EXPECT_TRUE(GetManagedButton()->GetVisible());
 
   // If the release track UI is enabled AND the release track is non-stable, the
   // version button is shown.
@@ -243,8 +186,6 @@ TEST_P(UnifiedSystemInfoViewTest, EnterpriseUserManagedVisible) {
 using UnifiedSystemInfoViewNoSessionTest = NoSessionAshTestBase;
 
 TEST_F(UnifiedSystemInfoViewNoSessionTest, ChildVisible) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kManagedDeviceUIRedesign);
   auto model = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
   auto controller = std::make_unique<UnifiedSystemTrayController>(model.get());
 
