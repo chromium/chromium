@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-microtask-queue.h"
 
@@ -31,7 +32,8 @@ class RejectedPromises;
 // Worklets have their own agent.
 // While an WindowAgentFactory is shared across a group of reachable frames,
 // Agent is shared across a group of reachable and same-site frames.
-class CORE_EXPORT Agent : public GarbageCollected<Agent> {
+class CORE_EXPORT Agent : public GarbageCollected<Agent>,
+                          public Supplementable<Agent> {
  public:
   // Do not create the instance directly.
   // Use MakeGarbageCollected<Agent>() or
@@ -45,7 +47,7 @@ class CORE_EXPORT Agent : public GarbageCollected<Agent> {
     return event_loop_;
   }
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   void AttachContext(ExecutionContext*);
   void DetachContext(ExecutionContext*);

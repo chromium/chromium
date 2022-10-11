@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_WINDOW_AGENT_H_
 
 #include "third_party/blink/renderer/core/execution_context/agent.h"
-#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -54,9 +53,10 @@ class WindowAgent final : public Agent, public AgentGroupScheduler::Agent {
   scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler();
 
  private:
+  // Note clients may attach per-agent data via Supplementable.
+  // MutationObservers are attached this way.
   // TODO(keishi): Move per-agent data here with the correct granularity.
-  // E.g. ActiveMutationObservers and CustomElementReactionStack should move
-  // here.
+  // E.g. CustomElementReactionStack should move here.
   scheduler::WebAgentGroupScheduler* agent_group_scheduler_ = nullptr;
 };
 

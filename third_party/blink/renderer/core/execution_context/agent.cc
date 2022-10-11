@@ -43,7 +43,9 @@ Agent::Agent(v8::Isolate* isolate,
 
 Agent::~Agent() = default;
 
-void Agent::Trace(Visitor* visitor) const {}
+void Agent::Trace(Visitor* visitor) const {
+  Supplementable<Agent>::Trace(visitor);
+}
 
 void Agent::AttachContext(ExecutionContext* context) {
   event_loop_->AttachScheduler(context->GetScheduler());

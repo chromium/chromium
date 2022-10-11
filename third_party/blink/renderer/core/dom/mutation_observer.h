@@ -123,6 +123,7 @@ class CORE_EXPORT MutationObserver final
 
  private:
   struct ObserverLessThan;
+  friend class MutationObserverAgentData;
 
   void Deliver();
   void CancelInspectorAsyncTasks();
