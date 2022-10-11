@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/web_package/web_bundle_chunked_buffer.h"
+#include "services/network/web_bundle/web_bundle_chunked_buffer.h"
 
 #include <algorithm>
 
@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/checked_math.h"
 
-namespace web_package {
+namespace network {
 
 namespace {
 
@@ -205,4 +205,4 @@ uint64_t WebBundleChunkedBuffer::ReadData(uint64_t offset,
   return written;
 }
 
-}  // namespace web_package
+}  // namespace network

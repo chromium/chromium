@@ -8,7 +8,6 @@
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "components/web_package/web_bundle_builder.h"
-#include "components/web_package/web_bundle_url_loader_factory.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -17,6 +16,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
+#include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -86,7 +86,7 @@ class TestWebBundleHandle : public mojom::WebBundleHandle {
   mojo::ReceiverSet<network::mojom::WebBundleHandle> web_bundle_handles_;
 };
 
-std::tuple<base::WeakPtr<web_package::WebBundleURLLoaderFactory>,
+std::tuple<base::WeakPtr<WebBundleURLLoaderFactory>,
            std::unique_ptr<TestWebBundleHandle>>
 CreateWebBundleLoaderFactory(WebBundleManager& manager, int32_t process_id) {
   base::UnguessableToken token = base::UnguessableToken::Create();
@@ -96,7 +96,7 @@ CreateWebBundleLoaderFactory(WebBundleManager& manager, int32_t process_id) {
           remote_handle.InitWithNewPipeAndPassReceiver());
   ResourceRequest::WebBundleTokenParams create_params(GURL(kBundleUrl), token,
                                                       std::move(remote_handle));
-  base::WeakPtr<web_package::WebBundleURLLoaderFactory> factory =
+  base::WeakPtr<WebBundleURLLoaderFactory> factory =
       manager.CreateWebBundleURLLoaderFactory(
           GURL(kBundleUrl), create_params, process_id,
           /*devtools_observer=*/mojo::PendingRemote<mojom::DevToolsObserver>(),
@@ -107,7 +107,7 @@ CreateWebBundleLoaderFactory(WebBundleManager& manager, int32_t process_id) {
 }
 
 mojo::ScopedDataPipeProducerHandle SetBundleStream(
-    web_package::WebBundleURLLoaderFactory& factory) {
+    WebBundleURLLoaderFactory& factory) {
   mojo::ScopedDataPipeConsumerHandle consumer;
   mojo::ScopedDataPipeProducerHandle producer;
   CHECK_EQ(MOJO_RESULT_OK, CreateDataPipe(nullptr, producer, consumer));
@@ -117,7 +117,7 @@ mojo::ScopedDataPipeProducerHandle SetBundleStream(
 
 std::tuple<mojo::Remote<network::mojom::URLLoader>,
            std::unique_ptr<network::TestURLLoaderClient>>
-StartSubresourceLoad(web_package::WebBundleURLLoaderFactory& factory) {
+StartSubresourceLoad(WebBundleURLLoaderFactory& factory) {
   mojo::Remote<network::mojom::URLLoader> loader;
   auto client = std::make_unique<network::TestURLLoaderClient>();
   network::ResourceRequest request;
@@ -126,7 +126,7 @@ StartSubresourceLoad(web_package::WebBundleURLLoaderFactory& factory) {
   request.request_initiator = url::Origin::Create(GURL(kInitiatorUrl));
   request.web_bundle_token_params = ResourceRequest::WebBundleTokenParams();
   request.web_bundle_token_params->bundle_url = GURL(kBundleUrl);
-  factory.StartLoader(web_package::WebBundleURLLoaderFactory::CreateURLLoader(
+  factory.StartLoader(WebBundleURLLoaderFactory::CreateURLLoader(
       loader.BindNewPipeAndPassReceiver(), request, client->CreateRemote(),
       mojo::Remote<mojom::TrustedHeaderClient>(), base::Time::Now(),
       base::TimeTicks::Now(), base::DoNothing()));
@@ -151,8 +151,7 @@ class WebBundleManagerTest : public testing::Test {
     return manager.IsPendingLoadersEmptyForTesting(key);
   }
 
-  base::WeakPtr<web_package::WebBundleURLLoaderFactory>
-  GetWebBundleURLLoaderFactory(
+  base::WeakPtr<WebBundleURLLoaderFactory> GetWebBundleURLLoaderFactory(
       WebBundleManager& manager,
       const ResourceRequest::WebBundleTokenParams& params,
       int32_t process_id) {
@@ -406,7 +405,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_StartRequestAfterError) {
   EXPECT_EQ(handle->last_bundle_error()->second, kQuotaExceededErrorMessage);
   histogram_tester.ExpectUniqueSample(
       "SubresourceWebBundles.LoadResult",
-      web_package::WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
           kMemoryQuotaExceeded,
       1);
 
@@ -583,9 +582,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
                                       bundle.size(), 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceWebBundles.LoadResult",
-      web_package::WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
-          kSuccess,
-      1);
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::kSuccess, 1);
 
   // Start loading the second web bundle in the process 1.
   auto [factory1_2, handle1_2] =
@@ -608,9 +605,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
                                       bundle.size(), 2);
   histogram_tester.ExpectUniqueSample(
       "SubresourceWebBundles.LoadResult",
-      web_package::WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
-          kSuccess,
-      2);
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::kSuccess, 2);
 
   // Start loading the third web bundle in the process 1.
   auto [factory1_3, handle1_3] =
@@ -633,7 +628,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
             client1_3->completion_status().error_code);
   histogram_tester.ExpectBucketCount(
       "SubresourceWebBundles.LoadResult",
-      web_package::WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
           kMemoryQuotaExceeded,
       1);
 
@@ -656,9 +651,7 @@ TEST_F(WebBundleManagerTest, MemoryQuota_ProcessIsolation) {
                                       bundle.size(), 3);
   histogram_tester.ExpectBucketCount(
       "SubresourceWebBundles.LoadResult",
-      web_package::WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
-          kSuccess,
-      3);
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::kSuccess, 3);
 
   // Reset handles and RunUntilIdle to trigger MaxMemoryUsagePerProcess
   // histogram count.
@@ -685,11 +678,11 @@ TEST_F(WebBundleManagerTest, WebBundleURLRedirection) {
   ResourceRequest::WebBundleTokenParams create_params(GURL(kBundleUrl), token,
                                                       std::move(remote_handle));
 
-  // Create a web_package::WebBundleURLLoaderFactory where bundle request URL is
-  // different from WebBundleTokenParams::bundle_url. This happens when
-  // WebBundle request is readirected by WebRequest extension API.
+  // Create a WebBundleURLLoaderFactory where bundle request URL is different
+  // from WebBundleTokenParams::bundle_url. This happens when WebBundle request
+  // is readirected by WebRequest extension API.
   GURL redirected_bundle_url("https://redirected.example.com/bundle.wbn");
-  base::WeakPtr<web_package::WebBundleURLLoaderFactory> factory =
+  base::WeakPtr<WebBundleURLLoaderFactory> factory =
       manager.CreateWebBundleURLLoaderFactory(
           redirected_bundle_url, create_params, process_id1,
           /*devtools_observer=*/{},
@@ -703,7 +696,7 @@ TEST_F(WebBundleManagerTest, WebBundleURLRedirection) {
             mojom::WebBundleErrorType::kWebBundleRedirected);
   histogram_tester.ExpectUniqueSample(
       "SubresourceWebBundles.LoadResult",
-      web_package::WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
+      WebBundleURLLoaderFactory::SubresourceWebBundleLoadResult::
           kWebBundleRedirected,
       1);
 

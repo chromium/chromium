@@ -9,18 +9,18 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
-#include "components/web_package/web_bundle_memory_quota_consumer.h"
-#include "components/web_package/web_bundle_url_loader_factory.h"
 #include "components/web_package/web_bundle_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/network_context.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/web_bundle_handle.mojom.h"
+#include "services/network/web_bundle/web_bundle_memory_quota_consumer.h"
+#include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 
 namespace network {
 
 class WebBundleManager::MemoryQuotaConsumer
-    : public web_package::WebBundleMemoryQuotaConsumer {
+    : public WebBundleMemoryQuotaConsumer {
  public:
   MemoryQuotaConsumer(base::WeakPtr<WebBundleManager> manager,
                       int32_t process_id)
@@ -54,7 +54,7 @@ WebBundleManager::WebBundleManager()
 
 WebBundleManager::~WebBundleManager() = default;
 
-base::WeakPtr<web_package::WebBundleURLLoaderFactory>
+base::WeakPtr<WebBundleURLLoaderFactory>
 WebBundleManager::CreateWebBundleURLLoaderFactory(
     const GURL& bundle_url,
     const ResourceRequest::WebBundleTokenParams& web_bundle_token_params,
@@ -79,7 +79,7 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
                      // |this| outlives |remote|.
                      base::Unretained(this), key));
 
-  auto factory = std::make_unique<web_package::WebBundleURLLoaderFactory>(
+  auto factory = std::make_unique<WebBundleURLLoaderFactory>(
       bundle_url, web_bundle_token_params, std::move(remote),
       std::make_unique<MemoryQuotaConsumer>(weak_ptr_factory_.GetWeakPtr(),
                                             process_id),
@@ -112,7 +112,7 @@ WebBundleManager::Key WebBundleManager::GetKey(
   return {process_id, token_params.token};
 }
 
-base::WeakPtr<web_package::WebBundleURLLoaderFactory>
+base::WeakPtr<WebBundleURLLoaderFactory>
 WebBundleManager::GetWebBundleURLLoaderFactory(const Key& key) {
   auto it = factories_.find(key);
   if (it == factories_.end()) {
@@ -131,12 +131,12 @@ void WebBundleManager::StartSubresourceRequest(
   DCHECK(!url_request.web_bundle_token_params->handle.is_valid());
 
   Key key = GetKey(*url_request.web_bundle_token_params, process_id);
-  base::WeakPtr<web_package::WebBundleURLLoaderFactory>
-      web_bundle_url_loader_factory = GetWebBundleURLLoaderFactory(key);
+  base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
+      GetWebBundleURLLoaderFactory(key);
   base::Time request_start_time = base::Time::Now();
   base::TimeTicks request_start_time_ticks = base::TimeTicks::Now();
   if (web_bundle_url_loader_factory) {
-    auto loader = web_package::WebBundleURLLoaderFactory::CreateURLLoader(
+    auto loader = WebBundleURLLoaderFactory::CreateURLLoader(
         std::move(receiver), url_request, std::move(client),
         std::move(trusted_header_client), request_start_time,
         request_start_time_ticks, base::DoNothing());
@@ -145,19 +145,17 @@ void WebBundleManager::StartSubresourceRequest(
   }
 
   // A request for subresource arrives earlier than a request for a webbundle.
-  pending_loaders_[key].push_back(
-      web_package::WebBundleURLLoaderFactory::CreateURLLoader(
-          std::move(receiver), url_request, std::move(client),
-          std::move(trusted_header_client), request_start_time,
-          request_start_time_ticks,
-          base::BindOnce(&WebBundleManager::CleanUpWillBeDeletedURLLoader,
-                         weak_ptr_factory_.GetWeakPtr(), key)));
+  pending_loaders_[key].push_back(WebBundleURLLoaderFactory::CreateURLLoader(
+      std::move(receiver), url_request, std::move(client),
+      std::move(trusted_header_client), request_start_time,
+      request_start_time_ticks,
+      base::BindOnce(&WebBundleManager::CleanUpWillBeDeletedURLLoader,
+                     weak_ptr_factory_.GetWeakPtr(), key)));
 }
 
 void WebBundleManager::CleanUpWillBeDeletedURLLoader(
     Key key,
-    web_package::WebBundleURLLoaderFactory::URLLoader*
-        will_be_deleted_url_loader) {
+    WebBundleURLLoaderFactory::URLLoader* will_be_deleted_url_loader) {
   auto it = pending_loaders_.find(key);
   if (it == pending_loaders_.end())
     return;

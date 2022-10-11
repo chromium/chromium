@@ -10,7 +10,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
 #include "base/types/optional_util.h"
-#include "components/web_package/web_bundle_url_loader_factory.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
@@ -31,6 +30,7 @@
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_loader_factory.h"
+#include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 #include "url/origin.h"
 
 namespace network::cors {
@@ -277,13 +277,12 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
       devtools_observer = GetDevToolsObserver(resource_request);
     }
 
-    base::WeakPtr<web_package::WebBundleURLLoaderFactory>
-        web_bundle_url_loader_factory =
-            context_->GetWebBundleManager().CreateWebBundleURLLoaderFactory(
-                resource_request.url, *resource_request.web_bundle_token_params,
-                process_id_, std::move(devtools_observer),
-                resource_request.devtools_request_id,
-                cross_origin_embedder_policy_, coep_reporter());
+    base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
+        context_->GetWebBundleManager().CreateWebBundleURLLoaderFactory(
+            resource_request.url, *resource_request.web_bundle_token_params,
+            process_id_, std::move(devtools_observer),
+            resource_request.devtools_request_id, cross_origin_embedder_policy_,
+            coep_reporter());
     client = web_bundle_url_loader_factory->MaybeWrapURLLoaderClient(
         std::move(client));
     if (!client)

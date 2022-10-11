@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_MEMORY_QUOTA_CONSUMER_H_
-#define COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_MEMORY_QUOTA_CONSUMER_H_
+#ifndef SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_MEMORY_QUOTA_CONSUMER_H_
+#define SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_MEMORY_QUOTA_CONSUMER_H_
 
-namespace web_package {
+#include "base/component_export.h"
+
+namespace network {
 
 // This class is used to check the memory quota while loading subresource
 // Web Bundles. The allocated quota is released in the destructor.
-class WebBundleMemoryQuotaConsumer {
+class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleMemoryQuotaConsumer {
  public:
   virtual ~WebBundleMemoryQuotaConsumer() = default;
   virtual bool AllocateMemory(uint64_t num_bytes) = 0;
 };
 
-}  // namespace web_package
+}  // namespace network
 
-#endif  // COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_MEMORY_QUOTA_CONSUMER_H_
+#endif  // SERVICES_NETWORK_WEB_BUNDLE_WEB_BUNDLE_MEMORY_QUOTA_CONSUMER_H_
