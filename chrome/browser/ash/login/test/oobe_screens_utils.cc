@@ -128,6 +128,9 @@ void SkipToEnrollmentOnRecovery() {
     TapEulaAccept();
   }
 
+  WaitForUpdateScreen();
+  ExitUpdateScreenNoUpdate();
+
   WaitFor(EnrollmentScreenView::kScreenId);
 }
 
