@@ -614,6 +614,8 @@ bookmarkHomeViewControllerWantsDismissal:(BookmarkHomeViewController*)controller
 #pragma mark - BookmarksCommands
 
 - (void)bookmark:(BookmarkAddCommand*)command {
+  DCHECK(command.URLs.count > 0) << "URLs are missing";
+
   if (!self.bookmarkModel->loaded())
     return;
 
