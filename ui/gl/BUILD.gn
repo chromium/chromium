@@ -217,6 +217,8 @@ component("gl") {
       "gl_image_egl.h",
       "gl_surface_egl.cc",
       "gl_surface_egl.h",
+      "scoped_egl_image.cc",
+      "scoped_egl_image.h",
       "shared_gl_fence_egl.cc",
       "shared_gl_fence_egl.h",
     ]
