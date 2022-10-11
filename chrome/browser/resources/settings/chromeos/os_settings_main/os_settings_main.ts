@@ -21,7 +21,7 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
-import {assertExists, cast, castExists} from '../assert_extras.js';
+import {assertExists} from '../assert_extras.js';
 import {OSPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
@@ -209,11 +209,10 @@ class OsSettingsMainElement extends OsSettingsMainElementBase {
     // that the given section is displayed at the top of the viewport.
     // Find the distance from the section's top to the overscroll.
     const sectionTop =
-        cast(section.offsetParent, HTMLElement).offsetTop + section.offsetTop;
+        (section.offsetParent as HTMLElement).offsetTop + section.offsetTop;
     const distance = this.$.overscroll.offsetTop - sectionTop;
 
-    const overscroll =
-        Math.max(0, castExists(this.offsetParent).clientHeight - distance);
+    const overscroll = Math.max(0, this.offsetParent!.clientHeight - distance);
     this.setOverscroll_(overscroll);
     section.scrollIntoView();
     section.focus();

@@ -20,7 +20,6 @@ import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/po
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route} from '../../router.js';
-import {cast} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
@@ -213,7 +212,7 @@ class SettingsPointersElement extends SettingsPointersElementBase {
       return;
     }
 
-    if (cast(path[0], HTMLElement).tagName === 'A') {
+    if ((path[0] as HTMLElement).tagName === 'A') {
       // Do not toggle reverse scrolling if the contained link is clicked.
       event.stopPropagation();
     }

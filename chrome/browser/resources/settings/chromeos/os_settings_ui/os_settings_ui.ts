@@ -265,8 +265,8 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
       // view.
       const drawer = this.getDrawer_();
       listenOnce(drawer, 'cr-drawer-opening', () => {
-        const drawerTemplate =
-            this.shadowRoot!.querySelector('#drawerTemplate') as DomIf;
+        const drawerTemplate = castExists(
+            this.shadowRoot!.querySelector<DomIf>('#drawerTemplate'));
         drawerTemplate.if = true;
       });
 
@@ -380,8 +380,7 @@ class OsSettingsUiElement extends OsSettingsUiElementBase {
   }
 
   private getDrawer_(): CrDrawerElement {
-    return castExists(
-        this.shadowRoot!.querySelector<CrDrawerElement>('#drawer'));
+    return castExists(this.shadowRoot!.querySelector('cr-drawer'));
   }
 
   private getToolbar_(): OsToolbarElement {

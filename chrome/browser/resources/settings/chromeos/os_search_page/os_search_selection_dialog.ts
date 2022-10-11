@@ -16,6 +16,8 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {castExists} from '../assert_extras.js';
+
 import {getTemplate} from './os_search_selection_dialog.html.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 
@@ -78,8 +80,7 @@ class OsSettingsSearchSelectionDialogElement extends
    * Enables the checked languages.
    */
   private onActionButtonClick_() {
-    const select =
-        this.shadowRoot!.querySelector('select') as HTMLSelectElement;
+    const select = castExists(this.shadowRoot!.querySelector('select'));
     const searchEngine = this.searchEngines_[select.selectedIndex];
     this.browserProxy_.setDefaultSearchEngine(searchEngine.modelIndex);
 
