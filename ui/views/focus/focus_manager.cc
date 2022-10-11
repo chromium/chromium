@@ -330,7 +330,7 @@ void FocusManager::SetKeyboardAccessible(bool keyboard_accessible) {
 }
 
 bool FocusManager::IsSettingFocusedView() const {
-  return setting_focused_view_entrance_count > 0;
+  return setting_focused_view_entrance_count_ > 0;
 }
 
 void FocusManager::SetFocusedViewWithReason(View* view,
@@ -366,8 +366,8 @@ void FocusManager::SetFocusedViewWithReason(View* view,
   View* old_focused_view = focused_view_;
   focused_view_ = view;
   base::AutoReset<int> entrance_count_resetter(
-      &setting_focused_view_entrance_count,
-      setting_focused_view_entrance_count + 1);
+      &setting_focused_view_entrance_count_,
+      setting_focused_view_entrance_count_ + 1);
 
   if (old_focused_view) {
     old_focused_view->RemoveObserver(this);

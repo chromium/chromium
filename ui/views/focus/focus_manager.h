@@ -377,7 +377,7 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   // Count of SetFocusedViewWithReason() in the current stack.
   // This value is ideally 0 or 1, i.e. no nested focus change.
   // See crbug.com/1203960.
-  int setting_focused_view_entrance_count = 0;
+  int setting_focused_view_entrance_count_ = 0;
 };
 
 }  // namespace views
