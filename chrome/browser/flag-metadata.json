@@ -41,7 +41,7 @@
   {
     "name": "account-id-migration",
     "owners": [ "msarda" ],
-    "expiry_milestone": 107
+    "expiry_milestone": 111
   },
   {
     "name": "activate-metrics-reporting-enabled-policy",
