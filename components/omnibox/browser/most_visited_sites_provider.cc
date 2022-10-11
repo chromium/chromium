@@ -131,14 +131,6 @@ bool BuildTileSuggest(AutocompleteProvider* provider,
   }
   return true;
 }
-
-// Builds GroupConfig data used to decide where and how to present related
-// suggestions.
-omnibox::GroupConfig BuildGroupConfig() {
-  omnibox::GroupConfig group_config;
-  group_config.set_section(omnibox::SECTION_MOBILE_MOST_VISITED);
-  return group_config;
-}
 }  // namespace
 
 void MostVisitedSitesProvider::Start(const AutocompleteInput& input,
@@ -195,11 +187,8 @@ MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;
 void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
     const history::MostVisitedURLList& urls) {
   done_ = true;
-  if (BuildTileSuggest(this, client_, urls, matches_)) {
-    suggestion_groups_map_.emplace(omnibox::GROUP_MOBILE_MOST_VISITED,
-                                   BuildGroupConfig());
+  if (BuildTileSuggest(this, client_, urls, matches_))
     NotifyListeners(true);
-  }
 }
 
 bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(

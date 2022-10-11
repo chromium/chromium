@@ -419,8 +419,10 @@ class AutocompleteProvider
   const size_t provider_max_matches_in_keyword_mode_{7};
 
   ACMatches matches_;
-  // A map of suggestion group IDs to suggestion group information corresponding
-  // to |matches_|.
+  // A map of suggestion group IDs to suggestion group information.
+  // `omnibox::BuildDefaultGroups()` will generate static groups. Providers can
+  // set this to create dynamic groups; e.g. the `ZeroSuggestProvider` does this
+  // based on groups received from the server.
   omnibox::GroupConfigMap suggestion_groups_map_{};
   bool done_{true};
 

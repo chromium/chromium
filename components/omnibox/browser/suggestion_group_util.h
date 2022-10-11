@@ -11,6 +11,9 @@ namespace omnibox {
 
 using GroupConfigMap = std::unordered_map<GroupId, GroupConfig>;
 
+// Builds the pre-defined static groups that are useful for sorting suggestions.
+omnibox::GroupConfigMap BuildDefaultGroups();
+
 // Returns the omnibox::GroupId enum object corresponding to |value|, or
 // omnibox::GROUP_INVALID when there is no corresponding enum object.
 GroupId GroupIdForNumber(int value);

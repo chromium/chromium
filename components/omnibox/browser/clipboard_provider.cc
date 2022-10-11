@@ -119,14 +119,6 @@ void RecordDeletingClipboardSuggestionMetrics(
                                  clipboard_contents_age);
   }
 }
-
-// Builds GroupConfig data used to decide where and how to present related
-// suggestions.
-omnibox::GroupConfig BuildGroupConfig() {
-  omnibox::GroupConfig group_config;
-  group_config.set_section(omnibox::SECTION_MOBILE_CLIPBOARD);
-  return group_config;
-}
 }  // namespace
 
 ClipboardProvider::ClipboardProvider(AutocompleteProviderClient* client,
@@ -263,8 +255,6 @@ void ClipboardProvider::AddCreatedMatchWithTracking(
                                            clipboard_contents_age);
 
   matches_.push_back(match);
-  suggestion_groups_map_.emplace(omnibox::GROUP_MOBILE_CLIPBOARD,
-                                 BuildGroupConfig());
 }
 
 bool ClipboardProvider::TemplateURLSupportsTextSearch() {

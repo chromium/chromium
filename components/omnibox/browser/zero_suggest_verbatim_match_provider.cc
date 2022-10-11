@@ -4,13 +4,11 @@
 
 #include "components/omnibox/browser/zero_suggest_verbatim_match_provider.h"
 
-#include "base/feature_list.h"
 #include "base/strings/escape.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/verbatim_match.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/url_formatter/url_formatter.h"
 
 namespace {
@@ -31,14 +29,6 @@ bool IsVerbatimMatchEligible(
          context == metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET ||
          context == metrics::OmniboxEventProto::ANDROID_SHORTCUTS_WIDGET ||
          context == metrics::OmniboxEventProto::OTHER;
-}
-
-// Builds GroupConfig data used to decide where and how to present related
-// suggestions.
-omnibox::GroupConfig BuildGroupConfig() {
-  omnibox::GroupConfig group_config;
-  group_config.set_section(omnibox::SECTION_MOBILE_VERBATIM);
-  return group_config;
 }
 }  // namespace
 
@@ -103,6 +93,4 @@ void ZeroSuggestVerbatimMatchProvider::Start(const AutocompleteInput& input,
 
   match.provider = this;
   matches_.push_back(match);
-  suggestion_groups_map_.emplace(omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX,
-                                 BuildGroupConfig());
 }
