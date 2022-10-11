@@ -35,7 +35,8 @@ class AffiliationService : public KeyedService {
       absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
                     PasswordStoreBackendError>)>;
 
-  using GroupsCallback = base::OnceCallback<void(std::vector<GroupedFacets>)>;
+  using GroupsCallback =
+      base::OnceCallback<void(const std::vector<GroupedFacets>&)>;
 
   // Prefetches change password URLs for sites requested. Receives a callback to
   // run when the prefetch finishes.

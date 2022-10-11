@@ -732,6 +732,7 @@ source_set("unit_tests") {
     "sync/password_sync_bridge_unittest.cc",
     "sync_credentials_filter_unittest.cc",
     "ui/bulk_leak_check_service_adapter_unittest.cc",
+    "ui/credential_ui_entry_unittest.cc",
     "ui/insecure_credentials_manager_unittest.cc",
     "ui/password_undo_helper_unittest.cc",
     "ui/post_save_compromised_helper_unittest.cc",

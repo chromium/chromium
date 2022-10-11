@@ -16,6 +16,8 @@
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
+#include "components/password_manager/core/browser/ui/affiliated_group.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 
 namespace password_manager {
@@ -96,8 +98,13 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   using AddCredentialsCallback =
       base::OnceCallback<void(const std::vector<AddResult>&)>;
+  using SignonRealm = base::StrongAlias<class SignonRealmTag, std::string>;
+  using GroupId = base::StrongAlias<class GroupIdTag, int>;
+  using UsernamePasswordKey =
+      base::StrongAlias<class UsernamePasswordKeyTag, std::string>;
 
-  explicit SavedPasswordsPresenter(
+  SavedPasswordsPresenter(
+      AffiliationService* affiliation_service,
       scoped_refptr<PasswordStoreInterface> profile_store,
       scoped_refptr<PasswordStoreInterface> account_store = nullptr);
   ~SavedPasswordsPresenter() override;
@@ -154,6 +161,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // credentials federation origin.
   std::vector<CredentialUIEntry> GetSavedCredentials() const;
 
+  // Returns a list of affiliated groups for the Password Manager.
+  std::vector<AffiliatedGroup> GetAffiliatedGroups() const;
+
   // Returns PasswordForms corresponding to |credential|.
   std::vector<PasswordForm> GetCorrespondingPasswordForms(
       const CredentialUIEntry& credential) const;
@@ -186,6 +196,9 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
       PasswordStoreInterface* store,
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
+  // Handle groups results and perform grouping algorithm.
+  void OnGetAllGroupsResultsFrom(const std::vector<GroupedFacets>& results);
+
   // Notify observers about changes in the compromised credentials.
   void NotifyEdited(const PasswordForm& password);
   void NotifySavedPasswordsChanged();
@@ -211,6 +224,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   scoped_refptr<PasswordStoreInterface> profile_store_;
   scoped_refptr<PasswordStoreInterface> account_store_;
 
+  raw_ptr<AffiliationService> affiliation_service_;
+
   // The number of stores from which no updates have been received yet.
   int pending_store_updates = 0;
 
@@ -221,6 +236,19 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   // Structure used to deduplicate list of passwords.
   DuplicatePasswordsMap sort_key_to_password_forms_;
+
+  // Structure used to keep track of the mapping between the credential's
+  // sign-on realm and the group id.
+  std::map<SignonRealm, GroupId> map_signon_realm_to_group_id_;
+
+  // Structure used to keep track of the mapping between the group id and the
+  // grouped facet's branding information.
+  std::map<GroupId, FacetBrandingInfo> map_group_id_to_branding_info_;
+
+  // Structure used to keep track of the mapping between a group id and the
+  // grouped by username-password key password forms.
+  std::map<GroupId, std::map<UsernamePasswordKey, std::vector<PasswordForm>>>
+      map_group_id_to_forms_;
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 

@@ -75,6 +75,42 @@ CredentialUIEntry::CredentialUIEntry(const PasswordForm& form)
     stored_in.insert(PasswordForm::Store::kProfileStore);
 }
 
+CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
+  CHECK(!forms.empty());
+
+  username = forms[0].username_value;
+  password = forms[0].password_value;
+  federation_origin = forms[0].federation_origin;
+  password_issues = forms[0].password_issues;
+  blocked_by_user = forms[0].blocked_by_user;
+  last_used_time = forms[0].date_last_used;
+
+  // Only one-note with an empty `unique_display_name` is supported in the
+  // settings UI.
+  for (const PasswordNote& n : forms[0].notes) {
+    if (n.unique_display_name.empty()) {
+      note = n;
+      break;
+    }
+  }
+
+  // Add credential facets.
+  for (const auto& form : forms) {
+    CredentialFacet facet;
+    facet.display_name = form.app_display_name;
+    facet.url = form.url;
+    facet.signon_realm = form.signon_realm;
+    facet.affiliated_web_realm = form.affiliated_web_realm;
+
+    facets.push_back(std::move(facet));
+
+    if (form.IsUsingAccountStore())
+      stored_in.insert(PasswordForm::Store::kAccountStore);
+    if (form.IsUsingProfileStore())
+      stored_in.insert(PasswordForm::Store::kProfileStore);
+  }
+}
+
 CredentialUIEntry::CredentialUIEntry(const CSVPassword& csv_password,
                                      PasswordForm::Store to_store)
     : username(base::UTF8ToUTF16(csv_password.GetUsername())),

@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/autofill_assistant/common_dependencies_chrome.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -18,6 +19,7 @@
 #include "components/password_manager/core/browser/capabilities_service_impl.h"
 #include "components/password_manager/core/browser/password_scripts_fetcher_impl.h"
 #include "components/password_manager/core/browser/saved_passwords_capabilities_fetcher.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_service_impl.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/version_info/version_info.h"
@@ -61,10 +63,13 @@ KeyedService* PasswordScriptsFetcherFactory::BuildServiceInstanceFor(
             std::move(autofill_assistant));
 
     Profile* profile = Profile::FromBrowserContext(browser_context);
+    password_manager::AffiliationService* affiliation_service =
+        AffiliationServiceFactory::GetForProfile(profile);
 
     return new password_manager::SavedPasswordsCapabilitiesFetcher(
         std::move(service),
         std::make_unique<password_manager::SavedPasswordsPresenter>(
+            affiliation_service,
             PasswordStoreFactory::GetForProfile(
                 profile, ServiceAccessType::EXPLICIT_ACCESS),
             AccountPasswordStoreFactory::GetForProfile(

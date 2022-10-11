@@ -28,6 +28,8 @@ struct AffiliatedGroup {
   std::vector<CredentialUIEntry> credential_groups;
 };
 
+bool operator==(const AffiliatedGroup& lhs, const AffiliatedGroup& rhs);
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_AFFILIATED_GROUP_H_

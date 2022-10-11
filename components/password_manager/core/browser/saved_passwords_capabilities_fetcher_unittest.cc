@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/site_affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -148,7 +149,8 @@ class SavedPasswordsCapabilitiesFetcherTest : public ::testing::Test {
     fetcher_ = std::make_unique<SavedPasswordsCapabilitiesFetcher>(
         std::move(capabilities_service),
         std::make_unique<SavedPasswordsPresenter>(
-            profile_store_, use_account_store ? account_store_ : nullptr));
+            &affiliation_service_, profile_store_,
+            use_account_store ? account_store_ : nullptr));
     RunUntilIdle();
   }
 
@@ -243,6 +245,7 @@ class SavedPasswordsCapabilitiesFetcherTest : public ::testing::Test {
   scoped_refptr<PasswordStore> profile_store_ = nullptr;
   scoped_refptr<PasswordStore> account_store_ = nullptr;
   std::unique_ptr<SavedPasswordsCapabilitiesFetcher> fetcher_;
+  MockAffiliationService affiliation_service_;
 };
 
 TEST_F(SavedPasswordsCapabilitiesFetcherTest, ServerError) {

@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/affiliation_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -72,9 +73,12 @@ class PasswordStoreBridge
 
   // Used to fetch and edit passwords.
   password_manager::SavedPasswordsPresenter saved_passwords_presenter_{
-      profile_store_, AccountPasswordStoreFactory::GetForProfile(
-                          ProfileManager::GetLastUsedProfile(),
-                          ServiceAccessType::EXPLICIT_ACCESS)};
+      AffiliationServiceFactory::GetForProfile(
+          ProfileManager::GetLastUsedProfile()),
+      profile_store_,
+      AccountPasswordStoreFactory::GetForProfile(
+          ProfileManager::GetLastUsedProfile(),
+          ServiceAccessType::EXPLICIT_ACCESS)};
 
   // A scoped observer for `saved_passwords_presenter_`.
   base::ScopedObservation<password_manager::SavedPasswordsPresenter,

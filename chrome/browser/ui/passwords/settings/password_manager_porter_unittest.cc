@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/site_affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
 #include "components/password_manager/core/browser/ui/import_results.h"
@@ -293,7 +294,9 @@ TEST_F(PasswordManagerPorterTest, ImportDismissedOnCanceledFileSelection) {
   auto* test_password_store =
       static_cast<password_manager::TestPasswordStore*>(store.get());
   EXPECT_THAT(test_password_store->stored_passwords(), IsEmpty());
-  password_manager::SavedPasswordsPresenter presenter{test_password_store};
+  password_manager::MockAffiliationService affiliation_service;
+  password_manager::SavedPasswordsPresenter presenter{&affiliation_service,
+                                                      test_password_store};
   presenter.Init();
 
   PasswordManagerPorter porter(
@@ -376,7 +379,9 @@ TEST_P(PasswordManagerPorterStoreTest, Import) {
   ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path));
   ASSERT_TRUE(base::WriteFile(temp_file_path, tc.csv));
 
-  password_manager::SavedPasswordsPresenter presenter{test_password_store};
+  password_manager::MockAffiliationService affiliation_service;
+  password_manager::SavedPasswordsPresenter presenter{&affiliation_service,
+                                                      test_password_store};
   presenter.Init();
 
   PasswordManagerPorter porter(

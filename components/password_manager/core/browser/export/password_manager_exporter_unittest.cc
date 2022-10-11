@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/site_affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/export_progress_status.h"
@@ -94,7 +95,8 @@ class PasswordManagerExporterTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  SavedPasswordsPresenter presenter_{store_};
+  MockAffiliationService affiliation_service_;
+  SavedPasswordsPresenter presenter_{&affiliation_service_, store_};
   base::MockCallback<
       base::RepeatingCallback<void(ExportProgressStatus, const std::string&)>>
       mock_on_progress_;

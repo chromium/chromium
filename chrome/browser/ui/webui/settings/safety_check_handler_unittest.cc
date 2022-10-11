@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/site_affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -259,7 +260,9 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
       extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE;
   scoped_refptr<password_manager::TestPasswordStore> store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
-  password_manager::SavedPasswordsPresenter presenter_{store_};
+  password_manager::MockAffiliationService affiliation_service_;
+  password_manager::SavedPasswordsPresenter presenter_{&affiliation_service_,
+                                                       store_};
   password_manager::InsecureCredentialsManager credentials_manager_{&presenter_,
                                                                     store_};
 };

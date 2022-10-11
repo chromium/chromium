@@ -17,4 +17,17 @@ AffiliatedGroup::AffiliatedGroup(AffiliatedGroup&& other) = default;
 
 AffiliatedGroup::~AffiliatedGroup() = default;
 
+bool operator==(const AffiliatedGroup& lhs, const AffiliatedGroup& rhs) {
+  if (lhs.credential_groups.size() != rhs.credential_groups.size()) {
+    return false;
+  }
+  for (const CredentialUIEntry& credential : lhs.credential_groups) {
+    if (std::find(rhs.credential_groups.begin(), rhs.credential_groups.end(),
+                  credential) == rhs.credential_groups.end()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace password_manager

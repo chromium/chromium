@@ -203,4 +203,37 @@ TEST(PasswordListSorterTest, EntriesDifferingByStoreShouldMapToSameKey) {
             CreateSortKey(profile_form, IgnoreStore(true)));
 }
 
+TEST(PasswordListSorterTest, CreateUsernamePasswordSortKey) {
+  PasswordForm form;
+  form.signon_realm = "https://g.com/";
+  form.url = GURL(form.signon_realm);
+  form.blocked_by_user = false;
+  form.username_value = u"username00";
+  form.password_value = u"password01";
+
+  EXPECT_EQ(CreateUsernamePasswordSortKey(form), "username00 password01 -");
+}
+
+TEST(PasswordListSorterTest,
+     CreateUsernamePasswordSortKeyWithFederationOrigin) {
+  PasswordForm form;
+  form.signon_realm = "https://g.com/";
+  form.url = GURL(form.signon_realm);
+  form.username_value = u"username00";
+  form.password_value = u"password01";
+  form.federation_origin = url::Origin::Create(GURL("https://google.com/"));
+
+  EXPECT_EQ(CreateUsernamePasswordSortKey(form),
+            "username00 password01 google.com");
+}
+
+TEST(PasswordListSorterTest, CreateUsernamePasswordSortKeyBlockedByUser) {
+  PasswordForm form;
+  form.signon_realm = "https://g.com/";
+  form.url = GURL(form.signon_realm);
+  form.blocked_by_user = true;
+
+  EXPECT_EQ(CreateUsernamePasswordSortKey(form), "g.com");
+}
+
 }  // namespace password_manager

@@ -43,6 +43,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/site_affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/browser/well_known_change_password_util.h"
@@ -353,7 +354,8 @@ class PasswordCheckDelegateTest : public ::testing::Test {
               int,
               password_manager::CredentialUIEntry::Less>
       credential_id_generator_;
-  SavedPasswordsPresenter presenter_{store_};
+  password_manager::MockAffiliationService affiliation_service_;
+  SavedPasswordsPresenter presenter_{&affiliation_service_, store_};
   PasswordCheckDelegate delegate_{&profile_, &presenter_,
                                   &credential_id_generator_};
 };
@@ -1138,7 +1140,8 @@ TEST_F(PasswordCheckDelegateTest,
 
   // Use a local delegate instead of |delegate()| so that the Password Store can
   // be set-up prior to constructing the object.
-  SavedPasswordsPresenter new_presenter(&store());
+  password_manager::MockAffiliationService affiliation_service;
+  SavedPasswordsPresenter new_presenter(&affiliation_service, &store());
   PasswordCheckDelegate delegate = CreateDelegate(&new_presenter);
   new_presenter.Init();
   delegate.StartPasswordCheck(callback1.Get());
