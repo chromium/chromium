@@ -52,7 +52,6 @@ bool OriginVerifier::VerifyOrigin(
   raw_ptr<content::WebContents> web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   std::string package_name = ConvertJavaStringToUTF8(env, j_package_name);
-  // TODO(swestphal): pass all fingerprints for verification.
   std::vector<std::string> fingerprints;
   AppendJavaStringArrayToStringVector(env, j_fingerprints, &fingerprints);
   std::string origin = ConvertJavaStringToUTF8(env, j_origin);

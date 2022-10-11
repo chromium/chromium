@@ -101,11 +101,15 @@ public class ChromeOriginVerifierJunitTest {
 
         mJniMocker.mock(OriginVerifierJni.TEST_HOOKS, mMockOriginVerifierJni);
         Mockito.doAnswer(args -> {
-                   if (args.getArgument(3) == null) {
+                   String[] fingerprints = args.getArgument(3);
+                   if (fingerprints == null) {
                        mChromeVerifier.onOriginVerificationResult(
                                args.getArgument(4), RelationshipCheckResult.FAILURE);
                        return false;
                    }
+                   // Ensure parsing of signature works.
+                   assert fingerprints.length == 1;
+                   assert fingerprints[0] != null;
                    mChromeVerifier.onOriginVerificationResult(
                            args.getArgument(4), RelationshipCheckResult.SUCCESS);
                    return true;
