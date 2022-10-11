@@ -131,15 +131,13 @@ void HeadlessDevToolsClientImpl::SendRawDevToolsMessage(
     const std::string& json_message) {
   std::unique_ptr<base::Value> message =
       base::JSONReader::ReadDeprecated(json_message);
-  if (!message->is_dict()) {
+  if (!message || !message->is_dict()) {
     LOG(ERROR) << "Malformed raw message";
     return;
   }
-  std::unique_ptr<base::DictionaryValue> dict =
-      base::DictionaryValue::From(std::move(message));
   if (!session_id_.empty())
-    dict->SetString("sessionId", session_id_);
-  SendProtocolMessage(dict.get());
+    message->GetDict().Set("sessionId", session_id_);
+  SendProtocolMessage(message->GetDict());
 }
 
 void HeadlessDevToolsClientImpl::DispatchMessageFromExternalHost(
@@ -447,28 +445,28 @@ tracing::Domain* HeadlessDevToolsClientImpl::GetTracing() {
 
 template <typename CallbackType>
 void HeadlessDevToolsClientImpl::FinalizeAndSendMessage(
-    base::DictionaryValue* message,
+    base::Value::Dict message,
     CallbackType callback) {
   if (renderer_crashed_)
     return;
   int id = g_next_message_id;
   g_next_message_id += 2;  // We only send even numbered messages.
-  message->SetInteger("id", id);
+  message.Set("id", id);
   if (!session_id_.empty())
-    message->SetString("sessionId", session_id_);
+    message.Set("sessionId", session_id_);
   pending_messages_[id] = Callback(std::move(callback));
   SendProtocolMessage(message);
 }
 
 void HeadlessDevToolsClientImpl::SendProtocolMessage(
-    const base::DictionaryValue* message) {
+    const base::Value::Dict& message) {
   if (parent_client_) {
     parent_client_->SendProtocolMessage(message);
     return;
   }
 
   std::string json_message;
-  base::JSONWriter::Write(*message, &json_message);
+  base::JSONWriter::Write(message, &json_message);
   // LOG(ERROR) << "[SEND] " << json_message;
   auto bytes_message = base::as_bytes(base::make_span(json_message));
   if (channel_)
@@ -478,27 +476,25 @@ void HeadlessDevToolsClientImpl::SendProtocolMessage(
 }
 
 template <typename CallbackType>
-void HeadlessDevToolsClientImpl::SendMessageWithParams(
-    const char* method,
-    std::unique_ptr<base::Value> params,
-    CallbackType callback) {
-  base::DictionaryValue message;
-  message.SetString("method", method);
-  message.SetKey("params", base::Value::FromUniquePtrValue(std::move(params)));
-  FinalizeAndSendMessage(&message, std::move(callback));
+void HeadlessDevToolsClientImpl::SendMessageWithParams(const char* method,
+                                                       base::Value params,
+                                                       CallbackType callback) {
+  base::Value::Dict message;
+  message.Set("method", method);
+  message.Set("params", std::move(params));
+  FinalizeAndSendMessage(std::move(message), std::move(callback));
 }
 
 void HeadlessDevToolsClientImpl::SendMessage(
     const char* method,
-    std::unique_ptr<base::Value> params,
+    base::Value params,
     base::OnceCallback<void(const base::Value&)> callback) {
   SendMessageWithParams(method, std::move(params), std::move(callback));
 }
 
-void HeadlessDevToolsClientImpl::SendMessage(
-    const char* method,
-    std::unique_ptr<base::Value> params,
-    base::OnceClosure callback) {
+void HeadlessDevToolsClientImpl::SendMessage(const char* method,
+                                             base::Value params,
+                                             base::OnceClosure callback) {
   SendMessageWithParams(method, std::move(params), std::move(callback));
 }
 

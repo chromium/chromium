@@ -806,42 +806,40 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
     GURL::Replacements replace_port;
     replace_port.SetPortStr("");
 
-    std::vector<std::unique_ptr<base::DictionaryValue>> dom_nodes(
-        result->GetDomNodes()->size());
+    std::vector<base::Value> dom_nodes(result->GetDomNodes()->size());
 
     // For convenience, flatten the dom tree into an array of dicts.
     for (size_t i = 0; i < result->GetDomNodes()->size(); i++) {
       dom_snapshot::DOMNode* node = (*result->GetDomNodes())[i].get();
 
-      dom_nodes[i].reset(
-          static_cast<base::DictionaryValue*>(node->Serialize().release()));
-      base::DictionaryValue* node_dict = dom_nodes[i].get();
+      dom_nodes[i] = node->Serialize();
+      ASSERT_TRUE(dom_nodes[i].is_dict());
+      base::Value::Dict& node_dict = dom_nodes[i].GetDict();
 
       // Node IDs are assigned in a non deterministic way.
-      if (node_dict->FindKey("backendNodeId"))
-        node_dict->SetString("backendNodeId", "?");
+      if (node_dict.Find("backendNodeId"))
+        node_dict.Set("backendNodeId", "?");
 
       // Frame IDs are random.
-      if (node_dict->FindKey("frameId"))
-        node_dict->SetString("frameId", "?");
+      if (node_dict.Find("frameId"))
+        node_dict.Set("frameId", "?");
 
       // Ports are random.
-      if (base::Value* base_url_value = node_dict->FindKey("baseURL")) {
-        node_dict->SetString("baseURL", GURL(base_url_value->GetString())
-                                            .ReplaceComponents(replace_port)
-                                            .spec());
+      if (base::Value* base_url_value = node_dict.Find("baseURL")) {
+        node_dict.Set("baseURL", GURL(base_url_value->GetString())
+                                     .ReplaceComponents(replace_port)
+                                     .spec());
       }
 
-      if (base::Value* document_url_value = node_dict->FindKey("documentURL")) {
-        node_dict->SetString("documentURL",
-                             GURL(document_url_value->GetString())
-                                 .ReplaceComponents(replace_port)
-                                 .spec());
+      if (base::Value* document_url_value = node_dict.Find("documentURL")) {
+        node_dict.Set("documentURL", GURL(document_url_value->GetString())
+                                         .ReplaceComponents(replace_port)
+                                         .spec());
       }
 
       // Merge LayoutTreeNode data into the dictionary.
       if (base::Value* layout_node_index_value =
-              node_dict->FindKey("layoutNodeIndex")) {
+              node_dict.Find("layoutNodeIndex")) {
         int layout_node_index = layout_node_index_value->GetInt();
         ASSERT_LE(0, layout_node_index);
         ASSERT_GT(result->GetLayoutTreeNodes()->size(),
@@ -849,25 +847,22 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
         const std::unique_ptr<dom_snapshot::LayoutTreeNode>& layout_node =
             (*result->GetLayoutTreeNodes())[layout_node_index];
 
-        node_dict->SetKey("boundingBox",
-                          base::Value::FromUniquePtrValue(
-                              layout_node->GetBoundingBox()->Serialize()));
+        node_dict.Set("boundingBox",
+                      layout_node->GetBoundingBox()->Serialize());
 
         if (layout_node->HasLayoutText())
-          node_dict->SetString("layoutText", layout_node->GetLayoutText());
+          node_dict.Set("layoutText", layout_node->GetLayoutText());
 
         if (layout_node->HasStyleIndex())
-          node_dict->GetDict().Set("styleIndex", layout_node->GetStyleIndex());
+          node_dict.Set("styleIndex", layout_node->GetStyleIndex());
 
         if (layout_node->HasInlineTextNodes()) {
           base::Value::List inline_text_nodes;
           for (const std::unique_ptr<dom_snapshot::InlineTextBox>&
                    inline_text_box : *layout_node->GetInlineTextNodes()) {
-            inline_text_nodes.Append(
-                base::Value::FromUniquePtrValue(inline_text_box->Serialize()));
+            inline_text_nodes.Append(inline_text_box->Serialize());
           }
-          node_dict->GetDict().Set("inlineTextNodes",
-                                   std::move(inline_text_nodes));
+          node_dict.Set("inlineTextNodes", std::move(inline_text_nodes));
         }
       }
     }
@@ -895,10 +890,10 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
         base::ReadFileToString(expected_dom_nodes_path, &expected_dom_nodes));
 
     std::string dom_nodes_result;
-    for (size_t i = 0; i < dom_nodes.size(); i++) {
+    for (const base::Value& entry : dom_nodes) {
       std::string result_json;
       base::JSONWriter::WriteWithOptions(
-          *dom_nodes[i], base::JSONWriter::OPTIONS_PRETTY_PRINT, &result_json);
+          entry, base::JSONWriter::OPTIONS_PRETTY_PRINT, &result_json);
 
       dom_nodes_result += result_json;
     }

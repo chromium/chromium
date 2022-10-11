@@ -238,9 +238,10 @@ TEST(TypesTest, ComplexObjectClone) {
   ASSERT_TRUE(clone);
 
   std::string orig;
-  JSONStringValueSerializer(&orig).Serialize(*params->Serialize());
+  JSONStringValueSerializer(&orig).Serialize(base::Value(params->Serialize()));
   std::string clone_value;
-  JSONStringValueSerializer(&clone_value).Serialize(*clone->Serialize());
+  JSONStringValueSerializer(&clone_value)
+      .Serialize(base::Value(clone->Serialize()));
   EXPECT_EQ(orig, clone_value);
 }
 

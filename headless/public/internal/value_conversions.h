@@ -6,6 +6,9 @@
 #define HEADLESS_PUBLIC_INTERNAL_VALUE_CONVERSIONS_H_
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/values.h"
 #include "headless/public/util/error_reporter.h"
@@ -16,7 +19,7 @@ namespace internal {
 // Generic conversion from a type to a base::Value. Implemented below
 // (for composite and low level types) and and in types_DOMAIN.cc.
 template <typename T>
-std::unique_ptr<base::Value> ToValue(const T& value);
+base::Value ToValue(const T& value);
 
 // Generic conversion from a base::Value to a type. Note that this generic
 // variant is never defined. Instead, we declare a specific template
@@ -28,53 +31,52 @@ struct FromValue {
 };
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const int& value) {
-  return std::make_unique<base::Value>(value);
+inline base::Value ToValue(const int& value) {
+  return base::Value(value);
 }
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const double& value) {
-  return std::make_unique<base::Value>(value);
+inline base::Value ToValue(const double& value) {
+  return base::Value(value);
 }
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const bool& value) {
-  return std::make_unique<base::Value>(value);
+inline base::Value ToValue(const bool& value) {
+  return base::Value(value);
 }
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const std::string& value) {
-  return std::make_unique<base::Value>(value);
+inline base::Value ToValue(const std::string& value) {
+  return base::Value(value);
 }
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const base::Value& value) {
-  return base::Value::ToUniquePtrValue(value.Clone());
+inline base::Value ToValue(const base::Value& value) {
+  return value.Clone();
 }
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(
-    const base::DictionaryValue& value) {
+inline base::Value ToValue(const base::DictionaryValue& value) {
   return ToValue(static_cast<const base::Value&>(value));
 }
 
 // Note: Order of the two templates below is important to handle
 // vectors of unique_ptr.
 template <typename T>
-std::unique_ptr<base::Value> ToValue(const std::unique_ptr<T>& value) {
+base::Value ToValue(const std::unique_ptr<T>& value) {
   return ToValue(*value);
 }
 
 template <typename T>
-std::unique_ptr<base::Value> ToValue(const std::vector<T>& vector_of_values) {
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+base::Value ToValue(const std::vector<T>& vector_of_values) {
+  base::Value::List result;
   for (const T& value : vector_of_values)
-    result->GetList().Append(base::Value::FromUniquePtrValue(ToValue(value)));
-  return result;
+    result.Append(ToValue(value));
+  return base::Value(std::move(result));
 }
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const protocol::Binary& value) {
+inline base::Value ToValue(const protocol::Binary& value) {
   return ToValue(value.toBase64());
 }
 

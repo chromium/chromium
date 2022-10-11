@@ -8,6 +8,7 @@
 #define HEADLESS_PUBLIC_DEVTOOLS_INTERNAL_TYPE_CONVERSIONS_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
 
 #include "base/notreached.h"
+#include "base/values.h"
 #include "headless/public/devtools/domains/types_{{domain.domain | camelcase_to_hacker_style}}.h"
 #include "headless/public/internal/value_conversions.h"
 
@@ -36,15 +37,15 @@ struct FromValue<{{namespace}}::{{type.id}}> {
 };
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const {{namespace}}::{{type.id}}& value) {
+inline base::Value ToValue(const {{namespace}}::{{type.id}}& value) {
   switch (value) {
     {% for literal in type.enum %}
     case {{namespace}}::{{type.id}}::{{literal | sanitize_literal | dash_to_camelcase | camelcase_to_hacker_style | upper }}:
-      return std::make_unique<base::Value>("{{literal}}");
+      return base::Value("{{literal}}");
     {% endfor %}
   };
   NOTREACHED();
-  return nullptr;
+  return base::Value();
 }
     {% continue %}
   {% endif %}
@@ -58,7 +59,7 @@ struct FromValue<{{namespace}}::{{type.id}}> {
 };
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const {{namespace}}::{{type.id}}& value) {
+inline base::Value ToValue(const {{namespace}}::{{type.id}}& value) {
   return value.Serialize();
 }
 

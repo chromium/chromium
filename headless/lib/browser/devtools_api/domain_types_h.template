@@ -7,8 +7,8 @@
 #ifndef HEADLESS_PUBLIC_DEVTOOLS_DOMAINS_TYPES_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
 #define HEADLESS_PUBLIC_DEVTOOLS_DOMAINS_TYPES_{{domain.domain | camelcase_to_hacker_style | upper}}_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
 
 {% for domain_name in domain.dependencies %}
@@ -54,7 +54,7 @@ class HEADLESS_EXPORT {{type.id}} {
     {% endif %}
   {% endfor %}
 
-  std::unique_ptr<base::Value> Serialize() const;
+  base::Value Serialize() const;
   {{resolve_type(type).pass_type}} Clone() const;
 
   template<int STATE>

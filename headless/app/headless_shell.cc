@@ -517,9 +517,9 @@ void HeadlessShell::InputExpression() {
 
 void HeadlessShell::OnExpressionResult(
     std::unique_ptr<runtime::EvaluateResult> result) {
-  std::unique_ptr<base::Value> value = result->Serialize();
+  base::Value value = result->Serialize();
   std::string result_json;
-  base::JSONWriter::Write(*value, &result_json);
+  base::JSONWriter::Write(value, &result_json);
   printf("%s\n", result_json.c_str());
   InputExpression();
 }
