@@ -39,7 +39,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
@@ -1333,14 +1332,6 @@ void AppsGridView::CalculateIdealBounds() {
 }
 
 void AppsGridView::AnimateToIdealBounds() {
-  if (layer()->GetCompositor()) {
-    item_reorder_animation_tracker_ =
-        layer()->GetCompositor()->RequestNewThroughputTracker();
-    item_reorder_animation_tracker_->Start(
-        metrics_util::ForSmoothness(base::BindRepeating(
-            &ReportItemDragReorderAnimationSmoothness, IsTabletMode())));
-  }
-
   gfx::Rect visible_bounds(GetVisibleBounds());
   gfx::Point visible_origin = visible_bounds.origin();
   ConvertPointToTarget(this, items_container_, &visible_origin);
@@ -2557,10 +2548,6 @@ void AppsGridView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
 }
 
 void AppsGridView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
-  if (item_reorder_animation_tracker_) {
-    item_reorder_animation_tracker_->Stop();
-    item_reorder_animation_tracker_.reset();
-  }
   row_change_animator_->OnBoundsAnimatorDone();
   DestroyLayerItemsIfNotNeeded();
 }

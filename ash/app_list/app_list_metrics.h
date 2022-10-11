@@ -15,21 +15,15 @@ namespace ash {
 
 class SearchResult;
 
-// UMA histograms that record app list sort reorder animation smoothness.
-// Exposed in this header because it is needed in tests.
+// UMA histograms that record app list reorder animation smoothness. Exposed
+// in this header because it is needed in tests.
 ASH_EXPORT extern const char kClamshellReorderAnimationSmoothnessHistogram[];
 ASH_EXPORT extern const char kTabletReorderAnimationSmoothnessHistogram[];
 
-// UMA histograms that record app list sort reorder actions. Exposed in this
-// header because it is needed in tests.
+// UMA histograms that record app list reorder actions. Exposed in this header
+// because it is needed in tests.
 ASH_EXPORT extern const char kClamshellReorderActionHistogram[];
 ASH_EXPORT extern const char kTabletReorderActionHistogram[];
-
-// UMA histograms that record app list drag reorder animation smoothness.
-// Exposed in this header because it is needed in tests.
-ASH_EXPORT extern const char
-    kClamshellDragReorderAnimationSmoothnessHistogram[];
-ASH_EXPORT extern const char kTabletDragReorderAnimationSmoothnessHistogram[];
 
 // UMA histograms that records the number of files removed per user per session
 // from the launcher continue section. Exposed in this header because it is
@@ -284,8 +278,6 @@ ASH_EXPORT void ReportCardifiedSmoothness(bool is_entering_cardified,
 void ReportReorderAnimationSmoothness(bool in_tablet, int smoothness);
 
 void RecordAppListSortAction(AppListSortOrder new_order, bool in_tablet);
-
-void ReportItemDragReorderAnimationSmoothness(bool in_tablet, int smoothness);
 
 // Invoked when the app list session ends, records metrics of interest during
 // the session.
