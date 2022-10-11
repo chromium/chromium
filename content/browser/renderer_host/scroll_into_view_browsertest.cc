@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -223,10 +224,11 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     CHECK(value.has_value());
     CHECK(value->is_dict());
 
-    absl::optional<double> x = value->FindDoubleKey("x");
-    absl::optional<double> y = value->FindDoubleKey("y");
-    absl::optional<double> width = value->FindDoubleKey("width");
-    absl::optional<double> height = value->FindDoubleKey("height");
+    const base::Value::Dict& dict = value->GetDict();
+    absl::optional<double> x = dict.FindDouble("x");
+    absl::optional<double> y = dict.FindDouble("y");
+    absl::optional<double> width = dict.FindDouble("width");
+    absl::optional<double> height = dict.FindDouble("height");
 
     CHECK(x);
     CHECK(y);
@@ -273,13 +275,14 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     CHECK(value.has_value());
     CHECK(value->is_dict());
 
-    absl::optional<double> offset_left = value->FindDoubleKey("offsetLeft");
-    absl::optional<double> offset_top = value->FindDoubleKey("offsetTop");
-    absl::optional<double> width = value->FindDoubleKey("width");
-    absl::optional<double> height = value->FindDoubleKey("height");
-    absl::optional<double> scale = value->FindDoubleKey("scale");
-    absl::optional<double> page_left = value->FindDoubleKey("pageLeft");
-    absl::optional<double> page_top = value->FindDoubleKey("pageTop");
+    const base::Value::Dict& dict = value->GetDict();
+    absl::optional<double> offset_left = dict.FindDouble("offsetLeft");
+    absl::optional<double> offset_top = dict.FindDouble("offsetTop");
+    absl::optional<double> width = dict.FindDouble("width");
+    absl::optional<double> height = dict.FindDouble("height");
+    absl::optional<double> scale = dict.FindDouble("scale");
+    absl::optional<double> page_left = dict.FindDouble("pageLeft");
+    absl::optional<double> page_top = dict.FindDouble("pageTop");
 
     CHECK(offset_left);
     CHECK(offset_top);
