@@ -515,9 +515,6 @@
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX" desc="Notifies users that the type of card they are enrolling in is a virtual card.">
       Virtual card
     </message>
-    <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX_TWO" desc="Notifies the user that their virtual card card is linked with another card on their account.">
-      Linked with
-    </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_SELECTION_DIALOG_CONTENT_TITLE" desc="The title shown in the Autofill virtual card selection dialog. This dialog offers available virtual credit cards for users to choose to fill the form with. [ICU Syntax]">
       {NUM_CARDS, plural,
       =1 {Use a virtual number for this card}

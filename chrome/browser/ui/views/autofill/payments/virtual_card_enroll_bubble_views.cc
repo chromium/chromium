@@ -147,7 +147,7 @@ void VirtualCardEnrollBubbleViews::Init() {
   auto* description_view =
       AddChildView(std::make_unique<views::BoxLayoutView>());
   description_view->SetBetweenChildSpacing(
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
+      provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
   description_view->SetMainAxisAlignment(
       views::BoxLayout::MainAxisAlignment::kStart);
 
@@ -161,33 +161,19 @@ void VirtualCardEnrollBubbleViews::Init() {
   card_network_icon_->SetImage(virtual_card_enrollment_fields.card_art_image);
   card_network_icon_->SetTooltipText(card.NetworkForDisplay());
 
-  const std::u16string card_info =
-      card.CardIdentifierStringForAutofillDisplay();
-
-  const std::u16string card_label_text =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX) +
-      u"\n" +
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX_TWO) +
-      u" " + card_info;
-
-  auto* const card_identifier_label =
-      description_view->AddChildView(std::make_unique<views::StyledLabel>());
-  card_identifier_label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-  card_identifier_label->SetDefaultTextStyle(views::style::STYLE_PRIMARY);
-  card_identifier_label->SetText(card_label_text);
-
-  uint32_t length =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX_TWO)
-          .length() +
-      card_info.length() +
-      1;  // one added for space between string and card info.
-
-  uint32_t offset = card_label_text.length() - length;
-
-  views::StyledLabel::RangeStyleInfo linked_styling;
-  linked_styling.text_style = views::style::STYLE_SECONDARY;
-  card_identifier_label->AddStyleRange(gfx::Range(offset, offset + length),
-                                       linked_styling);
+  auto* const card_identifier_view =
+      description_view->AddChildView(std::make_unique<views::BoxLayoutView>());
+  card_identifier_view->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  card_identifier_view->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStart);
+  card_identifier_view->AddChildView(std::make_unique<views::Label>(
+      card.CardIdentifierStringForAutofillDisplay(),
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
+  card_identifier_view->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX),
+      ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+      views::style::STYLE_SECONDARY));
 }
 
 std::unique_ptr<views::View>
