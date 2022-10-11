@@ -183,7 +183,8 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
             new TabListMediator.ThumbnailFetcher(new TabListMediator.ThumbnailProvider() {
                 @Override
                 public void getTabThumbnailWithCallback(int tabId, Size thumbnailSize,
-                        Callback<Bitmap> callback, boolean forceUpdate, boolean writeToCache) {
+                        Callback<Bitmap> callback, boolean forceUpdate, boolean writeToCache,
+                        boolean isSelected) {
                     Bitmap bitmap = mShouldReturnBitmap
                             ? Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
                             : null;

@@ -131,7 +131,7 @@ class TabListMediator {
          * @see TabContentManager#getTabThumbnailWithCallback
          */
         void getTabThumbnailWithCallback(int tabId, Size thumbnailSize, Callback<Bitmap> callback,
-                boolean forceUpdate, boolean writeToCache);
+                boolean forceUpdate, boolean writeToCache, boolean isSelected);
     }
 
     /**
@@ -295,14 +295,14 @@ class TabListMediator {
             mWriteToCache = writeToCache;
         }
 
-        void fetch(Callback<Bitmap> callback, Size thumbnailSize) {
+        void fetch(Callback<Bitmap> callback, Size thumbnailSize, boolean isSelected) {
             Callback<Bitmap> forking = (bitmap) -> {
                 if (sBitmapCallbackForTesting != null) sBitmapCallbackForTesting.onResult(bitmap);
                 callback.onResult(bitmap);
             };
             sFetchCountForTesting++;
             mThumbnailProvider.getTabThumbnailWithCallback(
-                    mId, thumbnailSize, forking, mForceUpdate, mWriteToCache);
+                    mId, thumbnailSize, forking, mForceUpdate, mWriteToCache, isSelected);
         }
     }
 
@@ -476,6 +476,15 @@ class TabListMediator {
                 RecordUserAction.record("TabMultiSelect.TabSelected");
             }
             mModel.get(index).model.set(TabProperties.IS_SELECTED, !selected);
+            // Reset thumbnail to ensure the color of the blank tab slots is correct.
+            TabGroupModelFilter filter =
+                    (TabGroupModelFilter) mTabModelSelector.getTabModelFilterProvider()
+                            .getCurrentTabModelFilter();
+            Tab tab = mTabModelSelector.getTabById(tabId);
+            if (tab != null && filter.hasOtherRelatedTabs(tab)) {
+                mModel.get(index).model.set(TabProperties.THUMBNAIL_FETCHER,
+                        new ThumbnailFetcher(mThumbnailProvider, tabId, false, false));
+            }
         }
     };
 
@@ -1348,6 +1357,8 @@ class TabListMediator {
                 tabSelectedListener = mTabSelectedListener;
             }
         }
+        boolean selectionStateChanged =
+                mModel.get(index).model.get(TabProperties.IS_SELECTED) != isSelected;
         mModel.get(index).model.set(TabProperties.TAB_SELECTED_LISTENER, tabSelectedListener);
         mModel.get(index).model.set(TabProperties.IS_SELECTED, isSelected);
         mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
@@ -1379,10 +1390,13 @@ class TabListMediator {
         boolean forceUpdate = isSelected && !quickMode;
         boolean forceUpdateLastSelected =
                 mActionsOnAllRelatedTabs && index == mLastSelectedTabListModelIndex && !quickMode;
-
+        boolean forceUpdateColorForSelectableGroup = mUiType == UiType.SELECTABLE
+                && selectionStateChanged
+                && PseudoTab.getRelatedTabs(mContext, pseudoTab, mTabModelSelector).size() > 1;
         if (mThumbnailProvider != null && mVisible
                 && (mModel.get(index).model.get(TabProperties.THUMBNAIL_FETCHER) == null
-                        || forceUpdate || isUpdatingId || forceUpdateLastSelected)) {
+                        || forceUpdate || isUpdatingId || forceUpdateLastSelected
+                        || forceUpdateColorForSelectableGroup)) {
             ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, pseudoTab.getId(),
                     forceUpdate || forceUpdateLastSelected,
                     forceUpdate && !TabUiFeatureUtilities.isTabToGtsAnimationEnabled());

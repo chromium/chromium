@@ -364,8 +364,8 @@ class TabGridViewBinder {
             return;
         }
         // Use placeholder drawable before the real thumbnail is available.
-        thumbnail.setColorThumbnailPlaceHolder(
-                model.get(TabProperties.IS_INCOGNITO), model.get(TabProperties.IS_SELECTED));
+        boolean isSelected = model.get(TabProperties.IS_SELECTED);
+        thumbnail.setColorThumbnailPlaceHolder(model.get(TabProperties.IS_INCOGNITO), isSelected);
 
         final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
         final Size thumbnailSize =
@@ -389,9 +389,9 @@ class TabGridViewBinder {
             }
         };
         if (TabUiFeatureUtilities.isLaunchPolishEnabled() && sThumbnailFetcherForTesting != null) {
-            sThumbnailFetcherForTesting.fetch(callback, thumbnailSize);
+            sThumbnailFetcherForTesting.fetch(callback, thumbnailSize, isSelected);
         } else {
-            fetcher.fetch(callback, thumbnailSize);
+            fetcher.fetch(callback, thumbnailSize, isSelected);
         }
     }
 

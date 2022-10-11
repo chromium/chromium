@@ -140,6 +140,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.commerce.PriceTracking.BuyableProduct;
 import org.chromium.components.commerce.PriceTracking.PriceTrackingData;
 import org.chromium.components.commerce.PriceTracking.ProductPrice;
@@ -296,6 +297,8 @@ public class TabListMediatorUnitTest {
     TabSwitcherMediator.PriceWelcomeMessageController mPriceWelcomeMessageController;
     @Mock
     ShoppingPersistedTabData mShoppingPersistedTabData;
+    @Mock
+    SelectionDelegate<Integer> mSelectionDelegate;
 
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -432,9 +435,9 @@ public class TabListMediatorUnitTest {
         mModel = new TabListModel();
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
-                mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, false, null, mGridCardOnClickListenerProvider, null, null,
-                getClass().getSimpleName(), UiType.CLOSABLE);
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, false, null,
+                mGridCardOnClickListenerProvider, null, null, getClass().getSimpleName(),
+                UiType.CLOSABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
         TrackerFactory.setTrackerForTests(mTracker);
 
@@ -1031,9 +1034,9 @@ public class TabListMediatorUnitTest {
     @Test
     public void tabSelection_updatePreviousSelectedTabThumbnailFetcher() {
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
-                mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, true, null, mGridCardOnClickListenerProvider, null, null,
-                getClass().getSimpleName(), UiType.CLOSABLE);
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, null,
+                mGridCardOnClickListenerProvider, null, null, getClass().getSimpleName(),
+                UiType.CLOSABLE);
         mMediator.initWithNative(mProfile);
         // mTabModelObserverCaptor captures on every initWithNative calls. There is one
         // initWithNative call in the setup already.
@@ -2775,9 +2778,8 @@ public class TabListMediatorUnitTest {
 
         // Re-initialize the mediator to setup TemplateUrlServiceObserver if needed.
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
-                mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
-                TabProperties.UiType.CLOSABLE);
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, null,
+                null, null, null, getClass().getSimpleName(), TabProperties.UiType.CLOSABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
 
@@ -2800,9 +2802,8 @@ public class TabListMediatorUnitTest {
 
         // Re-initialize the mediator to setup TemplateUrlServiceObserver if needed.
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
-                mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
-                TabProperties.UiType.CLOSABLE);
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, null,
+                null, null, null, getClass().getSimpleName(), TabProperties.UiType.CLOSABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
 
@@ -2945,9 +2946,8 @@ public class TabListMediatorUnitTest {
     public void testListObserver_OnItemRangeInserted() {
         setPriceTrackingEnabledForTesting(true);
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
-                mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
-                TabProperties.UiType.CLOSABLE);
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, null,
+                null, null, null, getClass().getSimpleName(), TabProperties.UiType.CLOSABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initAndAssertAllProperties();
@@ -2963,9 +2963,8 @@ public class TabListMediatorUnitTest {
     public void testListObserver_OnItemRangeRemoved() {
         setPriceTrackingEnabledForTesting(true);
         mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
-                mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, true, null, null, null, null, getClass().getSimpleName(),
-                TabProperties.UiType.CLOSABLE);
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, null,
+                null, null, null, getClass().getSimpleName(), TabProperties.UiType.CLOSABLE);
         mMediator.registerOrientationListener(mGridLayoutManager);
         mMediator.initWithNative(mProfile);
         initWithThreeTabs();
@@ -3272,6 +3271,117 @@ public class TabListMediatorUnitTest {
         assertEquals(2, mMediator.getViewedTabIdsForTesting().size());
     }
 
+    @Test
+    public void testSelectableUpdates_withoutRelated() {
+        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
+        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
+        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
+        when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(true);
+        when(mSelectionDelegate.isItemSelected(TAB2_ID)).thenReturn(false);
+        when(mSelectionDelegate.isItemSelected(TAB3_ID)).thenReturn(false);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, () -> {
+                    return mSelectionDelegate;
+                }, null, null, null, getClass().getSimpleName(), TabProperties.UiType.SELECTABLE);
+        mMediator.registerOrientationListener(mGridLayoutManager);
+        mMediator.initWithNative(mProfile);
+        initAndAssertAllProperties();
+        when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(false);
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, tab3));
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false, false);
+        assertThat(mModel.size(), equalTo(3));
+        assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        assertThat(mModel.get(2).model.get(TabProperties.IS_SELECTED), equalTo(false));
+
+        when(mTabModelSelector.getTabById(TAB2_ID)).thenReturn(mTab2);
+        when(mTabGroupModelFilter.hasOtherRelatedTabs(mTab2)).thenReturn(false);
+        ThumbnailFetcher fetcher2 = mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER);
+        mModel.get(1).model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(TAB2_ID);
+        assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(true));
+        assertEquals(fetcher2, mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER));
+    }
+
+    @Test
+    public void testSelectableUpdates_withRelated() {
+        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
+        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
+        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
+        when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(true);
+        when(mSelectionDelegate.isItemSelected(TAB2_ID)).thenReturn(false);
+        when(mSelectionDelegate.isItemSelected(TAB3_ID)).thenReturn(false);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, () -> {
+                    return mSelectionDelegate;
+                }, null, null, null, getClass().getSimpleName(), TabProperties.UiType.SELECTABLE);
+        mMediator.registerOrientationListener(mGridLayoutManager);
+        mMediator.initWithNative(mProfile);
+        initAndAssertAllProperties();
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(false);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, tab3));
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false, false);
+        assertThat(mModel.size(), equalTo(3));
+        assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        assertThat(mModel.get(2).model.get(TabProperties.IS_SELECTED), equalTo(false));
+
+        when(mTabModelSelector.getTabById(TAB2_ID)).thenReturn(mTab2);
+        when(mTabGroupModelFilter.hasOtherRelatedTabs(mTab2)).thenReturn(true);
+        ThumbnailFetcher fetcher2 = mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER);
+        mModel.get(1).model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER).run(TAB2_ID);
+        assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(true));
+        assertNotEquals(fetcher2, mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER));
+    }
+
+    @Test
+    public void testSelectableUpdates_onReset() {
+        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
+        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
+        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
+        when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(true);
+        when(mSelectionDelegate.isItemSelected(TAB2_ID)).thenReturn(false);
+        when(mSelectionDelegate.isItemSelected(TAB3_ID)).thenReturn(false);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        mMediator = new TabListMediator(mActivity, mModel, TabListMode.GRID, mTabModelSelector,
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider, true, () -> {
+                    return mSelectionDelegate;
+                }, null, null, null, getClass().getSimpleName(), TabProperties.UiType.SELECTABLE);
+        mMediator.registerOrientationListener(mGridLayoutManager);
+        mMediator.initWithNative(mProfile);
+        initAndAssertAllProperties();
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        Tab tab4 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        when(mTabGroupModelFilter.getRelatedTabList(TAB1_ID)).thenReturn(Arrays.asList(mTab1));
+        when(mTabGroupModelFilter.getRelatedTabList(TAB2_ID))
+                .thenReturn(Arrays.asList(mTab2, tab4));
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2, tab3));
+        when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(false);
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false, false);
+        assertThat(mModel.size(), equalTo(3));
+        assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        assertThat(mModel.get(2).model.get(TabProperties.IS_SELECTED), equalTo(false));
+
+        when(mSelectionDelegate.isItemSelected(TAB1_ID)).thenReturn(true);
+        when(mSelectionDelegate.isItemSelected(TAB2_ID)).thenReturn(true);
+        when(mSelectionDelegate.isItemSelected(TAB3_ID)).thenReturn(false);
+        ThumbnailFetcher fetcher1 = mModel.get(0).model.get(TabProperties.THUMBNAIL_FETCHER);
+        ThumbnailFetcher fetcher2 = mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER);
+        ThumbnailFetcher fetcher3 = mModel.get(2).model.get(TabProperties.THUMBNAIL_FETCHER);
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), true, false);
+
+        assertThat(mModel.get(0).model.get(TabProperties.IS_SELECTED), equalTo(true));
+        assertThat(mModel.get(1).model.get(TabProperties.IS_SELECTED), equalTo(true));
+        assertThat(mModel.get(2).model.get(TabProperties.IS_SELECTED), equalTo(false));
+        assertEquals(fetcher1, mModel.get(0).model.get(TabProperties.THUMBNAIL_FETCHER));
+        assertNotEquals(fetcher2, mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER));
+        assertEquals(fetcher3, mModel.get(2).model.get(TabProperties.THUMBNAIL_FETCHER));
+    }
+
     private void setUpCloseButtonDescriptionString(boolean isGroup) {
         if (isGroup) {
             doAnswer(invocation -> {
@@ -3364,6 +3474,8 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.get(1).model.get(TabProperties.THUMBNAIL_FETCHER),
                 instanceOf(TabListMediator.ThumbnailFetcher.class));
 
+        if (mModel.get(0).model.get(TabProperties.SELECTABLE_TAB_CLICKED_LISTENER) != null) return;
+
         assertThat(mModel.get(0).model.get(TabProperties.TAB_SELECTED_LISTENER),
                 instanceOf(TabListMediator.TabActionListener.class));
         assertThat(mModel.get(1).model.get(TabProperties.TAB_SELECTED_LISTENER),
@@ -3431,9 +3543,8 @@ public class TabListMediatorUnitTest {
         CachedFeatureFlags.setForTesting(TAB_GROUPS_ANDROID, true);
 
         mMediator = new TabListMediator(mActivity, mModel, mode, mTabModelSelector,
-                mTabContentManager::getTabThumbnailWithCallback, mTitleProvider,
-                mTabListFaviconProvider, actionOnRelatedTabs, null, null, handler, null,
-                getClass().getSimpleName(), uiType);
+                getTabThumbnailCallback(), mTitleProvider, mTabListFaviconProvider,
+                actionOnRelatedTabs, null, null, handler, null, getClass().getSimpleName(), uiType);
         mMediator.registerOrientationListener(mGridLayoutManager);
 
         // TabGroupModelFilterObserver is registered when native is ready.
@@ -3535,6 +3646,13 @@ public class TabListMediatorUnitTest {
 
         doReturn(true).when(mGridLayoutManager).isViewPartiallyVisible(seenView, false, true);
         doReturn(mTabModel.getCount()).when(mRecyclerView).getChildCount();
+    }
+
+    private TabListMediator.ThumbnailProvider getTabThumbnailCallback() {
+        return (tabId, thumbnailSize, callback, forceUpdate, writeToCache, isSelected) -> {
+            mTabContentManager.getTabThumbnailWithCallback(
+                    tabId, thumbnailSize, callback, forceUpdate, writeToCache);
+        };
     }
 
     private static void setPriceTrackingEnabledForTesting(boolean value) {

@@ -372,14 +372,14 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
 
     @Override
     public void getTabThumbnailWithCallback(int tabId, Size thumbnailSize,
-            Callback<Bitmap> finalCallback, boolean forceUpdate, boolean writeToCache) {
+            Callback<Bitmap> finalCallback, boolean forceUpdate, boolean writeToCache,
+            boolean isSelected) {
         PseudoTab tab = PseudoTab.fromTabId(tabId);
         if (tab == null || PseudoTab.getRelatedTabs(mContext, tab, mTabModelSelector).size() == 1) {
             mTabContentManager.getTabThumbnailWithCallback(
                     tabId, thumbnailSize, finalCallback, forceUpdate, writeToCache);
             return;
         }
-        boolean isSelected = tabId == mTabModelSelector.getCurrentTabId();
         new MultiThumbnailFetcher(
                 tab, thumbnailSize, finalCallback, forceUpdate, writeToCache, isSelected)
                 .fetch();

@@ -90,7 +90,12 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                                     && SysUtils.isLowEndDevice()
                             ? TabListCoordinator.TabListMode.LIST
                             : TabListCoordinator.TabListMode.GRID,
-                    activity, tabModelSelector, tabContentManager::getTabThumbnailWithCallback,
+                    activity, tabModelSelector,
+                    (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected)
+                            -> {
+                        tabContentManager.getTabThumbnailWithCallback(
+                                tabId, thumbnailSize, callback, forceUpdate, writeBack);
+                    },
                     null, false, gridCardOnClickListenerProvider,
                     mMediator.getTabGridDialogHandler(), TabProperties.UiType.CLOSABLE, null, null,
                     containerView, false, mComponentName, rootView, null);

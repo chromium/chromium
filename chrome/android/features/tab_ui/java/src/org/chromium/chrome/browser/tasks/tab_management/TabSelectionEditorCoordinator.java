@@ -181,7 +181,10 @@ class TabSelectionEditorCoordinator {
 
             TabListMediator.ThumbnailProvider thumbnailProvider = displayGroups
                     ? new MultiThumbnailCardProvider(context, tabContentManager, tabModelSelector)
-                    : tabContentManager::getTabThumbnailWithCallback;
+                    : (tabId, thumbnailSize, callback, forceUpdate, writeBack, isSelected) -> {
+                tabContentManager.getTabThumbnailWithCallback(
+                        tabId, thumbnailSize, callback, forceUpdate, writeBack);
+            };
             PseudoTab.TitleProvider titleProvider = displayGroups ? this::getTitle : null;
 
             // TODO(ckitagawa): Lazily instantiate the TabSelectionEditorCoordinator. When doing so,
