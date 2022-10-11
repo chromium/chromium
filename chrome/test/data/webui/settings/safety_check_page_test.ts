@@ -10,6 +10,7 @@ import {HatsBrowserProxyImpl, LifetimeBrowserProxyImpl, MetricsBrowserProxyImpl,
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 
 import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
@@ -17,6 +18,7 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {assertSafetyCheckChild} from './safety_check_test_utils.js';
+import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 // clang-format on
 
@@ -961,13 +963,19 @@ suite('SafetyCheckExtensionsChildUiTests', function() {
 
 suite('SafetyCheckPagePermissionModulesTest', function() {
   let page: SettingsSafetyCheckPageElement;
+  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
   const notificationElementName =
       'settings-safety-check-notification-permissions';
   const unusedSiteElementName = 'settings-safety-check-unused-site-permissions';
 
-  function createPage() {
+  setup(function() {
+    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML =
         window.trustedTypes!.emptyHTML as unknown as string;
+  });
+
+  function createPage() {
     page = document.createElement('settings-safety-check-page');
     document.body.appendChild(page);
     flush();
@@ -977,19 +985,57 @@ suite('SafetyCheckPagePermissionModulesTest', function() {
     page.remove();
   });
 
-  test('notificationPermissionModuleVisible', () => {
+  test('notificationPermissionModuleVisible', async () => {
+    const mockData = [
+      {
+        origin: 'www.example1.com',
+        notificationInfoString: 'About 4 notifications a day',
+      },
+    ];
+    browserProxy.setNotificationPermissionReview(mockData);
+
     loadTimeData.overrideValues(
         {safetyCheckNotificationPermissionsEnabled: true});
     createPage();
+    webUIListenerCallback(
+        'notification-permission-review-list-changed', mockData);
+    flush();
     assertTrue(
+        isVisible(page.shadowRoot!.querySelector(notificationElementName)));
+
+    webUIListenerCallback('notification-permission-review-list-changed', []);
+    flush();
+
+    assertFalse(
         isVisible(page.shadowRoot!.querySelector(notificationElementName)));
   });
 
-  test('notificationPermissionModuleNotVisible', () => {
+  test('notificationPermissionModuleFeatureDisabled', () => {
     loadTimeData.overrideValues(
         {safetyCheckNotificationPermissionsEnabled: false});
     createPage();
     assertFalse(
+        isVisible(page.shadowRoot!.querySelector(notificationElementName)));
+  });
+
+  test('notificationPermissionModuleEmptyList', () => {
+    browserProxy.setNotificationPermissionReview([]);
+
+    loadTimeData.overrideValues(
+        {safetyCheckNotificationPermissionsEnabled: true});
+    createPage();
+    assertFalse(
+        isVisible(page.shadowRoot!.querySelector(notificationElementName)));
+
+    const mockData = [{
+      origin: 'www.example1.com',
+      notificationInfoString: 'About 4 notifications a day',
+    }];
+    webUIListenerCallback(
+        'notification-permission-review-list-changed', mockData);
+    flush();
+
+    assertTrue(
         isVisible(page.shadowRoot!.querySelector(notificationElementName)));
   });
 

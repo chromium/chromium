@@ -391,6 +391,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   plural_string_handler->AddLocalizedString(
       "importPasswordsBadRowsFormat",
       IDS_SETTINGS_PASSWORDS_IMPORT_BAD_ROWS_FORMAT);
+  plural_string_handler->AddLocalizedString(
+      "safetyCheckNotificationPermissionReviewHeaderLabel",
+      IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_HEADER_LABEL);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   // Add the metrics handler to write uma stats.

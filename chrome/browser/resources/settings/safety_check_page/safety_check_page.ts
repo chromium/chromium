@@ -35,6 +35,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
+import {NotificationPermission, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckParentStatus} from './safety_check_browser_proxy.js';
 import {getTemplate} from './safety_check_page.html.js';
@@ -68,7 +69,7 @@ export class SettingsSafetyCheckPageElement extends
       /** UI string to display for the parent status. */
       parentDisplayString_: String,
 
-      /** Boolean to show/hide entry point for notification permissions. */
+      /** Boolean to check safety check notification permissions enabled . */
       safetyCheckNotificationPermissionsEnabled_: {
         type: Boolean,
         value() {
@@ -76,7 +77,6 @@ export class SettingsSafetyCheckPageElement extends
               'safetyCheckNotificationPermissionsEnabled');
         },
       },
-
 
       /** Boolean to show/hide entry point for unused site permissions. */
       safetyCheckUnusedSitePermissionsEnabled_: {
@@ -86,6 +86,9 @@ export class SettingsSafetyCheckPageElement extends
               'safetyCheckUnusedSitePermissionsEnabled');
         },
       },
+
+      /* List of notification permission sites. */
+      notificationPermissionSites_: Array,
     };
   }
 
@@ -93,6 +96,9 @@ export class SettingsSafetyCheckPageElement extends
   private parentDisplayString_: string;
   private safetyCheckNotificationPermissionsEnabled_: boolean;
   private safetyCheckUnusedSitePermissionsEnabled_: boolean;
+  private notificationPermissionSites_: NotificationPermission[] = [];
+  private siteSettingsBrowserProxy_: SiteSettingsPrefsBrowserProxy =
+      SiteSettingsPrefsBrowserProxyImpl.getInstance();
   private safetyCheckBrowserProxy_: SafetyCheckBrowserProxy =
       SafetyCheckBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -101,7 +107,7 @@ export class SettingsSafetyCheckPageElement extends
   /** Timer ID for periodic update. */
   private updateTimerId_: number = -1;
 
-  override connectedCallback() {
+  override async connectedCallback() {
     super.connectedCallback();
 
     // Register for safety check status updates.
@@ -117,6 +123,15 @@ export class SettingsSafetyCheckPageElement extends
         Router.getInstance().getQueryParameters().has('activateSafetyCheck')) {
       this.runSafetyCheck_();
     }
+
+    // Register for notification permission review list updates.
+    this.addWebUIListener(
+        'notification-permission-review-list-changed',
+        (sites: NotificationPermission[]) =>
+            this.onReviewNotificationPermissionListChanged_(sites));
+
+    this.notificationPermissionSites_ =
+        await this.siteSettingsBrowserProxy_.getNotificationPermissionReview();
   }
 
   /** Triggers the safety check. */
@@ -175,6 +190,16 @@ export class SettingsSafetyCheckPageElement extends
 
   private shouldShowChildren_(): boolean {
     return this.parentStatus_ !== SafetyCheckParentStatus.BEFORE;
+  }
+
+  private onReviewNotificationPermissionListChanged_(
+      sites: NotificationPermission[]) {
+    this.notificationPermissionSites_ = sites;
+  }
+
+  private shouldShowNotificationPermissions_(): boolean {
+    return this.notificationPermissionSites_.length !== 0 &&
+        this.safetyCheckNotificationPermissionsEnabled_;
   }
 }
 
