@@ -229,10 +229,10 @@ void WriteIntoTracedValue(TracedValue, T&&) {}
 namespace protos::pbzero::SequenceManagerTask {
 enum class QueueName {
   UNKNOWN_TQ = 0,
-  DEFAULT_TQ = 3,
-  TASK_ENVIRONMENT_DEFAULT_TQ = 4,
-  TEST_TQ = 5,
-  TEST2_TQ = 51,
+  DEFAULT_TQ = 1,
+  TASK_ENVIRONMENT_DEFAULT_TQ = 2,
+  TEST2_TQ = 3,
+  TEST_TQ = 4,
 };
 inline const char* QueueName_Name(QueueName value) {
   switch (value) {
@@ -242,10 +242,10 @@ inline const char* QueueName_Name(QueueName value) {
       return "DEFAULT_TQ";
     case QueueName::TASK_ENVIRONMENT_DEFAULT_TQ:
       return "TASK_ENVIRONMENT_DEFAULT_TQ";
-    case QueueName::TEST_TQ:
-      return "TEST_TQ";
     case QueueName::TEST2_TQ:
       return "TEST2_TQ";
+    case QueueName::TEST_TQ:
+      return "TEST_TQ";
   }
 }
 }  // namespace protos::pbzero::SequenceManagerTask

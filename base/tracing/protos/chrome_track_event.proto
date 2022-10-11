@@ -854,12 +854,12 @@ message SequenceManagerTask {
   }
 
   enum QueueName {
-    CONTROL_TQ = 0;
+    UNKNOWN_TQ = 0;
     DEFAULT_TQ = 1;
     TASK_ENVIRONMENT_DEFAULT_TQ = 2;
     TEST2_TQ = 3;
     TEST_TQ = 4;
-    UNKNOWN_TQ = 5;
+    CONTROL_TQ = 5;
 
     SUBTHREAD_CONTROL_TQ = 6;
     SUBTHREAD_DEFAULT_TQ = 7;
