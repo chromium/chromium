@@ -46,3 +46,6 @@
 
 # TODO(crbug.com/1373197)
 -PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginSignedExchangeWithPreload/*
+
+# TODO(crbug.com/1373576)
+-PrefetchBrowserTest/PrefetchBrowserTest.CrossOriginWithPreloadAnonymous/*
