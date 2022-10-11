@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -155,6 +156,9 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
           }),
       /*use_fallback=*/false);
 
+  // Create a new tab to ensure that the browser isn't destroyed with the web
+  // contents closing.
+  chrome::NewTab(browser());
   web_contents->Close();
 
   loop.Run();

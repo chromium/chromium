@@ -110,10 +110,16 @@ void WebAppLockManager::AcquireLock(Lock& lock,
   CHECK(!lock.HasLockBeenRequested()) << "Cannot acquire a lock twice.";
   std::vector<content::PartitionedLockManager::PartitionedLockRequest>
       requests = GetLockRequestsForLock(lock);
+  // TODO(dmurph): Create option for lock acquisition callbacks to always be
+  // posted async. https://crbug.com/1354312
+  auto posted_callback =
+      base::BindOnce(base::IgnoreResult(&base::TaskRunner::PostTask),
+                     base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
+                     std::move(on_lock_acquired));
   lock.holder_ = std::make_unique<content::PartitionedLockHolder>();
   bool success =
       lock_manager_.AcquireLocks(std::move(requests), lock.holder_->AsWeakPtr(),
-                                 std::move(on_lock_acquired));
+                                 std::move(posted_callback));
   DCHECK(success);
 }
 
