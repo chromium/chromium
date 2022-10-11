@@ -150,7 +150,7 @@ class WebKioskTest : public OobeBaseTest {
                               result) {
                     ASSERT_TRUE(webapps::IsSuccess(result.code));
                     Shell::Get()->session_controller()->RequestSignOut();
-                    loop.QuitWhenIdle();
+                    loop.Quit();
                   }));
         });
 

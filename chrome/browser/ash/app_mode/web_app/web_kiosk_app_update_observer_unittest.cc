@@ -208,7 +208,7 @@ TEST_F(WebKioskAppUpdateObserverTest, ShouldUpdateAppInfoWithIconWhenReady) {
   {
     base::RunLoop loop;
     EXPECT_CALL(*mock_app_registry_observer(), OnAppUpdate)
-        .WillOnce(RunClosure(loop.QuitWhenIdleClosure()));
+        .WillOnce(RunClosure(loop.QuitClosure()));
     std::vector<apps::AppPtr> apps;
     apps.push_back(CreateTestApp());
     app_service()->OnApps(std::move(apps), apps::AppType::kWeb,
@@ -225,7 +225,7 @@ TEST_F(WebKioskAppUpdateObserverTest, ShouldUpdateAppInfoWithIconWhenReady) {
   {
     base::RunLoop loop;
     EXPECT_CALL(*mock_app_registry_observer(), OnAppUpdate)
-        .WillOnce(RunClosure(loop.QuitWhenIdleClosure()));
+        .WillOnce(RunClosure(loop.QuitClosure()));
     std::vector<apps::AppPtr> apps;
     apps.push_back(CreateTestApp());
     apps[0]->name = kAppTitle2;
@@ -240,7 +240,7 @@ TEST_F(WebKioskAppUpdateObserverTest, ShouldUpdateAppInfoWithIconWhenReady) {
   {
     base::RunLoop loop;
     EXPECT_CALL(*mock_app_registry_observer(), OnAppUpdate)
-        .WillOnce(RunClosure(loop.QuitWhenIdleClosure()));
+        .WillOnce(RunClosure(loop.QuitClosure()));
     std::vector<apps::AppPtr> apps;
     apps.push_back(CreateTestApp());
     apps[0]->icon_key = apps::IconKey();
@@ -263,7 +263,7 @@ TEST_F(WebKioskAppUpdateObserverTest, ShouldNotUpdateAppInfoWhenNotReady) {
   {
     base::RunLoop loop;
     EXPECT_CALL(*mock_app_registry_observer(), OnAppUpdate)
-        .WillOnce(RunClosure(loop.QuitWhenIdleClosure()));
+        .WillOnce(RunClosure(loop.QuitClosure()));
     std::vector<apps::AppPtr> apps;
     apps.push_back(CreateTestApp());
     apps[0]->readiness = apps::Readiness::kUnknown;
@@ -286,7 +286,7 @@ TEST_F(WebKioskAppUpdateObserverTest, ShouldNotUpdateAppInfoForNonWebApps) {
   {
     base::RunLoop loop;
     EXPECT_CALL(*mock_app_registry_observer(), OnAppUpdate)
-        .WillOnce(RunClosure(loop.QuitWhenIdleClosure()));
+        .WillOnce(RunClosure(loop.QuitClosure()));
     std::vector<apps::AppPtr> apps;
     apps.push_back(CreateTestApp());
     apps[0]->app_type = apps::AppType::kChromeApp;
@@ -309,7 +309,7 @@ TEST_F(WebKioskAppUpdateObserverTest, ShouldNotUpdateAppInfoForNonKioskApps) {
   {
     base::RunLoop loop;
     EXPECT_CALL(*mock_app_registry_observer(), OnAppUpdate)
-        .WillOnce(RunClosure(loop.QuitWhenIdleClosure()));
+        .WillOnce(RunClosure(loop.QuitClosure()));
     std::vector<apps::AppPtr> apps;
     apps.push_back(CreateTestApp());
     apps[0]->install_reason = apps::InstallReason::kPolicy;
@@ -357,7 +357,7 @@ TEST_F(WebKioskAppUpdateObserverTest, ShouldNotUpdateAppInfoForPlaceholders) {
   {
     base::RunLoop loop;
     EXPECT_CALL(*mock_app_registry_observer(), OnAppUpdate)
-        .WillOnce(RunClosure(loop.QuitWhenIdleClosure()));
+        .WillOnce(RunClosure(loop.QuitClosure()));
     std::vector<apps::AppPtr> apps;
     apps.push_back(CreateTestApp());
     apps[0]->app_id = app_id;

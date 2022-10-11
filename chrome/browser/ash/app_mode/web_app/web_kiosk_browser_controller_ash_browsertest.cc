@@ -161,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskBrowserControllerAshTest,
   const auto* browser_list = BrowserList::GetInstance();
   {
     base::RunLoop run_loop;
-    set_browser_removed_callback(run_loop.QuitWhenIdleClosure());
+    set_browser_removed_callback(run_loop.QuitClosure());
     auto* new_browser =
         Browser::Create(Browser::CreateParams(browser()->profile(), true));
     NavigateParams nav_params(
