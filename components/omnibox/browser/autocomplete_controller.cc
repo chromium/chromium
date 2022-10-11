@@ -945,12 +945,6 @@ void AutocompleteController::UpdateResult(
     preserve_default_match = &last_default_match.value();
   result_.SortAndCull(input_, template_url_service_, preserve_default_match);
 
-  // Need to validate before invoking `TransferOldMatches()` as the old matches
-  // are not valid against the current input.
-#if DCHECK_IS_ON()
-  result_.Validate();
-#endif  // DCHECK_IS_ON()
-
   if (!done_) {
     // This conditional needs to match the conditional in Start that invokes
     // StartExpireTimer.
@@ -963,6 +957,10 @@ void AutocompleteController::UpdateResult(
       result_.SortAndCull(input_, template_url_service_);
     }
   }
+
+#if DCHECK_IS_ON()
+  result_.Validate();
+#endif  // DCHECK_IS_ON()
 
   // Will log metrics for how many matches changed. Will also log timing metrics
   // for the current request if it's complete; otherwise, will just update

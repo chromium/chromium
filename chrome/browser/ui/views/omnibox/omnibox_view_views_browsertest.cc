@@ -592,6 +592,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, FriendlyAccessibleLabel) {
       ACMatchClassification(0, ACMatchClassification::URL));
   match.destination_url = GURL(match_url);
   match.description = u"Google";
+  match.description_class = {{0, 0}};
   match.allowed_to_be_default_match = true;
 
   // Enter user input mode to prevent spurious unelision.
