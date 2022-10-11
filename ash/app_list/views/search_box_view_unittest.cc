@@ -1194,6 +1194,41 @@ TEST_F(SearchBoxViewAppListBubbleTest, AutocompleteCategoricalResult) {
   EXPECT_EQ(view->search_box()->GetSelectedText(), u"");
 }
 
+TEST_F(SearchBoxViewAppListBubbleTest, DoNotAutocompleteWithMidQueryCursor) {
+  GetAppListTestHelper()->ShowAppList();
+
+  // Type "calculao".
+  PressAndReleaseKey(ui::VKEY_C);
+  PressAndReleaseKey(ui::VKEY_A);
+  PressAndReleaseKey(ui::VKEY_L);
+  PressAndReleaseKey(ui::VKEY_C);
+  PressAndReleaseKey(ui::VKEY_U);
+  PressAndReleaseKey(ui::VKEY_L);
+  PressAndReleaseKey(ui::VKEY_A);
+  PressAndReleaseKey(ui::VKEY_O);
+
+  // Simulate "calculator" being returned as a search result.
+  AddSearchResult("id", u"calculator");
+  base::RunLoop().RunUntilIdle();  // Allow observer tasks to run.
+
+  // The search box does not autocomplete.
+  SearchBoxView* view = GetAppListTestHelper()->GetBubbleSearchBoxView();
+  EXPECT_EQ(view->search_box()->GetText(), u"calculao");
+  EXPECT_EQ(view->search_box()->GetSelectedText(), u"");
+
+  PressAndReleaseKey(ui::VKEY_LEFT);
+  PressAndReleaseKey(ui::VKEY_T);
+
+  GetSearchModel()->DeleteAllResults();
+  base::RunLoop().RunUntilIdle();  // Allow observer tasks to run.
+  AddSearchResult("id", u"calculator");
+  base::RunLoop().RunUntilIdle();  // Allow observer tasks to run.
+
+  // The search box does not autocomplete.
+  EXPECT_EQ(view->search_box()->GetText(), u"calculato");
+  EXPECT_EQ(view->search_box()->GetSelectedText(), u"");
+}
+
 TEST_F(SearchBoxViewAppListBubbleTest, ResultSelection) {
   GetAppListTestHelper()->ShowAppList();
   SearchBoxView* view = GetAppListTestHelper()->GetBubbleSearchBoxView();

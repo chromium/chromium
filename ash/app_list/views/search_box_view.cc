@@ -1272,9 +1272,12 @@ void SearchBoxView::ShowAssistantChanged() {
 }
 
 bool SearchBoxView::ShouldProcessAutocomplete() {
-  // IME sets composition text while the user is typing, so avoid handle
+  // IME sets composition text while the user is typing, so avoid handling
   // autocomplete in this case to avoid conflicts.
-  return !(search_box()->IsIMEComposing() && highlight_range_.is_empty());
+  // The user's cursor may not be at the end of the the current query, so avoid
+  // handling autocomplete in this case to avoid moving the user's cursor.
+  return search_box()->GetCursorPosition() == search_box()->GetText().size() &&
+         (!(search_box()->IsIMEComposing() && highlight_range_.is_empty()));
 }
 
 void SearchBoxView::ResetHighlightRange() {
