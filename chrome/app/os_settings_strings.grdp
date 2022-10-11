@@ -2299,7 +2299,7 @@ Press an assigned switch or key to remove assignment.
     Scan for new devices
   </message>
   <message name="IDS_BLUETOOTH_ENABLE_FAST_PAIR_SUBTITLE" desc="Subtitle that describes the toggle that enables Fast Pair on the Bluetooth settings page.">
-    Easily connect and set up Fast Pair devices close by
+    Connect and quickly set up Fast Pair devices close by
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_ENABLED_A11Y_LABEL" desc="Bluetooth device details page: Accessibility announcement when Bluetooth state is enabled.">
     Bluetooth enabled
