@@ -81,7 +81,31 @@ void StubAuthenticator::AuthenticateToLogin(
 
 void StubAuthenticator::AuthenticateToUnlock(
     std::unique_ptr<UserContext> user_context) {
-  NOTREACHED() << "Only available in AuthSessionAuthenticator.";
+  if (expected_user_context_.GetAccountId() == user_context->GetAccountId() &&
+      (*expected_user_context_.GetKey() == *user_context->GetKey() ||
+       *ExpectedUserContextWithTransformedKey().GetKey() ==
+           *user_context->GetKey())) {
+    switch (auth_action_) {
+      case AuthAction::kAuthFailure:
+        task_runner_->PostTask(
+            FROM_HERE, base::BindOnce(&StubAuthenticator::OnAuthFailure, this,
+                                      AuthFailure(failure_reason_)));
+        break;
+      case AuthAction::kAuthSuccess:
+      case AuthAction::kPasswordChange:
+      case AuthAction::kOldEncryption:
+        // The distinction between fields other than AuthAction::kAuthFailure
+        // only matter for login.
+        task_runner_->PostTask(
+            FROM_HERE, base::BindOnce(&StubAuthenticator::OnAuthSuccess, this));
+        break;
+    }
+    return;
+  }
+
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&StubAuthenticator::OnAuthFailure, this,
+                                AuthFailure(AuthFailure::UNLOCK_FAILED)));
 }
 
 void StubAuthenticator::LoginOffTheRecord() {
