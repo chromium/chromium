@@ -51,8 +51,7 @@ constexpr char kManifestListPath[] = "/.well-known/web-identity";
 constexpr char kProviderUrlListKey[] = "provider_urls";
 
 // fedcm.json configuration keys.
-// TODO(crbug.com/1339373): Rename id_token_endpoint to another name.
-constexpr char kTokenEndpointKey[] = "id_token_endpoint";
+constexpr char kIdAssertionEndpoint[] = "id_assertion_endpoint";
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
 constexpr char kClientMetadataEndpointKey[] = "client_metadata_endpoint";
 constexpr char kRevocationEndpoint[] = "revocation_endpoint";
@@ -377,7 +376,7 @@ void OnManifestParsed(const GURL& provider,
   };
 
   Endpoints endpoints;
-  endpoints.token = ExtractEndpoint(kTokenEndpointKey);
+  endpoints.token = ExtractEndpoint(kIdAssertionEndpoint);
   endpoints.accounts = ExtractEndpoint(kAccountsEndpointKey);
   endpoints.client_metadata = ExtractEndpoint(kClientMetadataEndpointKey);
   endpoints.revocation = ExtractEndpoint(kRevocationEndpoint);

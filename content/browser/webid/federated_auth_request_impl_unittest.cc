@@ -1136,7 +1136,7 @@ TEST_F(FederatedAuthRequestImplTest, MissingTokenEndpoint) {
   EXPECT_EQ(
       "Manifest is missing or has an invalid URL for the following "
       "endpoints:\n"
-      "\"id_token_endpoint\"\n",
+      "\"id_assertion_endpoint\"\n",
       messages[0]);
   EXPECT_EQ("Provider's FedCM manifest configuration is invalid.", messages[1]);
 }
@@ -1289,7 +1289,7 @@ TEST_F(FederatedAuthRequestImplTest, AllInvalidEndpoints) {
   EXPECT_EQ(
       "Manifest is missing or has an invalid URL for the following "
       "endpoints:\n"
-      "\"id_token_endpoint\"\n"
+      "\"id_assertion_endpoint\"\n"
       "\"accounts_endpoint\"\n",
       messages[0]);
   EXPECT_EQ("Provider's FedCM manifest configuration is invalid.", messages[1]);

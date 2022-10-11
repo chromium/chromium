@@ -58,7 +58,7 @@ constexpr char kExpectedManifestListPath[] = "/.well-known/web-identity";
 constexpr char kTestContentType[] = "application/json";
 constexpr char kIdpForbiddenHeader[] = "Sec-FedCM-CSRF";
 
-// Token value in //content/test/data/id_token_endpoint.json
+// Token value in //content/test/data/id_assertion_endpoint.json
 constexpr char kToken[] = "[not a real token]";
 
 bool IsGetRequestWithPath(const HttpRequest& request,
@@ -76,7 +76,7 @@ class IdpTestServer {
     std::string content_type;
     std::string accounts_endpoint_url;
     std::string client_metadata_endpoint_url;
-    std::string id_token_endpoint_url;
+    std::string id_assertion_endpoint_url;
   };
 
   IdpTestServer() = default;
@@ -119,7 +119,7 @@ class IdpTestServer {
     std::string content = ConvertToJsonDictionary(
         {{"accounts_endpoint", details.accounts_endpoint_url},
          {"client_metadata_endpoint", details.client_metadata_endpoint_url},
-         {"id_token_endpoint", details.id_token_endpoint_url}});
+         {"id_assertion_endpoint", details.id_assertion_endpoint_url}});
     response.set_code(details.status_code);
     response.set_content(content);
     response.set_content_type(details.content_type);
@@ -224,9 +224,9 @@ class WebIdBrowserTest : public ContentBrowserTest {
     std::string accounts_endpoint_url = "/fedcm/accounts_endpoint.json";
     std::string client_metadata_endpoint_url =
         "/fedcm/client_metadata_endpoint.json";
-    std::string id_token_endpoint_url = "/fedcm/id_token_endpoint.json";
+    std::string id_assertion_endpoint_url = "/fedcm/id_assertion_endpoint.json";
     return {net::HTTP_OK, kTestContentType, accounts_endpoint_url,
-            client_metadata_endpoint_url, id_token_endpoint_url};
+            client_metadata_endpoint_url, id_assertion_endpoint_url};
   }
 
   IdpTestServer* idp_server() { return idp_server_.get(); }
@@ -261,7 +261,8 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, AbsoluteURLs) {
   manifest_details.accounts_endpoint_url = "/fedcm/accounts_endpoint.json";
   manifest_details.client_metadata_endpoint_url =
       "/fedcm/client_metadata_endpoint.json";
-  manifest_details.id_token_endpoint_url = "/fedcm/id_token_endpoint.json";
+  manifest_details.id_assertion_endpoint_url =
+      "/fedcm/id_assertion_endpoint.json";
 
   idp_server()->SetManifestResponseDetails(manifest_details);
 

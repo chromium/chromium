@@ -745,7 +745,7 @@ void FederatedAuthRequestImpl::OnManifestReady(
         "Manifest is missing or has an invalid URL for the following "
         "endpoints:\n";
     if (!is_token_valid) {
-      message += "\"id_token_endpoint\"\n";
+      message += "\"id_assertion_endpoint\"\n";
     }
     if (!is_accounts_valid) {
       message += "\"accounts_endpoint\"\n";
