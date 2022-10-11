@@ -222,6 +222,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
   MediaFoundationRenderingMode rendering_mode_ =
       MediaFoundationRenderingMode::DirectComposition;
 
+  bool has_reported_playing_ = false;
   bool has_reported_significant_playback_ = false;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.

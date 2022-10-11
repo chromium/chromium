@@ -3467,6 +3467,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.MediaFoundationRenderer.InvalidHwdrmState.HasReportedPlaying"
+    enum="Boolean" expires_after="2023-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Whether or not playback has started when DRM_E_TEE_INVALID_HWDRM_STATE
+    happens in MediaFoundationRenderer.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.MediaFoundationRenderer.InvalidHwdrmState.VideoFrameDecoded"
+    units="frames" expires_after="2023-05-07">
+  <owner>xhwang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    The number of video frames decoded when DRM_E_TEE_INVALID_HWDRM_STATE
+    happens in MediaFoundationRenderer.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaFoundationRenderer.PlaybackError" enum="Hresult"
     expires_after="2023-05-07">
   <owner>xhwang@chromium.org</owner>

@@ -838,6 +838,9 @@ void MediaFoundationRenderer::OnLoadedData() {
 
 void MediaFoundationRenderer::OnPlaying() {
   DVLOG_FUNC(3);
+
+  has_reported_playing_ = true;
+
   OnBufferingStateChange(
       BufferingState::BUFFERING_HAVE_ENOUGH,
       BufferingStateChangeReason::BUFFERING_CHANGE_REASON_UNKNOWN);
@@ -964,6 +967,14 @@ void MediaFoundationRenderer::OnError(PipelineStatus status,
   // This is not an error, so special case it here.
   PipelineStatus new_status = status;
   if (hresult == static_cast<HRESULT>(0x8004CD12)) {
+    // TODO(crbug.com/1370844): Remove these after the investigation is done.
+    base::UmaHistogramBoolean(
+        "Media.MediaFoundationRenderer.InvalidHwdrmState.HasReportedPlaying",
+        has_reported_playing_);
+    base::UmaHistogramCounts10000(
+        "Media.MediaFoundationRenderer.InvalidHwdrmState.VideoFrameDecoded",
+        statistics_.video_frames_decoded);
+
     new_status = PIPELINE_ERROR_HARDWARE_CONTEXT_RESET;
     if (cdm_proxy_)
       cdm_proxy_->OnHardwareContextReset();
