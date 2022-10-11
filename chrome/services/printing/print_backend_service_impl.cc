@@ -544,8 +544,6 @@ void PrintBackendServiceImpl::FetchCapabilities(
 
 void PrintBackendServiceImpl::UseDefaultSettings(
     mojom::PrintBackendService::UseDefaultSettingsCallback callback) {
-  DCHECK(print_backend_);
-
   // Use a one-time `PrintingContext` to get the print settings.
   std::unique_ptr<PrintingContext> context =
       PrintingContext::Create(&context_delegate_, /*skip_system_calls=*/false);
@@ -567,13 +565,6 @@ void PrintBackendServiceImpl::AskUserForSettings(
     bool has_selection,
     bool is_scripted,
     mojom::PrintBackendService::AskUserForSettingsCallback callback) {
-  if (!print_backend_) {
-    DLOG(ERROR) << "Print backend instance needs initialization for locale.";
-    std::move(callback).Run(
-        mojom::PrintSettingsResult::NewResultCode(mojom::ResultCode::kFailed));
-    return;
-  }
-
   // Provide the window which owns the print dialog.  On Windows the call to
   // `AskUserForSettings()` is a blocking call.  Additionally, the browser
   // process is to have logic to avoid even making a concurrent call to the
@@ -644,8 +635,6 @@ void PrintBackendServiceImpl::StartPrinting(
     mojom::PrintTargetType target_type,
     const PrintSettings& settings,
     mojom::PrintBackendService::StartPrintingCallback callback) {
-  DCHECK(print_backend_);
-
 #if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
   CupsConnectionPool* connection_pool = CupsConnectionPool::GetInstance();
   if (connection_pool) {
@@ -694,7 +683,6 @@ void PrintBackendServiceImpl::RenderPrintedPage(
     const gfx::Rect& page_content_rect,
     float shrink_factor,
     mojom::PrintBackendService::RenderPrintedPageCallback callback) {
-  DCHECK(print_backend_);
   DocumentHelper* document_helper = GetDocumentHelper(document_cookie);
   DCHECK(document_helper);
 
@@ -716,7 +704,6 @@ void PrintBackendServiceImpl::RenderPrintedDocument(
     mojom::MetafileDataType data_type,
     base::ReadOnlySharedMemoryRegion serialized_document,
     mojom::PrintBackendService::RenderPrintedDocumentCallback callback) {
-  DCHECK(print_backend_);
   DocumentHelper* document_helper = GetDocumentHelper(document_cookie);
   DCHECK(document_helper);
 
@@ -734,7 +721,6 @@ void PrintBackendServiceImpl::RenderPrintedDocument(
 void PrintBackendServiceImpl::DocumentDone(
     int document_cookie,
     mojom::PrintBackendService::DocumentDoneCallback callback) {
-  DCHECK(print_backend_);
   DocumentHelper* document_helper = GetDocumentHelper(document_cookie);
   DCHECK(document_helper);
 
