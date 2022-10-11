@@ -596,8 +596,9 @@ void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
   if (params.clip_rect.has_value())
     clipped_onscreen_rect.Intersect(*visual_clip_rect);
 
-  if (!IsWithinMargin(clipped_onscreen_rect.x(), 0) &&
-      !IsWithinMargin(clipped_onscreen_rect.y(), 0)) {
+  bool is_onscreen_rect_x_near_0 = IsWithinMargin(clipped_onscreen_rect.x(), 0);
+  bool is_onscreen_rect_y_near_0 = IsWithinMargin(clipped_onscreen_rect.y(), 0);
+  if (!is_onscreen_rect_x_near_0 && !is_onscreen_rect_y_near_0) {
     // Not fullscreen letterboxing mode.
     return;
   }
@@ -612,7 +613,6 @@ void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
   // position of the whole clipped_onscreen_rect, which makes it not cover
   // the whole screen with its black bar surroundings. In this case, the
   // adjustment should be stopped. (http://crbug.com/1371976)
-  bool is_onscreen_rect_x_near_0 = IsWithinMargin(clipped_onscreen_rect.x(), 0);
   if (is_onscreen_rect_x_near_0 &&
       !IsWithinMargin(
           clipped_onscreen_rect.y() * 2 + clipped_onscreen_rect.height(),
@@ -621,7 +621,6 @@ void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
     return;
   }
 
-  bool is_onscreen_rect_y_near_0 = IsWithinMargin(clipped_onscreen_rect.y(), 0);
   if (is_onscreen_rect_y_near_0 &&
       !IsWithinMargin(
           clipped_onscreen_rect.x() * 2 + clipped_onscreen_rect.width(),
@@ -637,21 +636,47 @@ void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
   if (is_onscreen_rect_x_near_0) {
     clipped_onscreen_rect.set_x(0);
     clipped_onscreen_rect.set_width(monitor_size.width());
+    int new_y = (monitor_size.height() - clipped_onscreen_rect.height()) / 2;
+    if (new_y < clipped_onscreen_rect.y()) {
+      // If clipped_onscreen_rect needs to be moved up by n lines, we add n
+      // lines to the video onscreen rect height.
+      clipped_onscreen_rect.set_height(clipped_onscreen_rect.height() +
+                                       clipped_onscreen_rect.y() - new_y);
+      clipped_onscreen_rect.set_y(new_y);
+    } else if (new_y > clipped_onscreen_rect.y()) {
+      // If clipped_onscreen_rect needs to be moved down by n lines, we keep
+      // the original point of the video onscreen rect. Meanwhile, increase its
+      // size to make it symmetrical around the monitor center.
+      clipped_onscreen_rect.set_height(monitor_size.height() -
+                                       clipped_onscreen_rect.y() * 2);
+    }
+
     // Make clipped_onscreen_rect height even.
     if (clipped_onscreen_rect.height() % 2 == 1)
       clipped_onscreen_rect.set_height(clipped_onscreen_rect.height() + 1);
-    clipped_onscreen_rect.set_y(
-        (monitor_size.height() - clipped_onscreen_rect.height()) / 2);
   }
 
   if (is_onscreen_rect_y_near_0) {
     clipped_onscreen_rect.set_y(0);
     clipped_onscreen_rect.set_height(monitor_size.height());
+    int new_x = (monitor_size.width() - clipped_onscreen_rect.width()) / 2;
+    if (new_x < clipped_onscreen_rect.x()) {
+      // If clipped_onscreen_rect needs to be moved left by n lines, we add n
+      // lines to the video onscreen rect width.
+      clipped_onscreen_rect.set_width(clipped_onscreen_rect.width() +
+                                      clipped_onscreen_rect.x() - new_x);
+      clipped_onscreen_rect.set_x(new_x);
+    } else if (new_x > clipped_onscreen_rect.x()) {
+      // If clipped_onscreen_rect needs to be moved right by n lines, we keep
+      // the original point of the video onscreen rect. Meanwhile, increase its
+      // size to make it symmetrical around the monitor center.
+      clipped_onscreen_rect.set_width(monitor_size.width() -
+                                      clipped_onscreen_rect.x() * 2);
+    }
+
     // Make clipped_onscreen_rect width even.
     if (clipped_onscreen_rect.width() % 2 == 1)
       clipped_onscreen_rect.set_width(clipped_onscreen_rect.width() + 1);
-    clipped_onscreen_rect.set_x(
-        (monitor_size.width() - clipped_onscreen_rect.width()) / 2);
   }
 
   // Adjust the clip rect.
