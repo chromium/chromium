@@ -1493,15 +1493,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.iOS.InfoBar.PasswordUpdate" enum="Boolean"
-    expires_after="2022-10-16">
-  <owner>djean@chromium.org</owner>
-  <owner>sczs@google.com</owner>
-  <summary>
-    This metric counts how many times the Update Password infobar is shown.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.iOS.PasswordDetails.CopyDetailsFailed"
     enum="Boolean" expires_after="2023-03-08">
   <owner>eic@google.com</owner>
