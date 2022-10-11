@@ -104,7 +104,7 @@ Read instructions in WPT README:
 https://github.com/web-platform-tests/wpt/blob/master/README.md
 
 Also, check out the WPTServe Documentation
-(https://wptserve.readthedocs.org/en/latest/).
+(https://web-platform-tests.org/tools/wptserve/docs/).
 
 Note that editing /etc/hosts is not required for run_web_tests.py since
 content_shell is invoked with flags to map all \*.test domains to 127.0.0.1.
