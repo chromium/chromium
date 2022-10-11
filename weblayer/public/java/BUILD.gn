@@ -40,7 +40,6 @@ android_library("java") {
     "org/chromium/weblayer/BroadcastReceiver.java",
     "org/chromium/weblayer/Browser.java",
     "org/chromium/weblayer/BrowserControlsOffsetCallback.java",
-    "org/chromium/weblayer/BrowserEmbeddabilityMode.java",
     "org/chromium/weblayer/BrowserFragment.java",
     "org/chromium/weblayer/BrowserFragmentCreateParams.java",
     "org/chromium/weblayer/BrowserFragmentDelegate.java",

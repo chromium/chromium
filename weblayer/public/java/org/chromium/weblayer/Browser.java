@@ -7,7 +7,6 @@ package org.chromium.weblayer;
 import android.os.RemoteException;
 import android.view.SurfaceControlViewHost;
 import android.view.View;
-import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -501,54 +500,6 @@ public class Browser {
             Tab tab = Tab.getTabById(iTab.getId());
             assert tab != null;
             return tab;
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
-     * Control support for embedding use cases such as animations. This should be enabled when the
-     * container view of the fragment is animated in any way, needs to be rotated or blended, or
-     * need to control z-order with other views or other BrowserFragmentImpls. Note embedder should
-     * keep WebLayer in the default non-embedding mode when user is interacting with the web
-     * content. Embedding mode does not support encrypted video.
-     * Deprecated in 90. Use setEmbeddabilityMode instead.
-     *
-     * @param enable Whether to support embedding
-     * @param callback {@link Callback} to be called with a boolean indicating whether request
-     * succeeded. A request might fail if it is subsumed by a subsequent request, or if this object
-     * is destroyed.
-     */
-    @Deprecated
-    public void setSupportsEmbedding(boolean enable, @NonNull Callback<Boolean> callback) {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        try {
-            mImpl.setSupportsEmbedding(
-                    enable, ObjectWrapper.wrap((ValueCallback<Boolean>) callback::onResult));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
-     * See BrowserEmbeddabilityMode for details. The default mode is UNSUPPORTED.
-     * @param mode the requested embedding mode.
-     * @param callback {@link Callback} to be called with a boolean indicating whether request
-     * succeeded. A request might fail if it is subsumed by a subsequent request, or if this object
-     * is destroyed.
-     * @since 90
-     */
-    public void setEmbeddabilityMode(
-            @BrowserEmbeddabilityMode int mode, @NonNull Callback<Boolean> callback) {
-        ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 90) {
-            throw new UnsupportedOperationException();
-        }
-        throwIfDestroyed();
-        try {
-            mImpl.setEmbeddabilityMode(
-                    mode, ObjectWrapper.wrap((ValueCallback<Boolean>) callback::onResult));
         } catch (RemoteException e) {
             throw new APICallException(e);
         }

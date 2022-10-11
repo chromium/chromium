@@ -12,7 +12,6 @@ import android.util.AndroidRuntimeException;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.webkit.ValueCallback;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -43,7 +42,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
-import org.chromium.weblayer_private.interfaces.BrowserEmbeddabilityMode;
 
 /**
  * BrowserViewController controls the set of Views needed to show the WebContents.
@@ -117,8 +115,7 @@ public final class BrowserViewController
         mContentViewRenderView = new ContentViewRenderView(context, recreateForConfigurationChange);
         mContentViewRenderView.addOnAttachStateChangeListener(listener);
 
-        mContentViewRenderView.onNativeLibraryLoaded(
-                mWindowAndroid, BrowserEmbeddabilityMode.UNSUPPORTED);
+        mContentViewRenderView.onNativeLibraryLoaded(mWindowAndroid);
         mTopControlsContainerView =
                 new BrowserControlsContainerView(context, mContentViewRenderView, this, true,
                         (savedState == null) ? null : savedState.mTopControlsState);
@@ -462,11 +459,6 @@ public final class BrowserViewController
         mContentViewRenderView.setWebContentsHeightDelta(
                 mTopControlsContainerView.getContentHeightDelta()
                 + mBottomControlsContainerView.getContentHeightDelta());
-    }
-
-    public void setEmbeddabilityMode(
-            @BrowserEmbeddabilityMode int mode, ValueCallback<Boolean> callback) {
-        mContentViewRenderView.requestMode(mode, callback);
     }
 
     public void setMinimumSurfaceSize(int width, int height) {
