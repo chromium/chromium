@@ -303,6 +303,11 @@ class PageInfo : private content_settings::CookieControlsView {
   // subdomains.
   std::u16string GetSimpleSiteName() const;
 
+  // For Isolated Web Apps the origin's host name is a non-human-readable string
+  // of characters, so instead of displaying the origin, the short name of the
+  // app will be displayed.
+  std::u16string GetSiteOriginOrAppNameToDisplay() const;
+
   // Retrieves all the permissions that are shown in Page Info.
   // Exposed for testing.
   static std::vector<ContentSettingsType> GetAllPermissionsForTesting();
@@ -310,6 +315,9 @@ class PageInfo : private content_settings::CookieControlsView {
   PageInfoUI* ui_for_testing() const { return ui_; }
 
   void SetSiteNameForTesting(const std::u16string& site_name);
+
+  void SetIsolatedWebAppNameForTesting(
+      const std::u16string& isolated_web_app_name);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
@@ -389,6 +397,8 @@ class PageInfo : private content_settings::CookieControlsView {
   int GetSitesWithAllowedCookiesAccessCount();
   int GetThirdPartySitesWithBlockedCookiesAccessCount(const GURL& site_url);
 
+  bool IsIsolatedWebApp() const;
+
   // The page info UI displays information and controls for site-
   // specific data (local stored objects like cookies), site-specific
   // permissions (location, pop-up, plugin, etc. permissions) and site-specific
@@ -408,6 +418,9 @@ class PageInfo : private content_settings::CookieControlsView {
   // The Omnibox URL of the website for which to display site permissions and
   // site information.
   GURL site_url_;
+
+  // The short name of an Isolated Web App. Empty for non-IWAs.
+  std::u16string isolated_web_app_name_;
 
   // Status of the website's identity verification check.
   SiteIdentityStatus site_identity_status_;
@@ -482,6 +495,8 @@ class PageInfo : private content_settings::CookieControlsView {
   bool was_about_this_site_shown_ = false;
 
   std::u16string site_name_for_testing_;
+
+  bool is_isolated_web_app_for_testing_ = false;
 
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   base::ScopedObservation<content_settings::CookieControlsController,

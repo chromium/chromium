@@ -99,10 +99,30 @@ void WebAppMenuModel::Build() {
   size_t app_info_index = GetItemCount() - 1;
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+
+  bool is_isolated_web_app =
+      web_contents &&
+      web_contents->GetPrimaryMainFrame()->GetWebExposedIsolationLevel() >=
+          WebExposedIsolationLevel::kMaybeIsolatedApplication;
+
   if (web_contents) {
-    SetMinorText(app_info_index, web_app::AppBrowserController::FormatUrlOrigin(
-                                     web_contents->GetVisibleURL()));
+    std::u16string display_text =
+        web_app::AppBrowserController::FormatUrlOrigin(
+            web_contents->GetVisibleURL());
+
+    // For Isolated Web Apps the origin's host name is a non-human-readable
+    // string of characters, so instead of displaying the origin, the short name
+    // of the app will be displayed.
+    if (is_isolated_web_app && browser() &&
+        browser()->app_controller()->IsWebApp(browser())) {
+      std::u16string short_name =
+          browser()->app_controller()->GetAppShortName();
+      if (!short_name.empty())
+        display_text = short_name;
+    }
+    SetMinorText(app_info_index, display_text);
   }
+
   SetMinorIcon(app_info_index,
                ui::ImageModel::FromVectorIcon(
                    browser()->location_bar_model()->GetVectorIcon()));
@@ -113,12 +133,8 @@ void WebAppMenuModel::Build() {
     AddItemWithStringId(kExtensionsMenuCommandId, IDS_SHOW_EXTENSIONS);
   AddItemWithStringId(IDC_COPY_URL, IDS_COPY_URL);
 
-  // Isolated apps shouldn't be opened in Chrome.
-  bool is_isolated_app =
-      web_contents &&
-      web_contents->GetPrimaryMainFrame()->GetWebExposedIsolationLevel() >=
-          WebExposedIsolationLevel::kMaybeIsolatedApplication;
-  if (!is_isolated_app)
+  // Isolated Web Apps shouldn't be opened in Chrome.
+  if (!is_isolated_web_app)
     AddItemWithStringId(IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

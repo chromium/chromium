@@ -135,10 +135,6 @@ PageInfoBubbleView::PageInfoBubbleView(
       closing_callback_(std::move(closing_callback)) {
   DCHECK(closing_callback_);
   DCHECK(web_contents());
-
-  SetShowTitle(false);
-  SetShowCloseButton(false);
-
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   // In Harmony, the last view is a HoverButton, which overrides the bottom
@@ -161,7 +157,11 @@ PageInfoBubbleView::PageInfoBubbleView(
   view_factory_ = std::make_unique<PageInfoViewFactory>(
       presenter_.get(), ui_delegate_.get(), this, history_controller_.get());
 
-  SetTitle(presenter_->GetSimpleSiteName());
+  SetShowTitle(false);
+  SetShowCloseButton(false);
+  // The title isn't visible, it is set for a11y purposes and the actual visible
+  // title is a custom label in the content view.
+  SetTitle(presenter_->GetSiteOriginOrAppNameToDisplay());
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));

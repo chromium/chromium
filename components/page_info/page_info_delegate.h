@@ -78,6 +78,7 @@ class PageInfoDelegate {
 
   virtual std::unique_ptr<content_settings::CookieControlsController>
   CreateCookieControlsController() = 0;
+  virtual std::u16string GetWebAppShortName() = 0;
   virtual void ShowSiteSettings(const GURL& site_url) = 0;
   virtual void ShowCookiesSettings() = 0;
   virtual void ShowAllSitesSettingsFilteredByFpsOwner(

@@ -313,6 +313,9 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
   DCHECK(delegate_);
   security_level_ = delegate_->GetSecurityLevel();
   visible_security_state_for_metrics_ = delegate_->GetVisibleSecurityState();
+#if !BUILDFLAG(IS_ANDROID)
+  isolated_web_app_name_ = delegate_->GetWebAppShortName();
+#endif
 
   // TabSpecificContentSetting needs to be created before page load.
   DCHECK(GetPageSpecificContentSettings());
@@ -828,6 +831,12 @@ std::u16string PageInfo::GetSimpleSiteName() const {
       site_url_);
 }
 
+std::u16string PageInfo::GetSiteOriginOrAppNameToDisplay() const {
+  return IsIsolatedWebApp() && !isolated_web_app_name_.empty()
+             ? isolated_web_app_name_
+             : GetSimpleSiteName();
+}
+
 void PageInfo::ComputeUIInputs(const GURL& url) {
   auto security_level = delegate_->GetSecurityLevel();
   auto visible_security_state = delegate_->GetVisibleSecurityState();
@@ -1332,6 +1341,12 @@ void PageInfo::SetSiteNameForTesting(const std::u16string& site_name) {
   PresentSiteIdentity();
 }
 
+void PageInfo::SetIsolatedWebAppNameForTesting(
+    const std::u16string& isolated_web_app_name) {
+  is_isolated_web_app_for_testing_ = true;
+  isolated_web_app_name_ = isolated_web_app_name;
+}
+
 void PageInfo::GetSafeBrowsingStatusByMaliciousContentStatus(
     security_state::MaliciousContentStatus malicious_content_status,
     PageInfo::SafeBrowsingStatus* status,
@@ -1463,4 +1478,14 @@ int PageInfo::GetThirdPartyBlockedCookiesCount(const GURL& site_url) {
 
   return settings->blocked_local_shared_objects().GetObjectCount() -
          GetFirstPartyBlockedCookiesCount(site_url);
+}
+
+bool PageInfo::IsIsolatedWebApp() const {
+  if (is_isolated_web_app_for_testing_)
+    return true;
+
+  return web_contents_ &&
+         web_contents_->GetPrimaryMainFrame()->GetWebExposedIsolationLevel() >=
+             content::RenderFrameHost::WebExposedIsolationLevel::
+                 kMaybeIsolatedApplication;
 }

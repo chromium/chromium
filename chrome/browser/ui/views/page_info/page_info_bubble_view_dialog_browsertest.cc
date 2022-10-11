@@ -44,6 +44,7 @@ namespace {
 constexpr char kExpiredCertificateFile[] = "expired_cert.pem";
 constexpr char kAboutThisSiteUrl[] = "a.test";
 constexpr char kHistoryUrl[] = "b.test";
+constexpr char kIsolatedWebAppUrl[] = "iwa.test";
 
 // Clicks the location icon to open the page info bubble.
 void OpenPageInfoBubble(Browser* browser) {
@@ -492,8 +493,11 @@ class PageInfoBubbleViewAboutThisSiteDialogBrowserTest
 
     auto* bubble_view = static_cast<PageInfoBubbleView*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting());
-    bubble_view->presenter_for_testing()->SetSiteNameForTesting(
-        u"Example site");
+    std::u16string site_name = u"Example site";
+    bubble_view->presenter_for_testing()->SetSiteNameForTesting(site_name);
+    ASSERT_EQ(
+        bubble_view->presenter_for_testing()->GetSiteOriginOrAppNameToDisplay(),
+        site_name);
 
     if (name == "AboutThisSite") {
       // No further action needed, default case.
@@ -574,8 +578,11 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
 
     auto* bubble_view = static_cast<PageInfoBubbleView*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting());
-    bubble_view->presenter_for_testing()->SetSiteNameForTesting(
-        u"Example site");
+    std::u16string site_name = u"Example site";
+    bubble_view->presenter_for_testing()->SetSiteNameForTesting(site_name);
+    ASSERT_EQ(
+        bubble_view->presenter_for_testing()->GetSiteOriginOrAppNameToDisplay(),
+        site_name);
 
     if (name == "PrivacySandboxMain") {
       // No further action needed, default case.
@@ -636,8 +643,11 @@ class PageInfoBubbleViewHistoryDialogBrowserTest : public DialogBrowserTest {
 
     auto* bubble_view = static_cast<PageInfoBubbleView*>(
         PageInfoBubbleView::GetPageInfoBubbleForTesting());
-    bubble_view->presenter_for_testing()->SetSiteNameForTesting(
-        u"Example site");
+    std::u16string site_name = u"Example site";
+    bubble_view->presenter_for_testing()->SetSiteNameForTesting(site_name);
+    ASSERT_EQ(
+        bubble_view->presenter_for_testing()->GetSiteOriginOrAppNameToDisplay(),
+        site_name);
   }
 
   GURL GetUrl(const std::string& host) {
@@ -804,5 +814,51 @@ IN_PROC_BROWSER_TEST_F(
 }
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesSubpageFpsManaged3pcAllowed) {
+  ShowAndVerifyUi();
+}
+
+class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.Start());
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+  // DialogBrowserTest:
+  void ShowUi(const std::string& name) override {
+    // Bubble dialogs' bounds may exceed the display's work area.
+    // https://crbug.com/893292.
+    set_should_verify_dialog_bounds(false);
+
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GetUrl(kIsolatedWebAppUrl)));
+    OpenPageInfoBubble(browser());
+
+    auto* bubble_view = static_cast<PageInfoBubbleView*>(
+        PageInfoBubbleView::GetPageInfoBubbleForTesting());
+    std::u16string app_name = u"Google IWA";
+    bubble_view->presenter_for_testing()->SetIsolatedWebAppNameForTesting(
+        app_name);
+    bubble_view->presenter_for_testing()->SetSiteNameForTesting(u"google.com");
+    // For Isolated Web Apps, normal site name gets overridden by app name.
+    ASSERT_EQ(
+        bubble_view->presenter_for_testing()->GetSiteOriginOrAppNameToDisplay(),
+        app_name);
+  }
+
+  GURL GetUrl(const std::string& host) {
+    return https_server_.GetURL(host, "/title1.html");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    PageInfoBubbleViewIsolatedWebAppBrowserTest,
+    InvokeUi_AppNameIsDisplayedInsteadOfOriginForIsolatedWebApps) {
   ShowAndVerifyUi();
 }
