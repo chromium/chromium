@@ -834,7 +834,7 @@ class GpuIntegrationTest(
             # without resorting to the more generic "intel" tag.
             if gpu_vendor == 'intel' and (gpu_device_id & 0xFF00) in (
                 0x1900, 0x3100, 0x3E00, 0x5900, 0x5A00, 0x9B00):
-              gpu_tags.extend(['intel-gen-9', 'intel-hd-630-family'])
+              gpu_tags.extend(['intel-gen-9'])
       # all spaces and underscores in the tag will be replaced by dashes
       tags.extend([re.sub('[ _]', '-', tag) for tag in gpu_tags])
 
