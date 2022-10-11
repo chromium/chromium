@@ -1550,10 +1550,10 @@ NavigationRequest::NavigationRequest(
   // Navigations can't be a replacement and a reload at the same time.
   DCHECK(!common_params_->should_replace_current_entry ||
          !NavigationTypeUtils::IsReload(common_params_->navigation_type));
-  DCHECK(!GetParentFrameOrOuterDocument() ||
+  DCHECK(IsInOutermostMainFrame() ||
          common_params_->base_url_for_data_url.is_empty());
 #if BUILDFLAG(IS_ANDROID)
-  DCHECK(!GetParentFrameOrOuterDocument() ||
+  DCHECK(IsInOutermostMainFrame() ||
          commit_params_->data_url_as_string.empty());
 #endif
   // If `rfh_restored_from_back_forward_cache` was set, it should not be
@@ -7000,6 +7000,14 @@ RenderFrameHostImpl* NavigationRequest::GetParentFrameOrOuterDocument() {
 
 bool NavigationRequest::IsInPrimaryMainFrame() const {
   return GetNavigatingFrameType() == FrameType::kPrimaryMainFrame;
+}
+
+bool NavigationRequest::IsInOutermostMainFrame() {
+  // TODO(1267506, 1254770): Ideally we'd just base this on
+  // `GetNavigatingFrameType()`, however the kPrimaryMainFrame case is ambiguous
+  // due to inner WebContents based portals. Once portals are based on MPArch,
+  // we could switch to using the FrameType.
+  return !GetParentFrameOrOuterDocument();
 }
 
 bool NavigationRequest::IsInPrerenderedMainFrame() {

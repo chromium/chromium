@@ -66,7 +66,7 @@ void UpdateRendererOnMixedContentFound(NavigationRequest* navigation_request,
   // mixed content for now. Once/if the browser should also check form submits
   // for mixed content than this will be allowed to happen and this DCHECK
   // should be updated.
-  DCHECK(navigation_request->GetParentFrameOrOuterDocument());
+  DCHECK(!navigation_request->IsInOutermostMainFrame());
 
   RenderFrameHostImpl* rfh =
       navigation_request->frame_tree_node()->current_frame_host();
@@ -369,7 +369,7 @@ void MixedContentNavigationThrottle::ReportBasicMixedContentFeatures(
 void MixedContentNavigationThrottle::MaybeHandleCertificateError() {
   // The outermost main frame certificate errors are handled separately in
   // SSLManager.
-  if (!navigation_handle()->GetParentFrameOrOuterDocument()) {
+  if (navigation_handle()->IsInOutermostMainFrame()) {
     return;
   }
 

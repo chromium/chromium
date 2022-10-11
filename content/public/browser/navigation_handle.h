@@ -117,6 +117,13 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // value remains constant over the navigation lifetime.
   virtual bool IsInPrimaryMainFrame() const = 0;
 
+  // Whether the navigation is taking place in a main frame which does not have
+  // an outer document. For example, this will return true for the primary main
+  // frame and for a prerendered main frame, but false for a <fencedframe>. See
+  // documentation for `RenderFrameHost::GetParentOrOuterDocument()` for more
+  // details.
+  virtual bool IsInOutermostMainFrame() = 0;
+
   // Prerender2:
   // Whether the navigation is taking place in the main frame of the
   // prerendered frame tree. Prerender will create separate frame trees to load

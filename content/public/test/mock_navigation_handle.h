@@ -73,6 +73,9 @@ class MockNavigationHandle : public NavigationHandle {
   bool IsInPrimaryMainFrame() const override {
     return is_in_primary_main_frame_;
   }
+  bool IsInOutermostMainFrame() override {
+    return !GetParentFrameOrOuterDocument();
+  }
   MOCK_METHOD0(GetFrameTreeNodeId, int());
   MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalRenderFrameHostId());
   MOCK_METHOD(int, GetExpectedRenderProcessHostId, ());

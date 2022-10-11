@@ -86,7 +86,7 @@ PlatformAppNavigationRedirector::MaybeCreateThrottleFor(
       handle->GetWebContents()->GetBrowserContext();
   DCHECK(browser_context);
 
-  if (handle->GetParentFrameOrOuterDocument()) {
+  if (!handle->IsInOutermostMainFrame()) {
     DVLOG(1) << "Skip redirection: navigation is from an iframe or inner page";
     return nullptr;
   }
