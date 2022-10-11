@@ -175,12 +175,12 @@ class BrowsingTopicsBrowserTestBase : public InProcessBrowserTest {
   ~BrowsingTopicsBrowserTestBase() override = default;
 
   std::string InvokeTopicsAPI(const content::ToRenderFrameHost& adapter,
-                              bool observe = true) {
+                              bool skip_observation = false) {
     return EvalJs(adapter, content::JsReplace(R"(
       if (!(document.browsingTopics instanceof Function)) {
         'not a function';
       } else {
-        document.browsingTopics({observe: $1})
+        document.browsingTopics({skipObservation: $1})
         .then(topics => {
           let result = "[";
           for (const topic of topics) {
@@ -192,7 +192,7 @@ class BrowsingTopicsBrowserTestBase : public InProcessBrowserTest {
         .catch(error => error.message);
       }
     )",
-                                              observe))
+                                              skip_observation))
         .ExtractString();
   }
 
@@ -841,32 +841,32 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest, TopicsAPI_ObserveBehavior) {
                                            /*iframe_id=*/"frame",
                                            subframe_url));
 
-  // Invoked the API with {observe: false}.
+  // Invoked the API with {skipObservation: true}.
   EXPECT_EQ("[]", InvokeTopicsAPI(content::ChildFrameAt(
                                       web_contents()->GetPrimaryMainFrame(), 0),
-                                  /*observe=*/false));
+                                  /*skip_observation=*/true));
 
-  // Since {observe: false} was specified, the page is not eligible for topics
-  // calculation.
+  // Since {skipObservation: true} was specified, the page is not eligible for
+  // topics calculation.
   EXPECT_FALSE(
       BrowsingTopicsEligibleForURLVisit(history_service(), main_frame_url));
 
-  // Since {observe: false} was specified, the usage is not tracked. The
+  // Since {skipObservation: true} was specified, the usage is not tracked. The
   // returned entry was from the pre-existing storage.
   std::vector<ApiUsageContext> api_usage_contexts =
       content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
   EXPECT_EQ(api_usage_contexts.size(), 1u);
 
-  // Invoked the API with {observe: true}.
+  // Invoked the API with {skipObservation: false}.
   EXPECT_EQ("[]", InvokeTopicsAPI(content::ChildFrameAt(
                       web_contents()->GetPrimaryMainFrame(), 0)));
 
-  // Since {observe: true} was specified, the page is eligible for topics
-  // calculation.
+  // Since {skipObservation: false} was specified, the page is eligible for
+  // topics calculation.
   EXPECT_TRUE(
       BrowsingTopicsEligibleForURLVisit(history_service(), main_frame_url));
 
-  // Since {observe: true} was specified, the usage is tracked.
+  // Since {skipObservation: false} was specified, the usage is tracked.
   api_usage_contexts =
       content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
 

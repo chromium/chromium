@@ -146,7 +146,7 @@ ScriptPromise BrowsingTopicsDocumentSupplement::GetBrowsingTopics(
   }
 
   document_host_->GetBrowsingTopics(
-      options->observe(),
+      /*observe=*/!options->skipObservation(),
       WTF::BindOnce(
           [](ScriptPromiseResolver* resolver,
              BrowsingTopicsDocumentSupplement* supplement,
