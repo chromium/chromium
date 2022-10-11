@@ -199,6 +199,11 @@ std::vector<autofill::AutofillProfile*> GetUniqueProfiles(
     const std::string app_locale,
     const base::flat_set<autofill::ServerFieldType>& field_types);
 
+void AddAutofillEntryToDataModel(autofill::ServerFieldType type,
+                                 const AutofillEntryProto& entry,
+                                 const std::string& locale,
+                                 autofill::AutofillDataModel* model);
+
 }  // namespace user_data
 }  // namespace autofill_assistant
 

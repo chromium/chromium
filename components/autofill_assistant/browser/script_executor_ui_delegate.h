@@ -87,7 +87,9 @@ class ScriptExecutorUiDelegate : public WaitForDomObserver {
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
       base::OnceCallback<void(const ClientStatus&)> end_action_callback,
       base::OnceCallback<void(const ClientStatus&)>
-          view_inflation_finished_callback) = 0;
+          view_inflation_finished_callback,
+      base::RepeatingCallback<void(const RequestBackendDataProto&)>
+          request_backend_data_callback) = 0;
 
   // Sets the persistent generic UI to show to the user.
   virtual void SetPersistentGenericUi(

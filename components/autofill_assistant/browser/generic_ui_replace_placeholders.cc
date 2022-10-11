@@ -464,6 +464,22 @@ void ReplacePlaceholdersInCallback(
         ReplacePlaceholdersInCallback(&callback, placeholders);
       }
       return;
+    case CallbackProto::kRequestBackendData:
+      if (in_out_proto->request_backend_data()
+              .has_output_success_model_identifier()) {
+        ReplaceInPlace(in_out_proto->mutable_request_backend_data()
+                           ->mutable_output_success_model_identifier(),
+                       placeholders);
+      }
+      if (in_out_proto->request_backend_data()
+              .request_phone_numbers()
+              .has_output_profiles_model_identifier()) {
+        ReplaceInPlace(in_out_proto->mutable_request_backend_data()
+                           ->mutable_request_phone_numbers()
+                           ->mutable_output_profiles_model_identifier(),
+                       placeholders);
+      }
+      return;
     case CallbackProto::kShowInfoPopup:
     case CallbackProto::kEndAction:
     case CallbackProto::KIND_NOT_SET:

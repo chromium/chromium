@@ -557,6 +557,26 @@ TEST_F(BasicInteractionsTest, ComputeValueArrayLength) {
   EXPECT_EQ(user_model_.GetValue("result"), SimpleValue(2));
 }
 
+TEST_F(BasicInteractionsTest, RequestBackendDataWithoutCallbackFails) {
+  EndActionProto proto;
+  EXPECT_FALSE(
+      basic_interactions_.RequestBackendData(RequestBackendDataProto{}));
+}
+
+TEST_F(BasicInteractionsTest, RequestBackendDataWithCallbackSucceeds) {
+  base::MockCallback<
+      base::RepeatingCallback<void(const RequestBackendDataProto&)>>
+      callback;
+  basic_interactions_.SetRequestBackendDataCallback(callback.Get());
+  RequestBackendDataProto request;
+  request.set_output_success_model_identifier("output_success");
+  EXPECT_CALL(
+      callback,
+      Run(Property(&RequestBackendDataProto::output_success_model_identifier,
+                   "output_success")));
+  EXPECT_TRUE(basic_interactions_.RequestBackendData(request));
+}
+
 TEST_F(BasicInteractionsTest, EndActionWithoutCallbackFails) {
   EndActionProto proto;
   EXPECT_FALSE(basic_interactions_.EndAction(ClientStatus(INVALID_ACTION)));

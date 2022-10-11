@@ -137,7 +137,9 @@ void HeadlessUiController::SetGenericUi(
     std::unique_ptr<GenericUserInterfaceProto> generic_ui,
     base::OnceCallback<void(const ClientStatus&)> end_action_callback,
     base::OnceCallback<void(const ClientStatus&)>
-        view_inflation_finished_callback) {
+        view_inflation_finished_callback,
+    base::RepeatingCallback<void(const RequestBackendDataProto&)>
+        request_backend_data_callback) {
   VLOG(2) << "Unexpected UI method called: " << __func__;
 }
 void HeadlessUiController::SetPersistentGenericUi(

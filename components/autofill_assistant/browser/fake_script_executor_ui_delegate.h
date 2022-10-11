@@ -79,7 +79,9 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
       base::OnceCallback<void(const ClientStatus&)> end_action_callback,
       base::OnceCallback<void(const ClientStatus&)>
-          view_inflation_finished_callback) override;
+          view_inflation_finished_callback,
+      base::RepeatingCallback<void(const RequestBackendDataProto&)>
+          request_backend_data_callback) override;
   void SetPersistentGenericUi(
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
       base::OnceCallback<void(const ClientStatus&)>
@@ -99,6 +101,22 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
   void OnInterruptFinished() override;
 
   const std::vector<Details>& GetDetails() { return details_; }
+
+  const GenericUserInterfaceProto* GetGenericUi() { return generic_ui_.get(); }
+
+  const base::OnceCallback<void(const ClientStatus&)>& GetEndActionCallback() {
+    return end_action_callback_;
+  }
+
+  const base::OnceCallback<void(const ClientStatus&)>&
+  GetViewInflationFinishedCallback() {
+    return view_inflation_finished_callback_;
+  }
+
+  const base::RepeatingCallback<void(const RequestBackendDataProto&)>&
+  GetRequestBackendDataCallback() {
+    return request_backend_data_callback_;
+  }
 
   const GenericUserInterfaceProto* GetPersistentGenericUi() {
     return persistent_generic_ui_.get();
@@ -138,6 +156,12 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
   bool expand_or_collapse_value_ = false;
   bool expand_sheet_for_prompt_ = true;
   bool show_qr_code_scan_ui_ = false;
+  std::unique_ptr<GenericUserInterfaceProto> generic_ui_;
+  base::OnceCallback<void(const ClientStatus&)> end_action_callback_;
+  base::OnceCallback<void(const ClientStatus&)>
+      view_inflation_finished_callback_;
+  base::RepeatingCallback<void(const RequestBackendDataProto&)>
+      request_backend_data_callback_;
   std::unique_ptr<GenericUserInterfaceProto> persistent_generic_ui_;
   std::vector<InterruptNotification> interrupt_notification_history_;
 };

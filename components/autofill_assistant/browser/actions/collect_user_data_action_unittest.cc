@@ -2653,7 +2653,7 @@ TEST_F(CollectUserDataActionTest, FailsForDataOriginNoticeWithoutBackendData) {
 
 TEST_F(CollectUserDataActionTest, SucceedsWithDataOriginNoticeAndBackendData) {
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<2>(true, GetUserDataResponseProto()));
+      .WillOnce(RunOnceCallback<1>(true, GetUserDataResponseProto()));
   ON_CALL(mock_action_delegate_, CollectUserData)
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         EXPECT_TRUE(collect_user_data_options->data_origin_notice);
@@ -2709,7 +2709,7 @@ TEST_F(CollectUserDataActionTest, ContactDataFromProto) {
   auto* incomplete = user_data_response.add_available_contacts();
   (*incomplete->mutable_values())[7] = MakeAutofillEntry("Jane Doe");
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<2>(true, user_data_response));
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -2780,7 +2780,7 @@ TEST_F(CollectUserDataActionTest, PhoneNumberFromProto) {
   *user_data_response.add_available_phone_numbers()->mutable_value() =
       MakeAutofillEntry("+1 187-654-3210");
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<2>(true, user_data_response));
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -2888,7 +2888,7 @@ TEST_F(CollectUserDataActionTest, PaymentDataFromProto) {
   AddCompleteAddressEntriesToMap("John Doe",
                                  payment_instrument->mutable_address_values());
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<2>(true, user_data_response));
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -2939,7 +2939,7 @@ TEST_F(CollectUserDataActionTest, ShippingDataFromProto) {
   auto* address = user_data_response.add_available_addresses();
   AddCompleteAddressEntriesToMap("John Doe", address->mutable_values());
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<2>(true, user_data_response));
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -2987,7 +2987,7 @@ TEST_F(CollectUserDataActionTest, RawDataFromProtoDoesNotGetFormatted) {
   (*profile->mutable_values())[14] =
       MakeAutofillEntry("+1 123-456-7890", /* raw= */ true);
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<2>(true, user_data_response));
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -3074,7 +3074,7 @@ TEST_F(CollectUserDataActionTest, SelectEntriesFromProtoFromIdentifiers) {
   AddCompleteAddressEntriesToMap(
       "Jane Doe", payment_instrument_2->mutable_address_values());
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<2>(true, user_data_response));
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -3151,7 +3151,7 @@ TEST_F(CollectUserDataActionTest,
   AddCompleteAddressEntriesToMap(
       "Jane Doe", payment_instrument_2->mutable_address_values());
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<2>(true, user_data_response));
+      .WillOnce(RunOnceCallback<1>(true, user_data_response));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -3925,7 +3925,7 @@ TEST_F(CollectUserDataActionTest, LogUkmDataFromBackend) {
   collect_user_data_proto->mutable_data_source();
 
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillRepeatedly(RunOnceCallback<2>(true, GetUserDataResponseProto()));
+      .WillRepeatedly(RunOnceCallback<1>(true, GetUserDataResponseProto()));
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
         user_data_.terms_and_conditions_ = ACCEPTED;
@@ -3983,7 +3983,7 @@ TEST_F(CollectUserDataActionTest, LogUkmDataFallbackBackendData) {
                               payment_instrument_1->mutable_card_values());
 
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillRepeatedly(RunOnceCallback<2>(true, user_data_response));
+      .WillRepeatedly(RunOnceCallback<1>(true, user_data_response));
 
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
@@ -4017,7 +4017,7 @@ TEST_F(CollectUserDataActionTest, LogUkmFallbackChromeAutofillDataFromBackend) {
   (*response_profile->mutable_values())[7] = MakeAutofillEntry("John Doe");
   autofill::CountryNames::SetLocaleString("en-US");
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillRepeatedly(RunOnceCallback<2>(true, user_data_response));
+      .WillRepeatedly(RunOnceCallback<1>(true, user_data_response));
 
   ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
       .WillByDefault(Return(true));
@@ -4245,7 +4245,7 @@ TEST_F(CollectUserDataActionTest, ReloadsDataIfRequested) {
       .WillByDefault(Return(true));
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
       .Times(3)
-      .WillRepeatedly(RunOnceCallback<2>(true, GetUserDataResponseProto()));
+      .WillRepeatedly(RunOnceCallback<1>(true, GetUserDataResponseProto()));
   EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
       .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
         std::move(collect_user_data_options->reload_data_callback)
@@ -4301,7 +4301,7 @@ TEST_F(CollectUserDataActionTest, MergesTransientDataWithUserDataFromBackend) {
       .WillByDefault(Return(true));
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
       .Times(2)
-      .WillRepeatedly(RunOnceCallback<2>(true, user_data_response));
+      .WillRepeatedly(RunOnceCallback<1>(true, user_data_response));
   EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
       .WillOnce(Invoke([=](CollectUserDataOptions* collect_user_data_options) {
         ASSERT_EQ(user_data_.available_contacts_.size(), 2u);
@@ -4361,7 +4361,7 @@ TEST_F(CollectUserDataActionTest, FallBackToChromeDataOnFailedRequest) {
   ON_CALL(mock_action_delegate_, MustUseBackendData)
       .WillByDefault(Return(false));
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<2>(false, GetUserDataResponseProto()));
+      .WillOnce(RunOnceCallback<1>(false, GetUserDataResponseProto()));
 
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
@@ -4434,7 +4434,7 @@ TEST_F(CollectUserDataActionTest, FailActionIfFallbackIsNotPossible) {
   ON_CALL(mock_action_delegate_, MustUseBackendData)
       .WillByDefault(Return(true));
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<2>(false, GetUserDataResponseProto()));
+      .WillOnce(RunOnceCallback<1>(false, GetUserDataResponseProto()));
 
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
@@ -4456,8 +4456,8 @@ TEST_F(CollectUserDataActionTest, FailActionIfReloadFails) {
   ON_CALL(mock_action_delegate_, MustUseBackendData)
       .WillByDefault(Return(false));
   EXPECT_CALL(mock_action_delegate_, RequestUserData)
-      .WillOnce(RunOnceCallback<2>(true, GetUserDataResponseProto()))
-      .WillOnce(RunOnceCallback<2>(false, GetUserDataResponseProto()));
+      .WillOnce(RunOnceCallback<1>(true, GetUserDataResponseProto()))
+      .WillOnce(RunOnceCallback<1>(false, GetUserDataResponseProto()));
   EXPECT_CALL(mock_action_delegate_, CollectUserData(_))
       .WillOnce([&](CollectUserDataOptions* collect_user_data_options) {
         std::move(collect_user_data_options->reload_data_callback)

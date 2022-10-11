@@ -988,5 +988,16 @@ std::vector<autofill::AutofillProfile*> GetUniqueProfiles(
   return unique_profiles;
 }
 
+void AddAutofillEntryToDataModel(autofill::ServerFieldType type,
+                                 const AutofillEntryProto& entry,
+                                 const std::string& locale,
+                                 autofill::AutofillDataModel* model) {
+  if (entry.raw()) {
+    model->SetRawInfo(type, base::UTF8ToUTF16(entry.value()));
+  } else {
+    model->SetInfo(type, base::UTF8ToUTF16(entry.value()), locale);
+  }
+}
+
 }  // namespace user_data
 }  // namespace autofill_assistant

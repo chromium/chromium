@@ -426,6 +426,10 @@ message AutofillProfileProto {
     // The selected profile for the given profile name. Only works if a profile
     // was selected in a previous |CollectUserData| action.
     string selected_profile_name = 2;
+    // This points to a backend phone number which is stored in an Autofill
+    // profile for convenience's sake. All non phone number fields will be
+    // empty.
+    int32 phone_number_index = 3;
   }
 }
 

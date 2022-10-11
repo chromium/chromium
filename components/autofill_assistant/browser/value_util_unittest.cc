@@ -426,6 +426,13 @@ TEST_F(ValueUtilTest, TestEqualOperatorForAutofillProfile) {
 
   profile_a.clear_selected_profile_name();
   EXPECT_FALSE(profile_a == profile_b);
+
+  profile_a.set_phone_number_index(2);
+  profile_b.set_phone_number_index(3);
+  EXPECT_FALSE(profile_a == profile_b);
+
+  profile_b.set_phone_number_index(2);
+  EXPECT_TRUE(profile_a == profile_b);
 }
 
 TEST_F(ValueUtilTest, TestEqualOperatorForAutofillCreditCard) {
@@ -452,6 +459,29 @@ TEST_F(ValueUtilTest, TestEqualOperatorForAutofillCreditCard) {
 
   credit_card_a.clear_selected_credit_card();
   EXPECT_FALSE(credit_card_a == credit_card_b);
+}
+
+TEST_F(ValueUtilTest, TestAutofilllProfileProtoToString) {
+  std::ostringstream stream;
+  AutofillProfileProto proto;
+
+  stream << proto;
+  EXPECT_EQ(stream.str(), "");
+
+  proto.set_guid("123");
+  stream.str("");
+  stream << proto;
+  EXPECT_EQ(stream.str(), "guid:123");
+
+  proto.set_selected_profile_name("profile_a");
+  stream.str("");
+  stream << proto;
+  EXPECT_EQ(stream.str(), "profile name:profile_a");
+
+  proto.set_phone_number_index(2);
+  stream.str("");
+  stream << proto;
+  EXPECT_EQ(stream.str(), "phone number index:2");
 }
 
 }  // namespace value_util

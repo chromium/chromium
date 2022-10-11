@@ -258,23 +258,12 @@ void SetInitialUserDataForAdditionalSection(
   }
 }
 
-void AddAutofillEntryToDataModel(autofill::ServerFieldType type,
-                                 AutofillEntryProto entry,
-                                 const std::string& locale,
-                                 autofill::AutofillDataModel* model) {
-  if (entry.raw()) {
-    model->SetRawInfo(type, base::UTF8ToUTF16(entry.value()));
-  } else {
-    model->SetInfo(type, base::UTF8ToUTF16(entry.value()), locale);
-  }
-}
-
 void AddProtoDataToAutofillDataModel(
     const google::protobuf::Map<int32_t, AutofillEntryProto>& data,
     const std::string& locale,
     autofill::AutofillDataModel* model) {
   for (const auto& it : data) {
-    AddAutofillEntryToDataModel(
+    user_data::AddAutofillEntryToDataModel(
         static_cast<autofill::ServerFieldType>(it.first), it.second, locale,
         model);
   }
@@ -642,8 +631,10 @@ void CollectUserDataAction::OnShowToUser(UserData* user_data,
 
 void CollectUserDataAction::UpdateUserData(UserData* user_data) {
   if (proto_.collect_user_data().has_data_source()) {
+    delegate_->SetCollectUserDataUiState(/*loading=*/true,
+                                         UserDataEventField::NONE);
     delegate_->RequestUserData(
-        UserDataEventField::NONE, *collect_user_data_options_,
+        *collect_user_data_options_,
         base::BindOnce(&CollectUserDataAction::OnRequestUserData,
                        weak_ptr_factory_.GetWeakPtr(),
                        /* is_initial_request= */ true, user_data));
@@ -912,8 +903,9 @@ void CollectUserDataAction::ReloadUserData(UserDataEventField event_field,
   metrics_data_.personal_data_changed = true;
   collect_user_data_options_->reload_data_callback = base::BindOnce(
       &CollectUserDataAction::ReloadUserData, weak_ptr_factory_.GetWeakPtr());
+  delegate_->SetCollectUserDataUiState(/*loading=*/true, event_field);
   delegate_->RequestUserData(
-      event_field, *collect_user_data_options_,
+      *collect_user_data_options_,
       base::BindOnce(&CollectUserDataAction::OnRequestUserData,
                      weak_ptr_factory_.GetWeakPtr(),
                      /* is_initial_request= */ false, user_data));
@@ -1583,7 +1575,7 @@ void CollectUserDataAction::UpdateUserDataFromProto(
     }
     for (const auto& phone_number_data : proto_data.available_phone_numbers()) {
       auto profile = std::make_unique<autofill::AutofillProfile>();
-      AddAutofillEntryToDataModel(
+      user_data::AddAutofillEntryToDataModel(
           autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
           phone_number_data.value(), proto_data.locale(), profile.get());
       auto phone_number = std::make_unique<PhoneNumber>(std::move(profile));

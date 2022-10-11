@@ -4,12 +4,18 @@
 
 #include "components/autofill_assistant/browser/actions/show_generic_ui_action.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/web/element.h"
@@ -29,7 +35,9 @@ void ShowGenericUiAction::OnInterruptFinished() {
       base::BindOnce(&ShowGenericUiAction::OnEndActionInteraction,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ShowGenericUiAction::OnViewInflationFinished,
-                     weak_ptr_factory_.GetWeakPtr(), false));
+                     weak_ptr_factory_.GetWeakPtr(), false),
+      base::BindRepeating(&ShowGenericUiAction::OnRequestBackendUserData,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 ShowGenericUiAction::ShowGenericUiAction(ActionDelegate* delegate,
@@ -95,7 +103,60 @@ void ShowGenericUiAction::InternalProcessAction(
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ShowGenericUiAction::OnViewInflationFinished,
                      weak_ptr_factory_.GetWeakPtr(),
-                     /* first_inflation= */ true));
+                     /* first_inflation= */ true),
+      base::BindRepeating(&ShowGenericUiAction::OnRequestBackendUserData,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ShowGenericUiAction::OnRequestBackendUserData(
+    const RequestBackendDataProto& request) {
+  if (request.output_success_model_identifier().empty() ||
+      request.request_phone_numbers()
+          .output_profiles_model_identifier()
+          .empty()) {
+    return;
+  }
+  // TODO(b/246875491): Stop using collect user data options in ShowGenericUi.
+  CollectUserDataOptions options;
+  options.request_phone_number_separately = request.has_request_phone_numbers();
+  delegate_->RequestUserData(
+      options, base::BindOnce(&ShowGenericUiAction::OnGetBackendUserData,
+                              weak_ptr_factory_.GetWeakPtr(), request));
+}
+
+void ShowGenericUiAction::OnGetBackendUserData(
+    const RequestBackendDataProto& request,
+    bool success,
+    const GetUserDataResponseProto& response) {
+  delegate_->GetUserModel()->SetValue(request.output_success_model_identifier(),
+                                      SimpleValue(success));
+  if (request.has_request_phone_numbers()) {
+    auto phone_number_autofill_profile_list = std::make_unique<
+        std::vector<std::unique_ptr<autofill::AutofillProfile>>>();
+    for (const auto& phone_number_proto : response.available_phone_numbers()) {
+      auto profile = std::make_unique<autofill::AutofillProfile>();
+      // AddAutofillEntryToDataModel adds only to the autofill profile and
+      // not UserModel.
+      user_data::AddAutofillEntryToDataModel(
+          autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
+          phone_number_proto.value(), response.locale(), profile.get());
+      phone_number_autofill_profile_list->emplace_back(std::move(profile));
+    }
+    size_t phone_numbers_count = phone_number_autofill_profile_list->size();
+    delegate_->GetUserModel()->SetPhoneNumbers(
+        std::move(phone_number_autofill_profile_list));
+
+    auto phone_number_model_list_value = ValueProto();
+    auto* phone_number_model_list =
+        phone_number_model_list_value.mutable_profiles();
+    for (size_t i = 0; i < phone_numbers_count; i++) {
+      phone_number_model_list->add_values()->set_phone_number_index(i);
+    }
+    phone_number_model_list_value.set_is_client_side_only(true);
+    delegate_->GetUserModel()->SetValue(
+        request.request_phone_numbers().output_profiles_model_identifier(),
+        phone_number_model_list_value);
+  }
 }
 
 void ShowGenericUiAction::OnViewInflationFinished(bool first_inflation,

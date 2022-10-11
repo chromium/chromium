@@ -47,6 +47,14 @@ void EndAction(base::WeakPtr<BasicInteractions> basic_interactions,
   basic_interactions->EndAction(ClientStatus(proto.status()));
 }
 
+void RequestBackendData(base::WeakPtr<BasicInteractions> basic_interactions,
+                        const RequestBackendDataProto& proto) {
+  if (!basic_interactions) {
+    return;
+  }
+  basic_interactions->RequestBackendData(proto);
+}
+
 void ToggleUserAction(base::WeakPtr<BasicInteractions> basic_interactions,
                       const ToggleUserActionProto& proto) {
   if (!basic_interactions) {

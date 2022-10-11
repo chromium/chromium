@@ -365,6 +365,11 @@ InteractionHandlerAndroid::CreateInteractionCallbackFromProto(
           &RunForEachLoop, proto.for_each(), GetWeakPtr(),
           user_model_->GetWeakPtr(), view_handler_->GetWeakPtr()));
     }
+    case CallbackProto::kRequestBackendData: {
+      return absl::optional<InteractionCallback>(base::BindRepeating(
+          &android_interactions::RequestBackendData,
+          basic_interactions_->GetWeakPtr(), proto.request_backend_data()));
+    }
     case CallbackProto::KIND_NOT_SET:
       VLOG(1) << "Error creating interaction: kind not set";
       return absl::nullopt;

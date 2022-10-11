@@ -36,6 +36,10 @@ void SetUserActions(base::WeakPtr<BasicInteractions> basic_interactions,
 void EndAction(base::WeakPtr<BasicInteractions> basic_interactions,
                const EndActionProto& proto);
 
+// Requests backend data.
+void RequestBackendData(base::WeakPtr<BasicInteractions> basic_interactions,
+                        const RequestBackendDataProto& proto);
+
 // Enables or disables a particular user action.
 void ToggleUserAction(base::WeakPtr<BasicInteractions> basic_interactions,
                       const ToggleUserActionProto& proto);

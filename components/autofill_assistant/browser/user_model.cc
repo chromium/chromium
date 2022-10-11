@@ -149,6 +149,15 @@ void UserModel::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void UserModel::SetPhoneNumbers(
+    std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
+        phone_numbers) {
+  if (phone_numbers_) {
+    phone_numbers_.reset();
+  }
+  phone_numbers_ = std::move(phone_numbers);
+}
+
 void UserModel::SetAutofillCreditCards(
     std::unique_ptr<std::vector<std::unique_ptr<autofill::CreditCard>>>
         credit_cards) {
@@ -269,6 +278,13 @@ const autofill::AutofillProfile* UserModel::GetProfile(
     }
     case AutofillProfileProto::kSelectedProfileName:
       return GetSelectedAutofillProfile(proto.selected_profile_name());
+    case AutofillProfileProto::kPhoneNumberIndex: {
+      size_t index = proto.phone_number_index();
+      if (index >= phone_numbers_->size() || index < 0) {
+        return nullptr;
+      }
+      return phone_numbers_->at(index).get();
+    }
     case AutofillProfileProto::IDENTIFIER_NOT_SET:
       return nullptr;
   }

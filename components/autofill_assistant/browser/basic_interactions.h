@@ -53,6 +53,9 @@ class BasicInteractions {
   // Ends the current action. Can only be called during a ShowGenericUiAction.
   bool EndAction(const ClientStatus& status);
 
+  // Makes a backend call and populates UserModel.
+  bool RequestBackendData(const RequestBackendDataProto& request);
+
   // Runs |view_inflation_finished_callback_| to notify its owner that view
   // inflation has finished. Can only be called during a ShowGenericUiAction.
   bool NotifyViewInflationFinished(const ClientStatus& status);
@@ -70,6 +73,11 @@ class BasicInteractions {
   void SetViewInflationFinishedCallback(
       base::OnceCallback<void(const ClientStatus&)>
           view_inflation_finished_callback);
+
+  // Sets the callback to indicate whether view inflation was successful or not.
+  void SetRequestBackendDataCallback(
+      base::RepeatingCallback<void(const RequestBackendDataProto&)>
+          request_backend_data_callback);
 
   // Sets the callback to indicate whether view inflation of the persistent Ui
   // was successful or not.
@@ -96,6 +104,8 @@ class BasicInteractions {
   base::OnceCallback<void(const ClientStatus&)> end_action_callback_;
   base::OnceCallback<void(const ClientStatus&)>
       view_inflation_finished_callback_;
+  base::RepeatingCallback<void(const RequestBackendDataProto&)>
+      request_backend_data_callback_;
   // Set during a SetPersistentUiAction.
   base::OnceCallback<void(const ClientStatus&)>
       persistent_view_inflation_finished_callback_;

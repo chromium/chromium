@@ -54,10 +54,27 @@ message CallbackProto {
     CreateNestedGenericUiProto create_nested_ui = 14;
     ClearViewContainerProto clear_view_container = 15;
     ForEachProto for_each = 16;
+    RequestBackendDataProto request_backend_data = 17;
   }
   // Optional model identifier pointing to a single boolean. If set, the
   // callback will only be invoked if the condition is true.
   optional string condition_model_identifier = 10;
+}
+
+message RequestBackendDataProto {
+  // Store the outcome of the backend data request in this model identifier.
+  // true if the backend request and response parsing was successful, else false
+  optional string output_success_model_identifier = 1;
+
+  // Set if requesting phone numbers from the backend.
+  optional RequestPhoneNumbersProto request_phone_numbers = 2;
+}
+
+message RequestPhoneNumbersProto {
+  // After getting the phone numbers from the backend, model identifier
+  // points to a list of |AutofillProfileProto|, each item pointing to
+  // a profile containing one phone number.
+  optional string output_profiles_model_identifier = 1;
 }
 
 message EventProto {

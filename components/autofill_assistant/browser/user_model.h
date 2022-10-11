@@ -86,6 +86,10 @@ class UserModel {
     return values;
   }
 
+  void SetPhoneNumbers(
+      std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
+          profiles);
+
   // Replaces the set of available autofill credit cards.
   void SetAutofillCreditCards(
       std::unique_ptr<std::vector<std::unique_ptr<autofill::CreditCard>>>
@@ -174,7 +178,8 @@ class UserModel {
   // Profile name to profile map.
   base::flat_map<std::string, std::unique_ptr<autofill::AutofillProfile>>
       selected_profiles_;
-
+  std::unique_ptr<std::vector<std::unique_ptr<autofill::AutofillProfile>>>
+      phone_numbers_;
   GURL current_url_;
   base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<UserModel> weak_ptr_factory_{this};

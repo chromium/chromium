@@ -30,6 +30,8 @@ class ShowGenericUiAction : public Action, public WaitForDomObserver {
   void OnInterruptStarted() override;
   void OnInterruptFinished() override;
 
+  void OnRequestBackendUserData(const RequestBackendDataProto& request);
+
  private:
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
@@ -50,6 +52,9 @@ class ShowGenericUiAction : public Action, public WaitForDomObserver {
   // EndAction, otherwise it just calls EndAction.
   void OnEndActionInteraction(const ClientStatus& status);
   void EndAction(const ClientStatus& status);
+  void OnGetBackendUserData(const RequestBackendDataProto& request,
+                            bool success,
+                            const GetUserDataResponseProto& proto_data);
 
   void OnViewInflationFinished(bool first_inflation,
                                const ClientStatus& status);

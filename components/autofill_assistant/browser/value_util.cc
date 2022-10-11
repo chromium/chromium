@@ -185,6 +185,8 @@ bool operator==(const AutofillProfileProto& value_a,
       return value_a.guid() == value_b.guid();
     case AutofillProfileProto::kSelectedProfileName:
       return value_a.selected_profile_name() == value_b.selected_profile_name();
+    case AutofillProfileProto::kPhoneNumberIndex:
+      return value_a.phone_number_index() == value_b.phone_number_index();
     case AutofillProfileProto::IDENTIFIER_NOT_SET:
       return true;
   }
@@ -261,6 +263,9 @@ std::ostream& operator<<(std::ostream& out, const AutofillProfileProto& value) {
       break;
     case AutofillProfileProto::kSelectedProfileName:
       out << "profile name:" << value.selected_profile_name();
+      break;
+    case AutofillProfileProto::kPhoneNumberIndex:
+      out << "phone number index:" << value.phone_number_index();
       break;
     case AutofillProfileProto::IDENTIFIER_NOT_SET:
       break;

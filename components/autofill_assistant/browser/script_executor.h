@@ -257,7 +257,9 @@ class ScriptExecutor : public ActionDelegate,
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
       base::OnceCallback<void(const ClientStatus&)> end_action_callback,
       base::OnceCallback<void(const ClientStatus&)>
-          view_inflation_finished_callback) override;
+          view_inflation_finished_callback,
+      base::RepeatingCallback<void(const RequestBackendDataProto&)>
+          request_backend_data_callback) override;
   void SetPersistentGenericUi(
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
       base::OnceCallback<void(const ClientStatus&)>
@@ -272,10 +274,11 @@ class ScriptExecutor : public ActionDelegate,
   base::WeakPtr<ActionDelegate> GetWeakPtr() override;
   ProcessedActionStatusDetailsProto& GetLogInfo() override;
   void RequestUserData(
-      UserDataEventField event_field,
       const CollectUserDataOptions& options,
       base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback)
       override;
+  void SetCollectUserDataUiState(bool loading,
+                                 UserDataEventField event_field) override;
   bool SupportsExternalActions() override;
   void RequestExternalAction(
       const ExternalActionProto& external_action,

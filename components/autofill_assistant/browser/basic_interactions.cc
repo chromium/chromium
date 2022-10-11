@@ -656,6 +656,16 @@ bool BasicInteractions::EndAction(const ClientStatus& status) {
   return true;
 }
 
+bool BasicInteractions::RequestBackendData(
+    const RequestBackendDataProto& request) {
+  if (!request_backend_data_callback_) {
+    DVLOG(2) << "Failed to RequestBackendData: no callback set";
+    return false;
+  }
+  request_backend_data_callback_.Run(request);
+  return true;
+}
+
 bool BasicInteractions::NotifyViewInflationFinished(
     const ClientStatus& status) {
   if (!view_inflation_finished_callback_) {
@@ -693,6 +703,12 @@ void BasicInteractions::SetViewInflationFinishedCallback(
         view_inflation_finished_callback) {
   view_inflation_finished_callback_ =
       std::move(view_inflation_finished_callback);
+}
+
+void BasicInteractions::SetRequestBackendDataCallback(
+    base::RepeatingCallback<void(const RequestBackendDataProto&)>
+        request_backend_data_callback) {
+  request_backend_data_callback_ = std::move(request_backend_data_callback);
 }
 
 void BasicInteractions::SetPersistentViewInflationFinishedCallback(

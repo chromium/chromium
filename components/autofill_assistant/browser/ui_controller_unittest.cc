@@ -982,7 +982,7 @@ TEST_F(UiControllerTest, SetGenericUi) {
   }
   ui_controller_->SetGenericUi(
       std::make_unique<GenericUserInterfaceProto>(GenericUserInterfaceProto()),
-      base::DoNothing(), base::DoNothing());
+      base::DoNothing(), base::DoNothing(), base::DoNothing());
   ui_controller_->ClearGenericUi();
 }
 
