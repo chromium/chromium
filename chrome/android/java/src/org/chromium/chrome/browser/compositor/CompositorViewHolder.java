@@ -195,7 +195,8 @@ public class CompositorViewHolder extends FrameLayout
     private boolean mHasKeyboardGeometryChangeFired;
 
     @VirtualKeyboardMode.EnumType
-    private int mVirtualKeyboardMode = ChromeFeatureList.sOSKResizesVisualViewport.isEnabled()
+    private int mVirtualKeyboardMode =
+            ChromeFeatureList.sOSKResizesVisualViewportByDefault.isEnabled()
             ? VirtualKeyboardMode.RESIZE_VISUAL
             : VirtualKeyboardMode.RESIZE_LAYOUT;
 
@@ -423,7 +424,8 @@ public class CompositorViewHolder extends FrameLayout
         // contents.
         //
         // [1] - https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_FULLSCREEN
-        if (mShowingFullscreen && (!ChromeFeatureList.sOSKResizesVisualViewport.isEnabled())
+        if (mShowingFullscreen
+                && (!ChromeFeatureList.sOSKResizesVisualViewportByDefault.isEnabled())
                 && KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(getContext(), this)) {
             getWindowVisibleDisplayFrame(mCacheRect);
 
@@ -1342,9 +1344,7 @@ public class CompositorViewHolder extends FrameLayout
      * @return The inset height in pixels.
      */
     private int getKeyboardBottomInsetForControlsPixels() {
-        // If osk-resizes-visual-viewport is enabled, the OSK and its
-        // accessories don't resize the view/page so the autofill inset
-        // supplier must not have been set.
+        // If the OSK mode resizes only the visual viewport avoid insetting the the container.
         if (oskResizesVisualViewport()) {
             return 0;
         }
@@ -1549,7 +1549,7 @@ public class CompositorViewHolder extends FrameLayout
     @VisibleForTesting
     void updateVirtualKeyboardMode(@VirtualKeyboardMode.EnumType int newMode) {
         if (newMode == VirtualKeyboardMode.UNSET) {
-            newMode = ChromeFeatureList.sOSKResizesVisualViewport.isEnabled()
+            newMode = ChromeFeatureList.sOSKResizesVisualViewportByDefault.isEnabled()
                     ? VirtualKeyboardMode.RESIZE_VISUAL
                     : VirtualKeyboardMode.RESIZE_LAYOUT;
         }

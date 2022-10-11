@@ -97,7 +97,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableUpdateVirtualCardEnrollment,
     &autofill::features::kAutofillEnableVirtualCardMetadata,
     &blink::features::kForceWebContentsDarkMode,
-    &blink::features::kOSKResizesVisualViewport,
+    &blink::features::kOSKResizesVisualViewportByDefault,
     &blink::features::kPrerender2,
     &commerce::kCommerceMerchantViewer,
     &commerce::kCommercePriceTracking,

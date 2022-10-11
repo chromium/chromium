@@ -5273,7 +5273,7 @@
     "expiry_milestone": 114
   },
   {
-    "name": "osk-resizes-visual-viewport",
+    "name": "osk-resizes-visual-viewport-by-default",
     "owners": [ "bokan", "rendering-core-dev@chromium.org" ],
     "expiry_milestone": 116
   },

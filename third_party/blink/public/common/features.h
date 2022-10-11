@@ -79,7 +79,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLayoutNGBlockInInline);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMixedContentAutoupgrade);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kNavigationPredictor);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAnchorElementInteraction);
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOSKResizesVisualViewport);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOSKResizesVisualViewportByDefault);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPlzDedicatedWorker);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPortalsCrossOrigin);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFencedFrames);
@@ -180,7 +180,7 @@ BLINK_COMMON_EXPORT bool
 IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled();
 // Returns true if the Android On-Screen-Keyboard is in "resize visual
 // viewport" mode.
-BLINK_COMMON_EXPORT bool OSKResizesVisualViewport();
+BLINK_COMMON_EXPORT bool OSKResizesVisualViewportByDefault();
 
 // Fenced Frames:
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();

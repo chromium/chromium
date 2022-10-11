@@ -1850,7 +1850,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
     RuntimeEnabledFeatures::SetStrictMimeTypesForWorkersEnabled(false);
   }
 
-  if (features::OSKResizesVisualViewport()) {
+  if (features::OSKResizesVisualViewportByDefault()) {
     RuntimeEnabledFeatures::SetViewportMetaInteractiveWidgetPropertyEnabled(
         true);
   }

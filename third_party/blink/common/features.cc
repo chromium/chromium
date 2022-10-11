@@ -238,8 +238,8 @@ BASE_FEATURE(kAnchorElementInteraction,
 // Enable "interoperable" Android virtual-keyboard. i.e. the keyboard doesn't
 // affect page layout, resizing only the visual viewport. This matches WebKit
 // and ChromeOS behavior.
-BASE_FEATURE(kOSKResizesVisualViewport,
-             "OSKResizesVisualViewport",
+BASE_FEATURE(kOSKResizesVisualViewportByDefault,
+             "OSKResizesVisualViewportByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable browser-initiated dedicated worker script loading
@@ -341,9 +341,9 @@ bool IsSameSiteCrossOriginForSpeculationRulesPrerender2Enabled() {
       blink::features::kSameSiteCrossOriginForSpeculationRulesPrerender);
 }
 
-bool OSKResizesVisualViewport() {
+bool OSKResizesVisualViewportByDefault() {
   return base::FeatureList::IsEnabled(
-      blink::features::kOSKResizesVisualViewport);
+      blink::features::kOSKResizesVisualViewportByDefault);
 }
 
 bool IsFencedFramesEnabled() {

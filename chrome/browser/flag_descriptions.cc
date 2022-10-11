@@ -3660,12 +3660,12 @@ const char kEnableFamilyInfoFeedbackName[] =
 const char kEnableFamilyInfoFeedbackDescription[] =
     "Enable FamilyLink feedback source in Chrome Settings feedback";
 
-const char kEnableOskResizesVisualViewportName[] =
-    "Enable OSK resizes visual viewport";
-const char kEnableOskResizesVisualViewportDescription[] =
-    "With this flag on, the Android On-Screen-Keyboard (OSK) will avoid "
-    "changing the page height,"
-    "resizing only the visual viewport.";
+const char kEnableOskResizesVisualViewportByDefaultName[] =
+    "Enable OSK resizes visual viewport by default";
+const char kEnableOskResizesVisualViewportByDefaultDescription[] =
+    "Unless explicitly overriden by the page author, the Android "
+    "On-Screen-Keyboard (OSK) will avoid changing the page height, resizing "
+    "only the visual viewport.";
 
 const char kExploreSitesName[] = "Explore websites";
 const char kExploreSitesDescription[] =

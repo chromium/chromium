@@ -182,9 +182,9 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
-     * Tests the OSKResizesVisualViewport flag changes Chrome's default behavior to the virtual
-     * keyboard resizing only the visual viewport, but not the page's initial containing block or
-     * layout viewport.
+     * Tests the OSKResizesVisualViewportByDefault flag changes Chrome's default behavior to the
+     * virtual keyboard resizing only the visual viewport, but not the page's initial containing
+     * block or layout viewport.
      */
     @Test
     @MediumTest
@@ -215,9 +215,8 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
-     * Tests the <meta name="viewport" content="interactive-widgets=resize-visual"> tag (which works
-     * only when the OSKResizesVisualViewport flag is enabled) causes the page to resize only the
-     * visual viewport.
+     * Tests the <meta name="viewport" content="interactive-widgets=resize-visual"> tag causes the
+     * page to resize only the visual viewport.
      */
     @Test
     @MediumTest
@@ -248,7 +247,7 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
-     * Same as above but with OSKResizesVisualViewport disabled but
+     * Same as above but with OSKResizesVisualViewportByDefault disabled but
      * --enable-blink-features=ViewportMetaInteractiveWidgetProperty to enable
      * only the meta tag.
      *
@@ -317,9 +316,8 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
-     * Tests the <meta name="viewport" content="interactive-widgets=overlays-content"> tag (which
-     * works only when the OSKResizesVisualViewport flag is enabled) causes the page to avoid
-     * resizing any viewports.
+     * Tests the <meta name="viewport" content="interactive-widgets=overlays-content"> tag causes
+     * the page to avoid resizing any viewports.
      */
     @Test
     @MediumTest

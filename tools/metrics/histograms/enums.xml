@@ -59785,6 +59785,7 @@ from previous Chrome versions.
   <int value="-226826278" label="ForceEnableFastCheckoutCapabilities:disabled"/>
   <int value="-225505731" label="CCTModule:enabled"/>
   <int value="-225228149" label="ContentSettingsRedesign:enabled"/>
+  <int value="-223595595" label="OSKResizesVisualViewportByDefault:enabled"/>
   <int value="-222296540" label="VirtualKeyboardBorderedKey:disabled"/>
   <int value="-222282965"
       label="disable_idle_sockets_close_on_memory_pressure:enabled"/>
@@ -60338,7 +60339,6 @@ from previous Chrome versions.
   <int value="106744400" label="OmniboxModernizeVisualUpdate:enabled"/>
   <int value="106840653" label="mus"/>
   <int value="107900612" label="ChromeHomePersistentIph:disabled"/>
-  <int value="108656675" label="OSKResizesVisualViewport:enabled"/>
   <int value="108874121" label="InstanceSwitcher:disabled"/>
   <int value="109577361" label="ForbidSyncXHRInPageDismissal:enabled"/>
   <int value="110888614" label="ReduceDisplayNotifications:enabled"/>
@@ -61390,6 +61390,7 @@ from previous Chrome versions.
   <int value="741219332" label="ShareByDefaultInCCT:enabled"/>
   <int value="741760108" label="SidePanelPrototype:enabled"/>
   <int value="742083923" label="MimeHandlerViewInCrossProcessFrame:disabled"/>
+  <int value="742363749" label="OSKResizesVisualViewportByDefault:disabled"/>
   <int value="743714331" label="HelpAppLauncherSearch:enabled"/>
   <int value="744342941" label="SafetyCheckChromeCleanerChild:enabled"/>
   <int value="745541471" label="PaintHolding:disabled"/>
@@ -62606,7 +62607,6 @@ from previous Chrome versions.
   <int value="1486092162"
       label="AutofillEnableOffersInClankKeyboardAccessory:enabled"/>
   <int value="1486171015" label="disable-fill-on-account-select"/>
-  <int value="1486269568" label="OSKResizesVisualViewport:disabled"/>
   <int value="1486347614" label="IsolatedWebApps:disabled"/>
   <int value="1486784197" label="MouseSubframeNoImplicitCapture:disabled"/>
   <int value="1487341558" label="MacViewsAutofillPopup:enabled"/>
