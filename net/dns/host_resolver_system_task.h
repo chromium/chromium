@@ -9,11 +9,13 @@
 
 #include "base/functional/callback.h"
 #include "base/task/task_runner.h"
+#include "base/types/pass_key.h"
 #include "net/base/address_list.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/dns/host_resolver_proc.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -85,11 +87,29 @@ class NET_EXPORT HostResolverSystemTask {
     uint32_t retry_factor = 2;
   };
 
-  HostResolverSystemTask(
+  static std::unique_ptr<HostResolverSystemTask> Create(
       std::string hostname,
       AddressFamily address_family,
       HostResolverFlags flags,
-      SystemDnsResultsCallback results_cb,
+      const Params& params = Params(nullptr, 0),
+      const NetLogWithSource& job_net_log = NetLogWithSource(),
+      handles::NetworkHandle network = handles::kInvalidNetworkHandle);
+
+  // Same as above but resolves the result of GetHostName() (the machine's own
+  // hostname).
+  static std::unique_ptr<HostResolverSystemTask> CreateForOwnHostname(
+      AddressFamily address_family,
+      HostResolverFlags flags,
+      const Params& params = Params(nullptr, 0),
+      const NetLogWithSource& job_net_log = NetLogWithSource(),
+      handles::NetworkHandle network = handles::kInvalidNetworkHandle);
+
+  // "Private" constructor for the above 2 static functions.
+  HostResolverSystemTask(
+      base::PassKey<HostResolverSystemTask>,
+      absl::optional<std::string> hostname,
+      AddressFamily address_family,
+      HostResolverFlags flags,
       const Params& params = Params(nullptr, 0),
       const NetLogWithSource& job_net_log = NetLogWithSource(),
       handles::NetworkHandle network = handles::kInvalidNetworkHandle);
@@ -102,7 +122,10 @@ class NET_EXPORT HostResolverSystemTask {
   // checking their WeakPtrs to find that this task is cancelled.
   ~HostResolverSystemTask();
 
-  void Start();
+  // Starts the resolution task. This can only be called once per
+  // HostResolverSystemTask. `results_cb` will not be invoked synchronously and
+  // can own `this`.
+  void Start(SystemDnsResultsCallback results_cb);
 
   bool was_completed() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -110,9 +133,6 @@ class NET_EXPORT HostResolverSystemTask {
   }
 
  private:
-  using AttemptCompletionCallback = base::OnceCallback<
-      void(const AddressList& results, int error, const int os_error)>;
-
   void StartLookupAttempt();
 
   // Callback for when DoLookup() completes.
@@ -121,7 +141,9 @@ class NET_EXPORT HostResolverSystemTask {
                         const int os_error,
                         int error);
 
-  const std::string hostname_;
+  // If `hostname_` is absl::nullopt, this class should resolve the result of
+  // net::GetHostName() (the machine's own hostname).
+  const absl::optional<std::string> hostname_;
   const AddressFamily address_family_;
   const HostResolverFlags flags_;
 
@@ -142,7 +164,7 @@ class NET_EXPORT HostResolverSystemTask {
   NetLogWithSource net_log_;
 
   // Network to perform DNS lookups for.
-  handles::NetworkHandle network_;
+  const handles::NetworkHandle network_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

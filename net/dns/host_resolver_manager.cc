@@ -2234,18 +2234,17 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     DCHECK_EQ(1, num_occupied_job_slots_);
     DCHECK(HasAddressType(key_.query_types));
 
-    system_task_ = std::make_unique<HostResolverSystemTask>(
+    system_task_ = HostResolverSystemTask::Create(
         std::string(GetHostname(key_.host)),
         HostResolver::DnsQueryTypeSetToAddressFamily(key_.query_types),
-        key_.flags,
-        base::BindOnce(&Job::OnSystemTaskComplete, base::Unretained(this),
-                       tick_clock_->NowTicks()),
-        resolver_->host_resolver_system_params_, net_log_,
+        key_.flags, resolver_->host_resolver_system_params_, net_log_,
         key_.GetTargetNetwork());
 
     // Start() could be called from within Resolve(), hence it must NOT directly
     // call OnSystemTaskComplete, for example, on synchronous failure.
-    system_task_->Start();
+    system_task_->Start(base::BindOnce(&Job::OnSystemTaskComplete,
+                                       base::Unretained(this),
+                                       tick_clock_->NowTicks()));
   }
 
   // Called by HostResolverSystemTask when it completes.

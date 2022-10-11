@@ -4,6 +4,9 @@
 
 #include "net/dns/host_resolver_system_task.h"
 
+#include <memory>
+
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
@@ -11,8 +14,10 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/pass_key.h"
 #include "dns_reloader.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_interfaces.h"
 #include "net/base/sys_addrinfo.h"
 #include "net/base/trace_constants.h"
 #include "net/dns/address_info.h"
@@ -54,10 +59,7 @@ scoped_refptr<base::TaskRunner>& GetSystemDnsResolutionTaskRunnerOverride() {
 // assigning to GetSystemDnsResolutionTaskRunnerOverride(). `results_cb` will be
 // called later on the current sequence with the results of the DNS resolution.
 void PostSystemDnsResolutionTaskAndReply(
-    handles::NetworkHandle network,
-    base::OnceCallback<int(AddressList* addrlist,
-                           int* os_error,
-                           handles::NetworkHandle network)>
+    base::OnceCallback<int(AddressList* addrlist, int* os_error)>
         system_dns_resolution_callback,
     HostResolverSystemTask::SystemDnsResultsCallback results_cb) {
   auto addr_list = std::make_unique<net::AddressList>();
@@ -88,8 +90,25 @@ void PostSystemDnsResolutionTaskAndReply(
   system_dns_resolution_task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(std::move(system_dns_resolution_callback), addr_list_ptr,
-                     os_error_ptr, network),
+                     os_error_ptr),
       std::move(call_with_results_cb));
+}
+
+int ResolveOnWorkerThread(scoped_refptr<HostResolverProc> resolver_proc,
+                          absl::optional<std::string> hostname,
+                          AddressFamily address_family,
+                          HostResolverFlags flags,
+                          handles::NetworkHandle network,
+                          AddressList* addrlist,
+                          int* os_error) {
+  std::string hostname_str = hostname ? *hostname : GetHostName();
+  if (resolver_proc) {
+    return resolver_proc->Resolve(hostname_str, address_family, flags, addrlist,
+                                  os_error, network);
+  } else {
+    return SystemHostResolverCall(hostname_str, address_family, flags, addrlist,
+                                  os_error, network);
+  }
 }
 
 // Creates NetLog parameters when the resolve failed.
@@ -142,11 +161,37 @@ HostResolverSystemTask::Params::Params(const Params& other) = default;
 
 HostResolverSystemTask::Params::~Params() = default;
 
-HostResolverSystemTask::HostResolverSystemTask(
+// static
+std::unique_ptr<HostResolverSystemTask> HostResolverSystemTask::Create(
     std::string hostname,
     AddressFamily address_family,
     HostResolverFlags flags,
-    SystemDnsResultsCallback results_cb,
+    const Params& params,
+    const NetLogWithSource& job_net_log,
+    handles::NetworkHandle network) {
+  return std::make_unique<HostResolverSystemTask>(
+      base::PassKey<HostResolverSystemTask>(), hostname, address_family, flags,
+      params, job_net_log, network);
+}
+
+// static
+std::unique_ptr<HostResolverSystemTask>
+HostResolverSystemTask::CreateForOwnHostname(
+    AddressFamily address_family,
+    HostResolverFlags flags,
+    const Params& params,
+    const NetLogWithSource& job_net_log,
+    handles::NetworkHandle network) {
+  return std::make_unique<HostResolverSystemTask>(
+      base::PassKey<HostResolverSystemTask>(), absl::nullopt, address_family,
+      flags, params, job_net_log, network);
+}
+
+HostResolverSystemTask::HostResolverSystemTask(
+    base::PassKey<HostResolverSystemTask>,
+    absl::optional<std::string> hostname,
+    AddressFamily address_family,
+    HostResolverFlags flags,
     const Params& params,
     const NetLogWithSource& job_net_log,
     handles::NetworkHandle network)
@@ -154,13 +199,13 @@ HostResolverSystemTask::HostResolverSystemTask(
       address_family_(address_family),
       flags_(flags),
       params_(params),
-      results_cb_(std::move(results_cb)),
       net_log_(job_net_log),
       network_(network) {
-  DCHECK(results_cb_);
-  // |host| should be a valid domain name. HostResolverImpl::Resolve has checks
-  // to fail early if this is not the case.
-  DCHECK(IsValidDNSDomain(hostname_)) << "Invalid hostname: " << hostname_;
+  if (hostname_) {
+    // |host| should be a valid domain name. HostResolverImpl::Resolve has
+    // checks to fail early if this is not the case.
+    DCHECK(IsValidDNSDomain(*hostname_)) << "Invalid hostname: " << *hostname_;
+  }
   // If a resolver_proc has not been specified, try to use a default if one is
   // set, as it may be in tests.
   if (!params_.resolver_proc.get())
@@ -179,9 +224,11 @@ HostResolverSystemTask::~HostResolverSystemTask() {
     net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_SYSTEM_TASK);
 }
 
-void HostResolverSystemTask::Start() {
+void HostResolverSystemTask::Start(SystemDnsResultsCallback results_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!was_completed());
+  DCHECK(results_cb);
+  DCHECK(!results_cb_);
+  results_cb_ = std::move(results_cb);
   net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_SYSTEM_TASK);
   StartLookupAttempt();
 }
@@ -191,23 +238,11 @@ void HostResolverSystemTask::StartLookupAttempt() {
   DCHECK(!was_completed());
   ++attempt_number_;
 
-  base::OnceCallback<int(AddressList * addrlist, int* os_error,
-                         handles::NetworkHandle network)>
-      resolve_cb;
-  if (params_.resolver_proc) {
-    // Resolve() is overloaded so we have to instruct the compiler which
-    // overload we want to call.
-    int (HostResolverProc::*resolve_func)(
-        const std::string&, AddressFamily, HostResolverFlags, AddressList*,
-        int*, handles::NetworkHandle) = &HostResolverProc::Resolve;
-    resolve_cb = base::BindOnce(resolve_func, params_.resolver_proc, hostname_,
-                                address_family_, flags_);
-  } else {
-    resolve_cb = base::BindOnce(&SystemHostResolverCall, hostname_,
-                                address_family_, flags_);
-  }
+  base::OnceCallback<int(AddressList * addrlist, int* os_error)> resolve_cb =
+      base::BindOnce(&ResolveOnWorkerThread, params_.resolver_proc, hostname_,
+                     address_family_, flags_, network_);
   PostSystemDnsResolutionTaskAndReply(
-      network_, std::move(resolve_cb),
+      std::move(resolve_cb),
       base::BindOnce(&HostResolverSystemTask::OnLookupComplete,
                      weak_ptr_factory_.GetWeakPtr(), attempt_number_));
 
@@ -271,6 +306,7 @@ void HostResolverSystemTask::OnLookupComplete(const uint32_t attempt_number,
   }
 
   std::move(results_cb_).Run(results, os_error, error);
+  // Running |results_cb_| can delete |this|.
 }
 
 void EnsureSystemHostResolverCallReady() {

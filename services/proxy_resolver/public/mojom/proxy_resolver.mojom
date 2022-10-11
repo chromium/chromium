@@ -20,8 +20,8 @@ enum HostResolveOperation {
   MY_IP_ADDRESS_EX,
 };
 
-// Interface for waiting for the result of a HostResolver query.
-// TODO(mmenke): Remove this interface, in favor of callbacks.
+// Interface for waiting for the result of a HostResolver or myIpAddress()
+// query. Disconnecting the interface cancels the request.
 interface HostResolverRequestClient {
   // |error| is a value in net::Error.
   ReportResult(int32 error, array<network.mojom.IPAddress> result);

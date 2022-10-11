@@ -20,8 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -61,7 +59,7 @@ base::Value NetLogErrorParams(int line_number, const std::string& message) {
 
 // A mixin that forwards logging to (Bound)NetLog and ProxyResolverErrorObserver
 // and DNS requests to a MojoHostResolverImpl, which is implemented in terms of
-// a HostResolver, or myIpAddress[Ex]() which is implemented by //net.
+// a HostResolver, or myIpAddress[Ex]() which is implemented by MyIpAddressImpl.
 template <typename ClientInterface>
 class ClientMixin : public ClientInterface {
  public:
@@ -70,9 +68,9 @@ class ClientMixin : public ClientInterface {
               net::NetLog* net_log,
               const net::NetLogWithSource& net_log_with_source)
       : host_resolver_(host_resolver, net_log_with_source),
-        my_ip_address_impl_(base::MakeRefCounted<MyIpAddressImpl>(
+        my_ip_address_impl_(std::make_unique<MyIpAddressImpl>(
             MyIpAddressImpl::Mode::kMyIpAddress)),
-        my_ip_address_impl_ex_(base::MakeRefCounted<MyIpAddressImpl>(
+        my_ip_address_impl_ex_(std::make_unique<MyIpAddressImpl>(
             MyIpAddressImpl::Mode::kMyIpAddressEx)),
         error_observer_(error_observer),
         net_log_(net_log),
@@ -132,8 +130,8 @@ class ClientMixin : public ClientInterface {
   MojoHostResolverImpl host_resolver_;
   // Handles myIpAddress() queries and also owns the
   // Remote<HostResolverRequestClient>'s.
-  scoped_refptr<MyIpAddressImpl> my_ip_address_impl_;
-  scoped_refptr<MyIpAddressImpl> my_ip_address_impl_ex_;
+  std::unique_ptr<MyIpAddressImpl> my_ip_address_impl_;
+  std::unique_ptr<MyIpAddressImpl> my_ip_address_impl_ex_;
 
   const raw_ptr<net::ProxyResolverErrorObserver> error_observer_;
   const raw_ptr<net::NetLog> net_log_;
