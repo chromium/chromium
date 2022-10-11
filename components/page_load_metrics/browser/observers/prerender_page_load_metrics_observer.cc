@@ -11,6 +11,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace internal {
@@ -36,6 +37,22 @@ const char
         [] = "PageLoad.Clients.Prerender.LayoutInstability."
              "MaxCumulativeShiftScore.SessionWindow."
              "Gap1000ms.Max5000ms2";
+
+// Responsiveness metrics.
+const char
+    kHistogramPrerenderAverageUserInteractionLatencyOverBudgetMaxEventDuration
+        [] = "PageLoad.InteractiveTiming."
+             "AverageUserInteractionLatencyOverBudget."
+             "MaxEventDuration.Prerender";
+const char kHistogramPrerenderNumInteractions[] =
+    "PageLoad.InteractiveTiming.NumInteractions.Prerender";
+const char
+    kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration[] =
+        "PageLoad.InteractiveTiming.UserInteractionLatency."
+        "HighPercentile2.MaxEventDuration.Prerender";
+const char kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration[] =
+    "PageLoad.InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration."
+    "Prerender";
 
 }  // namespace internal
 
@@ -187,7 +204,21 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
         .Record(ukm::UkmRecorder::Get());
   }
 
-  // Records Cumulative Layout Shift Score (CLS) to UMA and UKM.
+  // Record metrics only when a prerendered page is successfully activated.
+  // TODO(crbug.com/1364013): add tests to make sure that CLS and INP metrics
+  // are not recorded when prerendering is canceled.
+  if (GetDelegate().GetPrerenderingState() ==
+      page_load_metrics::PrerenderingState::kActivated) {
+    RecordLayoutShiftScoreMetrics(main_frame_timing);
+    RecordNormalizedResponsivenessMetrics();
+  }
+}
+
+void PrerenderPageLoadMetricsObserver::RecordLayoutShiftScoreMetrics(
+    const page_load_metrics::mojom::PageLoadTiming& main_frame_timing) {
+  DCHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
+  DCHECK(main_frame_timing.activation_start);
+
   base::UmaHistogramCounts100(
       AppendSuffix(internal::kHistogramPrerenderCumulativeShiftScore),
       page_load_metrics::LayoutShiftUmaValue(
@@ -201,19 +232,74 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
       GetDelegate().GetNormalizedCLSData(
           page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
               ACCUMULATE);
-  if (!normalized_cls_data.data_tainted) {
-    page_load_metrics::UmaMaxCumulativeShiftScoreHistogram10000x(
-        AppendSuffix(
-            internal::
-                kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2),
-        normalized_cls_data);
-    const float max_cls =
-        normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
-    ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
-        .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
-            page_load_metrics::LayoutShiftUkmValue(max_cls))
-        .Record(ukm::UkmRecorder::Get());
-  }
+  if (normalized_cls_data.data_tainted)
+    return;
+
+  page_load_metrics::UmaMaxCumulativeShiftScoreHistogram10000x(
+      AppendSuffix(
+          internal::
+              kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2),
+      normalized_cls_data);
+  const float max_cls =
+      normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
+  ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+      .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
+          page_load_metrics::LayoutShiftUkmValue(max_cls))
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void PrerenderPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
+  DCHECK(GetDelegate().WasPrerenderedThenActivatedInForeground());
+
+  const page_load_metrics::NormalizedResponsivenessMetrics&
+      normalized_responsiveness_metrics =
+          GetDelegate().GetNormalizedResponsivenessMetrics();
+  if (!normalized_responsiveness_metrics.num_user_interactions)
+    return;
+
+  const page_load_metrics::NormalizedInteractionLatencies& max_event_durations =
+      normalized_responsiveness_metrics.normalized_max_event_durations;
+
+  base::TimeDelta high_percentile2_max_event_duration = page_load_metrics::
+      ResponsivenessMetricsNormalization::ApproximateHighPercentile(
+          normalized_responsiveness_metrics.num_user_interactions,
+          max_event_durations.worst_ten_latencies);
+
+  UmaHistogramCustomTimes(
+      internal::kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration,
+      max_event_durations.worst_latency, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramPrerenderAverageUserInteractionLatencyOverBudgetMaxEventDuration,
+      max_event_durations.sum_of_latency_over_budget /
+          normalized_responsiveness_metrics.num_user_interactions,
+      base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(
+      internal::
+          kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration,
+      high_percentile2_max_event_duration, base::Milliseconds(1),
+      base::Seconds(60), 50);
+  base::UmaHistogramCounts1000(
+      internal::kHistogramPrerenderNumInteractions,
+      normalized_responsiveness_metrics.num_user_interactions);
+
+  ukm::builders::PrerenderPageLoad builder(GetDelegate().GetPageUkmSourceId());
+  builder.SetInteractiveTiming_WorstUserInteractionLatency_MaxEventDuration(
+      max_event_durations.worst_latency.InMilliseconds());
+  builder
+      .SetInteractiveTiming_AverageUserInteractionLatencyOverBudget_MaxEventDuration(
+          max_event_durations.sum_of_latency_over_budget.InMilliseconds() /
+          normalized_responsiveness_metrics.num_user_interactions);
+
+  builder
+      .SetInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDuration(
+          high_percentile2_max_event_duration.InMilliseconds());
+  builder.SetInteractiveTiming_NumInteractions(
+      ukm::GetExponentialBucketMinForCounts1000(
+          normalized_responsiveness_metrics.num_user_interactions));
+
+  builder.Record(ukm::UkmRecorder::Get());
 }
 
 std::string PrerenderPageLoadMetricsObserver::AppendSuffix(

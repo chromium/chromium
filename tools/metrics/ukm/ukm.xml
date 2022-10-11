@@ -17713,11 +17713,46 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric
+      name="InteractiveTiming.AverageUserInteractionLatencyOverBudget.MaxEventDuration">
+    <summary>
+      The average value of user interaction latency above budget of a
+      prerendered page after it is successfully activated, in ms. For this
+      metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration and we deduct a budget
+      from the original value. If the latency value is below the budget, it will
+      be treated as 0 ms. Each type of interaction has its own budget.
+    </summary>
+  </metric>
   <metric name="InteractiveTiming.FirstInputDelay4">
     <summary>
       The duration between the hardware timestamp and the start of event
       processing on the main thread for the first meaningful input. Recorded on
       the prerender activation.
+    </summary>
+  </metric>
+  <metric name="InteractiveTiming.NumInteractions">
+    <summary>
+      The number of distinct user interactions on a prerendered page after it is
+      successfully activated. See definition of user interaction:
+      https://web.dev/better-responsiveness-metric/#group-events-into-interactions
+    </summary>
+  </metric>
+  <metric
+      name="InteractiveTiming.UserInteractionLatency.HighPercentile2.MaxEventDuration">
+    <summary>
+      An approximation of a high percentile of user interaction latency of a
+      prerendered page after it is successfully activated, in ms. For this
+      metric, we measure the latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration.
+    </summary>
+  </metric>
+  <metric name="InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration">
+    <summary>
+      The maximum value of user interaction latency of a prerendered page after
+      it is successfully activated, in ms. For this metric, we measure the
+      latency of user interactions by
+      Responsiveness.UserInteraction.MaxEventDuration.
     </summary>
   </metric>
   <metric

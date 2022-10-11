@@ -55,6 +55,45 @@ class PrerenderPageLoadMetricsObserverBrowserTest
   }
 
  protected:
+  void CheckResponsivenessMetrics(const GURL& url) {
+    std::vector<std::string> ukm_list = {
+        "InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration",
+        "InteractiveTiming.AverageUserInteractionLatencyOverBudget."
+        "MaxEventDuration",
+        "InteractiveTiming.UserInteractionLatency.HighPercentile2."
+        "MaxEventDuration",
+        "InteractiveTiming.NumInteractions"};
+
+    for (auto& ukm : ukm_list) {
+      int count = 0;
+      for (auto* entry :
+           ukm_recorder().GetEntriesByName(PrerenderPageLoad::kEntryName)) {
+        auto* source = ukm_recorder().GetSourceForSourceId(entry->source_id);
+        if (!source)
+          continue;
+        if (source->url() != url)
+          continue;
+        if (!ukm_recorder().EntryHasMetric(entry, ukm.c_str()))
+          continue;
+        count++;
+      }
+      EXPECT_EQ(count, 1);
+    }
+
+    std::vector<std::string> uma_list = {
+        internal::
+            kHistogramPrerenderAverageUserInteractionLatencyOverBudgetMaxEventDuration,
+        internal::kHistogramPrerenderNumInteractions,
+        internal::
+            kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDuration,
+        internal::
+            kHistogramPrerenderWorstUserInteractionLatencyMaxEventDuration};
+
+    for (auto& uma : uma_list) {
+      histogram_tester().ExpectTotalCount(uma, 1);
+    }
+  }
+
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
@@ -198,6 +237,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   EXPECT_FALSE(ukm_recorder().EntryHasMetric(
       initiator_page_entry,
       PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
+
+  CheckResponsivenessMetrics(prerender_url);
 }
 
 // TODO(crbug.com/1329881): Re-enable this test
@@ -314,6 +355,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
           content::PrerenderTriggerType::kEmbedder,
           prerender_utils::kDirectUrlInputMetricSuffix),
       1);
+
+  CheckResponsivenessMetrics(prerender_url);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,

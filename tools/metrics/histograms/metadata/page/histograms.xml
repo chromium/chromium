@@ -2295,13 +2295,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PageLoad.InteractiveTiming.{NormalizedResponsivenessMetric}.{UserInteractionLatency}{Bfcache}"
+    name="PageLoad.InteractiveTiming.{NormalizedResponsivenessMetric}.{UserInteractionLatency}{PageLoadType}"
     units="ms" expires_after="2023-03-23">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
-    The {NormalizedResponsivenessMetric} of a page load {Bfcache}, in ms. For
-    this metric, we measure the latency of a user interaction by the
+    The {NormalizedResponsivenessMetric} of a page load {PageLoadType}, in ms.
+    For this metric, we measure the latency of a user interaction by the
     {UserInteractionLatency} within the user interaction.
 
     Recorded at the end of the page load lifetime, such as when users navigate
@@ -2312,9 +2312,10 @@ chromium-metrics-reviews@google.com.
     record the INP values which are not able to be recorded in
     UserInteractionLatency.HighPercentile2 for some reasons.
   </summary>
-  <token key="Bfcache">
+  <token key="PageLoadType">
     <variant name=""/>
     <variant name=".AfterBackForwardCacheRestore"/>
+    <variant name=".Prerender"/>
   </token>
   <token key="NormalizedResponsivenessMetric">
     <variant name="AverageUserInteractionLatencyOverBudget"/>
