@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-
 #import "ios/chrome/browser/ui/commands/omnibox_suggestion_commands.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_delegate.h"
 
 // Enum type specifying the direction of fade animations.
@@ -18,7 +18,7 @@ typedef enum {
 } OmniboxTextFieldFadeStyle;
 
 // UITextField subclass to allow for adjusting borders.
-@interface OmniboxTextFieldIOS : UITextField
+@interface OmniboxTextFieldIOS : UITextField <OmniboxKeyboardDelegate>
 
 // Initialize the omnibox with the given frame, text color, and tint color.
 - (instancetype)initWithFrame:(CGRect)frame
@@ -101,6 +101,9 @@ typedef enum {
 // The delegate for this textfield.  Overridden to use OmniboxTextFieldDelegate
 // instead of UITextFieldDelegate.
 @property(nonatomic, weak) id<OmniboxTextFieldDelegate> delegate;
+// Object that handles arrow keys behavior in Omnibox dispatching to multiple
+// OmniboxKeyboardDelegates.
+@property(nonatomic, weak) id<OmniboxKeyboardDelegate> omniboxKeyboardDelegate;
 
 // The object handling suggestion commands.
 @property(nonatomic, weak) id<OmniboxSuggestionCommands>

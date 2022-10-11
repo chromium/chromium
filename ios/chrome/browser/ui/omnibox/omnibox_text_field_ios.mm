@@ -151,6 +151,15 @@
   return nil;
 }
 
+#pragma mark - OmniboxKeyboardDelegate
+
+- (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  return NO;
+}
+
+- (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+}
+
 #pragma mark - Properties
 
 - (UIFont*)largerFont {

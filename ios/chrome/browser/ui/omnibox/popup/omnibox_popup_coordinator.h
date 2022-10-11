@@ -10,6 +10,7 @@
 #include <memory>
 
 @protocol OmniboxCommands;
+@protocol OmniboxKeyboardDelegate;
 @protocol OmniboxPopupPresenterDelegate;
 class OmniboxPopupViewIOS;
 @protocol OmniboxReturnDelegate;
@@ -38,6 +39,9 @@ class OmniboxPopupViewIOS;
 // Object implementing OmniboxReturnDelegate in OmniboxPopupCoordinator.
 @property(nonatomic, weak, readonly) id<OmniboxReturnDelegate>
     popupReturnDelegate;
+// Object implementing OmniboxKeyboardDelegate in OmniboxPopupCoordinator.
+@property(nonatomic, weak, readonly) id<OmniboxKeyboardDelegate>
+    KeyboardDelegate;
 // Delegate for OmniboxReturnDelegate used in OmniboxPopupCoordinator.
 @property(nonatomic, weak) id<OmniboxReturnDelegate> acceptReturnDelegate;
 // Delegate for PopupMatchPreviewDelegate used in OmniboxPopupCoordinator.

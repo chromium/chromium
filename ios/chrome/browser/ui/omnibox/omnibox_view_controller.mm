@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_keyboard_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_change_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -36,6 +37,7 @@ const CGFloat kClearButtonSize = 28.0f;
 }  // namespace
 
 @interface OmniboxViewController () <OmniboxTextFieldDelegate,
+                                     OmniboxKeyboardDelegate,
                                      UIScribbleInteractionDelegate> {
   // Weak, acts as a delegate
   OmniboxTextChangeDelegate* _textChangeDelegate;
@@ -110,6 +112,7 @@ const CGFloat kClearButtonSize = 28.0f;
   self.view.incognito = self.incognito;
 
   self.textField.delegate = self;
+  self.textField.omniboxKeyboardDelegate = self;
 
   SetA11yLabelAndUiAutomationName(self.textField, IDS_ACCNAME_LOCATION,
                                   @"Address");
@@ -382,6 +385,25 @@ const CGFloat kClearButtonSize = 28.0f;
   self.omniboxInteractedWhileFocused = YES;
 
   [self.pasteDelegate didTapPasteToSearchButton:itemProviders];
+}
+
+- (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  return [self.popupKeyboardDelegate canPerformKeyboardAction:keyboardAction] ||
+         [self.textField canPerformKeyboardAction:keyboardAction];
+}
+
+- (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  if ([self.popupKeyboardDelegate canPerformKeyboardAction:keyboardAction]) {
+    if (keyboardAction == OmniboxKeyboardActionUpArrow ||
+        keyboardAction == OmniboxKeyboardActionDownArrow) {
+      [self.textField exitPreEditState];
+    }
+    [self.popupKeyboardDelegate performKeyboardAction:keyboardAction];
+  } else if ([self.textField canPerformKeyboardAction:keyboardAction]) {
+    [self.textField performKeyboardAction:keyboardAction];
+  } else {
+    NOTREACHED() << "Check canPerformKeyboardAction before!";
+  }
 }
 
 #pragma mark - OmniboxConsumer

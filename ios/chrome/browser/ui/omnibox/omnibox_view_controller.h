@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/orchestrator/edit_view_animatee.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_offset_provider.h"
 
+@protocol OmniboxKeyboardDelegate;
 @protocol OmniboxReturnDelegate;
 @class OmniboxViewController;
 class OmniboxTextChangeDelegate;
@@ -64,6 +65,7 @@ class OmniboxTextChangeDelegate;
     textInputDelegate;
 @property(nonatomic, weak) id<OmniboxViewControllerPasteDelegate> pasteDelegate;
 @property(nonatomic, weak) id<OmniboxReturnDelegate> returnKeyDelegate;
+@property(nonatomic, weak) id<OmniboxKeyboardDelegate> popupKeyboardDelegate;
 
 // Designated initializer.
 - (instancetype)initWithIncognito:(BOOL)isIncognito;

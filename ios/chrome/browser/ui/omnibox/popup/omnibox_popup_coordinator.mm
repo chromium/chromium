@@ -70,6 +70,7 @@
     _popupView = std::move(popupView);
     _popupViewController = [[OmniboxPopupViewController alloc] init];
     _popupReturnDelegate = _popupViewController;
+    _KeyboardDelegate = _popupViewController;
   }
   return self;
 }

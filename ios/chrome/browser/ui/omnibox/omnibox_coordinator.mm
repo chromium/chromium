@@ -239,6 +239,7 @@
   coordinator.popupMatchPreviewDelegate = self.mediator;
   coordinator.acceptReturnDelegate = self.returnDelegate;
   self.viewController.returnKeyDelegate = coordinator.popupReturnDelegate;
+  self.viewController.popupKeyboardDelegate = coordinator.KeyboardDelegate;
 
   return coordinator;
 }

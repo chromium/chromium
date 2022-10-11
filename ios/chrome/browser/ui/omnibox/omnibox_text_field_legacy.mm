@@ -618,12 +618,20 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
     return YES;
   }
 
-  // Allow key commands to be recognized.
-  if (action == @selector(keyCommandUp) ||
-      action == @selector(keyCommandDown) ||
-      action == @selector(keyCommandLeft) ||
-      action == @selector(keyCommandRight)) {
-    return YES;
+  // Arrow keys are handled by OmniboxKeyboardDelegates, if they don't handle
+  // them, default behavior of UITextField applies.
+  if (action == @selector(forwardKeyCommandUp)) {
+    return [self.omniboxKeyboardDelegate
+        canPerformKeyboardAction:OmniboxKeyboardActionUpArrow];
+  } else if (action == @selector(forwardKeyCommandDown)) {
+    return [self.omniboxKeyboardDelegate
+        canPerformKeyboardAction:OmniboxKeyboardActionDownArrow];
+  } else if (action == @selector(forwardKeyCommandLeft)) {
+    return [self.omniboxKeyboardDelegate
+        canPerformKeyboardAction:OmniboxKeyboardActionLeftArrow];
+  } else if (action == @selector(forwardKeyCommandRight)) {
+    return [self.omniboxKeyboardDelegate
+        canPerformKeyboardAction:OmniboxKeyboardActionRightArrow];
   }
 
   // Handle pre-edit shortcuts.
@@ -700,73 +708,58 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   [super deleteBackward];
 }
 
-#pragma mark Key Commands
+#pragma mark Key Command Forwarding
 
-- (NSArray<UIKeyCommand*>*)upDownCommands {
-  // These up/down arrow key commands override the standard UITextInput handling
-  // of up/down arrow key. The standard behavior is to go to the beginning/end
-  // of the text. Instead, the omnibox popup needs to highlight suggestions.
+- (void)forwardKeyCommandUp {
+  [self.omniboxKeyboardDelegate
+      performKeyboardAction:OmniboxKeyboardActionUpArrow];
+}
+
+- (void)forwardKeyCommandDown {
+  [self.omniboxKeyboardDelegate
+      performKeyboardAction:OmniboxKeyboardActionDownArrow];
+}
+
+- (void)forwardKeyCommandLeft {
+  [self.omniboxKeyboardDelegate
+      performKeyboardAction:OmniboxKeyboardActionLeftArrow];
+}
+
+- (void)forwardKeyCommandRight {
+  [self.omniboxKeyboardDelegate
+      performKeyboardAction:OmniboxKeyboardActionDownArrow];
+}
+
+- (NSArray<UIKeyCommand*>*)keyCommands {
   UIKeyCommand* commandUp =
       [UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow
                           modifierFlags:0
-                                 action:@selector(keyCommandUp)];
+                                 action:@selector(forwardKeyCommandUp)];
   UIKeyCommand* commandDown =
       [UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow
                           modifierFlags:0
-                                 action:@selector(keyCommandDown)];
+                                 action:@selector(forwardKeyCommandDown)];
+  UIKeyCommand* commandLeft =
+      [UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow
+                          modifierFlags:0
+                                 action:@selector(forwardKeyCommandLeft)];
+  UIKeyCommand* commandRight =
+      [UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow
+                          modifierFlags:0
+                                 action:@selector(forwardKeyCommandRight)];
 
 #if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
   if (@available(iOS 15, *)) {
     commandUp.wantsPriorityOverSystemBehavior = YES;
     commandDown.wantsPriorityOverSystemBehavior = YES;
-  }
-#endif
-
-  return @[ commandUp, commandDown ];
-}
-
-- (NSArray<UIKeyCommand*>*)keyCommands {
-  NSMutableArray<UIKeyCommand*>* commands = [[self upDownCommands] mutableCopy];
-  if ([self isPreEditing] || [self hasAutocompleteText]) {
-    [commands addObjectsFromArray:[self leftRightCommands]];
-  }
-
-  return commands;
-}
-
-- (void)keyCommandUp {
-  [self.suggestionCommandsEndpoint highlightPreviousSuggestion];
-}
-
-- (void)keyCommandDown {
-  [self.suggestionCommandsEndpoint highlightNextSuggestion];
-}
-
-#pragma mark preedit and inline autocomplete key commands
-
-// React to left and right keys when in preedit state to exit preedit and put
-// cursor to the beginning/end of the textfield; or if there is inline
-// suggestion displayed, accept it and put the cursor before/after the
-// suggested text.
-- (NSArray<UIKeyCommand*>*)leftRightCommands {
-  UIKeyCommand* commandLeft =
-      [UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow
-                          modifierFlags:0
-                                 action:@selector(keyCommandLeft)];
-  UIKeyCommand* commandRight =
-      [UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow
-                          modifierFlags:0
-                                 action:@selector(keyCommandRight)];
-
-#if defined(__IPHONE_15_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
-  if (@available(iOS 15, *)) {
     commandLeft.wantsPriorityOverSystemBehavior = YES;
     commandRight.wantsPriorityOverSystemBehavior = YES;
   }
 #endif
-
-  return @[ commandLeft, commandRight ];
+  return @[ commandUp, commandDown, commandLeft, commandRight ];
 }
+
+#pragma mark preedit and inline autocomplete key commands
 
 - (void)keyCommandLeft {
   DCHECK([self isPreEditing] || [self hasAutocompleteText]);
@@ -818,6 +811,44 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   NSAttributedString* string =
       [[NSAttributedString alloc] initWithString:_selection.text];
   [self setText:string userTextLength:string.length];
+}
+
+#pragma mark - OmniboxKeyboardDelegate
+
+- (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  switch (keyboardAction) {
+      // These up/down arrow key commands override the standard UITextInput
+      // handling of up/down arrow key. The standard behavior is to go to the
+      // beginning/end of the text. Remove this behavior to avoid inconsistent
+      // behavior when popup can and cannot move up and down.
+    case OmniboxKeyboardActionUpArrow:
+    case OmniboxKeyboardActionDownArrow:
+      return YES;
+      // React to left and right keys when in preedit state to exit preedit and
+      // put cursor to the beginning/end of the textfield; or if there is inline
+      // suggestion displayed, accept it and put the cursor before/after the
+      // suggested text.
+    case OmniboxKeyboardActionLeftArrow:
+    case OmniboxKeyboardActionRightArrow:
+      return ([self isPreEditing] || [self hasAutocompleteText]);
+  }
+}
+
+- (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  DCHECK([self canPerformKeyboardAction:keyboardAction]);
+  switch (keyboardAction) {
+    case OmniboxKeyboardActionUpArrow:
+    case OmniboxKeyboardActionDownArrow:
+      // Up and down arrow do nothing instead of standard behavior. The standard
+      // behavior is to go to the beginning/end of the text.
+      break;
+    case OmniboxKeyboardActionLeftArrow:
+      [self keyCommandLeft];
+      break;
+    case OmniboxKeyboardActionRightArrow:
+      [self keyCommandRight];
+      break;
+  }
 }
 
 #pragma mark - helpers

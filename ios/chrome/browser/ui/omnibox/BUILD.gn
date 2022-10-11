@@ -22,6 +22,7 @@ source_set("omnibox_popup_shared") {
   sources = [
     "omnibox_constants.h",
     "omnibox_constants.mm",
+    "omnibox_keyboard_delegate.h",
   ]
 }
 

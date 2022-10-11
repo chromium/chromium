@@ -332,6 +332,37 @@ const CGFloat kMaxTileFaviconSize = 48.0f;
       requestResultsWithVisibleSuggestionCount:self.visibleSuggestionCount];
 }
 
+#pragma mark - OmniboxKeyboardDelegate
+
+- (BOOL)canPerformKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  switch (keyboardAction) {
+    case OmniboxKeyboardActionUpArrow:
+    case OmniboxKeyboardActionDownArrow:
+      return YES;
+    case OmniboxKeyboardActionLeftArrow:
+    case OmniboxKeyboardActionRightArrow:
+      // TODO(crbug.com/1371453): Add left and right action for tile selection.
+      return NO;
+  }
+}
+
+- (void)performKeyboardAction:(OmniboxKeyboardAction)keyboardAction {
+  DCHECK([self canPerformKeyboardAction:keyboardAction]);
+  switch (keyboardAction) {
+    case OmniboxKeyboardActionUpArrow:
+      [self highlightPreviousSuggestion];
+      break;
+    case OmniboxKeyboardActionDownArrow:
+      [self highlightNextSuggestion];
+      break;
+    case OmniboxKeyboardActionLeftArrow:
+    case OmniboxKeyboardActionRightArrow:
+      // TODO(crbug.com/1371453): Add left and right action for tile selection.
+      NOTREACHED();
+      break;
+  }
+}
+
 #pragma mark - OmniboxPopupRowCellDelegate
 
 - (void)trailingButtonTappedForCell:(OmniboxPopupRowCell*)cell {
