@@ -2621,6 +2621,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onDestroyInternal() {
+        if (mReturnToChromeBackPressHandler != null) {
+            mReturnToChromeBackPressHandler.destroy();
+            mReturnToChromeBackPressHandler = null;
+        }
+
         if (mReadingListBackPressHandler != null) {
             mReadingListBackPressHandler.destroy();
             mReadingListBackPressHandler = null;

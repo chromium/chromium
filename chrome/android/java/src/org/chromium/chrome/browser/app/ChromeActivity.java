@@ -1532,6 +1532,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             SnackbarManagerProvider.detach(mSnackbarManager);
         }
 
+        if (mBackPressManager != null) {
+            mBackPressManager.destroy();
+        }
+
         if (mTabModelSelectorTabObserver != null) {
             mTabModelSelectorTabObserver.destroy();
             mTabModelSelectorTabObserver = null;
