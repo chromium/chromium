@@ -4,13 +4,29 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/removed_results_ranker.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ui/app_list/search/ranking/types.h"
 
 namespace app_list {
+namespace {
 
-RemovedResultsRanker::RemovedResultsRanker(
-    PersistentProto<RemovedResultsProto>* proto)
-    : proto_(proto) {
+// Returns true if `result` is a file suggestion.
+bool IsFileSuggestion(const ChromeSearchResult& result) {
+  ResultType type = result.result_type();
+  return type == ResultType::kZeroStateDrive ||
+         type == ResultType::kZeroStateFile;
+}
+
+}  // namespace
+
+RemovedResultsRanker::RemovedResultsRanker(Profile* profile)
+    : profile_(profile),
+      proto_(GetFileSuggestKeyedService()->GetProto(
+          base::PassKey<RemovedResultsRanker>())) {
+  DCHECK(profile_);
   DCHECK(proto_);
 }
 
@@ -35,11 +51,24 @@ void RemovedResultsRanker::Remove(ChromeSearchResult* result) {
   if (!initialized())
     return;
 
-  // Record the string ID of |result| to the storage proto's map.
-  // Note: We are using a map for its set capabilities; the map value is
-  // arbitrary.
-  ((*proto_)->mutable_removed_ids())->insert({result->id(), false});
-  proto_->StartWrite();
+  if (IsFileSuggestion(*result)) {
+    // If `result` is a file suggestion, remove it through the suggestion
+    // service.
+    auto meta_data_copy = result->CloneMetadata();
+    GetFileSuggestKeyedService()->RemoveSuggestionBySearchResultAndNotify(
+        *meta_data_copy);
+
+  } else {
+    // Record the string ID of |result| to the storage proto's map.
+    // Note: We are using a map for its set capabilities; the map value is
+    // arbitrary.
+    ((*proto_)->mutable_removed_ids())->insert({result->id(), false});
+    proto_->StartWrite();
+  }
+}
+
+FileSuggestKeyedService* RemovedResultsRanker::GetFileSuggestKeyedService() {
+  return FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_);
 }
 
 }  // namespace app_list

@@ -73,10 +73,7 @@ RankerDelegate::RankerDelegate(Profile* profile, SearchController* controller) {
   AddRanker(std::make_unique<QueryHighlighter>());
   AddRanker(std::make_unique<ContinueRanker>());
   AddRanker(std::make_unique<FilteringRanker>());
-  AddRanker(std::make_unique<RemovedResultsRanker>(
-      FileSuggestKeyedServiceFactory::GetInstance()
-          ->GetService(profile)
-          ->GetProto(base::PassKey<RankerDelegate>())));
+  AddRanker(std::make_unique<RemovedResultsRanker>(profile));
 
   // 2. Score normalization, a precursor to other ranking.
   AddRanker(std::make_unique<ScoreNormalizingRanker>(

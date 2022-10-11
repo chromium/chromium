@@ -4,13 +4,20 @@
 
 #include "chrome/browser/ui/app_list/search/ranking/removed_results_ranker.h"
 
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
+#include "chrome/browser/ui/app_list/search/files/file_suggest_test_util.h"
+#include "chrome/browser/ui/app_list/search/files/mock_file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,101 +44,38 @@ Results MakeResults(std::vector<std::string> ids) {
 
 class RemovedResultsRankerTest : public testing::Test {
  public:
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  // testing::Test:
+  void SetUp() override {
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    EXPECT_TRUE(testing_profile_manager_->SetUp());
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    profile_ = testing_profile_manager_->CreateTestingProfile(
+        "primary_profile@test",
+        {{FileSuggestKeyedServiceFactory::GetInstance(),
+          base::BindRepeating(
+              &MockFileSuggestKeyedService::BuildMockFileSuggestKeyedService,
+              temp_dir_.GetPath().Append("proto"))}});
+    WaitUntilFileSuggestServiceReady(
+        FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_));
+    ranker_ = std::make_unique<RemovedResultsRanker>(profile_);
+  }
 
   void Wait() { task_environment_.RunUntilIdle(); }
 
-  base::FilePath GetPath() { return temp_dir_.GetPath().Append("proto"); }
-  bool IsInitialized(const RemovedResultsRanker& ranker) {
-    return ranker.initialized();
-  }
-
-  PersistentProto<RemovedResultsProto> GetProto() {
-    PersistentProto<RemovedResultsProto> proto(GetPath(), base::Seconds(0));
-    proto.Init();
-    return proto;
-  }
-
-  RemovedResultsProto ReadFromDisk() {
-    EXPECT_TRUE(base::PathExists(GetPath()));
-    std::string proto_str;
-    CHECK(base::ReadFileToString(GetPath(), &proto_str));
-    RemovedResultsProto proto;
-    CHECK(proto.ParseFromString(proto_str));
-    return proto;
-  }
-
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::UI,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED,
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  TestingProfile* profile_ = nullptr;
   base::ScopedTempDir temp_dir_;
+  std::unique_ptr<RemovedResultsRanker> ranker_;
 };
 
-TEST_F(RemovedResultsRankerTest, CheckInitializeEmpty) {
-  PersistentProto<RemovedResultsProto> proto(GetProto());
-  RemovedResultsRanker ranker(&proto);
-  EXPECT_FALSE(IsInitialized(ranker));
-  Wait();
-
-  EXPECT_TRUE(IsInitialized(ranker));
-  RemovedResultsProto proto_from_disk = ReadFromDisk();
-  EXPECT_EQ(proto_from_disk.removed_ids_size(), 0);
-}
-
-TEST_F(RemovedResultsRankerTest, RemoveResults) {
-  PersistentProto<RemovedResultsProto> proto(GetProto());
-  RemovedResultsRanker ranker(&proto);
-  Wait();
-
-  // Request to remove results.
-  std::vector<std::string> ids{"A", "B", "C"};
-  auto results = MakeResults(ids);
-  for (const auto& result : results)
-    ranker.Remove(result.get());
-  Wait();
-
-  // Check proto for records of removed results.
-  RemovedResultsProto proto_from_disk = ReadFromDisk();
-  EXPECT_EQ(proto_from_disk.removed_ids_size(), 3);
-
-  std::vector<std::string> recorded_ids;
-  for (const auto& result : proto_from_disk.removed_ids())
-    recorded_ids.push_back(result.first);
-  EXPECT_THAT(ids, UnorderedElementsAreArray(recorded_ids));
-}
-
-TEST_F(RemovedResultsRankerTest, DuplicateRemoveRequests) {
-  PersistentProto<RemovedResultsProto> proto(GetProto());
-  RemovedResultsRanker ranker(&proto);
-  Wait();
-
-  // Request to remove results, with a duplicate.
-  std::vector<std::string> ids{"A", "B", "B"};
-  auto results = MakeResults(ids);
-  for (const auto& result : results)
-    ranker.Remove(result.get());
-  Wait();
-
-  // Check proto for records of removed results.
-  RemovedResultsProto proto_from_disk = ReadFromDisk();
-  EXPECT_EQ(proto_from_disk.removed_ids_size(), 2);
-
-  std::vector<std::string> recorded_ids;
-  for (const auto& result : proto_from_disk.removed_ids())
-    recorded_ids.push_back(result.first);
-  EXPECT_THAT(recorded_ids, UnorderedElementsAre("A", "B"));
-}
-
 TEST_F(RemovedResultsRankerTest, UpdateResultRanks) {
-  PersistentProto<RemovedResultsProto> proto(GetProto());
-  RemovedResultsRanker ranker(&proto);
-  Wait();
-
   // Request to remove some results.
-  ranker.Remove(MakeResult("A").get());
-  ranker.Remove(MakeResult("C").get());
-  ranker.Remove(MakeResult("E").get());
+  ranker_->Remove(MakeResult("A").get());
+  ranker_->Remove(MakeResult("C").get());
+  ranker_->Remove(MakeResult("E").get());
   Wait();
 
   ResultsMap results_map;
@@ -140,12 +84,12 @@ TEST_F(RemovedResultsRankerTest, UpdateResultRanks) {
   results_map[ResultType::kOmnibox] = MakeResults({"E"});
 
   // Installed apps: The 0th result ("A") is marked to be filtered.
-  ranker.UpdateResultRanks(results_map, ResultType::kInstalledApp);
+  ranker_->UpdateResultRanks(results_map, ResultType::kInstalledApp);
   EXPECT_TRUE(results_map[ResultType::kInstalledApp][0]->scoring().filter);
   EXPECT_FALSE(results_map[ResultType::kInstalledApp][1]->scoring().filter);
 
   // Internal apps: The 0th result ("C") is marked to be filtered.
-  ranker.UpdateResultRanks(results_map, ResultType::kInternalApp);
+  ranker_->UpdateResultRanks(results_map, ResultType::kInternalApp);
   EXPECT_TRUE(results_map[ResultType::kInternalApp][0]->scoring().filter);
   EXPECT_FALSE(results_map[ResultType::kInternalApp][1]->scoring().filter);
 
@@ -154,40 +98,27 @@ TEST_F(RemovedResultsRankerTest, UpdateResultRanks) {
   // TODO(crbug.com/1272361): Ranking here should not affect Omnibox results,
   // after support is added to the autocomplete controller for removal of
   // non-zero state Omnibox results.
-  ranker.UpdateResultRanks(results_map, ResultType::kOmnibox);
+  ranker_->UpdateResultRanks(results_map, ResultType::kOmnibox);
   EXPECT_TRUE(results_map[ResultType::kOmnibox][0]->scoring().filter);
-
-  // Check proto for record of removed results.
-  RemovedResultsProto proto_from_disk = ReadFromDisk();
-  EXPECT_EQ(proto_from_disk.removed_ids_size(), 3);
-
-  std::vector<std::string> recorded_ids;
-  for (const auto& result : proto_from_disk.removed_ids())
-    recorded_ids.push_back(result.first);
-  EXPECT_THAT(recorded_ids, UnorderedElementsAre("A", "C", "E"));
 }
 
 TEST_F(RemovedResultsRankerTest, RankEmptyResults) {
-  PersistentProto<RemovedResultsProto> proto(GetProto());
-  RemovedResultsRanker ranker(&proto);
   Wait();
 
   ResultsMap results_map;
   results_map[ResultType::kInstalledApp] =
       MakeResults(std::vector<std::string>());
 
-  ranker.UpdateResultRanks(results_map, ResultType::kInstalledApp);
+  ranker_->UpdateResultRanks(results_map, ResultType::kInstalledApp);
   EXPECT_TRUE(results_map[ResultType::kInstalledApp].empty());
 }
 
 TEST_F(RemovedResultsRankerTest, RankDuplicateResults) {
-  PersistentProto<RemovedResultsProto> proto(GetProto());
-  RemovedResultsRanker ranker(&proto);
   Wait();
 
   // Request to remove some results.
-  ranker.Remove(MakeResult("A").get());
-  ranker.Remove(MakeResult("C").get());
+  ranker_->Remove(MakeResult("A").get());
+  ranker_->Remove(MakeResult("C").get());
   Wait();
 
   ResultsMap results_map;
@@ -196,24 +127,53 @@ TEST_F(RemovedResultsRankerTest, RankDuplicateResults) {
   results_map[ResultType::kInternalApp] = MakeResults({"C", "D"});
 
   // Installed apps: The 0th and 1st results ("A") are marked to be filtered.
-  ranker.UpdateResultRanks(results_map, ResultType::kInstalledApp);
+  ranker_->UpdateResultRanks(results_map, ResultType::kInstalledApp);
   EXPECT_TRUE(results_map[ResultType::kInstalledApp][0]->scoring().filter);
   EXPECT_TRUE(results_map[ResultType::kInstalledApp][1]->scoring().filter);
   EXPECT_FALSE(results_map[ResultType::kInstalledApp][2]->scoring().filter);
 
   // Internal apps: The 0th result ("C") is marked to be filtered.
-  ranker.UpdateResultRanks(results_map, ResultType::kInternalApp);
+  ranker_->UpdateResultRanks(results_map, ResultType::kInternalApp);
   EXPECT_TRUE(results_map[ResultType::kInternalApp][0]->scoring().filter);
   EXPECT_FALSE(results_map[ResultType::kInternalApp][1]->scoring().filter);
+}
 
-  // Check proto for record of removed results.
-  RemovedResultsProto proto_from_disk = ReadFromDisk();
-  EXPECT_EQ(proto_from_disk.removed_ids_size(), 2);
+// Verifies that the ranker removes a result through the file suggest keyed
+// service if the result is a file suggestion.
+TEST_F(RemovedResultsRankerTest, RemoveFileSuggestions) {
+  Wait();
 
-  std::vector<std::string> recorded_ids;
-  for (const auto& result : proto_from_disk.removed_ids())
-    recorded_ids.push_back(result.first);
-  EXPECT_THAT(recorded_ids, UnorderedElementsAre("A", "C"));
+  const base::FilePath drive_file_result_path("file_A");
+  FileResult drive_file_result(
+      "zero_state_drive://" + drive_file_result_path.value(),
+      drive_file_result_path, absl::nullopt,
+      ash::AppListSearchResultType::kZeroStateDrive,
+      ash::SearchResultDisplayType::kList, /*relevance=*/0.5f,
+      /*query=*/std::u16string(), FileResult::Type::kFile, profile_);
+  MockFileSuggestKeyedService* mock_service =
+      static_cast<MockFileSuggestKeyedService*>(
+          FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile_));
+  auto drive_file_metadata = drive_file_result.CloneMetadata();
+  EXPECT_CALL(*mock_service, RemoveSuggestionBySearchResultAndNotify)
+      .WillOnce([&](const ash::SearchResultMetadata& search_result) {
+        EXPECT_EQ(search_result.result_type, drive_file_metadata->result_type);
+        EXPECT_EQ(search_result.id, drive_file_metadata->id);
+      });
+  ranker_->Remove(&drive_file_result);
+
+  const base::FilePath local_file_path("file_B");
+  FileResult local_file_result(
+      "zero_state_file://" + local_file_path.value(), local_file_path,
+      absl::nullopt, ash::AppListSearchResultType::kZeroStateDrive,
+      ash::SearchResultDisplayType::kList, /*relevance=*/0.5f,
+      /*query=*/std::u16string(), FileResult::Type::kFile, profile_);
+  auto local_file_metadata = local_file_result.CloneMetadata();
+  EXPECT_CALL(*mock_service, RemoveSuggestionBySearchResultAndNotify)
+      .WillOnce([&](const ash::SearchResultMetadata& search_result) {
+        EXPECT_EQ(search_result.result_type, local_file_metadata->result_type);
+        EXPECT_EQ(search_result.id, local_file_metadata->id);
+      });
+  ranker_->Remove(&local_file_result);
 }
 
 }  // namespace app_list

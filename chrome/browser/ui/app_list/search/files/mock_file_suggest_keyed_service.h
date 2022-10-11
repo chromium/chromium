@@ -43,6 +43,10 @@ class MockFileSuggestKeyedService : public app_list::FileSuggestKeyedService {
               RemoveSuggestionsAndNotify,
               (const std::vector<base::FilePath>& suggested_file_paths),
               (override));
+  MOCK_METHOD(void,
+              RemoveSuggestionBySearchResultAndNotify,
+              (const ash::SearchResultMetadata& search_result),
+              (override));
 
   void SetSuggestionsForType(
       app_list::FileSuggestionType type,

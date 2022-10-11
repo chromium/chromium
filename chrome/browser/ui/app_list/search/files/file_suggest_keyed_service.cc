@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ui/app_list/search/files/drive_file_suggestion_provider.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
@@ -77,10 +78,7 @@ void FileSuggestKeyedService::RemoveSuggestionsAndNotify(
   if (!IsProtoInitialized())
     return;
 
-  // Record the types of the removed suggestions. `observers_` should be
-  // notified of the updates on these types.
-  base::flat_set<FileSuggestionType> types_to_update;
-
+  std::vector<std::pair<FileSuggestionType, std::string>> type_id_pairs;
   for (const auto& file_path : absolute_file_paths) {
     DCHECK(file_path.IsAbsolute());
 
@@ -100,27 +98,32 @@ void FileSuggestKeyedService::RemoveSuggestionsAndNotify(
             ? FileSuggestionType::kDriveFile
             : FileSuggestionType::kLocalFile;
 
-    // Record the suggestion id to the storage proto's map.
-    // Note: We are using a map for its set capabilities; the map value is
-    // arbitrary.
-    const bool success =
-        proto_->mutable_removed_ids()
-            ->insert({CalculateSuggestionId(type, file_path), false})
-            .second;
-
-    // Skip the suggestion whose id is already in `proto_`.
-    if (success)
-      types_to_update.insert(type);
+    type_id_pairs.emplace_back(type, CalculateSuggestionId(type, file_path));
   }
+  RemoveSuggestionsByTypeIdPairs(type_id_pairs);
+}
 
-  proto_.StartWrite();
+void FileSuggestKeyedService::RemoveSuggestionBySearchResultAndNotify(
+    const ash::SearchResultMetadata& search_result) {
+  if (!IsProtoInitialized())
+    return;
 
-  for (const auto& type : types_to_update)
-    OnSuggestionProviderUpdated(type);
+  // `search_result` should refer to a suggested file.
+  DCHECK(search_result.result_type ==
+             ash::AppListSearchResultType::kZeroStateDrive ||
+         search_result.result_type ==
+             ash::AppListSearchResultType::kZeroStateFile);
+
+  RemoveSuggestionsByTypeIdPairs(
+      {{search_result.result_type ==
+                ash::AppListSearchResultType::kZeroStateDrive
+            ? FileSuggestionType::kDriveFile
+            : FileSuggestionType::kLocalFile,
+        search_result.id}});
 }
 
 PersistentProto<RemovedResultsProto>* FileSuggestKeyedService::GetProto(
-    base::PassKey<RankerDelegate>) {
+    base::PassKey<RemovedResultsRanker>) {
   return &proto_;
 }
 
@@ -184,6 +187,33 @@ void FileSuggestKeyedService::OnRemovedSuggestionProtoReady(
 
   if (local_file_suggestion_provider_->IsInitialized())
     OnSuggestionProviderUpdated(FileSuggestionType::kLocalFile);
+}
+
+void FileSuggestKeyedService::RemoveSuggestionsByTypeIdPairs(
+    const std::vector<std::pair<FileSuggestionType, std::string>>&
+        type_id_pairs) {
+  DCHECK(IsProtoInitialized());
+
+  // Record the types of the removed suggestions. `observers_` should be
+  // notified of the updates on these types.
+  base::flat_set<FileSuggestionType> types_to_update;
+
+  for (const auto& [type, id] : type_id_pairs) {
+    // Record the suggestion id to the storage proto's map.
+    // Note: We are using a map for its set capabilities; the map value is
+    // arbitrary.
+    const bool success =
+        proto_->mutable_removed_ids()->insert({id, false}).second;
+
+    // Skip the suggestion whose id is already in `proto_`.
+    if (success)
+      types_to_update.insert(type);
+  }
+
+  proto_.StartWrite();
+
+  for (const auto& type : types_to_update)
+    OnSuggestionProviderUpdated(type);
 }
 
 }  // namespace app_list

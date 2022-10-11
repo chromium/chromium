@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_FILE_SUGGEST_KEYED_SERVICE_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_FILE_SUGGEST_KEYED_SERVICE_H_
 
+#include <utility>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -19,10 +20,14 @@
 
 class Profile;
 
+namespace ash {
+struct SearchResultMetadata;
+}  // namespace ash
+
 namespace app_list {
 class DriveFileSuggestionProvider;
 class LocalFileSuggestionProvider;
-class RankerDelegate;
+class RemovedResultsRanker;
 class ZeroStateDriveProvider;
 
 // The keyed service that queries for the file suggestions (for both the drive
@@ -67,12 +72,18 @@ class FileSuggestKeyedService : public KeyedService {
   virtual void RemoveSuggestionsAndNotify(
       const std::vector<base::FilePath>& absolute_file_paths);
 
+  // Similar to `RemoveSuggestionsAndNotify()` but with the difference that
+  // the suggestion is specified by a search result. Overridden for tests.
+  virtual void RemoveSuggestionBySearchResultAndNotify(
+      const ash::SearchResultMetadata& search_result);
+
   // Used to expose `proto_` to app list so that the app list can query/remove
   // non-file result ids from `proto_`.
   // TODO(https://crbug.com/1368833): remove this function when the removed file
   // results are managed by this service's own proto without reusing the app
   // list's.
-  PersistentProto<RemovedResultsProto>* GetProto(base::PassKey<RankerDelegate>);
+  PersistentProto<RemovedResultsProto>* GetProto(
+      base::PassKey<RemovedResultsRanker>);
 
   // Adds/Removes an observer.
   void AddObserver(Observer* observer);
@@ -108,6 +119,11 @@ class FileSuggestKeyedService : public KeyedService {
  private:
   // Called when `proto_` is ready to read.
   void OnRemovedSuggestionProtoReady(ReadStatus read_status);
+
+  // Removes the suggestions specified by type-id pairs.
+  void RemoveSuggestionsByTypeIdPairs(
+      const std::vector<std::pair<FileSuggestionType, std::string>>&
+          type_id_pairs);
 
   // The provider of drive file suggestions.
   std::unique_ptr<DriveFileSuggestionProvider> drive_file_suggestion_provider_;

@@ -7384,6 +7384,7 @@ test("unit_tests") {
       "../browser/ui/app_list/search/ranking/mrfu_ranker_unittest.cc",
       "../browser/ui/app_list/search/ranking/query_highlighter_unittest.cc",
       "../browser/ui/app_list/search/ranking/ranking_item_util_unittest.cc",
+      "../browser/ui/app_list/search/ranking/removed_results_proto_unittest.cc",
       "../browser/ui/app_list/search/ranking/removed_results_ranker_unittest.cc",
       "../browser/ui/app_list/search/ranking/score_normalizing_ranker_unittest.cc",
       "../browser/ui/app_list/search/search_controller_impl_new_unittest.cc",

@@ -11,7 +11,10 @@
 #include "chrome/browser/ui/app_list/search/ranking/removed_results.pb.h"
 #include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 
+class Profile;
+
 namespace app_list {
+class FileSuggestKeyedService;
 
 // A ranker which removes results which have previously been marked for removal
 // from the launcher search results list.
@@ -21,7 +24,7 @@ namespace app_list {
 // On a call to Rank(), previously removed results are filtered out.
 class RemovedResultsRanker : public Ranker {
  public:
-  explicit RemovedResultsRanker(PersistentProto<RemovedResultsProto>* proto);
+  explicit RemovedResultsRanker(Profile* profile);
   ~RemovedResultsRanker() override;
 
   RemovedResultsRanker(const RemovedResultsRanker&) = delete;
@@ -35,11 +38,15 @@ class RemovedResultsRanker : public Ranker {
  private:
   friend class RemovedResultsRankerTest;
 
+  FileSuggestKeyedService* GetFileSuggestKeyedService();
+
   // Whether the ranker has finished reading from disk.
   bool initialized() const { return proto_->initialized(); }
 
   // How long to wait until writing any |proto_| updates to disk.
   base::TimeDelta write_delay_;
+
+  Profile* const profile_;
 
   // TODO(https://crbug.com/1368833): after this issue gets fixed, the ranker
   // should own a proto that contains only non-file result ids.
