@@ -6,17 +6,51 @@
 
 #include <memory>
 
+#include "base/files/file_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/api/extension_action/action_info.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/image_util.h"
 #include "extensions/common/manifest_constants.h"
 
+// Adds `extensions::InstallWarning`s to an `extensions::Extension` if the
+// `default_popup` value for the action is not same origin, or doesn't
+// exist in the filesystem.
+void SetWarningsForInvalidDefaultPopup(
+    const extensions::ActionInfo* action,
+    const char* manifest_key,
+    const extensions::Extension* extension,
+    std::vector<extensions::InstallWarning>* warnings) {
+  GURL default_popup_url = action->default_popup_url;
+  if (default_popup_url.is_empty())
+    return;
+
+  GURL extension_base_url =
+      extension->GetBaseURLFromExtensionId(extension->id());
+  base::FilePath relative_path =
+      extensions::file_util::ExtensionURLToRelativeFilePath(default_popup_url);
+  base::FilePath resource_path =
+      extension->GetResource(relative_path).GetFilePath();
+
+  // Check popup is only for this extension.
+  if (!extension->origin().IsSameOriginWith(default_popup_url)) {
+    warnings->push_back(extensions::InstallWarning(
+        extensions::manifest_errors::kInvalidExtensionOriginPopup, manifest_key,
+        extensions::manifest_keys::kActionDefaultPopup));
+    // Check that the popup file actually exists on filesystem.
+  } else if (resource_path.empty() || !base::PathExists(resource_path)) {
+    warnings->push_back(extensions::InstallWarning(
+        extensions::manifest_errors::kNonexistentDefaultPopup, manifest_key,
+        extensions::manifest_keys::kActionDefaultPopup));
+  }
+}
+
 namespace extensions {
 
-ExtensionActionHandler::ExtensionActionHandler() {}
+ExtensionActionHandler::ExtensionActionHandler() = default;
 
 ExtensionActionHandler::~ExtensionActionHandler() {}
 
@@ -95,7 +129,8 @@ bool ExtensionActionHandler::Validate(
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
   const ActionInfo* action = ActionInfo::GetExtensionActionInfo(extension);
-  if (!action || action->default_icon.empty())
+
+  if (!action)
     return true;
 
   const char* manifest_key = nullptr;
@@ -111,6 +146,12 @@ bool ExtensionActionHandler::Validate(
       break;
   }
   DCHECK(manifest_key);
+
+  SetWarningsForInvalidDefaultPopup(action, manifest_key, extension, warnings);
+
+  // Empty default icon is valid.
+  if (action->default_icon.empty())
+    return true;
 
   // Analyze the icons for visibility using the default toolbar color, since
   // the majority of Chrome users don't modify their theme.

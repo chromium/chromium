@@ -702,6 +702,12 @@ const char kUnrecognizedManifestProperty[] =
     "Unrecognized property '*' of manifest key '*'.";
 const char16_t kWebRequestConflictsWithLazyBackground[] =
     u"The 'webRequest' API cannot be used with event pages.";
+const char kInvalidExtensionOriginPopup[] =
+    "The default_popup path specified in the manifest is invalid. Ensure it is "
+    "a path to a file in this extension.";
+const char kNonexistentDefaultPopup[] =
+    "The default_popup file in the manifest doesn't exist. Confirm it exists "
+    "and then reload the extension.";
 #if BUILDFLAG(IS_CHROMEOS)
 const char16_t kInvalidFileSystemProviderMissingCapabilities[] =
     u"The 'fileSystemProvider' permission requires the "
