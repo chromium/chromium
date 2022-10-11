@@ -3080,7 +3080,7 @@
     ],
 
     # Meant for local development of fuzzers where no reclient/goma is needed.
-	'libfuzzer_asan_local': [
+    'libfuzzer_asan_local': [
       'libfuzzer', 'asan', 'release', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'no_reclient',
     ],
 
@@ -3459,11 +3459,11 @@
     ],
 
     'release_bot_fuchsia_arm64_cast_receiver': [
-      'release_bot', 'fuchsia', 'arm64', 'arm64_host', 'cast_receiver_size_optimized', 'no_symbols',
+      'release_bot', 'fuchsia', 'arm64', 'arm64_host', 'cast_receiver_size_optimized',
     ],
 
     'release_bot_fuchsia_cast_receiver': [
-      'release_bot', 'fuchsia', 'cast_receiver_size_optimized', 'no_symbols',
+      'release_bot', 'fuchsia', 'cast_receiver_size_optimized',
     ],
 
     'release_bot_fuchsia_cfv2_script': [

@@ -46,7 +46,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 0,
       "target_os": "fuchsia",
       "use_goma": true
     }

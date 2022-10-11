@@ -5,7 +5,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 0,
       "target_cpu": "arm64",
       "target_os": "fuchsia",
       "test_host_cpu": "arm64",
@@ -71,7 +70,6 @@
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 0,
       "target_os": "fuchsia",
       "use_goma": true
     }
