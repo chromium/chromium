@@ -294,7 +294,7 @@ ScriptPromise MediaDevices::getDisplayMediaSet(
   ExecutionContext* const context = GetExecutionContext();
   if (!context) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
+        DOMExceptionCode::kInvalidStateError,
         "No media device client available; is this a detached window?");
     return ScriptPromise();
   }
@@ -311,7 +311,7 @@ ScriptPromise MediaDevices::getDisplayMedia(
   ExecutionContext* const context = GetExecutionContext();
   if (!context) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
+        DOMExceptionCode::kInvalidStateError,
         "No media device client available; is this a detached window?");
     return ScriptPromise();
   }
