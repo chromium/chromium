@@ -41,6 +41,10 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
    public:
     virtual ~Delegate() {}
     virtual void OnClosed() = 0;
+
+    // Called when a toast's hover state changed if the toast is supposed to
+    // persist on hover.
+    virtual void OnToastHoverStateChanged(bool is_hovering) = 0;
   };
 
   // Offset of the overlay from the edge of the work area.
@@ -70,7 +74,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
 
   ~ToastOverlay() override;
 
-  base::TimeTicks time_shown() const { return time_shown_; }
+  base::TimeTicks time_started() const { return time_started_; }
 
   // Shows or hides the overlay.
   void Show(bool visible);
@@ -87,6 +91,14 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // Activates the dismiss button in `overlay_view_` if it is highlighted.
   // Returns false if `is_dismiss_button_highlighted_` is false.
   bool MaybeActivateHighlightedDismissButton();
+
+  // Sets whether the expiration countdown from the toast should stop or resume.
+  // If `is_hovering` is true, then we stop the expiration countdown.
+  void UpdateToastExpirationTimer(bool is_hovering);
+
+  // Prevents the `expired_callback_` on this toast from running on this toast's
+  // destruction.
+  void ResetExpiredCallback();
 
  private:
   friend class ToastManagerImplTest;
@@ -147,10 +159,11 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   // remaining duration when the hover is removed.
   base::TimeDelta duration_elapsed_;
 
-  // Records the time that the toast was shown so that the `ToastManagerImpl`
-  // can log it and so that we can calculate the time elapsed since showing the
-  // toast if we need to pause the `expiration_timer_`.
-  base::TimeTicks time_shown_;
+  // Records the time that the toast's `expiration_timer_` was most recently
+  // started so that the `ToastManagerImpl` can log the time that it was shown
+  // and so that we can calculate the time elapsed since starting the timer if
+  // we need to pause the `expiration_timer_`.
+  base::TimeTicks time_started_;
 
   // Timer that is started if `duration_total_` is not infinite. This will call
   // the function to close the toast when the `duration_total_` time has

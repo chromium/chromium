@@ -114,7 +114,7 @@ bool ToastManagerImpl::IsRunning(const std::string& id) const {
 
 void ToastManagerImpl::OnClosed() {
   const base::TimeDelta user_journey_time =
-      base::TimeTicks::Now() - current_toast_data_->time_shown;
+      base::TimeTicks::Now() - current_toast_data_->time_start_showing;
   const std::string time_range = GetToastDismissedTimeRange(user_journey_time);
   base::UmaHistogramEnumeration(
       base::StringPrintf("%s.Dismissed.%s", NotifierFrameworkToastHistogram,
@@ -130,6 +130,17 @@ void ToastManagerImpl::OnClosed() {
   // manually after the state is changed. See OnLockStateChanged.
   if (!queue_.empty())
     ShowLatest();
+}
+
+void ToastManagerImpl::OnToastHoverStateChanged(bool is_hovering) {
+  DCHECK(current_toast_data_->persist_on_hover);
+  if (!current_toast_data_->show_on_all_root_windows)
+    return;
+
+  for (auto& iter : root_window_to_overlay_) {
+    if (iter.second)
+      iter.second->UpdateToastExpirationTimer(is_hovering);
+  }
 }
 
 void ToastManagerImpl::OnSessionStateChanged(
@@ -195,8 +206,8 @@ void ToastManagerImpl::CreateToastOverlayForRoot(aura::Window* root_window) {
 
   // We only want to record this value when the first instance of the toast is
   // initialized.
-  if (current_toast_data_->time_shown.is_null())
-    current_toast_data_->time_shown = new_overlay->time_shown();
+  if (current_toast_data_->time_start_showing.is_null())
+    current_toast_data_->time_start_showing = new_overlay->time_started();
 }
 
 void ToastManagerImpl::CloseAllToastsWithAnimation() {
@@ -233,7 +244,19 @@ void ToastManagerImpl::OnRootWindowAdded(aura::Window* root_window) {
 }
 
 void ToastManagerImpl::OnRootWindowWillShutdown(aura::Window* root_window) {
-  root_window_to_overlay_[root_window].reset();
+  if (current_toast_data_ && !current_toast_data_->show_on_all_root_windows)
+    return;
+
+  // If the toast is displaying on multiple monitors and one of the root windows
+  // shuts down, then we do not want for that toast to run the
+  // `expired_callback_` when it is being destroyed.
+  auto& toast_overlay = root_window_to_overlay_[root_window];
+
+  if (!toast_overlay)
+    return;
+
+  toast_overlay->ResetExpiredCallback();
+  toast_overlay.reset();
 }
 
 }  // namespace ash

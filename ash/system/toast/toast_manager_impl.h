@@ -52,6 +52,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
 
   // ToastOverlay::Delegate overrides:
   void OnClosed() override;
+  void OnToastHoverStateChanged(bool is_hovering) override;
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;

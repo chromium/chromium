@@ -230,7 +230,7 @@ void ToastOverlay::Show(bool visible) {
     // Notify accessibility about the overlay.
     overlay_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, false);
 
-    time_shown_ = base::TimeTicks::Now();
+    time_started_ = base::TimeTicks::Now();
 
     if (duration_total_ != ToastData::kInfiniteDuration)
       StartExpirationTimer();
@@ -257,6 +257,25 @@ bool ToastOverlay::MaybeActivateHighlightedDismissButton() {
 
   OnButtonClicked();
   return true;
+}
+
+void ToastOverlay::UpdateToastExpirationTimer(bool is_hovering) {
+  // This function can be called twice on a toast (e.g. the toast that is being
+  // hovered when we are persisting a multi-monitor toast on hover).
+  if (is_hovering != expiration_timer_.IsRunning())
+    return;
+
+  if (is_hovering) {
+    duration_elapsed_ += base::TimeTicks::Now() - time_started_;
+    expiration_timer_.Stop();
+  } else {
+    StartExpirationTimer();
+    time_started_ = base::TimeTicks::Now();
+  }
+}
+
+void ToastOverlay::ResetExpiredCallback() {
+  expired_callback_.Reset();
 }
 
 gfx::Rect ToastOverlay::CalculateOverlayBounds() {
@@ -297,12 +316,11 @@ void ToastOverlay::OnHoverStateChanged(bool is_hovering) {
   // If `is_hovering` is true, then we want to stop the `expiration_timer_` to
   // maintain the toast while the hover persists. Otherwise we restart the
   // timer with the remaining time for the toast.
-  if (is_hovering) {
-    duration_elapsed_ = base::TimeTicks::Now() - time_shown_;
-    expiration_timer_.Stop();
-  } else {
-    StartExpirationTimer();
-  }
+  UpdateToastExpirationTimer(is_hovering);
+
+  // We want to update the `delegate_` here in case this toast is also
+  // displaying on other monitors.
+  delegate_->OnToastHoverStateChanged(is_hovering);
 }
 
 void ToastOverlay::OnToastExpired() {
