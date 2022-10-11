@@ -109,10 +109,6 @@ enum class IOSOverflowMenuActionType {
 
 @property(nonatomic, strong) PopupMenuHelpCoordinator* popupMenuHelpCoordinator;
 
-// Holds reference to this handler (which is this class) to it can be cleared
-// out on `-stop`.
-@property(nonatomic, weak) id<PopupMenuCommands> popupMenuCommandsHandler;
-
 @end
 
 @implementation PopupMenuCoordinator
@@ -136,7 +132,6 @@ enum class IOSOverflowMenuActionType {
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(PopupMenuCommands)];
-  self.popupMenuCommandsHandler = self;
   NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
   [defaultCenter addObserver:self
                     selector:@selector(applicationDidEnterBackground:)
@@ -145,10 +140,8 @@ enum class IOSOverflowMenuActionType {
 }
 
 - (void)stop {
-  self.presenter.delegate = nil;
   [self.popupMenuHelpCoordinator stop];
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
-  self.popupMenuCommandsHandler = nil;
   [self.overflowMenuMediator disconnect];
   self.overflowMenuMediator = nil;
   [self.mediator disconnect];
@@ -281,7 +274,7 @@ enum class IOSOverflowMenuActionType {
 #pragma mark - PopupMenuPresenterDelegate
 
 - (void)popupMenuPresenterWillDismiss:(PopupMenuPresenter*)presenter {
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:NO];
+  [self dismissPopupMenuAnimated:NO];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -298,7 +291,7 @@ enum class IOSOverflowMenuActionType {
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:NO];
+  [self dismissPopupMenuAnimated:NO];
 }
 
 #pragma mark - UISheetPresentationControllerDelegate
@@ -326,7 +319,7 @@ enum class IOSOverflowMenuActionType {
 #pragma mark - Notification callback
 
 - (void)applicationDidEnterBackground:(NSNotification*)note {
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:NO];
+  [self dismissPopupMenuAnimated:NO];
 }
 
 #pragma mark - Private
@@ -336,7 +329,7 @@ enum class IOSOverflowMenuActionType {
 - (void)presentPopupOfType:(PopupMenuType)type
             fromNamedGuide:(GuideName*)guideName {
   if (self.presenter || self.overflowMenuMediator)
-    [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+    [self dismissPopupMenuAnimated:YES];
 
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
