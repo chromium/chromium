@@ -82,25 +82,25 @@ function setupEvents() {
     'show_recurrent_error_paragraph');
 
   const body = document.querySelector('#body');
-  const errorCode = document.querySelector('#error-code');
   if (ssl || blockedInterception) {
     body.classList.add(badClock ? 'bad-clock' : 'ssl');
     if (loadTimeData.valueExists('errorCode')) {
+      const errorCode = document.querySelector('#error-code');
       errorCode.textContent = loadTimeData.getString('errorCode');
       errorCode.classList.remove(HIDDEN_CLASS);
     }
   } else if (captivePortal) {
-    errorCode.classList.add('captive-portal');
+    body.classList.add('captive-portal');
   } else if (billing) {
-    errorCode.classList.add('safe-browsing-billing');
+    body.classList.add('safe-browsing-billing');
   } else if (lookalike) {
-    errorCode.classList.add('lookalike-url');
+    body.classList.add('lookalike-url');
   } else if (insecureForm) {
-    errorCode.classList.add('insecure-form');
+    body.classList.add('insecure-form');
   } else if (httpsOnly) {
-    errorCode.classList.add('https-only');
+    body.classList.add('https-only');
   } else {
-    errorCode.classList.add('safe-browsing');
+    body.classList.add('safe-browsing');
     // Override the default theme color.
     document.querySelector('meta[name=theme-color]').setAttribute('content',
       'rgb(217, 48, 37)');
