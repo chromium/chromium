@@ -174,7 +174,8 @@ struct MojoTrap::Trigger : public base::RefCountedThreadSafe<Trigger> {
   const uintptr_t trigger_context;
   IpczTrapConditions conditions = {.size = sizeof(conditions), .flags = 0};
 
-  // Access is effectively guarded by the owning MojoTrap's `lock_`.
+  // Access to all fields below is effectively guarded by the owning MojoTrap's
+  // `lock_`.
   bool armed = false;
   bool removed = false;
 
@@ -263,13 +264,16 @@ MojoResult MojoTrap::AddTrigger(MojoHandle handle,
 
     // The new trigger already needs to fire an event. OK.
     armed_ = false;
+
+    pending_mojo_events_->emplace_back(
+        MojoTrapEvent{.struct_size = sizeof(MojoTrapEvent)});
+    MojoTrapEvent& event = pending_mojo_events_->back();
+    TranslateIpczToMojoEvent(signals, trigger_context, data_pipe, flags, status,
+                             &event);
+    event.flags = MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL;
   }
 
-  MojoTrapEvent event = {.struct_size = sizeof(event)};
-  TranslateIpczToMojoEvent(signals, trigger_context, data_pipe, flags, status,
-                           &event);
-  event.flags = MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL;
-  handler_(&event);
+  MaybeFlushMojoEvents();
   return MOJO_RESULT_OK;
 }
 
@@ -283,12 +287,12 @@ MojoResult MojoTrap::RemoveTrigger(uintptr_t trigger_context) {
     }
     trigger = std::move(it->second);
     trigger->armed = false;
-    trigger->removed = true;
     triggers_.erase(it);
     next_trigger_ = triggers_.begin();
+    MaybeEnqueueTriggerRemoval(*trigger);
   }
 
-  NotifyTriggerRemoved(*trigger);
+  MaybeFlushMojoEvents();
   return MOJO_RESULT_OK;
 }
 
@@ -389,13 +393,11 @@ void MojoTrap::Close() {
       trigger->armed = false;
 
       DCHECK(!trigger->removed);
-      trigger->removed = true;
+      MaybeEnqueueTriggerRemoval(*trigger);
     }
   }
 
-  for (auto& [trigger_context, trigger] : triggers) {
-    NotifyTriggerRemoved(*trigger);
-  }
+  MaybeFlushMojoEvents();
 }
 
 // static
@@ -417,6 +419,11 @@ void MojoTrap::HandleEvent(const IpczTrapEvent& event) {
   scoped_refptr<Trigger> trigger = WrapRefCounted(&Trigger::FromEvent(event));
   trigger->Release();
 
+  if (trigger->data_pipe &&
+      (event.condition_flags & IPCZ_TRAP_NEW_LOCAL_PARCEL)) {
+    trigger->data_pipe->SetHasNewData();
+  }
+
   {
     base::AutoLock lock(lock_);
     const bool trigger_active = armed_ && trigger->armed && !trigger->removed;
@@ -430,20 +437,17 @@ void MojoTrap::HandleEvent(const IpczTrapEvent& event) {
     }
 
     armed_ = false;
+
+    pending_mojo_events_->emplace_back(
+        MojoTrapEvent{.struct_size = sizeof(MojoTrapEvent)});
+    MojoTrapEvent& mojo_event = pending_mojo_events_->back();
+    TranslateIpczToMojoEvent(trigger->signals, trigger->trigger_context,
+                             trigger->data_pipe.get(), event.condition_flags,
+                             *event.status, &mojo_event);
+    mojo_event.flags |= MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL;
   }
 
-  if (trigger->data_pipe &&
-      (event.condition_flags & IPCZ_TRAP_NEW_LOCAL_PARCEL)) {
-    trigger->data_pipe->SetHasNewData();
-  }
-
-  MojoTrapEvent mojo_event = {.struct_size = sizeof(mojo_event)};
-  TranslateIpczToMojoEvent(trigger->signals, trigger->trigger_context,
-                           trigger->data_pipe.get(), event.condition_flags,
-                           *event.status, &mojo_event);
-  mojo_event.flags |= MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL;
-
-  handler_(&mojo_event);
+  MaybeFlushMojoEvents();
 }
 
 void MojoTrap::HandleTrapRemoved(const IpczTrapEvent& event) {
@@ -457,11 +461,11 @@ void MojoTrap::HandleTrapRemoved(const IpczTrapEvent& event) {
     }
 
     triggers_.erase(trigger.trigger_context);
-    trigger.removed = true;
+    MaybeEnqueueTriggerRemoval(trigger);
     next_trigger_ = triggers_.begin();
   }
 
-  NotifyTriggerRemoved(trigger);
+  MaybeFlushMojoEvents();
 }
 
 IpczResult MojoTrap::ArmTrigger(Trigger& trigger,
@@ -519,15 +523,49 @@ IpczResult MojoTrap::ArmTrigger(Trigger& trigger,
   return result;
 }
 
-void MojoTrap::NotifyTriggerRemoved(Trigger& trigger) {
-  MojoTrapEvent mojo_event = {
-      .struct_size = sizeof(mojo_event),
+void MojoTrap::MaybeEnqueueTriggerRemoval(Trigger& trigger) {
+  if (trigger.removed) {
+    return;
+  }
+  trigger.removed = true;
+  pending_mojo_events_->push_back(MojoTrapEvent{
+      .struct_size = sizeof(MojoTrapEvent),
       .flags = MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL,
       .trigger_context = trigger.trigger_context,
       .result = MOJO_RESULT_CANCELLED,
       .signals_state = {.satisfied_signals = 0, .satisfiable_signals = 0},
-  };
-  handler_(&mojo_event);
+  });
+}
+
+void MojoTrap::MaybeFlushMojoEvents() {
+  size_t index = 0;
+  for (;;) {
+    MojoTrapEvent event;
+    {
+      base::AutoLock lock(lock_);
+      if (pending_mojo_events_->empty()) {
+        return;
+      }
+
+      if (is_flushing_mojo_events_ && index == 0) {
+        // Another thread already started flushing these events.
+        return;
+      }
+
+      is_flushing_mojo_events_ = true;
+      if (index == pending_mojo_events_->size()) {
+        // All pending events have been dispatched.
+        pending_mojo_events_->clear();
+        is_flushing_mojo_events_ = false;
+        return;
+      }
+
+      event = pending_mojo_events_[index];
+    }
+
+    handler_(&event);
+    ++index;
+  }
 }
 
 }  // namespace mojo::core::ipcz_driver

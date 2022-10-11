@@ -16,6 +16,8 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/threading/thread.h"
+#include "mojo/core/embedder/embedder.h"
+#include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -30,6 +32,7 @@
 #include "mojo/public/interfaces/bindings/tests/sample_interfaces.mojom.h"
 #include "mojo/public/interfaces/bindings/tests/sample_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace test {
@@ -930,6 +933,97 @@ TEST_P(SelfOwnedReceiverTest, DisconnectDestroysImplAndPipe) {
   EXPECT_FALSE(was_deleted);
   run_loop.Run();
   EXPECT_TRUE(was_deleted);
+}
+
+class MultiprocessReceiverTest : public core::test::MojoTestBase,
+                                 public mojom::TestInterface1 {
+ public:
+  ~MultiprocessReceiverTest() override = default;
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+};
+
+class InterfaceDropper : public mojom::InterfaceDropper {
+ public:
+  explicit InterfaceDropper(PendingReceiver<mojom::InterfaceDropper> receiver)
+      : receiver_(this, std::move(receiver)) {}
+
+  void set_disconnect_handler(base::OnceClosure callback) {
+    receiver_.set_disconnect_handler(std::move(callback));
+  }
+
+ private:
+  // mojom::InterfaceDropper:
+  void Drop(PendingRemote<mojom::TestInterface1> remote) override {
+    // Nothing to do but let `remote` go out of scope, effectively closing it
+    // and signaling peer closure to the Receiver in another process.
+  }
+
+  Receiver<mojom::InterfaceDropper> receiver_;
+};
+
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessReceiverClient,
+                                  MultiprocessReceiverTest,
+                                  test_pipe) {
+  // This client sits in a loop listening for new interface remotes to drop.
+  // Each dropped remote sends a signal back to the main test process to notify
+  // the receiver there, and those notifications are meant to elicit a potential
+  // race in the internal dispatch machinery of that receiver. The client
+  // terminates when the InterfaceDropper is disconnected, which happens once
+  // the test is done throwing remotes at it.
+  MojoHandle dropper_pipe;
+  ReadMessageWithHandles(test_pipe, &dropper_pipe, 1);
+  base::RunLoop loop;
+  InterfaceDropper dropper{PendingReceiver<mojom::InterfaceDropper>(
+      MakeScopedHandle(MessagePipeHandle(dropper_pipe)))};
+  dropper.set_disconnect_handler(loop.QuitClosure());
+  loop.Run();
+  MojoClose(test_pipe);
+}
+
+TEST_F(MultiprocessReceiverTest, MultiprocessReceiver) {
+  // Regression test for https://crbug.com/1371860.
+  //
+  // This test establishes a remote connection to an InterfaceDropper
+  // implementation in the client process; then it continually creates new test
+  // interface endpoints, sending one end to the client to be destroyed from
+  // there; and binding the other end as a local receiver that is also
+  // immediately destroyed.
+  //
+  // This effectively exercises potential races between receiver lifetime and
+  // incoming IO thread activity, as an event to signal peer closure on the new
+  // receiver may arrive on the IO thread during receiver teardown on this
+  // thread.
+  if (!mojo::core::IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "This is a regression test specifically for MojoIpcz. When "
+                 << "MojoIpcz is disabled, the test is flaky for unrelated "
+                 << "reasons which stem from a long-standing bug in Mojo Core "
+                 << "shutdown.";
+  }
+  RunTestClient("MultiprocessReceiverClient", [&](MojoHandle client) {
+    Remote<mojom::InterfaceDropper> dropper;
+    MojoHandle dropper_pipe =
+        dropper.BindNewPipeAndPassReceiver().PassPipe().release().value();
+    WriteMessageWithHandles(client, "", &dropper_pipe, 1);
+
+    constexpr size_t kNumIterations = 1000;
+    constexpr size_t kNumReceiversPerIteration = 10;
+    for (size_t i = 0; i < kNumIterations; ++i) {
+      std::vector<absl::optional<Receiver<mojom::TestInterface1>>> receivers(
+          kNumReceiversPerIteration);
+      for (auto& receiver : receivers) {
+        receiver.emplace(this);
+        auto remote = receiver->BindNewPipeAndPassRemote();
+
+        // Installing a disconnect handler ensures that we set up the machinery
+        // necessary to watch for incoming IO events targeting this receiver.
+        receiver->set_disconnect_handler(base::BindOnce([] {}));
+
+        dropper->Drop(std::move(remote));
+      }
+    }
+  });
 }
 
 INSTANTIATE_MOJO_BINDINGS_TEST_SUITE_P(ReceiverTest);

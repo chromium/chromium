@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/stack_container.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/ipcz_driver/object.h"
@@ -65,7 +66,9 @@ class MojoTrap : public Object<MojoTrap> {
                         IpczTrapConditionFlags* satisfied_flags,
                         IpczPortalStatus* status);
 
-  void NotifyTriggerRemoved(Trigger&);
+  void MaybeEnqueueTriggerRemoval(Trigger& trigger)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void MaybeFlushMojoEvents() LOCKS_EXCLUDED(lock_);
 
   const MojoTrapEventHandler handler_;
 
@@ -81,6 +84,22 @@ class MojoTrap : public Object<MojoTrap> {
   // SUBTLE: Because it is invalidated by mutations to `triggers_`, this MUST
   // be reset any time a trigger is inserted or removed.
   TriggerMap::iterator next_trigger_ GUARDED_BY(lock_) = triggers_.end();
+
+  // A Mojo Trap must ensure that all its event dispatches are mutually
+  // exclusive. This vector accumulates all dispatches in one place, from which
+  // they can be flushed by one thread at a time. An inlined vector is used to
+  // avoid new heap allocation in the most common cases.
+  //
+  // NOTE: Outside of MaybeFlushMojoEvents(), elements may ONLY be appended to
+  // this vector. MaybeFlushMojoEvents() expects all added events to be retained
+  // in the vector until it has had a chance to flush all of them, at which
+  // point it will clear the vector itself.
+  base::StackVector<MojoTrapEvent, 4> pending_mojo_events_ GUARDED_BY(lock_);
+
+  // Indicates whether a thread is already flushing events out of
+  // `pending_mojo_events_` to ensure that the events remain ordered and
+  // mutually exclusive.
+  bool is_flushing_mojo_events_ GUARDED_BY(lock_) = false;
 
   bool armed_ GUARDED_BY(lock_) = false;
 };

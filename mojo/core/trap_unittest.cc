@@ -1456,6 +1456,12 @@ TEST_F(TrapTest, OtherThreadRemovesTriggerDuringEventHandler) {
 }
 
 TEST_F(TrapTest, TriggersRemoveEachOtherWithinEventHandlers) {
+  if (IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "Separate traps under MojoIpcz may re-enter each other's "
+                 << "event handlers, causing this test to deadlock. This test "
+                 << "case is of no practical interest in production.";
+  }
+
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
 

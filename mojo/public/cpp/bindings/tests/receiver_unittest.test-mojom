@@ -25,3 +25,7 @@ interface RebindTestInterface {
   [Sync]
   SyncCall() => ();
 };
+
+interface InterfaceDropper {
+  Drop(pending_remote<TestInterface1> remote);
+};
