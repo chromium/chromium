@@ -38,6 +38,7 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -101,6 +102,33 @@ public class TabSelectionEditorCloseActionUnitTest {
                 false, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
         Assert.assertEquals(
                 0, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+    }
+
+    @Test
+    @SmallTest
+    public void testCloseActionWithOneTab() throws Exception {
+        configure(false);
+        List<Integer> tabIds = new ArrayList<>();
+        tabIds.add(5);
+        tabIds.add(3);
+        tabIds.add(7);
+        List<Tab> tabs = new ArrayList<>();
+        for (int id : tabIds) {
+            tabs.add(mTabModel.addTab(id));
+        }
+        Set<Integer> tabIdsSet = new LinkedHashSet<>();
+        tabIdsSet.add(3);
+        when(mSelectionDelegate.getSelectedItems()).thenReturn(tabIdsSet);
+
+        mAction.onSelectionStateChange(Arrays.asList(3));
+        Assert.assertEquals(
+                true, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ENABLED));
+        Assert.assertEquals(
+                1, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
+
+        Assert.assertTrue(mAction.perform());
+        verify(mTabModel).closeTab(tabs.get(1), false, false, true);
+        verify(mDelegate).hide();
     }
 
     @Test

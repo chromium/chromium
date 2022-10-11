@@ -530,6 +530,70 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    public void testDialogSelectionEditorV2_UndoClose() throws ExecutionException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 4);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 4);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open the selection editor.
+        openDialogFromTabSwitcherAndVerify(cta, 4, null);
+        openSelectionEditorV2AndVerify(cta, 4);
+
+        // Close two tabs and undo.
+        mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(2)
+                .clickToolbarMenuButton()
+                .clickToolbarMenuItem("Close tabs");
+        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        verifyShowingDialog(cta, 2, null);
+        verifyDialogUndoBarAndClick();
+        verifyShowingDialog(cta, 4, null);
+
+        clickScrimToExitDialog(cta);
+        waitForDialogHidingAnimationInTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.TAB_SELECTION_EDITOR_V2})
+    public void testDialogSelectionEditorV2_UndoCloseAll() throws ExecutionException {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        createTabs(cta, false, 4);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 4);
+
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+
+        // Open the selection editor.
+        openDialogFromTabSwitcherAndVerify(cta, 4, null);
+        openSelectionEditorV2AndVerify(cta, 4);
+
+        // Close two tabs and undo.
+        mSelectionEditorRobot.actionRobot.clickItemAtAdapterPosition(0)
+                .clickItemAtAdapterPosition(1)
+                .clickItemAtAdapterPosition(2)
+                .clickItemAtAdapterPosition(3)
+                .clickToolbarMenuButton()
+                .clickToolbarMenuItem("Close tabs");
+        mSelectionEditorRobot.resultRobot.verifyTabSelectionEditorIsHidden();
+        waitForDialogHidingAnimationInTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 0);
+
+        verifyGlobalUndoBarAndClick();
+        verifyTabSwitcherCardCount(cta, 1);
+    }
+
+    @Test
+    @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testSelectionEditorUngroup() throws ExecutionException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1434,6 +1498,18 @@ public class TabGridDialogTest {
                 .check(doesNotExist());
         onView(allOf(withId(R.id.snackbar_button),
                        isDescendantOfA(withId(R.id.dialog_snack_bar_container_view)),
+                       isDisplayed()))
+                .perform(click());
+    }
+
+    private void verifyGlobalUndoBarAndClick() {
+        // Verify that the dialog undo bar is showing and the default undo bar is hidden.
+        onViewWaiting(allOf(withId(R.id.snackbar), isDescendantOfA(withId(R.id.bottom_container)),
+                isDisplayed()));
+        onView(allOf(withId(R.id.snackbar_button),
+                       isDescendantOfA(withId(R.id.dialog_snack_bar_container_view))))
+                .check(doesNotExist());
+        onView(allOf(withId(R.id.snackbar_button), isDescendantOfA(withId(R.id.bottom_container)),
                        isDisplayed()))
                 .perform(click());
     }

@@ -689,6 +689,29 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    public void onFinishingMultipleTabClosure() {
+        List<Tab> tabs = Arrays.asList(mTab1, mTab2);
+        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
+
+        verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(tabs));
+    }
+
+    @Test
+    public void onFinishingMultipleTabClosure_singleTab() {
+        List<Tab> tabs = Arrays.asList(mTab1);
+        mTabModelObserverCaptor.getValue().onFinishingMultipleTabClosure(tabs);
+
+        verify(mSnackbarManager).dismissSnackbars(eq(mMediator), eq(TAB1_ID));
+    }
+
+    @Test
+    public void allTabsClosureCommitted() {
+        mTabModelObserverCaptor.getValue().allTabsClosureCommitted(false);
+
+        verify(mSnackbarManager).dismissSnackbars(eq(mMediator));
+    }
+
+    @Test
     public void tabPendingClosure_DialogVisible() {
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
 
@@ -698,10 +721,39 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    public void tabPendingClosure_DialogInVisible() {
+    public void tabPendingClosure_DialogInvisible() {
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
 
         mTabModelObserverCaptor.getValue().tabPendingClosure(mTab1);
+
+        verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
+    }
+
+    @Test
+    public void multipleTabsPendingClosure_DialogVisible() {
+        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+
+        mTabModelObserverCaptor.getValue().multipleTabsPendingClosure(
+                Arrays.asList(mTab1, mTab2), false);
+
+        verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
+    }
+
+    @Test
+    public void multipleTabsPendingClosure_singleTab_DialogVisible() {
+        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+
+        mTabModelObserverCaptor.getValue().multipleTabsPendingClosure(Arrays.asList(mTab1), false);
+
+        verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
+    }
+
+    @Test
+    public void multipleTabsPendingClosure_DialogInvisible() {
+        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
+
+        mTabModelObserverCaptor.getValue().multipleTabsPendingClosure(
+                Arrays.asList(mTab1, mTab2), false);
 
         verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
     }
@@ -1148,7 +1200,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    public void testSnackbarController_onAction() {
+    public void testSnackbarController_onAction_singleTab() {
         doReturn(mTabModel).when(mTabModelSelector).getModelForTabId(TAB1_ID);
 
         mMediator.onAction(TAB1_ID);
@@ -1157,12 +1209,32 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    public void testSnackbarController_onDismissNoAction() {
+    public void testSnackbarController_onAction_multipleTabs() {
+        doReturn(mTabModel).when(mTabModelSelector).getModelForTabId(TAB1_ID);
+
+        mMediator.onAction(Arrays.asList(mTab1, mTab2));
+
+        verify(mTabModel).cancelTabClosure(eq(TAB1_ID));
+        verify(mTabModel).cancelTabClosure(eq(TAB2_ID));
+    }
+
+    @Test
+    public void testSnackbarController_onDismissNoAction_singleTab() {
         doReturn(mTabModel).when(mTabModelSelector).getModelForTabId(TAB1_ID);
 
         mMediator.onDismissNoAction(TAB1_ID);
 
         verify(mTabModel).commitTabClosure(eq(TAB1_ID));
+    }
+
+    @Test
+    public void testSnackbarController_onDismissNoAction_multipleTabs() {
+        doReturn(mTabModel).when(mTabModelSelector).getModelForTabId(TAB1_ID);
+
+        mMediator.onDismissNoAction(Arrays.asList(mTab1, mTab2));
+
+        verify(mTabModel).commitTabClosure(eq(TAB1_ID));
+        verify(mTabModel).commitTabClosure(eq(TAB2_ID));
     }
 
     @Test

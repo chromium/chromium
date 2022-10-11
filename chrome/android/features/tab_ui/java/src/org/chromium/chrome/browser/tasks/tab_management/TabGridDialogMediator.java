@@ -54,6 +54,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A mediator for the TabGridDialog component, responsible for communicating
@@ -201,6 +202,49 @@ public class TabGridDialogMediator
             @Override
             public void tabPendingClosure(Tab tab) {
                 if (!mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE)) return;
+
+                showSingleTabClosureSnackbar(tab);
+            }
+
+            @Override
+            public void multipleTabsPendingClosure(List<Tab> closedTabs, boolean isAllTabs) {
+                if (!mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE)) return;
+
+                if (closedTabs.size() == 1) {
+                    showSingleTabClosureSnackbar(closedTabs.get(0));
+                    return;
+                }
+
+                assert !isAllTabs;
+                String content = String.format(Locale.getDefault(), "%d", closedTabs.size());
+                snackbarManager.showSnackbar(
+                        Snackbar.make(content, TabGridDialogMediator.this, Snackbar.TYPE_ACTION,
+                                        Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO)
+                                .setTemplateText(
+                                        mContext.getString(R.string.undo_bar_close_all_message))
+                                .setAction(mContext.getString(R.string.undo), closedTabs));
+            }
+
+            @Override
+            public void tabClosureCommitted(Tab tab) {
+                dismissSingleTabClosureSnackbar(tab.getId());
+            }
+
+            @Override
+            public void onFinishingMultipleTabClosure(List<Tab> tabs) {
+                if (tabs.size() == 1) {
+                    dismissSingleTabClosureSnackbar(tabs.get(0).getId());
+                    return;
+                }
+                snackbarManager.dismissSnackbars(TabGridDialogMediator.this, tabs);
+            }
+
+            @Override
+            public void allTabsClosureCommitted(boolean isIncognito) {
+                snackbarManager.dismissSnackbars(TabGridDialogMediator.this);
+            }
+
+            private void showSingleTabClosureSnackbar(Tab tab) {
                 snackbarManager.showSnackbar(
                         Snackbar.make(tab.getTitle(), TabGridDialogMediator.this,
                                         Snackbar.TYPE_ACTION, Snackbar.UMA_TAB_CLOSE_UNDO)
@@ -209,9 +253,8 @@ public class TabGridDialogMediator
                                 .setAction(mContext.getString(R.string.undo), tab.getId()));
             }
 
-            @Override
-            public void tabClosureCommitted(Tab tab) {
-                snackbarManager.dismissSnackbars(TabGridDialogMediator.this, tab.getId());
+            private void dismissSingleTabClosureSnackbar(int tabId) {
+                snackbarManager.dismissSnackbars(TabGridDialogMediator.this, tabId);
             }
         };
 
@@ -668,19 +711,43 @@ public class TabGridDialogMediator
     // SnackbarManager.SnackbarController implementation.
     @Override
     public void onAction(Object actionData) {
-        int tabId = (int) actionData;
-        TabModel model = mTabModelSelector.getModelForTabId(tabId);
-        if (model != null) {
+        if (actionData instanceof Integer) {
+            int tabId = (Integer) actionData;
+            TabModel model = mTabModelSelector.getModelForTabId(tabId);
+            if (model == null) return;
+
             model.cancelTabClosure(tabId);
+        } else {
+            List<Tab> tabs = (List<Tab>) actionData;
+            if (tabs.isEmpty()) return;
+
+            TabModel model = mTabModelSelector.getModelForTabId(tabs.get(0).getId());
+            if (model == null) return;
+
+            for (Tab tab : tabs) {
+                model.cancelTabClosure(tab.getId());
+            }
         }
     }
 
     @Override
     public void onDismissNoAction(Object actionData) {
-        int tabId = (int) actionData;
-        TabModel model = mTabModelSelector.getModelForTabId(tabId);
-        if (model != null) {
+        if (actionData instanceof Integer) {
+            int tabId = (Integer) actionData;
+            TabModel model = mTabModelSelector.getModelForTabId(tabId);
+            if (model == null) return;
+
             model.commitTabClosure(tabId);
+        } else {
+            List<Tab> tabs = (List<Tab>) actionData;
+            if (tabs.isEmpty()) return;
+
+            TabModel model = mTabModelSelector.getModelForTabId(tabs.get(0).getId());
+            if (model == null) return;
+
+            for (Tab tab : tabs) {
+                model.commitTabClosure(tab.getId());
+            }
         }
     }
 

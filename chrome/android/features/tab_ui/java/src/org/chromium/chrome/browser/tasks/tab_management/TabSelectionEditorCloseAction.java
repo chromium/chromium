@@ -51,7 +51,12 @@ public class TabSelectionEditorCloseAction extends TabSelectionEditorAction {
     public void performAction(List<Tab> tabs) {
         assert !tabs.isEmpty() : "Close action should not be enabled for no tabs.";
 
-        getTabModelSelector().getCurrentModel().closeMultipleTabs(tabs, true);
+        if (tabs.size() == 1) {
+            getTabModelSelector().getCurrentModel().closeTab(
+                    tabs.get(0), /*animate=*/false, /*uponExit=*/false, /*canUndo=*/true);
+        } else {
+            getTabModelSelector().getCurrentModel().closeMultipleTabs(tabs, true);
+        }
         RecordUserAction.record("TabMultiSelectV2.CloseTabs");
     }
 
