@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
+#import "ios/chrome/browser/ui/price_notifications/price_notifications_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
@@ -22,7 +23,8 @@
 @property(nonatomic, strong)
     TableViewNavigationController* navigationController;
 // The view controller used to display price notifications.
-@property(nonatomic, strong) ChromeTableViewController* tableViewController;
+@property(nonatomic, strong)
+    PriceNotificationsTableViewController* tableViewController;
 
 @end
 
@@ -31,11 +33,8 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  // TODO(crbug.com/1368700) Once the PriceNotificationTableViewController is
-  // created, add the code that instantiates it and sets it to coordinator's
-  // `tableViewController` property.
-  self.tableViewController =
-      [[ChromeTableViewController alloc] initWithStyle:ChromeTableViewStyle()];
+  self.tableViewController = [[PriceNotificationsTableViewController alloc]
+      initWithStyle:ChromeTableViewStyle()];
 
   // Add the "Done" button and hook it up to stop.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]

@@ -10,6 +10,7 @@ source_set("price_notifications") {
   ]
 
   deps = [
+    ":price_notifications_ui",
     "//base",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
@@ -17,4 +18,36 @@ source_set("price_notifications") {
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:utils",
   ]
+}
+
+source_set("price_notifications_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "price_notifications_table_view_controller.h",
+    "price_notifications_table_view_controller.mm",
+  ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//net",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "price_notifications_constants.h",
+    "price_notifications_constants.mm",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
 }
