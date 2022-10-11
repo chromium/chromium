@@ -522,13 +522,20 @@ var defaultTests = [
         })
         .then(function() {
           return promisify(
-              chrome.autotestPrivate.stopThroughputTrackerDataCollection);
+              chrome.autotestPrivate.getThroughputTrackerData);
         })
         .then(function(data) {
           chrome.test.assertTrue(data.length > 0);
           return promisify(unminimizeBrowserWindow);
         })
         .then(function() {
+          return promisify(
+              chrome.autotestPrivate.stopThroughputTrackerDataCollection);
+        })
+        .then(function(data) {
+          // `unminimizeBrowserWindow` might produce 0 frames on build bots
+          // and end up not being captured in `data`.
+          chrome.test.assertTrue(data.length >= 0);
           chrome.test.succeed();
         })
         .catch(function(err) {

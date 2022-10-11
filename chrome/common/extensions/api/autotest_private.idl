@@ -692,6 +692,12 @@ namespace autotestPrivate {
   callback StopThroughputTrackerDataCollectionCallback = void
       (ThroughputTrackerAnimationData[] data);
 
+  // Callback invoked to report the currently collected ui::ThroughputTracker
+  // animation data. Note that the data reported is removed to avoid reporting
+  // duplicated data.
+  callback GetThroughtputTrackerDataCallback = void
+      (ThroughputTrackerAnimationData[] data);
+
   // Callback invoked to report the number of system web apps that should be
   // installed.
   callback GetRegisteredSystemWebAppsCallback = void
@@ -1441,9 +1447,13 @@ namespace autotestPrivate {
         VoidCallback callback);
 
     // Stops ui::ThroughputTracker data collection and reports the collected
-    // data since the start.
+    // data since the start or the last GetThroughtputTrackerData call.
     [supportsPromises] static void stopThroughputTrackerDataCollection(
         StopThroughputTrackerDataCollectionCallback callback);
+
+    // Reports the currently collected animation data.
+    [supportsPromises] static void getThroughputTrackerData(
+        GetThroughtputTrackerDataCallback callback);
 
     // Gets the smoothness of a display. If the display id is not specified,
     // the primary display is used.
