@@ -60440,6 +60440,8 @@ from previous Chrome versions.
   <int value="174759256" label="LockScreenMediaControls:enabled"/>
   <int value="174917935" label="ReengagementNotification:disabled"/>
   <int value="175254474" label="SpectreVariant2Mitigation:enabled"/>
+  <int value="176421334"
+      label="OmniboxHistoryQuickProviderSpecificityScoreCountUniqueHosts:enabled"/>
   <int value="176526479" label="AccessibilityPageZoom:enabled"/>
   <int value="176773784" label="EnableHardwareMirrorMode:disabled"/>
   <int value="176882922" label="ux-study-1"/>
@@ -63008,6 +63010,8 @@ from previous Chrome versions.
   <int value="1753732236" label="SignInProfileCreationEnterprise:enabled"/>
   <int value="1755024316" label="HostWindowsInAppShimProcess:disabled"/>
   <int value="1756736642" label="DynamicSearchUpdateAnimation:enabled"/>
+  <int value="1757654890"
+      label="OmniboxHistoryQuickProviderSpecificityScoreCountUniqueHosts:disabled"/>
   <int value="1757894817" label="PrinterStatusDialog:disabled"/>
   <int value="1758262950"
       label="OmniboxUIExperimentVerticalMarginLimitToNonTouchOnly:disabled"/>

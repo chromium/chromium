@@ -5580,11 +5580,19 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kExperimentalKeywordMode)},
     {"omnibox-domain-suggestions",
      flag_descriptions::kOmniboxDomainSuggestionsName,
-     flag_descriptions::kOmniboxDomainSuggestionsDescriptions, kOsDesktop,
+     flag_descriptions::kOmniboxDomainSuggestionsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kDomainSuggestions)},
+    {"omnibox-history-quick-provider-specificity-score-count-unique-hosts",
+     flag_descriptions::
+         kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsName,
+     flag_descriptions::
+         kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         omnibox::kHistoryQuickProviderSpecificityScoreCountUniqueHosts)},
     {"omnibox-drive-suggestions",
      flag_descriptions::kOmniboxDriveSuggestionsName,
-     flag_descriptions::kOmniboxDriveSuggestionsDescriptions, kOsDesktop,
+     flag_descriptions::kOmniboxDriveSuggestionsDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDocumentProvider,
                                     kOmniboxDocumentProviderVariations,
                                     "OmniboxBundledExperimentV1")},

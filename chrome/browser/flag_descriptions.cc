@@ -1993,7 +1993,7 @@ const char kOmniboxDocumentProviderAsoDescription[] =
     "to ASO (Apps Search Overlay) search.";
 
 const char kOmniboxDomainSuggestionsName[] = "Omnibox Domain Suggestions";
-const char kOmniboxDomainSuggestionsDescriptions[] =
+const char kOmniboxDomainSuggestionsDescription[] =
     "If enabled, history URL suggestions from hosts visited often bypass the "
     "per provider limit.";
 
@@ -2010,6 +2010,12 @@ const char kOmniboxFuzzyUrlSuggestionsDescription[] =
 const char kOmniboxHeaderPaddingUpdateName[] = "Omnibox Header Padding Update";
 const char kOmniboxHeaderPaddingUpdateDescription[] =
     "Update Omnibox suggestion header's position.";
+
+const char kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsName[] =
+    "Omnibox HQP Specificity";
+const char
+    kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsDescription[] =
+        "When enabled, HQP doesn't demote same-host suggestions.";
 
 const char kOmniboxModernizeVisualUpdateName[] =
     "Omnibox Modernize Visual Update";
@@ -4462,7 +4468,7 @@ const char kHappinessTrackingSurveysForDesktopDemoDescription[] =
 
 const char kOmniboxDriveSuggestionsName[] =
     "Omnibox Google Drive Document suggestions";
-const char kOmniboxDriveSuggestionsDescriptions[] =
+const char kOmniboxDriveSuggestionsDescription[] =
     "Display suggestions for Google Drive documents in the omnibox when Google "
     "is the default search engine.";
 

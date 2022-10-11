@@ -1124,7 +1124,7 @@ extern const char kOmniboxDocumentProviderAsoName[];
 extern const char kOmniboxDocumentProviderAsoDescription[];
 
 extern const char kOmniboxDomainSuggestionsName[];
-extern const char kOmniboxDomainSuggestionsDescriptions[];
+extern const char kOmniboxDomainSuggestionsDescription[];
 
 extern const char kOmniboxExperimentalSuggestScoringName[];
 extern const char kOmniboxExperimentalSuggestScoringDescription[];
@@ -1134,6 +1134,11 @@ extern const char kOmniboxFuzzyUrlSuggestionsDescription[];
 
 extern const char kOmniboxHeaderPaddingUpdateName[];
 extern const char kOmniboxHeaderPaddingUpdateDescription[];
+
+extern const char
+    kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsName[];
+extern const char
+    kOmniboxHistoryQuickProviderSpecificityScoreCountUniqueHostsDescription[];
 
 extern const char kOmniboxModernizeVisualUpdateName[];
 extern const char kOmniboxModernizeVisualUpdateDescription[];
@@ -2547,7 +2552,7 @@ extern const char kHappinessTrackingSurveysForDesktopDemoName[];
 extern const char kHappinessTrackingSurveysForDesktopDemoDescription[];
 
 extern const char kOmniboxDriveSuggestionsName[];
-extern const char kOmniboxDriveSuggestionsDescriptions[];
+extern const char kOmniboxDriveSuggestionsDescription[];
 
 extern const char kOmniboxExperimentalKeywordModeName[];
 extern const char kOmniboxExperimentalKeywordModeDescription[];
