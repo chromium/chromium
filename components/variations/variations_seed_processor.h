@@ -10,11 +10,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/gtest_prod_util.h"
-#include "base/metrics/field_trial.h"
-#include "base/version.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/proto/variations_seed.pb.h"
@@ -33,6 +29,7 @@ COMPONENT_EXPORT(VARIATIONS) extern const char kFeatureConflictGroupName[];
 
 class ProcessedStudy;
 struct ClientFilterableState;
+class VariationsLayers;
 
 // Helper class to instantiate field trials from a variations seed.
 class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
@@ -67,6 +64,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
   void CreateTrialFromStudy(const ProcessedStudy& processed_study,
                             const UIStringOverrideCallback& override_callback,
                             const EntropyProviders& entropy_providers,
+                            const VariationsLayers& layers,
                             base::FeatureList* feature_list);
 };
 

@@ -117,11 +117,12 @@ VariationsSeedSimulator::Result VariationsSeedSimulator::SimulateSeedStudies(
   VariationsLayers layers(seed, entropy_providers_);
   FilterAndValidateStudies(seed, client_state, layers, &filtered_studies);
 
-  return ComputeDifferences(filtered_studies);
+  return ComputeDifferences(filtered_studies, layers);
 }
 
 VariationsSeedSimulator::Result VariationsSeedSimulator::ComputeDifferences(
-    const std::vector<ProcessedStudy>& processed_studies) {
+    const std::vector<ProcessedStudy>& processed_studies,
+    const VariationsLayers& layers) {
   std::map<std::string, std::string> current_state;
   GetCurrentTrialState(&current_state);
 
@@ -147,7 +148,7 @@ VariationsSeedSimulator::Result VariationsSeedSimulator::ComputeDifferences(
     ChangeType change_type = NO_CHANGE;
     if (study.consistency() == Study_Consistency_PERMANENT) {
       change_type = PermanentStudyGroupChanged(processed_studies[i],
-                                               selected_group);
+                                               selected_group, layers);
     } else if (study.consistency() == Study_Consistency_SESSION) {
       change_type = SessionStudyGroupChanged(processed_studies[i],
                                              selected_group);
@@ -194,12 +195,13 @@ VariationsSeedSimulator::ConvertExperimentTypeToChangeType(
 VariationsSeedSimulator::ChangeType
 VariationsSeedSimulator::PermanentStudyGroupChanged(
     const ProcessedStudy& processed_study,
-    const std::string& selected_group) {
+    const std::string& selected_group,
+    const VariationsLayers& layers) {
   const Study& study = *processed_study.study();
   DCHECK_EQ(Study_Consistency_PERMANENT, study.consistency());
 
   const auto& entropy_provider =
-      processed_study.SelectEntropyProviderForStudy(entropy_providers_);
+      processed_study.SelectEntropyProviderForStudy(entropy_providers_, layers);
 
   const std::string simulated_group =
       SimulateGroupAssignment(entropy_provider, processed_study);

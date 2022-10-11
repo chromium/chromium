@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
 
 #include "base/at_exit.h"
@@ -59,10 +60,11 @@ void CreateTrialFromStudyFuzzer(const Study& study) {
   TestOverrideStringCallback override_callback;
   EntropyProviders entropy_providers("client_id", 7999, 8000);
   ProcessedStudy processed_study;
+  VariationsLayers layers;
   if (processed_study.Init(&study)) {
     VariationsSeedProcessor().CreateTrialFromStudy(
         processed_study, override_callback.callback(), entropy_providers,
-        &feature_list);
+        layers, &feature_list);
   }
 }
 

@@ -64,7 +64,8 @@ class COMPONENT_EXPORT(VARIATIONS) ProcessedStudy {
   // Returns the entropy provider that should be used to select a group for
   // this study.
   const base::FieldTrial::EntropyProvider& SelectEntropyProviderForStudy(
-      const EntropyProviders& entropy_providers) const;
+      const EntropyProviders& entropy_providers,
+      const VariationsLayers& layers) const;
 
   // Gets the index of the experiment with the given |name|. Returns -1 if no
   // experiment is found.

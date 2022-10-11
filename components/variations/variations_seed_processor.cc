@@ -252,7 +252,7 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
   SetSeedVersion(seed.version());
 
   for (const ProcessedStudy& study : filtered_studies) {
-    CreateTrialFromStudy(study, override_callback, entropy_providers,
+    CreateTrialFromStudy(study, override_callback, entropy_providers, layers,
                          feature_list);
   }
 }
@@ -261,6 +261,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
     const ProcessedStudy& processed_study,
     const UIStringOverrideCallback& override_callback,
     const EntropyProviders& entropy_providers,
+    const VariationsLayers& layers,
     base::FeatureList* feature_list) {
   // Since trials and features can come from many different sources (variations
   // seed, about://flags, and command line), there are special cases for when
@@ -347,7 +348,7 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
     return;
 
   const auto& entropy_provider =
-      processed_study.SelectEntropyProviderForStudy(entropy_providers);
+      processed_study.SelectEntropyProviderForStudy(entropy_providers, layers);
 
   scoped_refptr<base::FieldTrial> trial(
       base::FieldTrialList::FactoryGetFieldTrial(

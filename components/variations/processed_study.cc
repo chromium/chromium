@@ -180,7 +180,8 @@ bool ProcessedStudy::ShouldStudyUseLowEntropy() const {
 
 const base::FieldTrial::EntropyProvider&
 ProcessedStudy::SelectEntropyProviderForStudy(
-    const EntropyProviders& entropy_providers) const {
+    const EntropyProviders& entropy_providers,
+    const VariationsLayers& layers) const {
   if (!study_->has_consistency() ||
       study_->consistency() != Study_Consistency_PERMANENT ||
       // If all assignments are to a single group, no need to enable one time
