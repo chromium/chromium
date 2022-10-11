@@ -12005,6 +12005,24 @@
             ]
         }
     ],
+    "WebRTC-IPv6NetworkResolutionFixes": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled,ResolveStunHostnameForFamily:true,PreferGlobalIPv6Address:true,DiversifyIpv6Interfaces:true,_20220929"
+                }
+            ]
+        }
+    ],
     "WebRTC-SlackedTaskQueuePacedSender": [
         {
             "platforms": [
