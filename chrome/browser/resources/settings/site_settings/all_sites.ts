@@ -23,9 +23,9 @@ import './site_entry.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -36,7 +36,6 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 
 import {getTemplate} from './all_sites.html.js';
 import {AllSitesAction2, AllSitesDialog, ContentSetting, SortMethod} from './constants.js';
-import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
 import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
 import {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
@@ -72,9 +71,7 @@ export interface AllSitesElement {
     clearAllButton: HTMLElement,
     clearLabel: HTMLElement,
     confirmClearAllData: CrLazyRenderElement<CrDialogElement>,
-    confirmClearData: CrLazyRenderElement<CrDialogElement>,
     confirmRemoveSite: CrLazyRenderElement<CrDialogElement>,
-    confirmResetSettings: CrLazyRenderElement<CrDialogElement>,
     listContainer: HTMLElement,
     menu: CrLazyRenderElement<CrActionMenuElement>,
     sortMethod: HTMLSelectElement,
@@ -151,14 +148,6 @@ export class AllSitesElement extends AllSitesElementBase {
       },
 
       /**
-       * Whether First Party Sets are enabled.
-       */
-      enableFirstPartySetsUI_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('firstPartySetsUIEnabled'),
-      },
-
-      /**
        * All possible sort methods.
        */
       sortMethods_: {
@@ -211,15 +200,12 @@ export class AllSitesElement extends AllSitesElementBase {
   private filteredList_: SiteGroup[];
   subpageRoute: Route;
   filter: string;
-  private enableFirstPartySetsUI_: boolean;
   private selectedItem_: SelectedItem|null;
   private listBlurred_: boolean;
   private actionMenuModel_: ActionMenuModel|null;
   private clearAllData_: boolean;
   private sortMethod_?: SortMethod;
   private totalUsage_: string;
-  private localDataBrowserProxy_: LocalDataBrowserProxy =
-      LocalDataBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -578,38 +564,6 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   /**
-   * Confirms the resetting of all content settings for an origin.
-   */
-  private onConfirmResetSettings_(e: Event) {
-    e.preventDefault();
-    const scope = this.actionMenuModel_!.actionScope === 'origin' ? 'Origin' :
-                                                                    'SiteGroup';
-    const scopes = [AllSitesDialog.RESET_PERMISSIONS, scope, 'DialogOpened'];
-    this.recordUserAction_(scopes);
-    this.$.confirmResetSettings.get().showModal();
-  }
-
-  /**
-   * Confirms the clearing of all storage data for an etld+1.
-   */
-  private onConfirmClearData_(e: Event) {
-    e.preventDefault();
-    const {actionScope, index, origin} = this.actionMenuModel_!;
-    const {origins, hasInstalledPWA} = this.filteredList_[index];
-
-    const scope = actionScope === 'origin' ? 'Origin' : 'SiteGroup';
-    const appInstalled = actionScope === 'origin' ?
-        (origins.find(o => o.origin === origin) || {}).isInstalled :
-        hasInstalledPWA;
-    const installed = appInstalled ? 'Installed' : '';
-
-    const scopes =
-        [AllSitesDialog.CLEAR_DATA, scope, installed, 'DialogOpened'];
-    this.recordUserAction_(scopes);
-    this.$.confirmClearData.get().showModal();
-  }
-
-  /**
    * Checks if a filter is applied.
    * @return True if a filter is applied.
    */
@@ -667,72 +621,6 @@ export class AllSitesElement extends AllSitesElementBase {
     (e.target as HTMLElement).closest('cr-dialog')!.close();
     this.actionMenuModel_ = null;
     this.$.menu.get().close();
-  }
-
-  /**
-   * Get the appropriate label string for the clear data dialog based on whether
-   * user is clearing data for an origin or siteGroup, and whether or not the
-   * origin/siteGroup has an associated installed app.
-   */
-  private getClearDataLabel_(): string {
-    // actionMenuModel_ will be null when dialog closes
-    if (this.actionMenuModel_ === null) {
-      return '';
-    }
-
-    const {index, origin} = this.actionMenuModel_;
-
-    const {origins, hasInstalledPWA} = this.filteredList_[index];
-
-    if (origin) {
-      const {isInstalled = false} =
-          origins.find(o => o.origin === origin) || {};
-      const messageId = isInstalled ?
-          'siteSettingsOriginDeleteConfirmationInstalled' :
-          'siteSettingsOriginDeleteConfirmation';
-      return loadTimeData.substituteString(
-          this.i18n(messageId), this.originRepresentation(origin));
-    } else {
-      // Clear SiteGroup
-      let messageId;
-      if (hasInstalledPWA) {
-        const multipleAppsInstalled = (this.filteredList_[index].origins || [])
-                                          .filter(o => o.isInstalled)
-                                          .length > 1;
-
-        messageId = multipleAppsInstalled ?
-            'siteSettingsSiteGroupDeleteConfirmationInstalledPlural' :
-            'siteSettingsSiteGroupDeleteConfirmationInstalled';
-      } else {
-        messageId = 'siteSettingsSiteGroupDeleteConfirmationNew';
-      }
-      const displayName = this.actionMenuModel_.item.etldPlus1 ||
-          this.originRepresentation(
-              this.actionMenuModel_.item.origins[0].origin);
-      return loadTimeData.substituteString(this.i18n(messageId), displayName);
-    }
-  }
-
-  /**
-   * Get the appropriate label for the reset permissions confirmation
-   * dialog, dependent on whether user is resetting permissions for an
-   * origin or an entire SiteGroup.
-   */
-  private getResetPermissionsLabel_(): string {
-    if (this.actionMenuModel_ === null) {
-      return '';
-    }
-
-    if (this.actionMenuModel_.actionScope === 'origin') {
-      return loadTimeData.substituteString(
-          this.i18n('siteSettingsSiteResetConfirmation'),
-          this.originRepresentation(this.actionMenuModel_.origin));
-    }
-    return loadTimeData.substituteString(
-        this.i18n('siteSettingsSiteGroupResetConfirmation'),
-        this.actionMenuModel_.item.etldPlus1 ||
-            this.originRepresentation(
-                this.actionMenuModel_.item.origins[0].origin));
   }
 
   private getRemoveSiteTitle_(): string {
@@ -867,17 +755,6 @@ export class AllSitesElement extends AllSitesElementBase {
     return this.i18n(signOutLabelId);
   }
 
-  /**
-   * Get the appropriate label for the clear data confirmation
-   * dialog, depending on whether the user is clearing data for a
-   * single origin or an entire site group.
-   */
-  private getLogoutLabel_(): string {
-    return this.actionMenuModel_!.actionScope === 'origin' ?
-        this.i18n('siteSettingsSiteClearStorageSignOut') :
-        this.i18n('siteSettingsSiteGroupDeleteSignOut');
-  }
-
   private recordUserAction_(scopes: string[]) {
     chrome.metricsPrivate.recordUserAction(
         ['AllSites', ...scopes].filter(Boolean).join('_'));
@@ -903,75 +780,6 @@ export class AllSitesElement extends AllSitesElementBase {
   private resetPermissionsForOrigin_(origin: string) {
     this.browserProxy.setOriginPermissions(
         origin, null, ContentSetting.DEFAULT);
-  }
-
-  /**
-   * Resets all permissions for a single origin or all origins listed in
-   * |siteGroup.origins|.
-   */
-  private onResetSettings_(e: Event) {
-    const {actionScope, index, origin} = this.actionMenuModel_!;
-    const siteGroupToUpdate = this.filteredList_[index];
-
-    const updatedSiteGroup: SiteGroup = {
-      etldPlus1: siteGroupToUpdate.etldPlus1,
-      hasInstalledPWA: false,
-      numCookies: siteGroupToUpdate.numCookies,
-      fpsOwner: siteGroupToUpdate.fpsOwner,
-      fpsNumMembers: siteGroupToUpdate.fpsNumMembers,
-      origins: [],
-    };
-
-    if (actionScope === 'origin') {
-      this.browserProxy.recordAction(AllSitesAction2.RESET_ORIGIN_PERMISSIONS);
-      this.recordUserAction_(
-          [AllSitesDialog.RESET_PERMISSIONS, 'Origin', 'Confirm']);
-
-      this.resetPermissionsForOrigin_(origin);
-      updatedSiteGroup.origins = siteGroupToUpdate.origins;
-      const updatedOrigin =
-          updatedSiteGroup.origins.find(o => o.origin === origin)!;
-      updatedOrigin.hasPermissionSettings = false;
-      if (updatedOrigin.numCookies <= 0 || updatedOrigin.usage <= 0) {
-        updatedSiteGroup.origins =
-            updatedSiteGroup.origins.filter(o => o.origin !== origin);
-      }
-    } else {
-      // Reset permissions for entire site group
-      this.browserProxy.recordAction(
-          AllSitesAction2.RESET_SITE_GROUP_PERMISSIONS);
-      this.recordUserAction_(
-          [AllSitesDialog.RESET_PERMISSIONS, 'SiteGroup', 'Confirm']);
-
-      if (this.actionMenuModel_!.item.etldPlus1 !==
-          siteGroupToUpdate.etldPlus1) {
-        return;
-      }
-      siteGroupToUpdate.origins.forEach(originEntry => {
-        this.resetPermissionsForOrigin_(originEntry.origin);
-        if (originEntry.numCookies > 0 || originEntry.usage > 0) {
-          originEntry.hasPermissionSettings = false;
-          updatedSiteGroup.origins.push(originEntry);
-        }
-      });
-    }
-
-    if (updatedSiteGroup.origins.length > 0) {
-      this.set('filteredList_.' + index, updatedSiteGroup);
-    } else if (siteGroupToUpdate.numCookies > 0) {
-      // If there is no origin for this site group that has any data,
-      // but the ETLD+1 has cookies in use, create a origin placeholder
-      // for display purposes.
-      const originPlaceHolder = this.generatePlaceholderOrigin_(
-          siteGroupToUpdate.etldPlus1, siteGroupToUpdate.numCookies);
-      updatedSiteGroup.origins.push(originPlaceHolder);
-      this.set('filteredList_.' + index, updatedSiteGroup);
-    } else {
-      this.splice('filteredList_', index, 1);
-    }
-
-    this.$.allSitesList.fire('iron-resize');
-    this.onCloseDialog_(e);
   }
 
   /**
@@ -1003,41 +811,6 @@ export class AllSitesElement extends AllSitesElementBase {
     this.updateSiteGroup_(index, updatedSiteGroup);
   }
 
-  /**
-   * Helper to remove data and cookies for an origin.
-   * @param index The index of the target siteGroup in filteredList_ that should
-   *     be cleared.
-   * @param origin The origin of the target origin that should be cleared.
-   */
-  private clearDataForOrigin_(index: number, origin: string) {
-    this.browserProxy.clearUnpartitionedOriginDataAndCookies(
-        this.toUrl(origin)!.href);
-
-    const siteGroupToUpdate = this.filteredList_[index];
-    const updatedSiteGroup: SiteGroup = {
-      etldPlus1: siteGroupToUpdate.etldPlus1,
-      hasInstalledPWA: false,
-      numCookies: 0,
-      fpsOwner: siteGroupToUpdate.fpsOwner,
-      fpsNumMembers: siteGroupToUpdate.fpsNumMembers,
-      origins: [],
-    };
-
-    const updatedOrigin =
-        siteGroupToUpdate.origins.find(o => o.origin === origin)!;
-    if (updatedOrigin.hasPermissionSettings) {
-      updatedOrigin.numCookies = 0;
-      updatedOrigin.usage = 0;
-      updatedSiteGroup.origins = siteGroupToUpdate.origins;
-    } else {
-      updatedSiteGroup.origins =
-          siteGroupToUpdate.origins.filter(o => o.origin !== origin);
-    }
-
-    updatedSiteGroup.hasInstalledPWA =
-        updatedSiteGroup.origins.some(o => o.isInstalled);
-    this.updateSiteGroup_(index, updatedSiteGroup);
-  }
 
   /**
    * Updates the UI after permissions have been reset or data/cookies
@@ -1054,42 +827,6 @@ export class AllSitesElement extends AllSitesElementBase {
       this.splice('filteredList_', index, 1);
       this.siteGroupMap.delete(updatedSiteGroup.etldPlus1);
     }
-  }
-
-  /**
-   * Clear data and cookies for an etldPlus1.
-   */
-  private onClearData_(e: Event) {
-    const {index, actionScope, origin} = this.actionMenuModel_!;
-    const scopes: string[] = [AllSitesDialog.CLEAR_DATA];
-
-    if (actionScope === 'origin') {
-      this.browserProxy.recordAction(AllSitesAction2.CLEAR_ORIGIN_DATA);
-
-      const {origins} = this.filteredList_[index];
-
-      scopes.push('Origin');
-      const installed =
-          (origins.find(o => o.origin === origin) || {}).isInstalled ?
-          'Installed' :
-          '';
-      this.recordUserAction_([...scopes, installed, 'Confirm']);
-
-      this.clearDataForOrigin_(index, origin);
-    } else {
-      this.browserProxy.recordAction(AllSitesAction2.CLEAR_SITE_GROUP_DATA);
-
-      scopes.push('SiteGroup');
-      const {hasInstalledPWA} = this.filteredList_[index];
-      const installed = hasInstalledPWA ? 'Installed' : '';
-      this.recordUserAction_([...scopes, installed, 'Confirm']);
-
-      this.clearDataForSiteGroupIndex_(index);
-    }
-
-    this.$.allSitesList.fire('iron-resize');
-    this.updateTotalUsage_();
-    this.onCloseDialog_(e);
   }
 
   /**

@@ -42,7 +42,7 @@
     <div id="sort">
       <label id="sortLabel">$i18n{siteSettingsAllSitesSort}</label>
       <select id="sortMethod" class="md-select" aria-labelledby="sortLabel"
-        on-change="onSortMethodChanged_">
+          on-change="onSortMethodChanged_">
         <option value="[[sortMethods_.MOST_VISITED]]">
           $i18n{siteSettingsAllSitesSortMethodMostVisited}
         </option>
@@ -98,84 +98,14 @@
     <cr-lazy-render id="menu">
       <template>
         <cr-action-menu role-description="$i18n{menu}">
-          <template is="dom-if" if="[[enableFirstPartySetsUI_]]">
-            <button class="dropdown-item" role="menuitem"
-                on-click="onShowRelatedSites_">
-                $i18n{firstPartySetsShowRelatedSitesButton}
-            </button>
-            <button class="dropdown-item" role="menuitem"
-                on-click="onRemove_">
-                $i18n{firstPartySetsSiteClearStorageButton}
-            </button>
-          </template>
-          <template is="dom-if" if="[[!enableFirstPartySetsUI_]]">
-            <button hidden$="[[actionMenuModel_.isPartitioned]]"
-                class="dropdown-item" role="menuitem"
-                on-click="onConfirmResetSettings_">
-              $i18n{siteSettingsSiteGroupReset}
-            </button>
-            <button class="dropdown-item" role="menuitem"
-                on-click="onConfirmClearData_">
-              $i18n{siteSettingsSiteGroupDelete}
-            </button>
-          </template>
+          <button class="dropdown-item" role="menuitem"
+              on-click="onShowRelatedSites_">
+            $i18n{firstPartySetsShowRelatedSitesButton}
+          </button>
+          <button class="dropdown-item" role="menuitem" on-click="onRemove_">
+            $i18n{firstPartySetsSiteClearStorageButton}
+          </button>
         </cr-action-menu>
-      </template>
-    </cr-lazy-render>
-
-    <!-- Confirm reset settings dialog. -->
-    <cr-lazy-render id="confirmResetSettings">
-      <template>
-        <cr-dialog close-text="$i18n{close}">
-          <div slot="title">
-            $i18n{siteSettingsSiteGroupResetDialogTitle}
-          </div>
-          <div slot="body">
-            [[getResetPermissionsLabel_(actionMenuModel_)]]
-          </div>
-          <div slot="button-container">
-            <cr-button class="cancel-button" on-click="onCloseDialog_">
-              $i18n{cancel}
-            </cr-button>
-            <cr-button class="action-button" on-click="onResetSettings_">
-              $i18n{siteSettingsSiteResetAll}
-            </cr-button>
-          </div>
-        </cr-dialog>
-      </template>
-    </cr-lazy-render>
-
-    <!-- Confirm clear data dialog. -->
-    <cr-lazy-render id="confirmClearData">
-      <template>
-        <cr-dialog close-text="$i18n{close}">
-          <div slot="title">
-            $i18n{siteSettingsSiteGroupDeleteDialogTitle}
-          </div>
-          <div slot="body">
-            [[getClearDataLabel_(actionMenuModel_)]]
-            <div class="detail-list">
-              <div class="detail">
-                <iron-icon icon="all-sites:logout" aria-hidden="true"
-                  role="presentation"></iron-icon>
-                [[getLogoutLabel_()]]
-              </div>
-              <div class="detail">
-                <iron-icon icon="all-sites:offline" aria-hidden="true"
-                  role="presentation"></iron-icon>
-                $i18n{siteSettingsSiteGroupDeleteOfflineData}
-              </div>
-            </div>
-          </div>
-          <div slot="button-container">
-            <cr-button class="cancel-button" on-click="onCloseDialog_">
-              $i18n{cancel}
-            </cr-button>
-            <cr-button class="action-button" on-click="onClearData_">
-              $i18n{siteSettingsSiteClearStorage}
-            </cr-button>
-          </div>
-        </cr-dialog>
       </template>
     </cr-lazy-render>
 
@@ -198,7 +128,7 @@
               $i18n{siteSettingsRemoveSiteOfflineData}
             </div>
             <div id="permissionsBulletPoint" class="detail"
-              hidden$="[[!showPermissionsBulletPoint_(actionMenuModel_)]]">
+                hidden$="[[!showPermissionsBulletPoint_(actionMenuModel_)]]">
               <iron-icon icon="settings:permissions"></iron-icon>
               $i18n{siteSettingsRemoveSitePermissions}
             </div>
