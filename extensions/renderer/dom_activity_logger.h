@@ -8,13 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "extensions/common/dom_action_types.h"
 #include "third_party/blink/public/web/web_dom_activity_logger.h"
 #include "v8/include/v8-forward.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace blink {
 class WebString;
@@ -75,7 +72,7 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
                             const GURL& url,
                             const std::u16string& url_title,
                             DomActionType::Type call_type,
-                            std::unique_ptr<base::ListValue> args);
+                            base::Value::List args);
 
   // The id of the extension with which this logger is associated.
   std::string extension_id_;

@@ -211,8 +211,7 @@ void ChromeExtensionMessageFilter::OnAddDOMActionToExtensionActivityLog(
   scoped_refptr<extensions::Action> action = new extensions::Action(
       extension_id, base::Time::Now(), extensions::Action::ACTION_DOM_ACCESS,
       params.api_call);
-  if (params.arguments.is_list())
-    action->set_args(params.arguments.GetList().Clone());
+  action->set_args(params.arguments.Clone());
   action->set_page_url(params.url);
   action->set_page_title(base::UTF16ToUTF8(params.url_title));
   action->mutable_other().Set(activity_log_constants::kActionDomVerb,
