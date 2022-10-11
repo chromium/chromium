@@ -80,12 +80,16 @@ cast_source_set("mixer_output") {
 
 cast_source_set("unittests") {
   testonly = true
-  sources = [ "scoped_alsa_mixer_unittest.cc" ]
+  sources = [
+    "alsa_volume_control_unittest.cc",
+    "scoped_alsa_mixer_unittest.cc",
+  ]
 
   deps = [
     ":volume_control",
     "//base",
     "//base/test:test_support",
+    "//chromecast/media/cma/backend:public",
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",

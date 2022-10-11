@@ -202,8 +202,6 @@ test("cast_audio_backend_unittests") {
   ]
 
   if (use_alsa) {
-    deps += [
-    "//chromecast/media/cma/backend/alsa:unittests",
-    ]
+    deps += [ "//chromecast/media/cma/backend/alsa:unittests" ]
   }
 }

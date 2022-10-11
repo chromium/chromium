@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/message_loop/message_pump_for_io.h"
 #include "base/timer/timer.h"
 #include "chromecast/media/cma/backend/system_volume_control.h"
 #include "media/audio/alsa/alsa_wrapper.h"
@@ -20,10 +19,10 @@ namespace media {
 class ScopedAlsaMixer;
 
 // SystemVolumeControl implementation for ALSA.
-class AlsaVolumeControl : public SystemVolumeControl,
-                          public base::MessagePumpForIO::FdWatcher {
+class AlsaVolumeControl : public SystemVolumeControl {
  public:
-  explicit AlsaVolumeControl(Delegate* delegate);
+  AlsaVolumeControl(Delegate* delegate,
+                    std::unique_ptr<::media::AlsaWrapper> alsa);
 
   AlsaVolumeControl(const AlsaVolumeControl&) = delete;
   AlsaVolumeControl& operator=(const AlsaVolumeControl&) = delete;
@@ -60,12 +59,6 @@ class AlsaVolumeControl : public SystemVolumeControl,
   // state is not accessible.
   absl::optional<bool> IsElementAllMuted(ScopedAlsaMixer* mixer);
 
-  void RefreshMixerFds(ScopedAlsaMixer* mixer);
-
-  // base::MessagePumpForIO::FdWatcher implementation:
-  void OnFileCanReadWithoutBlocking(int fd) override;
-  void OnFileCanWriteWithoutBlocking(int fd) override;
-
   void OnVolumeOrMuteChanged();
 
   void CheckPowerSave();
@@ -90,9 +83,6 @@ class AlsaVolumeControl : public SystemVolumeControl,
 
   bool last_power_save_on_ = false;
   base::OneShotTimer power_save_timer_;
-
-  std::vector<std::unique_ptr<base::MessagePumpForIO::FdWatchController>>
-      file_descriptor_watchers_;
 };
 
 }  // namespace media
