@@ -92,7 +92,7 @@ int HttpAuthHandlerDigest::Factory::CreateAuthHandler(
     HttpAuthChallengeTokenizer* challenge,
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key,
+    const NetworkAnonymizationKey& network_anonymization_key,
     const url::SchemeHostPort& scheme_host_port,
     CreateReason reason,
     int digest_nonce_count,
@@ -104,8 +104,8 @@ int HttpAuthHandlerDigest::Factory::CreateAuthHandler(
   auto tmp_handler = base::WrapUnique(
       new HttpAuthHandlerDigest(digest_nonce_count, nonce_generator_.get()));
   if (!tmp_handler->InitFromChallenge(challenge, target, ssl_info,
-                                      network_isolation_key, scheme_host_port,
-                                      net_log)) {
+                                      network_anonymization_key,
+                                      scheme_host_port, net_log)) {
     return ERR_INVALID_RESPONSE;
   }
   *handler = std::move(tmp_handler);
@@ -115,7 +115,7 @@ int HttpAuthHandlerDigest::Factory::CreateAuthHandler(
 bool HttpAuthHandlerDigest::Init(
     HttpAuthChallengeTokenizer* challenge,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   return ParseChallenge(challenge);
 }
 

@@ -41,16 +41,17 @@ class MockHttpAuthHandlerFactory : public HttpAuthHandlerFactory {
       return_code_(return_code) {}
   ~MockHttpAuthHandlerFactory() override = default;
 
-  int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
-                        HttpAuth::Target target,
-                        const SSLInfo& ssl_info,
-                        const NetworkIsolationKey& network_isolation_key,
-                        const url::SchemeHostPort& scheme_host_port,
-                        CreateReason reason,
-                        int nonce_count,
-                        const NetLogWithSource& net_log,
-                        HostResolver* host_resolver,
-                        std::unique_ptr<HttpAuthHandler>* handler) override {
+  int CreateAuthHandler(
+      HttpAuthChallengeTokenizer* challenge,
+      HttpAuth::Target target,
+      const SSLInfo& ssl_info,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::SchemeHostPort& scheme_host_port,
+      CreateReason reason,
+      int nonce_count,
+      const NetLogWithSource& net_log,
+      HostResolver* host_resolver,
+      std::unique_ptr<HttpAuthHandler>* handler) override {
     handler->reset();
     return return_code_;
   }
@@ -82,60 +83,60 @@ TEST(HttpAuthHandlerFactoryTest, RegistryFactory) {
   std::unique_ptr<HttpAuthHandler> handler;
 
   // No schemes should be supported in the beginning.
-  EXPECT_EQ(
-      ERR_UNSUPPORTED_AUTH_SCHEME,
-      registry_factory.CreateAuthHandlerFromString(
-          "Basic", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-          scheme_host_port, NetLogWithSource(), host_resovler.get(), &handler));
+  EXPECT_EQ(ERR_UNSUPPORTED_AUTH_SCHEME,
+            registry_factory.CreateAuthHandlerFromString(
+                "Basic", HttpAuth::AUTH_SERVER, null_ssl_info,
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+                host_resovler.get(), &handler));
 
   // Test what happens with a single scheme.
   registry_factory.RegisterSchemeFactory("Basic",
                                          std::move(mock_factory_basic));
-  EXPECT_EQ(
-      kBasicReturnCode,
-      registry_factory.CreateAuthHandlerFromString(
-          "Basic", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-          scheme_host_port, NetLogWithSource(), host_resovler.get(), &handler));
-  EXPECT_EQ(
-      ERR_UNSUPPORTED_AUTH_SCHEME,
-      registry_factory.CreateAuthHandlerFromString(
-          "Digest", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-          scheme_host_port, NetLogWithSource(), host_resovler.get(), &handler));
+  EXPECT_EQ(kBasicReturnCode,
+            registry_factory.CreateAuthHandlerFromString(
+                "Basic", HttpAuth::AUTH_SERVER, null_ssl_info,
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+                host_resovler.get(), &handler));
+  EXPECT_EQ(ERR_UNSUPPORTED_AUTH_SCHEME,
+            registry_factory.CreateAuthHandlerFromString(
+                "Digest", HttpAuth::AUTH_SERVER, null_ssl_info,
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+                host_resovler.get(), &handler));
 
   // Test multiple schemes
   registry_factory.RegisterSchemeFactory("Digest",
                                          std::move(mock_factory_digest));
-  EXPECT_EQ(
-      kBasicReturnCode,
-      registry_factory.CreateAuthHandlerFromString(
-          "Basic", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-          scheme_host_port, NetLogWithSource(), host_resovler.get(), &handler));
-  EXPECT_EQ(
-      kDigestReturnCode,
-      registry_factory.CreateAuthHandlerFromString(
-          "Digest", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-          scheme_host_port, NetLogWithSource(), host_resovler.get(), &handler));
+  EXPECT_EQ(kBasicReturnCode,
+            registry_factory.CreateAuthHandlerFromString(
+                "Basic", HttpAuth::AUTH_SERVER, null_ssl_info,
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+                host_resovler.get(), &handler));
+  EXPECT_EQ(kDigestReturnCode,
+            registry_factory.CreateAuthHandlerFromString(
+                "Digest", HttpAuth::AUTH_SERVER, null_ssl_info,
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+                host_resovler.get(), &handler));
 
   // Test case-insensitivity
-  EXPECT_EQ(
-      kBasicReturnCode,
-      registry_factory.CreateAuthHandlerFromString(
-          "basic", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-          scheme_host_port, NetLogWithSource(), host_resovler.get(), &handler));
+  EXPECT_EQ(kBasicReturnCode,
+            registry_factory.CreateAuthHandlerFromString(
+                "basic", HttpAuth::AUTH_SERVER, null_ssl_info,
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+                host_resovler.get(), &handler));
 
   // Test replacement of existing auth scheme
   registry_factory.RegisterSchemeFactory(
       "Digest", std::move(mock_factory_digest_replace));
-  EXPECT_EQ(
-      kBasicReturnCode,
-      registry_factory.CreateAuthHandlerFromString(
-          "Basic", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-          scheme_host_port, NetLogWithSource(), host_resovler.get(), &handler));
-  EXPECT_EQ(
-      kDigestReturnCodeReplace,
-      registry_factory.CreateAuthHandlerFromString(
-          "Digest", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
-          scheme_host_port, NetLogWithSource(), host_resovler.get(), &handler));
+  EXPECT_EQ(kBasicReturnCode,
+            registry_factory.CreateAuthHandlerFromString(
+                "Basic", HttpAuth::AUTH_SERVER, null_ssl_info,
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+                host_resovler.get(), &handler));
+  EXPECT_EQ(kDigestReturnCodeReplace,
+            registry_factory.CreateAuthHandlerFromString(
+                "Digest", HttpAuth::AUTH_SERVER, null_ssl_info,
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+                host_resovler.get(), &handler));
 }
 
 TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
@@ -153,7 +154,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
         "Basic realm=\"FooBar\"", HttpAuth::AUTH_SERVER, null_ssl_info,
-        NetworkIsolationKey(), server_scheme_host_port, NetLogWithSource(),
+        NetworkAnonymizationKey(), server_scheme_host_port, NetLogWithSource(),
         host_resolver.get(), &handler);
     EXPECT_THAT(rv, IsOk());
     ASSERT_FALSE(handler.get() == nullptr);
@@ -167,7 +168,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
         "UNSUPPORTED realm=\"FooBar\"", HttpAuth::AUTH_SERVER, null_ssl_info,
-        NetworkIsolationKey(), server_scheme_host_port, NetLogWithSource(),
+        NetworkAnonymizationKey(), server_scheme_host_port, NetLogWithSource(),
         host_resolver.get(), &handler);
     EXPECT_THAT(rv, IsError(ERR_UNSUPPORTED_AUTH_SCHEME));
     EXPECT_TRUE(handler.get() == nullptr);
@@ -176,7 +177,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
         "Digest realm=\"FooBar\", nonce=\"xyz\"", HttpAuth::AUTH_PROXY,
-        null_ssl_info, NetworkIsolationKey(), proxy_scheme_host_port,
+        null_ssl_info, NetworkAnonymizationKey(), proxy_scheme_host_port,
         NetLogWithSource(), host_resolver.get(), &handler);
     EXPECT_THAT(rv, IsOk());
     ASSERT_FALSE(handler.get() == nullptr);
@@ -189,7 +190,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
   {
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
-        "NTLM", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
+        "NTLM", HttpAuth::AUTH_SERVER, null_ssl_info, NetworkAnonymizationKey(),
         server_scheme_host_port, NetLogWithSource(), host_resolver.get(),
         &handler);
     EXPECT_THAT(rv, IsOk());
@@ -204,7 +205,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
         "Negotiate", HttpAuth::AUTH_SERVER, null_ssl_info,
-        NetworkIsolationKey(), server_scheme_host_port, NetLogWithSource(),
+        NetworkAnonymizationKey(), server_scheme_host_port, NetLogWithSource(),
         host_resolver.get(), &handler);
 // Note the default factory doesn't support Kerberos on Android
 #if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
@@ -267,7 +268,7 @@ TEST(HttpAuthHandlerFactoryTest, HttpAuthUrlFilter) {
     for (const TestCase& test_case : kTestCases) {
       std::unique_ptr<HttpAuthHandler> handler;
       int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
-          test_case.challenge, target, null_ssl_info, NetworkIsolationKey(),
+          test_case.challenge, target, null_ssl_info, NetworkAnonymizationKey(),
           url::SchemeHostPort(test_case.origin), NetLogWithSource(),
           host_resolver.get(), &handler);
       EXPECT_THAT(rv, IsError(test_case.expected_net_error));
@@ -324,7 +325,7 @@ TEST(HttpAuthHandlerFactoryTest, BasicFactoryRespectsHTTPEnabledPref) {
     for (const TestCase& test_case : kTestCases) {
       std::unique_ptr<HttpAuthHandler> handler;
       int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
-          test_case.challenge, target, null_ssl_info, NetworkIsolationKey(),
+          test_case.challenge, target, null_ssl_info, NetworkAnonymizationKey(),
           test_case.scheme_host_port, NetLogWithSource(), host_resolver.get(),
           &handler);
       EXPECT_THAT(rv, IsError(test_case.expected_net_error));
@@ -374,7 +375,7 @@ TEST(HttpAuthHandlerFactoryTest, LogCreateAuthHandlerResults) {
       std::unique_ptr<HttpAuthHandler> handler;
       int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
           test_case.challenge, test_case.auth_target, null_ssl_info,
-          NetworkIsolationKey(), scheme_host_port,
+          NetworkAnonymizationKey(), scheme_host_port,
           NetLogWithSource::Make(NetLogSourceType::NONE), host_resolver.get(),
           &handler);
       EXPECT_THAT(rv, IsError(test_case.expected_net_error));

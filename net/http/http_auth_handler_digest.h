@@ -77,16 +77,17 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerDigest : public HttpAuthHandler {
     void set_nonce_generator(
         std::unique_ptr<const NonceGenerator> nonce_generator);
 
-    int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
-                          HttpAuth::Target target,
-                          const SSLInfo& ssl_info,
-                          const NetworkIsolationKey& network_isolation_key,
-                          const url::SchemeHostPort& scheme_host_port,
-                          CreateReason reason,
-                          int digest_nonce_count,
-                          const NetLogWithSource& net_log,
-                          HostResolver* host_resolver,
-                          std::unique_ptr<HttpAuthHandler>* handler) override;
+    int CreateAuthHandler(
+        HttpAuthChallengeTokenizer* challenge,
+        HttpAuth::Target target,
+        const SSLInfo& ssl_info,
+        const NetworkAnonymizationKey& network_anonymization_key,
+        const url::SchemeHostPort& scheme_host_port,
+        CreateReason reason,
+        int digest_nonce_count,
+        const NetLogWithSource& net_log,
+        HostResolver* host_resolver,
+        std::unique_ptr<HttpAuthHandler>* handler) override;
 
    private:
     std::unique_ptr<const NonceGenerator> nonce_generator_;
@@ -98,7 +99,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerDigest : public HttpAuthHandler {
   // HttpAuthHandler
   bool Init(HttpAuthChallengeTokenizer* challenge,
             const SSLInfo& ssl_info,
-            const NetworkIsolationKey& network_isolation_key) override;
+            const NetworkAnonymizationKey& network_anonymization_key) override;
   int GenerateAuthTokenImpl(const AuthCredentials* credentials,
                             const HttpRequestInfo* request,
                             CompletionOnceCallback callback,

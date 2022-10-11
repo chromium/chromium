@@ -57,7 +57,7 @@ void RunSingleRoundAuthTest(
     SchemeState scheme_state,
     const NetLogWithSource& net_log = NetLogWithSource()) {
   HttpAuthCache dummy_auth_cache(
-      false /* key_server_entries_by_network_isolation_key */);
+      false /* key_server_entries_by_network_anonymization_key */);
 
   HttpRequestInfo request;
   request.method = "GET";
@@ -80,7 +80,7 @@ void RunSingleRoundAuthTest(
   scoped_refptr<HttpAuthController> controller(
       base::MakeRefCounted<HttpAuthController>(
           HttpAuth::AUTH_PROXY, GURL("http://example.com"),
-          NetworkIsolationKey(), &dummy_auth_cache, &auth_handler_factory,
+          NetworkAnonymizationKey(), &dummy_auth_cache, &auth_handler_factory,
           host_resolver.get()));
   SSLInfo null_ssl_info;
   ASSERT_EQ(OK, controller->HandleAuthChallenge(headers, null_ssl_info, false,
@@ -183,10 +183,11 @@ TEST(HttpAuthControllerTest, NoExplicitCredentialsAllowed) {
     }
 
    protected:
-    bool Init(HttpAuthChallengeTokenizer* challenge,
-              const SSLInfo& ssl_info,
-              const NetworkIsolationKey& network_isolation_key) override {
-      HttpAuthHandlerMock::Init(challenge, ssl_info, network_isolation_key);
+    bool Init(
+        HttpAuthChallengeTokenizer* challenge,
+        const SSLInfo& ssl_info,
+        const NetworkAnonymizationKey& network_anonymization_key) override {
+      HttpAuthHandlerMock::Init(challenge, ssl_info, network_anonymization_key);
       set_allows_default_credentials(true);
       set_allows_explicit_credentials(false);
       set_connection_based(true);
@@ -218,7 +219,7 @@ TEST(HttpAuthControllerTest, NoExplicitCredentialsAllowed) {
 
   NetLogWithSource dummy_log;
   HttpAuthCache dummy_auth_cache(
-      false /* key_server_entries_by_network_isolation_key */);
+      false /* key_server_entries_by_network_anonymization_key */);
   HttpRequestInfo request;
   request.method = "GET";
   request.url = GURL("http://example.com");
@@ -269,7 +270,7 @@ TEST(HttpAuthControllerTest, NoExplicitCredentialsAllowed) {
   scoped_refptr<HttpAuthController> controller(
       base::MakeRefCounted<HttpAuthController>(
           HttpAuth::AUTH_SERVER, GURL("http://example.com"),
-          NetworkIsolationKey(), &dummy_auth_cache, &auth_handler_factory,
+          NetworkAnonymizationKey(), &dummy_auth_cache, &auth_handler_factory,
           host_resolver.get()));
   SSLInfo null_ssl_info;
   ASSERT_EQ(OK, controller->HandleAuthChallenge(headers, null_ssl_info, false,

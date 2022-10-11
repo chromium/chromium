@@ -351,8 +351,8 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameSync) {
   EXPECT_EQ("HTTP@canonical.example.com", auth_handler->spn_for_testing());
 #endif
 
-  // Make sure a cache-only lookup with the wrong NetworkIsolationKey (an empty
-  // one) fails, to make sure the right NetworkIsolationKey was used.
+  // Make sure a cache-only lookup with the wrong NetworkAnonymizationKey (an
+  // empty one) fails, to make sure the right NetworkAnonymizationKey was used.
   url::SchemeHostPort scheme_host_port{GURL(url_string)};
   HostResolver::ResolveHostParameters resolve_params;
   resolve_params.include_canonical_name = true;
@@ -364,8 +364,8 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameSync) {
   int result = host_request1->Start(callback2.callback());
   EXPECT_EQ(ERR_NAME_NOT_RESOLVED, callback2.GetResult(result));
 
-  // Make sure a cache-only lookup with the same NetworkIsolationKey succeeds,
-  // to make sure the right NetworkIsolationKey was used.
+  // Make sure a cache-only lookup with the same NetworkAnonymizationKey
+  // succeeds, to make sure the right NetworkAnonymizationKey was used.
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request2 =
       resolver()->CreateRequest(scheme_host_port, network_anonymization_key(),
                                 NetLogWithSource(), resolve_params);
@@ -393,8 +393,8 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
   EXPECT_EQ("HTTP@canonical.example.com", auth_handler->spn_for_testing());
 #endif
 
-  // Make sure a cache-only lookup with the wrong NetworkIsolationKey (an empty
-  // one) fails, to make sure the right NetworkIsolationKey was used.
+  // Make sure a cache-only lookup with the wrong NetworkAnonymizationKey (an
+  // empty one) fails, to make sure the right NetworkAnonymizationKey was used.
   url::SchemeHostPort scheme_host_port{GURL(url_string)};
   HostResolver::ResolveHostParameters resolve_params;
   resolve_params.include_canonical_name = true;
@@ -406,8 +406,8 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
   int result = host_request1->Start(callback2.callback());
   EXPECT_EQ(ERR_NAME_NOT_RESOLVED, callback2.GetResult(result));
 
-  // Make sure a cache-only lookup with the same NetworkIsolationKey succeeds,
-  // to make sure the right NetworkIsolationKey was used.
+  // Make sure a cache-only lookup with the same NetworkAnonymizationKey
+  // succeeds, to make sure the right NetworkAnonymizationKey was used.
   std::unique_ptr<HostResolver::ResolveHostRequest> host_request2 =
       resolver()->CreateRequest(scheme_host_port, network_anonymization_key(),
                                 NetLogWithSource(), resolve_params);
@@ -464,7 +464,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, MissingGSSAPI) {
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   std::unique_ptr<HttpAuthHandler> generic_handler;
   int rv = negotiate_factory->CreateAuthHandlerFromString(
-      "Negotiate", HttpAuth::AUTH_SERVER, SSLInfo(), NetworkIsolationKey(),
+      "Negotiate", HttpAuth::AUTH_SERVER, SSLInfo(), NetworkAnonymizationKey(),
       scheme_host_port, NetLogWithSource(), resolver(), &generic_handler);
   EXPECT_THAT(rv, IsError(ERR_UNSUPPORTED_AUTH_SCHEME));
   EXPECT_TRUE(generic_handler.get() == nullptr);
@@ -538,8 +538,8 @@ TEST_F(HttpAuthHandlerNegotiateTest, OverrideAuthSystem) {
   std::unique_ptr<HttpAuthHandler> handler;
   EXPECT_EQ(OK, negotiate_factory->CreateAuthHandlerFromString(
                     "Negotiate", HttpAuth::AUTH_SERVER, SSLInfo(),
-                    NetworkIsolationKey(), scheme_host_port, NetLogWithSource(),
-                    resolver(), &handler));
+                    NetworkAnonymizationKey(), scheme_host_port,
+                    NetLogWithSource(), resolver(), &handler));
   EXPECT_TRUE(handler);
 
   TestCompletionCallback callback;

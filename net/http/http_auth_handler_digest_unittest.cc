@@ -9,7 +9,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
@@ -68,8 +68,8 @@ bool RespondToChallenge(HttpAuth::Target target,
   url::SchemeHostPort scheme_host_port(
       target == HttpAuth::AUTH_SERVER ? GURL(request_url) : GURL(proxy_name));
   int rv_create = factory->CreateAuthHandlerFromString(
-      challenge, target, null_ssl_info, NetworkIsolationKey(), scheme_host_port,
-      NetLogWithSource(), host_resolver.get(), &handler);
+      challenge, target, null_ssl_info, NetworkAnonymizationKey(),
+      scheme_host_port, NetLogWithSource(), host_resolver.get(), &handler);
   if (rv_create != OK || handler.get() == nullptr) {
     ADD_FAILURE() << "Unable to create auth handler.";
     return false;
@@ -369,7 +369,7 @@ TEST(HttpAuthHandlerDigestTest, ParseChallenge) {
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = factory->CreateAuthHandlerFromString(
         test.challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
-        NetworkIsolationKey(), scheme_host_port, NetLogWithSource(),
+        NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
         host_resolver.get(), &handler);
     if (test.parsed_success) {
       EXPECT_THAT(rv, IsOk());
@@ -534,7 +534,7 @@ TEST(HttpAuthHandlerDigestTest, AssembleCredentials) {
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = factory->CreateAuthHandlerFromString(
         test.challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
-        NetworkIsolationKey(), scheme_host_port, NetLogWithSource(),
+        NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
         host_resolver.get(), &handler);
     EXPECT_THAT(rv, IsOk());
     ASSERT_TRUE(handler != nullptr);
@@ -561,7 +561,7 @@ TEST(HttpAuthHandlerDigest, HandleAnotherChallenge) {
   SSLInfo null_ssl_info;
   int rv = factory->CreateAuthHandlerFromString(
       default_challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
-      NetworkIsolationKey(), scheme_host_port, NetLogWithSource(),
+      NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
       host_resolver.get(), &handler);
   EXPECT_THAT(rv, IsOk());
   ASSERT_TRUE(handler.get() != nullptr);

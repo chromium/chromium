@@ -18,7 +18,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/http/http_auth.h"
 #include "url/scheme_host_port.h"
 
@@ -123,21 +123,21 @@ class NET_EXPORT HttpAuthCache {
   enum { kMaxNumPathsPerRealmEntry = 10 };
   enum { kMaxNumRealmEntries = 20 };
 
-  // If |key_server_entries_by_network_isolation_key| is true, all
-  // HttpAuth::AUTH_SERVER operations are keyed by NetworkIsolationKey.
-  // Otherwise, NetworkIsolationKey arguments are ignored.
-  explicit HttpAuthCache(bool key_server_entries_by_network_isolation_key);
+  // If |key_server_entries_by_network_anonymization_key| is true, all
+  // HttpAuth::AUTH_SERVER operations are keyed by NetworkAnonymizationKey.
+  // Otherwise, NetworkAnonymizationKey arguments are ignored.
+  explicit HttpAuthCache(bool key_server_entries_by_network_anonymization_key);
 
   HttpAuthCache(const HttpAuthCache&) = delete;
   HttpAuthCache& operator=(const HttpAuthCache&) = delete;
 
   ~HttpAuthCache();
 
-  // Sets whether server entries are keyed by NetworkIsolationKey.
+  // Sets whether server entries are keyed by NetworkAnonymizationKey.
   // If this results in changing the value of the setting, all current server
   // entries are deleted.
-  void SetKeyServerEntriesByNetworkIsolationKey(
-      bool key_server_entries_by_network_isolation_key);
+  void SetKeyServerEntriesByNetworkAnonymizationKey(
+      bool key_server_entries_by_network_anonymization_key);
 
   // Find the realm entry on server |origin| for realm |realm| and
   // scheme |scheme|. If a matching entry is found, move it up by one place
@@ -152,7 +152,7 @@ class NET_EXPORT HttpAuthCache {
                 HttpAuth::Target target,
                 const std::string& realm,
                 HttpAuth::Scheme scheme,
-                const NetworkIsolationKey& network_isolation_key);
+                const NetworkAnonymizationKey& network_anonymization_key);
 
   // Find the entry on server |origin| whose protection space includes
   // |path|. This uses the assumption in RFC 2617 section 2 that deeper
@@ -165,7 +165,7 @@ class NET_EXPORT HttpAuthCache {
   //   returns  - the matched entry or nullptr.
   Entry* LookupByPath(const url::SchemeHostPort& scheme_host_port,
                       HttpAuth::Target target,
-                      const NetworkIsolationKey& network_isolation_key,
+                      const NetworkAnonymizationKey& network_anonymization_key,
                       const std::string& path);
 
   // Add an entry on server |scheme_host_port| for realm |handler->realm()| and
@@ -183,7 +183,7 @@ class NET_EXPORT HttpAuthCache {
              HttpAuth::Target target,
              const std::string& realm,
              HttpAuth::Scheme scheme,
-             const NetworkIsolationKey& network_isolation_key,
+             const NetworkAnonymizationKey& network_anonymization_key,
              const std::string& auth_challenge,
              const AuthCredentials& credentials,
              const std::string& path);
@@ -199,7 +199,7 @@ class NET_EXPORT HttpAuthCache {
               HttpAuth::Target target,
               const std::string& realm,
               HttpAuth::Scheme scheme,
-              const NetworkIsolationKey& network_isolation_key,
+              const NetworkAnonymizationKey& network_anonymization_key,
               const AuthCredentials& credentials);
 
   // Clears cache entries added between |begin_time| inclusively and |end_time|
@@ -215,17 +215,18 @@ class NET_EXPORT HttpAuthCache {
   // |auth_challenge| and the nonce count is reset.
   // |UpdateStaleChallenge()| returns true if a matching entry exists in the
   // cache, false otherwise.
-  bool UpdateStaleChallenge(const url::SchemeHostPort& scheme_host_port,
-                            HttpAuth::Target target,
-                            const std::string& realm,
-                            HttpAuth::Scheme scheme,
-                            const NetworkIsolationKey& network_isolation_key,
-                            const std::string& auth_challenge);
+  bool UpdateStaleChallenge(
+      const url::SchemeHostPort& scheme_host_port,
+      HttpAuth::Target target,
+      const std::string& realm,
+      HttpAuth::Scheme scheme,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const std::string& auth_challenge);
 
   // Copies all entries from |other| cache with a target of
   // HttpAuth::AUTH_PROXY. |this| and |other| need not have the same
-  // |key_server_entries_by_network_isolation_key_| value, since proxy
-  // credentials are not keyed on NetworkIsolationKey.
+  // |key_server_entries_by_network_anonymization_key_| value, since proxy
+  // credentials are not keyed on NetworkAnonymizationKey.
   void CopyProxyEntriesFrom(const HttpAuthCache& other);
 
   size_t GetEntriesSizeForTesting();
@@ -234,26 +235,26 @@ class NET_EXPORT HttpAuthCache {
   }
   void set_clock_for_testing(const base::Clock* clock) { clock_ = clock; }
 
-  bool key_server_entries_by_network_isolation_key() const {
-    return key_server_entries_by_network_isolation_key_;
+  bool key_server_entries_by_network_anonymization_key() const {
+    return key_server_entries_by_network_anonymization_key_;
   }
 
  private:
   struct EntryMapKey {
     EntryMapKey(const url::SchemeHostPort& scheme_host_port,
                 HttpAuth::Target target,
-                const NetworkIsolationKey& network_isolation_key,
-                bool key_server_entries_by_network_isolation_key);
+                const NetworkAnonymizationKey& network_anonymization_key,
+                bool key_server_entries_by_network_anonymization_key);
     ~EntryMapKey();
 
     bool operator<(const EntryMapKey& other) const;
 
     url::SchemeHostPort scheme_host_port;
     HttpAuth::Target target;
-    // Empty if |key_server_entries_by_network_isolation_key| is false, |target|
-    // is HttpAuth::AUTH_PROXY, or an empty NetworkIsolationKey is passed in to
-    // the EntryMap constructor.
-    NetworkIsolationKey network_isolation_key;
+    // Empty if |key_server_entries_by_network_anonymization_key| is false,
+    // |target| is HttpAuth::AUTH_PROXY, or an empty NetworkAnonymizationKey is
+    // passed in to the EntryMap constructor.
+    NetworkAnonymizationKey network_anonymization_key;
   };
 
   using EntryMap = std::multimap<EntryMapKey, Entry>;
@@ -267,11 +268,11 @@ class NET_EXPORT HttpAuthCache {
       HttpAuth::Target target,
       const std::string& realm,
       HttpAuth::Scheme scheme,
-      const NetworkIsolationKey& network_isolation_key);
+      const NetworkAnonymizationKey& network_anonymization_key);
 
   void EvictLeastRecentlyUsedEntry();
 
-  bool key_server_entries_by_network_isolation_key_;
+  bool key_server_entries_by_network_anonymization_key_;
 
   EntryMap entries_;
 };

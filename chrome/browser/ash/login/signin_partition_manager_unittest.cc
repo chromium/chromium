@@ -24,7 +24,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/cookies/cookie_store.h"
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_cache.h"
@@ -58,7 +58,7 @@ void AddEntryToHttpAuthCache(network::NetworkContext* network_context) {
                                             ->http_auth_cache();
   http_auth_cache->Add(
       url::SchemeHostPort(GURL(kEmbedderUrl)), net::HttpAuth::AUTH_PROXY, "",
-      net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkIsolationKey(), "",
+      net::HttpAuth::AUTH_SCHEME_BASIC, net::NetworkAnonymizationKey(), "",
       net::AuthCredentials(), "");
 }
 
@@ -72,7 +72,7 @@ void IsEntryInHttpAuthCache(network::NetworkContext* network_context,
       http_auth_cache->Lookup(url::SchemeHostPort(GURL(kEmbedderUrl)),
                               net::HttpAuth::AUTH_PROXY, "",
                               net::HttpAuth::AUTH_SCHEME_BASIC,
-                              net::NetworkIsolationKey()) != nullptr;
+                              net::NetworkAnonymizationKey()) != nullptr;
 }
 
 }  // namespace

@@ -9,7 +9,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "net/base/mock_network_change_notifier.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/request_priority.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/host_resolver.h"
@@ -63,16 +63,17 @@ class MockHttpAuthHandlerFactory : public HttpAuthHandlerFactory {
       : return_code_(return_code), supported_scheme_(supported_scheme) {}
   ~MockHttpAuthHandlerFactory() override = default;
 
-  int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
-                        HttpAuth::Target target,
-                        const SSLInfo& ssl_info,
-                        const NetworkIsolationKey& network_isolation_key,
-                        const url::SchemeHostPort& scheme_host_port,
-                        CreateReason reason,
-                        int nonce_count,
-                        const NetLogWithSource& net_log,
-                        HostResolver* host_resolver,
-                        std::unique_ptr<HttpAuthHandler>* handler) override {
+  int CreateAuthHandler(
+      HttpAuthChallengeTokenizer* challenge,
+      HttpAuth::Target target,
+      const SSLInfo& ssl_info,
+      const NetworkAnonymizationKey& network_anonymization_key,
+      const url::SchemeHostPort& scheme_host_port,
+      CreateReason reason,
+      int nonce_count,
+      const NetLogWithSource& net_log,
+      HostResolver* host_resolver,
+      std::unique_ptr<HttpAuthHandler>* handler) override {
     handler->reset();
 
     return challenge->auth_scheme() == supported_scheme_
@@ -144,7 +145,7 @@ TEST_F(URLRequestContextBuilderTest, DefaultHttpAuthHandlerFactory) {
   EXPECT_EQ(OK,
             context->http_auth_handler_factory()->CreateAuthHandlerFromString(
                 "basic", HttpAuth::AUTH_SERVER, null_ssl_info,
-                NetworkIsolationKey(), scheme_host_port, NetLogWithSource(),
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
                 host_resolver_.get(), &handler));
 }
 
@@ -161,21 +162,21 @@ TEST_F(URLRequestContextBuilderTest, CustomHttpAuthHandlerFactory) {
   EXPECT_EQ(kBasicReturnCode,
             context->http_auth_handler_factory()->CreateAuthHandlerFromString(
                 "ExtraScheme", HttpAuth::AUTH_SERVER, null_ssl_info,
-                NetworkIsolationKey(), scheme_host_port, NetLogWithSource(),
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
                 host_resolver_.get(), &handler));
 
   // Verify that the default basic handler isn't present
   EXPECT_EQ(ERR_UNSUPPORTED_AUTH_SCHEME,
             context->http_auth_handler_factory()->CreateAuthHandlerFromString(
                 "basic", HttpAuth::AUTH_SERVER, null_ssl_info,
-                NetworkIsolationKey(), scheme_host_port, NetLogWithSource(),
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
                 host_resolver_.get(), &handler));
 
   // Verify that a handler isn't returned for a bogus scheme.
   EXPECT_EQ(ERR_UNSUPPORTED_AUTH_SCHEME,
             context->http_auth_handler_factory()->CreateAuthHandlerFromString(
                 "Bogus", HttpAuth::AUTH_SERVER, null_ssl_info,
-                NetworkIsolationKey(), scheme_host_port, NetLogWithSource(),
+                NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
                 host_resolver_.get(), &handler));
 }
 

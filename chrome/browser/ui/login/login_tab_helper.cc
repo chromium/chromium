@@ -108,8 +108,8 @@ void LoginTabHelper::DidFinishNavigation(
   }
 
   challenge_ = navigation_handle->GetAuthChallengeInfo().value();
-  network_isolation_key_ =
-      navigation_handle->GetIsolationInfo().network_isolation_key();
+  network_anonymization_key_ =
+      navigation_handle->GetIsolationInfo().network_anonymization_key();
 
   url_for_login_handler_ = navigation_handle->GetURL();
   login_handler_ = LoginHandler::Create(
@@ -227,7 +227,7 @@ void LoginTabHelper::HandleCredentials(
     // LoginTabHelper) could be destroyed while the network service is
     // processing the new cache entry.
     storage_partition->GetNetworkContext()->AddAuthCacheEntry(
-        challenge_, network_isolation_key_, credentials.value(),
+        challenge_, network_anonymization_key_, credentials.value(),
         base::BindOnce(&LoginTabHelper::Reload,
                        weak_ptr_factory_.GetWeakPtr()));
   }

@@ -23,7 +23,7 @@
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/http/http_auth.h"
@@ -177,7 +177,7 @@ void ProfileAuthDataTest::VerifyTransferredUserProxyAuthEntry() {
           ->Lookup(url::SchemeHostPort(GURL(kProxyAuthURL)),
                    net::HttpAuth::AUTH_PROXY, kProxyAuthRealm,
                    net::HttpAuth::AUTH_SCHEME_BASIC,
-                   net::NetworkIsolationKey());
+                   net::NetworkAnonymizationKey());
   ASSERT_TRUE(entry);
   EXPECT_EQ(kProxyAuthPassword1, entry->credentials().password());
 }
@@ -213,7 +213,7 @@ void ProfileAuthDataTest::PopulateBrowserContext(
   GetAuthCache(network_context)
       ->Add(url::SchemeHostPort(GURL(kProxyAuthURL)), net::HttpAuth::AUTH_PROXY,
             kProxyAuthRealm, net::HttpAuth::AUTH_SCHEME_BASIC,
-            net::NetworkIsolationKey(), kProxyAuthChallenge,
+            net::NetworkAnonymizationKey(), kProxyAuthChallenge,
             net::AuthCredentials(std::u16string(), proxy_auth_password),
             std::string());
 

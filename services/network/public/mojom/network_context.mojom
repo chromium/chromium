@@ -33,6 +33,7 @@ import "services/network/public/mojom/mdns_responder.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
 import "services/network/public/mojom/net_log.mojom";
 import "services/network/public/mojom/network_isolation_key.mojom";
+import "services/network/public/mojom/network_anonymization_key.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
@@ -512,8 +513,8 @@ struct NetworkContextParams {
   // effectively starting with an empty cache.
   bool reset_http_cache_backend = false;
 
-  // See comments on NetworkContext.SetSplitAuthCacheByNetworkIsolationKey.
-  bool split_auth_cache_by_network_isolation_key = false;
+  // See comments on NetworkContext.SetSplitAuthCacheByNetworkAnonymizationKey.
+  bool split_auth_cache_by_network_anonymization_key = false;
 
   // If true, all requests that can take a NetworkIsolationKey or IsolationInfo
   // must be given a non-empty one.
@@ -1409,8 +1410,8 @@ interface NetworkContext {
   // Sets whether the HTTP auth cache will be split the NetworkIsolationKey.
   // Only affects server (not proxy) credentials. Whenever the effective value
   // is changed, all cached server auth credentials will be cleared.
-  SetSplitAuthCacheByNetworkIsolationKey(
-      bool split_auth_cache_by_network_isolation_key);
+  SetSplitAuthCacheByNetworkAnonymizationKey(
+      bool split_auth_cache_by_network_anonymization_key);
 
   // Copies the proxy entries of this NetworkContext's auth cache and
   // returns a key that can be used by LoadHttpAuthCache to load them into
@@ -1430,14 +1431,14 @@ interface NetworkContext {
   LoadHttpAuthCacheProxyEntries(mojo_base.mojom.UnguessableToken cache_key)
       => ();
 
-  // Adds an entry to the HttpAuthCache. |network_isolation_key| is the
+  // Adds an entry to the HttpAuthCache. |network_anonymization_key| is the
   // NetworkIsolationKey to restrict the credentials to, and is only respected
   // for server (not proxy) HTTP auth and only when the NetworkService was
   // configured to split the auth cache by NetworkIsolationKey. |challenge|
   // may not necessarily contain a stateful challenge that requires a persistent
   // connection, allowing the cache to be pre-populated.
   AddAuthCacheEntry(AuthChallengeInfo challenge,
-                    NetworkIsolationKey network_isolation_key,
+                    NetworkAnonymizationKey network_anonymization_key,
                     AuthCredentials credentials) => ();
 
   // Sets whether
@@ -1448,9 +1449,9 @@ interface NetworkContext {
   // Looks up credentials in the HttpAuthCache using the origin and path from
   // |url|. Only supports basic auth scheme. Only looks up server (not proxy)
   // auth credentials, and only those that are usable in the scope of
-  // |network_isolation_key|.
+  // |network_anonymization_key|.
   LookupServerBasicAuthCredentials(url.mojom.Url url,
-      NetworkIsolationKey network_isolation_key)
+      NetworkAnonymizationKey network_anonymization_key)
       => (AuthCredentials? credentials);
 
   // Looks up the proxy authentication credentials associated with
