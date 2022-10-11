@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="QuickAnswers.ActiveImpression" enum="QuickAnswersResultType"
-    expires_after="2023-03-26">
+    expires_after="2023-04-09">
   <owner>updowndota@chromium.org</owner>
   <owner>llin@google.com</owner>
   <owner>croissant-eng@chromium.org</owner>

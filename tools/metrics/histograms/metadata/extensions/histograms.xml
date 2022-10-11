@@ -2044,7 +2044,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.GuestView.ChangeOwnerWebContentsOnAttach"
-    enum="Boolean" expires_after="2023-02-01">
+    enum="Boolean" expires_after="2023-04-09">
   <owner>mcnee@chromium.org</owner>
   <owner>src/components/guest_view/OWNERS</owner>
   <summary>

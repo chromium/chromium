@@ -1551,7 +1551,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType"
-    enum="HistoryClusterKeywordType" expires_after="2023-03-26">
+    enum="HistoryClusterKeywordType" expires_after="2023-04-09">
   <owner>junzou@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -1604,7 +1604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.SuggestionUsed.ResumeJourney.PageEntityCollection"
-    enum="OptimizationGuidePageEntityCollection" expires_after="2023-03-26">
+    enum="OptimizationGuidePageEntityCollection" expires_after="2023-04-09">
   <owner>junzou@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

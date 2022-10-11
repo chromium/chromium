@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Download.ApiFunctions" enum="DownloadFunctions"
-    expires_after="2023-02-02">
+    expires_after="2023-04-09">
   <owner>dtrainor@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>

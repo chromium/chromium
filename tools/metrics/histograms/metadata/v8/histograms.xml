@@ -991,7 +991,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCBackgroundMarking" units="ms" expires_after="M111">
+<histogram name="V8.GCBackgroundMarking" units="ms" expires_after="2023-04-09">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1015,7 +1015,8 @@ chromium-metrics-reviews@google.com.
   <summary>Time spent in mark-sweep phase of GC.</summary>
 </histogram>
 
-<histogram name="V8.GCCompactorBackground" units="ms" expires_after="M111">
+<histogram name="V8.GCCompactorBackground" units="ms"
+    expires_after="2023-04-09">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1043,7 +1044,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Clear" units="ms" expires_after="M111">
+<histogram name="V8.GCFinalizeMC.Clear" units="ms" expires_after="2023-04-09">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -1123,7 +1124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCFinalizeMCReduceMemoryBackground" units="ms"
-    expires_after="M111">
+    expires_after="2023-04-09">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -1146,7 +1147,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCIncrementalMarking" units="ms" expires_after="M111">
+<histogram name="V8.GCIncrementalMarking" units="ms" expires_after="2023-04-09">
   <owner>hpayer@chromium.org</owner>
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
@@ -1207,7 +1208,7 @@ chromium-metrics-reviews@google.com.
   <summary>Reason a mark-compact garbage collection was started in V8.</summary>
 </histogram>
 
-<histogram name="V8.GCMarkingSum" units="ms" expires_after="M111">
+<histogram name="V8.GCMarkingSum" units="ms" expires_after="2023-04-09">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1217,7 +1218,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCScavenger.ScavengeMain" units="ms" expires_after="M111">
+<histogram name="V8.GCScavenger.ScavengeMain" units="ms"
+    expires_after="2023-04-09">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1226,7 +1228,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCScavenger.ScavengeRoots" units="ms" expires_after="M111">
+<histogram name="V8.GCScavenger.ScavengeRoots" units="ms"
+    expires_after="2023-04-09">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in scavenging the roots during a V8 scavenge.</summary>

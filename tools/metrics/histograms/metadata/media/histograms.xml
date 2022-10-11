@@ -4137,7 +4137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.RegionCapture.ProduceCropTarget.Promise.Result"
-    enum="ProduceCropTargetPromiseResult" expires_after="2023-01-25">
+    enum="ProduceCropTargetPromiseResult" expires_after="2023-04-09">
   <owner>eladalon@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
@@ -6530,7 +6530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Device.Count" units="units"
-    expires_after="2023-03-26">
+    expires_after="2023-04-09">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>

@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Destroyer.OffTheRecord" enum="ProfileDestructionType"
-    expires_after="2022-12-25">
+    expires_after="2023-04-09">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-privacy-core@google.com</owner>
   <summary>

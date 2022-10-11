@@ -1284,7 +1284,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ScreenshotsPerWeek" units="int"
-    expires_after="2023-01-22">
+    expires_after="2023-04-09">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -1777,7 +1777,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskTemplate.AddOrUpdateTemplateStatus"
-    enum="DeskModelAddOrUpdateEntryStatus" expires_after="2023-01-15">
+    enum="DeskModelAddOrUpdateEntryStatus" expires_after="2023-04-09">
   <owner>yzd@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -2060,7 +2060,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeviceActivity.MethodCalled" enum="DeviceActivityMethod"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>hirthanan@google.com</owner>
   <owner>chromeos-data-team@google.com</owner>
   <summary>
@@ -3767,7 +3767,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.Menu.NumItemsEnabledUponSelection" units="Count"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>anasalazar@chromium.org</owner>
   <owner>mmourgos@google.com</owner>
   <summary>
@@ -4000,7 +4000,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.ShutdownConfirmationBubble.Action"
-    enum="ShutdownConfirmationBubbleAction" expires_after="2023-03-26">
+    enum="ShutdownConfirmationBubbleAction" expires_after="2023-04-09">
   <owner>sherrilin@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -5192,7 +5192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowManager.Lock.Success" units="ms"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>antrim@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>

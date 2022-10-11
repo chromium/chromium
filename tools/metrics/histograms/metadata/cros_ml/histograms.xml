@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MachineLearningService.TextSuggester.Suggest.Event"
-    enum="BooleanError" expires_after="2023-01-31">
+    enum="BooleanError" expires_after="2023-04-09">
   <owner>curtismcmullan@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <summary>

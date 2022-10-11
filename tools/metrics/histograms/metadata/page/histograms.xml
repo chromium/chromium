@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="PageActionController.ActionTypeShown"
-    enum="PageActionIconType" expires_after="2023-02-01">
+    enum="PageActionIconType" expires_after="2023-04-09">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.Icon.CTR" enum="PageActionCTREvent"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.Icon.NumberActionsShownWhenClicked"
-    units="actions" expires_after="2023-02-01">
+    units="actions" expires_after="2023-04-09">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.NumberActionsShown" units="actions"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -118,7 +118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PageActionController.PagesWithActionsShown"
-    enum="PageActionPageEvent" expires_after="2023-02-01">
+    enum="PageActionPageEvent" expires_after="2023-04-09">
   <owner>emshack@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>

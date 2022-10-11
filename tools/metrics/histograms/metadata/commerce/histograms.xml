@@ -262,7 +262,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PowerBookmarks.SubscriptionValidationResult"
-    enum="CommerceSubscriptionValidationResult" expires_after="2023-02-01">
+    enum="CommerceSubscriptionValidationResult" expires_after="2023-04-09">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>

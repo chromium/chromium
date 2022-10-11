@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AppLaunch.DurationDrawWasBlocked.OnIncognitoReauth"
-    units="ms" expires_after="M110">
+    units="ms" expires_after="2023-04-09">
   <owner>roagarwal@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.AutofillAssistant.CupRpcVerificationEvent"
-    enum="AutofillAssistantCupRpcVerificationEvent" expires_after="2023-02-02">
+    enum="AutofillAssistantCupRpcVerificationEvent" expires_after="2023-04-09">
   <owner>sergiovila@google.com</owner>
   <owner>autofill_assistant@google.com</owner>
   <summary>
@@ -2725,7 +2725,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime2"
-    units="microseconds" expires_after="2023-01-31">
+    units="microseconds" expires_after="2023-04-09">
   <owner>ender@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -2783,7 +2783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionList.MeasureTime2"
-    units="microseconds" expires_after="2023-01-31">
+    units="microseconds" expires_after="2023-04-09">
   <owner>ender@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
@@ -2880,7 +2880,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Omnibox.SuggestionView.CreateTime2"
-    units="microseconds" expires_after="2023-01-31">
+    units="microseconds" expires_after="2023-04-09">
   <owner>ender@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>

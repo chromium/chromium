@@ -2407,7 +2407,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.UserPolicyChromeOS.ReregistrationResult"
     enum="EnterpriseUserPolicyChromeOSReregistrationResult"
-    expires_after="2023-01-31">
+    expires_after="2023-04-09">
   <owner>hendrich@chromium.org</owner>
   <owner>rbock@google.com</owner>
   <owner>managed-devices@google.com</owner>

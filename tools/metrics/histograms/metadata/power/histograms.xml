@@ -1499,7 +1499,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ForegroundThermalState.ChangeEvent.Android"
-    enum="DeviceThermalState" expires_after="2023-02-01">
+    enum="DeviceThermalState" expires_after="2023-04-09">
   <owner>carlscab@google.com</owner>
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@google.com</owner>

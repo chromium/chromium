@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioBuffer.SampleRate384kHz" units="Hz"
-    expires_after="2022-12-31">
+    expires_after="2023-04-09">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
@@ -89,7 +89,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.latencyHintCategory" units="units"
-    expires_after="2022-12-31">
+    expires_after="2023-04-09">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <summary>
@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContext.latencyHintMilliSeconds" units="ms"
-    expires_after="2022-12-31">
+    expires_after="2023-04-09">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <summary>
@@ -125,7 +125,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContextOptions.sampleRate" units="Hz"
-    expires_after="2022-12-31">
+    expires_after="2023-04-09">
   <owner>hongchan@chromium.org</owner>
   <owner>mjwilson@chromium.org</owner>
   <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>

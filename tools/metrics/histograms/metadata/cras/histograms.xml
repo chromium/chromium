@@ -616,7 +616,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cras.StreamCreateError" enum="CrasStreamCreateError"
-    expires_after="2023-01-22">
+    expires_after="2023-04-09">
   <owner>hychao@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>Record the errors happen when CRAS server creats a stream.</summary>
@@ -635,7 +635,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cras.StreamFlags" units="value" expires_after="2023-01-15">
+<histogram name="Cras.StreamFlags" units="value" expires_after="2023-04-09">
 <!-- Name completed by histogram_suffixes
      name="Cras.Direction" and
      name="Cras.ClientType" -->

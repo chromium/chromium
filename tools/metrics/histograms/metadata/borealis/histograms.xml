@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Disk.Client.NumRequestsPerSesssion" units="requests"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Disk.Client.SpaceRequested" units="MB"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Install.Result" enum="BorealisInstallResult"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Stability" enum="GuestOsFailureClasses"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>cpelling@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -246,14 +246,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.NumAttempts" enum="BooleanAttempted"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>Recording every attempt to start Borealis (via the UI).</summary>
 </histogram>
 
 <histogram name="Borealis.Startup.OverallTime" units="ms"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>
@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Borealis.Startup.Result" enum="BorealisStartupResult"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>danielng@google.com</owner>
   <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
   <summary>

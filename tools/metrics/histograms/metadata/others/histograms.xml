@@ -1486,7 +1486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.NumberOfExistingAdvertisements" units="advertisements"
-    expires_after="2022-12-31">
+    expires_after="2023-04-09">
   <owner>mcchou@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -1580,7 +1580,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BlueZ.TimeLengthOfDiscoverable" units="seconds"
-    expires_after="2022-12-31">
+    expires_after="2023-04-09">
   <owner>mcchou@chromium.org</owner>
   <owner>chromeos-bt-platform-sw-core@google.com</owner>
   <summary>
@@ -3159,7 +3159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.LensSupportStatus" enum="LensSupportStatus"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>benwgold@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -3294,7 +3294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextMenu.TimeToTakeAction.Abandoned" units="ms"
-    expires_after="2023-02-05">
+    expires_after="2023-04-09">
   <owner>twellington@chromium.org</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -4653,7 +4653,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DemoMode.AppLaunchSource" enum="DemoModeAppLaunchSource"
-    expires_after="2023-01-22">
+    expires_after="2023-04-09">
   <owner>drcrash@chromium.org</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
   <summary>
@@ -4928,7 +4928,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DisplayManager.UnifiedDesktopDisplayCountRange"
-    enum="MultiDisplayModeDisplayCountRanges" expires_after="2022-12-11">
+    enum="MultiDisplayModeDisplayCountRanges" expires_after="2023-04-09">
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -5540,7 +5540,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Eche.StreamEvent.ConnectionFail" enum="ConnectionFailReason"
-    expires_after="2023-01-15">
+    expires_after="2023-04-09">
   <owner>paulzchen@google.com</owner>
   <owner>andychou@google.com</owner>
   <owner>exo-core-eng@google.com</owner>
@@ -7406,7 +7406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InstanceID.GetToken.RequestStatus.FcmInvalidations"
-    enum="GCMRegistrationRequestStatus" expires_after="2023-01-29">
+    enum="GCMRegistrationRequestStatus" expires_after="2023-04-09">
   <owner>peter@chromium.org</owner>
   <owner>rushans@chromium.org</owner>
   <owner>treib@chromium.org</owner>
@@ -10372,7 +10372,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Process.Sandbox.CreateAlternateDesktopResultCode"
-    enum="LaunchErrorCodes" expires_after="2023-01-15">
+    enum="LaunchErrorCodes" expires_after="2023-04-09">
   <owner>ajgo@chromium.org</owner>
   <owner>src/sandbox/policy/win/OWNERS</owner>
   <summary>
@@ -13529,7 +13529,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="Tablet.WindowDrag.DragEndEventType"
-    enum="WindowDragEndEventType" expires_after="2023-01-15">
+    enum="WindowDragEndEventType" expires_after="2023-04-09">
   <owner>minch@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>

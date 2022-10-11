@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2"
-    units="navigations" expires_after="2023-02-05">
+    units="navigations" expires_after="2023-04-09">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>

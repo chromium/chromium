@@ -1407,7 +1407,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Liveness.BrowserStateAtTimeout"
-    enum="ChromeOSBrowserProcessState" expires_after="2023-01-30">
+    enum="ChromeOSBrowserProcessState" expires_after="2023-04-09">
   <owner>iby@google.com</owner>
   <owner>xiyuan@google.com</owner>
   <owner>kaznacheev@google.com</owner>
@@ -1434,7 +1434,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Liveness.PingResult" enum="BooleanSuccess"
-    expires_after="2023-02-04">
+    expires_after="2023-04-09">
   <owner>iby@google.com</owner>
   <owner>xiyuan@google.com</owner>
   <summary>
@@ -2105,7 +2105,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.TypeC.WrongConfiguration"
-    enum="WrongConfigurationMetric" expires_after="2023-01-15">
+    enum="WrongConfigurationMetric" expires_after="2023-04-09">
   <owner>pmalani@chromium.org</owner>
   <owner>chromeos-power@google.com</owner>
   <summary>

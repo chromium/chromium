@@ -461,7 +461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.DeepScan.DragAndDrop.Duration" units="ms"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>domfc@chromium.org</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
@@ -627,7 +627,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.DeepScan.Paste.Duration" units="ms"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>domfc@chromium.org</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
@@ -637,7 +637,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.DeepScan.Paste.FailedToGetToken.Duration"
-    units="ms" expires_after="2023-02-01">
+    units="ms" expires_after="2023-04-09">
   <owner>domfc@chromium.org</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
@@ -839,7 +839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.DeepScan.Upload.BytesPerSeconds" units="bytes"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>domfc@chromium.org</owner>
   <owner>webprotect-team@google.com</owner>
   <summary>
@@ -1727,7 +1727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.GetToken.Time" units="ms"
-    expires_after="2023-01-29">
+    expires_after="2023-04-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1930,7 +1930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Response.VerdictType"
-    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2023-03-26">
+    enum="SafeBrowsingRTLookupResponseVerdictType" expires_after="2023-04-09">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2182,7 +2182,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.V4Database.Size" units="KB"
-    expires_after="2023-03-26">
+    expires_after="2023-04-09">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

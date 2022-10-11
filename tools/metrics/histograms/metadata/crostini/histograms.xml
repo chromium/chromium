@@ -46,7 +46,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.AppLaunchResult" enum="CrostiniResult"
-    expires_after="2023-03-26">
+    expires_after="2023-04-09">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.AvailableDiskError" units="MiB"
-    expires_after="2023-01-06">
+    expires_after="2023-04-09">
   <owner>davidmunro@google.com</owner>
   <owner>clumptini@google.com</owner>
   <summary>

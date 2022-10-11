@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordBubble.CompromisedBubble.CheckClicked"
-    enum="BooleanClicked" expires_after="2023-01-22">
+    enum="BooleanClicked" expires_after="2023-04-09">
   <owner>vasilii@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <summary>
@@ -363,7 +363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AccountChooserDialogOneAccount"
-    enum="AccountChooserDismissalReason" expires_after="2023-01-22">
+    enum="AccountChooserDismissalReason" expires_after="2023-04-09">
   <owner>vasilii@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <summary>
@@ -1140,7 +1140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CredentialsWithMismatchedDuplicates2"
-    units="units" expires_after="M111">
+    units="units" expires_after="2023-04-09">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1418,7 +1418,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.Import.DesktopInteractions"
-    enum="PasswordsImportDesktopInteractions" expires_after="2023-02-01">
+    enum="PasswordsImportDesktopInteractions" expires_after="2023-04-09">
   <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
   <summary>
@@ -1428,7 +1428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ImportDuration" units="ms"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
   <summary>
@@ -1463,7 +1463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ImportFileSize" units="bytes"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
   <summary>
@@ -1474,7 +1474,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ImportResultsStatus"
-    enum="PasswordManagerImportResultsStatus" expires_after="2023-02-01">
+    enum="PasswordManagerImportResultsStatus" expires_after="2023-04-09">
   <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
   <summary>
@@ -1754,7 +1754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.MigratedSettingsUPMAndroid"
-    enum="BooleanEnabled" expires_after="M110">
+    enum="BooleanEnabled" expires_after="2023-04-09">
   <owner>ioanap@chromium.org</owner>
   <owner>kazinova@google.com</owner>
   <summary>

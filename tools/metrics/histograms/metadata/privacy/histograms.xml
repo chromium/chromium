@@ -20,7 +20,7 @@ reviewer.
 <histograms>
 
 <histogram name="Privacy.AboutThisSite.PageLoadValidation"
-    enum="AboutThisSiteStatus" expires_after="2022-12-21">
+    enum="AboutThisSiteStatus" expires_after="2023-04-09">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
@@ -165,7 +165,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.CookiesInUseDialog.Action"
-    enum="CookiesInUseDialogActions" expires_after="2022-12-31">
+    enum="CookiesInUseDialogActions" expires_after="2023-04-09">
   <owner>alimariam@google.com</owner>
   <owner>olesiamarukhno@google.com</owner>
   <owner>sauski@google.com</owner>

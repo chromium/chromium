@@ -554,7 +554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptOut.ReportCount" units="reports"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>cthomp@chromium.org</owner>
   <owner>jdeblasio@chromium.org</owner>
   <summary>

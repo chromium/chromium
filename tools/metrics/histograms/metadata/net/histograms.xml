@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.BlockfileWriteInUserBuffer" enum="Boolean"
-    expires_after="2022-11-25">
+    expires_after="2023-04-09">
   <owner>jam@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="HttpCache.RestrictedPrefetchReuse"
-    enum="RestrictedPrefetchReused" expires_after="2023-02-01">
+    enum="RestrictedPrefetchReused" expires_after="2023-04-09">
   <owner>nrosenthal@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacKeychainCerts.IntermediateCount"
-    units="certificates" expires_after="2023-02-01">
+    units="certificates" expires_after="2023-04-09">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -406,7 +406,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacKeychainCerts.TotalCount"
-    units="certificates" expires_after="2023-02-01">
+    units="certificates" expires_after="2023-04-09">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.MacTrustDomainCacheInitTime" units="ms"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>mattm@chromium.org</owner>
   <owner>hchao@chromium.org</owner>
   <summary>
@@ -461,7 +461,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CertVerifier.PathBuilderIterationCount" units="units"
-    expires_after="2023-01-01">
+    expires_after="2023-04-09">
   <owner>mattm@chromium.org</owner>
   <owner>rsleevi@chromium.org</owner>
   <summary>
@@ -812,7 +812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.DNS.DnsTask.AdditionalHttps.Requested"
-    enum="UnsolicitedHttpsRecordStatus" expires_after="2023-01-14">
+    enum="UnsolicitedHttpsRecordStatus" expires_after="2023-04-09">
   <owner>awillia@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -1595,7 +1595,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.ErrorPageCounts.WebAppAlternativeErrorPage"
-    enum="NetErrorCodes" expires_after="2023-02-07">
+    enum="NetErrorCodes" expires_after="2023-04-09">
   <owner>ericwilligers@chromium.org</owner>
   <owner>alexbn@chromium.org</owner>
   <summary>
@@ -4368,7 +4368,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.CookiePartitionKeyOK"
-    enum="Boolean" expires_after="2023-02-01">
+    enum="Boolean" expires_after="2023-04-09">
   <owner>dylancutler@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>

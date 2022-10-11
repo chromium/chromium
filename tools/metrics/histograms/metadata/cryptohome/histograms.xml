@@ -207,7 +207,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DiskCleanupProgress"
-    enum="CryptohomeDiskCleanupProgress" expires_after="2023-02-01">
+    enum="CryptohomeDiskCleanupProgress" expires_after="2023-04-09">
   <owner>vsavu@google.com</owner>
   <owner>dlunev@chromium.org</owner>
   <owner>sarthakkukreti@chromium.org</owner>
@@ -220,7 +220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DiskCleanupResult"
-    enum="CryptohomeDiskCleanupResult" expires_after="2023-02-01">
+    enum="CryptohomeDiskCleanupResult" expires_after="2023-04-09">
   <owner>vsavu@google.com</owner>
   <owner>dlunev@chromium.org</owner>
   <summary>Records the result of triggering disk cleanup.</summary>
@@ -430,7 +430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.GCache.FreedDiskSpaceInMb" units="MB"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>dlunev@chromium.org</owner>
   <owner>sarthakkukreti@chromium.org</owner>
   <summary>
@@ -560,7 +560,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.LoginDiskCleanupResult"
-    enum="CryptohomeDiskCleanupResult" expires_after="2023-02-01">
+    enum="CryptohomeDiskCleanupResult" expires_after="2023-04-09">
   <owner>vsavu@google.com</owner>
   <owner>sarthakkukreti@chromium.org</owner>
   <summary>
@@ -710,7 +710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeBetweenFreeDiskSpace" units="s"
-    expires_after="2023-02-01">
+    expires_after="2023-04-09">
   <owner>vsavu@google.com</owner>
   <owner>dlunev@chromium.org</owner>
   <owner>sarthakkukreti@chromium.org</owner>

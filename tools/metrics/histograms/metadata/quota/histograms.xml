@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictedBytesPerRound" units="MB"
-    expires_after="2023-02-08">
+    expires_after="2023-04-09">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

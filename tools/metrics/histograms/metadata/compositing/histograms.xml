@@ -722,7 +722,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.SkiaRenderer.DrawTileDrawQuad.UsingRawDraw"
-    units="boolean" expires_after="2023-02-01">
+    units="boolean" expires_after="2023-04-09">
   <owner>backer@chromium.org</owner>
   <owner>penghuang@chromium.org</owner>
   <summary>Records if the TileDrawQuad is rendered with RawDraw.</summary>

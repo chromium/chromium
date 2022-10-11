@@ -147,7 +147,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.OptInFlow.LoadingTimeoutCount" units="timeouts"
-    expires_after="2023-01-15">
+    expires_after="2023-04-09">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>

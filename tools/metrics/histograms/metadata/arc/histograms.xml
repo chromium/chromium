@@ -977,7 +977,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.DataRestore.Duration" units="ms"
-    expires_after="2023-01-15">
+    expires_after="2023-04-09">
   <owner>khmel@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>The duration of the SELinux data restoration flow.</summary>
@@ -1246,7 +1246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.InputOverlay.Customized" enum="BooleanEnabled"
-    expires_after="2023-01-15">
+    expires_after="2023-04-09">
   <owner>cuicuiruan@google.com</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -1449,7 +1449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Net.ArcNetworkError" enum="ArcNetworkError"
-    expires_after="2022-12-31">
+    expires_after="2023-04-09">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-networking@google.com</owner>
   <summary>
@@ -1545,7 +1545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.OptInNetworkErrorAction" enum="ArcOptInNetworkErrorAction"
-    expires_after="2023-02-04">
+    expires_after="2023-04-09">
   <owner>mhasank@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>

@@ -697,7 +697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.EchoCanceller.ReliableDelayEstimates"
-    enum="WebRTCAecDelayEstimateReliability" expires_after="2023-01-15">
+    enum="WebRTCAecDelayEstimateReliability" expires_after="2023-04-09">
   <owner>peah@chromium.org</owner>
   <owner>saza@chromium.org</owner>
   <summary>
