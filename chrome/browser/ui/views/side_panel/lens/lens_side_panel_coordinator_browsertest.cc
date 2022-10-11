@@ -51,6 +51,7 @@ namespace {
 constexpr char kCloseAction[] = "LensUnifiedSidePanel.HideSidePanel";
 constexpr char kExpectedSidePanelContentUrlRegex[] =
     ".*ep=ccm&re=dcsp&s=csp&st=\\d+&p=somepayload&sideimagesearch=1";
+constexpr char kExpectedNewTabContentUrlRegex[] = ".*p=somepayload";
 
 // Maintains image search test state. In particular, note that |menu_observer_|
 // must live until the right-click completes asynchronously.
@@ -71,7 +72,8 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
            {lens::features::kHomepageURLForLens.name,
             GetLensImageSearchURL().spec()}}},
          {features::kUnifiedSidePanel, {{}}},
-         {lens::features::kLensUnifiedSidePanelFooter, {{}}}},
+         {lens::features::kLensUnifiedSidePanelFooter, {{}}},
+         {lens::features::kEnableImageSearchSidePanelFor3PDse, {{}}}},
         {});
     InProcessBrowserTest::SetUp();
   }
@@ -112,6 +114,14 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
     // clicked.
     menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
         IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE);
+    RightClickImage();
+  }
+
+  void Attempt3pDseImageSearch() {
+    // |menu_observer_| will cause the search web for image menu item to be
+    // clicked.
+    menu_observer_ = std::make_unique<ContextMenuNotificationObserver>(
+        IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE);
     RightClickImage();
   }
 
@@ -345,6 +355,73 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanelFooterDisabled,
             side_panel_content.substr(0, query_start_pos));
   EXPECT_FALSE(
       GetLensSidePanelCoordinator()->IsLaunchButtonEnabledForTesting());
+  // Match the query parameters, without the value of start_time.
+  EXPECT_THAT(side_panel_content,
+              testing::MatchesRegex(kExpectedSidePanelContentUrlRegex));
+}
+
+class SearchImageWithSidePanel3PDseDisabled
+    : public SearchImageWithUnifiedSidePanel {
+ protected:
+  void SetUp() override {
+    // The test server must start first, so that we know the port that the test
+    // server is using.
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    base::test::ScopedFeatureList features;
+    features.InitWithFeaturesAndParameters(
+        {{lens::features::kLensStandalone,
+          {{lens::features::kEnableSidePanelForLens.name, "true"},
+           {lens::features::kHomepageURLForLens.name,
+            GetLensImageSearchURL().spec()}}},
+         {lens::features::kLensUnifiedSidePanelFooter, {{}}},
+         {features::kUnifiedSidePanel, {{}}}},
+        {lens::features::kEnableImageSearchSidePanelFor3PDse});
+    InProcessBrowserTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SearchImageWithSidePanel3PDseDisabled,
+                       ImageSearchFor3PDSEWithValidImageOpensInNewTab) {
+  SetupAndLoadValidImagePage();
+
+  // Ensures that the lens side panel coordinator is open and is valid when
+  // running the search.
+  lens::CreateLensUnifiedSidePanelEntryForTesting(browser());
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
+
+  ui_test_utils::AllBrowserTabAddedWaiter add_tab;
+  // The browser should open in a new tab with the image.
+  Attempt3pDseImageSearch();
+
+  // Get the result URL in the new tab and verify.
+  content::WebContents* new_tab = add_tab.Wait();
+  content::WaitForLoadStop(new_tab);
+  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
+  EXPECT_THAT(new_tab_content,
+              testing::MatchesRegex(kExpectedNewTabContentUrlRegex));
+
+  content::WebContents* contents =
+      lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());
+  std::string side_panel_content = contents->GetLastCommittedURL().GetContent();
+  EXPECT_NE(side_panel_content, new_tab_content);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchImageWithSidePanel3PDseDisabled,
+                       ImageSearchForLensWithValidImageOpensInSidePanel) {
+  SetupUnifiedSidePanel();
+  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
+
+  content::WebContents* contents =
+      lens::GetLensUnifiedSidePanelWebContentsForTesting(browser());
+
+  std::string expected_content = GetLensImageSearchURL().GetContent();
+  std::string side_panel_content = contents->GetLastCommittedURL().GetContent();
+  // Match strings up to the query.
+  std::size_t query_start_pos = side_panel_content.find("?");
+  EXPECT_EQ(expected_content.substr(0, query_start_pos),
+            side_panel_content.substr(0, query_start_pos));
+  EXPECT_TRUE(GetLensSidePanelCoordinator()->IsLaunchButtonEnabledForTesting());
   // Match the query parameters, without the value of start_time.
   EXPECT_THAT(side_panel_content,
               testing::MatchesRegex(kExpectedSidePanelContentUrlRegex));

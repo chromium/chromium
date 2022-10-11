@@ -46,6 +46,10 @@ BASE_FEATURE(kLensInstructionChipImprovements,
              "LensInstructionChipImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableImageSearchSidePanelFor3PDse,
+             "EnableImageSearchSidePanelFor3PDse",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
     &kLensStandalone, "region-search-enable-ukm-logging", true};
 
@@ -136,6 +140,10 @@ std::string GetHomepageURLForLens() {
 
 bool GetEnableLensHtmlRedirectFix() {
   return kEnableLensHtmlRedirectFix.Get();
+}
+
+bool GetEnableImageSearchUnifiedSidePanelFor3PDse() {
+  return base::FeatureList::IsEnabled(kEnableImageSearchSidePanelFor3PDse);
 }
 
 bool UseRegionSearchMenuItemAltText1() {

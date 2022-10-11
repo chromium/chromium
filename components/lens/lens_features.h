@@ -40,6 +40,10 @@ BASE_DECLARE_FEATURE(kEnableRegionSearchOnPdfViewer);
 // region search is opened.
 BASE_DECLARE_FEATURE(kLensInstructionChipImprovements);
 
+// Enables the image search side panel experience for third party default search
+// engines
+BASE_DECLARE_FEATURE(kEnableImageSearchSidePanelFor3PDse);
+
 // Enables using `Google` as the visual search provider instead of `Google
 // Lens`.
 extern const base::FeatureParam<bool> kUseGoogleAsVisualSearchProvider;
@@ -91,6 +95,10 @@ extern const base::FeatureParam<bool> kUseAltChipString;
 
 // Enables Latency logging for the LensStandalone feature.
 extern bool GetEnableLatencyLogging();
+
+// Returns whether the image search side panel is supported for third party
+// default search engines
+extern bool GetEnableImageSearchUnifiedSidePanelFor3PDse();
 
 // Returns whether to enable UKM logging for Lens Region Search feature.
 extern bool GetEnableUKMLoggingForRegionSearch();

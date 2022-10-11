@@ -139,7 +139,8 @@ bool CoreTabHelper::IsSidePanelEnabled() {
 
 bool CoreTabHelper::IsSidePanelEnabledFor3PDse() {
   return IsSidePanelEnabled() &&
-         base::FeatureList::IsEnabled(features::kUnifiedSidePanel);
+         base::FeatureList::IsEnabled(features::kUnifiedSidePanel) &&
+         lens::features::GetEnableImageSearchUnifiedSidePanelFor3PDse();
 }
 
 void CoreTabHelper::SearchWithLens(gfx::Image image,
