@@ -10,6 +10,7 @@ import argparse
 import logging
 import os
 import platform
+import subprocess
 import sys
 
 from common import GetHostOsFromPlatform, SDK_ROOT
@@ -36,6 +37,8 @@ def _GetTarballPath(gcs_tarball_prefix: str) -> str:
 
 def main():
   parser = argparse.ArgumentParser()
+  parser.add_argument('--cipd-prefix', help='CIPD base directory for the SDK.')
+  parser.add_argument('--version', help='Specifies the SDK version.')
   parser.add_argument('--verbose',
                       '-v',
                       action='store_true',
@@ -46,15 +49,24 @@ def main():
 
   # Exit if there's no SDK support for this platform.
   try:
-    GetHostOsFromPlatform()
+    host_plat = GetHostOsFromPlatform()
   except:
     logging.warning('Fuchsia SDK is not supported on this platform.')
     return 0
 
   sdk_override = os.path.join(os.path.dirname(__file__), 'sdk_override.txt')
 
-  # Exit if there is no override file.
+  # Download from CIPD if there is no override file.
   if not os.path.isfile(sdk_override):
+    if not args.cipd_prefix:
+      parser.exit(1, '--cipd-prefix must be specified.')
+    if not args.version:
+      parser.exit(2, '--version must be specified.')
+    ensure_file = '%s%s-%s %s' % (args.cipd_prefix, host_plat, _GetHostArch(),
+                                  args.version)
+    subprocess.run(('cipd', 'ensure', '-ensure-file', '-', '-root', SDK_ROOT),
+                   check=True,
+                   input=ensure_file.encode('utf-8'))
     return 0
 
   with open(sdk_override, 'r') as f:
