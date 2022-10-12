@@ -59,7 +59,7 @@ void SetCachedAvatarForIdentity(id<SystemIdentity> identity, UIImage* avatar) {
 }  // anonymous namespace
 
 @interface FakeAccountDetailsViewController : UIViewController {
-  __weak ChromeIdentity* _identity;
+  __weak id<SystemIdentity> _identity;
   UIButton* _removeAccountButton;
   UIButton* _closeAccountDetailsButton;
 }
@@ -67,7 +67,7 @@ void SetCachedAvatarForIdentity(id<SystemIdentity> identity, UIImage* avatar) {
 
 @implementation FakeAccountDetailsViewController
 
-- (instancetype)initWithIdentity:(ChromeIdentity*)identity {
+- (instancetype)initWithIdentity:(id<SystemIdentity>)identity {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _identity = identity;
