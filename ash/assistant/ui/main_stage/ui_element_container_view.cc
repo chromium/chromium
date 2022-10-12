@@ -12,7 +12,6 @@
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
-#include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/assistant/ui/main_stage/animated_container_view.h"
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view.h"
 #include "ash/assistant/ui/main_stage/assistant_ui_element_view_factory.h"
@@ -88,8 +87,7 @@ END_METADATA
 
 UiElementContainerView::UiElementContainerView(AssistantViewDelegate* delegate)
     : AnimatedContainerView(delegate),
-      view_factory_(std::make_unique<AssistantUiElementViewFactory>(delegate)),
-      use_dark_light_mode_colors_(assistant::UseDarkLightModeColors()) {
+      view_factory_(std::make_unique<AssistantUiElementViewFactory>(delegate)) {
   SetID(AssistantViewID::kUiElementContainer);
   InitLayout();
 }
@@ -260,12 +258,8 @@ void UiElementContainerView::OnOverflowIndicatorVisibilityChanged(
 }
 
 SkColor UiElementContainerView::GetOverflowIndicatorBackgroundColor() const {
-  if (use_dark_light_mode_colors_) {
-    return ColorProvider::Get()->GetContentLayerColor(
-        ColorProvider::ContentLayerType::kSeparatorColor);
-  }
-
-  return gfx::kGoogleGrey300;
+  return ColorProvider::Get()->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kSeparatorColor);
 }
 
 }  // namespace ash

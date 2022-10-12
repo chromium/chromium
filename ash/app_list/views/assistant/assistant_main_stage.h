@@ -86,9 +86,6 @@ class ASH_EXPORT AppListAssistantMainStage
 
   AssistantViewDelegate* const delegate_;  // Owned by Shell.
 
-  // Whether to use dark/light mode colors, which default to dark.
-  const bool use_dark_light_mode_colors_;
-
   // Owned by view hierarchy.
   AssistantProgressIndicator* progress_indicator_;
   views::Separator* horizontal_separator_;

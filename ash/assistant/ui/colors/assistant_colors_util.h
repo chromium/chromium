@@ -15,11 +15,6 @@ namespace assistant {
 // flag is off, this resolve the color from a map defined in the cc file.
 SkColor ResolveAssistantColor(assistant_colors::ColorName color_name);
 
-// Whether to use the modern dark/light mode colors, instead of legacy colors.
-// Returns true if either feature kDarkLightMode or kProductivityLauncher is
-// enabled.
-bool UseDarkLightModeColors();
-
 }  // namespace assistant
 }  // namespace ash
 

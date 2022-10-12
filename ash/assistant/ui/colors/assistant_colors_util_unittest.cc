@@ -51,35 +51,33 @@ TEST_F(AssistantColorsUtilUnittest, AssistantColor) {
 }
 
 TEST_F(AssistantColorsUtilUnittest, AssistantColorFlagOff) {
-  // ProductivityLauncher uses DarkLightMode colors.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
-          features::kProductivityLauncher});
+          chromeos::features::kDarkLightMode, features::kNotificationsRefresh});
 
+  // If DarkLightMode is off, the dark mode is on by default.
   EXPECT_EQ(
       ResolveAssistantColor(assistant_colors::ColorName::kBgAssistantPlate),
-      SK_ColorWHITE);
-  EXPECT_EQ(
-      ResolveAssistantColor(assistant_colors::ColorName::kBgAssistantPlate),
-      SK_ColorWHITE);
+      assistant_colors::ResolveColor(
+          assistant_colors::ColorName::kBgAssistantPlate,
+          /*is_dark_mode=*/true,
+          /*use_debug_colors=*/false));
 }
 
 // ResolveAssistantColor falls back to assistant_colors::ResolveColor with dark
 // mode off if the color is not defined in the cc file map and the flag is off.
 TEST_F(AssistantColorsUtilUnittest, AssistantColorFlagOffFallback) {
-  // ProductivityLauncher uses DarkLightMode colors.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
-          features::kProductivityLauncher});
+          chromeos::features::kDarkLightMode, features::kNotificationsRefresh});
 
+  // If DarkLightMode is off, the dark mode is on by default.
   EXPECT_EQ(ResolveAssistantColor(assistant_colors::ColorName::kGoogleBlue100),
             assistant_colors::ResolveColor(
                 assistant_colors::ColorName::kGoogleBlue100,
-                /*is_dark_mode=*/false, /*use_debug_colors=*/false));
+                /*is_dark_mode=*/true, /*use_debug_colors=*/false));
 }
 
 }  // namespace assistant

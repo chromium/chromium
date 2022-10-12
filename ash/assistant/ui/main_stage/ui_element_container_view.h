@@ -64,9 +64,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) UiElementContainerView
 
   // Factory instance used to construct views for modeled UI elements.
   std::unique_ptr<AssistantUiElementViewFactory> view_factory_;
-
-  // Whether to use dark/light mode colors, which default to dark.
-  const bool use_dark_light_mode_colors_;
 };
 
 }  // namespace ash

@@ -11,7 +11,6 @@
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/assistant_view_ids.h"
 #include "ash/assistant/ui/base/stack_layout.h"
-#include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/assistant/ui/main_stage/assistant_footer_view.h"
 #include "ash/assistant/ui/main_stage/assistant_progress_indicator.h"
 #include "ash/assistant/ui/main_stage/assistant_query_view.h"
@@ -118,8 +117,7 @@ bool IsShown(const views::View* view) {
 
 AppListAssistantMainStage::AppListAssistantMainStage(
     AssistantViewDelegate* delegate)
-    : delegate_(delegate),
-      use_dark_light_mode_colors_(assistant::UseDarkLightModeColors()) {
+    : delegate_(delegate) {
   SetID(AssistantViewID::kMainStage);
   InitLayout();
 
@@ -142,10 +140,6 @@ void AppListAssistantMainStage::ChildPreferredSizeChanged(views::View* child) {
 
 void AppListAssistantMainStage::OnThemeChanged() {
   views::View::OnThemeChanged();
-
-  if (!use_dark_light_mode_colors_)
-    return;
-
   horizontal_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
 }
 
@@ -258,9 +252,7 @@ AppListAssistantMainStage::CreateDividerLayoutContainer() {
                        2;
   horizontal_separator_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(vertical_inset, 0)));
-  // We use default color of views::Separator if dark light mode flag is off.
-  if (use_dark_light_mode_colors_)
-    horizontal_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+  horizontal_separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
   horizontal_separator_->SetPreferredSize(gfx::Size(
       kSeparatorWidthDip, progress_indicator_->GetPreferredSize().height()));
   horizontal_separator_->SetPaintToLayer();
