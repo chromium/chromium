@@ -301,6 +301,13 @@ void DesktopResizerX11::SetVideoLayout(const protocol::VideoLayout& layout) {
       }
       auto crtc = output_info.crtcs.front();
       auto track_layout = diff.new_displays[i];
+      // Note that this has a weird behavior in GNOME, such that, if |output| is
+      // "disconnected", creating the mode somehow resizes all existing displays
+      // to 1024x768. Once the output is successfully enabled, it will remain
+      // "connected" and will no longer have the problem. The problem doesn't
+      // occur on XFCE or Cinnamon.
+      // TODO(yuweih): See if this is fixable, or at least implement some
+      // workaround, such as re-applying the layout.
       auto mode =
           UpdateMode(output, track_layout.width(), track_layout.height());
       if (mode == kInvalidMode) {

@@ -17,7 +17,6 @@ INSTALL_DIR = $(DESTDIR)/opt/google/chrome-remote-desktop
 CHROME_NATIVE_MESSAGING_DIR = $(DESTDIR)/etc/opt/chrome/native-messaging-hosts
 FIREFOX_NATIVE_MESSAGING_DIR = $(DESTDIR)/usr/lib/mozilla/native-messaging-hosts
 SYSTEM_WIDE_DESKTOP_ENTRIES_DIR = $(DESTDIR)/usr/share/applications
-XDG_AUTOSTART_DIR=$(DESTDIR)/etc/xdg/autostart
 
 CORE_LIBNAME = $(BUILD_DIR)/libremoting_core.so
 CORE_DEBUGFILE = $(CORE_LIBNAME).debug
@@ -50,7 +49,6 @@ install:
 	install -d "$(CHROME_NATIVE_MESSAGING_DIR)"
 	install -d "$(FIREFOX_NATIVE_MESSAGING_DIR)"
 	install -d "$(SYSTEM_WIDE_DESKTOP_ENTRIES_DIR)"
-	install -d "$(XDG_AUTOSTART_DIR)"
 
 	install "$(SRC_DIR)/remoting/host/linux/linux_me2me_host.py" \
 	  "$(INSTALL_DIR)/chrome-remote-desktop"
@@ -60,8 +58,6 @@ install:
 	  "$(INSTALL_DIR)"
 	install "$(SRC_DIR)/remoting/host/linux/configure_url_forwarder.py" \
 	  "$(INSTALL_DIR)/configure-url-forwarder"
-	install "$(SRC_DIR)/remoting/host/linux/connect_xrandr_outputs.sh" \
-	  "$(INSTALL_DIR)/connect-xrandr-outputs"
 
 	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/com.google.chrome.remote_desktop.json" \
@@ -115,10 +111,6 @@ install:
 	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/crd-url-forwarder.desktop" \
 	  "$(SYSTEM_WIDE_DESKTOP_ENTRIES_DIR)/crd-url-forwarder.desktop"
-
-	install -m 0644 \
-	  "$(SRC_DIR)/remoting/host/linux/crd-connect-xrandr-outputs.desktop" \
-	  "$(XDG_AUTOSTART_DIR)/crd-connect-xrandr-outputs.desktop"
 
 	install -m 0644 \
 	  "$(BUILD_DIR)/icudtl.dat" "$(INSTALL_DIR)/icudtl.dat"
