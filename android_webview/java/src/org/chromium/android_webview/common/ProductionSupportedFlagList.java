@@ -378,7 +378,9 @@ public final class ProductionSupportedFlagList {
                     "Enables a performance optimization that caches event paths."),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_METRONOME,
                     "Inject a metronome into webrtc to allow task coalescing, "
-                            + " including synchronized decoding.")
+                            + " including synchronized decoding."),
+            Flag.baseFeature(BlinkFeatures.THREADED_BODY_LOADER,
+                    "If enabled, reads and decodes navigation body data off the main thread."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
