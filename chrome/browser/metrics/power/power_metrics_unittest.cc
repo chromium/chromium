@@ -84,12 +84,11 @@ TEST(PowerMetricsTest, ReportAggregatedProcessMetricsHistograms) {
 
   ReportAggregatedProcessMetricsHistograms(process_metrics, suffixes);
 
-
   ExpectHistogramSamples(&histogram_tester, suffixes, {
 // Windows ARM64 does not support Constant Rate TSC so
-// PerformanceMonitor.AverageCPU6.Total is not recorded there.
+// PerformanceMonitor.AverageCPU7.Total is not recorded there.
 #if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
-    {"PerformanceMonitor.AverageCPU6.Total", 20},
+    {"PerformanceMonitor.AverageCPU7.Total", 20},
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \

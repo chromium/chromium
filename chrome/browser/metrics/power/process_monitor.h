@@ -131,6 +131,19 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
       const content::ChildProcessData& data) override;
   void BrowserChildProcessHostDisconnected(
       const content::ChildProcessData& data) override;
+  void BrowserChildProcessCrashed(
+      const content::ChildProcessData& data,
+      const content::ChildProcessTerminationInfo& info) override;
+  void BrowserChildProcessKilled(
+      const content::ChildProcessData& data,
+      const content::ChildProcessTerminationInfo& info) override;
+  void BrowserChildProcessExitedNormally(
+      const content::ChildProcessData& data,
+      const content::ChildProcessTerminationInfo& info) override;
+
+  void OnBrowserChildProcessExited(
+      const content::ChildProcessData& data,
+      const content::ChildProcessTerminationInfo& info);
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>

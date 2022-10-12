@@ -146,19 +146,19 @@ chromium-metrics-reviews@google.com.
                but there was in the last 2 minutes"/>
 </variants>
 
-<histogram name="PerformanceMonitor.AverageCPU6.Total{UsageScenario}"
+<histogram name="PerformanceMonitor.AverageCPU7.Total{UsageScenario}"
     units="1/100 %" expires_after="2022-11-30">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    See definition of PerformanceClass.AverageCPU6.ProcessName. This is recorded
+    See definition of PerformanceClass.AverageCPU7.ProcessName. This is recorded
     every 2 minutes for {UsageScenario} (see go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.AverageCPU6.{ProcessName}" units="1/100 %"
+<histogram name="PerformanceMonitor.AverageCPU7.{ProcessName}" units="1/100 %"
     expires_after="2022-11-30">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
@@ -174,12 +174,8 @@ chromium-metrics-reviews@google.com.
 
     Not recorded on Android.
 
-    NOTE: This metric has one significant limitation, it doesn't report the CPU
-    usage of non-renderer processes that terminate before the end of the
-    interval.
-
-    ANOTHER NOTE: On Windows, this is not recorded on CPUs that do not support
-    constant rate TSC.
+    NOTE: On Windows, this is not recorded on CPUs that do not support constant
+    rate TSC.
   </summary>
   <token key="ProcessName" variants="ProcessName"/>
 </histogram>
