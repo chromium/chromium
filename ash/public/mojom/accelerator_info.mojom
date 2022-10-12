@@ -87,6 +87,8 @@ enum AcceleratorSubcategory {
 struct AcceleratorInfo {
   // Underlying accelerator struct, contains keycode and modifier.
   ui.mojom.Accelerator accelerator;
+  // The user viewable string of the primary activation key for the accelerator.
+  mojo_base.mojom.String16 key_display;
   AcceleratorType type;
   AcceleratorState state;
   // True if the accelerator can not be customized by the user.

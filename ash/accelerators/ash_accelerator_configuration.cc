@@ -11,6 +11,7 @@
 #include "ash/accelerators/debug_commands.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
@@ -172,7 +173,8 @@ void AshAcceleratorConfiguration::AddAccelerators(
                                   : ui::Accelerator::KeyState::RELEASED);
     // TODO(jimmyxgong): Ash accelerators should not be locked when
     // customization is allowed.
-    AcceleratorInfo info(type, accelerator, /**locked=*/true);
+    AcceleratorInfo info(type, accelerator, KeycodeToKeyString(data.keycode),
+                         /*locked=*/true);
     accelerator_to_id_.InsertNew(std::make_pair(accelerator, data.action));
     id_to_accelerator_infos_[static_cast<uint32_t>(data.action)].push_back(
         info);

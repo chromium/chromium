@@ -10,6 +10,7 @@
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -31,8 +32,10 @@ bool CompareAccelerators(const ash::AcceleratorData& expected_data,
                          const ash::AcceleratorInfo& actual_info) {
   ui::Accelerator expected_accel(expected_data.keycode,
                                  expected_data.modifiers);
-  ash::AcceleratorInfo expected_info(actual_info.type, expected_accel,
-                                     /**locked=*/true);
+  ash::AcceleratorInfo expected_info(
+      actual_info.type, expected_accel,
+      ash::KeycodeToKeyString(expected_data.keycode),
+      /*locked=*/true);
 
   const bool type_equals = expected_info.type == actual_info.type;
   const bool accelerator_equals =

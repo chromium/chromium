@@ -9,6 +9,7 @@
 
 #include "ash/accelerators/accelerator_layout_table.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/accelerators_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
@@ -24,14 +25,19 @@ bool CompareAccelerators(const ash::AcceleratorData& expected_data,
                          const ash::AcceleratorInfo& actual_info) {
   ui::Accelerator expected_accel(expected_data.keycode,
                                  expected_data.modifiers);
-  ash::AcceleratorInfo expected_info(actual_info.type, expected_accel,
-                                     /**locked=*/true);
+  ash::AcceleratorInfo expected_info(
+      actual_info.type, expected_accel,
+      ash::KeycodeToKeyString(expected_data.keycode),
+      /*locked=*/true);
 
   const bool type_equals = expected_info.type == actual_info.type;
   const bool accelerator_equals =
       expected_info.accelerator == actual_info.accelerator;
+  const bool key_display_equals =
+      expected_info.key_display == actual_info.key_display;
   const bool locked_equals = expected_info.locked == actual_info.locked;
-  return type_equals && accelerator_equals && locked_equals;
+  return type_equals && accelerator_equals && key_display_equals &&
+         locked_equals;
 }
 
 void ExpectAllAcceleratorsEqual(
