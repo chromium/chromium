@@ -13,6 +13,7 @@
 #include "ash/login/ui/login_palette.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
@@ -54,7 +55,8 @@ enum class EasyUnlockIconState;
 //  ------------------
 class ASH_EXPORT LoginPasswordView : public views::View,
                                      public views::TextfieldController,
-                                     public ImeControllerImpl::Observer {
+                                     public ImeControllerImpl::Observer,
+                                     public ui::ImplicitAnimationObserver {
  public:
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {
@@ -160,6 +162,9 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // ImeControllerImpl::Observer:
   void OnCapsLockChanged(bool enabled) override;
   void OnKeyboardLayoutNameChanged(const std::string&) override {}
+
+  // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsCompleted() override;
 
   void HandleLeftIconsVisibilities(bool handling_capslock);
 

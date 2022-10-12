@@ -905,6 +905,12 @@ void LoginPasswordView::OnCapsLockChanged(bool enabled) {
   HandleLeftIconsVisibilities(true /*handling_capslock*/);
 }
 
+void LoginPasswordView::OnImplicitAnimationsCompleted() {
+  Reset();
+  SetVisible(false);
+  StopObservingImplicitAnimations();
+}
+
 bool LoginPasswordView::IsPasswordSubmittable() {
   return !textfield_->GetReadOnly() &&
          (enabled_on_empty_password_ || !textfield_->GetText().empty());

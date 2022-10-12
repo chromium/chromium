@@ -201,32 +201,6 @@ ui::CallbackLayerAnimationObserver* BuildObserverToNotifyA11yLocationChanged(
       view));
 }
 
-// Clears the password for the given |LoginPasswordView| instance, hides it, and
-// then deletes itself.
-class ClearPasswordAndHideAnimationObserver
-    : public ui::ImplicitAnimationObserver {
- public:
-  explicit ClearPasswordAndHideAnimationObserver(LoginPasswordView* view)
-      : password_view_(view) {}
-
-  ClearPasswordAndHideAnimationObserver(
-      const ClearPasswordAndHideAnimationObserver&) = delete;
-  ClearPasswordAndHideAnimationObserver& operator=(
-      const ClearPasswordAndHideAnimationObserver&) = delete;
-
-  ~ClearPasswordAndHideAnimationObserver() override = default;
-
-  // ui::ImplicitAnimationObserver:
-  void OnImplicitAnimationsCompleted() override {
-    password_view_->Reset();
-    password_view_->SetVisible(false);
-    delete this;
-  }
-
- private:
-  LoginPasswordView* const password_view_;
-};
-
 // The label shown below the fingerprint icon.
 // TODO(https://crbug.com/1233614): Remove this class after the Smart Lock UI
 // revamp is complete.
@@ -1486,8 +1460,7 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
           base::Milliseconds(login::kChangeUserAnimationDurationMs));
       settings.SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
       if (previous_state_->has_password && !current_state.has_password) {
-        settings.AddObserver(
-            new ClearPasswordAndHideAnimationObserver(password_view_));
+        settings.AddObserver(password_view_);
       }
 
       password_view_->layer()->SetOpacity(opacity_end);
