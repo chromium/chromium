@@ -18,7 +18,6 @@ import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_C
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_EXPANDED_WITH_HEADER;
 
 import android.content.Context;
-import android.util.SparseArray;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
@@ -44,7 +43,7 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -143,7 +142,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
                 new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2),
                 new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2));
 
-        mManager.setSourceViewInfoList(list, new SparseArray<GroupConfig>());
+        mManager.setSourceViewInfoList(list, GroupsInfo.newBuilder().build());
         verifyModelEquals(list);
 
         // Monitor updates moving forward.
@@ -180,7 +179,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
                 new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2),
                 new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2));
 
-        mManager.setSourceViewInfoList(listWithBothGroupsExpanded, new SparseArray<GroupConfig>());
+        mManager.setSourceViewInfoList(listWithBothGroupsExpanded, GroupsInfo.newBuilder().build());
         verifyModelEquals(listWithBothGroupsExpanded);
 
         // Toggle group 1.
@@ -227,12 +226,11 @@ public class DropdownItemViewInfoListManagerUnitTest {
                 new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2));
 
         // Receive suggestions list with group 1 default-collapsed.
-        mManager.setSourceViewInfoList(listWithBothGroupsExpanded, new SparseArray<GroupConfig>() {
-            {
-                put(1, SECTION_1_COLLAPSED_NO_HEADER);
-                put(2, SECTION_2_EXPANDED_WITH_HEADER);
-            }
-        });
+        mManager.setSourceViewInfoList(listWithBothGroupsExpanded,
+                GroupsInfo.newBuilder()
+                        .putGroupConfigs(1, SECTION_1_COLLAPSED_NO_HEADER)
+                        .putGroupConfigs(2, SECTION_2_EXPANDED_WITH_HEADER)
+                        .build());
 
         final List<DropdownItemViewInfo> listWithGroup1Collapsed = new ArrayList<>();
         listWithGroup1Collapsed.add(listWithBothGroupsExpanded.get(0));
@@ -244,12 +242,11 @@ public class DropdownItemViewInfoListManagerUnitTest {
         verifyModelEquals(listWithBothGroupsExpanded);
 
         // Receive suggestions list with group 2 default-collapsed.
-        mManager.setSourceViewInfoList(listWithBothGroupsExpanded, new SparseArray<GroupConfig>() {
-            {
-                put(1, SECTION_1_EXPANDED_NO_HEADER);
-                put(2, SECTION_2_COLLAPSED_WITH_HEADER);
-            }
-        });
+        mManager.setSourceViewInfoList(listWithBothGroupsExpanded,
+                GroupsInfo.newBuilder()
+                        .putGroupConfigs(1, SECTION_1_EXPANDED_NO_HEADER)
+                        .putGroupConfigs(2, SECTION_2_COLLAPSED_WITH_HEADER)
+                        .build());
         final List<DropdownItemViewInfo> listWithGroup2Collapsed =
                 listWithBothGroupsExpanded.subList(0, 4);
         verifyModelEquals(listWithGroup2Collapsed);
@@ -258,12 +255,11 @@ public class DropdownItemViewInfoListManagerUnitTest {
         verifyModelEquals(listWithBothGroupsExpanded);
 
         // Receive suggestions list with both groups default-collapsed.
-        mManager.setSourceViewInfoList(listWithBothGroupsExpanded, new SparseArray<GroupConfig>() {
-            {
-                put(1, SECTION_1_COLLAPSED_NO_HEADER);
-                put(2, SECTION_2_COLLAPSED_WITH_HEADER);
-            }
-        });
+        mManager.setSourceViewInfoList(listWithBothGroupsExpanded,
+                GroupsInfo.newBuilder()
+                        .putGroupConfigs(1, SECTION_1_COLLAPSED_NO_HEADER)
+                        .putGroupConfigs(2, SECTION_2_COLLAPSED_WITH_HEADER)
+                        .build());
         final List<DropdownItemViewInfo> listWithBothGroupsCollapsed =
                 listWithGroup1Collapsed.subList(0, 2);
         verifyModelEquals(listWithBothGroupsCollapsed);
@@ -286,7 +282,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
                 new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2),
                 new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2));
 
-        mManager.setSourceViewInfoList(list, new SparseArray<GroupConfig>());
+        mManager.setSourceViewInfoList(list, GroupsInfo.newBuilder().build());
         verifyModelEquals(list);
 
         // Expand group 1.
@@ -311,7 +307,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
                 new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2),
                 new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 2));
 
-        mManager.setSourceViewInfoList(list, new SparseArray<GroupConfig>());
+        mManager.setSourceViewInfoList(list, GroupsInfo.newBuilder().build());
         verifyModelEquals(list);
 
         // Collapse group 1.
@@ -352,12 +348,12 @@ public class DropdownItemViewInfoListManagerUnitTest {
                         new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1),
                         new DropdownItemViewInfo(mBasicSuggestionProcessor, mModel, 1));
 
-        mManager.setSourceViewInfoList(list1, new SparseArray<GroupConfig>());
+        mManager.setSourceViewInfoList(list1, GroupsInfo.newBuilder().build());
         verifyModelEquals(list1);
 
         mManager.clear();
 
-        mManager.setSourceViewInfoList(list2, new SparseArray<GroupConfig>());
+        mManager.setSourceViewInfoList(list2, GroupsInfo.newBuilder().build());
         verifyModelEquals(list2);
     }
 
@@ -372,7 +368,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
                         new DropdownItemViewInfo(mBasicSuggestionProcessor,
                                 new PropertyModel(SuggestionCommonProperties.ALL_KEYS), 1));
 
-        mManager.setSourceViewInfoList(list, new SparseArray<GroupConfig>());
+        mManager.setSourceViewInfoList(list, GroupsInfo.newBuilder().build());
         verifyModelEquals(list);
         verifyPropertyValues(View.LAYOUT_DIRECTION_INHERIT, BrandedColorScheme.LIGHT_BRANDED_THEME);
 
@@ -394,7 +390,7 @@ public class DropdownItemViewInfoListManagerUnitTest {
                         new PropertyModel(SuggestionCommonProperties.ALL_KEYS), 2),
                 new DropdownItemViewInfo(mBasicSuggestionProcessor,
                         new PropertyModel(SuggestionCommonProperties.ALL_KEYS), 2));
-        mManager.setSourceViewInfoList(list, new SparseArray<GroupConfig>());
+        mManager.setSourceViewInfoList(list, GroupsInfo.newBuilder().build());
         verifyModelEquals(list);
         verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, BrandedColorScheme.INCOGNITO);
     }
@@ -415,12 +411,11 @@ public class DropdownItemViewInfoListManagerUnitTest {
                 new DropdownItemViewInfo(mBasicSuggestionProcessor,
                         new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdWithHeader));
 
-        mManager.setSourceViewInfoList(list, new SparseArray<GroupConfig>() {
-            {
-                put(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER);
-                put(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER);
-            }
-        });
+        mManager.setSourceViewInfoList(list,
+                GroupsInfo.newBuilder()
+                        .putGroupConfigs(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER)
+                        .putGroupConfigs(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER)
+                        .build());
         verifyModelEquals(list);
 
         //
@@ -477,12 +472,11 @@ public class DropdownItemViewInfoListManagerUnitTest {
                         new PropertyModel(SuggestionCommonProperties.ALL_KEYS), groupIdWithHeader));
 
         // Receive suggestions list with group 1 default-collapsed.
-        mManager.setSourceViewInfoList(list, new SparseArray<GroupConfig>() {
-            {
-                put(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER);
-                put(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER);
-            }
-        });
+        mManager.setSourceViewInfoList(list,
+                GroupsInfo.newBuilder()
+                        .putGroupConfigs(groupIdNoHeader, SECTION_1_EXPANDED_NO_HEADER)
+                        .putGroupConfigs(groupIdWithHeader, SECTION_2_EXPANDED_WITH_HEADER)
+                        .build());
         verifyModelEquals(list);
 
         //

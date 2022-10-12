@@ -38,7 +38,6 @@ import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -255,6 +254,7 @@ class DropdownItemViewInfoListBuilder {
         }
 
         final int suggestionsCount = autocompleteResult.getSuggestionsList().size();
+        var groupConfigs = autocompleteResult.getGroupsInfo().getGroupConfigsMap();
 
         // When Adaptive Suggestions are set, perform partial grouping by search vs url.
         // Take action only if we have more suggestions to offer than just a default match and
@@ -308,7 +308,7 @@ class DropdownItemViewInfoListBuilder {
             // determines rounding boundaries of suggestion group.
             if (currentGroup != suggestion.getGroupId()) {
                 currentGroup = suggestion.getGroupId();
-                final GroupConfig details = autocompleteResult.getGroupsDetails().get(currentGroup);
+                final var details = groupConfigs.get(currentGroup);
 
                 // Only add the Header Group when both ID and details are specified.
                 // Note that despite GroupsDetails map not holding <null> values,

@@ -4,20 +4,16 @@
 
 package org.chromium.components.omnibox;
 
-import android.util.SparseArray;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.util.ObjectsCompat;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.build.annotations.MockedInTests;
-import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 
 import java.lang.annotation.Retention;
@@ -50,10 +46,8 @@ public class AutocompleteResult {
             new AutocompleteResult(0, Collections.emptyList(), null);
     /** A special value indicating that action has no particular index associated. */
     public static final int NO_SUGGESTION_INDEX = -1;
-    /** Initial capacity of the mGroupsDetails SparseArray. */
-    private static final int GROUPS_DETAILS_INIT_CAPACITY = 5;
 
-    private final @NonNull SparseArray<GroupConfig> mGroupsDetails;
+    private final @NonNull GroupsInfo mGroupsInfo;
     private final @NonNull List<AutocompleteMatch> mSuggestions;
     private final boolean mIsFromCachedResult;
     private long mNativeAutocompleteResult;
@@ -65,11 +59,11 @@ public class AutocompleteResult {
      * @param nativeResult Opaque pointer to Native AutocompleteResult object (or 0 if this object
      *         is built from local cache)
      * @param suggestions List of AutocompleteMatch objects.
-     * @param groupsDetails Additional information about the AutocompleteMatch groups.
+     * @param groupsInfo Additional information about the AutocompleteMatch groups.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     AutocompleteResult(long nativeResult, @Nullable List<AutocompleteMatch> suggestions,
-            @Nullable SparseArray<GroupConfig> groupsDetails) {
+            @Nullable GroupsInfo groupsInfo) {
         // Consider all locally constructed AutocompleteResult objects as coming from Cache.
         // These results do not have a native counterpart, meaning there's no corresponding C++
         // structure describing the same AutocompleteResult.
@@ -79,7 +73,7 @@ public class AutocompleteResult {
         mIsFromCachedResult = nativeResult == 0;
         mNativeAutocompleteResult = nativeResult;
         mSuggestions = suggestions != null ? suggestions : new ArrayList<>();
-        mGroupsDetails = groupsDetails != null ? groupsDetails : new SparseArray<>();
+        mGroupsInfo = groupsInfo != null ? groupsInfo : GroupsInfo.newBuilder().build();
     }
 
     /**
@@ -89,12 +83,12 @@ public class AutocompleteResult {
      * counterpart.
      *
      * @param suggestions List of AutocompleteMatch objects.
-     * @param groupsDetails Additional information about the AutocompleteMatch groups.
+     * @param groupsInfo Additional information about the AutocompleteMatch groups.
      * @return AutocompleteResult object encompassing supplied information.
      */
-    public static AutocompleteResult fromCache(@Nullable List<AutocompleteMatch> suggestions,
-            @Nullable SparseArray<GroupConfig> groupsDetails) {
-        return new AutocompleteResult(0, suggestions, groupsDetails);
+    public static AutocompleteResult fromCache(
+            @Nullable List<AutocompleteMatch> suggestions, @Nullable GroupsInfo groupsInfo) {
+        return new AutocompleteResult(0, suggestions, groupsInfo);
     }
 
     /**
@@ -117,19 +111,15 @@ public class AutocompleteResult {
     @CalledByNative
     static AutocompleteResult fromNative(long nativeAutocompleteResult,
             @NonNull AutocompleteMatch[] suggestions, @NonNull byte[] groupDefinitions) {
-        var groupsDetails = new SparseArray<GroupConfig>(GROUPS_DETAILS_INIT_CAPACITY);
+        GroupsInfo groupsInfo = null;
 
         try {
-            var groupsInfo = GroupsInfo.parseFrom(groupDefinitions);
-            var groupsMap = groupsInfo.getGroupConfigsMap();
-            for (var entry : groupsMap.entrySet()) {
-                groupsDetails.put(entry.getKey(), entry.getValue());
-            }
+            groupsInfo = GroupsInfo.parseFrom(groupDefinitions);
         } catch (InvalidProtocolBufferException e) {
         }
 
         AutocompleteResult result =
-                new AutocompleteResult(nativeAutocompleteResult, null, groupsDetails);
+                new AutocompleteResult(nativeAutocompleteResult, null, groupsInfo);
         result.updateMatches(suggestions);
         return result;
     }
@@ -155,11 +145,11 @@ public class AutocompleteResult {
     }
 
     /**
-     * @return Map of Group ID to GroupConfig objects.
+     * @return GroupsInfo structure, describing everything that's known about Suggestion Groups.
      */
     @NonNull
-    public SparseArray<GroupConfig> getGroupsDetails() {
-        return mGroupsDetails;
+    public GroupsInfo getGroupsInfo() {
+        return mGroupsInfo;
     }
 
     public boolean isFromCachedResult() {
@@ -199,29 +189,12 @@ public class AutocompleteResult {
 
         AutocompleteResult other = (AutocompleteResult) otherObj;
         if (!mSuggestions.equals(other.mSuggestions)) return false;
-
-        final SparseArray<GroupConfig> otherGroupsDetails = other.mGroupsDetails;
-        if (mGroupsDetails.size() != otherGroupsDetails.size()) return false;
-        for (int index = 0; index < mGroupsDetails.size(); index++) {
-            if (mGroupsDetails.keyAt(index) != otherGroupsDetails.keyAt(index)) return false;
-            if (!ObjectsCompat.equals(
-                        mGroupsDetails.valueAt(index), otherGroupsDetails.valueAt(index))) {
-                return false;
-            }
-        }
-
-        return true;
+        return (mGroupsInfo.equals(other.mGroupsInfo));
     }
 
     @Override
     public int hashCode() {
-        int baseHash = 0;
-        for (int index = 0; index < mGroupsDetails.size(); index++) {
-            baseHash += mGroupsDetails.keyAt(index);
-            baseHash ^= mGroupsDetails.valueAt(index).hashCode();
-            baseHash = Integer.rotateLeft(baseHash, 10);
-        }
-        return baseHash ^ mSuggestions.hashCode();
+        return mGroupsInfo.hashCode() ^ mSuggestions.hashCode();
     }
 
     /**

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.content.Context;
-import android.util.SparseArray;
 import android.util.SparseBooleanArray;
 import android.view.View;
 
@@ -16,6 +15,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.components.omnibox.GroupsProto.GroupSection;
+import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -119,15 +119,16 @@ class DropdownItemViewInfoListManager {
      * @param sourceList Source list of ViewInfo elements.
      * @param groupsDetails Group ID to GroupConfig map carrying group collapsed state information.
      */
-    void setSourceViewInfoList(@NonNull List<DropdownItemViewInfo> sourceList,
-            @NonNull SparseArray<GroupConfig> groupsDetails) {
+    void setSourceViewInfoList(
+            @NonNull List<DropdownItemViewInfo> sourceList, @NonNull GroupsInfo groupsInfo) {
         mSourceViewInfoList = sourceList;
         mGroupsCollapsedState.clear();
 
+        final var groupsDetails = groupsInfo.getGroupConfigsMap();
         // Clone information about the recommended group collapsed state.
-        for (int index = 0; index < groupsDetails.size(); index++) {
-            mGroupsCollapsedState.put(groupsDetails.keyAt(index),
-                    groupsDetails.valueAt(index).getVisibility() == GroupConfig.Visibility.HIDDEN);
+        for (var entry : groupsDetails.entrySet()) {
+            mGroupsCollapsedState.put(entry.getKey(),
+                    entry.getValue().getVisibility() == GroupConfig.Visibility.HIDDEN);
         }
 
         // Build a new list of suggestions. Honor the default collapsed state.

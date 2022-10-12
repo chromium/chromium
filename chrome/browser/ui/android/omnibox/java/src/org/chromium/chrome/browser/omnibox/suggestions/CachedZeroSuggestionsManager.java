@@ -21,7 +21,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_Z
 
 import android.text.TextUtils;
 import android.util.Base64;
-import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -35,11 +34,13 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -52,7 +53,7 @@ public class CachedZeroSuggestionsManager {
     public static void saveToCache(AutocompleteResult resultToCache) {
         final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
         cacheSuggestionList(manager, resultToCache.getSuggestionsList());
-        cacheGroupsDetails(manager, resultToCache.getGroupsDetails());
+        cacheGroupsDetails(manager, resultToCache.getGroupsInfo());
     }
 
     /**
@@ -63,9 +64,8 @@ public class CachedZeroSuggestionsManager {
         final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
         List<AutocompleteMatch> suggestions =
                 CachedZeroSuggestionsManager.readCachedSuggestionList(manager);
-        SparseArray<GroupConfig> groupsDetails =
-                CachedZeroSuggestionsManager.readCachedGroupsDetails(manager);
-        removeInvalidSuggestionsAndGroupsDetails(suggestions, groupsDetails);
+        GroupsInfo groupsDetails = CachedZeroSuggestionsManager.readCachedGroupsDetails(manager);
+        removeInvalidSuggestionsAndGroupsDetails(suggestions, groupsDetails.getGroupConfigsMap());
         return AutocompleteResult.fromCache(suggestions, groupsDetails);
     }
 
@@ -196,20 +196,23 @@ public class CachedZeroSuggestionsManager {
      * @param groupsDetails Map of Group ID to GroupConfig.
      */
     private static void cacheGroupsDetails(
-            SharedPreferencesManager prefs, SparseArray<GroupConfig> groupsDetails) {
-        final int size = groupsDetails.size();
+            SharedPreferencesManager prefs, GroupsInfo groupsDetails) {
+        final var groupConfigs = groupsDetails.getGroupConfigsMap();
+        final int size = groupConfigs.size();
         prefs.writeInt(ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_LIST_SIZE, size);
-        for (int i = 0; i < size; i++) {
-            final GroupConfig details = groupsDetails.valueAt(i);
+
+        int i = 0;
+        for (var entry : groupConfigs.entrySet()) {
+            final GroupConfig details = entry.getValue();
             String title = details.getHeaderText();
             boolean collapsedByDefault = details.getVisibility() == GroupConfig.Visibility.HIDDEN;
 
-            prefs.writeInt(
-                    KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX.createKey(i), groupsDetails.keyAt(i));
+            prefs.writeInt(KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX.createKey(i), entry.getKey());
             prefs.writeString(KEY_ZERO_SUGGEST_HEADER_GROUP_TITLE_PREFIX.createKey(i), title);
             prefs.writeBoolean(
                     KEY_ZERO_SUGGEST_HEADER_GROUP_COLLAPSED_BY_DEFAULT_PREFIX.createKey(i),
                     collapsedByDefault);
+            i++;
         }
     }
 
@@ -221,9 +224,9 @@ public class CachedZeroSuggestionsManager {
      */
     @NonNull
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static SparseArray<GroupConfig> readCachedGroupsDetails(SharedPreferencesManager prefs) {
+    static GroupsInfo readCachedGroupsDetails(SharedPreferencesManager prefs) {
         final int size = prefs.readInt(ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_LIST_SIZE, 0);
-        final SparseArray<GroupConfig> groupsDetails = new SparseArray<>(size);
+        final var builder = GroupsInfo.newBuilder();
 
         for (int i = 0; i < size; i++) {
             int groupId = prefs.readInt(KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX.createKey(i),
@@ -239,7 +242,7 @@ public class CachedZeroSuggestionsManager {
                 continue;
             }
 
-            groupsDetails.put(groupId,
+            builder.putGroupConfigs(groupId,
                     GroupConfig.newBuilder()
                             .setHeaderText(groupTitle)
                             .setVisibility(collapsedByDefault
@@ -247,7 +250,7 @@ public class CachedZeroSuggestionsManager {
                                             : GroupConfig.Visibility.DEFAULT_VISIBLE)
                             .build());
         }
-        return groupsDetails;
+        return builder.build();
     }
 
     /**
@@ -258,22 +261,14 @@ public class CachedZeroSuggestionsManager {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static void removeInvalidSuggestionsAndGroupsDetails(
-            List<AutocompleteMatch> suggestions, SparseArray<GroupConfig> groupsDetails) {
-        // Remove all group details that have invalid index.
-        // Note that the missing title is OK: groups do not need to have one.
-        for (int index = groupsDetails.size() - 1; index >= 0; index--) {
-            if (groupsDetails.keyAt(index) == AutocompleteMatch.INVALID_GROUP) {
-                groupsDetails.removeAt(index);
-            }
-        }
-
+            List<AutocompleteMatch> suggestions, Map<Integer, GroupConfig> groupsDetails) {
         // Remove all suggestions with no valid URL or pointing to nonexistent groups.
         for (int index = suggestions.size() - 1; index >= 0; index--) {
             final AutocompleteMatch suggestion = suggestions.get(index);
             final int groupId = suggestion.getGroupId();
             if (!suggestion.getUrl().isValid() || suggestion.getUrl().isEmpty()
                     || (groupId != AutocompleteMatch.INVALID_GROUP
-                            && groupsDetails.indexOfKey(groupId) < 0)) {
+                            && !groupsDetails.containsKey(groupId))) {
                 suggestions.remove(index);
             }
         }

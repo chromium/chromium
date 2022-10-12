@@ -9,8 +9,6 @@ import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_E
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_EXPANDED_WITH_HEADER;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_EXPANDED_WITH_HEADER;
 
-import android.util.SparseArray;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +17,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.url.ShadowGURL;
 
 import java.util.ArrayList;
@@ -56,20 +55,26 @@ public class AutocompleteResultUnitTest {
         list1.get(2).getSubtypes().add(4);
         list2.get(2).getSubtypes().add(4);
 
-        SparseArray<GroupConfig> groupsDetails1 = new SparseArray<>();
-        SparseArray<GroupConfig> groupsDetails2 = new SparseArray<>();
+        var groupsDetails1 = GroupsInfo.newBuilder()
+                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .putGroupConfigs(30, SECTION_3_EXPANDED_WITH_HEADER)
+                                     .build();
 
-        groupsDetails1.put(10, SECTION_1_EXPANDED_NO_HEADER);
-        groupsDetails1.put(20, SECTION_2_EXPANDED_WITH_HEADER);
-        groupsDetails1.put(30, SECTION_3_EXPANDED_WITH_HEADER);
-
-        // Make explicit copies of the original protos listed above.
-        groupsDetails2.put(
-                10, GroupConfig.newBuilder().mergeFrom(SECTION_1_EXPANDED_NO_HEADER).build());
-        groupsDetails2.put(
-                20, GroupConfig.newBuilder().mergeFrom(SECTION_2_EXPANDED_WITH_HEADER).build());
-        groupsDetails2.put(
-                30, GroupConfig.newBuilder().mergeFrom(SECTION_3_EXPANDED_WITH_HEADER).build());
+        var groupsDetails2 = GroupsInfo.newBuilder()
+                                     .putGroupConfigs(10,
+                                             GroupConfig.newBuilder()
+                                                     .mergeFrom(SECTION_1_EXPANDED_NO_HEADER)
+                                                     .build())
+                                     .putGroupConfigs(20,
+                                             GroupConfig.newBuilder()
+                                                     .mergeFrom(SECTION_2_EXPANDED_WITH_HEADER)
+                                                     .build())
+                                     .putGroupConfigs(30,
+                                             GroupConfig.newBuilder()
+                                                     .mergeFrom(SECTION_3_EXPANDED_WITH_HEADER)
+                                                     .build())
+                                     .build();
 
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
@@ -80,22 +85,22 @@ public class AutocompleteResultUnitTest {
 
     @Test
     public void autocompleteResult_itemsOutOfOrderAreNotEqual() {
-        List<AutocompleteMatch> list1 = Arrays.asList(
+        var list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
-        List<AutocompleteMatch> list2 = Arrays.asList(
+        var list2 = Arrays.asList(
                 buildSuggestionForIndex(2), buildSuggestionForIndex(1), buildSuggestionForIndex(3));
 
-        SparseArray<GroupConfig> groupsDetails1 = new SparseArray<>();
-        SparseArray<GroupConfig> groupsDetails2 = new SparseArray<>();
+        var groupsDetails1 = GroupsInfo.newBuilder()
+                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .build();
+        var groupsDetails2 = GroupsInfo.newBuilder()
+                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .build();
 
-        groupsDetails1.put(10, SECTION_1_EXPANDED_NO_HEADER);
-        groupsDetails1.put(20, SECTION_2_EXPANDED_WITH_HEADER);
-
-        groupsDetails2.put(10, SECTION_1_EXPANDED_NO_HEADER);
-        groupsDetails2.put(20, SECTION_2_EXPANDED_WITH_HEADER);
-
-        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
-        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
+        var res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
+        var res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
@@ -103,21 +108,20 @@ public class AutocompleteResultUnitTest {
 
     @Test
     public void autocompleteResult_missingGroupsDetailsAreNotEqual() {
-        List<AutocompleteMatch> list1 = Arrays.asList(
+        var list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
-        List<AutocompleteMatch> list2 = Arrays.asList(
+        var list2 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
-        SparseArray<GroupConfig> groupsDetails1 = new SparseArray<>();
-        SparseArray<GroupConfig> groupsDetails2 = new SparseArray<>();
+        var groupsDetails1 = GroupsInfo.newBuilder()
+                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .build();
+        var groupsDetails2 =
+                GroupsInfo.newBuilder().putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER).build();
 
-        groupsDetails1.put(10, SECTION_1_EXPANDED_NO_HEADER);
-        groupsDetails1.put(20, SECTION_2_EXPANDED_WITH_HEADER);
-
-        groupsDetails2.put(10, SECTION_1_EXPANDED_NO_HEADER);
-
-        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
-        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
+        var res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
+        var res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
@@ -125,22 +129,22 @@ public class AutocompleteResultUnitTest {
 
     @Test
     public void autocompleteResult_groupsWithDifferentDefaultExpandedStateAreNotEqual() {
-        List<AutocompleteMatch> list1 = Arrays.asList(
+        var list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
-        List<AutocompleteMatch> list2 = Arrays.asList(
+        var list2 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
-        SparseArray<GroupConfig> groupsDetails1 = new SparseArray<>();
-        SparseArray<GroupConfig> groupsDetails2 = new SparseArray<>();
+        var groupsDetails1 = GroupsInfo.newBuilder()
+                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .build();
+        var groupsDetails2 = GroupsInfo.newBuilder()
+                                     .putGroupConfigs(10, SECTION_1_COLLAPSED_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .build();
 
-        groupsDetails1.put(10, SECTION_1_EXPANDED_NO_HEADER);
-        groupsDetails1.put(20, SECTION_2_EXPANDED_WITH_HEADER);
-
-        groupsDetails2.put(10, SECTION_1_COLLAPSED_NO_HEADER);
-        groupsDetails2.put(20, SECTION_2_EXPANDED_WITH_HEADER);
-
-        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
-        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
+        var res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
+        var res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
@@ -148,23 +152,23 @@ public class AutocompleteResultUnitTest {
 
     @Test
     public void autocompleteResult_extraGroupsDetailsAreNotEqual() {
-        List<AutocompleteMatch> list1 = Arrays.asList(
+        var list1 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
-        List<AutocompleteMatch> list2 = Arrays.asList(
+        var list2 = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
-        SparseArray<GroupConfig> groupsDetails1 = new SparseArray<>();
-        SparseArray<GroupConfig> groupsDetails2 = new SparseArray<>();
+        var groupsDetails1 = GroupsInfo.newBuilder()
+                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .build();
+        var groupsDetails2 = GroupsInfo.newBuilder()
+                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .putGroupConfigs(30, SECTION_3_EXPANDED_WITH_HEADER)
+                                     .build();
 
-        groupsDetails1.put(10, SECTION_1_EXPANDED_NO_HEADER);
-        groupsDetails1.put(20, SECTION_2_EXPANDED_WITH_HEADER);
-
-        groupsDetails2.put(10, SECTION_1_EXPANDED_NO_HEADER);
-        groupsDetails2.put(20, SECTION_2_EXPANDED_WITH_HEADER);
-        groupsDetails2.put(30, SECTION_3_EXPANDED_WITH_HEADER);
-
-        AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
-        AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
+        var res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
+        var res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
@@ -186,30 +190,29 @@ public class AutocompleteResultUnitTest {
 
     @Test
     public void autocompleteResult_differentGroupsDetailsAreNotEqual() {
-        List<AutocompleteMatch> list = Arrays.asList(
+        var list = Arrays.asList(
                 buildSuggestionForIndex(1), buildSuggestionForIndex(2), buildSuggestionForIndex(3));
 
-        SparseArray<GroupConfig> groupsDetails1 = new SparseArray<>();
-        SparseArray<GroupConfig> groupsDetails2 = new SparseArray<>();
-        SparseArray<GroupConfig> groupsDetails3 = new SparseArray<>();
+        var groupsDetails1 = GroupsInfo.newBuilder()
+                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
+                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .build();
+        var groupsDetails2 = GroupsInfo.newBuilder()
+                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
+                                     .putGroupConfigs(15, SECTION_2_EXPANDED_WITH_HEADER)
+                                     .build();
+        var groupsDetails3 = GroupsInfo.newBuilder()
+                                     .putGroupConfigs(10, SECTION_1_EXPANDED_NO_HEADER)
+                                     .putGroupConfigs(20,
+                                             GroupConfig.newBuilder()
+                                                     .mergeFrom(SECTION_2_EXPANDED_WITH_HEADER)
+                                                     .setHeaderText("Woooo")
+                                                     .build())
+                                     .build();
 
-        groupsDetails1.put(10, SECTION_1_EXPANDED_NO_HEADER);
-        groupsDetails1.put(20, SECTION_2_EXPANDED_WITH_HEADER);
-
-        groupsDetails2.put(10, SECTION_1_EXPANDED_NO_HEADER);
-        groupsDetails2.put(15, SECTION_2_EXPANDED_WITH_HEADER);
-
-        groupsDetails3.put(10, SECTION_1_EXPANDED_NO_HEADER);
-        ;
-        groupsDetails3.put(20,
-                GroupConfig.newBuilder()
-                        .mergeFrom(SECTION_2_EXPANDED_WITH_HEADER)
-                        .setHeaderText("Woooo")
-                        .build());
-
-        AutocompleteResult res1 = AutocompleteResult.fromCache(list, groupsDetails1);
-        AutocompleteResult res2 = AutocompleteResult.fromCache(list, groupsDetails2);
-        AutocompleteResult res3 = AutocompleteResult.fromCache(list, groupsDetails3);
+        var res1 = AutocompleteResult.fromCache(list, groupsDetails1);
+        var res2 = AutocompleteResult.fromCache(list, groupsDetails2);
+        var res3 = AutocompleteResult.fromCache(list, groupsDetails3);
 
         Assert.assertNotEquals(res1, res2);
         Assert.assertNotEquals(res1, res3);
@@ -290,7 +293,7 @@ public class AutocompleteResultUnitTest {
         res.notifyNativeDestroyed();
         Assert.assertTrue(res.isFromCachedResult());
 
-        res = AutocompleteResult.fromCache(new ArrayList<>(), new SparseArray<>());
+        res = AutocompleteResult.fromCache(new ArrayList<>(), GroupsInfo.newBuilder().build());
         Assert.assertTrue(res.isFromCachedResult());
         res.notifyNativeDestroyed();
         Assert.assertTrue(res.isFromCachedResult());

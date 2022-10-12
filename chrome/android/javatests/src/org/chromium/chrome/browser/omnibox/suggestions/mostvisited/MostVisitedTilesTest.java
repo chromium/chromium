@@ -15,6 +15,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_EXPANDED_WITH_HEADER;
+
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -57,7 +59,7 @@ import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
 import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -166,7 +168,8 @@ public class MostVisitedTilesTest {
         mTile3 = new SuggestTile(
                 "Test Server", new GURL(mTestServer.getURL("/echo/tile3.html")), false);
 
-        AutocompleteResult autocompleteResult = AutocompleteResult.fromCache(null, null);
+        AutocompleteResult autocompleteResult = AutocompleteResult.fromCache(null,
+                GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_EXPANDED_WITH_HEADER).build());
         AutocompleteMatchBuilder builder = new AutocompleteMatchBuilder();
 
         // First suggestion is the current content of the Omnibox.
@@ -190,9 +193,6 @@ public class MostVisitedTilesTest {
         builder.setGroupId(1);
         autocompleteResult.getSuggestionsList().add(builder.build());
         builder.reset();
-
-        autocompleteResult.getGroupsDetails().put(
-                1, GroupConfig.newBuilder().setHeaderText("See also").build());
 
         doAnswer(invocation -> {
             mListener.getValue().onSuggestionsReceived(autocompleteResult, mStartUrl, true);

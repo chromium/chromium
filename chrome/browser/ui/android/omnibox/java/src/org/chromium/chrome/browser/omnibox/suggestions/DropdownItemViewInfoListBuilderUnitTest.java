@@ -20,8 +20,6 @@ import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_E
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_EXPANDED_WITH_HEADER;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_EXPANDED_WITH_HEADER;
 
-import android.util.SparseArray;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -44,7 +42,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
-import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.ShadowGURL;
 
@@ -104,8 +102,8 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     @SmallTest
     public void headers_buildsHeaderForFirstSuggestion() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
-        final SparseArray<GroupConfig> groupsDetails = new SparseArray<>();
-        groupsDetails.put(1, SECTION_2_EXPANDED_WITH_HEADER);
+        final var groupsDetails =
+                GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_EXPANDED_WITH_HEADER).build();
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
 
         AutocompleteMatch suggestion =
@@ -143,9 +141,10 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     @SmallTest
     public void headers_buildsHeadersOnlyWhenGroupChanges() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
-        final SparseArray<GroupConfig> groupsDetails = new SparseArray<>();
-        groupsDetails.put(1, SECTION_2_EXPANDED_WITH_HEADER);
-        groupsDetails.put(2, SECTION_3_EXPANDED_WITH_HEADER);
+        final var groupsDetails = GroupsInfo.newBuilder()
+                                          .putGroupConfigs(1, SECTION_2_EXPANDED_WITH_HEADER)
+                                          .putGroupConfigs(2, SECTION_3_EXPANDED_WITH_HEADER)
+                                          .build();
 
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
         AutocompleteMatch suggestionWithNoGroup =
@@ -208,9 +207,10 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     @SmallTest
     public void headers_respectGroupHeadersWithNoTitle() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
-        final SparseArray<GroupConfig> groupsDetails = new SparseArray<>();
-        groupsDetails.put(1, SECTION_1_EXPANDED_NO_HEADER);
-        groupsDetails.put(2, SECTION_2_EXPANDED_WITH_HEADER);
+        final var groupsDetails = GroupsInfo.newBuilder()
+                                          .putGroupConfigs(1, SECTION_1_EXPANDED_NO_HEADER)
+                                          .putGroupConfigs(2, SECTION_2_EXPANDED_WITH_HEADER)
+                                          .build();
 
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
         AutocompleteMatch suggestionWithNoGroup =
@@ -456,7 +456,7 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         AutocompleteResult mockResult = mock(AutocompleteResult.class);
         when(mockResult.getSuggestionsList())
                 .thenReturn(Arrays.asList(match1, match2, match1, match2, match3, match3));
-        when(mockResult.getGroupsDetails()).thenReturn(new SparseArray<>());
+        when(mockResult.getGroupsInfo()).thenReturn(GroupsInfo.newBuilder().build());
         doNothing().when(mockResult).groupSuggestionsBySearchVsURL(anyInt(), anyInt());
 
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
@@ -506,8 +506,8 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         mBuilder.setDividerLineProcessorForTest(mMockDividerLineProcessor);
 
         final List<AutocompleteMatch> actualList = new ArrayList<>();
-        final SparseArray<GroupConfig> groupsDetails = new SparseArray<>();
-        groupsDetails.put(1, SECTION_2_EXPANDED_WITH_HEADER);
+        final var groupsDetails =
+                GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_2_EXPANDED_WITH_HEADER).build();
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
 
         AutocompleteMatch suggestion =
@@ -539,11 +539,8 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 .thenReturn(OmniboxSuggestionUiType.DIVIDER_LINE);
         mBuilder.setDividerLineProcessorForTest(mMockDividerLineProcessor);
 
-        final List<AutocompleteMatch> actualList = new ArrayList<>();
-        final SparseArray<GroupConfig> groupsDetails = new SparseArray<>();
-
-        final List<DropdownItemViewInfo> infoList = mBuilder.buildDropdownViewInfoList(
-                AutocompleteResult.fromCache(actualList, groupsDetails));
+        final List<DropdownItemViewInfo> infoList =
+                mBuilder.buildDropdownViewInfoList(AutocompleteResult.fromCache(null, null));
         Assert.assertEquals(0, infoList.size());
 
         mBuilder.setDividerLineProcessorForTest(null);
