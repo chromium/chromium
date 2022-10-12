@@ -146,6 +146,11 @@ declare_args() {
 
 assert(!is_cfi || use_thin_lto, "CFI requires ThinLTO")
 
+if (use_thin_lto && is_debug) {
+  print("WARNING: ThinLTO (use_thin_lto=true) doesn't work with debug" +
+        " (is_debug=true) build.")
+}
+
 declare_args() {
   # Whether we should consider the profile we're using to be accurate. Accurate
   # profiles have the benefit of (potentially substantial) binary size
