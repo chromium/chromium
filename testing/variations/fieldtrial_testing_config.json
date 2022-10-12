@@ -12123,6 +12123,21 @@
             ]
         }
     ],
+    "WebRTCPipeWireCapturer": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebRTCPipeWireCapturer"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebRtcAllowWgcDesktopCapturer": [
         {
             "platforms": [
