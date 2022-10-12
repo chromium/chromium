@@ -344,33 +344,33 @@ TEST(MathUtilTest, MapEnclosingRectWithLargeTransforms) {
   gfx::Transform rotation;
   rotation.RotateAboutYAxis(170.0);
 
-  int max_int = std::numeric_limits<int>::max();
-
+  // The following code should not crash due to NaNs. The result rects are
+  // empty because either the geometry was saturated or NaNs were set to 0.
   output = MathUtil::MapEnclosingClippedRect(large_x_scale, input);
-  EXPECT_EQ(gfx::Rect(max_int, 2, 0, 200), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(large_x_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(infinite_x_scale, input);
-  EXPECT_EQ(gfx::Rect(max_int, 2, 0, 200), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::MapEnclosingClippedRect(infinite_x_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(large_y_scale, input);
-  EXPECT_EQ(gfx::Rect(1, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(large_y_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(-100, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(infinite_y_scale, input);
-  EXPECT_EQ(gfx::Rect(1, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::MapEnclosingClippedRect(infinite_y_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 }
 
 TEST(MathUtilTest, MapEnclosingRectIgnoringError) {
@@ -412,35 +412,35 @@ TEST(MathUtilTest, ProjectEnclosingRectWithLargeTransforms) {
   gfx::Transform rotation;
   rotation.RotateAboutYAxis(170.0);
 
-  int max_int = std::numeric_limits<int>::max();
-
+  // The following code should not crash due to NaNs. The result rects are
+  // empty because either the geometry was saturated or NaNs were set to 0.
   output = MathUtil::ProjectEnclosingClippedRect(large_x_scale, input);
-  EXPECT_EQ(gfx::Rect(max_int, 2, 0, 200), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::ProjectEnclosingClippedRect(large_x_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::ProjectEnclosingClippedRect(infinite_x_scale, input);
-  EXPECT_EQ(gfx::Rect(max_int, 2, 0, 200), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::ProjectEnclosingClippedRect(infinite_x_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::ProjectEnclosingClippedRect(large_y_scale, input);
-  EXPECT_EQ(gfx::Rect(1, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::ProjectEnclosingClippedRect(large_y_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(-103, max_int, 102, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::ProjectEnclosingClippedRect(infinite_y_scale, input);
-  EXPECT_EQ(gfx::Rect(1, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::ProjectEnclosingClippedRect(infinite_y_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 }
 
 TEST(MathUtilTest, RoundUp) {

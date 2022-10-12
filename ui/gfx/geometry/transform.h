@@ -11,7 +11,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/matrix44.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace gfx {
 
@@ -23,6 +22,7 @@ class Point;
 class PointF;
 class Point3F;
 class Quaternion;
+class Vector2dF;
 class Vector3dF;
 
 // 4x4 transformation matrix. Transform is cheap and explicitly allows
@@ -291,54 +291,57 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Returns true if the 3rd row and 3rd column are both (0, 0, 1, 0).
   bool IsFlat() const;
 
-  // Returns the x and y translation components of the matrix.
+  // Returns the x and y translation components of the matrix, clamped with
+  // ClampFloatGeometry().
   Vector2dF To2dTranslation() const;
 
-  // Returns the x and y scale components of the matrix.
-  Vector2dF To2dScale() const { return gfx::Vector2dF(rc(0, 0), rc(1, 1)); }
+  // Returns the x and y scale components of the matrix, clamped with
+  // ClampFloatGeometry().
+  Vector2dF To2dScale() const;
 
-  // Returns the point with the transformation applied to |point|.
+  // Returns the point with the transformation applied to |point|, clamped
+  // with ClampFloatGeometry().
   [[nodiscard]] Point3F MapPoint(const Point3F& point) const;
   [[nodiscard]] PointF MapPoint(const PointF& point) const;
   [[nodiscard]] Point MapPoint(const Point& point) const;
 
-  // Returns the vector with the transformation applied to |vector|.
-  // It differs from MapPoint() by that the translation and perspective
-  // components of the matrix are ignored.
+  // Returns the vector with the transformation applied to |vector|, clamped
+  // with ClampFloatGeometry(). It differs from MapPoint() by that the
+  // translation and perspective components of the matrix are ignored.
   [[nodiscard]] Vector3dF MapVector(const Vector3dF& vector) const;
 
-  // Applies the transformation to the vector.
+  // Applies the transformation to the vector. The results are clamped with
+  // ClampFloatGeometry().
   void TransformVector4(float vector[4]) const;
 
-  // Applies the reverse transformation on `point`. Returns `absl::nullopt` if
-  // the transformation cannot be inverted.
+  // Returns the point with reverse transformation applied to `point`, clamped
+  // with ClampFloatGeometry(), or `absl::nullopt` if the transformation cannot
+  // be inverted.
   [[nodiscard]] absl::optional<PointF> InverseMapPoint(
       const PointF& point) const;
+  [[nodiscard]] absl::optional<Point3F> InverseMapPoint(
+      const Point3F& point) const;
 
   // Applies the reverse transformation on `point`. Returns `absl::nullopt` if
   // the transformation cannot be inverted. Rounds the result to the nearest
   // point.
   [[nodiscard]] absl::optional<Point> InverseMapPoint(const Point& point) const;
 
-  // Applies the reverse transformation on `point`. Returns `absl::nullopt` if
-  // the transformation cannot be inverted.
-  [[nodiscard]] absl::optional<Point3F> InverseMapPoint(
-      const Point3F& point) const;
-
   // Returns the rect that is the smallest axis aligned bounding rect
-  // containing the transformed rect.
+  // containing the transformed rect, clamped with ClampFloatGeometry().
   [[nodiscard]] RectF MapRect(const RectF& rect) const;
   [[nodiscard]] Rect MapRect(const Rect& rect) const;
 
   // Applies the reverse transformation on the given rect. Returns
   // `absl::nullopt` if the transformation cannot be inverted, or the rect that
-  // is the smallest axis aligned bounding rect containing the transformed rect.
+  // is the smallest axis aligned bounding rect containing the transformed rect,
+  // clamped with ClampFloatGeometry().
   [[nodiscard]] absl::optional<RectF> InverseMapRect(const RectF& rect) const;
   [[nodiscard]] absl::optional<Rect> InverseMapRect(const Rect& rect) const;
 
   // Returns the box with transformation applied on the given box. The returned
   // box will be the smallest axis aligned bounding box containing the
-  // transformed box.
+  // transformed box, clamped with ClampFloatGeometry().
   [[nodiscard]] BoxF MapBox(const BoxF& box) const;
 
   // Decomposes |this| and |from|, interpolates the decomposed values, and

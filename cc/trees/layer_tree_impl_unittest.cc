@@ -2168,10 +2168,18 @@ TEST_F(LayerTreeImplTest, SelectionBoundsWithLargeTransforms) {
   viz::Selection<gfx::SelectionBound> output;
   host_impl().active_tree()->GetViewportSelection(&output);
 
-  // edge_end and edge_start aren't allowed to have NaNs, so the selection
-  // should be empty.
-  EXPECT_EQ(gfx::SelectionBound(), output.start);
-  EXPECT_EQ(gfx::SelectionBound(), output.end);
+  auto point_is_valid = [](const gfx::PointF& p) {
+    return std::isfinite(p.x()) && std::isfinite(p.y());
+  };
+  auto selection_bound_is_valid = [&](const gfx::SelectionBound& b) {
+    return point_is_valid(b.edge_start()) &&
+           point_is_valid(b.visible_edge_start()) &&
+           point_is_valid(b.edge_end()) && point_is_valid(b.visible_edge_end());
+  };
+  // No NaNs or infinities in SelectounBound.
+  EXPECT_TRUE(selection_bound_is_valid(output.start))
+      << output.start.ToString();
+  EXPECT_TRUE(selection_bound_is_valid(output.end)) << output.end.ToString();
 }
 
 TEST_F(LayerTreeImplTest, SelectionBoundsForCaretLayer) {

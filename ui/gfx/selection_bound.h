@@ -78,6 +78,12 @@ GFX_EXPORT gfx::RectF RectFBetweenSelectionBounds(const SelectionBound& b1,
 GFX_EXPORT gfx::RectF RectFBetweenVisibleSelectionBounds(
     const SelectionBound& b1,
     const SelectionBound& b2);
-}  // namespace ui
+
+// This is declared here for use in gtest-based unit tests but is defined in
+// the //ui/gfx:test_support target. Depend on that to use this in your unit
+// test. This should not be used in production code - call ToString() instead.
+void PrintTo(const SelectionBound& bound, ::std::ostream* os);
+
+}  // namespace gfx
 
 #endif  // UI_GFX_SELECTION_BOUND_H_

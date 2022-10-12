@@ -10,6 +10,7 @@ component("geometry") {
     "axis_transform2d.h",
     "box_f.cc",
     "box_f.h",
+    "clamp_float_geometry.h",
     "cubic_bezier.cc",
     "cubic_bezier.h",
     "dip_util.cc",

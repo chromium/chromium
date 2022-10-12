@@ -2754,14 +2754,6 @@ static gfx::SelectionBound ComputeViewportSelectionBound(
   gfx::PointF screen_end =
       MathUtil::MapPoint(screen_space_transform, layer_end, &clipped);
 
-  // MapPoint can produce points with NaN components (even when no inputs are
-  // NaN). Since consumers of gfx::SelectionBounds may round |edge_start| or
-  // |edge_end| (and since rounding will crash on NaN), we return an empty
-  // bound instead.
-  if (std::isnan(screen_start.x()) || std::isnan(screen_start.y()) ||
-      std::isnan(screen_end.x()) || std::isnan(screen_end.y()))
-    return gfx::SelectionBound();
-
   const float inv_scale = 1.f / device_scale_factor;
   viewport_bound.SetEdgeStart(gfx::ScalePoint(screen_start, inv_scale));
   viewport_bound.SetEdgeEnd(gfx::ScalePoint(screen_end, inv_scale));

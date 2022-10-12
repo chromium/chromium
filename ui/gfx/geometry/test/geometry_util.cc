@@ -27,6 +27,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
+#include "ui/gfx/selection_bound.h"
 
 namespace gfx {
 
@@ -397,6 +398,10 @@ void PrintTo(const Vector3dF& vector, ::std::ostream* os) {
 
 void PrintTo(const MaskFilterInfo& info, ::std::ostream* os) {
   *os << info.ToString();
+}
+
+void PrintTo(const SelectionBound& bound, ::std::ostream* os) {
+  *os << bound.ToString();
 }
 
 }  // namespace gfx

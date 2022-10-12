@@ -9,6 +9,7 @@
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/box_f.h"
+#include "ui/gfx/geometry/clamp_float_geometry.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/quaternion.h"
@@ -421,8 +422,13 @@ bool Transform::IsFlat() const {
 }
 
 Vector2dF Transform::To2dTranslation() const {
-  return gfx::Vector2dF(SkScalarToFloat(matrix_.rc(0, 3)),
-                        SkScalarToFloat(matrix_.rc(1, 3)));
+  return gfx::Vector2dF(ClampFloatGeometry(matrix_.rc(0, 3)),
+                        ClampFloatGeometry(matrix_.rc(1, 3)));
+}
+
+Vector2dF Transform::To2dScale() const {
+  return gfx::Vector2dF(ClampFloatGeometry(matrix_.rc(0, 0)),
+                        ClampFloatGeometry(matrix_.rc(1, 1)));
 }
 
 Point Transform::MapPoint(const Point& point) const {
@@ -443,12 +449,15 @@ Vector3dF Transform::MapVector(const Vector3dF& vector) const {
 
   SkScalar p[4] = {vector.x(), vector.y(), vector.z(), 0};
   matrix_.mapScalars(p);
-  return Vector3dF(p[0], p[1], p[2]);
+  return Vector3dF(ClampFloatGeometry(p[0]), ClampFloatGeometry(p[1]),
+                   ClampFloatGeometry(p[2]));
 }
 
 void Transform::TransformVector4(float vector[4]) const {
   DCHECK(vector);
   matrix_.mapScalars(vector);
+  for (int i = 0; i < 4; i++)
+    vector[i] = ClampFloatGeometry(vector[i]);
 }
 
 absl::optional<PointF> Transform::InverseMapPoint(const PointF& point) const {
@@ -482,7 +491,9 @@ RectF Transform::MapRect(const RectF& rect) const {
   // TODO(crbug.com/1359528): Use local implementation.
   SkRect src = RectFToSkRect(rect);
   TransformToFlattenedSkMatrix(*this).mapRect(&src);
-  return SkRectToRectF(src);
+  return RectF(ClampFloatGeometry(src.x()), ClampFloatGeometry(src.y()),
+               ClampFloatGeometry(src.width()),
+               ClampFloatGeometry(src.height()));
 }
 
 Rect Transform::MapRect(const Rect& rect) const {
@@ -500,10 +511,12 @@ absl::optional<RectF> Transform::InverseMapRect(const RectF& rect) const {
   if (!GetInverse(&inverse))
     return absl::nullopt;
 
-  // TODO(crbug.com/1359528): Use local implementation.
+  // TODO(crbug.com/1359528): Use local implementation and clamp the results.
   SkRect src = RectFToSkRect(rect);
   TransformToFlattenedSkMatrix(inverse).mapRect(&src);
-  return SkRectToRectF(src);
+  return RectF(ClampFloatGeometry(src.x()), ClampFloatGeometry(src.y()),
+               ClampFloatGeometry(src.width()),
+               ClampFloatGeometry(src.height()));
 }
 
 absl::optional<Rect> Transform::InverseMapRect(const Rect& rect) const {
@@ -563,9 +576,12 @@ Point3F Transform::MapPointInternal(const Matrix44& xform,
 
   if (p[3] != SK_Scalar1 && std::isnormal(p[3])) {
     float w_inverse = SK_Scalar1 / p[3];
-    return gfx::Point3F(p[0] * w_inverse, p[1] * w_inverse, p[2] * w_inverse);
+    return gfx::Point3F(ClampFloatGeometry(p[0] * w_inverse),
+                        ClampFloatGeometry(p[1] * w_inverse),
+                        ClampFloatGeometry(p[2] * w_inverse));
   }
-  return gfx::Point3F(p[0], p[1], p[2]);
+  return gfx::Point3F(ClampFloatGeometry(p[0]), ClampFloatGeometry(p[1]),
+                      ClampFloatGeometry(p[2]));
 }
 
 PointF Transform::MapPointInternal(const Matrix44& xform,
@@ -578,9 +594,10 @@ PointF Transform::MapPointInternal(const Matrix44& xform,
 
   if (p[3] != SK_Scalar1 && std::isnormal(p[3])) {
     float w_inverse = SK_Scalar1 / p[3];
-    return gfx::PointF(p[0] * w_inverse, p[1] * w_inverse);
+    return gfx::PointF(ClampFloatGeometry(p[0] * w_inverse),
+                       ClampFloatGeometry(p[1] * w_inverse));
   }
-  return gfx::PointF(p[0], p[1]);
+  return gfx::PointF(ClampFloatGeometry(p[0]), ClampFloatGeometry(p[1]));
 }
 
 Point Transform::MapPointInternal(const Matrix44& xform,

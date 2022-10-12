@@ -2991,6 +2991,86 @@ TEST(XFormTest, PostConcatAxisTransform2d) {
   EXPECT_EQ(t, t1);
 }
 
+TEST(TransformationMatrixTest, ClampOutput) {
+  double entries[][2] = {
+      // The first entry is used to initialize the transform.
+      // The second entry is used to initialize the object to be mapped.
+      {std::numeric_limits<float>::max(),
+       std::numeric_limits<float>::infinity()},
+      {1, std::numeric_limits<float>::infinity()},
+      {-1, std::numeric_limits<float>::infinity()},
+      {1, -std::numeric_limits<float>::infinity()},
+      {
+          std::numeric_limits<float>::max(),
+          std::numeric_limits<float>::max(),
+      },
+      {
+          std::numeric_limits<float>::lowest(),
+          -std::numeric_limits<float>::infinity(),
+      },
+  };
+
+  for (double* entry : entries) {
+    const float mv = entry[0];
+    const float factor = entry[1];
+
+    auto is_valid_point = [&](const PointF& p) -> bool {
+      return std::isfinite(p.x()) && std::isfinite(p.y());
+    };
+    auto is_valid_point3 = [&](const Point3F& p) -> bool {
+      return std::isfinite(p.x()) && std::isfinite(p.y()) &&
+             std::isfinite(p.z());
+    };
+    auto is_valid_vector2 = [&](const Vector2dF& v) -> bool {
+      return std::isfinite(v.x()) && std::isfinite(v.y());
+    };
+    auto is_valid_vector3 = [&](const Vector3dF& v) -> bool {
+      return std::isfinite(v.x()) && std::isfinite(v.y()) &&
+             std::isfinite(v.z());
+    };
+    auto is_valid_rect = [&](const RectF& r) -> bool {
+      return is_valid_point(r.origin()) && std::isfinite(r.width()) &&
+             std::isfinite(r.height());
+    };
+    auto is_valid_array = [&](const float* a, size_t size) -> bool {
+      for (size_t i = 0; i < size; i++) {
+        if (!std::isfinite(a[i]))
+          return false;
+      }
+      return true;
+    };
+
+    auto test = [&](const Transform& m) {
+      SCOPED_TRACE(base::StringPrintf("m: %s factor: %lg", m.ToString().c_str(),
+                                      factor));
+      auto p = m.MapPoint(PointF(factor, factor));
+      EXPECT_TRUE(is_valid_point(p)) << p.ToString();
+
+      auto p3 = m.MapPoint(Point3F(factor, factor, factor));
+      EXPECT_TRUE(is_valid_point3(p3)) << p3.ToString();
+
+      auto r = m.MapRect(RectF(factor, factor, factor, factor));
+      EXPECT_TRUE(is_valid_rect(r)) << r.ToString();
+
+      auto v3 = m.MapVector(Vector3dF(factor, factor, factor));
+      EXPECT_TRUE(is_valid_vector3(v3)) << v3.ToString();
+
+      float v4[4] = {factor, factor, factor, factor};
+      m.TransformVector4(v4);
+      EXPECT_TRUE(is_valid_array(v4, 4));
+
+      auto v2 = m.To2dTranslation();
+      EXPECT_TRUE(is_valid_vector2(v2)) << v2.ToString();
+      v2 = m.To2dScale();
+      EXPECT_TRUE(is_valid_vector2(v2)) << v2.ToString();
+    };
+
+    test(Transform::ColMajor(mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv, mv,
+                             mv, mv, mv));
+    test(Transform::MakeTranslation(mv, mv));
+  }
+}
+
 }  // namespace
 
 }  // namespace gfx

@@ -87,5 +87,58 @@ TEST(AxisTransform2dTest, Inverse) {
                              ConcatAxisTransform2d(inv_inplace, t));
 }
 
+TEST(TransformationMatrixTest, ClampOutput) {
+  double entries[][2] = {
+      // The first entry is used to initialize the transform.
+      // The second entry is used to initialize the object to be mapped.
+      {std::numeric_limits<float>::max(),
+       std::numeric_limits<float>::infinity()},
+      {1, std::numeric_limits<float>::infinity()},
+      {-1, std::numeric_limits<float>::infinity()},
+      {1, -std::numeric_limits<float>::infinity()},
+      {
+          std::numeric_limits<float>::max(),
+          std::numeric_limits<float>::max(),
+      },
+      {
+          std::numeric_limits<float>::lowest(),
+          -std::numeric_limits<float>::infinity(),
+      },
+  };
+
+  for (double* entry : entries) {
+    const float mv = entry[0];
+    const float factor = entry[1];
+
+    auto is_valid_point = [&](const PointF& p) -> bool {
+      return std::isfinite(p.x()) && std::isfinite(p.y());
+    };
+    auto is_valid_rect = [&](const RectF& r) -> bool {
+      return is_valid_point(r.origin()) && std::isfinite(r.width()) &&
+             std::isfinite(r.height());
+    };
+
+    auto test = [&](const AxisTransform2d& m) {
+      SCOPED_TRACE(base::StringPrintf("m: %s factor: %lg", m.ToString().c_str(),
+                                      factor));
+      auto p = m.MapPoint(PointF(factor, factor));
+      EXPECT_TRUE(is_valid_point(p)) << p.ToString();
+
+      // AxisTransform2d::MapRect() requires non-negative scales.
+      if (m.scale().x() >= 0 && m.scale().y() >= 0) {
+        auto r = m.MapRect(RectF(factor, factor, factor, factor));
+        EXPECT_TRUE(is_valid_rect(r)) << r.ToString();
+      }
+    };
+
+    test(AxisTransform2d::FromScaleAndTranslation(Vector2dF(mv, mv),
+                                                  Vector2dF(mv, mv)));
+    test(AxisTransform2d::FromScaleAndTranslation(Vector2dF(mv, mv),
+                                                  Vector2dF(0, 0)));
+    test(AxisTransform2d::FromScaleAndTranslation(Vector2dF(1, 1),
+                                                  Vector2dF(mv, mv)));
+  }
+}
+
 }  // namespace
 }  // namespace gfx
