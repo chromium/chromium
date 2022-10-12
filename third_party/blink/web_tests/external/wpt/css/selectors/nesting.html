@@ -30,11 +30,15 @@
   }
 
   span > b {
-    @nest .test-4 section > & {
+    @nest .test-4 section & {
       display: inline-block;
       background-color: green;
       width: 100%;
       height: 100%;
+    }
+
+    @nest .test-4 section > & {
+      background-color: red;
     }
   }
 
