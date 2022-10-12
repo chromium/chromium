@@ -1,6 +1,6 @@
 # Largest Contentful Paint
 
-[Largest Contentful Paint](https://web.dev/lcp) is a [Core Web Vital](https://web.dev/vitals) metric that reports the time until the largest image or text element is painted to the screen, as a heuristic for page load time.
+[Largest Contentful Paint](https://web.dev/lcp) is a [Core Web Vital](https://web.dev/vitals) metric that reports the time until the largest image or text element is painted to the screen, as a heuristic for page load time. For [Prerender2](https://docs.google.com/document/d/1P2VKCLpmnNm_cRAjUeE-bqLL0bslL_zKqiNeCzNom_w/edit?usp=sharing), it measures the time of the activation start to the time when the activated page paints the largest content.
 
 This document details:
 * [Where it is computed in the renderer](#Computation-in-Renderer)
@@ -79,8 +79,12 @@ UKM for LCP are:
 * Most navigations: `PageLoad.PaintTiming.NavigationToLargestContentfulPaint2`
 * BFCache navigations:
   `HistoryNavigation.NavigationToFirstPaintAfterBackForwardCacheRestore`
+* Prerender2 activations:
+  `PrerenderPageLoad.Timing.ActivationToLargestContentfulPaint`
 
 UMA for LCP are:
 * Most navigations: `PageLoad.PaintTiming.NavigationToLargestContentfulPaint2`
 * BFCache navigations:
   `PageLoad.PaintTiming.NavigationToFirstPaint.BFCachePolyfillSecond`
+* Prerender2 activations:
+  `PageLoad.Clients.Prerender.PaintTiming.ActivationToLargestContentfulPaint2.{SpeculationRule, Embedder_DirectURLInput, Embedder_DefaultSearchEngine}`

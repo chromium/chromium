@@ -53,8 +53,12 @@ UKM for FID are:
 * Most navigations: `PageLoad.InteractiveTiming.FirstInputDelay4`
 * BFCache navigations:
   `HistoryNavigation.FirstInputDelayAfterBackForwardCacheRestore`
+* Prerender2 activations:
+  `PrerenderPageLoad.InteractiveTiming.FirstInputDelay4`
 
 UMA for FID are:
 * Most navigations: `PageLoad.InteractiveTiming.FirstInputDelay4`
 * BFCache navigations:
   `PageLoad.InteractiveTiming.FirstInputDelay.AfterBackForwardCacheRestore`
+* Prerender2 activations:
+  `PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4.{SpeculationRule, Embedder_DirectURLInput, Embedder_DefaultSearchEngine}`

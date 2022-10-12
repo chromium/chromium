@@ -88,9 +88,13 @@ UKM for CLS are:
   `PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms`
 * BFCache navigations:
   `HistoryNavigation.MaxCumulativeShiftScoreAfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms`
+* Prerender2 activations:
+  `PrerenderPageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms`
 
 UMA for CLS are:
 * Most navigations:
   `PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms`
 * BFCache navigations:
   `PageLoad.LayoutInstability.MaxCumulativeShiftScore.AfterBackForwardCacheRestore.SessionWindow.Gap1000ms.Max5000ms`
+* Prerender2 activations:
+  `PageLoad.Clients.Prerender.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2.{SpeculationRule, Embedder_DirectURLInput, Embedder_DefaultSearchEngine}`
