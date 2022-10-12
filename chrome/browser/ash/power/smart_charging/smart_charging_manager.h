@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/power/smart_charging/smart_charging_ukm_logger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/power_manager/charge_history_state.pb.h"
 #include "chromeos/dbus/power_manager/user_charging_event.pb.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -93,6 +94,9 @@ class SmartChargingManager : public ui::UserActivityObserver,
   // Called when the periodic timer triggers.
   void OnTimerFired();
 
+  // Get charge history from powerd and update it.
+  void UpdateChargeHistory();
+
   // Updates screen brightness percent from received value.
   void OnReceiveScreenBrightnessPercent(
       absl::optional<double> screen_brightness_percent);
@@ -127,6 +131,9 @@ class SmartChargingManager : public ui::UserActivityObserver,
              power_manager::PastChargingEvents::Event>
   GetLastChargeEvents();
 
+  void OnChargeHistoryReceived(
+      absl::optional<power_manager::ChargeHistoryState> proto);
+
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observation_{this};
 
@@ -139,6 +146,16 @@ class SmartChargingManager : public ui::UserActivityObserver,
 
   // Timer to trigger periodically for logging data.
   const std::unique_ptr<base::RepeatingTimer> periodic_timer_;
+
+  // Timer to trigger the update of charge history periodically;
+  const std::unique_ptr<base::RepeatingTimer> charge_history_timer_ =
+      std::make_unique<base::RepeatingTimer>();
+
+  // Number of trials to get charge history again if failed.
+  int num_trials_getting_charge_history_ = 5;
+  const std::unique_ptr<base::OneShotTimer>
+      retry_getting_charge_history_timer_ =
+          std::make_unique<base::OneShotTimer>();
 
   // Checks if data is loaded from disk yet.
   bool loaded_from_disk_ = false;
@@ -176,6 +193,7 @@ class SmartChargingManager : public ui::UserActivityObserver,
   absl::optional<double> screen_brightness_percent_;
   absl::optional<power_manager::PowerSupplyProperties::ExternalPower>
       external_power_;
+  power_manager::ChargeHistoryState charge_history_;
   absl::optional<bool> is_charging_;
 
   absl::optional<base::FilePath> profile_path_;

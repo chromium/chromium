@@ -5239,6 +5239,50 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="ChargeEventHistory">
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Records history of charge events including start time and duration of
+    charges. Can be used with other ChargeEventHistory to track the last 30 days
+    of charging events. If a &quot;SmartCharging&quot; event and a
+    &quot;ChargeEventHistory&quot; event has them same source ID and
+    &quot;EventId&quot;, it means &quot;ChargeEventHistory&quot; is the charge
+    history when &quot;SmartCharging&quot; event is logged. ChargeEventHistory
+    records an array. Each ChargeEventHistory event records an item in the
+    array, specified by it's index ChargeEventHistoryIndex. Items in the same
+    array will have same source ID and EventId.
+  </summary>
+  <metric name="ChargeEventHistoryDuration">
+    <summary>
+      Duration of a history charge event.
+    </summary>
+  </metric>
+  <metric name="ChargeEventHistoryIndex">
+    <summary>
+      Index of this event in the ChargeEventHistory array. Please see the event
+      summary for more details.
+    </summary>
+  </metric>
+  <metric name="ChargeEventHistorySize">
+    <summary>
+      Number of items in ChargeEventHistory array. Please see the event summary
+      for more details.
+    </summary>
+  </metric>
+  <metric name="ChargeEventHistoryStartTime">
+    <summary>
+      Duration (in minutes) between start time of a charge event and logging
+      time.
+    </summary>
+  </metric>
+  <metric name="EventId">
+    <summary>
+      A unique number that represent order of an event. Used combined with
+      &quot;SmartCharging&quot;'s EventId to reconstruct charge history.
+    </summary>
+  </metric>
+</event>
+
 <event name="ChromeOS.WebsiteUsageTime">
   <owner>nancylingwang@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
@@ -6247,6 +6291,64 @@ be describing additional metrics about the same event.
     <summary>
       Mesaures the number of pages with subframes embedded in cross-origin
       contexts without having a CSP frame-ancestor header or an XFO header.
+    </summary>
+  </metric>
+</event>
+
+<event name="DailyChargeSummary">
+  <owner>thanhdng@chromium.org</owner>
+  <summary>
+    Records daily summaries of charging. DailyChargeSummary summarizes charging
+    information (e.g. amount of time on full charge, amount of time on AC
+    adapter, etc) in a day. It can be used in combination with other
+    DailyChargeSummary events to get information about the last 30 days of
+    charging. If a &quot;SmartCharging&quot; event and a
+    &quot;DailyChargeSummary&quot; event has them same source ID and
+    &quot;EventId&quot;, it means &quot;DailyChargeSummary&quot; is the summary
+    when &quot;SmartCharging&quot; event is logged. DailyChargeSummary records
+    an array. Each event records an item in the array, specified by it's index
+    DailySummaryIndex. Items in the same array will have same source ID and
+    EventId.
+  </summary>
+  <metric name="DailySummaryHoldTimeOnAc">
+    <summary>
+      Amount of time (in minutes) the device was on AC charger and the charge
+      was hold due to adaptive charging, at an index specified by
+      DailySummaryIndex.
+    </summary>
+  </metric>
+  <metric name="DailySummaryIndex">
+    <summary>
+      Index of this event in the array. Please see the event summary for more
+      details.
+    </summary>
+  </metric>
+  <metric name="DailySummaryNumDaysDistance">
+    <summary>
+      Distance in days bettwen current day and the day that the daily summary
+      was logged.
+    </summary>
+  </metric>
+  <metric name="DailySummarySize">
+    <summary>
+      Number of items in array. Please see the event summary for more details.
+    </summary>
+  </metric>
+  <metric name="DailySummaryTimeFullOnAc">
+    <summary>
+      Amount of time (in minutes) the device was keep on AC charger with full
+      battery (100%).
+    </summary>
+  </metric>
+  <metric name="DailySummaryTimeOnAc">
+    <summary>
+      Amount of time (in minutes) the device was keep on AC charger.
+    </summary>
+  </metric>
+  <metric name="EventId">
+    <summary>
+      A number that represent order of an event. Used combined with
+      &quot;SmartCharging&quot;'s EventId to reconstruct charge history.
     </summary>
   </metric>
 </event>

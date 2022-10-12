@@ -51,6 +51,9 @@ constexpr auto kUserActivityDuration = base::Minutes(30);
 // Granularity of input events is per minute.
 constexpr int kNumUserInputEventsBuckets = kUserActivityDuration.InMinutes();
 
+// Amount of time to wait between each try.
+const base::TimeDelta kDelayBetweenTrials = base::Seconds(5);
+
 constexpr char kSavedFileName[] = "past_charging_events.pb";
 constexpr char kSavedDir[] = "smartcharging";
 
@@ -201,6 +204,10 @@ SmartChargingManager::SmartChargingManager(
   blocking_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+
+  UpdateChargeHistory();
+  charge_history_timer_->Start(FROM_HERE, kLoggingInterval, this,
+                               &SmartChargingManager::UpdateChargeHistory);
 }
 
 SmartChargingManager::~SmartChargingManager() = default;
@@ -457,6 +464,7 @@ void SmartChargingManager::PopulateUserChargingEventProto(
 }
 
 void SmartChargingManager::LogEvent(const EventReason& reason) {
+  UpdateChargeHistory();
   UserChargingEvent proto;
   proto.mutable_event()->set_event_id(++event_id_);
   proto.mutable_event()->set_reason(reason);
@@ -466,7 +474,7 @@ void SmartChargingManager::LogEvent(const EventReason& reason) {
   // ukm logger is available.
   user_charging_event_for_test_ = proto;
 
-  ukm_logger_->LogEvent(proto);
+  ukm_logger_->LogEvent(proto, charge_history_, base::Time::Now());
 
   AddPastEvent(reason);
   // Calls |UpdatePastEvents()| after |AddPastEvent()| to keep the number of
@@ -481,6 +489,12 @@ void SmartChargingManager::LogEvent(const EventReason& reason) {
 
 void SmartChargingManager::OnTimerFired() {
   LogEvent(power_manager::UserChargingEvent_Event::PERIODIC_LOG);
+}
+
+void SmartChargingManager::UpdateChargeHistory() {
+  chromeos::PowerManagerClient::Get()->GetChargeHistoryForAdaptiveCharging(
+      base::BindOnce(&SmartChargingManager::OnChargeHistoryReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SmartChargingManager::OnReceiveScreenBrightnessPercent(
@@ -638,6 +652,21 @@ std::tuple<PastEvent, PastEvent> SmartChargingManager::GetLastChargeEvents() {
     }
   }
   return std::make_tuple(plugged_in, unplugged);
+}
+
+void SmartChargingManager::OnChargeHistoryReceived(
+    absl::optional<power_manager::ChargeHistoryState> proto) {
+  if (proto.has_value()) {
+    charge_history_ = proto.value();
+    return;
+  }
+  // Retry if not get the charge history successfully
+  if (num_trials_getting_charge_history_-- > 0) {
+    retry_getting_charge_history_timer_->Start(
+        FROM_HERE, kDelayBetweenTrials,
+        base::BindOnce(&SmartChargingManager::UpdateChargeHistory,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 }  // namespace power

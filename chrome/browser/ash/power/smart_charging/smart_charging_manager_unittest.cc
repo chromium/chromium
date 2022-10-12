@@ -22,6 +22,7 @@ namespace {
 using PastEvent = power_manager::PastChargingEvents::Event;
 using EventReason = power_manager::UserChargingEvent::Event::Reason;
 using UserChargingEvent = power_manager::UserChargingEvent;
+using ChargeHistoryState = power_manager::ChargeHistoryState;
 
 PastEvent CreateEvent(int time,
                       int battery_percent,
@@ -74,6 +75,12 @@ class SmartChargingManagerTest : public ChromeRenderViewHostTestHarness {
   absl::optional<power_manager::PowerSupplyProperties::ExternalPower>
   GetExternalPower() {
     return smart_charging_manager_->external_power_;
+  }
+
+  void UpdateChargeHistory() { smart_charging_manager_->UpdateChargeHistory(); }
+
+  ChargeHistoryState GetChargeHistory() {
+    return smart_charging_manager_->charge_history_;
   }
 
  protected:
@@ -516,5 +523,34 @@ TEST_F(SmartChargingManagerTest, LastChargeRelatedFeatures) {
   EXPECT_EQ(features.battery_percentage_before_last_charge(), 23);
   EXPECT_EQ(features.battery_percentage_of_last_charge(), 80);
 }
+
+TEST_F(SmartChargingManagerTest, GetCorrectChargeHistory) {
+  ChargeHistoryState charge_history;
+  ChargeHistoryState::ChargeEvent charge_event;
+  ChargeHistoryState::DailyHistory daily_history;
+
+  charge_event.set_start_time(1234);
+  daily_history.set_utc_midnight(3456);
+
+  for (size_t i = 0; i < 50; ++i)
+    *charge_history.add_charge_event() = charge_event;
+  for (size_t i = 0; i < 30; ++i)
+    *charge_history.add_daily_history() = daily_history;
+
+  chromeos::FakePowerManagerClient::Get()->SetChargeHistoryForAdaptiveCharging(
+      charge_history);
+
+  UpdateChargeHistory();
+  Wait();
+
+  ChargeHistoryState charge_history_obtained = GetChargeHistory();
+  EXPECT_EQ(charge_history_obtained.charge_event_size(), 50);
+  EXPECT_TRUE(charge_history_obtained.charge_event(10).has_start_time());
+  EXPECT_EQ(charge_history_obtained.charge_event(10).start_time(), 1234);
+  EXPECT_EQ(charge_history_obtained.daily_history_size(), 30);
+  EXPECT_TRUE(charge_history_obtained.daily_history(10).has_utc_midnight());
+  EXPECT_EQ(charge_history_obtained.daily_history(10).utc_midnight(), 3456);
+}
+
 }  // namespace power
 }  // namespace ash
