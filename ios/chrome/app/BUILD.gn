@@ -542,6 +542,7 @@ source_set("main") {
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/common",
+    "//ios/public/provider/chrome/browser/primes:primes_api",
   ]
   if (ios_enable_sandbox_dump) {
     deps += [ "//ios/chrome/app/startup:sandbox_dump" ]
