@@ -116,6 +116,7 @@ class CORE_EXPORT NGHighlightOverlay {
   static Vector<HighlightEdge> ComputeEdges(
       const Node*,
       const HighlightRegistry*,
+      bool is_generated_text_fragment,
       const NGTextFragmentPaintInfo& originating,
       const LayoutSelectionStatus* selection,
       const DocumentMarkerVector& custom,

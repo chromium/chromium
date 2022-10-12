@@ -493,8 +493,9 @@ NGHighlightPainter::NGHighlightPainter(
         GetHighlightRegistry(node_), GetSelectionStatus(selection_), custom_,
         grammar_, spelling_, target_);
     Vector<HighlightEdge> edges = NGHighlightOverlay::ComputeEdges(
-        node_, GetHighlightRegistry(node_), fragment_paint_info_,
-        GetSelectionStatus(selection_), custom_, grammar_, spelling_, target_);
+        node_, GetHighlightRegistry(node_), fragment_item_.IsGeneratedText(),
+        fragment_paint_info_, GetSelectionStatus(selection_), custom_, grammar_,
+        spelling_, target_);
     parts_ =
         NGHighlightOverlay::ComputeParts(fragment_paint_info_, layers, edges);
 

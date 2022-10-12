@@ -228,6 +228,7 @@ Vector<HighlightLayer> NGHighlightOverlay::ComputeLayers(
 Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
     const Node* node,
     const HighlightRegistry* registry,
+    bool is_generated_text_fragment,
     const NGTextFragmentPaintInfo& originating,
     const LayoutSelectionStatus* selection,
     const DocumentMarkerVector& custom,
@@ -258,6 +259,14 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
     DCHECK(custom.empty() && grammar.empty() && spelling.empty() &&
            target.empty())
         << "markers can not be painted without a valid Text node";
+  } else if (is_generated_text_fragment) {
+    // Custom highlights and marker-based highlights are defined in terms of
+    // DOM ranges in a Text node. Generated text either has no Text node or does
+    // not derive its content from the Text node (e.g. ellipsis, soft hyphens).
+    // TODO(crbug.com/17528) handle ::first-letter
+    DCHECK(custom.empty() && grammar.empty() && spelling.empty() &&
+           target.empty())
+        << "no marker can ever apply to fragment items with generated text";
   } else {
     // We can save time by skipping marker-based highlights that are outside the
     // originating fragment (e.g. on a different line), but we can only compare
