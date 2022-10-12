@@ -836,6 +836,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.OpenMethod.{DownloadContent}"
+    enum="DownloadOpenMethod" expires_after="2023-01-06">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Invocation count for methods of opening a {DownloadContent} download. For
+    some file types, Chrome defaults to opening the file in the browser instead
+    of invoking the system handler. The user has the option of overriding this
+    behavior. This histogram is added for debugging purpose and will be removed
+    after it is done.
+  </summary>
+  <token key="DownloadContent">
+    <variant name="DOCUMENT" summary="document"/>
+    <variant name="PDF" summary="pdf"/>
+    <variant name="SPREADSHEET" summary="spreadsheet"/>
+    <variant name="TEXT" summary="text"/>
+    <variant name="UNRECOGNIZED" summary="unrecognized"/>
+  </token>
+</histogram>
+
 <histogram name="Download.OpensOutstanding" units="units" expires_after="M77">
   <owner>dtrainor@chromium.org</owner>
   <summary>The number of unopened downloads, when one is opened.</summary>

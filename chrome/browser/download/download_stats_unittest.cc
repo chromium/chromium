@@ -5,8 +5,10 @@
 #include "chrome/browser/download/download_stats.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prompt_status.h"
+#include "components/download/public/common/download_content.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -39,6 +41,25 @@ TEST(DownloadStatsTest, RecordDownloadCancelReason) {
       kDownloadCancelReasonHistogram,
       DownloadCancelReason::kTargetConfirmationResult, 1);
   histogram_tester.ExpectTotalCount(kDownloadCancelReasonHistogram, 1);
+}
+
+TEST(DownloadStatsTest, RecordDownloadOpen) {
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
+  RecordDownloadOpen(DOWNLOAD_OPEN_METHOD_DEFAULT_BROWSER, "application/pdf");
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount("Download.Open"));
+  histogram_tester.ExpectUniqueSample(
+      "Download.OpenMethod",
+      /*sample=*/DOWNLOAD_OPEN_METHOD_DEFAULT_BROWSER,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Download.OpenMethod.PDF",
+      /*sample=*/DOWNLOAD_OPEN_METHOD_DEFAULT_BROWSER,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample("Download.Open.ContentType",
+                                      /*sample=*/download::DownloadContent::PDF,
+                                      /*expected_bucket_count=*/1);
 }
 
 }  // namespace

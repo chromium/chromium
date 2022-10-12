@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
+#include "components/download/public/common/download_content.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
 
@@ -47,6 +48,17 @@ void RecordDownloadOpen(ChromeDownloadOpenMethod open_method,
   download::DownloadContent download_content =
       download::DownloadContentFromMimeType(
           mime_type_string, /*record_content_subcategory=*/false);
+  if (download_content == download::DownloadContent::DOCUMENT ||
+      download_content == download::DownloadContent::PDF ||
+      download_content == download::DownloadContent::SPREADSHEET ||
+      download_content == download::DownloadContent::TEXT ||
+      download_content == download::DownloadContent::UNRECOGNIZED) {
+    // TODO(crbug.com/1372476): Remove this histogram after debugging.
+    base::UmaHistogramEnumeration(
+        "Download.OpenMethod." +
+            download::GetDownloadContentString(download_content),
+        open_method, DOWNLOAD_OPEN_METHOD_LAST_ENTRY);
+  }
   base::UmaHistogramEnumeration("Download.Open.ContentType", download_content,
                                 download::DownloadContent::MAX);
 }

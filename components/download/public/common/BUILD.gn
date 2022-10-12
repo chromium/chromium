@@ -19,6 +19,7 @@ component("public") {
     "auto_resumption_handler.cc",
     "auto_resumption_handler.h",
     "base_file.h",
+    "download_content.cc",
     "download_content.h",
     "download_create_info.h",
     "download_danger_type.cc",
