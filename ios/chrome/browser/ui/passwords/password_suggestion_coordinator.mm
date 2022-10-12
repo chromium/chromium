@@ -142,10 +142,10 @@ constexpr CGFloat preferredCornerRadius = 20;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
-  ChromeIdentity* authenticatedIdentity =
+  id<SystemIdentity> authenticatedIdentity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
-  return [authenticatedIdentity userEmail];
+  return authenticatedIdentity.userEmail;
 }
 
 - (void)handleDecision:(BOOL)accept {
@@ -159,8 +159,7 @@ constexpr CGFloat preferredCornerRadius = 20;
   NSString* activeWebStateIdentifier = self.browser->GetWebStateList()
                                            ->GetActiveWebState()
                                            ->GetStableIdentifier();
-  __weak PasswordSuggestionCoordinator* weakSelf = self;
-  [weakSelf onCloseKeyboardWithIdentifier:activeWebStateIdentifier];
+  [self onCloseKeyboardWithIdentifier:activeWebStateIdentifier];
 }
 
 // Helper method which closes the keyboard.
