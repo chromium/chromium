@@ -126,11 +126,14 @@ class DriveUploadHandlerTest
         "https://docs.google.com/document/d/"
         "smalldocxid?rtpof=true&usp=drive_fs");
 
-    // Simulate file changes events being sent from the server.
-    std::vector<drivefs::mojom::FileChangePtr> changes;
-    changes.emplace_back(absl::in_place, observed_relative_drive_path(),
-                         drivefs::mojom::FileChange::Type::kModify);
-    drivefs_delegate()->OnFilesChanged(std::move(changes));
+    // Simulate server sync events.
+    drivefs::mojom::SyncingStatusPtr status =
+        drivefs::mojom::SyncingStatus::New();
+    status->item_events.emplace_back(
+        absl::in_place, 12, 34, observed_relative_drive_path().value(),
+        drivefs::mojom::ItemEvent::State::kCompleted, 123, 456,
+        drivefs::mojom::ItemEventReason::kTransfer);
+    drivefs_delegate()->OnSyncingStatusUpdate(status.Clone());
     drivefs_delegate().FlushForTesting();
   }
 

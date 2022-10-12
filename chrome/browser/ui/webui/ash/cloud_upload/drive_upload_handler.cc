@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/drive_upload_handler.h"
 
 #include "base/check_op.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -24,6 +25,10 @@ namespace {
 // completion of a file and the update of its metadata with the expected (Google
 // editor) alternate URL.
 const int kAlternateUrlTimeout = 15;
+
+// The polling interval, in milliseconds, for querying the uploaded file's
+// alternate URL.
+const int kAlternateUrlPollInterval = 200;
 
 // Runs the callback provided to `DriveUploadHandler::Upload`.
 void OnUploadDone(scoped_refptr<DriveUploadHandler> drive_upload_handler,
@@ -252,10 +257,11 @@ void DriveUploadHandler::OnSyncingStatusUpdate(
         UpdateProgressNotification();
         // The file has fully synced. Start the timer for the maximum amount of
         // time we allow before the file's alternate URL is available.
-        alternate_url_timer_.Start(
+        alternate_url_timeout_.Start(
             FROM_HERE, base::Seconds(kAlternateUrlTimeout),
-            base::BindOnce(&DriveUploadHandler::OnAlternateUrlTimeout,
-                           weak_ptr_factory_.GetWeakPtr()));
+            base::BindOnce(&DriveUploadHandler::CheckAlternateUrl,
+                           weak_ptr_factory_.GetWeakPtr(), /*timed_out=*/true));
+        CheckAlternateUrl(/*timed_out=*/false);
         return;
       case drivefs::mojom::ItemEvent::State::kFailed:
         OnEndUpload(GURL(), "Drive sync error: kFailed");
@@ -264,28 +270,6 @@ void DriveUploadHandler::OnSyncingStatusUpdate(
         OnEndUpload(GURL(), "Drive sync error + invalid sync state");
         return;
     }
-  }
-}
-
-// If a `kModify` event has been dispatched for the uploaded file, check the
-// file's metadata to see if its alternate URL is available, in which case the
-// upload is complete.
-void DriveUploadHandler::OnFilesChanged(
-    const std::vector<drivefs::mojom::FileChange>& changes) {
-  for (const auto& change : changes) {
-    if (base::FilePath(change.path) != observed_relative_drive_path_ ||
-        change.type != drivefs::mojom::FileChange::Type::kModify) {
-      continue;
-    }
-
-    if (!drive_integration_service_) {
-      OnEndUpload(GURL(), "No drive integration service");
-      return;
-    }
-    drive_integration_service_->GetDriveFsInterface()->GetMetadata(
-        observed_relative_drive_path_,
-        base::BindOnce(&DriveUploadHandler::OnGetDriveMetadata,
-                       weak_ptr_factory_.GetWeakPtr(), /*timed_out=*/false));
   }
 }
 
@@ -310,12 +294,25 @@ void DriveUploadHandler::OnGetDriveMetadata(
     drive::FileError error,
     drivefs::mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK) {
+    if (timed_out) {
+      OnEndUpload(GURL(), "Drive Metadata error");
+    } else {
+      alternate_url_poll_timer_.Start(
+          FROM_HERE, base::Milliseconds(kAlternateUrlPollInterval),
+          base::BindOnce(&DriveUploadHandler::CheckAlternateUrl,
+                         weak_ptr_factory_.GetWeakPtr(), /*timed_out=*/false));
+    }
     return;
   }
   GURL hosted_url(metadata->alternate_url);
   if (!hosted_url.is_valid()) {
     if (timed_out) {
       OnEndUpload(GURL(), "Invalid alternate URL - Drive editing unavailable");
+    } else {
+      alternate_url_poll_timer_.Start(
+          FROM_HERE, base::Milliseconds(kAlternateUrlPollInterval),
+          base::BindOnce(&DriveUploadHandler::CheckAlternateUrl,
+                         weak_ptr_factory_.GetWeakPtr(), /*timed_out=*/false));
     }
     return;
   }
@@ -326,16 +323,22 @@ void DriveUploadHandler::OnGetDriveMetadata(
     if (timed_out) {
       OnEndUpload(GURL(),
                   "Unexpected alternate URL - Drive editing unavailable");
+    } else {
+      alternate_url_poll_timer_.Start(
+          FROM_HERE, base::Milliseconds(kAlternateUrlPollInterval),
+          base::BindOnce(&DriveUploadHandler::CheckAlternateUrl,
+                         weak_ptr_factory_.GetWeakPtr(), /*timed_out=*/false));
     }
     return;
   }
 
   // Success.
-  alternate_url_timer_.Stop();
+  alternate_url_timeout_.Stop();
+  alternate_url_poll_timer_.Stop();
   OnEndUpload(hosted_url);
 }
 
-void DriveUploadHandler::OnAlternateUrlTimeout() {
+void DriveUploadHandler::CheckAlternateUrl(bool timed_out) {
   if (!drive_integration_service_) {
     OnEndUpload(GURL(), "No drive integration service");
     return;
@@ -344,7 +347,7 @@ void DriveUploadHandler::OnAlternateUrlTimeout() {
   drive_integration_service_->GetDriveFsInterface()->GetMetadata(
       observed_relative_drive_path_,
       base::BindOnce(&DriveUploadHandler::OnGetDriveMetadata,
-                     weak_ptr_factory_.GetWeakPtr(), /*timed_out=*/true));
+                     weak_ptr_factory_.GetWeakPtr(), /*timed_out=*/timed_out));
 }
 
 }  // namespace ash::cloud_upload

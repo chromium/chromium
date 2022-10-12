@@ -71,8 +71,6 @@ class DriveUploadHandler
   void OnUnmounted() override;
   void OnSyncingStatusUpdate(
       const drivefs::mojom::SyncingStatus& status) override;
-  void OnFilesChanged(
-      const std::vector<drivefs::mojom::FileChange>& changes) override;
   void OnError(const drivefs::mojom::DriveError& error) override;
 
   // Checks the alternate URL from the request file's metadata.
@@ -80,9 +78,9 @@ class DriveUploadHandler
                           drive::FileError error,
                           drivefs::mojom::FileMetadataPtr metadata);
 
-  // Run when the maximum amount of time allowed to get the synced file's
-  // alternate URL has elapsed.
-  void OnAlternateUrlTimeout();
+  // Get the uploaded file's alternate URL. `timed_out` indicates whether or not
+  // the timeout for getting the alternate URL is hit.
+  void CheckAlternateUrl(bool timed_out);
 
   Profile* const profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
@@ -94,7 +92,8 @@ class DriveUploadHandler
   base::FilePath observed_relative_drive_path_;
   int move_progress_ = 0;
   int sync_progress_ = 0;
-  base::OneShotTimer alternate_url_timer_;
+  base::OneShotTimer alternate_url_timeout_;
+  base::OneShotTimer alternate_url_poll_timer_;
   UploadCallback callback_;
   std::unique_ptr<file_manager::ScopedSuppressDriveNotificationsForPath>
       scoped_suppress_drive_notifications_for_path_ = nullptr;
