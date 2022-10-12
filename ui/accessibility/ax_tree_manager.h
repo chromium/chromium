@@ -73,6 +73,12 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
   // Returns the AXNode that is at the root of the current tree.
   AXNode* GetRoot() const;
 
+  bool IsRoot() const;
+
+  // Returns the root AXTreeManager by walking up the tree to any parent trees.
+  // If there is a parent tree that is not yet connected, returns nullptr.
+  AXTreeManager* GetRootManager() const;
+
   // If this tree has a parent tree, returns the node in the parent tree that
   // hosts the current tree. Returns nullptr if this tree doesn't have a parent
   // tree.

@@ -203,4 +203,23 @@ AXTreeManager* AXTreeManager::GetParentManager() const {
   return FromID(parent_tree_id);
 }
 
+bool AXTreeManager::IsRoot() const {
+  return GetParentTreeID() == ui::AXTreeIDUnknown();
+}
+
+AXTreeManager* AXTreeManager::GetRootManager() const {
+  if (IsRoot())
+    return const_cast<AXTreeManager*>(this);
+
+  AXTreeManager* parent = GetParentManager();
+  if (!parent) {
+    // This can occur when the parent tree is not yet serialized. We can't
+    // prevent a child tree from serializing before the parent tree, so we just
+    // have to handle this case. Attempting to change this to a DCHECK() will
+    // cause a number of tests to fail.
+    return nullptr;
+  }
+  return parent->GetRootManager();
+}
+
 }  // namespace ui
