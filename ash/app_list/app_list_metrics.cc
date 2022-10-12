@@ -236,7 +236,7 @@ std::string GetAppListOpenMethod(AppListShowSource source) {
     case AppListShowSource::kSearchKeyFullscreen_DEPRECATED:
       return "SearchKey";
     case AppListShowSource::kShelfButton:
-    case AppListShowSource::kShelfButtonFullscreen:
+    case AppListShowSource::kShelfButtonFullscreen_DEPRACTED:
       return "HomeButton";
     case AppListShowSource::kSwipeFromShelf:
       return "Swipe";

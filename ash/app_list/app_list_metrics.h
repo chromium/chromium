@@ -58,8 +58,8 @@ enum class AppListShowSource : uint8_t {
   kShelfButton = 1,
   kSwipeFromShelf = 2,
   kTabletMode = 3,
-  kSearchKeyFullscreen_DEPRECATED = 4,  // Migrated to kSearchKey.
-  kShelfButtonFullscreen = 5,
+  kSearchKeyFullscreen_DEPRECATED = 4,   // Migrated to kSearchKey.
+  kShelfButtonFullscreen_DEPRACTED = 5,  // Obsolete on bubble launcher.
   kAssistantEntryPoint = 6,
   kScrollFromShelf = 7,
   kMaxValue = kScrollFromShelf,

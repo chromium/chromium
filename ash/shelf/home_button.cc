@@ -179,11 +179,8 @@ void HomeButton::ButtonPressed(views::Button* sender,
         base::UserMetricsAction("AppList_HomeButtonPressedClamshell"));
   }
 
-  const AppListShowSource show_source =
-      event.IsShiftDown() ? AppListShowSource::kShelfButtonFullscreen
-                          : AppListShowSource::kShelfButton;
   Shell::Get()->app_list_controller()->ToggleAppList(
-      GetDisplayId(), show_source, event.time_stamp());
+      GetDisplayId(), AppListShowSource::kShelfButton, event.time_stamp());
 
   // If the home button is pressed, fade out the nudge label if it is showing.
   if (label_container_) {
