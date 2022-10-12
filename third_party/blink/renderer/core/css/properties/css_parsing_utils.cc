@@ -4612,9 +4612,10 @@ CSSValue* ConsumeFontWeight(CSSParserTokenRange& range,
     if (token.Id() >= CSSValueID::kNormal && token.Id() <= CSSValueID::kLighter)
       return ConsumeIdent(range);
   } else {
-    if (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
-        (token.Id() == CSSValueID::kAuto || token.Id() == CSSValueID::kNormal ||
-         token.Id() == CSSValueID::kBold))
+    if ((token.Id() == CSSValueID::kNormal ||
+         token.Id() == CSSValueID::kBold) ||
+        (RuntimeEnabledFeatures::CSSFontFaceAutoVariableRangeEnabled() &&
+         token.Id() == CSSValueID::kAuto))
       return ConsumeIdent(range);
   }
 
