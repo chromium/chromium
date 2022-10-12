@@ -447,6 +447,9 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
 
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
+ protected:
+  std::unique_ptr<FakeVideoCaptureHost> video_host_;
+
  private:
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
@@ -463,7 +466,6 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
   int32_t target_playout_delay_ms_ = kDefaultPlayoutDelay;
 
   std::unique_ptr<OpenscreenSessionHost> session_host_;
-  std::unique_ptr<FakeVideoCaptureHost> video_host_;
   std::unique_ptr<MockNetworkContext> network_context_;
   std::unique_ptr<openscreen::cast::Answer> answer_;
 
@@ -494,9 +496,31 @@ TEST_F(OpenscreenSessionHostTest, AudioAndVideoMirroring) {
 
 TEST_F(OpenscreenSessionHostTest, AnswerWithConstraints) {
   SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
+  media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
+      .min_frame_size = gfx::Size(2, 2),
+      .max_frame_size = gfx::Size(1920, 1080),
+      .fixed_aspect_ratio = false};
   CreateSession(SessionType::AUDIO_AND_VIDEO);
   StartSession();
   StopSession();
+  EXPECT_EQ(video_host_->GetVideoCaptureParams().SuggestConstraints(),
+            expected_constraints);
+}
+
+// TODO(crbug.com/1363512): Remove support for sender side letterboxing.
+TEST_F(OpenscreenSessionHostTest, AnswerWithConstraintsLetterboxEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kCastDisableLetterboxing);
+  SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
+  media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
+      .min_frame_size = gfx::Size(320, 180),
+      .max_frame_size = gfx::Size(1920, 1080),
+      .fixed_aspect_ratio = true};
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  StopSession();
+  EXPECT_EQ(video_host_->GetVideoCaptureParams().SuggestConstraints(),
+            expected_constraints);
 }
 
 TEST_F(OpenscreenSessionHostTest, AnswerTimeout) {

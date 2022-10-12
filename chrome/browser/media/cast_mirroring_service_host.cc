@@ -148,27 +148,6 @@ void CastMirroringServiceHost::GetForTab(
 
 // static
 void CastMirroringServiceHost::GetForDesktop(
-    content::WebContents* initiator_contents,
-    const std::string& desktop_stream_id,
-    mojo::PendingReceiver<mojom::MirroringServiceHost> receiver) {
-  DCHECK(!desktop_stream_id.empty());
-  if (initiator_contents) {
-    std::string original_extension_name;
-    const content::DesktopMediaID media_id =
-        content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
-            desktop_stream_id,
-            initiator_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
-            initiator_contents->GetPrimaryMainFrame()->GetRoutingID(),
-            url::Origin::Create(initiator_contents->GetVisibleURL()),
-            &original_extension_name, content::kRegistryStreamTypeDesktop);
-    mojo::MakeSelfOwnedReceiver(
-        std::make_unique<CastMirroringServiceHost>(media_id),
-        std::move(receiver));
-  }
-}
-
-// static
-void CastMirroringServiceHost::GetForDesktop(
     const content::DesktopMediaID& media_id,
     mojo::PendingReceiver<mojom::MirroringServiceHost> receiver) {
   mojo::MakeSelfOwnedReceiver(

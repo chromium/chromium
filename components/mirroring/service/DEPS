@@ -20,4 +20,5 @@ include_rules = [
   "+third_party/openscreen/src/platform/api",
   "+third_party/openscreen/src/platform/base",
   "+ui/base",
+  "+ui/gfx/geometry",
 ]

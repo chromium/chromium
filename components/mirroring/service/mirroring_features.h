@@ -22,6 +22,10 @@ BASE_DECLARE_FEATURE(kCastUseBlocklistForRemotingQuery);
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastForceEnableRemotingQuery);
 
+// TODO(crbug.com/1363512): Remove support for sender side letterboxing.
+COMPONENT_EXPORT(MIRRORING_SERVICE)
+BASE_DECLARE_FEATURE(kCastDisableLetterboxing);
+
 bool IsCastStreamingAV1Enabled();
 
 }  // namespace features

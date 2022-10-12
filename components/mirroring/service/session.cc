@@ -597,8 +597,15 @@ void Session::ApplyConstraintsToConfigs(
         std::min(video_config->max_frame_rate,
                  static_cast<double>(video.maximum.frame_rate));
 
-    // We only do sender-side letterboxing if the receiver doesn't support it.
-    mirror_settings_.SetSenderSideLetterboxingEnabled(!video.supports_scaling);
+    // TODO(crbug.com/1363512): Remove support for sender side letterboxing.
+    if (base::FeatureList::IsEnabled(features::kCastDisableLetterboxing)) {
+      mirror_settings_.SetSenderSideLetterboxingEnabled(false);
+    } else {
+      // Enable sender-side letterboxing if the receiver specifically does not
+      // opt-in to variable aspect ratio video.
+      mirror_settings_.SetSenderSideLetterboxingEnabled(
+          !video.supports_scaling);
+    }
   }
 
   if (audio_config) {

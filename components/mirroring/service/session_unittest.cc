@@ -13,14 +13,17 @@
 #include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/mirroring/service/fake_network_service.h"
 #include "components/mirroring/service/fake_video_capture_host.h"
 #include "components/mirroring/service/mirror_settings.h"
+#include "components/mirroring/service/mirroring_features.h"
 #include "components/mirroring/service/receiver_response.h"
 #include "components/mirroring/service/value_util.h"
+#include "media/capture/video_capture_types.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/net_utility.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -32,6 +35,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/ssrc.h"
+#include "ui/gfx/geometry/size.h"
 
 using media::cast::FrameSenderConfig;
 using media::cast::Packet;
@@ -46,6 +50,7 @@ using ::testing::AtLeast;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 using ::testing::NiceMock;
+using ::testing::SaveArg;
 
 namespace mirroring {
 
@@ -398,6 +403,9 @@ class SessionTest : public mojom::ResourceProvider,
     answer_ = std::move(answer);
   }
 
+ protected:
+  std::unique_ptr<FakeVideoCaptureHost> video_host_;
+
  private:
   base::test::TaskEnvironment task_environment_;
   const net::IPEndPoint receiver_endpoint_ =
@@ -415,7 +423,6 @@ class SessionTest : public mojom::ResourceProvider,
   int32_t target_playout_delay_ms_ = kDefaultPlayoutDelay;
 
   std::unique_ptr<Session> session_;
-  std::unique_ptr<FakeVideoCaptureHost> video_host_;
   std::unique_ptr<MockNetworkContext> network_context_;
   std::unique_ptr<openscreen::cast::Answer> answer_;
 };
@@ -443,9 +450,31 @@ TEST_F(SessionTest, AudioAndVideoMirroring) {
 
 TEST_F(SessionTest, AnswerWithConstraints) {
   SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
+  media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
+      .min_frame_size = gfx::Size(2, 2),
+      .max_frame_size = gfx::Size(1280, 720),
+      .fixed_aspect_ratio = false};
   CreateSession(SessionType::AUDIO_AND_VIDEO);
   StartSession();
   StopSession();
+  EXPECT_EQ(video_host_->GetVideoCaptureParams().SuggestConstraints(),
+            expected_constraints);
+}
+
+// TODO(crbug.com/1363512): Remove support for sender side letterboxing.
+TEST_F(SessionTest, AnswerWithConstraintsLetterboxEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kCastDisableLetterboxing);
+  SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
+  media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
+      .min_frame_size = gfx::Size(320, 180),
+      .max_frame_size = gfx::Size(1280, 720),
+      .fixed_aspect_ratio = true};
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  StopSession();
+  EXPECT_EQ(video_host_->GetVideoCaptureParams().SuggestConstraints(),
+            expected_constraints);
 }
 
 TEST_F(SessionTest, AnswerTimeout) {
