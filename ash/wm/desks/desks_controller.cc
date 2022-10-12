@@ -523,15 +523,18 @@ bool DesksController::CanRemoveDesks() const {
 }
 
 void DesksController::NewDesk(DesksCreationRemovalSource source) {
+  // We do not want this function to run here when there is no
+  // `temporary_removed_desk_` because that will incorrectly record metrics.
+  // We also want to destroy the `temporary_removed_desk_` first in this
+  // function because we want to ensure that the removing desk's container is
+  // available for use if we need it for the new desk.
+  if (temporary_removed_desk_)
+    MaybeCommitPendingDeskRemoval();
+
   DCHECK(CanCreateDesks());
   DCHECK(!available_container_ids_.empty());
 
   base::AutoReset<bool> in_progress(&are_desks_being_modified_, true);
-
-  // We do not want this function to run here when there is no
-  // `temporary_removed_desk_` because that will incorrectly record metrics.
-  if (temporary_removed_desk_)
-    MaybeCommitPendingDeskRemoval();
 
   // The first default desk should not overwrite any desks restore data, nor
   // should it trigger any UMA stats reports.
@@ -1806,10 +1809,15 @@ void DesksController::FinalizeDeskRemoval(RemovedDeskData* removed_desk_data) {
     // when `native_widget_->CloseNow()` finishes running, the window will
     // finally be removed from desk. Therefore, to remove the desk now, we have
     // to manually remove the window from desk now.
-    // Since floated window doesn't belong to desk container, handle it
-    // separately.
-    if (window != floated_window)
-      removed_desk->RemoveWindowFromDesk(window);
+    // We also want to ensure that any windows associated with `removed_desk`'s
+    // container are removed from the container in case we want to immediately
+    // reuse that container. Since floated window doesn't belong to desk
+    // container, handle it separately.
+    if (window != floated_window) {
+      aura::Window* removed_desk_container =
+          removed_desk->GetDeskContainerForRoot(window->GetRootWindow());
+      removed_desk_container->RemoveChild(window);
+    }
   }
 
   // Schedules a delayed task to forcefully close all windows that have not

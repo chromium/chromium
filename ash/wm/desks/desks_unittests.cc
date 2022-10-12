@@ -8113,6 +8113,48 @@ TEST_F(DesksCloseAllTest, CanUndoDeskClosureThroughKeyboardNavigation) {
   EXPECT_EQ(2u, DesksController::Get()->desks().size());
 }
 
+// Tests that we can create the maximum number of desks, remove one, and add one
+// before the toast asking if the user would like to undo goes away.
+TEST_F(DesksCloseAllTest, CanAddLastDeskWhileUndoToastIsBeingDisplayed) {
+  auto* controller = DesksController::Get();
+  while (controller->desks().size() < desks_util::kMaxNumberOfDesks)
+    NewDesk();
+  ASSERT_EQ(desks_util::kMaxNumberOfDesks, controller->desks().size());
+
+  // Create a window to ensure that closing windows after removing the last desk
+  // still occurs correctly.
+  WindowHolder window(CreateAppWindow());
+  const int last_desk_index = desks_util::kMaxNumberOfDesks - 1;
+  controller->SendToDeskAtIndex(window.window(), last_desk_index);
+
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Remove the last desk with close-all. This should show the undo toast.
+  RemoveDesk(controller->desks()[last_desk_index].get(),
+             DeskCloseType::kCloseAllWindowsAndWait);
+  ASSERT_EQ(desks_util::kMaxNumberOfDesks - 1, controller->desks().size());
+  ASSERT_TRUE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+
+  // The new desk button should be enabled at this point.
+  auto* new_desk_button = GetPrimaryRootDesksBarView()
+                              ->expanded_state_new_desk_button()
+                              ->inner_button();
+  ASSERT_TRUE(new_desk_button->GetEnabled());
+
+  // If we click on the `new_desk_button`, we should create a new desk and
+  // destroy the previously removed desk and the window inside of it.
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(new_desk_button, event_generator);
+  EXPECT_EQ(desks_util::kMaxNumberOfDesks, controller->desks().size());
+  EXPECT_FALSE(DesksTestApi::DesksControllerCanUndoDeskRemoval());
+
+  // Ensure that the window is still closed properly.
+  WaitForMilliseconds(
+      DesksController::kCloseAllWindowCloseTimeout.InMilliseconds());
+  EXPECT_FALSE(window.is_valid());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
