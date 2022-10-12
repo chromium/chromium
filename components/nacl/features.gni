@@ -5,15 +5,26 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/gclient_args.gni")
 
+# The NaCl sandbox and toolchain currently only support x86-32, x86-64
+# and ARM32.
+#
+# The NaCl sandbox itself supports MIPS32, but the Clang toolchain
+# support for that is no longer up-to-date, so we don't include that
+# in the list of CPU architectures to enable NaCl on.
+#
+# NaCl is also supported on ARM64 Chrome OS, where the ARM32 NaCl
+# sandbox is used.  We don't enable that by default here, but Chrome
+# OS builds override "enable_nacl" to enable that.
+_cpu_is_supported =
+    target_cpu == "x86" || target_cpu == "x64" || target_cpu == "arm"
+
 declare_args() {
   # Enables Native Client support.
-  # Temporarily disable nacl on arm64 linux to get rid of compilation errors.
+  #
   # Intentionally and permanently disable nacl on arm64 mac.
-  # TODO: When mipsel-nacl-clang is available, drop the exclusion.
   enable_nacl =
-      checkout_nacl && target_os != "ios" && !is_android && !is_fuchsia &&
-      !is_castos && current_cpu != "mipsel" && current_cpu != "mips64el" &&
-      target_cpu != "arm64" && !(is_win && host_os != "win") &&
+      checkout_nacl && _cpu_is_supported && target_os != "ios" && !is_android &&
+      !is_fuchsia && !is_castos && !(is_win && host_os != "win") &&
       !(is_mac && (host_os != "mac" || target_cpu != "x64"))
 }
 
