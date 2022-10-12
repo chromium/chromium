@@ -114,6 +114,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
@@ -808,6 +809,14 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     bool is_synchronously_committed) {
   DCHECK_EQ(IsBackForwardLoadType(type), !!history_item);
 
+  if (frame_->IsMainFrame() && type == WebFrameLoadType::kBackForward) {
+    if (ScriptState* script_state = ToScriptStateForMainWorld(frame_)) {
+      DCHECK(frame_->DomWindow());
+      SoftNavigationHeuristics* heuristics =
+          SoftNavigationHeuristics::From(*frame_->DomWindow());
+      heuristics->SetBackForwardNavigationURL(script_state, new_url);
+    }
+  }
   SinglePageAppNavigationType single_page_app_navigation_type =
       CategorizeSinglePageAppNavigation(same_document_navigation_type, type);
   UMA_HISTOGRAM_ENUMERATION(

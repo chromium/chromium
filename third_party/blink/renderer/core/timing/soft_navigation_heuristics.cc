@@ -136,6 +136,16 @@ void SoftNavigationHeuristics::ModifiedDOM(ScriptState* script_state) {
   SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
 }
 
+void SoftNavigationHeuristics::SetBackForwardNavigationURL(
+    ScriptState* script_state,
+    const String& url) {
+  if (!url_.empty()) {
+    return;
+  }
+  url_ = url;
+  CheckAndReportSoftNavigation(script_state);
+}
+
 void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
     ScriptState* script_state) {
   if (flag_set_ != FlagTypeSet::All()) {
@@ -146,22 +156,29 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
   if (!frame || !frame->IsMainFrame()) {
     return;
   }
+  LocalDOMWindow* window = frame->DomWindow();
+  if (!window) {
+    return;
+  }
+  // In case of a Soft Navigation using `history.back()`, `history.forward()` or
+  // `history.go()`, `SawURLChange` was called with an empty URL. If that's the
+  // case, don't report the Soft Navigation just yet, and wait for
+  // `SetBackForwardNavigationURL` to be called with the correct URL (which the
+  // renderer only knows about asynchronously).
+  if (url_.empty()) {
+    ResetPaintsIfNeeded(frame, window);
+    return;
+  }
   ++soft_navigation_count_;
   frame->IncrementNavigationId();
-  if (LocalDOMWindow* window = frame->DomWindow()) {
-    auto* performance = DOMWindowPerformance::performance(*window);
-    DCHECK(!url_.IsNull());
-    performance->AddSoftNavigationEntry(AtomicString(url_),
-                                        user_click_timestamp_);
+  auto* performance = DOMWindowPerformance::performance(*window);
+  DCHECK(!url_.IsNull());
+  performance->AddSoftNavigationEntry(AtomicString(url_),
+                                      user_click_timestamp_);
 
-    if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled()) {
-      if (Document* document = window->document()) {
-        PaintTiming::From(*document).ResetFirstPaintAndFCP();
-      }
-      DCHECK(frame->View());
-      frame->View()->GetPaintTimingDetector().StartRecordingLCP();
-    }
-  }
+  // TODO(yoav): There's a theoretical race here where DOM modifications trigger
+  // paints before the URL change happens, leading to unspotted LCPs and FCPs.
+  ResetPaintsIfNeeded(frame, window);
 
   ResetHeuristic();
   LogToConsole(frame, mojom::blink::ConsoleMessageLevel::kInfo,
@@ -170,6 +187,20 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
   if (LocalFrameClient* frame_client = frame->Client()) {
     // This notifies UKM about this soft navigation.
     frame_client->DidObserveSoftNavigation(soft_navigation_count_);
+  }
+}
+
+void SoftNavigationHeuristics::ResetPaintsIfNeeded(LocalFrame* frame,
+                                                   LocalDOMWindow* window) {
+  if (!did_reset_paints_) {
+    if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled()) {
+      if (Document* document = window->document()) {
+        PaintTiming::From(*document).ResetFirstPaintAndFCP();
+      }
+      DCHECK(frame->View());
+      frame->View()->GetPaintTimingDetector().StartRecordingLCP();
+    }
+    did_reset_paints_ = true;
   }
 }
 

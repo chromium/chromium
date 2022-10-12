@@ -24,7 +24,7 @@
         img.onload = resolve;
       });
       main.appendChild(img);
-    }, link, /*push_state=*/true,
+    }, link, /*push_state=*/url=>{history.pushState({}, '', url)},
        /*clicks=*/1, ()=>{},
        "Test that a soft navigation is detected");
   </script>

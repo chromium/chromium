@@ -182,38 +182,53 @@ bool History::IsSameAsCurrentState(SerializedScriptValue* state) const {
   return state == StateInternal();
 }
 
-void History::back(ExceptionState& exception_state) {
-  go(-1, exception_state);
+void History::back(ScriptState* script_state, ExceptionState& exception_state) {
+  go(script_state, -1, exception_state);
 }
 
-void History::forward(ExceptionState& exception_state) {
-  go(1, exception_state);
+void History::forward(ScriptState* script_state,
+                      ExceptionState& exception_state) {
+  go(script_state, 1, exception_state);
 }
 
-void History::go(int delta, ExceptionState& exception_state) {
-  if (!DomWindow()) {
+void History::go(ScriptState* script_state,
+                 int delta,
+                 ExceptionState& exception_state) {
+  LocalDOMWindow* window = DomWindow();
+  if (!window) {
     exception_state.ThrowSecurityError(
         "May not use a History object associated with a Document that is not "
         "fully active");
     return;
   }
+  LocalFrame* frame = window->GetFrame();
+  DCHECK(frame);
 
-  if (!DomWindow()->GetFrame()->IsNavigationAllowed())
+  if (!frame->IsNavigationAllowed())
     return;
 
   DCHECK(IsMainThread());
 
-  if (!DomWindow()->GetFrame()->navigation_rate_limiter().CanProceed())
+  if (!frame->navigation_rate_limiter().CanProceed())
     return;
 
   // TODO(crbug.com/1262022): Remove this condition when Fenced Frames
   // transition to MPArch completely.
-  if (DomWindow()->GetFrame()->IsInFencedFrameTree())
+  if (frame->IsInFencedFrameTree())
     return;
 
   if (delta) {
-    if (DomWindow()->GetFrame()->Client()->NavigateBackForward(delta)) {
-      if (Page* page = DomWindow()->GetFrame()->GetPage())
+    // We don't have the URL here, as it is not available in the renderer just
+    // yet. We initially set it to an empty string, to signal to the
+    // SoftNavigationHeuristics class that it's not yet set. We will
+    // asynchronously set the URL at
+    // DocumentLoader::UpdateForSameDocumentNavigation, once the same document
+    // navigation is committed.
+    ReportURLChange(window, script_state,
+                    /*url=*/String(""));
+    DCHECK(frame->Client());
+    if (frame->Client()->NavigateBackForward(delta)) {
+      if (Page* page = frame->GetPage())
         page->HistoryNavigationVirtualTimePauser().PauseVirtualTime();
     }
   } else {
@@ -221,7 +236,7 @@ void History::go(int delta, ExceptionState& exception_state) {
     // Otherwise, navigation happens on the root frame.
     // This behavior is designed in the following spec.
     // https://html.spec.whatwg.org/C/#dom-history-go
-    DomWindow()->GetFrame()->Reload(WebFrameLoadType::kReload);
+    frame->Reload(WebFrameLoadType::kReload);
   }
 }
 

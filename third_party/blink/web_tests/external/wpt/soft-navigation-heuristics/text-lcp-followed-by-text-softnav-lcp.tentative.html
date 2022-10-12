@@ -25,7 +25,7 @@
       const text = document.createTextNode(json["content"]);
       div.appendChild(text);
       main.appendChild(div);
-    }, link, /*push_state=*/true,
+    }, link, /*push_state=*/url=>{history.pushState({}, '', url)},
        /*clicks=*/1, ()=>{},
        "Test that a text LCP followup by a smaller soft navigation text LCP"
        + " properly queues an LCP entry");

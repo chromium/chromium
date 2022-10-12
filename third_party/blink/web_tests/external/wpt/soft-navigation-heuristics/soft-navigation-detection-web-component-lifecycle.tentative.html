@@ -36,7 +36,7 @@
       const content = document.createTextNode(json["content"]);
       spa_content.appendChild(content);
       main.appendChild(spa_content);
-    }, link, /*push_state=*/false,
+    }, link, /*push_state=*/null,
        /*clicks=*/1, ()=>{},
        "Test that a soft navigation is detected when the click is done  "
        + "on a custom element.");

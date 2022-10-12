@@ -27,7 +27,7 @@
       img.src = json["image"] + "?" + Math.random();
       await loaded;
       main.appendChild(img);
-    }, link, /*push_state=*/true,
+    }, link, /*push_state=*/url=>{history.pushState({}, '', url)},
        /*clicks=*/52, (entries, options)=>{assert_equals(
          options['droppedEntriesCount'], 2);
        },

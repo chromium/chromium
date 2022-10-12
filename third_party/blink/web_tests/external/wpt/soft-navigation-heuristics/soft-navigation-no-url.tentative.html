@@ -22,7 +22,7 @@
       const content = document.createTextNode(json["content"]);
       div.appendChild(content);
       main.appendChild(div);
-    }, link, /*push_state=*/true,
+    }, link, /*push_state=*/url=>{history.pushState({}, '', url)},
        /*clicks=*/1, ()=>{},
        "Test that a soft navigation is detected", /*push_url=*/false);
   </script>

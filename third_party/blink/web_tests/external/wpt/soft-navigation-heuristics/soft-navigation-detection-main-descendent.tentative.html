@@ -21,7 +21,7 @@
       const descendent= document.getElementById("descendent");
       const content = document.createTextNode(json["content"]);
       descendent.appendChild(content);
-    }, link, /*push_state=*/true,
+    }, link, /*push_state=*/url=>{history.pushState({}, '', url)},
        /*clicks=*/1, ()=>{},
        "Test that a soft navigation is detected even when DOM change is "
        + "done on a main descendent");

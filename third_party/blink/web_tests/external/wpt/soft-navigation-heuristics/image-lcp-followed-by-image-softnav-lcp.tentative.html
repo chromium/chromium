@@ -27,7 +27,7 @@
         img.onload = resolve;
       });
       main.appendChild(img);
-    }, link, /*push_state=*/true,
+    }, link, /*push_state=*/url=>{history.pushState({}, '', url)},
        /*clicks=*/1, ()=>{},
        "Test that an image LCP followup by a smaller soft navigation image LCP"
        + " properly queues an LCP entry");

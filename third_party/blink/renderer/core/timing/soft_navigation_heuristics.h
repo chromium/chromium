@@ -39,6 +39,8 @@ class SoftNavigationHeuristics
   void SawURLChange(ScriptState*, const String& url);
   void ModifiedDOM(ScriptState*);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
+  void SetBackForwardNavigationURL(ScriptState* script_state,
+                                   const String& url);
 
   // TaskAttributionTracker::Observer's implementation.
   void OnCreateTaskScope(const scheduler::TaskAttributionId&) override;
@@ -57,10 +59,12 @@ class SoftNavigationHeuristics
                                    FlagType,
                                    absl::optional<String> url = absl::nullopt);
   void ResetHeuristic();
+  void ResetPaintsIfNeeded(LocalFrame*, LocalDOMWindow*);
 
   WTF::HashSet<scheduler::TaskAttributionIdType>
       potential_soft_navigation_task_ids_;
   FlagTypeSet flag_set_;
+  bool did_reset_paints_ = false;
   String url_;
   // The timestamp just before the click event responding to the user's click
   // started processing.

@@ -21,7 +21,7 @@
         img.onload = resolve;
       });
       document.body.appendChild(img);
-    }, link, /*push_state=*/true,
+    }, link, /*push_state=*/url=>{history.pushState({}, '', url)},
        /*clicks=*/1, ()=>{},
        "Test that a soft navigation is detected on a non-main element");
   </script>
