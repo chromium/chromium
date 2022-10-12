@@ -1073,16 +1073,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCFinalizeMC.Mark" units="ms" expires_after="2022-11-20">
-  <owner>mlippautz@chromium.org</owner>
-  <owner>hpayer@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent in the marking phase of incremental latency-optimized
-    Mark-Compact GC.
-  </summary>
-</histogram>
-
 <histogram name="V8.GCFinalizeMC.Prologue" units="ms" expires_after="M111">
   <owner>mlippautz@chromium.org</owner>
   <owner>hpayer@chromium.org</owner>
