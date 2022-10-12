@@ -95,6 +95,11 @@ message UploadEncryptedRecordRequest {
 
   // The rate (bytes/sec) at which new events are added to the storage.
   optional uint64 new_events_rate = 4;
+
+  // A random ID generated in storage and used by the server as a key for
+  // retrieving record sequence info. (Re)Created whenever storage is
+  // (re)initialized.
+  optional string pipeline_id = 5;
 }
 
 message UploadEncryptedRecordResponse {
