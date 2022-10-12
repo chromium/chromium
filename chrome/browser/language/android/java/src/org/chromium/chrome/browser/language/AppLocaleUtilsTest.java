@@ -126,23 +126,6 @@ public class AppLocaleUtilsTest {
         }
     }
 
-    @Test
-    @SmallTest
-    public void testHasMultipleUiLanguageVariants() {
-        Assert.assertTrue(AppLocaleUtils.hasMultipleUiLanguageVariants("en-US"));
-        Assert.assertTrue(AppLocaleUtils.hasMultipleUiLanguageVariants("en-AU"));
-        Assert.assertTrue(AppLocaleUtils.hasMultipleUiLanguageVariants("pt-BR"));
-        Assert.assertTrue(AppLocaleUtils.hasMultipleUiLanguageVariants("es"));
-
-        Assert.assertFalse(AppLocaleUtils.hasMultipleUiLanguageVariants("af"));
-        Assert.assertFalse(AppLocaleUtils.hasMultipleUiLanguageVariants("af-ZA"));
-        Assert.assertFalse(AppLocaleUtils.hasMultipleUiLanguageVariants("fil"));
-        Assert.assertFalse(AppLocaleUtils.hasMultipleUiLanguageVariants("zu"));
-
-        // Non existent UI language is false.
-        Assert.assertFalse(AppLocaleUtils.hasMultipleUiLanguageVariants("dne"));
-    }
-
     // Helper function to manually get and check AppLanguagePref.
     private void assertLanguagePrefEquals(String language) {
         Assert.assertEquals(language,

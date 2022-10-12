@@ -120,10 +120,10 @@ public class AppLanguagePromoDialogTest {
 
         // Current override language is en-US, System Language is en-US
         topLanguages = AppLanguagePromoDialog.getTopLanguagesHelper(mUiLanguages,
-                new LinkedHashSet<>(Arrays.asList("zu", "af", "an", "en-AU", "en-US")), mLangEnUs,
-                LocaleUtils.forLanguageTag("en-US"));
-        Assert.assertEquals(
-                new ArrayList<>(topLanguages), Arrays.asList(mLangEnUs, mLangZu, mLangAf));
+                new LinkedHashSet<>(Arrays.asList("zu", "af", "an", "en-AU", "en-US", "en-GB")),
+                mLangEnUs, LocaleUtils.forLanguageTag("en-US"));
+        Assert.assertEquals(new ArrayList<>(topLanguages),
+                Arrays.asList(mLangEnUs, mLangZu, mLangAf, mLangEnGb));
 
         // Current override language is Afrikaans, System Language is Zulu
         topLanguages = AppLanguagePromoDialog.getTopLanguagesHelper(mUiLanguages,
@@ -152,25 +152,32 @@ public class AppLanguagePromoDialogTest {
                 mFollowSystem, LocaleUtils.forLanguageTag("af-ZA"));
         Assert.assertEquals(
                 new ArrayList<>(topLanguages), Arrays.asList(mFollowSystem, mLangEnUs, mLangZu));
+
+        // Test that country specific top languages are converted to their base language.
+        topLanguages = AppLanguagePromoDialog.getTopLanguagesHelper(mUiLanguages,
+                new LinkedHashSet<>(
+                        Arrays.asList("af-ZA", "af-NA", "an", "as", "en-US", "en-AU", "zu-XX")),
+                mFollowSystem, LocaleUtils.forLanguageTag("en-US"));
+        Assert.assertEquals(
+                new ArrayList<>(topLanguages), Arrays.asList(mFollowSystem, mLangAf, mLangZu));
     }
 
     // Test isOverrideLanguageOriginalSystemLanguage
     @Test
     @SmallTest
-    public void testIsOverrideLanguageOriginalSystemLanguage() {
-        // Only one UI variant: Afrikaans
-        Assert.assertTrue(AppLanguagePromoDialog.isOverrideLanguageOriginalSystemLanguage(
-                mLangAf, LocaleUtils.forLanguageTag("af-ZA")));
-
-        // Multiple UI variants: en-US
-        Assert.assertFalse(AppLanguagePromoDialog.isOverrideLanguageOriginalSystemLanguage(
-                mLangEnGb, LocaleUtils.forLanguageTag("en-US")));
-        Assert.assertTrue(AppLanguagePromoDialog.isOverrideLanguageOriginalSystemLanguage(
-                mLangEnUs, LocaleUtils.forLanguageTag("en-US")));
-
-        // Follow system language
-        Assert.assertFalse(AppLanguagePromoDialog.isOverrideLanguageOriginalSystemLanguage(
-                mFollowSystem, LocaleUtils.forLanguageTag("zu")));
+    public void testGetPotentialUILanguage() {
+        LinkedHashSet<String> uiLanguages =
+                new LinkedHashSet<>(Arrays.asList("af", "en-US", "en-GB", "es", "es-419"));
+        Assert.assertEquals(
+                AppLanguagePromoDialog.getPotentialUILanguage("af-ZA", uiLanguages), "af");
+        Assert.assertEquals(
+                AppLanguagePromoDialog.getPotentialUILanguage("en-GB", uiLanguages), "en-GB");
+        Assert.assertEquals(
+                AppLanguagePromoDialog.getPotentialUILanguage("en-ZA", uiLanguages), "en");
+        Assert.assertEquals(
+                AppLanguagePromoDialog.getPotentialUILanguage("es-AR", uiLanguages), "es");
+        Assert.assertEquals(
+                AppLanguagePromoDialog.getPotentialUILanguage("es-419", uiLanguages), "es-419");
     }
 
     // Test LanguageItemAdapter

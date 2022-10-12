@@ -43,6 +43,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /**
  * Implements a modal dialog that prompts the user to change their UI language. Displayed once at
@@ -419,8 +420,14 @@ public class AppLanguagePromoDialog {
      */
     private static LinkedHashSet<LanguageItem> getTopLanguages(
             Collection<LanguageItem> uiLanguages, LanguageItem currentOverrideLanguage) {
-        LinkedHashSet<String> topLanguageCodes =
-                new LinkedHashSet<>(GeoLanguageProviderBridge.getCurrentGeoLanguages());
+        LinkedHashSet<String> topLanguageCodes = new LinkedHashSet<>();
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT_ULP)) {
+            topLanguageCodes.addAll(LanguageBridge.getULPFromPreference());
+        } else {
+            topLanguageCodes.addAll(GeoLanguageProviderBridge.getCurrentGeoLanguages());
+        }
+        // Add current Accept-Languages to bottom of top languages list.
         topLanguageCodes.addAll(TranslateBridge.getUserLanguageCodes());
 
         Locale originalSystemLocale =
@@ -432,9 +439,9 @@ public class AppLanguagePromoDialog {
     }
 
     /**
-     * Helper function isolating the logic for making the top language list for testing. Adds the
-     * system default language to the top of the list if needed and only adds top languages that are
-     * possible UI languages.
+     * Helper function isolating the top language list logic for testing.
+     * The original system language is replaced by the system default language
+     * which is added to the top of the list. Languages that can not be UI languages are removed.
      * @param uiLanguages Collection of possible UI languages.
      * @param topLanguageCodes Ordered set of potential top languages tags.
      * @param currentOverrideLanguage The LanguageItem representing the current UI language.
@@ -445,64 +452,67 @@ public class AppLanguagePromoDialog {
     static LinkedHashSet<LanguageItem> getTopLanguagesHelper(Collection<LanguageItem> uiLanguages,
             LinkedHashSet<String> topLanguageCodes, LanguageItem currentOverrideLanguage,
             Locale originalSystemLocale) {
-        // Remove the exact language from top language codes if there are multiple UI languages
-        // with the same base, otherwise remove the base language.
-        if (AppLocaleUtils.hasMultipleUiLanguageVariants(originalSystemLocale.toLanguageTag())) {
-            topLanguageCodes.remove(originalSystemLocale.toLanguageTag());
-        } else {
-            topLanguageCodes.remove(originalSystemLocale.getLanguage());
-        }
-
-        // The system default language should always be at the top of the list unless the current
-        // override language is equal to the original system language. In that case only the
-        // current override language is added to the top of the list.
         LinkedHashSet<LanguageItem> topLanguages = new LinkedHashSet<>();
-        if (currentOverrideLanguage.isSystemDefault()) {
-            topLanguages.add(LanguageItem.makeFollowSystemLanguageItem());
-        } else if (!isOverrideLanguageOriginalSystemLanguage(
-                           currentOverrideLanguage, originalSystemLocale)) {
-            topLanguages.add(LanguageItem.makeFollowSystemLanguageItem());
-            topLanguages.add(currentOverrideLanguage);
-        } else {
-            // The current override language can only be the original system language if it has
-            // already been changed in settings. The option to track the system language is not
-            // given in the app language promo - but can be reset from Language Settings.
-            topLanguages.add(currentOverrideLanguage);
-        }
 
         // Make a map of code -> LanguageItem for UI languages
         HashMap<String, LanguageItem> uiLanguagesMap = new HashMap<>();
         for (LanguageItem item : uiLanguages) {
             uiLanguagesMap.put(item.getCode(), item);
         }
-        // Only add top languages that can be UI languages.
+
+        String originalSystemLocalAsUILanguage = getPotentialUILanguage(
+                originalSystemLocale.toLanguageTag(), uiLanguagesMap.keySet());
+
+        // The system default language should always be at the top of the list unless the current
+        // override language is equal to the original system language. In that case only the
+        // current override language is added to the top of the list.
+        if (currentOverrideLanguage.isSystemDefault()) {
+            topLanguages.add(LanguageItem.makeFollowSystemLanguageItem());
+        } else if (TextUtils.equals(
+                           currentOverrideLanguage.getCode(), originalSystemLocalAsUILanguage)) {
+            // The override language is set to original system language, this can only happen if
+            // the App Language has been changed in settings. In this case the option to track the
+            // system language is not given in the app language promo - but can be reset from
+            // Language Settings.
+            topLanguages.add(currentOverrideLanguage);
+        } else {
+            topLanguages.add(LanguageItem.makeFollowSystemLanguageItem());
+            topLanguages.add(currentOverrideLanguage);
+        }
+
+        // Only add top languages that can be UI languages and are not the original system language.
         for (String code : topLanguageCodes) {
+            // Check for exact match
             LanguageItem item = uiLanguagesMap.get(code);
-            if (item != null) topLanguages.add(item);
+            if (item != null) {
+                if (!TextUtils.equals(item.getCode(), originalSystemLocalAsUILanguage)) {
+                    topLanguages.add(item);
+                }
+                continue;
+            }
+            // Check for base match
+            item = uiLanguagesMap.get(LocaleUtils.toLanguage(code));
+            if (item != null
+                    && !LocaleUtils.isBaseLanguageEqual(code, originalSystemLocalAsUILanguage)) {
+                topLanguages.add(item);
+            }
         }
         return topLanguages;
     }
 
     /**
-     * Returns true if the current override language is the same as the original system language.
-     * For languages that have only one Chrome UI language variant the base languages are compared
-     * and for languages with multiple Chrome UI languages the full language tag is compared.
-     * @param overrideLanguage LanguageItem for the current override language.
-     * @param originalSystemLocale String language code for the original system locale.
-     * @return Whether or not the override language is the same as the original system language.
+     * If |language| is in |uiLanguages| return it otherwise return the base language. If the
+     * return value is a country specific language that means it is a UI variant.
+     * @param language ISO 639 language code (e.g. en-US or en).
+     * @param uiLanguages Set of ISO 639 languages that are potential UI languages.
+     * @return |language| converted to a potential UI language.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    static boolean isOverrideLanguageOriginalSystemLanguage(
-            LanguageItem overrideLanguage, Locale originalSystemLocale) {
-        if (overrideLanguage.isSystemDefault()) {
-            return false;
+    static String getPotentialUILanguage(String language, Set<String> uiLanguages) {
+        if (uiLanguages.contains(language)) {
+            return language;
         }
-        if (AppLocaleUtils.hasMultipleUiLanguageVariants(overrideLanguage.getCode())) {
-            return TextUtils.equals(
-                    overrideLanguage.getCode(), originalSystemLocale.toLanguageTag());
-        }
-        return LocaleUtils.isBaseLanguageEqual(
-                overrideLanguage.getCode(), originalSystemLocale.toLanguageTag());
+        return LocaleUtils.toLanguage(language);
     }
 
     /**

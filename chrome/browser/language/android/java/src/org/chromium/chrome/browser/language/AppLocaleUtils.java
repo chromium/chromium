@@ -24,7 +24,6 @@ import org.chromium.ui.base.ResourceBundle;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -225,28 +224,6 @@ public class AppLocaleUtils {
     @ChecksSdkIntAtLeast(api = 33)
     public static boolean shouldUseSystemManagedLocale() {
         return BuildInfo.isAtLeastT();
-    }
-
-    /**
-     * Return true if the base language of |languageCode| has multiple UI language variants (e.g.
-     * pt-BR and pt-PT).
-     * @param languageCode Language tag to look up.
-     * @return Whether or not |languageCode| has multiple UI language variants.
-     */
-    public static boolean hasMultipleUiLanguageVariants(String languageCode) {
-        if (isFollowSystemLanguage(languageCode)) {
-            return false;
-        }
-        String baseLanguage = LocaleUtils.toLanguage(languageCode);
-        HashSet<String> baseLanguages = new HashSet<String>();
-        for (String code : ResourceBundle.getAvailableLocales()) {
-            String base = LocaleUtils.toLanguage(code);
-            if (baseLanguages.contains(base) && TextUtils.equals(base, baseLanguage)) {
-                return true;
-            }
-            baseLanguages.add(LocaleUtils.toLanguage(code));
-        }
-        return false;
     }
 
     /**
