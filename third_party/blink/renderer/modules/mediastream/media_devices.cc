@@ -314,12 +314,19 @@ ScriptPromise MediaDevices::getDisplayMedia(
     ScriptState* script_state,
     const MediaStreamConstraints* options,
     ExceptionState& exception_state) {
-  ExecutionContext* const context = GetExecutionContext();
-  if (!context) {
+  LocalDOMWindow* const window = DomWindow();
+  if (!window) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "No media device client available; is this a detached window?");
+        "No local DOM window; is this a detached window?");
     return ScriptPromise();
+  }
+
+  // Measure calls without transient activation as required by spec in
+  // https://github.com/w3c/mediacapture-screen-share/pull/106
+  if (!LocalFrame::HasTransientUserActivation(window->GetFrame())) {
+    UseCounter::Count(window,
+                      WebFeature::kGetDisplayMediaWithoutUserActivation);
   }
 
   // The kDisplayCapturePermissionsPolicyEnabled preference controls whether
@@ -327,10 +334,9 @@ ScriptPromise MediaDevices::getDisplayMedia(
   // The kDisplayCapturePermissionsPolicyEnabled preference is translated
   // into DisplayCapturePermissionsPolicyEnabled RuntimeEnabledFeature.
   if (RuntimeEnabledFeatures::DisplayCapturePermissionsPolicyEnabled()) {
-    const bool capture_allowed_by_permissions_policy =
-        context->IsFeatureEnabled(
-            mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
-            ReportOptions::kReportOnFailure);
+    const bool capture_allowed_by_permissions_policy = window->IsFeatureEnabled(
+        mojom::blink::PermissionsPolicyFeature::kDisplayCapture,
+        ReportOptions::kReportOnFailure);
 
     base::UmaHistogramEnumeration(
         "Media.Ui.GetDisplayMedia.DisplayCapturePolicyResult",
