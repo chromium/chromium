@@ -29,23 +29,6 @@ base::ScopedFD CreateEglFenceAndExportFd() {
   return std::move(fence_handle.owned_fd);
 }
 
-bool DeleteAImageAsync(AImage* image,
-                       base::android::AndroidImageReader* loader) {
-  // If there is no image to delete, there is no need to insert fence.
-  if (image == nullptr)
-    return true;
-
-  // Create egl fence and export a sync fd from it.
-  base::ScopedFD fence_fd = CreateEglFenceAndExportFd();
-  if (!fence_fd.is_valid())
-    return false;
-
-  // Delete the image synchronously. Release the fence_fd as below api will own
-  // it and ensure that the file descriptor is closed properly.
-  loader->AImage_deleteAsync(image, fence_fd.release());
-  return true;
-}
-
 bool InsertEglFenceAndWait(base::ScopedFD acquire_fence_fd) {
   int fence_fd = acquire_fence_fd.release();
 
