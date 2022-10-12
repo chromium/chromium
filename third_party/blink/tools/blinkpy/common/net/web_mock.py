@@ -27,7 +27,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import json
-from six.moves.urllib.error import HTTPError
+from requests.exceptions import HTTPError
+from requests import Response
 
 from blinkpy.common.net.rpc import RESPONSE_PREFIX
 
@@ -52,7 +53,7 @@ class MockWeb(object):
         return MockResponse(self.responses.pop(0))
 
     def request_and_read(self, *args, **kwargs):
-        return self.request(*args, **kwargs).read()
+        return self.request(*args, **kwargs).body
 
     def append_prpc_response(self, payload, status_code=200, headers=None):
         headers = headers or {}
@@ -81,12 +82,12 @@ class MockResponse(object):
         self._info = MockInfo(self.headers)
 
         if int(self.status_code) >= 400:
-            raise HTTPError(url=self.url,
-                            code=self.status_code,
-                            msg='Received error status code: {}'.format(
-                                self.status_code),
-                            hdrs={},
-                            fp=None)
+            response = Response()
+            response.status_code = self.status_code
+            response.reason = 'Received error status code: {}'.format(
+                self.status_code)
+            response.url = self.url
+            raise HTTPError(response=response)
 
     def getcode(self):
         return self.status_code
@@ -94,8 +95,8 @@ class MockResponse(object):
     def getheader(self, header):
         return self.headers.get(header.lower(), None)
 
-    def read(self):
-        return self.body
+    def json(self):
+        return json.loads(self.body)
 
     def info(self):
         return self._info
