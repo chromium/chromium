@@ -4250,6 +4250,10 @@ interface IIRFilterNode : AudioNode
     attribute @@toStringTag
     method constructor
     method getFrequencyResponse
+interface IdentityCredential : Credential
+    attribute @@toStringTag
+    getter token
+    method constructor
 interface IdleDeadline
     attribute @@toStringTag
     getter didTimeout

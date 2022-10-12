@@ -1146,23 +1146,24 @@
     },
     {
       name: "FedCm",
-      origin_trial_feature_name: "FedCM",
-      origin_trial_allows_third_party: true,
       public: true,
-      status: "test",
+      status: "stable",
     },
     {
       name: "FedCmIdpSigninStatus",
+      depends_on: ["FedCm"],
       public: true,
       status: "test",
     },
     {
       name: "FedCmIdpSignout",
+      depends_on: ["FedCm"],
       public: true,
       status: "test",
     },
     {
       name: "FedCmIframeSupport",
+      depends_on: ["FedCm"],
       public: true,
       status: "test",
     },

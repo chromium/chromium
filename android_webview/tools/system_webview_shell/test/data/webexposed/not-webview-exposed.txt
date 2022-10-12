@@ -281,7 +281,6 @@ interface Element : Node
 
 # FedCM API is not implemented on WebView. crbug.com/1340252
 interface IdentityCredential : Credential
-    getter token
 
 [GLOBAL OBJECT]
     method openDatabase
