@@ -448,15 +448,16 @@ TEST_F(PrivateAggregationHostTest, PrivateAggregationDisallowed_RequestFails) {
   EXPECT_TRUE(remote.is_connected());
 }
 
-class PrivateAggregationHostDebugModeTest : public PrivateAggregationHostTest {
+class PrivateAggregationHostDeveloperModeTest
+    : public PrivateAggregationHostTest {
  public:
-  PrivateAggregationHostDebugModeTest() {
+  PrivateAggregationHostDeveloperModeTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kPrivateAggregationDebugMode);
+        switches::kPrivateAggregationDeveloperMode);
   }
 };
 
-TEST_F(PrivateAggregationHostDebugModeTest,
+TEST_F(PrivateAggregationHostDeveloperModeTest,
        SendHistogramReport_ScheduledReportTimeIsNotDelayed) {
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));

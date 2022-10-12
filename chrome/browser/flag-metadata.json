@@ -5589,7 +5589,7 @@
     "expiry_milestone": 108
   },
   {
-    "name": "private-aggregation-debug-mode",
+    "name": "private-aggregation-developer-mode",
     "owners": [
       "//content/browser/private_aggregation/OWNERS"
     ],

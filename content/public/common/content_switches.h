@@ -182,7 +182,7 @@ CONTENT_EXPORT extern const char kPpapiInProcess[];
 extern const char kPpapiPluginLauncher[];
 CONTENT_EXPORT extern const char kPpapiPluginProcess[];
 extern const char kPpapiStartupDialog[];
-CONTENT_EXPORT extern const char kPrivateAggregationDebugMode[];
+CONTENT_EXPORT extern const char kPrivateAggregationDeveloperMode[];
 CONTENT_EXPORT extern const char kProcessPerSite[];
 CONTENT_EXPORT extern const char kProcessPerTab[];
 CONTENT_EXPORT extern const char kProcessType[];

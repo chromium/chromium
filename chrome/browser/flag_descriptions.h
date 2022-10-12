@@ -1385,8 +1385,8 @@ extern const char kPrivacyGuideAndroidDescription[];
 extern const char kPrivacySandboxAdsAPIsOverrideName[];
 extern const char kPrivacySandboxAdsAPIsOverrideDescription[];
 
-extern const char kPrivateAggregationDebugModeName[];
-extern const char kPrivateAggregationDebugModeDescription[];
+extern const char kPrivateAggregationDeveloperModeName[];
+extern const char kPrivateAggregationDeveloperModeDescription[];
 
 extern const char kProminentDarkModeActiveTabTitleName[];
 extern const char kProminentDarkModeActiveTabTitleDescription[];

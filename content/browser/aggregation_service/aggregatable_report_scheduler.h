@@ -129,7 +129,7 @@ class CONTENT_EXPORT AggregatableReportScheduler {
     // the typical size.
     std::set<AggregationServiceStorage::RequestId> in_progress_requests_;
 
-    // Set iff the private aggregation debug mode is set.
+    // Set iff the private aggregation developer mode is enabled.
     bool should_not_delay_reports_;
 
     base::WeakPtrFactory<AggregatableReportScheduler::TimerDelegate>

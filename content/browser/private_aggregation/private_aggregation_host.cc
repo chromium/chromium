@@ -57,7 +57,7 @@ PrivateAggregationHost::PrivateAggregationHost(
     BrowserContext* browser_context)
     : should_not_delay_reports_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kPrivateAggregationDebugMode)),
+              switches::kPrivateAggregationDeveloperMode)),
       on_report_request_received_(std::move(on_report_request_received)),
       browser_context_(*browser_context) {
   DCHECK(!on_report_request_received_.is_null());

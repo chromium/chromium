@@ -86,7 +86,7 @@ AggregatableReportScheduler::TimerDelegate::TimerDelegate(
           std::move(on_scheduled_report_time_reached)),
       should_not_delay_reports_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kPrivateAggregationDebugMode)) {
+              switches::kPrivateAggregationDeveloperMode)) {
   DCHECK(storage_context);
 }
 AggregatableReportScheduler::TimerDelegate::~TimerDelegate() = default;

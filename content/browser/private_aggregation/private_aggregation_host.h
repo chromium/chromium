@@ -72,7 +72,7 @@ class CONTENT_EXPORT PrivateAggregationHost
  private:
   struct ReceiverContext;
 
-  // Set iff the private aggregation debug mode is set.
+  // Set iff the private aggregation developer mode is set.
   bool should_not_delay_reports_;
 
   base::RepeatingCallback<void(AggregatableReportRequest,

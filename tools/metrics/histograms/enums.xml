@@ -59260,7 +59260,6 @@ from previous Chrome versions.
   <int value="-617851128"
       label="ForceGpuMainThreadToNormalPriorityDrDc:enabled"/>
   <int value="-617452890" label="media-router"/>
-  <int value="-617378214" label="private-aggregation-debug-mode"/>
   <int value="-616818899" label="SameSiteByDefaultCookies:enabled"/>
   <int value="-616508634" label="DisableCryptAuthV1DeviceSync:enabled"/>
   <int value="-615974325" label="ArcMouseWheelSmoothScroll:disabled"/>
@@ -59527,6 +59526,7 @@ from previous Chrome versions.
   <int value="-455413094" label="FilesJsModules:enabled"/>
   <int value="-455203267" label="use_new_features_summary"/>
   <int value="-454362199" label="HelpAppV2:disabled"/>
+  <int value="-451898735" label="private-aggregation-developer-mode"/>
   <int value="-450976085"
       label="AutofillSaveCreditCardUsesImprovedMessaging:disabled"/>
   <int value="-450917820" label="EnableCbdSignOut:enabled"/>

@@ -7751,10 +7751,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAttributionReportingDebugModeDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kAttributionReportingDebugMode)},
 
-    {"private-aggregation-debug-mode",
-     flag_descriptions::kPrivateAggregationDebugModeName,
-     flag_descriptions::kPrivateAggregationDebugModeDescription, kOsAll,
-     SINGLE_VALUE_TYPE(switches::kPrivateAggregationDebugMode)},
+    {"private-aggregation-developer-mode",
+     flag_descriptions::kPrivateAggregationDeveloperModeName,
+     flag_descriptions::kPrivateAggregationDeveloperModeDescription, kOsAll,
+     SINGLE_VALUE_TYPE(switches::kPrivateAggregationDeveloperMode)},
 
     {"client-storage-access-context-auditing",
      flag_descriptions::kClientStorageAccessContextAuditingName,

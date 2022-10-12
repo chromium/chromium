@@ -600,8 +600,9 @@ const char kPpapiPluginProcess[]            = "ppapi";
 // --no-sandbox as well or the sandbox won't allow the dialog to display.
 const char kPpapiStartupDialog[]            = "ppapi-startup-dialog";
 
-// Causes the Private Aggregation API to run without delays.
-const char kPrivateAggregationDebugMode[] = "private-aggregation-debug-mode";
+// Causes the Private Aggregation API to run without reporting delays.
+const char kPrivateAggregationDeveloperMode[] =
+    "private-aggregation-developer-mode";
 
 // Enable the "Process Per Site" process model for all domains. This mode
 // consolidates same-site pages so that they share a single process.

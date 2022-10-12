@@ -2480,12 +2480,12 @@ const char kPrivacySandboxAdsAPIsOverrideDescription[] =
     "Fenced Frames, Shared Storage, Private Aggregation, and their associated "
     "features.";
 
-const char kPrivateAggregationDebugModeName[] =
-    "Private Aggregation debug mode";
-const char kPrivateAggregationDebugModeDescription[] =
-    "Enables debug mode for the Private Aggregation API. This removes all "
-    "reporting delays. Only works if the Private Aggregation API is already "
-    "enabled.";
+const char kPrivateAggregationDeveloperModeName[] =
+    "Private Aggregation developer mode";
+const char kPrivateAggregationDeveloperModeDescription[] =
+    "Enables the developer mode for the Private Aggregation API. This removes "
+    "all reporting delays. Only works if the Private Aggregation API is "
+    "already enabled.";
 
 const char kProminentDarkModeActiveTabTitleName[] =
     "Prominent Dark Mode Active Tab Titles";

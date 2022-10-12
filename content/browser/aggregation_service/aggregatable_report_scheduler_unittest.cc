@@ -525,16 +525,16 @@ TEST_F(AggregatableReportSchedulerTest,
   task_environment_.FastForwardBy(kExampleTime - base::Time::Now());
 }
 
-class AggregatableReportSchedulerDebugModeTest
+class AggregatableReportSchedulerDeveloperModeTest
     : public AggregatableReportSchedulerTest {
  public:
-  AggregatableReportSchedulerDebugModeTest() {
+  AggregatableReportSchedulerDeveloperModeTest() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kPrivateAggregationDebugMode);
+        switches::kPrivateAggregationDeveloperMode);
   }
 };
 
-TEST_F(AggregatableReportSchedulerDebugModeTest,
+TEST_F(AggregatableReportSchedulerDeveloperModeTest,
        NetworkOffline_ReportsAreSentImmediatelyWhenOnline) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_NONE);  // Offline
@@ -571,8 +571,8 @@ TEST_F(AggregatableReportSchedulerDebugModeTest,
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_UNKNOWN);  // Online
 
-  // With the debug mode flag, the report should not be delayed, so all we need
-  // to do is run any pending tasks.
+  // With the developer mode flag, the report should be sent immediately, so all
+  // we need to do is run any pending tasks.
   task_environment_.RunUntilIdle();
 }
 
