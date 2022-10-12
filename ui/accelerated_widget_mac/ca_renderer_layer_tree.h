@@ -61,6 +61,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   // cannot be called anymore after CommitScheduledCALayers has been called.
   bool ScheduleCALayer(const CARendererLayerParams& params);
 
+  // Set the MTLDevice to use for any CAMetalLayers.
+  void SetMetalDevice(intptr_t metal_device) { metal_device_ = metal_device; }
+
   // Create a CALayer tree for the scheduled layers, and set |superlayer| to
   // have only this tree as its sublayers. If |old_tree| is non-null, then try
   // to re-use the CALayers of |old_tree| as much as possible. |old_tree| will
@@ -301,6 +304,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   bool has_committed_ = false;
   const bool allow_av_sample_buffer_display_layer_ = true;
   const bool allow_solid_color_layers_ = true;
+  intptr_t metal_device_ = 0;
 
   // Used for uma.
   int changed_io_surfaces_during_commit_ = 0;

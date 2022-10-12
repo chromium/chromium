@@ -28,9 +28,12 @@ bool METAL_UTIL_EXPORT ShouldUseHDRCopier(IOSurfaceRef buffer,
 CALayer* METAL_UTIL_EXPORT CreateHDRCopierLayer();
 
 // Update the contents of |layer| to the specified IOSurface and color space.
+// If `metal_device` is non-zero, then it is the MTLDevice that the
+// CAMetaLLayer should be set to.
 void METAL_UTIL_EXPORT
 UpdateHDRCopierLayer(CALayer* layer,
                      IOSurfaceRef buffer,
+                     intptr_t metal_device,
                      const gfx::ColorSpace& color_space,
                      const absl::optional<gfx::HDRMetadata>& hdr_metadata);
 

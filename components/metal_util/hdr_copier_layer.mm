@@ -238,6 +238,7 @@ API_AVAILABLE(macos(10.15))
 }
 - (id)init;
 - (void)setHDRContents:(IOSurfaceRef)buffer
+            withDevice:(id<MTLDevice>)device
         withColorSpace:(gfx::ColorSpace)color_space
           withMetadata:(absl::optional<gfx::HDRMetadata>)hdr_metadata;
 @end
@@ -258,6 +259,7 @@ API_AVAILABLE(macos(10.15))
 }
 
 - (void)setHDRContents:(IOSurfaceRef)buffer
+            withDevice:(id<MTLDevice>)device
         withColorSpace:(gfx::ColorSpace)color_space
           withMetadata:(absl::optional<gfx::HDRMetadata>)hdr_metadata {
   // Retrieve information about the IOSurface.
@@ -300,12 +302,16 @@ API_AVAILABLE(macos(10.15))
 
   // Migrate to the MTLDevice on which the CAMetalLayer is being composited, if
   // known.
-  if ([self respondsToSelector:@selector(preferredDevice)]) {
-    id<MTLDevice> preferred_device = [self preferredDevice];
-    if (preferred_device)
-      [self setDevice:preferred_device];
+  if (device) {
+    [self setDevice:device];
+  } else {
+    if ([self respondsToSelector:@selector(preferredDevice)]) {
+      id<MTLDevice> preferred_device = [self preferredDevice];
+      if (preferred_device)
+        [self setDevice:preferred_device];
+    }
+    device = [self device];
   }
-  id<MTLDevice> device = [self device];
 
   // When the device changes, rebuild the RenderPipelineState.
   if (device != [_render_pipeline_state device])
@@ -424,11 +430,15 @@ CALayer* CreateHDRCopierLayer() {
 void UpdateHDRCopierLayer(
     CALayer* layer,
     IOSurfaceRef buffer,
+    intptr_t metal_device,
     const gfx::ColorSpace& color_space,
     const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
   if (@available(macos 10.15, *)) {
+    id<MTLDevice> device =
+        (__bridge id<MTLDevice>)reinterpret_cast<void*>(metal_device);
     if (auto* hdr_copier_layer = base::mac::ObjCCast<HDRCopierLayer>(layer)) {
       [hdr_copier_layer setHDRContents:buffer
+                            withDevice:device
                         withColorSpace:color_space
                           withMetadata:hdr_metadata];
       return;

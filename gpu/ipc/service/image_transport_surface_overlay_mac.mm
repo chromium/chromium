@@ -30,6 +30,13 @@
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/scoped_cgl.h"
 
+// From ANGLE's EGL/eglext_angle.h. This should be included instead of being
+// redefined here.
+#ifndef EGL_ANGLE_device_metal
+#define EGL_ANGLE_device_metal 1
+#define EGL_METAL_DEVICE_ANGLE 0x34A6
+#endif /* EGL_ANGLE_device_metal */
+
 namespace gpu {
 
 namespace {
@@ -433,6 +440,25 @@ gfx::SwapResult ImageTransportSurfaceOverlayMacEGL::SwapBuffersInternal(
   constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
   constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(16);
   constexpr int kHistogramTimeBuckets = 50;
+
+  // Query the underlying Metal device, if one exists. This is needed to ensure
+  // synchronization between the display compositor and the HDRCopierLayer.
+  // https://crbug.com/1372898
+  if (gl::GLDisplayEGL* display =
+          gl::GLDisplayEGL::GetDisplayForCurrentContext()) {
+    EGLAttrib angle_device_attrib = 0;
+    if (eglQueryDisplayAttribEXT(display->GetDisplay(), EGL_DEVICE_EXT,
+                                 &angle_device_attrib)) {
+      EGLDeviceEXT angle_device =
+          reinterpret_cast<EGLDeviceEXT>(angle_device_attrib);
+      EGLAttrib metal_device = 0;
+      if (eglQueryDeviceAttribEXT(angle_device, EGL_METAL_DEVICE_ANGLE,
+                                  &metal_device)) {
+        ca_layer_tree_coordinator_->GetPendingCARendererLayerTree()
+            ->SetMetalDevice(metal_device);
+      }
+    }
+  }
 
   // Do a GL fence for flush to apply back-pressure before drawing.
   {
