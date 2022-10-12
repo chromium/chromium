@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Color picker: Pressing escape closes popup after value is changed and then set back to original value. assert_equals: Mouse input should have changed color value. expected "#8fa8b3" but got "#92aab5"
+Harness: the test ran to completion.
+
