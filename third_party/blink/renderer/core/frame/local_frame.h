@@ -787,8 +787,6 @@ class CORE_EXPORT LocalFrame final
   // Invokes on first paint, this method could be invoked multiple times, refer
   // to FrameFirstPaint.
   void OnFirstPaint(bool text_painted, bool image_painted);
-  void IncrementNavigationId() { navigation_id_++; }
-  uint32_t GetNavigationId() { return navigation_id_; }
 
 #if BUILDFLAG(IS_MAC)
   void ResetTextInputHostForTesting();
@@ -1046,9 +1044,6 @@ class CORE_EXPORT LocalFrame final
 
   // Indicate if the current document's color scheme was notified.
   bool notified_color_scheme_ = false;
-  // Tracks the number of times this document has been retrieved from the
-  // bfcache.
-  uint32_t navigation_id_ = 1;
 
   // Stores whether this frame is affected by a CSPEE policy (from any ancestor
   // frame). Calculated browser-side and used to help determine if this frame

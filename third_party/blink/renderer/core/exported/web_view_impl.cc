@@ -2506,7 +2506,8 @@ void WebViewImpl::SetPageLifecycleStateInternal(
          frame = frame->Tree().TraverseNext()) {
       auto* local_frame = DynamicTo<LocalFrame>(frame);
       if (local_frame && local_frame->View()) {
-        local_frame->IncrementNavigationId();
+        DCHECK(local_frame->DomWindow());
+        local_frame->DomWindow()->IncrementNavigationId();
       }
     }
 

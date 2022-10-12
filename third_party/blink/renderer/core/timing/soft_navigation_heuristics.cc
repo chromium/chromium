@@ -170,7 +170,7 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
     return;
   }
   ++soft_navigation_count_;
-  frame->IncrementNavigationId();
+  window->IncrementNavigationId();
   auto* performance = DOMWindowPerformance::performance(*window);
   DCHECK(!url_.IsNull());
   performance->AddSoftNavigationEntry(AtomicString(url_),

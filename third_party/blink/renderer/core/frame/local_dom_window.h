@@ -490,6 +490,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
     return closewatcher_stack_;
   }
 
+  void IncrementNavigationId() { navigation_id_++; }
+  uint32_t GetNavigationId() const { return navigation_id_; }
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -617,6 +620,11 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // If set, this window is a Document Picture in Picture window.
   // https://github.com/steimelchrome/document-pip-explainer/blob/main/explainer.md
   bool is_picture_in_picture_window_ = false;
+
+  // The navigation id of a document is to identify navigation of special types
+  // like bfcache navigation or soft navigation. It increments when navigations
+  // of these types occur.
+  uint32_t navigation_id_ = 1;
 };
 
 template <>

@@ -222,12 +222,4 @@ TEST_F(LocalFrameTest, CharacterIndexAtPointWithPinchZoom) {
   EXPECT_EQ(waiter.index(), 5ul);
 }
 #endif
-TEST_F(LocalFrameTest, NavigationCounter) {
-  auto page_holder = std::make_unique<DummyPageHolder>();
-  EXPECT_EQ(1u, page_holder->GetFrame().GetNavigationId());
-  page_holder->GetFrame().IncrementNavigationId();
-  EXPECT_EQ(2u, page_holder->GetFrame().GetNavigationId());
-  page_holder->GetFrame().IncrementNavigationId();
-  EXPECT_EQ(3u, page_holder->GetFrame().GetNavigationId());
-}
 }  // namespace blink
