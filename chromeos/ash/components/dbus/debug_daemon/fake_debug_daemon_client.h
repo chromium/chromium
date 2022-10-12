@@ -80,8 +80,10 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
                      chromeos::DBusMethodCallback<uint64_t> callback) override;
   void StopPerf(uint64_t session_id,
                 chromeos::VoidDBusMethodCallback callback) override;
-  void GetScrubbedBigLogs(const cryptohome::AccountIdentifier& id,
-                          GetLogsCallback callback) override;
+  void GetFeedbackLogsV2(
+      const cryptohome::AccountIdentifier& id,
+      const std::vector<debugd::FeedbackLogType>& requested_logs,
+      GetLogsCallback callback) override;
   void BackupArcBugReport(const cryptohome::AccountIdentifier& id,
                           chromeos::VoidDBusMethodCallback callback) override;
   void GetAllLogs(GetLogsCallback callback) override;

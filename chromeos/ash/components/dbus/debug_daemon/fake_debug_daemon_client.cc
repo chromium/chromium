@@ -153,13 +153,15 @@ void FakeDebugDaemonClient::StopPerf(
     uint64_t session_id,
     chromeos::VoidDBusMethodCallback callback) {}
 
-void FakeDebugDaemonClient::GetScrubbedBigLogs(
+void FakeDebugDaemonClient::GetFeedbackLogsV2(
     const cryptohome::AccountIdentifier& id,
+    const std::vector<debugd::FeedbackLogType>& requested_logs,
     GetLogsCallback callback) {
   std::map<std::string, std::string> sample;
-  sample["Sample Scrubbed Big Log"] = "Your email address is xxxxxxxx";
+  sample["Sample Log"] = "Your email address is abc@abc.com";
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), false, sample));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), /*succeeded=*/true, sample));
 }
 
 void FakeDebugDaemonClient::BackupArcBugReport(

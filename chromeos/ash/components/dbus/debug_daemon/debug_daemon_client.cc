@@ -254,8 +254,10 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void GetScrubbedBigLogs(const cryptohome::AccountIdentifier& id,
-                          GetLogsCallback callback) override {
+  void GetFeedbackLogsV2(
+      const cryptohome::AccountIdentifier& id,
+      const std::vector<debugd::FeedbackLogType>& requested_logs,
+      GetLogsCallback callback) override {
     // The PipeReaderWrapper is a self-deleting object; we don't have to worry
     // about ownership or lifetime. We need to create a new one for each Big
     // Logs requests in order to queue these requests. One request can take a
@@ -265,15 +267,22 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     base::ScopedFD pipe_write_end = pipe_reader->Initialize();
 
     dbus::MethodCall method_call(debugd::kDebugdInterface,
-                                 debugd::kGetBigFeedbackLogs);
+                                 debugd::kGetFeedbackLogsV2);
     dbus::MessageWriter writer(&method_call);
     writer.AppendFileDescriptor(pipe_write_end.get());
     writer.AppendString(id.account_id());
+    // Write |requested_logs|.
+    dbus::MessageWriter sub_writer(NULL);
+    writer.OpenArray("i", &sub_writer);
+    for (auto log_type : requested_logs) {
+      sub_writer.AppendInt32(log_type);
+    }
+    writer.CloseContainer(&sub_writer);
 
-    DVLOG(1) << "Requesting big feedback logs";
+    DVLOG(1) << "Requesting feedback logs";
     debugdaemon_proxy_->CallMethod(
         &method_call, kBigLogsDBusTimeoutMS,
-        base::BindOnce(&DebugDaemonClientImpl::OnBigFeedbackLogsResponse,
+        base::BindOnce(&DebugDaemonClientImpl::OnFeedbackLogsResponse,
                        weak_ptr_factory_.GetWeakPtr(),
                        pipe_reader->AsWeakPtr()));
   }
@@ -816,8 +825,8 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     std::move(callback).Run(!sub_reader.HasMoreData() && !broken, logs);
   }
 
-  void OnBigFeedbackLogsResponse(base::WeakPtr<PipeReaderWrapper> pipe_reader,
-                                 dbus::Response* response) {
+  void OnFeedbackLogsResponse(base::WeakPtr<PipeReaderWrapper> pipe_reader,
+                              dbus::Response* response) {
     if (!response && pipe_reader.get()) {
       // We need to terminate the data stream if an error occurred while the
       // pipe reader is still waiting on read.

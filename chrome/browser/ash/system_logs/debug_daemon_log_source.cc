@@ -61,8 +61,6 @@ constexpr struct UserLogs {
 // List of debugd entries to exclude from the results.
 constexpr std::array<const char*, 2> kExcludeList = {
     // Shill device and service properties are retrieved by ShillLogSource.
-    // TODO(https://crbug.com/967800): Modify debugd to omit these for
-    // feedback report gathering and remove these entries.
     "network-devices",
     "network-services",
 };
@@ -161,9 +159,11 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
   if (scrub_) {
     const user_manager::User* user =
         user_manager::UserManager::Get()->GetActiveUser();
-    client->GetScrubbedBigLogs(
+    client->GetFeedbackLogsV2(
         cryptohome::CreateAccountIdentifierFromAccountId(
             user ? user->GetAccountId() : EmptyAccountId()),
+        // Send `requested_logs` as empty to request all logs.
+        /*requested_logs=*/{},
         base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
                        weak_ptr_factory_.GetWeakPtr(), start_time));
   } else {

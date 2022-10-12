@@ -137,13 +137,17 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
       base::OnceCallback<void(bool succeeded,
                               const std::map<std::string, std::string>& logs)>;
 
-  // Gets the scrubbed logs from debugd that are very large and cannot be
+  // Gets feedback logs from debugd that are very large and cannot be
   // returned directly from D-Bus. These logs will include ARC and cheets
   // system information.
   // |id|: Cryptohome Account identifier for the user to get
   // logs for.
-  virtual void GetScrubbedBigLogs(const cryptohome::AccountIdentifier& id,
-                                  GetLogsCallback callback) = 0;
+  // |requested_logs|: The list of requested logs. All available logs will be
+  // requested if left empty.
+  virtual void GetFeedbackLogsV2(
+      const cryptohome::AccountIdentifier& id,
+      const std::vector<debugd::FeedbackLogType>& requested_logs,
+      GetLogsCallback callback) = 0;
 
   // Retrieves the ARC bug report for user identified by |userhash|
   // and saves it in debugd daemon store.
