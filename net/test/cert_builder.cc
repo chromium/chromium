@@ -517,11 +517,12 @@ void CertBuilder::SetIssuerTLV(base::span<const uint8_t> issuer_tlv) {
 }
 
 void CertBuilder::SetSubjectCommonName(base::StringPiece common_name) {
-  SetSubject(BuildNameWithCommonNameOfType(common_name, CBS_ASN1_UTF8STRING));
+  SetSubjectTLV(
+      BuildNameWithCommonNameOfType(common_name, CBS_ASN1_UTF8STRING));
   Invalidate();
 }
 
-void CertBuilder::SetSubject(base::span<const uint8_t> subject_tlv) {
+void CertBuilder::SetSubjectTLV(base::span<const uint8_t> subject_tlv) {
   subject_tlv_.assign(subject_tlv.begin(), subject_tlv.end());
   Invalidate();
 }

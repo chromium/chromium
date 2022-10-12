@@ -2896,7 +2896,7 @@ TEST_P(CertVerifyProcNameNormalizationTest, StringType) {
   std::string issuer_cn = CertBuilder::MakeRandomHexString(12);
   leaf->SetIssuerTLV(CertBuilder::BuildNameWithCommonNameOfType(
       issuer_cn, CBS_ASN1_PRINTABLESTRING));
-  intermediate->SetSubject(CertBuilder::BuildNameWithCommonNameOfType(
+  intermediate->SetSubjectTLV(CertBuilder::BuildNameWithCommonNameOfType(
       issuer_cn, CBS_ASN1_UTF8STRING));
 
   ScopedTestRoot scoped_root(root->GetX509Certificate().get());
@@ -2934,7 +2934,7 @@ TEST_P(CertVerifyProcNameNormalizationTest, CaseFolding) {
   std::string issuer_hex = CertBuilder::MakeRandomHexString(12);
   leaf->SetIssuerTLV(CertBuilder::BuildNameWithCommonNameOfType(
       "Z" + issuer_hex, CBS_ASN1_PRINTABLESTRING));
-  intermediate->SetSubject(CertBuilder::BuildNameWithCommonNameOfType(
+  intermediate->SetSubjectTLV(CertBuilder::BuildNameWithCommonNameOfType(
       "z" + issuer_hex, CBS_ASN1_PRINTABLESTRING));
 
   ScopedTestRoot scoped_root(root->GetX509Certificate().get());
@@ -2960,7 +2960,7 @@ TEST_P(CertVerifyProcNameNormalizationTest, ByteEqual) {
   std::string issuer_hex = CertBuilder::MakeRandomHexString(12);
   leaf->SetIssuerTLV(CertBuilder::BuildNameWithCommonNameOfType(
       issuer_hex, CBS_ASN1_PRINTABLESTRING));
-  intermediate->SetSubject(CertBuilder::BuildNameWithCommonNameOfType(
+  intermediate->SetSubjectTLV(CertBuilder::BuildNameWithCommonNameOfType(
       issuer_hex, CBS_ASN1_PRINTABLESTRING));
 
   ScopedTestRoot scoped_root(root->GetX509Certificate().get());

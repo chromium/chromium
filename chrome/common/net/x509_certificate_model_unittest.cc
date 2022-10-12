@@ -625,7 +625,7 @@ TEST_P(X509CertificateModel, SubjectIA5StringInvalidCharacters) {
   const uint8_t kSubject[] = {0x30, 0x10, 0x31, 0x0e, 0x30, 0x0c,
                               0x06, 0x03, 0x55, 0x04, 0x03, 0x16,
                               0x05, 0x61, 0x20, 0xf6, 0x20, 0x62};
-  builder->SetSubject(kSubject);
+  builder->SetSubjectTLV(kSubject);
 
   x509_certificate_model::X509CertificateModel model(
       bssl::UpRef(builder->GetCertBuffer()), GetParam());
@@ -648,7 +648,7 @@ TEST_P(X509CertificateModel, SubjectInvalid) {
 
   // SEQUENCE { SET { } }
   const uint8_t kSubject[] = {0x30, 0x02, 0x31, 0x00};
-  builder->SetSubject(kSubject);
+  builder->SetSubjectTLV(kSubject);
 
   x509_certificate_model::X509CertificateModel model(
       bssl::UpRef(builder->GetCertBuffer()), GetParam());
@@ -663,7 +663,7 @@ TEST_P(X509CertificateModel, SubjectEmptySequence) {
 
   // SEQUENCE { }
   const uint8_t kSubject[] = {0x30, 0x00};
-  builder->SetSubject(kSubject);
+  builder->SetSubjectTLV(kSubject);
 
   {
     x509_certificate_model::X509CertificateModel model(

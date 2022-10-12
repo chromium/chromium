@@ -158,7 +158,7 @@ class CertBuilder {
   void SetSubjectCommonName(base::StringPiece common_name);
 
   // Sets the subject to |subject_tlv|.
-  void SetSubject(base::span<const uint8_t> subject_tlv);
+  void SetSubjectTLV(base::span<const uint8_t> subject_tlv);
 
   // Sets the SAN for the certificate to a single dNSName.
   void SetSubjectAltName(base::StringPiece dns_name);
