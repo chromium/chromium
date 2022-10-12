@@ -410,6 +410,23 @@ void HTMLMetaElement::ProcessViewportKeyValuePair(
 
     if (resize_type) {
       description.virtual_keyboard_mode = resize_type.value();
+      switch (resize_type.value()) {
+        case ui::mojom::blink::VirtualKeyboardMode::kOverlaysContent: {
+          UseCounter::Count(document,
+                            WebFeature::kInteractiveWidgetOverlaysContent);
+        } break;
+        case ui::mojom::blink::VirtualKeyboardMode::kResizesContent: {
+          UseCounter::Count(document,
+                            WebFeature::kInteractiveWidgetResizesContent);
+        } break;
+        case ui::mojom::blink::VirtualKeyboardMode::kResizesVisual: {
+          UseCounter::Count(document,
+                            WebFeature::kInteractiveWidgetResizesVisual);
+        } break;
+        case ui::mojom::blink::VirtualKeyboardMode::kUnset: {
+          NOTREACHED();
+        } break;
+      }
     } else {
       description.virtual_keyboard_mode =
           ui::mojom::blink::VirtualKeyboardMode::kUnset;

@@ -41540,6 +41540,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4363" label="ServiceWorkerSkippedForSubresourceLoad"/>
   <int value="4364" label="ClientHintsPrefersReducedMotion"/>
   <int value="4365" label="WakeLockAcquireScreenLockWithoutActivation"/>
+  <int value="4366" label="InteractiveWidgetOverlaysContent"/>
+  <int value="4367" label="InteractiveWidgetResizesContent"/>
+  <int value="4368" label="InteractiveWidgetResizesVisual"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

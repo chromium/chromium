@@ -3361,4 +3361,67 @@ TEST_F(ViewportMetaSimTest, VirtualKeyboardUpdateContent) {
             ui::mojom::blink::VirtualKeyboardMode::kUnset);
 }
 
+// Test use counters for values of the 'interactive-widget' property.
+TEST_F(ViewportMetaSimTest, InteractiveWidgetUseCounters) {
+  // Property unset.
+  {
+    LoadPageWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <meta name="viewport" content="width=device-width">
+    )HTML");
+
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kInteractiveWidgetResizesVisual));
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kInteractiveWidgetResizesContent));
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kInteractiveWidgetOverlaysContent));
+  }
+
+  // resizes-visual.
+  {
+    LoadPageWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <meta name="viewport" content="interactive-widget=resizes-visual">
+    )HTML");
+
+    EXPECT_TRUE(GetDocument().IsUseCounted(
+        WebFeature::kInteractiveWidgetResizesVisual));
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kInteractiveWidgetResizesContent));
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kInteractiveWidgetOverlaysContent));
+  }
+
+  // resizes-content.
+  {
+    LoadPageWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <meta name="viewport" content="interactive-widget=resizes-content">
+    )HTML");
+
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kInteractiveWidgetResizesVisual));
+    EXPECT_TRUE(GetDocument().IsUseCounted(
+        WebFeature::kInteractiveWidgetResizesContent));
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kInteractiveWidgetOverlaysContent));
+  }
+
+  // overlays-content.
+  {
+    LoadPageWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <meta name="viewport" content="interactive-widget=overlays-content">
+    )HTML");
+
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kInteractiveWidgetResizesVisual));
+    EXPECT_FALSE(GetDocument().IsUseCounted(
+        WebFeature::kInteractiveWidgetResizesContent));
+    EXPECT_TRUE(GetDocument().IsUseCounted(
+        WebFeature::kInteractiveWidgetOverlaysContent));
+  }
+}
+
 }  // namespace blink
