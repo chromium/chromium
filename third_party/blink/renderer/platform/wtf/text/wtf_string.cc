@@ -376,12 +376,6 @@ float String::ToFloat(bool* ok) const {
   return impl_->ToFloat(ok);
 }
 
-String String::IsolatedCopy() const {
-  if (!impl_)
-    return String();
-  return impl_->IsolatedCopy();
-}
-
 void String::Split(const StringView& separator,
                    bool allow_empty_entries,
                    Vector<String>& result) const {

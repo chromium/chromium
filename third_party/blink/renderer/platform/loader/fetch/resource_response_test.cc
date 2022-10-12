@@ -29,36 +29,7 @@ ResourceResponse CreateTestResponse() {
   return response;
 }
 
-void RunHeaderRelatedTest(const ResourceResponse& response) {
-  EXPECT_EQ(base::TimeDelta(), response.Age());
-  EXPECT_NE(absl::nullopt, response.Date());
-  EXPECT_NE(absl::nullopt, response.Expires());
-  EXPECT_NE(absl::nullopt, response.LastModified());
-  EXPECT_EQ(true, response.CacheControlContainsNoCache());
-}
-
-void RunInThread() {
-  ResourceResponse response(CreateTestResponse());
-  RunHeaderRelatedTest(response);
-}
-
 }  // namespace
-
-// This test checks that AtomicStrings in ResourceResponse doesn't cause the
-// failure of ThreadRestrictionVerifier check.
-TEST(ResourceResponseTest, CrossThreadAtomicStrings) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
-
-  ResourceResponse response(CreateTestResponse());
-  RunHeaderRelatedTest(response);
-  std::unique_ptr<NonMainThread> thread =
-      NonMainThread::CreateThread(ThreadCreationParams(ThreadType::kTestThread)
-                                      .SetThreadNameForTest("WorkerThread"));
-  PostCrossThreadTask(*thread->GetTaskRunner(), FROM_HERE,
-                      CrossThreadBindOnce(&RunInThread));
-  thread.reset();
-}
 
 TEST(ResourceResponseTest, AddHttpHeaderFieldWithMultipleValues) {
   ResourceResponse response(CreateTestResponse());

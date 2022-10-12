@@ -30,8 +30,8 @@
 // As a consequence, the inner pointer should never be cached, and only touched
 // through a string returned by the |ToString()| method.
 //
-// As with WTF::AtomicString, this class is *not* thread-safe, and strings
-// created on a thread must always be used on the same thread.
+// This class is *not* thread-safe, and strings created on a thread must always
+// be used on the same thread.
 
 namespace blink {
 

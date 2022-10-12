@@ -17,12 +17,12 @@ namespace blink {
 
 // This class is needed to copy a FetchClientSettingsObjectSnapshot across
 // threads, because it has some members which cannot be transferred across
-// threads (AtomicString for example).
+// threads (SecurityOrigin for example).
 // There are some rules / restrictions:
 //   - This struct cannot contain an object that cannot be transferred across
-//     threads (e.g., AtomicString)
-//   - Non-simple members need explicit copying (e.g., String::IsolatedCopy,
-//     KURL::Copy) rather than the copy constructor or the assignment operator.
+//     threads.
+//   - Non-thread-safe members need explicit copying rather than the copy
+//     constructor or the assignment operator.
 //   - This struct cannot contain any garbage-collected object because this
 //     data can be constructed on a thread which runs without Oilpan.
 struct CrossThreadFetchClientSettingsObjectData {
@@ -129,7 +129,7 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
   std::unique_ptr<CrossThreadFetchClientSettingsObjectData> CopyData() const {
     return std::make_unique<CrossThreadFetchClientSettingsObjectData>(
         global_object_url_, base_url_, security_origin_->IsolatedCopy(),
-        referrer_policy_, outgoing_referrer_.IsolatedCopy(), https_state_,
+        referrer_policy_, outgoing_referrer_, https_state_,
         mime_type_check_for_classic_worker_script_, insecure_requests_policy_,
         insecure_navigations_set_);
   }

@@ -100,10 +100,9 @@ void AsanPoisonString(const String& string) {
 #if defined(ADDRESS_SANITIZER)
   if (string.IsNull())
     return;
-  // Since |string| is not deallocated, it remains in the per-thread
-  // AtomicStringTable, where its content can be accessed for equality
-  // comparison for instance, triggering a poisoned memory access.
-  // See crbug.com/883344 for an example.
+  // Since |string| is not deallocated, it remains in the AtomicStringTable,
+  // where its content can be accessed for equality comparison for instance,
+  // triggering a poisoned memory access. See crbug.com/883344 for an example.
   if (string.Impl()->IsAtomic())
     return;
 

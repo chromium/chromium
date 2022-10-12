@@ -160,20 +160,6 @@ ScrollCustomizationCallbacks& GetScrollCustomizationCallbacks() {
   return *scroll_customization_callbacks;
 }
 
-// TODO(crbug.com/545926): Unsafe hack to avoid triggering the
-// ThreadRestrictionVerifier on StringImpl. This should be fixed completely, and
-// we should always avoid accessing these strings from the impl thread.
-// Currently code that calls into this method from the impl thread tries to make
-// sure that the main thread is not running at this time.
-void AppendUnsafe(StringBuilder& builder, const String& off_thread_string) {
-  StringImpl* impl = off_thread_string.Impl();
-  if (impl) {
-    WTF::VisitCharacters(*impl, [&](const auto* chars, unsigned length) {
-      builder.Append(chars, length);
-    });
-  }
-}
-
 }  // namespace
 
 using ReattachHookScope = LayoutShiftTracker::ReattachHookScope;
@@ -2272,11 +2258,11 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
 
 String Node::DebugName() const {
   StringBuilder name;
-  AppendUnsafe(name, DebugNodeName());
+  name.Append(DebugNodeName());
   if (const auto* this_element = DynamicTo<Element>(this)) {
     if (this_element->HasID()) {
       name.Append(" id=\'");
-      AppendUnsafe(name, this_element->GetIdAttribute());
+      name.Append(this_element->GetIdAttribute());
       name.Append('\'');
     }
 
@@ -2285,7 +2271,7 @@ String Node::DebugName() const {
       for (wtf_size_t i = 0; i < this_element->ClassNames().size(); ++i) {
         if (i > 0)
           name.Append(' ');
-        AppendUnsafe(name, this_element->ClassNames()[i]);
+        name.Append(this_element->ClassNames()[i]);
       }
       name.Append('\'');
     }

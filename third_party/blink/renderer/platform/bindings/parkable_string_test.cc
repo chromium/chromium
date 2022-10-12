@@ -223,7 +223,7 @@ TEST_P(ParkableStringTest, DecompressUtf16String) {
   }
 
   String large_string = String(&data[0], size_in_chars);
-  String copy = large_string.IsolatedCopy();
+  String copy = String(large_string.Impl()->IsolatedCopy());
   ParkableString parkable(large_string.ReleaseImpl());
   large_string = String();
   EXPECT_FALSE(parkable.Is8Bit());
@@ -294,7 +294,7 @@ TEST_P(ParkableStringTest, Park) {
 
 TEST_P(ParkableStringTest, EqualityNoUnparking) {
   String large_string = MakeLargeString();
-  String copy = large_string.IsolatedCopy();
+  String copy = String(large_string.Impl()->IsolatedCopy());
   EXPECT_NE(large_string.Impl(), copy.Impl());
 
   ParkableString parkable(large_string.Impl());
@@ -403,7 +403,7 @@ TEST_P(ParkableStringTest, AbortedParkingRetainsCompressedData) {
 
 TEST_P(ParkableStringTest, Unpark) {
   ParkableString parkable(MakeLargeString().Impl());
-  String unparked_copy = parkable.ToString().IsolatedCopy();
+  String unparked_copy = String(parkable.ToString().Impl()->IsolatedCopy());
   EXPECT_TRUE(parkable.may_be_parked());
   EXPECT_FALSE(parkable.Impl()->is_parked());
   EXPECT_TRUE(ParkAndWait(parkable));
