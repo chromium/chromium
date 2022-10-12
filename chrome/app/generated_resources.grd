@@ -9529,6 +9529,11 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         Allow to save data
       </message>
 
+      <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOW_THIRD_PARTY_MENU_ITEM"
+          desc="The name of a menu item that allows storage access for third party cookies (creates an allow exception) for a site. The user has blocked third-party cookies in settings. The site has access to some cookies (partitioned cookies) and doesn't have access to regular third party cookies. This menu item will allow third party cookie access. The menu item is shown in the `Cookies and site data` dialog.">
+        Allow to set third-party cookies
+      </message>
+
       <message name="IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCK_MENU_ITEM"
           desc="The name of a menu item that blocks storage access (creates a block exception) for a site. The menu item is shown in the `Cookies and site data` dialog.">
         Don’t allow to save data

@@ -210,11 +210,13 @@ void SiteDataRowView::OnMenuIconClicked() {
                             base::Unretained(this)),
         ui::DialogModelMenuItem::Params().SetId(kBlockMenuItem));
   }
-  if (setting_ != CONTENT_SETTING_ALLOW) {
+  if (setting_ != CONTENT_SETTING_ALLOW || is_fully_partitioned_) {
     builder.AddMenuItem(
         ui::ImageModel(),
         l10n_util::GetStringUTF16(
-            IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOW_MENU_ITEM),
+            is_fully_partitioned_
+                ? IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOW_THIRD_PARTY_MENU_ITEM
+                : IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOW_MENU_ITEM),
         base::BindRepeating(&SiteDataRowView::OnAllowMenuItemClicked,
                             base::Unretained(this)),
         ui::DialogModelMenuItem::Params().SetId(kAllowMenuItem));
@@ -271,7 +273,11 @@ void SiteDataRowView::OnClearOnExitMenuItemClicked(int event_flags) {
 }
 
 void SiteDataRowView::SetContentSettingException(ContentSetting setting) {
-  DCHECK_NE(setting_, setting);
+  // For partitioned access, it's valid to create an allow exception that
+  // matches current effective setting to allow 3PC.
+  if (!is_fully_partitioned_ || setting_ != CONTENT_SETTING_ALLOW)
+    DCHECK_NE(setting_, setting);
+
   create_exception_callback_.Run(origin_, setting);
 
   setting_ = setting;

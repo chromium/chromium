@@ -21,6 +21,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/strings/grit/components_strings.h"
@@ -294,27 +295,56 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
         content_settings::CookieSettings::QueryReason::kCookies);
     // TODO(crbug.com/1344787): Handle sources other than SETTING_SOURCE_USER.
 
-    site.is_fully_partitioned = AreAllCookiesPartitioned(node);
+    // TODO(crbug.com/1344787): Add a test to verify partitioned logic.
+    site.is_fully_partitioned =
+        GetEtldPlusOne(site.origin) !=
+            GetEtldPlusOne(url::Origin::Create(current_url)) &&
+        IsOnlyPartitionedStorageAccessAllowed(site.origin) &&
+        AreAllCookiesPartitioned(node);
     if (site.is_fully_partitioned) {
-      // Because partitioned cookies are considered first party cookies, if
-      // first party is blocked from accessing storage, partitioned cookies are
-      // too.
-      ContentSetting first_party_setting =
-          host_content_settings_map_->GetContentSetting(
-              current_url, GURL(), ContentSettingsType::COOKIES);
-      if (first_party_setting == CONTENT_SETTING_BLOCK) {
-        site.setting = CONTENT_SETTING_BLOCK;
-      } else {
-        // Check the explicit content setting from HostContentSettingsMap
-        // instead of CookieSettings because partitioned cookies aren't
-        // third-party cookies and are not influenced by third-party cookie
-        // blocking.
-        site.setting = host_content_settings_map_->GetContentSetting(
-            site.origin.GetURL(), current_url, ContentSettingsType::COOKIES);
-      }
+      // Check the explicit content setting from HostContentSettingsMap
+      // instead of CookieSettings because partitioned cookies aren't
+      // third-party cookies and are not influenced by third-party cookie
+      // blocking.
+      site.setting = host_content_settings_map_->GetContentSetting(
+          site.origin.GetURL(), current_url, ContentSettingsType::COOKIES);
     }
 
     return site;
+  }
+
+  bool IsOnlyPartitionedStorageAccessAllowed(url::Origin site_origin) {
+    GURL current_url = web_contents_->GetVisibleURL();
+
+    const bool block_third_party_cookies =
+        cookie_settings_->ShouldBlockThirdPartyCookies();
+    const auto default_content_setting =
+        cookie_settings_->GetDefaultCookieSetting(/*provider_id=*/nullptr);
+    ContentSetting first_party_setting =
+        host_content_settings_map_->GetContentSetting(
+            current_url, GURL(), ContentSettingsType::COOKIES);
+
+    content_settings::SettingInfo info;
+    const base::Value value = host_content_settings_map_->GetWebsiteSetting(
+        site_origin.GetURL(), current_url, ContentSettingsType::COOKIES, &info);
+
+    bool has_site_level_exception =
+        info.primary_pattern != ContentSettingsPattern::Wildcard() ||
+        info.secondary_pattern != ContentSettingsPattern::Wildcard();
+
+    // Partitioned access is displayed when all of these conditions are met:
+    return
+        // * third-party cookies are blocked
+        block_third_party_cookies
+        // * other cookies are allowed
+        && default_content_setting != ContentSetting::CONTENT_SETTING_BLOCK
+        // * there is no site level exception (the exception affects full cookie
+        // access)
+        && !has_site_level_exception
+        // * first-party cookies are allowed (because partitioned cookies are
+        // considered first party cookies, if first party is blocked from
+        // accessing storage, partitioned cookies are too)
+        && first_party_setting != CONTENT_SETTING_BLOCK;
   }
 
   bool AreAllCookiesPartitioned(CookieTreeNode* node) {

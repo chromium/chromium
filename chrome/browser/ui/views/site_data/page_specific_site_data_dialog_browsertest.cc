@@ -435,6 +435,125 @@ IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
   histograms.ExpectTotalCount(kCookiesDialogHistogramName, 2);
 }
 
+IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
+                       PartitionedCookies) {
+  if (!GetParam()) {
+    return;
+  }
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL(
+                     "a.test", "/third_party_partitioned_cookies.html")));
+
+  auto* dialog = OpenDialog();
+  ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForWidget(dialog);
+
+  // Get the first row: "b.test" with only partitioned cookie set.
+  auto* partitioned_row_view =
+      static_cast<SiteDataRowView*>(GetViewByIdentifierAtIndex(
+          context, kPageSpecificSiteDataDialogRow, /*index=*/1));
+  // Only partitioned cookie was set in this third-party context. Third-party
+  // cookies are allowed, so the access is shown as allowed.
+  EXPECT_TRUE(partitioned_row_view->state_label_for_testing()->GetVisible());
+  EXPECT_EQ(partitioned_row_view->state_label_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE));
+  ClickButton(partitioned_row_view->menu_button_for_testing());
+  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // correct menu item are displayed.
+  ClickBlockMenuItem(partitioned_row_view);
+  EXPECT_TRUE(partitioned_row_view->state_label_for_testing()->GetVisible());
+  EXPECT_EQ(partitioned_row_view->state_label_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
+  // TODO(crbug.com/1344787): Check the histograms value.
+
+  // Get the second row: "c.test" with both partitioned and regular cookies set.
+  auto* mixed_row_view =
+      static_cast<SiteDataRowView*>(GetViewByIdentifierAtIndex(
+          context, kPageSpecificSiteDataDialogRow, /*index=*/2));
+  // Both third-party and partitioned cookies are allowed access.
+  // TODO(crbug.com/1344787): The label shouldn't be visible here but GetVisible
+  // returns true. It's not actually visible because it has size 0.
+  EXPECT_EQ(mixed_row_view->state_label_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_ALLOWED_STATE_SUBTITLE));
+  ClickButton(mixed_row_view->menu_button_for_testing());
+  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // correct menu item are displayed.
+  ClickBlockMenuItem(mixed_row_view);
+  EXPECT_TRUE(mixed_row_view->state_label_for_testing()->GetVisible());
+  EXPECT_EQ(mixed_row_view->state_label_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
+  // TODO(crbug.com/1344787): Check the histograms value.
+}
+
+IN_PROC_BROWSER_TEST_P(PageSpecificSiteDataDialogBrowserTest,
+                       PartitionedCookiesAndBlockedThirdParty) {
+  if (!GetParam()) {
+    return;
+  }
+
+  // Block third-party cookies.
+  browser()->profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL(
+                     "a.test", "/third_party_partitioned_cookies.html")));
+
+  auto* dialog = OpenDialog();
+  ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForWidget(dialog);
+
+  // Get the first row: "b.test" with only partitioned cookie set.
+  auto* partitioned_row_view =
+      static_cast<SiteDataRowView*>(GetViewByIdentifierAtIndex(
+          context, kPageSpecificSiteDataDialogRow, /*index=*/1));
+  // Only partitioned cookie was set in this third-party context. Partitioned
+  // cookie isn't blocked as a third party cookie because it is treated as a
+  // first party. The state is "Only using partitioned storage" as other types
+  // of storage are not used or blocked from access.
+  EXPECT_TRUE(partitioned_row_view->state_label_for_testing()->GetVisible());
+  EXPECT_EQ(partitioned_row_view->state_label_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_PARTITIONED_STATE_SUBTITLE));
+  ClickButton(partitioned_row_view->menu_button_for_testing());
+  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // correct menu item are displayed.
+  ClickBlockMenuItem(partitioned_row_view);
+  EXPECT_TRUE(partitioned_row_view->state_label_for_testing()->GetVisible());
+  EXPECT_EQ(partitioned_row_view->state_label_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
+  // TODO(crbug.com/1344787): Check the histograms value.
+
+  // Get the second row: "c.test" with both partitioned and regular cookies set.
+  auto* mixed_row_view =
+      static_cast<SiteDataRowView*>(GetViewByIdentifierAtIndex(
+          context, kPageSpecificSiteDataDialogRow, /*index=*/2));
+  // Regular third party cookies is blocked by third-party cookie blocking
+  // perf, partitioned cookie isn't because it is treated
+  // as a first party. The state is "Only using partitioned storage" as other
+  // types of storage are not used or blocked from access.
+  EXPECT_TRUE(mixed_row_view->state_label_for_testing()->GetVisible());
+  EXPECT_EQ(mixed_row_view->state_label_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_PARTITIONED_STATE_SUBTITLE));
+  ClickButton(mixed_row_view->menu_button_for_testing());
+  // TODO(crbug.com/1344787): Use the actual menu to perform action. Check if
+  // correct menu item are displayed.
+  ClickBlockMenuItem(mixed_row_view);
+  EXPECT_TRUE(mixed_row_view->state_label_for_testing()->GetVisible());
+  EXPECT_EQ(mixed_row_view->state_label_for_testing()->GetText(),
+            l10n_util::GetStringUTF16(
+                IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_BLOCKED_STATE_SUBTITLE));
+  // TODO(crbug.com/1344787): Check the histograms value.
+}
+
 // Run tests with kPageSpecificSiteDataDialog flag enabled and disabled.
 INSTANTIATE_TEST_SUITE_P(All,
                          PageSpecificSiteDataDialogBrowserTest,
