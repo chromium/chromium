@@ -740,11 +740,14 @@ void AttributionDataHostManagerImpl::OnRedirectSourceParsed(
   }
 
   // Process the registration if it was valid.
-  // TODO(apaseltiner): Report a DevTools/internals issue if the destinations
-  // aren't matched.
-  if (source.has_value() &&
-      source->common_info().DestinationSite() == registrations.destination) {
-    attribution_manager_->HandleSource(std::move(*source));
+  if (source.has_value()) {
+    if (source->common_info().DestinationSite() == registrations.destination) {
+      attribution_manager_->HandleSource(std::move(*source));
+    } else {
+      attribution_manager_->NotifyFailedSourceRegistration(
+          header_value, reporting_origin,
+          SourceRegistrationError::kDestinationMismatched);
+    }
   }
 
   if (registrations.pending_source_data == 0u) {

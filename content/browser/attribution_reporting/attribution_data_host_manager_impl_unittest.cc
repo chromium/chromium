@@ -43,6 +43,8 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::mojom::SourceRegistrationError;
+
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
@@ -1300,6 +1302,11 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporter = url::Origin::Create(GURL("https://report.test"));
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
+  EXPECT_CALL(mock_manager_,
+              NotifyFailedSourceRegistration(
+                  kRegisterSourceJson, reporter,
+                  SourceRegistrationError::kDestinationMismatched));
+
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(
       attribution_src_token, kRegisterSourceJson, reporter, source_site);
@@ -1382,11 +1389,9 @@ TEST_F(AttributionDataHostManagerImplTest,
   auto reporter = url::Origin::Create(GURL("https://report.test"));
   auto source_site = url::Origin::Create(GURL("https://source.test"));
 
-  EXPECT_CALL(
-      mock_manager_,
-      NotifyFailedSourceRegistration(
-          "!!!invalid json", reporter,
-          attribution_reporting::mojom::SourceRegistrationError::kInvalidJson));
+  EXPECT_CALL(mock_manager_, NotifyFailedSourceRegistration(
+                                 "!!!invalid json", reporter,
+                                 SourceRegistrationError::kInvalidJson));
 
   const blink::AttributionSrcToken attribution_src_token;
   data_host_manager_.NotifyNavigationRedirectRegistration(

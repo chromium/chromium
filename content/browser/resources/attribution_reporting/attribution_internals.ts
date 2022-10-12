@@ -680,6 +680,10 @@ class Log {
       case SourceRegistrationError.kDestinationUntrustworthy:
         this.failureReason = 'destination not potentially trustworthy';
         break;
+      case SourceRegistrationError.kDestinationMismatched:
+        this.failureReason =
+            'destination differs from that of previous source in redirect chain';
+        break;
       case SourceRegistrationError.kFilterDataInvalid:
         this.failureReason = 'filter_data invalid';
         break;
