@@ -1750,8 +1750,13 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TextInputStateUpdated) {
   }
 }
 
+#if (BUILDFLAG(IS_MAC))
+#define MAYBE_SubframeTextInputStateUpdated DISABLED_SubframeTextInputStateUpdated
+#else
+#define MAYBE_SubframeTextInputStateUpdated SubframeTextInputStateUpdated
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       SubframeTextInputStateUpdated) {
+                       MAYBE_SubframeTextInputStateUpdated) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_1(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b(a))"));
