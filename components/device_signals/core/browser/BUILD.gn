@@ -105,4 +105,8 @@ source_set("unit_tests") {
   if (is_win) {
     deps += [ "//components/device_signals/core/browser/win:unit_tests" ]
   }
+
+  if (is_mac) {
+    deps += [ "//components/device_signals/core/browser/mac:unit_tests" ]
+  }
 }

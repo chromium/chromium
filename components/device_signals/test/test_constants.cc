@@ -77,4 +77,16 @@ base::FilePath GetUnusedPath() {
   return GetTestDataDir().AppendASCII("Unused");
 }
 
+base::FilePath GetEmptyPlistPath() {
+  return GetTestDataDir().AppendASCII("empty.plist");
+}
+
+base::FilePath GetMixArrayDictionaryPlistPath() {
+  return GetTestDataDir().AppendASCII("mix_array_dictionary.plist");
+}
+
+base::FilePath GetOnlyDictionaryPlistPath() {
+  return GetTestDataDir().AppendASCII("only_dictionary.plist");
+}
+
 }  // namespace device_signals::test

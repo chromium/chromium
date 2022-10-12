@@ -743,6 +743,73 @@ IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest,
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(EnterpriseReportingPrivateApiTest, GetSettings) {
+  constexpr char kTest[] = R"(
+      chrome.test.assertEq(
+        'function',
+        typeof chrome.enterprise.reportingPrivate.getSettings);
+      const userContext = {userId: '%s'};
+
+      const options = [];
+
+      %s
+
+      const request = { userContext, options};
+
+   chrome.enterprise.reportingPrivate.getSettings(
+    request,
+    (settingItems) => {
+        chrome.test.assertNoLastError();
+
+        %s
+
+        chrome.test.notifyPass();
+      });
+  )";
+
+  std::string extra_items = base::StringPrintf(
+      R"(
+    const filePath = '%s';
+    const validKeyPath = "Key1.SubKey1.SubSubKey1[0][10]";
+    const invalidKeyPath = "Key1.SubKey1.SubSubKey1[0][0][3]";
+    options.push({
+      path: filePath,
+      key: validKeyPath,
+      getValue: true
+    });
+    options.push({
+      path: filePath,
+      key: invalidKeyPath,
+      getValue: true
+    });
+  )",
+
+      device_signals::test::GetMixArrayDictionaryPlistPath().value().c_str());
+
+  constexpr char kAssertions[] = R"(
+        chrome.test.assertTrue(settingItems instanceof Array);
+        chrome.test.assertEq(2, settingItems.length);
+        for (const response of settingItems) {
+          chrome.test.assertEq(filePath, response.path);
+          if (response.key == validKeyPath) {
+            chrome.test.assertEq("FOUND", response.presence);
+            chrome.test.assertEq("\"string10\"", response.value);
+          } else if (response.key == invalidKeyPath) {
+            chrome.test.assertEq("NOT_FOUND", response.presence);
+            chrome.test.assertEq(null, response.value);
+          } else {
+            chrome.test.fail();
+          }
+        }
+  )";
+
+  AccountInfo account_info = SignIn("some-email@example.com");
+  RunTest(base::StringPrintf(kTest, account_info.gaia.c_str(),
+                             extra_items.c_str(), kAssertions));
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_CHROMEOS)
 static void RunTestUsingProfile(const std::string& background_js,
                                 Profile* profile) {

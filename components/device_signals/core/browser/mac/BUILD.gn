@@ -9,8 +9,22 @@ static_library("mac") {
 
   deps = [
     "//base",
-    "//components/device_signals/core/browser:browser",
+    "//components/device_signals/core/browser",
+    "//components/device_signals/core/common/",
   ]
 
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "plist_settings_client_unittest.mm" ]
+
+  deps = [
+    ":mac",
+    "//base/test:test_support",
+    "//components/device_signals/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

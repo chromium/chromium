@@ -53,6 +53,16 @@ base::FilePath GetUnsignedBundlePath();
 // Returns an absolute path to nothing (no file/directory).
 base::FilePath GetUnusedPath();
 
+// Returns an absolute path to a test empty plist.
+base::FilePath GetEmptyPlistPath();
+
+// Returns an absolute path to a test plist containing only dictionary items.
+base::FilePath GetOnlyDictionaryPlistPath();
+
+// Returns an absolute path to a test plist containing a mix of dictionary and
+// array items.
+base::FilePath GetMixArrayDictionaryPlistPath();
+
 }  // namespace device_signals::test
 
 #endif  // COMPONENTS_DEVICE_SIGNALS_TEST_TEST_CONSTANTS_H_
