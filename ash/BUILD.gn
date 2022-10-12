@@ -2952,6 +2952,7 @@ test("ash_unittests") {
     "system/power/adaptive_charging_notification_controller_unittest.cc",
     "system/power/adaptive_charging_nudge_controller_unittest.cc",
     "system/power/backlights_forced_off_setter_unittest.cc",
+    "system/power/battery_notification_unittest.cc",
     "system/power/peripheral_battery_listener_unittest.cc",
     "system/power/peripheral_battery_notifier_listener_integration_test.cc",
     "system/power/peripheral_battery_notifier_unittest.cc",
