@@ -280,8 +280,12 @@ class StartupTracingTest
     }
 
     // Both proto and json should have the trace event name recorded somewhere
-    // as a substring.
-    EXPECT_TRUE(trace.find("StartupTracingController::Start") !=
+    // as a substring. We check for "ThreadControllerImpl::RunTask" because
+    // it's an example of event that happens early in the trace, but any other
+    // early event will do. The event has to happen early because in
+    // WaitForTimeout and in EmergencyStop tests we don't wait for
+    // TracingSession::StartBlocking() to complete.
+    EXPECT_TRUE(trace.find("ThreadControllerImpl::RunTask") !=
                 std::string::npos);
 #endif  // !(BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
   }
