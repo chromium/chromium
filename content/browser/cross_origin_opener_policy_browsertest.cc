@@ -1246,8 +1246,16 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 }
 
 // Reproducer test for https://crbug.com/1264104.
+// TODO(crbug.com/1331287): flaky on Linux Tsan.
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_BackNavigationCoiToNonCoiAfterCrash \
+  DISABLED_BackNavigationCoiToNonCoiAfterCrash
+#else
+#define MAYBE_BackNavigationCoiToNonCoiAfterCrash \
+  BackNavigationCoiToNonCoiAfterCrash
+#endif
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
-                       BackNavigationCoiToNonCoiAfterCrash) {
+                       MAYBE_BackNavigationCoiToNonCoiAfterCrash) {
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   GURL isolated_page(
       https_server()->GetURL("a.test",
