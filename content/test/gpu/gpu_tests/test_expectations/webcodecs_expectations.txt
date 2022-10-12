@@ -90,10 +90,7 @@ crbug.com/1311091 WebCodecs_WebRTCPeerConnection_* [ Skip ]
 
 crbug.com/1338968 [ android android-nexus-5x ] WebCodecs_TexImage2d_hw_decoder [ Failure ]
 
-# Conservatively expect all macs to fail, I'm not sure if our try bots run arm64
-# devices. A later commit needs to put mac-x86_64 here, or better still fix the
-# bug and remove this expectation.
-crbug.com/1371749 [ mac ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-hardware [ Failure ]
+crbug.com/1371749 [ mac-x86_64 ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-hardware [ Failure ]
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
