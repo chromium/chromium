@@ -312,7 +312,7 @@ bool ShouldPinChromeToTaskbar() {
   switch (install_static::GetChromeChannel()) {
     case version_info::Channel::BETA: {
       // Increase kBetaRolloutPercentage to roll out to beta channel.
-      constexpr int kBetaRolloutPercentage = 10;
+      constexpr int kBetaRolloutPercentage = 50;
       return base::RandInt(0, 99) < kBetaRolloutPercentage;
     }
     case version_info::Channel::STABLE: {
