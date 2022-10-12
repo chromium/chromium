@@ -20139,6 +20139,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to use <ph name="PRODUCT_NAME">Google Cast</ph>',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to use <ph name="PRODUCT_NAME">Google Cast</ph>',
+        },
+      ],
       'example_value': True,
       'id': 333,
       'caption': '''Enable <ph name="PRODUCT_NAME">Google Cast</ph>''',
@@ -20158,6 +20168,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Always show the <ph name="PRODUCT_NAME">Google Cast</ph> icon in the toolbar',
+        },
+        {
+          'value': False,
+          'caption': 'Do not show the <ph name="PRODUCT_NAME">Google Cast</ph> icon in the toolbar by default, but let users choose',
+        },
+      ],
       'example_value': False,
       'id': 362,
       'caption': '''Show the <ph name="PRODUCT_NAME">Google Cast</ph> toolbar icon''',
@@ -20179,6 +20199,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow <ph name="PRODUCT_NAME">Google Cast</ph> to connect to devices on all IP addresses',
+        },
+        {
+          'value': False,
+          'caption': 'Allow <ph name="PRODUCT_NAME">Google Cast</ph> to only connect to devices on private IP addresses',
+        },
+      ],
       'example_value': False,
       'id': 437,
       'caption': '''Allow <ph name="PRODUCT_NAME">Google Cast</ph> to connect to Cast devices on all IP addresses.''',
@@ -20415,6 +20445,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable updates for all components',
+        },
+        {
+          'value': False,
+          'caption': 'Disable updates for non-critical components',
+        },
+      ],
       'example_value': True,
       'id': 342,
       'caption': '''Enable component updates in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>''',
@@ -21512,7 +21552,22 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to set a weak PIN',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to set a weak PIN',
+        },
+        {
+          'value': None,
+          'caption': 'Allow users to set a weak PIN, but show a warning',
+        },
+      ],
       'example_value': False,
+      'default': None,
       'id': 356,
       'caption': '''Enable users to set weak PINs for the lock screen PIN''',
       'tags': [],
@@ -21606,7 +21661,22 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Always display system information on the sign-in screen',
+        },
+        {
+          'value': False,
+          'caption': 'Do not display system information on the sign-in screen',
+        },
+        {
+          'value': None,
+          'caption': 'Allow users to toggle the display of system information on the sign-in screen',
+        },
+      ],
       'example_value': True,
+      'default': None,
       'id': 609,
       'caption': '''Force the sign-in screen to show or hide system information.''',
       'tags': [],
@@ -21628,6 +21698,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to sync SMS messages between their phone and Chromebook',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow users to sync SMS messages between their phone and Chromebook',
+        },
+      ],
       'example_value': True,
       'default_for_enterprise_users': False,
       'id': 469,
@@ -21649,6 +21729,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow Wi-Fi network configurations to be synced across <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices and a connected Android phone',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow Wi-Fi network configurations to be synced across <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices and a connected Android phone',
+        },
+      ],
       'example_value': True,
       'default_for_enterprise_users': False,
       'id': 798,
