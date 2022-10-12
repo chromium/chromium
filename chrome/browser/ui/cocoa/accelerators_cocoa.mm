@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/i18n/rtl.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/singleton.h"
 #include "build/branding_buildflags.h"
@@ -143,6 +144,17 @@ AcceleratorsCocoa::AcceleratorsCocoa() {
                        ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN)));
     DCHECK(result.second);
   }
+
+  if (!base::i18n::IsRTL())
+    return;
+
+  // If running in RTL, swap the keyboard shortcuts for History -> Forward
+  // and Back.
+  ui::Accelerator history_forward = accelerators_[IDC_FORWARD];
+  ui::Accelerator history_back = accelerators_[IDC_BACK];
+
+  accelerators_[IDC_FORWARD] = history_back;
+  accelerators_[IDC_BACK] = history_forward;
 }
 
 AcceleratorsCocoa::~AcceleratorsCocoa() {}

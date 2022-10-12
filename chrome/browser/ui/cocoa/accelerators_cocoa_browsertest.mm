@@ -4,6 +4,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/i18n/base_i18n_switches.h"
 #include "chrome/app/chrome_command_ids.h"
 #import "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/grit/generated_resources.h"
@@ -80,6 +81,16 @@ NSMenuItem* MenuContainsAccelerator(NSMenu* menu,
 
 }  // namespace
 
+class AcceleratorsCocoaBrowserTestRTL : public AcceleratorsCocoaBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII(::switches::kForceUIDirection,
+                                    ::switches::kForceDirectionRTL);
+    command_line->AppendSwitchASCII(::switches::kForceTextDirection,
+                                    ::switches::kForceDirectionRTL);
+  }
+};
+
 // Checks that each NSMenuItem in the main menu has a corresponding accelerator,
 // and the keyEquivalent/modifiers match.
 IN_PROC_BROWSER_TEST_F(AcceleratorsCocoaBrowserTest,
@@ -144,4 +155,15 @@ IN_PROC_BROWSER_TEST_F(AcceleratorsCocoaBrowserTest,
         && item.tag != IDC_TOGGLE_FULLSCREEN_TOOLBAR)
       EXPECT_EQ(item.tag, it.first);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(AcceleratorsCocoaBrowserTestRTL,
+                       HistoryAcceleratorsReversedForRTL) {
+  AcceleratorsCocoa* keymap = AcceleratorsCocoa::GetInstance();
+  ui::Accelerator history_forward = keymap->accelerators_[IDC_FORWARD];
+  ui::Accelerator history_back = keymap->accelerators_[IDC_BACK];
+
+  // In LTR, History -> Forward is VKEY_OEM_6 and Back is VKEY_OEM_4.
+  EXPECT_EQ(ui::VKEY_OEM_4, history_forward.key_code());
+  EXPECT_EQ(ui::VKEY_OEM_6, history_back.key_code());
 }

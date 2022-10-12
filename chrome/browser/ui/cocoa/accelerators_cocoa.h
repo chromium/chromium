@@ -52,6 +52,8 @@ class AcceleratorsCocoa {
   friend struct base::DefaultSingletonTraits<AcceleratorsCocoa>;
   FRIEND_TEST_ALL_PREFIXES(AcceleratorsCocoaBrowserTest,
                            MappingAcceleratorsInMainMenu);
+  FRIEND_TEST_ALL_PREFIXES(AcceleratorsCocoaBrowserTestRTL,
+                           HistoryAcceleratorsReversedForRTL);
 
   AcceleratorsCocoa();
   ~AcceleratorsCocoa();
