@@ -157,9 +157,7 @@ void SoftNavigationHeuristics::CheckAndReportSoftNavigation(
     return;
   }
   LocalDOMWindow* window = frame->DomWindow();
-  if (!window) {
-    return;
-  }
+  DCHECK(window);
   // In case of a Soft Navigation using `history.back()`, `history.forward()` or
   // `history.go()`, `SawURLChange` was called with an empty URL. If that's the
   // case, don't report the Soft Navigation just yet, and wait for
