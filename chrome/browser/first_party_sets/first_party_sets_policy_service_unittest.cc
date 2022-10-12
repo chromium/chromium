@@ -75,18 +75,13 @@ TEST_F(DefaultFirstPartySetsPolicyServiceTest, DisabledByFeature) {
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
   service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
 
-  // Ensure NotifyReady is called with the empty config.
-  base::RunLoop loop;
-  network::mojom::FirstPartySetsReadyEventPtr actual;
-  EXPECT_CALL(mock_delegate, NotifyReady(_))
-      .WillOnce([&](network::mojom::FirstPartySetsReadyEventPtr ptr) {
-        actual = std::move(ptr);
-        loop.Quit();
-      });
-  loop.Run();
+  net::FirstPartySetsContextConfig config;
 
-  EXPECT_FALSE(actual.is_null());
-  EXPECT_EQ(actual->config, net::FirstPartySetsContextConfig());
+  // Ensure NotifyReady is called with the empty config.
+  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfig(std::ref(config))))
+      .Times(1);
+
+  env().RunUntilIdle();
 }
 
 TEST_F(DefaultFirstPartySetsPolicyServiceTest, GuestProfiles) {
@@ -100,18 +95,13 @@ TEST_F(DefaultFirstPartySetsPolicyServiceTest, GuestProfiles) {
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(profile.get());
   service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
 
-  // Ensure NotifyReady is called with the empty config.
-  base::RunLoop loop;
-  network::mojom::FirstPartySetsReadyEventPtr actual;
-  EXPECT_CALL(mock_delegate, NotifyReady(_))
-      .WillOnce([&](network::mojom::FirstPartySetsReadyEventPtr ptr) {
-        actual = std::move(ptr);
-        loop.Quit();
-      });
-  loop.Run();
+  net::FirstPartySetsContextConfig config;
 
-  EXPECT_FALSE(actual.is_null());
-  EXPECT_EQ(actual->config, net::FirstPartySetsContextConfig());
+  // Ensure NotifyReady is called with the empty config.
+  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfig(std::ref(config))))
+      .Times(1);
+
+  env().RunUntilIdle();
 }
 
 TEST_F(DefaultFirstPartySetsPolicyServiceTest, EnabledForLegitProfile) {
@@ -122,18 +112,13 @@ TEST_F(DefaultFirstPartySetsPolicyServiceTest, EnabledForLegitProfile) {
       FirstPartySetsPolicyServiceFactory::GetForBrowserContext(&profile);
   service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
 
-  // Ensure NotifyReady is called with the empty config.
-  base::RunLoop loop;
-  network::mojom::FirstPartySetsReadyEventPtr actual;
-  EXPECT_CALL(mock_delegate, NotifyReady(_))
-      .WillOnce([&](network::mojom::FirstPartySetsReadyEventPtr ptr) {
-        actual = std::move(ptr);
-        loop.Quit();
-      });
-  loop.Run();
+  net::FirstPartySetsContextConfig config;
 
-  EXPECT_FALSE(actual.is_null());
-  EXPECT_EQ(actual->config, net::FirstPartySetsContextConfig());
+  // Ensure NotifyReady is called with the empty config.
+  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfig(std::ref(config))))
+      .Times(1);
+
+  env().RunUntilIdle();
 }
 
 class FirstPartySetsPolicyServiceTest
