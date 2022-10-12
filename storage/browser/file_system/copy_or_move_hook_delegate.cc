@@ -11,9 +11,12 @@
 
 namespace storage {
 
-CopyOrMoveHookDelegate::CopyOrMoveHookDelegate() {
+CopyOrMoveHookDelegate::CopyOrMoveHookDelegate(bool is_composite)
+    : is_composite_(is_composite) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
+
+CopyOrMoveHookDelegate::~CopyOrMoveHookDelegate() = default;
 
 void CopyOrMoveHookDelegate::OnBeginProcessFile(
     const FileSystemURL& source_url,

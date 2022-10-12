@@ -15,10 +15,10 @@ namespace storage {
 class FileSystemURL;
 
 // A delegate to handle different hooks of the CopyOrMove operation.
-// Its At* functions take a callback that is called when the function
+// Its OnBegin* functions take a callback that is called when the function
 // finishes, potentially notifying of any errors during the execution of
 // the function.
-// The Notify* functions do not take a callback and can asynchronously notify of
+// The other functions do not take a callback and can asynchronously notify of
 // any progress or errors.
 // Used for progress updates, etc. in FileSystemOperation::Copy() and Move().
 //
@@ -47,7 +47,7 @@ class FileSystemURL;
 // transfer, PROGRESS event should be called. At beginning, `size` should be
 // 0. At ending, `size` should be the size of the file.
 //
-// NotifyError is called for any occurring error.
+// OnError is called for any occurring error.
 // The `source_url` and the `destination_url` are the URLs of the source and
 // the destination entries. `error` is the base::File::Error that was noticed.
 // NotifyError is also called if an OnBeginProcessFile or
@@ -126,9 +126,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveHookDelegate
  public:
   using StatusCallback = base::OnceCallback<void(base::File::Error result)>;
 
-  CopyOrMoveHookDelegate();
+  explicit CopyOrMoveHookDelegate(bool is_composite = false);
 
-  virtual ~CopyOrMoveHookDelegate() = default;
+  virtual ~CopyOrMoveHookDelegate();
 
   virtual void OnBeginProcessFile(const FileSystemURL& source_url,
                                   const FileSystemURL& destination_url,
@@ -152,7 +152,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveHookDelegate
   virtual void OnEndRemoveSource(const FileSystemURL& source_url);
 
  protected:
+  friend class CopyOrMoveHookDelegateCompositeTest;
+  friend class CopyOrMoveHookDelegateComposite;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Indicates if this is an instance of CopyOrMoveHookDelegateComposite.
+  const bool is_composite_ = false;
 };
 
 }  // namespace storage
