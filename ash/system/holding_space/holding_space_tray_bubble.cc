@@ -34,6 +34,7 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/proposed_layout.h"
@@ -300,7 +301,8 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
       if (last_visible_child) {
         float y = gfx::Tween::FloatValueBetween(
             0.5f, last_visible_child->bounds().bottom(), child->bounds().y());
-        canvas->DrawRect(gfx::RectF(x, y, width, height), color);
+        canvas->FillRect(gfx::ToRoundedRect(gfx::RectF(x, y, width, height)),
+                         color);
       }
 
       last_visible_child = child;
