@@ -95,9 +95,11 @@ public class TabSelectionEditorShareActionUnitTest {
 
         Assert.assertEquals(R.id.tab_selection_editor_share_menu_item,
                 mAction.getPropertyModel().get(TabSelectionEditorActionProperties.MENU_ITEM_ID));
-        Assert.assertEquals(R.string.tab_selection_editor_share_tabs_action_button,
+        Assert.assertEquals(R.plurals.tab_selection_editor_share_tabs_action_button,
                 mAction.getPropertyModel().get(
                         TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
+        Assert.assertEquals(true,
+                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.TITLE_IS_PLURAL));
         Assert.assertEquals(R.plurals.accessibility_tab_selection_editor_share_tabs_action_button,
                 mAction.getPropertyModel()
                         .get(TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID)

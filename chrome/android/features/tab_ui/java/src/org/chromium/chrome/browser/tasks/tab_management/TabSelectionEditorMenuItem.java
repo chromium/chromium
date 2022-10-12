@@ -78,11 +78,23 @@ public class TabSelectionEditorMenuItem {
         return mListItem;
     }
 
-    public void setTitleResourceId(int titleResourceId) {
-        mListItem.model.set(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID, titleResourceId);
+    /**
+     * Set the title in the menu and ActionView.
+     * @param titleResourceId Resource ID of the title.
+     * @param itemCount current item count. -1 means the title is not plural.
+     */
+    public void setTitle(int titleResourceId, int itemCount) {
+        String title;
+        if (itemCount >= 0) {
+            title = mContext.getResources().getQuantityString(
+                    titleResourceId, itemCount, itemCount);
+        } else {
+            title = mContext.getResources().getString(titleResourceId);
+        }
+        mListItem.model.set(TabSelectionEditorActionProperties.TITLE, title);
         if (mActionView != null) {
             if (mShowText) {
-                mActionView.setText(titleResourceId);
+                mActionView.setText(title);
             } else {
                 mActionView.setText("");
                 mActionView.setMinWidth(0);

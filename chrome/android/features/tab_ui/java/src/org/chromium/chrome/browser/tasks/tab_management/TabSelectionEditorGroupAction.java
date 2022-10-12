@@ -38,7 +38,7 @@ public class TabSelectionEditorGroupAction extends TabSelectionEditorAction {
     private TabSelectionEditorGroupAction(@ShowMode int showMode, @ButtonType int buttonType,
             @IconPosition int iconPosition, Drawable drawable) {
         super(R.id.tab_selection_editor_group_menu_item, showMode, buttonType, iconPosition,
-                R.string.tab_selection_editor_group_tabs,
+                R.plurals.tab_selection_editor_group_tabs,
                 R.plurals.accessibility_tab_selection_editor_group_tabs, drawable);
     }
 

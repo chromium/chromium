@@ -596,7 +596,7 @@ public class TabSelectionEditorTest {
 
         mRobot.actionRobot.clickItemAtAdapterPosition(0)
                 .clickToolbarMenuButton()
-                .clickToolbarMenuItem("Close tabs");
+                .clickToolbarMenuItem("Close tab");
 
         assertEquals(1, getTabsInCurrentTabModel().size());
     }

@@ -255,7 +255,10 @@
         Deselect all
       </message>
       <message name="IDS_TAB_SELECTION_EDITOR_SHARE_TABS_ACTION_BUTTON" desc="This text button is shown in the Tab Selection Editor Toolbar. When the user taps the button, Chrome shares all currently selected tabs shown in the editor. [CHAR_LIMIT=27]">
-        Share tabs
+        {TABS_COUNT, plural,
+          =1 {Share tab}
+          other {Share tabs}
+        }
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_SHARE_TABS_ACTION_BUTTON" desc="The accessibility string for the share button in the Tab Selection Editor Toolbar. Tap this button to share all selected tabs.">
         {TABS_COUNT, plural,
@@ -270,7 +273,10 @@
         }
       </message>
       <message name="IDS_TAB_SELECTION_EDITOR_GROUP_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Group' is a verb. When the user taps the menu item, Chrome creates a new group that contains the selected tabs. [CHAR_LIMIT=27]">
-        Group tabs
+        {TABS_COUNT, plural,
+          =1 {Group tab}
+          other {Group tabs}
+        }
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_GROUP_TABS" desc="The accessibility text to read when the 'Group tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be grouped together.">
         {TABS_COUNT, plural,
@@ -279,7 +285,10 @@
         }
       </message>
       <message name="IDS_TAB_SELECTION_EDITOR_UNGROUP_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Ungroup' is a verb. When the user taps the menu item, Chrome removes the selected tabs from the group. [CHAR_LIMIT=27]">
-        Ungroup tabs
+        {TABS_COUNT, plural,
+          =1 {Ungroup tab}
+          other {Ungroup tabs}
+        }
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_UNGROUP_TABS" desc="The accessibility text to read when the 'Ungroup tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be ungroup.">
         {TABS_COUNT, plural,
@@ -288,7 +297,10 @@
         }
       </message>
       <message name="IDS_TAB_SELECTION_EDITOR_CLOSE_TABS" desc="This text menu item is shown in the Tab Selection Editor menu. 'Close' is a verb. When the user taps the menu item, Chrome closes the selected tabs. [CHAR_LIMIT=27]">
-        Close tabs
+        {TABS_COUNT, plural,
+          =1 {Close tab}
+          other {Close tabs}
+        }
       </message>
       <message name="IDS_ACCESSIBILITY_TAB_SELECTION_EDITOR_CLOSE_TABS" desc="The accessibility text to read when the 'Close tabs' menu item in the selection mode menu is focused. When this menu item is tapped, all the selected tabs will be closed.">
         {TABS_COUNT, plural,

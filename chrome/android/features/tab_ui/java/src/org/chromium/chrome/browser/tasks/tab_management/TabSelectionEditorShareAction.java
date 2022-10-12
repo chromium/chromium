@@ -48,7 +48,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
             @IconPosition int iconPosition, Supplier<ShareDelegate> shareDelegateSupplier,
             Drawable drawable) {
         super(R.id.tab_selection_editor_share_menu_item, showMode, buttonType, iconPosition,
-                R.string.tab_selection_editor_share_tabs_action_button,
+                R.plurals.tab_selection_editor_share_tabs_action_button,
                 R.plurals.accessibility_tab_selection_editor_share_tabs_action_button, drawable);
         mShareDelegateSupplier = shareDelegateSupplier;
     }

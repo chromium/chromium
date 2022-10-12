@@ -36,7 +36,7 @@ public class TabSelectionEditorUngroupAction extends TabSelectionEditorAction {
     private TabSelectionEditorUngroupAction(@ShowMode int showMode, @ButtonType int buttonType,
             @IconPosition int iconPosition, Drawable drawable) {
         super(R.id.tab_selection_editor_ungroup_menu_item, showMode, buttonType, iconPosition,
-                R.string.tab_selection_editor_ungroup_tabs,
+                R.plurals.tab_selection_editor_ungroup_tabs,
                 R.plurals.accessibility_tab_selection_editor_ungroup_tabs, drawable);
     }
 

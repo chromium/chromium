@@ -132,6 +132,11 @@ public abstract class TabSelectionEditorAction {
         assert buttonType >= ButtonType.TEXT && buttonType < ButtonType.NUM_ENTRIES;
         assert iconPosition >= IconPosition.START && iconPosition < IconPosition.NUM_ENTRIES;
 
+        final String expectedResourceourceTypeName = "plurals";
+        boolean titleIsPlural = expectedResourceourceTypeName.equals(
+                ContextUtils.getApplicationContext().getResources().getResourceTypeName(
+                        titleResourceId));
+
         mModel =
                 new PropertyModel.Builder(TabSelectionEditorActionProperties.ACTION_KEYS)
                         .with(TabSelectionEditorActionProperties.MENU_ITEM_ID, menuItemId)
@@ -139,6 +144,7 @@ public abstract class TabSelectionEditorAction {
                         .with(TabSelectionEditorActionProperties.BUTTON_TYPE, buttonType)
                         .with(TabSelectionEditorActionProperties.ICON_POSITION, iconPosition)
                         .with(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID, titleResourceId)
+                        .with(TabSelectionEditorActionProperties.TITLE_IS_PLURAL, titleIsPlural)
                         .with(TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID,
                                 contentDescriptionResourceId)
                         .with(TabSelectionEditorActionProperties.ICON, icon)
@@ -156,7 +162,6 @@ public abstract class TabSelectionEditorAction {
 
         if (contentDescriptionResourceId == null) return;
 
-        final String expectedResourceourceTypeName = "plurals";
         assert expectedResourceourceTypeName.equals(
                 ContextUtils.getApplicationContext().getResources().getResourceTypeName(
                         contentDescriptionResourceId))

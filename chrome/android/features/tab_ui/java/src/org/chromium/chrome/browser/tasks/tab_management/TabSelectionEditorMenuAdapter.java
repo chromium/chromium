@@ -83,14 +83,14 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
     private void bindMenuItemProperty(
             PropertyModel actionModel, TabSelectionEditorMenuItem menuItem, PropertyKey key) {
         if (key == TabSelectionEditorActionProperties.TITLE_RESOURCE_ID) {
-            menuItem.setTitleResourceId(
-                    actionModel.get(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
-        } else if (key == TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID
-                || key == TabSelectionEditorActionProperties.ITEM_COUNT) {
-            menuItem.setContentDescription(
-                    actionModel.get(
-                            TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID),
-                    actionModel.get(TabSelectionEditorActionProperties.ITEM_COUNT));
+            updateTitle(actionModel, menuItem);
+        } else if (key == TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID) {
+            updateContentDescription(actionModel, menuItem);
+        } else if (key == TabSelectionEditorActionProperties.ITEM_COUNT) {
+            if (actionModel.get(TabSelectionEditorActionProperties.TITLE_IS_PLURAL)) {
+                updateTitle(actionModel, menuItem);
+            }
+            updateContentDescription(actionModel, menuItem);
         } else if (key == TabSelectionEditorActionProperties.ICON_POSITION
                 || key == TabSelectionEditorActionProperties.ICON) {
             menuItem.setIcon(actionModel.get(TabSelectionEditorActionProperties.ICON_POSITION),
@@ -110,12 +110,27 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
         }
     }
 
+    private void updateTitle(PropertyModel actionModel, TabSelectionEditorMenuItem menuItem) {
+        int itemCount = actionModel.get(TabSelectionEditorActionProperties.TITLE_IS_PLURAL)
+                ? actionModel.get(TabSelectionEditorActionProperties.ITEM_COUNT)
+                : -1;
+        menuItem.setTitle(
+                actionModel.get(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID), itemCount);
+    }
+
+    private void updateContentDescription(
+            PropertyModel actionModel, TabSelectionEditorMenuItem menuItem) {
+        menuItem.setContentDescription(
+                actionModel.get(TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID),
+                actionModel.get(TabSelectionEditorActionProperties.ITEM_COUNT));
+    }
+
     public static void bindMenuItem(PropertyModel model, View view, PropertyKey propertyKey) {
         TextView textView = view.findViewById(R.id.menu_item_text);
         ImageView startIcon = view.findViewById(R.id.menu_item_icon);
         ImageView endIcon = view.findViewById(R.id.menu_item_end_icon);
-        if (propertyKey == TabSelectionEditorActionProperties.TITLE_RESOURCE_ID) {
-            textView.setText(model.get(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
+        if (propertyKey == TabSelectionEditorActionProperties.TITLE) {
+            textView.setText(model.get(TabSelectionEditorActionProperties.TITLE));
         } else if (propertyKey == TabSelectionEditorActionProperties.CONTENT_DESCRIPTION) {
             textView.setContentDescription(
                     model.get(TabSelectionEditorActionProperties.CONTENT_DESCRIPTION));

@@ -73,6 +73,8 @@ public class TabSelectionEditorSelectionActionUnitTest {
         Assert.assertEquals(R.string.tab_selection_editor_select_all,
                 mAction.getPropertyModel().get(
                         TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
+        Assert.assertEquals(false,
+                mAction.getPropertyModel().get(TabSelectionEditorActionProperties.TITLE_IS_PLURAL));
         Assert.assertEquals(null,
                 mAction.getPropertyModel().get(
                         TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID));

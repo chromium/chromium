@@ -35,7 +35,7 @@ public class TabSelectionEditorCloseAction extends TabSelectionEditorAction {
     private TabSelectionEditorCloseAction(@ShowMode int showMode, @ButtonType int buttonType,
             @IconPosition int iconPosition, Drawable drawable) {
         super(R.id.tab_selection_editor_close_menu_item, showMode, buttonType, iconPosition,
-                R.string.tab_selection_editor_close_tabs,
+                R.plurals.tab_selection_editor_close_tabs,
                 R.plurals.accessibility_tab_selection_editor_close_tabs, drawable);
     }
 
