@@ -1633,6 +1633,61 @@ message ClientSafeBrowsingReportRequest {
   optional string safety_net_id = 25 [deprecated = true];
 
   optional ChromeUserPopulation population = 26;
+
+  // Logs user actions on download warnings. This field is useful for analyzing
+  // whether users pay attention to the warning, and why they decide to proceed
+  // or discard.
+  message DownloadWarningAction {
+    // The warning surface this action is performed on. See
+    // go/chrome-download-warning-surfaces for details.
+    enum Surface {
+      SURFACE_UNSPECIFIED = 0;
+      // Applicable actions: DISCARD
+      BUBBLE_MAINPAGE = 1;
+      // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK
+      BUBBLE_SUBPAGE = 2;
+      // Applicable actions: DISCARD, KEEP
+      DOWNLOADS_PAGE = 3;
+      // Applicable actions: PROCEED, CANCEL, CLOSE
+      DOWNLOAD_PROMPT = 4;
+    }
+    optional Surface surface = 1;
+
+    enum Action {
+      ACTION_UNSPECIFIED = 0;
+      // The user clicks proceed, which means the user decides to bypass the
+      // warning.
+      PROCEED = 1;
+      // The user clicks discard, which means the user decides to obey the
+      // warning and the dangerous download is deleted from disk.
+      DISCARD = 2;
+      // The user has clicked the keep button on the surface.
+      KEEP = 3;
+      // The user has clicked the close button on the surface.
+      CLOSE = 4;
+      // The user clicks cancel on the download prompt.
+      CANCEL = 5;
+      // The user has dismissed the bubble by clicking anywhere outside
+      // the bubble.
+      DISMISS = 6;
+      // The user has clicked the back button on the bubble subpage to go back
+      // to the bubble main page.
+      BACK = 7;
+    }
+    optional Action action = 2;
+
+    // Whether the action is terminal (i.e. the warning disappears after this
+    // action is performed).
+    optional bool is_terminal_action = 3;
+
+    // Time intervals between when the download warning is first shown and
+    // when the user performs actions on that warning, measured on the
+    // client-side by the same clock. If the same warning has shown multiple
+    // times, the interval is anchored to the earliest warning. All intervals
+    // are measured in milliseconds.
+    optional int64 interval_msec = 4;
+  }
+  repeated DownloadWarningAction download_warning_actions = 27;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).
