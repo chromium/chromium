@@ -36,8 +36,7 @@ gfx::Vector3dF GetEffectiveUpVector(const gfx::Vector3dF& forward,
       q, (kHeadUpTransitionStartDegrees - degrees_from_up) /
              (kHeadUpTransitionStartDegrees - kHeadUpTransitionEndDegrees));
 
-  gfx::Vector3dF interpolated_up = kUp;
-  gfx::Transform(q).TransformVector(&interpolated_up);
+  gfx::Vector3dF interpolated_up = gfx::Transform(q).MapVector(kUp);
   return interpolated_up;
 }
 
@@ -79,8 +78,8 @@ void Repositioner::UpdateTransform(const gfx::Transform& head_pose) {
   gfx::Vector3dF head_forward = vr::GetForwardVector(head_pose);
 
   if (reset_yaw_) {
-    gfx::Vector3dF current_right = {1, 0, 0};
-    transform_.TransformVector(&current_right);
+    gfx::Vector3dF current_right =
+        transform_.MapVector(gfx::Vector3dF(1, 0, 0));
     transform_.PostConcat(
         gfx::Transform(gfx::Quaternion(current_right, {1, 0, 0})));
   } else {
@@ -89,15 +88,8 @@ void Repositioner::UpdateTransform(const gfx::Transform& head_pose) {
         gfx::Quaternion(initial_laser_direction_, laser_direction_)));
   }
 
-  gfx::Vector3dF new_right = {1, 0, 0};
-  transform_.TransformVector(&new_right);
-
-  gfx::Vector3dF forward = {0, 0, -1};
-  gfx::Vector3dF new_forward = forward;
-  transform_.TransformVector(&new_forward);
-
-  new_forward = forward;
-  transform_.TransformVector(&new_forward);
+  gfx::Vector3dF new_right = transform_.MapVector(gfx::Vector3dF(1, 0, 0));
+  gfx::Vector3dF new_forward = transform_.MapVector(gfx::Vector3dF(0, 0, -1));
 
   // Finally we have to correct the roll. I.e., we want to rotate the content
   // window so that it's oriented "up" and we want to favor world up when we're
@@ -144,8 +136,7 @@ bool Repositioner::OnBeginFrame(const gfx::Transform& head_pose) {
 #ifndef NDEBUG
 void Repositioner::DumpGeometry(std::ostringstream* os) const {
   gfx::Transform t = world_space_transform();
-  gfx::Vector3dF forward = {0, 0, -1};
-  t.TransformVector(&forward);
+  gfx::Vector3dF forward = t.MapVector(gfx::Vector3dF(0, 0, -1));
   // Decompose the rotation to world x axis followed by world y axis
   float x_rotation = std::asin(forward.y() / forward.Length());
   gfx::Vector3dF projected_forward = {forward.x(), 0, forward.z()};

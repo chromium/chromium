@@ -738,7 +738,7 @@ void TouchEvent::UpdateForRootTransform(
   LocatedEvent::UpdateForRootTransform(inverted_root_transform,
                                        inverted_local_transform);
 
-  // We could create a vector and then rely on Transform::TransformVector , but
+  // We could create a vector and then rely on Transform::MapVector, but
   // that ends up creating a 4 dimensional vector and applying a 4 dim
   // transform. Really what we're looking at is only in the (x,y) plane, and
   // given that we can run this relatively frequently we will inline execute the

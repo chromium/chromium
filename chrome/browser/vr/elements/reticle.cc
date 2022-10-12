@@ -163,11 +163,8 @@ gfx::Transform Reticle::LocalTransform() const {
 
   // We now need to correct the roll so that cursors point upward.
   gfx::Vector3dF up = {0.0f, 1.0f, 0.0f};
-  gfx::Vector3dF forward = {0.0f, 0.0f, -1.0f};
-  mat.TransformVector(&forward);
-
-  gfx::Vector3dF right = {1.0f, 0.0f, 0.0f};
-  mat.TransformVector(&right);
+  gfx::Vector3dF forward = mat.MapVector(gfx::Vector3dF(0.0f, 0.0f, -1.0f));
+  gfx::Vector3dF right = mat.MapVector(gfx::Vector3dF(1.0f, 0.0f, 0.0f));
 
   gfx::Vector3dF expected_right = gfx::CrossProduct(forward, up);
   gfx::Quaternion rotate_to_expected_right(right, expected_right);

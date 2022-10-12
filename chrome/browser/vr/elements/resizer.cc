@@ -10,6 +10,7 @@
 #include "chrome/browser/vr/ui_scene_constants.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/angle_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 
 namespace vr {
@@ -80,9 +81,7 @@ bool Resizer::OnBeginFrame(const gfx::Transform& head_pose) {
 
 #ifndef NDEBUG
 void Resizer::DumpGeometry(std::ostringstream* os) const {
-  gfx::Transform t = LocalTransform();
-  gfx::Vector3dF right = {1, 0, 0};
-  t.TransformVector(&right);
+  gfx::Vector3dF right = LocalTransform().MapVector(gfx::Vector3dF(1, 0, 0));
   *os << "s(" << right.x() << ") ";
 }
 #endif

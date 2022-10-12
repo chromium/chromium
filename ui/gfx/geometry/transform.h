@@ -308,8 +308,10 @@ class GEOMETRY_SKIA_EXPORT Transform {
   void TransformPoint(PointF* point) const;
   void TransformPoint(Point* point) const;
 
-  // Applies the transformation to the vector.
-  void TransformVector(Vector3dF* vector) const;
+  // Returns the vector with the transformation applied to |vector|.
+  // It differs from MapPoint() by that the translation and perspective
+  // components of the matrix are ignored.
+  [[nodiscard]] Vector3dF MapVector(const Vector3dF& vector) const;
 
   // Applies the transformation to the vector.
   void TransformVector4(float vector[4]) const;
@@ -420,12 +422,8 @@ class GEOMETRY_SKIA_EXPORT Transform {
       : matrix_(lhs.matrix_, rhs.matrix_) {}
 
   Point MapPointInternal(const Matrix44& xform, const Point& point) const;
-
   PointF MapPointInternal(const Matrix44& xform, const PointF& point) const;
-
   Point3F MapPointInternal(const Matrix44& xform, const Point3F& point) const;
-
-  void TransformVectorInternal(const Matrix44& xform, Vector3dF* vector) const;
 
   Matrix44 matrix_;
 

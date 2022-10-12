@@ -453,9 +453,13 @@ void Transform::TransformPoint(Point3F* point) const {
   *point = MapPointInternal(matrix_, *point);
 }
 
-void Transform::TransformVector(Vector3dF* vector) const {
-  DCHECK(vector);
-  TransformVectorInternal(matrix_, vector);
+Vector3dF Transform::MapVector(const Vector3dF& vector) const {
+  if (IsIdentity())
+    return vector;
+
+  SkScalar p[4] = {vector.x(), vector.y(), vector.z(), 0};
+  matrix_.mapScalars(p);
+  return Vector3dF(p[0], p[1], p[2]);
 }
 
 void Transform::TransformVector4(float vector[4]) const {
@@ -583,20 +587,6 @@ Point3F Transform::MapPointInternal(const Matrix44& xform,
     return gfx::Point3F(p[0] * w_inverse, p[1] * w_inverse, p[2] * w_inverse);
   }
   return gfx::Point3F(p[0], p[1], p[2]);
-}
-
-void Transform::TransformVectorInternal(const Matrix44& xform,
-                                        Vector3dF* vector) const {
-  if (xform.isIdentity())
-    return;
-
-  SkScalar p[4] = {vector->x(), vector->y(), vector->z(), 0};
-
-  xform.mapScalars(p);
-
-  vector->set_x(p[0]);
-  vector->set_y(p[1]);
-  vector->set_z(p[2]);
 }
 
 PointF Transform::MapPointInternal(const Matrix44& xform,

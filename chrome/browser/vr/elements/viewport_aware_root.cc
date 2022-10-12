@@ -88,8 +88,8 @@ bool ViewportAwareRoot::AdjustRotationForHeadPose(
   if (!children_visible_)
     return false;
 
-  gfx::Vector3dF rotated_center_vector{0.f, 0.f, -1.0f};
-  LocalTransform().TransformVector(&rotated_center_vector);
+  gfx::Vector3dF rotated_center_vector =
+      LocalTransform().MapVector(gfx::Vector3dF(0.f, 0.f, -1.0f));
   gfx::Vector3dF top_projected_look_at{look_at.x(), 0.f, look_at.z()};
   float degrees = gfx::ClockwiseAngleBetweenVectorsInDegrees(
       top_projected_look_at, rotated_center_vector, {0.f, 1.0f, 0.f});

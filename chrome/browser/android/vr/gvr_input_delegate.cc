@@ -58,7 +58,8 @@ ControllerModel GvrInputDelegate::GetControllerModel(
                             -cos(kErgoAngleOffset)};
     controller_quat = controller_->Orientation();
   }
-  gfx::Transform(controller_quat).TransformVector(&controller_direction);
+  controller_direction =
+      gfx::Transform(controller_quat).MapVector(controller_direction);
 
   ControllerModel controller_model;
   controller_->GetTransform(&controller_model.transform);

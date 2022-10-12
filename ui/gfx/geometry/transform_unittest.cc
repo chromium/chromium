@@ -2946,6 +2946,25 @@ TEST(XFormTest, InverseMapPoint) {
   EXPECT_TRUE(PointsAreNearlyEqual(reverted_point_3f.value(), point_3f));
 }
 
+TEST(XFormTest, MapVector) {
+  Transform transform;
+  transform.Scale3d(3, 4, 5);
+  Vector3dF vector(12.5f, 34.5f, 56.5f);
+  Vector3dF expected(37.5f, 138.0f, 282.5f);
+  EXPECT_EQ(expected, transform.MapVector(vector));
+
+  // The translation components should be ignored.
+  transform.Translate3d(1.25f, 2.75f, 3.875f);
+  EXPECT_EQ(expected, transform.MapVector(vector));
+
+  // The perspective components should be ignored.
+  transform.set_rc(3, 0, 0.5f);
+  transform.set_rc(3, 1, 2.5f);
+  transform.set_rc(3, 2, 4.5f);
+  transform.set_rc(3, 3, 8.5f);
+  EXPECT_EQ(expected, transform.MapVector(vector));
+}
+
 TEST(XFormTest, PreConcatAxisTransform2d) {
   auto t = Transform::RowMajor(2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
                                16, 17);

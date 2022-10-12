@@ -65,10 +65,10 @@ void DeJellyState::AdvanceFrame(LayerTreeImpl* layer_tree_impl) {
                        ->transform_tree()
                        .Node(scroll_transform_node_)
                        ->scroll_offset.y();
-  fallback_delta_y_ = scroll_offset_ - previous_scroll_offset;
-  gfx::Vector3dF vector(0, fallback_delta_y_, 0);
-  new_scroll_node_transform_->TransformVector(&vector);
-  fallback_delta_y_ = vector.y();
+  float scroll_delta = scroll_offset_ - previous_scroll_offset;
+  fallback_delta_y_ =
+      new_scroll_node_transform_->MapVector(gfx::Vector3dF(0, scroll_delta, 0))
+          .y();
 
   // Don't attempt de-jelly while the omnibox is transitioning in or out. There
   // is no correct way to handle this.

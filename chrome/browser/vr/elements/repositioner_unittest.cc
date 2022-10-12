@@ -57,8 +57,8 @@ void CheckRepositionedCorrectly(const TestCase& test_case) {
 
   EXPECT_POINT3F_NEAR(element->GetCenter(), test_case.expected_element_center,
                       kEpsilon);
-  gfx::Vector3dF right_vector = {1, 0, 0};
-  element->world_space_transform().TransformVector(&right_vector);
+  gfx::Vector3dF right_vector =
+      element->world_space_transform().MapVector(gfx::Vector3dF(1, 0, 0));
   EXPECT_VECTOR3DF_NEAR(right_vector, test_case.expected_right_vector,
                         kEpsilon);
 }

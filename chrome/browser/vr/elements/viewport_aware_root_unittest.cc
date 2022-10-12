@@ -48,7 +48,7 @@ bool MatricesAreNearlyEqual(const gfx::Transform& lhs,
 void RotateAboutYAxis(float degrees, gfx::Vector3dF* out) {
   gfx::Transform transform;
   transform.RotateAboutYAxis(degrees);
-  transform.TransformVector(out);
+  *out = transform.MapVector(*out);
 }
 
 class ViewportAwareRootForTesting : public ViewportAwareRoot {

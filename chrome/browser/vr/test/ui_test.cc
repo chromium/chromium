@@ -19,10 +19,8 @@ namespace vr {
 namespace {
 
 gfx::Vector3dF ComputeNormal(const gfx::Transform& transform) {
-  gfx::Vector3dF x_axis(1, 0, 0);
-  gfx::Vector3dF y_axis(0, 1, 0);
-  transform.TransformVector(&x_axis);
-  transform.TransformVector(&y_axis);
+  gfx::Vector3dF x_axis = transform.MapVector(gfx::Vector3dF(1, 0, 0));
+  gfx::Vector3dF y_axis = transform.MapVector(gfx::Vector3dF(0, 1, 0));
   gfx::Vector3dF normal = CrossProduct(x_axis, y_axis);
   normal.GetNormalized(&normal);
   return normal;

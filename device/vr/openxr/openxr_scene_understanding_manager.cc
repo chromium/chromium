@@ -148,9 +148,8 @@ void OpenXRSceneUnderstandingManager::RequestHitTest(
     gfx::Point3F plane_origin = gfx::Point3F(
         plane_pose.position.x, plane_pose.position.y, plane_pose.position.z);
     gfx::Transform mojo_to_plane = XrPoseToGfxTransform(plane_pose);
-    gfx::Vector3dF forward = {0, 0, -1};
-    gfx::Vector3dF plane_direction_vector = forward;
-    mojo_to_plane.TransformVector(&plane_direction_vector);
+    gfx::Vector3dF plane_direction_vector =
+        mojo_to_plane.MapVector(gfx::Vector3dF(0, 0, -1));
 
     absl::optional<float> distance_to_plane = GetRayPlaneDistance(
         ray_origin, ray_direction, plane_origin, plane_direction_vector);
@@ -245,8 +244,8 @@ OpenXRSceneUnderstandingManager::GetHitTestSubscriptionResult(
   gfx::Point3F origin =
       mojo_from_native_origin.MapPoint(native_origin_ray.origin);
 
-  gfx::Vector3dF direction = native_origin_ray.direction;
-  mojo_from_native_origin.TransformVector(&direction);
+  gfx::Vector3dF direction =
+      mojo_from_native_origin.MapVector(native_origin_ray.direction);
 
   std::vector<mojom::XRHitResultPtr> hit_results;
   RequestHitTest(origin, direction, &hit_results);
@@ -272,9 +271,9 @@ OpenXRSceneUnderstandingManager::GetTransientHitTestSubscriptionResult(
         input_source_id_and_mojo_from_input_source.second.MapPoint(
             input_source_ray.origin);
 
-    gfx::Vector3dF direction = input_source_ray.direction;
-    input_source_id_and_mojo_from_input_source.second.TransformVector(
-        &direction);
+    gfx::Vector3dF direction =
+        input_source_id_and_mojo_from_input_source.second.MapVector(
+            input_source_ray.direction);
 
     std::vector<mojom::XRHitResultPtr> hit_results;
     RequestHitTest(origin, direction, &hit_results);

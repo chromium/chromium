@@ -79,7 +79,7 @@ DrawPolygon::DrawPolygon(const DrawQuad* original_ref,
   for (int i = 0; i < num_vertices_in_clipped_quad; i++) {
     points_.push_back(points[i]);
   }
-  transform.TransformVector(&normal_);
+  normal_ = transform.MapVector(normal_);
   ConstructNormal();
 }
 
@@ -150,7 +150,7 @@ void DrawPolygon::ApplyTransformToNormal(const gfx::Transform& transform) {
     return;
 
   inverse_transform.Transpose();
-  inverse_transform.TransformVector(&normal_);
+  normal_ = inverse_transform.MapVector(normal_);
 
   // Make sure our normal is still normalized.
   float normal_magnitude = normal_.Length();
@@ -169,7 +169,7 @@ void DrawPolygon::ApplyTransform(const gfx::Transform& transform) {
 // be transformed along with the vertices.
 void DrawPolygon::TransformToScreenSpace(const gfx::Transform& transform) {
   ApplyTransform(transform);
-  transform.TransformVector(&normal_);
+  normal_ = transform.MapVector(normal_);
   ConstructNormal();
 }
 
