@@ -15,9 +15,10 @@ import org.chromium.content.browser.HostZoomMapImpl;
 public class HostZoomMap {
     // Preset zoom factors that the +/- buttons can "snap" the zoom level to if user chooses to
     // not use the slider. These zoom factors correspond to the zoom levels that are used on
-    // desktop, i.e. {0.25, 0.33, 0.50, 0.67, ... 3.00, 4.00, 5.00}.
-    public static final double[] AVAILABLE_ZOOM_FACTORS = new double[] {-7.60, -6.08, -3.80, -2.20,
-            -1.58, -1.22, -0.58, 0.00, 0.52, 1.22, 1.56, 2.22, 3.07, 3.80, 5.03, 6.03, 7.60, 8.83};
+    // desktop, i.e. {0.50, 0.67, ... 3.00}, excluding the smallest/largest two, since they are
+    // of little value on a mobile device.
+    public static final double[] AVAILABLE_ZOOM_FACTORS = new double[] {-3.80, -2.20, -1.58, -1.22,
+            -0.58, 0.00, 0.52, 1.22, 1.56, 2.22, 3.07, 3.80, 5.03, 6.03};
 
     // The value of the base for zoom factor, should match |kTextSizeMultiplierRatio|.
     public static final float TEXT_SIZE_MULTIPLIER_RATIO = 1.2f;

@@ -22,7 +22,7 @@ import java.util.Arrays;
  *
  * The zoom of a page is calculated internally with a base an exponent. The base is set to
  * |kTextSizeMultiplierRatio| = 1.2. See: third_party/blink/common/page/page_zoom.cc.
- * E.g. To get a zoom level of 25%, internally the number -7.6 is used, because: 1.2^-7.6 = 0.25.
+ * E.g. To get a zoom level of 50%, internally the number -3.8 is used, because: 1.2^-3.8 = 0.50.
  *
  * To help with confusion, we will consistently stick to the following verbiage:
  *
@@ -34,11 +34,10 @@ import java.util.Arrays;
  * For example, some common zoom values are:
  *
  *        string        factor      level      seek value
- *          25%     |   -7.6    |   0.25    |      0      |
- *          50%     |   -3.8    |   0.50    |     25      |
- *         100%     |    0.0    |   1.00    |    125      |
- *         250%     |   5.03    |   2.50    |    275      |
- *         500%     |   8.83    |   5.00    |    475      |
+ *          50%     |   -3.8    |   0.50    |      0      |
+ *         100%     |    0.0    |   1.00    |     50      |
+ *         250%     |   5.03    |   2.50    |    200      |
+ *         300%     |   6.03    |   3.00    |    250      |
  *
  */
 public class PageZoomUtils {
@@ -46,11 +45,11 @@ public class PageZoomUtils {
     public static final int PAGE_ZOOM_DEFAULT_SEEK_VALUE = convertZoomFactorToSeekBarValue(0.0);
 
     // The max value for the seek bar to help with rounding effects (not shown to user).
-    public static final int PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE = 475;
+    public static final int PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE = 250;
 
-    // The minimum and maximum zoom values as a percentage (e.g. 25% = 0.25, 500% = 5.0)
-    private static final float PAGE_ZOOM_MINIMUM_ZOOM_LEVEL = 0.25f;
-    private static final float PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL = 5.00f;
+    // The minimum and maximum zoom values as a percentage (e.g. 50% = 0.50, 300% = 3.0)
+    private static final float PAGE_ZOOM_MINIMUM_ZOOM_LEVEL = 0.50f;
+    private static final float PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL = 3.00f;
 
     /**
      * Returns whether the Accessibility Settings page should include the 'Zoom' UI. The page
@@ -76,7 +75,7 @@ public class PageZoomUtils {
                 + ((PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL - PAGE_ZOOM_MINIMUM_ZOOM_LEVEL) * seekbarPercent);
 
         // The zoom level maps internally to a zoom factor, which is the exponent that
-        // |kTextSizeMultiplierRatio| = 1.2 is raised to. For example, 1.2^-7.6 = 0.25, or
+        // |kTextSizeMultiplierRatio| = 1.2 is raised to. For example, 1.2^-3.8 = 0.50, or
         // 1.2^3.8 = 2.0. See: third_party/blink/common/page/page_zoom.cc
         // This means zoomFactor = log_base1.2(chosenZoomLevel). Java has natural log and base
         // 10, we can rewrite the above as: log10(chosenZoomLevel) / log10(1.2);

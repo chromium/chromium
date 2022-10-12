@@ -60,21 +60,21 @@ public class PageZoomUtilsUnitTest {
     public void testConvertSeekBarValueToZoomFactor() {
         // Cached zoom factor
         Assert.assertEquals(SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE, 2.22,
-                PageZoomUtils.convertSeekBarValueToZoomFactor(125), 0.0001);
+                PageZoomUtils.convertSeekBarValueToZoomFactor(100), 0.0001);
 
         // Non-cached zoom factor
         Assert.assertEquals(SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE, 2.26,
-                PageZoomUtils.convertSeekBarValueToZoomFactor(126), 0.0001);
+                PageZoomUtils.convertSeekBarValueToZoomFactor(101), 0.0001);
     }
 
     @Test
     public void testConvertZoomFactorToSeekBarValue() {
         // Cached zoom factor
-        Assert.assertEquals(ZOOM_FACTOR_TO_SEEKBAR_VALUE_FAILURE, 125,
+        Assert.assertEquals(ZOOM_FACTOR_TO_SEEKBAR_VALUE_FAILURE, 100,
                 PageZoomUtils.convertZoomFactorToSeekBarValue(2.22));
 
         // Non-cached zoom factor
-        Assert.assertEquals(ZOOM_FACTOR_TO_SEEKBAR_VALUE_FAILURE, 126,
+        Assert.assertEquals(ZOOM_FACTOR_TO_SEEKBAR_VALUE_FAILURE, 101,
                 PageZoomUtils.convertZoomFactorToSeekBarValue(2.26));
     }
 
@@ -82,32 +82,32 @@ public class PageZoomUtilsUnitTest {
     public void testConvertSeekBarValueToZoomLevel() {
         // Cached zoom level
         Assert.assertEquals(SEEKBAR_VALUE_TO_ZOOM_LEVEL_FAILURE, 1.5,
-                PageZoomUtils.convertSeekBarValueToZoomLevel(125), 0.0001);
+                PageZoomUtils.convertSeekBarValueToZoomLevel(100), 0.0001);
 
         // Non-cached zoom level
         Assert.assertEquals(SEEKBAR_VALUE_TO_ZOOM_FACTOR_FAILURE, 1.51,
-                PageZoomUtils.convertSeekBarValueToZoomLevel(126), 0.0001);
+                PageZoomUtils.convertSeekBarValueToZoomLevel(101), 0.0001);
     }
 
     @Test
     public void testGetNextIndexIncrease() {
-        Assert.assertEquals(GET_NEXT_INDEX_INCREASE_FAILURE, 9,
+        Assert.assertEquals(GET_NEXT_INDEX_INCREASE_FAILURE, 7,
                 PageZoomUtils.getNextIndex(false, 1.00), 0.0001);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetNextIndexIncreaseMax() {
-        PageZoomUtils.getNextIndex(false, 8.83);
+        PageZoomUtils.getNextIndex(false, 6.03);
     }
 
     @Test
     public void testGetNextIndexDecrease() {
         Assert.assertEquals(
-                GET_NEXT_INDEX_DECREASE_FAILURE, 8, PageZoomUtils.getNextIndex(true, 1.00), 0.0001);
+                GET_NEXT_INDEX_DECREASE_FAILURE, 6, PageZoomUtils.getNextIndex(true, 1.00), 0.0001);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetNextIndexDecreaseMin() {
-        PageZoomUtils.getNextIndex(true, -7.60);
+        PageZoomUtils.getNextIndex(true, -3.80);
     }
 }
