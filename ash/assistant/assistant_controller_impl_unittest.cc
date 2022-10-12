@@ -254,21 +254,18 @@ TEST_F(AssistantControllerImplTest, ClosesAssistantUiForFeedbackDeeplink) {
   ui_model()->RemoveObserver(&ui_model_observer_mock);
 }
 
-// Make sure that AssistantControllerImpl sets dark mode = false even if the
-// flag is off. SettingsController won't set options if dark mode bit is not
-// set.
+// Dark mode is set to true if the DarkLightMode flag is off. This is determined
+// in DarkLightModeControllerImpl::IsDarkModeEnabled().
 TEST_F(AssistantControllerImplTest, ColorModeIsSetWhenAssistantIsReadyFlagOff) {
-  // ProductivityLauncher uses DarkLightMode colors.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/{}, /*disabled_features=*/{
-          chromeos::features::kDarkLightMode, features::kNotificationsRefresh,
-          features::kProductivityLauncher});
+          chromeos::features::kDarkLightMode, features::kNotificationsRefresh});
 
   controller()->SetAssistant(test_assistant_service());
 
   ASSERT_TRUE(test_assistant_service()->dark_mode_enabled().has_value());
-  EXPECT_FALSE(test_assistant_service()->dark_mode_enabled().value());
+  EXPECT_TRUE(test_assistant_service()->dark_mode_enabled().value());
 }
 
 TEST_F(AssistantControllerImplTest, ColorModeIsUpdated) {
