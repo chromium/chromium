@@ -6,22 +6,19 @@ import 'chrome://settings/settings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {OpenWindowProxyImpl, PerformanceBrowserProxyImpl, SettingsPerformancePageElement, SUBMIT_EVENT, TabDiscardExceptionDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/settings.js';
+import {HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeExceptionListAction, OpenWindowProxyImpl, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsPerformancePageElement, SUBMIT_EVENT, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
+import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
 
 suite('PerformancePage', function() {
   let performancePage: SettingsPerformancePageElement;
   let performanceBrowserProxy: TestPerformanceBrowserProxy;
+  let performanceMetricsProxy: TestPerformanceMetricsProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let tabDiscardExceptionsList: TabDiscardExceptionListElement;
-
-  const highEfficiencyModeEnabledPref =
-      'prefs.performance_tuning.high_efficiency_mode.enabled.value';
-  const tabDiscardExceptionsPref =
-      'prefs.performance_tuning.tab_discarding.exceptions.value';
 
   function getExceptionListEntries():
       NodeListOf<TabDiscardExceptionEntryElement> {
@@ -52,6 +49,9 @@ suite('PerformancePage', function() {
     performanceBrowserProxy = new TestPerformanceBrowserProxy();
     PerformanceBrowserProxyImpl.setInstance(performanceBrowserProxy);
 
+    performanceMetricsProxy = new TestPerformanceMetricsProxy();
+    PerformanceMetricsProxyImpl.setInstance(performanceMetricsProxy);
+
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
@@ -81,17 +81,32 @@ suite('PerformancePage', function() {
   });
 
   test('testHighEfficiencyModeEnabled', function() {
-    performancePage.set(highEfficiencyModeEnabledPref, true);
+    performancePage.setPrefValue(HIGH_EFFICIENCY_MODE_PREF, true);
     assertTrue(
         performancePage.$.toggleButton.checked,
         'toggle should be checked when pref is true');
   });
 
   test('testHighEfficiencyModeDisabled', function() {
-    performancePage.set(highEfficiencyModeEnabledPref, false);
+    performancePage.setPrefValue(HIGH_EFFICIENCY_MODE_PREF, false);
     assertFalse(
         performancePage.$.toggleButton.checked,
         'toggle should not be checked when pref is false');
+  });
+
+  test('testHighEfficiencyModeMetrics', async function() {
+    performancePage.setPrefValue(HIGH_EFFICIENCY_MODE_PREF, false);
+
+    performancePage.$.toggleButton.click();
+    let enabled = await performanceMetricsProxy.whenCalled(
+        'recordHighEfficiencyModeChanged');
+    assertTrue(enabled);
+
+    performanceMetricsProxy.reset();
+    performancePage.$.toggleButton.click();
+    enabled = await performanceMetricsProxy.whenCalled(
+        'recordHighEfficiencyModeChanged');
+    assertFalse(enabled);
   });
 
   test('testLearnMoreLink', async function() {
@@ -122,7 +137,7 @@ suite('PerformancePage', function() {
   });
 
   function setupExceptionListEntries(existingRules: string[]) {
-    performancePage.set(tabDiscardExceptionsPref, existingRules);
+    performancePage.setPrefValue(TAB_DISCARD_EXCEPTIONS_PREF, existingRules);
     flush();
     assertDeepEquals(existingRules, tabDiscardExceptionsList.$.list.items);
   }
@@ -137,13 +152,17 @@ suite('PerformancePage', function() {
     assertTrue(tabDiscardExceptionsList.$.noSitesAdded.hidden);
   });
 
-  test('testTabDiscardExceptionsListDelete', function() {
+  test('testTabDiscardExceptionsListDelete', async function() {
     setupExceptionListEntries(['foo', 'bar']);
 
     getExceptionListEntries()[0]!.$.button.click();
     clickDeleteMenuItem();
     flush();
     assertDeepEquals(['bar'], tabDiscardExceptionsList.$.list.items);
+
+    const action =
+        await performanceMetricsProxy.whenCalled('recordExceptionListAction');
+    assertEquals(HighEfficiencyModeExceptionListAction.REMOVE, action);
 
     getExceptionListEntries()[0]!.$.button.click();
     clickDeleteMenuItem();
@@ -191,11 +210,14 @@ suite('PerformancePage', function() {
     return editDialog;
   }
 
-  test('testTabDiscardExceptionsListAdd', function() {
+  test('testTabDiscardExceptionsListAdd', async function() {
     setupExceptionListEntries(['foo']);
     const dialog = openAddDialog();
     dialog.fire(SUBMIT_EVENT, 'bar');
 
+    const action =
+        await performanceMetricsProxy.whenCalled('recordExceptionListAction');
+    assertEquals(HighEfficiencyModeExceptionListAction.ADD, action);
     assertDeepEquals(
         ['foo', 'bar'], tabDiscardExceptionsList.$.list.items,
         'expected valid rule to be added to the end of the list');
@@ -214,11 +236,14 @@ suite('PerformancePage', function() {
         'add dialog should be opened instead of edit dialog');
   });
 
-  test('testTabDiscardExceptionsListEdit', function() {
+  test('testTabDiscardExceptionsListEdit', async function() {
     setupExceptionListEntries(['foo', 'bar']);
     const dialog = openEditDialog(getExceptionListEntries()[1]!);
     dialog.fire(SUBMIT_EVENT, 'baz');
 
+    const action =
+        await performanceMetricsProxy.whenCalled('recordExceptionListAction');
+    assertEquals(HighEfficiencyModeExceptionListAction.EDIT, action);
     assertDeepEquals(
         ['foo', 'baz'], tabDiscardExceptionsList.$.list.items,
         'expected valid rule to be added to the end of the list');

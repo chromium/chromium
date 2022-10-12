@@ -138,6 +138,7 @@ non_preprocessed_files = [
   "test_open_window_proxy.ts",
   "test_password_manager_proxy.ts",
   "test_performance_browser_proxy.ts",
+  "test_performance_metrics_proxy.ts",
   "test_privacy_page_browser_proxy.ts",
   "test_profile_info_browser_proxy.ts",
   "test_reset_browser_proxy.ts",

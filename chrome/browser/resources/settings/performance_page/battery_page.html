@@ -3,7 +3,7 @@
     padding-block-end: var(--cr-section-vertical-padding);
   }
 </style>
-<settings-toggle-button id="toggleButton"
+<settings-toggle-button id="toggleButton" on-change="onChange_"
     pref="{{prefs.performance_tuning.battery_saver_mode.state}}"
     label="$i18n{batterySaverModeLabel}"
     sub-label-with-link="$i18n{batterySaverModeDescription}"
@@ -16,7 +16,7 @@
     opened="[[isBatterySaverModeEnabled_(
     prefs.performance_tuning.battery_saver_mode.state.value)]]">
   <div class="cr-row continuation battery-saver-radio-group">
-    <settings-radio-group id="radioGroup"
+    <settings-radio-group id="radioGroup" on-change="onChange_"
         pref="{{prefs.performance_tuning.battery_saver_mode.state}}"
         group-aria-label="$i18n{batterySaverModeLabel}">
       <controlled-radio-button
@@ -24,7 +24,7 @@
           name="[[batterySaverModeStatePrefValues.enabledBelowThreshold]]"
           pref="[[prefs.performance_tuning.battery_saver_mode.state]]">
       </controlled-radio-button>
-      <controlled-radio-button
+      <controlled-radio-button id="enabledOnBatteryButton"
           label="$i18n{batterySaverModeEnabledOnBatteryLabel}"
           name="[[batterySaverModeStatePrefValues.enabledOnBattery]]"
           pref="[[prefs.performance_tuning.battery_saver_mode.state]]">

@@ -339,6 +339,7 @@ build_webui("build") {
     "people_page/sync_browser_proxy.ts",
     "people_page/profile_info_browser_proxy.ts",
     "performance_page/performance_browser_proxy.ts",
+    "performance_page/performance_metrics_proxy.ts",
     "prefs/prefs_mixin.ts",
     "prefs/prefs.ts",
     "prefs/prefs_types.ts",

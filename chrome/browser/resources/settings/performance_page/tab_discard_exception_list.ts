@@ -22,6 +22,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
+import {HighEfficiencyModeExceptionListAction, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_metrics_proxy.js';
 import {getTemplate} from './tab_discard_exception_list.html.js';
 
 export interface TabDiscardExceptionListElement {
@@ -36,7 +37,7 @@ export interface TabDiscardExceptionListElement {
 const TabDiscardExceptionListElementBase =
     CrScrollableMixin(ListPropertyUpdateMixin(PrefsMixin(PolymerElement)));
 
-const TAB_DISCARD_EXCEPTIONS_PREF =
+export const TAB_DISCARD_EXCEPTIONS_PREF =
     'performance_tuning.tab_discarding.exceptions';
 
 export class TabDiscardExceptionListElement extends
@@ -89,6 +90,9 @@ export class TabDiscardExceptionListElement extends
   private selectedRule_: string;
   private showDialog_: boolean;
 
+  private metricsProxy_: PerformanceMetricsProxy =
+      PerformanceMetricsProxyImpl.getInstance();
+
   private hasSites_(): boolean {
     return this.siteList_.length > 0;
   }
@@ -127,14 +131,20 @@ export class TabDiscardExceptionListElement extends
               TAB_DISCARD_EXCEPTIONS_PREF, this.selectedRule_, newRule);
         }
       }
+      this.metricsProxy_.recordExceptionListAction(
+          HighEfficiencyModeExceptionListAction.EDIT);
       return;
     }
     // add dialog
     this.appendPrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, newRule);
+    this.metricsProxy_.recordExceptionListAction(
+        HighEfficiencyModeExceptionListAction.ADD);
   }
 
   private onDeleteClick_() {
     this.deletePrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, this.selectedRule_);
+    this.metricsProxy_.recordExceptionListAction(
+        HighEfficiencyModeExceptionListAction.REMOVE);
     this.$.menu.get().close();
   }
 

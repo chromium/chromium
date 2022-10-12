@@ -10926,6 +10926,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Dismissed bubble"/>
 </enum>
 
+<enum name="BatterySaverModeState">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled below threshold"/>
+  <int value="2" label="Enabled on battery"/>
+  <int value="3" label="Enabled"/>
+</enum>
+
 <enum name="BatteryStatusNumberBatteries">
   <obsolete>
     Removed 2021-08-11. https://crbug.com/1165237
@@ -48461,6 +48468,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 <enum name="HighEfficiencyBubbleActionType">
   <int value="0" label="Open settings"/>
   <int value="1" label="Dismiss dialog"/>
+</enum>
+
+<enum name="HighEfficiencyModeExceptionListAction">
+  <int value="0" label="Add"/>
+  <int value="1" label="Edit"/>
+  <int value="2" label="Remove"/>
 </enum>
 
 <enum name="HintCacheStoreEntryType">
