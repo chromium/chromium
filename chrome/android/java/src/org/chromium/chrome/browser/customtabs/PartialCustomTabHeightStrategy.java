@@ -91,6 +91,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private static final int SPINNER_FADEIN_DURATION_MS = 100;
     private static final int SPINNER_FADEOUT_DURATION_MS = 400;
     private static final int NAVBAR_BUTTON_RESTORE_DELAY_MS = 400;
+    private static final int NAVBAR_BUTTON_HIDE_SHOW_DELAY_MS = 50;
     private static final String PARAM_LOG_IMMERSIVE_MODE_CONFIRMATIONS =
             "log_immersive_mode_confirmations";
     @VisibleForTesting
@@ -886,13 +887,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         }
     }
 
-    private void showNavbarButtons(boolean show) {
-        // If the feature flag is set to true then we don't want to hide the nav buttons.
-        if (mWindowAboveNavbar
-                && ChromeFeatureList.sCctResizableAlwaysShowNavBarButtons.isEnabled()) {
-            return;
-        }
-
+    private void changeVisibilityNavbarButtons(boolean show) {
         View decorView = mActivity.getWindow().getDecorView();
         WindowInsetsControllerCompat controller =
                 WindowCompat.getInsetsController(mActivity.getWindow(), decorView);
@@ -908,6 +903,28 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mNavbarTransitionController.setShow(show);
         controller.controlWindowInsetsAnimation(WindowInsetsCompat.Type.navigationBars(),
                 /*durationMillis*/ 1, null, null, mNavbarTransitionController);
+    }
+
+    private void showNavbarButtons(boolean show) {
+        if (mWindowAboveNavbar
+                && ChromeFeatureList.sCctResizableAlwaysShowNavBarButtons.isEnabled()) {
+            // Resizing while the navbar buttons are visible, at times, flashes the host app.
+            // http://crbug/1360425 fixed this for when the navbar buttons are hidden, so taking
+            // advantage of that fix by hiding for a bit the navigation buttons, during the time the
+            // flashing usually occurs. The navbar buttons need to be visible while resizing so that
+            // the immersive mode confirmation dialog is not displayed, as fixed with
+            // http://crbug/1360453
+            // TODO: http://crbug/1373984 for follow-up on long term solution for fixing host app
+            // flashing issues.
+            if (!show) {
+                changeVisibilityNavbarButtons(false);
+                new Handler().postDelayed(() -> {
+                    changeVisibilityNavbarButtons(true);
+                }, NAVBAR_BUTTON_HIDE_SHOW_DELAY_MS);
+            }
+        } else {
+            changeVisibilityNavbarButtons(show);
+        }
     }
 
     // TODO(jinsukkim): Explore the way to use androidx.window.WindowManager or
