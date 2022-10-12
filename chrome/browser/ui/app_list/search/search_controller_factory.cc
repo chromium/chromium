@@ -16,6 +16,8 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/app_search_provider.h"
@@ -197,11 +199,18 @@ std::unique_ptr<SearchController> CreateSearchController(
   }
 
   if (ash::personalization_app::CanSeeWallpaperOrPersonalizationApp(profile)) {
-    size_t personalization_app_group_id =
-        controller->AddGroup(kGenericMaxResults);
+    auto* personalization_app_manager = ash::personalization_app::
+        PersonalizationAppManagerFactory::GetForBrowserContext(profile);
+    DCHECK(personalization_app_manager);
 
-    controller->AddProvider(personalization_app_group_id,
-                            std::make_unique<PersonalizationProvider>(profile));
+    if (personalization_app_manager) {
+      size_t personalization_app_group_id =
+          controller->AddGroup(kGenericMaxResults);
+      controller->AddProvider(
+          personalization_app_group_id,
+          std::make_unique<PersonalizationProvider>(
+              profile, personalization_app_manager->search_handler()));
+    }
   }
 
   return controller;

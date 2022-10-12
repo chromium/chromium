@@ -57,7 +57,9 @@ class PersonalizationProvider
       public ::ash::personalization_app::mojom::SearchResultsObserver,
       public ::apps::AppRegistryCache::Observer {
  public:
-  explicit PersonalizationProvider(Profile* profile);
+  PersonalizationProvider(
+      Profile* profile,
+      ::ash::personalization_app::SearchHandler* search_handler);
   ~PersonalizationProvider() override;
 
   PersonalizationProvider(const PersonalizationProvider&) = delete;
