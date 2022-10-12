@@ -315,8 +315,6 @@ void ApcExternalActionDelegate::HandleBasePrompt(
         specification) {
   base_prompt_should_send_payload_ = specification.has_output_key();
 
-  // TODO(crbug.com/1331202): If this causes flickering, separate prompt
-  // argument extraction and showing the base prompt.
   ShowBasePrompt(specification);
 
   // `this` outlives the script controller, therefore we can pass an unretained

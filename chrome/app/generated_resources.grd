@@ -13837,6 +13837,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
 
     <!-- Automated Password Change on Desktop strings -->
     <if expr="not is_android">
+      <message name="IDS_AUTOFILL_ASSISTANT" desc="The text rendered on the side panel entry.">
+        Assistant
+      </message>
       <message name="IDS_ACCESSIBLE_AUTOFILL_ASSISTANT_PASSWORD_CHANGE" desc="The text announced by screenreaders once focus in brought to automatic password change side panel UI.">
         Automatic password change
       </message>

@@ -10,6 +10,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
@@ -31,12 +33,10 @@ AssistantSidePanelCoordinator::Create(content::WebContents* web_contents) {
 AssistantSidePanelCoordinatorImpl::AssistantSidePanelCoordinatorImpl(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
-  // TODO(cr/1322419): Check with designers if this string should be "Google
-  // Assistant" as it is in other places. Also make make sure whether it should
-  // be translated.
   SidePanelRegistry::Get(web_contents)
       ->Register(std::make_unique<SidePanelEntry>(
-          SidePanelEntry::Id::kAssistant, u"Assistant",
+          SidePanelEntry::Id::kAssistant,
+          l10n_util::GetStringUTF16(IDS_AUTOFILL_ASSISTANT),
           ui::ImageModel::FromVectorIcon(GetAssistantIconOrFallback(),
                                          ui::kColorIcon, kAssistantIconSize),
           base::BindRepeating(

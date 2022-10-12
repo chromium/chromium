@@ -47,8 +47,6 @@ class AssistantStoppedBubbleCoordinatorDelegate
   ~AssistantStoppedBubbleCoordinatorDelegate() override = default;
 
   void RestartScript() {
-    // TODO(crbug.com/1329179): Possibly update this to restart the flow
-    // in a new foreground tab.
     content::OpenURLParams params(
         url_, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
         ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);

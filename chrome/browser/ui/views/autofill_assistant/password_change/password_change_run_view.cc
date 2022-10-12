@@ -134,8 +134,6 @@ void PasswordChangeRunView::CreateView() {
                       /*left=*/0, /*bottom=*/0, /*right=*/0));
 
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlertDialog);
-  // TODO(crbug.com/1329179): Ask accessibility reviewers what the best string
-  // to use here is.
   GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(
           IDS_ACCESSIBLE_AUTOFILL_ASSISTANT_PASSWORD_CHANGE),
