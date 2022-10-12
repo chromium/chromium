@@ -18,13 +18,12 @@ namespace content {
 typedef std::map<GinJavaBoundObject::ObjectID, JavaObjectWeakGlobalRef>
     ObjectRefs;
 
-jvalue CoerceJavaScriptValueToJavaValue(
-    JNIEnv* env,
-    const base::Value* value,
-    const JavaType& target_type,
-    bool coerce_to_string,
-    const ObjectRefs& object_refs,
-    GinJavaBridgeError* error);
+jvalue CoerceJavaScriptValueToJavaValue(JNIEnv* env,
+                                        const base::Value& value,
+                                        const JavaType& target_type,
+                                        bool coerce_to_string,
+                                        const ObjectRefs& object_refs,
+                                        GinJavaBridgeError* error);
 
 void ReleaseJavaValueIfRequired(JNIEnv* env,
                                 jvalue* value,

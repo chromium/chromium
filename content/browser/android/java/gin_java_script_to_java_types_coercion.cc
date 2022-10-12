@@ -16,6 +16,7 @@
 #include "base/android/jni_string.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -106,14 +107,14 @@ jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
     case JavaType::TypeObject:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
       // requires handling object equivalents of primitive types.
-      result.l = NULL;
+      result.l = nullptr;
       break;
     case JavaType::TypeString:
       result.l = coerce_to_string
                      ? ConvertUTF8ToJavaString(
                            env, base::NumberToString(integer_value))
                            .Release()
-                     : NULL;
+                     : nullptr;
       break;
     case JavaType::TypeBoolean:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to false. Spec
@@ -123,7 +124,7 @@ jvalue CoerceJavaScriptIntegerToJavaValue(JNIEnv* env,
     case JavaType::TypeArray:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
       // requires raising a JavaScript exception.
-      result.l = NULL;
+      result.l = nullptr;
       break;
     case JavaType::TypeVoid:
       // Conversion to void must never happen.
@@ -170,14 +171,14 @@ jvalue CoerceJavaScriptDoubleToJavaValue(JNIEnv* env,
     case JavaType::TypeObject:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
       // requires handling object equivalents of primitive types.
-      result.l = NULL;
+      result.l = nullptr;
       break;
     case JavaType::TypeString:
-      result.l =
-          coerce_to_string
-              ? ConvertUTF8ToJavaString(
-                    env, base::StringPrintf("%.6lg", double_value)).Release()
-              : NULL;
+      result.l = coerce_to_string
+                     ? ConvertUTF8ToJavaString(
+                           env, base::StringPrintf("%.6lg", double_value))
+                           .Release()
+                     : nullptr;
       break;
     case JavaType::TypeBoolean:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to false. Spec
@@ -187,7 +188,7 @@ jvalue CoerceJavaScriptDoubleToJavaValue(JNIEnv* env,
     case JavaType::TypeArray:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
       // requires raising a JavaScript exception.
-      result.l = NULL;
+      result.l = nullptr;
       break;
     case JavaType::TypeVoid:
       // Conversion to void must never happen.
@@ -198,27 +199,27 @@ jvalue CoerceJavaScriptDoubleToJavaValue(JNIEnv* env,
 }
 
 jvalue CoerceJavaScriptBooleanToJavaValue(JNIEnv* env,
-                                          const base::Value* value,
+                                          const base::Value& value,
                                           const JavaType& target_type,
                                           bool coerce_to_string,
                                           GinJavaBridgeError* error) {
   // See http://jdk6.java.net/plugin2/liveconnect/#JS_BOOLEAN_VALUES.
-  bool boolean_value = value->GetBool();
+  bool boolean_value = value.GetBool();
   jvalue result;
   switch (target_type.type) {
     case JavaType::TypeBoolean:
       result.z = boolean_value ? JNI_TRUE : JNI_FALSE;
       break;
     case JavaType::TypeObject:
-      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to NULL. Spec
+      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
       // requires handling java.lang.Boolean and java.lang.Object.
-      result.l = NULL;
+      result.l = nullptr;
       break;
     case JavaType::TypeString:
-      result.l = coerce_to_string
-                     ? ConvertUTF8ToJavaString(
-                           env, boolean_value ? "true" : "false").Release()
-                     : NULL;
+      result.l = coerce_to_string ? ConvertUTF8ToJavaString(
+                                        env, boolean_value ? "true" : "false")
+                                        .Release()
+                                  : nullptr;
       break;
     case JavaType::TypeByte:
     case JavaType::TypeChar:
@@ -234,9 +235,9 @@ jvalue CoerceJavaScriptBooleanToJavaValue(JNIEnv* env,
       break;
     }
     case JavaType::TypeArray:
-      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to NULL. Spec
+      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
       // requires raising a JavaScript exception.
-      result.l = NULL;
+      result.l = nullptr;
       break;
     case JavaType::TypeVoid:
       // Conversion to void must never happen.
@@ -247,20 +248,20 @@ jvalue CoerceJavaScriptBooleanToJavaValue(JNIEnv* env,
 }
 
 jvalue CoerceJavaScriptStringToJavaValue(JNIEnv* env,
-                                         const base::Value* value,
+                                         const base::Value& value,
                                          const JavaType& target_type,
                                          GinJavaBridgeError* error) {
   // See http://jdk6.java.net/plugin2/liveconnect/#JS_STRING_VALUES.
   jvalue result;
   switch (target_type.type) {
     case JavaType::TypeString: {
-      result.l = ConvertUTF8ToJavaString(env, value->GetString()).Release();
+      result.l = ConvertUTF8ToJavaString(env, value.GetString()).Release();
       break;
     }
     case JavaType::TypeObject:
-      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to NULL. Spec
+      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
       // requires handling java.lang.Object.
-      result.l = NULL;
+      result.l = nullptr;
       break;
     case JavaType::TypeByte:
     case JavaType::TypeShort:
@@ -285,9 +286,9 @@ jvalue CoerceJavaScriptStringToJavaValue(JNIEnv* env,
       result.z = JNI_FALSE;
       break;
     case JavaType::TypeArray:
-      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to NULL. Spec
+      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
       // requires raising a JavaScript exception.
-      result.l = NULL;
+      result.l = nullptr;
       break;
     case JavaType::TypeVoid:
       // Conversion to void must never happen.
@@ -319,7 +320,7 @@ jobject CreateJavaArray(JNIEnv* env, const JavaType& type, jsize length) {
     case JavaType::TypeString: {
       ScopedJavaLocalRef<jclass> clazz(
           base::android::GetClass(env, kJavaLangString));
-      return env->NewObjectArray(length, clazz.obj(), NULL);
+      return env->NewObjectArray(length, clazz.obj(), nullptr);
     }
     case JavaType::TypeVoid:
       // Conversion to void must never happen.
@@ -328,7 +329,7 @@ jobject CreateJavaArray(JNIEnv* env, const JavaType& type, jsize length) {
       // Not handled.
       NOTREACHED();
   }
-  return NULL;
+  return nullptr;
 }
 
 // Sets the specified element of the supplied array to the value of the
@@ -388,14 +389,14 @@ void SetArrayElement(JNIEnv* env,
 }
 
 jvalue CoerceJavaScriptNullOrUndefinedToJavaValue(JNIEnv* env,
-                                                  const base::Value* value,
+                                                  const base::Value& value,
                                                   const JavaType& target_type,
                                                   bool coerce_to_string,
                                                   GinJavaBridgeError* error) {
   bool is_undefined = false;
   std::unique_ptr<const GinJavaBridgeValue> gin_value;
-  if (GinJavaBridgeValue::ContainsGinJavaBridgeValue(value)) {
-    gin_value = GinJavaBridgeValue::FromValue(value);
+  if (GinJavaBridgeValue::ContainsGinJavaBridgeValue(&value)) {
+    gin_value = GinJavaBridgeValue::FromValue(&value);
     if (gin_value->IsType(GinJavaBridgeValue::TYPE_UNDEFINED)) {
       is_undefined = true;
     }
@@ -403,14 +404,14 @@ jvalue CoerceJavaScriptNullOrUndefinedToJavaValue(JNIEnv* env,
   jvalue result;
   switch (target_type.type) {
     case JavaType::TypeObject:
-      result.l = NULL;
+      result.l = nullptr;
       break;
     case JavaType::TypeString:
       // LIVECONNECT_COMPLIANCE: Existing behavior is to convert undefined to
-      // "undefined". Spec requires converting undefined to NULL.
+      // "undefined". Spec requires converting undefined to null.
       result.l = (coerce_to_string && is_undefined)
                      ? ConvertUTF8ToJavaString(env, kUndefined).Release()
-                     : NULL;
+                     : nullptr;
       break;
     case JavaType::TypeByte:
     case JavaType::TypeChar:
@@ -427,9 +428,9 @@ jvalue CoerceJavaScriptNullOrUndefinedToJavaValue(JNIEnv* env,
       result.z = JNI_FALSE;
       break;
     case JavaType::TypeArray:
-      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to NULL. Spec
+      // LIVECONNECT_COMPLIANCE: Existing behavior is to convert to null. Spec
       // requires raising a JavaScript exception.
-      result.l = NULL;
+      result.l = nullptr;
       break;
     case JavaType::TypeVoid:
       // Conversion to void must never happen.
@@ -440,7 +441,7 @@ jvalue CoerceJavaScriptNullOrUndefinedToJavaValue(JNIEnv* env,
 }
 
 jobject CoerceJavaScriptListToArray(JNIEnv* env,
-                                    const base::Value* value,
+                                    const base::Value::List& list,
                                     const JavaType& target_type,
                                     const ObjectRefs& object_refs,
                                     GinJavaBridgeError* error) {
@@ -449,26 +450,31 @@ jobject CoerceJavaScriptListToArray(JNIEnv* env,
   // LIVECONNECT_COMPLIANCE: Existing behavior is to return null for
   // multi-dimensional arrays. Spec requires handling multi-demensional arrays.
   if (target_inner_type.type == JavaType::TypeArray) {
-    return NULL;
+    return nullptr;
   }
 
   // LIVECONNECT_COMPLIANCE: Existing behavior is to return null for object
   // arrays. Spec requires handling object arrays.
   if (target_inner_type.type == JavaType::TypeObject) {
-    return NULL;
+    return nullptr;
   }
 
+  // Coerce the length.
+  if (!base::IsValueInRangeForNumericType<jsize>(list.size())) {
+    return nullptr;
+  }
+  jsize length = static_cast<jsize>(list.size());
+
   // Create the Java array.
-  jsize length = static_cast<jsize>(value->GetListDeprecated().size());
   jobject result = CreateJavaArray(env, target_inner_type, length);
   if (!result) {
-    return NULL;
+    return nullptr;
   }
 
   jsize i = 0;
-  for (const auto& value_element : value->GetListDeprecated()) {
+  for (const auto& value_element : list) {
     jvalue element = CoerceJavaScriptValueToJavaValue(
-        env, &value_element, target_inner_type, false, object_refs, error);
+        env, value_element, target_inner_type, false, object_refs, error);
     SetArrayElement(env, result, target_inner_type, i++, element);
     // CoerceJavaScriptValueToJavaValue() creates new local references to
     // strings, objects and arrays. Of these, only strings can occur here.
@@ -483,7 +489,7 @@ jobject CoerceJavaScriptListToArray(JNIEnv* env,
 }
 
 jobject CoerceJavaScriptDictionaryToArray(JNIEnv* env,
-                                          const base::Value* value,
+                                          const base::Value::Dict& dict,
                                           const JavaType& target_type,
                                           const ObjectRefs& object_refs,
                                           GinJavaBridgeError* error) {
@@ -493,21 +499,19 @@ jobject CoerceJavaScriptDictionaryToArray(JNIEnv* env,
   // LIVECONNECT_COMPLIANCE: Existing behavior is to return null for
   // multi-dimensional arrays. Spec requires handling multi-demensional arrays.
   if (target_inner_type.type == JavaType::TypeArray) {
-    return NULL;
+    return nullptr;
   }
 
   // LIVECONNECT_COMPLIANCE: Existing behavior is to return null for object
   // arrays. Spec requires handling object arrays.
   if (target_inner_type.type == JavaType::TypeObject) {
-    return NULL;
+    return nullptr;
   }
 
-  const base::DictionaryValue* dictionary_value;
-  value->GetAsDictionary(&dictionary_value);
-  const base::Value* length_value;
   // If the object does not have a length property, return null.
-  if (!dictionary_value->Get("length", &length_value)) {
-    return NULL;
+  const base::Value* length_value = dict.Find("length");
+  if (!length_value) {
+    return nullptr;
   }
 
   // If the length property does not have numeric type, or is outside the valid
@@ -526,21 +530,21 @@ jobject CoerceJavaScriptDictionaryToArray(JNIEnv* env,
     }
   }
   if (length == -1) {
-    return NULL;
+    return nullptr;
   }
 
   jobject result = CreateJavaArray(env, target_inner_type, length);
   if (!result) {
-    return NULL;
+    return nullptr;
   }
-  auto null_value = std::make_unique<base::Value>();
+  base::Value null_value;
   for (jsize i = 0; i < length; ++i) {
     const std::string key(base::NumberToString(i));
-    const base::Value* value_element = dictionary_value->FindKey(key);
+    const base::Value* value_element = dict.Find(key);
     if (!value_element)
-      value_element = null_value.get();
+      value_element = &null_value;
     jvalue element = CoerceJavaScriptValueToJavaValue(
-        env, value_element, target_inner_type, false, object_refs, error);
+        env, *value_element, target_inner_type, false, object_refs, error);
     SetArrayElement(env, result, target_inner_type, i, element);
     // CoerceJavaScriptValueToJavaValue() creates new local references to
     // strings, objects and arrays. Of these, only strings can occur here.
@@ -555,7 +559,7 @@ jobject CoerceJavaScriptDictionaryToArray(JNIEnv* env,
 }
 
 jvalue CoerceJavaScriptObjectToJavaValue(JNIEnv* env,
-                                         const base::Value* value,
+                                         const base::Value& value,
                                          const JavaType& target_type,
                                          bool coerce_to_string,
                                          const ObjectRefs& object_refs,
@@ -567,9 +571,9 @@ jvalue CoerceJavaScriptObjectToJavaValue(JNIEnv* env,
   jvalue result;
   switch (target_type.type) {
     case JavaType::TypeObject: {
-      if (GinJavaBridgeValue::ContainsGinJavaBridgeValue(value)) {
+      if (GinJavaBridgeValue::ContainsGinJavaBridgeValue(&value)) {
         std::unique_ptr<const GinJavaBridgeValue> gin_value(
-            GinJavaBridgeValue::FromValue(value));
+            GinJavaBridgeValue::FromValue(&value));
         DCHECK(gin_value);
         DCHECK(gin_value->IsType(GinJavaBridgeValue::TYPE_OBJECT_ID));
         ScopedJavaLocalRef<jobject> obj;
@@ -586,7 +590,7 @@ jvalue CoerceJavaScriptObjectToJavaValue(JNIEnv* env,
             JNI_TRUE) {
           result.l = obj.Release();
         } else {
-          result.l = NULL;
+          result.l = nullptr;
           *error = kGinJavaBridgeNonAssignableTypes;
         }
       } else {
@@ -594,7 +598,7 @@ jvalue CoerceJavaScriptObjectToJavaValue(JNIEnv* env,
         // requires converting if the target type is
         // netscape.javascript.JSObject, otherwise raising a JavaScript
         // exception.
-        result.l = NULL;
+        result.l = nullptr;
       }
       break;
     }
@@ -603,7 +607,7 @@ jvalue CoerceJavaScriptObjectToJavaValue(JNIEnv* env,
       // "undefined". Spec requires calling toString() on the Java object.
       result.l = coerce_to_string
                      ? ConvertUTF8ToJavaString(env, kUndefined).Release()
-                     : NULL;
+                     : nullptr;
       break;
     case JavaType::TypeByte:
     case JavaType::TypeShort:
@@ -624,14 +628,14 @@ jvalue CoerceJavaScriptObjectToJavaValue(JNIEnv* env,
       result.z = JNI_FALSE;
       break;
     case JavaType::TypeArray:
-      if (value->is_dict()) {
+      if (value.is_dict()) {
         result.l = CoerceJavaScriptDictionaryToArray(
-            env, value, target_type, object_refs, error);
-      } else if (value->is_list()) {
-        result.l = CoerceJavaScriptListToArray(
-            env, value, target_type, object_refs, error);
+            env, value.GetDict(), target_type, object_refs, error);
+      } else if (value.is_list()) {
+        result.l = CoerceJavaScriptListToArray(env, value.GetList(),
+                                               target_type, object_refs, error);
       } else {
-        result.l = NULL;
+        result.l = nullptr;
       }
       break;
     case JavaType::TypeVoid:
@@ -643,14 +647,14 @@ jvalue CoerceJavaScriptObjectToJavaValue(JNIEnv* env,
 }
 
 jvalue CoerceGinJavaBridgeValueToJavaValue(JNIEnv* env,
-                                           const base::Value* value,
+                                           const base::Value& value,
                                            const JavaType& target_type,
                                            bool coerce_to_string,
                                            const ObjectRefs& object_refs,
                                            GinJavaBridgeError* error) {
-  DCHECK(GinJavaBridgeValue::ContainsGinJavaBridgeValue(value));
+  DCHECK(GinJavaBridgeValue::ContainsGinJavaBridgeValue(&value));
   std::unique_ptr<const GinJavaBridgeValue> gin_value(
-      GinJavaBridgeValue::FromValue(value));
+      GinJavaBridgeValue::FromValue(&value));
   switch (gin_value->GetType()) {
     case GinJavaBridgeValue::TYPE_UNDEFINED:
       return CoerceJavaScriptNullOrUndefinedToJavaValue(
@@ -687,12 +691,12 @@ void ReleaseJavaValueIfRequired(JNIEnv* env,
   if (type.type == JavaType::TypeString || type.type == JavaType::TypeObject ||
       type.type == JavaType::TypeArray) {
     env->DeleteLocalRef(value->l);
-    value->l = NULL;
+    value->l = nullptr;
   }
 }
 
 jvalue CoerceJavaScriptValueToJavaValue(JNIEnv* env,
-                                        const base::Value* value,
+                                        const base::Value& value,
                                         const JavaType& target_type,
                                         bool coerce_to_string,
                                         const ObjectRefs& object_refs,
@@ -700,13 +704,13 @@ jvalue CoerceJavaScriptValueToJavaValue(JNIEnv* env,
   // Note that in all these conversions, the relevant field of the jvalue must
   // always be explicitly set, as jvalue does not initialize its fields.
 
-  switch (value->type()) {
+  switch (value.type()) {
     case base::Value::Type::INTEGER:
       return CoerceJavaScriptIntegerToJavaValue(
-          env, value->GetInt(), target_type, coerce_to_string, error);
+          env, value.GetInt(), target_type, coerce_to_string, error);
     case base::Value::Type::DOUBLE: {
       return CoerceJavaScriptDoubleToJavaValue(
-          env, value->GetDouble(), target_type, coerce_to_string, error);
+          env, value.GetDouble(), target_type, coerce_to_string, error);
     }
     case base::Value::Type::BOOLEAN:
       return CoerceJavaScriptBooleanToJavaValue(

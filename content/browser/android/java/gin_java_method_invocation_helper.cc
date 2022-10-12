@@ -133,7 +133,7 @@ void GinJavaMethodInvocationHelper::Invoke() {
   for (size_t i = 0; i < method->num_parameters(); ++i) {
     const base::Value& argument = arguments_[i];
     parameters[i] = CoerceJavaScriptValueToJavaValue(
-        env, &argument, method->parameter_type(i), true, object_refs_,
+        env, argument, method->parameter_type(i), true, object_refs_,
         &coercion_error);
   }
 
