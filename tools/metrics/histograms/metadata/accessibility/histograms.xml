@@ -301,11 +301,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.AndroidServiceInfo"
-    enum="AccessibilityAndroidServiceInfoEnum" expires_after="2022-11-18">
+    enum="AccessibilityAndroidServiceInfoEnum" expires_after="M109">
   <owner>aleventhal@chromium.org</owner>
   <owner>mschillaci@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
+    Deprecated as of 10/2022, M109. Now using the per-variant enum (below).
     Tracks flags and capabilities of enabled accessibility services. Recorded
     every time an Android web content view first creates a virtual view
     hierarchy, indicating that some accessibility service is running. The number
@@ -314,6 +315,32 @@ chromium-metrics-reviews@google.com.
     capabilities of accessibility services are widespread and which ones are
     relatively rare.
   </summary>
+</histogram>
+
+<histogram name="Accessibility.AndroidServiceInfo.{RunningApps}"
+    enum="AccessibilityAndroidServiceInfoEnum" expires_after="2023-07-01">
+  <owner>mschillaci@google.com</owner>
+  <owner>aldietz@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Tracks events, flags, feedback and capabilities of enabled accessibility
+    services separated into variants based on the types of running accessibility
+    services. This information would be a subset of the (now deprecated)
+    Accessibility.AndroidServiceInfo histogram. It will allow us to look at the
+    same histograms but only for a subset of users (e.g. what are the requested
+    flags etc of enabled accessibility services for clients running only a
+    password manager).
+  </summary>
+  <token key="RunningApps">
+    <variant name="ALL_VARIANTS"/>
+    <variant name="ASSISTIVE_TECH"/>
+    <variant name="ASSISTIVE_TECH_WITH_PASSWORD_MANAGER"/>
+    <variant name="ASSISTIVE_TECH_WITH_UNKNOWN"/>
+    <variant name="PASSWORD_MANAGER"/>
+    <variant name="PASSWORD_MANAGER_WITH_UNKNOWN"/>
+    <variant name="UNKNOWN"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.ATK-APIs" enum="AccessibilityATKAPIEnum"

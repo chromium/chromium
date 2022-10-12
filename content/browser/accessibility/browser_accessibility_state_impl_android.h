@@ -7,9 +7,6 @@
 
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 
-#include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
-
 namespace content {
 
 class BrowserContext;
@@ -18,9 +15,14 @@ class BrowserAccessibilityStateImplAndroid
     : public BrowserAccessibilityStateImpl {
  public:
   BrowserAccessibilityStateImplAndroid();
-  ~BrowserAccessibilityStateImplAndroid() override {}
+  ~BrowserAccessibilityStateImplAndroid() override = default;
 
   void CollectAccessibilityServiceStats();
+  void RecordAccessibilityServiceStatsHistogram(int event_type_mask,
+                                                int feedback_type_mask,
+                                                int flags_mask,
+                                                int capabilities_mask,
+                                                std::string histogram);
 
  protected:
   void UpdateHistogramsOnOtherThread() override;
