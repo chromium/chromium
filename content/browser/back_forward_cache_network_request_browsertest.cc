@@ -244,10 +244,9 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
-// TODO(crbug.com/1236190) Disabled for flaky failures on various configs.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTest,
-    DISABLED_PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch) {
+    PageWithDrainedDatapipeRequestsForScriptStreamerShouldBeEvictedIfStreamedTooMuch) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/small_script.js");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -257,6 +256,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_1(current_frame_host());
+
   // Append the script tag.
   EXPECT_TRUE(ExecJs(shell(), R"(
     var script = document.createElement('script');
@@ -276,11 +277,16 @@ IN_PROC_BROWSER_TEST_F(
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  // Page A is now in BFCache.
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
 
   // Complete the response after navigating away.
   std::string body(kMaxBufferedBytesPerProcess + 1, '*');
   response.Send(body);
   response.Done();
+  // Page A should be evicted from BFCache, we wait for the deletion to
+  // complete.
+  EXPECT_TRUE(rfh_1.WaitUntilRenderFrameDeleted());
 
   // 3) Go back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
