@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_helpers.h"
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -25,8 +26,9 @@ namespace audio {
 // InputIPC is a client-side class for handling creation,
 // initialization and control of an input stream. May only be used on a single
 // thread.
-class InputIPC : public media::AudioInputIPC,
-                 public media::mojom::AudioInputStreamClient {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) InputIPC
+    : public media::AudioInputIPC,
+      public media::mojom::AudioInputStreamClient {
  public:
   InputIPC(mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
            const std::string& device_id,

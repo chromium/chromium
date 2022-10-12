@@ -6,6 +6,7 @@
 #define SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -17,7 +18,7 @@ namespace audio {
 
 // This class is used for reproduction of system sounds. All methods
 // should be accessed from the Audio thread.
-class SoundsManager {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) SoundsManager {
  public:
   typedef int SoundKey;
 

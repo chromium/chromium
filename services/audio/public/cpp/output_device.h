@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
@@ -22,7 +23,7 @@ class AudioOutputDeviceThreadCallback;
 
 namespace audio {
 
-class OutputDevice {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) OutputDevice {
  public:
   // media::AudioRendererSink::RenderCallback must outlive |this|.
   OutputDevice(

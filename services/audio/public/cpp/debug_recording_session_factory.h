@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "services/audio/public/mojom/debug_recording.mojom.h"
 
 namespace base {
@@ -19,6 +20,7 @@ class AudioDebugRecordingSession;
 
 namespace audio {
 
+COMPONENT_EXPORT(AUDIO_PUBLIC_CPP)
 std::unique_ptr<media::AudioDebugRecordingSession>
 CreateAudioDebugRecordingSession(
     const base::FilePath& debug_recording_file_path,

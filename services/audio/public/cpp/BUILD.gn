@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("cpp") {
+component("cpp") {
   sources = [
     "audio_system_to_service_adapter.cc",
     "audio_system_to_service_adapter.h",
@@ -22,6 +22,8 @@ source_set("cpp") {
     "sounds/sounds_manager.h",
   ]
 
+  defines = [ "IS_AUDIO_PUBLIC_CPP_IMPL" ]
+
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
@@ -30,6 +32,8 @@ source_set("cpp") {
     "//media/mojo/common",
     "//services/audio/public/mojom",
   ]
+
+  output_name = "audio_public_cpp"
 }
 
 source_set("test_support") {

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -22,7 +23,8 @@ namespace audio {
 // Provides media::AudioSystem implementation on top of Audio service.
 // In case connection to Audio service is lost, reply callbacks will run with
 // empty optionals / false booleans.
-class AudioSystemToServiceAdapter : public media::AudioSystem {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) AudioSystemToServiceAdapter
+    : public media::AudioSystem {
  public:
   // A callback which can be used to acquire a new SystemInfo interface pipe
   // lazily as needed.
