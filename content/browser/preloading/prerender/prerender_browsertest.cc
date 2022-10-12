@@ -25,6 +25,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
@@ -3262,7 +3263,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EvalJsResult results = EvalJs(prerender_render_frame_host, "eventsSeen");
   std::vector<std::string> eventsSeen;
   base::Value resultsList = results.ExtractList();
-  for (auto& result : resultsList.GetListDeprecated())
+  for (auto& result : resultsList.GetList())
     eventsSeen.push_back(result.GetString());
   EXPECT_THAT(eventsSeen,
               testing::ElementsAreArray(
