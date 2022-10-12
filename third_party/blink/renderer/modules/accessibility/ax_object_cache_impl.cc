@@ -3884,32 +3884,32 @@ bool AXObjectCacheImpl::SerializeEntireTree(bool exclude_offscreen,
                                             size_t max_node_count,
                                             base::TimeDelta timeout,
                                             ui::AXTreeUpdate* response) {
-  BlinkAXTreeSource tree_source(*this);
+  BlinkAXTreeSource* tree_source = BlinkAXTreeSource::Create(*this);
 
-  tree_source.set_exclude_offscreen(exclude_offscreen);
+  tree_source->set_exclude_offscreen(exclude_offscreen);
 
   // The serializer returns an ui::AXTreeUpdate, which can store a complete
   // or a partial accessibility tree. AXTreeSerializer is stateful, but the
   // first time you serialize from a brand-new tree you're guaranteed to get a
   // complete tree.
-  ui::AXTreeSerializer<AXObject*> serializer(&tree_source);
+  ui::AXTreeSerializer<AXObject*> serializer(tree_source);
 
   if (max_node_count)
     serializer.set_max_node_count(max_node_count);
   if (!timeout.is_zero())
     serializer.set_timeout(timeout);
 
-  tree_source.Freeze();
+  tree_source->Freeze();
 
-  if (!tree_source.GetRoot() || tree_source.GetRoot()->IsDetached()) {
-    tree_source.Thaw();
+  if (!tree_source->GetRoot() || tree_source->GetRoot()->IsDetached()) {
+    tree_source->Thaw();
     // TODO(chrishtr): not clear why this can happen.
     NOTREACHED();
     return false;
   }
 
-  if (serializer.SerializeChanges(tree_source.GetRoot(), response)) {
-    tree_source.Thaw();
+  if (serializer.SerializeChanges(tree_source->GetRoot(), response)) {
+    tree_source->Thaw();
     return true;
   }
 
@@ -3917,8 +3917,8 @@ bool AXObjectCacheImpl::SerializeEntireTree(bool exclude_offscreen,
   // aria-owns rearranging the page while it's being scanned. Try a second
   // time.
   *response = ui::AXTreeUpdate();
-  bool result = serializer.SerializeChanges(tree_source.GetRoot(), response);
-  tree_source.Thaw();
+  bool result = serializer.SerializeChanges(tree_source->GetRoot(), response);
+  tree_source->Thaw();
   return result;
 }
 
