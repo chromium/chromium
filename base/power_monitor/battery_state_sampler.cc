@@ -52,7 +52,10 @@ BatteryStateSampler::~BatteryStateSampler() {
 BatteryStateSampler* BatteryStateSampler::Get() {
   // On a platform with a BatteryLevelProvider implementation, the global
   // instance must be created before accessing it.
-#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
+  // TODO(crbug.com/1373560): ChromeOS currently doesn't define
+  // `HAS_BATTERY_LEVEL_PROVIDER_IMPL` but it should once the locations of the
+  // providers and sampling sources are consolidated.
+#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL) || BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(g_battery_state_sampler);
 #endif
   return g_battery_state_sampler;
@@ -71,6 +74,12 @@ void BatteryStateSampler::AddObserver(Observer* observer) {
 void BatteryStateSampler::RemoveObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observer_list_.RemoveObserver(observer);
+}
+
+void BatteryStateSampler::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sampling_event_source_.reset();
+  battery_level_provider_.reset();
 }
 
 // static
@@ -112,6 +121,7 @@ void BatteryStateSampler::OnInitialBatteryStateSampled(
 
 void BatteryStateSampler::OnSamplingEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(battery_level_provider_);
 
   battery_level_provider_->GetBatteryState(base::BindOnce(
       &BatteryStateSampler::OnBatteryStateSampled, base::Unretained(this)));

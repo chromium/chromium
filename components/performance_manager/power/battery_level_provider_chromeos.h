@@ -20,6 +20,8 @@ class BatteryLevelProviderChromeOS : public base::BatteryLevelProvider {
       chromeos::PowerManagerClient* power_manager_client);
   ~BatteryLevelProviderChromeOS() override;
 
+  static std::unique_ptr<base::BatteryLevelProvider> Create();
+
  private:
   friend class BatteryLevelProviderChromeOSTest;
 

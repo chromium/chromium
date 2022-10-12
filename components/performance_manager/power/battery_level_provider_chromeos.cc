@@ -20,6 +20,14 @@ BatteryLevelProviderChromeOS::BatteryLevelProviderChromeOS(
 
 BatteryLevelProviderChromeOS::~BatteryLevelProviderChromeOS() = default;
 
+// static
+std::unique_ptr<base::BatteryLevelProvider>
+BatteryLevelProviderChromeOS::Create() {
+  return std::make_unique<
+      performance_manager::power::BatteryLevelProviderChromeOS>(
+      chromeos::PowerManagerClient::Get());
+}
+
 void BatteryLevelProviderChromeOS::GetBatteryState(
     base::OnceCallback<
         void(const absl::optional<base::BatteryLevelProvider::BatteryState>&)>

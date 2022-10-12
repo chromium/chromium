@@ -42,6 +42,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/allocator/buildflags.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "components/performance_manager/power/battery_level_provider_chromeos.h"
+#include "components/performance_manager/power/dbus_power_manager_sampling_event_source.h"
+
 #if defined(ARCH_CPU_X86_64)
 #include "chrome/browser/performance_manager/policies/userspace_swap_policy_chromeos.h"
 #endif  // defined(ARCH_CPU_X86_64)
@@ -253,12 +257,27 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
       std::make_unique<performance_manager::ExtensionWatcher>();
 #endif
 
-#if BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
   // Some browser tests need to control how the battery state behaves, so they
   // install a test `BatteryStateSampler` before browser setup.
-  if (!base::BatteryStateSampler::HasTestingInstance())
+  if (!base::BatteryStateSampler::HasTestingInstance()) {
+    // The ChromeOS `BatteryLevelProvider` and `SamplingEventSource`
+    // implementations are in `components` for dependency reasons, so they need
+    // to be created here and passed in explicitly to `BatteryStateSampler`.
+    // TODO(crbug.com/1373560): All of the battery level machinery should be in
+    // the same location, and the ifdefs should be contained to the
+    // `BatteryLevelProvider` and SamplingEventSource` instantiation functions.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    battery_state_sampler_ = std::make_unique<base::BatteryStateSampler>(
+        std::make_unique<
+            performance_manager::power::DbusPowerManagerSamplingEventSource>(
+            chromeos::PowerManagerClient::Get()),
+        std::make_unique<
+            performance_manager::power::BatteryLevelProviderChromeOS>(
+            chromeos::PowerManagerClient::Get()));
+#elif BUILDFLAG(HAS_BATTERY_LEVEL_PROVIDER_IMPL)
     battery_state_sampler_ = std::make_unique<base::BatteryStateSampler>();
 #endif
+  }
 }
 
 void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
@@ -300,6 +319,9 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
 #if !BUILDFLAG(IS_ANDROID)
   user_performance_tuning_manager_.reset();
   profile_discard_opt_out_list_helper_.reset();
+
+  if (battery_state_sampler_)
+    battery_state_sampler_->Shutdown();
 #endif
 
   // Releasing `performance_manager_lifetime_` will tear down the registry and

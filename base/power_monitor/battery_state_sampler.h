@@ -51,6 +51,12 @@ class BASE_EXPORT BatteryStateSampler {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Shuts down this instance but doesn't destroy it. This allows it to remain
+  // alive for its observers to deregister as they are destroyed without causing
+  // use-after-frees, but it won't serve any samples after this is called.
+  // Invoked in `PostMainMessageLoopRun`.
+  void Shutdown();
+
   // Creates, installs, and returns an instance of the sampler for testing.
   // This is meant to be used in browser tests before browser init to control
   // the sampler's behavior in the tests.

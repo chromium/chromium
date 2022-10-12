@@ -17,6 +17,7 @@
 #include "chrome/browser/metrics/power/usage_scenario.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
+#include "components/performance_manager/public/power/battery_level_provider_creator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -56,7 +57,7 @@ class PowerMetricsReporter : public ProcessMonitor::Observer {
       UsageScenarioDataStore* short_usage_scenario_data_store = nullptr,
       UsageScenarioDataStore* long_usage_scenario_data_store = nullptr,
       std::unique_ptr<base::BatteryLevelProvider> battery_level_provider =
-          base::BatteryLevelProvider::Create()
+          performance_manager::power::CreateBatteryLevelProvider()
 #if BUILDFLAG(IS_MAC)
           ,
       std::unique_ptr<CoalitionResourceUsageProvider>
