@@ -18,25 +18,34 @@
         // Get the test parameters.
         const testId = parsedString.get('testId');
         const worker_string = parsedString.get('worker');
-        const use_worker = (worker_string != null) ? worker_string == 'true' : false;
+        const use_worker =
+              (worker_string != null) ? worker_string == 'true' : false;
+        const runs_string = parsedString.get('runs');
+        const runs = (runs_string != null) ? parseInt(runs_string) : 1;
 
-        if (!use_worker) {
-            const result = await webGpuUnitTests.runTest(testId);
-            domAutomationController.send(result);
-        } else {
-            const worker = new Worker('./webgpu-unittest-worker.js', { type: 'module' });
-            const result = new Promise(
-                resolve => {
-                    worker.addEventListener('message',
-                                            e => {
-                                                resolve(e.data.result);
-                                            },
-                                            { once: true })
-                }
-            );
-            worker.postMessage({ testId });
-            domAutomationController.send(await result);
+        var success = true;
+        for (let i = 0; i < runs; i++) {
+            if (!use_worker) {
+                success = success && await webGpuUnitTests.runTest(testId);
+            } else {
+                const worker = new Worker(
+                    './webgpu-unittest-worker.js',
+                    { type: 'module' }
+                );
+                const result = new Promise(
+                    resolve => {
+                        worker.addEventListener('message',
+                                                e => {
+                                                    resolve(e.data.result);
+                                                },
+                                                { once: true })
+                    }
+                );
+                worker.postMessage({ testId });
+                success = success && await result;
+            }
         }
+        domAutomationController.send(success ? 'SUCCESS' : 'FAILED');
     }
 
     await main();

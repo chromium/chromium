@@ -37,7 +37,7 @@ export const webGpuUnitTests = function() {
   const renderTestBase = async function(useAsync) {
     const [adapter, device] = await init();
     if (!adapter || !device) {
-      return 'FAILED';
+      return false;
     }
 
     // Create the WebGPU primitives and execute the rendering and buffer copy.
@@ -111,14 +111,14 @@ export const webGpuUnitTests = function() {
     await buffer.mapAsync(GPUMapMode.READ);
     const actual = new Uint8Array(buffer.getMappedRange());
     if (expected.length !== actual.length) {
-      return 'FAILED';
+      return false;
     }
     for (var i = 0; i !== expected.length; i++) {
       if (expected[i] != actual[i]) {
-        return 'FAILED';
+        return false;
       }
     }
-    return 'SUCCESS';
+    return true;
   };
 
   // Compute test base which allows for specifying whether to use async pipeline
@@ -127,7 +127,7 @@ export const webGpuUnitTests = function() {
   const computeTestBase = async function(useAsync) {
     const [adapter, device] = await init();
     if (!adapter || !device) {
-      return 'FAILED';
+      return false;
     }
 
     // Test constants.
@@ -181,14 +181,14 @@ export const webGpuUnitTests = function() {
     await result.mapAsync(GPUMapMode.READ);
     const actual = new Uint32Array(result.getMappedRange());
     if (expected.length !== actual.length) {
-      return 'FAILED';
+      return false;
     }
     for (var i = 0; i !== expected.length; i++) {
       if (expected[i] != actual[i]) {
-        return 'FAILED';
+        return false;
       }
     }
-    return 'SUCCESS';
+    return true;
   };
 
   return {
@@ -226,7 +226,7 @@ export const webGpuUnitTests = function() {
           break;
         default:
           // Just fail for any undefined tests.
-          return 'FAILED';
+          return false;
       }
     },
   };
