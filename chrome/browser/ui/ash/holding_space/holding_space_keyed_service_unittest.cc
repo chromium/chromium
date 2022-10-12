@@ -3254,6 +3254,38 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
   EXPECT_EQ(expected, GetSuggestionsInModel(model));
 }
 
+TEST_P(HoldingSpaceSuggestionsDelegateTest, DownloadsFolderNotSuggested) {
+  auto downloads_mount = mount_point()->CreateAndMountDownloads(profile());
+  auto downloads_path =
+      file_manager::util::GetDownloadsFolderForProfile(GetProfile());
+  auto other_folder_path = downloads_path.Append("contained_folder");
+  ASSERT_TRUE(base::CreateDirectory(other_folder_path));
+  const base::FilePath file_path = mount_point()->CreateArbitraryFile();
+
+  GetFileSuggestKeyedService()->SetSuggestionsForType(
+      app_list::FileSuggestionType::kLocalFile,
+      /*suggestions=*/std::vector<app_list::FileSuggestData>{
+          {app_list::FileSuggestionType::kLocalFile, downloads_path,
+           /*new_prediction_reason=*/absl::nullopt,
+           /*new_score=*/absl::nullopt},
+          {app_list::FileSuggestionType::kLocalFile, other_folder_path,
+           /*new_prediction_reason=*/absl::nullopt,
+           /*new_score=*/absl::nullopt},
+          {app_list::FileSuggestionType::kLocalFile, file_path,
+           /*new_prediction_reason=*/absl::nullopt,
+           /*new_score=*/absl::nullopt}});
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>> expected;
+  if (features::IsHoldingSpaceSuggestionsEnabled()) {
+    expected = {{HoldingSpaceItem::Type::kLocalSuggestion, file_path},
+                {HoldingSpaceItem::Type::kLocalSuggestion, other_folder_path}};
+  }
+
+  EXPECT_EQ(GetSuggestionsInModel(HoldingSpaceController::Get()->model()),
+            expected);
+}
+
 TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
   const base::FilePath file_path_1 = mount_point()->CreateArbitraryFile();
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_suggestions_delegate.h"
 
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service_factory.h"
 
 namespace ash {
@@ -131,10 +132,13 @@ void HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched(
 void HoldingSpaceSuggestionsDelegate::UpdateSuggestionsInModel() {
   std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>>
       suggestion_items;
+  base::FilePath downloads_folder =
+      file_manager::util::GetDownloadsFolderForProfile(profile());
   for (const auto& [type, raw_suggestions] : suggestions_by_type_) {
     HoldingSpaceItem::Type item_type = GetItemTypeFromSuggestionType(type);
     for (const auto& suggestion : raw_suggestions) {
-      if (!model()->ContainsItem(HoldingSpaceItem::Type::kPinnedFile,
+      if (suggestion.file_path != downloads_folder &&
+          !model()->ContainsItem(HoldingSpaceItem::Type::kPinnedFile,
                                  suggestion.file_path)) {
         suggestion_items.emplace_back(item_type, suggestion.file_path);
       }
