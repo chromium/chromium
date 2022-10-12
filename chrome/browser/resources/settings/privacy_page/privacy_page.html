@@ -512,9 +512,12 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <div id="notificationRadioGroup" class="radio-group">
-            <div class="secondary">
-              $i18n{siteSettingsNotificationsDescription}
-            </div>
+            <template is="dom-if"
+                if="[[!safetyCheckNotificationPermissionsEnabled_]]">
+                <div class="secondary">
+                  $i18n{siteSettingsNotificationsDescription}
+                </div>
+            </template>
             <template is="dom-if"
                 if="[[safetyCheckNotificationPermissionsEnabled_]]">
               <review-notification-permissions>
@@ -523,7 +526,7 @@
             <h2>$i18n{siteSettingsDefaultBehavior}</h2>
             <div id="notificationSubHeading"
               class="secondary radio-sub-heading">
-              $i18n{siteSettingsDefaultBehaviorDescription}
+              [[notificationsDefaultBehaviorLabel_]]
             </div>
             <settings-radio-group
                 pref="{{prefs.generated.notification}}"

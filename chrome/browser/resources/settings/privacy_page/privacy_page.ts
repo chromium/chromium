@@ -240,6 +240,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
               'safetyCheckNotificationPermissionsEnabled');
         },
       },
+
+      notificationsDefaultBehaviorLabel_: {
+        type: String,
+        computed:
+            'computeNotificationsDefaultBehaviorLabel_(safetyCheckNotificationPermissionsEnabled_)',
+      },
     };
   }
 
@@ -436,6 +442,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     const enabled = this.getPref('privacy_sandbox.apis_enabled_v2').value;
     return enabled ? this.i18n('privacySandboxTrialsEnabled') :
                      this.i18n('privacySandboxTrialsDisabled');
+  }
+
+  private computeNotificationsDefaultBehaviorLabel_(): string {
+    return this.safetyCheckNotificationPermissionsEnabled_ ?
+        this.i18n('siteSettingsNotificationsDefaultBehaviorDescription') :
+        this.i18n('siteSettingsDefaultBehaviorDescription');
   }
 }
 
