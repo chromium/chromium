@@ -49,11 +49,13 @@ class Web(object):
             return_none_on_404=return_none_on_404).run(make_request)
 
     def request(self, method, url, data=None, headers=None):
-        return self.session.request(method.lower(),
-                                    url,
-                                    data=data,
-                                    headers=headers,
-                                    stream=True)
+        response = self.session.request(method.lower(),
+                                        url,
+                                        data=data,
+                                        headers=headers,
+                                        stream=True)
+        response.raise_for_status()
+        return response
 
     def request_and_read(self, *args, **kwargs):
         response = self.request(*args, **kwargs)
