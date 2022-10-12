@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Fuchsia ARM64",
+              "builder": "fuchsia-arm64-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -19,6 +19,7 @@
                 ],
                 "build_config": "Release",
                 "config": "chromium",
+                "target_arch": "arm",
                 "target_bits": 64,
                 "target_platform": "fuchsia"
               },
@@ -36,7 +37,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Fuchsia ARM64",
+          "builder": "fuchsia-arm64-rel",
           "project": "chromium"
         }
       ]

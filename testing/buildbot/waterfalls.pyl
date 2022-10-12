@@ -2429,7 +2429,7 @@
     'name': 'chromium.fuchsia',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'Fuchsia ARM64': {
+      'fuchsia-arm64-cast-receiver-rel': {
         'additional_compile_targets': [
           'all',
         ],
@@ -2443,7 +2443,21 @@
           'linux-focal',
         ],
       },
-      'Fuchsia x64': {
+      'fuchsia-arm64-rel': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
+          'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
+        },
+        'mixins': [
+          'arm64',
+          'docker',
+          'linux-focal',
+        ],
+      },
+      'fuchsia-x64-cast-receiver-rel': {
         'additional_compile_targets': [
           'all',
         ],
@@ -2465,22 +2479,32 @@
           'isolated_scripts': 'fuchsia_isolated_scripts',
         },
       },
-      # TODO(crbug.com/1294938): Remove this bot after the transition.
-      'fuchsia-arm64-cast': {
-        'additional_compile_targets': [
-          'cast_test_lists',
-        ],
-      },
-      # TODO(crbug.com/1294938): Remove this bot after the transition.
-      'fuchsia-x64-cast': {
-        'additional_compile_targets': [
-          'cast_test_lists',
-        ],
-      },
       'fuchsia-x64-dbg': {
         'additional_compile_targets': [
           'all',
         ],
+      },
+      'fuchsia-x64-rel' : {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'browser_config': 'web-engine-shell',
+        'os_type': 'fuchsia',
+        'mixins': [
+          'linux-bionic',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'kvm': '1',
+            },
+          ],
+        },
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
+          'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'fuchsia_isolated_scripts',
+        },
       },
     },
   },
@@ -2488,41 +2512,12 @@
     'name': 'chromium.fuchsia.fyi',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'fuchsia-arm64-cast-receiver-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
-          'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
-        },
-        'mixins': [
-          'arm64',
-          'docker',
-          'linux-focal',
-        ],
-      },
       'fuchsia-arm64-chrome-rel': {
         'additional_compile_targets': [
           'all',
         ],
         'test_suites': {
           'gtest_tests': 'fuchsia_chrome_large_gtests',
-        },
-        'mixins': [
-          'arm64',
-          'docker',
-          'linux-focal',
-        ],
-      },
-      # TODO(crbug.com/1294938): Move to 'chromium.fuchsia'.
-      'fuchsia-arm64-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
-          'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
         },
         'mixins': [
           'arm64',
@@ -2579,29 +2574,6 @@
           'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
         },
       },
-      # TODO(crbug.com/1294938): Move to 'chromium.fuchsia'.
-      'fuchsia-x64-cast-receiver-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'browser_config': 'web-engine-shell',
-        'os_type': 'fuchsia',
-        'mixins': [
-          'linux-bionic',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
-        },
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
-          'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'fuchsia_isolated_scripts',
-        },
-      },
       'fuchsia-x64-chrome-rel': {
         'additional_compile_targets': [
           'all',
@@ -2623,28 +2595,6 @@
           # not run on CI or another FYI bot. Ideally, they would all run there.
           'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_experimental_tests',
           'gtest_tests': 'fuchsia_chrome_large_gtests',
-        },
-      },
-      'fuchsia-x64-rel' : {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'browser_config': 'web-engine-shell',
-        'os_type': 'fuchsia',
-        'mixins': [
-          'linux-bionic',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
-        },
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
-          'gtest_tests': 'fuchsia_gtests',
-          'isolated_scripts': 'fuchsia_isolated_scripts',
         },
       },
     },

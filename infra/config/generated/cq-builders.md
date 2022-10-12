@@ -35,13 +35,11 @@ These builders must pass before a CL may land that affects files outside of
 
 * [chromium_presubmit](https://ci.chromium.org/p/chromium/builders/try/chromium_presubmit) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromium_presubmit"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""chromium_presubmit""))
 
+* [fuchsia-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia-arm64-rel""))
+
 * [fuchsia-binary-size](https://ci.chromium.org/p/chromium/builders/try/fuchsia-binary-size) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-binary-size"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia-binary-size""))
 
-* [fuchsia-x64-cast](https://ci.chromium.org/p/chromium/builders/try/fuchsia-x64-cast) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-x64-cast"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia-x64-cast""))
-
-* [fuchsia_arm64](https://ci.chromium.org/p/chromium/builders/try/fuchsia_arm64) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia_arm64"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia_arm64""))
-
-* [fuchsia_x64](https://ci.chromium.org/p/chromium/builders/try/fuchsia_x64) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia_x64"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia_x64""))
+* [fuchsia-x64-cast-receiver-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-x64-cast-receiver-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-x64-cast-receiver-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia-x64-cast-receiver-rel""))
 
 * [ios-simulator](https://ci.chromium.org/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""ios-simulator""))
 
@@ -277,7 +275,7 @@ builder.
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=+file:tools/clang/scripts/update.py)
   * [`//ui/gl/features.gni`](https://cs.chromium.org/search?q=+file:ui/gl/features.gni)
 
-* [fuchsia-arm64-cast](https://ci.chromium.org/p/chromium/builders/try/fuchsia-arm64-cast) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-arm64-cast"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia-arm64-cast""))
+* [fuchsia-arm64-cast-receiver-rel](https://ci.chromium.org/p/chromium/builders/try/fuchsia-arm64-cast-receiver-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-arm64-cast-receiver-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""fuchsia-arm64-cast-receiver-rel""))
 
   Path regular expressions:
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)

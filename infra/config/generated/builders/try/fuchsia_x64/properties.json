@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Fuchsia x64",
+              "builder": "fuchsia-x64-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -35,7 +35,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Fuchsia x64",
+          "builder": "fuchsia-x64-rel",
           "project": "chromium"
         }
       ]

@@ -5,8 +5,6 @@ ci/Cast Linux Debug
 ci/Deterministic Fuchsia (dbg)
 ci/Deterministic Linux
 ci/Deterministic Linux (dbg)
-ci/Fuchsia ARM64
-ci/Fuchsia x64
 ci/Linux ASan LSan Builder
 ci/Linux ASan LSan Tests (1)
 ci/Linux ASan Tests (sandboxed)
@@ -60,9 +58,11 @@ ci/chromeos-arm-generic-dbg
 ci/chromeos-arm-generic-rel
 ci/chromeos-arm64-generic-rel
 ci/chromeos-kevin-rel
-ci/fuchsia-arm64-cast
-ci/fuchsia-x64-cast
+ci/fuchsia-arm64-cast-receiver-rel
+ci/fuchsia-arm64-rel
+ci/fuchsia-x64-cast-receiver-rel
 ci/fuchsia-x64-dbg
+ci/fuchsia-x64-rel
 ci/ios-catalyst
 ci/ios-device
 ci/ios-simulator

@@ -6,7 +6,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "fuchsia-x64-cast",
+              "builder": "fuchsia-x64-cast-receiver-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -35,7 +35,7 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "fuchsia-x64-cast",
+          "builder": "fuchsia-x64-cast-receiver-rel",
           "project": "chromium"
         }
       ]

@@ -54,7 +54,7 @@
         "port_name": "win-win11",
         "specifiers": ["Win11", "Release"]
     },
-    "fuchsia_x64": {
+    "fuchsia-x64-rel": {
         "main": "tryserver.chromium.linux",
         "port_name": "fuchsia",
         "specifiers": ["Fuchsia", "Release"],

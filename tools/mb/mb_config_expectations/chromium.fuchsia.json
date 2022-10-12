@@ -8,7 +8,8 @@
       "use_goma": true
     }
   },
-  "Fuchsia ARM64": {
+  "fuchsia-arm64-cast-receiver-rel": {
+    "args_file": "//build/config/fuchsia/size_optimized_cast_receiver_args.gn",
     "gn_args": {
       "dcheck_always_on": false,
       "is_component_build": false,
@@ -19,28 +20,18 @@
       "use_goma": true
     }
   },
-  "Fuchsia x64": {
+  "fuchsia-arm64-rel": {
     "gn_args": {
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
-      "target_os": "fuchsia",
-      "use_goma": true
-    }
-  },
-  "fuchsia-arm64-cast": {
-    "args_file": "//build/config/fuchsia/size_optimized_cast_receiver_args.gn",
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 0,
       "target_cpu": "arm64",
       "target_os": "fuchsia",
+      "test_host_cpu": "arm64",
       "use_goma": true
     }
   },
-  "fuchsia-x64-cast": {
+  "fuchsia-x64-cast-receiver-rel": {
     "args_file": "//build/config/fuchsia/size_optimized_cast_receiver_args.gn",
     "gn_args": {
       "dcheck_always_on": false,
@@ -57,6 +48,15 @@
       "symbol_level": 0,
       "target_os": "fuchsia",
       "use_remoteexec": true
+    }
+  },
+  "fuchsia-x64-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "target_os": "fuchsia",
+      "use_goma": true
     }
   }
 }

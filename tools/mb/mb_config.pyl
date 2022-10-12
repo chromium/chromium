@@ -261,25 +261,19 @@
 
     'chromium.fuchsia': {
       'Deterministic Fuchsia (dbg)': 'debug_bot_fuchsia',
-      'Fuchsia ARM64': 'release_bot_fuchsia_arm64',
-      'Fuchsia x64': 'release_bot_fuchsia',
-      'fuchsia-arm64-cast': 'release_bot_fuchsia_arm64_cast_legacy',
-      'fuchsia-x64-cast': 'release_bot_fuchsia_cast_receiver',
+      'fuchsia-arm64-cast-receiver-rel': 'release_bot_fuchsia_arm64_cast_receiver',
+      'fuchsia-arm64-rel': 'release_bot_fuchsia_arm64',
+      'fuchsia-x64-cast-receiver-rel': 'release_bot_fuchsia_cast_receiver',
       'fuchsia-x64-dbg': 'debug_bot_fuchsia_compile_only_reclient',
+      'fuchsia-x64-rel': 'release_bot_fuchsia',
     },
 
     'chromium.fuchsia.fyi': {
-      'fuchsia-arm64-cast-receiver-rel': 'release_bot_fuchsia_arm64_cast_receiver',
       'fuchsia-arm64-chrome-rel': 'release_bot_fuchsia_arm64',
-       # TODO(crbug.com/1294938): Move to 'chromium.fuchsia'.
-      'fuchsia-arm64-rel': 'release_bot_fuchsia_arm64',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
       'fuchsia-fyi-x64-asan': 'asan_lsan_bot_fuchsia',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
-      # TODO(crbug.com/1294938): Move to 'chromium.fuchsia'.
-      'fuchsia-x64-cast-receiver-rel': 'release_bot_fuchsia_cast_receiver',
       'fuchsia-x64-chrome-rel': 'release_bot_fuchsia_cfv2_script_chrome',
-      'fuchsia-x64-rel': 'release_bot_fuchsia',
     },
 
     'chromium.fuzz': {
@@ -1134,7 +1128,7 @@
       'fuchsia-arm64-cast-receiver-rel': 'release_trybot_fuchsia_arm64_cast_receiver',
       'fuchsia-arm64-chrome-rel': 'release_trybot_fuchsia_arm64',
       'fuchsia-arm64-rel': 'release_trybot_fuchsia_arm64',
-      'fuchsia-binary-size': 'release_fuchsia_arm64',
+      'fuchsia-binary-size': 'release_fuchsia_arm64_binary_size',
       'fuchsia-compile-x64-dbg': 'debug_bot_fuchsia_compile_only',
       'fuchsia-deterministic-dbg': 'debug_bot_fuchsia',
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
@@ -3453,11 +3447,6 @@
       'release_bot', 'fuchsia', 'arm64', 'arm64_host',
     ],
 
-    # TODO(crbug.com/1294938): Remove when removing the legacy bot.
-    'release_bot_fuchsia_arm64_cast_legacy': [
-      'release_bot', 'fuchsia', 'arm64', 'cast_receiver_size_optimized', 'no_symbols',
-    ],
-
     'release_bot_fuchsia_arm64_cast_receiver': [
       'release_bot', 'fuchsia', 'arm64', 'arm64_host', 'cast_receiver_size_optimized',
     ],
@@ -3534,8 +3523,8 @@
       'release_bot_reclient', 'x86', 'minimal_symbols',
     ],
 
-    'release_fuchsia_arm64': [
-      'release', 'official_optimize_goma', 'fuchsia', 'arm64'
+    'release_fuchsia_arm64_binary_size': [
+      'release', 'official_optimize_goma', 'fuchsia', 'arm64', 'cast_receiver_size_optimized',
     ],
 
     'release_rust_android_arm': [

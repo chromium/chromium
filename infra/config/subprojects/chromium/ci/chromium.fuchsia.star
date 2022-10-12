@@ -58,7 +58,44 @@ ci.builder(
 )
 
 ci.builder(
-    name = "Fuchsia ARM64",
+    name = "fuchsia-arm64-cast-receiver-rel",
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "cast-receiver",
+            short_name = "arm64",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "gardener|ci|arm64",
+            short_name = "cast",
+        ),
+    ],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_arm64",
+                "fuchsia_arm64_host",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
+)
+
+ci.builder(
+    name = "fuchsia-arm64-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     console_view_entry = [
         consoles.console_view_entry(
@@ -86,6 +123,7 @@ ci.builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.ARM,
             target_bits = 64,
             target_platform = builder_config.target_platform.FUCHSIA,
         ),
@@ -94,88 +132,11 @@ ci.builder(
 )
 
 ci.builder(
-    name = "Fuchsia x64",
+    name = "fuchsia-x64-cast-receiver-rel",
     branch_selector = branches.FUCHSIA_LTS_MILESTONE,
     console_view_entry = [
         consoles.console_view_entry(
-            category = "release",
-            short_name = "x64",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "gardener|ci|x64",
-            short_name = "rel",
-        ),
-    ],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "fuchsia_x64",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.FUCHSIA,
-        ),
-        build_gs_bucket = "chromium-linux-archive",
-    ),
-)
-
-# TODO(crbug.com/1294938): Rename the category to "cast-receiver" when replacing
-# with the -cast-receiver bots. Same for the x64 bot.
-ci.builder(
-    name = "fuchsia-arm64-cast",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "cast",
-            short_name = "arm64",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "gardener|ci|arm64",
-            short_name = "cast",
-        ),
-    ],
-    # Set tree_closing to false to disable the default tree closer, which
-    # filters by step name, and instead enable tree closing for any step
-    # failure.
-    tree_closing = False,
-    notifies = ["cr-fuchsia", "close-on-any-step-failure"],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "fuchsia_arm64",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.FUCHSIA,
-        ),
-        build_gs_bucket = "chromium-linux-archive",
-    ),
-)
-
-ci.builder(
-    name = "fuchsia-x64-cast",
-    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "cast",
+            category = "cast-receiver",
             short_name = "x64",
         ),
         consoles.console_view_entry(
@@ -185,11 +146,6 @@ ci.builder(
             short_name = "cast",
         ),
     ],
-    # Set tree_closing to false to disable the default tree closer, which
-    # filters by step name, and instead enable tree closing for any step
-    # failure.
-    tree_closing = False,
-    notifies = ["cr-fuchsia", "close-on-any-step-failure"],
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -247,4 +203,39 @@ ci.builder(
     goma_backend = None,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
     reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+)
+
+ci.builder(
+    name = "fuchsia-x64-rel",
+    branch_selector = branches.FUCHSIA_LTS_MILESTONE,
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "release",
+            short_name = "x64",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "gardener|ci|x64",
+            short_name = "rel",
+        ),
+    ],
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "fuchsia_x64",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.FUCHSIA,
+        ),
+        build_gs_bucket = "chromium-linux-archive",
+    ),
 )

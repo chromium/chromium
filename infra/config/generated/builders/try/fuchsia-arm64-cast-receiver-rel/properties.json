@@ -10,8 +10,8 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
-              "builder_group": "chromium.fuchsia.fyi",
+              "build_gs_bucket": "chromium-linux-archive",
+              "builder_group": "chromium.fuchsia",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -29,11 +29,7 @@
                   "fuchsia_arm64_host"
                 ],
                 "config": "chromium"
-              },
-              "legacy_test_results_config": {
-                "config": "staging_server"
-              },
-              "run_tests_serially": true
+              }
             }
           }
         ]

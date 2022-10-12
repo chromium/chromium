@@ -10,8 +10,8 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
-              "builder_group": "chromium.fuchsia.fyi",
+              "build_gs_bucket": "chromium-linux-archive",
+              "builder_group": "chromium.fuchsia",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -27,11 +27,7 @@
                   "fuchsia_x64"
                 ],
                 "config": "chromium"
-              },
-              "legacy_test_results_config": {
-                "config": "staging_server"
-              },
-              "run_tests_serially": true
+              }
             }
           }
         ]
@@ -47,12 +43,17 @@
         {
           "builder": "fuchsia-x64-rel",
           "group": "tryserver.chromium.fuchsia"
+        },
+        {
+          "builder": "fuchsia_x64",
+          "group": "tryserver.chromium.fuchsia"
         }
       ]
     }
   },
   "$build/goma": {
     "enable_ats": true,
+    "jobs": 500,
     "rpc_extra_params": "?prod",
     "server_host": "goma.chromium.org",
     "use_luci_auth": true
@@ -64,9 +65,9 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fuchsia.fyi",
+  "builder_group": "chromium.fuchsia",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "fuchsia"
+    "chromium"
   ]
 }

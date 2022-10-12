@@ -207,15 +207,6 @@
       'Win10 Tests x64 (dbg)',
     ],
     'modifications': {
-      'Fuchsia x64': {
-        'args': [
-          '--platform=fuchsia',
-          '--jobs=1',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-      },
       'Linux Tests': {
         "args": [
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
@@ -533,15 +524,6 @@
       'devtools_frontend_linux_blink_light_rel_fastbuild',
     ],
     'modifications': {
-      'Fuchsia x64': {
-        'args': [
-          '--platform=fuchsia',
-          '--jobs=1',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-      },
       'Linux Tests': {
         "args": [
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
@@ -2665,7 +2647,6 @@
     },
     'remove_from': [
       # TODO(crbug.com/1372213): Remove these once tests are stable.
-      'Fuchsia x64',
       'fuchsia-x64-cast-receiver-rel',
       'fuchsia-x64-rel',
     ],
@@ -3075,7 +3056,6 @@
     },
     'remove_from': [
       # TODO(https://crbug.com/1302427): Remove once tests pass.
-      'Fuchsia x64',
       'fuchsia-x64-cast-receiver-rel',
       'fuchsia-x64-rel',
     ],
@@ -3161,7 +3141,6 @@
     },
     'remove_from': [
       # TODO(https://crbug.com/1302427): Remove once tests pass.
-      'Fuchsia x64',
       'fuchsia-x64-cast-receiver-rel',
       'fuchsia-x64-rel',
     ],

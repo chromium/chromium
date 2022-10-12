@@ -310,7 +310,7 @@ crbug.com/1066979 [ win ] Pixel_Canvas2DRedBoxHdr10 [ Failure ]
 # Failure on win10 capturing a VideoFrame from unaccelerated OffscreenCanvas clears the source canvas
 crbug.com/1300550 [ win ] Pixel_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
-# Flakes on gpu-fyi-try-chromeos-kevin and Fuchsia x64, produces notably different image.
+# Flakes on gpu-fyi-try-chromeos-kevin and fuchsia-x64, produces notably different image.
 crbug.com/1086687 [ chromeos chromeos-board-kevin ] Pixel_PrecisionRoundedCorner [ Failure ]
 
 # Flakes on gpu-fyi-try-chromeos-amd64-generic, times out.

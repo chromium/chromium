@@ -642,7 +642,7 @@ TEST_P(MAYBE_BidirectionalStreamTest, ReadFailsBeforeRequestStarted) {
   bidirectional_stream_destroy(test.stream);
 }
 
-// TODO(https://crbug.com/880474): This test is flaky on fuchsia_x64 builder.
+// TODO(https://crbug.com/880474): This test is flaky on fuchsia-x64 builder.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_StreamFailBeforeReadIsExecutedOnNetworkThread \
   DISABLED_StreamFailBeforeReadIsExecutedOnNetworkThread
