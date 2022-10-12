@@ -26,10 +26,10 @@ import '../settings_shared.css.js';
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 // </if>
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {getImage} from 'chrome://resources/js/icon.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -56,8 +56,8 @@ export interface SettingsPeoplePageElement {
 }
 
 const SettingsPeoplePageElementBase =
-    RouteObserverMixin(WebUiListenerMixin(BaseMixin(PolymerElement))) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
+    RouteObserverMixin(WebUIListenerMixin(BaseMixin(PolymerElement))) as {
+      new (): PolymerElement & WebUIListenerMixinInterface &
           RouteObserverMixinInterface,
     };
 

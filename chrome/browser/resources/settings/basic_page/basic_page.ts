@@ -34,7 +34,7 @@ import '../languages_page/languages.js';
 // </if>
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
@@ -60,9 +60,9 @@ type Constructor<T> = new (...args: any[]) => T;
 
 const SettingsBasicPageElementBase =
     PrefsMixin(MainPageMixin(
-        RouteObserverMixin(WebUiListenerMixin(PolymerElement)) as unknown as
+        RouteObserverMixin(WebUIListenerMixin(PolymerElement)) as unknown as
         Constructor<PolymerElement>)) as unknown as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
+      new (): PolymerElement & WebUIListenerMixinInterface &
           PrefsMixinInterface & RouteObserverMixinInterface &
           MainPageMixinInterface,
     };

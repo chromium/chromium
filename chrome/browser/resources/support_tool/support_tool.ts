@@ -13,7 +13,7 @@ import './data_export_done.js';
 import './support_tool_shared.css.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy, BrowserProxyImpl, PIIDataItem, StartDataCollectionResult} from './browser_proxy.js';
@@ -51,7 +51,7 @@ export interface SupportToolElement {
   };
 }
 
-const SupportToolElementBase = WebUiListenerMixin(PolymerElement);
+const SupportToolElementBase = WebUIListenerMixin(PolymerElement);
 
 export class SupportToolElement extends SupportToolElementBase {
   static get is() {

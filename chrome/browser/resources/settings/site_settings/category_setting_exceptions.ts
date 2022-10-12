@@ -9,7 +9,7 @@
  */
 import './site_list.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -20,7 +20,7 @@ import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {ContentSettingProvider} from './site_settings_prefs_browser_proxy.js';
 
 const CategorySettingExceptionsElementBase =
-    SiteSettingsMixin(WebUiListenerMixin(PolymerElement));
+    SiteSettingsMixin(WebUIListenerMixin(PolymerElement));
 
 export class CategorySettingExceptionsElement extends
     CategorySettingExceptionsElementBase {

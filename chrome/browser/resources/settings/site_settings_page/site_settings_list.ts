@@ -8,10 +8,10 @@ import '../icons.html.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {DomRepeatEvent, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -49,7 +49,7 @@ export function defaultSettingLabel(
 
 
 const SettingsSiteSettingsListElementBase =
-    PrefsMixin(BaseMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
+    PrefsMixin(BaseMixin(WebUIListenerMixin(I18nMixin(PolymerElement))));
 
 class SettingsSiteSettingsListElement extends
     SettingsSiteSettingsListElementBase {

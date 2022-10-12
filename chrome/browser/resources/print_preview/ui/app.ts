@@ -9,11 +9,11 @@ import '../data/document_info.js';
 import './sidebar.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {isMac, isWindows} from 'chrome://resources/js/cr.m.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Destination, PrinterType} from '../data/destination.js';
@@ -43,7 +43,7 @@ export interface PrintPreviewAppElement {
 }
 
 const PrintPreviewAppElementBase =
-    WebUiListenerMixin(SettingsMixin(PolymerElement));
+    WebUIListenerMixin(SettingsMixin(PolymerElement));
 
 export class PrintPreviewAppElement extends PrintPreviewAppElementBase {
   static get is() {

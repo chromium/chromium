@@ -19,8 +19,8 @@ import '../prefs/prefs.js';
 import '../settings_shared.css.js';
 
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
-import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';
+import {WebUIListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -39,7 +39,7 @@ export interface SettingsSyncAccountControlElement {
 }
 
 const SettingsSyncAccountControlElementBase =
-    WebUiListenerMixin(PrefsMixin(PolymerElement));
+    WebUIListenerMixin(PrefsMixin(PolymerElement));
 
 export class SettingsSyncAccountControlElement extends
     SettingsSyncAccountControlElementBase {

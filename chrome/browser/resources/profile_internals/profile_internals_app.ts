@@ -6,13 +6,13 @@ import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './strings.m.js';
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './profile_internals_app.html.js';
 import {ProfileInternalsBrowserProxy, ProfileInternalsBrowserProxyImpl, ProfileState, ProfileStateElement} from './profile_internals_browser_proxy.js';
 
-const ProfileInternalsAppElementBase = WebUiListenerMixin(PolymerElement);
+const ProfileInternalsAppElementBase = WebUIListenerMixin(PolymerElement);
 
 export class ProfileInternalsAppElement extends ProfileInternalsAppElementBase {
   static get is() {

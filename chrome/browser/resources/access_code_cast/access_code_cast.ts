@@ -12,11 +12,11 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {isWindows} from 'chrome://resources/js/cr.m.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './access_code_cast.html.js';
@@ -43,7 +43,8 @@ export interface AccessCodeCastElement {
   };
 }
 
-const AccessCodeCastElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
+const AccessCodeCastElementBase =
+    WebUIListenerMixin(I18nMixin(PolymerElement));
 
 const ECMASCRIPT_EPOCH_START_YEAR = 1970;
 const SECONDS_PER_DAY = 86400;

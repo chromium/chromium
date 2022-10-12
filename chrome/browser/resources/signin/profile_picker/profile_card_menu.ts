@@ -19,7 +19,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
 
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="chromeos_lacros">
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -64,7 +64,7 @@ export interface ProfileCardMenuElement {
 }
 
 const ProfileCardMenuElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    WebUIListenerMixin(I18nMixin(PolymerElement));
 
 export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
   static get is() {

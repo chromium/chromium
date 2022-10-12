@@ -13,16 +13,16 @@ import './certificate_provisioning_entry.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from '../../cr_elements/web_ui_listener_mixin.js';
 import {focusWithoutInk} from '../../js/focus_without_ink.js';
+import {I18nMixin} from '../../cr_elements/i18n_mixin.js';
+import {WebUIListenerMixin} from '../../cr_elements/web_ui_listener_mixin.js';
 
 import {CertificateProvisioningViewDetailsActionEvent} from './certificate_manager_types.js';
 import {CertificateProvisioningBrowserProxyImpl, CertificateProvisioningProcess} from './certificate_provisioning_browser_proxy.js';
 import {getTemplate} from './certificate_provisioning_list.html.js';
 
 const CertificateProvisioningListElementBase =
-    WebUiListenerMixin(I18nMixin(PolymerElement));
+    WebUIListenerMixin(I18nMixin(PolymerElement));
 
 export class CertificateProvisioningListElement extends
     CertificateProvisioningListElementBase {

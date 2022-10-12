@@ -20,8 +20,8 @@ import './omnibox_extension_entry.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -50,8 +50,8 @@ export interface SettingsSearchEnginesPageElement {
 }
 
 const SettingsSearchEnginesPageElementBase =
-    GlobalScrollTargetMixin(WebUiListenerMixin(PolymerElement)) as
-    {new (): PolymerElement & WebUiListenerMixinInterface};
+    GlobalScrollTargetMixin(WebUIListenerMixin(PolymerElement)) as
+    {new (): PolymerElement & WebUIListenerMixinInterface};
 
 export class SettingsSearchEnginesPageElement extends
     SettingsSearchEnginesPageElementBase {

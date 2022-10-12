@@ -8,8 +8,8 @@ import './print_preview_vars.css.js';
 import '../strings.m.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.js';
+import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DarkModeMixin} from '../dark_mode_mixin.js';
@@ -50,7 +50,7 @@ export interface PrintPreviewPreviewAreaElement {
 }
 
 const PrintPreviewPreviewAreaElementBase =
-    WebUiListenerMixin(I18nMixin(SettingsMixin(DarkModeMixin(PolymerElement))));
+    WebUIListenerMixin(I18nMixin(SettingsMixin(DarkModeMixin(PolymerElement))));
 
 export class PrintPreviewPreviewAreaElement extends
     PrintPreviewPreviewAreaElementBase {

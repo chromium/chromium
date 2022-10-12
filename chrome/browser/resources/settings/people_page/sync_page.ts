@@ -26,9 +26,9 @@ import '//resources/cr_elements/cr_toast/cr_toast.js';
 
 import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -76,8 +76,8 @@ export interface SettingsSyncPageElement {
  */
 
 const SettingsSyncPageElementBase =
-    RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement))) as {
-      new (): PolymerElement & WebUiListenerMixinInterface &
+    RouteObserverMixin(WebUIListenerMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & WebUIListenerMixinInterface &
           I18nMixinInterface & RouteObserverMixinInterface,
     };
 

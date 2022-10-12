@@ -37,7 +37,7 @@ import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -113,10 +113,10 @@ export interface PasswordsSectionElement {
 
 const PasswordsSectionElementBase =
     UserUtilMixin(MergePasswordsStoreCopiesMixin(PrefsMixin(
-        GlobalScrollTargetMixin(RouteObserverMixin(WebUiListenerMixin(
+        GlobalScrollTargetMixin(RouteObserverMixin(WebUIListenerMixin(
             I18nMixin(PasswordCheckMixin(PolymerElement)))))))) as {
       new (): PolymerElement & PasswordCheckMixinInterface &
-          I18nMixinInterface & WebUiListenerMixinInterface &
+          I18nMixinInterface & WebUIListenerMixinInterface &
           RouteObserverMixinInterface & GlobalScrollTargetMixinInterface &
           PrefsMixinInterface & MergePasswordsStoreCopiesMixinInterface &
           UserUtilMixinInterface,

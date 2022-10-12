@@ -13,7 +13,7 @@ import './privacy_guide_fragment_shared.css.js';
 import './privacy_guide_fragment_shared.css.js';
 import '../../controls/settings_toggle_button.js';
 
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../../base_mixin.js';
@@ -34,9 +34,9 @@ export interface PrivacyGuideHistorySyncFragmentElement {
 }
 
 const PrivacyGuideHistorySyncFragmentElementBase =
-    RouteObserverMixin(WebUiListenerMixin(BaseMixin(PolymerElement))) as {
+    RouteObserverMixin(WebUIListenerMixin(BaseMixin(PolymerElement))) as {
       new (): PolymerElement & RouteObserverMixinInterface &
-          WebUiListenerMixinInterface,
+          WebUIListenerMixinInterface,
     };
 
 export class PrivacyGuideHistorySyncFragmentElement extends
