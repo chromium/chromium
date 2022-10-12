@@ -918,6 +918,8 @@ crbug.com/1328444 [ chromeos chromeos-board-kevin ] conformance2/textures/misc/t
 
 crbug.com/1337803 [ chromeos chromeos-board-kevin ] conformance2/misc/expando-loss-2.html [ Failure ]
 
+crbug.com/1373277 [ chromeos chromeos-board-kevin ] conformance2/textures/video/tex-3d-srgb8-rgb-unsigned_byte.html [ Failure ]
+
 # Must investigate ChromeOS failures with passthrough command decoder.
 crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
