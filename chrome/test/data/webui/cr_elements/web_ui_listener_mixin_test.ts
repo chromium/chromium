@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-const TestElementBase = WebUIListenerMixin(PolymerElement);
+const TestElementBase = WebUiListenerMixin(PolymerElement);
 class TestElement extends TestElementBase {}
 customElements.define('test-element', TestElement);
 
-suite('WebUIListenerMixinTest', function() {
+suite('WebUiListenerMixinTest', function() {
   let testElement: TestElement;
 
   setup(function() {

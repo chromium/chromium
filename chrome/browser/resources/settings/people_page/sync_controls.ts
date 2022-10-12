@@ -12,8 +12,8 @@ import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared.css.js';
 
+import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert_ts.js';
-import {WebUIListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // <if expr="is_chromeos">
@@ -39,7 +39,7 @@ enum RadioButtonNames {
  * 'settings-sync-controls' contains all sync data type controls.
  */
 
-const SettingsSyncControlsElementBase = WebUIListenerMixin(PolymerElement);
+const SettingsSyncControlsElementBase = WebUiListenerMixin(PolymerElement);
 
 export class SettingsSyncControlsElement extends
     SettingsSyncControlsElementBase {

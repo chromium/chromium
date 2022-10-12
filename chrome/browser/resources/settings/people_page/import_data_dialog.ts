@@ -20,7 +20,7 @@ import '../i18n_setup.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
@@ -41,7 +41,7 @@ export interface SettingsImportDataDialogElement {
 }
 
 const SettingsImportDataDialogElementBase =
-    WebUIListenerMixin(I18nMixin(PrefsMixin(PolymerElement)));
+    WebUiListenerMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsImportDataDialogElement extends
     SettingsImportDataDialogElementBase {

@@ -21,7 +21,7 @@ import '../../settings_shared.css.js';
 import '../../settings_vars.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
@@ -30,7 +30,7 @@ import {getTemplate} from './search_engine.html.js';
 import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 
 const SettingsSearchEngineElementBase =
-    I18nMixin(WebUIListenerMixin(PolymerElement));
+    I18nMixin(WebUiListenerMixin(PolymerElement));
 
 class SettingsSearchEngineElement extends SettingsSearchEngineElementBase {
   static get is() {

@@ -15,7 +15,7 @@ import './startup_urls_page.js';
 import '../i18n_setup.js';
 import '../settings_shared.css.js';
 
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NtpExtension, OnStartupBrowserProxyImpl} from './on_startup_browser_proxy.js';
@@ -30,7 +30,7 @@ enum PrefValues {
   CONTINUE_AND_OPEN_SPECIFIC = 6,
 }
 
-const SettingsOnStartupPageElementBase = WebUIListenerMixin(PolymerElement);
+const SettingsOnStartupPageElementBase = WebUiListenerMixin(PolymerElement);
 
 export class SettingsOnStartupPageElement extends
     SettingsOnStartupPageElementBase {

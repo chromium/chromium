@@ -16,7 +16,7 @@ import './chooser_exception_list_entry.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -32,7 +32,7 @@ export interface ChooserExceptionListElement {
 }
 
 const ChooserExceptionListElementBase = ListPropertyUpdateMixin(
-    SiteSettingsMixin(WebUIListenerMixin(I18nMixin(PolymerElement))));
+    SiteSettingsMixin(WebUiListenerMixin(I18nMixin(PolymerElement))));
 
 export class ChooserExceptionListElement extends
     ChooserExceptionListElementBase {

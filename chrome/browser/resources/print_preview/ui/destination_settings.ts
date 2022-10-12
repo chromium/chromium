@@ -27,7 +27,7 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {createRecentDestinationKey, Destination, isPdfPrinter, makeRecentDestination, PrinterType, RecentDestination} from '../data/destination.js';
@@ -89,7 +89,7 @@ export interface PrintPreviewDestinationSettingsElement {
 }
 
 const PrintPreviewDestinationSettingsElementBase =
-    I18nMixin(WebUIListenerMixin(SettingsMixin(PolymerElement)));
+    I18nMixin(WebUiListenerMixin(SettingsMixin(PolymerElement)));
 
 export class PrintPreviewDestinationSettingsElement extends
     PrintPreviewDestinationSettingsElementBase {

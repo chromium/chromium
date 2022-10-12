@@ -16,7 +16,7 @@ import '../settings_shared.css.js';
 import '../site_favicon.js';
 
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -33,7 +33,7 @@ export interface ZoomLevelsElement {
 }
 
 const ZoomLevelsElementBase = ListPropertyUpdateMixin(
-    SiteSettingsMixin(WebUIListenerMixin(PolymerElement)));
+    SiteSettingsMixin(WebUiListenerMixin(PolymerElement)));
 
 export class ZoomLevelsElement extends ZoomLevelsElementBase {
   static get is() {

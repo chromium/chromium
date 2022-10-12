@@ -17,7 +17,7 @@ import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../settings_shared.css.js';
 
 import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import {WebUIListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -33,7 +33,7 @@ export interface SettingsSignoutDialogElement {
   };
 }
 
-const SettingsSignoutDialogElementBase = WebUIListenerMixin(PolymerElement);
+const SettingsSignoutDialogElementBase = WebUiListenerMixin(PolymerElement);
 
 export class SettingsSignoutDialogElement extends
     SettingsSignoutDialogElementBase {

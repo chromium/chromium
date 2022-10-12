@@ -19,7 +19,7 @@ import './timezone_selector.js';
 import './timezone_subpage.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -40,10 +40,10 @@ const SettingsDateTimePageElementBase =
           PrefsBehavior,
           RouteObserverBehavior,
         ],
-        I18nMixin(WebUIListenerMixin(PolymerElement))) as {
+        I18nMixin(WebUiListenerMixin(PolymerElement))) as {
       new (): PolymerElement & DeepLinkingBehaviorInterface &
           PrefsBehaviorInterface & RouteObserverBehaviorInterface &
-          I18nMixinInterface & WebUIListenerMixinInterface,
+          I18nMixinInterface & WebUiListenerMixinInterface,
     };
 
 class SettingsDateTimePageElement extends SettingsDateTimePageElementBase {

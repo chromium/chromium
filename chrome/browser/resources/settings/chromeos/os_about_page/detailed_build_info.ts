@@ -19,7 +19,7 @@ import './edit_hostname_dialog.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_mixin.js';
-import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -50,9 +50,9 @@ const SettingsDetailedBuildInfoBase =
           PrefsBehavior,
           RouteObserverBehavior,
         ],
-        I18nMixin(WebUIListenerMixin(PolymerElement))) as {
+        I18nMixin(WebUiListenerMixin(PolymerElement))) as {
       new (): PolymerElement & DeepLinkingBehaviorInterface &
-          WebUIListenerMixinInterface & I18nMixinInterface &
+          WebUiListenerMixinInterface & I18nMixinInterface &
           PrefsBehaviorInterface & RouteObserverBehaviorInterface,
     };
 

@@ -13,7 +13,7 @@ import './privacy_guide_completion_link_row.js';
 import './privacy_guide_fragment_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ClearBrowsingDataBrowserProxyImpl, UpdateSyncStateEvent} from '../../clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js';
@@ -25,7 +25,7 @@ import {Router} from '../../router.js';
 import {getTemplate} from './privacy_guide_completion_fragment.html.js';
 
 const PrivacyGuideCompletionFragmentElementBase =
-    WebUIListenerMixin(I18nMixin(PolymerElement));
+    WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export class PrivacyGuideCompletionFragmentElement extends
     PrivacyGuideCompletionFragmentElementBase {
