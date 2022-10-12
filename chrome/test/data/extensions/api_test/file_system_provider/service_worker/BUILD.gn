@@ -27,6 +27,8 @@ js_library("service_worker") {
     "get_all/sw.js",
     "get_all/test.js",
     "helpers.js",
+    "move_entry/sw.js",
+    "move_entry/test.js",
     "provider.js",
     "read_directory/sw.js",
     "read_directory/test.js",

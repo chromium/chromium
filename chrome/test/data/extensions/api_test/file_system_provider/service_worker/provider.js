@@ -206,6 +206,7 @@ export class TestFileSystemProvider {
     this.setHandlerEnabled('onCreateFileRequested', true);
     this.setHandlerEnabled('onDeleteEntryRequested', true);
     this.setHandlerEnabled('onGetMetadataRequested', true);
+    this.setHandlerEnabled('onMoveEntryRequested', true);
     this.setHandlerEnabled('onOpenFileRequested', true);
     this.setHandlerEnabled('onReadDirectoryRequested', true);
     this.setHandlerEnabled('onReadFileRequested', true);
@@ -592,6 +593,58 @@ export class TestFileSystemProvider {
 
     onSuccess();
   };
+
+  /**
+   * FSP: implementation of moving an entry within the same file system.
+   *
+   * @param {!chrome.fileSystemProvider.MoveEntryRequestedOptions} options
+   *  Options.
+   * @param {function()} onSuccess Success callback
+   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
+   *  callback with an error code.
+   */
+  onMoveEntryRequested(options, onSuccess, onError) {
+    if (options.fileSystemId !== this.fileSystemId) {
+      onError(chrome.fileSystemProvider.ProviderError.SECURITY);
+      return;
+    }
+
+    if (options.sourcePath === '/') {
+      onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+      return;
+    }
+
+    const source = this.findEntryByPath(options.sourcePath);
+    if (!source) {
+      onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+      return;
+    }
+
+    if (this.findEntryByPath(options.targetPath)) {
+      onError(chrome.fileSystemProvider.ProviderError.EXISTS);
+      return;
+    }
+
+    // Move the metadata with changing the 'name' field.
+    let {dirPath, fileName} = splitPath(options.targetPath);
+    const dir = this.findEntryByPath(dirPath);
+    if (!dir) {
+      onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+      return;
+    }
+    if (!dir.metadata.isDirectory) {
+      onError(chrome.fileSystemProvider.ProviderError.NOT_A_DIRECTORY);
+      return;
+    }
+    source.metadata.name = fileName;
+    dir.children[fileName] = source;
+
+    // Remove the source file.
+    ({dirPath, fileName} = splitPath(options.sourcePath));
+    delete this.findEntryByPath(dirPath).children[fileName];
+
+    onSuccess();
+  }
 
   /**
    * Returns entries in the requested directory.
