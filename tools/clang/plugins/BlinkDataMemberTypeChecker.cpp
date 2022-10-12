@@ -44,7 +44,7 @@ BlinkDataMemberTypeChecker::BlinkDataMemberTypeChecker(
   diag_disallowed_blink_data_member_type_ = diagnostic_.getCustomDiagID(
       error_level,
       "[blink-style] '%0' is discouraged for data members in blink renderer. "
-      "Use '%1' instead. If the usage is necessary, add "
+      "Use %1 if possible. If the usage is necessary, add "
       "ALLOW_DISCOURAGED_TYPE(reason) to the data member or the type alias to "
       "suppress this message.");
 }
@@ -124,6 +124,10 @@ void BlinkDataMemberTypeChecker::CheckField(const FieldDecl* field) {
       return;
     }
 
+    // Skip the following conditions if we will break the loop anyway.
+    if (!type)
+      return;
+
     // Stop if the underlying type is not under blink namespace, instead of
     // finding the root underlying type. This is to allow the following case:
     // namespace cc {
@@ -138,6 +142,13 @@ void BlinkDataMemberTypeChecker::CheckField(const FieldDecl* field) {
     //   };
     // Finding the root underlying type would disallow the above usage.
     if (type_name.find("blink::") != 0)
+      return;
+
+    // Similarly, stop finding the root underlying type if the intermediate
+    // type is defined in a file that should not be checked, e.g. in a file
+    // under third_party/blink/public/common.
+    std::string filename = GetFilename(instance_, decl->getLocation());
+    if (!included_filenames_regex_.match(filename))
       return;
   }
 }

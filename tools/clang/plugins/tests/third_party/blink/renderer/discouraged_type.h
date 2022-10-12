@@ -7,13 +7,20 @@
 
 #include <vector>
 
+#include "third_party/blink/public/public.h"
+
 namespace cc {
+// Allowed, since type aliases are defined outside of blink:: namespace.
 using CcVector = std::vector<double>;
+typedef std::vector<double> CcVector2;
 }
 
 namespace blink {
 
 namespace nested {
+// Not allowed. Will report error when this type is used for a data member.
+using IntVector = std::vector<int>;
+// Allowed, since this is a type alias of an allowed type.
 using CcVector = cc::CcVector;
 }
 
@@ -24,8 +31,11 @@ struct Foo {
   std::vector<int> v1;
 
   using FloatVector = std::vector<float>;
+  typedef std::vector<float> FloatVector2;
   // Not allowed.
-  FloatVector v2;
+  nested::IntVector v2a;
+  FloatVector v2b;
+  FloatVector2 v2c;
 
   // Not allowed.
   std::vector<char> v_array[4][4];
@@ -33,12 +43,17 @@ struct Foo {
   // cc::CcVector is not under the blink:: namespace, the checker should
   // ignore it and allow the use. In real world, this will be OK as long as
   // audit_non_blink_usages.py allows cc::CcVector.
-  cc::CcVector v3;
+  cc::CcVector v3a;
+  cc::CcVector2 v3b;
 
   // This is a type alias that ultimately refers to cc::CcVector. Since the
   // underlying type is not under the blink:: namespace, the checker should
   // ignore it and allow the use.
-  nested::CcVector v4;
+  nested::CcVector v3c;
+
+  // This is a type alias defined in third_party/blink/public/public.h which
+  // should not be checked.
+  BlinkPublicType v4;
 
   std::vector<int> v5 __attribute__((annotate("other1")))
   __attribute__((annotate("other2"), annotate("allow_discouraged_type")));
