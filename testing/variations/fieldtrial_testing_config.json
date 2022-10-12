@@ -4560,6 +4560,25 @@
             ]
         }
     ],
+    "EnableShoppingListDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221005",
+                    "enable_features": [
+                        "ShoppingList"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExploreSitesDense": [
         {
             "platforms": [
@@ -9757,25 +9776,6 @@
                     "enable_features": [
                         "DesktopScreenshots",
                         "SharingDesktopScreenshotsEdit"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ShoppingList": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20221005",
-                    "enable_features": [
-                        "ShoppingList"
                     ]
                 }
             ]
