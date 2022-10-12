@@ -2,11 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file provides a builders for DictionaryValue and ListValue.  These
-// aren't specific to extensions and could move up to base/ if there's interest
-// from other sub-projects.
+// This file provides a builders for base::Value::Dict and base::Value::List.
+// These aren't specific to extensions and could move up to base/ if there's
+// interest from other sub-projects.
 //
 // The pattern is to write:
+//
+//  base::Value::T result(FooBuilder()
+//                   .Set(args)
+//                   .Set(args)
+//                   .BuildT());
+//
+// The BuildT() method invalidates its builder, and returns ownership of the
+// built value.
+//
+// The DEPRECATED pattern previously used was:
 //
 //  std::unique_ptr<BuiltType> result(FooBuilder()
 //                               .Set(args)
@@ -43,6 +53,13 @@ class DictionaryBuilder {
   ~DictionaryBuilder();
 
   // Can only be called once, after which it's invalid to use the builder.
+  base::Value::Dict BuildDict() {
+    base::Value::Dict result = std::move(*dict_).TakeDict();
+    dict_.reset();
+    return result;
+  }
+
+  // DEPRECATED version of BuildDict().
   std::unique_ptr<base::DictionaryValue> Build() { return std::move(dict_); }
 
   // Immediately serializes the current state to JSON. Can be called as many
@@ -51,7 +68,7 @@ class DictionaryBuilder {
 
   template <typename T>
   DictionaryBuilder& Set(base::StringPiece key, T in_value) {
-    dict_->SetKey(key, base::Value(in_value));
+    dict_->GetDict().Set(key, std::move(in_value));
     return *this;
   }
 
@@ -80,11 +97,18 @@ class ListBuilder {
   ~ListBuilder();
 
   // Can only be called once, after which it's invalid to use the builder.
+  base::Value::List BuildList() {
+    base::Value::List result = std::move(*list_).TakeList();
+    list_.reset();
+    return result;
+  }
+
+  // DEPRECATED version of BuildList().
   std::unique_ptr<base::ListValue> Build() { return std::move(list_); }
 
   template <typename T>
   ListBuilder& Append(T in_value) {
-    list_->Append(in_value);
+    list_->Append(std::move(in_value));
     return *this;
   }
 
