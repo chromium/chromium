@@ -1,0 +1,16 @@
+    <style include="cr-shared-style settings-shared iron-flex">
+    </style>
+    <div class="cr-row continuation two-line" focus-row-container actionable>
+      <site-favicon url="[[model.site]]"></site-favicon>
+      <div class="flex cr-row-gap">
+        <span class="url-directionality">[[model.site]]</span>
+        <div class="secondary">[[model.localData]]</div>
+      </div>
+      <cr-icon-button class="subpage-arrow" aria-label$="[[model.site]]"
+          focus-row-control focus-type="showDetails"></cr-icon-button>
+      <div class="separator"></div>
+      <cr-icon-button class="icon-delete-gray"
+          title$="[[i18n('siteSettingsCookieRemoveSite', model.site)]]"
+          on-click="onRemove_" focus-row-control focus-type="remove">
+      </cr-icon-button>
+    </div>

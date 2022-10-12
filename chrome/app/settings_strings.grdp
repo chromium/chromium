@@ -3335,6 +3335,33 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_GROUP_DELETE" desc="The clear storage button label, used to delete storage data for a group of sites.">
     Clear data
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_HEADER" desc="A header for the list of showing all cookies and site data.">
+    All cookies and site data
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_LINK" desc="Label for link showing all cookies and site data.">
+    See all cookies and site data
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE" desc="Label for the button to delete a single site cookie.">
+    Remove
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_ALL" desc="Label for the button to delete all cookies for a site.">
+    Remove All
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_ALL_SHOWN" desc="Label for the button to delete all visible cookies for a site.">
+    Remove All Shown
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_ALL_THIRD_PARTY" desc="Label for the subpage button to open a confirmation dialog to remove all cookies available in third-party contexts.">
+    Remove Third-Party Cookies
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_THIRD_PARTY_COOKIE_REMOVE_DIALOG_TITLE" desc="Title of the dialog that warns about deleting third-party cookie data.">
+    Clear third-party cookies
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_THIRD_PARTY_COOKIE_REMOVE_CONFIRMATION" desc="Text for the dialog that warns about deleting third-party cookie data.">
+    This will delete all cookies and site data available in third-party contexts. Do you want to continue?
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_THIRD_PARTY_COOKIES" desc="Label for the confirmation dialog button to delete all cookies and site data for third-party contexts.">
+    Clear third-party cookies
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_THIRD_PARTY_COOKIES_EXCEPTION_LABEL" desc="Label for site exceptions that affect third party cookies.">
     Including third-party cookies on this site
   </message>
@@ -3387,6 +3414,12 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_DISPLAYED_STORAGE_SIGN_OUT" desc="Text for the dialog that warns about being signed out when clearing storage used by displayed sites.">
     You'll be signed out of displayed sites, including in open tabs
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_DIALOG_TITLE" desc="Title of the dialog that warns about deleting all site data.">
+    Clear site data
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_SUBPAGE" desc="A label for cookie subpage, stating which site we're showing data for.">
+    <ph name="SITE">$1<ex>www.example.com</ex></ph> locally stored data
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_RESET_CONFIRMATION" desc="Text for the dialog that warns about resetting all permissions for a site.">
     Reset site permissions for <ph name="SITE">$1<ex>www.example.com</ex></ph>?
   </message>
@@ -3438,6 +3471,15 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_DELETE_APPS" desc="Text for the dialog that warns about installed apps losing offline data when clearing all storage data for the site group.">
     Offline data in installed apps will also be cleared
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ORIGIN_DELETE_CONFIRMATION" desc="Text for the dialog that warns about clearing all storage data for an origin.">
+    This will clear all data and cookies stored by <ph name="ORIGIN_NAME">$1<ex>www.example.com</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ORIGIN_DELETE_CONFIRMATION_INSTALLED" desc="Text for the dialog that warns about clearing all storage data for an origin that has one or more installed apps.">
+    This will clear all data and cookies stored by <ph name="ORIGIN_NAME">$1<ex>www.example.com</ex></ph> and its installed apps
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_MULTIPLE" desc="Text for the dialog that warns about deleting all site data.">
+    This will delete any data stored on your device for all the sites shown. Do you want to continue?
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_REMOVE_SITE_ORIGIN_DIALOG_TITLE" desc="Title of the confirmation dialog when a user selects to remove a specific origin">
     Clear site data and permissions for <ph name="SITE_NAME">$1<ex>www.example.com</ex></ph>?
   </message>
@@ -3474,11 +3516,17 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_SITE" desc="Label for the trashcan button to delete all cookies and site data for a specific site (ex: all the cookies set on google.com).">
     Remove <ph name="SITE">$1<ex>google.com</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES_CLEAR_ALL" desc="Text for the button that clears all site data.">
+    Clear all
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_RESET_ALL" desc="Text for the button that resets the site's permissions back to the defaults.">
     Reset
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_CLEAR_STORAGE" desc="Text for the button that clears the storage used by a site, excluding cookies.">
     Clear
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_SEARCH" desc="A placeholder label shown inside the Cookie Data filter textbox as a hint that the user can enter a substring to search for.">
+    Search cookies
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLER_IS_DEFAULT" desc="A label showing that a certain handler for a given protocol is the default.">
     Default

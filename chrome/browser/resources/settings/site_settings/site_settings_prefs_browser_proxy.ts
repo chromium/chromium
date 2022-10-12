@@ -470,20 +470,6 @@ export interface SiteSettingsPrefsBrowserProxy {
 
   /** Resets the notification permission for the origin. */
   resetNotificationPermissionForOrigin(origin: string): void;
-
-  /**
-   * Gets display string for FPS information of owner and member count.
-   * @param fpsNumMembers The number of members in the first party set.
-   * @param fpsOwner The eTLD+1 for the first party set owner.
-   */
-  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string):
-      Promise<string>;
-
-  /**
-   * Gets the plural string for a given number of cookies.
-   * @param numCookies The number of cookies.
-   */
-  getNumCookiesString(numCookies: number): Promise<string>;
 }
 
 export class SiteSettingsPrefsBrowserProxyImpl implements
@@ -670,14 +656,6 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     chrome.send('resetNotificationPermissionForOrigin', [
       origin,
     ]);
-  }
-
-  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {
-    return sendWithPromise('getFpsMembershipLabel', fpsNumMembers, fpsOwner);
-  }
-
-  getNumCookiesString(numCookies: number) {
-    return sendWithPromise('getNumCookiesString', numCookies);
   }
 
   static getInstance(): SiteSettingsPrefsBrowserProxy {

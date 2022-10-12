@@ -1,0 +1,44 @@
+    <style include="cr-shared-style settings-shared md-select iron-flex">
+      .cr-row {
+        padding-inline-start: 0;
+      }
+
+      [first] {
+        border-top: none;
+      }
+
+      cr-expand-button {
+        padding: 0 var(--cr-section-padding);
+      }
+
+      .separator {
+        margin-inline-start: 0;
+      }
+
+      .secondary,
+      .start {
+        max-width: 100%;
+        word-break: break-word;
+      }
+    </style>
+    <template is="dom-repeat" items="[[entries_]]">
+      <div class="cr-row" first$="[[!index]]">
+        <cr-expand-button class="flex" expanded="{{item.expanded_}}">
+          [[getEntryDescription_(item)]]
+        </cr-expand-button>
+        <div class="separator"></div>
+        <cr-icon-button class="icon-clear" data-id-path$="[[item.idPath]]"
+            on-click="onRemove_"></cr-icon-button>
+      </div>
+      <iron-collapse class="list-frame vertical-list"
+          opened="[[item.expanded_]]">
+        <template is="dom-repeat" items="[[getCookieNodes_(item)]]">
+          <div class="list-item two-line">
+            <div class="start">
+              [[item.label]]
+              <div class="secondary">[[item.content]]</div>
+            </div>
+          </div>
+        </template>
+      </iron-collapse>
+    </template>

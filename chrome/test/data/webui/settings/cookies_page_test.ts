@@ -25,6 +25,7 @@ suite('CrSettingsCookiesPageTest', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
+      consolidatedSiteStorageControlsEnabled: false,
       // <if expr="chromeos_lacros">
       isSecondaryUser: false,
       // </if>
@@ -281,6 +282,91 @@ suite('CrSettingsCookiesPageTest', function() {
         await testMetricsBrowserProxy.whenCalled('recordAction'));
     testMetricsBrowserProxy.resetResolver('recordAction');
     assertFalse(page.$.toast.open);
+  });
+});
+
+suite('CrSettingsCookiesPageTest_consolidatedControlsDisabled', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    page.set('prefs.generated.cookie_session_only', {
+      value: false,
+    });
+    page.set('prefs.privacy_sandbox.apis_enabled_v2.value', true);
+    page.set(
+        'prefs.generated.cookie_primary_setting.value',
+        CookiePrimarySetting.ALLOW_ALL);
+    document.body.appendChild(page);
+    flush();
+  });
+
+  teardown(function() {
+    page.remove();
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('AllSiteDataLink_consolidatedControlsDisabled', function() {
+    const siteDataLinkRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>('#site-data-trigger')!;
+    assertEquals(siteDataLinkRow.label, page.i18n('siteSettingsCookieLink'));
+
+    siteDataLinkRow.click();
+    assertEquals(
+        Router.getInstance().getCurrentRoute(), routes.SITE_SETTINGS_SITE_DATA);
+  });
+});
+
+suite('CrSettingsCookiesPageTest_consolidatedControlsEnabled', function() {
+  let page: SettingsCookiesPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      consolidatedSiteStorageControlsEnabled: true,
+    });
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML =
+        window.trustedTypes!.emptyHTML as unknown as string;
+    page = document.createElement('settings-cookies-page');
+    page.prefs = settingsPrefs.prefs!;
+    page.set('prefs.generated.cookie_session_only', {
+      value: false,
+    });
+    page.set('prefs.privacy_sandbox.apis_enabled_v2.value', true);
+    page.set(
+        'prefs.generated.cookie_primary_setting.value',
+        CookiePrimarySetting.ALLOW_ALL);
+    document.body.appendChild(page);
+    flush();
+  });
+
+  teardown(function() {
+    page.remove();
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('AllSiteDataLink_consolidatedControlsEnabled', function() {
+    const siteDataLinkRow =
+        page.shadowRoot!.querySelector<CrLinkRowElement>('#site-data-trigger')!;
+    assertEquals(siteDataLinkRow.label, page.i18n('cookiePageAllSitesLink'));
+
+    siteDataLinkRow.click();
+    assertEquals(
+        Router.getInstance().getCurrentRoute(), routes.SITE_SETTINGS_ALL);
   });
 });
 

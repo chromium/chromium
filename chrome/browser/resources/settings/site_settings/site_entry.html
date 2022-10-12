@@ -90,22 +90,31 @@
               focus-row-control focus-type="show-detail"></cr-icon-button>
         </div>
         <div class="row-aligned">
-          <template is="dom-if" if="[[isFpsMember_(siteGroup.fpsOwner)]]">
+          <template is="dom-if"
+              if="[[!enableConsolidatedSiteStorageControls_]]">
             <div class="separator"></div>
-            <cr-icon-button class="icon-more-vert"
-                id="fpsOverflowMenuButton"
-                title="$i18n{moreActions}"
-                on-click="showOverflowMenu_"
-                focus-row-control focus-type="more-actions">
-            </cr-icon-button>
+            <cr-icon-button class="icon-more-vert" id="overflowMenuButton"
+                title="$i18n{moreActions}" on-click="showOverflowMenu_"
+                focus-row-control focus-type="more-actions"></cr-icon-button>
           </template>
-          <template is="dom-if" if="[[!isFpsMember_(siteGroup.fpsOwner)]]">
-            <div class="separator"></div>
-            <cr-icon-button class="icon-delete-gray" id="removeSiteButton"
-                title$=
-                  "[[i18n('siteSettingsCookieRemoveSite', displayName_)]]"
-                on-click="onRemove_" focus-row-control focus-type="remove">
-            </cr-icon-button>
+          <template is="dom-if" if="[[enableConsolidatedSiteStorageControls_]]">
+            <template is="dom-if" if="[[isFpsMember_(siteGroup.fpsOwner)]]">
+              <div class="separator"></div>
+              <cr-icon-button class="icon-more-vert"
+                  id="fpsOverflowMenuButton"
+                  title="$i18n{moreActions}"
+                  on-click="showOverflowMenu_"
+                  focus-row-control focus-type="more-actions">
+              </cr-icon-button>
+            </template>
+            <template is="dom-if" if="[[!isFpsMember_(siteGroup.fpsOwner)]]">
+              <div class="separator"></div>
+              <cr-icon-button class="icon-delete-gray" id="removeSiteButton"
+                  title$=
+                    "[[i18n('siteSettingsCookieRemoveSite', displayName_)]]"
+                  on-click="onRemove_" focus-row-control focus-type="remove">
+              </cr-icon-button>
+            </template>
           </template>
         </div>
       </div>
@@ -163,15 +172,29 @@
                     </cr-icon-button>
                   </div>
                   <div class="row-aligned">
-                    <div class="separator"></div>
-                    <cr-icon-button class="icon-delete-gray"
-                        id="removeOriginButton"
-                        title$="[[getRemoveOriginButtonTitle_(item.origin)]]"
-                        data-origin$="[[item.origin]]" data-context="origin"
-                        data-partitioned$="[[item.isPartitioned]]"
-                        on-click="onRemove_" focus-row-control
-                        focus-type="remove">
-                    </cr-icon-button>
+                    <template is="dom-if"
+                        if="[[!enableConsolidatedSiteStorageControls_]]">
+                      <div class="separator"></div>
+                      <cr-icon-button class="icon-more-vert"
+                          id="originOverflowMenuButton"
+                          data-origin$="[[item.origin]]" data-context="origin"
+                          title="$i18n{moreActions}"
+                          on-click="showOverflowMenu_"
+                          focus-row-control focus-type="more-actions">
+                      </cr-icon-button>
+                    </template>
+                    <template is="dom-if"
+                        if="[[enableConsolidatedSiteStorageControls_]]">
+                      <div class="separator"></div>
+                      <cr-icon-button class="icon-delete-gray"
+                          id="removeOriginButton"
+                          title$="[[getRemoveOriginButtonTitle_(item.origin)]]"
+                          data-origin$="[[item.origin]]" data-context="origin"
+                          data-partitioned$="[[item.isPartitioned]]"
+                          on-click="onRemove_" focus-row-control
+                          focus-type="remove">
+                      </cr-icon-button>
+                    </template>
                   </div>
                 </div>
               </template>

@@ -704,6 +704,11 @@ const char kCommerceHintAndroidName[] = "Commerce Hint Android";
 const char kCommerceHintAndroidDescription[] =
     "Enables commerce hint detection on Android.";
 
+const char kConsolidatedSiteStorageControlsName[] =
+    "Consolidated Site Storage Controls";
+const char kConsolidatedSiteStorageControlsDescription[] =
+    "Enables the consolidated version of Site Storage controls in settings";
+
 const char kConsumerAutoUpdateToggleAllowedName[] =
     "Allow Consumer Auto Update Toggle";
 const char kConsumerAutoUpdateToggleAllowedDescription[] =

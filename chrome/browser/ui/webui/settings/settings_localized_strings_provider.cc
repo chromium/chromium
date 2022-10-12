@@ -1660,6 +1660,16 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "driveSuggestAvailable",
       base::FeatureList::IsEnabled(omnibox::kDocumentProvider));
+  html_source->AddBoolean(
+      "consolidatedSiteStorageControlsEnabled",
+      base::FeatureList::IsEnabled(
+          features::kConsolidatedSiteStorageControls) ||
+          // The third release of Privacy Sandbox settings depends on the
+          // simplified control structure. Ideally simplified controls will
+          // launch to 100% in advance of the Privacy Sandbox, but the Sandbox
+          // cannot launch without this simplification enabled.
+          base::FeatureList::IsEnabled(
+              privacy_sandbox::kPrivacySandboxSettings3));
 
   bool show_secure_dns = IsSecureDnsAvailable();
   bool link_secure_dns = ShouldLinkSecureDnsOsSettings();
@@ -2452,10 +2462,33 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
     {"siteSettingsSourceKillSwitch",
      IDS_SETTINGS_SITE_SETTINGS_SOURCE_KILL_SWITCH},
     {"siteSettingsReset", IDS_SETTINGS_SITE_SETTINGS_RESET_BUTTON},
+    {"siteSettingsCookieHeader", IDS_SETTINGS_SITE_SETTINGS_COOKIE_HEADER},
+    {"siteSettingsCookieLink", IDS_SETTINGS_SITE_SETTINGS_COOKIE_LINK},
+    {"siteSettingsCookieRemove", IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE},
+    {"siteSettingsCookieRemoveAll",
+     IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_ALL},
+    {"siteSettingsCookieRemoveAllShown",
+     IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_ALL_SHOWN},
+    {"siteSettingsCookieRemoveAllThirdParty",
+     IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_ALL_THIRD_PARTY},
+    {"siteSettingsCookieRemoveThirdPartyDialogTitle",
+     IDS_SETTINGS_SITE_SETTINGS_THIRD_PARTY_COOKIE_REMOVE_DIALOG_TITLE},
+    {"siteSettingsCookieRemoveThirdPartyConfirmation",
+     IDS_SETTINGS_SITE_SETTINGS_THIRD_PARTY_COOKIE_REMOVE_CONFIRMATION},
+    {"siteSettingsCookiesClearThirdParty",
+     IDS_SETTINGS_SITE_SETTINGS_CLEAR_THIRD_PARTY_COOKIES},
     {"siteSettingsCookiesThirdPartyExceptionLabel",
      IDS_SETTINGS_SITE_SETTINGS_THIRD_PARTY_COOKIES_EXCEPTION_LABEL},
+    {"siteSettingsCookieRemoveDialogTitle",
+     IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_DIALOG_TITLE},
+    {"siteSettingsCookieRemoveMultipleConfirmation",
+     IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_MULTIPLE},
     {"siteSettingsCookieRemoveSite",
      IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_SITE},
+    {"siteSettingsCookiesClearAll",
+     IDS_SETTINGS_SITE_SETTINGS_COOKIES_CLEAR_ALL},
+    {"siteSettingsCookieSearch", IDS_SETTINGS_SITE_SETTINGS_COOKIE_SEARCH},
+    {"siteSettingsCookieSubpage", IDS_SETTINGS_SITE_SETTINGS_COOKIE_SUBPAGE},
     {"siteSettingsDelete", IDS_SETTINGS_SITE_SETTINGS_DELETE},
     {"siteSettingsClearAllStorageDialogTitle",
      IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_DIALOG_TITLE},
@@ -2489,6 +2522,10 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
      IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_SHOW_RELATED_SITES_BUTTON},
     {"firstPartySetsSiteClearStorageButton",
      IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_SITE_CLEAR_STORAGE_BUTTON},
+    {"siteSettingsOriginDeleteConfirmation",
+     IDS_SETTINGS_SITE_SETTINGS_ORIGIN_DELETE_CONFIRMATION},
+    {"siteSettingsOriginDeleteConfirmationInstalled",
+     IDS_SETTINGS_SITE_SETTINGS_ORIGIN_DELETE_CONFIRMATION_INSTALLED},
     {"siteSettingsSiteGroupDeleteConfirmationInstalledPlural",
      IDS_SETTINGS_SITE_SETTINGS_SITE_GROUP_DELETE_CONFIRMATION_INSTALLED_PLURAL},
     {"siteSettingsSiteClearStorage",
@@ -2908,6 +2945,11 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "enableExperimentalWebPlatformFeatures",
       cmd.HasSwitch(::switches::kEnableExperimentalWebPlatformFeatures));
+
+  html_source->AddBoolean(
+      "enableRemovingAllThirdPartyCookies",
+      base::FeatureList::IsEnabled(
+          browsing_data::features::kEnableRemovingAllThirdPartyCookies));
 
   html_source->AddBoolean(
       "enableQuietNotificationPromptsSetting",

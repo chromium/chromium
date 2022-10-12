@@ -1,0 +1,77 @@
+    <style include="cr-shared-style settings-shared">
+      paper-spinner-lite {
+        height: var(--cr-icon-size);
+        opacity: 0;
+        transition-delay: 1s;
+        width: var(--cr-icon-size);
+      }
+
+      paper-spinner-lite[active] {
+        opacity: 1;
+      }
+
+      #removeShowingSites {
+        margin-inline-start: auto;
+      }
+    </style>
+    <div class="cr-row continuation">
+      <paper-spinner-lite active="[[isLoading_]]"></paper-spinner-lite>
+      <cr-button disabled$="[[isLoading_]]" id="removeShowingSites"
+          on-click="onRemoveShowingSitesTap_" hidden$="[[!sites.length]]">
+        [[computeRemoveLabel_(filter)]]
+      </cr-button>
+      <cr-button disabled$="[[isLoading_]]" id="removeThirdPartyCookies"
+          class="cr-button-gap"
+          on-click="onRemoveThirdPartyCookiesTap_"
+          hidden$="[[!showRemoveThirdPartyCookies_(sites.length, filter)]]">
+          $i18n{siteSettingsCookieRemoveAllThirdParty}
+      </cr-button>
+    </div>
+    <iron-list id="list" items="[[sites]]" preserve-focus
+        scroll-target="[[subpageScrollTarget]]" class="cr-separators">
+      <template>
+        <site-data-entry id$="siteItem_[[item.site]]" actionable
+            model="[[item]]" first$="[[!index]]" tabindex$="[[tabIndex]]"
+            iron-list-tab-index="[[tabIndex]]" last-focused="{{lastFocused_}}"
+            list-blurred="{{listBlurred_}}" on-click="onSiteClick_"
+            on-remove-site="onRemoveSite_" focus-row-index="[[index]]">
+        </site-data-entry>
+      </template>
+    </iron-list>
+
+    <!-- Confirm Delete dialog -->
+    <cr-dialog id="confirmDeleteDialog" close-text="$i18n{close}"
+        on-close="onConfirmDeleteDialogClosed_">
+      <div slot="title">
+        $i18n{siteSettingsCookieRemoveDialogTitle}
+      </div>
+      <div slot="body">$i18n{siteSettingsCookieRemoveMultipleConfirmation}</div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCloseDialog_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button class="action-button" on-click="onConfirmDelete_">
+          $i18n{siteSettingsCookiesClearAll}
+        </cr-button>
+      </div>
+    </cr-dialog>
+
+    <!-- Confirm Delete Third Party Cookies dialog -->
+    <cr-dialog id="confirmDeleteThirdPartyDialog" close-text="$i18n{close}"
+        on-close="onConfirmDeleteThirdPartyDialogClosed_">
+      <div slot="title">
+        $i18n{siteSettingsCookieRemoveThirdPartyDialogTitle}
+      </div>
+      <div slot="body">
+        $i18n{siteSettingsCookieRemoveThirdPartyConfirmation}
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCloseThirdPartyDialog_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button class="action-button" on-click="onConfirmThirdPartyDelete_">
+          $i18n{siteSettingsCookiesClearThirdParty}
+        </cr-button>
+      </div>
+    </cr-dialog>
+

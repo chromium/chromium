@@ -762,10 +762,6 @@ void SiteSettingsHandler::RegisterMessages() {
       "recordAction",
       base::BindRepeating(&SiteSettingsHandler::HandleRecordAction,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "getNumCookiesString",
-      base::BindRepeating(&SiteSettingsHandler::HandleGetNumCookiesString,
-                          base::Unretained(this)));
 }
 
 void SiteSettingsHandler::OnJavascriptAllowed() {
@@ -2115,22 +2111,6 @@ void SiteSettingsHandler::HandleRecordAction(const base::Value::List& args) {
   DCHECK_GE(action, static_cast<int>(AllSitesAction2::kLoadPage));
 
   LogAllSitesAction(static_cast<AllSitesAction2>(action));
-}
-
-void SiteSettingsHandler::HandleGetNumCookiesString(
-    const base::Value::List& args) {
-  CHECK_EQ(2U, args.size());
-  std::string callback_id;
-  callback_id = args[0].GetString();
-  int num_cookies = args[1].GetInt();
-
-  AllowJavascript();
-  const std::u16string string =
-      num_cookies > 0 ? l10n_util::GetPluralStringFUTF16(
-                            IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES, num_cookies)
-                      : std::u16string();
-
-  ResolveJavascriptCallback(base::Value(callback_id), base::Value(string));
 }
 
 void SiteSettingsHandler::RemoveNonTreeModelData(
