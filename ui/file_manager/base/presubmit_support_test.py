@@ -28,7 +28,7 @@ class GM3CounterpartPresubmit(unittest.TestCase):
         If a CSS file foo.css is changed, and there's a corresponding
         foo_gm3.css existed but not changed, show warning.
         """
-        foo_css = MockFile('some/path/foo.css', '')
+        foo_css = MockFile(os.path.join('some', 'path', 'foo.css'), '')
         self.mock_input_api.files.append(foo_css)
         # Mock Path.is_file call to make sure foo_gm3.css is existed.
         with patch.object(Path, 'is_file') as mock_is_file:
@@ -45,8 +45,8 @@ class GM3CounterpartPresubmit(unittest.TestCase):
         If a CSS file foo.css is changed, and there's a corresponding
         foo_gm3.css existed also changed, no warnings.
         """
-        foo_css = MockFile('some/path/foo.css', '')
-        foo_gm3_css = MockFile('some/path/foo_gm3.css', '')
+        foo_css = MockFile(os.path.join('some', 'path', 'foo.css'), '')
+        foo_gm3_css = MockFile(os.path.join('some', 'path', 'foo_gm3.css'), '')
         self.mock_input_api.files.append(foo_css)
         self.mock_input_api.files.append(foo_gm3_css)
         # Mock Path.is_file call to make sure foo_gm3.css is existed.
@@ -54,33 +54,33 @@ class GM3CounterpartPresubmit(unittest.TestCase):
             mock_is_file.return_value = True
             errors = _CheckGM3Counterpart(self.mock_input_api,
                                           self.mock_output_api)
-            self.assertEqual(0, len(errors))
+            self.assertEqual([], errors)
 
     def testNoWarningWithoutGM3Counterpart(self):
         """
         If a CSS file foo.css is changed, and the corresponding foo_gm3.css
         does not existed, no warnings.
         """
-        foo_css = MockFile('some/path/foo.css', '')
+        foo_css = MockFile(os.path.join('some', 'path', 'foo.css'), '')
         self.mock_input_api.files.append(foo_css)
         # Mock Path.is_file call to make sure foo_gm3.css is not existed.
         with patch.object(Path, 'is_file') as mock_is_file:
             mock_is_file.return_value = False
             errors = _CheckGM3Counterpart(self.mock_input_api,
                                           self.mock_output_api)
-            self.assertEqual(0, len(errors))
+            self.assertEqual([], errors)
 
     def testNoWarningForNonCSSChange(self):
         """
         If the patch doesn't have any CSS files, no warnings.
         """
-        foo_js = MockFile('some/path/foo.js', '')
-        foo_cpp = MockFile('some/path/foo.cc', '')
+        foo_js = MockFile(os.path.join('some', 'path', 'foo.js'), '')
+        foo_cpp = MockFile(os.path.join('some', 'path', 'foo.cc'), '')
         self.mock_input_api.files.append(foo_js)
         self.mock_input_api.files.append(foo_cpp)
         errors = _CheckGM3Counterpart(self.mock_input_api,
                                       self.mock_output_api)
-        self.assertEqual(0, len(errors))
+        self.assertEqual([], errors)
 
 
 if __name__ == '__main__':
