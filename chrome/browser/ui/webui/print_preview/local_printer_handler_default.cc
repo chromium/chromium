@@ -70,13 +70,15 @@ void OnDidGetDefaultPrinterName(
     PrinterHandler::DefaultPrinterCallback callback,
     mojom::DefaultPrinterNameResultPtr printer_name) {
   if (printer_name->is_result_code()) {
-    PRINTER_LOG(ERROR) << "Failure getting default printer, result: "
-                       << printer_name->get_result_code();
+    PRINTER_LOG(ERROR)
+        << "Failure getting default printer via service, result: "
+        << printer_name->get_result_code();
     std::move(callback).Run(std::string());
     return;
   }
 
-  VLOG(1) << "Default Printer: " << printer_name->get_default_printer_name();
+  PRINTER_LOG(EVENT) << "Default Printer from service: "
+                     << printer_name->get_default_printer_name();
   std::move(callback).Run(printer_name->get_default_printer_name());
 }
 
@@ -85,8 +87,9 @@ void OnDidEnumeratePrinters(
     PrinterHandler::GetPrintersDoneCallback done_callback,
     mojom::PrinterListResultPtr printer_list) {
   if (printer_list->is_result_code()) {
-    PRINTER_LOG(ERROR) << "Failure enumerating local printers, result: "
-                       << printer_list->get_result_code();
+    PRINTER_LOG(ERROR)
+        << "Failure enumerating local printers via service, result: "
+        << printer_list->get_result_code();
   }
 
   ConvertPrinterListForCallback(
@@ -102,8 +105,10 @@ void OnDidFetchCapabilities(
     PrinterHandler::GetCapabilityCallback callback,
     mojom::PrinterCapsAndInfoResultPtr printer_caps_and_info) {
   if (printer_caps_and_info->is_result_code()) {
-    LOG(WARNING) << "Failure fetching printer capabilities for " << device_name
-                 << " - error " << printer_caps_and_info->get_result_code();
+    PRINTER_LOG(ERROR)
+        << "Failure fetching printer capabilities via service for "
+        << device_name
+        << ", result: " << printer_caps_and_info->get_result_code();
 
     // If we failed because of access denied then we could retry at an elevated
     // privilege (if not already elevated).
@@ -130,7 +135,8 @@ void OnDidFetchCapabilities(
     return;
   }
 
-  VLOG(1) << "Received printer info & capabilities for " << device_name;
+  PRINTER_LOG(EVENT) << "Received printer info & capabilities via service for "
+                     << device_name;
   const mojom::PrinterCapsAndInfoPtr& caps_and_info =
       printer_caps_and_info->get_printer_caps_and_info();
   base::Value::Dict settings = AssemblePrinterSettings(
@@ -186,9 +192,11 @@ base::Value::Dict LocalPrinterHandlerDefault::FetchCapabilitiesAsync(
   VLOG(1) << "Get printer capabilities start for " << device_name;
 
   PrinterBasicInfo basic_info;
-  if (print_backend->GetPrinterBasicInfo(device_name, &basic_info) !=
-      mojom::ResultCode::kSuccess) {
-    LOG(WARNING) << "Invalid printer " << device_name;
+  mojom::ResultCode result =
+      print_backend->GetPrinterBasicInfo(device_name, &basic_info);
+  if (result != mojom::ResultCode::kSuccess) {
+    PRINTER_LOG(ERROR) << "Invalid printer when getting basic info for "
+                       << device_name << ", result: " << result;
     return base::Value::Dict();
   }
 
@@ -217,7 +225,7 @@ std::string LocalPrinterHandlerDefault::GetDefaultPrinterAsync(
                        << result;
     return std::string();
   }
-  VLOG(1) << "Default Printer: " << default_printer;
+  PRINTER_LOG(EVENT) << "Default Printer: " << default_printer;
   return default_printer;
 }
 
