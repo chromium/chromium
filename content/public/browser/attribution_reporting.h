@@ -5,13 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_ATTRIBUTION_REPORTING_H_
 #define CONTENT_PUBLIC_BROWSER_ATTRIBUTION_REPORTING_H_
 
-#include <stdint.h>
-
-#include <limits>
-
-#include "base/time/time.h"
-#include "content/common/content_export.h"
-
 namespace content {
 
 enum class AttributionNoiseMode {
@@ -30,36 +23,6 @@ enum class AttributionDelayMode {
   kDefault,
   // Reports are sent immediately after attribution is triggered.
   kNone,
-};
-
-// Controls rate limits for the API.
-struct CONTENT_EXPORT AttributionRateLimitConfig {
-  // The default rates used by th API.
-  static const AttributionRateLimitConfig kDefault;
-
-  // Returns true if this config is valid.
-  [[nodiscard]] bool Validate() const;
-
-  // Controls the rate-limiting time window for attribution.
-  base::TimeDelta time_window = base::TimeDelta::Max();
-
-  // Maximum number of distinct reporting origins that can register sources
-  // for a given <source site, destination site> in `time_window`.
-  int64_t max_source_registration_reporting_origins =
-      std::numeric_limits<int64_t>::max();
-
-  // Maximum number of distinct reporting origins that can create attributions
-  // for a given <source site, destination site> in `time_window`.
-  int64_t max_attribution_reporting_origins =
-      std::numeric_limits<int64_t>::max();
-
-  // Maximum number of attributions for a given <source site, destination
-  // site, reporting origin> in `time_window`.
-  int64_t max_attributions = std::numeric_limits<int64_t>::max();
-
-  // When adding new members, the corresponding `Validate()` definition and
-  // `operator==()` definition in `attribution_interop_parser_unittest.cc`
-  // should also be updated.
 };
 
 }  // namespace content

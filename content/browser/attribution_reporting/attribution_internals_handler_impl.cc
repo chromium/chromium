@@ -25,7 +25,6 @@
 #include "content/browser/attribution_reporting/attribution_observer_types.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
-#include "content/browser/attribution_reporting/attribution_reporting_constants.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -47,11 +46,6 @@
 namespace content {
 
 namespace {
-
-static_assert(kAttributionAggregatableBudgetPerSource == 65536,
-              "please update BUDGET_PER_SOURCE in "
-              "content/browser/resources/attribution_reporting/"
-              "attribution_internals.ts with new value");
 
 using Attributability =
     ::attribution_internals::mojom::WebUISource::Attributability;

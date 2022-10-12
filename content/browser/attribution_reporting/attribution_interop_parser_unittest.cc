@@ -11,16 +11,16 @@
 #include "base/strings/strcat.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "content/public/browser/attribution_reporting.h"
-#include "content/public/test/attribution_config.h"
+#include "content/public/browser/attribution_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
-bool operator==(AttributionRateLimitConfig a, AttributionRateLimitConfig b) {
-  const auto tie = [](AttributionRateLimitConfig config) {
+bool operator==(AttributionConfig::RateLimitConfig a,
+                AttributionConfig::RateLimitConfig b) {
+  const auto tie = [](AttributionConfig::RateLimitConfig config) {
     return std::make_tuple(
         config.time_window, config.max_source_registration_reporting_origins,
         config.max_attribution_reporting_origins, config.max_attributions);

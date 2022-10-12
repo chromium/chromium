@@ -158,7 +158,6 @@ static_library("test_support") {
     "../browser/worker_host/test_shared_worker_service_impl.h",
     "../public/test/accessibility_notification_waiter.cc",
     "../public/test/accessibility_notification_waiter.h",
-    "../public/test/attribution_config.h",
     "../public/test/attribution_simulator.h",
     "../public/test/attribution_simulator_environment.h",
     "../public/test/audio_service_test_helper.cc",
@@ -355,7 +354,6 @@ static_library("test_support") {
     "../public/test/web_ui_browsertest_util.h",
     "../renderer/mock_agent_scheduling_group.cc",
     "../renderer/mock_agent_scheduling_group.h",
-    "attribution_config.cc",
     "attribution_simulator_environment.cc",
     "attribution_simulator_impl.cc",
     "attribution_simulator_input_parser.cc",
@@ -1341,6 +1339,7 @@ test("content_browsertests") {
     "../browser/native_io/native_io_manager_browsertest.cc",
     "../browser/navigation_browsertest.cc",
     "../browser/navigation_mhtml_browsertest.cc",
+    "../browser/net_info_browsertest.cc",
     "../browser/network/accept_header_browsertest.cc",
     "../browser/network/dns_https_protocol_upgrade_browsertest.cc",
     "../browser/network/http_cookie_browsertest.cc",
@@ -1355,7 +1354,6 @@ test("content_browsertests") {
     "../browser/network/trust_token_browsertest.h",
     "../browser/network/trust_token_origin_trial_browsertest.cc",
     "../browser/network/trust_token_parameters_browsertest.cc",
-    "../browser/net_info_browsertest.cc",
     "../browser/network_service_browsertest.cc",
     "../browser/network_service_restart_browsertest.cc",
     "../browser/origin_trials/origin_trials_browsertest.cc",
@@ -1540,8 +1538,9 @@ test("content_browsertests") {
   rs_sources = [ "../browser/smoke_rust_browsertest.rs" ]
 
   if (enable_reporting) {
-    sources +=
-        [ "../browser/network/cross_origin_opener_policy_reporting_browsertest.cc" ]
+    sources += [
+      "../browser/network/cross_origin_opener_policy_reporting_browsertest.cc",
+    ]
   }
 
   if (use_viz_debugger) {

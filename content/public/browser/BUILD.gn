@@ -28,6 +28,7 @@ source_set("browser_sources") {
   sources = [
     "allow_service_worker_result.cc",
     "allow_service_worker_result.h",
+    "attribution_config.h",
     "attribution_reporting.h",
     "audio_service.h",
     "audio_service_info.cc",

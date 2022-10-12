@@ -16,7 +16,7 @@
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
-#include "content/public/test/attribution_config.h"
+#include "content/public/browser/attribution_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"

@@ -15,7 +15,7 @@
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
-#include "content/public/browser/attribution_reporting.h"
+#include "content/public/browser/attribution_config.h"
 #include "net/base/schemeful_site.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -168,7 +168,8 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
 
   const CommonSourceInfo& common_info = attribution_info.source.common_info();
 
-  const AttributionRateLimitConfig rate_limits = delegate_->GetRateLimits();
+  const AttributionConfig::RateLimitConfig rate_limits =
+      delegate_->GetRateLimits();
   DCHECK_GT(rate_limits.time_window, base::TimeDelta());
   DCHECK_GT(rate_limits.max_attributions, 0);
 
@@ -277,7 +278,8 @@ RateLimitResult RateLimitTable::AllowedForReportingOriginLimit(
     Scope scope,
     const CommonSourceInfo& common_info,
     base::Time time) {
-  const AttributionRateLimitConfig rate_limits = delegate_->GetRateLimits();
+  const AttributionConfig::RateLimitConfig rate_limits =
+      delegate_->GetRateLimits();
   DCHECK_GT(rate_limits.time_window, base::TimeDelta());
 
   int64_t max;

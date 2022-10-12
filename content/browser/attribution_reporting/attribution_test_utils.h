@@ -19,7 +19,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
-#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -44,8 +43,8 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
+#include "content/public/browser/attribution_config.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/test/attribution_config.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -67,7 +66,6 @@ namespace content {
 
 class AttributionObserver;
 class AttributionTrigger;
-struct AttributionRateLimitConfig;
 
 enum class RateLimitResult : int;
 
@@ -209,27 +207,14 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   base::Time GetEventLevelReportTime(const CommonSourceInfo& source,
                                      base::Time trigger_time) const override;
   base::Time GetAggregatableReportTime(base::Time trigger_time) const override;
-  int GetMaxAttributionsPerSource(
-      AttributionSourceType source_type) const override;
-  int GetMaxSourcesPerOrigin() const override;
-  int GetMaxReportsPerDestination(
-      AttributionReport::Type report_type) const override;
-  AttributionRateLimitConfig GetRateLimits() const override;
-  int GetMaxDestinationsPerSourceSiteReportingOrigin() const override;
   base::TimeDelta GetDeleteExpiredSourcesFrequency() const override;
   base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const override;
   base::GUID NewReportID() const override;
   absl::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>& reports) override;
-  double GetRandomizedResponseRate(AttributionSourceType) const override;
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source) override;
-  int64_t GetAggregatableBudgetPerSource() const override;
-  uint64_t SanitizeTriggerData(
-      uint64_t trigger_data,
-      AttributionSourceType source_type) const override;
-  uint64_t SanitizeSourceEventId(uint64_t source_event_id) const override;
 
   void set_max_attributions_per_source(int max);
 
@@ -242,7 +227,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_aggregatable_budget_per_source(int64_t max);
 
-  void set_rate_limits(AttributionRateLimitConfig c);
+  void set_rate_limits(AttributionConfig::RateLimitConfig c);
 
   void set_delete_expired_sources_frequency(base::TimeDelta frequency);
 
@@ -270,8 +255,6 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   void DetachFromSequence();
 
  private:
-  AttributionConfig config_ GUARDED_BY_CONTEXT(sequence_checker_);
-
   base::TimeDelta delete_expired_sources_frequency_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::TimeDelta delete_expired_rate_limits_frequency_
@@ -289,8 +272,6 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   RandomizedResponse randomized_response_
       GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 class MockAttributionManager : public AttributionManager {

@@ -15,8 +15,8 @@
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/attribution_config.h"
 #include "content/public/browser/attribution_reporting.h"
-#include "content/public/test/attribution_config.h"
 #include "content/public/test/attribution_simulator.h"
 #include "content/public/test/attribution_simulator_environment.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -309,7 +309,7 @@ int main(int argc, char* argv[]) {
     noise_seed = value;
   }
 
-  auto config = content::AttributionConfig::kDefault;
+  content::AttributionConfig config;
 
   if (!ParseRandomizedResponseRateSwitch(
           command_line, kSwitchRandomizedResponseRateNavigation,

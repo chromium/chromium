@@ -17,13 +17,24 @@
 #include "content/browser/attribution_reporting/attribution_default_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_random_generator.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_reporting_constants.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/combinatorics.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/public/browser/attribution_config.h"
 #include "content/public/browser/attribution_reporting.h"
 
 namespace content {
+
+// static
+std::unique_ptr<AttributionStorageDelegate>
+AttributionStorageDelegateImpl::CreateForTesting(
+    AttributionNoiseMode noise_mode,
+    AttributionDelayMode delay_mode,
+    const AttributionConfig& config,
+    std::unique_ptr<AttributionRandomGenerator> rng) {
+  return base::WrapUnique(new AttributionStorageDelegateImpl(
+      noise_mode, delay_mode, config, std::move(rng)));
+}
 
 AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
     AttributionNoiseMode noise_mode,
@@ -31,53 +42,24 @@ AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
     : AttributionStorageDelegateImpl(
           noise_mode,
           delay_mode,
+          AttributionConfig(),
           std::make_unique<AttributionDefaultRandomGenerator>()) {}
 
 AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
     AttributionNoiseMode noise_mode,
     AttributionDelayMode delay_mode,
+    const AttributionConfig& config,
     std::unique_ptr<AttributionRandomGenerator> rng)
-    : noise_mode_(noise_mode), delay_mode_(delay_mode), rng_(std::move(rng)) {
+    : AttributionStorageDelegate(config),
+      noise_mode_(noise_mode),
+      delay_mode_(delay_mode),
+      rng_(std::move(rng)) {
   DCHECK(rng_);
 
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 AttributionStorageDelegateImpl::~AttributionStorageDelegateImpl() = default;
-
-int AttributionStorageDelegateImpl::GetMaxAttributionsPerSource(
-    AttributionSourceType source_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (source_type) {
-    case AttributionSourceType::kNavigation:
-      return kMaxAttributionsPerNavigationSource;
-    case AttributionSourceType::kEvent:
-      return kMaxAttributionsPerEventSource;
-  }
-}
-
-int AttributionStorageDelegateImpl::GetMaxSourcesPerOrigin() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return kAttributionMaxSourcesPerOrigin;
-}
-
-int AttributionStorageDelegateImpl::GetMaxReportsPerDestination(
-    AttributionReport::Type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return kAttributionMaxReportsPerDestination;
-}
-
-int AttributionStorageDelegateImpl::
-    GetMaxDestinationsPerSourceSiteReportingOrigin() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return kAttributionMaxDestinationsPerSourceSiteReportingOrigin;
-}
-
-AttributionRateLimitConfig AttributionStorageDelegateImpl::GetRateLimits()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return AttributionRateLimitConfig::kDefault;
-}
 
 base::TimeDelta
 AttributionStorageDelegateImpl::GetDeleteExpiredSourcesFrequency() const {
@@ -112,11 +94,11 @@ base::Time AttributionStorageDelegateImpl::GetAggregatableReportTime(
     case AttributionDelayMode::kDefault:
       switch (noise_mode_) {
         case AttributionNoiseMode::kDefault:
-          return trigger_time + kAttributionAggregatableReportMinDelay +
-                 rng_->RandDouble() * kAttributionAggregatableReportDelaySpan;
+          return trigger_time + config_.aggregate_limit.min_delay +
+                 rng_->RandDouble() * config_.aggregate_limit.delay_span;
         case AttributionNoiseMode::kNone:
-          return trigger_time + kAttributionAggregatableReportMinDelay +
-                 kAttributionAggregatableReportDelaySpan;
+          return trigger_time + config_.aggregate_limit.min_delay +
+                 config_.aggregate_limit.delay_span;
       }
 
     case AttributionDelayMode::kNone:
@@ -160,18 +142,6 @@ void AttributionStorageDelegateImpl::ShuffleReports(
       break;
     case AttributionNoiseMode::kNone:
       break;
-  }
-}
-
-double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
-    AttributionSourceType source_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  switch (source_type) {
-    case AttributionSourceType::kNavigation:
-      return kAttributionNavigationSourceRandomizedResponseRate;
-    case AttributionSourceType::kEvent:
-      return kAttributionEventSourceRandomizedResponseRate;
   }
 }
 
@@ -253,39 +223,6 @@ AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
     });
   }
   return fake_reports;
-}
-
-int64_t AttributionStorageDelegateImpl::GetAggregatableBudgetPerSource() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return kAttributionAggregatableBudgetPerSource;
-}
-
-uint64_t AttributionStorageDelegateImpl::SanitizeTriggerData(
-    uint64_t trigger_data,
-    AttributionSourceType source_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const uint64_t cardinality = TriggerDataCardinality(source_type);
-  return trigger_data % cardinality;
-}
-
-uint64_t AttributionStorageDelegateImpl::SanitizeSourceEventId(
-    uint64_t source_event_id) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static_assert(!kAttributionSourceEventIdCardinality.has_value(),
-                "update sanitize logic below");
-  return source_event_id;
-}
-
-uint64_t AttributionStorageDelegateImpl::TriggerDataCardinality(
-    AttributionSourceType source_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (source_type) {
-    case AttributionSourceType::kNavigation:
-      return kAttributionNavigationSourceTriggerDataCardinality;
-    case AttributionSourceType::kEvent:
-      return kAttributionEventSourceTriggerDataCardinality;
-  }
 }
 
 }  // namespace content

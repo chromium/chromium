@@ -8,9 +8,13 @@
 #include <stdint.h>
 #include <vector>
 
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
+#include "content/common/content_export.h"
+#include "content/public/browser/attribution_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -19,12 +23,11 @@ class GUID;
 
 namespace content {
 
-struct AttributionRateLimitConfig;
 class CommonSourceInfo;
 
 // Storage delegate that can supplied to extend basic attribution storage
 // functionality like annotating reports.
-class AttributionStorageDelegate {
+class CONTENT_EXPORT AttributionStorageDelegate {
  public:
   // Both bounds are inclusive.
   struct OfflineReportDelayConfig {
@@ -43,6 +46,8 @@ class AttributionStorageDelegate {
   // non-empty vector -> `StoredSource::AttributionLogic::kFalsely`
   using RandomizedResponse = absl::optional<std::vector<FakeReport>>;
 
+  explicit AttributionStorageDelegate(const AttributionConfig& config);
+
   virtual ~AttributionStorageDelegate() = default;
 
   // Returns the time an event-level report should be sent for a given trigger
@@ -60,30 +65,29 @@ class AttributionStorageDelegate {
   // marked inactive and no new reports will be created for it.
   // Sources will be checked against this limit after they schedule a new
   // report.
-  virtual int GetMaxAttributionsPerSource(
-      AttributionSourceType source_type) const = 0;
+  int GetMaxAttributionsPerSource(AttributionSourceType source_type) const;
 
   // These limits are designed solely to avoid excessive disk / memory usage.
   // In particular, they do not correspond with any privacy parameters.
   //
   // Returns the maximum number of sources that can be in storage at any
   // time for a source top-level origin.
-  virtual int GetMaxSourcesPerOrigin() const = 0;
+  int GetMaxSourcesPerOrigin() const;
 
   // Returns the maximum number of reports of the given type that can be in
   // storage at any time for a destination site. Note that since
   // reporting origins are the actual entities that invoke attribution
   // registration, we could consider changing this limit to be keyed by an
   // <attribution origin, reporting origin> tuple.
-  virtual int GetMaxReportsPerDestination(AttributionReport::Type) const = 0;
+  int GetMaxReportsPerDestination(AttributionReport::Type) const;
 
   // Returns the maximum number of distinct attribution destinations that can
   // be in storage at any time for sources with the same <source site,
   // reporting origin>.
-  virtual int GetMaxDestinationsPerSourceSiteReportingOrigin() const = 0;
+  int GetMaxDestinationsPerSourceSiteReportingOrigin() const;
 
   // Returns the rate limits for capping contributions per window.
-  virtual AttributionRateLimitConfig GetRateLimits() const = 0;
+  AttributionConfig::RateLimitConfig GetRateLimits() const;
 
   // Returns the maximum frequency at which to delete expired sources.
   // Must be positive.
@@ -114,7 +118,7 @@ class AttributionStorageDelegate {
   // source with the given source type, as implemented by
   // `GetRandomizedResponse()`. Must be in the range [0, 1] and remain constant
   // for the lifetime of the delegate.
-  virtual double GetRandomizedResponseRate(AttributionSourceType) const = 0;
+  double GetRandomizedResponseRate(AttributionSourceType) const;
 
   // Returns a randomized response for the given source, consisting of zero or
   // more fake reports. Returns `absl::nullopt` to indicate that the response
@@ -124,15 +128,21 @@ class AttributionStorageDelegate {
 
   // Returns the maximum sum of the contributions (values) across all buckets
   // per source.
-  virtual int64_t GetAggregatableBudgetPerSource() const = 0;
+  int64_t GetAggregatableBudgetPerSource() const;
 
   // Sanitizes `trigger_data` according to the data limits for `source_type`.
-  virtual uint64_t SanitizeTriggerData(
-      uint64_t trigger_data,
-      AttributionSourceType source_type) const = 0;
+  uint64_t SanitizeTriggerData(uint64_t trigger_data,
+                               AttributionSourceType source_type) const;
 
   // Sanitizes `source_event_id` according to the data limit.
-  virtual uint64_t SanitizeSourceEventId(uint64_t source_event_id) const = 0;
+  uint64_t SanitizeSourceEventId(uint64_t source_event_id) const;
+
+ protected:
+  uint64_t TriggerDataCardinality(AttributionSourceType source_type) const;
+
+  AttributionConfig config_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content
