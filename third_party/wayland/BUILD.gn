@@ -15,7 +15,7 @@ wayland_protocol("wayland_protocol_c") {
   } else {
     sources = [ "src/protocol/wayland.xml" ]
   }
-  code_marshalling = true
+  generator_type = "protocol-marshalling"
 }
 
 if (!use_system_libwayland_client || !use_system_libwayland_server) {
@@ -39,12 +39,12 @@ if (!use_system_libwayland_client || !use_system_libwayland_server) {
 
   wayland_protocol("wayland_server_protocol") {
     sources = [ "src/protocol/wayland.xml" ]
-    wayland_protocol_server = true
+    generator_type = "protocol-server"
   }
 
   wayland_protocol("wayland_client_protocol") {
     sources = [ "src/protocol/wayland.xml" ]
-    wayland_protocol_client = true
+    generator_type = "protocol-client"
   }
 
   source_set("wayland_util") {

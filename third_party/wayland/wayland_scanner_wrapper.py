@@ -36,23 +36,23 @@ def main(argv):
   src_root = options.src_root
   root_gen_dir = options.root_gen_dir
   protocols = options.protocols
-  generator_type=options.generator_type
+  generator_type = options.generator_type
 
   version = subprocess.check_output([cmd, '--version'],
                                     stderr=subprocess.STDOUT).decode('utf-8')
   # The version is of the form "wayland-scanner 1.18.0\n"
   version = tuple([int(x) for x in version.strip().split(' ')[1].split('.')])
+  # This needs to generate private-code to avoid ODR
+  # violation and avoid hacks such as in https://crrev.com/c/2416941/
+  # See third_party/wayland/BUILD.gn#212 there for details there.
+  private_code_type = 'private-code' if version > (1, 14, 90) else 'code'
 
   for protocol in protocols:
     protocol_path = os.path.join(src_root, protocol)
     protocol_without_extension = protocol.rsplit(".", 1)[0]
     out_base_name = os.path.join(root_gen_dir, protocol_without_extension)
     if generator_type == "protocol-marshalling":
-      # This needs to generate private-code to avoid ODR
-      # violation and avoid hacks such as in https://crrev.com/c/2416941/
-      # See third_party/wayland/BUILD.gn#212 there for details there.
-      scanner_args = [ 'private-code' ]
-      generate_code(cmd, scanner_args, protocol_path,
+      generate_code(cmd, [ private_code_type ], protocol_path,
                               out_base_name + "-protocol.c")
     elif generator_type == "protocol-client":
       scanner_args = [ 'client-header' ]
@@ -70,16 +70,12 @@ def main(argv):
                     out_base_name + "-server-protocol-core.h")
     else:
       assert(generator_type == "all")
-      scanner_cmd = []
-      code_type = 'private-code' if version > (1, 14, 90) else 'code'
-      scanner_cmd.append(code_type)
-      generate_code(cmd, scanner_cmd, protocol_path,
+
+      generate_code(cmd, [ private_code_type ], protocol_path,
                     out_base_name + "-protocol.c")
-      scanner_cmd = [ 'client-header' ]
-      generate_code(cmd, scanner_cmd, protocol_path,
+      generate_code(cmd, [ 'client-header' ], protocol_path,
                     out_base_name + "-client-protocol.h")
-      scanner_cmd = [ 'server-header' ]
-      generate_code(cmd, scanner_cmd, protocol_path,
+      generate_code(cmd, [ 'server-header' ], protocol_path,
                     out_base_name + "-server-protocol.h")
 
 
