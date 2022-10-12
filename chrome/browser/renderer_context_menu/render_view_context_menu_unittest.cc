@@ -1363,8 +1363,17 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchChromeUIScheme) {
 }
 
 // Verify that the Lens Region Search menu item is enabled for Progressive Web
-// Apps
-TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchProgressiveWebApp) {
+// Apps. Region Search on PWAs is currently broken and therefore disabled on
+// Mac. b/250074889
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_LensRegionSearchProgressiveWebApp \
+  DISABLED_LensRegionSearchProgressiveWebApp
+#else
+#define MAYBE_LensRegionSearchProgressiveWebApp \
+  LensRegionSearchProgressiveWebApp
+#endif
+TEST_F(RenderViewContextMenuPrefsTest,
+       MAYBE_LensRegionSearchProgressiveWebApp) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(lens::features::kLensStandalone);
   SetUserSelectedDefaultSearchProvider("https://www.google.com",

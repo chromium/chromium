@@ -3286,7 +3286,7 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
   if (!service)
     return false;
 
-// Region selection is broken in PWAs on Mac
+// Region selection is broken in PWAs on Mac b/250074889
 #if BUILDFLAG(IS_MAC)
   if (IsInProgressiveWebApp())
     return false;
