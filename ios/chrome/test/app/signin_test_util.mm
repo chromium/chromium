@@ -44,7 +44,7 @@ void StartForgetAllIdentities(ChromeBrowserState* browser_state) {
   NSArray* identities_to_remove = account_manager_service->GetAllIdentities();
   ios::ChromeIdentityService* identity_service =
       ios::GetChromeBrowserProvider().GetChromeIdentityService();
-  for (ChromeIdentity* identity in identities_to_remove) {
+  for (id<SystemIdentity> identity in identities_to_remove) {
     identity_service->ForgetIdentity(identity, ^(NSError* error) {
       if (error) {
         NSLog(@"ForgetIdentity failed: [identity = %@, error = %@]",
@@ -130,7 +130,7 @@ void ResetUserApprovedAccountListManager() {
   prefs->ClearPref(prefs::kSigninLastAccounts);
 }
 
-void SignInWithoutSync(ChromeIdentity* identity) {
+void SignInWithoutSync(id<SystemIdentity> identity) {
   Browser* browser = GetMainBrowser();
   UIViewController* viewController = GetActiveViewController();
   __block AuthenticationFlow* authenticationFlow =
