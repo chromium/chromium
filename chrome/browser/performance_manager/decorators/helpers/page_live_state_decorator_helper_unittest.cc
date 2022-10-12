@@ -6,9 +6,11 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
@@ -194,6 +196,73 @@ TEST_F(PageLiveStateDecoratorHelperTest, IsConnectedToUsbDevice) {
   testing::TestPageNodePropertyOnPMSequence(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
       &PageLiveStateDecorator::Data::IsConnectedToUSBDevice, false);
+}
+
+TEST_F(PageLiveStateDecoratorHelperTest, ContentSettingsChanged) {
+  base::WeakPtr<PageNode> node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com/path"));
+
+  {
+    base::RunLoop run_loop;
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          ASSERT_TRUE(node);
+          const PageLiveStateDecorator::Data* data =
+              PageLiveStateDecorator::Data::FromPageNode(node.get());
+          ASSERT_TRUE(data);
+          EXPECT_EQ(data->IsContentSettingTypeAllowed(
+                        ContentSettingsType::NOTIFICATIONS),
+                    false);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(
+          web_contents()->GetBrowserContext());
+  host_content_settings_map->SetContentSettingDefaultScope(
+      GURL("https://www.example.com/"), GURL(),
+      ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
+
+  {
+    base::RunLoop run_loop;
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          ASSERT_TRUE(node);
+          const PageLiveStateDecorator::Data* data =
+              PageLiveStateDecorator::Data::FromPageNode(node.get());
+          ASSERT_TRUE(data);
+          EXPECT_EQ(data->IsContentSettingTypeAllowed(
+                        ContentSettingsType::NOTIFICATIONS),
+                    true);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  // Changing content settings for a different URL doesn't affect this one.
+  host_content_settings_map->SetContentSettingDefaultScope(
+      GURL("https://other.url.com/"), GURL(),
+      ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_BLOCK);
+
+  {
+    base::RunLoop run_loop;
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          ASSERT_TRUE(node);
+          const PageLiveStateDecorator::Data* data =
+              PageLiveStateDecorator::Data::FromPageNode(node.get());
+          ASSERT_TRUE(data);
+          EXPECT_EQ(data->IsContentSettingTypeAllowed(
+                        ContentSettingsType::NOTIFICATIONS),
+                    true);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
 }
 
 // Create many WebContents to exercice the code that maintains the linked list
