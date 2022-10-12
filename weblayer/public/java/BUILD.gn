@@ -149,6 +149,7 @@ android_library("java") {
 
 dist_aar("client_aar") {
   deps = [
+    ":browserfragment_java",
     ":java",
     ":weblayer_client_manifest",
   ]
