@@ -69,9 +69,6 @@ class ContentMainRunnerImpl : public ContentMainRunner {
   // True if the runner has been shut down.
   bool is_shutdown_ = false;
 
-  // True if basic startup was completed.
-  bool completed_basic_startup_ = false;
-
   // The delegate will outlive this object.
   raw_ptr<ContentMainDelegate> delegate_ = nullptr;
 

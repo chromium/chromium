@@ -96,7 +96,7 @@ class WebMainRunnerImpl : public WebMainRunner {
     ////////////////////////////////////////////////////////////////////
     // ContentMainRunner::Shutdown()
     //
-    if (completed_basic_startup_ && delegate_) {
+    if (delegate_) {
       delegate_->ProcessExiting();
     }
 

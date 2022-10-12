@@ -465,8 +465,10 @@ void CleanupChromeLogging() {
   if (chrome_logging_failed_)
     return;  // We failed to initiailize logging, no cleanup.
 
-  DCHECK(chrome_logging_initialized_)
-      << "Attempted to clean up logging when it wasn't initialized.";
+  // Logging was not initialized, no cleanup required. This is happening with
+  // the Chrome early exit error paths (i.e Process Singleton).
+  if (!chrome_logging_initialized_)
+    return;
 
   CloseLogFile();
 

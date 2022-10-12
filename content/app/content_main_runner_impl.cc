@@ -853,7 +853,6 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
       delegate_->BasicStartupComplete();
   if (basic_startup_exit_code.has_value())
     return basic_startup_exit_code.value();
-  completed_basic_startup_ = true;
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
@@ -1249,14 +1248,11 @@ void ContentMainRunnerImpl::Shutdown() {
 
   mojo_ipc_support_.reset();
 
-  if (completed_basic_startup_) {
-    const base::CommandLine& command_line =
-        *base::CommandLine::ForCurrentProcess();
-    std::string process_type =
-        command_line.GetSwitchValueASCII(switches::kProcessType);
-
-    delegate_->ProcessExiting(process_type);
-  }
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  std::string process_type =
+      command_line.GetSwitchValueASCII(switches::kProcessType);
+  delegate_->ProcessExiting(process_type);
 
   // The BrowserTaskExecutor needs to be destroyed before |exit_manager_|.
   BrowserTaskExecutor::Shutdown();

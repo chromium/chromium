@@ -74,7 +74,10 @@ class CONTENT_EXPORT ContentMainDelegate {
       const std::string& process_type,
       MainFunctionParams main_function_params);
 
-  // Called right before the process exits.
+  // Called right before the process exits. Note: an empty process_type must not
+  // be assumed to be an exclusive browser process, processes that exit early
+  // (e.g. attempt and fail to be the browser process) will also go through this
+  // path.
   virtual void ProcessExiting(const std::string& process_type) {}
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
