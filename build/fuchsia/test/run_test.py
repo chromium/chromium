@@ -75,7 +75,9 @@ def main():
         parser.error('-d is required when --target-id is used')
 
     with ExitStack() as stack:
-        set_ffx_isolate_dir(stack.enter_context(tempfile.TemporaryDirectory()))
+        if not runner_args.device:
+            set_ffx_isolate_dir(
+                stack.enter_context(tempfile.TemporaryDirectory()))
         stack.enter_context(
             ScopedFfxConfig('repository.server.listen', '"[::]:0"'))
         log_manager = stack.enter_context(LogManager(runner_args.logs_dir))
