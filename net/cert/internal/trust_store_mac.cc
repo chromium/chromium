@@ -23,7 +23,6 @@
 #include "crypto/mac_security_services_lock.h"
 #include "net/base/hash_value.h"
 #include "net/base/network_notification_thread_mac.h"
-#include "net/cert/known_roots_mac.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/cert_issuer_source_static.h"
 #include "net/cert/pki/extended_key_usage.h"
@@ -52,12 +51,6 @@ enum class TrustStatus {
   TRUSTED,
   // Certificate is blocked / explicitly distrusted.
   DISTRUSTED
-};
-
-enum class KnownRootStatus {
-  UNKNOWN,
-  IS_KNOWN_ROOT,
-  NOT_KNOWN_ROOT,
 };
 
 const void* kResultDebugDataKey = &kResultDebugDataKey;
@@ -273,35 +266,9 @@ TrustStatus IsCertificateTrustedForPolicyInDomain(
       cert_handle, is_self_issued, policy_oid, trust_domain, debug_info);
 }
 
-KnownRootStatus IsCertificateKnownRoot(const ParsedCertificate* cert) {
-  base::ScopedCFTypeRef<SecCertificateRef> cert_handle =
-      x509_util::CreateSecCertificateFromBytes(cert->der_cert().UnsafeData(),
-                                               cert->der_cert().Length());
-  if (!cert_handle)
-    return KnownRootStatus::NOT_KNOWN_ROOT;
-
-  base::ScopedCFTypeRef<CFArrayRef> trust_settings;
-  OSStatus err;
-  {
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    err = SecTrustSettingsCopyTrustSettings(cert_handle,
-                                            kSecTrustSettingsDomainSystem,
-                                            trust_settings.InitializeInto());
-  }
-  return (err == errSecSuccess) ? KnownRootStatus::IS_KNOWN_ROOT
-                                : KnownRootStatus::NOT_KNOWN_ROOT;
-}
-
 TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
                                           const CFStringRef policy_oid,
-                                          TrustStoreMac::TrustDomains domains,
-                                          int* debug_info,
-                                          KnownRootStatus* out_is_known_root) {
-  // |*out_is_known_root| is intentionally not cleared before starting, as
-  // there may have been a value already calculated and cached independently.
-  // The caller is expected to initialize |*out_is_known_root| to UNKNOWN if
-  // the value has not been calculated.
-
+                                          int* debug_info) {
   base::ScopedCFTypeRef<SecCertificateRef> cert_handle =
       x509_util::CreateSecCertificateFromBytes(cert->der_cert().UnsafeData(),
                                                cert->der_cert().Length());
@@ -311,15 +278,10 @@ TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
   const bool is_self_issued =
       cert->normalized_subject() == cert->normalized_issuer();
 
-  // Evaluate trust domains in user, admin, system order. Admin settings can
-  // override system ones, and user settings can override both admin and system.
+  // Evaluate user trust domain, then admin. User settings can override
+  // admin (and both override the system domain, but we don't check that).
   for (const auto& trust_domain :
-       {kSecTrustSettingsDomainUser, kSecTrustSettingsDomainAdmin,
-        kSecTrustSettingsDomainSystem}) {
-    if (domains == TrustStoreMac::TrustDomains::kUserAndAdmin &&
-        trust_domain == kSecTrustSettingsDomainSystem) {
-      continue;
-    }
+       {kSecTrustSettingsDomainUser, kSecTrustSettingsDomainAdmin}) {
     base::ScopedCFTypeRef<CFArrayRef> trust_settings;
     OSStatus err;
     {
@@ -328,11 +290,6 @@ TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
                                               trust_settings.InitializeInto());
     }
     if (err != errSecSuccess) {
-      if (out_is_known_root && trust_domain == kSecTrustSettingsDomainSystem) {
-        // If trust settings are not present for |cert| in the system domain,
-        // record it as not a known root.
-        *out_is_known_root = KnownRootStatus::NOT_KNOWN_ROOT;
-      }
       if (err == errSecItemNotFound) {
         // No trust settings for that domain.. try the next.
         continue;
@@ -340,11 +297,6 @@ TrustStatus IsCertificateTrustedForPolicy(const ParsedCertificate* cert,
       OSSTATUS_LOG(ERROR, err) << "SecTrustSettingsCopyTrustSettings error";
       *debug_info |= TrustStoreMac::COPY_TRUST_SETTINGS_ERROR;
       continue;
-    }
-    if (out_is_known_root && trust_domain == kSecTrustSettingsDomainSystem) {
-      // If trust settings are present for |cert| in the system domain, record
-      // it as a known root.
-      *out_is_known_root = KnownRootStatus::IS_KNOWN_ROOT;
     }
     TrustStatus trust = IsTrustSettingsTrustedForPolicy(
         trust_settings, is_self_issued, policy_oid, debug_info);
@@ -571,7 +523,7 @@ class TrustDomainCacheFullCerts {
         domain_name = "Admin";
         break;
       case kSecTrustSettingsDomainSystem:
-        domain_name = "System";
+        NOTREACHED();
         break;
     }
     base::UmaHistogramCounts1000(
@@ -751,7 +703,6 @@ class TrustStoreMac::TrustImpl {
  public:
   virtual ~TrustImpl() = default;
 
-  virtual bool IsKnownRoot(const ParsedCertificate* cert) = 0;
   virtual TrustStatus IsCertTrusted(const ParsedCertificate* cert,
                                     base::SupportsUserData* debug_data) = 0;
   virtual bool ImplementsSyncGetIssuersOf() const { return false; }
@@ -766,14 +717,9 @@ class TrustStoreMac::TrustImpl {
 // modified.
 class TrustStoreMac::TrustImplDomainCache : public TrustStoreMac::TrustImpl {
  public:
-  explicit TrustImplDomainCache(CFStringRef policy_oid, TrustDomains domains)
-      : use_system_domain_cache_(domains == TrustDomains::kAll),
-        admin_domain_cache_(kSecTrustSettingsDomainAdmin, policy_oid),
+  explicit TrustImplDomainCache(CFStringRef policy_oid)
+      : admin_domain_cache_(kSecTrustSettingsDomainAdmin, policy_oid),
         user_domain_cache_(kSecTrustSettingsDomainUser, policy_oid) {
-    if (use_system_domain_cache_) {
-      system_domain_cache_ = std::make_unique<TrustDomainCache>(
-          kSecTrustSettingsDomainSystem, policy_oid);
-    }
     keychain_observer_ = std::make_unique<KeychainTrustObserver>();
   }
 
@@ -785,17 +731,6 @@ class TrustStoreMac::TrustImplDomainCache : public TrustStoreMac::TrustImpl {
         FROM_HERE, std::move(keychain_observer_));
   }
 
-  // Returns true if |cert| is present in kSecTrustSettingsDomainSystem.
-  bool IsKnownRoot(const ParsedCertificate* cert) override {
-    if (!use_system_domain_cache_)
-      return false;
-    SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
-
-    base::AutoLock lock(cache_lock_);
-    MaybeInitializeCache();
-    return system_domain_cache_->ContainsCert(cert_hash);
-  }
-
   // Returns the trust status for |cert|.
   TrustStatus IsCertTrusted(const ParsedCertificate* cert,
                             base::SupportsUserData* debug_data) override {
@@ -804,18 +739,14 @@ class TrustStoreMac::TrustImplDomainCache : public TrustStoreMac::TrustImpl {
     base::AutoLock lock(cache_lock_);
     MaybeInitializeCache();
 
-    // Evaluate trust domains in user, admin, system order. Admin settings can
-    // override system ones, and user settings can override both admin and
-    // system.
+    // Evaluate user trust domain, then admin. User settings can override
+    // admin (and both override the system domain, but we don't check that).
     for (TrustDomainCache* trust_domain_cache :
          {&user_domain_cache_, &admin_domain_cache_}) {
       TrustStatus ts =
           trust_domain_cache->IsCertTrusted(cert, cert_hash, debug_data);
       if (ts != TrustStatus::UNSPECIFIED)
         return ts;
-    }
-    if (use_system_domain_cache_) {
-      return system_domain_cache_->IsCertTrusted(cert, cert_hash, debug_data);
     }
 
     // Cert did not have trust settings in any domain.
@@ -840,26 +771,13 @@ class TrustStoreMac::TrustImplDomainCache : public TrustStoreMac::TrustImpl {
     iteration_ = keychain_iteration;
     user_domain_cache_.Initialize();
     admin_domain_cache_.Initialize();
-    if (use_system_domain_cache_ && !system_domain_initialized_) {
-      // In practice, the system trust domain does not change during runtime,
-      // and SecTrustSettingsCopyCertificates on the system domain is quite
-      // slow, so the system domain cache is not reset on keychain changes.
-      system_domain_cache_->Initialize();
-      system_domain_initialized_ = true;
-    }
   }
 
   std::unique_ptr<KeychainTrustObserver> keychain_observer_;
-  // Store whether to use the system domain in a const bool that is initialized
-  // in constructor so it is safe to read without having to lock first.
-  const bool use_system_domain_cache_;
 
   base::Lock cache_lock_;
   // |cache_lock_| must be held while accessing any following members.
   int64_t iteration_ GUARDED_BY(cache_lock_) = -1;
-  bool system_domain_initialized_ GUARDED_BY(cache_lock_) = false;
-  std::unique_ptr<TrustDomainCache> system_domain_cache_
-      GUARDED_BY(cache_lock_);
   TrustDomainCache admin_domain_cache_ GUARDED_BY(cache_lock_);
   TrustDomainCache user_domain_cache_ GUARDED_BY(cache_lock_);
 };
@@ -872,16 +790,10 @@ class TrustStoreMac::TrustImplDomainCache : public TrustStoreMac::TrustImpl {
 class TrustStoreMac::TrustImplDomainCacheFullCerts
     : public TrustStoreMac::TrustImpl {
  public:
-  explicit TrustImplDomainCacheFullCerts(CFStringRef policy_oid,
-                                         TrustDomains domains)
+  explicit TrustImplDomainCacheFullCerts(CFStringRef policy_oid)
       : policy_oid_(policy_oid, base::scoped_policy::RETAIN),
-        use_system_domain_cache_(domains == TrustDomains::kAll),
         admin_domain_cache_(kSecTrustSettingsDomainAdmin, policy_oid),
         user_domain_cache_(kSecTrustSettingsDomainUser, policy_oid) {
-    if (use_system_domain_cache_) {
-      system_domain_cache_ = std::make_unique<TrustDomainCacheFullCerts>(
-          kSecTrustSettingsDomainSystem, policy_oid);
-    }
     keychain_trust_observer_ = std::make_unique<KeychainTrustObserver>();
     keychain_certs_observer_ = std::make_unique<KeychainCertsObserver>();
   }
@@ -897,17 +809,6 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
         FROM_HERE, std::move(keychain_certs_observer_));
   }
 
-  // Returns true if |cert| is present in kSecTrustSettingsDomainSystem.
-  bool IsKnownRoot(const ParsedCertificate* cert) override {
-    if (!use_system_domain_cache_)
-      return false;
-    SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
-
-    base::AutoLock lock(cache_lock_);
-    MaybeInitializeCache();
-    return system_domain_cache_->ContainsCert(cert_hash);
-  }
-
   // Returns the trust status for |cert|.
   TrustStatus IsCertTrusted(const ParsedCertificate* cert,
                             base::SupportsUserData* debug_data) override {
@@ -916,18 +817,14 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
     base::AutoLock lock(cache_lock_);
     MaybeInitializeCache();
 
-    // Evaluate trust domains in user, admin, system order. Admin settings can
-    // override system ones, and user settings can override both admin and
-    // system.
+    // Evaluate user trust domain, then admin. User settings can override
+    // admin (and both override the system domain, but we don't check that).
     for (TrustDomainCacheFullCerts* trust_domain_cache :
          {&user_domain_cache_, &admin_domain_cache_}) {
       TrustStatus ts =
           trust_domain_cache->IsCertTrusted(cert, cert_hash, debug_data);
       if (ts != TrustStatus::UNSPECIFIED)
         return ts;
-    }
-    if (use_system_domain_cache_) {
-      return system_domain_cache_->IsCertTrusted(cert, cert_hash, debug_data);
     }
 
     // Cert did not have trust settings in any domain.
@@ -942,10 +839,6 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
     MaybeInitializeCache();
     user_domain_cache_.cert_issuer_source().SyncGetIssuersOf(cert, issuers);
     admin_domain_cache_.cert_issuer_source().SyncGetIssuersOf(cert, issuers);
-    if (system_domain_cache_) {
-      system_domain_cache_->cert_issuer_source().SyncGetIssuersOf(cert,
-                                                                  issuers);
-    }
     intermediates_cert_issuer_source_.SyncGetIssuersOf(cert, issuers);
   }
 
@@ -969,13 +862,6 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
       trust_iteration_ = keychain_trust_iteration;
       user_domain_cache_.Initialize();
       admin_domain_cache_.Initialize();
-      if (use_system_domain_cache_ && !system_domain_initialized_) {
-        // In practice, the system trust domain does not change during runtime,
-        // and SecTrustSettingsCopyCertificates on the system domain is quite
-        // slow, so the system domain cache is not reset on keychain changes.
-        system_domain_cache_->Initialize();
-        system_domain_initialized_ = true;
-      }
       base::UmaHistogramMediumTimes(
           "Net.CertVerifier.MacTrustDomainCacheInitTime",
           trust_domain_cache_init_timer.Elapsed());
@@ -1047,9 +933,7 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
       SHA256HashValue cert_hash =
           x509_util::CalculateFingerprint256(match_cert_handle);
       if (user_domain_cache_.ContainsCert(cert_hash) ||
-          admin_domain_cache_.ContainsCert(cert_hash) ||
-          (use_system_domain_cache_ &&
-           system_domain_cache_->ContainsCert(cert_hash))) {
+          admin_domain_cache_.ContainsCert(cert_hash)) {
         continue;
       }
 
@@ -1120,18 +1004,12 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
   std::unique_ptr<KeychainTrustObserver> keychain_trust_observer_;
   std::unique_ptr<KeychainCertsObserver> keychain_certs_observer_;
   const base::ScopedCFTypeRef<CFStringRef> policy_oid_;
-  // Store whether to use the system domain in a const bool that is initialized
-  // in constructor so it is safe to read without having to lock first.
-  const bool use_system_domain_cache_;
 
   base::Lock cache_lock_;
   // |cache_lock_| must be held while accessing any following members.
   int64_t trust_iteration_ GUARDED_BY(cache_lock_) = -1;
   int64_t certs_iteration_ GUARDED_BY(cache_lock_) = -1;
 
-  bool system_domain_initialized_ GUARDED_BY(cache_lock_) = false;
-  std::unique_ptr<TrustDomainCacheFullCerts> system_domain_cache_
-      GUARDED_BY(cache_lock_);
   TrustDomainCacheFullCerts admin_domain_cache_ GUARDED_BY(cache_lock_);
   TrustDomainCacheFullCerts user_domain_cache_ GUARDED_BY(cache_lock_);
 
@@ -1143,30 +1021,19 @@ class TrustStoreMac::TrustImplDomainCacheFullCerts
 // SecTrustSettingsCopyTrustSettings on every cert checked, with no caching.
 class TrustStoreMac::TrustImplNoCache : public TrustStoreMac::TrustImpl {
  public:
-  explicit TrustImplNoCache(CFStringRef policy_oid, TrustDomains domains)
-      : policy_oid_(policy_oid), domains_(domains) {}
+  explicit TrustImplNoCache(CFStringRef policy_oid) : policy_oid_(policy_oid) {}
 
   TrustImplNoCache(const TrustImplNoCache&) = delete;
   TrustImplNoCache& operator=(const TrustImplNoCache&) = delete;
 
   ~TrustImplNoCache() override = default;
 
-  // Returns true if |cert| is present in kSecTrustSettingsDomainSystem.
-  bool IsKnownRoot(const ParsedCertificate* cert) override {
-    if (domains_ == TrustDomains::kUserAndAdmin)
-      return false;
-    HashValue cert_hash(CalculateFingerprint256(cert->der_cert()));
-    base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    return net::IsKnownRoot(cert_hash);
-  }
-
   // Returns the trust status for |cert|.
   TrustStatus IsCertTrusted(const ParsedCertificate* cert,
                             base::SupportsUserData* debug_data) override {
     int debug_info = 0;
     TrustStatus result =
-        IsCertificateTrustedForPolicy(cert, policy_oid_, domains_, &debug_info,
-                                      /*out_is_known_root=*/nullptr);
+        IsCertificateTrustedForPolicy(cert, policy_oid_, &debug_info);
     UpdateUserData(debug_info, debug_data,
                    TrustStoreMac::TrustImplType::kSimple);
     return result;
@@ -1178,7 +1045,6 @@ class TrustStoreMac::TrustImplNoCache : public TrustStoreMac::TrustImpl {
 
  private:
   const CFStringRef policy_oid_;
-  const TrustDomains domains_;
 };
 
 // TrustImplLRUCache is calls SecTrustSettingsCopyTrustSettings on every cert
@@ -1186,12 +1052,8 @@ class TrustStoreMac::TrustImplNoCache : public TrustStoreMac::TrustImpl {
 // keychain updates.
 class TrustStoreMac::TrustImplLRUCache : public TrustStoreMac::TrustImpl {
  public:
-  TrustImplLRUCache(CFStringRef policy_oid,
-                    size_t cache_size,
-                    TrustDomains domains)
-      : policy_oid_(policy_oid),
-        domains_(domains),
-        trust_status_cache_(cache_size) {
+  TrustImplLRUCache(CFStringRef policy_oid, size_t cache_size)
+      : policy_oid_(policy_oid), trust_status_cache_(cache_size) {
     keychain_observer_ = std::make_unique<KeychainTrustObserver>();
   }
 
@@ -1201,13 +1063,6 @@ class TrustStoreMac::TrustImplLRUCache : public TrustStoreMac::TrustImpl {
   ~TrustImplLRUCache() override {
     GetNetworkNotificationThreadMac()->DeleteSoon(
         FROM_HERE, std::move(keychain_observer_));
-  }
-
-  // Returns true if |cert| has trust settings in kSecTrustSettingsDomainSystem.
-  bool IsKnownRoot(const ParsedCertificate* cert) override {
-    if (domains_ == TrustDomains::kUserAndAdmin)
-      return false;
-    return GetKnownRootStatus(cert) == KnownRootStatus::IS_KNOWN_ROOT;
   }
 
   // Returns the trust status for |cert|.
@@ -1227,49 +1082,10 @@ class TrustStoreMac::TrustImplLRUCache : public TrustStoreMac::TrustImpl {
   struct TrustStatusDetails {
     TrustStatus trust_status = TrustStatus::UNKNOWN;
     int debug_info = 0;
-    KnownRootStatus is_known_root = KnownRootStatus::UNKNOWN;
   };
-
-  KnownRootStatus GetKnownRootStatus(const ParsedCertificate* cert) {
-    SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
-
-    int starting_cache_iteration = -1;
-    {
-      base::AutoLock lock(cache_lock_);
-      MaybeResetCache();
-      starting_cache_iteration = iteration_;
-      auto cache_iter = trust_status_cache_.Get(cert_hash);
-      if (cache_iter != trust_status_cache_.end() &&
-          cache_iter->second.is_known_root != KnownRootStatus::UNKNOWN) {
-        return cache_iter->second.is_known_root;
-      }
-    }
-
-    KnownRootStatus is_known_root = IsCertificateKnownRoot(cert);
-
-    {
-      base::AutoLock lock(cache_lock_);
-      MaybeResetCache();
-      if (iteration_ != starting_cache_iteration)
-        return is_known_root;
-
-      auto cache_iter = trust_status_cache_.Get(cert_hash);
-      // Update |is_known_root| on existing cache entry if there is one,
-      // otherwise create a new cache entry.
-      if (cache_iter != trust_status_cache_.end()) {
-        cache_iter->second.is_known_root = is_known_root;
-      } else {
-        TrustStatusDetails trust_details;
-        trust_details.is_known_root = is_known_root;
-        trust_status_cache_.Put(cert_hash, trust_details);
-      }
-    }
-    return is_known_root;
-  }
 
   TrustStatusDetails GetTrustStatus(const ParsedCertificate* cert) {
     SHA256HashValue cert_hash = CalculateFingerprint256(cert->der_cert());
-    TrustStatusDetails trust_details;
 
     int starting_cache_iteration = -1;
     {
@@ -1280,15 +1096,12 @@ class TrustStoreMac::TrustImplLRUCache : public TrustStoreMac::TrustImpl {
       if (cache_iter != trust_status_cache_.end()) {
         if (cache_iter->second.trust_status != TrustStatus::UNKNOWN)
           return cache_iter->second;
-        // If there was a cache entry but the trust status was not initialized,
-        // copy the existing values. (|is_known_root| might already be cached.)
-        trust_details = cache_iter->second;
       }
     }
 
+    TrustStatusDetails trust_details;
     trust_details.trust_status = IsCertificateTrustedForPolicy(
-        cert, policy_oid_, domains_, &trust_details.debug_info,
-        &trust_details.is_known_root);
+        cert, policy_oid_, &trust_details.debug_info);
 
     {
       base::AutoLock lock(cache_lock_);
@@ -1310,7 +1123,6 @@ class TrustStoreMac::TrustImplLRUCache : public TrustStoreMac::TrustImpl {
   }
 
   const CFStringRef policy_oid_;
-  const TrustDomains domains_;
   std::unique_ptr<KeychainTrustObserver> keychain_observer_;
 
   base::Lock cache_lock_;
@@ -1328,27 +1140,24 @@ class TrustStoreMac::TrustImplLRUCache : public TrustStoreMac::TrustImpl {
 
 TrustStoreMac::TrustStoreMac(CFStringRef policy_oid,
                              TrustImplType impl,
-                             size_t cache_size,
-                             TrustDomains domains)
-    : domains_(domains) {
+                             size_t cache_size) {
   switch (impl) {
     case TrustImplType::kUnknown:
       DCHECK(false);
       break;
     case TrustImplType::kDomainCache:
-      trust_cache_ =
-          std::make_unique<TrustImplDomainCache>(policy_oid, domains);
+      trust_cache_ = std::make_unique<TrustImplDomainCache>(policy_oid);
       break;
     case TrustImplType::kSimple:
-      trust_cache_ = std::make_unique<TrustImplNoCache>(policy_oid, domains);
+      trust_cache_ = std::make_unique<TrustImplNoCache>(policy_oid);
       break;
     case TrustImplType::kLruCache:
       trust_cache_ =
-          std::make_unique<TrustImplLRUCache>(policy_oid, cache_size, domains);
+          std::make_unique<TrustImplLRUCache>(policy_oid, cache_size);
       break;
     case TrustImplType::kDomainCacheFullCerts:
       trust_cache_ =
-          std::make_unique<TrustImplDomainCacheFullCerts>(policy_oid, domains);
+          std::make_unique<TrustImplDomainCacheFullCerts>(policy_oid);
       break;
   }
 }
@@ -1357,10 +1166,6 @@ TrustStoreMac::~TrustStoreMac() = default;
 
 void TrustStoreMac::InitializeTrustCache() const {
   trust_cache_->InitializeTrustCache();
-}
-
-bool TrustStoreMac::IsKnownRoot(const ParsedCertificate* cert) const {
-  return trust_cache_->IsKnownRoot(cert);
 }
 
 void TrustStoreMac::SyncGetIssuersOf(const ParsedCertificate* cert,
@@ -1375,7 +1180,7 @@ void TrustStoreMac::SyncGetIssuersOf(const ParsedCertificate* cert,
     return;
 
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> matching_cert_buffers =
-      FindMatchingCertificatesForMacNormalizedSubject(name_data, domains_);
+      FindMatchingCertificatesForMacNormalizedSubject(name_data);
 
   // Convert to ParsedCertificate.
   for (auto& buffer : matching_cert_buffers) {
@@ -1419,8 +1224,7 @@ CertificateTrust TrustStoreMac::GetTrust(
 // static
 std::vector<bssl::UniquePtr<CRYPTO_BUFFER>>
 TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
-    CFDataRef name_data,
-    TrustDomains domains) {
+    CFDataRef name_data) {
   std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> matching_cert_buffers;
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query(
       CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks,
@@ -1443,52 +1247,6 @@ TrustStoreMac::FindMatchingCertificatesForMacNormalizedSubject(
       return matching_cert_buffers;
     }
   }
-
-// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
-// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
-// warnings are disabled in the meanwhile.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-
-  if (domains == TrustDomains::kAll) {
-    // If a TestKeychainSearchList is present, it will have already set
-    // |scoped_alternate_keychain_search_list|, which will be used as the
-    // basis for reordering the keychain. Otherwise, get the current keychain
-    // search list and use that.
-    if (!scoped_alternate_keychain_search_list) {
-      OSStatus status = SecKeychainCopySearchList(
-          scoped_alternate_keychain_search_list.InitializeInto());
-      if (status) {
-        OSSTATUS_LOG(ERROR, status) << "SecKeychainCopySearchList error";
-        return matching_cert_buffers;
-      }
-    }
-
-    CFMutableArrayRef mutable_keychain_search_list = CFArrayCreateMutableCopy(
-        kCFAllocatorDefault,
-        CFArrayGetCount(scoped_alternate_keychain_search_list.get()) + 1,
-        scoped_alternate_keychain_search_list.get());
-    if (!mutable_keychain_search_list) {
-      LOG(ERROR) << "CFArrayCreateMutableCopy";
-      return matching_cert_buffers;
-    }
-    scoped_alternate_keychain_search_list.reset(mutable_keychain_search_list);
-
-    base::ScopedCFTypeRef<SecKeychainRef> roots_keychain;
-    // The System Roots keychain is not normally searched by
-    // SecItemCopyMatching. Get a reference to it and include in the keychain
-    // search list.
-    OSStatus status = SecKeychainOpen(
-        "/System/Library/Keychains/SystemRootCertificates.keychain",
-        roots_keychain.InitializeInto());
-    if (status) {
-      OSSTATUS_LOG(ERROR, status) << "SecKeychainOpen error";
-      return matching_cert_buffers;
-    }
-    CFArrayAppendValue(mutable_keychain_search_list, roots_keychain);
-  }
-
-#pragma clang diagnostic pop
 
   if (scoped_alternate_keychain_search_list) {
     CFDictionarySetValue(query, kSecMatchSearchList,

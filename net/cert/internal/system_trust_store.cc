@@ -287,7 +287,7 @@ TrustStoreMac* GetGlobalTrustStoreMacForCRS() {
       TrustStoreMac::TrustImplType::kDomainCacheFullCerts;
   static base::NoDestructor<TrustStoreMac> static_trust_store_mac(
       kSecPolicyAppleSSL, GetTrustStoreImplParam(kDefaultMacTrustImplForCRS),
-      GetTrustStoreCacheSize(), TrustStoreMac::TrustDomains::kUserAndAdmin);
+      GetTrustStoreCacheSize());
   return static_trust_store_mac.get();
 }
 

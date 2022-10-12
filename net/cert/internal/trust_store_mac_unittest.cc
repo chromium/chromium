@@ -20,7 +20,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "crypto/mac_security_services_lock.h"
 #include "crypto/sha2.h"
-#include "net/cert/known_roots_mac.h"
 #include "net/cert/pem.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parsed_certificate.h"
@@ -105,11 +104,6 @@ class DebugData : public base::SupportsUserData {
   ~DebugData() override = default;
 };
 
-enum IsKnownRootTestOrder {
-  TEST_IS_KNOWN_ROOT_BEFORE,
-  TEST_IS_KNOWN_ROOT_AFTER,
-};
-
 const char* TrustImplTypeToString(TrustStoreMac::TrustImplType t) {
   switch (t) {
     case TrustStoreMac::TrustImplType::kDomainCache:
@@ -125,30 +119,10 @@ const char* TrustImplTypeToString(TrustStoreMac::TrustImplType t) {
   }
 }
 
-const char* IsKnownRootTestOrderToString(IsKnownRootTestOrder order) {
-  switch (order) {
-    case TEST_IS_KNOWN_ROOT_BEFORE:
-      return "IsKnownRootBefore";
-    case TEST_IS_KNOWN_ROOT_AFTER:
-      return "IsKnownRootAfter";
-  }
-}
-
-const char* TrustDomainsToString(TrustStoreMac::TrustDomains domains) {
-  switch (domains) {
-    case TrustStoreMac::TrustDomains::kAll:
-      return "AllDomains";
-    case TrustStoreMac::TrustDomains::kUserAndAdmin:
-      return "UserAndAdminDomains";
-  }
-}
-
 }  // namespace
 
 class TrustStoreMacImplTest
-    : public testing::TestWithParam<std::tuple<TrustStoreMac::TrustImplType,
-                                               IsKnownRootTestOrder,
-                                               TrustStoreMac::TrustDomains>> {};
+    : public testing::TestWithParam<TrustStoreMac::TrustImplType> {};
 
 // Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
 // Removal of its use is tracked in https://crbug.com/1348251 but deprecation
@@ -177,11 +151,8 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
 
 #pragma clang diagnostic pop
 
-  const TrustStoreMac::TrustImplType trust_impl = std::get<0>(GetParam());
-  const IsKnownRootTestOrder is_known_root_test_order = std::get<1>(GetParam());
-  const TrustStoreMac::TrustDomains trust_domains = std::get<2>(GetParam());
-  TrustStoreMac trust_store(kSecPolicyAppleSSL, trust_impl, kDefaultCacheSize,
-                            trust_domains);
+  const TrustStoreMac::TrustImplType trust_impl = GetParam();
+  TrustStoreMac trust_store(kSecPolicyAppleSSL, trust_impl, kDefaultCacheSize);
 
   scoped_refptr<ParsedCertificate> a_by_b, b_by_c, b_by_f, c_by_d, c_by_e,
       f_by_e, d_by_d, e_by_e;
@@ -241,8 +212,6 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
   // added and trusted the test certs on the machine the test is being run on).
   for (const auto& cert :
        {a_by_b, b_by_c, b_by_f, c_by_d, c_by_e, f_by_e, d_by_d, e_by_e}) {
-    if (is_known_root_test_order == TEST_IS_KNOWN_ROOT_BEFORE)
-      EXPECT_FALSE(trust_store.IsKnownRoot(cert.get()));
     DebugData debug_data;
     CertificateTrust trust = trust_store.GetTrust(cert.get(), &debug_data);
     EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
@@ -253,8 +222,6 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
     ASSERT_TRUE(trust_debug_data);
     EXPECT_EQ(0, trust_debug_data->combined_trust_debug_info());
     EXPECT_EQ(trust_impl, trust_debug_data->trust_impl());
-    if (is_known_root_test_order == TEST_IS_KNOWN_ROOT_AFTER)
-      EXPECT_FALSE(trust_store.IsKnownRoot(cert.get()));
   }
 }
 
@@ -287,13 +254,11 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
       ParseFindCertificateOutputToDerCerts(
           find_certificate_system_roots_output);
 
-  const TrustStoreMac::TrustImplType trust_impl = std::get<0>(GetParam());
-  const IsKnownRootTestOrder is_known_root_test_order = std::get<1>(GetParam());
-  const TrustStoreMac::TrustDomains trust_domains = std::get<2>(GetParam());
+  const TrustStoreMac::TrustImplType trust_impl = GetParam();
 
   base::HistogramTester histogram_tester;
   TrustStoreMac trust_store(kSecPolicyAppleX509Basic, trust_impl,
-                            kDefaultCacheSize, trust_domains);
+                            kDefaultCacheSize);
 
   base::ScopedCFTypeRef<SecPolicyRef> sec_policy(SecPolicyCreateBasicX509());
   ASSERT_TRUE(sec_policy);
@@ -333,16 +298,6 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
       continue;
     }
 
-    if (is_known_root_test_order == TEST_IS_KNOWN_ROOT_BEFORE) {
-      bool trust_store_is_known_root = trust_store.IsKnownRoot(cert.get());
-      if (trust_domains == TrustStoreMac::TrustDomains::kAll) {
-        base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-        EXPECT_EQ(net::IsKnownRoot(cert_handle), trust_store_is_known_root);
-      } else {
-        EXPECT_FALSE(trust_store_is_known_root);
-      }
-    }
-
     // Check if this cert is considered a trust anchor by TrustStoreMac.
     DebugData debug_data;
     CertificateTrust cert_trust = trust_store.GetTrust(cert.get(), &debug_data);
@@ -364,16 +319,15 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
                                               kSecTrustOptionAllowExpired |
                                               kSecTrustOptionAllowExpiredRoot));
 
-      if (trust_domains == TrustStoreMac::TrustDomains::kUserAndAdmin &&
-          find_certificate_default_search_list_certs.count(cert_der) &&
+      if (find_certificate_default_search_list_certs.count(cert_der) &&
           find_certificate_system_roots_certs.count(cert_der)) {
         // If the same certificate is present in both the System and User/Admin
         // domains, and TrustStoreMac is only using trust settings from
         // User/Admin, then it's not possible for this test to know whether the
         // result from SecTrustEvaluate should match the TrustStoreMac result.
         // Just ignore such certificates.
-      } else if (trust_domains == TrustStoreMac::TrustDomains::kUserAndAdmin &&
-                 !find_certificate_default_search_list_certs.count(cert_der)) {
+      } else if (!find_certificate_default_search_list_certs.count(cert_der)) {
+        // Cert is only in the system domain. It should be untrusted.
         EXPECT_FALSE(is_trust_anchor);
       } else {
         SecTrustResultType trust_result;
@@ -394,16 +348,6 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
       }
       // The impl that was used should be specified in the debug data.
       EXPECT_EQ(trust_impl, trust_debug_data->trust_impl());
-    }
-
-    if (is_known_root_test_order == TEST_IS_KNOWN_ROOT_AFTER) {
-      bool trust_store_is_known_root = trust_store.IsKnownRoot(cert.get());
-      if (trust_domains == TrustStoreMac::TrustDomains::kAll) {
-        base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-        EXPECT_EQ(net::IsKnownRoot(cert_handle), trust_store_is_known_root);
-      } else {
-        EXPECT_FALSE(trust_store_is_known_root);
-      }
     }
 
     // Call GetTrust again on the same cert. This should exercise the code
@@ -430,32 +374,18 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
         "Net.CertVerifier.MacTrustDomainCertCount.User", 1);
     histogram_tester.ExpectTotalCount(
         "Net.CertVerifier.MacTrustDomainCertCount.Admin", 1);
-    histogram_tester.ExpectTotalCount(
-        "Net.CertVerifier.MacTrustDomainCertCount.System",
-        (trust_domains == TrustStoreMac::TrustDomains::kAll) ? 1 : 0);
   }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     Impl,
     TrustStoreMacImplTest,
-    testing::Combine(
-        testing::Values(TrustStoreMac::TrustImplType::kDomainCache,
-                        TrustStoreMac::TrustImplType::kSimple,
-                        TrustStoreMac::TrustImplType::kLruCache,
-                        TrustStoreMac::TrustImplType::kDomainCacheFullCerts),
-        // Some TrustImpls may calculate/cache IsKnownRoot values and trust
-        // values independently, so test with calling IsKnownRoot both before
-        // and after GetTrust to try to ensure there is no ordering issue with
-        // which one initializes the cache first.
-        testing::Values(TEST_IS_KNOWN_ROOT_BEFORE, TEST_IS_KNOWN_ROOT_AFTER),
-        testing::Values(TrustStoreMac::TrustDomains::kAll,
-                        TrustStoreMac::TrustDomains::kUserAndAdmin)),
+    testing::Values(TrustStoreMac::TrustImplType::kDomainCache,
+                    TrustStoreMac::TrustImplType::kSimple,
+                    TrustStoreMac::TrustImplType::kLruCache,
+                    TrustStoreMac::TrustImplType::kDomainCacheFullCerts),
     [](const testing::TestParamInfo<TrustStoreMacImplTest::ParamType>& info) {
-      return base::StrCat(
-          {TrustImplTypeToString(std::get<0>(info.param)),
-           IsKnownRootTestOrderToString(std::get<1>(info.param)),
-           TrustDomainsToString(std::get<2>(info.param))});
+      return TrustImplTypeToString(info.param);
     });
 
 }  // namespace net
