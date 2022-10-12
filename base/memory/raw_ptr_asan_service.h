@@ -26,12 +26,6 @@ using EnableInstantiationCheck =
 
 class BASE_EXPORT RawPtrAsanService {
  public:
-  enum class Mode {
-    kUninitialized,
-    kDisabled,
-    kEnabled,
-  };
-
   enum class ReportType {
     kDereference,
     kExtraction,
@@ -41,9 +35,10 @@ class BASE_EXPORT RawPtrAsanService {
   void Configure(EnableDereferenceCheck,
                  EnableExtractionCheck,
                  EnableInstantiationCheck);
-  Mode mode() const { return mode_; }
 
   bool IsSupportedAllocation(void*) const;
+
+  bool IsEnabled() const { return mode_ == Mode::kEnabled; }
 
   NO_SANITIZE("address")
   ALWAYS_INLINE bool is_dereference_check_enabled() const {
@@ -68,6 +63,12 @@ class BASE_EXPORT RawPtrAsanService {
   static void Log(const char* format, ...);
 
  private:
+  enum class Mode {
+    kUninitialized,
+    kDisabled,
+    kEnabled,
+  };
+
   struct PendingReport {
     ReportType type;
     uintptr_t allocation_base;

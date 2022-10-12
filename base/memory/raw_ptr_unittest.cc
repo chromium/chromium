@@ -1855,8 +1855,7 @@ const char kAsanBrpNotProtected_NoRawPtrAccess[] =
 class AsanBackupRefPtrTest : public testing::Test {
  protected:
   void SetUp() override {
-    if (RawPtrAsanService::GetInstance().mode() !=
-        RawPtrAsanService::Mode::kEnabled) {
+    if (!RawPtrAsanService::GetInstance().IsEnabled()) {
       base::RawPtrAsanService::GetInstance().Configure(
           base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
           base::EnableInstantiationCheck(true));

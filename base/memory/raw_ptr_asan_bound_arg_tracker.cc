@@ -35,8 +35,7 @@ uintptr_t RawPtrAsanBoundArgTracker::GetProtectedArgPtr(uintptr_t ptr) {
 }
 
 RawPtrAsanBoundArgTracker::RawPtrAsanBoundArgTracker()
-    : enabled_(RawPtrAsanService::GetInstance().mode() ==
-               RawPtrAsanService::Mode::kEnabled) {
+    : enabled_(RawPtrAsanService::GetInstance().IsEnabled()) {
   if (enabled_) {
     prev_protected_args_ = CurrentProtectedArgs().Get();
     CurrentProtectedArgs().Set(&protected_args_);
