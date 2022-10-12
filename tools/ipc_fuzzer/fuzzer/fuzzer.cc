@@ -639,15 +639,6 @@ struct FuzzTraits<viz::LocalSurfaceId> {
 };
 
 template <>
-struct FuzzTraits<viz::ResourceFormat> {
-  static bool Fuzz(viz::ResourceFormat* p, Fuzzer* fuzzer) {
-    int format = RandInRange(viz::ResourceFormat::RESOURCE_FORMAT_MAX + 1);
-    *p = static_cast<viz::ResourceFormat>(format);
-    return true;
-  }
-};
-
-template <>
 struct FuzzTraits<blink::PageState> {
   static bool Fuzz(blink::PageState* p, Fuzzer* fuzzer) {
     std::string data = p->ToEncodedData();
@@ -796,19 +787,6 @@ struct FuzzTraits<gfx::PointF> {
     if (!FuzzParam(&y, fuzzer))
       return false;
     p->SetPoint(x, y);
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<gfx::PresentationFeedback> {
-  static bool Fuzz(gfx::PresentationFeedback* p, Fuzzer* fuzzer) {
-    if (!FuzzParam(&p->timestamp, fuzzer))
-      return false;
-    if (!FuzzParam(&p->interval, fuzzer))
-      return false;
-    if (!FuzzParam(&p->flags, fuzzer))
-      return false;
     return true;
   }
 };
@@ -1080,16 +1058,6 @@ template <>
 struct FuzzTraits<gpu::Mailbox> {
   static bool Fuzz(gpu::Mailbox* p, Fuzzer* fuzzer) {
     fuzzer->FuzzBytes(p->name, sizeof(p->name));
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<gpu::SchedulingPriority> {
-  static bool Fuzz(gpu::SchedulingPriority* p, Fuzzer* fuzzer) {
-    int priority =
-        RandInRange(static_cast<int>(gpu::SchedulingPriority::kLast) + 1);
-    *p = static_cast<gpu::SchedulingPriority>(priority);
     return true;
   }
 };
