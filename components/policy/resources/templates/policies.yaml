@@ -878,7 +878,7 @@ policies:
   877: DataLeakPreventionClipboardCheckSizeLimit
   878: CrossOriginWebAssemblyModuleSharingEnabled
   879: RestrictedManagedGuestSessionExtensionCleanupExemptList
-  880: DisplayCapturePermissionsPolicyEnabled
+  880: ''
   881: ScreenCaptureAllowedByOrigins
   882: WindowCaptureAllowedByOrigins
   883: TabCaptureAllowedByOrigins

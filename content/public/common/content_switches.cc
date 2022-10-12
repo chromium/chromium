@@ -60,13 +60,6 @@ const char kChangeStackGuardOnFork[] = "change-stack-guard-on-fork";
 const char kChangeStackGuardOnForkEnabled[] = "enable";
 const char kChangeStackGuardOnForkDisabled[] = "disable";
 
-// Enables gating of getDisplayMedia by the display-capture permissions-policy.
-// This switch supports the shipping of display-capture, as it allows admins to
-// temporarily disable display-capture gating with an Enterprise policy.
-// TODO(crbug.com/1233969): Remove this around m100.
-const char kDisplayCapturePermissionsPolicyAllowed[] =
-    "display-capture-permissions-policy-allowed";
-
 // Disable antialiasing on 2d canvas.
 const char kDisable2dCanvasAntialiasing[]   = "disable-canvas-aa";
 

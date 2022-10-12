@@ -1464,8 +1464,6 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
       prefs::kSharedArrayBufferUnrestrictedAccessAllowed, false);
 #endif
   registry->RegisterBooleanPref(prefs::kSandboxExternalProtocolBlocked, true);
-  registry->RegisterBooleanPref(prefs::kDisplayCapturePermissionsPolicyEnabled,
-                                true);
   registry->RegisterBooleanPref(prefs::kSSLErrorOverrideAllowed, true);
   registry->RegisterListPref(prefs::kSSLErrorOverrideAllowedForOrigins);
   registry->RegisterBooleanPref(
@@ -2549,11 +2547,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif
       if (!prefs->GetBoolean(prefs::kSandboxExternalProtocolBlocked))
         command_line->AppendSwitch(kDisableSandboxExternalProtocolSwitch);
-
-      if (prefs->GetBoolean(prefs::kDisplayCapturePermissionsPolicyEnabled)) {
-        command_line->AppendSwitch(
-            switches::kDisplayCapturePermissionsPolicyAllowed);
-      }
 
       if (prefs->HasPrefPath(prefs::kAllowDinosaurEasterEgg) &&
           !prefs->GetBoolean(prefs::kAllowDinosaurEasterEgg)) {

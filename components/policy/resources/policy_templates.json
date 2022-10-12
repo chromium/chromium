@@ -22926,7 +22926,8 @@
       'owners': ['eladalon@chromium.org', 'guidou@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome.*:94-', 'chrome_os:94-'],
+      'deprecated': True,
+      'supported_on': ['chrome.*:94-107', 'chrome_os:94-107'],
       'future_on': ['fuchsia'],
       'device_only': False,
       'features': {

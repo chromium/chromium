@@ -97,8 +97,6 @@ namespace content {
 
 RenderProcessImpl::RenderProcessImpl()
     : RenderProcess(GetThreadPoolInitParams()) {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
 #if BUILDFLAG(IS_MAC)
   // Specified when launching the process in
   // RendererSandboxedProcessLauncherDelegate::EnableCpuSecurityMitigations
@@ -198,7 +196,7 @@ RenderProcessImpl::RenderProcessImpl()
 
   // Bypass the SAB restriction when enabled by Enterprise Policy.
   if (!enable_shared_array_buffer_unconditionally &&
-      command_line->HasSwitch(
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSharedArrayBufferUnrestrictedAccessAllowed)) {
     enable_shared_array_buffer_unconditionally = true;
     blink::WebRuntimeFeatures::EnableSharedArrayBufferUnrestrictedAccessAllowed(
@@ -222,17 +220,6 @@ RenderProcessImpl::RenderProcessImpl()
     v8::V8::SetFlagsFromString(kSABPerContextFlag, sizeof(kSABPerContextFlag));
   }
 
-  // The display-capture-permissions-policy-allowed flag is used to pass
-  // the kDisplayCapturePermissionsPolicyEnabled Enterprise policy from the
-  // browser process to the renderer process. This switch should be enabled by
-  // default for now, but after a few milestones that allow enterprises to fix
-  // broken applications, this flag will be removed.
-  // This switch will only be enabled by the Enterprise policy.
-  if (command_line->HasSwitch(
-          switches::kDisplayCapturePermissionsPolicyAllowed)) {
-    blink::WebRuntimeFeatures::EnableDisplayCapturePermissionsPolicy(true);
-  }
-
   SetV8FlagIfFeature(features::kWebAssemblyTiering, "--wasm-tier-up");
   SetV8FlagIfNotFeature(features::kWebAssemblyTiering, "--no-wasm-tier-up");
 
@@ -243,6 +230,9 @@ RenderProcessImpl::RenderProcessImpl()
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_X86_64)
   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
+    base::CommandLine* const command_line =
+        base::CommandLine::ForCurrentProcess();
+
     if (command_line->HasSwitch(switches::kEnableCrashpad) ||
         command_line->HasSwitch(switches::kEnableCrashReporter) ||
         command_line->HasSwitch(switches::kEnableCrashReporterForTesting)) {

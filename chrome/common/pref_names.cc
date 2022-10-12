@@ -3286,18 +3286,6 @@ const char kIsolateOrigins[] = "site_isolation.isolate_origins";
 // Boolean that specifies opting into --site-per-process (full Site Isolation).
 const char kSitePerProcess[] = "site_isolation.site_per_process";
 
-// Boolean that is true when the display-capture permissions-policy is enabled.
-// This permissions-policy gates access to getDisplayMedia(), as per this spec:
-// https://www.w3.org/TR/screen-capture/#feature-policy-integration
-// However, if kDisplayCapturePermissionsPolicyEnabled is set to |false|,
-// this requirement is not enforced, and getDisplayMedia() is allowed from
-// contexts that would otherwise be forbidden.
-// This Enterprise policy is temporary. It is intended to unblock Enterprise
-// users whose application is non-spec compliant, but needs time to be fixed.
-// TODO(crbug.com/1233969): Remove this around m100.
-extern const char kDisplayCapturePermissionsPolicyEnabled[] =
-    "display_capture_permissions_policy_enabled";
-
 #if !BUILDFLAG(IS_ANDROID)
 // Boolean to allow SharedArrayBuffer in non-crossOriginIsolated contexts.
 // TODO(crbug.com/1144104) Remove when migration to COOP+COEP is complete.
