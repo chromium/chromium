@@ -9715,6 +9715,25 @@
             ]
         }
     ],
+    "ShoppingList": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221005",
+                    "enable_features": [
+                        "ShoppingList"
+                    ]
+                }
+            ]
+        }
+    ],
     "ShowScrollableMVTOnNTPAndroid": [
         {
             "platforms": [
