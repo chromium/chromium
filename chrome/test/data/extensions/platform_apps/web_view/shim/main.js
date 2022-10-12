@@ -3471,6 +3471,26 @@ function testActivatePortal() {
   document.body.appendChild(webview);
 }
 
+// Inserting a webview element into a detached iframe's document shouldn't
+// crash.
+function testInsertIntoDetachedIframe() {
+  let webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+  let iframe = document.createElement('iframe');
+
+  iframe.addEventListener('load', () => {
+    let doc = iframe.contentDocument;
+    iframe.remove();
+    doc.body.appendChild(webview);
+
+    setTimeout(() => {
+      embedder.test.succeed();
+    });
+  });
+
+  document.body.appendChild(iframe);
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -3604,6 +3624,7 @@ embedder.test.testList = {
   'testWebRequestBlockedNavigation': testWebRequestBlockedNavigation,
   'testAddFencedFrame': testAddFencedFrame,
   'testActivatePortal': testActivatePortal,
+  'testInsertIntoDetachedIframe': testInsertIntoDetachedIframe,
 };
 
 onload = function() {

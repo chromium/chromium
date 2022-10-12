@@ -5523,6 +5523,13 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
             entry->metrics.begin()->second);
 }
 
+IN_PROC_BROWSER_TEST_P(WebViewTest, InsertIntoDetachedIframe) {
+  TestHelper("testInsertIntoDetachedIframe", "web_view/shim",
+             NEEDS_TEST_SERVER);
+  // Round-trip to ensure the embedder did not crash.
+  EXPECT_EQ(true, content::EvalJs(GetFirstAppWindowWebContents(), "true"));
+}
+
 #if BUILDFLAG(ENABLE_PPAPI)
 class WebViewPPAPITest : public WebViewTest {
  protected:
