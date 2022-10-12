@@ -134,6 +134,9 @@ const char kFileTypePoliciesTagParamName[] = "policy_omaha_tag";
 // Enable logging of the account enhanced protection setting in Protego pings.
 BASE_DECLARE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings);
 
+// Enables unpacking of nested archives during downloads.
+BASE_DECLARE_FEATURE(kNestedArchives);
+
 // Enable omitting non-user gesture from referrer chain.
 BASE_DECLARE_FEATURE(kOmitNonUserGesturesFromReferrerChain);
 

@@ -142,6 +142,10 @@ BASE_FEATURE(kLogAccountEnhancedProtectionStateInProtegoPings,
              "TailoredSecurityLogAccountEnhancedProtectionStateInProtegoPings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kNestedArchives,
+             "SafeBrowsingArchiveImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSimplifiedUrlDisplay,
              "SimplifiedUrlDisplay",
              base::FEATURE_DISABLED_BY_DEFAULT);
