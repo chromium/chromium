@@ -3514,8 +3514,8 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
   const base::Value* sans =
       response.FindByDottedPath("response.securityDetails.sanList");
   ASSERT_TRUE(sans);
-  ASSERT_EQ(1u, sans->GetListDeprecated().size());
-  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetListDeprecated()[0]);
+  ASSERT_EQ(1u, sans->GetList().size());
+  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetList()[0]);
 
   absl::optional<double> valid_from =
       response.FindDoubleByDottedPath("response.securityDetails.validFrom");
@@ -3652,13 +3652,13 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetailsSAN) {
   const base::Value* sans =
       response.FindByDottedPath("response.securityDetails.sanList");
   ASSERT_TRUE(sans);
-  ASSERT_EQ(6u, sans->GetListDeprecated().size());
-  EXPECT_EQ(base::Value("a.example"), sans->GetListDeprecated()[0]);
-  EXPECT_EQ(base::Value("b.example"), sans->GetListDeprecated()[1]);
-  EXPECT_EQ(base::Value("*.c.example"), sans->GetListDeprecated()[2]);
-  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetListDeprecated()[3]);
-  EXPECT_EQ(base::Value("::1"), sans->GetListDeprecated()[4]);
-  EXPECT_EQ(base::Value("1.2.3.4"), sans->GetListDeprecated()[5]);
+  ASSERT_EQ(6u, sans->GetList().size());
+  EXPECT_EQ(base::Value("a.example"), sans->GetList()[0]);
+  EXPECT_EQ(base::Value("b.example"), sans->GetList()[1]);
+  EXPECT_EQ(base::Value("*.c.example"), sans->GetList()[2]);
+  EXPECT_EQ(base::Value("127.0.0.1"), sans->GetList()[3]);
+  EXPECT_EQ(base::Value("::1"), sans->GetList()[4]);
+  EXPECT_EQ(base::Value("1.2.3.4"), sans->GetList()[5]);
 }
 
 class NetworkResponseProtocolECHTest : public NetworkResponseProtocolTest {

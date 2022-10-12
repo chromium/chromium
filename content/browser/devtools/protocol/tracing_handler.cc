@@ -100,7 +100,7 @@ base::Value ConvertDictKeyStyle(const base::Value& value) {
 
   if (value.is_list()) {
     base::Value out(base::Value::Type::LIST);
-    for (const auto& v : value.GetListDeprecated())
+    for (const auto& v : value.GetList())
       out.Append(ConvertDictKeyStyle(v));
     return out;
   }
