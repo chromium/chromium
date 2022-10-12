@@ -1147,13 +1147,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCIncrementalMarkingFinalize" units="ms"
-    expires_after="2022-11-20">
-  <owner>hpayer@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>Time spent in finalizing incremental marking.</summary>
-</histogram>
-
 <histogram name="V8.GCIncrementalMarkingReason" enum="GarbageCollectionReason"
     expires_after="2023-03-26">
   <owner>mlippautz@chromium.org</owner>
