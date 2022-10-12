@@ -176,7 +176,6 @@ generate_definitions_js_files = [
   "js/cr/ui.js",
   "js/event_tracker.js",
   "js/load_time_data.m.js",
-  "js/plural_string_proxy.js",
   "js/icon.js",
   "js/util.js",
 ]
@@ -202,6 +201,7 @@ ts_library("library") {
                "js/focus_row.ts",
                "js/focus_outline_manager.ts",
                "js/keyboard_shortcut_list.ts",
+               "js/plural_string_proxy.ts",
                "js/store_ts.ts",
                "js/test_loader.ts",
                "js/test_loader_util.ts",

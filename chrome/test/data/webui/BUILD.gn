@@ -314,7 +314,6 @@ js_type_check("closure_compile_local") {
     ":fake_chrome_event",
     ":mock_timer",
     ":test_browser_proxy",
-    ":test_plural_string_proxy",
     ":test_util",
   ]
 }
@@ -342,13 +341,6 @@ js_library("chai_assert") {
 
 js_library("test_browser_proxy") {
   deps = [ "//ui/webui/resources/js:promise_resolver" ]
-}
-
-js_library("test_plural_string_proxy") {
-  deps = [
-    ":test_browser_proxy",
-    "//ui/webui/resources/js:plural_string_proxy",
-  ]
 }
 
 grit("resources") {
@@ -416,7 +408,6 @@ ts_definitions("generate_definitions") {
     "mock_controller.js",
     "mock_timer.js",
     "mojo_webui_test_support.js",
-    "test_plural_string_proxy.js",
     "test_util.js",
   ]
   if (is_chromeos_ash) {
@@ -448,6 +439,7 @@ ts_library("build_ts") {
     "cr_focus_row_mixin_test.ts",
     "polymer_test_util.ts",
     "text_defaults_test.ts",
+    "test_plural_string_proxy.ts",
     "test_store_ts.ts",
   ]
 
@@ -484,7 +476,6 @@ generate_grd("build_grd") {
     "mock_timer.js",
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",
-    "test_plural_string_proxy.js",
     "test_util.js",
     "usb_internals_test.js",
 

@@ -48,6 +48,7 @@ preprocess_if_expr("preprocess_src_ts") {
     "focus_outline_manager.ts",
     "focus_row.ts",
     "keyboard_shortcut_list.ts",
+    "plural_string_proxy.ts",
     "search_highlight_utils.ts",
     "store_ts.ts",
     "test_loader.ts",
@@ -80,7 +81,6 @@ preprocess_if_expr("preprocess_src") {
     "load_time_data.m.js",
     "load_time_data_deprecated.js",
     "parse_html_subset.js",
-    "plural_string_proxy.js",
     "promise_resolver.js",
     "static_types.js",
     "util.js",
@@ -150,7 +150,6 @@ js_type_check("js_resources_modules") {
     ":icon",
     ":load_time_data.m",
     ":parse_html_subset",
-    ":plural_string_proxy",
     ":promise_resolver",
     ":static_types",
     ":util",
@@ -179,10 +178,6 @@ js_library("load_time_data.m") {
 }
 
 js_library("parse_html_subset") {
-}
-
-js_library("plural_string_proxy") {
-  deps = [ ":cr.m" ]
 }
 
 js_library("promise_resolver") {

@@ -160,6 +160,7 @@ non_web_component_files = [
   "chromeos/os_people_page/account_manager_browser_proxy.js",
   "chromeos/os_people_page/fingerprint_browser_proxy.js",
   "chromeos/os_people_page/lock_state_behavior.js",
+  "chromeos/os_people_page/plural_string_proxy_wrapper.js",
   "chromeos/os_people_page/os_sync_browser_proxy.js",
   "chromeos/os_printing_page/cups_printer_dialog_util.js",
   "chromeos/os_printing_page/cups_printer_types.js",

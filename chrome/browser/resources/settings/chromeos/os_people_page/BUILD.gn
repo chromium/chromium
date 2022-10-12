@@ -96,7 +96,6 @@ js_library("lock_screen") {
     "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:plural_string_proxy",
   ]
   externs_list = [ "../settings_controls_types.js" ]
 }
