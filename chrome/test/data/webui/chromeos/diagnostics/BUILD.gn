@@ -183,6 +183,15 @@ js_library("diagnostics_utils_test") {
   ]
 }
 
+js_library("drawing_provider_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util",
+    "//ash/webui/diagnostics_ui/mojom:mojom_webui_js",
+    "//ash/webui/diagnostics_ui/resources:drawing_provider",
+  ]
+}
+
 js_library("ethernet_info_test") {
   deps = [
     "../..:chai_assert",

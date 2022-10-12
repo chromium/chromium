@@ -9,6 +9,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {CanvasDrawingProvider} from './drawing_provider.js';
 import {getTemplate} from './touchscreen_tester.html.js';
 
 // To ensure the tester works when the user rotates their screen, we
@@ -28,6 +29,9 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
   static get template() {
     return getTemplate();
   }
+
+  // Drawing provider.
+  private drawingProvider: CanvasDrawingProvider;
 
   getDialog(dialogId: string): CrDialogElement {
     const dialog = this.shadowRoot!.getElementById(dialogId);
@@ -89,6 +93,10 @@ export class TouchscreenTesterElement extends TouchscreenTesterElementBase {
         this.getDialog('canvas-dialog')!.shadowRoot!.querySelector(
             '.top-container') as HTMLElement;
     topContainer!.style.display = 'none';
+
+    const ctx = canvas.getContext('2d');
+    assert(ctx);
+    this.drawingProvider = new CanvasDrawingProvider(ctx);
   }
 }
 

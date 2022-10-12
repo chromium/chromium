@@ -1,0 +1,113 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {assert} from 'chrome://resources/js/assert_ts.js';
+
+export const LINE_CAP = 'round';
+export const LINE_WIDTH = 20;
+export const MARK_RADIUS = 10;
+export const MARK_COLOR =
+    'rgba(var(--cros-icon-color-prominent), var(--cros-second-tone-opacity))';
+export const TRAIL_COLOR = 'var(--google-blue-50)';
+export const SOURCE_OVER = 'source-over';
+export const DESTINATION_OVER = 'destination-over';
+
+/**
+ * DrawingProvider interface provides drawing methods for touchscreen and
+ * touchpad tester to draw on screen.
+ */
+interface DrawingProvider {
+  // For touchscreen tester to draw a trail on screen.
+  drawTrail(x0: number, y0: number, x1: number, y1: number): void;
+
+  // For touchscreen tester to draw a trial mark on screen.
+  drawTrailMark(x: number, y: number): void;
+}
+
+/**
+ * CanvasDrawingProvider implements the DrawingProvider interface using html
+ * Canvas API. This design makes the drawing mechanism in a replaceable module.
+ */
+export class CanvasDrawingProvider implements DrawingProvider {
+  private ctx: CanvasRenderingContext2D;
+
+  constructor(ctx: CanvasRenderingContext2D) {
+    this.ctx = ctx;
+    this.setup();
+  }
+
+  setup() {
+    assert(this.ctx);
+    this.ctx.lineCap = LINE_CAP;
+    this.ctx.lineWidth = LINE_WIDTH;
+  }
+
+  /**
+   * For testing only.
+   */
+  getCtx(): CanvasRenderingContext2D {
+    return this.ctx;
+  }
+
+  /**
+   * For testing only.
+   */
+  getLineCap(): string {
+    return this.ctx.lineCap;
+  }
+
+  /**
+   * For testing only.
+   */
+  getLineWidth(): number {
+    return this.ctx.lineWidth;
+  }
+
+  /**
+   * For testing only.
+   */
+  getStrokeStyle(): string|CanvasGradient|CanvasPattern {
+    return this.ctx.strokeStyle;
+  }
+
+  /**
+   * For testing only.
+   */
+  getFillStyle(): string|CanvasGradient|CanvasPattern {
+    return this.ctx.fillStyle;
+  }
+
+  /**
+   * For testing only.
+   */
+  getGlobalCompositeOperation(): string {
+    return this.ctx.globalCompositeOperation;
+  }
+
+  /**
+   * Draw a line on canvas.
+   */
+  drawTrail(x0: number, y0: number, x1: number, y1: number): void {
+    assert(this.ctx);
+    this.ctx.strokeStyle = TRAIL_COLOR;
+    this.ctx.beginPath();
+    this.ctx.moveTo(x0, y0);
+    this.ctx.lineTo(x1, y1);
+    this.ctx.stroke();
+  }
+
+  /**
+   * Draw a trail mark on canvas.
+   */
+  drawTrailMark(x: number, y: number): void {
+    assert(this.ctx);
+    // Making sure the mark is always on top.
+    this.ctx.globalCompositeOperation = SOURCE_OVER;
+    this.ctx.fillStyle = MARK_COLOR;
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, MARK_RADIUS, 0, 2 * Math.PI);
+    this.ctx.fill();
+    this.ctx.globalCompositeOperation = DESTINATION_OVER;
+  }
+}
