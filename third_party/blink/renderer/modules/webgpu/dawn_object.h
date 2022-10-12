@@ -50,6 +50,10 @@ class WebGPUInterface;
 
 namespace blink {
 
+namespace scheduler {
+class EventLoop;
+}  // namespace scheduler
+
 template <typename T>
 struct WGPUReleaseFn;
 
@@ -84,7 +88,7 @@ class DawnObjectBase {
 
   // Ensure commands up until now on this object's parent device are flushed by
   // the end of the task.
-  void EnsureFlush();
+  void EnsureFlush(scheduler::EventLoop& event_loop);
 
   // Flush commands up until now on this object's parent device immediately.
   void FlushNow();

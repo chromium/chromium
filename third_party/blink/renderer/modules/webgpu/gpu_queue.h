@@ -38,34 +38,40 @@ class GPUQueue : public DawnObject<WGPUQueue> {
   // gpu_queue.idl
   void submit(const HeapVector<Member<GPUCommandBuffer>>& buffers);
   ScriptPromise onSubmittedWorkDone(ScriptState* script_state);
-  void writeBuffer(GPUBuffer* buffer,
+  void writeBuffer(ScriptState* script_state,
+                   GPUBuffer* buffer,
                    uint64_t buffer_offset,
                    const MaybeShared<DOMArrayBufferView>& data,
                    uint64_t data_element_offset,
                    ExceptionState& exception_state);
-  void writeBuffer(GPUBuffer* buffer,
+  void writeBuffer(ScriptState* script_state,
+                   GPUBuffer* buffer,
                    uint64_t buffer_offset,
                    const MaybeShared<DOMArrayBufferView>& data,
                    uint64_t data_element_offset,
                    uint64_t data_element_count,
                    ExceptionState& exception_state);
-  void writeBuffer(GPUBuffer* buffer,
+  void writeBuffer(ScriptState* script_state,
+                   GPUBuffer* buffer,
                    uint64_t buffer_offset,
                    const DOMArrayBufferBase* data,
                    uint64_t data_byte_offset,
                    ExceptionState& exception_state);
-  void writeBuffer(GPUBuffer* buffer,
+  void writeBuffer(ScriptState* script_state,
+                   GPUBuffer* buffer,
                    uint64_t buffer_offset,
                    const DOMArrayBufferBase* data,
                    uint64_t data_byte_offset,
                    uint64_t byte_size,
                    ExceptionState& exception_state);
-  void writeTexture(GPUImageCopyTexture* destination,
+  void writeTexture(ScriptState* script_state,
+                    GPUImageCopyTexture* destination,
                     const MaybeShared<DOMArrayBufferView>& data,
                     GPUImageDataLayout* data_layout,
                     const V8GPUExtent3D* write_size,
                     ExceptionState& exception_state);
-  void writeTexture(GPUImageCopyTexture* destination,
+  void writeTexture(ScriptState* script_state,
+                    GPUImageCopyTexture* destination,
                     const DOMArrayBufferBase* data,
                     GPUImageDataLayout* data_layout,
                     const V8GPUExtent3D* write_size,
@@ -86,7 +92,8 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                               bool dst_premultiplied_alpha,
                               PredefinedColorSpace dst_color_space,
                               bool flipY);
-  void WriteBufferImpl(GPUBuffer* buffer,
+  void WriteBufferImpl(ScriptState* script_state,
+                       GPUBuffer* buffer,
                        uint64_t buffer_offset,
                        uint64_t data_byte_length,
                        const void* data_base_ptr,
@@ -94,7 +101,8 @@ class GPUQueue : public DawnObject<WGPUQueue> {
                        uint64_t data_byte_offset,
                        absl::optional<uint64_t> byte_size,
                        ExceptionState& exception_state);
-  void WriteTextureImpl(GPUImageCopyTexture* destination,
+  void WriteTextureImpl(ScriptState* script_state,
+                        GPUImageCopyTexture* destination,
                         const void* data,
                         size_t dataSize,
                         GPUImageDataLayout* data_layout,

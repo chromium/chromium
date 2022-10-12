@@ -114,7 +114,7 @@ ScriptPromise GPUShaderModule::compilationInfo(ScriptState* script_state) {
       GetHandle(), callback->UnboundCallback(), callback->AsUserdata());
   // WebGPU guarantees that promises are resolved in finite time so we
   // need to ensure commands are flushed.
-  EnsureFlush();
+  EnsureFlush(ToEventLoop(script_state));
   return promise;
 }
 

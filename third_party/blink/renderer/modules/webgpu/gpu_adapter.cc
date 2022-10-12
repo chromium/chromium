@@ -235,7 +235,7 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
 
   GetProcs().adapterRequestDevice(
       handle_, &dawn_desc, callback->UnboundCallback(), callback->AsUserdata());
-  EnsureFlush();
+  EnsureFlush(ToEventLoop(script_state));
 
   return promise;
 }

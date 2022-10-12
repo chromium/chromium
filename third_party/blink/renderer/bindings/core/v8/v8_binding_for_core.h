@@ -53,6 +53,10 @@
 
 namespace blink {
 
+namespace scheduler {
+class EventLoop;
+}  // namespace scheduler
+
 // This file contains core-specific bindings utility functions. For functions
 // that are core independent, see platform/bindings/V8Binding.h. When adding a
 // new utility function, consider adding it to V8Binding.h instead unless it has
@@ -517,6 +521,8 @@ CORE_EXPORT Vector<String> GetOwnPropertyNames(v8::Isolate*,
 
 CORE_EXPORT v8::MicrotaskQueue* ToMicrotaskQueue(ExecutionContext*);
 CORE_EXPORT v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState*);
+CORE_EXPORT scheduler::EventLoop& ToEventLoop(ExecutionContext*);
+CORE_EXPORT scheduler::EventLoop& ToEventLoop(ScriptState*);
 
 // Helper finction used in the callback functions to validate context.
 // Returns true if the given execution context and V8 context are capable to run

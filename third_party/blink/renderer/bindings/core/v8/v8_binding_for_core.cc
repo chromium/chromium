@@ -953,6 +953,15 @@ v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState* script_state) {
   return ToMicrotaskQueue(ExecutionContext::From(script_state));
 }
 
+scheduler::EventLoop& ToEventLoop(ExecutionContext* execution_context) {
+  DCHECK(execution_context);
+  return *execution_context->GetAgent()->event_loop().get();
+}
+
+scheduler::EventLoop& ToEventLoop(ScriptState* script_state) {
+  return ToEventLoop(ExecutionContext::From(script_state));
+}
+
 bool IsInParallelAlgorithmRunnable(ExecutionContext* execution_context,
                                    ScriptState* script_state) {
   if (!execution_context || execution_context->IsContextDestroyed())

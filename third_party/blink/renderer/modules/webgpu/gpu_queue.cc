@@ -257,53 +257,58 @@ ScriptPromise GPUQueue::onSubmittedWorkDone(ScriptState* script_state) {
       GetHandle(), 0u, callback->UnboundCallback(), callback->AsUserdata());
   // WebGPU guarantees that promises are resolved in finite time so we
   // need to ensure commands are flushed.
-  EnsureFlush();
+  EnsureFlush(ToEventLoop(script_state));
   return promise;
 }
 
-void GPUQueue::writeBuffer(GPUBuffer* buffer,
+void GPUQueue::writeBuffer(ScriptState* script_state,
+                           GPUBuffer* buffer,
                            uint64_t buffer_offset,
                            const MaybeShared<DOMArrayBufferView>& data,
                            uint64_t data_element_offset,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(buffer, buffer_offset, data->byteLength(),
+  WriteBufferImpl(script_state, buffer, buffer_offset, data->byteLength(),
                   data->BaseAddressMaybeShared(), data->TypeSize(),
                   data_element_offset, {}, exception_state);
 }
 
-void GPUQueue::writeBuffer(GPUBuffer* buffer,
+void GPUQueue::writeBuffer(ScriptState* script_state,
+                           GPUBuffer* buffer,
                            uint64_t buffer_offset,
                            const MaybeShared<DOMArrayBufferView>& data,
                            uint64_t data_element_offset,
                            uint64_t data_element_count,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(buffer, buffer_offset, data->byteLength(),
+  WriteBufferImpl(script_state, buffer, buffer_offset, data->byteLength(),
                   data->BaseAddressMaybeShared(), data->TypeSize(),
                   data_element_offset, data_element_count, exception_state);
 }
 
-void GPUQueue::writeBuffer(GPUBuffer* buffer,
+void GPUQueue::writeBuffer(ScriptState* script_state,
+                           GPUBuffer* buffer,
                            uint64_t buffer_offset,
                            const DOMArrayBufferBase* data,
                            uint64_t data_byte_offset,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(buffer, buffer_offset, data->ByteLength(),
+  WriteBufferImpl(script_state, buffer, buffer_offset, data->ByteLength(),
                   data->DataMaybeShared(), 1, data_byte_offset, {},
                   exception_state);
 }
 
-void GPUQueue::writeBuffer(GPUBuffer* buffer,
+void GPUQueue::writeBuffer(ScriptState* script_state,
+                           GPUBuffer* buffer,
                            uint64_t buffer_offset,
                            const DOMArrayBufferBase* data,
                            uint64_t data_byte_offset,
                            uint64_t byte_size,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(buffer, buffer_offset, data->ByteLength(),
+  WriteBufferImpl(script_state, buffer, buffer_offset, data->ByteLength(),
                   data->DataMaybeShared(), 1, data_byte_offset, byte_size,
                   exception_state);
 }
 
-void GPUQueue::WriteBufferImpl(GPUBuffer* buffer,
+void GPUQueue::WriteBufferImpl(ScriptState* script_state,
+                               GPUBuffer* buffer,
                                uint64_t buffer_offset,
                                uint64_t data_byte_length,
                                const void* data_base_ptr,
@@ -352,29 +357,33 @@ void GPUQueue::WriteBufferImpl(GPUBuffer* buffer,
   const uint8_t* data_ptr = data_base_ptr_bytes + data_byte_offset;
   GetProcs().queueWriteBuffer(GetHandle(), buffer->GetHandle(), buffer_offset,
                               data_ptr, static_cast<size_t>(write_byte_size));
-  EnsureFlush();
+  EnsureFlush(ToEventLoop(script_state));
 }
 
-void GPUQueue::writeTexture(GPUImageCopyTexture* destination,
+void GPUQueue::writeTexture(ScriptState* script_state,
+                            GPUImageCopyTexture* destination,
                             const MaybeShared<DOMArrayBufferView>& data,
                             GPUImageDataLayout* data_layout,
                             const V8GPUExtent3D* write_size,
                             ExceptionState& exception_state) {
-  WriteTextureImpl(destination, data->BaseAddressMaybeShared(),
+  WriteTextureImpl(script_state, destination, data->BaseAddressMaybeShared(),
                    data->byteLength(), data_layout, write_size,
                    exception_state);
 }
 
-void GPUQueue::writeTexture(GPUImageCopyTexture* destination,
+void GPUQueue::writeTexture(ScriptState* script_state,
+                            GPUImageCopyTexture* destination,
                             const DOMArrayBufferBase* data,
                             GPUImageDataLayout* data_layout,
                             const V8GPUExtent3D* write_size,
                             ExceptionState& exception_state) {
-  WriteTextureImpl(destination, data->DataMaybeShared(), data->ByteLength(),
-                   data_layout, write_size, exception_state);
+  WriteTextureImpl(script_state, destination, data->DataMaybeShared(),
+                   data->ByteLength(), data_layout, write_size,
+                   exception_state);
 }
 
-void GPUQueue::WriteTextureImpl(GPUImageCopyTexture* destination,
+void GPUQueue::WriteTextureImpl(ScriptState* script_state,
+                                GPUImageCopyTexture* destination,
                                 const void* data,
                                 size_t data_size,
                                 GPUImageDataLayout* data_layout,
@@ -419,7 +428,7 @@ void GPUQueue::WriteTextureImpl(GPUImageCopyTexture* destination,
   GetProcs().queueWriteTexture(GetHandle(), &dawn_destination, data_ptr,
                                required_copy_size, &dawn_data_layout,
                                &dawn_write_size);
-  EnsureFlush();
+  EnsureFlush(ToEventLoop(script_state));
   return;
 }
 

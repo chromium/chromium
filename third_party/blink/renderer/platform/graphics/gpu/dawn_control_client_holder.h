@@ -22,6 +22,10 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 
+namespace scheduler {
+class EventLoop;
+}  // namespace scheduler
+
 // This class holds the WebGraphicsContext3DProviderWrapper and a strong
 // reference to the WebGPU APIChannel.
 // DawnControlClientHolder::Destroy() should be called to destroy the
@@ -57,7 +61,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   // Flush commands on this client immediately.
   void Flush();
   // Ensure commands on this client are flushed by the end of the task.
-  void EnsureFlush();
+  void EnsureFlush(scheduler::EventLoop& event_loop);
 
  private:
   friend class RefCounted<DawnControlClientHolder>;
