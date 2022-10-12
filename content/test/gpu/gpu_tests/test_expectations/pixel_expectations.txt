@@ -448,12 +448,6 @@ crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 crbug.com/1348002 [ linux nvidia ] Pixel_VideoStreamFromWebGLCanvas [ RetryOnFailure ]
 crbug.com/1348002 [ linux nvidia ] Pixel_VideoStreamFromWebGLAlphaCanvas [ Failure ]
 
-# Timeout on Nexus 5
-crbug.com/1353189 [ android android-nexus-5 ] Pixel_VideoStreamFromWebGLAlphaCanvas_TwoCopy_CpuReadback [ Failure ]
-
-# Crash on Linux FYI Release (NVIDIA) using SkiaRenderer/Vulkan
-crbug.com/1353189 [ linux renderer-skia-vulkan nvidia-0x2184 ] Pixel_VideoStreamFromWebGLAlphaCanvas_TwoCopy_CpuReadback [ Failure ]
-
 # Currently expected to fail on non-rooted devices since minidump collection
 # does not work yet, meaning that we can't verify that we crashed exactly once
 # as expected.
