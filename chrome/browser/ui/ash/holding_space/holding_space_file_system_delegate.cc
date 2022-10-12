@@ -502,38 +502,34 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
             profile(), /*base_path=*/base::FilePath());
   }
 
-  // Resolve conflicts with existing items that arise from the move.
+  // Mark items that were moved to an enabled Trash location for removal.
   std::set<std::string> item_ids_to_remove;
-  for (auto& item : model()->items()) {
-    if (dst == item->file_path() || dst.IsParent(item->file_path())) {
-      item_ids_to_remove.insert(item->id());
-      continue;
-    }
-
-    // Files that are sent to the Trash are actually moved to a folder, e.g.
-    // My files/.Trash/files. This means the files still appear in holding space
-    // despite the user intending to delete them. These should be removed from
-    // the model.
-    if (base::ranges::any_of(enabled_trash_locations, [&dst](const auto& it) {
-          const base::FilePath trash_location =
-              it.first.Append(it.second.relative_folder_path);
-          return trash_location.IsParent(dst);
-        })) {
-      item_ids_to_remove.insert(item->id());
+  for (const auto& it : enabled_trash_locations) {
+    const base::FilePath& trash_location =
+        it.first.Append(it.second.relative_folder_path);
+    for (const auto& [id, file_path] : items_to_move) {
+      if (trash_location.IsParent(file_path))
+        item_ids_to_remove.insert(id);
     }
   }
+
+  // Mark conflicts with existing items that arise from the move for removal.
+  for (auto& item : model()->items()) {
+    if (dst == item->file_path() || dst.IsParent(item->file_path()))
+      item_ids_to_remove.insert(item->id());
+  }
+
+  // Remove items which have been marked for removal.
   model()->RemoveItems(item_ids_to_remove);
 
   // Finally, update the files that have been moved.
-  for (const auto& to_move : items_to_move) {
-    if (item_ids_to_remove.count(to_move.first))
+  for (const auto& [id, file_path] : items_to_move) {
+    if (item_ids_to_remove.count(id))
       continue;
 
-    model()
-        ->UpdateItem(/*id=*/to_move.first)
-        ->SetBackingFile(/*file_path=*/to_move.second,
-                         holding_space_util::ResolveFileSystemUrl(
-                             profile(), /*file_path=*/to_move.second));
+    model()->UpdateItem(id)->SetBackingFile(
+        file_path,
+        holding_space_util::ResolveFileSystemUrl(profile(), file_path));
   }
 
   // If a backing file update occurred, it's possible that there are no longer

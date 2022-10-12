@@ -22,15 +22,15 @@
 #include "base/files/file_util.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
-#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/trash_io_task.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
@@ -144,12 +144,6 @@ HoldingSpaceItem* AddUninitializedItem(HoldingSpaceModel* model,
   auto* deserialized_item_ptr = deserialized_item.get();
   model->AddItem(std::move(deserialized_item));
   return deserialized_item_ptr;
-}
-
-base::FilePath MakeRelativePath(const base::FilePath& absolute_path,
-                                const base::FilePath& parent) {
-  return base::FilePath(absolute_path.value().substr(
-      parent.AsEndingWithSeparator().value().size()));
 }
 
 // Utility class which can wait until a `HoldingSpaceModel` for a given profile
@@ -1090,6 +1084,14 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
       ScopedTestMountPoint::CreateAndMountDownloads(GetProfile());
   ASSERT_TRUE(downloads_mount->IsValid());
 
+  // Ensure that required trash folders exist for the `downloads_mount`.
+  const base::FilePath trash_path = downloads_mount->GetRootPath().Append(
+      file_manager::trash::kTrashFolderName);
+  ASSERT_TRUE(base::CreateDirectory(
+      trash_path.Append(file_manager::trash::kFilesFolderName)));
+  ASSERT_TRUE(base::CreateDirectory(
+      trash_path.Append(file_manager::trash::kInfoFolderName)));
+
   // Cache the holding space model for the primary profile.
   HoldingSpaceKeyedService* const primary_holding_space_service =
       HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(GetProfile());
@@ -1117,10 +1119,11 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
     primary_holding_space_model->AddItem(std::move(holding_space_item));
   }
 
-  // Create a context for testing.
-  scoped_refptr<storage::FileSystemContext> file_system_context =
-      storage::CreateFileSystemContextForTesting(
-          nullptr, downloads_mount->GetRootPath());
+  // Use the File Manager's context for testing. Note that we specifically do
+  // not use a test context since we want a production context which uses file
+  // system operations that notify the `FileChangeService` on completion.
+  storage::FileSystemContext* file_system_context =
+      file_manager::util::GetFileManagerFileSystemContext(GetProfile());
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("chrome-extension://abc");
 
@@ -1132,25 +1135,15 @@ TEST_P(HoldingSpaceKeyedServiceWithExperimentalFeatureTest,
     base::FilePath file_path = holding_space_item->file_path();
 
     ItemRemovedWaiter waiter(primary_holding_space_model, holding_space_item);
-    base::MockOnceCallback<void(file_manager::io_task::ProgressStatus)>
-        complete_callback;
 
-    EXPECT_CALL(complete_callback,
-                Run(Field(&file_manager::io_task::ProgressStatus::state,
-                          file_manager::io_task::State::kSuccess)));
+    base::test::TestFuture<file_manager::io_task::ProgressStatus> status;
+    file_manager::io_task::TrashIOTask task(
+        {file_system_context->CrackURLInFirstPartyContext(
+            GetFileSystemUrl(GetProfile(), file_path))},
+        GetProfile(), file_system_context, /*base_path=*/base::FilePath());
+    task.Execute(base::DoNothing(), status.GetCallback());
+    EXPECT_EQ(status.Get().state, file_manager::io_task::State::kSuccess);
 
-    // Paths sent to the test `FileSystemContext` must be relative to the base
-    // path supplied when the context was setup.
-    base::FilePath relative_path =
-        MakeRelativePath(file_path, downloads_mount->GetRootPath());
-    std::vector<storage::FileSystemURL> source_urls = {
-        file_system_context->CreateCrackedFileSystemURL(
-            kTestStorageKey, storage::kFileSystemTypeTest, relative_path),
-    };
-    file_manager::io_task::TrashIOTask task(source_urls, GetProfile(),
-                                            file_system_context,
-                                            downloads_mount->GetRootPath());
-    task.Execute(base::DoNothing(), complete_callback.Get());
     waiter.Wait();
   }
 
