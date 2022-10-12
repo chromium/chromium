@@ -597,9 +597,6 @@ void NativeWidgetAura::StackAtTop() {
 }
 
 bool NativeWidgetAura::IsStackedAbove(gfx::NativeView native_view) {
-  if (!window_)
-    return false;
-
   // If the root windows are not shared between two native views
   // it is likely that they are child windows of different top level windows.
   // In that scenario, just check the top level windows.
