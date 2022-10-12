@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -17,6 +18,11 @@ export enum KeyInputState {
   MODIFIER_SELECTED = 'modifier-selected',
   ALPHANUMERIC_SELECTED = 'alpha-numeric-selected',
 }
+
+const keyToIconNameMap: {[key: string]: string} = {
+  'PrintScreen': 'overview',
+  // TODO(cambickel): Add remaining keyboard icons to this map.
+};
 
 /**
  * @fileoverview
@@ -48,6 +54,20 @@ export class InputKeyElement extends PolymerElement {
 
   static get template() {
     return getTemplate();
+  }
+
+  private getIconIdForKey(): string|null {
+    const iconName = keyToIconNameMap[this.key];
+    if (iconName) {
+      return `shortcut-customization:${iconName}`;
+    }
+    return null;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'input-key': InputKeyElement;
   }
 }
 

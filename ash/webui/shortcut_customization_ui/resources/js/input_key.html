@@ -37,6 +37,18 @@
     color: var(--google-grey-600);
     font-weight: bold;
   }
+
+  #key-icon {
+    height: 14px;
+    width: 14px;
+  }
 </style>
 
-<div id="key" class="key-container">[[key]]</div>
+<div id="key" class="key-container">
+  <template is="dom-if" if="[[getIconIdForKey(key)]]">
+    <iron-icon icon="[[getIconIdForKey(key)]]" id="key-icon"></iron-icon>
+  </template>
+  <template is="dom-if" if="[[!getIconIdForKey(key)]]">
+    <span id="key-text">[[key]]</span>
+  </template>
+</div>
