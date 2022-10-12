@@ -65,7 +65,8 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
 
   // Called when the external extensions prefs are read from the disk.
   // `prefs` - demo extensions prefs.
-  void DemoExternalExtensionsPrefsLoaded(absl::optional<base::Value> prefs);
+  void DemoExternalExtensionsPrefsLoaded(
+      absl::optional<base::Value::Dict> prefs);
 
   std::unique_ptr<ExternalCache> external_cache_;
 
