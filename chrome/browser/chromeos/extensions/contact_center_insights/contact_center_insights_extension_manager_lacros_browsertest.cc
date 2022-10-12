@@ -40,7 +40,9 @@ void SetupUserDeviceAffiliation() {
 
 // Browser test that validates extension installation status when the
 // `InsightsExtensionEnabled` policy is set/unset on Lacros.
-class ContactCenterInsightsExtensionManagerBrowserTest
+//
+// TODO (crbug.com/1362037): Disabled for flakiness.
+class DISABLED_ContactCenterInsightsExtensionManagerBrowserTest
     : public ::extensions::ExtensionBrowserTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
@@ -54,21 +56,24 @@ class ContactCenterInsightsExtensionManagerBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ContactCenterInsightsExtensionManagerBrowserTest,
-                       ExtensionUnloadedByDefault) {
+IN_PROC_BROWSER_TEST_F(
+    DISABLED_ContactCenterInsightsExtensionManagerBrowserTest,
+    ExtensionUnloadedByDefault) {
   EXPECT_FALSE(extension_registry()->GetInstalledExtension(
       ::extension_misc::kContactCenterInsightsExtensionId));
 }
 
-IN_PROC_BROWSER_TEST_F(ContactCenterInsightsExtensionManagerBrowserTest,
-                       InstallExtensionWhenPrefSet) {
+IN_PROC_BROWSER_TEST_F(
+    DISABLED_ContactCenterInsightsExtensionManagerBrowserTest,
+    InstallExtensionWhenPrefSet) {
   SetPrefValue(true);
   EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(
       ::extension_misc::kContactCenterInsightsExtensionId));
 }
 
-IN_PROC_BROWSER_TEST_F(ContactCenterInsightsExtensionManagerBrowserTest,
-                       ExtensionUninstalledWhenPrefUnset) {
+IN_PROC_BROWSER_TEST_F(
+    DISABLED_ContactCenterInsightsExtensionManagerBrowserTest,
+    ExtensionUninstalledWhenPrefUnset) {
   // Set pref to enable extension.
   SetPrefValue(true);
   EXPECT_TRUE(extension_registry()->enabled_extensions().GetByID(
