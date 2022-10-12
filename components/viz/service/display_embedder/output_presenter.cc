@@ -14,7 +14,13 @@
 
 namespace viz {
 
-OutputPresenter::Image::Image() = default;
+OutputPresenter::Image::Image(
+    gpu::SharedImageFactory* factory,
+    gpu::SharedImageRepresentationFactory* representation_factory,
+    SkiaOutputSurfaceDependency* deps)
+    : factory_(factory),
+      representation_factory_(representation_factory),
+      deps_(deps) {}
 
 OutputPresenter::Image::~Image() {
   // TODO(vasilyt): As we are going to delete image anyway we should be able
@@ -23,25 +29,35 @@ OutputPresenter::Image::~Image() {
     EndWriteSkia();
   }
   DCHECK(!scoped_skia_write_access_);
+  factory_->DestroySharedImage(mailbox_);
 }
 
-bool OutputPresenter::Image::Initialize(
-    gpu::SharedImageFactory* factory,
-    gpu::SharedImageRepresentationFactory* representation_factory,
-    const gpu::Mailbox& mailbox,
-    SkiaOutputSurfaceDependency* deps) {
-  skia_representation_ = representation_factory->ProduceSkia(
-      mailbox, deps->GetSharedContextState());
+bool OutputPresenter::Image::Initialize(const gfx::Size& size,
+                                        const gfx::ColorSpace& color_space,
+                                        SharedImageFormat format,
+                                        uint32_t shared_image_usage) {
+  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
+
+  if (!factory_->CreateSharedImage(
+          mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType, deps_->GetSurfaceHandle(), shared_image_usage)) {
+    DLOG(ERROR) << "CreateSharedImage failed.";
+    return false;
+  }
+  mailbox_ = mailbox;
+
+  skia_representation_ = representation_factory_->ProduceSkia(
+      mailbox_, deps_->GetSharedContextState());
   if (!skia_representation_) {
     DLOG(ERROR) << "ProduceSkia() failed.";
     return false;
   }
 
-  // Initialize |shared_image_deleter_| to make sure the shared image backing
-  // will be released with the Image.
-  shared_image_deleter_.ReplaceClosure(base::BindOnce(
-      base::IgnoreResult(&gpu::SharedImageFactory::DestroySharedImage),
-      base::Unretained(factory), mailbox));
+  overlay_representation_ = representation_factory_->ProduceOverlay(mailbox_);
+  if (!overlay_representation_) {
+    DLOG(ERROR) << "ProduceOverlay() failed";
+    return false;
+  }
 
   return true;
 }

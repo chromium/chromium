@@ -27,7 +27,11 @@ namespace {
 
 class PresenterImageFuchsia : public OutputPresenter::Image {
  public:
-  PresenterImageFuchsia() = default;
+  PresenterImageFuchsia(
+      gpu::SharedImageFactory* factory,
+      gpu::SharedImageRepresentationFactory* representation_factory,
+      SkiaOutputSurfaceDependency* deps)
+      : Image(factory, representation_factory, deps) {}
   ~PresenterImageFuchsia() override;
 
   // OutputPresenter::Image implementation.
@@ -35,11 +39,6 @@ class PresenterImageFuchsia : public OutputPresenter::Image {
   void EndPresent(gfx::GpuFenceHandle release_fence) final;
   int GetPresentCount() const final;
   void OnContextLost() final;
-
-  bool Initialize(gpu::SharedImageFactory* factory,
-                  gpu::SharedImageRepresentationFactory* representation_factory,
-                  const gpu::Mailbox& mailbox,
-                  SkiaOutputSurfaceDependency* deps);
 
   // Must only be called in between BeginPresent() and EndPresent().
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() {
@@ -53,14 +52,6 @@ class PresenterImageFuchsia : public OutputPresenter::Image {
       std::vector<gfx::GpuFenceHandle>& read_end_fences);
 
  private:
-  VulkanContextProvider* vulkan_context_provider_ = nullptr;
-
-  std::unique_ptr<gpu::OverlayImageRepresentation> overlay_representation_;
-  std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
-      scoped_overlay_read_access_;
-
-  int present_count_ = 0;
-
   std::vector<gfx::GpuFenceHandle> read_begin_fences_;
   gfx::GpuFenceHandle read_end_fence_;
 };
@@ -68,26 +59,6 @@ class PresenterImageFuchsia : public OutputPresenter::Image {
 PresenterImageFuchsia::~PresenterImageFuchsia() {
   DCHECK(read_begin_fences_.empty());
   DCHECK(read_end_fence_.is_null());
-}
-
-bool PresenterImageFuchsia::Initialize(
-    gpu::SharedImageFactory* factory,
-    gpu::SharedImageRepresentationFactory* representation_factory,
-    const gpu::Mailbox& mailbox,
-    SkiaOutputSurfaceDependency* deps) {
-  vulkan_context_provider_ = deps->GetVulkanContextProvider();
-
-  if (!Image::Initialize(factory, representation_factory, mailbox, deps))
-    return false;
-
-  overlay_representation_ = representation_factory->ProduceOverlay(mailbox);
-
-  if (!overlay_representation_) {
-    DLOG(ERROR) << "ProduceOverlay() failed";
-    return false;
-  }
-
-  return true;
 }
 
 void PresenterImageFuchsia::BeginPresent() {
@@ -114,7 +85,7 @@ void PresenterImageFuchsia::BeginPresent() {
   // A new release fence is generated for each present. The fence for the last
   // present gets waited on before giving up read access to the shared image.
   gpu::ExternalSemaphore semaphore =
-      gpu::ExternalSemaphore::Create(vulkan_context_provider_);
+      gpu::ExternalSemaphore::Create(deps_->GetVulkanContextProvider());
   DCHECK(semaphore.is_valid());
   read_end_fence_ = semaphore.TakeSemaphoreHandle().ToGpuFenceHandle();
 
@@ -231,18 +202,10 @@ OutputPresenterFuchsia::AllocateImages(gfx::ColorSpace color_space,
 
   // Create an image for each buffer in the collection.
   for (size_t i = 0; i < num_images; ++i) {
-    auto mailbox = gpu::Mailbox::GenerateForSharedImage();
-    if (!shared_image_factory_->CreateSharedImage(
-            mailbox, si_format_, frame_size_, color_space,
-            kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-            dependency_->GetSurfaceHandle(), image_usage)) {
-      return {};
-    }
-
-    auto image = std::make_unique<PresenterImageFuchsia>();
-    if (!image->Initialize(shared_image_factory_,
-                           shared_image_representation_factory_, mailbox,
-                           dependency_)) {
+    auto image = std::make_unique<PresenterImageFuchsia>(
+        shared_image_factory_, shared_image_representation_factory_,
+        dependency_);
+    if (!image->Initialize(frame_size_, color_space, si_format_, image_usage)) {
       return {};
     }
     images.push_back(std::move(image));

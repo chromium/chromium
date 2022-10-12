@@ -48,16 +48,12 @@ std::unique_ptr<gfx::GpuFence> TakeGpuFence(gfx::GpuFenceHandle fence) {
 
 class PresenterImageGL : public OutputPresenter::Image {
  public:
-  PresenterImageGL() = default;
+  PresenterImageGL(
+      gpu::SharedImageFactory* factory,
+      gpu::SharedImageRepresentationFactory* representation_factory,
+      SkiaOutputSurfaceDependency* deps)
+      : Image(factory, representation_factory, deps) {}
   ~PresenterImageGL() override = default;
-
-  bool Initialize(gpu::SharedImageFactory* factory,
-                  gpu::SharedImageRepresentationFactory* representation_factory,
-                  const gfx::Size& size,
-                  const gfx::ColorSpace& color_space,
-                  ResourceFormat format,
-                  SkiaOutputSurfaceDependency* deps,
-                  uint32_t shared_image_usage);
 
   void BeginPresent() final;
   void EndPresent(gfx::GpuFenceHandle release_fence) final;
@@ -70,45 +66,7 @@ class PresenterImageGL : public OutputPresenter::Image {
     DCHECK(overlay_representation_);
     return overlay_representation_->color_space();
   }
-
- private:
-  std::unique_ptr<gpu::OverlayImageRepresentation> overlay_representation_;
-  std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
-      scoped_overlay_read_access_;
-
-  int present_count_ = 0;
 };
-
-bool PresenterImageGL::Initialize(
-    gpu::SharedImageFactory* factory,
-    gpu::SharedImageRepresentationFactory* representation_factory,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    ResourceFormat format,
-    SkiaOutputSurfaceDependency* deps,
-    uint32_t shared_image_usage) {
-  auto mailbox = gpu::Mailbox::GenerateForSharedImage();
-  auto si_format = SharedImageFormat::SinglePlane(format);
-
-  if (!factory->CreateSharedImage(
-          mailbox, si_format, size, color_space, kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, deps->GetSurfaceHandle(), shared_image_usage)) {
-    DLOG(ERROR) << "CreateSharedImage failed.";
-    return false;
-  }
-
-  if (!Image::Initialize(factory, representation_factory, mailbox, deps))
-    return false;
-
-  overlay_representation_ = representation_factory->ProduceOverlay(mailbox);
-
-  if (!overlay_representation_) {
-    LOG(ERROR) << "ProduceOverlay() failed";
-    return false;
-  }
-
-  return true;
-}
 
 void PresenterImageGL::BeginPresent() {
   if (++present_count_ != 1) {
@@ -288,10 +246,11 @@ OutputPresenterGL::AllocateImages(gfx::ColorSpace color_space,
                                   size_t num_images) {
   std::vector<std::unique_ptr<Image>> images;
   for (size_t i = 0; i < num_images; ++i) {
-    auto image = std::make_unique<PresenterImageGL>();
-    if (!image->Initialize(shared_image_factory_,
-                           shared_image_representation_factory_, image_size,
-                           color_space, image_format_, dependency_,
+    auto image = std::make_unique<PresenterImageGL>(
+        shared_image_factory_, shared_image_representation_factory_,
+        dependency_);
+    if (!image->Initialize(image_size, color_space,
+                           SharedImageFormat::SinglePlane(image_format_),
                            shared_image_usage_)) {
       DLOG(ERROR) << "Failed to initialize image.";
       return {};
@@ -305,10 +264,10 @@ OutputPresenterGL::AllocateImages(gfx::ColorSpace color_space,
 std::unique_ptr<OutputPresenter::Image> OutputPresenterGL::AllocateSingleImage(
     gfx::ColorSpace color_space,
     gfx::Size image_size) {
-  auto image = std::make_unique<PresenterImageGL>();
-  if (!image->Initialize(shared_image_factory_,
-                         shared_image_representation_factory_, image_size,
-                         color_space, image_format_, dependency_,
+  auto image = std::make_unique<PresenterImageGL>(
+      shared_image_factory_, shared_image_representation_factory_, dependency_);
+  if (!image->Initialize(image_size, color_space,
+                         SharedImageFormat::SinglePlane(image_format_),
                          shared_image_usage_)) {
     DLOG(ERROR) << "Failed to initialize image.";
     return nullptr;
