@@ -21,7 +21,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "element.h"
 
 namespace autofill_assistant {
 
@@ -75,7 +74,7 @@ void SemanticElementFinder::GiveUpWithError(const ClientStatus& status) {
   SendResult(status, ElementFinderResult::EmptyResult());
 }
 
-void SemanticElementFinder::ResultFound(const SemanticNodeResult& node,
+void SemanticElementFinder::ResultFound(const GlobalBackendNodeId& node_id,
                                         const std::string& object_id,
                                         const std::string& devtools_frame_id) {
   if (!callback_) {
@@ -83,10 +82,10 @@ void SemanticElementFinder::ResultFound(const SemanticNodeResult& node,
   }
 
   ElementFinderResult result;
-  result.SetRenderFrameHostGlobalId(node.id.host_id());
+  result.SetRenderFrameHostGlobalId(node_id.host_id());
   result.SetObjectId(object_id);
   result.SetNodeFrameId(devtools_frame_id);
-  result.SetBackendNodeId(node.id.backend_node_id());
+  result.SetBackendNodeId(node_id.backend_node_id());
 
   SendResult(OkClientStatus(), result);
 }
@@ -121,15 +120,13 @@ ElementFinderInfoProto SemanticElementFinder::GetLogInfo() const {
     auto* predicted_element =
         info.mutable_semantic_inference_result()->add_predicted_elements();
     predicted_element->set_backend_node_id(
-        semantic_node_result.id.backend_node_id());
+        semantic_node_result.backend_node_id());
     *predicted_element->mutable_semantic_filter() = filter_;
     // TODO(b/217160707): For the ignore_objective case this is not correct
     // and the inferred objective should be returned from the Agent and used
     // here.
-    if (semantic_node_result.used_override) {
-      predicted_element->set_used_override(semantic_node_result.used_override);
-    }
   }
+
   return info;
 }
 
@@ -159,6 +156,7 @@ void SemanticElementFinder::RunAnnotateDomModel(
 }
 
 void SemanticElementFinder::OnTimeout() {
+  VLOG(1) << "AnnotateDomModel timeout.";
   Finalize();
 }
 
@@ -196,22 +194,20 @@ void SemanticElementFinder::OnRunAnnotateDomModelOnFrame(
 
   node_data_frame_status_.emplace_back(status);
 
-  std::vector<SemanticNodeResult> results;
+  std::vector<GlobalBackendNodeId> node_ids;
   for (const auto& node : node_data) {
-    SemanticNodeResult node_result;
-    node_result.id = GlobalBackendNodeId(host_id, node.backend_node_id);
-    node_result.used_override = node.used_override;
-    results.emplace_back(node_result);
+    node_ids.emplace_back(GlobalBackendNodeId(host_id, node.backend_node_id));
   }
-  received_results_.emplace(host_id, std::move(results));
+
+  received_results_.emplace(host_id, std::move(node_ids));
 
   MarkRenderFrameProcessed(host_id);
 }
 
 void SemanticElementFinder::OnRunAnnotateDomModel() {
-  for (const auto& [backend_id, results] : received_results_) {
-    semantic_node_results_.insert(semantic_node_results_.end(), results.begin(),
-                                  results.end());
+  for (const auto& [backend_id, node_ids] : received_results_) {
+    semantic_node_results_.insert(semantic_node_results_.end(),
+                                  node_ids.begin(), node_ids.end());
   }
 
   // For now we only support finding a single element.
@@ -242,7 +238,7 @@ void SemanticElementFinder::OnRunAnnotateDomModel() {
   // not have a session id in our |DevtoolsClient|).
   std::string devtools_frame_id;
   auto* frame =
-      content::RenderFrameHost::FromID(semantic_node_result.id.host_id());
+      content::RenderFrameHost::FromID(semantic_node_result.host_id());
   if (frame != nullptr && frame->IsRenderFrameLive() &&
       web_contents_->GetPrimaryMainFrame()->GetProcess() !=
           frame->GetProcess()) {
@@ -253,7 +249,7 @@ void SemanticElementFinder::OnRunAnnotateDomModel() {
 
   devtools_client_->GetDOM()->ResolveNode(
       dom::ResolveNodeParams::Builder()
-          .SetBackendNodeId(semantic_node_result.id.backend_node_id())
+          .SetBackendNodeId(semantic_node_result.backend_node_id())
           .Build(),
       devtools_frame_id,
       base::BindOnce(&SemanticElementFinder::OnResolveNodeForAnnotateDom,
@@ -262,7 +258,7 @@ void SemanticElementFinder::OnRunAnnotateDomModel() {
 }
 
 void SemanticElementFinder::OnResolveNodeForAnnotateDom(
-    const SemanticNodeResult& node,
+    const GlobalBackendNodeId& node,
     const std::string& devtools_frame_id,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<dom::ResolveNodeResult> result) {

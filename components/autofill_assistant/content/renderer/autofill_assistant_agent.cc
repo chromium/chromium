@@ -22,7 +22,6 @@
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/autofill_assistant/content/common/proto/semantic_feature_overrides.pb.h"
-#include "components/autofill_assistant/content/renderer/autofill_assistant_agent_debug_utils.h"
 #include "components/autofill_assistant/content/renderer/autofill_assistant_model_executor.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
@@ -87,10 +86,8 @@ AutofillAssistantAgent::AutofillAssistantAgent(
     std::string jsonEncodedSemanticEnums =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             autofill_assistant::switches::kAutofillAssistantDebugAnnotateDom);
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     semantic_labels =
         DecodeSemanticPredictionLabelsJson(jsonEncodedSemanticEnums);
-#endif
   }
 }
 
@@ -222,11 +219,10 @@ void AutofillAssistantAgent::OnGetModelFile(
       }
     }
 
-    if (result && result->role == role &&
-        (result->objective == objective || ignore_objective)) {
+    if (result && result->first == role &&
+        (result->second == objective || ignore_objective)) {
       NodeData node_data;
       node_data.backend_node_id = node_signal.backend_node_id;
-      node_data.used_override = result->used_override;
       nodes.push_back(node_data);
     }
   }

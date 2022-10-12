@@ -86,30 +86,27 @@ SemanticLabelsPair DecodeSemanticPredictionLabelsJson(std::string encodedJson) {
 std::u16string SemanticPredictionResultToDebugString(
     SemanticPredictionLabelMap roles,
     SemanticPredictionLabelMap objectives,
-    const ModelExecutorResult& result,
+    const std::pair<int, int>& result,
     bool ignore_objective) {
-  int role = result.role;
-  int objective = result.objective;
   if (!roles.empty() || !objectives.empty()) {
     std::string result_label =
-        roles.contains(role) ? roles.at(role)
-                             : "(missing-label) " + base::NumberToString(role);
+        roles.contains(result.first)
+            ? roles.at(result.first)
+            : "(missing-label) " + base::NumberToString(result.first);
     std::string objective_label =
-        objectives.contains(objective)
-            ? objectives.at(objective)
-            : "(missing-label) " + base::NumberToString(objective);
+        objectives.contains(result.second)
+            ? objectives.at(result.second)
+            : "(missing-label) " + base::NumberToString(result.second);
     return base::StrCat(
         {u"{role: ", std::u16string(result_label.begin(), result_label.end()),
          u", objective: ",
          std::u16string(objective_label.begin(), objective_label.end()),
-         (ignore_objective ? u"(ignored)}" : u"}"),
-         (result.used_override ? u"[override]" : u"")});
+         (ignore_objective ? u"(ignored)}" : u"}")});
   }
 
-  return base::StrCat({u"{role: ", base::NumberToString16(role),
-                       u", objective: ", base::NumberToString16(objective),
-                       (ignore_objective ? u"(ignored)}" : u"}"),
-                       (result.used_override ? u"[override]" : u"")});
+  return base::StrCat({u"{role: ", base::NumberToString16(result.first),
+                       u", objective: ", base::NumberToString16(result.second),
+                       (ignore_objective ? u"(ignored)}" : u"}")});
 }
 
 }  // namespace autofill_assistant

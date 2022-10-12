@@ -1624,8 +1624,6 @@ message ElementFinderInfoProto {
     optional SelectorProto.SemanticFilter semantic_filter = 4;
     // The element's backend node id.
     optional int32 backend_node_id = 3;
-    // Whether this element was found using a feature override.
-    optional bool used_override = 5;
 
     reserved 1, 2;
   }
