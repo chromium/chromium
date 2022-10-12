@@ -38,6 +38,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -146,9 +147,13 @@ class UserManagerTest : public testing::Test {
     wallpaper_controller_client_ =
         std::make_unique<WallpaperControllerClientImpl>();
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
+
+    in_process_data_decoder_ =
+        std::make_unique<data_decoder::test::InProcessDataDecoder>();
   }
 
   void TearDown() override {
+    in_process_data_decoder_.reset();
     wallpaper_controller_client_.reset();
 
     // Shut down the DeviceSettingsService.
@@ -234,6 +239,8 @@ class UserManagerTest : public testing::Test {
       session_type_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
+  std::unique_ptr<data_decoder::test::InProcessDataDecoder>
+      in_process_data_decoder_;
 
   content::BrowserTaskEnvironment task_environment_;
 

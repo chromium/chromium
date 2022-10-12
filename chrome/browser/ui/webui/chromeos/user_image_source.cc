@@ -140,7 +140,8 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
           !user->HasDefaultImage() || user->has_image_bytes());
 
     if (user->has_image_bytes()) {
-      if (user->image_format() == user_manager::UserImage::FORMAT_PNG) {
+      if (user->image_format() == user_manager::UserImage::FORMAT_PNG ||
+          user->image_format() == user_manager::UserImage::FORMAT_WEBP) {
         return GetUserImageFrame(user->image_bytes(), user->image_format(),
                                  frame);
       } else {
