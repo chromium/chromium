@@ -32,6 +32,7 @@ source_set("overflow_menu") {
     "resources:overflow_menu_action_incognito",
     "resources:overflow_menu_action_new_tab",
     "resources:overflow_menu_action_new_window",
+    "resources:overflow_menu_action_price_notifications",
     "resources:overflow_menu_action_read_later",
     "resources:overflow_menu_action_reload",
     "resources:overflow_menu_action_report_issue",
