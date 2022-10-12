@@ -57,24 +57,25 @@ TEST_F(LibassistantLoaderImplTest, ShouldRunCallbackWithDlcFeature) {
   EXPECT_TRUE(loader);
 
   // Should fail without dlcservice client.
-  base::RunLoop run_loop;
+  base::RunLoop run_loop1;
   loader->Load(base::BindOnce(
       [](base::RunLoop* run_loop, bool success) {
         EXPECT_FALSE(success);
         run_loop->Quit();
       },
-      &run_loop));
-  run_loop.Run();
+      &run_loop1));
+  run_loop1.Run();
 
   // Should success with dlcservice client.
+  base::RunLoop run_loop2;
   DlcserviceClient::InitializeFake();
   loader->Load(base::BindOnce(
       [](base::RunLoop* run_loop, bool success) {
         EXPECT_TRUE(success);
         run_loop->Quit();
       },
-      &run_loop));
-  run_loop.Run();
+      &run_loop2));
+  run_loop2.Run();
   DlcserviceClient::Shutdown();
 }
 
