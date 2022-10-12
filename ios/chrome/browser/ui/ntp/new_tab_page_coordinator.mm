@@ -1338,7 +1338,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
 
   ios::ChromeIdentityService* identity_service =
       ios::GetChromeBrowserProvider().GetChromeIdentityService();
-  ChromeIdentity* identity =
+  id<SystemIdentity> identity =
       self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (!identity) {
     [self updateFeedWithIsSupervisedUser:NO];
