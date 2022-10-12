@@ -425,9 +425,9 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
   // Check JSON is what we expect.
   {
     base::Value found_sessions = GetSessionsFromValueAndReset();
-    EXPECT_EQ(1u, found_sessions.GetListDeprecated().size());
+    EXPECT_EQ(1u, found_sessions.GetList().size());
 
-    const base::Value& session = found_sessions.GetListDeprecated()[0];
+    const base::Value& session = found_sessions.GetList()[0];
     EXPECT_EQ(base::Value(request_id1), *session.FindKey("id"));
     EXPECT_TRUE(session.FindKeyOfType("name", base::Value::Type::STRING));
     EXPECT_TRUE(session.FindKeyOfType("owner", base::Value::Type::STRING));
@@ -449,15 +449,15 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
   // Check JSON is what we expect.
   {
     base::Value found_sessions = GetSessionsFromValueAndReset();
-    EXPECT_EQ(2u, found_sessions.GetListDeprecated().size());
+    EXPECT_EQ(2u, found_sessions.GetList().size());
 
-    const base::Value& session1 = found_sessions.GetListDeprecated()[0];
+    const base::Value& session1 = found_sessions.GetList()[0];
     EXPECT_EQ(base::Value(request_id2), *session1.FindKey("id"));
     EXPECT_TRUE(session1.FindKeyOfType("name", base::Value::Type::STRING));
     EXPECT_TRUE(session1.FindKeyOfType("owner", base::Value::Type::STRING));
     EXPECT_TRUE(session1.FindKeyOfType("state", base::Value::Type::STRING));
 
-    const base::Value& session2 = found_sessions.GetListDeprecated()[1];
+    const base::Value& session2 = found_sessions.GetList()[1];
     EXPECT_EQ(base::Value(request_id1), *session2.FindKey("id"));
     EXPECT_TRUE(session2.FindKeyOfType("name", base::Value::Type::STRING));
     EXPECT_TRUE(session2.FindKeyOfType("owner", base::Value::Type::STRING));
@@ -471,9 +471,9 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
   // Check JSON is what we expect.
   {
     base::Value found_sessions = GetSessionsFromValueAndReset();
-    EXPECT_EQ(1u, found_sessions.GetListDeprecated().size());
+    EXPECT_EQ(1u, found_sessions.GetList().size());
 
-    const base::Value& session = found_sessions.GetListDeprecated()[0];
+    const base::Value& session = found_sessions.GetList()[0];
     EXPECT_EQ(base::Value(request_id1), *session.FindKey("id"));
     EXPECT_TRUE(session.FindKeyOfType("name", base::Value::Type::STRING));
     EXPECT_TRUE(session.FindKeyOfType("owner", base::Value::Type::STRING));
@@ -491,7 +491,7 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
   // Check JSON is what we expect.
   {
     base::Value found_sessions = GetSessionsFromValueAndReset();
-    EXPECT_EQ(0u, found_sessions.GetListDeprecated().size());
+    EXPECT_EQ(0u, found_sessions.GetList().size());
   }
 }
 
