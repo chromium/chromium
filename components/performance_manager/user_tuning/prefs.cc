@@ -30,7 +30,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(kTabDiscardingExceptions);
+  registry->RegisterListPref(kTabDiscardingExceptions,
+                             user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterListPref(kManagedTabDiscardingExceptions);
 }
 
