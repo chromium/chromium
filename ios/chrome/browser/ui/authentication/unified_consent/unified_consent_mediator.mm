@@ -79,8 +79,8 @@
 
 #pragma mark - Properties
 
-- (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
-  if ([self.selectedIdentity isEqual:selectedIdentity]) {
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
+  if ([_selectedIdentity isEqual:selectedIdentity]) {
     return;
   }
   // nil is allowed only if there is no other identity.
@@ -91,7 +91,7 @@
 
 #pragma mark - Private
 
-- (ChromeIdentity*)findDefaultSelectedIdentity {
+- (id<SystemIdentity>)findDefaultSelectedIdentity {
   if (self.authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     return self.authenticationService->GetPrimaryIdentity(
@@ -109,14 +109,14 @@
   if (!self.accountManagerService)
     return;
 
-  if (self.selectedIdentity) {
+  id<SystemIdentity> selectedIdentity = self.selectedIdentity;
+  if (selectedIdentity) {
     [self.unifiedConsentViewController
-        updateIdentityButtonControlWithUserFullName:self.selectedIdentity
+        updateIdentityButtonControlWithUserFullName:selectedIdentity
                                                         .userFullName
-                                              email:self.selectedIdentity
-                                                        .userEmail];
+                                              email:selectedIdentity.userEmail];
     UIImage* avatar = self.accountManagerService->GetIdentityAvatarWithIdentity(
-        self.selectedIdentity, IdentityAvatarSize::Regular);
+        selectedIdentity, IdentityAvatarSize::Regular);
     DCHECK(avatar);
     [self.unifiedConsentViewController
         updateIdentityButtonControlWithAvatar:avatar];
@@ -131,8 +131,7 @@
   if (!self.accountManagerService)
     return;
 
-  if (!self.selectedIdentity ||
-      !self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
+  if (!self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
     self.selectedIdentity = [self findDefaultSelectedIdentity];
     [self.delegate
         unifiedConsentViewMediatorDelegateNeedPrimaryButtonUpdate:self];

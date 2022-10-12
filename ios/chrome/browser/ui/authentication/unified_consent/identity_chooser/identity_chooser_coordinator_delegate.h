@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-@class ChromeIdentity;
 @class IdentityChooserCoordinator;
+@protocol SystemIdentity;
 
 // Delegate protocol for IdentityChooserCoordinator.
 @protocol IdentityChooserCoordinatorDelegate<NSObject>
@@ -27,7 +27,7 @@
 // already dismissed when this call is made. This call is followed by
 // `-identityChooserCoordinatorDidClose:`.
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
-                 didSelectIdentity:(ChromeIdentity*)identity;
+                 didSelectIdentity:(id<SystemIdentity>)identity;
 
 @end
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -228,9 +229,10 @@
 }
 
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
-                 didSelectIdentity:(ChromeIdentity*)identity {
+                 didSelectIdentity:(id<SystemIdentity>)identity {
   CHECK_EQ(self.identityChooserCoordinator, coordinator);
-  self.mediator.selectedIdentity = identity;
+  self.mediator.selectedIdentity =
+      base::mac::ObjCCastStrict<ChromeIdentity>(identity);
 }
 
 #pragma mark - PromoStyleViewControllerDelegate

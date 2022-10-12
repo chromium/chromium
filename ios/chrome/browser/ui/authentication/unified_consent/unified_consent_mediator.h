@@ -9,9 +9,9 @@
 
 class AuthenticationService;
 class ChromeAccountManagerService;
-@class ChromeIdentity;
 @class UnifiedConsentMediator;
 @class UnifiedConsentViewController;
+@protocol SystemIdentity;
 
 // Delegate protocol for UnifiedConsentMediator class.
 @protocol UnifiedConsentMediatorDelegate <NSObject>
@@ -32,7 +32,7 @@ class ChromeAccountManagerService;
 // by `GetDefaultIdentity()` is used. If there is no identity in the list, the
 // identity picker will be hidden. Nil is not accepted if at least one identity
 // exists.
-@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
+@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 // Instance delegate.
 @property(nonatomic, weak) id<UnifiedConsentMediatorDelegate> delegate;
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/first_run/legacy_signin/legacy_signin_screen_coordinator.h"
 
+#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
@@ -247,9 +248,10 @@
 }
 
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
-                 didSelectIdentity:(ChromeIdentity*)identity {
+                 didSelectIdentity:(id<SystemIdentity>)identity {
   CHECK_EQ(self.identityChooserCoordinator, coordinator);
-  self.mediator.selectedIdentity = identity;
+  self.mediator.selectedIdentity =
+      base::mac::ObjCCastStrict<ChromeIdentity>(identity);
 }
 
 #pragma mark - PolicyWatcherBrowserAgentObserving

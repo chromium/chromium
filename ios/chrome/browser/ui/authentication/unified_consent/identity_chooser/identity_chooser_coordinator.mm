@@ -104,11 +104,11 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
 
 #pragma mark - Setters/Getters
 
-- (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
   self.identityChooserMediator.selectedIdentity = selectedIdentity;
 }
 
-- (ChromeIdentity*)selectedIdentity {
+- (id<SystemIdentity>)selectedIdentity {
   return self.identityChooserMediator.selectedIdentity;
 }
 

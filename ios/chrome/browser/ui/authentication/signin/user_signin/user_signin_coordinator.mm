@@ -348,7 +348,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 
   ChromeIdentity* identity =
       (signinResult == SigninCoordinatorResultSuccess)
-          ? self.unifiedConsentCoordinator.selectedIdentity
+          ? base::mac::ObjCCastStrict<ChromeIdentity>(
+                self.unifiedConsentCoordinator.selectedIdentity)
           : nil;
   SigninCompletionAction completionAction = SigninCompletionActionNone;
   if (self.managedLearnMoreLinkWasTapped) {
@@ -493,8 +494,9 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
           [self.viewController supportedInterfaceOrientations];
       if (!((1 << orientation) & supportedOrientationsMask)) {
         SigninCompletionInfo* completionInfo = [SigninCompletionInfo
-            signinCompletionInfoWithIdentity:self.unifiedConsentCoordinator
-                                                 .selectedIdentity];
+            signinCompletionInfoWithIdentity:
+                base::mac::ObjCCastStrict<ChromeIdentity>(
+                    self.unifiedConsentCoordinator.selectedIdentity)];
         [self runCompletionCallbackWithSigninResult:
                   SigninCoordinatorResultInterrupted
                                      completionInfo:completionInfo];
@@ -627,7 +629,9 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   self.unifiedConsentCoordinator.uiDisabled = YES;
   [self.viewController signinWillStart];
   [self.mediator
-      authenticateWithIdentity:self.unifiedConsentCoordinator.selectedIdentity
+      authenticateWithIdentity:base::mac::ObjCCastStrict<ChromeIdentity>(
+                                   self.unifiedConsentCoordinator
+                                       .selectedIdentity)
             authenticationFlow:authenticationFlow];
 }
 

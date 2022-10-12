@@ -9,8 +9,8 @@
 
 #include <vector>
 
-@class ChromeIdentity;
 @class UnifiedConsentCoordinator;
+@protocol SystemIdentity;
 
 // Delegate protocol for UnifiedConsentCoordinator.
 @protocol UnifiedConsentCoordinatorDelegate<NSObject>
@@ -52,7 +52,7 @@
 // Identity selected by the user to sign-in. By default, the identity returned
 // by `GetDefaultIdentity()` is used. Must be non-nil if at least one identity
 // exists.
-@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
+@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 // Informs the coordinator whether the identity picker should automatically be
 // open when the UnifiedConsent view appears.
 @property(nonatomic) BOOL autoOpenIdentityPicker;

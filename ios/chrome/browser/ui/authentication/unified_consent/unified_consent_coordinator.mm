@@ -84,11 +84,11 @@
 
 #pragma mark - Properties
 
-- (ChromeIdentity*)selectedIdentity {
+- (id<SystemIdentity>)selectedIdentity {
   return self.unifiedConsentMediator.selectedIdentity;
 }
 
-- (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
   self.unifiedConsentMediator.selectedIdentity = selectedIdentity;
 }
 
@@ -208,7 +208,7 @@
 }
 
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
-                 didSelectIdentity:(ChromeIdentity*)identity {
+                 didSelectIdentity:(id<SystemIdentity>)identity {
   CHECK_EQ(self.identityChooserCoordinator, coordinator);
   self.selectedIdentity = identity;
 }

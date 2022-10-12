@@ -59,11 +59,11 @@
   self.accountManagerService = nullptr;
 }
 
-- (void)setSelectedIdentity:(ChromeIdentity*)selectedIdentity {
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
   if ([_selectedIdentity isEqual:selectedIdentity])
     return;
-  TableViewIdentityItem* previousSelectedItem = [self.consumer
-      tableViewIdentityItemWithGaiaID:self.selectedIdentity.gaiaID];
+  TableViewIdentityItem* previousSelectedItem =
+      [self.consumer tableViewIdentityItemWithGaiaID:_selectedIdentity.gaiaID];
   if (previousSelectedItem) {
     previousSelectedItem.selected = NO;
     [self.consumer itemHasChanged:previousSelectedItem];
@@ -72,8 +72,8 @@
   if (!_selectedIdentity) {
     return;
   }
-  TableViewIdentityItem* selectedItem = [self.consumer
-      tableViewIdentityItemWithGaiaID:self.selectedIdentity.gaiaID];
+  TableViewIdentityItem* selectedItem =
+      [self.consumer tableViewIdentityItemWithGaiaID:_selectedIdentity.gaiaID];
   DCHECK(selectedItem);
   selectedItem.selected = YES;
   [self.consumer itemHasChanged:selectedItem];
@@ -87,17 +87,17 @@
 #pragma mark - Private
 
 // Creates the identity section with its header item, and all the identity items
-// based on the ChromeIdentity.
+// based on the SystemIdentity.
 - (void)loadIdentitySection {
   if (!self.accountManagerService) {
     return;
   }
 
   // Create all the identity items.
-  NSArray<ChromeIdentity*>* identities =
+  NSArray<id<SystemIdentity>>* identities =
       self.accountManagerService->GetAllIdentities();
   NSMutableArray<TableViewIdentityItem*>* items = [NSMutableArray array];
-  for (ChromeIdentity* identity in identities) {
+  for (id<SystemIdentity> identity in identities) {
     TableViewIdentityItem* item =
         [[TableViewIdentityItem alloc] initWithType:0];
     item.identityViewStyle = IdentityViewStyleIdentityChooser;
@@ -108,7 +108,7 @@
   [self.consumer setIdentityItems:items];
 }
 
-// Updates an TableViewIdentityItem based on a ChromeIdentity.
+// Updates an TableViewIdentityItem based on a SystemIdentity.
 - (void)updateTableViewIdentityItem:(TableViewIdentityItem*)item
                        withIdentity:(id<SystemIdentity>)identity {
   item.gaiaID = identity.gaiaID;
@@ -135,8 +135,7 @@
 
   [self loadIdentitySection];
   // Updates the selection.
-  if (!self.selectedIdentity ||
-      !self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
+  if (!self.accountManagerService->IsValidIdentity(self.selectedIdentity)) {
     self.selectedIdentity = self.accountManagerService->GetDefaultIdentity();
   }
 }

@@ -8,8 +8,8 @@
 #import <UIKit/UIKit.h>
 
 class ChromeAccountManagerService;
-@class ChromeIdentity;
 @protocol IdentityChooserConsumer;
+@protocol SystemIdentity;
 
 // A mediator object that monitors updates of chrome identities, and updates the
 // IdentityChooserViewController.
@@ -23,7 +23,7 @@ class ChromeAccountManagerService;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Selected Chrome identity.
-@property(nonatomic, strong) ChromeIdentity* selectedIdentity;
+@property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 // View controller.
 @property(nonatomic, weak) id<IdentityChooserConsumer> consumer;
 
