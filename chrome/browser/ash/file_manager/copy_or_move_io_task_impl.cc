@@ -271,6 +271,7 @@ void CopyOrMoveIOTaskImpl::GotFileSize(size_t idx,
   DCHECK(idx < progress_.sources.size());
   if (error != base::File::FILE_OK) {
     progress_.sources[idx].error = error;
+    LOG(ERROR) << "Could not get size of source file: " << error;
     Complete(State::kError);
     return;
   }
@@ -326,6 +327,7 @@ void CopyOrMoveIOTaskImpl::GotFreeDiskSpace(int64_t free_space) {
   if (required_bytes > free_space) {
     progress_.outputs.emplace_back(progress_.destination_folder,
                                    base::File::FILE_ERROR_NO_SPACE);
+    LOG(ERROR) << "Insufficient free space in destination";
     Complete(State::kError);
     return;
   }
@@ -455,6 +457,7 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveComplete(size_t idx,
   } else {
     for (const auto& source : progress_.sources) {
       if (source.error != base::File::FILE_OK) {
+        LOG(ERROR) << "Error on complete: " << error;
         Complete(State::kError);
         return;
       }
