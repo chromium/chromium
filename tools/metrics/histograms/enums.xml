@@ -36627,6 +36627,39 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Both"/>
 </enum>
 
+<enum name="FamilyLinkUserLocalWebApprovalOutcome">
+  <int value="0" label="Approved by parent">
+    Request to allow visiting a host was approved by the parent i.e. the parent
+    completed the verification flow and selected the (&quot;Approve&quot;
+    button).
+  </int>
+  <int value="1" label="Denied by parent">
+    Request to allow visiting a host was denied by the parent, i.e. the parent
+    completed the verification flow and selected the (&quot;Don't approve&quot;
+    button).
+  </int>
+  <int value="2" label="Parent approval cancelled">
+    The user cancelled the local website parent approval, i.e. the parent
+    navigated away from the approval widget and did not complete the
+    verification flow.
+  </int>
+  <int value="3" label="Verification widget unsupported API call exception">
+    Feature to support parent verification is missing.
+  </int>
+  <int value="4" label="Verification widget failure unsupported GMS version">
+    GMSCore version does not support the API call.
+  </int>
+  <int value="5" label="Verification widget failure no suppervised account">
+    No supervised user account is found on the device.
+  </int>
+  <int value="6" label="Verification widget failure unexpected reason">
+    Verification widget failed with unexpected status code.
+  </int>
+  <int value="7" label="Verification widget unexpected exception">
+    An unexpected exception occured during parent verification.
+  </int>
+</enum>
+
 <enum name="FamilyLinkUserLogSegment">
   <summary>
     Filters family link user metrics into categories of interest. ChromeOS uses

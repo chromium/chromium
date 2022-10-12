@@ -4,14 +4,19 @@
 
 #include "chrome/browser/supervised_user/web_approvals_manager.h"
 
+#include <string>
 #include <utility>
 #include <vector>
+#include "base/test/metrics/histogram_tester.h"
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "chrome/browser/supervised_user/permission_request_creator.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -80,6 +85,9 @@ class MockPermissionRequestCreator : public PermissionRequestCreator {
   std::vector<SuccessCallback> callbacks_;
 };
 
+constexpr char kLocalWebApprovalDurationHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";
+
 }  // namespace
 
 class WebApprovalsManagerTest : public ::testing::Test {
@@ -95,6 +103,10 @@ class WebApprovalsManagerTest : public ::testing::Test {
     return web_approvals_manager_;
   }
 
+  content::BrowserTaskEnvironment& task_environment() {
+    return task_environment_;
+  }
+
   void RequestRemoteApproval(const GURL& url,
                              AsyncResultHolder* result_holder) {
     web_approvals_manager_.RequestRemoteApproval(
@@ -103,7 +115,8 @@ class WebApprovalsManagerTest : public ::testing::Test {
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   WebApprovalsManager web_approvals_manager_;
 };
 
@@ -188,4 +201,55 @@ TEST_F(WebApprovalsManagerTest, CreatePermissionRequest) {
     creator_2->AnswerRequest(0, true);
     EXPECT_TRUE(result_holder.GetResult());
   }
+}
+
+class MockSupervisedUserSettingsService
+    : public ::SupervisedUserSettingsService {
+ public:
+  MOCK_METHOD1(RecordLocalWebsiteApproval, void(const std::string& host));
+};
+
+TEST_F(WebApprovalsManagerTest, LocalWebApprovalDurationHistogramTest) {
+  base::HistogramTester histogram_tester;
+
+  std::string host = "www.example.com";
+  GURL url("http://" + host);
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  testing::NiceMock<MockSupervisedUserSettingsService>
+      supervisedUserSettingsServiceMock;
+
+  // Receive a request rejected by the parent with a total duration of 1 minute.
+  // Check that duration metric is recorded.
+  base::TimeDelta elapsed_time = base::Minutes(1);
+  task_environment().FastForwardBy(elapsed_time);
+  web_approvals_manager().OnLocalApprovalRequestCompleted(
+      &supervisedUserSettingsServiceMock, url, start_time,
+      AndroidLocalWebApprovalFlowOutcome::kRejected);
+
+  histogram_tester.ExpectTotalCount(kLocalWebApprovalDurationHistogramName, 1);
+  histogram_tester.ExpectTimeBucketCount(kLocalWebApprovalDurationHistogramName,
+                                         elapsed_time, 1);
+
+  // Receive a request cancelled by the parent.
+  // Check that no duration metric is recorded for incomplete requests.
+  web_approvals_manager().OnLocalApprovalRequestCompleted(
+      &supervisedUserSettingsServiceMock, url, start_time,
+      AndroidLocalWebApprovalFlowOutcome::kIncomplete);
+  histogram_tester.ExpectTotalCount(kLocalWebApprovalDurationHistogramName, 1);
+
+  // Receive a request accepted by the parent with a total duration of 5
+  // minutes. Check that duration metric is recorded.
+  EXPECT_CALL(supervisedUserSettingsServiceMock,
+              RecordLocalWebsiteApproval(host));
+
+  base::TimeDelta fast_forward_by = base::Minutes(4);
+  elapsed_time =
+      elapsed_time + fast_forward_by;  // Elapsed time since the start time.
+  task_environment().FastForwardBy(fast_forward_by);
+  web_approvals_manager().OnLocalApprovalRequestCompleted(
+      &supervisedUserSettingsServiceMock, url, start_time,
+      AndroidLocalWebApprovalFlowOutcome::kApproved);
+  histogram_tester.ExpectTotalCount(kLocalWebApprovalDurationHistogramName, 2);
+  histogram_tester.ExpectTimeBucketCount(kLocalWebApprovalDurationHistogramName,
+                                         elapsed_time, 1);
 }

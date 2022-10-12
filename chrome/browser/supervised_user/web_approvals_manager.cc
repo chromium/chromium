@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,11 +31,35 @@
 
 namespace {
 
+constexpr char kLocalWebApprovalDurationHistogramName[] =
+    "FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration";
+
 void CreateURLAccessRequest(
     const GURL& url,
     PermissionRequestCreator* creator,
     WebApprovalsManager::ApprovalRequestInitiatedCallback callback) {
   creator->CreateURLAccessRequest(url, std::move(callback));
+}
+
+// Helper method for getting human readable outcome for a local web approval.
+std::string EnumLocalWebApprovalFlowOutcomeToString(
+    AndroidLocalWebApprovalFlowOutcome outcome) {
+  switch (outcome) {
+    case AndroidLocalWebApprovalFlowOutcome::kApproved:
+      return "Approved";
+    case AndroidLocalWebApprovalFlowOutcome::kRejected:
+      return "Rejected";
+    case AndroidLocalWebApprovalFlowOutcome::kIncomplete:
+      return "Incomplete";
+  }
+}
+
+// TODO(b/250947827): Record the
+// "ManagedUsers.LocalWebApprovalCompleteRequestTotalDuration" metric for
+// completed verification flows on Chrome OS.
+void RecordTimeToApprovalDurationMetric(base::TimeDelta durationMs) {
+  base::UmaHistogramLongTimes(kLocalWebApprovalDurationHistogramName,
+                              durationMs);
 }
 
 }  // namespace
@@ -83,7 +108,8 @@ void WebApprovalsManager::RequestLocalApproval(
   WebsiteParentApproval::RequestLocalApproval(
       web_contents, NormalizeUrl(url),
       base::BindOnce(&WebApprovalsManager::OnLocalApprovalRequestCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), settings_service, url));
+                     weak_ptr_factory_.GetWeakPtr(), settings_service, url,
+                     base::TimeTicks::Now()));
   std::move(callback).Run(true);
 #endif
 }
@@ -160,11 +186,18 @@ void WebApprovalsManager::OnRemoteApprovalRequestIssued(
 void WebApprovalsManager::OnLocalApprovalRequestCompleted(
     SupervisedUserSettingsService* settings_service,
     const GURL& url,
-    bool request_approved) {
-  // TODO(crbug.com/1324945): output metrics.
-  VLOG(0) << "Local URL approval final result: " << request_approved;
+    base::TimeTicks start_time,
+    AndroidLocalWebApprovalFlowOutcome request_outcome) {
+  VLOG(0) << "Local URL approval final result: "
+          << EnumLocalWebApprovalFlowOutcomeToString(request_outcome);
 
-  if (request_approved) {
+  // Record duration metrics only for completed approval flows.
+  if (request_outcome == AndroidLocalWebApprovalFlowOutcome::kApproved ||
+      request_outcome == AndroidLocalWebApprovalFlowOutcome::kRejected) {
+    RecordTimeToApprovalDurationMetric(base::TimeTicks::Now() - start_time);
+  }
+
+  if (request_outcome == AndroidLocalWebApprovalFlowOutcome::kApproved) {
     settings_service->RecordLocalWebsiteApproval(url.host());
   }
 }

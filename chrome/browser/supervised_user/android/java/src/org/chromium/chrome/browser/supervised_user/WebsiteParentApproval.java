@@ -20,7 +20,7 @@ import org.chromium.url.GURL;
  * Requests approval from a parent of a supervised user to unblock navigation to a given URL.
  */
 class WebsiteParentApproval {
-    // Favicon default specs
+    // Favicon default specifications
     private static final int FAVICON_MIN_SOURCE_SIZE_PIXEL = 16;
 
     /**
@@ -105,7 +105,8 @@ class WebsiteParentApproval {
     private static void onParentAuthComplete(
             boolean success, WindowAndroid windowAndroid, GURL url, FaviconHelper faviconHelper) {
         if (!success) {
-            WebsiteParentApprovalJni.get().onCompletion(false);
+            WebsiteParentApprovalJni.get().onCompletion(
+                    AndroidLocalWebApprovalFlowOutcome.INCOMPLETE);
             return;
         }
 
@@ -116,14 +117,20 @@ class WebsiteParentApproval {
                 windowAndroid, url, new WebsiteApprovalCoordinator.CompletionCallback() {
                     @Override
                     public void onWebsiteApproved() {
-                        // TODO(crbug.com/1330897): add metrics.
-                        WebsiteParentApprovalJni.get().onCompletion(true);
+                        WebsiteParentApprovalMetrics.recordOutcomeMetric(
+                                WebsiteParentApprovalMetrics.FamilyLinkUserLocalWebApprovalOutcome
+                                        .APPROVED_BY_PARENT);
+                        WebsiteParentApprovalJni.get().onCompletion(
+                                AndroidLocalWebApprovalFlowOutcome.APPROVED);
                     }
 
                     @Override
                     public void onWebsiteDenied() {
-                        // TODO(crbug.com/1330897): add metrics.
-                        WebsiteParentApprovalJni.get().onCompletion(false);
+                        WebsiteParentApprovalMetrics.recordOutcomeMetric(
+                                WebsiteParentApprovalMetrics.FamilyLinkUserLocalWebApprovalOutcome
+                                        .DENIED_BY_PARENT);
+                        WebsiteParentApprovalJni.get().onCompletion(
+                                AndroidLocalWebApprovalFlowOutcome.REJECTED);
                     }
                 }, favicon);
 
@@ -132,7 +139,7 @@ class WebsiteParentApproval {
 
     @NativeMethods
     interface Natives {
-        void onCompletion(boolean success);
+        void onCompletion(int requestOutcomeValue);
 
         void fetchFavicon(GURL url, int minSourceSizePixel, int desiredSizePixel,
                 Callback<Bitmap> onFaviconFetched);

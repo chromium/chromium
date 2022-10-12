@@ -197,6 +197,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FamilyLinkUser.LocalWebApprovalCompleteRequestTotalDuration"
+    units="ms" expires_after="2023-03-26">
+  <owner>anthie@google.com</owner>
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    The total elapsed time in milliseconds to complete the local web approval
+    verification flow, from the time the supervised user requests to the time
+    the webpage is approved or rejected by the parent. Currently available on
+    Android only.
+  </summary>
+</histogram>
+
+<histogram name="FamilyLinkUser.LocalWebApprovalOutcome"
+    enum="FamilyLinkUserLocalWebApprovalOutcome" expires_after="2023-03-26">
+  <owner>anthie@google.com</owner>
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>
+    The different outcomes that a user may come accross the local web approval
+    flow. Currently available on Android only (as the Chrome OS implementation
+    is not yet available).
+  </summary>
+</histogram>
+
 <histogram name="FamilyLinkUser.LogSegment" enum="FamilyLinkUserLogSegment"
     expires_after="never">
 <!-- expires-never: used internally for filtering -->
