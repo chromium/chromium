@@ -166,6 +166,7 @@ BASE_DECLARE_FEATURE(kTabReparenting);
 BASE_DECLARE_FEATURE(kTabSelectionEditorV2);
 BASE_DECLARE_FEATURE(kTabStripImprovements);
 BASE_DECLARE_FEATURE(kDiscoverFeedMultiColumn);
+BASE_DECLARE_FEATURE(kTabStripRedesign);
 BASE_DECLARE_FEATURE(kTabSwitcherOnReturn);
 BASE_DECLARE_FEATURE(kTabToGTSAnimation);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);

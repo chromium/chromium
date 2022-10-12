@@ -6393,6 +6393,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDiscoverFeedMultiColumnAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kDiscoverFeedMultiColumn)},
 
+    {"enable-tab-strip-redesign",
+     flag_descriptions::kTabStripRedesignAndroidName,
+     flag_descriptions::kTabStripRedesignAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabStripRedesign)},
+
     {"enable-conditional-tabstrip",
      flag_descriptions::kConditionalTabStripAndroidName,
      flag_descriptions::kConditionalTabStripAndroidDescription, kOsAndroid,

@@ -4185,6 +4185,11 @@ const char kDiscoverFeedMultiColumnAndroidDescription[] =
     "Enabled single or multi-column Discover feed based on screen width on "
     "Android.";
 
+const char kTabStripRedesignAndroidName[] = "Tab Strip Redesign Android.";
+const char kTabStripRedesignAndroidDescription[] =
+    "Enabled Tab Strip Redesign on Android - A visual redesign of Clank Tab "
+    "Strip that is consistent with GM3.";
+
 const char kTouchDragAndContextMenuName[] =
     "Simultaneous touch drag and context menu";
 const char kTouchDragAndContextMenuDescription[] =

@@ -3088,6 +3088,11 @@
     "expiry_milestone": 114
   },
   {
+    "name": "enable-tab-strip-redesign",
+    "owners": [ "zheliooo", "skavuluru", "nemco", "clank-app-team@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-tab-switcher-on-return",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 115

@@ -1656,6 +1656,9 @@ extern const char kTabStripImprovementsAndroidDescription[];
 extern const char kDiscoverFeedMultiColumnAndroidName[];
 extern const char kDiscoverFeedMultiColumnAndroidDescription[];
 
+extern const char kTabStripRedesignAndroidName[];
+extern const char kTabStripRedesignAndroidDescription[];
+
 extern const char kTailoredSecurityDesktopNoticeName[];
 extern const char kTailoredSecurityDesktopNoticeDescription[];
 
