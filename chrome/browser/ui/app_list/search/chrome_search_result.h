@@ -66,6 +66,7 @@ class ChromeSearchResult {
   const TextVector& title_text_vector() const {
     return metadata_->title_vector;
   }
+  bool multiline_title() const { return metadata_->multiline_title; }
   const TextVector& details_text_vector() const {
     return metadata_->details_vector;
   }
@@ -116,6 +117,7 @@ class ChromeSearchResult {
   void SetDetailsTags(const Tags& tags);
   void MaybeUpdateDetailsVector();
   void SetTitleTextVector(const TextVector& text_vector);
+  void SetMultilineTitle(bool multiline_title);
   void SetDetailsTextVector(const TextVector& text_vector);
   void SetMultilineDetails(bool multiline_details);
   void SetBigTitleTextVector(const TextVector& text_vector);

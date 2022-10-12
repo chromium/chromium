@@ -80,6 +80,11 @@ void ChromeSearchResult::SetTitleTextVector(const TextVector& text_vector) {
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetMultilineTitle(bool multiline_title) {
+  metadata_->multiline_title = multiline_title;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetDetailsTextVector(const TextVector& text_vector) {
   metadata_->details_vector = text_vector;
   explicit_details_vector_ = true;
