@@ -24,13 +24,6 @@
 
 namespace ash {
 
-namespace {
-
-// Keep track of the button indexes in the privacy indicators notification.
-enum PrivacyIndicatorsNotificationButton { kAppLaunch, kAppSettings };
-
-}  // namespace
-
 PrivacyIndicatorsNotificationDelegate::PrivacyIndicatorsNotificationDelegate(
     const AppActionClosure& launch_app,
     const AppActionClosure& launch_settings)
@@ -46,14 +39,7 @@ void PrivacyIndicatorsNotificationDelegate::Click(
   if (!button_index)
     return;
 
-  switch (button_index.value()) {
-    case PrivacyIndicatorsNotificationButton::kAppLaunch:
-      launch_app_.Run();
-      break;
-    case PrivacyIndicatorsNotificationButton::kAppSettings:
-      launch_settings_.Run();
-      break;
-  }
+  launch_settings_.Run();
 }
 
 std::unique_ptr<message_center::Notification>
@@ -94,10 +80,7 @@ CreatePrivacyIndicatorsNotification(
 
   optional_fields.parent_vector_small_image = &kPrivacyIndicatorsIcon;
 
-  // Note: The order of buttons added here should match the order in
-  // PrivacyIndicatorsNotificationButton.
-  optional_fields.buttons.emplace_back(
-      l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_BUTTON_APP_LAUNCH));
+  // TODO(b/251686202): Add back the "Launch App button".
   optional_fields.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_PRIVACY_NOTIFICATION_BUTTON_APP_SETTINGS));
 

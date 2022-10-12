@@ -120,14 +120,9 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationClickButton) {
       GetNotificationViewFromMessageCenter(notification_id));
   EXPECT_TRUE(notification_view);
 
-  // Clicking the first button will trigger launching the app.
-  EXPECT_FALSE(delegate->launch_app_called());
-  ClickView(notification_view, 0);
-  EXPECT_TRUE(delegate->launch_app_called());
-
   // Clicking the first button will trigger launching the app settings.
   EXPECT_FALSE(delegate->launch_settings_called());
-  ClickView(notification_view, 1);
+  ClickView(notification_view, 0);
   EXPECT_TRUE(delegate->launch_settings_called());
 }
 
