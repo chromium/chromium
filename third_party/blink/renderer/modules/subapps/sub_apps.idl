@@ -14,6 +14,8 @@ enum SubAppsServiceAddResultCode {
   "user-install-declined",
   "expected-app-id-check-failed",
   "parent-app-uninstalled",
+  "install-url-invalid",
+  "invalid-manifest-for-web-app",
   "failure",
 };
 
