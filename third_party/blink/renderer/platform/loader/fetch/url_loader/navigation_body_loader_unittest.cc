@@ -23,6 +23,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
+#include "third_party/blink/renderer/platform/loader/fetch/body_text_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
@@ -31,46 +32,14 @@ namespace blink {
 
 namespace {
 
-class FakeCodeCacheHost : public mojom::CodeCacheHost {
- public:
-  FakeCodeCacheHost()
-      : code_cache_host_(mojo::Remote<mojom::CodeCacheHost>(
-            receiver_.BindNewPipeAndPassRemote())) {}
-
-  // blink::mojom::CodeCacheHost implementation.
-  void DidGenerateCacheableMetadata(blink::mojom::CodeCacheType cache_type,
-                                    const GURL& url,
-                                    base::Time expected_response_time,
-                                    mojo_base::BigBuffer data) override {}
-  void FetchCachedCode(blink::mojom::CodeCacheType cache_type,
-                       const GURL& url,
-                       FetchCachedCodeCallback callback) override {
-    if (run_loop_.running())
-      run_loop_.Quit();
-    callback_ = std::move(callback);
-  }
-  void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
-                           const GURL& url) override {}
-  void DidGenerateCacheableMetadataInCacheStorage(
-      const GURL& url,
-      base::Time expected_response_time,
-      mojo_base::BigBuffer data,
-      const url::Origin& cache_storage_origin,
-      const std::string& cache_storage_cache_name) override {}
-
-  blink::CodeCacheHost* GetCodeCacheHost() { return &code_cache_host_; }
-
-  void FinishFetch() {
-    if (!callback_)
-      run_loop_.Run();
-    std::move(callback_).Run(base::Time(), std::vector<uint8_t>());
+class UppercaseDecoder : public BodyTextDecoder {
+  String Decode(const char* data, size_t length) override {
+    return String(data, length).UpperASCII();
   }
 
- private:
-  FetchCachedCodeCallback callback_;
-  mojo::Receiver<mojom::CodeCacheHost> receiver_{this};
-  blink::CodeCacheHost code_cache_host_;
-  base::RunLoop run_loop_;
+  String Flush() override { return String(); }
+
+  WebEncodingData GetEncodingData() const override { return WebEncodingData(); }
 };
 
 class NavigationBodyLoaderTest : public ::testing::Test,
@@ -119,6 +88,13 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     base::RunLoop().RunUntilIdle();
   }
 
+  void StartLoadingInBackground() {
+    To<NavigationBodyLoader>(loader_.get())
+        ->StartLoadingBodyInBackground(std::make_unique<UppercaseDecoder>(),
+                                       false);
+    base::RunLoop().RunUntilIdle();
+  }
+
   void Write(const std::string& buffer) {
     uint32_t size = static_cast<uint32_t>(buffer.size());
     MojoResult result = writer_->WriteData(buffer.c_str(), &size, kNone);
@@ -132,9 +108,22 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   }
 
   void BodyDataReceived(base::span<const char> data) override {
+    ASSERT_FALSE(did_receive_decoded_data_);
     ASSERT_TRUE(expecting_data_received_);
     did_receive_data_ = true;
     data_received_ += std::string(data.data(), data.size());
+    TakeActions();
+    if (run_loop_)
+      run_loop_->Quit();
+  }
+
+  void DecodedBodyDataReceived(const WebString& data,
+                               const WebEncodingData& encoding_data,
+                               base::span<const char> encoded_data) override {
+    ASSERT_FALSE(did_receive_data_);
+    ASSERT_TRUE(expecting_decoded_data_received_);
+    did_receive_decoded_data_ = true;
+    data_received_ += data.Ascii();
     TakeActions();
     if (run_loop_)
       run_loop_->Quit();
@@ -177,6 +166,11 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     did_receive_data_ = false;
   }
 
+  void ExpectDecodedDataReceived() {
+    expecting_decoded_data_received_ = true;
+    did_receive_decoded_data_ = false;
+  }
+
   void ExpectFinished() {
     expecting_finished_ = true;
     did_finish_ = false;
@@ -194,6 +188,12 @@ class NavigationBodyLoaderTest : public ::testing::Test,
         WaitForRunLoop();
       ASSERT_TRUE(did_receive_data_);
       expecting_data_received_ = false;
+    }
+    if (expecting_decoded_data_received_) {
+      if (!did_receive_decoded_data_)
+        WaitForRunLoop();
+      ASSERT_TRUE(did_receive_decoded_data_);
+      expecting_decoded_data_received_ = false;
     }
     if (expecting_finished_) {
       if (!did_finish_)
@@ -218,6 +218,8 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   std::unique_ptr<base::RunLoop> run_loop_;
   bool expecting_data_received_ = false;
   bool did_receive_data_ = false;
+  bool expecting_decoded_data_received_ = false;
+  bool did_receive_decoded_data_ = false;
   bool expecting_finished_ = false;
   bool did_finish_ = false;
   std::string buffer_to_write_;
@@ -232,6 +234,16 @@ TEST_F(NavigationBodyLoaderTest, SetDefersBeforeStart) {
   loader_->SetDefersLoading(WebLoaderFreezeMode::kStrict);
   loader_->SetDefersLoading(WebLoaderFreezeMode::kNone);
   // Should not crash.
+}
+
+TEST_F(NavigationBodyLoaderTest, DecodedDataReceived) {
+  CreateBodyLoader();
+  StartLoadingInBackground();
+  StartLoading();
+  ExpectDecodedDataReceived();
+  Write("hello");
+  Wait();
+  EXPECT_EQ("HELLO", TakeDataReceived());
 }
 
 TEST_F(NavigationBodyLoaderTest, DataReceived) {

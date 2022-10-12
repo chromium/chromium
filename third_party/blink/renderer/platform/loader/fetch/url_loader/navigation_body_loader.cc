@@ -22,8 +22,235 @@
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/web/web_navigation_params.h"
+#include "third_party/blink/renderer/platform/loader/fetch/body_text_decoder.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
+namespace {
+
+// A chunk of data read by the OffThreadBodyReader. This will be created on a
+// background thread and processed on the main thread.
+struct DataChunk {
+  String decoded_data;
+  bool has_seen_end_of_data = false;
+  bool has_error = false;
+  std::unique_ptr<char[]> encoded_data;
+  size_t encoded_data_size = 0;
+  WebEncodingData encoding_data;
+};
+
+// This interface abstracts out the logic for consuming the response body and
+// allows calling ReadFromDataPipeImpl() on either the main thread or a
+// background thread.
+class BodyReader {
+ public:
+  virtual ~BodyReader() = default;
+  virtual bool ShouldContinueReading() = 0;
+  virtual void FinishedReading(bool has_error) = 0;
+  virtual bool DataReceived(const char* data, size_t size) = 0;
+};
+
+void ReadFromDataPipeImpl(BodyReader& reader,
+                          mojo::ScopedDataPipeConsumerHandle& handle,
+                          mojo::SimpleWatcher& handle_watcher) {
+  uint32_t num_bytes_consumed = 0;
+  while (reader.ShouldContinueReading()) {
+    const void* buffer = nullptr;
+    uint32_t available = 0;
+    MojoResult result =
+        handle->BeginReadData(&buffer, &available, MOJO_READ_DATA_FLAG_NONE);
+    if (result == MOJO_RESULT_SHOULD_WAIT) {
+      handle_watcher.ArmOrNotify();
+      return;
+    }
+    if (result == MOJO_RESULT_FAILED_PRECONDITION) {
+      reader.FinishedReading(/*has_error=*/false);
+      return;
+    }
+    if (result != MOJO_RESULT_OK) {
+      reader.FinishedReading(/*has_error=*/true);
+      return;
+    }
+    const uint32_t chunk_size = network::features::GetLoaderChunkSize();
+    DCHECK_LE(num_bytes_consumed, chunk_size);
+    available = std::min(available, chunk_size - num_bytes_consumed);
+    if (available == 0) {
+      // We've already consumed many bytes in this task. Defer the remaining
+      // to the next task.
+      result = handle->EndReadData(0);
+      DCHECK_EQ(result, MOJO_RESULT_OK);
+      handle_watcher.ArmOrNotify();
+      return;
+    }
+    num_bytes_consumed += available;
+    if (!reader.DataReceived(static_cast<const char*>(buffer), available))
+      return;
+    result = handle->EndReadData(available);
+    DCHECK_EQ(MOJO_RESULT_OK, result);
+  }
+}
+
+}  // namespace
+
+class NavigationBodyLoader::OffThreadBodyReader : public BodyReader {
+ public:
+  OffThreadBodyReader(
+      mojo::ScopedDataPipeConsumerHandle response_body,
+      std::unique_ptr<BodyTextDecoder> decoder,
+      base::WeakPtr<NavigationBodyLoader> body_loader,
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> reader_task_runner,
+      bool should_keep_encoded_data)
+      : response_body_(std::move(response_body)),
+        decoder_(std::move(decoder)),
+        should_keep_encoded_data_(should_keep_encoded_data),
+        main_thread_task_runner_(std::move(main_thread_task_runner)),
+        reader_task_runner_(std::move(reader_task_runner)),
+        body_loader_(std::move(body_loader)) {
+    DCHECK(IsMainThread());
+    PostCrossThreadTask(
+        *reader_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(&OffThreadBodyReader::StartInBackground,
+                            CrossThreadUnretained(this)));
+  }
+
+  ~OffThreadBodyReader() override {
+    DCHECK(reader_task_runner_->RunsTasksInCurrentSequence());
+  }
+
+  std::vector<DataChunk> TakeData() {
+    DCHECK(IsMainThread());
+    base::AutoLock lock(lock_);
+    return std::move(data_chunks_);
+  }
+
+  void Delete() const {
+    DCHECK(IsMainThread());
+    reader_task_runner_->DeleteSoon(FROM_HERE, this);
+  }
+
+ private:
+  // BodyReader:
+  bool ShouldContinueReading() override {
+    // It's fine to keep reading unconditionally here because the main thread
+    // will wait to process the data if loading is deferred.
+    return true;
+  }
+
+  void FinishedReading(bool has_error) override {
+    has_seen_end_of_data_ = true;
+    AddChunk(decoder_->Flush(), nullptr, 0, has_error);
+  }
+
+  bool DataReceived(const char* data, size_t size) override {
+    AddChunk(decoder_->Decode(data, size), data, size, /*has_error=*/false);
+    return true;
+  }
+
+  void StartInBackground() {
+    TRACE_EVENT0("loading", "OffThreadBodyReader::StartInBackground");
+    DCHECK(reader_task_runner_->RunsTasksInCurrentSequence());
+    response_body_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+        FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL);
+    response_body_watcher_->Watch(
+        response_body_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+        base::BindRepeating(&OffThreadBodyReader::ReadFromDataPipe,
+                            base::Unretained(this)));
+    ReadFromDataPipe(MOJO_RESULT_OK);
+  }
+
+  void ReadFromDataPipe(MojoResult unused) {
+    TRACE_EVENT0("loading", "OffThreadBodyReader::ReadFromDataPipe");
+    ReadFromDataPipeImpl(*this, response_body_, *response_body_watcher_);
+  }
+
+  void AddChunk(const String& decoded_data,
+                const char* encoded_data,
+                size_t size,
+                bool has_error) {
+    DCHECK(reader_task_runner_->RunsTasksInCurrentSequence());
+    std::unique_ptr<char[]> encoded_data_copy;
+    // Avoid copying the encoded data unless the caller needs it.
+    if (should_keep_encoded_data_) {
+      encoded_data_copy = std::make_unique<char[]>(size);
+      memcpy(encoded_data_copy.get(), encoded_data, size);
+    }
+
+    bool post_task;
+    {
+      base::AutoLock lock(lock_);
+      // If |data_chunks_| is not empty, there is already a task posted which
+      // will consume the data, so no need to post another one.
+      post_task = data_chunks_.empty();
+      data_chunks_.push_back(
+          DataChunk{.decoded_data = decoded_data,
+                    .has_seen_end_of_data = has_seen_end_of_data_,
+                    .has_error = has_error,
+                    .encoded_data = std::move(encoded_data_copy),
+                    .encoded_data_size = size,
+                    .encoding_data = decoder_->GetEncodingData()});
+    }
+    if (post_task) {
+      PostCrossThreadTask(
+          *main_thread_task_runner_, FROM_HERE,
+          CrossThreadBindOnce(&NavigationBodyLoader::ProcessOffThreadData,
+                              body_loader_));
+    }
+  }
+
+  mojo::ScopedDataPipeConsumerHandle response_body_;
+  std::unique_ptr<mojo::SimpleWatcher> response_body_watcher_;
+  std::unique_ptr<BodyTextDecoder> decoder_;
+  bool should_keep_encoded_data_;
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> reader_task_runner_;
+  base::WeakPtr<NavigationBodyLoader> body_loader_;
+  bool has_seen_end_of_data_ = false;
+
+  base::Lock lock_;
+  std::vector<DataChunk> data_chunks_ GUARDED_BY(lock_);
+};
+
+void NavigationBodyLoader::OffThreadBodyReaderDeleter::operator()(
+    const OffThreadBodyReader* ptr) {
+  if (ptr)
+    ptr->Delete();
+}
+
+class NavigationBodyLoader::MainThreadBodyReader : public BodyReader {
+ public:
+  explicit MainThreadBodyReader(NavigationBodyLoader* loader)
+      : loader_(loader) {}
+
+  bool ShouldContinueReading() override {
+    return loader_->freeze_mode_ == WebLoaderFreezeMode::kNone;
+  }
+
+  void FinishedReading(bool has_error) override {
+    loader_->has_seen_end_of_data_ = true;
+    if (has_error) {
+      loader_->status_.error_code = net::ERR_FAILED;
+      loader_->has_received_completion_ = true;
+    }
+    loader_->NotifyCompletionIfAppropriate();
+  }
+
+  bool DataReceived(const char* data, size_t size) override {
+    base::WeakPtr<NavigationBodyLoader> weak_self =
+        loader_->weak_factory_.GetWeakPtr();
+    loader_->client_->BodyDataReceived(base::make_span(data, size));
+    return weak_self.get();
+  }
+
+ private:
+  NavigationBodyLoader* loader_;
+};
 
 NavigationBodyLoader::NavigationBodyLoader(
     const KURL& original_url,
@@ -99,6 +326,8 @@ void NavigationBodyLoader::SetDefersLoading(WebLoaderFreezeMode mode) {
   freeze_mode_ = mode;
   if (handle_.is_valid())
     OnReadable(MOJO_RESULT_OK);
+  else if (off_thread_body_reader_)
+    ProcessOffThreadData();
 }
 
 void NavigationBodyLoader::StartLoadingBody(
@@ -117,6 +346,18 @@ void NavigationBodyLoader::StartLoadingBody(
   // TODO(dgozman): we should explore retrieveing code cache in parallel with
   // receiving response or reading the first data chunk.
   BindURLLoaderAndStartLoadingResponseBodyIfPossible();
+}
+
+void NavigationBodyLoader::StartLoadingBodyInBackground(
+    std::unique_ptr<BodyTextDecoder> decoder,
+    bool should_keep_encoded_data) {
+  if (!response_body_)
+    return;
+
+  off_thread_body_reader_.reset(new OffThreadBodyReader(
+      std::move(response_body_), std::move(decoder), weak_factory_.GetWeakPtr(),
+      task_runner_, worker_pool::CreateSequencedTaskRunner({}),
+      should_keep_encoded_data));
 }
 
 void NavigationBodyLoader::BindURLLoaderAndContinue() {
@@ -153,51 +394,39 @@ void NavigationBodyLoader::OnReadable(MojoResult unused) {
   is_in_on_readable_ = false;
 }
 
+void NavigationBodyLoader::ProcessOffThreadData() {
+  if (has_seen_end_of_data_ || freeze_mode_ != WebLoaderFreezeMode::kNone ||
+      !client_) {
+    return;
+  }
+
+  auto chunks = off_thread_body_reader_->TakeData();
+  auto weak_self = weak_factory_.GetWeakPtr();
+  for (const auto& chunk : chunks) {
+    client_->DecodedBodyDataReceived(
+        chunk.decoded_data, chunk.encoding_data,
+        base::make_span(chunk.encoded_data.get(), chunk.encoded_data_size));
+    if (!weak_self)
+      return;
+
+    if (chunk.has_seen_end_of_data)
+      has_seen_end_of_data_ = true;
+
+    if (chunk.has_error) {
+      status_.error_code = net::ERR_FAILED;
+      has_received_completion_ = true;
+      break;
+    }
+  }
+  NotifyCompletionIfAppropriate();
+}
+
 void NavigationBodyLoader::ReadFromDataPipe() {
   TRACE_EVENT1("loading", "NavigationBodyLoader::ReadFromDataPipe", "url",
                original_url_.GetString().Utf8());
-  uint32_t num_bytes_consumed = 0;
-  while (freeze_mode_ == WebLoaderFreezeMode::kNone) {
-    const void* buffer = nullptr;
-    uint32_t available = 0;
-    MojoResult result =
-        handle_->BeginReadData(&buffer, &available, MOJO_READ_DATA_FLAG_NONE);
-    if (result == MOJO_RESULT_SHOULD_WAIT) {
-      handle_watcher_.ArmOrNotify();
-      return;
-    }
-    if (result == MOJO_RESULT_FAILED_PRECONDITION) {
-      has_seen_end_of_data_ = true;
-      NotifyCompletionIfAppropriate();
-      return;
-    }
-    if (result != MOJO_RESULT_OK) {
-      status_.error_code = net::ERR_FAILED;
-      has_seen_end_of_data_ = true;
-      has_received_completion_ = true;
-      NotifyCompletionIfAppropriate();
-      return;
-    }
-    const uint32_t chunk_size = network::features::GetLoaderChunkSize();
-    DCHECK_LE(num_bytes_consumed, chunk_size);
-    available = std::min(available, chunk_size - num_bytes_consumed);
-    if (available == 0) {
-      // We've already consumed many bytes in this task. Defer the remaining
-      // to the next task.
-      result = handle_->EndReadData(0);
-      DCHECK_EQ(result, MOJO_RESULT_OK);
-      handle_watcher_.ArmOrNotify();
-      return;
-    }
-    num_bytes_consumed += available;
-    base::WeakPtr<NavigationBodyLoader> weak_self = weak_factory_.GetWeakPtr();
-    client_->BodyDataReceived(
-        base::make_span(static_cast<const char*>(buffer), available));
-    if (!weak_self)
-      return;
-    result = handle_->EndReadData(available);
-    DCHECK_EQ(MOJO_RESULT_OK, result);
-  }
+  DCHECK(!off_thread_body_reader_);
+  MainThreadBodyReader reader(this);
+  ReadFromDataPipeImpl(reader, handle_, handle_watcher_);
 }
 
 void NavigationBodyLoader::NotifyCompletionIfAppropriate() {
@@ -227,7 +456,7 @@ void NavigationBodyLoader::NotifyCompletionIfAppropriate() {
 
 void NavigationBodyLoader::
     BindURLLoaderAndStartLoadingResponseBodyIfPossible() {
-  if (!response_body_) {
+  if (!response_body_ && !off_thread_body_reader_) {
     DCHECK(base::FeatureList::IsEnabled(features::kEarlyBodyLoad));
     return;
   }
@@ -241,12 +470,17 @@ void NavigationBodyLoader::
   // webkit_layout_tests can pass in that way.
   BindURLLoaderAndContinue();
 
+  DCHECK(!has_received_body_handle_);
+  has_received_body_handle_ = true;
+
+  if (off_thread_body_reader_) {
+    ProcessOffThreadData();
+    return;
+  }
+
   DCHECK(response_body_.is_valid());
 
-  DCHECK(!has_received_body_handle_);
   DCHECK(!has_received_completion_);
-  has_received_body_handle_ = true;
-  has_seen_end_of_data_ = false;
   handle_ = std::move(response_body_);
   DCHECK(handle_.is_valid());
   handle_watcher_.Watch(handle_.get(), MOJO_HANDLE_SIGNAL_READABLE,

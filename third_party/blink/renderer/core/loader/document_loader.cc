@@ -88,6 +88,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
+#include "third_party/blink/renderer/core/html/parser/text_resource_decoder_builder.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
@@ -128,6 +129,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
@@ -2347,6 +2349,9 @@ void DocumentLoader::CommitNavigation() {
   LocalDOMWindow* previous_window = frame_->DomWindow();
   InitializeWindow(owner_document);
 
+  MaybeStartLoadingBodyInBackground(body_loader_.get(), frame_, url_,
+                                    response_);
+
   // Record if we have navigated to a non-secure page served from a IP address
   // in the private address space.
   //
@@ -2962,6 +2967,30 @@ bool DocumentLoader::IsReloadedOrFormSubmitted() const {
     default:
       return false;
   }
+}
+
+// static
+void DocumentLoader::MaybeStartLoadingBodyInBackground(
+    WebNavigationBodyLoader* body_loader,
+    LocalFrame* frame,
+    const KURL& url,
+    const ResourceResponse& response) {
+  if (!body_loader ||
+      !base::FeatureList::IsEnabled(features::kThreadedBodyLoader) ||
+      !EqualIgnoringASCIICase(response.MimeType(), "text/html")) {
+    return;
+  }
+
+  auto* navigation_body_loader = DynamicTo<NavigationBodyLoader>(*body_loader);
+  if (!navigation_body_loader)
+    return;
+
+  auto decoder = BuildTextResourceDecoder(frame, url, response.MimeType(),
+                                          response.TextEncodingName());
+  navigation_body_loader->StartLoadingBodyInBackground(
+      std::move(decoder),
+      // The network inspector needs the raw data.
+      probe::ToCoreProbeSink(frame)->HasInspectorNetworkAgents());
 }
 
 ContentSecurityPolicy* DocumentLoader::CreateCSP() {

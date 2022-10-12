@@ -414,6 +414,13 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // have this problem.
   bool IsReloadedOrFormSubmitted() const;
 
+  // Starts loading the navigation body in a background thread.
+  static void MaybeStartLoadingBodyInBackground(
+      WebNavigationBodyLoader* body_loader,
+      LocalFrame* frame,
+      const KURL& url,
+      const ResourceResponse& response);
+
  protected:
   // Based on its MIME type, if the main document's response corresponds to an
   // MHTML archive, then every resources will be loaded from this archive.

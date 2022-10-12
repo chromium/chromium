@@ -28,6 +28,7 @@ class PLATFORM_EXPORT StaticDataNavigationBodyLoader
 
   void SetDefersLoading(LoaderFreezeMode) override;
   void StartLoadingBody(WebNavigationBodyLoader::Client*) override;
+  BodyLoaderType GetType() const override { return BodyLoaderType::kStatic; }
 
  private:
   void Continue();

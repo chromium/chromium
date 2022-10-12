@@ -1628,6 +1628,10 @@ BASE_FEATURE(kWildcardSubdomainsInPermissionsPolicy,
              "WildcardSubdomainsInPermissionsPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kThreadedBodyLoader,
+             "ThreadedBodyLoader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDocumentEventNodePathCaching,
              "DocumentEventNodePathCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);

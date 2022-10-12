@@ -25,13 +25,17 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/platform/web_loader_freeze_mode.h"
 #include "third_party/blink/public/platform/web_navigation_body_loader.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace network {
 struct URLLoaderCompletionStatus;
 }  // namespace network
 
 namespace blink {
+
+class BodyTextDecoder;
 
 // Navigation request is started in the browser process, and all redirects
 // and final response are received there. Then we pass URLLoader and
@@ -40,8 +44,9 @@ namespace blink {
 // metadata, and dispatches them to Blink. It also ensures that completion
 // status comes to Blink after the whole body was read and cached code metadata
 // was received.
-class NavigationBodyLoader : public WebNavigationBodyLoader,
-                             public network::mojom::URLLoaderClient {
+class PLATFORM_EXPORT NavigationBodyLoader
+    : public WebNavigationBodyLoader,
+      public network::mojom::URLLoaderClient {
  public:
   NavigationBodyLoader(
       const KURL& original_url,
@@ -52,6 +57,13 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper);
   ~NavigationBodyLoader() override;
+
+  // Starts reading and decoding the body on a background thread. Client
+  // callbacks will not be called until StartLoadingBody() is called. If
+  // |should_keep_encoded_data| is true, the original data will be copied from
+  // the background thread and passed to DecodedBodyDataReceived().
+  void StartLoadingBodyInBackground(std::unique_ptr<BodyTextDecoder> decoder,
+                                    bool should_keep_encoded_data);
 
  private:
   // The loading flow is outlined below. NavigationBodyLoader can be safely
@@ -82,6 +94,7 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
   // WebNavigationBodyLoader implementation.
   void SetDefersLoading(WebLoaderFreezeMode mode) override;
   void StartLoadingBody(WebNavigationBodyLoader::Client* client) override;
+  BodyLoaderType GetType() const override { return BodyLoaderType::kNetwork; }
 
   // network::mojom::URLLoaderClient implementation.
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -106,6 +119,9 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
   void ReadFromDataPipe();
   void NotifyCompletionIfAppropriate();
   void BindURLLoaderAndStartLoadingResponseBodyIfPossible();
+
+  // Takes and processes data loaded by |off_thread_body_reader_|.
+  void ProcessOffThreadData();
 
   NavigationBodyLoader& operator=(const NavigationBodyLoader&) = delete;
   NavigationBodyLoader(const NavigationBodyLoader&) = delete;
@@ -152,7 +168,24 @@ class NavigationBodyLoader : public WebNavigationBodyLoader,
   // The original navigation url to start with.
   const KURL original_url_;
 
+  class MainThreadBodyReader;
+  class OffThreadBodyReader;
+  struct OffThreadBodyReaderDeleter {
+    void operator()(const OffThreadBodyReader* ptr);
+  };
+  using OffThreadBodyReaderPtr =
+      std::unique_ptr<OffThreadBodyReader, OffThreadBodyReaderDeleter>;
+  OffThreadBodyReaderPtr off_thread_body_reader_;
+
   base::WeakPtrFactory<NavigationBodyLoader> weak_factory_{this};
+};
+
+template <>
+struct DowncastTraits<NavigationBodyLoader> {
+  static bool AllowFrom(const WebNavigationBodyLoader& body_loader) {
+    return body_loader.GetType() ==
+           NavigationBodyLoader::BodyLoaderType::kNetwork;
+  }
 };
 
 }  // namespace blink

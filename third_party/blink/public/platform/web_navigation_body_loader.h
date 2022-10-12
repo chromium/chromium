@@ -83,6 +83,12 @@ class BLINK_EXPORT WebNavigationBodyLoader {
   // Starts loading the body. Client must be non-null, and will receive the
   // body, and final result.
   virtual void StartLoadingBody(Client*) = 0;
+
+  enum class BodyLoaderType {
+    kStatic,
+    kNetwork,
+  };
+  virtual BodyLoaderType GetType() const = 0;
 };
 
 }  // namespace blink

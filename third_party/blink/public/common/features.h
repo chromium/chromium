@@ -865,6 +865,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFastPathPaintPropertyUpdates);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kWildcardSubdomainsInPermissionsPolicy);
 
+// If enabled, reads and decodes navigation body data off the main thread.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kThreadedBodyLoader);
+
 // If enabled, will cache for each node's EventPath::NodePath in document.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDocumentEventNodePathCaching);
 
