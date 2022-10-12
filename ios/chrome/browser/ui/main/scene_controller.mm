@@ -742,7 +742,8 @@ bool IsSigninForcedByPolicy() {
       ChromeAccountManagerServiceFactory::GetForBrowserState(
           self.mainInterface.browser->GetBrowserState());
   // The sign-in promo should not be presented if there is no identities.
-  ChromeIdentity* defaultIdentity = accountManagerService->GetDefaultIdentity();
+  id<SystemIdentity> defaultIdentity =
+      accountManagerService->GetDefaultIdentity();
   DCHECK(defaultIdentity);
 
   __weak SceneController* weakSelf = self;
