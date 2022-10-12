@@ -27,6 +27,7 @@
 <style>
   #p1 {top: 50px;}
   #p2 {top: 120px;}
+  [popup] {bottom:auto;}
   [popup]::backdrop {
     /* This should *not* affect anything: */
     pointer-events: auto;
@@ -501,4 +502,34 @@ promise_test(async () => {
   auto.hidePopUp();
   assert_false(auto.matches(':open'));
 },'Light dismiss of mixed popup types');
+</script>
+
+
+<div popup id=p13>Pop-up 1
+  <div popup id=p14>Pop-up 2
+    <div popup id=p15>Pop-up 3</div>
+  </div>
+</div>
+<style>
+  #p13 {top: 100px;}
+  #p14 {top: 200px;}
+  #p15 {top: 300px;}
+</style>
+<script>
+promise_test(async () => {
+  const p13 = document.querySelector('#p13');
+  const p14 = document.querySelector('#p14');
+  const p15 = document.querySelector('#p15');
+  p13.showPopUp();
+  p14.showPopUp();
+  p15.showPopUp();
+  p15.addEventListener('popuphide',() => {
+    p14.hidePopUp();
+  },{once:true});
+  assert_true(p13.matches(':open') && p14.matches(':open') && p15.matches(':open'),'all three should be open');
+  p14.hidePopUp();
+  assert_true(p13.matches(':open'),'p13 should still be open');
+  assert_false(p14.matches(':open'));
+  assert_false(p15.matches(':open'));
+},'Hide the target pop-up during "hide all popups until"');
 </script>

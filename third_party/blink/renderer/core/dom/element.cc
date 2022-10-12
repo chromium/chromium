@@ -2599,7 +2599,16 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
     DCHECK(document.PopupsWaitingToHide().empty());
   }
 
-  if (endpoint && endpoint->PopupType() == PopupValueType::kHint) {
+  auto close_all_open_pop_ups = [&document, &focus_behavior, &forcing_level]() {
+    while (auto* pop_up = document.TopmostPopupAutoOrHint()) {
+      pop_up->HidePopUpInternal(focus_behavior, forcing_level);
+    }
+  };
+
+  if (!endpoint)
+    return close_all_open_pop_ups();
+
+  if (endpoint->PopupType() == PopupValueType::kHint) {
     if (popup_independence == HidePopupIndependence::kHideUnrelated) {
       if (document.PopupHintShowing() != endpoint) {
         document.PopupHintShowing()->HidePopUpInternal(focus_behavior,
@@ -2611,7 +2620,7 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
       }
     }
   } else {
-    DCHECK(!endpoint || endpoint->PopupType() == PopupValueType::kAuto);
+    DCHECK_EQ(endpoint->PopupType(), PopupValueType::kAuto);
     const Element* hint_ancestor = nullptr;
     if (document.PopupHintShowing()) {
       // If there is a hint showing that is a descendant of something on the
@@ -2625,15 +2634,32 @@ void Element::HideAllPopupsUntil(const Element* endpoint,
                                                        forcing_level);
       }
     }
-    // Then hide everything in the popup=auto stack up to the specified
-    // endpoint.
-    while (!document.PopupStack().empty()) {
+    // Then hide everything in the popup=auto stack until the last_to_hide
+    // pop-up is closed, or the stack is empty.
+    const Element* last_to_hide = nullptr;
+    bool found_endpoint = false;
+    for (auto pop_up : document.PopupStack()) {
+      if (pop_up == endpoint) {
+        found_endpoint = true;
+      } else if (found_endpoint) {
+        last_to_hide = pop_up;
+        break;
+      }
+    }
+    if (!found_endpoint)
+      return close_all_open_pop_ups();
+    if (!last_to_hide && document.PopupHintShowing() &&
+        hint_ancestor == endpoint) {
+      // endpoint is the top of the pop-up stack, and there's a nested hint.
+      document.PopupHintShowing()->HidePopUpInternal(focus_behavior,
+                                                     forcing_level);
+    }
+    while (last_to_hide && last_to_hide->popupOpen() &&
+           !document.PopupStack().empty()) {
       if (document.PopupStack().back() == hint_ancestor) {
         document.PopupHintShowing()->HidePopUpInternal(focus_behavior,
                                                        forcing_level);
       }
-      if (document.PopupStack().back() == endpoint)
-        break;
       document.PopupStack().back()->HidePopUpInternal(focus_behavior,
                                                       forcing_level);
     }
