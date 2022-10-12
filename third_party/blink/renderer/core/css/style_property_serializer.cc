@@ -19,7 +19,7 @@
  * along with this library; see the file COPYING.LIB.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  * Boston, MA 02110-1301, USA.
-*/
+ */
 
 #include "third_party/blink/renderer/core/css/style_property_serializer.h"
 
@@ -217,8 +217,8 @@ String StylePropertySerializer::GetPropertyText(const CSSPropertyName& name,
 String StylePropertySerializer::AsText() const {
   StringBuilder result;
 
-  std::bitset<kNumCSSProperties> longhand_serialized;
-  std::bitset<kNumCSSProperties> shorthand_appeared;
+  std::bitset<kNumCSSPropertyIDs> longhand_serialized;
+  std::bitset<kNumCSSPropertyIDs> shorthand_appeared;
 
   unsigned size = property_set_.PropertyCount();
   unsigned num_decls = 0;
