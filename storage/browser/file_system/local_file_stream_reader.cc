@@ -32,12 +32,12 @@ const int kOpenFlagsForRead =
 
 base::FileErrorOr<base::File::Info> DoGetFileInfo(const base::FilePath& path) {
   if (!base::PathExists(path))
-    return base::File::FILE_ERROR_NOT_FOUND;
+    return base::unexpected(base::File::FILE_ERROR_NOT_FOUND);
 
   base::File::Info info;
   bool success = base::GetFileInfo(path, &info);
   if (!success)
-    return base::File::FILE_ERROR_FAILED;
+    return base::unexpected(base::File::FILE_ERROR_FAILED);
   return info;
 }
 
@@ -199,7 +199,7 @@ void LocalFileStreamReader::DidOpenForRead(net::IOBuffer* buf,
 void LocalFileStreamReader::DidGetFileInfoForGetLength(
     net::Int64CompletionOnceCallback callback,
     base::FileErrorOr<base::File::Info> result) {
-  if (result.is_error()) {
+  if (!result.has_value()) {
     std::move(callback).Run(net::FileErrorToNetError(result.error()));
     return;
   }

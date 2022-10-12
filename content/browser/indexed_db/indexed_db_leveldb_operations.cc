@@ -153,7 +153,7 @@ std::string ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
 
   base::FileErrorOr<base::File> file_or_error = filesystem_proxy->OpenFile(
       info_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (!file_or_error.is_error()) {
+  if (file_or_error.has_value()) {
     auto& file = file_or_error.value();
     if (file.IsValid()) {
       std::string input_js(file_info->size, '\0');

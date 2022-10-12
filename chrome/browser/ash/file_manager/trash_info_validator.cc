@@ -20,7 +20,7 @@ namespace {
 
 void RunCallbackWithError(base::File::Error error,
                           ValidateAndParseTrashInfoCallback callback) {
-  std::move(callback).Run(base::FileErrorOr<ParsedTrashInfoData>(error));
+  std::move(callback).Run(base::unexpected(error));
 }
 
 }  // namespace
@@ -147,8 +147,7 @@ void TrashInfoValidator::OnTrashInfoParsed(
   parsed_data.absolute_restore_path = std::move(absolute_restore_path);
   parsed_data.deletion_date = std::move(deletion_date);
 
-  std::move(callback).Run(
-      base::FileErrorOr<ParsedTrashInfoData>(std::move(parsed_data)));
+  std::move(callback).Run(std::move(parsed_data));
 }
 
 }  // namespace file_manager::trash

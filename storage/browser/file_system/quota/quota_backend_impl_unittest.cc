@@ -141,7 +141,7 @@ class QuotaBackendImplTest : public testing::Test,
     base::FileErrorOr<base::FilePath> path =
         file_util_->GetDirectoryForStorageKeyAndType(blink::StorageKey(origin),
                                                      type, true /* create */);
-    ASSERT_FALSE(path.is_error());
+    ASSERT_TRUE(path.has_value());
 
     ASSERT_TRUE(file_system_usage_cache_.UpdateUsage(
         GetUsageCachePath(origin, type), 0));
@@ -155,7 +155,7 @@ class QuotaBackendImplTest : public testing::Test,
                                    FileSystemType type) {
     base::FileErrorOr<base::FilePath> path =
         backend_->GetUsageCachePath(origin, type);
-    EXPECT_FALSE(path.is_error());
+    EXPECT_TRUE(path.has_value());
     EXPECT_FALSE(path->empty());
     return path.value();
   }

@@ -418,12 +418,12 @@ void FileManagerFileAPIUtilTest::TestGenerateUnusedFilename(
       root_url, base::FilePath(target_filename), file_system_context,
       base::BindLambdaForTesting(
           [&](base::FileErrorOr<storage::FileSystemURL> result) {
-            if (expected.is_error()) {
-              EXPECT_TRUE(result.is_error())
+            if (!expected.has_value()) {
+              EXPECT_FALSE(result.has_value())
                   << "Unexpected result " << result->ToGURL();
               EXPECT_EQ(expected.error(), result.error());
             } else {
-              EXPECT_FALSE(result.is_error())
+              EXPECT_TRUE(result.has_value())
                   << "Unexpected error " << result.error();
               EXPECT_EQ(temp_file_system->CreateFileSystemURL(expected.value())
                             .ToGURL(),
@@ -489,9 +489,11 @@ TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameDoubleExtension) {
 }
 
 TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameInvalidFilename) {
-  TestGenerateUnusedFilename({}, "", base::File::FILE_ERROR_INVALID_OPERATION);
-  TestGenerateUnusedFilename({}, "path/with/slashes",
-                             base::File::FILE_ERROR_INVALID_OPERATION);
+  TestGenerateUnusedFilename(
+      {}, "", base::unexpected(base::File::FILE_ERROR_INVALID_OPERATION));
+  TestGenerateUnusedFilename(
+      {}, "path/with/slashes",
+      base::unexpected(base::File::FILE_ERROR_INVALID_OPERATION));
 }
 
 TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameFileSystemProvider) {
@@ -542,7 +544,7 @@ TEST_F(FileManagerFileAPIUtilTest, GenerateUnusedFilenameFileSystemProvider) {
       context,
       base::BindLambdaForTesting(
           [&](base::FileErrorOr<storage::FileSystemURL> result) {
-            EXPECT_FALSE(result.is_error())
+            EXPECT_TRUE(result.has_value())
                 << "Unexpected error " << result.error();
             EXPECT_EQ(expected_url.ToGURL(), result->ToGURL());
             run_loop.Quit();

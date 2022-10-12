@@ -110,7 +110,7 @@ void RestoreToDestinationIOTask::ValidateTrashInfo(size_t idx) {
 void RestoreToDestinationIOTask::OnTrashInfoParsed(
     size_t idx,
     base::FileErrorOr<trash::ParsedTrashInfoData> parsed_data) {
-  if (parsed_data.is_error()) {
+  if (!parsed_data.has_value()) {
     progress_.sources[idx].error = parsed_data.error();
     Complete(State::kError);
     return;

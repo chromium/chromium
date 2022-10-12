@@ -34,13 +34,13 @@ base::FileErrorOr<base::File::Info> DoGetFileInfo(
     scoped_refptr<FilesystemProxyFileStreamReader::SharedFilesystemProxy>
         shared_filesystem_proxy) {
   if (!shared_filesystem_proxy->data->PathExists(path)) {
-    return base::File::FILE_ERROR_NOT_FOUND;
+    return base::unexpected(base::File::FILE_ERROR_NOT_FOUND);
   }
 
   absl::optional<base::File::Info> info =
       shared_filesystem_proxy->data->GetFileInfo(path);
   if (!info.has_value()) {
-    return base::File::FILE_ERROR_FAILED;
+    return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 
   return std::move(*info);
@@ -161,7 +161,7 @@ void FilesystemProxyFileStreamReader::DidVerifyForOpen(
 
 void FilesystemProxyFileStreamReader::DidOpenFile(
     base::FileErrorOr<base::File> open_result) {
-  if (open_result.is_error()) {
+  if (!open_result.has_value()) {
     std::move(callback_).Run(open_result.error());
     return;
   }
@@ -217,13 +217,13 @@ void FilesystemProxyFileStreamReader::DidGetFileInfoForGetLength(
     base::FileErrorOr<base::File::Info> result) {
   // TODO(enne): track rate of missing blobs for http://crbug.com/1131151
   if (emit_metrics_) {
-    bool file_was_found = !result.is_error() ||
+    bool file_was_found = result.has_value() ||
                           result.error() != base::File::FILE_ERROR_NOT_FOUND;
     UMA_HISTOGRAM_BOOLEAN("WebCore.IndexedDB.FoundBlobFileForValue",
                           file_was_found);
   }
 
-  if (result.is_error()) {
+  if (!result.has_value()) {
     std::move(callback).Run(net::FileErrorToNetError(result.error()));
     return;
   }

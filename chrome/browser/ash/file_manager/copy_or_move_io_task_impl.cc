@@ -358,7 +358,7 @@ void CopyOrMoveIOTaskImpl::CopyOrMoveFile(
     size_t idx,
     base::FileErrorOr<storage::FileSystemURL> destination_result) {
   DCHECK(idx < progress_.sources.size());
-  if (destination_result.is_error()) {
+  if (!destination_result.has_value()) {
     progress_.outputs.emplace_back(progress_.destination_folder, absl::nullopt);
     OnCopyOrMoveComplete(idx, destination_result.error());
     return;

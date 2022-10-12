@@ -133,7 +133,7 @@ base::FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Write(
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   if (!CreateDataPipeForSize(data.size(), producer_handle, consumer_handle)) {
-    return base::File::Error::FILE_ERROR_FAILED;
+    return base::unexpected(base::File::Error::FILE_ERROR_FAILED);
   }
 
   auto ref_counted_data =

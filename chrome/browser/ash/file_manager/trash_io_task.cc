@@ -477,7 +477,7 @@ void TrashIOTask::WriteMetadata(
     size_t output_idx,
     const storage::FileSystemURL& files_folder_location,
     base::FileErrorOr<storage::FileSystemURL> destination_result) {
-  if (destination_result.is_error()) {
+  if (!destination_result.has_value()) {
     progress_.outputs.emplace_back(files_folder_location, absl::nullopt);
     TrashComplete(source_idx, output_idx, destination_result.error());
     return;

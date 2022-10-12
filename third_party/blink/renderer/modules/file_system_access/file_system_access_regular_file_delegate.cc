@@ -77,7 +77,7 @@ base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Read(
   if (result >= 0) {
     return result;
   }
-  return base::File::GetLastFileError();
+  return base::unexpected(base::File::GetLastFileError());
 }
 
 base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Write(
@@ -90,7 +90,7 @@ base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Write(
 
   int64_t write_end_offset;
   if (!base::CheckAdd(offset, write_size).AssignIfValid(&write_end_offset)) {
-    return base::File::FILE_ERROR_NO_SPACE;
+    return base::unexpected(base::File::FILE_ERROR_NO_SPACE);
   }
 
   int64_t file_size_before = backing_file_.GetLength();
@@ -98,7 +98,7 @@ base::FileErrorOr<int> FileSystemAccessRegularFileDelegate::Write(
     // Attempt to pre-allocate quota. Do not attempt to write unless we have
     // enough quota for the whole operation.
     if (!capacity_tracker_->RequestFileCapacityChangeSync(write_end_offset))
-      return base::File::FILE_ERROR_NO_SPACE;
+      return base::unexpected(base::File::FILE_ERROR_NO_SPACE);
   }
 
   int result = backing_file_.Write(offset, reinterpret_cast<char*>(data.data()),
@@ -176,7 +176,7 @@ base::FileErrorOr<bool> FileSystemAccessRegularFileDelegate::SetLength(
   CHECK_GE(new_length, 0);
 
   if (!capacity_tracker_->RequestFileCapacityChangeSync(new_length))
-    return base::File::FILE_ERROR_NO_SPACE;
+    return base::unexpected(base::File::FILE_ERROR_NO_SPACE);
 
 #if BUILDFLAG(IS_MAC)
   // On macOS < 10.15, a sandboxing limitation causes failures in ftruncate()
@@ -198,7 +198,7 @@ base::FileErrorOr<bool> FileSystemAccessRegularFileDelegate::SetLength(
     // Unfortunately we don't have access to the error code when using
     // the FileUtilitiesHost, so we can say the operation failed but
     // not why (ex: out of quota).
-    return base::File::Error::FILE_ERROR_FAILED;
+    return base::unexpected(base::File::Error::FILE_ERROR_FAILED);
   }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -206,7 +206,7 @@ base::FileErrorOr<bool> FileSystemAccessRegularFileDelegate::SetLength(
     capacity_tracker_->CommitFileSizeChange(new_length);
     return true;
   }
-  return base::File::GetLastFileError();
+  return base::unexpected(base::File::GetLastFileError());
 }
 
 void FileSystemAccessRegularFileDelegate::SetLengthAsync(

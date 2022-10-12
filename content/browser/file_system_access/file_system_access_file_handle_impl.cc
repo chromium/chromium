@@ -61,7 +61,7 @@ std::pair<base::File, base::FileErrorOr<int64_t>> GetFileLengthOnBlockingThread(
     base::File file) {
   int64_t file_length = file.GetLength();
   if (file_length < 0)
-    return {std::move(file), base::File::GetLastFileError()};
+    return {std::move(file), base::unexpected(base::File::GetLastFileError())};
   return {std::move(file), std::move(file_length)};
 }
 
@@ -332,7 +332,7 @@ void FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength(
   base::FileErrorOr<int64_t> length_or_error =
       std::move(file_and_length.second);
 
-  if (length_or_error.is_error()) {
+  if (!length_or_error.has_value()) {
     std::move(callback).Run(
         file_system_access_error::FromFileError(length_or_error.error()),
         blink::mojom::FileSystemAccessAccessHandleFilePtr(),

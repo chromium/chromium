@@ -26,7 +26,7 @@ base::File SandboxedVfsDelegate::OpenFile(const base::FilePath& file_path,
   base::FileErrorOr<base::File> result = filesystem_->OpenFile(
       file_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                      base::File::FLAG_WRITE);
-  if (result.is_error())
+  if (!result.has_value())
     return base::File();
   return std::move(result.value());
 }

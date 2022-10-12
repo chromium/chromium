@@ -927,7 +927,7 @@ ObfuscatedFileUtil::GetDirectoryForBucketAndType(
   }
   base::File::Error error = GetDirectoryHelper(path, create);
   if (error != base::File::FILE_OK)
-    return error;
+    return base::unexpected(error);
   return path;
 }
 
@@ -939,7 +939,7 @@ ObfuscatedFileUtil::GetDirectoryForStorageKeyAndType(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FileErrorOr<base::FilePath> dir =
       GetDirectoryForStorageKey(storage_key, create);
-  if (dir.is_error()) {
+  if (!dir.has_value()) {
     return dir;
   }
   DCHECK(!dir->empty());
@@ -954,7 +954,7 @@ ObfuscatedFileUtil::GetDirectoryForStorageKeyAndType(
   }
   base::File::Error error = GetDirectoryHelper(path, create);
   if (error != base::File::FILE_OK)
-    return error;
+    return base::unexpected(error);
   return path;
 }
 
@@ -966,18 +966,18 @@ bool ObfuscatedFileUtil::DeleteDirectoryForStorageKeyAndType(
 
   base::FileErrorOr<base::FilePath> origin_path =
       GetDirectoryForStorageKey(storage_key, false);
-  if (origin_path.is_error() || origin_path->empty())
+  if (!origin_path.has_value() || origin_path->empty())
     return true;
 
   if (type) {
     // Delete the filesystem type directory.
     const base::FileErrorOr<base::FilePath> origin_type_path =
         GetDirectoryForStorageKeyAndType(storage_key, type.value(), false);
-    if (origin_type_path.is_error() &&
+    if (!origin_type_path.has_value() &&
         origin_type_path.error() == base::File::FILE_ERROR_FAILED) {
       return false;
     }
-    if (!origin_type_path.is_error() && !origin_type_path->empty() &&
+    if (origin_type_path.has_value() && !origin_type_path->empty() &&
         !delegate_->DeleteFileOrDirectory(origin_type_path.value(),
                                           true /* recursive */)) {
       return false;
@@ -1034,7 +1034,7 @@ bool ObfuscatedFileUtil::DeleteDirectoryForBucketAndType(
     // Delete the filesystem type directory.
     const base::FileErrorOr<base::FilePath> path_with_type =
         GetDirectoryForBucketAndType(bucket_locator, type.value(), false);
-    if (path_with_type.is_error())
+    if (!path_with_type.has_value())
       return false;
     if (!path_with_type->empty() &&
         !delegate_->DeleteFileOrDirectory(path_with_type.value(),
@@ -1351,7 +1351,7 @@ base::FilePath ObfuscatedFileUtil::DataPathToLocalPath(
     const base::FilePath& data_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::FileErrorOr<base::FilePath> root = GetDirectoryForURL(url, false);
-  if (root.is_error())
+  if (!root.has_value())
     return base::FilePath();
   return root.value().Append(data_path);
 }
@@ -1393,7 +1393,7 @@ SandboxDirectoryDatabase* ObfuscatedFileUtil::GetDirectoryDatabase(
   }
 
   base::FileErrorOr<base::FilePath> path = GetDirectoryForURL(url, create);
-  if (path.is_error()) {
+  if (!path.has_value()) {
     LOG(WARNING) << "Failed to get origin+type directory: " << url.DebugString()
                  << " error:" << path.error();
     return nullptr;
@@ -1413,39 +1413,40 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForStorageKey(
     // Retrieve the default bucket value for `storage_key`.
     QuotaErrorOr<BucketLocator> bucket = GetOrCreateDefaultBucket(storage_key);
     if (!bucket.ok())
-      return base::File::FILE_ERROR_FAILED;
+      return base::unexpected(base::File::FILE_ERROR_FAILED);
     // Get the path and verify it is valid.
     base::FileErrorOr<base::FilePath> path =
         sandbox_delegate_->quota_manager_proxy()->GetClientBucketPath(
             bucket.value(), QuotaClientType::kFileSystem);
-    if (path.is_error())
-      return path.error();
+    if (!path.has_value())
+      return base::unexpected(path.error());
     base::File::Error error = GetDirectoryHelper(path.value(), create);
     if (error != base::File::FILE_OK)
-      return error;
+      return base::unexpected(error);
     return path;
   }
 
   if (!InitOriginDatabase(storage_key.origin(), create)) {
-    return create ? base::File::FILE_ERROR_FAILED
-                  : base::File::FILE_ERROR_NOT_FOUND;
+    return base::FileErrorOr<base::FilePath>(
+        base::unexpected(create ? base::File::FILE_ERROR_FAILED
+                                : base::File::FILE_ERROR_NOT_FOUND));
   }
   base::FilePath directory_name;
   std::string id = GetIdentifierFromOrigin(storage_key.origin());
 
   bool exists_in_db = origin_database_->HasOriginPath(id);
   if (!exists_in_db && !create) {
-    return base::File::FILE_ERROR_NOT_FOUND;
+    return base::unexpected(base::File::FILE_ERROR_NOT_FOUND);
   }
   if (!origin_database_->GetPathForOrigin(id, &directory_name)) {
-    return base::File::FILE_ERROR_FAILED;
+    return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 
   base::FilePath path = file_system_directory_.Append(directory_name);
   bool exists_in_fs = delegate_->DirectoryExists(path);
   if (!exists_in_db && exists_in_fs) {
     if (!delegate_->DeleteFileOrDirectory(path, true)) {
-      return base::File::FILE_ERROR_FAILED;
+      return base::unexpected(base::File::FILE_ERROR_FAILED);
     }
     exists_in_fs = false;
   }
@@ -1454,8 +1455,8 @@ base::FileErrorOr<base::FilePath> ObfuscatedFileUtil::GetDirectoryForStorageKey(
     if (!create || delegate_->CreateDirectory(path, false /* exclusive */,
                                               true /* recursive */) !=
                        base::File::FILE_OK) {
-      return create ? base::File::FILE_ERROR_FAILED
-                    : base::File::FILE_ERROR_NOT_FOUND;
+      return base::unexpected(create ? base::File::FILE_ERROR_FAILED
+                                     : base::File::FILE_ERROR_NOT_FOUND);
     }
   }
   return path;
@@ -1580,7 +1581,7 @@ base::File::Error ObfuscatedFileUtil::GenerateNewLocalPath(
 
   base::FileErrorOr<base::FilePath> directory_for_url =
       GetDirectoryForURL(url, false);
-  if (directory_for_url.is_error())
+  if (!directory_for_url.has_value())
     return directory_for_url.error();
   *root = directory_for_url.value();
 

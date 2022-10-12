@@ -172,7 +172,7 @@ void ExtractIOTask::ExtractArchive(
     base::FileErrorOr<storage::FileSystemURL> destination_result) {
   DCHECK(index < progress_.sources.size());
   const base::FilePath source_file = progress_.sources[index].url.path();
-  if (destination_result.is_error()) {
+  if (!destination_result.has_value()) {
     ZipExtractCallback(base::FilePath(), false);
   } else {
     const base::FilePath destination_directory =

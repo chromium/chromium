@@ -195,7 +195,7 @@ void ZipIOTask::GenerateZipNameAfterGotTotalBytes(int64_t total_bytes) {
 // Starts the zip operation.
 void ZipIOTask::ZipItems(
     base::FileErrorOr<storage::FileSystemURL> destination_result) {
-  if (destination_result.is_error()) {
+  if (!destination_result.has_value()) {
     progress_.outputs.emplace_back(progress_.destination_folder,
                                    destination_result.error());
     Complete(State::kError);

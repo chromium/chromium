@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CROSS_THREAD_COPIER_BASE_H_
 
 #include "base/files/file.h"
+#include "base/files/file_error_or.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
@@ -39,8 +40,6 @@
 namespace base {
 template <typename, typename>
 class RefCountedThreadSafe;
-template <typename>
-class FileErrorOr;
 class TimeDelta;
 class TimeTicks;
 class Time;

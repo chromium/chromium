@@ -223,7 +223,7 @@ class ChromiumEvictableRandomAccessFile : public leveldb::RandomAccessFile {
     if (!handle) {
       int flags = base::File::FLAG_READ | base::File::FLAG_OPEN;
       FileErrorOr<base::File> result = filesystem_->OpenFile(filepath_, flags);
-      if (result.is_error()) {
+      if (!result.has_value()) {
         return MakeIOError(filepath_.AsUTF8Unsafe(), "Could not perform read",
                            kRandomAccessFileRead);
       }
@@ -323,7 +323,7 @@ Status ChromiumWritableFile::SyncParent() {
   FilePath path = FilePath::FromUTF8Unsafe(parent_dir_);
   FileErrorOr<base::File> result = filesystem_->OpenFile(
       path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (result.is_error()) {
+  if (!result.has_value()) {
     return MakeIOError(parent_dir_, "Unable to open directory", kSyncParent,
                        result.error());
   }
@@ -784,7 +784,7 @@ void ChromiumEnv::RemoveBackupFiles(const FilePath& dir) {
   FileErrorOr<std::vector<base::FilePath>> result =
       filesystem_->GetDirectoryEntries(
           dir, storage::FilesystemProxy::DirectoryEntryType::kFilesOnly);
-  if (result.is_error())
+  if (!result.has_value())
     return;
 
   for (const auto& path : result.value()) {
@@ -808,7 +808,7 @@ Status ChromiumEnv::GetChildren(const std::string& dir,
       filesystem_->GetDirectoryEntries(
           dir_path,
           storage::FilesystemProxy::DirectoryEntryType::kFilesAndDirectories);
-  if (entries_result.is_error()) {
+  if (!entries_result.has_value()) {
     return MakeIOError(dir, "Could not open/read directory", kGetChildren,
                        entries_result.error());
   }
@@ -892,11 +892,11 @@ Status ChromiumEnv::LockFile(const std::string& fname, FileLock** lock) {
   const base::FilePath path = base::FilePath::FromUTF8Unsafe(fname);
   Retrier retrier;
   FileErrorOr<std::unique_ptr<storage::FilesystemProxy::FileLock>> lock_result =
-      base::File::Error::FILE_ERROR_FAILED;
+      base::unexpected(base::File::Error::FILE_ERROR_FAILED);
   do {
     lock_result = filesystem_->LockFile(path);
-  } while (lock_result.is_error() && retrier.ShouldKeepTrying());
-  if (lock_result.is_error()) {
+  } while (!lock_result.has_value() && retrier.ShouldKeepTrying());
+  if (!lock_result.has_value()) {
     return MakeIOError(fname, FileErrorString(lock_result.error()), kLockFile,
                        lock_result.error());
   }
@@ -938,7 +938,7 @@ Status ChromiumEnv::NewLogger(const std::string& fname,
   FilePath path = FilePath::FromUTF8Unsafe(fname);
   FileErrorOr<base::File> open_result = filesystem_->OpenFile(
       path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  if (open_result.is_error()) {
+  if (!open_result.has_value()) {
     *result = nullptr;
     return MakeIOError(fname, "Unable to create log file", kNewLogger,
                        open_result.error());
@@ -953,7 +953,7 @@ Status ChromiumEnv::NewSequentialFile(const std::string& fname,
   FilePath path = FilePath::FromUTF8Unsafe(fname);
   FileErrorOr<base::File> open_result = filesystem_->OpenFile(
       path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  if (open_result.is_error()) {
+  if (!open_result.has_value()) {
     *result = nullptr;
     return MakeIOError(fname, "Unable to create sequential file",
                        kNewSequentialFile, open_result.error());
@@ -968,7 +968,7 @@ Status ChromiumEnv::NewRandomAccessFile(const std::string& fname,
   base::FilePath file_path = FilePath::FromUTF8Unsafe(fname);
   FileErrorOr<base::File> open_result = filesystem_->OpenFile(
       file_path, base::File::FLAG_READ | base::File::FLAG_OPEN);
-  if (!open_result.is_error()) {
+  if (open_result.has_value()) {
     base::File file = std::move(open_result.value());
     if (file_cache_) {
       *result = new ChromiumEvictableRandomAccessFile(
@@ -990,7 +990,7 @@ Status ChromiumEnv::NewWritableFile(const std::string& fname,
   FilePath path = FilePath::FromUTF8Unsafe(fname);
   FileErrorOr<base::File> open_result = filesystem_->OpenFile(
       path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  if (open_result.is_error()) {
+  if (!open_result.has_value()) {
     *result = nullptr;
     return MakeIOError(fname, "Unable to create writable file",
                        kNewWritableFile, open_result.error());
@@ -1005,7 +1005,7 @@ Status ChromiumEnv::NewAppendableFile(const std::string& fname,
   FilePath path = FilePath::FromUTF8Unsafe(fname);
   FileErrorOr<base::File> open_result = filesystem_->OpenFile(
       path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
-  if (open_result.is_error()) {
+  if (!open_result.has_value()) {
     *result = nullptr;
     return MakeIOError(fname, "Unable to create appendable file",
                        kNewAppendableFile, open_result.error());

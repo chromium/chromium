@@ -117,7 +117,7 @@ void FilesystemImpl::GetEntries(const base::FilePath& path,
   const base::FilePath full_path = MakeAbsolute(path);
   base::FileErrorOr<std::vector<base::FilePath>> result =
       GetDirectoryEntries(full_path, mode);
-  if (result.is_error()) {
+  if (!result.has_value()) {
     std::move(callback).Run(result.error(), std::vector<base::FilePath>());
     return;
   }
@@ -255,7 +255,7 @@ void FilesystemImpl::RenameFile(const base::FilePath& old_path,
 void FilesystemImpl::LockFile(const base::FilePath& path,
                               LockFileCallback callback) {
   base::FileErrorOr<base::File> result = LockFileLocal(MakeAbsolute(path));
-  if (result.is_error()) {
+  if (!result.has_value()) {
     std::move(callback).Run(result.error(), mojo::NullRemote());
     return;
   }
@@ -282,15 +282,15 @@ base::FileErrorOr<base::File> FilesystemImpl::LockFileLocal(
   base::File file(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
                             base::File::FLAG_WRITE);
   if (!file.IsValid())
-    return file.error_details();
+    return base::unexpected(file.error_details());
 
   if (!GetLockTable().AddLock(path))
-    return base::File::FILE_ERROR_IN_USE;
+    return base::unexpected(base::File::FILE_ERROR_IN_USE);
 
 #if !BUILDFLAG(IS_FUCHSIA)
   base::File::Error error = file.Lock(base::File::LockMode::kExclusive);
   if (error != base::File::FILE_OK)
-    return error;
+    return base::unexpected(error);
 #endif
 
   return file;
@@ -343,7 +343,7 @@ FilesystemImpl::GetDirectoryEntries(const base::FilePath& path,
     entries.push_back(entry);
   }
   if (enumerator.GetError() != base::File::FILE_OK)
-    return enumerator.GetError();
+    return base::unexpected(enumerator.GetError());
   return entries;
 }
 

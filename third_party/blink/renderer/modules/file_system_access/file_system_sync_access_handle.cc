@@ -217,7 +217,7 @@ uint64_t FileSystemSyncAccessHandle::GetSizeSync(
       << "file delgate invalidated before getSize";
 
   base::FileErrorOr<int64_t> error_or_length = file_delegate()->GetLength();
-  if (error_or_length.is_error()) {
+  if (!error_or_length.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "getSize failed");
     return 0;
@@ -257,7 +257,7 @@ ScriptPromise FileSystemSyncAccessHandle::GetSizeAsync(
         ScriptState::Scope scope(script_state);
 
         access_handle->ExitOperation();
-        if (error_or_length.is_error()) {
+        if (!error_or_length.has_value()) {
           resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
               script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
               "getSize failed"));
@@ -302,7 +302,7 @@ void FileSystemSyncAccessHandle::TruncateSync(ScriptState* script_state,
   }
 
   base::FileErrorOr<bool> result = file_delegate()->SetLength(size);
-  if (!result.is_error())
+  if (result.has_value())
     return;
 
   base::File::Error file_error = result.error();
@@ -423,7 +423,7 @@ uint64_t FileSystemSyncAccessHandle::DoRead(
   base::FileErrorOr<int> result =
       file_delegate()->Read(file_offset, {read_data, read_size});
 
-  if (result.is_error()) {
+  if (!result.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Failed to read the content");
     return 0;
@@ -488,7 +488,7 @@ uint64_t FileSystemSyncAccessHandle::DoWrite(
 
   base::FileErrorOr<int> result =
       file_delegate()->Write(file_offset, {write_data, write_size});
-  if (result.is_error()) {
+  if (!result.has_value()) {
     base::File::Error file_error = result.error();
     DCHECK_NE(file_error, base::File::FILE_OK);
     if (file_error == base::File::FILE_ERROR_NO_SPACE) {

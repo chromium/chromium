@@ -8,15 +8,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
-#include "base/types/pass_key.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace storage {
 
@@ -112,7 +110,7 @@ FilesystemProxy::GetDirectoryEntries(const base::FilePath& path,
   std::vector<base::FilePath> entries;
   remote_directory_->GetEntries(MakeRelative(path), mode, &error, &entries);
   if (error != base::File::FILE_OK)
-    return error;
+    return base::unexpected(error);
 
   // Fix up all the relative paths to be absolute.
   const base::FilePath root = path.IsAbsolute() ? path : root_.Append(path);
@@ -127,7 +125,7 @@ base::FileErrorOr<base::File> FilesystemProxy::OpenFile(
   if (!remote_directory_) {
     base::File file(MaybeMakeAbsolute(path), flags);
     if (!file.IsValid())
-      return file.error_details();
+      return base::unexpected(file.error_details());
     return file;
   }
 
@@ -161,7 +159,7 @@ base::FileErrorOr<base::File> FilesystemProxy::OpenFile(
       break;
     default:
       NOTREACHED() << "Invalid open mode flags: " << mode_flags;
-      return base::File::FILE_ERROR_FAILED;
+      return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 
   mojom::FileReadAccess read_access =
@@ -183,7 +181,7 @@ base::FileErrorOr<base::File> FilesystemProxy::OpenFile(
       break;
     default:
       NOTREACHED() << "Invalid write access flags: " << write_flags;
-      return base::File::FILE_ERROR_FAILED;
+      return base::unexpected(base::File::FILE_ERROR_FAILED);
   }
 
   base::File::Error error = base::File::FILE_ERROR_IO;
@@ -191,7 +189,7 @@ base::FileErrorOr<base::File> FilesystemProxy::OpenFile(
   remote_directory_->OpenFile(MakeRelative(path), mode, read_access,
                               write_access, &error, &file);
   if (error != base::File::FILE_OK)
-    return error;
+    return base::unexpected(error);
   return file;
 }
 
@@ -306,8 +304,8 @@ FilesystemProxy::LockFile(const base::FilePath& path) {
     base::FilePath full_path = MaybeMakeAbsolute(path);
     base::FileErrorOr<base::File> result =
         FilesystemImpl::LockFileLocal(full_path);
-    if (result.is_error())
-      return result.error();
+    if (!result.has_value())
+      return base::unexpected(result.error());
     std::unique_ptr<FileLock> lock = std::make_unique<LocalFileLockImpl>(
         std::move(full_path), std::move(result.value()));
     return lock;
@@ -316,9 +314,9 @@ FilesystemProxy::LockFile(const base::FilePath& path) {
   mojo::PendingRemote<mojom::FileLock> remote_lock;
   base::File::Error error = base::File::FILE_ERROR_IO;
   if (!remote_directory_->LockFile(MakeRelative(path), &error, &remote_lock))
-    return error;
+    return base::unexpected(error);
   if (error != base::File::FILE_OK)
-    return error;
+    return base::unexpected(error);
 
   std::unique_ptr<FileLock> lock =
       std::make_unique<RemoteFileLockImpl>(std::move(remote_lock));

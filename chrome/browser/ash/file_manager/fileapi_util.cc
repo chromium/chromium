@@ -475,7 +475,7 @@ void GenerateUnusedFilenameOnGotMetadata(
     return;
   } else if (error != base::File::FILE_OK &&
              error != base::File::FILE_ERROR_NOT_A_DIRECTORY) {
-    std::move(callback).Run(error);
+    std::move(callback).Run(base::unexpected(error));
     return;
   }
 
@@ -687,7 +687,8 @@ void GenerateUnusedFilename(
     base::OnceCallback<void(base::FileErrorOr<storage::FileSystemURL>)>
         callback) {
   if (filename.empty() || filename != filename.BaseName()) {
-    std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
+    std::move(callback).Run(
+        base::unexpected(base::File::FILE_ERROR_INVALID_OPERATION));
     return;
   }
 

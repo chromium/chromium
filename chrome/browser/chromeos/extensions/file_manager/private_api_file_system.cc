@@ -2038,7 +2038,7 @@ void FileManagerPrivateInternalParseTrashInfoFilesFunction::
   url::Origin origin = render_frame_host()->GetLastCommittedOrigin();
 
   for (auto& trash_info_data : parsed_data) {
-    if (trash_info_data.is_error()) {
+    if (!trash_info_data.has_value()) {
       LOG(ERROR) << "Failed parsing trashinfo file: "
                  << trash_info_data.error();
       continue;

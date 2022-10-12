@@ -128,7 +128,7 @@ void RestoreIOTask::ValidateTrashInfo(size_t idx) {
 void RestoreIOTask::EnsureParentRestorePathExists(
     size_t idx,
     base::FileErrorOr<trash::ParsedTrashInfoData> parsed_data) {
-  if (parsed_data.is_error()) {
+  if (!parsed_data.has_value()) {
     progress_.sources[idx].error = parsed_data.error();
     Complete(State::kError);
     return;
@@ -180,7 +180,7 @@ void RestoreIOTask::RestoreItem(
   storage::FileSystemURL source_url =
       CreateFileSystemURL(progress_.sources[idx].url,
                           MakeRelativeFromBasePath(trashed_file_location));
-  if (destination_result.is_error()) {
+  if (!destination_result.has_value()) {
     progress_.outputs.emplace_back(source_url, absl::nullopt);
     OnRestoreItem(idx, destination_result.error());
     return;
