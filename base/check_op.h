@@ -140,8 +140,7 @@ class CheckOpResult {
   char* message_ = nullptr;
 };
 
-#if defined(OFFICIAL_BUILD) && defined(NDEBUG) && \
-    !BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+#if !CHECK_WILL_STREAM()
 
 // Discard log strings to reduce code bloat.
 #define CHECK_OP(name, op, val1, val2) CHECK((val1)op(val2))
