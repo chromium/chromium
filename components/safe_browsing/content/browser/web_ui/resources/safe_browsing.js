@@ -177,9 +177,11 @@ function initialize() {
     addDeepScan(result);
   });
 
+  // <if expr="is_android">
   sendWithPromise('getReferringAppInfo', []).then((info) => {
     addReferringAppInfo(info);
   });
+  // </if>
 
   $('get-referrer-chain-form').addEventListener('submit', addReferrerChain);
 
@@ -426,10 +428,12 @@ function addReferrerChain(ev) {
       });
 }
 
+// <if expr="is_android">
 function addReferringAppInfo(info) {
   $('referring-app-info').innerHTML = trustedTypes.emptyHTML;
   $('referring-app-info').textContent = info;
 }
+// </if>
 
 function showTab(tabId) {
   const tabs = document.querySelectorAll('div[slot=\'tab\']');

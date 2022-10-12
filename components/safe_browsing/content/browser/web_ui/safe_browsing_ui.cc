@@ -2800,17 +2800,14 @@ void SafeBrowsingUIHandler::GetReferrerChain(const base::Value::List& args) {
                             base::Value(referrer_chain_serialized));
 }
 
-void SafeBrowsingUIHandler::GetReferringAppInfo(const base::Value::List& args) {
 #if BUILDFLAG(IS_ANDROID)
+void SafeBrowsingUIHandler::GetReferringAppInfo(const base::Value::List& args) {
   base::Value::Dict referring_app_value;
   LoginReputationClientRequest::ReferringAppInfo info =
       WebUIInfoSingleton::GetInstance()->GetReferringAppInfo(
           web_ui()->GetWebContents());
   referring_app_value = SerializeReferringAppInfo(info);
-#else
-  base::Value referring_app_value;
-  referring_app_value = base::Value("Not supported on current platform.");
-#endif
+
   std::string referring_app_serialized;
   JSONStringValueSerializer serializer(&referring_app_serialized);
   serializer.set_pretty_print(true);
@@ -2822,6 +2819,7 @@ void SafeBrowsingUIHandler::GetReferringAppInfo(const base::Value::List& args) {
   ResolveJavascriptCallback(base::Value(callback_id),
                             base::Value(referring_app_serialized));
 }
+#endif
 
 void SafeBrowsingUIHandler::GetReportingEvents(const base::Value::List& args) {
   base::Value::List reporting_events;
@@ -3082,10 +3080,12 @@ void SafeBrowsingUIHandler::RegisterMessages() {
       "getReferrerChain",
       base::BindRepeating(&SafeBrowsingUIHandler::GetReferrerChain,
                           base::Unretained(this)));
+#if BUILDFLAG(IS_ANDROID)
   web_ui()->RegisterMessageCallback(
       "getReferringAppInfo",
       base::BindRepeating(&SafeBrowsingUIHandler::GetReferringAppInfo,
                           base::Unretained(this)));
+#endif
   web_ui()->RegisterMessageCallback(
       "getReportingEvents",
       base::BindRepeating(&SafeBrowsingUIHandler::GetReportingEvents,
