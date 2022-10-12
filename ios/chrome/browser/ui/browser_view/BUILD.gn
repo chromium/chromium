@@ -298,7 +298,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/toolbar",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/toolbar/test",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url_loading:url_loading",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:delegate",
