@@ -47,6 +47,7 @@ extern "C" void V8RecordReplayRegisterPointer(const void* ptr);
 extern "C" void V8RecordReplayUnregisterPointer(const void* ptr);
 extern "C" int V8RecordReplayPointerId(const void* ptr);
 extern "C" void* V8RecordReplayIdPointer(int id);
+extern "C" bool V8RecordReplayFeatureEnabled(const char* feature);
 extern "C" void V8RecordReplayBrowserEvent(const char* name, const char* payload);
 
 bool IsRecordingOrReplaying() {
@@ -154,6 +155,10 @@ void BeginPassThroughEvents() {
 
 void EndPassThroughEvents() {
   OP(V8RecordReplayEndPassThroughEvents());
+}
+
+bool FeatureEnabled(const char* feature) {
+  return OP2(V8RecordReplayFeatureEnabled(feature), false);
 }
 
 void BrowserEvent(const char* name, const base::DictionaryValue& info) {

@@ -31,8 +31,6 @@ extern void FunctionCallbackRecordReplaySetClearPauseDataCallback(const Function
 
 } // namespace v8
 
-extern "C" bool V8RecordReplayFeatureEnabled(const char* feature);
-
 namespace blink {
 
 const char* gRecordReplayScript = R""""(
@@ -1185,7 +1183,7 @@ static void FeatureEnabled(const v8::FunctionCallbackInfo<v8::Value>& args) {
   v8::String::Utf8Value feature(isolate, args[0]);
   std::string nfeature(*feature);
 
-  bool enabled = V8RecordReplayFeatureEnabled(nfeature.c_str());
+  bool enabled = recordreplay::FeatureEnabled(nfeature.c_str());
   args.GetReturnValue().Set(enabled ? v8::True(isolate) : v8::False(isolate));
 }
 

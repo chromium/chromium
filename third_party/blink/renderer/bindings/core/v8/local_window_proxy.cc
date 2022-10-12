@@ -69,8 +69,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "v8/include/v8.h"
 
-extern "C" bool V8RecordReplayFeatureEnabled(const char* feature);
-
 namespace blink {
 
 void LocalWindowProxy::Trace(Visitor* visitor) const {
@@ -196,7 +194,7 @@ void LocalWindowProxy::Initialize() {
       origin &&
       !origin->Host().IsEmpty() &&
       !gRecordReplayStateInitialized &&
-      V8RecordReplayFeatureEnabled("checkpoints")) {
+      recordreplay::FeatureEnabled("checkpoints")) {
     gRecordReplayStateInitialized = true;
     SetupRecordReplayCommands(GetIsolate());
     V8RecordReplaySetDefaultContext(GetIsolate(), context);

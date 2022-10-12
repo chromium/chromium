@@ -138,7 +138,7 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     SkAlphaType alpha_type,
     GrSurfaceOrigin origin)
     : resource_provider_(resource_provider), resource_id_(resource_id) {
-  // When recording/replaying we don't have a resoure provider, and need to get
+  // When recording/replaying we don't have a resource provider, and need to get
   // the bitmap directly from the record/replay renderer.
   if (recordreplay::IsRecordingOrReplaying()) {
     SkBitmap sk_bitmap;

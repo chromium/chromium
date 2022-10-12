@@ -148,7 +148,8 @@ Sequence::Sequence(const TaskTraits& traits,
     : TaskSource(traits, task_runner, execution_mode) {
   // Leak sequences when recording/replaying to avoid problems with destructor
   // behavior running at non-deterministic points due to the threadsafe refcount.
-  if (recordreplay::IsRecordingOrReplaying()) {
+  if (recordreplay::IsRecordingOrReplaying() &&
+      recordreplay::FeatureEnabled("leak-references")) {
     AddRef();
   }
 }

@@ -58,6 +58,8 @@ void EndPassThroughEvents();
 void BeginDisallowEvents();
 void EndDisallowEvents();
 
+bool FeatureEnabled(const char* feature);
+
 void BrowserEvent(const char* msg, const base::DictionaryValue& info);
 
 struct AutoPassThroughEvents {
