@@ -29,7 +29,6 @@ group("js_modules") {
     ":function_parallel",
     ":function_sequence",
     ":id3_parser",
-    ":image_orientation",
     ":image_parsers",
     ":metadata_cache_item",
     ":metadata_cache_set",
@@ -67,7 +66,6 @@ js_type_check("closure_compile_jsmodules") {
     ":function_parallel",
     ":function_sequence",
     ":id3_parser",
-    ":image_orientation",
     ":image_parsers",
     ":metadata_cache_item",
     ":metadata_cache_set",
@@ -192,16 +190,6 @@ js_library("id3_parser") {
     ":function_sequence",
     ":metadata_parser",
     "//ui/file_manager/file_manager/externs:metadata_worker_window",
-  ]
-}
-
-js_library("image_orientation") {
-}
-
-js_unittest("image_orientation_unittest") {
-  deps = [
-    ":image_orientation",
-    "//chrome/test/data/webui:chai_assert",
   ]
 }
 
@@ -366,7 +354,6 @@ js_test_type_check("js_test_type_check") {
     ":exif_parser_unittest",
     ":external_metadata_provider_unittest",
     ":file_system_metadata_provider_unittest",
-    ":image_orientation_unittest",
     ":metadata_cache_item_unittest",
     ":metadata_cache_set_unittest",
     ":metadata_model_unittest",

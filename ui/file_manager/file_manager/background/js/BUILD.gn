@@ -63,8 +63,9 @@ js_type_check("closure_compile_jsmodules") {
 
   closure_flags = strict_error_checking_closure_args + [
                     "language_in=ECMASCRIPT_2020",
-                    "js_module_root=./gen/ui",
-                    "js_module_root=" + rebase_path("//ui", root_build_dir),
+                    "js_module_root=./gen/ui/file_manager",
+                    "js_module_root=" +
+                        rebase_path("//ui/file_manager", root_build_dir),
                     "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "hide_warnings_for=third_party/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
@@ -508,8 +509,9 @@ js_test_type_check("js_test_type_check") {
 
   closure_flags = strict_error_checking_closure_args + [
                     "language_in=ECMASCRIPT_2020",
-                    "js_module_root=./gen/ui",
-                    "js_module_root=" + rebase_path("//ui", root_build_dir),
+                    "js_module_root=./gen/ui/file_manager",
+                    "js_module_root=" +
+                        rebase_path("//ui/file_manager", root_build_dir),
                     "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "hide_warnings_for=third_party/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",

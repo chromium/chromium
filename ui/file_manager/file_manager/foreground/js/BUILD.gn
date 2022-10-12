@@ -1296,8 +1296,8 @@ js_library("task_history") {
 js_library("thumbnail_loader") {
   deps = [
     "//ui/file_manager/file_manager/common/js:file_type",
-    "//ui/file_manager/file_manager/foreground/js/metadata:image_orientation",
     "//ui/file_manager/image_loader:image_loader_client",
+    "//ui/file_manager/image_loader:image_orientation",
     "//ui/file_manager/image_loader:load_image_request",
     "//ui/webui/resources/js:assert",
   ]
@@ -1310,6 +1310,7 @@ js_unittest("thumbnail_loader_unittest") {
     "//ui/file_manager/file_manager/common/js:mock_entry",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
     "//ui/file_manager/image_loader:image_loader_client",
+    "//ui/file_manager/image_loader:image_orientation",
     "//ui/file_manager/image_loader:load_image_request",
   ]
 }

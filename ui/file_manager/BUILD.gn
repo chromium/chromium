@@ -263,7 +263,6 @@ generate_grd("build_grd") {
       "file_manager/foreground/js/metadata_dispatcher.rollup.js",
       "file_manager/foreground/js/shared.rollup.js",
 
-      "image_loader/image_orientation.js",
       "image_loader/lru_cache.js",
 
       "file_manager/common/js/file_types_data.js",

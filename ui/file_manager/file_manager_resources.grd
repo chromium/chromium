@@ -33,6 +33,7 @@
         <if expr="optimize_webui">
           <!-- When optimize_webui=false these are included via generate_grd() rule -->
           <include name="IDR_IMAGE_LOADER_IMAGE_LOADER_CLIENT_JS" file="image_loader/image_loader_client.js" type="BINDATA" />
+          <include name="IDR_IMAGE_LOADER_IMAGE_ORIENTATION_JS" file="image_loader/image_orientation.js" type="BINDATA" />
           <include name="IDR_IMAGE_LOADER_LOAD_IMAGE_REQUEST_JS" file="image_loader/load_image_request.js" type="BINDATA" />
         </if>
       </if>

@@ -5,6 +5,7 @@ image_loader_static_js_files = [
   "image_loader/image_loader.js",
   "image_loader/image_loader_client.js",
   "image_loader/image_loader_util.js",
+  "image_loader/image_orientation.js",
   "image_loader/image_request_task.js",
   "image_loader/load_image_request.js",
   "image_loader/piex_loader.js",
@@ -172,7 +173,6 @@ static_js_files = [
   "file_manager/foreground/js/metadata/function_parallel.js",
   "file_manager/foreground/js/metadata/function_sequence.js",
   "file_manager/foreground/js/metadata/id3_parser.js",
-  "file_manager/foreground/js/metadata/image_orientation.js",
   "file_manager/foreground/js/metadata/image_parsers.js",
   "file_manager/foreground/js/metadata/metadata_cache_item.js",
   "file_manager/foreground/js/metadata/metadata_cache_set.js",
@@ -294,10 +294,7 @@ foreach(_t, ts_templates) {
 
 # Generated files are built from the repository and the final JS files is only
 # available in the "gen/" folder.
-image_loader_generated_js_files = [
-  "image_loader/image_orientation.js",
-  "image_loader/lru_cache.js",
-]
+image_loader_generated_js_files = [ "image_loader/lru_cache.js" ]
 
 generated_js_files = [
   # Common:
@@ -367,7 +364,6 @@ unittest_files = [
   "file_manager/foreground/elements/files_xf_elements_unittest.js",
   "file_manager/foreground/elements/files_toast_unittest.js",
   "file_manager/foreground/elements/files_tooltip_unittest.js",
-  "file_manager/foreground/js/metadata/image_orientation_unittest.js",
   "file_manager/foreground/js/metadata/metadata_cache_item_unittest.js",
   "file_manager/foreground/js/metadata/exif_parser_unittest.js",
   "file_manager/foreground/js/metadata/thumbnail_model_unittest.js",
@@ -423,6 +419,7 @@ unittest_files = [
   # Image Loader:
   "image_loader/scheduler_unittest.js",
   "image_loader/image_loader_unittest.js",
+  "image_loader/image_orientation_unittest.js",
   "image_loader/cache_unittest.js",
   "image_loader/image_loader_client_unittest.js",
 ]

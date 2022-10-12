@@ -21,6 +21,7 @@ js_type_check("closure_compile_jsmodules") {
     ":cache",
     ":image_loader_client",
     ":image_loader_util",
+    ":image_orientation",
     ":image_request_task",
     ":load_image_request",
     ":piex_loader",
@@ -43,17 +44,8 @@ js_unittest("cache_unittest") {
 
 # TODO(b/199451464): Remove this and dependencies.
 copy("copy_from_filesapp") {
-  sources = [
-    "../file_manager/common/js/lru_cache.js",
-    "../file_manager/foreground/js/metadata/image_orientation.js",
-  ]
+  sources = [ "../file_manager/common/js/lru_cache.js" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
-}
-
-js_library("image_orientation") {
-  sources =
-      [ "$root_gen_dir/ui/file_manager/image_loader/image_orientation.js" ]
-  extra_deps = [ ":copy_from_filesapp" ]
 }
 
 js_library("lru_cache") {
@@ -117,6 +109,16 @@ js_unittest("image_loader_client_unittest") {
   ]
 }
 
+js_library("image_orientation") {
+}
+
+js_unittest("image_orientation_unittest") {
+  deps = [
+    ":image_orientation",
+    "//chrome/test/data/webui:chai_assert",
+  ]
+}
+
 js_library("piex_loader") {
   externs_list = [ "//ui/file_manager/file_manager/externs/platform.js" ]
 }
@@ -156,6 +158,7 @@ js_test_type_check("js_test_type_check") {
     ":cache_unittest",
     ":image_loader_client_unittest",
     ":image_loader_unittest",
+    ":image_orientation_unittest",
     ":scheduler_unittest",
   ]
 
