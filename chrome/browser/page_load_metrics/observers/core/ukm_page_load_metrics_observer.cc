@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -596,6 +597,7 @@ void UkmPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     return;
 
   DCHECK(timing.paint_timing->first_contentful_paint.has_value());
+  first_contentful_paint_ = timing.paint_timing->first_contentful_paint.value();
 
   ukm::builders::PageLoad builder(GetDelegate().GetPageUkmSourceId());
   builder.SetPaintTiming_NavigationToFirstContentfulPaint(
@@ -613,6 +615,13 @@ void UkmPageLoadMetricsObserver::RecordSiteEngagement() const {
   }
 
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+const page_load_metrics::ContentfulPaintTimingInfo&
+UkmPageLoadMetricsObserver::GetCoreWebVitalsLcpTimingInfo() {
+  return GetDelegate()
+      .GetLargestContentfulPaintHandler()
+      .MergeMainFrameAndSubframes();
 }
 
 void UkmPageLoadMetricsObserver::RecordTimingMetrics(
@@ -664,27 +673,25 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     builder.SetPaintTiming_NavigationToLargestContentfulPaint2_MainFrame(
         main_frame_largest_contentful_paint.Time().value().InMilliseconds());
   }
-  const page_load_metrics::ContentfulPaintTimingInfo&
-      all_frames_largest_contentful_paint =
-          GetDelegate()
-              .GetLargestContentfulPaintHandler()
-              .MergeMainFrameAndSubframes();
-  if (all_frames_largest_contentful_paint.ContainsValidTime() &&
+
+  const page_load_metrics::ContentfulPaintTimingInfo& cwv_lcp_timing_info =
+      GetCoreWebVitalsLcpTimingInfo();
+  if (cwv_lcp_timing_info.ContainsValidTime() &&
       WasStartedInForegroundOptionalEventInForeground(
-          all_frames_largest_contentful_paint.Time(), GetDelegate())) {
+          cwv_lcp_timing_info.Time(), GetDelegate())) {
     builder.SetPaintTiming_NavigationToLargestContentfulPaint2(
-        all_frames_largest_contentful_paint.Time().value().InMilliseconds());
+        cwv_lcp_timing_info.Time().value().InMilliseconds());
     builder.SetPaintTiming_LargestContentfulPaintType(
-        LargestContentfulPaintTypeToUKMFlags(
-            all_frames_largest_contentful_paint.Type()));
-    if (all_frames_largest_contentful_paint.TextOrImage() ==
+        LargestContentfulPaintTypeToUKMFlags(cwv_lcp_timing_info.Type()));
+    if (cwv_lcp_timing_info.TextOrImage() ==
         page_load_metrics::ContentfulPaintTimingInfo::
             LargestContentTextOrImage::kImage) {
       builder.SetPaintTiming_LargestContentfulPaintBPP(
-          CalculateLCPEntropyBucket(
-              all_frames_largest_contentful_paint.ImageBPP()));
+          CalculateLCPEntropyBucket(cwv_lcp_timing_info.ImageBPP()));
     }
   }
+  RecordInternalTimingMetrics(cwv_lcp_timing_info);
+
   const page_load_metrics::ContentfulPaintTimingInfo&
       cross_site_sub_frame_largest_contentful_paint =
           GetDelegate()
@@ -700,7 +707,6 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
                 .value()
                 .InMilliseconds());
   }
-  RecordInternalTimingMetrics(all_frames_largest_contentful_paint);
   if (timing.interactive_timing->first_input_delay &&
       WasStartedInForegroundOptionalEventInForeground(
           timing.interactive_timing->first_input_timestamp, GetDelegate())) {
@@ -994,6 +1000,17 @@ void UkmPageLoadMetricsObserver::ReportMainResourceTimingMetrics(
   }
 }
 
+absl::optional<float> UkmPageLoadMetricsObserver::GetCoreWebVitalsCLS() {
+  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
+      GetDelegate().GetNormalizedCLSData(
+          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
+              ACCUMULATE);
+  if (!normalized_cls_data.data_tainted) {
+    return normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
+  }
+  return absl::nullopt;
+}
+
 void UkmPageLoadMetricsObserver::ReportLayoutStability() {
   // Don't report CLS if we were never in the foreground.
   if (last_time_shown_.is_null())
@@ -1017,25 +1034,21 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
               GetDelegate()
                   .GetMainFrameRenderData()
                   .layout_shift_score_before_input_or_scroll));
-  // Record CLS normalization UKM.
-  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
-      GetDelegate().GetNormalizedCLSData(
-          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
-              ACCUMULATE);
-  if (!normalized_cls_data.data_tainted) {
-    const float max_cls =
-        normalized_cls_data.session_windows_gap1000ms_max5000ms_max_cls;
+
+  const absl::optional<float> cwv_cls_value = GetCoreWebVitalsCLS();
+  if (cwv_cls_value.has_value()) {
     builder
         .SetLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000ms(
-            page_load_metrics::LayoutShiftUkmValue(max_cls));
+            page_load_metrics::LayoutShiftUkmValue(*cwv_cls_value));
     base::UmaHistogramCounts100(
         "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
         "Gap1000ms.Max5000ms",
-        page_load_metrics::LayoutShiftUmaValue(max_cls));
+        page_load_metrics::LayoutShiftUmaValue(*cwv_cls_value));
     base::UmaHistogramCustomCounts(
         "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow."
         "Gap1000ms.Max5000ms2",
-        page_load_metrics::LayoutShiftUmaValue10000(max_cls), 1, 24000, 50);
+        page_load_metrics::LayoutShiftUmaValue10000(*cwv_cls_value), 1, 24000,
+        50);
     // The pseudo metric of PageLoad.LayoutInstability.MaxCumulativeShiftScore.
     // SessionWindow.Gap1000ms.Max5000ms2.
     // Only used to assess field trial data quality.
@@ -1043,7 +1056,7 @@ void UkmPageLoadMetricsObserver::ReportLayoutStability() {
         "UMA.Pseudo.PageLoad.LayoutInstability.MaxCumulativeShiftScore."
         "SessionWindow.Gap1000ms.Max5000ms2",
         page_load_metrics::LayoutShiftUmaValue10000(
-            metrics::GetPseudoMetricsSample(max_cls)),
+            metrics::GetPseudoMetricsSample(*cwv_cls_value)),
         1, 24000, 50);
   }
   builder.Record(ukm::UkmRecorder::Get());
@@ -1439,6 +1452,39 @@ void UkmPageLoadMetricsObserver::OnTimingUpdate(
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("loading", &loading_enabled);
   if (!loading_enabled)
     return;
+
+  TRACE_EVENT_INSTANT(
+      "loading", "UkmPageLoadTimingUpdate", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* data = event->set_ukm_page_load_timing_update();
+        if (first_contentful_paint_.has_value()) {
+          data->set_first_contentful_paint_ms(
+              first_contentful_paint_.value().InMillisecondsF());
+        }
+        data->set_ukm_source_id(
+            static_cast<int64_t>(GetDelegate().GetPageUkmSourceId()));
+        data->set_latest_url(GetDelegate().GetUrl().spec());
+
+        const absl::optional<float> cwv_cls_value = GetCoreWebVitalsCLS();
+        if (cwv_cls_value.has_value()) {
+          data->set_latest_cumulative_layout_shift(*cwv_cls_value);
+        }
+        const page_load_metrics::ContentfulPaintTimingInfo&
+            cwv_lcp_timing_info = GetCoreWebVitalsLcpTimingInfo();
+        if (cwv_lcp_timing_info.ContainsValidTime() &&
+            WasStartedInForegroundOptionalEventInForeground(
+                cwv_lcp_timing_info.Time(), GetDelegate())) {
+          data->set_latest_largest_contentful_paint_ms(
+              cwv_lcp_timing_info.Time().value().InMillisecondsF());
+        }
+      });
+
+  // The ones below are old trace events which should not be necessary given the
+  // UkmPageLoadTimingUpdate event above, but they may be used in
+  // devtools/lighthouse in addition to the old catapult loadingMetric. They can
+  // be removed once we verify that the consumers of these trace events have
+  // been updated.
+
   const page_load_metrics::ContentfulPaintTimingInfo& paint =
       GetDelegate()
           .GetLargestContentfulPaintHandler()

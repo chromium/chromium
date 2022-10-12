@@ -107,6 +107,15 @@ class MetricIntegrationTest : public InProcessBrowserTest {
   void ExpectUniqueUMAPageLoadMetricNear(base::StringPiece metric_name,
                                          double expected_value);
 
+  // Checks that the value of |metric_name| in the latest timing update trace
+  // event emitted by UkmPageLoadMetricsObserver is within |epsilon| of
+  // |expected_value|.
+  void ExpectMetricInLastUKMUpdateTraceEventNear(
+      trace_analyzer::TraceAnalyzer& trace_analyzer,
+      base::StringPiece metric_name,
+      double expected_value,
+      double epsilon);
+
  private:
   static std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const std::string& relative_url,

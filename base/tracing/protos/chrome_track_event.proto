@@ -964,9 +964,27 @@ message ActiveProcesses {
   repeated int32 pid = 1;
 }
 
+message UkmPageLoadTimingUpdate {
+  // This can be used to uniquely identify a navigation from the point of view
+  // of UKM.
+  optional int64 ukm_source_id = 1;
+
+  // The URL of a page can change throughout its lifetime. This is the current
+  // url when this timing update was dispatched.
+  optional string latest_url = 2;
+
+  // Latest fully aggregated value of Cumulative Layout Shift.
+  optional float latest_cumulative_layout_shift = 3;
+
+  // Latest fully aggregated value of Largest Contentful Paint.
+  optional double latest_largest_contentful_paint_ms = 4;
+
+  optional double first_contentful_paint_ms = 5;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1044
+  // Next ID: 1045
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -1060,5 +1078,7 @@ message ChromeTrackEvent {
     optional ActiveProcesses active_processes = 1042;
 
     optional BlinkTaskScope blink_task_scope = 1043;
+
+    optional UkmPageLoadTimingUpdate ukm_page_load_timing_update = 1044;
   }
 }

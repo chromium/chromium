@@ -27,7 +27,10 @@ using content::WebContents;
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
+using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
+using trace_analyzer::TraceEvent;
+using trace_analyzer::TraceEventVector;
 using ukm::TestUkmRecorder;
 using ukm::builders::PageLoad;
 using ukm::mojom::UkmEntry;
@@ -193,4 +196,24 @@ void MetricIntegrationTest::ExpectUniqueUMAPageLoadMetricNear(
       histogram_tester_->GetBucketCount(metric_name, expected_value - 1.0) == 1)
       << "The sample for " << metric_name.data()
       << " is not near the expected value!";
+}
+
+void MetricIntegrationTest::ExpectMetricInLastUKMUpdateTraceEventNear(
+    TraceAnalyzer& trace_analyzer,
+    base::StringPiece metric_name,
+    double expected_value,
+    double epsilon) {
+  TraceEventVector ukm_update_events;
+  trace_analyzer.FindEvents(Query::EventNameIs("UkmPageLoadTimingUpdate"),
+                            &ukm_update_events);
+  ASSERT_GT(ukm_update_events.size(), 0ul);
+
+  const TraceEvent* last_update_event = ukm_update_events.back();
+
+  base::Value::Dict arg_dict;
+  last_update_event->GetArgAsDict("ukm_page_load_timing_update", &arg_dict);
+  absl::optional<double> metric_value = arg_dict.FindDouble(metric_name);
+  ASSERT_TRUE(metric_value.has_value());
+
+  EXPECT_NEAR(expected_value, *metric_value, epsilon);
 }

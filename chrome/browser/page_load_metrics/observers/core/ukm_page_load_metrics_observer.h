@@ -139,6 +139,16 @@ class UkmPageLoadMetricsObserver
 
   void ReportLayoutStability();
 
+  // Returns the current Core Web Vital definition of Cumulative Layout Shift.
+  // Returns nullopt if current value should not be reported to UKM.
+  absl::optional<float> GetCoreWebVitalsCLS();
+
+  // Returns the current Core Web Vital definition of Largest Contentful Paint.
+  // The caller needs to check whether the value should be reported to UKM based
+  // on when the page was backgrounded and other validations.
+  const page_load_metrics::ContentfulPaintTimingInfo&
+  GetCoreWebVitalsLcpTimingInfo();
+
   void RecordAbortMetrics(
       const page_load_metrics::mojom::PageLoadTiming& timing,
       base::TimeTicks page_end_time,
@@ -249,6 +259,9 @@ class UkmPageLoadMetricsObserver
   // Load timing metrics of the main frame resource request.
   content::NavigationHandleTiming navigation_handle_timing_;
   absl::optional<net::LoadTimingInfo> main_frame_timing_;
+
+  // First contentful paint as reported in OnFirstContentfulPaintInPage.
+  absl::optional<base::TimeDelta> first_contentful_paint_;
 
   // How the SiteInstance for the committed page was assigned a renderer.
   absl::optional<content::SiteInstanceProcessAssignment>

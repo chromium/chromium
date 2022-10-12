@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/command_line.h"
-#include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
+#include <algorithm>
+#include <memory>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/strcat.h"
@@ -12,6 +13,7 @@
 #include "base/test/trace_event_analyzer.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
+#include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/paint_preview/buildflags/buildflags.h"
@@ -40,7 +42,8 @@ using ukm::builders::PageLoad;
 
 namespace {
 
-void ValidateCandidate(int expected_size, const TraceEvent& event) {
+void ValidateTraceEventHasCorrectCandidateSize(int expected_size,
+                                               const TraceEvent& event) {
   ASSERT_TRUE(event.HasDictArg("data"));
   base::Value::Dict data = event.GetKnownArgAsDict("data");
 
@@ -64,21 +67,6 @@ int GetCandidateIndex(const TraceEvent& event) {
 
 bool compare_candidate_index(const TraceEvent* lhs, const TraceEvent* rhs) {
   return GetCandidateIndex(*lhs) < GetCandidateIndex(*rhs);
-}
-
-void ValidateTraceEvents(std::unique_ptr<TraceAnalyzer> analyzer) {
-  TraceEventVector events;
-  analyzer->FindEvents(Query::EventNameIs("largestContentfulPaint::Candidate"),
-                       &events);
-  EXPECT_EQ(3ul, events.size());
-  std::sort(events.begin(), events.end(), compare_candidate_index);
-
-  // LCP_0 uses green-16x16.png, of size 16 x 16.
-  ValidateCandidate(16 * 16, *events[0]);
-  // LCP_1 uses blue96x96.png, of size 96 x 96.
-  ValidateCandidate(96 * 96, *events[1]);
-  // LCP_2 uses green-256x256.png, of size 16 x 16.
-  ValidateCandidate(256 * 256, *events[2]);
 }
 
 }  // namespace
@@ -138,7 +126,25 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   // Check Trace Events.
-  ValidateTraceEvents(StopTracingAndAnalyze());
+  std::unique_ptr<TraceAnalyzer> trace_analyzer = StopTracingAndAnalyze();
+  TraceEventVector candidate_events;
+  trace_analyzer->FindEvents(
+      Query::EventNameIs("largestContentfulPaint::Candidate"),
+      &candidate_events);
+  EXPECT_EQ(3ul, candidate_events.size());
+  std::sort(candidate_events.begin(), candidate_events.end(),
+            compare_candidate_index);
+
+  // LCP_0 uses green-16x16.png, of size 16 x 16.
+  ValidateTraceEventHasCorrectCandidateSize(16 * 16, *candidate_events[0]);
+  // LCP_1 uses blue96x96.png, of size 96 x 96.
+  ValidateTraceEventHasCorrectCandidateSize(96 * 96, *candidate_events[1]);
+  // LCP_2 uses green-256x256.png, of size 16 x 16.
+  ValidateTraceEventHasCorrectCandidateSize(256 * 256, *candidate_events[2]);
+
+  ExpectMetricInLastUKMUpdateTraceEventNear(
+      *trace_analyzer, "latest_largest_contentful_paint_ms",
+      lcp_timestamps[2].value(), 1.2);
 
   // Check UKM.
   // Since UKM rounds to an integer while the JS API returns a coarsened double,
@@ -181,7 +187,6 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
                        LargestContentfulPaintPaintPreview) {
   Start();
-  StartTracing({"loading"});
   Load("/largest_contentful_paint_paint_preview.html");
 
   content::EvalJsResult lcp_before_paint_preview =
@@ -252,6 +257,8 @@ IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, FullSizeImageInIframe) {
   // Navigate away to force metrics recording.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
+  std::unique_ptr<TraceAnalyzer> trace_analyzer = StopTracingAndAnalyze();
+
   // |lcpTime| is computed from 3 different JS timestamps, so use an epsilon of
   // 2 to account for coarsening and UKM integer rounding.
   ExpectUKMPageLoadMetricNear(
@@ -259,6 +266,9 @@ IN_PROC_BROWSER_TEST_F(PageViewportInLCPTest, FullSizeImageInIframe) {
       2.0);
   ExpectUniqueUMAPageLoadMetricNear(
       "PageLoad.PaintTiming.NavigationToLargestContentfulPaint2", lcpTime);
+
+  ExpectMetricInLastUKMUpdateTraceEventNear(
+      *trace_analyzer, "latest_largest_contentful_paint_ms", lcpTime, 2.0);
 }
 
 class IsAnimatedLCPTest : public MetricIntegrationTest {
