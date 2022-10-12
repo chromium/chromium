@@ -30,6 +30,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kManagerService[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGattInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerInterface[];
+extern DEVICE_BLUETOOTH_EXPORT const char kExperimentalInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerObject[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterObjectFormat[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGattObjectFormat[];
@@ -187,6 +188,10 @@ extern DEVICE_BLUETOOTH_EXPORT const char
 extern DEVICE_BLUETOOTH_EXPORT const char kOnPeriodicAdvertisingDataSet[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnPeriodicAdvertisingEnabled[];
 }  // namespace advertiser
+
+namespace experimental {
+extern DEVICE_BLUETOOTH_EXPORT const char kSetLLPrivacy[];
+}  // namespace experimental
 
 // BluetoothDevice structure for DBus apis.
 struct DEVICE_BLUETOOTH_EXPORT FlossDeviceId {

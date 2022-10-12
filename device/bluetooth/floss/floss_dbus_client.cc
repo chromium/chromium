@@ -22,6 +22,7 @@ const char kManagerService[] = "org.chromium.bluetooth.Manager";
 const char kAdapterInterface[] = "org.chromium.bluetooth.Bluetooth";
 const char kGattInterface[] = "org.chromium.bluetooth.BluetoothGatt";
 const char kManagerInterface[] = "org.chromium.bluetooth.Manager";
+const char kExperimentalInterface[] = "org.chromium.bluetooth.Experimental";
 const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
 const char kAdapterObjectFormat[] = "/org/chromium/bluetooth/hci%d/adapter";
 const char kGattObjectFormat[] = "/org/chromium/bluetooth/hci%d/gatt";
@@ -187,6 +188,10 @@ const char kOnPeriodicAdvertisingParametersUpdated[] =
 const char kOnPeriodicAdvertisingDataSet[] = "OnPeriodicAdvertisingDataSet";
 const char kOnPeriodicAdvertisingEnabled[] = "OnPeriodicAdvertisingEnabled";
 }  // namespace advertiser
+
+namespace experimental {
+const char kSetLLPrivacy[] = "SetLLPrivacy";
+}  // namespace experimental
 
 namespace {
 constexpr char kDeviceIdNameKey[] = "name";

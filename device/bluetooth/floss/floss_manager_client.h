@@ -109,6 +109,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
                                  bool enabled,
                                  ResponseCallback<Void> callback);
 
+  // Invoke D-Bus API to enable or disable LL privacy.
+  virtual void SetLLPrivacy(ResponseCallback<Void> callback, const bool enable);
+
   // Initializes the manager client.
   void Init(dbus::Bus* bus,
             const std::string& service_name,
@@ -211,6 +214,15 @@ class DEVICE_BLUETOOTH_EXPORT FlossManagerClient
   // Handle response to SetAdapterEnabled
   void OnSetAdapterEnabled(dbus::Response* response,
                            dbus::ErrorResponse* error_response);
+
+  // Call methods in floss experimental interface
+  template <typename R, typename... Args>
+  void CallExperimentalMethod(ResponseCallback<R> callback,
+                              const char* member,
+                              Args... args) {
+    CallMethod(std::move(callback), bus_, service_name_, kExperimentalInterface,
+               dbus::ObjectPath(kManagerObject), member, args...);
+  }
 
   // Object path for exported callbacks registered against manager interface.
   static const char kExportedCallbacksPath[];

@@ -22,6 +22,7 @@
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
+#include "device/bluetooth/bluez/bluez_features.h"
 #include "device/bluetooth/floss/floss_dbus_client.h"
 #include "device/bluetooth/floss/floss_features.h"
 
@@ -254,6 +255,12 @@ void FlossManagerClient::OnSetAdapterEnabled(
   }
 }
 
+void FlossManagerClient::SetLLPrivacy(ResponseCallback<Void> callback,
+                                      const bool enable) {
+  CallExperimentalMethod<Void>(std::move(callback), experimental::kSetLLPrivacy,
+                               enable);
+}
+
 // Register manager client against manager.
 void FlossManagerClient::RegisterWithManager() {
   DCHECK(!manager_available_);
@@ -361,6 +368,12 @@ void FlossManagerClient::Init(dbus::Bus* bus,
                   kSetFlossRetryDelayMs,
                   base::BindOnce(&FlossManagerClient::CompleteSetFlossEnabled,
                                  weak_ptr_factory_.GetWeakPtr()));
+  SetLLPrivacy(
+      base::BindOnce([](DBusResult<Void> ret) {
+        if (!ret.has_value())
+          LOG(ERROR) << "Fail to set LL privacy.\n";
+      }),
+      base::FeatureList::IsEnabled(bluez::features::kLinkLayerPrivacy));
 }
 
 void FlossManagerClient::HandleGetAvailableAdapters(
