@@ -3052,7 +3052,7 @@
 <translation id="3816118180265633665">Chrome အရောင်များ</translation>
 <translation id="3817524650114746564">သင့်ကွန်ပျူတာ၏ ပရောက်စီဆက်တင်များကို ဖွင့်ရန်</translation>
 <translation id="3819164369574292143">ဖန်သားပြင်ပေါ်ရှိအရာများကို ပိုကြီးလာစေရန် ဇူးမ်ဆွဲနိုင်သည်။ မှန်ဘီလူး ဖွင့်၊ ပိတ် ပြုလုပ်ရန် Search + Ctrl + M ကို သုံးပါ။ ဇူးမ်ဆွဲနေစဉ် ရွှေ့ကြည့်ရန် Ctrl + Alt + ‘မြားကီးများ’ သုံးပါ။</translation>
-<translation id="3819257035322786455">အရန်သိမ်းပါ</translation>
+<translation id="3819257035322786455">အရန်သိမ်းခြင်း</translation>
 <translation id="3819261658055281761">စနစ်သည် ဤစက်ပစ္စည်းအတွက် ကာလကြာရှည် API အသုံးပြုခွင့်တိုကင်နံပါတ်ကို သိမ်းဆည်း၍မရပါ။</translation>
 <translation id="3819800052061700452">&amp;မျက်နှာပြင် အပြည့်</translation>
 <translation id="3820638253182943944">{MUTED_NOTIFICATIONS_COUNT,plural, =1{ပြရန်}other{အားလုံးပြရန်}}</translation>
@@ -6031,7 +6031,7 @@
 <translation id="6706210727756204531">ပါဝင်မှု</translation>
 <translation id="6707389671160270963">SSL ဖောက်သည် အသိမှတ်ပြု လက်မှတ်</translation>
 <translation id="6709002550153567782">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> နှင့် အခြားတဘ် ၁ ခု}other{<ph name="PAGE_TITLE" /> နှင့် အခြားတဘ် # ခု}}</translation>
-<translation id="6709133671862442373">သတင်းများ</translation>
+<translation id="6709133671862442373">သတင်း</translation>
 <translation id="6709357832553498500"><ph name="EXTENSIONNAME" /> သုံး၍ ချိတ်ဆက်ပါ</translation>
 <translation id="6710213216561001401">အရင်</translation>
 <translation id="6710394144992407503">အင်တာနက်စာမျက်နှာများတွင် စာရိုက်စဉ် စာလုံးပေါင်းအမှားများကို စစ်ဆေးပါ</translation>

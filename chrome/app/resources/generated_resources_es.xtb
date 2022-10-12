@@ -3143,7 +3143,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3909791450649380159">Cor&amp;tar</translation>
 <translation id="39103738135459590">Código de activación</translation>
 <translation id="3911824782900911339">Página Nueva pestaña</translation>
-<translation id="3914173277599553213">Obligatorios</translation>
+<translation id="3914173277599553213">Obligatorio</translation>
 <translation id="3915280005470252504">Búsqueda por voz</translation>
 <translation id="3916233823027929090">Se han realizado las comprobaciones de seguridad</translation>
 <translation id="3916445069167113093">Este tipo de archivo puede dañar tu ordenador. ¿Quieres descargar <ph name="FILE_NAME" /> de todos modos?</translation>
@@ -8669,7 +8669,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="932327136139879170">Página principal</translation>
 <translation id="932508678520956232">No se ha podido iniciar la impresión.</translation>
 <translation id="933427034780221291">{NUM_FILES,plural, =1{Este archivo es demasiado grande para una comprobación de seguridad. Puedes subir archivos de hasta 50 MB.}other{Algunos de estos archivos son demasiado grandes para una comprobación de seguridad. Puedes subir archivos de hasta 50 MB.}}</translation>
-<translation id="93343527085570547">Accede a la <ph name="BEGIN_LINK1" />página Ayuda de Legal<ph name="END_LINK1" /> para solicitar cambios de contenido por motivos legales. Parte de la información del sistema y de la cuenta se enviará a Google, que la utilizará para solucionar problemas técnicos y mejorar sus servicios, de acuerdo con su <ph name="BEGIN_LINK2" />Política de Privacidad<ph name="END_LINK2" /> y <ph name="BEGIN_LINK3" />Términos del Servicio<ph name="END_LINK3" />.</translation>
+<translation id="93343527085570547">Accede a la <ph name="BEGIN_LINK1" />página de Ayuda Legal<ph name="END_LINK1" /> para solicitar cambios de contenido por motivos legales. Parte de la información del sistema y de la cuenta se enviará a Google, que la utilizará para solucionar problemas técnicos y mejorar sus servicios, de acuerdo con su <ph name="BEGIN_LINK2" />Política de Privacidad<ph name="END_LINK2" /> y <ph name="BEGIN_LINK3" />Términos del Servicio<ph name="END_LINK3" />.</translation>
 <translation id="93393615658292258">Solo contraseña</translation>
 <translation id="934244546219308557">Ponle un nombre a este grupo</translation>
 <translation id="934503638756687833">Si es necesario, también se eliminarán elementos que no se incluyan aquí. Consulta más información sobre la &lt;a href="<ph name="URL" />"&gt;protección contra software no deseado&lt;/a&gt; en el informe de privacidad de Chrome.</translation>

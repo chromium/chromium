@@ -202,7 +202,7 @@
 <translation id="1176471985365269981">మీ పరికరంలోని ఫైళ్లు లేదా ఫోల్డర్‌లను ఎడిట్ చేయడానికి అనుమతించబడలేదు</translation>
 <translation id="1177863135347784049">అనుకూల</translation>
 <translation id="1178581264944972037">పాజ్ చేయి</translation>
-<translation id="117916940443676133">మీ 'సెక్యూరిటీ కీ'కి పిన్ రక్షణ లేదు. సైన్-ఇన్ డేటాను నిర్వహించడానికి, ముందు పిన్‌ను క్రియేట్ చేయండి.</translation>
+<translation id="117916940443676133">మీ 'సెక్యూరిటీ కీ'కి పిన్ రక్షణ లేదు. సైన్-ఇన్ డేటాను మేనేజ్ చేయడానికి, ముందు పిన్‌ను క్రియేట్ చేయండి.</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
 <translation id="1183237619868651138">స్థానిక కాష్‌లో <ph name="EXTERNAL_CRX_FILE" />ను ఇన్‌స్టాల్ చేయడం సాధ్యపడదు.</translation>
 <translation id="1185924365081634987">మీరు ఈ నెట్‌వర్క్ ఎర్ర‌ర్‌ను పరిష్కరించడానికి <ph name="GUEST_SIGNIN_LINK_START" />అతిథిగా బ్రౌజ్ చేయడాన్ని<ph name="GUEST_SIGNIN_LINK_END" /> కూడా ప్రయత్నించవచ్చు.</translation>
@@ -1054,7 +1054,7 @@
 <translation id="1951012854035635156">Assistant</translation>
 <translation id="1954597385941141174">USB పరికరాలకు కనెక్ట్ అవ్వడం కోసం సైట్‌లు అడగగలవు</translation>
 <translation id="1954813140452229842">షేర్‌ను మౌంట్ చేయడంలో ఎర్రర్ ఏర్పడింది. దయచేసి మీ ఆధారాలను సరిచూసుకుని, మళ్లీ ప్రయత్నించండి.</translation>
-<translation id="1956050014111002555">ఫైల్ బహుళ ప్రమాణపత్రాలను కలిగి ఉంది, వీటిలో ఏది దిగుమతి చెయ్యబడింది:</translation>
+<translation id="1956050014111002555">ఫైల్ బహుళ ప్రమాణపత్రాలను కలిగి ఉంది, వీటిలో ఏది దిగుమతి చేయబడింది:</translation>
 <translation id="1956167375087861299">సురక్షితమైన కంటెంట్‌ను ప్లే చేయడానికి, ఐడెంటిఫయర్‌‌లను ఉపయోగించడానికి అనుమతి లేదు</translation>
 <translation id="1956390763342388273">ఇది "<ph name="FOLDER_PATH" />" నుండి అన్ని ఫైళ్లను అప్‌లోడ్ చేస్తుంది. మీరు సైట్‌ను విశ్వసిస్తే మాత్రమే దీనిని చేయండి.</translation>
 <translation id="1962233722219655970">ఈ పేజీ మీ కంప్యూటర్‌లో పని చేయని స్థానిక క్లయింట్ యాప్‌ను ఉపయోగిస్తుంది.</translation>
@@ -1090,7 +1090,7 @@
 <translation id="1990512225220753005">ఈ పేజీలో షార్ట్‌కట్‌లను చూపవద్దు</translation>
 <translation id="1990727803345673966">బ్యాకప్ చేసిన మీ Linux ఫైల్స్, యాప్‌లు రీస్టోర్ చేయబడుతున్నాయి</translation>
 <translation id="199191324030140441">'అంతరాయం కలిగించవద్దు'ను ఆఫ్ చేయండి</translation>
-<translation id="1992397118740194946">సెట్ చెయ్యలేదు</translation>
+<translation id="1992397118740194946">సెట్ చేయలేదు</translation>
 <translation id="1992924914582925289">పరికరం నుండి తీసివేయండి</translation>
 <translation id="1994173015038366702">సైట్ URL</translation>
 <translation id="1995916364271252349">సైట్‌లు ఉపయోగించగల సమాచారాన్ని, అవి చూపగల కంటెంట్‌ను (లొకేషన్, కెమెరా, పాప్-అప్‌లు, మరిన్ని) నియంత్రిస్తుంది</translation>
@@ -1788,7 +1788,7 @@
 <translation id="2620215283731032047"><ph name="FILE_NAME" />ను సురక్షితంగా డౌన్‌లోడ్ చేయడం సాధ్యం కాదు.</translation>
 <translation id="2620436844016719705">సిస్టమ్</translation>
 <translation id="262154978979441594">Google Assistant వాయిస్ మోడల్‌కు శిక్షణనివ్వండి</translation>
-<translation id="26224892172169984">ప్రోటోకాల్స్ నిర్వహించడానికి ఏ సైట్‌నూ అనుమతించవద్దు</translation>
+<translation id="26224892172169984">ప్రోటోకాల్స్ మేనేజ్ చేయడానికి ఏ సైట్‌నూ అనుమతించవద్దు</translation>
 <translation id="262373406453641243">కోల్‌మాక్</translation>
 <translation id="2624142942574147739">ఈ పేజీ మీ కెమెరా మరియు మైక్రోఫోన్‌ను యాక్సెస్‌ చేస్తోంది.</translation>
 <translation id="2626799779920242286">దయచేసి తర్వాత మళ్లీ ప్రయత్నించండి.</translation>
@@ -3203,7 +3203,7 @@
 <translation id="3948027458879361203">హోస్ట్‌పేరును మార్చండి</translation>
 <translation id="3948116654032448504">చిత్రం కోసం <ph name="SEARCH_ENGINE" />లో &amp;శోధించండి</translation>
 <translation id="3948507072814225786">కింది ఫోల్డర్‌లలోని ఫైళ్లను <ph name="ORIGIN" /> సవరించగలదు</translation>
-<translation id="394984172568887996">IE నుండి దిగుమతి చెయ్యబడింది</translation>
+<translation id="394984172568887996">IE నుండి దిగుమతి చేయబడింది</translation>
 <translation id="3950820424414687140">సైన్ ఇన్</translation>
 <translation id="3950841222883198950">వాయిస్ టైపింగ్</translation>
 <translation id="3953834000574892725">నా ఖాతాలు</translation>
@@ -4792,7 +4792,7 @@
 <translation id="5500709606820808700">భద్రతా తనిఖీ నేడు రన్ చేయబడింది</translation>
 <translation id="5501322521654567960">ఎడమవైపు అమర్చబడిన సైడ్ ప్యానెల్</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" />ని అందుకోవడం విఫలమైంది}other{<ph name="DEVICE_NAME" /> నుండి <ph name="ATTACHMENTS" />ని అందుకోవడం విఫలమైంది}}</translation>
-<translation id="5502500733115278303">Firefox నుండి దిగుమతి చెయ్యబడింది</translation>
+<translation id="5502500733115278303">Firefox నుండి దిగుమతి చేయబడింది</translation>
 <translation id="5502915260472117187">చిన్నారి</translation>
 <translation id="5503356662318814623">మెసేజ్‌ను పంపండి</translation>
 <translation id="5503982651688210506">మీ కెమెరా, మైక్రోఫోన్‌ను ఉపయోగించడానికి, తరలించడానికి <ph name="HOST" />ను అనుమతించడాన్ని కొనసాగించండి</translation>
@@ -6833,7 +6833,7 @@
 <translation id="7477793887173910789">మీ సంగీతం, వీడియోలు అలాగే ఇంకా మరిన్నింటిని నియంత్రించండి</translation>
 <translation id="7478485216301680444">కియోస్క్ అప్లికేషన్‌ను ఇన్‌స్టాల్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="7478658909253570368">సీరియల్ పోర్ట్‌లకు కనెక్ట్ చేయడానికి సైట్‌లను అనుమతించకండి</translation>
-<translation id="7479221278376295180">నిల్వ వినియోగ అవలోకనం</translation>
+<translation id="7479221278376295180">నిల్వ వినియోగ ఓవర్‌వ్యూ</translation>
 <translation id="747981547666531654"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /> అనే పేర్లతో ఉన్న బ్లూటూత్ పరికరాలకు కనెక్ట్ చేయబడింది</translation>
 <translation id="7481312909269577407">ఫార్వర్డ్</translation>
 <translation id="7481358317100446445">సిద్ధం</translation>
@@ -6957,7 +6957,7 @@
 <translation id="7606248551867844312">'కత్తిరింపు'ను నిర్ధారించండి</translation>
 <translation id="7606560865764296217">యానిమేషన్‌ను పాజ్ చేయండి</translation>
 <translation id="7606992457248886637">అధికారాలు</translation>
-<translation id="7607002721634913082">పాజ్ చెయ్యబడింది</translation>
+<translation id="7607002721634913082">పాజ్ చేయబడింది</translation>
 <translation id="7608810328871051088">Android ప్రాధాన్యతలు</translation>
 <translation id="7609148976235050828">దయచేసి ఇంటర్నెట్‌కి కనెక్ట్ చేసి, మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="7612655942094160088">కనెక్ట్ చేసిన ఫోన్ ఫీచర్‌లు ఎనేబుల్ చేయబడతాయి.</translation>
@@ -7427,7 +7427,7 @@
 <translation id="8028803902702117856"><ph name="SIZE" />, <ph name="FILE_NAME" /> డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="8028993641010258682">సైజ్‌</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> - అనుమతి కోసం రిక్వెస్ట్ చేశారు, ప్రతిస్పందించడానికి ⌘ + ఆప్షన్ + పై వైపు బాణం గుర్తును నొక్కండి</translation>
-<translation id="8030169304546394654">డిస్‌కనెక్ట్ చెయ్యబడింది</translation>
+<translation id="8030169304546394654">డిస్‌కనెక్ట్ చేయబడింది</translation>
 <translation id="8030852056903932865">ఆమోదించు</translation>
 <translation id="8032244173881942855">ట్యాబ్‌ను ప్రసారం చేయడం సాధ్యపడలేదు.</translation>
 <translation id="8032569120109842252">ఫాలో చేస్తున్నారు</translation>
@@ -8070,7 +8070,7 @@
 <translation id="8650543407998814195">మీరు మీ పాత ప్రొఫైల్‌ను ఇప్పుడు యాక్సెస్ చేయలేకపోయినప్పటికీ, మీరు దాన్ని ఇప్పటికీ తీసివేయగలరు.</translation>
 <translation id="8651585100578802546">ఈ పేజీని బలవంతంగా మళ్లీ లోడ్ చేయి</translation>
 <translation id="8652400352452647993">ప్యాక్ ఎక్స్‌టెన్షన్ ఎర్రర్</translation>
-<translation id="8654151524613148204">మీ కంప్యూటర్ నిర్వహించడానికి ఫైల్ చాలా పెద్దదిగా ఉంది. క్షమించండి.</translation>
+<translation id="8654151524613148204">మీ కంప్యూటర్ మేనేజ్ చేయడానికి ఫైల్ చాలా పెద్దదిగా ఉంది. క్షమించండి.</translation>
 <translation id="8655295600908251630">ఛానల్</translation>
 <translation id="8655972064210167941">మీ పాస్‌వర్డ్‌ను ధృవీకరించలేకపోయినందున సైన్-ఇన్ విఫలమైంది. దయచేసి మీ నిర్వాహకుడిని సంప్రదించండి లేదా మళ్లీ ప్రయత్నించండి.</translation>
 <translation id="8657393004602556571">మీరు ఫీడ్‌బ్యాక్‌ను విస్మరించాలనుకుంటున్నారా?</translation>

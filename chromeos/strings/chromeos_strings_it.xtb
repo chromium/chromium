@@ -103,7 +103,7 @@
 <translation id="1807246157184219062">Chiaro</translation>
 <translation id="1827738518074806965">Galleria d'arte</translation>
 <translation id="1851218745569890714">Videoconferenze</translation>
-<translation id="1852934301711881861">Installa Chrome OS Flex</translation>
+<translation id="1852934301711881861">Installa ChromeOS Flex</translation>
 <translation id="1856388568474281774">Freccia giù</translation>
 <translation id="1858620243986915808">Allega screenshot</translation>
 <translation id="1871569928317311284">Disattiva il tema scuro</translation>
@@ -139,7 +139,7 @@
 <translation id="2161394479394250669">Annulla processo di stampa</translation>
 <translation id="2163937499206714165">Attiva la modalità Buio</translation>
 <translation id="2180197493692062006">Si è verificato un errore. Prova a riaprire l'app.</translation>
-<translation id="2182088270354640012">Grazie per il feedback. Il tuo feedback aiuta a migliorare Chrome OS e verrà esaminato dal team competente. A causa dell'elevato numero di segnalazioni inviate non riceverai una risposta diretta.</translation>
+<translation id="2182088270354640012">Grazie per il feedback. Il tuo feedback aiuta a migliorare ChromeOS e verrà esaminato dal team competente. A causa dell'elevato numero di segnalazioni inviate non riceverai una risposta diretta.</translation>
 <translation id="2209788852729124853">Reimposta contatori di traffico</translation>
 <translation id="2212733584906323460">Risoluzione nome</translation>
 <translation id="2217935453350629363">Velocità attuale</translation>
@@ -250,7 +250,7 @@
 <translation id="3484914941826596830">Durante l'aggiornamento del firmware, non scollegare questo dispositivo esterno o non arrestare il computer. Puoi ridurre a icona questa finestra. Questo aggiornamento potrebbe richiedere qualche minuto e nel frattempo il dispositivo esterno potrebbe non funzionare.</translation>
 <translation id="3486220673238053218">definizione</translation>
 <translation id="3488065109653206955">Attivato parzialmente</translation>
-<translation id="3517001332549868749">Aggiornamento Chrome OS</translation>
+<translation id="3517001332549868749">Aggiornamento ChromeOS</translation>
 <translation id="3527036260304016759">Operazione non riuscita - Errore sconosciuto</translation>
 <translation id="3532980081107202182">Mancano circa <ph name="MIN_REMAINING" /> minuti</translation>
 <translation id="3557205324756024651">Identità locale (facoltativa)</translation>
@@ -295,7 +295,7 @@
 <translation id="3954678691475912818">Tipo di dispositivo sconosciuto.</translation>
 <translation id="3966286471246132217">Per risultati più accurati, chiudi tutte le app fino al completamento del test.</translation>
 <translation id="3967822245660637423">Download completato</translation>
-<translation id="3969602104473960991">Password di Chrome OS aggiornata</translation>
+<translation id="3969602104473960991">Password di ChromeOS aggiornata</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
 <translation id="39823212440917567">I processi di stampa risalenti a oltre <ph name="NUMBER_OF_DAYS" /> giorni fa verranno rimossi</translation>
 <translation id="3993704782688964914">Dispositivo (<ph name="DEVICE_NAME" />) aggiornato</translation>
@@ -527,7 +527,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6113701710518389813">Freccia su</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> + altri <ph name="NUMBER" /> album</translation>
 <translation id="6122191549521593678">Online</translation>
-<translation id="6122277663991249694">Servizio metodo di immissione di Chrome OS</translation>
+<translation id="6122277663991249694">Servizio metodo di immissione di ChromeOS</translation>
 <translation id="6137767437444130246">Certificato utente</translation>
 <translation id="6146993107019042706">Per terminare, inserisci la nuova password</translation>
 <translation id="6147514244879357420">PNG</translation>
@@ -750,7 +750,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8420955526972171689">Esegui test e risolvi problemi relativi all'hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8428073762635678092">Tastiera integrata</translation>
-<translation id="8431300646573772016">Novità di Chrome OS</translation>
+<translation id="8431300646573772016">Novità di ChromeOS</translation>
 <translation id="843568408673868420">Connessione a Internet</translation>
 <translation id="844521431886043384">DNS non configurato</translation>
 <translation id="8456761643544401578">Modalità Buio automatica</translation>
@@ -823,7 +823,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="9082718469794970195">Utilizza questo video</translation>
 <translation id="9087578468327036362">Segnala questa query</translation>
 <translation id="9088306295921699330">Spazio utilizzato</translation>
-<translation id="9092255287806472980">Il tuo feedback aiuta a migliorare Chrome OS e verrà esaminato dal nostro team. A causa dell'elevato numero di segnalazioni non potremo risponderti.</translation>
+<translation id="9092255287806472980">Il tuo feedback aiuta a migliorare ChromeOS e verrà esaminato dal nostro team. A causa dell'elevato numero di segnalazioni non potremo risponderti.</translation>
 <translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">Aggiorna la richiesta per <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scansione pagina <ph name="PAGE_NUMBER" />…</translation>

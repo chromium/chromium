@@ -29,7 +29,7 @@
 <translation id="1145536944570833626">Elimina i dati esistenti.</translation>
 <translation id="1146678959555564648">Entra nella VR</translation>
 <translation id="1149401351239820326">Mese di scadenza</translation>
-<translation id="1150263420752757504"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="1150263420752757504"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="1154704303112745282">Pagina non disponibile offline: <ph name="VIOLATED_URL" /></translation>
 <translation id="1171770572613082465">Scopri i siti web più visitati toccando il pulsante "Siti principali"</translation>
 <translation id="1173894706177603556">Rinomina</translation>
@@ -213,7 +213,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2122601567107267586">Impossibile aprire l'app</translation>
 <translation id="2132122640199389833">Rimuovi tutti i dispositivi collegati</translation>
 <translation id="213279576345780926">La scheda <ph name="TAB_TITLE" /> è stata chiusa</translation>
-<translation id="2134927169889348449">Se utilizzi Chrome, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio di Google<ph name="END_TOS_LINK" /> e i <ph name="BEGIN_ATOS_LINK" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_ATOS_LINK" />.</translation>
+<translation id="2134927169889348449">Se utilizzi Chrome, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio di Google<ph name="END_TOS_LINK" /> e i <ph name="BEGIN_ATOS_LINK" />Termini di servizio aggiuntivi di Google Chrome e ChromeOS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="2139186145475833000">Aggiungi a schermata Home</translation>
 <translation id="2141396931810938595">In base al tuo utilizzo</translation>
 <translation id="214888715418183969">Scegli quali dati condividere con Chrome. Le metriche che condividi verranno utilizzate per contribuire a migliorare le funzionalità, le prestazioni e la stabilità di Chrome.</translation>
@@ -390,7 +390,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="3062802207422175757">Articoli relativi ai tuoi interessi su Chrome</translation>
 <translation id="3066573403916685335">Sposta giù</translation>
 <translation id="3070005020161560471">Traduci automaticamente</translation>
-<translation id="3072980200212375806"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_LINK2" />. Si applicano anche le <ph name="BEGIN_LINK3" />Norme sulla privacy<ph name="END_LINK3" />.</translation>
+<translation id="3072980200212375806"><ph name="APP_NAME" /> si aprirà in Chrome. Se continui, accetti i <ph name="BEGIN_LINK1" />Termini di servizio di Google<ph name="END_LINK1" /> e i <ph name="BEGIN_LINK2" />Termini di servizio aggiuntivi di Google Chrome e ChromeOS<ph name="END_LINK2" />. Si applicano anche le <ph name="BEGIN_LINK3" />Norme sulla privacy<ph name="END_LINK3" />.</translation>
 <translation id="3091010850649238832">Mostra contenuti degli appunti</translation>
 <translation id="3098745985164956033">Alcune immagini vengono inviate a Google per migliorare le descrizioni</translation>
 <translation id="3114507951000454849">Leggi le notizie di oggi <ph name="NEWS_ICON" /></translation>
@@ -596,7 +596,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="4269820728363426813">Copia indirizzo link</translation>
 <translation id="4283102315569707115">Richiedere siti desktop per impostazione predefinita?</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Attiva il blocco schermo nelle impostazioni di Android<ph name="END_LINK" /></translation>
-<translation id="4293476595220860475">Se utilizzi Chrome, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio di Google<ph name="END_TOS_LINK" /> e i <ph name="BEGIN_ATOS_LINK" />Termini di servizio aggiuntivi di Google Chrome e Chrome OS<ph name="END_ATOS_LINK" />. Si applicano anche le <ph name="BEGIN_PRIVACY_LINK" />Norme sulla privacy<ph name="END_PRIVACY_LINK" />.</translation>
+<translation id="4293476595220860475">Se utilizzi Chrome, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio di Google<ph name="END_TOS_LINK" /> e i <ph name="BEGIN_ATOS_LINK" />Termini di servizio aggiuntivi di Google Chrome e ChromeOS<ph name="END_ATOS_LINK" />. Si applicano anche le <ph name="BEGIN_PRIVACY_LINK" />Norme sulla privacy<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="4296252229500326964">Nuova scheda in incognito</translation>
 <translation id="4298388696830689168">Siti collegati</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -1078,7 +1078,7 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="6767294960381293877">Elenco di dispositivi con cui condividere una scheda aperto nella parte inferiore dello schermo.</translation>
 <translation id="6770042910635026163">Siti visitati che definiscono i tuoi interessi</translation>
 <translation id="6770602306803890733">Aumenta la sicurezza per te e per tutti gli utenti del Web</translation>
-<translation id="6785476624617658922">Termini di servizio aggiuntivi di Chrome e Chrome OS</translation>
+<translation id="6785476624617658922">Termini di servizio aggiuntivi di Chrome e ChromeOS</translation>
 <translation id="6795633245022906657">Apri rapidamente una nuova scheda. Per modificare questa scorciatoia, vai a Impostazioni.</translation>
 <translation id="6802555630140434547">La finestra verrà chiusa</translation>
 <translation id="6811034713472274749">La pagina è pronta per essere visualizzata</translation>

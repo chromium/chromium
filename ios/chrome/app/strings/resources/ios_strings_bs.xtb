@@ -439,7 +439,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4659126640776004816">Kada se prijavite na Google račun, ova funkcija se uključuje.</translation>
 <translation id="4659667755519643272">Ulazak u prebacivač kartica</translation>
 <translation id="46614316059270592">Sačuvaj lozinku</translation>
-<translation id="4666531726415300315">Prijavljeni ste s računom <ph name="EMAIL" />.
+<translation id="4666531726415300315">Prijavljeni ste kao <ph name="EMAIL" />.
 
 Vaši podaci su šifrirani sinhroniziranim pristupnim izrazom. Unesite da započnete sinhronizaciju.</translation>
 <translation id="4682686630151240767">1. Otvorite postavke iPhonea</translation>
@@ -664,7 +664,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6406506848690869874">Sinhronizacija</translation>
 <translation id="6410390304316730527">Sigurno pregledanje vas štiti od napadača koji vas mogu prevarom navesti da uradite nešto opasno, naprimjer, da instalirate zlonamjerni softver ili otkrijete lične informacije kao što su lozinke i brojevi telefona ili kreditne kartice. Ako ga isključite, budite oprezni prilikom pregledanja nepoznatih ili sumnjivih web lokacija.</translation>
 <translation id="6410883413783534063">Otvorite kartice da istovremeno posjetite različite stranice</translation>
-<translation id="641799622251403418">Prijavljeni ste s računom <ph name="EMAIL" />.
+<translation id="641799622251403418">Prijavljeni ste kao <ph name="EMAIL" />.
 
 Vaši podaci su šifrirani sinhroniziranim pristupnim izrazom <ph name="TIME" />. Unesite izraz da započnete sinhronizaciju.</translation>
 <translation id="6418346271604475326">Pripremanje PDF-a</translation>
