@@ -1036,6 +1036,11 @@
       name: "DocumentPictureInPictureAPI",
       depends_on: ["PictureInPictureAPI"],
       public: true,
+      status: {
+        "Android": "",
+        "ChromeOS_Lacros": "",
+        "default": "experimental",
+      },
       settable_from_internals: true,
     },
     {

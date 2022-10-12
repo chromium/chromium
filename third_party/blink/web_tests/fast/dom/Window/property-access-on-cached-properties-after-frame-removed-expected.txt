@@ -51,6 +51,7 @@ PASS window.cached_navigator_connection.saveData is false
 PASS window.cached_navigator_connection.type is window.navigator.connection.type
 PASS window.cached_navigator_devicePosture.onchange is null
 PASS window.cached_navigator_devicePosture.type is window.navigator.devicePosture.type
+PASS window.cached_navigator_documentPictureInPicture.session is null
 PASS window.cached_navigator_hid.onconnect is null
 PASS window.cached_navigator_hid.ondisconnect is null
 PASS window.cached_navigator_managed.onmanagedconfigurationchange is null

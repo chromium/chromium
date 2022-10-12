@@ -2147,6 +2147,15 @@ interface DocumentFragment : Node
     method querySelector
     method querySelectorAll
     method replaceChildren
+interface DocumentPictureInPicture
+    attribute @@toStringTag
+    getter session
+    method constructor
+    method requestWindow
+interface DocumentPictureInPictureSession
+    attribute @@toStringTag
+    getter window
+    method constructor
 interface DocumentTimeline : AnimationTimeline
     attribute @@toStringTag
     method constructor
@@ -5968,6 +5977,7 @@ interface Navigator
     getter deviceMemory
     getter devicePosture
     getter doNotTrack
+    getter documentPictureInPicture
     getter geolocation
     getter hardwareConcurrency
     getter hid
