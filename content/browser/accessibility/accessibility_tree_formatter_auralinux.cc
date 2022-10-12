@@ -14,8 +14,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "content/browser/accessibility/browser_accessibility_auralinux.h"
-#include "content/public/browser/ax_inspect_factory.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/inspect/ax_call_statement_invoker_auralinux.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
@@ -112,15 +110,7 @@ std::string AccessibilityTreeFormatterAuraLinux::EvaluateScript(
 AtkObject* GetAtkObject(ui::AXPlatformNodeDelegate* node) {
   DCHECK(node);
 
-  BrowserAccessibility* node_internal =
-      BrowserAccessibility::FromAXPlatformNodeDelegate(node);
-  DCHECK(node_internal);
-
-  BrowserAccessibilityAuraLinux* platform_node =
-      ToBrowserAccessibilityAuraLinux(node_internal);
-  DCHECK(platform_node);
-
-  AtkObject* atk_node = platform_node->GetNativeViewAccessible();
+  AtkObject* atk_node = node->GetNativeViewAccessible();
   DCHECK(atk_node);
 
   return atk_node;
@@ -147,8 +137,7 @@ void AccessibilityTreeFormatterAuraLinux::RecursiveBuildTree(
       ui::AXPlatformNodeAuraLinux::FromAtkObject(atk_node);
   DCHECK(platform_node);
 
-  BrowserAccessibility* node = BrowserAccessibility::FromAXPlatformNodeDelegate(
-      platform_node->GetDelegate());
+  ui::AXPlatformNodeDelegate* node = platform_node->GetDelegate();
   DCHECK(node);
 
   if (!ShouldDumpNode(*node))
@@ -495,8 +484,7 @@ void AccessibilityTreeFormatterAuraLinux::AddProperties(
       ui::AXPlatformNodeAuraLinux::FromAtkObject(atk_object);
   DCHECK(platform_node);
 
-  BrowserAccessibility* node = BrowserAccessibility::FromAXPlatformNodeDelegate(
-      platform_node->GetDelegate());
+  ui::AXPlatformNodeDelegate* node = platform_node->GetDelegate();
   DCHECK(node);
 
   dict->Set("id", node->GetId());
