@@ -7,57 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "services/device/geolocation/geolocation_context.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 
 namespace device {
-
-namespace {
-
-// Geoposition error codes for reporting in UMA.
-enum GeopositionErrorCode {
-  // NOTE: Do not renumber these as that would confuse interpretation of
-  // previously logged data. When making changes, also update the enum list
-  // in tools/metrics/histograms/histograms.xml to keep it in sync.
-
-  // There was no error.
-  GEOPOSITION_ERROR_CODE_NONE = 0,
-
-  // User denied use of geolocation.
-  GEOPOSITION_ERROR_CODE_PERMISSION_DENIED = 1,
-
-  // Geoposition could not be determined.
-  GEOPOSITION_ERROR_CODE_POSITION_UNAVAILABLE = 2,
-
-  // Timeout.
-  GEOPOSITION_ERROR_CODE_TIMEOUT = 3,
-
-  // NOTE: Add entries only immediately above this line.
-  GEOPOSITION_ERROR_CODE_COUNT = 4
-};
-
-void RecordGeopositionErrorCode(mojom::Geoposition::ErrorCode error_code) {
-  GeopositionErrorCode code = GEOPOSITION_ERROR_CODE_NONE;
-  switch (error_code) {
-    case mojom::Geoposition::ErrorCode::NONE:
-      code = GEOPOSITION_ERROR_CODE_NONE;
-      break;
-    case mojom::Geoposition::ErrorCode::PERMISSION_DENIED:
-      code = GEOPOSITION_ERROR_CODE_PERMISSION_DENIED;
-      break;
-    case mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE:
-      code = GEOPOSITION_ERROR_CODE_POSITION_UNAVAILABLE;
-      break;
-    case mojom::Geoposition::ErrorCode::TIMEOUT:
-      code = GEOPOSITION_ERROR_CODE_TIMEOUT;
-      break;
-  }
-  UMA_HISTOGRAM_ENUMERATION("Geolocation.LocationUpdate.ErrorCode", code,
-                            GEOPOSITION_ERROR_CODE_COUNT);
-}
-
-}  // namespace
 
 GeolocationImpl::GeolocationImpl(mojo::PendingReceiver<Geolocation> receiver,
                                  GeolocationContext* context)
@@ -74,8 +27,8 @@ GeolocationImpl::~GeolocationImpl() {
   // Make sure to respond to any pending callback even without a valid position.
   if (!position_callback_.is_null()) {
     if (ValidateGeoposition(current_position_)) {
-      current_position_.error_code = mojom::Geoposition::ErrorCode(
-          GEOPOSITION_ERROR_CODE_POSITION_UNAVAILABLE);
+      current_position_.error_code =
+          mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE;
       current_position_.error_message.clear();
     }
     ReportCurrentPosition();
@@ -152,7 +105,6 @@ void GeolocationImpl::OnConnectionError() {
 }
 
 void GeolocationImpl::OnLocationUpdate(const mojom::Geoposition& position) {
-  RecordGeopositionErrorCode(position.error_code);
   DCHECK(context_);
 
   current_position_ = position;

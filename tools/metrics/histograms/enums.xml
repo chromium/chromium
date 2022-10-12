@@ -46714,13 +46714,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Three months"/>
 </enum>
 
-<enum name="GeopositionErrorCode">
-  <int value="0" label="There was no error"/>
-  <int value="1" label="User denied use of geolocation"/>
-  <int value="2" label="Geoposition could not be determined"/>
-  <int value="3" label="Timeout"/>
-</enum>
-
 <enum name="GestureEventFilterResults">
   <int value="0"
       label="GestureScrollBegin allowed by main thread touch action"/>
