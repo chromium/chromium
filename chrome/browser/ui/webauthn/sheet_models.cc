@@ -410,16 +410,30 @@ std::u16string AuthenticatorAlreadyRegisteredErrorModel::GetAcceptButtonLabel()
 const gfx::VectorIcon&
 AuthenticatorAlreadyRegisteredErrorModel::GetStepIllustration(
     ImageColorScheme color_scheme) const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return color_scheme == ImageColorScheme::kDark ? kPasskeyErrorDarkIcon
+                                                   : kPasskeyErrorIcon;
+  }
   return color_scheme == ImageColorScheme::kDark ? kWebauthnErrorDarkIcon
                                                  : kWebauthnErrorIcon;
 }
 
 std::u16string AuthenticatorAlreadyRegisteredErrorModel::GetStepTitle() const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return l10n_util::GetStringUTF16(IDS_WEBAUTHN_ERROR_WRONG_DEVICE_TITLE);
+  }
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_ERROR_WRONG_KEY_TITLE);
 }
 
 std::u16string AuthenticatorAlreadyRegisteredErrorModel::GetStepDescription()
     const {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnNewDiscoverableCredentialsUi)) {
+    return l10n_util::GetStringUTF16(
+        IDS_WEBAUTHN_ERROR_WRONG_DEVICE_REGISTER_DESCRIPTION);
+  }
   return l10n_util::GetStringUTF16(
       IDS_WEBAUTHN_ERROR_WRONG_KEY_REGISTER_DESCRIPTION);
 }

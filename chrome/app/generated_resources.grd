@@ -12787,6 +12787,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_ERROR_WRONG_KEY_REGISTER_DESCRIPTION" desc="Description in the dialog informing the user that they are trying to register a security key (an external physical device for user authentication) that they have already registered with the given web site before.">
         You already registered this security key. You don't have to register it again.
       </message>
+      <message name="IDS_WEBAUTHN_ERROR_WRONG_DEVICE_TITLE" desc="Title of the dialog informing the user that they are trying to register a passkey on a device that they have already registered with the given web site before.">
+        Try a different device
+      </message>
+      <message name="IDS_WEBAUTHN_ERROR_WRONG_DEVICE_REGISTER_DESCRIPTION" desc="Description in the dialog informing the user that they are trying to register a passkey on a device that they have already registered with the given web site before.">
+        You already registered this device. You don't have to register it again.
+      </message>
       <message name="IDS_WEBAUTHN_ERROR_WRONG_KEY_SIGN_DESCRIPTION" desc="Description in the dialog informing the user that they are trying to use the wrong security key (an external physical device for user authentication) to sign in to a given web site, that is, not the one they have previously registered on that site.">
         You're using a security key that's not registered with this website
       </message>
