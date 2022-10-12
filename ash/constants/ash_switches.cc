@@ -562,6 +562,10 @@ const char kForceLoginManagerInTests[] = "force-login-manager-in-tests";
 // cursor changes are locked when using this switch.
 const char kForceShowCursor[] = "force-show-cursor";
 
+// Force the "release track" UI to show in the system tray. Simulates the system
+// being on a non-stable release channel with feedback enabled.
+const char kForceShowReleaseTrack[] = "force-show-release-track";
+
 // Force system compositor mode when set.
 const char kForceSystemCompositorMode[] = "force-system-compositor-mode";
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/constants/personalization_entry_point.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/login_types.h"
@@ -790,6 +791,11 @@ void SystemTrayClientImpl::ShowChannelInfoGiveFeedback() {
 }
 
 bool SystemTrayClientImpl::IsUserFeedbackEnabled() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kForceShowReleaseTrack)) {
+    // Force the release track UI to show the feedback button.
+    return true;
+  }
   PrefService* signin_prefs =
       ProfileManager::GetActiveUserProfile()->GetPrefs();
   DCHECK(signin_prefs);
