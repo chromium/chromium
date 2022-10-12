@@ -437,22 +437,6 @@ Point3F Transform::MapPoint(const Point3F& point) const {
   return MapPointInternal(matrix_, point);
 }
 
-// TODO(crbug.com/1359528): Remove these methods in favor of MapPoint().
-void Transform::TransformPoint(Point* point) const {
-  DCHECK(point);
-  *point = MapPointInternal(matrix_, *point);
-}
-
-void Transform::TransformPoint(PointF* point) const {
-  DCHECK(point);
-  *point = MapPointInternal(matrix_, *point);
-}
-
-void Transform::TransformPoint(Point3F* point) const {
-  DCHECK(point);
-  *point = MapPointInternal(matrix_, *point);
-}
-
 Vector3dF Transform::MapVector(const Vector3dF& vector) const {
   if (IsIdentity())
     return vector;
@@ -506,11 +490,6 @@ Rect Transform::MapRect(const Rect& rect) const {
     return rect;
 
   return ToEnclosingRect(MapRect(RectF(rect)));
-}
-
-// TODO(crbug.com/1359528): Remove this.
-void Transform::TransformRect(RectF* rect) const {
-  *rect = MapRect(*rect);
 }
 
 absl::optional<RectF> Transform::InverseMapRect(const RectF& rect) const {

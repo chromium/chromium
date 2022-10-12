@@ -302,12 +302,6 @@ class GEOMETRY_SKIA_EXPORT Transform {
   [[nodiscard]] PointF MapPoint(const PointF& point) const;
   [[nodiscard]] Point MapPoint(const Point& point) const;
 
-  // Applies the transformation to the point.
-  // TODO(crbug.com/1359528): Remove these in favor of MapPoint().
-  void TransformPoint(Point3F* point) const;
-  void TransformPoint(PointF* point) const;
-  void TransformPoint(Point* point) const;
-
   // Returns the vector with the transformation applied to |vector|.
   // It differs from MapPoint() by that the translation and perspective
   // components of the matrix are ignored.
@@ -341,9 +335,6 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // is the smallest axis aligned bounding rect containing the transformed rect.
   [[nodiscard]] absl::optional<RectF> InverseMapRect(const RectF& rect) const;
   [[nodiscard]] absl::optional<Rect> InverseMapRect(const Rect& rect) const;
-
-  // TODO(crbug.com/1359528): Remove these in favor of MapRect().
-  void TransformRect(RectF* rect) const;
 
   // Returns the box with transformation applied on the given box. The returned
   // box will be the smallest axis aligned bounding box containing the

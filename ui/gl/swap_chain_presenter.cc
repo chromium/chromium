@@ -563,8 +563,7 @@ bool SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
 
   // Origin is probably (0,0) all the time. If not, adjust the origin.
   if (!params.quad_rect.origin().IsOrigin()) {
-    auto new_origin = params.quad_rect.origin();
-    visual_transform->TransformPoint(&new_origin);
+    auto new_origin = visual_transform->MapPoint(params.quad_rect.origin());
     visual_transform->PostTranslate(-new_origin.OffsetFromOrigin());
   }
 
