@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_texture_alpha_clearer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -182,6 +183,10 @@ WebGPUMailboxTexture::WebGPUMailboxTexture(
                            reinterpret_cast<const GLbyte*>(&mailbox));
 }
 
+void WebGPUMailboxTexture::SetAlphaClearer(
+    scoped_refptr<WebGPUTextureAlphaClearer> alpha_clearer) {
+  alpha_clearer_ = std::move(alpha_clearer);
+}
 
 void WebGPUMailboxTexture::Dissociate() {
   if (wire_texture_id_ == 0) {
@@ -191,6 +196,10 @@ void WebGPUMailboxTexture::Dissociate() {
           dawn_control_client_->GetContextProviderWeakPtr()) {
     gpu::webgpu::WebGPUInterface* webgpu =
         context_provider->ContextProvider()->WebGPUInterface();
+    if (alpha_clearer_) {
+      alpha_clearer_->ClearAlpha(texture_);
+      alpha_clearer_ = nullptr;
+    }
     if (needs_present_) {
       webgpu->DissociateMailboxForPresent(
           wire_device_id_, wire_device_generation_, wire_texture_id_,

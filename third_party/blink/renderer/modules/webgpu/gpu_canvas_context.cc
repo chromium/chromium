@@ -22,126 +22,10 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_texture_alpha_clearer.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 
 namespace blink {
-
-class TextureAlphaClearer final {
- public:
-  TextureAlphaClearer(GPUDevice* device, WGPUTextureFormat format)
-      : dawn_control_client_(device->GetDawnControlClient()),
-        device_(device->GetHandle()),
-        format_(format) {
-    const auto& procs = dawn_control_client_->GetProcs();
-
-    procs.deviceReference(device_);
-
-    WGPUShaderModuleWGSLDescriptor wgsl_desc = {
-        .chain = {.sType = WGPUSType_ShaderModuleWGSLDescriptor},
-        .source = R"(
-        @vertex fn vert_main(@builtin(vertex_index) VertexIndex : u32) -> @builtin(position) vec4<f32> {
-          var pos = array<vec2<f32>, 3>(
-              vec2<f32>(-1.0, -1.0),
-              vec2<f32>( 3.0, -1.0),
-              vec2<f32>(-1.0,  3.0));
-          return vec4<f32>(pos[VertexIndex], 0.0, 1.0);
-        }
-
-        @fragment fn frag_main() -> @location(0) vec4<f32> {
-          return vec4<f32>(1.0);
-        }
-      )",
-    };
-    WGPUShaderModuleDescriptor shader_module_desc = {.nextInChain =
-                                                         &wgsl_desc.chain};
-    WGPUShaderModule shader_module =
-        procs.deviceCreateShaderModule(device_, &shader_module_desc);
-
-    WGPUColorTargetState color_target = {
-        .format = format,
-        .writeMask = WGPUColorWriteMask_Alpha,
-    };
-    WGPUFragmentState fragment = {
-        .module = shader_module,
-        .entryPoint = "frag_main",
-        .targetCount = 1,
-        .targets = &color_target,
-    };
-    WGPURenderPipelineDescriptor pipeline_desc = {
-        .vertex =
-            {
-                .module = shader_module,
-                .entryPoint = "vert_main",
-            },
-        .primitive = {.topology = WGPUPrimitiveTopology_TriangleList},
-        .multisample = {.count = 1, .mask = 0xFFFFFFFF},
-        .fragment = &fragment,
-    };
-    alpha_to_one_pipeline_ =
-        procs.deviceCreateRenderPipeline(device_, &pipeline_desc);
-    procs.shaderModuleRelease(shader_module);
-  }
-
-  virtual ~TextureAlphaClearer() {
-    const auto& procs = dawn_control_client_->GetProcs();
-    procs.renderPipelineRelease(alpha_to_one_pipeline_);
-    procs.deviceRelease(device_);
-  }
-
-  bool IsCompatible(GPUDevice* device, WGPUTextureFormat format) {
-    return device_ == device->GetHandle() && format_ == format;
-  }
-
-  void ClearAlpha(GPUTexture* texture) {
-    const auto& procs = dawn_control_client_->GetProcs();
-
-    WGPUTextureView attachment_view =
-        procs.textureCreateView(texture->GetHandle(), nullptr);
-
-    WGPUDawnEncoderInternalUsageDescriptor internal_usage_desc = {
-        .chain = {.sType = WGPUSType_DawnEncoderInternalUsageDescriptor},
-        .useInternalUsages = true,
-    };
-    WGPUCommandEncoderDescriptor command_encoder_desc = {
-        .nextInChain = &internal_usage_desc.chain,
-    };
-    WGPUCommandEncoder command_encoder =
-        procs.deviceCreateCommandEncoder(device_, &command_encoder_desc);
-
-    WGPURenderPassColorAttachment color_attachment = {
-        .view = attachment_view,
-        .loadOp = WGPULoadOp_Load,
-        .storeOp = WGPUStoreOp_Store,
-    };
-    WGPURenderPassDescriptor render_pass_desc = {
-        .colorAttachmentCount = 1,
-        .colorAttachments = &color_attachment,
-    };
-    WGPURenderPassEncoder pass =
-        procs.commandEncoderBeginRenderPass(command_encoder, &render_pass_desc);
-    DCHECK(alpha_to_one_pipeline_);
-    procs.renderPassEncoderSetPipeline(pass, alpha_to_one_pipeline_);
-    procs.renderPassEncoderDraw(pass, 3, 1, 0, 0);
-    procs.renderPassEncoderEnd(pass);
-
-    WGPUCommandBuffer command_buffer =
-        procs.commandEncoderFinish(command_encoder, nullptr);
-
-    WGPUQueue queue = procs.deviceGetQueue(device_);
-    procs.queueSubmit(queue, 1, &command_buffer);
-
-    procs.renderPassEncoderRelease(pass);
-    procs.commandEncoderRelease(command_encoder);
-    procs.commandBufferRelease(command_buffer);
-    procs.textureViewRelease(attachment_view);
-  }
-
- private:
-  const scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-  const WGPUDevice device_;
-  const WGPUTextureFormat format_;
-  WGPURenderPipeline alpha_to_one_pipeline_ = nullptr;
-};
 
 GPUCanvasContext::Factory::~Factory() = default;
 
@@ -169,10 +53,6 @@ GPUCanvasContext::GPUCanvasContext(
   texture_descriptor_.dimension = WGPUTextureDimension_2D;
   texture_descriptor_.mipLevelCount = 1;
   texture_descriptor_.sampleCount = 1;
-}
-
-GPUCanvasContext::~GPUCanvasContext() {
-  alpha_clearer_ = nullptr;
 }
 
 void GPUCanvasContext::Trace(Visitor* visitor) const {
@@ -506,13 +386,16 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     case V8GPUCanvasAlphaMode::Enum::kOpaque: {
       CcLayer()->SetContentsOpaque(true);
       if (!alpha_clearer_ ||
-          !alpha_clearer_->IsCompatible(device_, texture_descriptor_.format)) {
-        alpha_clearer_ = std::make_unique<TextureAlphaClearer>(
-            device_, texture_descriptor_.format);
+          !alpha_clearer_->IsCompatible(device_->GetHandle(),
+                                        texture_descriptor_.format)) {
+        alpha_clearer_ = base::MakeRefCounted<WebGPUTextureAlphaClearer>(
+            device_->GetDawnControlClient(), device_->GetHandle(),
+            texture_descriptor_.format);
       }
       break;
     }
     case V8GPUCanvasAlphaMode::Enum::kPremultiplied:
+      alpha_clearer_ = nullptr;
       CcLayer()->SetContentsOpaque(false);
       break;
   }
@@ -658,6 +541,7 @@ GPUTexture* GPUCanvasContext::ReplaceCurrentTexture() {
   }
 
   mailbox_texture->SetNeedsPresent(true);
+  mailbox_texture->SetAlphaClearer(alpha_clearer_);
 
   texture_ = MakeGarbageCollected<GPUTexture>(
       device_, texture_descriptor_.format,
@@ -680,23 +564,6 @@ void GPUCanvasContext::FinalizeFrame(bool /*printing*/) {
 // WebGPUSwapBufferProvider::Client implementation
 void GPUCanvasContext::OnTextureTransferred() {
   DCHECK(texture_);
-
-  // The texture is about to be transferred to the compositor.
-  // For alpha mode Opaque, clear the alpha channel to 1.0.
-  switch (alpha_mode_) {
-    case V8GPUCanvasAlphaMode::Enum::kOpaque: {
-      // `alpha_clearer_` will be deleted if OnTextureTransferred is called
-      // during ~GPUCanvasContext -> ~WebGPUSwapBufferProvider ->
-      // ~WebGPUMailboxTexture
-      if (alpha_clearer_) {
-        alpha_clearer_->ClearAlpha(texture_);
-      }
-      break;
-    }
-    case V8GPUCanvasAlphaMode::Enum::kPremultiplied:
-      break;
-  }
-
   texture_ = nullptr;
 }
 

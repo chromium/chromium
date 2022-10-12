@@ -25,6 +25,7 @@ namespace blink {
 
 class DawnControlClientHolder;
 class StaticBitmapImage;
+class WebGPUTextureAlphaClearer;
 
 class PLATFORM_EXPORT WebGPUMailboxTexture
     : public RefCounted<WebGPUMailboxTexture> {
@@ -60,6 +61,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       scoped_refptr<media::VideoFrame> video_frame);
 
   void SetNeedsPresent(bool needs_present) { needs_present_ = needs_present; }
+  void SetAlphaClearer(scoped_refptr<WebGPUTextureAlphaClearer> alpha_clearer);
   void Dissociate();
 
   ~WebGPUMailboxTexture();
@@ -90,6 +92,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
   uint32_t wire_texture_generation_ = 0;
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource_;
   bool needs_present_ = false;
+  scoped_refptr<WebGPUTextureAlphaClearer> alpha_clearer_;
 };
 
 }  // namespace blink

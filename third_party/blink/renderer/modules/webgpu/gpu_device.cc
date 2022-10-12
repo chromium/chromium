@@ -393,6 +393,9 @@ GPUQueue* GPUDevice::queue() {
 void GPUDevice::destroy(ScriptState* script_state) {
   destroyed_ = true;
   DestroyAllExternalTextures();
+  // Dissociate mailboxes before destroying the device. This ensures that
+  // mailbox operations which run during dissociation can succeed.
+  DissociateMailboxes();
   UnmapAllMappableBuffers(script_state);
   GetProcs().deviceDestroy(GetHandle());
   FlushNow();
@@ -608,6 +611,7 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(queue_);
   visitor->Trace(lost_property_);
   visitor->Trace(active_external_textures_);
+  visitor->Trace(textures_with_mailbox_);
   visitor->Trace(mappable_buffers_);
   ExecutionContextClient::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
@@ -624,6 +628,13 @@ void GPUDevice::DestroyAllExternalTextures() {
     external_texture->Destroy();
   }
   active_external_textures_.clear();
+}
+
+void GPUDevice::DissociateMailboxes() {
+  for (auto& texture : textures_with_mailbox_) {
+    texture->DissociateMailbox();
+  }
+  textures_with_mailbox_.clear();
 }
 
 void GPUDevice::UnmapAllMappableBuffers(ScriptState* script_state) {
@@ -649,6 +660,16 @@ void GPUDevice::RemoveActiveExternalTexture(
     GPUExternalTexture* external_texture) {
   DCHECK(external_texture);
   active_external_textures_.erase(external_texture);
+}
+
+void GPUDevice::TrackTextureWithMailbox(GPUTexture* texture) {
+  DCHECK(texture);
+  textures_with_mailbox_.insert(texture);
+}
+
+void GPUDevice::UntrackTextureWithMailbox(GPUTexture* texture) {
+  DCHECK(texture);
+  textures_with_mailbox_.erase(texture);
 }
 
 }  // namespace blink

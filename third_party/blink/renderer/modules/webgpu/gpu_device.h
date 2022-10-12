@@ -144,6 +144,9 @@ class GPUDevice final : public EventTargetWithInlineData,
   void AddActiveExternalTexture(GPUExternalTexture* external_texture);
   void RemoveActiveExternalTexture(GPUExternalTexture* external_texture);
 
+  void TrackTextureWithMailbox(GPUTexture* texture);
+  void UntrackTextureWithMailbox(GPUTexture* texture);
+
   bool ValidateTextureFormatUsage(V8GPUTextureFormat format,
                                   ExceptionState& exception_state);
   std::string formattedLabel() const;
@@ -163,7 +166,7 @@ class GPUDevice final : public EventTargetWithInlineData,
   void Dispose();
 
   void DestroyAllExternalTextures();
-
+  void DissociateMailboxes();
   void UnmapAllMappableBuffers(ScriptState* script_state);
 
   void OnUncapturedError(WGPUErrorType errorType, const char* message);
@@ -212,6 +215,9 @@ class GPUDevice final : public EventTargetWithInlineData,
   // Keep a list of all active GPUExternalTexture. Eagerly destroy them
   // when the device is destroyed (via .destroy) to free the memory.
   HeapHashSet<WeakMember<GPUExternalTexture>> active_external_textures_;
+
+  // Textures with mailboxes that should be dissociated before device.destroy().
+  HeapHashSet<WeakMember<GPUTexture>> textures_with_mailbox_;
 
   HeapHashSet<WeakMember<GPUBuffer>> mappable_buffers_;
 

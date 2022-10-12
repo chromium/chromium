@@ -923,6 +923,8 @@ component("platform") {
     "graphics/gpu/webgpu_resource_provider_cache.h",
     "graphics/gpu/webgpu_swap_buffer_provider.cc",
     "graphics/gpu/webgpu_swap_buffer_provider.h",
+    "graphics/gpu/webgpu_texture_alpha_clearer.cc",
+    "graphics/gpu/webgpu_texture_alpha_clearer.h",
     "graphics/gpu/xr_frame_transport.cc",
     "graphics/gpu/xr_frame_transport.h",
     "graphics/gpu/xr_webgl_drawing_buffer.cc",

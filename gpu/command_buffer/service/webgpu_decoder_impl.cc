@@ -87,34 +87,6 @@ WGPUAdapterType PowerPreferenceToDawnAdapterType(
   }
 }
 
-// Helper class to make a scoped variable that creates an error scope to ignore
-// validation errors on a device.
-class IgnoreValidationErrorsScope {
- public:
-  explicit IgnoreValidationErrorsScope(const DawnProcTable& procs,
-                                       WGPUDevice device)
-      : procs_(procs), device_(device) {
-    procs_.devicePushErrorScope(device_, WGPUErrorFilter_Validation);
-    procs_.deviceReference(device_);
-  }
-  ~IgnoreValidationErrorsScope() {
-    procs_.devicePopErrorScope(
-        device_, [](WGPUErrorType, const char*, void*) {}, nullptr);
-    procs_.deviceRelease(device_);
-  }
-
-  IgnoreValidationErrorsScope(const IgnoreValidationErrorsScope&) = delete;
-  IgnoreValidationErrorsScope(IgnoreValidationErrorsScope&&) = delete;
-  IgnoreValidationErrorsScope& operator=(const IgnoreValidationErrorsScope&) =
-      delete;
-  IgnoreValidationErrorsScope& operator=(IgnoreValidationErrorsScope&&) =
-      delete;
-
- private:
-  const DawnProcTable& procs_;
-  WGPUDevice device_;
-};
-
 }  // namespace
 
 class WebGPUDecoderImpl final : public WebGPUDecoder {
@@ -542,8 +514,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     }
 
     ~SharedImageRepresentationAndAccessSkiaFallback() override {
-      auto ignore_validation_errors =
-          IgnoreValidationErrorsScope(procs_, device_);
       // If we have write access, flush any writes by uploading
       // into the SkSurface.
       if ((usage_ & kAllowedWritableMailboxTextureUsages) != 0) {
@@ -1953,11 +1923,10 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
     // The compositor renders uninitialized textures as red. If the texture is
     // not initialized, we need to explicitly clear its contents to black.
     // This may not successfully initialize the texture if the texture or device
-    // was explicitly destroyed. TODO(crbug.com/1359106): Some other workaround
-    // will be needed to make the texture black in the destroyed case.
+    // was explicitly destroyed, however the client ensures Dissociate is sent
+    // before destroy.
     // TODO(crbug.com/1242712): Use the C++ WebGPU API.
     const auto& procs = dawn::native::GetProcs();
-    auto ignore_validation_errors = IgnoreValidationErrorsScope(procs, device);
     WGPUTextureView view = procs.textureCreateView(texture, nullptr);
 
     WGPURenderPassColorAttachment color_attachment = {};

@@ -38,6 +38,8 @@ class GPUTexture : public DawnObject<WGPUTexture> {
              WGPUTextureUsage usage,
              scoped_refptr<WebGPUMailboxTexture> mailbox_texture);
 
+  ~GPUTexture() override;
+
   GPUTexture(const GPUTexture&) = delete;
   GPUTexture& operator=(const GPUTexture&) = delete;
 
@@ -57,6 +59,8 @@ class GPUTexture : public DawnObject<WGPUTexture> {
   WGPUTextureDimension Dimension() { return dimension_; }
   WGPUTextureFormat Format() { return format_; }
   WGPUTextureUsage Usage() { return usage_; }
+
+  void DissociateMailbox();
 
  private:
   void setLabelImpl(const String& value) override {

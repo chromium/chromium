@@ -240,6 +240,10 @@ GPUTexture::GPUTexture(GPUDevice* device,
       format_(format),
       usage_(usage),
       mailbox_texture_(std::move(mailbox_texture)) {
+  if (mailbox_texture_) {
+    device_->TrackTextureWithMailbox(this);
+  }
+
   // Mailbox textures are all 2d texture.
   dimension_ = WGPUTextureDimension_2D;
 
@@ -267,9 +271,16 @@ GPUTextureView* GPUTexture::createView(
   return view;
 }
 
+GPUTexture::~GPUTexture() {
+  DissociateMailbox();
+}
+
 void GPUTexture::destroy() {
+  if (mailbox_texture_) {
+    DissociateMailbox();
+    device_->UntrackTextureWithMailbox(this);
+  }
   GetProcs().textureDestroy(GetHandle());
-  mailbox_texture_.reset();
 }
 
 uint32_t GPUTexture::width() const {
@@ -302,6 +313,13 @@ String GPUTexture::format() const {
 
 uint32_t GPUTexture::usage() const {
   return GetProcs().textureGetUsage(GetHandle());
+}
+
+void GPUTexture::DissociateMailbox() {
+  if (mailbox_texture_) {
+    mailbox_texture_->Dissociate();
+    mailbox_texture_ = nullptr;
+  }
 }
 
 }  // namespace blink
