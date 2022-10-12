@@ -20,6 +20,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_backdrop.h"
@@ -694,23 +695,147 @@ TEST_F(WorkspaceLayoutManagerTest, EnsureWindowStateInOverlay) {
   EXPECT_TRUE(window->GetProperty(kWindowStateKey));
 }
 
-// Make sure window bounds is correct with session state lock/unlock.
+// Make sure window bounds is correct with session state lock/unlock. It tests
+// cases with various shelf settings.
 TEST_F(WorkspaceLayoutManagerTest, WindowBoundsWithSessionState) {
   TestSessionControllerClient* client = GetSessionControllerClient();
   Shelf* shelf = GetPrimaryShelf();
-  shelf->SetAlignment(ShelfAlignment::kLeft);
-  ASSERT_EQ(ShelfAlignment::kLeft, shelf->alignment());
 
-  const gfx::Rect bounds =
-      WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
-          ->ComputeStableWorkArea();
-  std::unique_ptr<aura::Window> window = CreateTestWindow(bounds);
-  EXPECT_EQ(bounds, window->bounds());
+  constexpr ShelfAlignment alignments[] = {
+      ShelfAlignment::kLeft, ShelfAlignment::kRight, ShelfAlignment::kBottom};
+  constexpr ShelfAutoHideBehavior auto_hide_behaviors[] = {
+      ShelfAutoHideBehavior::kAlways, ShelfAutoHideBehavior::kNever};
 
-  client->SetSessionState(session_manager::SessionState::LOCKED);
-  EXPECT_EQ(bounds, window->bounds());
-  client->SetSessionState(session_manager::SessionState::ACTIVE);
-  EXPECT_EQ(bounds, window->bounds());
+  // Test normal window.
+  for (auto alignment : alignments) {
+    for (auto auto_hide_behavior : auto_hide_behaviors) {
+      SCOPED_TRACE("Primary shelf alignment: " +
+                   base::NumberToString(static_cast<int>(alignment)));
+      SCOPED_TRACE("Primary shelf auto hide behavior: " +
+                   base::NumberToString(static_cast<int>(auto_hide_behavior)));
+
+      // Update the shelf setting.
+      shelf->SetAlignment(alignment);
+      shelf->SetAutoHideBehavior(auto_hide_behavior);
+      ASSERT_EQ(alignment, shelf->alignment());
+      ASSERT_EQ(auto_hide_behavior, shelf->auto_hide_behavior());
+
+      // Create the test window, and set its bounds to match the entire
+      // workarea.
+      std::unique_ptr<aura::Window> window = CreateTestWindow();
+      const gfx::Rect bounds =
+          screen_util::GetDisplayWorkAreaBoundsInParent(window.get());
+      window->SetBounds(bounds);
+      EXPECT_EQ(bounds, window->bounds());
+
+      // Lock/unlock the session, the test window should remain the same bounds.
+      client->SetSessionState(session_manager::SessionState::LOCKED);
+      EXPECT_EQ(bounds, window->bounds());
+      client->SetSessionState(session_manager::SessionState::ACTIVE);
+      EXPECT_EQ(bounds, window->bounds());
+    }
+  }
+
+  // Test maximized window.
+  for (auto alignment : alignments) {
+    for (auto auto_hide_behavior : auto_hide_behaviors) {
+      SCOPED_TRACE("Primary shelf alignment: " +
+                   base::NumberToString(static_cast<int>(alignment)));
+      SCOPED_TRACE("Primary shelf auto hide behavior: " +
+                   base::NumberToString(static_cast<int>(auto_hide_behavior)));
+
+      // Update the shelf setting.
+      shelf->SetAlignment(alignment);
+      shelf->SetAutoHideBehavior(auto_hide_behavior);
+      ASSERT_EQ(alignment, shelf->alignment());
+      ASSERT_EQ(auto_hide_behavior, shelf->auto_hide_behavior());
+
+      // Create the test window, and maximize it.
+      std::unique_ptr<aura::Window> window = CreateTestWindow();
+      const gfx::Rect bounds =
+          screen_util::GetDisplayWorkAreaBoundsInParent(window.get());
+      WindowState::Get(window.get())->Maximize();
+      EXPECT_EQ(bounds, window->bounds());
+
+      // Lock/unlock the session, the test window should remain the same bounds.
+      client->SetSessionState(session_manager::SessionState::LOCKED);
+      EXPECT_EQ(bounds, window->bounds());
+      client->SetSessionState(session_manager::SessionState::ACTIVE);
+      EXPECT_EQ(bounds, window->bounds());
+    }
+  }
+}
+
+// Make sure maximized window bounds is correct with multiple displays. It tests
+// cases when disconnecting secondary display in lock session with various shelf
+// settings.
+TEST_F(WorkspaceLayoutManagerTest, WindowBoundsWithMultiDisplays) {
+  TestSessionControllerClient* client = GetSessionControllerClient();
+
+  constexpr ShelfAlignment alignments[] = {
+      ShelfAlignment::kLeft, ShelfAlignment::kRight, ShelfAlignment::kBottom};
+  constexpr ShelfAutoHideBehavior auto_hide_behaviors[] = {
+      ShelfAutoHideBehavior::kAlways, ShelfAutoHideBehavior::kNever};
+
+  // Test maximized window.
+  for (auto primary_alignment : alignments) {
+    for (auto primary_auto_hide_behavior : auto_hide_behaviors) {
+      for (auto secondary_alignment : alignments) {
+        for (auto secondary_auto_hide_behavior : auto_hide_behaviors) {
+          SCOPED_TRACE(
+              "Primary shelf alignment: " +
+              base::NumberToString(static_cast<int>(primary_alignment)));
+          SCOPED_TRACE("Primary shelf auto hide behavior: " +
+                       base::NumberToString(
+                           static_cast<int>(primary_auto_hide_behavior)));
+          SCOPED_TRACE(
+              "Secondary shelf alignment: " +
+              base::NumberToString(static_cast<int>(secondary_alignment)));
+          SCOPED_TRACE("Secondary shelf auto hide behavior: " +
+                       base::NumberToString(
+                           static_cast<int>(secondary_auto_hide_behavior)));
+
+          // Update to 2 displays.
+          UpdateDisplay("800x600,500x400");
+          Shelf* primary_shelf = GetPrimaryShelf();
+          Shelf* secondary_shelf =
+              Shell::GetAllRootWindowControllers().back()->shelf();
+
+          // Update shelf for the primary display.
+          primary_shelf->SetAlignment(primary_alignment);
+          primary_shelf->SetAutoHideBehavior(primary_auto_hide_behavior);
+          ASSERT_EQ(primary_alignment, primary_shelf->alignment());
+          ASSERT_EQ(primary_auto_hide_behavior,
+                    primary_shelf->auto_hide_behavior());
+
+          // Update shelf for the secondary display.
+          secondary_shelf->SetAlignment(secondary_alignment);
+          secondary_shelf->SetAutoHideBehavior(secondary_auto_hide_behavior);
+          ASSERT_EQ(secondary_alignment, secondary_shelf->alignment());
+          ASSERT_EQ(secondary_auto_hide_behavior,
+                    secondary_shelf->auto_hide_behavior());
+
+          // Create a test window, move it to the secondary display, and
+          // maximize it.
+          std::unique_ptr<aura::Window> window = CreateTestWindow();
+          window_util::MoveWindowToDisplay(window.get(),
+                                           GetSecondaryDisplay().id());
+          WindowState::Get(window.get())->Maximize();
+          EXPECT_EQ(screen_util::GetDisplayWorkAreaBoundsInParent(window.get()),
+                    window->bounds());
+
+          // Lock the session, disconnect the secondary display, then unlock the
+          // session. The maximized window should be moved to the primary
+          // display with correct bounds.
+          client->SetSessionState(session_manager::SessionState::LOCKED);
+          UpdateDisplay("800x600");
+          client->SetSessionState(session_manager::SessionState::ACTIVE);
+          EXPECT_EQ(screen_util::GetDisplayWorkAreaBoundsInParent(window.get()),
+                    window->bounds());
+        }
+      }
+    }
+  }
 }
 
 // Following "Solo" tests were originally written for BaseLayoutManager.
