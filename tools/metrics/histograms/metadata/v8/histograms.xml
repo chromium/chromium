@@ -1171,19 +1171,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCMainThreadMarkingThroughput" units="MB/s"
-    expires_after="2022-11-20">
-  <owner>mlippautz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Marking throughput considering all durations of all marking phases on the
-    main thread and marked bytes within one V8 garbage collection cycle.
-    Reported once per garbage collection cycle. Only reported for platforms
-    supporting high resolution clocks and when more than 1MB of live objects
-    have been found.
-  </summary>
-</histogram>
-
 <histogram name="V8.GCMarkCompactReason" enum="GarbageCollectionReason"
     expires_after="2023-03-26">
   <owner>mlippautz@chromium.org</owner>
