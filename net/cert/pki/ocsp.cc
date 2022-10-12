@@ -4,7 +4,6 @@
 
 #include "net/cert/pki/ocsp.h"
 
-#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"

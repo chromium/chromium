@@ -4,12 +4,12 @@
 
 #include "net/cert/pki/ocsp.h"
 
-#include "base/base64.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/cert/pki/test_helpers.h"
 #include "net/der/encode_values.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/base64.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "url/gurl.h"
 
@@ -228,10 +228,15 @@ TEST_P(CreateOCSPGetURLTest, Basic) {
   base::ReplaceSubstringsAfterOffset(&b64, 0, "%3D", "=");
 
   // Base64 decode the data.
-  std::string decoded;
-  ASSERT_TRUE(base::Base64Decode(b64, &decoded));
+  size_t len;
+  EXPECT_TRUE(EVP_DecodedLength(&len, b64.size()));
+  std::vector<uint8_t> decoded(len);
+  EXPECT_TRUE(EVP_DecodeBase64(decoded.data(), &len, len,
+                               reinterpret_cast<const uint8_t*>(b64.data()),
+                               b64.size()));
+  std::string decoded_string(decoded.begin(), decoded.begin() + len);
 
-  EXPECT_EQ(request_data, decoded);
+  EXPECT_EQ(request_data, decoded_string);
 }
 
 }  // namespace

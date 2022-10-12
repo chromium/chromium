@@ -4,7 +4,6 @@
 
 #include "net/cert/pki/test_helpers.h"
 
-#include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
