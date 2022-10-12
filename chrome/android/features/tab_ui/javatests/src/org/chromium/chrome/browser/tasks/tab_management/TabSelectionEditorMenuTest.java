@@ -16,6 +16,9 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_FOR_TABLETS;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_STRIP_IMPROVEMENTS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
@@ -29,6 +32,7 @@ import androidx.test.filters.MediumTest;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -38,7 +42,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -50,6 +53,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorAction.ShowMode;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -61,7 +65,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,9 +78,9 @@ import java.util.concurrent.TimeoutException;
  * classes.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Features.
+EnableFeatures({GRID_TAB_SWITCHER_FOR_TABLETS, TAB_STRIP_IMPROVEMENTS, TAB_GROUPS_FOR_TABLETS})
 @Batch(Batch.UNIT_TESTS)
-// TODO(crbug/1371594): Fix test on tablets.
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
     private static final int TAB_COUNT = 3;
     private static final Integer TAB_ID_0 = 0;
@@ -92,6 +95,9 @@ public class TabSelectionEditorMenuTest extends BlankUiTestActivityTestCase {
                     .setRevision(3)
                     .setDescription("Pluralize strings")
                     .build();
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     static class FakeTabSelectionEditorAction extends TabSelectionEditorAction {
         private boolean mShouldEnableAction = true;
