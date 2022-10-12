@@ -13,7 +13,6 @@
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
-#include "components/signin/internal/identity_manager/ubertoken_fetcher_impl.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
@@ -365,17 +364,6 @@ AccountInfo IdentityManager::FindExtendedAccountInfoByGaiaId(
   // be able to find a valid refresh token.
   return HasAccountWithRefreshToken(account_info.account_id) ? account_info
                                                              : AccountInfo();
-}
-
-std::unique_ptr<UbertokenFetcher>
-IdentityManager::CreateUbertokenFetcherForAccount(
-    const CoreAccountId& account_id,
-    UbertokenFetcher::CompletionCallback callback,
-    gaia::GaiaSource source,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  return std::make_unique<UbertokenFetcherImpl>(
-      account_id, token_service_.get(), std::move(callback), source,
-      url_loader_factory);
 }
 
 AccountsInCookieJarInfo IdentityManager::GetAccountsInCookieJar() const {

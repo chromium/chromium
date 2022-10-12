@@ -25,7 +25,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_mutator.h"
 #include "components/signin/public/identity_manager/scope_set.h"
-#include "components/signin/public/identity_manager/ubertoken_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -41,7 +40,6 @@ class AccountManagerFacade;
 #endif
 
 namespace gaia {
-class GaiaSource;
 struct ListedAccount;
 }  // namespace gaia
 
@@ -269,14 +267,6 @@ class IdentityManager : public KeyedService,
       const std::string& email_address) const;
   // The same as `FindExtendedAccountInfo()` but finds an account by gaia ID.
   AccountInfo FindExtendedAccountInfoByGaiaId(const std::string& gaia_id) const;
-
-  // Creates an UbertokenFetcher given the passed-in information, allowing
-  // to specify a custom |url_loader_factory| as well.
-  std::unique_ptr<UbertokenFetcher> CreateUbertokenFetcherForAccount(
-      const CoreAccountId& account_id,
-      UbertokenFetcher::CompletionCallback callback,
-      gaia::GaiaSource source,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Provides the information of all accounts that are present in the Gaia
   // cookie in the cookie jar, ordered by their order in the cookie.
