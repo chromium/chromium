@@ -57,56 +57,65 @@ promise_test(async t => {
 
 promise_test(async t => {
   const same_origin_url = document.location.origin + '/sub-app';
-  let subapps = {};
+  let add_call_params = {};
   let install_options = {};
   install_options["install_url"] = same_origin_url;
-  subapps[same_origin_url] = install_options;
+  add_call_params[same_origin_url] = install_options;
 
-  let add_call_return_value = [{unhashedAppId: same_origin_url, resultCode: 3}]
-  let expected_results = {same_origin_url: "expected-app-id-check-failed"};
+  let mocked_response = [
+    { unhashedAppId: same_origin_url, resultCode: AddCallResultCode.EXPECTED_APP_ID_CHECK_FAILED }
+  ]
+  let expected_results = {};
+  expected_results[same_origin_url] = "expected-app-id-check-failed";
 
-  await subapps_add_expect_reject_with_result(t, {}, add_call_return_value, expected_results);
+  await subapps_add_expect_reject_with_result(t, add_call_params, mocked_response, expected_results);
 }, 'Service failed to add single sub-app.');
 
 promise_test(async t => {
-  let subapps = {};
+  let add_call_params = {};
 
   const url_1 = document.location.origin + '/sub-app-1';
   let install_options_1 = {};
   install_options_1["install_url"] = url_1;
-  subapps[url_1] = install_options_1;
+  add_call_params[url_1] = install_options_1;
 
   const url_2 = document.location.origin + '/sub-app-2';
   let install_options_2 = {};
   install_options_2["install_url"] = url_2;
-  subapps[url_2] = install_options_2;
+  add_call_params[url_2] = install_options_2;
 
-  let add_call_return_value = [{unhashedAppId: url_1, resultCode: 3},
-                               {unhashedAppId: url_2, resultCode: 5}]
-  let expected_results = {url_1: "expected-app-id-check-failed",
-                          url_2: "failure"};
+  let mocked_response = [
+    { unhashedAppId: url_1, resultCode: AddCallResultCode.EXPECTED_APP_ID_CHECK_FAILED },
+    { unhashedAppId: url_2, resultCode: AddCallResultCode.INSTALL_URL_INVALID }
+  ]
+  let expected_results = {};
+  expected_results[url_1] = "expected-app-id-check-failed";
+  expected_results[url_2] = "install-url-invalid";
 
-  await subapps_add_expect_reject_with_result(t, {}, add_call_return_value, expected_results);
+  await subapps_add_expect_reject_with_result(t, add_call_params, mocked_response, expected_results);
 }, 'Service failed to add two sub-apps.');
 
 promise_test(async t => {
-  let subapps = {};
+  let add_call_params = {};
 
   const url_1 = document.location.origin + '/sub-app-1';
   let install_options_1 = {};
   install_options_1["install_url"] = url_1;
-  subapps[url_1] = install_options_1;
+  add_call_params[url_1] = install_options_1;
 
   const url_2 = document.location.origin + '/sub-app-2';
   let install_options_2 = {};
   install_options_2["install_url"] = url_2;
-  subapps[url_2] = install_options_2;
+  add_call_params[url_2] = install_options_2;
 
-  let add_call_return_value = [{unhashedAppId: url_1, resultCode: 1},
-                               {unhashedAppId: url_2, resultCode: 3}]
-  let expected_results = {url_1: "success-new-install",
-                          url_2: "expected-app-id-check-failed"};
+  let mocked_response = [
+    { unhashedAppId: url_1, resultCode: AddCallResultCode.SUCCESS_NEW_INSTALL },
+    { unhashedAppId: url_2, resultCode: AddCallResultCode.EXPECTED_APP_ID_CHECK_FAILED }
+  ]
+  let expected_results = {};
+  expected_results[url_1] = "success-new-install";
+  expected_results[url_2] = "expected-app-id-check-failed";
 
-  await subapps_add_expect_reject_with_result(t, {}, add_call_return_value, expected_results);
+  await subapps_add_expect_reject_with_result(t, add_call_params, mocked_response, expected_results);
 }, 'Service added one sub-app failed to add another sub-app.');
 </script>

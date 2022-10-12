@@ -13,6 +13,17 @@ const Status = {
   FAILURE: 1,
 };
 
+const AddCallResultCode = {
+  SUCCESS_NEW_INSTALL: 0,
+  SUCCESS_ALREADY_INSTALLED: 1,
+  USER_INSTALL_DECLINED: 2,
+  EXPECTED_APP_ID_CHECK_FAILED: 3,
+  PARENT_APP_UNINSTALLED: 4,
+  INSTALL_URL_INVALID: 5,
+  NOT_VALID_MANIFEST_FOR_WEB_APP: 6,
+  FAILURE: 7,
+}
+
 async function createMockSubAppsService(service_result_code, add_call_return_value) {
   if (typeof SubAppsServiceTest === 'undefined') {
     // Load test-only API helpers.
@@ -28,7 +39,7 @@ async function createMockSubAppsService(service_result_code, add_call_return_val
 
     if (isChromiumBased) {
       // Chrome setup.
-      await import ('/resources/chromium/mock-subapps.js');
+      await import('/resources/chromium/mock-subapps.js');
     } else {
       throw new Error('Unsupported browser.');
     }
@@ -52,22 +63,40 @@ function subapps_test(func, description) {
   }, description);
 }
 
-async function subapps_add_expect_reject_with_result(t, subapps, add_call_return_value, expected_results) {
+async function subapps_add_expect_reject_with_result(t, add_call_params, mocked_response, expected_results) {
   t.add_cleanup(async () => {
-      await mockSubAppsService.reset();
-      mockSubAppsService = null;
+    await mockSubAppsService.reset();
+    mockSubAppsService = null;
   });
 
-  await createMockSubAppsService(Status.FAILURE, add_call_return_value);
-
-  navigator.subApps.add(subapps)
+  await createMockSubAppsService(Status.FAILURE, mocked_response);
+  await navigator.subApps.add(add_call_params)
     .then(result => {
       assert_unreached("Should have rejected.");
     })
     .catch(result => {
-      for (app_id in expected_results) {
+      for (const app_id in expected_results) {
         assert_own_property(result, app_id, "Return results are missing entry for subapp.")
         assert_equals(result[app_id], expected_results[app_id], "Return results are not as expected.")
       }
     });
+}
+
+async function subapps_add_expect_success_with_result(t, add_call_params, mocked_response, expected_results) {
+  t.add_cleanup(async () => {
+    await mockSubAppsService.reset();
+    mockSubAppsService = null;
+  });
+
+  await createMockSubAppsService(Status.SUCCESS, mocked_response);
+  await navigator.subApps.add(add_call_params)
+    .catch(e => {
+      assert_unreached("Should not have rejected.");
+    })
+    .then(result => {
+      for (const app_id in expected_results) {
+        assert_own_property(result, app_id, "Return results are missing entry for subapp.")
+        assert_equals(result[app_id], expected_results[app_id], "Return results are not as expected.")
+      }
+    })
 }
