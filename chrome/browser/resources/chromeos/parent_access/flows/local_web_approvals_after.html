@@ -17,8 +17,6 @@
   }
 
   .favicon {
-    /* TODO(b/199753545) remove bg color once favicon available. */
-    background-color: var(--google-grey-400); 
     height: 28px;
     margin: 0 16px;
     width: 28px;
@@ -28,11 +26,9 @@
 <div class="after-screen-content">
   <!-- TODO(b/199753545): Replace the hardcoded content when it's
     available. -->
-  <div class="subtitle">
-    [[i18n('localWebApprovalsAfterSubtitle', 'Child')]]
-  </div>
+  <div class="subtitle"></div>
   <div class="details">
-    <div class="favicon"></div>
-    <span>[[i18n('localWebApprovalsAfterDetails', 'google.com')]]</span>
+    <image class="favicon"></image>
+    <div class="details-text"></div>
   </div>
 </div>

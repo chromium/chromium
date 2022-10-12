@@ -7,6 +7,10 @@ import './flows/local_web_approvals_after.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {LocalWebApprovalsAfterElement} from './flows/local_web_approvals_after.js';
+import {ParentAccessParams, ParentAccessParams_FlowType} from './parent_access_ui.mojom-webui.js';
+import {getParentAccessParams} from './parent_access_ui_handler.js';
+
 class ParentAccessAfter extends PolymerElement {
   static get is() {
     return 'parent-access-after';
@@ -19,17 +23,25 @@ class ParentAccessAfter extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
+    this.renderFlowSpecificContent_();
     // TODO(b/199753153): Implement handlers for deny and approve buttons.
   }
 
   /**
+   * Renders the correct after screen based on the ParentAccessParams flowtype.
    * @private
-   * @return {boolean}
    */
-  isLocalWebApprovalsFlow_() {
-    // TODO(b/199753545): Use the passed in loadTimeData value for the flowtype
-    // when it is available.
-    return true;
+  async renderFlowSpecificContent_() {
+    const response = await getParentAccessParams();
+    switch (response.params.flowType) {
+      case ParentAccessParams_FlowType.kWebsiteAccess:
+        this.shadowRoot.querySelector('#after-screen-body')
+            .appendChild(new LocalWebApprovalsAfterElement());
+        return;
+      default:
+        return;
+    }
   }
 }
+
 customElements.define(ParentAccessAfter.is, ParentAccessAfter);

@@ -28,9 +28,7 @@
   <img class="google-logo" src="chrome://theme/IDR_LOGO_GOOGLE_COLOR_90"
     alt="Google">
   </img>
-  <template is="dom-if" if="[[isLocalWebApprovalsFlow_]]">
-    <local-web-approvals-after></local-web-approvals-after>
-  </template>
+  <div id="after-screen-body"></div>
   <div id="after-screen-buttons">
     <cr-button>$i18n{denyButtonText}</cr-button>
     <cr-button class="action-button">$i18n{approveButtonText}</cr-button>

@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ParentAccessUIHandler, ParentAccessUIHandlerRemote} from './parent_access_ui.mojom-webui.js';
+import {ParentAccessParams, ParentAccessUIHandler, ParentAccessUIHandlerRemote} from './parent_access_ui.mojom-webui.js';
 
 /** @type {?ParentAccessUIHandlerRemote} */
 let parentAccessUIHandler = null;
+
+/** @type {?{params: !ParentAccessParams}} */
+let parentAccessParams = null;
 
 /** @return  {!ParentAccessUIHandlerRemote} */
 export function getParentAccessUIHandler() {
@@ -13,4 +16,18 @@ export function getParentAccessUIHandler() {
     parentAccessUIHandler = ParentAccessUIHandler.getRemote();
   }
   return parentAccessUIHandler;
+}
+
+/** @return  {!Promise<{params: !ParentAccessParams}>} */
+export async function getParentAccessParams() {
+  if (!parentAccessParams) {
+    parentAccessParams =
+        await getParentAccessUIHandler().getParentAccessParams();
+  }
+  return parentAccessParams;
+}
+
+/** @param  {!{params: !ParentAccessParams}} params*/
+export function setParentAccessParamsForTest(params) {
+  parentAccessParams = params;
 }

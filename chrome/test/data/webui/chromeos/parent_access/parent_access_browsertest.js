@@ -23,8 +23,9 @@ var ParentAccessAppTest = class extends PolymerTest {
   }
 };
 
-TEST_F('ParentAccessAppTest', 'TestShowAfterFlow', function() {
-  this.runMochaTest(parent_access_app_tests.TestNames.TestShowAfterFlow);
+TEST_F('ParentAccessAppTest', 'TestShowWebApprovalsAfterFlow', function() {
+  this.runMochaTest(
+      parent_access_app_tests.TestNames.TestShowWebApprovalsAfterFlow);
 });
 
 var ParentAccessControllerTest = class extends testing.Test {
