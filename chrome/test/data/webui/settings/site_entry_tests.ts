@@ -632,7 +632,7 @@ suite('SiteEntry_EnabledConsolidatedControls', function() {
     // Assert first party set membership information is set correctly.
     assertFalse(fpsMembershipLabel.hidden);
     assertEquals(
-        '· Allowed for 1 foo.com site', fpsMembershipLabel.innerText.trim());
+        '· 1 site in foo.com\'s group', fpsMembershipLabel.innerText.trim());
   });
 
   test('first party set policy shown when managed key is true', function() {

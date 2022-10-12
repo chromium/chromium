@@ -1190,8 +1190,7 @@ TEST_F(PageInfoBubbleViewCookiesSubpageTest, TextsOnButtonsAreCorrect) {
       fps_button, l10n_util::GetStringFUTF16(IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE,
                                              owner_name));
   ExpectViewContainsText(
-      fps_button,
-      l10n_util::GetStringFUTF16(IDS_PAGE_INFO_FPS_BUTTON_TITLE, owner_name));
+      fps_button, l10n_util::GetStringUTF16(IDS_PAGE_INFO_FPS_BUTTON_TITLE));
   ExpectViewContainsText(api_->blocking_third_party_cookies_subtitle(),
                          l10n_util::GetPluralStringFUTF16(
                              IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT,

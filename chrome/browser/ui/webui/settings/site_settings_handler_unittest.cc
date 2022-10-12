@@ -3072,7 +3072,7 @@ TEST_F(SiteSettingsHandlerTest, HandleGetFpsMembershipLabel) {
   EXPECT_EQ("cr.webUIResponse", data.function_name());
   EXPECT_EQ("getFpsMembershipLabel", data.arg1()->GetString());
   ASSERT_TRUE(data.arg2()->GetBool());
-  EXPECT_EQ("Allowed for 5 google.com sites", data.arg3()->GetString());
+  EXPECT_EQ("5 sites in google.com's group", data.arg3()->GetString());
 }
 
 TEST_F(SiteSettingsHandlerTest, HandleGetFormattedBytes) {
@@ -3116,21 +3116,21 @@ TEST_F(SiteSettingsHandlerTest, HandleGetUsageInfo) {
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
   ValidateUsageInfo("www.example.com", "2 B", "1 cookie",
-                    "Allowed for 1 example.com site", true);
+                    "1 site in example.com's group", true);
 
   args.clear();
   args.Append("example.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
   ValidateUsageInfo("example.com", "", "1 cookie",
-                    "Allowed for 1 example.com site", true);
+                    "1 site in example.com's group", true);
 
   args.clear();
   args.Append("google.com");
   handler()->HandleFetchUsageTotal(args);
   handler()->ServicePendingRequests();
   ValidateUsageInfo("google.com", "", "2 cookies",
-                    "Allowed for 2 google.com sites", false);
+                    "2 sites in google.com's group", false);
   args.clear();
   args.Append("ungrouped.com");
   handler()->HandleFetchUsageTotal(args);

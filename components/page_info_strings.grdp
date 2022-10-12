@@ -742,14 +742,14 @@
   <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP" desc="The text of the tooltip on the button opening cookies in use dialog in cookies subpage.">
     Show cookies
   </message>
-  <message name="IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP" desc="The tooltip of first-party sets button in cookies subpage, which opens 'All Sites' settings page with a filter for this sets' pages." translateable="false">
-    Show sites
+  <message name="IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP" desc="The tooltip of first-party sets button in cookies subpage, which opens 'All Sites' settings page in a new tab with a filter for this set's pages.">
+    See related sites in a new tab
   </message>
-  <message name="IDS_PAGE_INFO_FPS_BUTTON_TITLE" desc="The title of first-party sets button in cookies subpage with placeholder for name of the owner of this set." translateable="false">
-    See sites related to <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>
+  <message name="IDS_PAGE_INFO_FPS_BUTTON_TITLE" desc="The title of first-party sets button in cookies subpage with placeholder for name of the owner of this set.">
+    See related sites
   </message>
-  <message name="IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE" desc="The subtitle of first-party sets button in cookies subpage with placeholder for name of the owner of this set." translateable="false">
-    This site is in <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>'s group of sites that can see your activity in the group
+  <message name="IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE" desc="The subtitle of first-party sets button in cookies subpage with placeholder for name of the owner of this set.">
+    This site is in a group, defined by <ph name="SET_OWNER">$1<ex>gannett.com</ex></ph>,  that can see your activity
   </message>
 
   <!-- History strings -->

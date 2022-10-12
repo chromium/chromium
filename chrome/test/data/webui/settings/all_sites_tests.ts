@@ -1694,7 +1694,7 @@ suite('AllSites_EnableFirstPartySets', function() {
         assertEquals(testElement.$.allSitesList.items!.length, 2);
         await localDataBrowserProxy.whenCalled('getFpsMembershipLabel');
         assertEquals(
-            '· Allowed for 2 google.com sites',
+            '· 2 sites in google.com\'s group',
             siteEntries[1]!.$.fpsMembership.innerText.trim());
 
         // Remove first site group.
@@ -1704,7 +1704,7 @@ suite('AllSites_EnableFirstPartySets', function() {
         assertEquals(testElement.$.allSitesList.items!.length, 1);
         await localDataBrowserProxy.whenCalled('getFpsMembershipLabel');
         assertEquals(
-            '· Allowed for 1 google.com site',
+            '· 1 site in google.com\'s group',
             siteEntries[1]!.$.fpsMembership.innerText.trim());
       });
 
@@ -1723,7 +1723,7 @@ suite('AllSites_EnableFirstPartySets', function() {
         assertEquals(testElement.$.allSitesList.items!.length, 2);
         await localDataBrowserProxy.whenCalled('getFpsMembershipLabel');
         assertEquals(
-            '· Allowed for 2 google.com sites',
+            '· 2 sites in google.com\'s group',
             siteEntries[1]!.$.fpsMembership.innerText.trim());
 
         let originList = siteEntries[0]!.$.originList.get();
@@ -1750,7 +1750,7 @@ suite('AllSites_EnableFirstPartySets', function() {
         // Ensure that first party set info is unaffected by origin removal.
         await localDataBrowserProxy.whenCalled('getFpsMembershipLabel');
         assertEquals(
-            '· Allowed for 2 google.com sites',
+            '· 2 sites in google.com\'s group',
             siteEntries[1]!.$.fpsMembership.innerText.trim());
 
         // Remove the last origin.
@@ -1770,7 +1770,7 @@ suite('AllSites_EnableFirstPartySets', function() {
         assertEquals(testElement.$.allSitesList.items!.length, 2);
         await localDataBrowserProxy.whenCalled('getFpsMembershipLabel');
         assertEquals(
-            '· Allowed for 2 google.com sites',
+            '· 2 sites in google.com\'s group',
             siteEntries[1]!.$.fpsMembership.innerText.trim());
       });
 

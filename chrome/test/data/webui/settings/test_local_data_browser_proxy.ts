@@ -85,10 +85,9 @@ export class TestLocalDataBrowserProxy extends TestBrowserProxy implements
   getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {
     this.methodCalled('getFpsMembershipLabel', fpsNumMembers, fpsOwner);
     return Promise.resolve([
-      'Allowed for',
       `${fpsNumMembers}`,
-      `${fpsOwner}`,
       (fpsNumMembers === 1 ? 'site' : 'sites'),
+      `in ${fpsOwner}'s group`,
     ].join(' '));
   }
 

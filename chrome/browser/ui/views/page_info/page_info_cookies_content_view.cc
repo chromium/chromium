@@ -306,8 +306,8 @@ void PageInfoCookiesContentView::SetFpsCookiesInfo(
     InitFpsButton(fps_info->is_managed);
     fps_button_->SetVisible(true);
 
-    const std::u16string fps_button_title = l10n_util::GetStringFUTF16(
-        IDS_PAGE_INFO_FPS_BUTTON_TITLE, fps_info->owner_name);
+    const std::u16string fps_button_title =
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_FPS_BUTTON_TITLE);
     const std::u16string fps_button_subtitle = l10n_util::GetStringFUTF16(
         IDS_PAGE_INFO_FPS_BUTTON_SUBTITLE, fps_info->owner_name);
 

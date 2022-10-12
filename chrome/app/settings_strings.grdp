@@ -3068,11 +3068,11 @@
   <message name="IDS_SETTINGS_COOKIES_BLOCK_ALL_BULLET_THREE" desc="Description for the third bullet of block all cookies radio toggle">
     Features on many sites may not work
   </message>
-  <message name="IDS_SETTINGS_COOKIES_FIRST_PARTY_SETS_TOGGLE_LABEL" desc="Label for the toggle that allows the user to control First Party sets enabled sharing between related sites" translateable="false">
-    Allow related sites to remember you across sites
+  <message name="IDS_SETTINGS_COOKIES_FIRST_PARTY_SETS_TOGGLE_LABEL" desc="Label for the toggle that allows the user to control first-party sets enabled sharing between related sites">
+    Allow related sites to see your activity in the group
   </message>
-  <message name="IDS_SETTINGS_COOKIES_FIRST_PARTY_SETS_TOGGLE_SUB_LABEL" desc="Sub-label for the toggle that allows the user to control First Party sets enabled sharing between related sites" translateable="false">
-    Related sites use cookies to help with things like keeping you signed in
+  <message name="IDS_SETTINGS_COOKIES_FIRST_PARTY_SETS_TOGGLE_SUB_LABEL" desc="Sub-label for the toggle that allows the user to control first-party sets enabled sharing between related sites">
+    A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.
   </message>
   <message name="IDS_SETTINGS_COOKIES_CLEAR_ON_EXIT" desc="Label for the toggle that allows the user to automatically delete their cookies and site data when they close all browser windows.">
     Clear cookies and site data when you close all windows
@@ -3389,8 +3389,8 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_DISPLAYED_STORAGE_DIALOG_TITLE" desc="Title of the dialog that warns about deleting displayed site data.">
     Clear displayed data?
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_LEARN_MORE" translateable="false" desc="Placeholder string for first party sets informational learn more link shown when sites are filtered by first party set owner">
-     These sites are in <ph name="FPS_OWNER">$1<ex>google.com</ex></ph>'s group of sites that can see your activity in the group. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_LEARN_MORE" desc="Label for first-party sets explainer with a learn more link shown when sites are filtered by first-party set owner">
+     These sites are in a group defined by <ph name="FPS_OWNER">$1<ex>google.com</ex></ph>. Sites in a group can see your activity in the group. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_DESCRIPTION" desc="Label describing how much total disk space chrome is using, next to the clear all button">
     Total storage used by sites: <ph name="TOTAL_USAGE">$1<ex>8 GB</ex></ph>
@@ -3403,15 +3403,15 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_DISPLAYED_STORAGE_LABEL" desc="Label for button to clear displayed site data">
     Clear displayed data
-  </message>  <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_MEMBERSHIP_LABEL" translateable="false" desc="Placeholder string for first party sets member count shown on site details and site entry">
+  </message>  <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_MEMBERSHIP_LABEL" desc="Label displaying how many members are in a first-party set for a specific site. This is displayed on site entries in all sites page and site details page.">
     {MEMBERS, plural,
-        =1 {Allowed for 1 <ph name="FPS_OWNER">$1<ex>google.com</ex></ph> site}
-        other {Allowed for {MEMBERS} <ph name="FPS_OWNER">{FPS_OWNER}<ex>google.com</ex></ph> sites}}
+        =1 {1 site in <ph name="FPS_OWNER">{FPS_OWNER}<ex>google.com</ex></ph>'s group}
+        other {{MEMBERS} sites in <ph name="FPS_OWNER">{FPS_OWNER}<ex>google.com</ex></ph>'s group}}
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_SHOW_RELATED_SITES_BUTTON" translateable="false" desc="Placeholder string for first party sets show related sites button">
-    Show related sites
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_SHOW_RELATED_SITES_BUTTON" desc="Label for the button on the first-party sets more actions menu to allow users to filter sites by the first-party set owner.">
+    Show sites in same group
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_SITE_CLEAR_STORAGE_BUTTON" translateable="false" desc="Placeholder string for first party sets clear data and permissions for site button">
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FIRST_PARTY_SETS_SITE_CLEAR_STORAGE_BUTTON" desc="Label for the button on the first-party sets more actions menu to allow users to clear data and permissions for a specific site entry.">
     Clear data and permissions
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLEAR_ALL_STORAGE_CONFIRMATION" desc="Text for the dialog that warns about clearing storage used by all sites.">
