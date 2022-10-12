@@ -13,8 +13,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -58,7 +58,7 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNumberOfSuggestionsShown_ShippingAddress_Completed() throws TimeoutException {
         createTestData();
@@ -83,7 +83,7 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNumberOfSuggestionsShown_ShippingAddress_AbortedByUser()
             throws InterruptedException, TimeoutException {
@@ -197,7 +197,7 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNumberOfSuggestionsShown_ContactInfo_Completed() throws TimeoutException {
         createTestData();
@@ -224,7 +224,7 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1197578")
+    @DisabledTest(message = "https://crbug.com/1197578")
     public void testNumberOfSuggestionsShown_ContactInfo_AbortedByUser()
             throws InterruptedException, TimeoutException {
         createTestData();
@@ -250,7 +250,7 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUserHadCompleteSuggestions_ShippingAndPayment() throws TimeoutException {
         // Add two addresses and two cards.
@@ -278,7 +278,7 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUserDidNotHaveCompleteSuggestions_ShippingAndPayment_IncompleteShipping()
             throws TimeoutException {
@@ -313,7 +313,7 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUserDidNotHaveCompleteSuggestions_ShippingAndPayment_IncompleteCard()
             throws TimeoutException {
@@ -346,7 +346,7 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUserDidNotHaveCompleteSuggestions_ShippingAndPayment_OnlyPaymentApp()
             throws TimeoutException {
@@ -413,7 +413,7 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUserHadCompleteSuggestions_ShippingAndPaymentApp_HasInvalidShipping()
             throws TimeoutException {
@@ -447,7 +447,7 @@ public class PaymentRequestJourneyLoggerTest implements MainActivityStartCallbac
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNoContactInfoHistogram() throws TimeoutException {
         createTestData();

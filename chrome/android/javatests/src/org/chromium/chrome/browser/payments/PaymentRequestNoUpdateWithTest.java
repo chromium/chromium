@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -58,7 +58,7 @@ public class PaymentRequestNoUpdateWithTest implements MainActivityStartCallback
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNoEventListener() throws Throwable {
         mRule.triggerUIAndWait("buyWithoutListeners", mRule.getReadyForInput());
@@ -78,7 +78,7 @@ public class PaymentRequestNoUpdateWithTest implements MainActivityStartCallback
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNoUpdateWith() throws Throwable {
         mRule.triggerUIAndWait("buyWithoutCallingUpdateWith", mRule.getReadyForInput());
@@ -95,7 +95,7 @@ public class PaymentRequestNoUpdateWithTest implements MainActivityStartCallback
     /** A merchant that calls updateWith() without using promises will not cause timeouts in UI. */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testNoPromises() throws Throwable {
         mRule.triggerUIAndWait("buyWithoutPromises", mRule.getReadyForInput());

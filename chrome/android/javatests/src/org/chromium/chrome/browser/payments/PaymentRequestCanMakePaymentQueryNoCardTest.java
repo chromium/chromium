@@ -11,8 +11,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
@@ -49,7 +49,7 @@ public class PaymentRequestCanMakePaymentQueryNoCardTest implements MainActivity
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1182384")
+    @DisabledTest(message = "https://crbug.com/1182384")
     public void testNoAppInFastBobPayInFactory() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.NO_APPS, FactorySpeed.FAST_FACTORY);

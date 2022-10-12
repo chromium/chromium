@@ -11,8 +11,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppSpeed;
@@ -66,7 +66,7 @@ public class PaymentRequestPaymentAppTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1182387")
+    @DisabledTest(message = "https://crbug.com/1182387")
     public void testNoAppsInSlowBobPayFactory() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.NO_APPS, FactorySpeed.SLOW_FACTORY);
@@ -79,7 +79,7 @@ public class PaymentRequestPaymentAppTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1182385")
+    @DisabledTest(message = "https://crbug.com/1182385")
     public void testAppsCreatedAfterDismissShouldNotCrash() throws TimeoutException {
         TestFactory factory = mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -98,7 +98,7 @@ public class PaymentRequestPaymentAppTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1189547")
+    @DisabledTest(message = "https://crbug.com/1189547")
     public void testFactoryActivityAfterDismissShouldNotCrash() throws TimeoutException {
         TestFactory factory = mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -148,7 +148,7 @@ public class PaymentRequestPaymentAppTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1182588")
+    @DisabledTest(message = "https://crbug.com/1182588")
     public void testPayViaDelayedFastBobPay() throws TimeoutException {
         mPaymentRequestTestRule.addPaymentAppFactory("https://bobpay.com", AppPresence.HAVE_APPS,
                 FactorySpeed.FAST_FACTORY, AppSpeed.FAST_APP);

@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -55,7 +55,7 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUpdateWithEmpty() throws Throwable {
         mRule.triggerUIAndWait("updateWithEmpty", mRule.getReadyToPay());
@@ -79,7 +79,7 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
     /** A merchant that calls updateWith() with total will not cause timeouts in UI. */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUpdateWithTotal() throws Throwable {
         mRule.triggerUIAndWait("updateWithTotal", mRule.getReadyToPay());
@@ -106,7 +106,7 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
     /** A merchant that calls updateWith() with displayItems will not cause timeouts in UI. */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUpdateWithDisplayItems() throws Throwable {
         mRule.triggerUIAndWait("updateWithDisplayItems", mRule.getReadyToPay());
@@ -133,7 +133,7 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
     /** A merchant that calls updateWith() with shipping options will not cause timeouts in UI. */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUpdateWithShippingOptions() throws Throwable {
         mRule.triggerUIAndWait("updateWithShippingOptions", mRule.getReadyToPay());
@@ -160,7 +160,7 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
     /** A merchant that calls updateWith() with modifiers will not cause timeouts in UI. */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUpdateWithModifiers() throws Throwable {
         mRule.triggerUIAndWait("updateWithModifiers", mRule.getReadyToPay());
@@ -190,7 +190,7 @@ public class PaymentRequestUpdateWithTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testUpdateWithError() throws Throwable {
         mRule.triggerUIAndWait("updateWithError", mRule.getReadyToPay());

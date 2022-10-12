@@ -13,8 +13,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -141,7 +141,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testContactDetailsSuggestionOrdering() throws TimeoutException {
         // Set the use stats so that profile[0] has the highest frecency score, profile[1] the
@@ -178,7 +178,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testContactDetailsEditRequiredMessage() throws TimeoutException {
         mProfilesToAdd = new AutofillProfile[] {AUTOFILL_PROFILES[0], AUTOFILL_PROFILES[1],
@@ -211,7 +211,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1182590")
+    @DisabledTest(message = "https://crbug.com/1182590")
     public void testContactDetailsDedupe_EmptyFields() throws TimeoutException {
         // Add the original profile and a bunch of similar profiles with missing fields.
         // Make sure the original profile is suggested last, to test that the suggestions are
@@ -242,7 +242,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testContactDetailsDedupe_Capitalization() throws TimeoutException {
         // Add the original profile and the one where the the name is not capitalized.
@@ -265,7 +265,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
      */
     @Test
     @MediumTest
-    @FlakyTest(message = "crbug.com/1182234")
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testContactDetailsDontDedupe_FieldSubset() throws TimeoutException {
         // Add the original profile and the one where the email is a superset of the original.
@@ -291,7 +291,7 @@ public class PaymentRequestMultipleContactDetailsTest implements MainActivitySta
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1182644")
+    @DisabledTest(message = "https://crbug.com/1182644")
     public void testContactDetailsAllMissingFieldsRecorded() throws TimeoutException {
         // Don't add any profiles.
         mProfilesToAdd = new AutofillProfile[] {};
