@@ -205,6 +205,7 @@
       'Win 7 Tests x64 (1)',  # 64-bit win is unsupported by the layout tests.
       'Win7 Tests (1)',
       'Win10 Tests x64 (dbg)',
+      'mac-osxbeta-rel',
     ],
     'modifications': {
       'Linux Tests': {
