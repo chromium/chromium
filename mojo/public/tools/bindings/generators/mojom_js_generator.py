@@ -994,13 +994,6 @@ class Generator(generator.Generator):
   def _GetConstantValueInJsModule(self, constant):
     return self._GetConstantValue(constant, for_module=True)
 
-  def _GenerateHtmlImports(self):
-    result = []
-    for full_import in self.module.imports:
-      result.append(
-          os.path.relpath(full_import.path, os.path.dirname(self.module.path)))
-    return result
-
   def _GetJsModuleImports(self, for_webui_module=False):
     this_module_path = _GetWebUiModulePath(self.module)
     this_module_is_shared = bool(
