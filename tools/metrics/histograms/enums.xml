@@ -52504,6 +52504,13 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="1" label="Home Screen Widget"/>
   <int value="2" label="New Tab Page"/>
   <int value="3" label="Omnibox Keyboard"/>
+  <int value="4" label="Spotlight"/>
+  <int value="5" label="Omnibox Post Capture">
+    Lens was triggered via the &quot;Search Copied Image&quot; Omnibox entry
+    point.
+  </int>
+  <int value="6" label="Image Share Menu"/>
+  <int value="7" label="App Icon Long Press"/>
 </enum>
 
 <enum name="IOSLensSupportStatus">

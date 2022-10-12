@@ -13,7 +13,11 @@ enum class LensEntrypoint {
   HomeScreenWidget = 1,
   NewTabPage = 2,
   Keyboard = 3,
-  kMaxValue = Keyboard,
+  Spotlight = 4,
+  OmniboxPostCapture = 5,
+  ImageShareMenu = 6,
+  AppIconLongPress = 7,
+  kMaxValue = AppIconLongPress,
 };
 
 extern const char kIOSLensEntrypoint[];
