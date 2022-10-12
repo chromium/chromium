@@ -59,7 +59,13 @@ bool TestAppBannerManagerDesktop::WaitForInstallableCheck() {
     installable_quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
   }
-  return *installable_;
+  // Only wait for worker check if it has started after the installable check.
+  if (waiting_for_worker_) {
+    base::RunLoop run_loop;
+    promotable_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+  return *installable_ && promotable_;
 }
 
 void TestAppBannerManagerDesktop::PrepareDone(base::OnceClosure on_done) {
@@ -92,9 +98,22 @@ void TestAppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(
   SetInstallable(result.NoBlockingErrors());
 }
 
+void TestAppBannerManagerDesktop::PerformServiceWorkerCheck() {
+  waiting_for_worker_ = true;
+  AppBannerManagerDesktop::PerformServiceWorkerCheck();
+}
+
+void TestAppBannerManagerDesktop::OnDidPerformWorkerCheck(
+    const InstallableData& result) {
+  AppBannerManagerDesktop::OnDidPerformWorkerCheck(result);
+  SetPromotable(result.NoBlockingErrors());
+}
+
 void TestAppBannerManagerDesktop::ResetCurrentPageData() {
   AppBannerManagerDesktop::ResetCurrentPageData();
   installable_.reset();
+  promotable_ = false;
+  waiting_for_worker_ = false;
   if (tear_down_quit_closure_)
     std::move(tear_down_quit_closure_).Run();
 }
@@ -143,6 +162,14 @@ void TestAppBannerManagerDesktop::SetInstallable(bool installable) {
   installable_ = installable;
   if (installable_quit_closure_)
     std::move(installable_quit_closure_).Run();
+}
+
+void TestAppBannerManagerDesktop::SetPromotable(bool promotable) {
+  DCHECK(waiting_for_worker_);
+  waiting_for_worker_ = false;
+  promotable_ = promotable;
+  if (promotable_quit_closure_)
+    std::move(promotable_quit_closure_).Run();
 }
 
 void TestAppBannerManagerDesktop::OnFinished() {

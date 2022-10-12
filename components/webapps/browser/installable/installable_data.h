@@ -66,6 +66,10 @@ struct InstallableData {
   // M93.
   bool NoBlockingErrors() const;
 
+  // Returns the first no blocking error if any one exist. Otherwise returns
+  // NO_ERROR_DETECTED.
+  InstallableStatusCode FirstNoBlockingError() const;
+
   // Returns true if there is any |errors| and all errors are service worker
   // errors, i.e.|NO_MATCHING_SERVICE_WORKER| or |NOT_OFFLINE_CAPABLE|.
   bool HasErrorOnlyServiceWorkerErrors() const;
