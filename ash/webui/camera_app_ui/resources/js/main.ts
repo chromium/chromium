@@ -40,6 +40,7 @@ import {
 import {addUnloadCallback} from './unload.js';
 import * as util from './util.js';
 import {Camera} from './views/camera.js';
+import * as timertick from './views/camera/timertick.js';
 import {CameraIntent} from './views/camera_intent.js';
 import {Dialog} from './views/dialog.js';
 import {View} from './views/view.js';
@@ -423,6 +424,7 @@ export class App {
    * Suspends app and hides app window.
    */
   async suspend(): Promise<void> {
+    timertick.cancel();
     await this.cameraManager.requestSuspend();
     nav.open(ViewName.WARNING, WarningType.CAMERA_PAUSED);
   }
