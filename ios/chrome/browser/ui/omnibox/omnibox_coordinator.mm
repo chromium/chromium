@@ -158,6 +158,7 @@
   _editView.reset();
   self.editController = nil;
   self.viewController = nil;
+  self.mediator.templateURLService = nullptr;  // Unregister the observer.
   self.mediator = nil;
   self.returnDelegate = nil;
   self.zeroSuggestPrefetchHelper = nil;

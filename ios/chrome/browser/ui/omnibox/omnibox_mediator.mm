@@ -84,8 +84,12 @@ using base::UserMetricsAction;
   _templateURLService = templateURLService;
   self.searchEngineSupportsSearchByImage =
       search_engines::SupportsSearchByImage(templateURLService);
-  _searchEngineObserver =
-      std::make_unique<SearchEngineObserverBridge>(self, templateURLService);
+  if (_templateURLService) {
+    _searchEngineObserver =
+        std::make_unique<SearchEngineObserverBridge>(self, templateURLService);
+  } else {
+    _searchEngineObserver.reset();
+  }
 }
 
 - (void)setSearchEngineSupportsSearchByImage:
