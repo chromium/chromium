@@ -197,6 +197,10 @@ public class ManagedPreferencesUtils {
 
         ImageView button = view.findViewById(R.id.image_view_widget);
         button.setImageDrawable(getManagedIconDrawable(delegate, preference));
+        if (delegate.isPreferenceControlledByPolicy(preference)) {
+            button.setContentDescription(preference.getContext().getResources().getString(
+                    R.string.managed_by_your_organization));
+        }
         button.setOnClickListener((View v) -> {
             if (delegate.isPreferenceControlledByPolicy(preference)) {
                 showManagedByAdministratorToast(preference.getContext());
