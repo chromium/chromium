@@ -58,6 +58,8 @@ const char kACMatchPropertyContentsStartIndex[] = "match contents start index";
 // scoring non-default match.
 const char kACMatchPropertyScoreBoostedFrom[] = "score_boosted_from";
 
+// RichAutocompletionParams ---------------------------------------------------
+
 // `RichAutocompletionParams` is a cache for the params used by
 // `TryRichAutocompletion()`. `TryRichAutocompletion()` is called about 80 times
 // per keystroke; fetching all 16 params each time causes measurable timing
@@ -830,5 +832,16 @@ struct AutocompleteMatch {
 typedef AutocompleteMatch::ACMatchClassification ACMatchClassification;
 typedef std::vector<ACMatchClassification> ACMatchClassifications;
 typedef std::vector<AutocompleteMatch> ACMatches;
+
+// Can be used as the key for grouping AutocompleteMatches in a map based on a
+// std::pair of fields. This can be generalized to a std::tuple if ever needed.
+// The accompanying hash function makes the key usable in an std::unordered_map.
+template <typename S, typename T>
+using ACMatchKey = std::pair<S, T>;
+
+template <typename S, typename T>
+struct ACMatchKeyHash {
+  size_t operator()(const ACMatchKey<S, T>& key) const;
+};
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_MATCH_H_

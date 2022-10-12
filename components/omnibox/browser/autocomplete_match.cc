@@ -115,7 +115,29 @@ int GetDeduplicationProviderPreferenceScore(AutocompleteProvider::Type type) {
   return it->second;
 }
 
+// Implementation of boost::hash_combine
+// http://www.boost.org/doc/libs/1_43_0/doc/html/hash/reference.html#boost.hash_combine
+template <typename T>
+inline void hash_combine(std::size_t& seed, const T& value) {
+  std::hash<T> hasher;
+  seed ^= hasher(value) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 }  // namespace
+
+template <typename S, typename T>
+size_t ACMatchKeyHash<S, T>::operator()(const ACMatchKey<S, T>& key) const {
+  size_t seed = 0;
+  hash_combine(seed, key.first);
+  hash_combine(seed, key.second);
+  return seed;
+}
+
+// This trick allows implementing ACMatchKeyHash in the implementation file.
+template struct ACMatchKeyHash<std::u16string, std::string>;
+template struct ACMatchKeyHash<std::string, bool>;
+
+// RichAutocompletionParams ---------------------------------------------------
 
 RichAutocompletionParams::RichAutocompletionParams()
     : enabled(OmniboxFieldTrial::IsRichAutocompletionEnabled()),

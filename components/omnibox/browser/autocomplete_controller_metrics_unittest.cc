@@ -433,7 +433,8 @@ TEST_F(AutocompleteControllerMetricsTest, MatchStability) {
   auto create_result = [&](std::vector<int> ids) {
     std::vector<AutocompleteResult::MatchDedupComparator> result;
     base::ranges::transform(ids, std::back_inserter(result), [](int id) {
-      return std::pair<GURL, bool>{"http://" + base::NumberToString(id), false};
+      return AutocompleteResult::MatchDedupComparator{
+          "http://" + base::NumberToString(id), false};
     });
     return result;
   };

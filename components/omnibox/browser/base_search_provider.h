@@ -180,10 +180,10 @@ class BaseSearchProvider : public AutocompleteProvider {
 
   ~BaseSearchProvider() override;
 
-  typedef std::pair<std::u16string, std::string> MatchKey;
-  typedef std::map<MatchKey, AutocompleteMatch> MatchMap;
-  typedef std::vector<std::unique_ptr<SuggestionDeletionHandler>>
-      SuggestionDeletionHandlers;
+  using MatchKey = ACMatchKey<std::u16string, std::string>;
+  using MatchMap = std::map<MatchKey, AutocompleteMatch>;
+  using SuggestionDeletionHandlers =
+      std::vector<std::unique_ptr<SuggestionDeletionHandler>>;
 
   // Returns the appropriate value for the fill_into_edit field of an
   // AutcompleteMatch. The result consists of the suggestion text from
