@@ -15,5 +15,9 @@ def main(request, response):
         "utf-8")
     if redemption_record:
         response.status = 200
+        # Add a response body for the iframe E2E test to read
+        response.content = "Trust token RR succeeded."
     else:
         response.status = 400
+        # Add a response body for the iframe E2E test to read
+        response.content = "Trust token RR failed."
