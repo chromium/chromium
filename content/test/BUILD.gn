@@ -191,6 +191,8 @@ static_library("test_support") {
     "../public/test/content_test_suite_base.h",
     "../public/test/download_test_observer.cc",
     "../public/test/download_test_observer.h",
+    "../public/test/embedded_worker_instance_test_harness.cc",
+    "../public/test/embedded_worker_instance_test_harness.h",
     "../public/test/fake_download_item.cc",
     "../public/test/fake_download_item.h",
     "../public/test/fake_frame_widget.cc",

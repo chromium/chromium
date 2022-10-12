@@ -134,8 +134,8 @@ class BackgroundSyncManagerTest
     ON_CALL(*mock_permission_manager,
             GetPermissionStatusForWorker(PermissionType::NOTIFICATIONS, _, _))
         .WillByDefault(Return(blink::mojom::PermissionStatus::DENIED));
-    helper_->browser_context()->SetPermissionControllerDelegate(
-        std::move(mock_permission_manager));
+    TestBrowserContext::FromBrowserContext(helper_->browser_context())
+        ->SetPermissionControllerDelegate(std::move(mock_permission_manager));
 
     // Create a StoragePartition with the correct BrowserContext so that the
     // BackgroundSyncManager can find the BrowserContext through it.

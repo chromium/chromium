@@ -271,7 +271,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   typedef base::ObserverList<Listener>::Unchecked ListenerList;
   struct StartInfo;
   class WorkerProcessHandle;
-  friend class EmbeddedWorkerInstanceTest;
+  friend class EmbeddedWorkerInstanceTestHarness;
   FRIEND_TEST_ALL_PREFIXES(EmbeddedWorkerInstanceTest, StartAndStop);
   FRIEND_TEST_ALL_PREFIXES(EmbeddedWorkerInstanceTest, DetachDuringStart);
   FRIEND_TEST_ALL_PREFIXES(EmbeddedWorkerInstanceTest, StopDuringStart);

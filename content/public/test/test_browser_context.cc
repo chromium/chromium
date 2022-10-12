@@ -177,4 +177,10 @@ TestBrowserContext::GetOriginTrialsControllerDelegate() {
   return origin_trials_controller_delegate_.get();
 }
 
+// static
+TestBrowserContext* TestBrowserContext::FromBrowserContext(
+    BrowserContext* browser_context) {
+  return static_cast<TestBrowserContext*>(browser_context);
+}
+
 }  // namespace content

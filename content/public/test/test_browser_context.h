@@ -30,6 +30,10 @@ class TestBrowserContext : public BrowserContext {
 
   ~TestBrowserContext() override;
 
+  // Returns the TestBrowserContext corresponding to the given browser context.
+  static TestBrowserContext* FromBrowserContext(
+      BrowserContext* browser_context);
+
   // Takes ownership of the temporary directory so that it's not deleted when
   // this object is destructed.
   base::FilePath TakePath();

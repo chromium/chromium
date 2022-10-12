@@ -135,8 +135,9 @@ void BackgroundSyncServiceImplTestHarness::CreateTestHelper() {
   ON_CALL(*mock_permission_manager,
           GetPermissionStatus(blink::PermissionType::BACKGROUND_SYNC, _, _))
       .WillByDefault(testing::Return(blink::mojom::PermissionStatus::GRANTED));
-  embedded_worker_helper_->browser_context()->SetPermissionControllerDelegate(
-      std::move(mock_permission_manager));
+  TestBrowserContext::FromBrowserContext(
+      embedded_worker_helper_->browser_context())
+      ->SetPermissionControllerDelegate(std::move(mock_permission_manager));
 }
 
 void BackgroundSyncServiceImplTestHarness::CreateStoragePartition() {

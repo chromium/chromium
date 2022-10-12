@@ -38,7 +38,6 @@ class FakeServiceWorker;
 class MockRenderProcessHost;
 class ServiceWorkerContextCore;
 class ServiceWorkerContextWrapper;
-class TestBrowserContext;
 
 // In-Process EmbeddedWorker test helper.
 //
@@ -85,9 +84,15 @@ class EmbeddedWorkerTestHelper {
   // If |user_data_directory| is empty, the context makes storage stuff in
   // memory.
   explicit EmbeddedWorkerTestHelper(const base::FilePath& user_data_directory);
+  EmbeddedWorkerTestHelper(const base::FilePath& user_data_directory,
+                           std::unique_ptr<BrowserContext> browser_context);
   EmbeddedWorkerTestHelper(
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
+  EmbeddedWorkerTestHelper(
+      const base::FilePath& user_data_directory,
+      scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
+      std::unique_ptr<BrowserContext> browser_context);
 
   EmbeddedWorkerTestHelper(const EmbeddedWorkerTestHelper&) = delete;
   EmbeddedWorkerTestHelper& operator=(const EmbeddedWorkerTestHelper&) = delete;
@@ -116,7 +121,7 @@ class EmbeddedWorkerTestHelper {
     return quota_manager_proxy_.get();
   }
 
-  TestBrowserContext* browser_context() { return browser_context_.get(); }
+  BrowserContext* browser_context() { return browser_context_.get(); }
 
   static std::unique_ptr<ServiceWorkerVersion::MainScriptResponse>
   CreateMainScriptResponse();
@@ -179,6 +184,42 @@ class EmbeddedWorkerTestHelper {
                                       base::OnceClosure callback);
   /////////////////////////////////////////////////////////////////////////////
 
+  using RegistrationAndVersionPair =
+      std::pair<scoped_refptr<ServiceWorkerRegistration>,
+                scoped_refptr<ServiceWorkerVersion>>;
+
+  RegistrationAndVersionPair PrepareRegistrationAndVersion(
+      const GURL& scope,
+      const GURL& script_url);
+
+  // Calls worker->Start() and runs until the start IPC is sent.
+  //
+  // Expects success. For failure cases, call Start() manually.
+  void StartWorkerUntilStartSent(
+      EmbeddedWorkerInstance* worker,
+      blink::mojom::EmbeddedWorkerStartParamsPtr params);
+
+  // Calls worker->Start() and runs until startup finishes.
+  //
+  // Expects success. For failure cases, call Start() manually.
+  void StartWorker(EmbeddedWorkerInstance* worker,
+                   blink::mojom::EmbeddedWorkerStartParamsPtr params);
+
+  blink::mojom::EmbeddedWorkerStartParamsPtr CreateStartParams(
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  blink::mojom::ServiceWorkerProviderInfoForStartWorkerPtr CreateProviderInfo(
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  mojo::PendingReceiver<blink::mojom::ServiceWorker> CreateServiceWorker(
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  mojo::PendingReceiver<blink::mojom::ControllerServiceWorker>
+  CreateController();
+
+  blink::mojom::ServiceWorkerInstalledScriptsInfoPtr
+  GetInstalledScriptsInfoPtr();
+
  protected:
   // Subclasses can override these to change the default fakes. This saves tests
   // from calling AddPending*() for each start worker attempt.
@@ -191,7 +232,7 @@ class EmbeddedWorkerTestHelper {
       mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
           receiver);
 
-  std::unique_ptr<TestBrowserContext> browser_context_;
+  std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<MockRenderProcessHost> render_process_host_;
   std::unique_ptr<MockRenderProcessHost> new_render_process_host_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
@@ -222,6 +263,14 @@ class EmbeddedWorkerTestHelper {
   int new_mock_render_process_id_;
 
   scoped_refptr<URLLoaderFactoryGetter> url_loader_factory_getter_;
+
+  // Mojo endpoints.
+  std::vector<mojo::Remote<blink::mojom::ControllerServiceWorker>> controllers_;
+  std::vector<mojo::Remote<blink::mojom::ServiceWorkerInstalledScriptsManager>>
+      installed_scripts_managers_;
+  std::vector<mojo::PendingReceiver<
+      blink::mojom::ServiceWorkerInstalledScriptsManagerHost>>
+      installed_scripts_manager_host_receivers_;
 };
 
 template <typename MockType, typename... Args>

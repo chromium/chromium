@@ -687,7 +687,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
 
  private:
   friend class base::RefCounted<ServiceWorkerVersion>;
-  friend class EmbeddedWorkerInstanceTest;
+  friend class EmbeddedWorkerTestHelper;
   friend class ServiceWorkerPingController;
   friend class ServiceWorkerContainerHostTest;
   friend class ServiceWorkerReadFromCacheJobTest;
