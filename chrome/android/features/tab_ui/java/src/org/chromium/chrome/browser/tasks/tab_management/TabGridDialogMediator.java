@@ -555,8 +555,10 @@ public class TabGridDialogMediator
                     mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             actions.add(TabSelectionEditorUngroupAction.createAction(
                     mContext, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
-            actions.add(TabSelectionEditorShareAction.createAction(mContext, ShowMode.MENU_ONLY,
-                    ButtonType.ICON_AND_TEXT, IconPosition.START, mShareDelegateSupplier));
+            if (TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_SHARE.getValue()) {
+                actions.add(TabSelectionEditorShareAction.createAction(mContext, ShowMode.MENU_ONLY,
+                        ButtonType.ICON_AND_TEXT, IconPosition.START, mShareDelegateSupplier));
+            }
             mTabSelectionEditorControllerSupplier.get().configureToolbarWithMenuItems(
                     actions, null);
             return;

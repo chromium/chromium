@@ -533,9 +533,11 @@ public class TabSwitcherCoordinator
                     mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
             mTabSelectionEditorActions.add(TabSelectionEditorGroupAction.createAction(
                     mActivity, ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START));
-            mTabSelectionEditorActions.add(
-                    TabSelectionEditorShareAction.createAction(mActivity, ShowMode.MENU_ONLY,
-                            ButtonType.ICON_AND_TEXT, IconPosition.START, mShareDelegateSupplier));
+            if (TabUiFeatureUtilities.ENABLE_TAB_SELECTION_EDITOR_V2_SHARE.getValue()) {
+                mTabSelectionEditorActions.add(TabSelectionEditorShareAction.createAction(mActivity,
+                        ShowMode.MENU_ONLY, ButtonType.ICON_AND_TEXT, IconPosition.START,
+                        mShareDelegateSupplier));
+            }
         }
 
         mTabSelectionEditorCoordinator.getController().configureToolbarWithMenuItems(

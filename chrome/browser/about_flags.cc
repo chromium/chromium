@@ -3469,6 +3469,15 @@ const FeatureEntry::FeatureVariation
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kTabSelectionEditorV2_share_enabled[] = {
+    {"enable_share", "true"}};
+const FeatureEntry::FeatureVariation kTabSelectionEditorV2Variations[] = {
+    {"- with share", kTabSelectionEditorV2_share_enabled,
+     std::size(kTabSelectionEditorV2_share_enabled), nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 const FeatureEntry::FeatureParam kPasswordNotesAuthValidity1m[] = {
     {"authentication_validity_duration", "1m"}};
 const FeatureEntry::FeatureParam kPasswordNotesAuthValidity5m[] = {
@@ -9662,7 +9671,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"tab-selection-editor-v2", flag_descriptions::kTabSelectionEditorV2Name,
      flag_descriptions::kTabSelectionEditorV2Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabSelectionEditorV2)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabSelectionEditorV2,
+                                    kTabSelectionEditorV2Variations,
+                                    "TabSelectionEditorV2")},
 
     {"context-menu-popup-for-all-screen-sizes",
      flag_descriptions::kContextMenuPopupForAllScreenSizesName,

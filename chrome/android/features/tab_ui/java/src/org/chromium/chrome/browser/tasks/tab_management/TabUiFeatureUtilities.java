@@ -109,6 +109,12 @@ public class TabUiFeatureUtilities {
             new DoubleCachedFieldTrialParameter(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS,
                     TAB_STRIP_IMPROVEMENTS_TAB_WIDTH_PARAM, 108.f);
 
+    // Field trial parameter for controlling share tabs in TabSelectionEditorV2.
+    private static final String TAB_SELECTION_EDITOR_V2_SHARE_PARAM = "enable_share";
+    public static final BooleanCachedFieldTrialParameter ENABLE_TAB_SELECTION_EDITOR_V2_SHARE =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_SELECTION_EDITOR_V2,
+                    TAB_SELECTION_EDITOR_V2_SHARE_PARAM, false);
+
     private static Boolean sTabManagementModuleSupportedForTesting;
     private static Boolean sGridTabSwitcherPolishEnabledForTesting;
 

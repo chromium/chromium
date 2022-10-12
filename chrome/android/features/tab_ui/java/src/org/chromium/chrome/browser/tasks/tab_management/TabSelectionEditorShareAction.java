@@ -95,7 +95,7 @@ public class TabSelectionEditorShareAction extends TabSelectionEditorAction {
 
     @Override
     public boolean shouldHideEditorAfterAction() {
-        return false;
+        return true;
     }
 
     private String getTabListStringForSharing(List<Tab> tabs) {
