@@ -459,7 +459,7 @@ BASE_FEATURE(kAutofillProbableFormSubmissionInBrowser,
 // TODO(crbug.com/1326425): Remove once feature is lanuched.
 BASE_FEATURE(kAutofillRationalizeStreetAddressAndAddressLine,
              "AutofillRationalizeStreetAddressAndAddressLine",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Removes setting-inaccessible field types from existing profiles on startup.
 // TODO(crbug.com/1300548): Cleanup when launched.
