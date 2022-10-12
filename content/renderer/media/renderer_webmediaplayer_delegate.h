@@ -148,6 +148,10 @@ class CONTENT_EXPORT RendererWebMediaPlayerDelegate
   // Determined at construction time based on system information; determines
   // when the idle cleanup timer should be fired more aggressively.
   bool is_low_end_;
+
+  // Last page shown/hidden state sent to the player.  Unset if we have not sent
+  // any message.  Used to elide duplicates.
+  absl::optional<bool> is_shown_;
 };
 
 }  // namespace media

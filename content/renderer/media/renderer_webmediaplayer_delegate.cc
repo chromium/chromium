@@ -65,7 +65,9 @@ bool RendererWebMediaPlayerDelegate::IsFrameHidden() {
     return true;
 
   return render_frame()->GetWebView()->GetVisibilityState() !=
-         blink::mojom::PageVisibilityState::kVisible;
+             blink::mojom::PageVisibilityState::kVisible &&
+         render_frame()->GetWebView()->GetVisibilityState() !=
+             blink::mojom::PageVisibilityState::kHiddenButPainting;
 }
 
 int RendererWebMediaPlayerDelegate::AddObserver(Observer* observer) {
@@ -183,7 +185,17 @@ bool RendererWebMediaPlayerDelegate::IsStale(int player_id) {
 
 void RendererWebMediaPlayerDelegate::OnPageVisibilityChanged(
     blink::mojom::PageVisibilityState visibility_state) {
-  if (visibility_state == blink::mojom::PageVisibilityState::kVisible) {
+  // Treat 'hidden but painting' as 'visible', since whatever is consuming the
+  // painted output (e.g., Picture in Picture), probably wants the video.
+  // Otherwise, the player might optimize the video away.
+  const bool is_shown =
+      visibility_state == blink::mojom::PageVisibilityState::kVisible ||
+      visibility_state == blink::mojom::PageVisibilityState::kHiddenButPainting;
+  if (is_shown_ == is_shown)
+    return;
+  is_shown_ = is_shown;
+
+  if (is_shown) {
     RecordAction(base::UserMetricsAction("Media.Shown"));
 
     for (base::IDMap<Observer*>::iterator it(&id_map_); !it.IsAtEnd();
