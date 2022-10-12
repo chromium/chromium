@@ -103,11 +103,13 @@ void NetworkDelegate::NotifyPACScriptError(int line_number,
 
 bool NetworkDelegate::AnnotateAndMoveUserBlockedCookies(
     const URLRequest& request,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   bool allowed = OnAnnotateAndMoveUserBlockedCookies(
-      request, maybe_included_cookies, excluded_cookies);
+      request, first_party_set_metadata, maybe_included_cookies,
+      excluded_cookies);
   cookie_util::DCheckIncludedAndExcludedCookieLists(maybe_included_cookies,
                                                     excluded_cookies);
   return allowed;

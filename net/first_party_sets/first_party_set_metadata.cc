@@ -45,4 +45,10 @@ std::ostream& operator<<(std::ostream& os,
   return os;
 }
 
+bool FirstPartySetMetadata::AreSitesInSameFirstPartySet() const {
+  if (!frame_entry_ || !top_frame_entry_)
+    return false;
+  return frame_entry_->primary() == top_frame_entry_->primary();
+}
+
 }  // namespace net

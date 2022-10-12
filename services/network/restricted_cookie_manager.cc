@@ -464,8 +464,8 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
   net::CookieAccessResultList maybe_included_cookies = cookie_list;
   net::CookieAccessResultList excluded_cookies = excluded_list;
   cookie_settings().AnnotateAndMoveUserBlockedCookies(
-      url, site_for_cookies, &top_frame_origin, maybe_included_cookies,
-      excluded_cookies);
+      url, site_for_cookies, &top_frame_origin, first_party_set_metadata_,
+      maybe_included_cookies, excluded_cookies);
 
   std::vector<net::CookieWithAccessResult> result;
   std::vector<mojom::CookieOrLineWithAccessResultPtr>

@@ -72,6 +72,7 @@ int IOSChromeNetworkDelegate::OnBeforeURLRequest(
 
 bool IOSChromeNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const net::URLRequest& request,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
   // `cookie_settings_` is null during tests, or when we're running in the

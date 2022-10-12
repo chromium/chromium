@@ -19,6 +19,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/site_for_cookies.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
@@ -80,6 +81,7 @@ class NET_EXPORT NetworkDelegate {
   void NotifyPACScriptError(int line_number, const std::u16string& error);
   bool AnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
+      const net::FirstPartySetMetadata& first_party_set_metadata,
       CookieAccessResultList& maybe_included_cookies,
       CookieAccessResultList& excluded_cookies);
   bool CanSetCookie(const URLRequest& request,
@@ -262,6 +264,7 @@ class NET_EXPORT NetworkDelegate {
   // otherwise.
   virtual bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
+      const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) = 0;
 

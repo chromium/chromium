@@ -499,6 +499,7 @@ void TestNetworkDelegate::OnURLRequestDestroyed(URLRequest* request) {
 
 bool TestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const URLRequest& request,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
   bool allow = true;
@@ -603,6 +604,7 @@ FilteringTestNetworkDelegate::OnForcePrivacyMode(
 
 bool FilteringTestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
     const URLRequest& request,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) {
   // Filter out cookies if |block_annotate_cookies_| is set and
@@ -636,7 +638,8 @@ bool FilteringTestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 
   // Call the nested delegate's method first to avoid a short circuit.
   return TestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
-             request, maybe_included_cookies, excluded_cookies) &&
+             request, first_party_set_metadata, maybe_included_cookies,
+             excluded_cookies) &&
          allowed;
 }
 

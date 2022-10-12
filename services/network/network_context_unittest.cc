@@ -4331,15 +4331,27 @@ TEST_F(NetworkContextTest,
   net::CookieAccessResultList included;
   net::CookieAccessResultList excluded;
 
-  EXPECT_TRUE(
-      network_context->url_request_context()
-          ->network_delegate()
-          ->AnnotateAndMoveUserBlockedCookies(*request, included, excluded));
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->network_delegate()
+                  ->AnnotateAndMoveUserBlockedCookies(
+                      *request,
+                      net::FirstPartySetMetadata(
+                          net::SamePartyContext(
+                              net::SamePartyContext::Type::kCrossParty),
+                          /*frame_entry=*/nullptr,
+                          /*top_frame_entry=*/nullptr),
+                      included, excluded));
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
-  EXPECT_FALSE(
-      network_context->url_request_context()
-          ->network_delegate()
-          ->AnnotateAndMoveUserBlockedCookies(*request, included, excluded));
+  EXPECT_FALSE(network_context->url_request_context()
+                   ->network_delegate()
+                   ->AnnotateAndMoveUserBlockedCookies(
+                       *request,
+                       net::FirstPartySetMetadata(
+                           net::SamePartyContext(
+                               net::SamePartyContext::Type::kCrossParty),
+                           /*frame_entry=*/nullptr,
+                           /*top_frame_entry=*/nullptr),
+                       included, excluded));
 }
 
 TEST_F(NetworkContextTest,
@@ -4354,10 +4366,16 @@ TEST_F(NetworkContextTest,
   net::CookieAccessResultList excluded;
 
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW, network_context.get());
-  EXPECT_TRUE(
-      network_context->url_request_context()
-          ->network_delegate()
-          ->AnnotateAndMoveUserBlockedCookies(*request, included, excluded));
+  EXPECT_TRUE(network_context->url_request_context()
+                  ->network_delegate()
+                  ->AnnotateAndMoveUserBlockedCookies(
+                      *request,
+                      net::FirstPartySetMetadata(
+                          net::SamePartyContext(
+                              net::SamePartyContext::Type::kCrossParty),
+                          /*frame_entry=*/nullptr,
+                          /*top_frame_entry=*/nullptr),
+                      included, excluded));
 }
 
 // Gets notified by the EmbeddedTestServer on incoming connections being

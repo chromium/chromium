@@ -10,6 +10,7 @@
 #include "base/memory/ref_counted.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "net/base/network_delegate_impl.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/same_party_context.h"
 
 class PrefService;
@@ -55,6 +56,7 @@ class IOSChromeNetworkDelegate : public net::NetworkDelegateImpl {
                          GURL* new_url) override;
   bool OnAnnotateAndMoveUserBlockedCookies(
       const net::URLRequest& request,
+      const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override;
   bool OnCanSetCookie(const net::URLRequest& request,

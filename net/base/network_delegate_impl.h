@@ -14,6 +14,7 @@
 #include "net/base/net_export.h"
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
@@ -70,6 +71,7 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
 
   bool OnAnnotateAndMoveUserBlockedCookies(
       const URLRequest& request,
+      const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) override;
 

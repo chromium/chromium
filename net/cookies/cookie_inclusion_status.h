@@ -96,6 +96,9 @@ class NET_EXPORT CookieInclusionStatus {
     EXCLUDE_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 20,
     // Cookie was set with a Domain attribute containing non ASCII characters.
     EXCLUDE_DOMAIN_NON_ASCII = 21,
+    // Special case for when a cookie is blocked by third-party cookie blocking
+    // but the two sites are in the same First-Party Set.
+    EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET = 22,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS

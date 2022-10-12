@@ -306,6 +306,7 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin* top_frame_origin,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieAccessResultList& maybe_included_cookies,
     net::CookieAccessResultList& excluded_cookies) const {
   const CookieSettingWithMetadata setting_with_metadata =
@@ -324,6 +325,13 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
     } else {
       cookie.access_result.status.AddExclusionReason(
           net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+      if (IsThirdPartyCookieBlockedInSamePartySites(
+              setting_with_metadata.third_party_blocking_outcome,
+              first_party_set_metadata)) {
+        cookie.access_result.status.AddExclusionReason(
+            net::CookieInclusionStatus::
+                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
+      }
     }
   }
   for (net::CookieWithAccessResult& cookie : excluded_cookies) {
@@ -384,6 +392,18 @@ bool CookieSettings::IsAllowedPartitionedCookie(
   return is_partitioned &&
          third_party_blocking_outcome ==
              ThirdPartyBlockingOutcome::kPartitionedStateAllowed;
+}
+
+// static
+bool CookieSettings::IsThirdPartyCookieBlockedInSamePartySites(
+    ThirdPartyBlockingOutcome third_party_blocking_outcome,
+    const net::FirstPartySetMetadata& first_party_set_metadata) {
+  // If partitioned state is allowed only, it means the cookie was excluded due
+  // to the third-party cookie blocking setting.
+  if (third_party_blocking_outcome !=
+      ThirdPartyBlockingOutcome::kPartitionedStateAllowed)
+    return false;
+  return first_party_set_metadata.AreSitesInSameFirstPartySet();
 }
 
 bool CookieSettings::IsHypotheticalCookieAllowed(

@@ -16,6 +16,7 @@
 #include "net/base/features.h"
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/same_party_context.h"
 #include "services/network/public/cpp/session_cookie_delete_predicate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -134,6 +135,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
       const url::Origin* top_frame_origin,
+      const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieAccessResultList& maybe_included_cookies,
       net::CookieAccessResultList& excluded_cookies) const;
 
@@ -238,6 +240,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   static bool IsAllowedPartitionedCookie(
       bool is_partitioned,
       ThirdPartyBlockingOutcome third_party_blocking_outcome);
+
+  // Checks if a cookie was blocked by third-party cookie blocking but the
+  // cookie belongs to a site in the same First-Party Set as the top-level site.
+  static bool IsThirdPartyCookieBlockedInSamePartySites(
+      ThirdPartyBlockingOutcome third_party_blocking_outcome,
+      const net::FirstPartySetMetadata& first_party_set_metadata);
 
   // Returns whether *some* cookie would be allowed to be sent in this context,
   // according to the user's settings. Note that cookies may still be "excluded"

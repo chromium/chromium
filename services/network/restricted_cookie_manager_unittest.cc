@@ -1116,7 +1116,9 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest, GetAllForUrlSameParty) {
                 CookieOrLine("cookie-name=cookie-value",
                              mojom::CookieOrLine::Tag::kCookie),
                 net::CookieInclusionStatus::MakeFromReasonsForTesting(
-                    {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
+                    {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
+                     net::CookieInclusionStatus::
+                         EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET},
                     expected_warnings))));
 
     cookie_settings_.set_block_third_party_cookies(false);
