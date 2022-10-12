@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/events/animation_playback_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -68,12 +69,12 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -1712,14 +1713,17 @@ void Animation::UpdateFinishedState(UpdateType update_type,
 }
 
 void Animation::ScheduleAsyncFinish() {
+  auto* execution_context = GetExecutionContext();
+  if (!execution_context)
+    return;
   // Run a task to handle the finished promise and event as a microtask. With
   // the exception of an explicit call to Animation::finish, it is important to
   // apply these updates asynchronously as it is possible to enter the finished
   // state temporarily.
   pending_finish_notification_ = true;
   if (!has_queued_microtask_) {
-    Microtask::EnqueueMicrotask(WTF::BindOnce(&Animation::AsyncFinishMicrotask,
-                                              WrapWeakPersistent(this)));
+    execution_context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+        &Animation::AsyncFinishMicrotask, WrapWeakPersistent(this)));
     has_queued_microtask_ = true;
   }
 }
