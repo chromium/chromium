@@ -224,7 +224,5 @@ def _GetPerfDashboardRevisionsWithProperties(
   versions['git_revision'] = git_revision
   versions['point_id'] = point_id
   # There are a lot of "bad" revisions to check for, so clean them all up here.
-  for key in versions:
-    if not versions[key] or versions[key] == 'undefined':
-      del versions[key]
-  return versions
+  new_versions = {k: v for k, v in versions.items() if v and v != 'undefined'}
+  return new_versions
