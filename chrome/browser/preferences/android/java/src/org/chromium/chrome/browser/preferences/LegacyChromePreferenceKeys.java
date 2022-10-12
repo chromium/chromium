@@ -146,8 +146,7 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.VR_FEEDBACK_OPT_OUT,
                 ChromePreferenceKeys.VR_SHOULD_REGISTER_ASSETS_COMPONENT_ON_STARTUP,
                 ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES,
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE,
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_LIST_SIZE
+                ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE
         );
         // clang-format on
     }
@@ -169,10 +168,7 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_STARRED_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_TYPE_PREFIX,
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX,
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX,
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_GROUP_TITLE_PREFIX,
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_GROUP_COLLAPSED_BY_DEFAULT_PREFIX
+                ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX
         );
         // clang-format on
     }

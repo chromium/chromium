@@ -47,30 +47,8 @@ public class CachedZeroSuggestionsManagerUnitTest {
      * they're not. Note that order is just as relevant as the content for caching.
      */
     void assertAutocompleteResultEquals(AutocompleteResult data1, AutocompleteResult data2) {
-        assertGroupsInfoEquals(data1.getGroupsInfo(), data2.getGroupsInfo());
-        final List<AutocompleteMatch> list1 = data1.getSuggestionsList();
-        final List<AutocompleteMatch> list2 = data2.getSuggestionsList();
-        Assert.assertEquals(list1, list2);
-    }
-
-    /**
-     * Compare two instances of GroupsInfo to see if they are same, asserting if
-     * they're not. Note that right now CachedZeroSuggestManager does not persist the
-     * section info, so we compare individual fields.
-     */
-    void assertGroupsInfoEquals(GroupsInfo info1, GroupsInfo info2) {
-        var groups1 = info1.getGroupConfigsMap();
-        var groups2 = info2.getGroupConfigsMap();
-        Assert.assertEquals(groups1.size(), groups2.size());
-
-        for (var entry : groups1.entrySet()) {
-            Assert.assertTrue(groups2.containsKey(entry.getKey()));
-            var group1 = entry.getValue();
-            var group2 = groups2.get(entry.getKey());
-
-            Assert.assertEquals(group1.getHeaderText(), group2.getHeaderText());
-            Assert.assertEquals(group1.getVisibility(), group2.getVisibility());
-        }
+        Assert.assertEquals(data1.getSuggestionsList(), data2.getSuggestionsList());
+        Assert.assertEquals(data1.getGroupsInfo(), data2.getGroupsInfo());
     }
 
     /**
@@ -186,6 +164,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
     @Test
     @SmallTest
     public void groupsDetails_restoreInvalidGroupsDetailsFromCache() {
+        final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
         var groupsDetails = GroupsInfo.newBuilder()
                                     .putGroupConfigs(20, SECTION_2_EXPANDED_WITH_HEADER)
                                     .putGroupConfigs(30, SECTION_1_EXPANDED_NO_HEADER)
@@ -200,13 +179,26 @@ public class CachedZeroSuggestionsManagerUnitTest {
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
         assertAutocompleteResultEquals(dataToCache, dataFromCache);
 
-        // Partially remove data, rendering details invalid - check it no longer works.
-        final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
-        manager.removeKey(
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_GROUP_TITLE_PREFIX.createKey(0));
-        manager.removeKey(
-                ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_GROUP_TITLE_PREFIX.createKey(1));
+        // Truncate the data.
+        var data = manager.readString(
+                ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, null);
+        data = data.substring(0, data.length() - 10);
+        manager.writeString(ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, data);
+        dataFromCache = CachedZeroSuggestionsManager.readFromCache();
+        assertAutocompleteResultEquals(dataFromCache, AutocompleteResult.EMPTY_RESULT);
+        Assert.assertNull(manager.readString(
+                ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, null));
 
+        // Corrupt the data.
+        manager.writeString(
+                ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, "abcdefgh");
+        dataFromCache = CachedZeroSuggestionsManager.readFromCache();
+        assertAutocompleteResultEquals(dataFromCache, AutocompleteResult.EMPTY_RESULT);
+        Assert.assertNull(manager.readString(
+                ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, null));
+
+        // Remove the data.
+        manager.removeKey(ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO);
         dataFromCache = CachedZeroSuggestionsManager.readFromCache();
         assertAutocompleteResultEquals(dataFromCache, AutocompleteResult.EMPTY_RESULT);
     }
@@ -273,39 +265,6 @@ public class CachedZeroSuggestionsManagerUnitTest {
         // Cache recovery however should be smart here and remove items that make no sense.
         AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
         assertAutocompleteResultEquals(dataFromCache, dataToCache);
-    }
-
-    @Test
-    @SmallTest
-    public void malformedCache_dropsMissingGroupConfig() {
-        // Clear cache explicitly, otherwise this test will be flaky until the suite is re-executed.
-        ContextUtils.getAppSharedPreferences().edit().clear().apply();
-
-        final SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
-
-        // Write 3 wrong group groupsDetails to the cache
-        var groupsDetails =
-                GroupsInfo.newBuilder()
-                        .putGroupConfigs(12, SECTION_2_COLLAPSED_WITH_HEADER)
-                        .putGroupConfigs(34, SECTION_1_EXPANDED_NO_HEADER)
-                        .putGroupConfigs(AutocompleteMatch.INVALID_GROUP, SECTION_INVALID)
-                        .build();
-        AutocompleteResult invalidDataToCache = AutocompleteResult.fromCache(null, groupsDetails);
-        CachedZeroSuggestionsManager.saveToCache(invalidDataToCache);
-
-        // Report that we actually have 4 items in the cache.
-        manager.writeInt(ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_LIST_SIZE, 4);
-
-        // Read raw suggestions from the cache. Note that the sparse array will only have 3 elements
-        // because we put one item with INVALID_GROUP, and additional INVALID_GROUP will be deduced
-        // from missing data with null title and default expanded state set to true.
-        GroupsInfo rawGroupsDetails = CachedZeroSuggestionsManager.readCachedGroupsDetails(manager);
-        assertGroupsInfoEquals(rawGroupsDetails, groupsDetails);
-
-        AutocompleteResult wantDataFromCache = AutocompleteResult.fromCache(null, groupsDetails);
-        AutocompleteResult dataFromCache = CachedZeroSuggestionsManager.readFromCache();
-
-        assertAutocompleteResultEquals(dataFromCache, wantDataFromCache);
     }
 
     @Test

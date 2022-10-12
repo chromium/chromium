@@ -8,9 +8,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_Z
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_DESCRIPTION_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_DISPLAY_TEXT_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_GROUP_ID_PREFIX;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_GROUP_COLLAPSED_BY_DEFAULT_PREFIX;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_GROUP_TITLE_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_DELETABLE_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX;
@@ -25,6 +22,8 @@ import android.util.Base64;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.Function;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
@@ -197,23 +196,8 @@ public class CachedZeroSuggestionsManager {
      */
     private static void cacheGroupsDetails(
             SharedPreferencesManager prefs, GroupsInfo groupsDetails) {
-        final var groupConfigs = groupsDetails.getGroupConfigsMap();
-        final int size = groupConfigs.size();
-        prefs.writeInt(ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_LIST_SIZE, size);
-
-        int i = 0;
-        for (var entry : groupConfigs.entrySet()) {
-            final GroupConfig details = entry.getValue();
-            String title = details.getHeaderText();
-            boolean collapsedByDefault = details.getVisibility() == GroupConfig.Visibility.HIDDEN;
-
-            prefs.writeInt(KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX.createKey(i), entry.getKey());
-            prefs.writeString(KEY_ZERO_SUGGEST_HEADER_GROUP_TITLE_PREFIX.createKey(i), title);
-            prefs.writeBoolean(
-                    KEY_ZERO_SUGGEST_HEADER_GROUP_COLLAPSED_BY_DEFAULT_PREFIX.createKey(i),
-                    collapsedByDefault);
-            i++;
-        }
+        prefs.writeString(ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO,
+                Base64.encodeToString(groupsDetails.toByteArray(), Base64.DEFAULT));
     }
 
     /**
@@ -225,32 +209,22 @@ public class CachedZeroSuggestionsManager {
     @NonNull
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static GroupsInfo readCachedGroupsDetails(SharedPreferencesManager prefs) {
-        final int size = prefs.readInt(ChromePreferenceKeys.KEY_ZERO_SUGGEST_HEADER_LIST_SIZE, 0);
-        final var builder = GroupsInfo.newBuilder();
+        var encoded = prefs.readString(
+                ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, null);
 
-        for (int i = 0; i < size; i++) {
-            int groupId = prefs.readInt(KEY_ZERO_SUGGEST_HEADER_GROUP_ID_PREFIX.createKey(i),
-                    AutocompleteMatch.INVALID_GROUP);
-            String groupTitle =
-                    prefs.readString(KEY_ZERO_SUGGEST_HEADER_GROUP_TITLE_PREFIX.createKey(i), null);
-            boolean collapsedByDefault = prefs.readBoolean(
-                    KEY_ZERO_SUGGEST_HEADER_GROUP_COLLAPSED_BY_DEFAULT_PREFIX.createKey(i), false);
-
-            if (groupTitle == null) {
-                // Group definition incomplete.
-                // Note that an empty string is a valid group title.
-                continue;
+        if (encoded != null) {
+            try {
+                var serialized = Base64.decode(encoded, Base64.DEFAULT);
+                return GroupsInfo.parseFrom(serialized);
+            } catch (IllegalArgumentException e) {
+                // Bad Base64 encoding.
+            } catch (InvalidProtocolBufferException e) {
+                // Bad protobuf.
             }
-
-            builder.putGroupConfigs(groupId,
-                    GroupConfig.newBuilder()
-                            .setHeaderText(groupTitle)
-                            .setVisibility(collapsedByDefault
-                                            ? GroupConfig.Visibility.HIDDEN
-                                            : GroupConfig.Visibility.DEFAULT_VISIBLE)
-                            .build());
+            prefs.removeKey(ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO);
         }
-        return builder.build();
+        // Failed to decode or no cached groups info.
+        return GroupsInfo.newBuilder().build();
     }
 
     /**
