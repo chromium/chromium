@@ -253,7 +253,8 @@ def main():
       test_filters = [c + '.*' for c in fixtures] + \
           ['*/' + c + '.*/*' for c in fixtures]
     else:
-      test_filters = ['*/' + c + '/*' for c in tests]
+      test_filters = [c for c in tests] + \
+          ['*/' + c + '/*' for c in tests]
 
   if args.as_exclusions:
     test_filters = ['-' + x for x in test_filters]
