@@ -24,17 +24,13 @@ export function rootReducer(currentState: State, action: Action): State {
 
   switch (action.type) {
     case ActionType.CHANGE_DIRECTORY:
-      return Object.assign(state, {
-        currentDirectory: changeDirectory(state, action),
-      });
+      return changeDirectory(state, action);
 
     case ActionType.CLEAR_STALE_CACHED_ENTRIES:
       return clearCachedEntries(state, action);
 
     case ActionType.SEARCH:
-      return Object.assign(state, {
-        search: search(state, action),
-      });
+      return search(state, action);
 
     default:
       console.error(`invalid action: ${action}`);

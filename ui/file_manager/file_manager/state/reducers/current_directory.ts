@@ -6,42 +6,44 @@ import {CurrentDirectory, State} from '../../externs/ts/state.js';
 import {PathComponent} from '../../foreground/js/path_component.js';
 import {ChangeDirectoryAction} from '../actions.js';
 
-/** Reducer that updates the `currentDirectory` attributes. */
+/**
+ * Reducer that updates the currentDirectory property of the state and returns
+ * the modified state.
+ */
 export function changeDirectory(
-    currentState: State, action: ChangeDirectoryAction): CurrentDirectory {
+    currentState: State, action: ChangeDirectoryAction): State {
   const fileData = currentState.allEntries[action.payload.key];
-  const emptyDir = {
+
+  let currentDirectory: CurrentDirectory = {
     key: action.payload.key,
     status: action.payload.status,
     pathComponents: [],
   };
 
-  if (!fileData) {
-    // The new directory might not be in the allEntries yet, this might happen
-    // when starting to change the directory for a entry that isn't cached.
-    // At the end of the change directory, DirectoryContents will send an Action
-    // with the Entry to be cached.
-    return emptyDir;
+  // The new directory might not be in the allEntries yet, this might happen
+  // when starting to change the directory for a entry that isn't cached.
+  // At the end of the change directory, DirectoryContents will send an Action
+  // with the Entry to be cached.
+  if (fileData) {
+    const volumeManager = window.fileManager?.volumeManager;
+    if (!volumeManager) {
+      console.debug(`VolumeManager not available yet.`);
+      currentDirectory = currentState.currentDirectory || currentDirectory;
+    } else {
+      const components = PathComponent.computeComponentsFromEntry(
+          fileData.entry!, volumeManager);
+      currentDirectory.pathComponents = components.map(c => {
+        return {
+          name: c.name,
+          label: c.name,
+          key: c.url_,
+        };
+      });
+    }
   }
 
-  const volumeManager = window.fileManager?.volumeManager;
-  if (!volumeManager) {
-    console.debug(`VolumeManager not available yet.`);
-    return currentState.currentDirectory || emptyDir;
-  }
-
-  const components =
-      PathComponent.computeComponentsFromEntry(fileData.entry!, volumeManager);
-
-  return Object.assign(currentState.currentDirectory || {}, {
-    status: action.payload.status,
-    key: action.payload.key,
-    pathComponents: components.map(c => {
-      return {
-        name: c.name,
-        label: c.name,
-        key: c.url_,
-      };
-    }),
-  });
+  return {
+    ...currentState,
+    currentDirectory,
+  };
 }
