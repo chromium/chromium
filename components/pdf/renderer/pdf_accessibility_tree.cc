@@ -1532,9 +1532,16 @@ void PdfAccessibilityTree::AddPageContent(
 }
 
 void PdfAccessibilityTree::Finish() {
+  content::RenderAccessibility* render_accessibility =
+      GetRenderAccessibilityIfEnabled();
+  if (!render_accessibility)
+    return;
+
   doc_node_->relative_bounds.transform = MakeTransformFromViewInfo();
 
   ui::AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.tree_data.tree_id = render_accessibility->GetTreeIDForPluginHost();
   update.root_id = doc_node_->id;
   for (const auto& node : nodes_)
     update.nodes.push_back(*node);
@@ -1543,11 +1550,7 @@ void PdfAccessibilityTree::Finish() {
     LOG(FATAL) << tree_.error();
 
   UpdateAXTreeDataFromSelection();
-
-  content::RenderAccessibility* render_accessibility =
-      GetRenderAccessibilityIfEnabled();
-  if (render_accessibility)
-    render_accessibility->SetPluginTreeSource(this);
+  render_accessibility->SetPluginTreeSource(this);
 
   base::UmaHistogramBoolean("Accessibility.PDF.HasAccessibleText",
                             did_get_a_text_run_);

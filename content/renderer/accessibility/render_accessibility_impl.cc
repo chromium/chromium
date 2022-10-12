@@ -746,6 +746,16 @@ int RenderAccessibilityImpl::GenerateAXID() {
   return ax_context_->GenerateAXID();
 }
 
+ui::AXTreeID RenderAccessibilityImpl::GetTreeIDForPluginHost() const {
+  DCHECK(render_frame_) << "A plugin tree should be under active construction "
+                           "only while this render frame is alive.";
+  DCHECK(render_frame_->GetWebFrame())
+      << "A render frame that contains an actively constructed plugin tree "
+         "should be in the list of committed web frames.";
+  // TODO(nektar): Why are some frames without an embedding token?
+  return render_frame_->GetWebFrame()->GetAXTreeID();
+}
+
 void RenderAccessibilityImpl::SetPluginTreeSource(
     PluginAXTreeSource* plugin_tree_source) {
   plugin_tree_source_ = plugin_tree_source;

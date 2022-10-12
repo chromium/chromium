@@ -10,6 +10,12 @@
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
 
+namespace ui {
+
+class AXTreeID;
+
+}  // namespace ui
+
 namespace content {
 
 // This interface exposes the accessibility tree for one RenderFrame.
@@ -20,9 +26,13 @@ class CONTENT_EXPORT RenderAccessibility {
   // These APIs allow a page with a single EMBED element to graft an
   // accessibility tree for the plugin content, implemented as a
   // PluginAXTreeSource, into the page's accessibility tree.
+
+  // TODO(accessibility): Consider caching the `AXTreeID` and returning a const
+  // reference to it, due to its large object size (128 bytes).
+  virtual ui::AXTreeID GetTreeIDForPluginHost() const = 0;
   virtual void SetPluginTreeSource(PluginAXTreeSource* source) = 0;
-  virtual void OnPluginRootNodeUpdated() = 0;
   virtual void ShowPluginContextMenu() = 0;
+  virtual void OnPluginRootNodeUpdated() = 0;
 
  protected:
   ~RenderAccessibility() {}

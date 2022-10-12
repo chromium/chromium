@@ -37,10 +37,13 @@ class WebDocument;
 }  // namespace blink
 
 namespace ui {
+
 struct AXActionData;
 class AXActionTarget;
 struct AXEvent;
-}
+class AXTreeID;
+
+}  // namespace ui
 
 namespace ukm {
 class MojoUkmRecorder;
@@ -91,6 +94,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   // RenderAccessibility implementation.
   int GenerateAXID() override;
+  ui::AXTreeID GetTreeIDForPluginHost() const override;
   void SetPluginTreeSource(PluginAXTreeSource* source) override;
   void OnPluginRootNodeUpdated() override;
   void ShowPluginContextMenu() override;
