@@ -70,4 +70,8 @@ export class WindowProxy {
   get url(): URL {
     return new URL(window.location.href);
   }
+
+  get onLine(): boolean {
+    return window.navigator.onLine;
+  }
 }

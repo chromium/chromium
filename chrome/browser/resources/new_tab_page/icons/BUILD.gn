@@ -29,6 +29,7 @@ generate_grd("build_grdp") {
     "link.svg",
     "mail.svg",
     "mic.svg",
+    "offline_dialog.svg",
     "shortcut_circles.svg",
     "twitter.svg",
     "upload.svg",

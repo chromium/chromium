@@ -210,7 +210,8 @@
     --upload-dialog-input-submit-color: var(--google-blue-600);
   }
 
-  #loadingContainer {
+  #loadingContainer,
+  #offlineContainer {
     align-items: center;
     display: flex;
     flex-direction: column;
@@ -221,6 +222,27 @@
   #loadingSpinner {
     display: block;
     margin-bottom: 12px;
+  }
+
+  #offlineTitle {
+    color: var(--upload-dialog-title-color);
+  }
+
+  #offlineImage {
+    background: url(icons/offline_dialog.svg) no-repeat center;
+    height: 51px;
+    margin-bottom: 24px;
+    width: 55px;
+  }
+
+  #offlineSubtitle {
+    color: var(--upload-dialog-drag-drop-title-color);
+    font-size: 16px;
+    margin-top: 6px;
+  }
+
+  #offlineRetryButton {
+    margin-top: 21px;
   }
 </style>
 
@@ -279,6 +301,22 @@
           </div>
         </div>
       </template>
+      <!-- Offline state -->
+      <template is="dom-if" if="{{isOffline_}}">
+        <div id="offlineContainer">
+          <div id="offlineImage"></div>
+          <div id="offlineTitle" class="drag-drop-title">
+            $i18n{lensSearchUploadDialogOfflineText}
+          </div>
+          <div id="offlineSubtitle">
+            $i18n{lensSearchUploadDialogOfflineSubtitleText}
+          </div>
+          <cr-button id="offlineRetryButton" class="action-button"
+              on-click="onOfflineRetryButtonClick_">
+            $i18n{lensSearchUploadDialogOfflineButtonLabel}
+          </cr-button>
+        </div>
+      </template>
     </div>
-  </div>  
+  </div>
 </div>

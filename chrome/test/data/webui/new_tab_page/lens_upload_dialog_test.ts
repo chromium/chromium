@@ -6,16 +6,24 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/new_tab_page.js';
 
 import {LensUploadDialogElement} from 'chrome://new-tab-page/lazy_load.js';
+import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+import {installMock} from './test_support.js';
 
 suite('LensUploadDialogTest', () => {
   let uploadDialog: LensUploadDialogElement;
   let wrapperElement: HTMLDivElement;
   let outsideClickTarget: HTMLDivElement;
+  let windowProxy: TestBrowserProxy;
 
   setup(() => {
     document.body.innerHTML = '';
+    windowProxy = installMock(WindowProxy);
+    windowProxy.setResultFor('onLine', true);
+
     // Larger than wrapper so that we can test outside clicks.
     document.body.style.width = '1000px';
 
@@ -65,7 +73,6 @@ suite('LensUploadDialogTest', () => {
   test('clicking outside the upload dialog closes the dialog', async () => {
     // Arrange.
     uploadDialog.openDialog();
-
     await waitAfterNextRender(uploadDialog);
 
     // Act.
@@ -74,4 +81,44 @@ suite('LensUploadDialogTest', () => {
     // Assert.
     assertTrue(uploadDialog.$.dialog.hidden);
   });
+
+  test('opening dialog while offline shows offline UI', async () => {
+    // Arrange.
+    windowProxy.setResultFor('onLine', false);
+
+    // Act.
+    uploadDialog.openDialog();
+    await waitAfterNextRender(uploadDialog);
+
+    // Assert.
+    assertTrue(uploadDialog.hasAttribute('is-offline_'));
+
+    // Reset.
+    windowProxy.setResultFor('onLine', true);
+  });
+
+  test(
+      'clicking try again in offline state when online updates UI',
+      async () => {
+        // Arrange.
+        windowProxy.setResultFor('onLine', false);
+
+        // Act.
+        uploadDialog.openDialog();
+        await waitAfterNextRender(uploadDialog);
+
+        // Assert. (consistency check)
+        assertTrue(uploadDialog.hasAttribute('is-offline_'));
+
+        // Arrange.
+        windowProxy.setResultFor('onLine', true);
+
+        // Act.
+        (uploadDialog.shadowRoot!.querySelector('#offlineRetryButton') as
+         HTMLElement)!.click();
+        await waitAfterNextRender(uploadDialog);
+
+        // Assert.
+        assertFalse(uploadDialog.hasAttribute('is-offline_'));
+      });
 });
