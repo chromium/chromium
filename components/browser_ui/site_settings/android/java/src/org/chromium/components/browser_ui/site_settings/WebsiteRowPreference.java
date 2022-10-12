@@ -96,6 +96,18 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
             summary = Formatter.formatShortFileSize(getContext(), usage);
         }
 
+        int cookies = mSiteEntry.getNumberOfCookies();
+        if (cookies > 0) {
+            String cookie_str = getContext().getResources().getQuantityString(
+                    R.plurals.cookies_count, cookies, cookies);
+            if (summary.isEmpty()) {
+                summary = cookie_str;
+            } else {
+                summary = String.format(getContext().getString(R.string.summary_with_one_bullet),
+                        cookie_str, summary);
+            }
+        }
+
         // When a single HTTP origin is represented, mark it as such.
         if (isSiteEntryASingleHttpOrigin()) {
             if (summary.isEmpty()) {

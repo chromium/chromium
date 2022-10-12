@@ -23,6 +23,8 @@ public class WebsiteGroup implements WebsiteEntry {
     private final List<Website> mWebsites;
     // Total storage taken up by all the stored websites.
     private final long mTotalUsage;
+    // Total number of cookies associated with the websites.
+    private final int mCookiesCount;
     // First Party Sets info relative to the eTLD+1.
     private FPSCookieInfo mFPSInfo;
 
@@ -67,6 +69,12 @@ public class WebsiteGroup implements WebsiteEntry {
             mFPSInfo = websites.get(0).getFPSCookieInfo();
         }
         mTotalUsage = totalUsage;
+
+        int cookiesCount = 0;
+        for (Website website : websites) {
+            cookiesCount += website.getNumberOfCookies();
+        }
+        mCookiesCount = cookiesCount;
     }
 
     // WebsiteEntry implementation.
@@ -88,6 +96,11 @@ public class WebsiteGroup implements WebsiteEntry {
     @Override
     public long getTotalUsage() {
         return mTotalUsage;
+    }
+
+    @Override
+    public int getNumberOfCookies() {
+        return mCookiesCount;
     }
 
     @Override

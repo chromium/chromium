@@ -201,6 +201,10 @@ public class WebsitePermissionsFetcher {
 
         private void addAllFetchers(TaskQueue queue) {
             addFetcherForStorage(queue);
+            // Fetch cookies if the new UI is enabled.
+            if (SiteSettingsFeatureList.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)) {
+                queue.add(new CookiesInfoFetcher());
+            }
             for (@ContentSettingsType int type = 0; type < ContentSettingsType.NUM_TYPES; type++) {
                 addFetcherForContentSettingsType(queue, type);
             }
@@ -470,6 +474,25 @@ public class WebsitePermissionsFetcher {
                                     String address = info.getHost();
                                     if (address == null) continue;
                                     findOrCreateSite(address, null).addStorageInfo(info);
+                                }
+                                queue.next();
+                            }
+                        });
+            }
+        }
+
+        private class CookiesInfoFetcher extends Task {
+            @Override
+            public void runAsync(final TaskQueue queue) {
+                mWebsitePreferenceBridge.fetchCookiesInfo(
+                        mBrowserContextHandle, new Callback<Map<String, CookiesInfo>>() {
+                            @Override
+                            public void onResult(Map<String, CookiesInfo> result) {
+                                for (Map.Entry<String, CookiesInfo> entry : result.entrySet()) {
+                                    String address = entry.getKey();
+                                    if (address == null) continue;
+                                    findOrCreateSite(address, null)
+                                            .setCookiesInfo(entry.getValue());
                                 }
                                 queue.next();
                             }

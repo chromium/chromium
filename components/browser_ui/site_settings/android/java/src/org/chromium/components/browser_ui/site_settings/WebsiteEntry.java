@@ -21,6 +21,9 @@ public interface WebsiteEntry extends Serializable {
     /** @return the total bytes used for associated storage. */
     long getTotalUsage();
 
+    /** @return the total number of cookies associated with the entry. */
+    int getNumberOfCookies();
+
     /**
      * @return whether either the eTLD+1 or one of the origins associated with it matches the given
      * search query.

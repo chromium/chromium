@@ -54,6 +54,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/ClearWebsiteStorageDialog.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ContentSettingException.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ContentSettingsResources.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/CookiesInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/DesktopSiteMetrics.java",
     "java/src/org/chromium/components/browser_ui/site_settings/FPSCookieInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/FPSCookieSettings.java",

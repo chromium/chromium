@@ -164,6 +164,9 @@
   <message name="IDS_DOMAIN_SETTINGS_SITES_IN_GROUP" desc="Title for the section that lists sites in the group for a given domain.">
     Sites under <ph name="DOMAIN">%1$s<ex>google.com</ex></ph>
   </message>
+  <message name="IDS_COOKIES_COUNT" desc="Used to display how many cookies are associated with a given site/domain.">
+    {COOKIES, plural, =1 {# cookie} other {# cookies}}
+  </message>
   <!-- Site settings: Possible permission values for a single site -->
 
   <message name="IDS_WEBSITE_SETTINGS_SITE_CATEGORY" desc="The headline above the website name on the website details page.">

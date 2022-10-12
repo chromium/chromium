@@ -16,6 +16,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class that interacts with native to retrieve and set website settings.
@@ -90,6 +91,21 @@ public class WebsitePreferenceBridge {
                 .put(origin, new LocalStorageInfo(origin, size, important));
     }
 
+    @CalledByNative
+    private static Object createCookiesInfoMap() {
+        return new HashMap<String, CookiesInfo>();
+    }
+
+    @CalledByNative
+    private static void insertCookieIntoMap(Map<String, CookiesInfo> map, String origin) {
+        CookiesInfo cookies_info = map.get(origin);
+        if (cookies_info == null) {
+            cookies_info = new CookiesInfo();
+            map.put(origin, cookies_info);
+        }
+        cookies_info.increment();
+    }
+
     public List<ContentSettingException> getContentSettingsExceptions(
             BrowserContextHandle browserContextHandle,
             @ContentSettingsType int contentSettingsType) {
@@ -118,6 +134,11 @@ public class WebsitePreferenceBridge {
     public void fetchStorageInfo(
             BrowserContextHandle browserContextHandle, Callback<ArrayList> callback) {
         WebsitePreferenceBridgeJni.get().fetchStorageInfo(browserContextHandle, callback);
+    }
+
+    public void fetchCookiesInfo(BrowserContextHandle browserContextHandle,
+            Callback<Map<String, CookiesInfo>> callback) {
+        WebsitePreferenceBridgeJni.get().fetchCookiesInfo(browserContextHandle, callback);
     }
 
     /**
@@ -391,6 +412,7 @@ public class WebsitePreferenceBridge {
                 @ContentSettingsType int type, String origin, String object);
         boolean isContentSettingsPatternValid(String pattern);
         boolean urlMatchesContentSettingsPattern(String url, String pattern);
+        void fetchCookiesInfo(BrowserContextHandle browserContextHandle, Object callback);
         void fetchStorageInfo(BrowserContextHandle browserContextHandle, Object callback);
         void fetchLocalStorageInfo(BrowserContextHandle browserContextHandle, Object callback,
                 boolean includeImportant);

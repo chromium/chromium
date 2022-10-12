@@ -42,6 +42,7 @@ public final class Website implements WebsiteEntry {
 
     private LocalStorageInfo mLocalStorageInfo;
     private FPSCookieInfo mFPSCookieInfo;
+    private CookiesInfo mCookiesInfo;
     private final List<StorageInfo> mStorageInfo = new ArrayList<>();
 
     // The collection of chooser-based permissions (e.g. USB device access) granted to this site.
@@ -287,6 +288,14 @@ public final class Website implements WebsiteEntry {
         return new ArrayList<StorageInfo>(mStorageInfo);
     }
 
+    public void setCookiesInfo(CookiesInfo info) {
+        mCookiesInfo = info;
+    }
+
+    public CookiesInfo getCookiesInfo() {
+        return mCookiesInfo;
+    }
+
     public void clearAllStoredData(
             BrowserContextHandle browserContextHandle, final StoredDataClearedCallback callback) {
         // Wait for callbacks from each mStorageInfo and another callback from
@@ -343,6 +352,12 @@ public final class Website implements WebsiteEntry {
         if (mLocalStorageInfo != null) usage += mLocalStorageInfo.getSize();
         for (StorageInfo info : mStorageInfo) usage += info.getSize();
         return usage;
+    }
+
+    @Override
+    public int getNumberOfCookies() {
+        if (mCookiesInfo == null) return 0;
+        return mCookiesInfo.getCount();
     }
 
     @Override
