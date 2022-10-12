@@ -16,6 +16,7 @@
 
 #include <cstddef>
 #include <initializer_list>
+#include <memory>
 #include <numeric>
 #include <type_traits>
 
@@ -1156,9 +1157,6 @@ TYPED_TEST_P(AnyInvTestMovable, ConversionConstructionUserDefinedType) {
 
   EXPECT_TRUE(static_cast<bool>(fun));
   EXPECT_EQ(29, TypeParam::ToThisParam(fun)(7, 8, 9).value);
-
-  EXPECT_TRUE(static_cast<bool>(fun));
-  EXPECT_EQ(38, TypeParam::ToThisParam(fun)(10, 11, 12).value);
 }
 
 TYPED_TEST_P(AnyInvTestMovable, ConversionConstructionVoidCovariance) {
@@ -1179,9 +1177,6 @@ TYPED_TEST_P(AnyInvTestMovable, ConversionAssignUserDefinedTypeEmptyLhs) {
 
   EXPECT_TRUE(static_cast<bool>(fun));
   EXPECT_EQ(29, TypeParam::ToThisParam(fun)(7, 8, 9).value);
-
-  EXPECT_TRUE(static_cast<bool>(fun));
-  EXPECT_EQ(38, TypeParam::ToThisParam(fun)(10, 11, 12).value);
 }
 
 TYPED_TEST_P(AnyInvTestMovable, ConversionAssignUserDefinedTypeNonemptyLhs) {
@@ -1193,9 +1188,6 @@ TYPED_TEST_P(AnyInvTestMovable, ConversionAssignUserDefinedTypeNonemptyLhs) {
 
   EXPECT_TRUE(static_cast<bool>(fun));
   EXPECT_EQ(29, TypeParam::ToThisParam(fun)(7, 8, 9).value);
-
-  EXPECT_TRUE(static_cast<bool>(fun));
-  EXPECT_EQ(38, TypeParam::ToThisParam(fun)(10, 11, 12).value);
 }
 
 TYPED_TEST_P(AnyInvTestMovable, ConversionAssignVoidCovariance) {
@@ -1412,6 +1404,41 @@ TYPED_TEST_P(AnyInvTestRvalue, ConversionAssignReferenceWrapper) {
 
   EXPECT_FALSE((
       std::is_assignable<AnyInvType&, std::reference_wrapper<AddType>>::value));
+}
+
+TYPED_TEST_P(AnyInvTestRvalue, NonConstCrashesOnSecondCall) {
+  using AnyInvType = typename TypeParam::AnyInvType;
+  using AddType = typename TypeParam::AddType;
+
+  AnyInvType fun(absl::in_place_type<AddType>, 5);
+
+  EXPECT_TRUE(static_cast<bool>(fun));
+  std::move(fun)(7, 8, 9);
+
+  // Ensure we're still valid
+  EXPECT_TRUE(static_cast<bool>(fun));  // NOLINT(bugprone-use-after-move)
+
+#if !defined(NDEBUG) || ABSL_OPTION_HARDENED == 1
+  EXPECT_DEATH_IF_SUPPORTED(std::move(fun)(7, 8, 9), "");
+#endif
+}
+
+// Ensure that any qualifiers (in particular &&-qualifiers) do not affect
+// when the destructor is actually run.
+TYPED_TEST_P(AnyInvTestRvalue, QualifierIndependentObjectLifetime) {
+  using AnyInvType = typename TypeParam::AnyInvType;
+
+  auto refs = std::make_shared<std::nullptr_t>();
+  {
+    AnyInvType fun([refs](auto&&...) noexcept { return 0; });
+    EXPECT_FALSE(refs.unique());
+
+    std::move(fun)(7, 8, 9);
+
+    // Ensure destructor hasn't run even if rref-qualified
+    EXPECT_FALSE(refs.unique());
+  }
+  EXPECT_TRUE(refs.unique());
 }
 
 // NOTE: This test suite originally attempted to enumerate all possible
@@ -1670,7 +1697,9 @@ INSTANTIATE_TYPED_TEST_SUITE_P(NonRvalueCallNothrow, AnyInvTestNonRvalue,
 REGISTER_TYPED_TEST_SUITE_P(AnyInvTestRvalue,
                             ConversionConstructionReferenceWrapper,
                             NonMoveableResultType,
-                            ConversionAssignReferenceWrapper);
+                            ConversionAssignReferenceWrapper,
+                            NonConstCrashesOnSecondCall,
+                            QualifierIndependentObjectLifetime);
 
 INSTANTIATE_TYPED_TEST_SUITE_P(RvalueCallMayThrow, AnyInvTestRvalue,
                                TestParameterListRvalueQualifiersCallMayThrow);

@@ -58,8 +58,10 @@ class LogEntry final {
   static constexpr int kNoVerbosityLevel = -1;
   static constexpr int kNoVerboseLevel = -1;  // TO BE removed
 
-  LogEntry(const LogEntry&) = default;
-  LogEntry& operator=(const LogEntry&) = default;
+  // Pass `LogEntry` by reference, and do not store it as its state does not
+  // outlive the call to `LogSink::Send()`.
+  LogEntry(const LogEntry&) = delete;
+  LogEntry& operator=(const LogEntry&) = delete;
 
   // Source file and line where the log message occurred.  Taken from `__FILE__`
   // and `__LINE__` unless overridden by `LOG(...).AtLocation(...)`.

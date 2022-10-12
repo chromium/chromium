@@ -16,12 +16,14 @@
 
 #include <algorithm>
 #include <forward_list>
+#include <iterator>
 #include <list>
 #include <memory>
 #include <scoped_allocator>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "gmock/gmock.h"
@@ -49,6 +51,7 @@ using testing::ElementsAre;
 using testing::ElementsAreArray;
 using testing::Eq;
 using testing::Gt;
+using testing::Pointwise;
 using testing::PrintToString;
 
 using IntVec = absl::InlinedVector<int, 8>;
@@ -1822,6 +1825,114 @@ TEST(InlinedVectorTest, AbslHashValueWorks) {
   }
 
   EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(cases));
+}
+
+class MoveConstructibleOnlyInstance
+    : public absl::test_internal::BaseCountedInstance {
+ public:
+  explicit MoveConstructibleOnlyInstance(int x) : BaseCountedInstance(x) {}
+  MoveConstructibleOnlyInstance(MoveConstructibleOnlyInstance&& other) =
+      default;
+  MoveConstructibleOnlyInstance& operator=(
+      MoveConstructibleOnlyInstance&& other) = delete;
+};
+
+MATCHER(HasValue, "") {
+  return ::testing::get<0>(arg).value() == ::testing::get<1>(arg);
+}
+
+TEST(MoveAssignment, NonAssignable) {
+  using X = MoveConstructibleOnlyInstance;
+  {
+    InstanceTracker tracker;
+    absl::InlinedVector<X, 2> inlined;
+    inlined.emplace_back(1);
+    absl::InlinedVector<X, 2> allocated;
+    allocated.emplace_back(1);
+    allocated.emplace_back(2);
+    allocated.emplace_back(3);
+    tracker.ResetCopiesMovesSwaps();
+
+    inlined = std::move(allocated);
+    // passed ownership of the allocated storage
+    EXPECT_EQ(tracker.moves(), 0);
+    EXPECT_EQ(tracker.live_instances(), 3);
+
+    EXPECT_THAT(inlined, Pointwise(HasValue(), {1, 2, 3}));
+  }
+
+  {
+    InstanceTracker tracker;
+    absl::InlinedVector<X, 2> inlined;
+    inlined.emplace_back(1);
+    absl::InlinedVector<X, 2> allocated;
+    allocated.emplace_back(1);
+    allocated.emplace_back(2);
+    allocated.emplace_back(3);
+    tracker.ResetCopiesMovesSwaps();
+
+    allocated = std::move(inlined);
+    // Moved elements
+    EXPECT_EQ(tracker.moves(), 1);
+    EXPECT_EQ(tracker.live_instances(), 1);
+
+    EXPECT_THAT(allocated, Pointwise(HasValue(), {1}));
+  }
+
+  {
+    InstanceTracker tracker;
+    absl::InlinedVector<X, 2> inlined_a;
+    inlined_a.emplace_back(1);
+    absl::InlinedVector<X, 2> inlined_b;
+    inlined_b.emplace_back(1);
+    tracker.ResetCopiesMovesSwaps();
+
+    inlined_a = std::move(inlined_b);
+    // Moved elements
+    EXPECT_EQ(tracker.moves(), 1);
+    EXPECT_EQ(tracker.live_instances(), 1);
+
+    EXPECT_THAT(inlined_a, Pointwise(HasValue(), {1}));
+  }
+
+  {
+    InstanceTracker tracker;
+    absl::InlinedVector<X, 2> allocated_a;
+    allocated_a.emplace_back(1);
+    allocated_a.emplace_back(2);
+    allocated_a.emplace_back(3);
+    absl::InlinedVector<X, 2> allocated_b;
+    allocated_b.emplace_back(4);
+    allocated_b.emplace_back(5);
+    allocated_b.emplace_back(6);
+    allocated_b.emplace_back(7);
+    tracker.ResetCopiesMovesSwaps();
+
+    allocated_a = std::move(allocated_b);
+    // passed ownership of the allocated storage
+    EXPECT_EQ(tracker.moves(), 0);
+    EXPECT_EQ(tracker.live_instances(), 4);
+
+    EXPECT_THAT(allocated_a, Pointwise(HasValue(), {4, 5, 6, 7}));
+  }
+
+  {
+    InstanceTracker tracker;
+    absl::InlinedVector<X, 2> v;
+    v.emplace_back(1);
+    v.emplace_back(2);
+    v.emplace_back(3);
+
+    tracker.ResetCopiesMovesSwaps();
+
+    // Obfuscated in order to pass -Wself-move.
+    v = std::move(*std::addressof(v));
+    // nothing happens
+    EXPECT_EQ(tracker.moves(), 0);
+    EXPECT_EQ(tracker.live_instances(), 3);
+
+    EXPECT_THAT(v, Pointwise(HasValue(), {1, 2, 3}));
+  }
 }
 
 }  // anonymous namespace

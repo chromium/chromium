@@ -423,8 +423,8 @@ constexpr char GetOrNull(absl::string_view data, size_t pos) {
   return pos < data.size() ? data[pos] : '\0';
 }
 
-// We store cordz_info as 64 bit pointer value in big endian format. This
-// guarantees that the least significant byte of cordz_info matches the last
+// We store cordz_info as 64 bit pointer value in little endian format. This
+// guarantees that the least significant byte of cordz_info matches the first
 // byte of the inline data representation in as_chars_, which holds the inlined
 // size or the 'is_tree' bit.
 using cordz_info_t = int64_t;
@@ -434,14 +434,14 @@ using cordz_info_t = int64_t;
 static_assert(sizeof(cordz_info_t) * 2 == kMaxInline + 1, "");
 static_assert(sizeof(cordz_info_t) >= sizeof(intptr_t), "");
 
-// BigEndianByte() creates a big endian representation of 'value', i.e.: a big
-// endian value where the last byte in the host's representation holds 'value`,
-// with all other bytes being 0.
-static constexpr cordz_info_t BigEndianByte(unsigned char value) {
+// LittleEndianByte() creates a little endian representation of 'value', i.e.:
+// a little endian value where the first byte in the host's representation
+// holds 'value`, with all other bytes being 0.
+static constexpr cordz_info_t LittleEndianByte(unsigned char value) {
 #if defined(ABSL_IS_BIG_ENDIAN)
-  return value;
-#else
   return static_cast<cordz_info_t>(value) << ((sizeof(cordz_info_t) - 1) * 8);
+#else
+  return value;
 #endif
 }
 
@@ -450,25 +450,37 @@ class InlineData {
   // DefaultInitType forces the use of the default initialization constructor.
   enum DefaultInitType { kDefaultInit };
 
-  // kNullCordzInfo holds the big endian representation of intptr_t(1)
+  // kNullCordzInfo holds the little endian representation of intptr_t(1)
   // This is the 'null' / initial value of 'cordz_info'. The null value
   // is specifically big endian 1 as with 64-bit pointers, the last
   // byte of cordz_info overlaps with the last byte holding the tag.
-  static constexpr cordz_info_t kNullCordzInfo = BigEndianByte(1);
+  static constexpr cordz_info_t kNullCordzInfo = LittleEndianByte(1);
+
+  // kTagOffset contains the offset of the control byte / tag. This constant is
+  // intended mostly for debugging purposes: do not remove this constant as it
+  // is actively inspected and used by gdb pretty printing code.
+  static constexpr size_t kTagOffset = 0;
 
   constexpr InlineData() : as_chars_{0} {}
   explicit InlineData(DefaultInitType) {}
   explicit constexpr InlineData(CordRep* rep) : as_tree_(rep) {}
   explicit constexpr InlineData(absl::string_view chars)
-      : as_chars_{
-            GetOrNull(chars, 0),  GetOrNull(chars, 1),
-            GetOrNull(chars, 2),  GetOrNull(chars, 3),
-            GetOrNull(chars, 4),  GetOrNull(chars, 5),
-            GetOrNull(chars, 6),  GetOrNull(chars, 7),
-            GetOrNull(chars, 8),  GetOrNull(chars, 9),
-            GetOrNull(chars, 10), GetOrNull(chars, 11),
-            GetOrNull(chars, 12), GetOrNull(chars, 13),
-            GetOrNull(chars, 14), static_cast<char>((chars.size() << 1))} {}
+      : as_chars_{static_cast<char>((chars.size() << 1)),
+                  GetOrNull(chars, 0),
+                  GetOrNull(chars, 1),
+                  GetOrNull(chars, 2),
+                  GetOrNull(chars, 3),
+                  GetOrNull(chars, 4),
+                  GetOrNull(chars, 5),
+                  GetOrNull(chars, 6),
+                  GetOrNull(chars, 7),
+                  GetOrNull(chars, 8),
+                  GetOrNull(chars, 9),
+                  GetOrNull(chars, 10),
+                  GetOrNull(chars, 11),
+                  GetOrNull(chars, 12),
+                  GetOrNull(chars, 13),
+                  GetOrNull(chars, 14)} {}
 
   // Returns true if the current instance is empty.
   // The 'empty value' is an inlined data value of zero length.
@@ -499,8 +511,8 @@ class InlineData {
   // Requires the current instance to hold a tree value.
   CordzInfo* cordz_info() const {
     assert(is_tree());
-    intptr_t info = static_cast<intptr_t>(
-        absl::big_endian::ToHost64(static_cast<uint64_t>(as_tree_.cordz_info)));
+    intptr_t info = static_cast<intptr_t>(absl::little_endian::ToHost64(
+        static_cast<uint64_t>(as_tree_.cordz_info)));
     assert(info & 1);
     return reinterpret_cast<CordzInfo*>(info - 1);
   }
@@ -512,7 +524,7 @@ class InlineData {
     assert(is_tree());
     uintptr_t info = reinterpret_cast<uintptr_t>(cordz_info) | 1;
     as_tree_.cordz_info =
-        static_cast<cordz_info_t>(absl::big_endian::FromHost64(info));
+        static_cast<cordz_info_t>(absl::little_endian::FromHost64(info));
   }
 
   // Resets the current cordz_info to null / empty.
@@ -525,7 +537,7 @@ class InlineData {
   // Requires the current instance to hold inline data.
   const char* as_chars() const {
     assert(!is_tree());
-    return as_chars_;
+    return &as_chars_[1];
   }
 
   // Returns a mutable pointer to the character data inside this instance.
@@ -543,7 +555,7 @@ class InlineData {
   //
   // It's an error to read from the returned pointer without a preceding write
   // if the current instance does not hold inline data, i.e.: is_tree() == true.
-  char* as_chars() { return as_chars_; }
+  char* as_chars() { return &as_chars_[1]; }
 
   // Returns the tree value of this value.
   // Requires the current instance to hold a tree value.
@@ -608,20 +620,13 @@ class InlineData {
  private:
   // See cordz_info_t for forced alignment and size of `cordz_info` details.
   struct AsTree {
-    explicit constexpr AsTree(absl::cord_internal::CordRep* tree)
-        : rep(tree), cordz_info(kNullCordzInfo) {}
-    // This union uses up extra space so that whether rep is 32 or 64 bits,
-    // cordz_info will still start at the eighth byte, and the last
-    // byte of cordz_info will still be the last byte of InlineData.
-    union {
-      absl::cord_internal::CordRep* rep;
-      cordz_info_t unused_aligner;
-    };
-    cordz_info_t cordz_info;
+    explicit constexpr AsTree(absl::cord_internal::CordRep* tree) : rep(tree) {}
+    cordz_info_t cordz_info = kNullCordzInfo;
+    absl::cord_internal::CordRep* rep;
   };
 
-  char& tag() { return reinterpret_cast<char*>(this)[kMaxInline]; }
-  char tag() const { return reinterpret_cast<const char*>(this)[kMaxInline]; }
+  int8_t& tag() { return reinterpret_cast<int8_t*>(this)[0]; }
+  int8_t tag() const { return reinterpret_cast<const int8_t*>(this)[0]; }
 
   // If the data has length <= kMaxInline, we store it in `as_chars_`, and
   // store the size in the last char of `as_chars_` shifted left + 1.

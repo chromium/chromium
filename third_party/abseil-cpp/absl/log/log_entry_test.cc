@@ -101,13 +101,14 @@ class LogEntryTestPeer {
                   entry_.source_basename(), entry_.source_line(), view)
             : 0;
 
-    EXPECT_THAT(entry_.prefix_len_, Eq(view.data() - buf_.data()));
+    EXPECT_THAT(entry_.prefix_len_,
+                Eq(static_cast<size_t>(view.data() - buf_.data())));
     AppendTruncated(text_message, view);
     view = absl::Span<char>(view.data(), view.size() + 2);
     view[0] = '\n';
     view[1] = '\0';
     view.remove_prefix(2);
-    buf_.resize(view.data() - buf_.data());
+    buf_.resize(static_cast<size_t>(view.data() - buf_.data()));
     entry_.text_message_with_prefix_and_newline_and_nul_ = absl::MakeSpan(buf_);
   }
   LogEntryTestPeer(const LogEntryTestPeer&) = delete;
@@ -124,7 +125,7 @@ class LogEntryTestPeer {
     const size_t prefix_size = log_internal::FormatLogPrefix(
         entry_.log_severity(), entry_.timestamp(), entry_.tid(),
         entry_.source_basename(), entry_.source_line(), buf);
-    EXPECT_THAT(prefix_size, Eq(buf.data() - str.data()));
+    EXPECT_THAT(prefix_size, Eq(static_cast<size_t>(buf.data() - str.data())));
     str.resize(prefix_size);
     return str;
   }

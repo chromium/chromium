@@ -194,6 +194,7 @@ absl_cc_library(
     absl::inlined_vector_internal
     absl::throw_delegate
     absl::memory
+    absl::type_traits
   PUBLIC
 )
 

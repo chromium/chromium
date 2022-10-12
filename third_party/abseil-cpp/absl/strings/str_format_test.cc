@@ -1118,6 +1118,23 @@ TEST_F(FormatExtensionTest, AbslStringifyExample) {
   PointStringify p;
   EXPECT_EQ(absl::StrFormat("a %v z", p), "a (10, 20) z");
 }
+
+struct PointStringifyUsingFormat {
+  template <typename FormatSink>
+  friend void AbslStringify(FormatSink& sink,
+                            const PointStringifyUsingFormat& p) {
+    absl::Format(&sink, "(%g, %g)", p.x, p.y);
+  }
+
+  double x = 10.0;
+  double y = 20.0;
+};
+
+TEST_F(FormatExtensionTest, AbslStringifyExampleUsingFormat) {
+  PointStringifyUsingFormat p;
+  EXPECT_EQ(absl::StrFormat("a %v z", p), "a (10, 20) z");
+}
+
 }  // namespace
 
 // Some codegen thunks that we can use to easily dump the generated assembly for

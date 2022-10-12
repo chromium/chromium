@@ -963,8 +963,8 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     visibility = ["//visibility:private"],
     deps = [
+        ":str_format",
         ":strings",
-        "//absl/base:core_headers",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -1164,7 +1164,6 @@ cc_test(
         ":cord",
         ":str_format",
         ":strings",
-        "//absl/base:core_headers",
         "@com_google_googletest//:gtest_main",
     ],
 )

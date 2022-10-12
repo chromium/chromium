@@ -83,6 +83,9 @@ using IsMemcpyOk =
                       absl::is_trivially_copy_assignable<ValueType<A>>,
                       absl::is_trivially_destructible<ValueType<A>>>;
 
+template <typename A>
+using IsMoveAssignOk = std::is_move_assignable<ValueType<A>>;
+
 template <typename T>
 struct TypeIdentity {
   using type = T;

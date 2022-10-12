@@ -140,7 +140,6 @@ set(ABSL_LOCAL_GOOGLETEST_DIR "/usr/src/googletest" CACHE PATH
   )
 
 if((BUILD_TESTING AND ABSL_BUILD_TESTING) OR ABSL_BUILD_TEST_HELPERS)
-  ## check targets
   if (ABSL_USE_EXTERNAL_GOOGLETEST)
     if (ABSL_FIND_GOOGLETEST)
       find_package(GTest REQUIRED)
@@ -172,11 +171,6 @@ if((BUILD_TESTING AND ABSL_BUILD_TESTING) OR ABSL_BUILD_TEST_HELPERS)
     endif()
     include(CMake/Googletest/DownloadGTest.cmake)
   endif()
-
-  check_target(GTest::gtest)
-  check_target(GTest::gtest_main)
-  check_target(GTest::gmock)
-  check_target(GTest::gmock_main)
 endif()
 
 add_subdirectory(absl)

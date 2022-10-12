@@ -134,6 +134,7 @@ cc_library(
         "//absl/base:core_headers",
         "//absl/base:throw_delegate",
         "//absl/memory",
+        "//absl/meta:type_traits",
     ],
 )
 
@@ -1011,8 +1012,8 @@ cc_binary(
         ":flat_hash_set",
         ":hashtable_debug",
         "//absl/base:raw_logging_internal",
-        "//absl/flags:flag",
         "//absl/hash",
+        "//absl/log",
         "//absl/memory",
         "//absl/strings:cord",
         "//absl/strings:str_format",

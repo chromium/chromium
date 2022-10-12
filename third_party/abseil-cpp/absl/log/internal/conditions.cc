@@ -37,7 +37,7 @@ uint32_t LossyIncrement(std::atomic<uint32_t>* counter) {
 }  // namespace
 
 bool LogEveryNState::ShouldLog(int n) {
-  return n != 0 && (LossyIncrement(&counter_) % n) == 0;
+  return n > 0 && (LossyIncrement(&counter_) % static_cast<uint32_t>(n)) == 0;
 }
 
 bool LogFirstNState::ShouldLog(int n) {

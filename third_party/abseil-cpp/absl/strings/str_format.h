@@ -570,6 +570,41 @@ ABSL_MUST_USE_RESULT inline bool FormatUntyped(
 // StrFormat Extensions
 //------------------------------------------------------------------------------
 //
+// AbslStringify()
+//
+// A simpler customization API for formatting user-defined types using
+// absl::StrFormat(). The API relies on detecting an overload in the
+// user-defined type's namespace of a free (non-member) `AbslStringify()`
+// function as a friend definition with the following signature:
+//
+// template <typename Sink>
+// void AbslStringify(Sink& sink, const X& value);
+//
+// An `AbslStringify()` overload for a type should only be declared in the same
+// file and namespace as said type.
+//
+// Note that unlike with AbslFormatConvert(), AbslStringify() does not allow
+// customization of allowed conversion characters. AbslStringify() uses `%v` as
+// the underlying conversion specififer. Additionally, AbslStringify() supports
+// use with absl::StrCat while AbslFormatConvert() does not.
+//
+// Example:
+//
+// struct Point {
+//   // To add formatting support to `Point`, we simply need to add a free
+//   // (non-member) function `AbslStringify()`. This method prints in the
+//   // request format using the underlying `%v` specifier. You can add such a
+//   // free function using a friend declaration within the body of the class.
+//   // The sink parameter is a templated type to avoid requiring dependencies.
+//   template <typename Sink>
+//   friend void AbslStringify(Sink& sink, const Point& p) {
+//     absl::Format(&sink, "(%v, %v)", p.x, p.y);
+//   }
+//
+//   int x;
+//   int y;
+// };
+//
 // AbslFormatConvert()
 //
 // The StrFormat library provides a customization API for formatting
@@ -616,9 +651,9 @@ ABSL_MUST_USE_RESULT inline bool FormatUntyped(
 //   AbslFormatConvert(const Point& p, const absl::FormatConversionSpec& spec,
 //                     absl::FormatSink* s) {
 //     if (spec.conversion_char() == absl::FormatConversionChar::s) {
-//       s->Append(absl::StrCat("x=", p.x, " y=", p.y));
+//       absl::Format(s, "x=%vy=%v", p.x, p.y);
 //     } else {
-//       s->Append(absl::StrCat(p.x, ",", p.y));
+//       absl::Format(s, "%v,%v", p.x, p.y);
 //     }
 //     return {true};
 //   }
@@ -787,6 +822,11 @@ class FormatSink {
   // at least `width`.
   bool PutPaddedString(string_view v, int width, int precision, bool left) {
     return sink_->PutPaddedString(v, width, precision, left);
+  }
+
+  // Support `absl::Format(&sink, format, args...)`.
+  friend void AbslFormatFlush(FormatSink* sink, absl::string_view v) {
+    sink->Append(v);
   }
 
  private:

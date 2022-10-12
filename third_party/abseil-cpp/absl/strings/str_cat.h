@@ -77,6 +77,43 @@ struct AlphaNumBuffer {
   size_t size;
 };
 
+//------------------------------------------------------------------------------
+// StrCat Extension
+//------------------------------------------------------------------------------
+//
+// AbslStringify()
+//
+// A simple customization API for formatting user-defined types using
+// absl::StrCat(). The API relies on detecting an overload in the
+// user-defined type's namespace of a free (non-member) `AbslStringify()`
+// function as a friend definition with the following signature:
+//
+// template <typename Sink>
+// void AbslStringify(Sink& sink, const X& value);
+//
+// An `AbslStringify()` overload for a type should only be declared in the same
+// file and namespace as said type.
+//
+// Note that AbslStringify() also supports use with absl::StrFormat().
+//
+// Example:
+//
+// struct Point {
+//   // To add formatting support to `Point`, we simply need to add a free
+//   // (non-member) function `AbslStringify()`. This method specifies how
+//   // Point should be printed when absl::StrCat() is called on it. You can add
+//   // such a free function using a friend declaration within the body of the
+//   // class. The sink parameter is a templated type to avoid requiring
+//   // dependencies.
+//   template <typename Sink> friend void AbslStringify(Sink&
+//   sink, const Point& p) {
+//     absl::Format(&sink, "(%v, %v)", p.x, p.y);
+//   }
+//
+//   int x;
+//   int y;
+// };
+
 class StringifySink {
  public:
   void Append(size_t count, char ch);
@@ -84,6 +121,11 @@ class StringifySink {
   void Append(string_view v);
 
   bool PutPaddedString(string_view v, int width, int precision, bool left);
+
+  // Support `absl::Format(&sink, format, args...)`.
+  friend void AbslFormatFlush(StringifySink* sink, absl::string_view v) {
+    sink->Append(v);
+  }
 
   template <typename T>
   friend string_view ExtractStringification(StringifySink& sink, const T& v);

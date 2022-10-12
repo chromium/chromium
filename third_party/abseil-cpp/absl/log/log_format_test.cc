@@ -108,7 +108,7 @@ TYPED_TEST(CharLogFormatTest, Printable) {
 TYPED_TEST(CharLogFormatTest, Unprintable) {
   absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
 
-  const TypeParam value = 0xeeu;
+  constexpr auto value = static_cast<TypeParam>(0xeeu);
   auto comparison_stream = ComparisonStream();
   comparison_stream << value;
 

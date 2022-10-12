@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "absl/strings/str_format.h"
 #include "absl/strings/substitute.h"
 
 #ifdef __ANDROID__
@@ -628,6 +629,23 @@ struct PointStringify {
 
 TEST(StrCat, AbslStringifyExample) {
   PointStringify p;
+  EXPECT_EQ(absl::StrCat(p), "(10, 20)");
+  EXPECT_EQ(absl::StrCat("a ", p, " z"), "a (10, 20) z");
+}
+
+struct PointStringifyUsingFormat {
+  template <typename FormatSink>
+  friend void AbslStringify(FormatSink& sink,
+                            const PointStringifyUsingFormat& p) {
+    absl::Format(&sink, "(%g, %g)", p.x, p.y);
+  }
+
+  double x = 10.0;
+  double y = 20.0;
+};
+
+TEST(StrCat, AbslStringifyExampleUsingFormat) {
+  PointStringifyUsingFormat p;
   EXPECT_EQ(absl::StrCat(p), "(10, 20)");
   EXPECT_EQ(absl::StrCat("a ", p, " z"), "a (10, 20) z");
 }

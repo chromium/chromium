@@ -281,6 +281,7 @@ absl_cc_test(
     ${ABSL_TEST_COPTS}
   DEPS
     absl::strings
+    absl::str_format
     absl::core_headers
     GTest::gmock_main
 )

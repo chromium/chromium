@@ -202,9 +202,7 @@ const char *ConsumeConversion(const char *pos, const char *const end,
 
   auto tag = GetTagForChar(c);
 
-  if (*(pos - 1) == 'v' && *(pos - 2) != '%') {
-    return nullptr;
-  }
+  if (ABSL_PREDICT_FALSE(c == 'v' && (pos - original_pos) != 1)) return nullptr;
 
   if (ABSL_PREDICT_FALSE(!tag.is_conv())) {
     if (ABSL_PREDICT_FALSE(!tag.is_length())) return nullptr;
@@ -223,6 +221,8 @@ const char *ConsumeConversion(const char *pos, const char *const end,
       conv->length_mod = length_mod;
     }
     tag = GetTagForChar(c);
+
+    if (ABSL_PREDICT_FALSE(c == 'v')) return nullptr;
     if (ABSL_PREDICT_FALSE(!tag.is_conv())) return nullptr;
   }
 

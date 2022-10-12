@@ -428,9 +428,10 @@ struct map_slot_policy {
     emplace(new_slot);
 #if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
     if (absl::is_trivially_relocatable<value_type>()) {
-      // TODO(b/247130232): remove cast after fixing class-memaccess warning.
+      // TODO(b/247130232,b/251814870): remove casts after fixing warnings.
       std::memcpy(static_cast<void*>(std::launder(&new_slot->value)),
-                  &old_slot->value, sizeof(value_type));
+                  static_cast<const void*>(&old_slot->value),
+                  sizeof(value_type));
       return;
     }
 #endif

@@ -148,6 +148,9 @@ ABSL_NAMESPACE_BEGIN
 //     // rvalue-reference qualified.
 //     std::move(continuation)(result_of_foo);
 //   }
+//
+// Attempting to call `absl::AnyInvocable` multiple times in such a case
+// results in undefined behavior.
 template <class Sig>
 class AnyInvocable : private internal_any_invocable::Impl<Sig> {
  private:

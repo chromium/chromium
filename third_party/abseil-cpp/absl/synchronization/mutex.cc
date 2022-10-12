@@ -2342,22 +2342,26 @@ ABSL_ATTRIBUTE_NOINLINE void Mutex::UnlockSlow(SynchWaitParams *waitp) {
   }                            // end of for(;;)-loop
 
   if (wake_list != kPerThreadSynchNull) {
-    int64_t wait_cycles = 0;
+    int64_t total_wait_cycles = 0;
+    int64_t max_wait_cycles = 0;
     int64_t now = base_internal::CycleClock::Now();
     do {
-      // Sample lock contention events only if the waiter was trying to acquire
+      // Profile lock contention events only if the waiter was trying to acquire
       // the lock, not waiting on a condition variable or Condition.
       if (!wake_list->cond_waiter) {
-        wait_cycles += (now - wake_list->waitp->contention_start_cycles);
+        int64_t cycles_waited =
+            (now - wake_list->waitp->contention_start_cycles);
+        total_wait_cycles += cycles_waited;
+        if (max_wait_cycles == 0) max_wait_cycles = cycles_waited;
         wake_list->waitp->contention_start_cycles = now;
         wake_list->waitp->should_submit_contention_data = true;
       }
       wake_list = Wakeup(wake_list);              // wake waiters
     } while (wake_list != kPerThreadSynchNull);
-    if (wait_cycles > 0) {
-      mutex_tracer("slow release", this, wait_cycles);
+    if (total_wait_cycles > 0) {
+      mutex_tracer("slow release", this, total_wait_cycles);
       ABSL_TSAN_MUTEX_PRE_DIVERT(this, 0);
-      submit_profile_data(wait_cycles);
+      submit_profile_data(total_wait_cycles);
       ABSL_TSAN_MUTEX_POST_DIVERT(this, 0);
     }
   }

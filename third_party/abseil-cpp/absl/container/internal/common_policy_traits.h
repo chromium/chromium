@@ -93,11 +93,12 @@ struct common_policy_traits {
                             slot_type* old_slot, char) {
 #if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
     if (absl::is_trivially_relocatable<value_type>()) {
-      // TODO(b/247130232): remove cast after fixing class-memaccess warning.
+      // TODO(b/247130232,b/251814870): remove casts after fixing warnings.
       std::memcpy(static_cast<void*>(
                       std::launder(const_cast<std::remove_const_t<value_type>*>(
                           &element(new_slot)))),
-                  &element(old_slot), sizeof(value_type));
+                  static_cast<const void*>(&element(old_slot)),
+                  sizeof(value_type));
       return;
     }
 #endif

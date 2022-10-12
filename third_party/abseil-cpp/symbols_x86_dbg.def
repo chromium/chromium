@@ -1836,7 +1836,7 @@ EXPORTS
     ?FromChrono@absl@@YA?AVDuration@1@ABV?$duration@_JV?$ratio@$00$0PECEA@@Cr@std@@@chrono@Cr@std@@@Z
     ?FromChrono@absl@@YA?AVTime@1@ABV?$time_point@Vsystem_clock@chrono@Cr@std@@V?$duration@_JV?$ratio@$00$0PECEA@@Cr@std@@@234@@chrono@Cr@std@@@Z
     ?FromCivil@absl@@YA?AVTime@1@V?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@time_internal@1@VTimeZone@1@@Z
-    ?FromHost64@big_endian@absl@@YA_K_K@Z
+    ?FromHost64@little_endian@absl@@YA_K_K@Z
     ?FromInt64@time_internal@absl@@YA?AVDuration@2@_JV?$ratio@$0DM@$00@Cr@std@@@Z
     ?FromInt64@time_internal@absl@@YA?AVDuration@2@_JV?$ratio@$0OBA@$00@Cr@std@@@Z
     ?FromTM@absl@@YA?AVTime@1@ABUtm@@VTimeZone@1@@Z
@@ -2407,7 +2407,7 @@ EXPORTS
     ?ToDoubleSeconds@absl@@YANVDuration@1@@Z
     ?ToHost16@big_endian@absl@@YAGG@Z
     ?ToHost32@big_endian@absl@@YAII@Z
-    ?ToHost64@big_endian@absl@@YA_K_K@Z
+    ?ToHost64@little_endian@absl@@YA_K_K@Z
     ?ToInt64@time_internal@absl@@YA_JVDuration@2@V?$ratio@$00$00@Cr@std@@@Z
     ?ToInt64@time_internal@absl@@YA_JVDuration@2@V?$ratio@$00$0DLJKMKAA@@Cr@std@@@Z
     ?ToInt64@time_internal@absl@@YA_JVDuration@2@V?$ratio@$00$0DOI@@Cr@std@@@Z
@@ -3435,8 +3435,8 @@ EXPORTS
     ?substr@string_view@absl@@QBE?AV12@II@Z
     ?substring@CordRep@cord_internal@absl@@QAEPAUCordRepSubstring@23@XZ
     ?substring@CordRep@cord_internal@absl@@QBEPBUCordRepSubstring@23@XZ
-    ?tag@InlineData@cord_internal@absl@@AAEAADXZ
-    ?tag@InlineData@cord_internal@absl@@ABEDXZ
+    ?tag@InlineData@cord_internal@absl@@AAEAACXZ
+    ?tag@InlineData@cord_internal@absl@@ABECXZ
     ?tail@CordRepRing@cord_internal@absl@@QBEIXZ
     ?thread_identity@PerThreadSynch@base_internal@absl@@QAEPAUThreadIdentity@23@XZ
     ?throw_bad_optional_access@optional_internal@absl@@YAXXZ

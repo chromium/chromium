@@ -118,20 +118,23 @@ class LogEntryStreambuf final : public std::streambuf {
     // If no data were ever streamed in, this is where we must write the prefix.
     if (pbase() == nullptr) Initialize();
     // Here we reclaim the two bytes we reserved.
-    size_t idx = pptr() - pbase();
+    ptrdiff_t idx = pptr() - pbase();
     setp(buf_.data(), buf_.data() + buf_.size());
-    pbump(idx);
+    pbump(static_cast<int>(idx));
     sputc('\n');
     sputc('\0');
     finalized_ = true;
-    return absl::Span<const char>(pbase(), pptr() - pbase());
+    return absl::Span<const char>(pbase(),
+                                  static_cast<size_t>(pptr() - pbase()));
   }
   size_t prefix_len() const { return prefix_len_; }
 
  protected:
   std::streamsize xsputn(const char* s, std::streamsize n) override {
+    if (n < 0) return 0;
     if (pbase() == nullptr) Initialize();
-    return Append(absl::string_view(s, n));
+    return static_cast<std::streamsize>(
+        Append(absl::string_view(s, static_cast<size_t>(n))));
   }
 
   int overflow(int ch = EOF) override {
@@ -154,14 +157,14 @@ class LogEntryStreambuf final : public std::streambuf {
       prefix_len_ = log_internal::FormatLogPrefix(
           entry_.log_severity(), entry_.timestamp(), entry_.tid(),
           entry_.source_basename(), entry_.source_line(), remaining);
-      pbump(prefix_len_);
+      pbump(static_cast<int>(prefix_len_));
     }
   }
 
   size_t Append(absl::string_view data) {
-    absl::Span<char> remaining(pptr(), epptr() - pptr());
+    absl::Span<char> remaining(pptr(), static_cast<size_t>(epptr() - pptr()));
     const size_t written = AppendTruncated(data, &remaining);
-    pbump(written);
+    pbump(static_cast<int>(written));
     return written;
   }
 

@@ -52,6 +52,7 @@
 #include "absl/base/port.h"
 #include "absl/container/internal/inlined_vector.h"
 #include "absl/memory/memory.h"
+#include "absl/meta/type_traits.h"
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
@@ -77,6 +78,8 @@ class InlinedVector {
   using MoveIterator = inlined_vector_internal::MoveIterator<TheA>;
   template <typename TheA>
   using IsMemcpyOk = inlined_vector_internal::IsMemcpyOk<TheA>;
+  template <typename TheA>
+  using IsMoveAssignOk = inlined_vector_internal::IsMoveAssignOk<TheA>;
 
   template <typename TheA, typename Iterator>
   using IteratorValueAdapter =
@@ -93,6 +96,15 @@ class InlinedVector {
   template <typename Iterator>
   using DisableIfAtLeastForwardIterator = absl::enable_if_t<
       !inlined_vector_internal::IsAtLeastForwardIterator<Iterator>::value, int>;
+
+  struct MemcpyPolicy {};
+  struct ElementwiseAssignPolicy {};
+  struct ElementwiseConstructPolicy {};
+
+  using MoveAssignmentPolicy = absl::conditional_t<
+      IsMemcpyOk<A>::value, MemcpyPolicy,
+      absl::conditional_t<IsMoveAssignOk<A>::value, ElementwiseAssignPolicy,
+                          ElementwiseConstructPolicy>>;
 
  public:
   using allocator_type = A;
@@ -486,18 +498,7 @@ class InlinedVector {
   // unspecified state.
   InlinedVector& operator=(InlinedVector&& other) {
     if (ABSL_PREDICT_TRUE(this != std::addressof(other))) {
-      if (IsMemcpyOk<A>::value || other.storage_.GetIsAllocated()) {
-        inlined_vector_internal::DestroyAdapter<A>::DestroyElements(
-            storage_.GetAllocator(), data(), size());
-        storage_.DeallocateIfAllocated();
-        storage_.MemcpyFrom(other.storage_);
-
-        other.storage_.SetInlinedSize(0);
-      } else {
-        storage_.Assign(IteratorValueAdapter<A, MoveIterator<A>>(
-                            MoveIterator<A>(other.storage_.GetInlinedData())),
-                        other.size());
-      }
+      MoveAssignment(MoveAssignmentPolicy{}, std::move(other));
     }
 
     return *this;
@@ -772,6 +773,42 @@ class InlinedVector {
  private:
   template <typename H, typename TheT, size_t TheN, typename TheA>
   friend H AbslHashValue(H h, const absl::InlinedVector<TheT, TheN, TheA>& a);
+
+  void MoveAssignment(MemcpyPolicy, InlinedVector&& other) {
+    inlined_vector_internal::DestroyAdapter<A>::DestroyElements(
+        storage_.GetAllocator(), data(), size());
+    storage_.DeallocateIfAllocated();
+    storage_.MemcpyFrom(other.storage_);
+
+    other.storage_.SetInlinedSize(0);
+  }
+
+  void MoveAssignment(ElementwiseAssignPolicy, InlinedVector&& other) {
+    if (other.storage_.GetIsAllocated()) {
+      MoveAssignment(MemcpyPolicy{}, std::move(other));
+    } else {
+      storage_.Assign(IteratorValueAdapter<A, MoveIterator<A>>(
+                          MoveIterator<A>(other.storage_.GetInlinedData())),
+                      other.size());
+    }
+  }
+
+  void MoveAssignment(ElementwiseConstructPolicy, InlinedVector&& other) {
+    if (other.storage_.GetIsAllocated()) {
+      MoveAssignment(MemcpyPolicy{}, std::move(other));
+    } else {
+      inlined_vector_internal::DestroyAdapter<A>::DestroyElements(
+          storage_.GetAllocator(), data(), size());
+      storage_.DeallocateIfAllocated();
+
+      IteratorValueAdapter<A, MoveIterator<A>> other_values(
+          MoveIterator<A>(other.storage_.GetInlinedData()));
+      inlined_vector_internal::ConstructElements<A>(
+          storage_.GetAllocator(), storage_.GetInlinedData(), other_values,
+          other.storage_.GetSize());
+      storage_.SetInlinedSize(other.storage_.GetSize());
+    }
+  }
 
   Storage storage_;
 };
