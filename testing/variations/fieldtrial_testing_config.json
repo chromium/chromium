@@ -4851,9 +4851,6 @@
                     "name": "ForceGpuMainThreadToNormalPriorityDrDc",
                     "enable_features": [
                         "ForceGpuMainThreadToNormalPriorityDrDc"
-                    ],
-                    "disable_features": [
-                        "RawDraw"
                     ]
                 }
             ]
@@ -8944,6 +8941,9 @@
                     },
                     "enable_features": [
                         "EnableDrDcVulkan"
+                    ],
+                    "disable_features": [
+                        "RawDraw"
                     ]
                 }
             ]
