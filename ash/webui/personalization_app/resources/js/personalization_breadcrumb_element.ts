@@ -95,11 +95,6 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
       /** The list of Google Photos albums. */
       googlePhotosAlbums_: Array,
 
-      showBackButton_: {
-        type: Boolean,
-        computed: 'computeShowBackButton_(path)',
-      },
-
       /** The breadcrumb being highlighted by keyboard navigation. */
       selectedBreadcrumb_: {
         type: Object,
@@ -115,7 +110,6 @@ export class PersonalizationBreadcrumb extends WithPersonalizationStore {
   private breadcrumbs_: string[];
   private collections_: WallpaperCollection[]|null;
   private googlePhotosAlbums_: GooglePhotosAlbum[]|null;
-  private showBackButton_: boolean;
   private selectedBreadcrumb_: HTMLElement;
 
   override ready() {
