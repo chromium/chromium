@@ -191,7 +191,7 @@ void ChromeExtensionMessageFilter::OnAddAPIActionToExtensionActivityLog(
   if (!ShouldLogExtensionAction(extension_id))
     return;
 
-  scoped_refptr<extensions::Action> action = new extensions::Action(
+  auto action = base::MakeRefCounted<extensions::Action>(
       extension_id, base::Time::Now(), extensions::Action::ACTION_API_CALL,
       params.api_call);
   action->set_args(params.arguments.Clone());
@@ -208,7 +208,7 @@ void ChromeExtensionMessageFilter::OnAddDOMActionToExtensionActivityLog(
   if (!ShouldLogExtensionAction(extension_id))
     return;
 
-  scoped_refptr<extensions::Action> action = new extensions::Action(
+  auto action = base::MakeRefCounted<extensions::Action>(
       extension_id, base::Time::Now(), extensions::Action::ACTION_DOM_ACCESS,
       params.api_call);
   action->set_args(params.arguments.Clone());
@@ -225,7 +225,7 @@ void ChromeExtensionMessageFilter::OnAddEventToExtensionActivityLog(
   if (!ShouldLogExtensionAction(extension_id))
     return;
 
-  scoped_refptr<extensions::Action> action = new extensions::Action(
+  auto action = base::MakeRefCounted<extensions::Action>(
       extension_id, base::Time::Now(), extensions::Action::ACTION_API_EVENT,
       params.api_call);
   action->set_args(params.arguments.Clone());
