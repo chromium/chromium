@@ -155,9 +155,9 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   if (!isIncognito) {
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForBrowserState(browserState);
-    ChromeIdentity* chromeIdentity = authenticationService->GetPrimaryIdentity(
+    id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity(
         ::signin::ConsentLevel::kSignin);
-    configuration.identity = chromeIdentity;
+    configuration.identity = identity;
   }
 
   // Set the controller.
