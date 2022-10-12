@@ -79,11 +79,11 @@ public class FastCheckoutSheetContent implements BottomSheetContent {
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.fast_checkout_sheet_half_height;
+        return R.string.fast_checkout_content_description;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.fast_checkout_sheet_full_height;
+        return R.string.fast_checkout_content_description;
     }
 }

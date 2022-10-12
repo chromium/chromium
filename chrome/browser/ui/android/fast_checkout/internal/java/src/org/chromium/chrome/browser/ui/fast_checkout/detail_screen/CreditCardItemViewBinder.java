@@ -63,6 +63,31 @@ class CreditCardItemViewBinder {
             view.findViewById(R.id.fast_checkout_credit_card_item_selected_icon)
                     .setVisibility(model.get(IS_SELECTED) ? View.VISIBLE : View.GONE);
         }
+        setAccessibilityContent(view, model.get(CREDIT_CARD), model.get(IS_SELECTED));
+    }
+
+    private static void setAccessibilityContent(
+            View view, FastCheckoutCreditCard card, boolean isSelected) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(getIfNotEmpty(card.getObfuscatedNumber()));
+        builder.append(getIfNotEmpty(card.getName()));
+        String expiryDateString = card.getFormattedExpirationDate(view.getContext());
+        if (!expiryDateString.isEmpty()) {
+            builder.append(view.getContext().getResources().getString(
+                    R.string.fast_checkout_credit_card_item_expire_description));
+            builder.append(getIfNotEmpty(" " + expiryDateString));
+        }
+        builder.append(view.getContext().getResources().getString(isSelected
+                        ? R.string.fast_checkout_detail_screen_selected_description
+                        : R.string.fast_checkout_detail_screen_non_selected_description));
+        view.setContentDescription(builder.toString());
+    }
+
+    private static String getIfNotEmpty(String text) {
+        if (!text.isEmpty()) {
+            return text + ",";
+        }
+        return "";
     }
 
     private static void hideIfEmpty(TextView view) {

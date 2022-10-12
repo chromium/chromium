@@ -26,13 +26,15 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:layout_marginTop="12dp"
       android:gravity="center_horizontal"
+      android:focusable="true"
       android:textAppearance="@style/TextAppearance.Headline"
-      android:text="@string/fast_checkout_home_sheet_title" />
+      android:text="@string/fast_checkout_home_sheet_title"/>
 
     <TextView
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="center_horizontal"
+      android:focusable="true"
       android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
       android:text="@string/fast_checkout_home_sheet_subtitle" />
 
@@ -139,7 +141,6 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_start"
             android:layout_marginEnd="@dimen/fast_checkout_home_sheet_expand_option_icon_margin_end"
-            android:importantForAccessibility="no"
             android:contentDescription="@string/fast_checkout_home_sheet_expand_icon_credit_card_description"
             app:tint="@color/default_icon_color_secondary_tint_list"
             app:srcCompat="@drawable/ic_expand_more_horizontal_black_24dp" />

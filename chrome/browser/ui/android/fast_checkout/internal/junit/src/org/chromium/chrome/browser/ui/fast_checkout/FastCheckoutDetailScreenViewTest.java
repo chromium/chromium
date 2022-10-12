@@ -363,9 +363,6 @@ public class FastCheckoutDetailScreenViewTest {
 
         View icon = getListItemAt(index).findViewById(
                 R.id.fast_checkout_autofill_profile_item_selected_icon);
-        assertThat(icon.getContentDescription(),
-                equalTo(mView.getContext().getResources().getString(
-                        R.string.fast_checkout_detail_screen_selected_icon_description)));
         assertThat(icon.getVisibility(), is(isSelected ? View.VISIBLE : View.GONE));
     }
 

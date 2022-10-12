@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutPropertie
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE;
 import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_TITLE;
+import static org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.DETAIL_SCREEN_TITLE_DESCRIPTION;
 
 import android.content.Context;
 import android.view.MenuItem;
@@ -31,12 +32,14 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 public class DetailScreenViewBinder {
     /** A ViewHolder that inflates the toolbar and provides easy item look-up. */
     static class ViewHolder {
+        final Context mContext;
         final Toolbar mToolbar;
         final MenuItem mSettingsMenuItem;
         final FrameLayout mSheetItemListContainer;
         final RecyclerView mRecyclerView;
 
         ViewHolder(Context context, View contentView) {
+            mContext = context;
             mSheetItemListContainer = contentView.findViewById(R.id.sheet_item_list_container);
             mRecyclerView =
                     contentView.findViewById(R.id.fast_checkout_detail_screen_recycler_view);
@@ -63,6 +66,10 @@ public class DetailScreenViewBinder {
                     model.get(DETAIL_SCREEN_SETTINGS_CLICK_HANDLER));
         } else if (propertyKey == DETAIL_SCREEN_TITLE) {
             view.mToolbar.setTitle(model.get(DETAIL_SCREEN_TITLE));
+        } else if (propertyKey == DETAIL_SCREEN_TITLE_DESCRIPTION) {
+            String text = view.mContext.getResources().getString(
+                    model.get(DETAIL_SCREEN_TITLE_DESCRIPTION));
+            view.mToolbar.setContentDescription(text);
         } else if (propertyKey == DETAIL_SCREEN_SETTINGS_MENU_TITLE) {
             view.mSettingsMenuItem.setTitle(model.get(DETAIL_SCREEN_SETTINGS_MENU_TITLE));
         } else if (propertyKey == DETAIL_SCREEN_MODEL_LIST) {

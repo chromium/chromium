@@ -346,6 +346,8 @@ public class FastCheckoutMediator {
         if (screenType == FastCheckoutProperties.ScreenType.AUTOFILL_PROFILE_SCREEN) {
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_TITLE,
                     R.string.fast_checkout_autofill_profile_sheet_title);
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_TITLE_DESCRIPTION,
+                    R.string.fast_checkout_autofill_profile_sheet_title_description);
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
                     R.string.fast_checkout_autofill_profile_settings_button_description);
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
@@ -360,6 +362,8 @@ public class FastCheckoutMediator {
         } else if (screenType == ScreenType.CREDIT_CARD_SCREEN) {
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_TITLE,
                     R.string.fast_checkout_credit_card_sheet_title);
+            mModel.set(FastCheckoutProperties.DETAIL_SCREEN_TITLE_DESCRIPTION,
+                    R.string.fast_checkout_credit_card_sheet_title_description);
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_MENU_TITLE,
                     R.string.fast_checkout_credit_card_settings_button_description);
             mModel.set(FastCheckoutProperties.DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,

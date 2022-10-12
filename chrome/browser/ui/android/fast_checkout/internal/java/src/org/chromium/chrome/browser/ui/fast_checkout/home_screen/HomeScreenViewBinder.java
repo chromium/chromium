@@ -73,7 +73,11 @@ public class HomeScreenViewBinder {
 
             view.mSelectedCreditCardView.setOnClickListener((v) -> delegate.onShowCreditCardList());
 
-            view.mAcceptButton.setOnClickListener((v) -> delegate.onOptionsAccepted());
+            view.mAcceptButton.setOnClickListener((v) -> {
+                view.mAcceptButton.announceForAccessibility(view.mContext.getResources().getString(
+                        R.string.fast_checkout_home_sheet_accept_button_clicked_description));
+                delegate.onOptionsAccepted();
+            });
         } else if (propertyKey == SELECTED_PROFILE) {
             updateProfile(model, view);
         } else if (propertyKey == SELECTED_CREDIT_CARD) {

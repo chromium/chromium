@@ -73,6 +73,7 @@ class AutofillProfileItemViewBinder {
             view.findViewById(R.id.fast_checkout_autofill_profile_item_selected_icon)
                     .setVisibility(model.get(IS_SELECTED) ? View.VISIBLE : View.GONE);
         }
+        setAccessibilityContent(view, model.get(AUTOFILL_PROFILE), model.get(IS_SELECTED));
     }
 
     /**
@@ -88,6 +89,28 @@ class AutofillProfileItemViewBinder {
         }
         builder.append(profile.getPostalCode());
         return builder.toString();
+    }
+
+    private static void setAccessibilityContent(
+            View view, FastCheckoutAutofillProfile profile, boolean isSelected) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(getIfNotEmpty(profile.getFullName()));
+        builder.append(getIfNotEmpty(profile.getStreetAddress()));
+        builder.append(getIfNotEmpty(getLocalityAndPostalCode(profile)));
+        builder.append(getIfNotEmpty(profile.getCountryName()));
+        builder.append(getIfNotEmpty(profile.getEmailAddress()));
+        builder.append(getIfNotEmpty(profile.getPhoneNumber()));
+        builder.append(view.getContext().getResources().getString(isSelected
+                        ? R.string.fast_checkout_detail_screen_selected_description
+                        : R.string.fast_checkout_detail_screen_non_selected_description));
+        view.setContentDescription(builder.toString());
+    }
+
+    private static String getIfNotEmpty(String text) {
+        if (!text.isEmpty()) {
+            return text + ",";
+        }
+        return "";
     }
 
     private static void hideIfEmpty(TextView view) {

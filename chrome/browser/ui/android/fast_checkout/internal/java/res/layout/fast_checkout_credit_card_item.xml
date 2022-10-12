@@ -53,7 +53,7 @@ found in the LICENSE file.
         android:layout_marginStart="@dimen/fast_checkout_detail_sheet_selected_icon_margin_start"
         android:layout_marginEnd="@dimen/fast_checkout_detail_sheet_selected_icon_margin_end"
         android:layout_gravity="center_vertical"
-        android:contentDescription="@string/fast_checkout_detail_screen_selected_icon_description"
+        android:contentDescription="@null"
         app:tint="?attr/colorPrimary"
         app:srcCompat="@drawable/ic_check_circle_filled_green_24dp" />
 </LinearLayout>

@@ -27,8 +27,12 @@ class FooterItemViewBinder {
     /** Binds the item view for the footer with to the model properties. */
     static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == LABEL) {
-            ((TextView) view.findViewById(R.id.fast_checkout_add_new_item_label))
-                    .setText(model.get(LABEL));
+            TextView newItemTextView = view.findViewById(R.id.fast_checkout_add_new_item_label);
+            newItemTextView.setText(model.get(LABEL));
+            newItemTextView.setContentDescription(
+                    view.getContext().getResources().getString(model.get(LABEL)) + ", "
+                    + view.getContext().getResources().getString(
+                            R.string.fast_checkout_detail_screen_non_selected_description));
         } else if (propertyKey == ON_CLICK_HANDLER) {
             view.setOnClickListener((v) -> model.get(ON_CLICK_HANDLER).run());
         }

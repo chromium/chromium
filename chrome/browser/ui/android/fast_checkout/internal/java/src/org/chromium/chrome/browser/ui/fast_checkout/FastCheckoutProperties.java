@@ -88,6 +88,10 @@ public class FastCheckoutProperties {
     public static final WritableIntPropertyKey DETAIL_SCREEN_TITLE =
             new WritableIntPropertyKey("detail_screen_title");
 
+    /** The string id of the accessibility description for the title shown on the detail screen. */
+    public static final WritableIntPropertyKey DETAIL_SCREEN_TITLE_DESCRIPTION =
+            new WritableIntPropertyKey("detail_screen_title");
+
     /** The string id of the title shown on the settings icon. */
     public static final WritableIntPropertyKey DETAIL_SCREEN_SETTINGS_MENU_TITLE =
             new WritableIntPropertyKey("detail_screen_settings_menu_title");
@@ -124,7 +128,8 @@ public class FastCheckoutProperties {
     /** All keys used for the fast checkout bottom sheet. */
     static final PropertyKey[] ALL_KEYS = new PropertyKey[] {VISIBLE, CURRENT_SCREEN,
             SELECTED_PROFILE, PROFILE_MODEL_LIST, SELECTED_CREDIT_CARD, CREDIT_CARD_MODEL_LIST,
-            HOME_SCREEN_DELEGATE, DETAIL_SCREEN_TITLE, DETAIL_SCREEN_SETTINGS_MENU_TITLE,
-            DETAIL_SCREEN_BACK_CLICK_HANDLER, DETAIL_SCREEN_SETTINGS_CLICK_HANDLER,
-            DETAIL_SCREEN_MODEL_LIST, DETAIL_SCREEN_LIST_HEIGHT_IN_PX};
+            HOME_SCREEN_DELEGATE, DETAIL_SCREEN_TITLE, DETAIL_SCREEN_TITLE_DESCRIPTION,
+            DETAIL_SCREEN_SETTINGS_MENU_TITLE, DETAIL_SCREEN_BACK_CLICK_HANDLER,
+            DETAIL_SCREEN_SETTINGS_CLICK_HANDLER, DETAIL_SCREEN_MODEL_LIST,
+            DETAIL_SCREEN_LIST_HEIGHT_IN_PX};
 }

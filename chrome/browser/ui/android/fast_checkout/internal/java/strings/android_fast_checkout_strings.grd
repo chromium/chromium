@@ -187,26 +187,23 @@ found in the LICENSE file.
       <message name="IDS_FAST_CHECKOUT_HOME_SHEET_ACCEPT" desc="Text for accepting autofilling the selected options on the site.">
         Autofill my info
       </message>
+      <message name="IDS_FAST_CHECKOUT_HOME_SHEET_ACCEPT_BUTTON_CLICKED_DESCRIPTION" desc="Accessibility string describing the actions to follow after the user accepts a selection.">
+        As you check out, your other info will be autofilled.
+      </message>
       <message name="IDS_FAST_CHECKOUT_HOME_SHEET_EXPAND_ICON_AUTOFILL_PROFILE_DESCRIPTION" desc="Accessibility string for the icon that allows entering the Autofill profile detail sheet.">
-        Change Autofill profile selection.
+        Change to other shipping address under this menu item.
       </message>
       <message name="IDS_FAST_CHECKOUT_HOME_SHEET_EXPAND_ICON_CREDIT_CARD_DESCRIPTION" desc="Accessibility string for the icon that allows entering the Autofill profile detail sheet.">
-        Change credit card selection.
+        Change to other payment method under this menu item.
       </message>
       <message name="IDS_FAST_CHECKOUT_CONTENT_DESCRIPTION" desc="Accessibility string read when the Fast Checkout bottom sheet is opened. It describes the bottom sheet where a user can pick an address and payment option to fill during checkout flows">
-        List of addresses and payment options to be filled during checkout flows.
-      </message>
-      <message name="IDS_FAST_CHECKOUT_SHEET_HALF_HEIGHT" desc="Accessibility string read when the Fast Checkout bottom sheet showing a list of the user stored addresses and payment options is opened at half height. The sheet will occupy the bottom half the screen.">
-        List of addresses and payment options to be filled during checkout flows opened at half height.
-      </message>
-      <message name="IDS_FAST_CHECKOUT_SHEET_FULL_HEIGHT" desc="Accessibility string read when the Fast Checkout bottom sheet showing a list of the user stored addresses and payment options is opened at full height. The sheet will occupy the entire screen.">
-        List of addresses and payment options to be filled during checkout flows opened at full height.
+        Addresses and payment methods available to be filled on touch. Keyboard hidden.
       </message>
       <message name="IDS_FAST_CHECKOUT_SHEET_CLOSED" desc="Accessibility string read when the Fast Checkout bottom sheet showing a list of the user stored addresses and payment options is closed.">
         List of addresses and payment options to be filled during checkout flows is closed.
       </message>
       <message name="IDS_FAST_CHECKOUT_BACK_TO_HOME_SCREEN_ICON_DESCRIPTION" desc="Acessibility string describing the back icon on the autofill profile and credit card detail sheets.">
-        Go back
+        Back
       </message>
       <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_ADD_AUTOFILL_PROFILE_TEXT" desc="The text appearing on the element to add a new Autofill profile on the detail sheet.">
         Add new address
@@ -214,20 +211,32 @@ found in the LICENSE file.
       <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_ADD_CREDIT_CARD_TEXT" desc="The text appearing on the element to add a new credit card on the detail sheet.">
         Add new credit card
       </message>
-      <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_SELECTED_ICON_DESCRIPTION" desc="Accessibility string describing the icon that indicates that an Autofill profile or a credit card is the currently selected one.">
-        Selected item
+      <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_SELECTED_DESCRIPTION" desc="Accessibility string describing the icon that indicates that an Autofill profile or a credit card is the currently selected one.">
+        Selected
+      </message>
+      <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_NON_SELECTED_DESCRIPTION" desc="Accessibility string describing the icon that indicates an Autofill profile or a credit card non selected item.">
+        Menu item
       </message>
       <message name="IDS_FAST_CHECKOUT_AUTOFILL_PROFILE_SHEET_TITLE" desc="Header of the autofill profile selection sheet.">
         Shipping address
       </message>
+      <message name="IDS_FAST_CHECKOUT_AUTOFILL_PROFILE_SHEET_TITLE_DESCRIPTION" desc="Accessibility string describing the header of the autofill profile selection sheet.">
+        Select shipping address. Navigation options.
+      </message>
       <message name="IDS_FAST_CHECKOUT_AUTOFILL_PROFILE_SETTINGS_BUTTON_DESCRIPTION" desc="Accessibility string describing the icon to open Autofill profile settings.">
-        Open Autofill profile settings
+        Manage addresses.
       </message>
       <message name="IDS_FAST_CHECKOUT_CREDIT_CARD_SHEET_TITLE" desc="Header of the credit card selection sheet.">
         Payment methods
       </message>
+      <message name="IDS_FAST_CHECKOUT_CREDIT_CARD_ITEM_EXPIRE_DESCRIPTION" desc="Accessibility string to describe the credit card expiry date.">
+        Expires
+      </message>
+      <message name="IDS_FAST_CHECKOUT_CREDIT_CARD_SHEET_TITLE_DESCRIPTION" desc="Accessibility string describing the header of the credit card selection sheet.">
+        Select payment method. Navigation options.
+      </message>
       <message name="IDS_FAST_CHECKOUT_CREDIT_CARD_SETTINGS_BUTTON_DESCRIPTION" desc="Accessibility string describing the icon to open credit card settings.">
-        Open credit card settings
+        Manage payment methods
       </message>
     </messages>
   </release>
