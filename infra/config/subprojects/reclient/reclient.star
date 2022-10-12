@@ -165,6 +165,9 @@ fyi_reclient_staging_builder(
     builderless = True,
     cores = None,
     priority = 35,
+    reclient_bootstrap_env = {
+        "GLOG_vmodule": "bridge*=2",
+    },
 )
 
 fyi_reclient_test_builder(
@@ -190,6 +193,7 @@ fyi_reclient_test_builder(
     priority = 35,
     reclient_bootstrap_env = {
         "RBE_ip_timeout": "-1s",
+        "GLOG_vmodule": "bridge*=2",
     },
 )
 

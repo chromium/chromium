@@ -308,9 +308,9 @@ def _reclient_property(*, instance, service, jobs, rewrapper_env, profiler_servi
     bootstrap_env = defaults.get_value("reclient_bootstrap_env", bootstrap_env)
     if bootstrap_env:
         for k in bootstrap_env:
-            if not k.startswith("RBE_"):
+            if not (k.startswith("RBE_") or k.startswith("GLOG_")):
                 fail("Environment variables in bootstrap_env must start with " +
-                     "'RBE_', got '%s'" % k)
+                     "'RBE_' or 'GLOG_', got '%s'" % k)
         reclient["bootstrap_env"] = bootstrap_env
     profiler_service = defaults.get_value("reclient_profiler_service", profiler_service)
     if profiler_service:
