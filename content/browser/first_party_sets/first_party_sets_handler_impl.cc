@@ -27,6 +27,10 @@
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace net {
+class SchemefulSite;
+}  // namespace net
+
 namespace content {
 
 namespace {
@@ -212,12 +216,6 @@ void FirstPartySetsHandlerImpl::SetGlobalSetsForTesting(
   global_sets_ = std::move(global_sets);
 }
 
-const net::GlobalFirstPartySets*
-FirstPartySetsHandlerImpl::GetGlobalSetsIfReady() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::OptionalToPtr(global_sets_);
-}
-
 void FirstPartySetsHandlerImpl::GetPersistedGlobalSetsForTesting(
     const std::string& browser_context_id,
     base::OnceCallback<void(absl::optional<net::GlobalFirstPartySets>)>
@@ -287,11 +285,24 @@ void FirstPartySetsHandlerImpl::InvokePendingQueries() {
   }
 }
 
+absl::optional<net::FirstPartySetEntry> FirstPartySetsHandlerImpl::FindEntry(
+    const net::SchemefulSite& site,
+    const net::FirstPartySetsContextConfig& config) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::FeatureList::IsEnabled(features::kFirstPartySets))
+    return absl::nullopt;
+
+  if (!global_sets_.has_value()) {
+    // TODO(crbug.com/1366918) : Add metrics to see how often this occurs.
+    return absl::nullopt;
+  }
+  return global_sets_->FindEntry(site, config);
+}
+
 net::GlobalFirstPartySets FirstPartySetsHandlerImpl::GetGlobalSetsSync() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const net::GlobalFirstPartySets* sets = GetGlobalSetsIfReady();
-  DCHECK(sets);
-  return sets->Clone();
+  DCHECK(global_sets_.has_value());
+  return global_sets_->Clone();
 }
 
 void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(

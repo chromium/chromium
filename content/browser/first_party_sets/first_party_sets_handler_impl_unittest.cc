@@ -509,51 +509,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                                example, net::SiteType::kAssociated, 0))));
 }
 
-TEST_F(FirstPartySetsHandlerImplEnabledTest,
-       GetGlobalSetsIfReady_BeforeSetsReady) {
-  FirstPartySetsHandlerImpl::GetInstance()
-      ->SetEmbedderWillProvidePublicSetsForTesting(true);
-
-  FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
-                                                 LocalSetDeclaration());
-
-  EXPECT_EQ(FirstPartySetsHandlerImpl::GetInstance()->GetGlobalSetsIfReady(),
-            nullptr);
-}
-
-TEST_F(FirstPartySetsHandlerImplEnabledTest,
-       GetGlobalSetsIfReady_AfterSetsReady) {
-  net::SchemefulSite example(GURL("https://example.test"));
-  net::SchemefulSite associated(GURL("https://associatedsite.test"));
-
-  FirstPartySetsHandlerImpl::GetInstance()
-      ->SetEmbedderWillProvidePublicSetsForTesting(true);
-
-  const std::string input =
-      R"({"primary": "https://example.test", )"
-      R"("associatedSites": ["https://associatedsite.test"]})";
-  ASSERT_TRUE(base::JSONReader::Read(input));
-  FirstPartySetsHandlerImpl::GetInstance()->SetPublicFirstPartySets(
-      base::Version(), WritePublicSetsFile(input));
-
-  FirstPartySetsHandlerImpl::GetInstance()->Init(scoped_dir_.GetPath(),
-                                                 LocalSetDeclaration());
-
-  // Wait until initialization is complete.
-  GetSetsAndWait();
-
-  EXPECT_THAT(
-      FirstPartySetsHandlerImpl::GetInstance()
-          ->GetGlobalSetsIfReady()
-          ->FindEntries({example, associated},
-                        net::FirstPartySetsContextConfig()),
-      UnorderedElementsAre(
-          Pair(example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, absl::nullopt)),
-          Pair(associated, net::FirstPartySetEntry(
-                               example, net::SiteType::kAssociated, 0))));
-}
-
 class FirstPartySetsHandlerGetContextConfigForPolicyTest
     : public FirstPartySetsHandlerImplEnabledTest {
  public:

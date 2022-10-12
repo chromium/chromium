@@ -9,7 +9,6 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -20,6 +19,10 @@
 namespace content {
 class BrowserContext;
 }  // namespace content
+
+namespace net {
+class SchemefulSite;
+}  // namespace net
 
 namespace first_party_sets {
 
@@ -79,6 +82,23 @@ class FirstPartySetsPolicyService
           get_config);
 
   void ResetForTesting();
+
+  // Looks up `site` in Chrome's list of First-Party Sets and returns its
+  // associated entry if `site` is found.
+  //
+  // This will return nullopt if:
+  // - First-Party Sets is disabled or
+  // - the list of First-Party Sets isn't initialized yet or
+  // - `site` isn't in Chrome's list of First-Party Sets or
+  // - this instance has not received the config yet
+  absl::optional<net::FirstPartySetEntry> FindEntry(
+      const net::SchemefulSite& site) const;
+
+  // Checks if ownership of `site` is managed by an enterprise.
+  //
+  // Note: this doesn't consider `site` as managed if it was removed by an
+  // enterprise using policy.
+  bool IsSiteInManagedSet(const net::SchemefulSite& site) const;
 
   content::BrowserContext* browser_context() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -7,6 +7,7 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -41,6 +42,8 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
 #if !BUILDFLAG(IS_ANDROID)
   DependsOn(TrustSafetySentimentServiceFactory::GetInstance());
 #endif
+  DependsOn(
+      first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
 }
 
 KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
@@ -57,5 +60,7 @@ KeyedService* PrivacySandboxServiceFactory::BuildServiceInstanceFor(
 #if !BUILDFLAG(IS_ANDROID)
       TrustSafetySentimentServiceFactory::GetForProfile(profile),
 #endif
-      browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile));
+      browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile),
+      first_party_sets::FirstPartySetsPolicyServiceFactory::
+          GetForBrowserContext(context));
 }

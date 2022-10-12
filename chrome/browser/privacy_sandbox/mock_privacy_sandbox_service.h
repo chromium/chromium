@@ -31,7 +31,7 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   // Mock this method to enable opening the settings page in tests.
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
   MOCK_METHOD((base::flat_map<net::SchemefulSite, net::SchemefulSite>),
-              GetFirstPartySets,
+              GetSampleFirstPartySets,
               (),
               (override, const));
   MOCK_METHOD(absl::optional<net::SchemefulSite>,

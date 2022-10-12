@@ -4,6 +4,7 @@
 
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 
+#include "base/feature_list.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -173,6 +174,31 @@ void FirstPartySetsPolicyService::OnProfileConfigReady(
           browser_context_getter, browser_context_id, std::move(config),
           base::BindOnce(&FirstPartySetsPolicyService::OnReadyToNotifyDelegates,
                          weak_factory_.GetWeakPtr()));
+}
+
+absl::optional<net::FirstPartySetEntry> FirstPartySetsPolicyService::FindEntry(
+    const net::SchemefulSite& site) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  PrefService* prefs =
+      Profile::FromBrowserContext(browser_context_)->GetPrefs();
+  if ((prefs &&
+       !prefs->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled)) ||
+      !config_.has_value()) {
+    return absl::nullopt;
+  }
+  return content::FirstPartySetsHandler::GetInstance()->FindEntry(
+      site, config_.value());
+}
+
+bool FirstPartySetsPolicyService::IsSiteInManagedSet(
+    const net::SchemefulSite& site) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!config_.has_value())
+    return false;
+
+  absl::optional<absl::optional<net::FirstPartySetEntry>> maybe_override =
+      config_->FindOverride(site);
+  return maybe_override.has_value() && maybe_override->has_value();
 }
 
 void FirstPartySetsPolicyService::OnReadyToNotifyDelegates(

@@ -9,9 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "base/time/time.h"
-#include "components/content_settings/core/common/content_settings.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/canonical_topic.h"
@@ -99,7 +97,8 @@ class PrivacySandboxService : public KeyedService {
 #if !BUILDFLAG(IS_ANDROID)
       TrustSafetySentimentService* sentiment_service,
 #endif
-      browsing_topics::BrowsingTopicsService* browsing_topics_service);
+      browsing_topics::BrowsingTopicsService* browsing_topics_service,
+      first_party_sets::FirstPartySetsPolicyService* first_party_sets_service);
 
   ~PrivacySandboxService() override;
 
@@ -215,17 +214,11 @@ class PrivacySandboxService : public KeyedService {
   virtual void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                                bool allowed);
 
-  // DEPRECATED - Do not use in new code. It will be replaced with the in-memory
-  // FPS map.
-  // Returns the first party sets recognised by the current profile. If FPS is
-  // disabled, or if sets have not been loaded yet, an empty map is returned.
-  // Encapsulates logic about whether FPS information should be shown, if it
-  // should not, an empty map is always returned.
+  // DEPRECATED - Do not use in new code. It will be replaced with queries to
+  // the First-Party Sets that are in the browser-process.
   // Virtual for mocking in tests.
-  // TODO (crbug.com/1350062): Reconsider whether ignoring async FPS information
-  // is appropriate.
   virtual base::flat_map<net::SchemefulSite, net::SchemefulSite>
-  GetFirstPartySets() const;
+  GetSampleFirstPartySets() const;
 
   // Returns the owner domain of the first party set that `site_url` is a member
   // of, or absl::nullopt if `site_url` is not recognised as a member of an FPS.
@@ -241,6 +234,11 @@ class PrivacySandboxService : public KeyedService {
 
   // Returns true if `site`'s membership in an FPS is being managed by policy or
   // if FirstPartySets preference is managed. Virtual for mocking in tests.
+  //
+  // Note: Enterprises can use the First-Party Set Overrides policy to either
+  // add or remove a site from a First-Party Set. This method returns true only
+  // if `site` is being added into a First-Party Set since there's no UI use for
+  // whether `site` is being removed by an enterprise yet.
   virtual bool IsPartOfManagedFirstPartySet(
       const net::SchemefulSite& site) const;
 
@@ -415,6 +413,8 @@ class PrivacySandboxService : public KeyedService {
   raw_ptr<TrustSafetySentimentService> sentiment_service_;
 #endif
   raw_ptr<browsing_topics::BrowsingTopicsService> browsing_topics_service_;
+  raw_ptr<first_party_sets::FirstPartySetsPolicyService>
+      first_party_sets_policy_service_;
 
   PrefChangeRegistrar user_prefs_registrar_;
 

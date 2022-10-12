@@ -17,7 +17,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
+class FirstPartySetEntry;
 class GlobalFirstPartySets;
+class SchemefulSite;
 }
 
 namespace content {
@@ -137,11 +139,16 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   virtual void SetGlobalSetsForTesting(
       net::GlobalFirstPartySets global_sets) = 0;
 
-  // Returns all First-Party Sets that are scoped to the entire browser.
+  // Looks up `site` in the global First-Party Sets and `config` to find its
+  // associated FirstPartySetEntry.
   //
-  // If initialization is not yet complete, returns nullptr; otherwise, returns
-  // a pointer to the initialized GlobalFirstPartySets instance.
-  virtual const net::GlobalFirstPartySets* GetGlobalSetsIfReady() const = 0;
+  // This will return nullopt if:
+  // - First-Party Sets is disabled or
+  // - the list of First-Party Sets isn't initialized yet or
+  // - `site` isn't in the global First-Party Sets or `config`
+  virtual absl::optional<net::FirstPartySetEntry> FindEntry(
+      const net::SchemefulSite& site,
+      const net::FirstPartySetsContextConfig& config) const = 0;
 
   // Computes a representation of the changes that need to be made to the
   // browser's list of First-Party Sets to respect the `policy` value of the

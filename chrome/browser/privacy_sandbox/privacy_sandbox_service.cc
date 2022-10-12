@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/optional_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browsing_topics/browsing_topics_service.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -26,10 +27,14 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/common/content_features.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
+#include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -98,7 +103,8 @@ PrivacySandboxService::PrivacySandboxService(
 #if !BUILDFLAG(IS_ANDROID)
     TrustSafetySentimentService* sentiment_service,
 #endif
-    browsing_topics::BrowsingTopicsService* browsing_topics_service)
+    browsing_topics::BrowsingTopicsService* browsing_topics_service,
+    first_party_sets::FirstPartySetsPolicyService* first_party_sets_service)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       cookie_settings_(cookie_settings),
       pref_service_(pref_service),
@@ -108,7 +114,8 @@ PrivacySandboxService::PrivacySandboxService(
 #if !BUILDFLAG(IS_ANDROID)
       sentiment_service_(sentiment_service),
 #endif
-      browsing_topics_service_(browsing_topics_service) {
+      browsing_topics_service_(browsing_topics_service),
+      first_party_sets_policy_service_(first_party_sets_service) {
   DCHECK(privacy_sandbox_settings_);
   DCHECK(pref_service_);
   DCHECK(cookie_settings_);
@@ -632,19 +639,7 @@ void PrivacySandboxService::SetTopicAllowed(
 }
 
 base::flat_map<net::SchemefulSite, net::SchemefulSite>
-PrivacySandboxService::GetFirstPartySets() const {
-  // If FPS is not affecting cookie access, then there are effectively no
-  // first party sets.
-  if (!(cookie_settings_->ShouldBlockThirdPartyCookies() &&
-        cookie_settings_->GetDefaultCookieSetting(/*provider_id=*/nullptr) !=
-            CONTENT_SETTING_BLOCK &&
-        pref_service_->GetBoolean(
-            prefs::kPrivacySandboxFirstPartySetsEnabled) &&
-        base::FeatureList::IsEnabled(
-            privacy_sandbox::kPrivacySandboxFirstPartySetsUI))) {
-    return {};
-  }
-
+PrivacySandboxService::GetSampleFirstPartySets() const {
   if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
     return {{net::SchemefulSite(GURL("https://youtube.com")),
              net::SchemefulSite(GURL("https://google.com"))},
@@ -660,43 +655,66 @@ PrivacySandboxService::GetFirstPartySets() const {
              net::SchemefulSite(GURL("https://chromium.org"))}};
   }
 
-  // TODO(crbug.com/1332513): Retrieve set information from FPS delegate.
   return {};
 }
 
 absl::optional<net::SchemefulSite> PrivacySandboxService::GetFirstPartySetOwner(
     const GURL& site_url) const {
-  auto sets = GetFirstPartySets();
-  auto schemeful_site = net::SchemefulSite(site_url);
+  // If FPS is not affecting cookie access, then there are effectively no
+  // first party sets.
+  if (!(cookie_settings_->ShouldBlockThirdPartyCookies() &&
+        cookie_settings_->GetDefaultCookieSetting(/*provider_id=*/nullptr) !=
+            CONTENT_SETTING_BLOCK &&
+        base::FeatureList::IsEnabled(
+            privacy_sandbox::kPrivacySandboxFirstPartySetsUI))) {
+    return absl::nullopt;
+  }
 
-  if (!sets.count(schemeful_site))
+  // Return the owner according to the sample sets if they're provided.
+  if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
+    const base::flat_map<net::SchemefulSite, net::SchemefulSite> sets =
+        GetSampleFirstPartySets();
+    net::SchemefulSite schemeful_site(site_url);
+
+    base::flat_map<net::SchemefulSite, net::SchemefulSite>::const_iterator
+        site_entry = sets.find(schemeful_site);
+    if (site_entry == sets.end())
+      return absl::nullopt;
+
+    return site_entry->second;
+  }
+
+  absl::optional<net::FirstPartySetEntry> site_entry =
+      first_party_sets_policy_service_->FindEntry(net::SchemefulSite(site_url));
+  if (!site_entry.has_value())
     return absl::nullopt;
 
-  return sets[schemeful_site];
+  return site_entry->primary();
 }
 
 absl::optional<std::u16string>
 PrivacySandboxService::GetFirstPartySetOwnerForDisplay(
     const GURL& site_url) const {
-  auto fpsOwner = GetFirstPartySetOwner(site_url);
-  if (!fpsOwner.has_value()) {
+  absl::optional<net::SchemefulSite> site_owner =
+      GetFirstPartySetOwner(site_url);
+  if (!site_owner.has_value()) {
     return absl::nullopt;
   }
 
   // TODO(crbug.com/1332513): Apply formatting that correctly displays unicode
   // domains.
-  return base::UTF8ToUTF16(fpsOwner->GetURL().host());
+  return base::UTF8ToUTF16(site_owner->GetURL().host());
 }
 
 bool PrivacySandboxService::IsPartOfManagedFirstPartySet(
     const net::SchemefulSite& site) const {
   if (privacy_sandbox::kPrivacySandboxFirstPartySetsUISampleSets.Get()) {
     return IsFirstPartySetsDataAccessManaged() ||
-           GetFirstPartySets()[site] ==
+           GetSampleFirstPartySets()[site] ==
                net::SchemefulSite(GURL("https://chromium.org"));
   }
-  // TODO(crbug.com/1332513): Retrieve set information from FPS delegate.
-  return IsFirstPartySetsDataAccessManaged();
+
+  return first_party_sets_policy_service_->IsSiteInManagedSet(site);
 }
 
 /*static*/ PrivacySandboxService::PromptType

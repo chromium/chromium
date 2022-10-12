@@ -28,6 +28,11 @@
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace net {
+class FirstPartySetEntry;
+class SchemefulSite;
+}  // namespace net
+
 namespace content {
 
 class BrowserContext;
@@ -105,7 +110,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
                                base::File sets_file) override;
   void ResetForTesting() override;
   void SetGlobalSetsForTesting(net::GlobalFirstPartySets global_sets) override;
-  const net::GlobalFirstPartySets* GetGlobalSetsIfReady() const override;
+  absl::optional<net::FirstPartySetEntry> FindEntry(
+      const net::SchemefulSite& site,
+      const net::FirstPartySetsContextConfig& config) const override;
   void GetContextConfigForPolicy(
       const base::Value::Dict* policy,
       base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback)

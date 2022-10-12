@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -35,9 +36,14 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "net/base/schemeful_site.h"
+#include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_context_config.h"
+#include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -675,7 +681,10 @@ class PrivacySandboxServiceTest : public testing::Test {
       : browser_task_environment_(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
-  void SetUp() override { CreateService(); }
+  void SetUp() override {
+    CreateService();
+    SetGlobalFirstPartySetsAndWait();
+  }
 
   virtual std::unique_ptr<
       privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
@@ -703,7 +712,7 @@ class PrivacySandboxServiceTest : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID)
         mock_sentiment_service(),
 #endif
-        mock_browsing_topics_service());
+        mock_browsing_topics_service(), first_party_sets_policy_service());
   }
 
   virtual profile_metrics::BrowserProfileType GetProfileType() {
@@ -743,11 +752,25 @@ class PrivacySandboxServiceTest : public testing::Test {
   browsing_topics::MockBrowsingTopicsService* mock_browsing_topics_service() {
     return &mock_browsing_topics_service_;
   }
+  first_party_sets::FirstPartySetsPolicyService*
+  first_party_sets_policy_service() {
+    return &first_party_sets_policy_service_;
+  }
 #if !BUILDFLAG(IS_ANDROID)
   MockTrustSafetySentimentService* mock_sentiment_service() {
     return mock_sentiment_service_.get();
   }
 #endif
+
+  void SetGlobalFirstPartySetsAndWait() {
+    content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
+    content::FirstPartySetsHandler::GetInstance()->SetGlobalSetsForTesting({});
+    base::RunLoop run_loop;
+    first_party_sets_policy_service_.WaitForFirstInitCompleteForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
+    first_party_sets_policy_service_.ResetForTesting();
+  }
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -756,6 +779,10 @@ class PrivacySandboxServiceTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestInterestGroupManager test_interest_group_manager_;
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
+  first_party_sets::FirstPartySetsPolicyService
+      first_party_sets_policy_service_ =
+          first_party_sets::FirstPartySetsPolicyService(
+              profile_.GetOriginalProfile());
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
 #endif
@@ -2072,6 +2099,355 @@ TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
                 GURL("https://example.com")));
 }
 
+TEST_F(PrivacySandboxServiceTest,
+       GetFirstPartySetOwner_SimulatedFpsData_DisabledWhen3pcAllowed) {
+  GURL associate1_gurl("https://associate1.test");
+  net::SchemefulSite primary_site(GURL("https://primary.test"));
+  net::SchemefulSite associate1_site(associate1_gurl);
+
+  // Create Global First-Party Sets with the following set:
+  // { primary: "https://primary.test",
+  // associatedSites: ["https://associate1.test"}
+  net::GlobalFirstPartySets global_sets(
+      {{associate1_site,
+        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                 0)}}},
+      {});
+
+  // Simulate 3PC are allowed while:
+  // - FPS pref is enabled
+  // - FPS backend Feature is enabled
+  // - FPS UI Feature is enabled
+  feature_list()->InitWithFeatures(
+      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
+       features::kFirstPartySets},
+      {});
+  CreateService();
+  ClearFpsUserPrefs(prefs());
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           content_settings::CookieControlsMode::kOff)));
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(true));
+  // Reset test state to reflect required state above.
+  content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
+
+  content::FirstPartySetsHandler::GetInstance()->SetGlobalSetsForTesting(
+      global_sets.Clone());
+  first_party_sets_policy_service()->InitForTesting(
+      [](PrefService* prefs,
+         base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(net::FirstPartySetsContextConfig());
+      });
+  // We shouldn't get associate1's owner since FPS is disabled.
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
+            absl::nullopt);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       GetFirstPartySetOwner_SimulatedFpsData_DisabledWhenAllCookiesBlocked) {
+  GURL associate1_gurl("https://associate1.test");
+  net::SchemefulSite primary_site(GURL("https://primary.test"));
+  net::SchemefulSite associate1_site(associate1_gurl);
+
+  // Create Global First-Party Sets with the following set:
+  // { primary: "https://primary.test",
+  // associatedSites: ["https://associate1.test"}
+  net::GlobalFirstPartySets global_sets(
+      {{associate1_site,
+        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                 0)}}},
+      {});
+
+  // Simulate all cookies are blocked while:
+  // - FPS pref is enabled
+  // - FPS backend Feature is enabled
+  // - FPS UI Feature is enabled
+  feature_list()->InitWithFeatures(
+      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
+       features::kFirstPartySets},
+      {});
+  prefs()->SetUserPref(
+      prefs::kCookieControlsMode,
+      std::make_unique<base::Value>(static_cast<int>(
+          content_settings::CookieControlsMode::kBlockThirdParty)));
+  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+  CreateService();
+  ClearFpsUserPrefs(prefs());
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(true));
+
+  // Reset test state to reflect required state above.
+  content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
+
+  content::FirstPartySetsHandler::GetInstance()->SetGlobalSetsForTesting(
+      global_sets.Clone());
+  first_party_sets_policy_service()->InitForTesting(
+      [](PrefService* prefs,
+         base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(net::FirstPartySetsContextConfig());
+      });
+  // We shouldn't get associate1's owner since FPS is disabled.
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
+            absl::nullopt);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       GetFirstPartySetOwner_SimulatedFpsData_DisabledByFpsUiFeature) {
+  GURL associate1_gurl("https://associate1.test");
+  net::SchemefulSite primary_site(GURL("https://primary.test"));
+  net::SchemefulSite associate1_site(associate1_gurl);
+
+  // Create Global First-Party Sets with the following set:
+  // { primary: "https://primary.test",
+  // associatedSites: ["https://associate1.test"}
+  net::GlobalFirstPartySets global_sets(
+      {{associate1_site,
+        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                 0)}}},
+      {});
+
+  // Simulate FPS UI feature disabled while:
+  // - FPS pref is enabled
+  // - FPS backend Feature is enabled
+  // - 3PC are being blocked
+  feature_list()->InitWithFeatures(
+      {features::kFirstPartySets},
+      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI});
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  CreateService();
+  ClearFpsUserPrefs(prefs());
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(true));
+
+  // Reset test state to reflect required state above.
+  content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
+
+  content::FirstPartySetsHandler::GetInstance()->SetGlobalSetsForTesting(
+      global_sets.Clone());
+  first_party_sets_policy_service()->InitForTesting(
+      [](PrefService* prefs,
+         base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(net::FirstPartySetsContextConfig());
+      });
+
+  // We shouldn't get associate1's owner since FPS is disabled.
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
+            absl::nullopt);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       GetFirstPartySetOwner_SimulatedFpsData_DisabledByFpsFeature) {
+  GURL associate1_gurl("https://associate1.test");
+  net::SchemefulSite primary_site(GURL("https://primary.test"));
+  net::SchemefulSite associate1_site(associate1_gurl);
+
+  // Create Global First-Party Sets with the following set:
+  // { primary: "https://primary.test",
+  // associatedSites: ["https://associate1.test"}
+  net::GlobalFirstPartySets global_sets(
+      {{associate1_site,
+        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                 0)}}},
+      {});
+
+  // Simulate FPS backend feature disabled while:
+  // - FPS pref is enabled
+  // - FPS UI Feature is enabled
+  // - 3PC are being blocked
+  feature_list()->InitWithFeatures(
+      {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+      {features::kFirstPartySets});
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  CreateService();
+  ClearFpsUserPrefs(prefs());
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(true));
+
+  // Reset test state to reflect required state above.
+  content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
+
+  content::FirstPartySetsHandler::GetInstance()->SetGlobalSetsForTesting(
+      global_sets.Clone());
+  first_party_sets_policy_service()->InitForTesting(
+      [](PrefService* prefs,
+         base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(net::FirstPartySetsContextConfig());
+      });
+
+  // We shouldn't get associate1's owner since FPS is disabled.
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
+            absl::nullopt);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       GetFirstPartySetOwner_SimulatedFpsData_DisabledByFpsPref) {
+  GURL associate1_gurl("https://associate1.test");
+  net::SchemefulSite primary_site(GURL("https://primary.test"));
+  net::SchemefulSite associate1_site(associate1_gurl);
+
+  // Create Global First-Party Sets with the following set:
+  // { primary: "https://primary.test",
+  // associatedSites: ["https://associate1.test"}
+  net::GlobalFirstPartySets global_sets(
+      {{associate1_site,
+        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                 0)}}},
+      {});
+
+  // Simulate FPS pref disabled while:
+  // - FPS UI Feature is enabled
+  // - FPS backend Feature is enabled
+  // - 3PC are being blocked
+  feature_list()->InitWithFeatures(
+      {features::kFirstPartySets,
+       privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+      {});
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  CreateService();
+  ClearFpsUserPrefs(prefs());
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(false));
+
+  // Reset test state to reflect required state above.
+  content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
+
+  content::FirstPartySetsHandler::GetInstance()->SetGlobalSetsForTesting(
+      global_sets.Clone());
+  first_party_sets_policy_service()->InitForTesting(
+      [](PrefService* prefs,
+         base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(net::FirstPartySetsContextConfig());
+      });
+
+  // We shouldn't get associate1's owner since FPS is disabled.
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
+            absl::nullopt);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       SimulatedFpsData_FpsEnabled_WithoutGlobalSets) {
+  GURL primary_gurl("https://primary.test");
+  GURL associate1_gurl("https://associate1.test");
+  GURL associate2_gurl("https://associate2.test");
+  net::SchemefulSite primary_site(primary_gurl);
+  net::SchemefulSite associate1_site(associate1_gurl);
+  net::SchemefulSite associate2_site(associate2_gurl);
+
+  // Set up state that fully enables the First-Party Sets for UI; blocking 3PC,
+  // and enabling the FPS UI and backend features and the FPS enabled pref.
+  feature_list()->InitWithFeatures(
+      {features::kFirstPartySets,
+       privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+      {});
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  CreateService();
+  ClearFpsUserPrefs(prefs());
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(true));
+
+  // Reset test state to reflect required state above.
+  content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
+
+  // Verify `GetFirstPartySetOwner` returns empty if FPS is enabled but the
+  // Global sets are not ready yet.
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
+            absl::nullopt);
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate2_gurl),
+            absl::nullopt);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       SimulatedFpsData_FpsEnabled_WithGlobalSetsAndProfileSets) {
+  GURL primary_gurl("https://primary.test");
+  GURL associate1_gurl("https://associate1.test");
+  GURL associate2_gurl("https://associate2.test");
+  net::SchemefulSite primary_site(primary_gurl);
+  net::SchemefulSite associate1_site(associate1_gurl);
+  net::SchemefulSite associate2_site(associate2_gurl);
+
+  // Set up state that fully enables the First-Party Sets for UI; blocking 3PC,
+  // and enabling the FPS UI and backend features and the FPS enabled pref.
+  feature_list()->InitWithFeatures(
+      {features::kFirstPartySets,
+       privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+      {});
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  CreateService();
+  ClearFpsUserPrefs(prefs());
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(true));
+
+  // Reset test state to reflect required state above.
+  content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
+
+  // Simulate that the Global First-Party Sets are ready with the following set:
+  // { primary: "https://primary.test",
+  // associatedSites: ["https://associate1.test", "https://associate2.test"] }
+  content::FirstPartySetsHandler::GetInstance()->SetGlobalSetsForTesting(
+      net::GlobalFirstPartySets(
+          {{associate1_site,
+            {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                     0)}},
+           {associate2_site,
+            {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                     1)}}},
+          {}));
+
+  // Simulate that associate2 is removed from the Global First-Party Sets for
+  // this profile.
+  first_party_sets_policy_service()->InitForTesting(
+      [](PrefService* prefs,
+         base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(net::FirstPartySetsContextConfig(
+            net::FirstPartySetsContextConfig::OverrideSets{
+                {net::SchemefulSite(GURL("https://associate2.test")),
+                 {absl::nullopt}}}));
+      });
+
+  // Verify that primary owns associate1, but no longer owns associate2.
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl).value(),
+      primary_site);
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate2_gurl),
+            absl::nullopt);
+}
+
 TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
   // Check that the init of the FPS pref occurs correctly.
   ClearFpsUserPrefs(prefs());
@@ -2137,51 +2513,101 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
       prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
 }
 
-TEST_F(PrivacySandboxServiceTest, NoFpsWhileNotAffected) {
-  // Confirm that when FPS is not involved in access decisions, that the set
-  // of returned First Party Sets is empty.
-  // TODO(crbug.com/1332513): Move away from this demo parameter.
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
-      {{"use-sample-sets", "true"}});
+TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
+  // Confirm that when the FPS sample sets are provided, they are used to answer
+  // First-Party Sets queries instead of the actual sets.
 
-  // When 3PC are blocked, and FPS is enabled, sets should be returned.
-  prefs()->SetUserPref(
-      prefs::kCookieControlsMode,
-      std::make_unique<base::Value>(static_cast<int>(
-          content_settings::CookieControlsMode::kBlockThirdParty)));
-  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled, true);
-  EXPECT_GT(privacy_sandbox_service()->GetFirstPartySets().size(), 0u);
+  // Set up state that fully enables the First-Party Sets for UI; blocking
+  // 3PC, and enabling the FPS UI and backend features and the FPS enabled pref.
+  //
+  // Note: this indicates that the sample sets should be used.
+  feature_list()->InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kFirstPartySets, {}},
+                            {privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
+                             {{"use-sample-sets", "true"}}}},
+      /*disabled_features=*/{});
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  CreateService();
+  ClearFpsUserPrefs(prefs());
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(true));
 
-  // When 3PC are enabled, no sets should be returned.
-  prefs()->SetUserPref(prefs::kCookieControlsMode,
-                       std::make_unique<base::Value>(static_cast<int>(
-                           content_settings::CookieControlsMode::kOff)));
-  EXPECT_EQ(0u, privacy_sandbox_service()->GetFirstPartySets().size());
+  // Reset test state to reflect required state above.
+  content::FirstPartySetsHandler::GetInstance()->ResetForTesting();
 
-  // When all cookies are blocked, no sets should be returned.
-  prefs()->SetUserPref(
-      prefs::kCookieControlsMode,
-      std::make_unique<base::Value>(static_cast<int>(
-          content_settings::CookieControlsMode::kBlockThirdParty)));
-  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+  // Simulate that the Global First-Party Sets are ready with the following
+  // set:
+  // { primary: "https://youtube-primary.test",
+  // associatedSites: ["https://youtube.com"]
+  // }
+  net::SchemefulSite youtube_primary_site(GURL("https://youtube-primary.test"));
+  GURL youtube_gurl("https://youtube.com");
+  net::SchemefulSite youtube_site(youtube_gurl);
 
-  EXPECT_EQ(0u, privacy_sandbox_service()->GetFirstPartySets().size());
+  content::FirstPartySetsHandler::GetInstance()->SetGlobalSetsForTesting(
+      net::GlobalFirstPartySets(
+          {{youtube_site,
+            {net::FirstPartySetEntry(youtube_primary_site,
+                                     net::SiteType::kAssociated, 0)}}},
+          {}));
 
-  // When FPS is disabled, no sets should be returned.
-  cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_ALLOW);
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled, false);
+  // Simulate that https://google.de is moved into a new First-Party Set for
+  // this profile.
+  first_party_sets_policy_service()->InitForTesting(
+      [](PrefService* prefs,
+         base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(
+            net::FirstPartySetsContextConfig(net::FirstPartySetsContextConfig(
+                net::FirstPartySetsContextConfig::OverrideSets{
+                    {net::SchemefulSite(GURL("https://google.de")),
+                     {net::FirstPartySetEntry(
+                         net::SchemefulSite(GURL("https://new-primary.test")),
+                         net::SiteType::kAssociated, 0)}}})));
+      });
 
-  EXPECT_EQ(0u, privacy_sandbox_service()->GetFirstPartySets().size());
+  // Expect queries to be resolved based on the FPS sample sets.
+  EXPECT_GT(privacy_sandbox_service()->GetSampleFirstPartySets().size(), 0u);
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(
+                GURL("https://youtube.com")),
+            net::SchemefulSite(GURL("https://google.com")));
+  EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
+      net::SchemefulSite(GURL("https://googlesource.com"))));
+  EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
+      net::SchemefulSite(GURL("https://google.de"))));
 
-  // When the UI feature is disabled, no sets should be returned.
   feature_list()->Reset();
-  feature_list()->InitAndDisableFeature(
-      privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
-  prefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled, true);
+  feature_list()->InitWithFeatures(
+      {features::kFirstPartySets,
+       privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+      {});
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  CreateService();
+  ClearFpsUserPrefs(prefs());
+  prefs()->SetUserPref(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                       std::make_unique<base::Value>(true));
 
-  EXPECT_EQ(0u, privacy_sandbox_service()->GetFirstPartySets().size());
+  // Expect queries to be resolved based on the FPS backend.
+  EXPECT_EQ(privacy_sandbox_service()->GetSampleFirstPartySets().size(), 0u);
+  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(youtube_gurl),
+            youtube_primary_site);
+  EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
+      net::SchemefulSite(GURL("https://googlesource.com"))));
+  EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
+      net::SchemefulSite(GURL("https://google.de"))));
 }
 
 class PrivacySandboxServiceTestNonRegularProfile
