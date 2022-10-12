@@ -79,10 +79,15 @@ void WebAppIconDiagnostic::DiagnoseGeneratedOrEmptyIconBitmap(
     return;
   }
 
+  const std::string& name = app_->untranslated_name();
+  if (name.empty()) {
+    std::move(done_callback).Run();
+    return;
+  }
+
   DCHECK(icon_size_);
   SkBitmap generated_icon_bitmap = GenerateBitmap(
-      *icon_size_, GenerateIconLetterFromAppName(
-                       base::UTF8ToUTF16(app_->untranslated_name())));
+      *icon_size_, GenerateIconLetterFromAppName(base::UTF8ToUTF16(name)));
   result_->has_generated_icon_bitmap =
       gfx::BitmapsAreEqual(icon_bitmap, generated_icon_bitmap);
 

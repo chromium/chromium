@@ -169,7 +169,8 @@ void WebAppSyncBridge::CommitUpdate(
     return;
   }
 
-  CheckRegistryUpdateData(update->update_data());
+  if (!disable_checks_for_testing_)
+    CheckRegistryUpdateData(update->update_data());
 
   std::unique_ptr<RegistryUpdateData> update_data = update->TakeUpdateData();
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =

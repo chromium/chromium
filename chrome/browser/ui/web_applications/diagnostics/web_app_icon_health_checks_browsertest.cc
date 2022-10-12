@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 
@@ -85,6 +86,24 @@ class WebAppIconHealthChecksBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, HealthyIcons) {
   InstallWebAppAndAwaitAppService("/web_apps/basic.html");
+  RunIconChecksWithMetricExpectations({});
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, EmptyAppName) {
+  AppId app_id = InstallWebAppAndAwaitAppService("/web_apps/basic.html");
+
+  // Delete the app name (some users may have corrupt web app databases with
+  // missing app names).
+  {
+    WebAppSyncBridge& sync_bridge =
+        WebAppProvider::GetForTest(profile())->sync_bridge();
+    sync_bridge.set_disable_checks_for_testing(true);
+    ScopedRegistryUpdate update(&sync_bridge);
+    WebApp* web_app = update->UpdateApp(app_id);
+    web_app->SetName("");
+  }
+
+  // Check that we don't crash on empty app names.
   RunIconChecksWithMetricExpectations({});
 }
 
