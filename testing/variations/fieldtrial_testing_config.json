@@ -413,8 +413,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Holdback_20221012",
                     "enable_features": [
+                        "AndroidBatteryMetricsReportOnUIThread"
+                    ],
+                    "disable_features": [
                         "AndroidScrollOptimizations"
                     ]
                 }
