@@ -20,10 +20,10 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
@@ -33,19 +33,20 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.ToolbarUnitTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+
+import java.util.concurrent.ExecutionException;
 
 /**
  * Instrumentation tests for the toolbar security icon.
@@ -80,25 +81,12 @@ public final class ToolbarSecurityIconTest {
     private SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     @Mock
-    private PrefService mMockPrefService;
-    @Mock
     private Profile mMockProfile;
-
-    /**
-     * Set up the lock icon policy for Mock PrefService.
-     * @param isPolicyEnabled If true, omnibox must show the lock icon.
-     */
-    private void setupLockIconPolicyForTests(boolean isPolicyEnabled) {
-        Mockito.when(mMockPrefService.isManagedPreference(
-                             ChromePreferenceKeys.LOCK_ICON_IN_ADDRESS_BAR_ENABLED))
-                .thenReturn(isPolicyEnabled);
-        Mockito.when(mMockPrefService.getBoolean(
-                             ChromePreferenceKeys.LOCK_ICON_IN_ADDRESS_BAR_ENABLED))
-                .thenReturn(isPolicyEnabled);
-    }
+    @Mock
+    private TrustedCdn mTrustedCdn;
 
     @Before
-    public void setUp() {
+    public void setUp() throws ExecutionException {
         MockitoAnnotations.initMocks(this);
 
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
@@ -114,10 +102,12 @@ public final class ToolbarSecurityIconTest {
                         mSearchEngineLogoUtils));
         // clang-format on
         Profile.setLastUsedProfileForTesting(mMockProfile);
-        TestThreadUtils.runOnUiThreadBlocking(() -> mLocationBarModel.initializeWithNative());
-
-        doReturn(mMockPrefService).when(mLocationBarModel).getPrefService();
-        setupLockIconPolicyForTests(false);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mLocationBarModel.initializeWithNative();
+            UserDataHost userDataHost = new UserDataHost();
+            userDataHost.setUserData(TrustedCdn.USER_DATA_KEY, mTrustedCdn);
+            doReturn(userDataHost).when(mTab).getUserDataHost();
+        });
     }
 
     @Test
@@ -125,34 +115,37 @@ public final class ToolbarSecurityIconTest {
     @UiThreadTest
     public void testGetSecurityLevel() {
         assertEquals(ConnectionSecurityLevel.NONE,
-                mLocationBarModel.getSecurityLevel(null, !IS_OFFLINE_PAGE, null));
+                mLocationBarModel.getSecurityLevel(null, !IS_OFFLINE_PAGE));
         assertEquals(ConnectionSecurityLevel.NONE,
-                mLocationBarModel.getSecurityLevel(null, IS_OFFLINE_PAGE, null));
+                mLocationBarModel.getSecurityLevel(null, IS_OFFLINE_PAGE));
         assertEquals(ConnectionSecurityLevel.NONE,
-                mLocationBarModel.getSecurityLevel(mTab, IS_OFFLINE_PAGE, null));
+                mLocationBarModel.getSecurityLevel(mTab, IS_OFFLINE_PAGE));
 
         for (int securityLevel : SECURITY_LEVELS) {
             doReturn(securityLevel).when(mLocationBarModel).getSecurityLevelFromStateModel(any());
             assertEquals("Wrong security level returned for " + securityLevel, securityLevel,
-                    mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE, null));
+                    mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE));
         }
 
         doReturn(ConnectionSecurityLevel.SECURE)
                 .when(mLocationBarModel)
                 .getSecurityLevelFromStateModel(any());
+        doReturn("https://example.com").when(mTrustedCdn).getPublisherUrl();
         assertEquals("Wrong security level returned for HTTPS publisher URL",
                 ConnectionSecurityLevel.SECURE,
-                mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE, "https://example.com"));
+                mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE));
+        doReturn("http://example.com").when(mTrustedCdn).getPublisherUrl();
         assertEquals("Wrong security level returned for HTTP publisher URL",
                 ConnectionSecurityLevel.WARNING,
-                mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE, "http://example.com"));
+                mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE));
 
         doReturn(ConnectionSecurityLevel.DANGEROUS)
                 .when(mLocationBarModel)
                 .getSecurityLevelFromStateModel(any());
+        doReturn(null).when(mTrustedCdn).getPublisherUrl();
         assertEquals("Wrong security level returned for publisher URL on insecure page",
                 ConnectionSecurityLevel.DANGEROUS,
-                mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE, null));
+                mLocationBarModel.getSecurityLevel(mTab, !IS_OFFLINE_PAGE));
     }
 
     @Test
@@ -210,39 +203,6 @@ public final class ToolbarSecurityIconTest {
                         ConnectionSecurityLevel.SECURE_WITH_POLICY_INSTALLED_CERT, !IS_SMALL_DEVICE,
                         !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
 
-        assertEquals(R.drawable.omnibox_https_valid,
-                mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.SECURE,
-                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
-        assertEquals(R.drawable.omnibox_https_valid,
-                mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.SECURE,
-                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"Omnibox"})
-    @Features.EnableFeatures(ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
-    public void testLockIconPolicyDisabled() {
-        setupLockIconPolicyForTests(false);
-
-        assertEquals(R.drawable.omnibox_https_valid_arrow,
-                mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.SECURE,
-                        IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
-        assertEquals(R.drawable.omnibox_https_valid_arrow,
-                mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.SECURE,
-                        !IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"Omnibox"})
-    @Features.EnableFeatures(ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
-    public void testLockIconPolicyEnabled() {
-        setupLockIconPolicyForTests(true);
-
-        // When the policy is enabled, omnibox should keep showing the lock icon.
         assertEquals(R.drawable.omnibox_https_valid,
                 mLocationBarModel.getSecurityIconResource(ConnectionSecurityLevel.SECURE,
                         IS_SMALL_DEVICE, !IS_OFFLINE_PAGE, !IS_PAINT_PREVIEW));

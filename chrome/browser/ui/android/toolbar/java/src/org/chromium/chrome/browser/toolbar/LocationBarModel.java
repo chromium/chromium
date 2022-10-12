@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
@@ -45,10 +44,8 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.SecurityStatusIcon;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -335,45 +332,47 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             }
 
             String url = gurl.getSpec().trim();
+            boolean isOfflinePage = isOfflinePage();
             String formattedUrl = getFormattedFullUrl();
-            if (mTab.isFrozen()) return buildUrlBarData(url, formattedUrl);
+            if (mTab.isFrozen()) return buildUrlBarData(url, isOfflinePage, formattedUrl);
 
             if (DomDistillerUrlUtils.isDistilledPage(url)) {
                 GURL originalUrl =
                         DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(new GURL(url));
-                return buildUrlBarData(mUrlFormatter.format(originalUrl));
+                return buildUrlBarData(mUrlFormatter.format(originalUrl), isOfflinePage);
             }
 
-            if (isOfflinePage()) {
+            if (isOfflinePage) {
                 GURL originalUrl = mTab.getOriginalUrl();
                 formattedUrl = UrlUtilities.stripScheme(mUrlFormatter.format(originalUrl));
 
                 // Clear the editing text for untrusted offline pages.
                 if (!mOfflineStatus.isShowingTrustedOfflinePage(mTab)) {
-                    return buildUrlBarData(url, formattedUrl, "");
+                    return buildUrlBarData(url, true, formattedUrl, "");
                 }
 
-                return buildUrlBarData(url, formattedUrl);
+                return buildUrlBarData(url, true, formattedUrl);
             }
 
             String urlForDisplay = getUrlForDisplay();
             if (!urlForDisplay.equals(formattedUrl)) {
-                return buildUrlBarData(url, urlForDisplay, formattedUrl);
+                return buildUrlBarData(url, false, urlForDisplay, formattedUrl);
             }
 
-            return buildUrlBarData(url, formattedUrl);
+            return buildUrlBarData(url, false, formattedUrl);
         }
     }
 
-    private UrlBarData buildUrlBarData(String url) {
-        return buildUrlBarData(url, url, url);
+    private UrlBarData buildUrlBarData(String url, boolean isOfflinePage) {
+        return buildUrlBarData(url, isOfflinePage, url, url);
     }
 
-    private UrlBarData buildUrlBarData(String url, String displayText) {
-        return buildUrlBarData(url, displayText, displayText);
+    private UrlBarData buildUrlBarData(String url, boolean isOfflinePage, String displayText) {
+        return buildUrlBarData(url, isOfflinePage, displayText, displayText);
     }
 
-    private UrlBarData buildUrlBarData(String url, String displayText, String editingText) {
+    private UrlBarData buildUrlBarData(
+            String url, boolean isOfflinePage, String displayText, String editingText) {
         SpannableStringBuilder spannableDisplayText = new SpannableStringBuilder(displayText);
         if (mNativeLocationBarModelAndroid != 0 && spannableDisplayText.length() > 0
                 && shouldEmphasizeUrl()) {
@@ -391,8 +390,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                     OmniboxResourceProvider.getUrlBarSecureColor(mContext, brandedColorScheme);
 
             AutocompleteSchemeClassifier autocompleteSchemeClassifier;
+            int securityLevel = getSecurityLevel(getTab(), isOfflinePage);
             SpannableDisplayTextCacheKey cacheKey =
-                    new SpannableDisplayTextCacheKey(url, displayText, getSecurityLevel(),
+                    new SpannableDisplayTextCacheKey(url, displayText, securityLevel,
                             nonEmphasizedColor, emphasizedColor, dangerColor, secureColor);
             SpannableStringBuilder cachedSpannableDisplayText = null;
             if (mOptimizationsEnabled) {
@@ -573,9 +573,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public int getSecurityLevel() {
-        Tab tab = getTab();
-        String publisherUrl = tab != null ? TrustedCdn.getPublisherUrl(tab) : null;
-        return getSecurityLevel(tab, isOfflinePage(), publisherUrl);
+        return getSecurityLevel(getTab(), isOfflinePage());
     }
 
     @Override
@@ -592,8 +590,9 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public @DrawableRes int getSecurityIconResource(boolean isTablet) {
-        return getSecurityIconResource(
-                getSecurityLevel(), !isTablet, isOfflinePage(), isPaintPreview());
+        boolean isOfflinePage = isOfflinePage();
+        return getSecurityIconResource(getSecurityLevel(getTab(), isOfflinePage), !isTablet,
+                isOfflinePage, isPaintPreview());
     }
 
     @Override
@@ -604,10 +603,13 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @VisibleForTesting
     @ConnectionSecurityLevel
-    int getSecurityLevel(Tab tab, boolean isOfflinePage, @Nullable String publisherUrl) {
+    int getSecurityLevel(Tab tab, boolean isOfflinePage) {
         if (tab == null || isOfflinePage || isInOverviewAndShowingOmnibox()) {
             return ConnectionSecurityLevel.NONE;
         }
+
+        @Nullable
+        String publisherUrl = TrustedCdn.getPublisherUrl(tab);
 
         if (publisherUrl != null) {
             assert getSecurityLevelFromStateModel(tab.getWebContents())
@@ -624,11 +626,6 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     int getSecurityLevelFromStateModel(WebContents webContents) {
         int securityLevel = SecurityStateModel.getSecurityLevelForWebContents(webContents);
         return securityLevel;
-    }
-
-    @VisibleForTesting
-    PrefService getPrefService() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
     @VisibleForTesting
@@ -656,20 +653,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
                 !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito())
                 || mNtpDelegate.isCurrentlyVisible() || isInOverviewAndShowingOmnibox();
 
-        boolean useLockIconEnabled = false;
-        if (mNativeLocationBarModelAndroid != 0) {
-            PrefService prefService = getPrefService();
-            if (prefService.isManagedPreference(
-                        ChromePreferenceKeys.LOCK_ICON_IN_ADDRESS_BAR_ENABLED)) {
-                useLockIconEnabled = prefService.getBoolean(
-                        ChromePreferenceKeys.LOCK_ICON_IN_ADDRESS_BAR_ENABLED);
-            }
-        }
-
         boolean useUpdatedConnectionSecurityIndicators = FeatureList.isInitialized()
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
-                && !useLockIconEnabled && !(hasTab() && mTab.isCustomTab());
+                && !(hasTab() && mTab.isCustomTab());
 
         return SecurityStatusIcon.getSecurityIconResource(securityLevel, isSmallDevice,
                 skipIconForNeutralState, useUpdatedConnectionSecurityIndicators);
