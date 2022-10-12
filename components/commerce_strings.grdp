@@ -60,7 +60,7 @@
       Track price
     </message>
     <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_ERROR_DESCRIPTION" desc="The description text for the dialog that is shown when a user initiates price tracking for the product displayed on the current page from the dialog but the request fails. It tells user that the tracking request failed.">
-      Something went wrong. Your change wasn’t saved.
+      Something went wrong. Try again.
     </message>
     <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_ERROR_BUTTON" desc="The action button text for the dialog that is shown when a user initiates price tracking for the product displayed on the current page from the dialog but the request fails. User can click this button to re-try tracking the product.">
       Try again
@@ -105,6 +105,9 @@
 
     <message name="IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION" desc="The description text for the dialog that is shown when a user clicks the bookmark star icon on a product web page. It describes what will happen when price tracking is initiated.">
       Get email alerts if the price drops on any site
+    </message>
+    <message name="IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION_EMAIL_OFF" desc="The description text for the dialog that is shown when a user clicks the bookmark star icon on a product web page. We use this text only if the email notification is currently turned off by the user. It describes what will happen when price tracking is initiated.">
+      Track prices across multiple sites at the same time
     </message>
 
     <message name="IDS_BOOKMARKS_MENU_TRACK_PRICE" desc="Text shown as a menu item when the user is on a product page and the product's price is not currently being tracked. User can click this button to track this product.">
@@ -177,10 +180,10 @@
       Mobile
     </message>
     <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_MOBILE_DESCRIPTION_ON" desc="The description text for managing mobile price drop popup notifications when the notification is currently enabled. Shown on the detailed page settings in Google services. It tells users that they can disable the popup notification in the Chrome notification settings." formatter_data="android_java">
-      Price drop alerts are on. You can change this in <ph name="BEGIN_LINK">&lt;link&gt;</ph><ph name="NOTIFICATION_SETTINGS">%1$s<ex>settings</ex></ph><ph name="END_LINK">&lt;/link&gt;</ph>
+      Price drop alerts are on. You can change this in <ph name="BEGIN_LINK">&lt;link&gt;</ph><ph name="NOTIFICATION_SETTINGS">%1$s<ex>settings</ex></ph><ph name="END_LINK">&lt;/link&gt;</ph>.
     </message>
     <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_MOBILE_DESCRIPTION_OFF" desc="The description text for managing mobile price drop popup notifications when the notification is currently disabled. Shown on the detailed page settings in Google services. It tells users that they can enable the popup notification in the Chrome notification settings." formatter_data="android_java">
-      Chrome notifications must be on. You can turn them on in <ph name="BEGIN_LINK">&lt;link&gt;</ph><ph name="NOTIFICATION_SETTINGS">%1$s<ex>settings</ex></ph><ph name="END_LINK">&lt;/link&gt;</ph>
+      Chrome notifications must be on. You can turn them on in <ph name="BEGIN_LINK">&lt;link&gt;</ph><ph name="NOTIFICATION_SETTINGS">%1$s<ex>settings</ex></ph><ph name="END_LINK">&lt;/link&gt;</ph>.
     </message>
     <message name="IDS_CHROME_NOTIFICATION_SETTINGS_FOR_PRICE_TRACKING" desc="The button text within the description for managing mobile price drop popup notifications. When user clicks this button, we send them to the Chrome notification settings." formatter_data="android_java">
       settings
