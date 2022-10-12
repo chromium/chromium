@@ -50,7 +50,7 @@ class NGOffsetMapping;
 enum class OnlyWhitespaceOrNbsp : unsigned { kUnknown = 0, kNo = 1, kYes = 2 };
 
 // LayoutText is the root class for anything that represents
-// a text node (see core/dom/Text.h).
+// a text node (see core/dom/text.h).
 //
 // This is a common node in the tree so to the limit memory overhead,
 // this class inherits directly from LayoutObject.
@@ -63,7 +63,7 @@ enum class OnlyWhitespaceOrNbsp : unsigned { kUnknown = 0, kNo = 1, kYes = 2 };
 // The result of layout is the line box tree, which represents lines
 // on the screen. It is stored into m_firstTextBox and m_lastTextBox.
 // To understand how lines are broken by the bidi algorithm, read e.g.
-// LayoutBlockFlow::layoutInlineChildren.
+// LayoutBlockFlow::LayoutInlineChildren.
 //
 //
 // ***** LINE BOXES OWNERSHIP *****
@@ -72,9 +72,9 @@ enum class OnlyWhitespaceOrNbsp : unsigned { kUnknown = 0, kNo = 1, kYes = 2 };
 // line_boxes_).
 //
 // This class implements the preferred logical widths computation
-// for its underlying text. The widths are stored into m_minWidth
-// and m_maxWidth. They are computed lazily based on
-// m_preferredLogicalWidthsDirty.
+// for its underlying text. The widths are stored into min_width_
+// and max_width_. They are computed lazily based on
+// LayoutObjectBitfields::intrinsic_logical_widths_dirty_.
 //
 // The previous comment applies also for painting. See e.g.
 // BlockFlowPainter::paintContents in particular the use of LineBoxListPainter.
@@ -526,8 +526,8 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void ApplyTextTransform();
   void SecureText(UChar mask);
 
-  bool IsText() const =
-      delete;  // This will catch anyone doing an unnecessary check.
+  // This will catch anyone doing an unnecessary check.
+  bool IsText() const = delete;
 
   PhysicalRect LocalVisualRectIgnoringVisibility() const final;
 

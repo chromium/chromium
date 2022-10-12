@@ -645,7 +645,7 @@ MultiColumnFragmentainerGroupList::MultiColumnFragmentainerGroupList(
 }
 
 // An explicit empty destructor of MultiColumnFragmentainerGroupList should be
-// in MultiColumnFragmentainerGroup.cpp, because if an implicit destructor is
+// in multi_column_fragmentainer_group.cc, because if an implicit destructor is
 // used, msvc 2015 tries to generate its destructor (because the class is
 // dll-exported class) and causes a compile error because of lack of
 // MultiColumnFragmentainerGroup::operator=.  Since

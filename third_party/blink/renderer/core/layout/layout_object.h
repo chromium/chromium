@@ -2445,7 +2445,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // elements into the correct LayoutBlock.
   //
   // See container() for the function that returns the containing block.
-  // See LayoutBlock.h for some extra explanations on containing blocks.
+  // See layout_block.h for some extra explanations on containing blocks.
   LayoutBlock* ContainingBlock(AncestorSkipInfo* = nullptr) const;
 
   bool IsAnonymousNGMulticolInlineWrapper() const;
@@ -4246,7 +4246,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
     // This boolean is used to know if this LayoutObject has one (or more)
     // associated CounterNode(s).
-    // See class comment in LayoutCounter.h for more detail.
+    // See class comment in layout_counter.h for more detail.
     ADD_BOOLEAN_BITFIELD(has_counter_node_map_, HasCounterNodeMap);
 
     ADD_BOOLEAN_BITFIELD(ever_had_layout_, EverHadLayout);

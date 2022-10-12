@@ -45,10 +45,10 @@ using CounterMap = HeapHashMap<AtomicString, Member<CounterNode>>;
 // style. It then just queries CounterNodes for their values.
 //
 // CounterNodes are rare so they are stored in a map instead of growing
-// LayoutObject. counterMaps() (in LayoutCounter.cpp) keeps the association
+// LayoutObject. GetCounterMaps() (in layout_counter.cc) keeps the association
 // between LayoutObject and CounterNodes. To avoid unneeded hash-lookups in the
 // common case where there is no CounterNode, LayoutObject also keeps track of
-// whether it has at least one CounterNode in the hasCounterNodeMap bit.
+// whether it has at least one CounterNode in the HasCounterNodeMap bit.
 //
 // Keeping the map up to date is the reason why LayoutObjects need to call into
 // LayoutCounter during their lifetime (see the static functions below).

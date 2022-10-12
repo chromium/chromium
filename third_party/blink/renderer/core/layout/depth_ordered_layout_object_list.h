@@ -17,7 +17,8 @@ namespace blink {
 
 class LayoutObject;
 
-// Put data inside a forward-declared struct, to avoid including LayoutObject.h.
+// Put data inside a forward-declared struct, to avoid including
+// layout_object.h.
 class DepthOrderedLayoutObjectListData;
 
 struct LayoutObjectWithDepth {

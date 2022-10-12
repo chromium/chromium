@@ -751,7 +751,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
   const unsigned caret_min_offset = static_cast<unsigned>(CaretMinOffset());
   const unsigned caret_max_offset = static_cast<unsigned>(CaretMaxOffset());
 
-  // Narrows |start| and |end| into |caretMinOffset| and |careMaxOffset|
+  // Narrows |start| and |end| into |CaretMinOffset| and |CaretMaxOffset|
   // to ignore unrendered leading and trailing whitespaces.
   start = std::min(std::max(caret_min_offset, start), caret_max_offset);
   end = std::min(std::max(caret_min_offset, end), caret_max_offset);
@@ -1097,8 +1097,8 @@ LayoutRect LayoutText::LocalCaretRect(
       break;
   }
 
-  // for unicode-bidi: plaintext, use inlineBoxBidiLevel() to test the correct
-  // direction for the cursor.
+  // for unicode-bidi: plaintext, use inline_box->BidiLevel() to test the
+  // correct direction for the cursor.
   if (right_aligned && StyleRef().GetUnicodeBidi() == UnicodeBidi::kPlaintext) {
     if (inline_box->BidiLevel() % 2 != 1)
       right_aligned = false;
@@ -1170,7 +1170,7 @@ void LayoutText::TrimmedPrefWidths(LayoutUnit lead_width_layout_unit,
   NOT_DESTROYED();
   float float_min_width = 0.0f, float_max_width = 0.0f;
 
-  // Convert leadWidth to a float here, to avoid multiple implict conversions
+  // Convert lead_width to a float here, to avoid multiple implicit conversions
   // below.
   float lead_width = lead_width_layout_unit.ToFloat();
 
@@ -1636,7 +1636,7 @@ void LayoutText::ComputePreferredLogicalWidths(
       if (j < len && style_to_use.AutoWrap())
         has_breakable_char_ = true;
 
-      // Add in wordSpacing to our currMaxWidth, but not if this is the last
+      // Add in wordSpacing to our curr_max_width, but not if this is the last
       // word on a line or the
       // last word in the run.
       if (word_spacing && (is_space || is_collapsible_white_space) &&
@@ -1671,7 +1671,7 @@ void LayoutText::ComputePreferredLogicalWidths(
         min_width_ = curr_min_width;
       curr_min_width = 0;
 
-      // Only set if preserveNewline was true and we saw a newline.
+      // Only set if PreserveNewline was true and we saw a newline.
       if (is_newline) {
         if (first_line) {
           first_line = false;
@@ -2092,7 +2092,7 @@ void LayoutText::ApplyTextTransform() {
     style->ApplyTextTransform(&text_, PreviousCharacter());
 
     // We use the same characters here as for list markers.
-    // See the listMarkerText function in LayoutListMarker.cpp.
+    // See CollectUACounterStyleRules() in ua_counter_style_map.cc.
     switch (style->TextSecurity()) {
       case ETextSecurity::kNone:
         break;
@@ -2129,8 +2129,8 @@ void LayoutText::SecureText(UChar mask) {
   if (last_typed_character_offset_to_reveal >= 0) {
     text_.replace(last_typed_character_offset_to_reveal, 1,
                   String(&revealed_text, 1u));
-    // m_text may be updated later before timer fires. We invalidate the
-    // lastTypedCharacterOffset to avoid inconsistency.
+    // text_ may be updated later before timer fires. We invalidate the
+    // last_typed_character_offset_ to avoid inconsistency.
     secure_text_timer->Invalidate();
   }
 }
@@ -2168,8 +2168,8 @@ void LayoutText::SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
 
 void LayoutText::TextDidChange() {
   NOT_DESTROYED();
-  // If preferredLogicalWidthsDirty() of an orphan child is true,
-  // LayoutObjectChildList::insertChildNode() fails to set true to owner.
+  // If intrinsic_logical_widths_dirty_ of an orphan child is true,
+  // LayoutObjectChildList::InsertChildNode() fails to set true to owner.
   // To avoid that, we call SetNeedsLayoutAndIntrinsicWidthsRecalc() only if
   // this LayoutText has parent.
   if (Parent()) {

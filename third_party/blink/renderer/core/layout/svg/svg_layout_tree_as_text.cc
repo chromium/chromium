@@ -181,7 +181,7 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-// FIXME: Maybe this should be in GraphicsTypes.cpp
+// FIXME: Maybe this should be in platform/graphics/graphics_types.cc
 static WTF::TextStream& operator<<(WTF::TextStream& ts, LineCap style) {
   switch (style) {
     case kButtCap:
@@ -197,7 +197,7 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts, LineCap style) {
   return ts;
 }
 
-// FIXME: Maybe this should be in GraphicsTypes.cpp
+// FIXME: Maybe this should be in platform/graphics/graphics_types.cc
 static WTF::TextStream& operator<<(WTF::TextStream& ts, LineJoin style) {
   switch (style) {
     case kMiterJoin:

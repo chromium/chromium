@@ -52,13 +52,13 @@ enum ContainingBlockState { kNewContainingBlock, kSameContainingBlock };
 // LayoutBlock is the class that is used by any LayoutObject
 // that is a containing block.
 // http://www.w3.org/TR/CSS2/visuren.html#containing-block
-// See also LayoutObject::containingBlock() that is the function
+// See also LayoutObject::ContainingBlock() that is the function
 // used to get the containing block of a LayoutObject.
 //
 // CSS is inconsistent and allows inline elements (LayoutInline) to be
 // containing blocks, even though they are not blocks. Our
 // implementation is as confused with inlines. See e.g.
-// LayoutObject::containingBlock() vs LayoutObject::container().
+// LayoutObject::ContainingBlock() vs LayoutObject::Container().
 //
 // Containing blocks are a central concept for layout, in
 // particular to the layout of out-of-flow positioned
@@ -66,9 +66,9 @@ enum ContainingBlockState { kNewContainingBlock, kSameContainingBlock };
 // as the positioning of the LayoutObjects.
 //
 // LayoutBlock is the class that handles out-of-flow positioned elements in
-// Blink, in particular for layout (see layoutPositionedObjects()). That's why
-// LayoutBlock keeps track of them through |gPositionedDescendantsMap| (see
-// LayoutBlock.cpp).
+// Blink, in particular for layout (see LayoutPositionedObjects()). That's why
+// LayoutBlock keeps track of them through |GetPositionedDescendantsMap()| (see
+// layout_block.cc).
 // Note that this is a design decision made in Blink that doesn't reflect CSS:
 // CSS allows relatively positioned inlines (LayoutInline) to be containing
 // blocks, but they don't have the logic to handle out-of-flow positioned
@@ -79,30 +79,30 @@ enum ContainingBlockState { kNewContainingBlock, kSameContainingBlock };
 //
 // ***** WHO LAYS OUT OUT-OF-FLOW POSITIONED OBJECTS? *****
 // A positioned object gets inserted into an enclosing LayoutBlock's positioned
-// map. This is determined by LayoutObject::containingBlock().
+// map. This is determined by LayoutObject::ContainingBlock().
 //
 //
 // ***** HANDLING OUT-OF-FLOW POSITIONED OBJECTS *****
 // Care should be taken to handle out-of-flow positioned objects during
-// certain tree walks (e.g. layout()). The rule is that anything that
+// certain tree walks (e.g. Layout()). The rule is that anything that
 // cares about containing blocks should skip the out-of-flow elements
 // in the normal tree walk and do an optional follow-up pass for them
-// using LayoutBlock::positionedObjects().
+// using LayoutBlock::PositionedObjects().
 // Not doing so will result in passing the wrong containing
 // block as tree walks will always pass the parent as the
 // containing block.
 //
 // Sample code of how to handle positioned objects in LayoutBlock:
 //
-// for (LayoutObject* child = firstChild(); child; child = child->nextSibling())
+// for (LayoutObject* child = FirstChild(); child; child = child->NextSibling())
 // {
-//     if (child->isOutOfFlowPositioned())
+//     if (child->IsOutOfFlowPositioned())
 //         continue;
 //
 //     // Handle normal flow children.
 //     ...
 // }
-// for (LayoutBox* positionedObject : positionedObjects()) {
+// for (LayoutBox* positioned_object : PositionedObjects()) {
 //     // Handle out-of-flow positioned objects.
 //     ...
 // }
@@ -124,7 +124,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
     return Children()->LastChild();
   }
 
-  // If you have a LayoutBlock, use firstChild or lastChild instead.
+  // If you have a LayoutBlock, use FirstChild or LastChild instead.
   void SlowFirstChild() const = delete;
   void SlowLastChild() const = delete;
 
@@ -155,9 +155,9 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   const char* GetName() const override;
 
  protected:
-  // Insert a child correctly into the tree when |beforeDescendant| isn't a
+  // Insert a child correctly into the tree when |before_descendant| isn't a
   // direct child of |this|. This happens e.g. when there's an anonymous block
-  // child of |this| and |beforeDescendant| has been reparented into that one.
+  // child of |this| and |before_descendant| has been reparented into that one.
   // Such things are invisible to the DOM, and addChild() is typically called
   // with the DOM tree (and not the layout tree) in mind.
   void AddChildBeforeDescendant(LayoutObject* new_child,
@@ -472,9 +472,9 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
  protected:
   virtual void AdjustInlineDirectionLineBounds(
-      unsigned /* expansionOpportunityCount */,
-      LayoutUnit& /* logicalLeft */,
-      LayoutUnit& /* logicalWidth */) const {
+      unsigned /* expansion_opportunity_count */,
+      LayoutUnit& /* logical_left */,
+      LayoutUnit& /* logical_width */) const {
     NOT_DESTROYED();
   }
 
@@ -528,7 +528,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // TODO(jchaffraix): We should rename this function as inline-flex and
   // inline-grid as also covered.
   // Alternatively it should be removed as we clarify the meaning of
-  // isAtomicInlineLevel to imply isInline.
+  // IsAtomicInlineLevel to imply isInline.
   bool IsInlineBlockOrInlineTable() const final {
     NOT_DESTROYED();
     return IsInline() && IsAtomicInlineLevel();
@@ -593,8 +593,8 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
  protected:
   // Paginated content inside this block was laid out.
-  // |logicalBottomOffsetAfterPagination| is the logical bottom offset of the
-  // child content after applying any forced or unforced breaks as needed.
+  // |logical_bottom_offset_after_pagination| is the logical bottom offset of
+  // the child content after applying any forced or unforced breaks as needed.
   void PaginatedContentWasLaidOut(
       LayoutUnit logical_bottom_offset_after_pagination);
 
@@ -612,16 +612,15 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   LayoutObjectChildList children_;
 
-  unsigned
-      has_margin_before_quirk_ : 1;  // Note these quirk values can't be put
-                                     // in LayoutBlockRareData since they are
-                                     // set too frequently.
+  // Note these quirk values can't be put in LayoutBlockRareData since they are
+  // set too frequently.
+  unsigned has_margin_before_quirk_ : 1;
   unsigned has_margin_after_quirk_ : 1;
   unsigned has_markup_truncation_ : 1;
   unsigned width_available_to_children_changed_ : 1;
   unsigned height_available_to_children_changed_ : 1;
-  unsigned is_self_collapsing_ : 1;  // True if margin-before and margin-after
-                                     // are adjoining.
+  // True if margin-before and margin-after are adjoining.
+  unsigned is_self_collapsing_ : 1;
   unsigned descendants_with_floats_marked_for_layout_ : 1;
 
   unsigned has_positioned_objects_ : 1;

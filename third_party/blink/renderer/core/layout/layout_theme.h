@@ -68,7 +68,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   void AdjustStyle(const Element*, ComputedStyle&);
 
   // The remaining methods should be implemented by the platform-specific
-  // portion of the theme, e.g., LayoutThemeMac.cpp for Mac OS X.
+  // portion of the theme, e.g., layout_theme_mac.mm for macOS.
 
   // These methods return the theme's extra style sheets rules, to let each
   // platform adjust the default CSS rules in html.css or quirks.css
