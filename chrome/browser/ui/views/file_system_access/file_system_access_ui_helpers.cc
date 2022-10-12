@@ -49,7 +49,7 @@ std::unique_ptr<views::View> CreateOriginLabel(Browser* browser,
 
   if (show_emphasis) {
     views::StyledLabel::RangeStyleInfo origin_style;
-    origin_style.text_style = views::style::STYLE_EMPHASIZED_SECONDARY;
+    origin_style.text_style = views::style::STYLE_EMPHASIZED;
     label->AddStyleRange(
         gfx::Range(offset, offset + origin_or_short_name.length()),
         origin_style);
@@ -79,7 +79,7 @@ std::unique_ptr<views::View> CreateOriginPathLabel(Browser* browser,
 
   if (show_emphasis) {
     views::StyledLabel::RangeStyleInfo origin_style;
-    origin_style.text_style = views::style::STYLE_EMPHASIZED_SECONDARY;
+    origin_style.text_style = views::style::STYLE_EMPHASIZED;
     // All but the last offset should be the origin.
     for (size_t i = 0; i < offsets.size() - 1; ++i) {
       label->AddStyleRange(
@@ -90,7 +90,7 @@ std::unique_ptr<views::View> CreateOriginPathLabel(Browser* browser,
 
   views::StyledLabel::RangeStyleInfo path_style;
   if (show_emphasis)
-    path_style.text_style = views::style::STYLE_EMPHASIZED_SECONDARY;
+    path_style.text_style = views::style::STYLE_EMPHASIZED;
   path_style.tooltip = path.LossyDisplayName();
   label->AddStyleRange(
       gfx::Range(offsets.back(), offsets.back() + formatted_path.length()),
