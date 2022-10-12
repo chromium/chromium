@@ -5,12 +5,20 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PAGE_LIVE_STATE_DECORATOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PAGE_LIVE_STATE_DECORATOR_H_
 
+#include <map>
+
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
+#include "base/threading/sequence_bound.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/web_contents_proxy.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -25,15 +33,24 @@ class PageLiveStateObserver;
 // All the functions that take a WebContents* as a parameter should only be
 // called from the UI thread, the event will be forwarded to the corresponding
 // PageNode on the Performance Manager's sequence.
-class PageLiveStateDecorator
-    : public GraphOwnedDefaultImpl,
-      public NodeDataDescriberDefaultImpl {
+class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
+                               public NodeDataDescriberDefaultImpl,
+                               public PageNode::ObserverDefaultImpl {
  public:
   class Data;
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+    // Invoked on the main thread. Returns the relevant content settings for
+    // `url` in the web contents' profile.
+    virtual std::map<ContentSettingsType, ContentSetting>
+    GetContentSettingsForUrl(WebContentsProxy web_contents_proxy,
+                             const GURL& url) = 0;
+  };
 
   // This object should only be used via its static methods.
-  PageLiveStateDecorator() = default;
-  ~PageLiveStateDecorator() override = default;
+  explicit PageLiveStateDecorator(base::SequenceBound<Delegate> delegate);
+  ~PageLiveStateDecorator() override;
   PageLiveStateDecorator(const PageLiveStateDecorator& other) = delete;
   PageLiveStateDecorator& operator=(const PageLiveStateDecorator&) = delete;
 
@@ -69,13 +86,31 @@ class PageLiveStateDecorator
   static void SetIsActiveTab(content::WebContents* contents,
                              bool is_active_tab);
 
+  static void SetContentSettings(
+      content::WebContents* contents,
+      std::map<ContentSettingsType, ContentSetting> settings);
+
  private:
+  friend class PageLiveStateDecoratorTest;
+
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
   // NodeDataDescriber implementation:
   base::Value DescribePageNodeData(const PageNode* node) const override;
+
+  // PageNode::ObserverDefaultImpl implementation:
+  void OnMainFrameUrlChanged(const PageNode* page_node) override;
+
+  void OnContentSettingsReceived(
+      base::WeakPtr<const PageNode> page_node,
+      const GURL& url,
+      const std::map<ContentSettingsType, ContentSetting>& settings);
+
+  base::SequenceBound<Delegate> delegate_;
+
+  base::WeakPtrFactory<PageLiveStateDecorator> weak_factory_{this};
 };
 
 class PageLiveStateDecorator::Data {
@@ -98,6 +133,7 @@ class PageLiveStateDecorator::Data {
   virtual bool IsAutoDiscardable() const = 0;
   virtual bool WasDiscarded() const = 0;
   virtual bool IsActiveTab() const = 0;
+  virtual bool IsContentSettingTypeAllowed(ContentSettingsType type) const = 0;
 
   static const Data* FromPageNode(const PageNode* page_node);
   static Data* GetOrCreateForPageNode(const PageNode* page_node);
@@ -138,6 +174,7 @@ class PageLiveStateObserver : public base::CheckedObserver {
   virtual void OnIsAutoDiscardableChanged(const PageNode* page_node) = 0;
   virtual void OnWasDiscardedChanged(const PageNode* page_node) = 0;
   virtual void OnIsActiveTabChanged(const PageNode* page_node) = 0;
+  virtual void OnContentSettingsChanged(const PageNode* page_node) = 0;
 };
 
 }  // namespace performance_manager

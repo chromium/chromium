@@ -4,6 +4,9 @@
 
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 
+#include <utility>
+
+#include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -12,7 +15,9 @@
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 
 namespace performance_manager {
 
@@ -69,6 +74,11 @@ class PageLiveStateDataImpl
   bool IsActiveTab() const override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return is_active_tab_;
+  }
+  bool IsContentSettingTypeAllowed(ContentSettingsType type) const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    auto it = content_settings_.find(type);
+    return it != content_settings_.end() && it->second == CONTENT_SETTING_ALLOW;
   }
 
   void SetIsConnectedToUSBDeviceForTesting(bool value) override {
@@ -183,6 +193,17 @@ class PageLiveStateDataImpl
     for (auto& obs : observers_)
       obs.OnIsActiveTabChanged(page_node_);
   }
+  void set_content_settings(
+      std::map<ContentSettingsType, ContentSetting> settings) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // Content settings are set for the first time when the page navigates, and
+    // subsequently when a notification that they have changed is received.
+    // Therefore, no need to check to see if they're equal to the previous
+    // value.
+    content_settings_ = std::move(settings);
+    for (auto& obs : observers_)
+      obs.OnContentSettingsChanged(page_node_);
+  }
 
  private:
   // Make the impl our friend so it can access the constructor and any
@@ -205,6 +226,8 @@ class PageLiveStateDataImpl
   bool is_auto_discardable_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
   bool was_discarded_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_active_tab_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  std::map<ContentSettingsType, ContentSetting> content_settings_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   const raw_ptr<const PageNode> page_node_;
 };
@@ -212,6 +235,11 @@ class PageLiveStateDataImpl
 const char kDescriberName[] = "PageLiveStateDecorator";
 
 }  // namespace
+
+PageLiveStateDecorator::PageLiveStateDecorator(
+    base::SequenceBound<Delegate> delegate)
+    : delegate_(std::move(delegate)) {}
+PageLiveStateDecorator::~PageLiveStateDecorator() = default;
 
 // static
 void PageLiveStateDecorator::OnIsConnectedToUSBDeviceChanged(
@@ -299,12 +327,22 @@ void PageLiveStateDecorator::SetIsActiveTab(content::WebContents* contents,
       contents, &PageLiveStateDataImpl::set_is_active_tab, is_active_tab);
 }
 
+// static
+void PageLiveStateDecorator::SetContentSettings(
+    content::WebContents* contents,
+    std::map<ContentSettingsType, ContentSetting> settings) {
+  SetPropertyForWebContentsPageNode(
+      contents, &PageLiveStateDataImpl::set_content_settings, settings);
+}
+
 void PageLiveStateDecorator::OnPassedToGraph(Graph* graph) {
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
+  graph->AddPageNodeObserver(this);
 }
 
 void PageLiveStateDecorator::OnTakenFromGraph(Graph* graph) {
+  graph->RemovePageNodeObserver(this);
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
 }
 
@@ -328,6 +366,30 @@ base::Value PageLiveStateDecorator::DescribePageNodeData(
   ret.SetBoolKey("IsActiveTab", data->IsActiveTab());
 
   return ret;
+}
+
+void PageLiveStateDecorator::OnMainFrameUrlChanged(const PageNode* page_node) {
+  // Get the content settings from the main thread.
+  delegate_.AsyncCall(&Delegate::GetContentSettingsForUrl)
+      .WithArgs(page_node->GetContentsProxy(), page_node->GetMainFrameUrl())
+      .Then(base::BindOnce(&PageLiveStateDecorator::OnContentSettingsReceived,
+                           weak_factory_.GetWeakPtr(),
+                           PageNodeImpl::FromNode(page_node)->GetWeakPtr(),
+                           page_node->GetMainFrameUrl()));
+}
+
+void PageLiveStateDecorator::OnContentSettingsReceived(
+    base::WeakPtr<const PageNode> page_node,
+    const GURL& url,
+    const std::map<ContentSettingsType, ContentSetting>& settings) {
+  // If the page node doesn't exist anymore, or it has navigated to a different
+  // URL, there's nothing to do.
+  if (!page_node || page_node->GetMainFrameUrl() != url) {
+    return;
+  }
+
+  PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node.get()))
+      ->set_content_settings(settings);
 }
 
 PageLiveStateDecorator::Data::Data() = default;

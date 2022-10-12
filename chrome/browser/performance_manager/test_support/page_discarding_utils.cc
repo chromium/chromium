@@ -6,6 +6,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/decorators/page_aggregator.h"
+#include "chrome/browser/performance_manager/decorators/page_live_state_decorator_delegate_impl.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/decorators/freezing_vote_decorator.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
@@ -48,8 +49,9 @@ void GraphTestHarnessWithMockDiscarder::SetUp() {
   auto mock_discarder = std::make_unique<MockPageDiscarder>();
   mock_discarder_ = mock_discarder.get();
 
-  // The discarding logic relies on the existance of the page live state data.
-  graph()->PassToGraph(std::make_unique<PageLiveStateDecorator>());
+  // The discarding logic relies on the existence of the page live state data.
+  graph()->PassToGraph(std::make_unique<PageLiveStateDecorator>(
+      PageLiveStateDelegateImpl::Create()));
 
   // Create the helper and pass it to the graph.
   auto page_discarding_helper =

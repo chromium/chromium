@@ -4,10 +4,14 @@
 
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "components/performance_manager/test_support/decorators_utils.h"
+#include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +44,7 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     kOnIsAutoDiscardableChanged,
     kOnWasDiscardedChanged,
     kOnIsActiveTabChanged,
+    kOnContentSettingsChanged,
   };
 
   void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override {
@@ -85,9 +90,28 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     latest_function_called_ = ObserverFunction::kOnIsActiveTabChanged;
     page_node_passed_ = page_node;
   }
+  void OnContentSettingsChanged(const PageNode* page_node) override {
+    latest_function_called_ = ObserverFunction::kOnContentSettingsChanged;
+    page_node_passed_ = page_node;
+  }
 
   ObserverFunction latest_function_called_ = ObserverFunction::kNone;
   raw_ptr<const PageNode> page_node_passed_ = nullptr;
+};
+
+class MockPageLiveStateDelegate
+    : public performance_manager::PageLiveStateDecorator::Delegate {
+ public:
+  MockPageLiveStateDelegate() = default;
+
+ private:
+  std::map<ContentSettingsType, ContentSetting> GetContentSettingsForUrl(
+      WebContentsProxy web_contents_proxy,
+      const GURL& url) override {
+    return {
+        {ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW},
+    };
+  }
 };
 
 }  // namespace
@@ -173,8 +197,19 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
     run_loop.Run();
   }
 
+  void OnGraphCreated(GraphImpl* graph) override {
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
+    graph->PassToGraph(std::make_unique<PageLiveStateDecorator>(
+        base::SequenceBound<MockPageLiveStateDelegate>(task_runner_)));
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner() {
+    return task_runner_;
+  }
+
  private:
   std::unique_ptr<TestPageLiveStateObserver> observer_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
 TEST_F(PageLiveStateDecoratorTest, OnIsConnectedToUSBDeviceChanged) {
@@ -271,6 +306,133 @@ TEST_F(PageLiveStateDecoratorTest, OnIsActiveTabChanged) {
       /*default_state=*/false);
   VerifyObserverExpectationOnPMSequence(
       TestPageLiveStateObserver::ObserverFunction::kOnIsActiveTabChanged);
+}
+
+TEST_F(PageLiveStateDecoratorTest, OnContentSettingsChanged) {
+  base::WeakPtr<PageNode> node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+
+  {
+    base::RunLoop run_loop;
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          ASSERT_TRUE(node);
+          const PageLiveStateDecorator::Data* data =
+              PageLiveStateDecorator::Data::FromPageNode(node.get());
+          ASSERT_TRUE(data);
+          EXPECT_EQ(data->IsContentSettingTypeAllowed(
+                        ContentSettingsType::NOTIFICATIONS),
+                    false);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  PageLiveStateDecorator::SetContentSettings(
+      web_contents(),
+      {
+          {ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW},
+      });
+
+  {
+    base::RunLoop run_loop;
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          ASSERT_TRUE(node);
+          const PageLiveStateDecorator::Data* data =
+              PageLiveStateDecorator::Data::FromPageNode(node.get());
+          ASSERT_TRUE(data);
+          EXPECT_EQ(data->IsContentSettingTypeAllowed(
+                        ContentSettingsType::NOTIFICATIONS),
+                    true);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  VerifyObserverExpectationOnPMSequence(
+      TestPageLiveStateObserver::ObserverFunction::kOnContentSettingsChanged);
+
+  PageLiveStateDecorator::SetContentSettings(
+      web_contents(),
+      {
+          {ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_BLOCK},
+      });
+
+  {
+    base::RunLoop run_loop;
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          ASSERT_TRUE(node);
+          const PageLiveStateDecorator::Data* data =
+              PageLiveStateDecorator::Data::FromPageNode(node.get());
+          ASSERT_TRUE(data);
+          EXPECT_EQ(data->IsContentSettingTypeAllowed(
+                        ContentSettingsType::NOTIFICATIONS),
+                    false);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  VerifyObserverExpectationOnPMSequence(
+      TestPageLiveStateObserver::ObserverFunction::kOnContentSettingsChanged);
+}
+
+TEST_F(PageLiveStateDecoratorTest, GetContentSettingsOnNavigation) {
+  base::WeakPtr<PageNode> node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+  {
+    base::RunLoop run_loop;
+    auto quit_closure = run_loop.QuitClosure();
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          ASSERT_TRUE(node);
+          const PageLiveStateDecorator::Data* data =
+              PageLiveStateDecorator::Data::FromPageNode(node.get());
+          ASSERT_TRUE(data);
+          EXPECT_EQ(data->IsContentSettingTypeAllowed(
+                        ContentSettingsType::NOTIFICATIONS),
+                    false);
+          PageNodeImpl::FromNode(node.get())
+              ->OnMainFrameNavigationCommitted(
+                  /*same_document=*/false,
+                  /*navigation_committed_time=*/base::TimeTicks::Now(),
+                  /*navigation_id=*/1,
+                  /*url=*/GURL("http://www.example.com"),
+                  /*contents_mime_type=*/"text/html");
+
+          // Posting the quit_closure run on the same task runner as the content
+          // settings fetch ensures it's run after the settings are done being
+          // retrieved.
+          task_runner()->PostTask(FROM_HERE, base::BindLambdaForTesting([&]() {
+                                    std::move(quit_closure).Run();
+                                  }));
+        }));
+    run_loop.Run();
+  }
+
+  VerifyObserverExpectationOnPMSequence(
+      TestPageLiveStateObserver::ObserverFunction::kOnContentSettingsChanged);
+
+  {
+    base::RunLoop run_loop;
+    PerformanceManager::CallOnGraph(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          ASSERT_TRUE(node);
+          const PageLiveStateDecorator::Data* data =
+              PageLiveStateDecorator::Data::FromPageNode(node.get());
+          ASSERT_TRUE(data);
+          EXPECT_EQ(data->IsContentSettingTypeAllowed(
+                        ContentSettingsType::NOTIFICATIONS),
+                    true);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+
+  VerifyObserverExpectationOnPMSequence(
+      TestPageLiveStateObserver::ObserverFunction::kOnContentSettingsChanged);
 }
 
 }  // namespace performance_manager

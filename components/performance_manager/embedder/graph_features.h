@@ -46,7 +46,6 @@ class GraphFeatures {
       bool frame_visibility_decorator : 1;
       bool freezing_vote_decorator : 1;
       bool metrics_collector : 1;
-      bool page_live_state_decorator : 1;
       bool page_load_tracker_decorator : 1;
       bool page_node_impl_describer : 1;
       bool process_hosted_content_types_aggregator : 1;
@@ -90,11 +89,6 @@ class GraphFeatures {
 
   constexpr GraphFeatures& EnableFreezingVoteDecorator() {
     flags_.freezing_vote_decorator = true;
-    return *this;
-  }
-
-  constexpr GraphFeatures& EnablePageLiveStateDecorator() {
-    flags_.page_live_state_decorator = true;
     return *this;
   }
 
@@ -157,7 +151,6 @@ class GraphFeatures {
     EnableFrameVisibilityDecorator();
     EnableFreezingVoteDecorator();
     EnableMetricsCollector();
-    EnablePageLiveStateDecorator();
     EnablePageLoadTrackerDecorator();
     EnablePageNodeImplDescriber();
     EnableProcessHostedContentTypesAggregator();

@@ -189,6 +189,7 @@ static_library("performance_manager") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//components/content_settings/core/common",
     "//components/metrics",
     "//components/pref_registry:pref_registry",
     "//components/prefs:prefs",

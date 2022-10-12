@@ -17,7 +17,6 @@
 #include "components/performance_manager/graph/page_node_impl_describer.h"
 #include "components/performance_manager/graph/process_node_impl_describer.h"
 #include "components/performance_manager/graph/worker_node_impl_describer.h"
-#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/metrics/metrics_collector.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
@@ -49,8 +48,6 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
     Install<MetricsCollector>(graph);
   if (flags_.freezing_vote_decorator)
     Install<FreezingVoteDecorator>(graph);
-  if (flags_.page_live_state_decorator)
-    Install<PageLiveStateDecorator>(graph);
   if (flags_.page_load_tracker_decorator)
     Install<PageLoadTrackerDecorator>(graph);
   if (flags_.page_node_impl_describer)
