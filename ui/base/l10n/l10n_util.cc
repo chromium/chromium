@@ -93,6 +93,7 @@ static const char* const kAcceptLanguageList[] = {
     "en-CA",           // English (Canada)
     "en-GB",           // English (UK)
     "en-GB-oxendict",  // English (UK, OED spelling)
+    "en-IE",           // English (Ireland)
     "en-IN",           // English (India)
     "en-NZ",           // English (New Zealand)
     "en-US",           // English (US)
