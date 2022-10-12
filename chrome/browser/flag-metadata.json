@@ -4120,8 +4120,13 @@
     "expiry_milestone": 105
   },
   {
-    "name": "install-isolated-apps-at-startup",
-    "owners": [ "jarrydg", "kuragin", "reillyg", "rmcelrath" ],
+    "name": "install-isolated-web-app-from-file",
+    "owners": [ "kuragin", "reillyg", "rmcelrath" ],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "install-isolated-web-app-from-url",
+    "owners": [ "kuragin", "reillyg", "rmcelrath" ],
     "expiry_milestone": 140
   },
   {

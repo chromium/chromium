@@ -23,7 +23,8 @@ using ::testing::Optional;
 
 base::CommandLine CreateDefaultCommandLine(base::StringPiece flag_value) {
   base::CommandLine command_line{base::CommandLine::NoProgram::NO_PROGRAM};
-  command_line.AppendSwitchASCII("install-isolated-app-at-startup", flag_value);
+  command_line.AppendSwitchASCII("install-isolated-web-app-from-url",
+                                 flag_value);
   return command_line;
 }
 

@@ -1756,11 +1756,17 @@ const char kInProductHelpUseClientConfigName[] = "IPH Use Client Config";
 const char kInProductHelpUseClientConfigDescription[] =
     "Enable In-Product Help to use client side configuration.";
 
-const char kInstallIssolatedAppsAtStartup[] =
-    "Install Isolated Apps at Startup";
-const char kInstallIssolatedAppsAtStartupDescription[] =
-    "Isolated application URLs that Chrome should install during startup, "
-    "specified as a comma-separated list";
+const char kInstallIsolatedWebAppFromFile[] =
+    "Install Isolated Web App from Unsigned Web Bundle";
+const char kInstallIsolatedWebAppFromFileDescription[] =
+    "Installs a new developer mode Isolated Web App backed by the unsigned "
+    "Web Bundle at the provided path.";
+
+const char kInstallIsolatedWebAppFromUrl[] =
+    "Install Isolated Web App from Proxy URL";
+const char kInstallIsolatedWebAppFromUrlDescription[] =
+    "Installs a new developer mode Isolated Web App whose contents are hosted "
+    "at the provided HTTP(S) URL.";
 
 const char kInstalledAppsInCbdName[] = "Installed Apps in Clear Browsing Data";
 const char kInstalledAppsInCbdDescription[] =

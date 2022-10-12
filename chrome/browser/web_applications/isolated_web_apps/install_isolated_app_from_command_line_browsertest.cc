@@ -43,7 +43,7 @@ class InstallIsolatedAppFromCommandLineBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DCHECK(command_line != nullptr);
 
-    command_line->AppendSwitchASCII("install-isolated-app-at-startup",
+    command_line->AppendSwitchASCII("install-isolated-web-app-from-url",
                                     GetAppUrl().spec());
   }
 
