@@ -25,6 +25,7 @@ mojom("cros_camera") {
   sources = [
     "cros_camera_client.mojom",
     "cros_camera_service.mojom",
+    "effects_pipeline.mojom",
   ]
 
   deps = [

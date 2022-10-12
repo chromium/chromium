@@ -1,0 +1,60 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next min version: 1
+
+module cros.mojom;
+
+// Set of effects that can be enabled.
+// Used by EffectsConfig to indicate which effect the g3 shared library
+// should be applying. Needs to be kept in sync with g3 version found in
+// chromeos/ml/effects_pipeline/effects_config.h
+[Extensible]
+enum CameraEffect {
+  [Default] kNone = 0,
+  kBackgroundBlur = 1,
+  kBackgroundReplace = 2,
+  kPortraitRelight = 3,
+};
+
+// Set of GPU APIs available.
+[Extensible]
+enum GpuApi {
+  kOpenCL = 0,
+  [Default] kOpenGL = 1,
+};
+
+// Indicates the state of setting an effect.
+[Extensible]
+enum SetEffectResult {
+  [Default] kOk = 0,
+  kError = 1,
+};
+
+// Defines which level of blur to apply with the background blur effect.
+[Extensible]
+enum BlurLevel {
+  kLowest,
+  kLight,
+  [Default] kMedium,
+  kHeavy,
+  kMaximum,
+};
+
+// Structure used for configuring and enabling video conferencing effects.
+// This should be kept in sync with the google3 version found in:
+// chromeos/ml/effects_pipeline/effects_config.h
+struct EffectsConfig {
+  // Name of the effect to enable.
+  CameraEffect effect = kNone;
+
+  // How much blur to apply for the background blur effect.
+  BlurLevel blur_level = kMedium;
+
+  // Select which GPU API to use to perform the segmentation inference.
+  GpuApi segmentation_gpu_api = kOpenGL;
+
+  // Maximum number of frames allowed in flight.
+  uint16 graph_max_frames_in_flight = 2;
+};
