@@ -8,6 +8,7 @@ include_rules = [
   "+components/account_id",
   "+components/device_event_log",
   "+components/user_manager",
+  "+components/version_info",
   "+third_party/cros_system_api",
 
   # Abseil features must be allowlisted explicitly for now. See

@@ -8,8 +8,11 @@
 
 #include "base/check_op.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
+#include "components/version_info/version_info.h"
 
 namespace cryptohome {
+
+const char kFallbackFactorVersion[] = "0.0.0.0";
 
 // =============== `AuthFactorRef` ===============
 AuthFactorRef::AuthFactorRef(AuthFactorType type, KeyLabel label)
@@ -29,7 +32,15 @@ bool AuthFactorRef::operator==(const AuthFactorRef& other) const {
 }
 
 // =============== `AuthFactorCommonMetadata` ===============
-AuthFactorCommonMetadata::AuthFactorCommonMetadata() = default;
+AuthFactorCommonMetadata::AuthFactorCommonMetadata()
+    : chrome_version_last_updated_(
+          ComponentVersion(version_info::GetVersionNumber())) {}
+
+AuthFactorCommonMetadata::AuthFactorCommonMetadata(ComponentVersion chrome,
+                                                   ComponentVersion chromeos)
+    : chrome_version_last_updated_(std::move(chrome)),
+      chromeos_version_last_updated_(std::move(chromeos)) {}
+
 AuthFactorCommonMetadata::AuthFactorCommonMetadata(
     AuthFactorCommonMetadata&&) noexcept = default;
 AuthFactorCommonMetadata& AuthFactorCommonMetadata::operator=(
@@ -42,8 +53,10 @@ AuthFactorCommonMetadata::~AuthFactorCommonMetadata() = default;
 
 bool AuthFactorCommonMetadata::operator==(
     const AuthFactorCommonMetadata& other) const {
-  // TODO (b/241259026): update when we get actual metadata.
-  return true;
+  return (this->chrome_version_last_updated_ ==
+          other.chrome_version_last_updated_) &&
+         (this->chromeos_version_last_updated_ ==
+          other.chromeos_version_last_updated_);
 }
 
 // =============== `AuthFactor` ===============

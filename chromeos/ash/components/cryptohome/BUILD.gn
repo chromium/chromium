@@ -21,6 +21,7 @@ component("cryptohome") {
     "//components/account_id",
     "//components/device_event_log",
     "//components/user_manager",
+    "//components/version_info",
   ]
   sources = [
     "auth_factor.cc",

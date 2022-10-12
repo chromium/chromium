@@ -14,6 +14,16 @@
 
 namespace cryptohome {
 
+// All authfactors created/modified after AuthFactor API is launched should
+// have OS/Chrome versions filled in CommonMetadata.
+// However, any factor created before the launch would miss such information.
+// In order to keep rest of the code simple, this "zero" value would be used
+// upon receiving AuthFactor from cryptohome.
+// Note that this value should not be passed back to cryptohome, this
+// is guarded by CHECKs in serialization code.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+extern const char kFallbackFactorVersion[];
+
 enum class AuthFactorType {
   // Special edge case - on old ChromeOS versions Kiosk keys and passwords for
   // regular users had no metadata to distinguish them on cryptohome level,
@@ -80,7 +90,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorRef {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     AuthFactorCommonMetadata {
  public:
+  // This constructor should be used for AuthFactors created on the Chrome side.
+  // It fills in current Chrome version, leaving ChromeOS version empty.
   AuthFactorCommonMetadata();
+  AuthFactorCommonMetadata(ComponentVersion chrome, ComponentVersion chromeos);
   ~AuthFactorCommonMetadata();
 
   AuthFactorCommonMetadata(AuthFactorCommonMetadata&&) noexcept;
@@ -91,6 +104,18 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
 
   // Should only be used for testing purposes.
   bool operator==(const AuthFactorCommonMetadata& other) const;
+
+  const ComponentVersion& chrome_version_last_updated() const {
+    return chrome_version_last_updated_;
+  }
+
+  const ComponentVersion& chromeos_version_last_updated() const {
+    return chromeos_version_last_updated_;
+  }
+
+ private:
+  ComponentVersion chrome_version_last_updated_;
+  ComponentVersion chromeos_version_last_updated_;
 };
 
 // Per-factor statuses (read-only properties set by cryptohomed):

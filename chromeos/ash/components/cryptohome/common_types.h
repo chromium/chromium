@@ -23,6 +23,11 @@ using RawPin = base::StrongAlias<class RawPinTag, std::string>;
 // The salt we use for PINs.
 using PinSalt = base::StrongAlias<class PinSaltTag, std::string>;
 
+// Type that denotes version of software component (Chrome or ChromeOS)
+// that was used to set up a factor.
+using ComponentVersion =
+    base::StrongAlias<class ComponentVersionTag, std::string>;
+
 }  // namespace cryptohome
 
 #endif  // CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_COMMON_TYPES_H_

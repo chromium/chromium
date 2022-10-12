@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
@@ -85,7 +86,19 @@ void SerializeAuthFactor(const AuthFactor& factor,
   out_proto->set_label(factor.ref().label().value());
   // Do not do anything with is_active_for_login yet.
 
-  // TODO(b/241259026): fill in common metadata.
+  CHECK_NE(factor.GetCommonMetadata().chrome_version_last_updated().value(),
+           kFallbackFactorVersion);
+  CHECK_NE(factor.GetCommonMetadata().chromeos_version_last_updated().value(),
+           kFallbackFactorVersion);
+
+  out_proto->mutable_common_metadata()->set_chrome_version_last_updated(
+      factor.GetCommonMetadata().chrome_version_last_updated().value());
+  const auto& chromeos_version =
+      factor.GetCommonMetadata().chromeos_version_last_updated().value();
+  if (!chromeos_version.empty()) {
+    out_proto->mutable_common_metadata()->set_chromeos_version_last_updated(
+        chromeos_version);
+  }
 
   switch (factor.ref().type()) {
     case AuthFactorType::kPassword:
@@ -183,9 +196,22 @@ AuthFactor DeserializeAuthFactor(const user_data_auth::AuthFactor& proto,
     }
   }
   AuthFactorRef ref(type, KeyLabel{proto.label()});
-  AuthFactorCommonMetadata common_metadata;
+  ComponentVersion chrome_ver{kFallbackFactorVersion};
+  ComponentVersion chromeos_ver{kFallbackFactorVersion};
+  if (proto.has_common_metadata()) {
+    if (!proto.common_metadata().chrome_version_last_updated().empty()) {
+      chrome_ver = ComponentVersion(
+          proto.common_metadata().chrome_version_last_updated());
+    }
+    if (!proto.common_metadata().chromeos_version_last_updated().empty()) {
+      chromeos_ver = ComponentVersion(
+          proto.common_metadata().chromeos_version_last_updated());
+    }
+  }
+  AuthFactorCommonMetadata common_metadata{std::move(chrome_ver),
+                                           std::move(chromeos_ver)};
+
   // Ignore is_active_for_login for now
-  // TODO(b/241259026) : fill in common metadata
   switch (type) {
     case AuthFactorType::kPassword:
       return AuthFactor(std::move(ref), std::move(common_metadata));
