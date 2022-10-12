@@ -24,6 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -97,12 +98,14 @@ class CORE_EXPORT CSSSelector {
  public:
   CSSSelector();
   CSSSelector(const CSSSelector&);
+  CSSSelector(CSSSelector&&);
   explicit CSSSelector(const QualifiedName&, bool tag_is_implicit = false);
 
   ~CSSSelector();
 
   String SelectorText() const;
 
+  CSSSelector& operator=(const CSSSelector&) = delete;
   bool operator==(const CSSSelector&) const = delete;
   bool operator!=(const CSSSelector&) const = delete;
 
@@ -473,9 +476,6 @@ class CORE_EXPORT CSSSelector {
   unsigned SpecificityForPage() const;
   const CSSSelector* SerializeCompound(StringBuilder&) const;
 
-  // Hide.
-  CSSSelector& operator=(const CSSSelector&) = delete;
-
   struct RareData : public RefCounted<RareData> {
     static scoped_refptr<RareData> Create(const AtomicString& value) {
       return base::AdoptRef(new RareData(value));
@@ -636,6 +636,26 @@ inline CSSSelector::CSSSelector(const CSSSelector& o)
     new (&data_.rare_data_) scoped_refptr<RareData>(o.data_.rare_data_);
   } else {
     new (&data_.value_) AtomicString(o.data_.value_);
+  }
+}
+
+inline CSSSelector::CSSSelector(CSSSelector&& o)
+    : relation_(o.relation_),
+      match_(o.match_),
+      pseudo_type_(o.pseudo_type_),
+      is_last_in_selector_list_(o.is_last_in_selector_list_),
+      is_last_in_tag_history_(o.is_last_in_tag_history_),
+      has_rare_data_(o.has_rare_data_),
+      is_for_page_(o.is_for_page_),
+      tag_is_implicit_(o.tag_is_implicit_),
+      data_(DataUnion::kConstructUninitialized) {
+  if (o.match_ == kTag) {
+    new (&data_.tag_q_name_) QualifiedName(std::move(o.data_.tag_q_name_));
+  } else if (o.has_rare_data_) {
+    new (&data_.rare_data_)
+        scoped_refptr<RareData>(std::move(o.data_.rare_data_));
+  } else {
+    new (&data_.value_) AtomicString(std::move(o.data_.value_));
   }
 }
 

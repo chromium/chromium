@@ -112,8 +112,7 @@ bool CSSSelectorParser::SupportsComplexSelector(
   if (parser.failed_parsing_ || !range.AtEnd() || !parser_selector)
     return false;
   auto complex_selector = parser_selector->ReleaseSelector();
-  DCHECK(complex_selector);
-  if (ContainsUnknownWebkitPseudoElements(*complex_selector.get()))
+  if (ContainsUnknownWebkitPseudoElements(complex_selector))
     return false;
   return true;
 }
@@ -424,8 +423,7 @@ unsigned ExtractCompoundFlags(const CSSParserSelector& simple_selector,
 
 ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeRelativeSelector(
     CSSParserTokenRange& range) {
-  ArenaUniquePtr<CSSParserSelector> selector(
-      arena_.New<CSSParserSelector>(arena_));
+  ArenaUniquePtr<CSSParserSelector> selector(arena_.New<CSSParserSelector>());
   selector->SetMatch(CSSSelector::kPseudoClass);
   selector->UpdatePseudoType("-internal-relative-anchor", *context_,
                              false /*has_arguments*/, context_->Mode());
@@ -782,7 +780,7 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeCompoundSelector(
       namespace_prefix = g_null_atom;
     context_->Count(WebFeature::kHasIDClassTagAttribute);
     return ArenaUniquePtr<CSSParserSelector>(arena_.New<CSSParserSelector>(
-        arena_, QualifiedName(namespace_prefix, element_name, namespace_uri)));
+        QualifiedName(namespace_prefix, element_name, namespace_uri)));
   }
   // TODO(futhark@chromium.org): Prepending a type selector to the compound is
   // unnecessary if this compound is an argument to a pseudo selector like
@@ -871,8 +869,7 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeId(
   DCHECK_EQ(range.Peek().GetType(), kHashToken);
   if (range.Peek().GetHashTokenType() != kHashTokenId)
     return nullptr;
-  ArenaUniquePtr<CSSParserSelector> selector(
-      arena_.New<CSSParserSelector>(arena_));
+  ArenaUniquePtr<CSSParserSelector> selector(arena_.New<CSSParserSelector>());
   selector->SetMatch(CSSSelector::kId);
   AtomicString value = range.Consume().Value().ToAtomicString();
   selector->SetValue(value, IsQuirksModeBehavior(context_->Mode()));
@@ -887,8 +884,7 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeClass(
   range.Consume();
   if (range.Peek().GetType() != kIdentToken)
     return nullptr;
-  ArenaUniquePtr<CSSParserSelector> selector(
-      arena_.New<CSSParserSelector>(arena_));
+  ArenaUniquePtr<CSSParserSelector> selector(arena_.New<CSSParserSelector>());
   selector->SetMatch(CSSSelector::kClass);
   AtomicString value = range.Consume().Value().ToAtomicString();
   selector->SetValue(value, IsQuirksModeBehavior(context_->Mode()));
@@ -922,8 +918,7 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeAttribute(
           ? QualifiedName(g_null_atom, attribute_name, g_null_atom)
           : QualifiedName(namespace_prefix, attribute_name, namespace_uri);
 
-  ArenaUniquePtr<CSSParserSelector> selector(
-      arena_.New<CSSParserSelector>(arena_));
+  ArenaUniquePtr<CSSParserSelector> selector(arena_.New<CSSParserSelector>());
 
   if (block.AtEnd()) {
     selector->SetAttribute(qualified_name,
@@ -963,8 +958,7 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
   if (token.GetType() != kIdentToken && token.GetType() != kFunctionToken)
     return nullptr;
 
-  ArenaUniquePtr<CSSParserSelector> selector(
-      arena_.New<CSSParserSelector>(arena_));
+  ArenaUniquePtr<CSSParserSelector> selector(arena_.New<CSSParserSelector>());
   selector->SetMatch(colons == 1 ? CSSSelector::kPseudoClass
                                  : CSSSelector::kPseudoElement);
 

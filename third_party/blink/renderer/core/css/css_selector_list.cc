@@ -73,12 +73,8 @@ void CSSSelectorList::AdoptSelectorVector(CSSSelectorVector& selector_vector,
        selector_vector) {
     CSSParserSelector* current = selector_ptr.get();
     while (current) {
-      // Move item from the parser selector vector into selector_array_ without
-      // invoking destructor (Ugh.) The CSSSelector is allocated on Arena,
-      // so we do not need to actually free it.
-      CSSSelector* current_selector = current->ReleaseSelector().release();
-      memcpy(&selector_array[array_index], current_selector,
-             sizeof(CSSSelector));
+      new (&selector_array[array_index])
+          CSSSelector(std::move(current->ReleaseSelector()));
 
       current = current->TagHistory();
       DCHECK(!selector_array[array_index].IsLastInSelectorList());

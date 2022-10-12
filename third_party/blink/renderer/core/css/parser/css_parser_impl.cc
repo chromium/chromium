@@ -366,9 +366,9 @@ CSSSelectorList CSSParserImpl::ParsePageSelector(
   ArenaUniquePtr<CSSParserSelector> selector;
   if (!type_selector.IsNull() && pseudo.IsNull()) {
     selector.reset(arena.New<CSSParserSelector>(
-        arena, QualifiedName(g_null_atom, type_selector, g_star_atom)));
+        QualifiedName(g_null_atom, type_selector, g_star_atom)));
   } else {
-    selector.reset(arena.New<CSSParserSelector>(arena));
+    selector.reset(arena.New<CSSParserSelector>());
     if (!pseudo.IsNull()) {
       selector->SetMatch(CSSSelector::kPagePseudoClass);
       selector->UpdatePseudoPage(pseudo.LowerASCII(), context.GetDocument());
