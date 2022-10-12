@@ -2581,13 +2581,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Login.TimeUntilGoodADF" units="ms"
+<histogram name="Ash.Login.TimeUntilGoodADF" units="microseconds"
     expires_after="2023-08-07">
   <owner>xiyuan@chromium.org</owner>
   <owner>chromeos-perfmetrics-eng@google.com</owner>
   <summary>
     Time between user logged in (i.e. a successful cryptohome mount) and when
     good ADF (&lt;= 20%) is observed for more than 5 seconds.
+
+    This histogram only records metrics on machines with high-resolution clocks.
   </summary>
 </histogram>
 
