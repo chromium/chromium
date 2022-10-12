@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/status_provider/status_provider_util.h"
 
 #include "base/values.h"
+#include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
@@ -23,7 +24,7 @@ const char kUserPolicyStatusDescription[] = "statusUser";
 void ExtractDomainFromUsername(base::Value::Dict* dict) {
   const std::string* username = dict->FindString("username");
   if (username && !username->empty())
-    dict->Set("domain", gaia::ExtractDomainName(*username));
+    dict->Set(policy::kDomainKey, gaia::ExtractDomainName(*username));
 }
 
 void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile) {
@@ -50,9 +51,9 @@ void GetUserAffiliationStatus(base::Value::Dict* dict, Profile* profile) {
 }
 
 void SetDomainInUserStatus(base::Value::Dict& user_status) {
-  const std::string* username = user_status.FindString("username");
+  const std::string* username = user_status.FindString(policy::kUsernameKey);
   if (username && !username->empty())
-    user_status.Set("domain", gaia::ExtractDomainName(*username));
+    user_status.Set(policy::kDomainKey, gaia::ExtractDomainName(*username));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -70,7 +71,7 @@ void GetUserManager(base::Value::Dict* dict, Profile* profile) {
   absl::optional<std::string> account_manager =
       chrome::GetAccountManagerIdentity(profile);
   if (account_manager) {
-    dict->Set("enterpriseDomainManager", *account_manager);
+    dict->Set(policy::kEnterpriseDomainManagerKey, *account_manager);
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

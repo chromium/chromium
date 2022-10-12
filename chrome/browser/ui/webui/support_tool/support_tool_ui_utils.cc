@@ -138,6 +138,8 @@ std::string GetDataCollectorName(
       return "Chrome OS Network Routes";
     case support_tool::CHROMEOS_SHILL:
       return "Chrome OS Shill (Connection Manager) Logs";
+    case support_tool::POLICIES:
+      return "Policies";
     default:
       return "Error: Undefined";
   }

@@ -17,7 +17,6 @@ class Value;
 }
 
 namespace policy {
-class PolicyConversionsClient;
 
 POLICY_EXPORT extern const char kChromeMetadataVersionKey[];
 POLICY_EXPORT extern const char kChromeMetadataOSKey[];
@@ -74,13 +73,14 @@ struct POLICY_EXPORT JsonGenerationParams {
   absl::optional<std::string> platform_name;
 };
 
-// Generates a string of JSON containing the currently applied policies along
+// Generates a string of JSON containing |policy_values| along
 // with additional metadata about the current device/build, based both on what
 // is stored in |params| and also information that is statically available.
-POLICY_EXPORT std::string GenerateJson(
-    std::unique_ptr<PolicyConversionsClient> client,
-    base::Value::Dict status,
-    const JsonGenerationParams& params);
+// Expects |policy_values| in the format PolicyValueProvider returns. Expects
+// |status| in the format policy::PolicyStatusProvider returns.
+POLICY_EXPORT std::string GenerateJson(base::Value::Dict policy_values,
+                                       base::Value::Dict status,
+                                       const JsonGenerationParams& params);
 
 // Returns metadata about the current device/build, based both on what
 // is stored in |params| and also information that is statically available.

@@ -33,7 +33,7 @@ base::Value::Dict DeviceLocalAccountPolicyStatusProvider::GetStatus() {
     dict.Set("status", policy::FormatStoreStatus(
                            policy::CloudPolicyStore::STATUS_BAD_STATE,
                            policy::CloudPolicyValidatorBase::VALIDATION_OK));
-    dict.Set("username", std::string());
+    dict.Set(policy::kUsernameKey, std::string());
   }
   ExtractDomainFromUsername(&dict);
   dict.Set("publicAccount", true);

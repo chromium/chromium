@@ -66,7 +66,7 @@ base::Value::Dict UpdaterStatusAndValueProvider::GetStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Value::Dict dict;
   if (!domain_.empty())
-    dict.Set("domain", domain_);
+    dict.Set(policy::kDomainKey, domain_);
   if (!updater_status_)
     return dict;
   if (!updater_status_->version.empty())

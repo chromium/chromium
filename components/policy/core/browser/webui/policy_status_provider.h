@@ -30,6 +30,17 @@ class CloudPolicyStore;
 
 POLICY_EXPORT extern const char kPolicyDescriptionKey[];
 
+// The following constants identify top-level keys in the dictionary returned by
+// PolicyStatusProvider.
+POLICY_EXPORT extern const char kAssetIdKey[];
+POLICY_EXPORT extern const char kLocationKey[];
+POLICY_EXPORT extern const char kDirectoryApiIdKey[];
+POLICY_EXPORT extern const char kGaiaIdKey[];
+POLICY_EXPORT extern const char kClientIdKey[];
+POLICY_EXPORT extern const char kUsernameKey[];
+POLICY_EXPORT extern const char kEnterpriseDomainManagerKey[];
+POLICY_EXPORT extern const char kDomainKey[];
+
 // An interface for querying the status of a policy provider.  It surfaces
 // things like last fetch time or status of the backing store, but not the
 // actual policies themselves.

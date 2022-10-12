@@ -40,8 +40,8 @@ base::Value::Dict UserActiveDirectoryPolicyStatusProvider::GetStatus() {
                                 policy_manager_->store()->validation_status());
   base::Value::Dict dict;
   dict.Set("status", status);
-  dict.Set("username", username);
-  dict.Set("clientId", client_id);
+  dict.Set(policy::kUsernameKey, username);
+  dict.Set(policy::kClientIdKey, client_id);
 
   const base::TimeDelta refresh_interval =
       policy_manager_->scheduler()->interval();

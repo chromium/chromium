@@ -8,10 +8,12 @@
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
 
+class Profile;
+
 // Data collector types that can work on every platform.
 static constexpr support_tool::DataCollectorType kDataCollectors[] = {
     support_tool::CHROME_INTERNAL, support_tool::CRASH_IDS,
-    support_tool::MEMORY_DETAILS};
+    support_tool::MEMORY_DETAILS, support_tool::POLICIES};
 
 // Data collector types can only work on Chrome OS Ash.
 static constexpr support_tool::DataCollectorType kDataCollectorsChromeosAsh[] =
@@ -39,6 +41,7 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
     std::string case_id,
     std::string email_address,
     std::string issue_description,
+    Profile* profile,
     std::set<support_tool::DataCollectorType> included_data_collectors);
 
 #endif  // CHROME_BROWSER_SUPPORT_TOOL_SUPPORT_TOOL_UTIL_H_

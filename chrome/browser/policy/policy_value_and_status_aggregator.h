@@ -23,6 +23,11 @@ class Profile;
 
 namespace policy {
 
+extern const char kUserStatusKey[];
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const char kDeviceStatusKey[];
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
 // PolicyValueAndStatusAggregator is a wrapper class that will contain all the
 // platform-specific PolicyStatusProviders and PolicyValueProviders. It will
 // call GetStatus(), GetValues(), GetNames() on the available providers, merge

@@ -157,7 +157,9 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
       ChromeBrowserState::FromWebUIIOS(web_ui()));
 
   return policy::GenerateJson(
-      std::move(client), GetStatusValue(),
+      /*policy_values=*/policy::DictionaryPolicyConversions(std::move(client))
+          .ToValueDict(),
+      GetStatusValue(),
       policy::JsonGenerationParams()
           .with_application_name(l10n_util::GetStringUTF8(IDS_IOS_PRODUCT_NAME))
           .with_channel_name(GetChannelString(GetChannel()))
@@ -247,7 +249,7 @@ base::Value::Dict PolicyUIHandler::GetStatusValue() const {
   // Given that it's usual for users to bring their own devices and the fact
   // that device names could expose personal information. We do not show
   // this field in Device Policy Box
-  machine_status.Remove("machine");
+  machine_status.Remove(policy::kMachineKey);
 
   base::Value::Dict status;
   status.Set("machine", std::move(machine_status));

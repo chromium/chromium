@@ -164,10 +164,10 @@ std::unique_ptr<policy::PolicyStatusProvider> GetMachinePolicyStatusProvider(
 
 namespace policy {
 
-constexpr char kUserStatusKey[] = "user";
+const char kUserStatusKey[] = "user";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-constexpr char kDeviceStatusKey[] = "device";
+const char kDeviceStatusKey[] = "device";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

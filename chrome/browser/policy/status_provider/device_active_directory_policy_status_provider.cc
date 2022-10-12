@@ -17,7 +17,7 @@ DeviceActiveDirectoryPolicyStatusProvider::
 
 base::Value::Dict DeviceActiveDirectoryPolicyStatusProvider::GetStatus() {
   base::Value::Dict dict = UserActiveDirectoryPolicyStatusProvider::GetStatus();
-  dict.Set("enterpriseDomainManager", enterprise_domain_manager_);
+  dict.Set(policy::kEnterpriseDomainManagerKey, enterprise_domain_manager_);
   dict.Set(policy::kPolicyDescriptionKey, kDevicePolicyStatusDescription);
   return dict;
 }

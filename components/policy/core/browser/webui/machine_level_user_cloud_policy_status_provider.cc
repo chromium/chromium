@@ -33,6 +33,10 @@ std::string GetMachineStatusDescriptionKey() {
 
 namespace policy {
 
+const char kDeviceIdKey[] = "deviceId";
+const char kEnrollmentTokenKey[] = "enrollmentToken";
+const char kMachineKey[] = "machine";
+
 MachineLevelUserCloudPolicyStatusProvider::
     MachineLevelUserCloudPolicyStatusProvider(
         CloudPolicyCore* core,
@@ -64,10 +68,10 @@ base::Value::Dict MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
       refresh_scheduler ? refresh_scheduler->invalidations_available() : false);
 
   if (!context_->enrollmentToken.empty())
-    dict.Set("enrollmentToken", context_->enrollmentToken);
+    dict.Set(kEnrollmentTokenKey, context_->enrollmentToken);
 
   if (!context_->deviceId.empty())
-    dict.Set("deviceId", context_->deviceId);
+    dict.Set(kDeviceIdKey, context_->deviceId);
 
   CloudPolicyStore* store = core_->store();
   if (store) {
@@ -81,10 +85,10 @@ base::Value::Dict MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
                GetTimeSinceLastActionString(
                    refresh_scheduler ? refresh_scheduler->last_refresh()
                                      : base::Time()));
-      dict.Set("domain", gaia::ExtractDomainName(policy->username()));
+      dict.Set(kDomainKey, gaia::ExtractDomainName(policy->username()));
     }
   }
-  dict.Set("machine", GetMachineName());
+  dict.Set(kMachineKey, GetMachineName());
 
   if (!context_->lastCloudReportSent.is_null()) {
     dict.Set("lastCloudReportSentTimestamp",

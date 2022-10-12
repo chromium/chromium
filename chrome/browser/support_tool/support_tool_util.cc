@@ -14,6 +14,7 @@
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
 #include "chrome/browser/support_tool/ash/network_routes_data_collector.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
+#include "chrome/browser/support_tool/policy_data_collector.h"
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/system_log_source_data_collector_adaptor.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -37,6 +38,7 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
     std::string case_id,
     std::string email_address,
     std::string issue_description,
+    Profile* profile,
     std::set<support_tool::DataCollectorType> included_data_collectors) {
   std::unique_ptr<SupportToolHandler> handler =
       std::make_unique<SupportToolHandler>(case_id, email_address,
@@ -62,6 +64,10 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
             "Fetches memory usage details and exports them into mem_usage and "
             "mem_usage_with_title files.",
             std::make_unique<system_logs::MemoryDetailsLogSource>()));
+        break;
+      case support_tool::POLICIES:
+        handler->AddDataCollector(
+            std::make_unique<PolicyDataCollector>(profile));
         break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       case support_tool::CHROMEOS_UI_HIERARCHY:

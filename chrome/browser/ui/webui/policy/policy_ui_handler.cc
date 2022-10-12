@@ -268,7 +268,8 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
       /*application_name=*/l10n_util::GetStringUTF8(IDS_PRODUCT_NAME));
 
   return policy::GenerateJson(
-      std::move(client),
+      /*policy_values=*/policy::DictionaryPolicyConversions(std::move(client))
+          .ToValueDict(),
       policy_value_and_status_aggregator_->GetAggregatedPolicyStatus(), params);
 }
 
