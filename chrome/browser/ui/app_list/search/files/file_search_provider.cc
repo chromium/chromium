@@ -59,7 +59,8 @@ std::string CreateFnmatchQuery(const std::u16string& query_input) {
   size_t sequence_start = 0;
   const std::u16string query = base::i18n::ToLower(query_input);
   for (size_t i = 0; i < query.size(); ++i) {
-    if (isalpha(query[i]) || HasDiacritics(query.substr(i, 1))) {
+    if ((query[i] >= u'a' && query[i] <= u'z') ||
+        HasDiacritics(query.substr(i, 1))) {
       if (sequence_start != i) {
         query_pieces.push_back(
             query.substr(sequence_start, i - sequence_start));
