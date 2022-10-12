@@ -120,7 +120,7 @@ p {
 }
 
 #main-message {
-  margin-top: 36px;
+  margin-top: 24px;
 }
 
 .button-container {
@@ -161,7 +161,6 @@ p {
 .custodian-contact {
   display: flex;
   flex-direction: column;
-  height: 40px;
   overflow: visible;
 }
 
@@ -262,6 +261,8 @@ button:focus-visible {
   }
 }
 
+/* Narrow breakpoint, primarily targeting phones in portrait mode, and
+iframes. */
 @media (max-width: 480px) {
   html,
   body,
@@ -291,17 +292,12 @@ button:focus-visible {
   }
 
   .frame-blocked {
-    border-radius: 12px;
     margin-top: 0;
     padding: 0 32px;
   }
 
   .message-container {
     margin-top: 50px;
-  }
-
-  #main-message {
-    margin-top: 32px;
   }
 
   #block-reason-show-details-link {
@@ -329,10 +325,6 @@ button:focus-visible {
     margin-top: 8px;
   }
 
-  .custodian-contact {
-    height: 32px;
-  }
-
   .avatar-img {
     height: 32px;
     width: 32px;
@@ -347,6 +339,19 @@ button:focus-visible {
 
   .go-back-button {
     margin-left: 4px;
+  }
+}
+
+/* Short version, primarily targeting iframes. */
+@media (max-height: 300px) {
+  #error-page-illustration,
+  #custodians-information,
+  #block-reason-container {
+    display: none;
+  }
+
+  .message-container {
+    margin-top: 0;
   }
 }
 
