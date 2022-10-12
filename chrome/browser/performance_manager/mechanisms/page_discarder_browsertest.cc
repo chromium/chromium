@@ -77,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(PageDiscarderBrowserTest, DiscardPageNodes) {
       performance_manager::user_tuning::UserPerformanceTuningManager::
           PreDiscardResourceUsage::FromWebContents(new_contents);
   EXPECT_TRUE(pre_discard_resource_usage);
-  EXPECT_EQ(total, pre_discard_resource_usage->resident_set_size_estimate());
+  EXPECT_EQ(total, pre_discard_resource_usage->resident_set_size_estimate_kb());
 }
 
 }  // namespace performance_manager

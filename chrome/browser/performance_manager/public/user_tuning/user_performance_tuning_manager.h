@@ -101,7 +101,8 @@ class UserPerformanceTuningManager
                             uint64_t resident_set_size_estimate);
     ~PreDiscardResourceUsage() override;
 
-    uint64_t resident_set_size_estimate() const {
+    // Returns the resource usage estimate in kilobytes.
+    uint64_t resident_set_size_estimate_kb() const {
       return resident_set_size_estimate_;
     }
 
