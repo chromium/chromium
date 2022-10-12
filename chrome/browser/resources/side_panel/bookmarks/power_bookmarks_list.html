@@ -36,11 +36,13 @@
   }
 </style>
 
-<template is="dom-repeat" items="[[topLevelBookmarks_]]"
+<template is="dom-repeat"
+    items="[[getShownBookmarks_(topLevelBookmarks_, activeFolder_)]]"
     id="powerBookmarksContainer">
   <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
       description="[[getBookmarkDescription_(item, descriptions_.*)]]"
-      compact="[[compact_]]">
+      compact="[[compact_]]"
+      on-row-clicked="onRowClicked_">
     <div slot="extra-content-container">
       <template is="dom-if"
           if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>

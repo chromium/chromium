@@ -73,6 +73,22 @@ export class PowerBookmarkRowElement extends PolymerElement {
       this.$.bookmarkImage.style.backgroundColor = 'red';
     }
   }
+
+  /**
+   * Dispatches a custom click event when the user clicks anywhere on the row.
+   */
+  private onRowClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dispatchEvent(new CustomEvent('row-clicked', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        bookmark: this.bookmark,
+        event: event,
+      },
+    }));
+  }
 }
 
 

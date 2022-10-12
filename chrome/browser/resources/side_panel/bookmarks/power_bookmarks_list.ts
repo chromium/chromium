@@ -10,6 +10,7 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {listenOnce} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ActionSource} from './bookmarks.mojom-webui.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {BookmarkProductInfo} from './commerce/shopping_list.mojom-webui.js';
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from './commerce/shopping_list_api_proxy.js';
@@ -42,6 +43,15 @@ export class PowerBookmarksListElement extends PolymerElement {
         value: true,
       },
 
+      activeFolder_: {
+        type: Object,
+      },
+
+      depth_: {
+        type: Number,
+        value: 0,
+      },
+
       showPriceTracking_: {
         type: Boolean,
         value: false,
@@ -57,6 +67,8 @@ export class PowerBookmarksListElement extends PolymerElement {
   private productInfos_ = new Map<string, BookmarkProductInfo>();
   private shoppingListenerIds_: number[] = [];
   private compact_: boolean;
+  private activeFolder_: chrome.bookmarks.BookmarkTreeNode|undefined;
+  private depth_: number;
   private descriptions_ = new Map<string, string>();
   private showPriceTracking_: boolean;
 
@@ -132,6 +144,42 @@ export class PowerBookmarksListElement extends PolymerElement {
   private isPriceTracked_(bookmark: chrome.bookmarks.BookmarkTreeNode):
       boolean {
     return this.productInfos_.has(bookmark.id);
+  }
+
+  /**
+   * Returns a list of bookmarks and folders to display to the user.
+   */
+  private getShownBookmarks_(): chrome.bookmarks.BookmarkTreeNode[] {
+    if (this.activeFolder_) {
+      return this.activeFolder_.children!;
+    }
+    return this.topLevelBookmarks_;
+  }
+
+  /**
+   * Invoked when the user clicks a power bookmarks row. This will either
+   * display children in the case of a folder row, or open the URL in the case
+   * of a bookmark row.
+   */
+  private onRowClicked_(
+      event: CustomEvent<
+          {bookmark: chrome.bookmarks.BookmarkTreeNode, event: MouseEvent}>) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (event.detail.bookmark.children) {
+      this.activeFolder_ = event.detail.bookmark;
+      this.depth_++;
+    } else {
+      this.bookmarksApi_.openBookmark(
+          event.detail.bookmark.id, this.depth_, {
+            middleButton: false,
+            altKey: event.detail.event.altKey,
+            ctrlKey: event.detail.event.ctrlKey,
+            metaKey: event.detail.event.metaKey,
+            shiftKey: event.detail.event.shiftKey,
+          },
+          ActionSource.kBookmark);
+    }
   }
 
   /**
