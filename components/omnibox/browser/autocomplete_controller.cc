@@ -947,7 +947,13 @@ void AutocompleteController::UpdateResult(
   const AutocompleteMatch* preserve_default_match = nullptr;
   if (last_default_match && ShouldPreserveDefault(in_start_, input_))
     preserve_default_match = &last_default_match.value();
-  result_.SortAndCull(input_, template_url_service_, preserve_default_match);
+
+  static bool single_sort_and_cull_pass =
+      base::FeatureList::IsEnabled(omnibox::kSingleSortAndCullPass);
+  // If `done_`, the below `SortAndCull()` is skipped, so this is the single
+  // pass.
+  if (!single_sort_and_cull_pass || done_)
+    result_.SortAndCull(input_, template_url_service_, preserve_default_match);
 
   if (!done_) {
     // This conditional needs to match the conditional in Start that invokes

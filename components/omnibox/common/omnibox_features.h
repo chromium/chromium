@@ -26,6 +26,7 @@ BASE_DECLARE_FEATURE(kOmniboxDemoteByType);
 BASE_DECLARE_FEATURE(kPreserveDefault);
 BASE_DECLARE_FEATURE(kStrippedGurlOptimization);
 BASE_DECLARE_FEATURE(kUpdateResultDebounce);
+BASE_DECLARE_FEATURE(kSingleSortAndCullPass);
 
 // Features below this line should be sorted alphabetically by their comments.
 

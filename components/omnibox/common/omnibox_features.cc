@@ -93,9 +93,16 @@ BASE_FEATURE(kStrippedGurlOptimization,
              "OmniboxStrippedGurlOptimization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature to debounce `AutocompleteController::UpdateResult()`.
+// Feature to debounce `AutocompleteController::NotifyChanged()`.
 BASE_FEATURE(kUpdateResultDebounce,
              "OmniboxUpdateResultDebounce",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When disabled, when providers update their matches, the new set of matches
+// are sorted and culled, then merged with the old matches, then sorted and
+// culled again. When enabled, the first sort and cull is skipped.
+BASE_FEATURE(kSingleSortAndCullPass,
+             "OmniboxSingleSortAndCullPass",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature used to cap max zero suggestions shown according to the param
