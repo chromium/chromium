@@ -23,6 +23,7 @@
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/follow/follow_menu_updater.h"
@@ -224,6 +225,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 @property(nonatomic, strong) OverflowMenuAction* addBookmarkAction;
 @property(nonatomic, strong) OverflowMenuAction* editBookmarkAction;
 @property(nonatomic, strong) OverflowMenuAction* readLaterAction;
+@property(nonatomic, strong) OverflowMenuAction* openPriceNotificationsAction;
 @property(nonatomic, strong) OverflowMenuAction* translateAction;
 @property(nonatomic, strong) OverflowMenuAction* requestDesktopAction;
 @property(nonatomic, strong) OverflowMenuAction* requestMobileAction;
@@ -700,6 +702,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
           [weakSelf addToReadingList];
         });
 
+    self.openPriceNotificationsAction = CreateOverflowMenuAction(
+        IDS_IOS_PRICE_NOTIFICATIONS_OVERFLOW_MENU_TITLE, kDownTrendSymbol, YES,
+        kToolsMenuPriceNotifications, ^{
+          [weakSelf openPriceNotifications];
+        });
+
     self.translateAction =
         CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_TRANSLATE, kTranslateSymbol,
                                  NO, kToolsMenuTranslateId, ^{
@@ -802,6 +810,13 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
         IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST,
         @"overflow_menu_action_read_later", kToolsMenuReadLater, ^{
           [weakSelf addToReadingList];
+        });
+
+    self.openPriceNotificationsAction = CreateOverflowMenuAction(
+        IDS_IOS_PRICE_NOTIFICATIONS_OVERFLOW_MENU_TITLE,
+        @"overflow_menu_action_price_notifications",
+        kToolsMenuPriceNotifications, ^{
+          [weakSelf openPriceNotifications];
         });
 
     self.translateAction = CreateOverflowMenuAction(
@@ -1073,6 +1088,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     (pageIsBookmarked) ? self.editBookmarkAction : self.addBookmarkAction,
     self.readLaterAction
   ]];
+
+  if (IsPriceNotificationsEnabled()) {
+    [pageActions addObject:self.openPriceNotificationsAction];
+  }
 
   // Clear Browsing Data Action is not relevant in incognito, so don't show it.
   // History is also hidden for similar reasons.
@@ -1658,6 +1677,15 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [self.dispatcher
       showSavedPasswordsSettingsFromViewController:self.baseViewController
                                   showCancelButton:NO];
+}
+
+// Dismisses the menu and opens price notifications list.
+- (void)openPriceNotifications {
+  RecordAction(UserMetricsAction("MobileMenuPriceNotifications"));
+  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  // TODO(crbug.com/1371166) Once the Price Notifications coordinator has
+  // been merged into the codebase, access that coordinator to display the
+  // Price Notifications UI.
 }
 
 // Dismisses the menu and opens downloads.
