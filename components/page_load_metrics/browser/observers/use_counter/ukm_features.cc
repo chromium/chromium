@@ -264,6 +264,7 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kChromeLoadTimesWasNpnNegotiated,
           WebFeature::kGamepadButtons,
           WebFeature::kWebNfcNdefReaderScan,
+          WebFeature::kWakeLockAcquireScreenLockWithoutActivation,
       }));
   return *opt_in_features;
 }
