@@ -370,16 +370,6 @@ ScriptPromise SharedStorage::selectURL(
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  if (frame->IsInFencedFrameTree()) {
-    // https://github.com/pythagoraskitty/shared-storage/blob/main/README.md#url-selection
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-        "sharedStorage.selectURL() is not allowed in fenced frame."));
-    LogSharedStorageWorkletError(
-        SharedStorageWorkletErrorType::kSelectURLWebVisible);
-    return promise;
-  }
-
   // For `selectURL()` to succeed, it is currently enforced in the browser side
   // that `addModule()` must be called beforehand that passed the early
   // permission checks. Thus the permissions-policy check here isn't strictly

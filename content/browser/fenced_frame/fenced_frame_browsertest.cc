@@ -2260,6 +2260,80 @@ IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
   EXPECT_EQ(0, EvalJs(root, "window.frames.length"));
 }
 
+IN_PROC_BROWSER_TEST_P(FencedFrameParameterizedBrowserTest,
+                       SharedStorageMetadataInNestedFencedFrame) {
+  GURL main_url = https_server()->GetURL("a.test", "/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  FencedFrameURLMapping& url_mapping1 =
+      root->current_frame_host()->GetPage().fenced_frame_urls_map();
+  auto urn_uuid1 = GenerateAndVerifyPendingMappedURN(&url_mapping1);
+  const GURL mapped_url1 =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+  SimulateSharedStorageURNMappingComplete(
+      url_mapping1, urn_uuid1, mapped_url1,
+      /*shared_storage_origin=*/url::Origin::Create(GURL("https://foo.com")),
+      /*budget_to_charge=*/2.0);
+
+  EXPECT_TRUE(ExecJs(root,
+                     "var f1 = document.createElement('fencedframe');"
+                     "f1.mode = 'opaque-ads';"
+                     "document.body.appendChild(f1);"));
+
+  EXPECT_EQ(1U, root->child_count());
+  FrameTreeNode* fenced_frame_root_node1 =
+      GetFencedFrameRootNode(root->child_at(0));
+
+  TestFrameNavigationObserver observer1(
+      fenced_frame_root_node1->current_frame_host());
+  std::string navigate_urn_script1 = JsReplace("f1.src = $1;", urn_uuid1);
+  EXPECT_EQ(urn_uuid1.spec(), EvalJs(root, navigate_urn_script1));
+  observer1.Wait();
+
+  FencedFrameURLMapping& url_mapping2 =
+      fenced_frame_root_node1->current_frame_host()
+          ->GetPage()
+          .fenced_frame_urls_map();
+  auto urn_uuid2 = GenerateAndVerifyPendingMappedURN(&url_mapping2);
+  const GURL mapped_url2 =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+  SimulateSharedStorageURNMappingComplete(
+      url_mapping2, urn_uuid2, mapped_url2,
+      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*budget_to_charge=*/3.0);
+
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node1,
+                     "var f2 = document.createElement('fencedframe');"
+                     "f2.mode = 'opaque-ads';"
+                     "document.body.appendChild(f2);"));
+
+  EXPECT_EQ(1U, fenced_frame_root_node1->child_count());
+  FrameTreeNode* fenced_frame_root_node2 =
+      GetFencedFrameRootNode(fenced_frame_root_node1->child_at(0));
+
+  TestFrameNavigationObserver observer2(
+      fenced_frame_root_node2->current_frame_host());
+  std::string navigate_urn_script2 = JsReplace("f2.src = $1;", urn_uuid2);
+  EXPECT_EQ(urn_uuid2.spec(),
+            EvalJs(fenced_frame_root_node1, navigate_urn_script2));
+  observer2.Wait();
+
+  auto metadata = fenced_frame_root_node2->FindSharedStorageBudgetMetadata();
+
+  EXPECT_EQ(metadata.size(), 2u);
+
+  EXPECT_EQ(metadata[0]->origin, url::Origin::Create(GURL("https://bar.com")));
+  EXPECT_DOUBLE_EQ(metadata[0]->budget_to_charge, 3.0);
+
+  EXPECT_EQ(metadata[1]->origin, url::Origin::Create(GURL("https://foo.com")));
+  EXPECT_DOUBLE_EQ(metadata[1]->budget_to_charge, 2.0);
+}
+
 IN_PROC_BROWSER_TEST_P(
     FencedFrameParameterizedBrowserTest,
     TwoFencedFrameNavigationToSameSharedStorageOriginatedUUID_SameMetadata) {
@@ -2315,7 +2389,8 @@ IN_PROC_BROWSER_TEST_P(
     observer.Wait();
   }
 
-  EXPECT_TRUE(fenced_frame_root_node1->FindSharedStorageBudgetMetadata());
+  EXPECT_EQ(fenced_frame_root_node1->FindSharedStorageBudgetMetadata().size(),
+            1u);
 
   EXPECT_EQ(fenced_frame_root_node1->FindSharedStorageBudgetMetadata(),
             fenced_frame_root_node2->FindSharedStorageBudgetMetadata());
@@ -2377,7 +2452,7 @@ IN_PROC_BROWSER_TEST_P(
 
   auto budget_metadata =
       fenced_frame_root_node->FindSharedStorageBudgetMetadata();
-  EXPECT_FALSE(budget_metadata.has_value());
+  EXPECT_EQ(budget_metadata.size(), 0u);
 
   // Trigger the mapping to resume the deferred navigation.
   SimulateSharedStorageURNMappingComplete(
@@ -2394,10 +2469,10 @@ IN_PROC_BROWSER_TEST_P(
       fenced_frame_root_node->current_frame_host()->GetLastCommittedURL());
 
   budget_metadata = fenced_frame_root_node->FindSharedStorageBudgetMetadata();
-  EXPECT_TRUE(budget_metadata.has_value());
-  EXPECT_EQ((*budget_metadata)->origin,
+  EXPECT_EQ(budget_metadata.size(), 1u);
+  EXPECT_EQ(budget_metadata[0]->origin,
             url::Origin::Create(GURL("https://bar.com")));
-  EXPECT_DOUBLE_EQ((*budget_metadata)->budget_to_charge, 2.0);
+  EXPECT_DOUBLE_EQ(budget_metadata[0]->budget_to_charge, 2.0);
 }
 
 // Test the scenario where the FF navigation is deferred and then resumed, and
@@ -2469,7 +2544,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Despite the error, the budget metadata should be valid.
   auto metadata = fenced_frame_root_node->FindSharedStorageBudgetMetadata();
-  EXPECT_TRUE(metadata);
+  EXPECT_EQ(metadata.size(), 1u);
 }
 
 IN_PROC_BROWSER_TEST_P(

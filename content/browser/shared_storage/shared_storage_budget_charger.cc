@@ -53,26 +53,25 @@ void SharedStorageBudgetCharger::DidStartNavigation(
   if (!initiator_frame_host)
     return;
 
-  absl::optional<const FencedFrameURLMapping::SharedStorageBudgetMetadata*>
+  storage::SharedStorageManager* shared_storage_manager =
+      initiator_frame_host->GetStoragePartition()->GetSharedStorageManager();
+
+  std::vector<const FencedFrameURLMapping::SharedStorageBudgetMetadata*>
       shared_storage_budget_metadata = initiator_frame_host->frame_tree_node()
                                            ->FindSharedStorageBudgetMetadata();
 
-  // Skip if the initiator frame is not originated from shared storage.
-  if (!shared_storage_budget_metadata.has_value())
-    return;
+  for (const auto* metadata : shared_storage_budget_metadata) {
+    if (metadata->budget_to_charge == 0)
+      continue;
 
-  if ((*shared_storage_budget_metadata)->budget_to_charge > 0) {
-    storage::SharedStorageManager* shared_storage_manager =
-        initiator_frame_host->GetStoragePartition()->GetSharedStorageManager();
     shared_storage_manager->MakeBudgetWithdrawal(
-        (*shared_storage_budget_metadata)->origin,
-        (*shared_storage_budget_metadata)->budget_to_charge, base::DoNothing());
+        metadata->origin, metadata->budget_to_charge, base::DoNothing());
 
     // We only want to charge the budget the first time a navigation leaves the
     // fenced frame, across all fenced frames navigated to the same urn.
     // We can do this even though the pointer is const because
     // `budget_to_charge` is a mutable field of `SharedStorageBudgetMetadata`.
-    (*shared_storage_budget_metadata)->budget_to_charge = 0;
+    metadata->budget_to_charge = 0;
   }
 }
 

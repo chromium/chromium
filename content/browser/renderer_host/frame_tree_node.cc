@@ -979,6 +979,26 @@ FrameTreeNode::GetFencedFrameProperties() {
   }
 }
 
+size_t FrameTreeNode::GetFencedFrameDepth() {
+  size_t depth = 0;
+  FrameTreeNode* node = this;
+
+  while (node->fenced_frame_status() !=
+         FencedFrameStatus::kNotNestedInFencedFrame) {
+    if (node->fenced_frame_status() == FencedFrameStatus::kFencedFrameRoot) {
+      depth += 1;
+    } else {
+      DCHECK_EQ(node->fenced_frame_status(),
+                FencedFrameStatus::kIframeNestedWithinFencedFrame);
+    }
+
+    DCHECK(node->GetParentOrOuterDocument());
+    node = node->GetParentOrOuterDocument()->frame_tree_node();
+  }
+
+  return depth;
+}
+
 absl::optional<base::UnguessableToken> FrameTreeNode::GetFencedFrameNonce() {
   auto& root_fenced_frame_properties = GetFencedFrameProperties();
   if (!root_fenced_frame_properties.has_value()) {
@@ -1037,15 +1057,16 @@ void FrameTreeNode::SetSrcdocValue(const std::string& srcdoc_value) {
   srcdoc_value_ = srcdoc_value;
 }
 
-absl::optional<const FencedFrameURLMapping::SharedStorageBudgetMetadata*>
+std::vector<const FencedFrameURLMapping::SharedStorageBudgetMetadata*>
 FrameTreeNode::FindSharedStorageBudgetMetadata() {
+  std::vector<const FencedFrameURLMapping::SharedStorageBudgetMetadata*> result;
   FrameTreeNode* node = this;
 
   while (true) {
     if (node->fenced_frame_properties_ &&
         node->fenced_frame_properties_->shared_storage_budget_metadata) {
-      DCHECK(node->IsFencedFrameRoot());
-      return node->fenced_frame_properties_->shared_storage_budget_metadata;
+      result.emplace_back(node->fenced_frame_properties_
+                              ->shared_storage_budget_metadata.value());
     }
 
     if (node->GetParentOrOuterDocument()) {
@@ -1055,7 +1076,7 @@ FrameTreeNode::FindSharedStorageBudgetMetadata() {
     }
   }
 
-  return absl::nullopt;
+  return result;
 }
 
 const scoped_refptr<BrowsingContextState>&

@@ -201,16 +201,14 @@ class CONTENT_EXPORT FencedFrameURLMapping {
     // fenced frame page's urn/url mapping when the urn navigation commits.
     absl::optional<PendingAdComponentsMap> pending_ad_components_map;
 
-    // This can only be possibly set for the outermost fenced frame root,
-    // because selectURL() is disallowed inside fenced frame, and the URN
-    // generated outside the a fenced frame cannot be recognized from inside,
-    // so a nested fenced frame can never navigate to a shared storage
-    // generated URN.
-    //
-    // This pointer to the outermost page's FencedFrameURLMapping is copied
+    // The pointer to the outer document page's FencedFrameURLMapping is copied
     // into the fenced frame root's FrameTreeNode. This is safe because a page
     // will outlive any NavigationRequest occurring in fenced frames in the
     // page.
+    //
+    // The metadata can be on fenced frame roots, and if `kAllowURNsInIframes`
+    // is enabled, it can also be on any node except for the main frame node in
+    // the outermost frame tree.
     absl::optional<raw_ptr<const SharedStorageBudgetMetadata>>
         shared_storage_budget_metadata;
 

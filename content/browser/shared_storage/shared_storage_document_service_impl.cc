@@ -7,12 +7,15 @@
 #include "base/strings/strcat.h"
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host.h"
 #include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "url/url_constants.h"
 
@@ -106,16 +109,6 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
         urls_with_metadata,
     const std::vector<uint8_t>& serialized_data,
     RunURLSelectionOperationOnWorkletCallback callback) {
-  if (render_frame_host().IsNestedWithinFencedFrame()) {
-    // This could indicate a compromised renderer, so let's terminate it.
-    receiver_.ReportBadMessage(
-        "Attempted to execute RunURLSelectionOperationOnWorklet within a "
-        "fenced frame.");
-    LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
-    return;
-  }
-
   if (!blink::IsValidSharedStorageURLsArrayLength(urls_with_metadata.size())) {
     // This could indicate a compromised renderer, so let's terminate it.
     receiver_.ReportBadMessage(
@@ -158,6 +151,27 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     std::move(callback).Run(/*success=*/false,
                             /*error_message=*/kSharedStorageDisabledMessage,
                             GURL());
+    return;
+  }
+
+  int fenced_frame_depth = base::checked_cast<int>(
+      static_cast<RenderFrameHostImpl&>(render_frame_host())
+          .frame_tree_node()
+          ->GetFencedFrameDepth());
+  int max_allowed_fenced_frame_depth =
+      blink::features::kSharedStorageMaxAllowedFencedFrameDepthForSelectURL
+          .Get();
+
+  if (fenced_frame_depth > max_allowed_fenced_frame_depth) {
+    std::move(callback).Run(
+        /*success=*/false,
+        /*error_message=*/
+        base::StrCat(
+            {"selectURL() is called in a context with a fenced frame depth (",
+             base::NumberToString(fenced_frame_depth),
+             ") exceeding the maximum allowed number (",
+             base::NumberToString(max_allowed_fenced_frame_depth), ")."}),
+        GURL());
     return;
   }
 

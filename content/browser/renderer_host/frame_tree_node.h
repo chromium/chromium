@@ -574,12 +574,21 @@ class CONTENT_EXPORT FrameTreeNode {
   const absl::optional<FencedFrameURLMapping::FencedFrameProperties>&
   GetFencedFrameProperties();
 
-  // Traverse up from this node. The `shared_storage_budget_metadata()` of the
-  // first seen node with a non-null budget metadata will be returned (i.e. this
-  // node inherits that budget metadata), and this node is expected to be an
-  // outermost fenced frame root. Return nullptr if not found (i.e. this node is
-  // not subjected to shared storage budgeting).
-  absl::optional<const FencedFrameURLMapping::SharedStorageBudgetMetadata*>
+  // Return the number of fenced frame boundaries above this frame. The
+  // outermost main frame's frame tree has fenced frame depth 0, a topmost
+  // fenced frame tree embedded in the outermost main frame has fenced frame
+  // depth 1, etc.
+  size_t GetFencedFrameDepth();
+
+  // Traverse up from this node. Return all valid
+  // `node->fenced_frame_properties_->shared_storage_budget_metadata` (i.e. this
+  // node is subjected to the shared storage budgeting associated with those
+  // metadata). Every node that originates from sharedStorage.selectURL() will
+  // have an associated metadata. This indicates that the metadata can only
+  // possibly be associated with a fenced frame root, unless when
+  // `kAllowURNsInIframes` is enabled in which case they could be be associated
+  // with any node.
+  std::vector<const FencedFrameURLMapping::SharedStorageBudgetMetadata*>
   FindSharedStorageBudgetMetadata();
 
   // Accessor to BrowsingContextState for subframes only. Only main frame

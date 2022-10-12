@@ -83,9 +83,9 @@ const double kBudgetAllowed = 5.0;
 const char kSelectFrom8URLsScript[] = R"(
     let urls = [];
     for (let i = 0; i < 8; ++i) {
-      urls.push({url: 'fenced_frames/title' + i.toString() + '.html',
+      urls.push({url: '/fenced_frames/title' + i.toString() + '.html',
                  reportingMetadata: {
-                   'click': 'fenced_frames/report' + i.toString() + '.html'
+                   'click': '/fenced_frames/report' + i.toString() + '.html'
                  }});
     }
 
@@ -1873,18 +1873,24 @@ class SharedStorageFencedFrameInteractionBrowserTest
     return child_node;
   }
 
-  // Create an iframe and run sharedStorage.selectURL() on 8 urls. This
-  // generates an URN associated with `origin` and 3 bits of shared storage
-  // budget. This can be called at most once per origin per test, because
-  // `GetAttachedWorkletHostForOrigin()` will expect only one worklet host for
-  // this origin, and `WaitForWorkletResponsesCount()` is expected to be invoked
-  // once per worklet host.
-  GURL SelectFrom8URLsInContext(const url::Origin& origin) {
-    FrameTreeNode* iframe =
-        CreateIFrame(PrimaryFrameTreeNodeRoot(), origin.GetURL());
+  // Create an iframe of origin `origin` inside `parent_node`, and run
+  // sharedStorage.selectURL() on 8 urls. If `parent_node` is not specified,
+  // the primary frame tree's root node will be chosen. This generates an URN
+  // associated with `origin` and 3 bits of shared storage budget.
+  GURL SelectFrom8URLsInContext(const url::Origin& origin,
+                                FrameTreeNode* parent_node = nullptr) {
+    if (!parent_node)
+      parent_node = PrimaryFrameTreeNodeRoot();
+
+    // If this is called inside a fenced frame, creating an iframe will need
+    // "Supports-Loading-Mode: fenced-frame" response header. Thus, we simply
+    // always set the path to `kFencedFramePath`.
+    GURL iframe_url = origin.GetURL().Resolve(kFencedFramePath);
+
+    FrameTreeNode* iframe = CreateIFrame(parent_node, iframe_url);
 
     EXPECT_TRUE(ExecJs(iframe, R"(
-        sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+        sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
       )"));
 
     std::string urn_uuid =
@@ -2042,35 +2048,6 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
   WaitForHistograms({kTimingSelectUrlExecutedInWorkletHistogram});
   histogram_tester_.ExpectTotalCount(kTimingSelectUrlExecutedInWorkletHistogram,
                                      1);
-}
-
-IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
-                       SelectURLNotAllowedInFencedFrame) {
-  GURL main_frame_url = https_server()->GetURL("a.test", kSimplePagePath);
-
-  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
-
-  GURL fenced_frame_url =
-      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
-
-  FrameTreeNode* fenced_frame_node = CreateFencedFrame(fenced_frame_url);
-
-  EXPECT_TRUE(ExecJs(fenced_frame_node, R"(
-      sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
-    )"));
-
-  EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
-  EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
-
-  EvalJsResult result = EvalJs(fenced_frame_node, R"(
-      sharedStorage.selectURL(
-          'test-url-selection-operation',
-          [{url: "fenced_frames/title0.html"}], {data: {'mockResult': 0}});
-    )");
-
-  EXPECT_THAT(result.error,
-              testing::HasSubstr(
-                  "sharedStorage.selectURL() is not allowed in fenced frame"));
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
@@ -2691,6 +2668,81 @@ IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                                      1);
 }
 
+IN_PROC_BROWSER_TEST_P(
+    SharedStorageFencedFrameInteractionBrowserTest,
+    NestedFencedFrameNavigateTop_BudgetWithdrawalFromTwoMetadata) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  url::Origin shared_storage_origin1 =
+      url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
+
+  GURL urn_uuid1 = SelectFrom8URLsInContext(shared_storage_origin1);
+  FrameTreeNode* fenced_frame_root_node1 = CreateFencedFrame(urn_uuid1);
+
+  url::Origin shared_storage_origin2 =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  GURL urn_uuid2 =
+      SelectFrom8URLsInContext(shared_storage_origin2, fenced_frame_root_node1);
+
+  FrameTreeNode* fenced_frame_root_node2 =
+      CreateFencedFrame(fenced_frame_root_node1, urn_uuid2);
+
+  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin1), kBudgetAllowed);
+  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin2), kBudgetAllowed);
+
+  GURL new_page_url = https_server()->GetURL("d.test", kSimplePagePath);
+  TestNavigationObserver top_navigation_observer(shell()->web_contents());
+  EXPECT_TRUE(ExecJs(
+      fenced_frame_root_node2,
+      JsReplace("window.open($1, '_unfencedTop')", new_page_url.spec())));
+  top_navigation_observer.Wait();
+
+  // After the top navigation, log(8)=3 bits should have been withdrawn from
+  // both `shared_storage_origin1` and `shared_storage_origin2`.
+  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin1),
+                   kBudgetAllowed - 3);
+  EXPECT_DOUBLE_EQ(GetRemainingBudget(shared_storage_origin2),
+                   kBudgetAllowed - 3);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
+                       SelectURLNotAllowedInNestedFencedFrame) {
+  GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  url::Origin shared_storage_origin1 =
+      url::Origin::Create(https_server()->GetURL("b.test", kSimplePagePath));
+
+  GURL urn_uuid1 = SelectFrom8URLsInContext(shared_storage_origin1);
+  FrameTreeNode* fenced_frame_root_node1 = CreateFencedFrame(urn_uuid1);
+
+  url::Origin shared_storage_origin2 =
+      url::Origin::Create(https_server()->GetURL("c.test", kSimplePagePath));
+
+  GURL urn_uuid2 =
+      SelectFrom8URLsInContext(shared_storage_origin2, fenced_frame_root_node1);
+
+  FrameTreeNode* fenced_frame_root_node2 =
+      CreateFencedFrame(fenced_frame_root_node1, urn_uuid2);
+
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node2, R"(
+      sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
+    )"));
+
+  EvalJsResult result = EvalJs(fenced_frame_root_node2, R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "/fenced_frames/title0.html"}], {data: {'mockResult': 0}});
+    )");
+
+  EXPECT_THAT(result.error,
+              testing::HasSubstr(
+                  "selectURL() is called in a context with a fenced frame "
+                  "depth (2) exceeding the maximum allowed number (1)."));
+}
+
 IN_PROC_BROWSER_TEST_P(SharedStorageFencedFrameInteractionBrowserTest,
                        IframeInFencedFrameNavigateTop_BudgetWithdrawal) {
   GURL main_url = https_server()->GetURL("a.test", kSimplePagePath);
@@ -2975,6 +3027,67 @@ INSTANTIATE_TEST_SUITE_P(
         blink::features::FencedFramesImplementationType::kShadowDOM,
         blink::features::FencedFramesImplementationType::kMPArch),
     &SharedStorageFencedFrameInteractionBrowserTest::DescribeParams);
+
+class SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest
+    : public SharedStorageFencedFrameInteractionBrowserTest {
+ public:
+  SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest() {
+    scoped_feature_list_
+        .InitWithFeaturesAndParameters(/*enabled_features=*/
+                                       {{blink::features::kSharedStorageAPI,
+                                         {{"SharedStorageBitBudget",
+                                           base::NumberToString(
+                                               kBudgetAllowed)},
+                                          {"SharedStorageMaxAllowedFencedFrameD"
+                                           "epthForSelectURL",
+                                           "0"}}},
+                                        {features::
+                                             kPrivacySandboxAdsAPIsOverride,
+                                         {}}},
+                                       /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest,
+                       SelectURLNotAllowedInFencedFrame) {
+  GURL main_frame_url = https_server()->GetURL("a.test", kSimplePagePath);
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+
+  GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+
+  FrameTreeNode* fenced_frame_node = CreateFencedFrame(fenced_frame_url);
+
+  EXPECT_TRUE(ExecJs(fenced_frame_node, R"(
+      sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
+    )"));
+
+  EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
+  EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
+
+  EvalJsResult result = EvalJs(fenced_frame_node, R"(
+      sharedStorage.selectURL(
+          'test-url-selection-operation',
+          [{url: "fenced_frames/title0.html"}], {data: {'mockResult': 0}});
+    )");
+
+  EXPECT_THAT(result.error,
+              testing::HasSubstr(
+                  "selectURL() is called in a context with a fenced frame "
+                  "depth (1) exceeding the maximum allowed number (0)."));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest,
+    ::testing::Values(
+        blink::features::FencedFramesImplementationType::kShadowDOM,
+        blink::features::FencedFramesImplementationType::kMPArch),
+    &SharedStorageSelectURLNotAllowedInFencedFrameBrowserTest::DescribeParams);
 
 class SharedStorageReportEventBrowserTest
     : public SharedStorageFencedFrameInteractionBrowserTest {

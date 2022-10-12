@@ -142,6 +142,13 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // origin's data is older than this threshold, it will be auto-purged.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kSharedStorageOriginStalenessThreshold;
+// Maximum depth of fenced frame where sharedStorage.selectURL() is allowed to
+// be invoked. The depth of a fenced frame is the number of the fenced frame
+// boundaries above that frame (i.e. the outermost main frame's frame tree has
+// fenced frame depth 0, a topmost fenced frame tree embedded in the outermost
+// main frame has fenced frame depth 1, etc).
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kSharedStorageMaxAllowedFencedFrameDepthForSelectURL;
 
 // Enables the multiple prerendering in a sequential way:
 // https://crbug.com/1355151

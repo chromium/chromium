@@ -309,6 +309,10 @@ const base::FeatureParam<base::TimeDelta>
     kSharedStorageOriginStalenessThreshold = {
         &kSharedStorageAPI, "SharedStorageOriginStalenessThreshold",
         base::Days(30)};
+const base::FeatureParam<int>
+    kSharedStorageMaxAllowedFencedFrameDepthForSelectURL = {
+        &kSharedStorageAPI,
+        "SharedStorageMaxAllowedFencedFrameDepthForSelectURL", 1};
 
 BASE_FEATURE(kSameSiteCrossOriginForSpeculationRulesPrerender,
              "SameSiteCrossOriginForSpeculationRulesPrerender",
