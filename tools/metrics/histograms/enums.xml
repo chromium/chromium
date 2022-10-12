@@ -29078,6 +29078,7 @@ Called by update_document_policy_enum.py.-->
   <int value="7" label="Failed to Serialize the Response"/>
   <int value="8" label="Serialized Response is Empty"/>
   <int value="9" label="Success"/>
+  <int value="10" label="Failed to Serialize the Signals"/>
 </enum>
 
 <enum name="DTEnrollmentStatus">

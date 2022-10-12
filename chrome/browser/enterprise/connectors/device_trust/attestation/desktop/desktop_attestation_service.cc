@@ -18,6 +18,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/proto/device_trust_attestation_ca.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/crypto_utility.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_switches.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
@@ -136,8 +137,8 @@ void DesktopAttestationService::OnPublicKeyExported(
   if (!exported_key) {
     // No key is available, so mark the device as untrusted (no challenge
     // response).
-    LogAttestationResult(DTAttestationResult::kMissingSigningKey);
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(
+        {std::string(), DTAttestationResult::kMissingSigningKey});
     return;
   }
 
@@ -146,8 +147,8 @@ void DesktopAttestationService::OnPublicKeyExported(
       !signed_data.ParseFromString(serialized_signed_challenge)) {
     // Challenge is not properly formatted, so mark the device as untrusted (no
     // challenge response).
-    LogAttestationResult(DTAttestationResult::kBadChallengeFormat);
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(
+        {std::string(), DTAttestationResult::kBadChallengeFormat});
     return;
   }
 
@@ -171,15 +172,15 @@ void DesktopAttestationService::OnChallengeValidated(
   if (!is_va_challenge) {
     // Challenge does not come from VA, so mark the device as untrusted (no
     // challenge response).
-    LogAttestationResult(DTAttestationResult::kBadChallengeSource);
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(
+        {std::string(), DTAttestationResult::kBadChallengeSource});
     return;
   }
 
   auto dm_token = dm_token_storage_->RetrieveDMToken();
   if (!dm_token.is_valid()) {
-    LogAttestationResult(DTAttestationResult::kMissingCoreSignals);
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(
+        {std::string(), DTAttestationResult::kMissingCoreSignals});
     return;
   }
 
@@ -196,7 +197,8 @@ void DesktopAttestationService::OnChallengeValidated(
   // VA should accept signals JSON string.
   std::string signals_json;
   if (!base::JSONWriter::Write(signals, &signals_json)) {
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(
+        {std::string(), DTAttestationResult::kFailedToSerializeSignals});
     return;
   }
 
@@ -204,8 +206,8 @@ void DesktopAttestationService::OnChallengeValidated(
 
   std::string serialized_key_info;
   if (!key_info.SerializeToString(&serialized_key_info)) {
-    LogAttestationResult(DTAttestationResult::kFailedToSerializeKeyInfo);
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(
+        {std::string(), DTAttestationResult::kFailedToSerializeKeyInfo});
     return;
   }
 
@@ -226,8 +228,8 @@ void DesktopAttestationService::OnResponseCreated(
   if (!serialized_response) {
     // Failed to create a response, so mark the device as untrusted (no
     // challenge response).
-    LogAttestationResult(DTAttestationResult::kFailedToGenerateResponse);
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(
+        {std::string(), DTAttestationResult::kFailedToGenerateResponse});
     return;
   }
 
@@ -246,8 +248,8 @@ void DesktopAttestationService::OnResponseSigned(
   if (!encrypted_response) {
     // Failed to sign the response, so mark the device as untrusted (no
     // challenge response).
-    LogAttestationResult(DTAttestationResult::kFailedToSignResponse);
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(
+        {std::string(), DTAttestationResult::kFailedToSignResponse});
     return;
   }
 
@@ -259,21 +261,21 @@ void DesktopAttestationService::OnResponseSigned(
 
   std::string serialized_attestation_response;
   if (!signed_data.SerializeToString(&serialized_attestation_response)) {
-    LogAttestationResult(DTAttestationResult::kFailedToSerializeResponse);
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(
+        {std::string(), DTAttestationResult::kFailedToSerializeResponse});
     return;
   }
 
   std::string json_response;
   if (!serialized_attestation_response.empty()) {
-    LogAttestationResult(DTAttestationResult::kSuccess);
     json_response =
         ProtobufChallengeToJsonChallenge(serialized_attestation_response);
-  } else {
-    LogAttestationResult(DTAttestationResult::kEmptySerializedResponse);
   }
 
-  std::move(callback).Run(json_response);
+  std::move(callback).Run(
+      {json_response, json_response.empty()
+                          ? DTAttestationResult::kEmptySerializedResponse
+                          : DTAttestationResult::kSuccess});
 }
 
 }  // namespace enterprise_connectors

@@ -14,11 +14,14 @@
 
 namespace enterprise_connectors {
 
+struct AttestationResponse;
+
 // Interface for classes in charge of building challenge-responses to enable
 // handshake between Chrome, an IdP and Verified Access.
 class AttestationService {
  public:
-  using AttestationCallback = base::OnceCallback<void(const std::string&)>;
+  using AttestationCallback =
+      base::OnceCallback<void(const AttestationResponse&)>;
 
   virtual ~AttestationService() = default;
 

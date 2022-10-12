@@ -9,6 +9,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace enterprise_connectors {

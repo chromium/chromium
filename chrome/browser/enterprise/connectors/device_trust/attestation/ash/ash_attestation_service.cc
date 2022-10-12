@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 
 namespace enterprise_connectors {
@@ -52,7 +53,8 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
     AttestationCallback callback) {
   std::string signals_json;
   if (!base::JSONWriter::Write(signals, &signals_json)) {
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(
+        {std::string(), DTAttestationResult::kFailedToSerializeSignals});
     return;
   }
 
@@ -78,11 +80,11 @@ void AshAttestationService::ReturnResult(
   if (result.IsSuccess()) {
     encoded_response =
         ProtobufChallengeToJsonChallenge(result.challenge_response);
-    LogAttestationResult(DTAttestationResult::kSuccess);
-  } else {
-    LogAttestationResult(ToAttestationResult(result.result_code));
   }
-  std::move(callback).Run(encoded_response);
+  std::move(callback).Run(
+      {encoded_response, encoded_response.empty()
+                             ? ToAttestationResult(result.result_code)
+                             : DTAttestationResult::kSuccess});
 }
 
 }  // namespace enterprise_connectors

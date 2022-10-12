@@ -11,7 +11,6 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
@@ -61,9 +60,6 @@ constexpr char kFakeDeviceId[] = "fake_device_id";
 constexpr char kDisplayName[] = "display-name";
 constexpr char kDmToken[] = "fake-dm-token";
 constexpr char kInvalidDmToken[] = "INVALID_DM_TOKEN";
-
-constexpr char kResultHistogramName[] =
-    "Enterprise.DeviceTrust.Attestation.Result";
 
 std::string GetSerializedSignedChallenge(bool use_dev = false) {
   std::string serialized_signed_challenge;
@@ -132,7 +128,6 @@ class DesktopAttestationServiceTest : public testing::Test {
   test::ScopedKeyPersistenceDelegateFactory persistence_delegate_factory_;
   std::unique_ptr<DeviceTrustKeyManagerImpl> key_manager_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
-  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseDev_Success) {
@@ -141,12 +136,16 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseDev_Success) {
 
   base::RunLoop run_loop;
   auto callback = base::BindLambdaForTesting(
-      [&](const std::string& serialized_signed_challenge) {
-        ASSERT_FALSE(serialized_signed_challenge.empty());
-        auto signed_data = ParseDataFromResponse(serialized_signed_challenge);
+      [&](const AttestationResponse& attestation_response) {
+        ASSERT_FALSE(attestation_response.challenge_response.empty());
+        auto signed_data =
+            ParseDataFromResponse(attestation_response.challenge_response);
         ASSERT_TRUE(signed_data);
         EXPECT_FALSE(signed_data->data().empty());
         EXPECT_FALSE(signed_data->signature().empty());
+
+        EXPECT_EQ(attestation_response.result_code,
+                  DTAttestationResult::kSuccess);
         run_loop.Quit();
       });
 
@@ -162,12 +161,16 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseProd_Success) {
 
   base::RunLoop run_loop;
   auto callback = base::BindLambdaForTesting(
-      [&](const std::string& serialized_signed_challenge) {
-        ASSERT_FALSE(serialized_signed_challenge.empty());
-        auto signed_data = ParseDataFromResponse(serialized_signed_challenge);
+      [&](const AttestationResponse& attestation_response) {
+        ASSERT_FALSE(attestation_response.challenge_response.empty());
+        auto signed_data =
+            ParseDataFromResponse(attestation_response.challenge_response);
         ASSERT_TRUE(signed_data);
         EXPECT_FALSE(signed_data->data().empty());
         EXPECT_FALSE(signed_data->signature().empty());
+
+        EXPECT_EQ(attestation_response.result_code,
+                  DTAttestationResult::kSuccess);
         run_loop.Quit();
       });
 
@@ -182,11 +185,11 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_InvalidDmToken) {
 
   base::RunLoop run_loop;
   auto callback = base::BindLambdaForTesting(
-      [&](const std::string& serialized_signed_challenge) {
+      [&](const AttestationResponse& attestation_response) {
         // No challenge response is returned if no valid DMToken was found.
-        ASSERT_TRUE(serialized_signed_challenge.empty());
-        histogram_tester_.ExpectUniqueSample(
-            kResultHistogramName, DTAttestationResult::kMissingCoreSignals, 1);
+        EXPECT_TRUE(attestation_response.challenge_response.empty());
+        EXPECT_EQ(attestation_response.result_code,
+                  DTAttestationResult::kMissingCoreSignals);
         run_loop.Quit();
       });
 
@@ -200,11 +203,11 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyDmToken) {
 
   base::RunLoop run_loop;
   auto callback = base::BindLambdaForTesting(
-      [&](const std::string& serialized_signed_challenge) {
+      [&](const AttestationResponse& attestation_response) {
         // No challenge response is returned if no valid DMToken was found.
-        ASSERT_TRUE(serialized_signed_challenge.empty());
-        histogram_tester_.ExpectUniqueSample(
-            kResultHistogramName, DTAttestationResult::kMissingCoreSignals, 1);
+        ASSERT_TRUE(attestation_response.challenge_response.empty());
+        EXPECT_EQ(attestation_response.result_code,
+                  DTAttestationResult::kMissingCoreSignals);
         run_loop.Quit();
       });
 

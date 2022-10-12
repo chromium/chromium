@@ -43,6 +43,7 @@ source_set("test_support") {
   public_deps = [
     ":common",
     ":types",
+    "//chrome/browser/enterprise/connectors/device_trust/common",
     "//testing/gmock",
   ]
 }

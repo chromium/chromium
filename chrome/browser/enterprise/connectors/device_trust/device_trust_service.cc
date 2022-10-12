@@ -10,6 +10,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/signals_type.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
@@ -107,7 +108,16 @@ void DeviceTrustService::OnSignalsCollected(
   LogAttestationFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
 
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      serialized_signed_challenge, std::move(signals), std::move(callback));
+      serialized_signed_challenge, std::move(signals),
+      base::BindOnce(&DeviceTrustService::OnAttestationResponseReceived,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void DeviceTrustService::OnAttestationResponseReceived(
+    AttestationCallback callback,
+    const AttestationResponse& response) {
+  LogAttestationResult(response.result_code);
+  std::move(callback).Run(response.challenge_response);
 }
 
 }  // namespace enterprise_connectors
