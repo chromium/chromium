@@ -23,7 +23,7 @@ constexpr int kCountBuckets[] = {20, 15, 12, 10, 9, 8, 7, 6, 5, 4};
 
 // Thresholds of the likelihood that triggers the CPSS prompts.
 constexpr float kNotificationPredictionsThreshold = 0.81;
-constexpr float kGeolocationPredictionsThreshold = 0.87;
+constexpr float kGeolocationPredictionsThreshold = 0.86;
 
 // Returns the ratio rounded to the nearest 10%. It returns a value between 0
 // and 1 in steps of 0.1
