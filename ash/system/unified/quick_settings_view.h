@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_UNIFIED_QUICK_SETTINGS_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/unified/quick_settings_footer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -14,9 +13,10 @@ namespace ash {
 
 class FeaturePodButton;
 class FeaturePodsContainerView;
-class UnifiedMediaControlsContainer;
 class PageIndicatorView;
-class UnifiedSystemInfoView;
+class QuickSettingsFooter;
+class QuickSettingsHeader;
+class UnifiedMediaControlsContainer;
 class UnifiedSystemTrayController;
 
 // Container view of slider views.
@@ -115,12 +115,12 @@ class ASH_EXPORT QuickSettingsView : public views::View {
   UnifiedSystemTrayController* const controller_;
 
   // Owned by views hierarchy.
-  QuickSettingsFooter* footer_ = nullptr;
+  SystemTrayContainer* system_tray_container_ = nullptr;
+  QuickSettingsHeader* header_ = nullptr;
   FeaturePodsContainerView* feature_pods_container_ = nullptr;
   PageIndicatorView* page_indicator_view_ = nullptr;
   SlidersContainerView* sliders_container_ = nullptr;
-  UnifiedSystemInfoView* system_info_view_ = nullptr;
-  SystemTrayContainer* system_tray_container_ = nullptr;
+  QuickSettingsFooter* footer_ = nullptr;
   views::View* detailed_view_container_ = nullptr;
 
   // Null if media::kGlobalMediaControlsForChromeOS is disabled.

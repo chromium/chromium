@@ -146,8 +146,6 @@ constexpr gfx::Insets kUnifiedCircularButtonFocusPadding(4);
 constexpr gfx::Insets kTrayBackgroundFocusPadding(1);
 constexpr gfx::Insets kUnifiedSystemInfoBatteryIconPadding =
     gfx::Insets::TLBR(2, 2, 2, 6);
-constexpr gfx::Insets kQuickSettingFooterPadding(16);
-constexpr int kQuickSettingFooterItemBetweenSpacing = 8;
 
 // Size of an icon drawn inside top shortcut buttons.
 // A dark disc with |kTrayItemSize| diameter is drawn in the background.

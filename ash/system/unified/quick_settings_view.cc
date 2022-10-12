@@ -15,6 +15,7 @@
 #include "ash/system/unified/feature_pods_container_view.h"
 #include "ash/system/unified/page_indicator_view.h"
 #include "ash/system/unified/quick_settings_footer.h"
+#include "ash/system/unified/quick_settings_header.h"
 #include "ash/system/unified/unified_system_info_view.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "media/base/media_switches.h"
@@ -137,8 +138,9 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
 
   system_tray_container_ =
       AddChildView(std::make_unique<SystemTrayContainer>());
-  system_info_view_ = system_tray_container_->AddChildView(
-      std::make_unique<UnifiedSystemInfoView>(controller_));
+
+  header_ = system_tray_container_->AddChildView(
+      std::make_unique<QuickSettingsHeader>());
   feature_pods_container_ = system_tray_container_->AddChildView(
       std::make_unique<FeaturePodsContainerView>(controller_, true));
   page_indicator_view_ = system_tray_container_->AddChildView(
@@ -251,12 +253,12 @@ gfx::Size QuickSettingsView::CalculatePreferredSize() const {
       media_controls_container_ ? media_controls_container_->GetExpandedHeight()
                                 : 0;
   return gfx::Size(kTrayMenuWidth,
-                   footer_->GetPreferredSize().height() +
+                   header_->GetPreferredSize().height() +
                        feature_pods_container_->GetExpandedHeight() +
                        page_indicator_view_->GetExpandedHeight() +
                        sliders_container_->GetHeight() +
                        media_controls_container_height +
-                       system_info_view_->GetPreferredSize().height());
+                       footer_->GetPreferredSize().height());
 }
 
 void QuickSettingsView::OnGestureEvent(ui::GestureEvent* event) {

@@ -18,7 +18,6 @@
 #include "ash/style/icon_button.h"
 #include "ash/system/power/adaptive_charging_controller.h"
 #include "ash/system/power/power_status.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/buttons.h"
 #include "ash/system/unified/power_button.h"
@@ -33,6 +32,12 @@
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
+namespace {
+
+constexpr gfx::Insets kQuickSettingFooterPadding(16);
+constexpr int kQuickSettingFooterItemBetweenSpacing = 8;
+
+}  // namespace
 
 QuickSettingsFooter::QuickSettingsFooter(
     UnifiedSystemTrayController* controller) {
