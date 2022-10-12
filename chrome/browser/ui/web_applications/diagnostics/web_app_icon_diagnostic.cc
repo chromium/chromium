@@ -5,7 +5,10 @@
 #include "chrome/browser/ui/web_applications/diagnostics/web_app_icon_diagnostic.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/web_applications/diagnostics/callback_utils.h"
+#include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -42,14 +45,17 @@ void WebAppIconDiagnostic::Run(
 
   RunChainedCallbacks(
       base::BindOnce(&WebAppIconDiagnostic::LoadIconFromProvider, GetWeakPtr()),
-
       base::BindOnce(&WebAppIconDiagnostic::DiagnoseGeneratedOrEmptyIconBitmap,
                      GetWeakPtr()),
 
       base::BindOnce(&WebAppIconDiagnostic::CheckForEmptyOrMissingIconFiles,
                      GetWeakPtr()),
-
       base::BindOnce(&WebAppIconDiagnostic::DiagnoseEmptyOrMissingIconFiles,
+                     GetWeakPtr()),
+
+      base::BindOnce(&WebAppIconDiagnostic::LoadIconFromAppService,
+                     GetWeakPtr()),
+      base::BindOnce(&WebAppIconDiagnostic::DiagnoseAppServiceIcon,
                      GetWeakPtr()),
 
       base::BindOnce(&WebAppIconDiagnostic::CallResultCallback, GetWeakPtr()));
@@ -115,6 +121,31 @@ void WebAppIconDiagnostic::DiagnoseEmptyOrMissingIconFiles(
     WebAppIconManager::IconFilesCheck icon_files_check) {
   result_->has_empty_icon_file = icon_files_check.empty > 0;
   result_->has_missing_icon_file = icon_files_check.missing > 0;
+  std::move(done_callback).Run();
+}
+
+void WebAppIconDiagnostic::LoadIconFromAppService(
+    apps::LoadIconCallback callback) {
+  if (!icon_size_) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_.get());
+  app_service_icon_loading_ =
+      proxy->LoadIcon(WebAppPublisherHelper::GetWebAppType(), app_id_,
+                      apps::IconType::kStandard, *icon_size_,
+                      /*allow_placeholder_icon=*/false, std::move(callback));
+}
+
+void WebAppIconDiagnostic::DiagnoseAppServiceIcon(
+    base::OnceClosure done_callback,
+    apps::IconValuePtr icon_value) {
+  if (!icon_value)
+    result_->has_app_service_missing_icon = true;
+  else if (icon_value->is_fallback_icon)
+    result_->has_app_service_fallback_icon = true;
+
   std::move(done_callback).Run();
 }
 

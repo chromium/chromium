@@ -721,6 +721,7 @@ void AppIconLoader::MaybeApplyEffectsAndComplete(const gfx::ImageSkia image) {
   iv->icon_type = icon_type_;
   iv->uncompressed = image;
   iv->is_placeholder_icon = is_placeholder_icon_;
+  iv->is_fallback_icon = using_fallback_icon_resource_;
 
   // Apply the icon effects on the uncompressed data. If the caller requests
   // an uncompressed icon, return the uncompressed result; otherwise, encode
@@ -854,6 +855,7 @@ void AppIconLoader::MaybeLoadFallbackOrCompleteEmpty() {
     LoadIconCallback fallback_adaptor = base::BindOnce(
         [](scoped_refptr<AppIconLoader> icon_loader, IconValuePtr iv) {
           if (iv) {
+            iv->is_fallback_icon = true;
             std::move(icon_loader->callback_).Run(std::move(iv));
           } else {
             icon_loader->MaybeLoadFallbackOrCompleteEmpty();
@@ -872,11 +874,11 @@ void AppIconLoader::MaybeLoadFallbackOrCompleteEmpty() {
     return;
   }
 
-  if (fallback_icon_resource_ != kInvalidIconResource) {
-    int icon_resource = fallback_icon_resource_;
-    // Resetting default icon resource to ensure no infinite loops.
-    fallback_icon_resource_ = kInvalidIconResource;
-    LoadIconFromResource(icon_resource);
+  if (fallback_icon_resource_ != kInvalidIconResource &&
+      !using_fallback_icon_resource_) {
+    // Set to avoid infinite loops.
+    using_fallback_icon_resource_ = true;
+    LoadIconFromResource(fallback_icon_resource_);
     return;
   }
 

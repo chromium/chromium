@@ -78,6 +78,10 @@ class WebAppIconHealthChecksBrowserTest : public InProcessBrowserTest {
                     expected_result.has_empty_icon_file);
     check_histogram("WebApp.Icon.AppsWithMissingIconFile",
                     expected_result.has_missing_icon_file);
+    check_histogram("WebApp.Icon.AppsWithAppServiceMissingIcon",
+                    expected_result.has_app_service_missing_icon);
+    check_histogram("WebApp.Icon.AppsWithAppServiceFallbackIcon",
+                    expected_result.has_app_service_fallback_icon);
   }
 
   AppId InstallWebAppAndAwaitAppService(const char* path) {
@@ -118,8 +122,9 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest,
   AppId app_id = InstallWebAppAndAwaitAppService("/web_apps/basic.html");
   CreateUpdateScope()->UpdateApp(app_id)->SetDownloadedIconSizes(
       IconPurpose::ANY, {});
-  RunIconChecksWithMetricExpectations(
-      {.has_empty_downloaded_icon_sizes = true, .has_empty_icon_bitmap = true});
+  RunIconChecksWithMetricExpectations({.has_empty_downloaded_icon_sizes = true,
+                                       .has_empty_icon_bitmap = true,
+                                       .has_app_service_missing_icon = true});
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, GeneratedIcon) {
@@ -155,8 +160,9 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest,
   // Restart to reload the app.
 }
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, DeletedIconFiles) {
-  RunIconChecksWithMetricExpectations(
-      {.has_empty_icon_bitmap = true, .has_missing_icon_file = true});
+  RunIconChecksWithMetricExpectations({.has_empty_icon_bitmap = true,
+                                       .has_missing_icon_file = true,
+                                       .has_app_service_fallback_icon = true});
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, PRE_EmptyIconFile) {

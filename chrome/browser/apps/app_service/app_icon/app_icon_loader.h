@@ -167,7 +167,8 @@ class AppIconLoader : public base::RefCounted<AppIconLoader> {
   // If |fallback_icon_resource_| is not |kInvalidIconResource|, then it is the
   // second fallback method attempted in MaybeLoadFallbackOrCompleteEmpty()
   // (after the favicon service).
-  int fallback_icon_resource_ = kInvalidIconResource;
+  const int fallback_icon_resource_ = kInvalidIconResource;
+  bool using_fallback_icon_resource_ = false;
 
   LoadIconCallback callback_;
 
