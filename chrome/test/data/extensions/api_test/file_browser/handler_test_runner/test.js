@@ -87,14 +87,16 @@ function run() {
    * and calls getFileTasks again.
    *
    * @param {string} entry File entry for which getFileTasks was called.
-   * @param {Array<Object>} tasks List of found task objects.
+   * @param {!chrome.fileManagerPrivate.ResultingTasks} resultingTasks List of
+   *     found task objects.
    */
 
-  function onGotNonDefaultTasks(entry, tasks) {
-    if (!tasks) {
+  function onGotNonDefaultTasks(entry, resultingTasks) {
+    if (!resultingTasks || !resultingTasks.tasks) {
       onError('Failed getting tasks for ' + entry.fullPath);
       return;
     }
+    const tasks = resultingTasks.tasks;
     if (tasks.length != 1) {
       onError('Got invalid number of tasks for "' + entry.fullPath + '": ' +
               tasks.length);
@@ -120,13 +122,16 @@ function run() {
    * are found, they are executed.
    *
    * @param {!Entry} entry File entry for which getFileTasks was called.
-   * @param {Array<Object>} tasks List of found task objects.
+   * @param {!chrome.fileManagerPrivate.ResultingTasks} resultingTasks List of
+   *     found task objects.
    */
-  function onGotTasks(entry, tasks) {
-    if (!tasks) {
+  function onGotTasks(entry, resultingTasks) {
+    if (!resultingTasks || !resultingTasks.tasks) {
       onError('Failed getting tasks for ' + entry.fullPath);
       return;
     }
+    const tasks = resultingTasks.tasks;
+
     if (tasks.length != 1) {
       onError('Got invalid number of tasks for "' + entry.fullPath + '": ' +
               tasks.length);

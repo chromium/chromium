@@ -25,6 +25,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/policy_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
@@ -36,6 +37,8 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/features.h"
@@ -386,6 +389,66 @@ void ExecuteAppServiceTask(
                 },
                 std::move(done), task.task_type));
   }
+}
+
+absl::optional<std::string> GetPolicyDefaultHandlerForFileExtension(
+    Profile* profile,
+    const std::string& file_extension) {
+  const auto& policy_default_handlers =
+      profile->GetPrefs()->GetDict(prefs::kDefaultHandlersForFileExtensions);
+  if (auto* policy_default_handler =
+          policy_default_handlers.FindString(file_extension)) {
+    return *policy_default_handler;
+  }
+  return {};
+}
+
+bool ChooseAndSetDefaultTaskFromPolicyPrefs(
+    Profile* profile,
+    const std::vector<extensions::EntryInfo>& entries,
+    ResultingTasks* resulting_tasks) {
+  // Check that there are no conflicting assignments for the given set of
+  // entries.
+  base::flat_set<std::string> default_handlers_for_entries;
+  for (const auto& entry : entries) {
+    if (auto policy_default_handler = GetPolicyDefaultHandlerForFileExtension(
+            profile, entry.path.Extension())) {
+      default_handlers_for_entries.insert(*policy_default_handler);
+    }
+  }
+
+  // If there are no policy-set handlers, we fallback to the regular flow.
+  if (default_handlers_for_entries.empty()) {
+    return false;
+  }
+
+  // Conflicting assignment! No default should be set.
+  if (default_handlers_for_entries.size() > 1) {
+    resulting_tasks->policy_default_handler_status =
+        PolicyDefaultHandlerStatus::kIncorrectAssignment;
+    return true;
+  }
+
+  DCHECK_EQ(default_handlers_for_entries.size(), 1U);
+  const auto& policy_id = *default_handlers_for_entries.begin();
+
+  if (auto app_id = apps_util::GetAppIdFromPolicyId(profile, policy_id)) {
+    auto task_it = base::ranges::find_if(
+        resulting_tasks->tasks, [&app_id](const FullTaskDescriptor& task) {
+          return task.task_descriptor.app_id == *app_id;
+        });
+    if (task_it != resulting_tasks->tasks.end()) {
+      task_it->is_default = true;
+      resulting_tasks->policy_default_handler_status =
+          PolicyDefaultHandlerStatus::kDefaultHandlerAssignedByPolicy;
+      return true;
+    }
+  }
+
+  // The corresponding task was not found -- no default.
+  resulting_tasks->policy_default_handler_status =
+      PolicyDefaultHandlerStatus::kIncorrectAssignment;
+  return true;
 }
 
 }  // namespace file_manager::file_tasks

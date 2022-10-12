@@ -160,7 +160,7 @@ function setupFileManagerPrivate() {
           isDefault: true,
         }),
       ]);
-      setTimeout(callback.bind(null, fileTasks), 0);
+      setTimeout(callback.bind(null, {tasks: fileTasks}), 0);
     },
     onAppsUpdated: {
       addListener: function() {},

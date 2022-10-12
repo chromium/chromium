@@ -1000,6 +1000,17 @@ void FindAllTypesOfTasks(Profile* profile,
 void ChooseAndSetDefaultTask(Profile* profile,
                              const std::vector<extensions::EntryInfo>& entries,
                              ResultingTasks* resulting_tasks) {
+  if (ChooseAndSetDefaultTaskFromPolicyPrefs(profile, entries,
+                                             resulting_tasks)) {
+    // If the function returns true, then the default selection has been
+    // affected by policy. Check that |policy_default_handler_status| is set.
+    DCHECK(resulting_tasks->policy_default_handler_status);
+    return;
+  }
+
+  // Otherwise check that |policy_default_handler_status| is not set.
+  DCHECK(!resulting_tasks->policy_default_handler_status);
+
   // Collect the default tasks from the preferences into a set.
   base::flat_set<TaskDescriptor> default_tasks;
   for (const extensions::EntryInfo& entry : entries) {

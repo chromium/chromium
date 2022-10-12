@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/file_tasks.h"
-#include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 
 #include <algorithm>
 #include <memory>
@@ -14,6 +13,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/app_service_file_tasks.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
@@ -42,7 +43,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -61,7 +61,6 @@
 #include "google_apis/drive/drive_api_parser.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 using extensions::api::file_manager_private::Verb;
@@ -179,7 +178,7 @@ TEST(FileManagerFileTasksTest, FileHandlerIsEnabled) {
   EXPECT_TRUE(FileHandlerIsEnabled(&test_profile, test_id));
 }
 
-class FileManagerFileTaskPreferencesTest : public testing::Test {
+class FileManagerFileTaskWithAppServiceTest : public testing::Test {
  public:
   void SetUp() override {
     TestingProfile::Builder profile_builder;
@@ -190,37 +189,224 @@ class FileManagerFileTaskPreferencesTest : public testing::Test {
     ASSERT_TRUE(app_service_proxy_);
   }
 
-  // Updates the default task preferences per the given dictionary values. Used
-  // for testing ChooseAndSetDefaultTask.
-  void UpdateDefaultTaskPreferences(const base::Value::Dict& mime_types,
-                                    const base::Value::Dict& suffixes) {
-    profile_->GetTestingPrefService()->SetDict(prefs::kDefaultTasksByMimeType,
-                                               mime_types.Clone());
-    profile_->GetTestingPrefService()->SetDict(prefs::kDefaultTasksBySuffix,
-                                               suffixes.Clone());
-  }
-
   void AddFakeAppToAppService(const std::string& app_id,
-                              const std::string& package_name,
+                              const absl::optional<std::string>& package_name,
+                              std::vector<std::string> policy_ids,
                               apps::AppType app_type) {
-    std::vector<apps::AppPtr> apps;
     auto app = std::make_unique<apps::App>(app_type, app_id);
     app->app_id = app_id;
     app->app_type = app_type;
     app->publisher_id = package_name;
+    app->policy_ids = std::move(policy_ids);
     app->readiness = apps::Readiness::kReady;
+
+    std::vector<apps::AppPtr> apps;
     apps.push_back(std::move(app));
-    app_service_proxy_->AppRegistryCache().OnApps(
+    app_service_proxy()->AppRegistryCache().OnApps(
         std::move(apps), app_type, false /* should_notify_initialized */);
   }
 
   TestingProfile* profile() { return profile_.get(); }
+  apps::AppServiceProxy* app_service_proxy() { return app_service_proxy_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   apps::AppServiceProxy* app_service_proxy_ = nullptr;
   apps::AppServiceTest app_service_test_;
+};
+
+using AppIdPolicyIdPair = std::pair<const char*, const char*>;
+
+class FileManagerFileTaskPolicyDefaultHandlersTest
+    : public FileManagerFileTaskWithAppServiceTest {
+ public:
+  void SetUp() override {
+    FileManagerFileTaskWithAppServiceTest::SetUp();
+    CreateAppsAndTasks();
+  }
+
+ protected:
+  void UpdateDefaultHandlersPrefs(
+      const std::vector<std::pair<std::string, std::string>>& handlers = {}) {
+    base::Value::Dict pref_dict;
+    for (const auto& [file_extension, policy_id] : handlers) {
+      pref_dict.Set(file_extension, policy_id);
+    }
+    profile()->GetTestingPrefService()->SetDict(
+        prefs::kDefaultHandlersForFileExtensions, std::move(pref_dict));
+  }
+
+  ResultingTasks* resulting_tasks() { return resulting_tasks_.get(); }
+  std::vector<extensions::EntryInfo>& entries() { return entries_; }
+
+  void CheckCorrectPolicyAssignment(const std::string& default_app_id) {
+    ASSERT_EQ(resulting_tasks()->policy_default_handler_status,
+              PolicyDefaultHandlerStatus::kDefaultHandlerAssignedByPolicy);
+    ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
+              1U);
+    ASSERT_EQ(base::ranges::find_if(resulting_tasks()->tasks, &IsDefaultTask)
+                  ->task_descriptor.app_id,
+              default_app_id);
+  }
+
+  void CheckConflictingPolicyAssignment() {
+    ASSERT_EQ(resulting_tasks()->policy_default_handler_status,
+              PolicyDefaultHandlerStatus::kIncorrectAssignment);
+    ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
+              0U);
+  }
+
+  void CheckNoPolicyAssignment() {
+    ASSERT_FALSE(resulting_tasks()->policy_default_handler_status);
+    ASSERT_EQ(base::ranges::count_if(resulting_tasks()->tasks, &IsDefaultTask),
+              0U);
+  }
+
+  static void RestoreOriginalState(ResultingTasks* resulting_tasks) {
+    resulting_tasks->policy_default_handler_status = {};
+    for (auto& task : resulting_tasks->tasks) {
+      task.is_default = false;
+    }
+  }
+
+ protected:
+  static constexpr char kWebAppId[] = "web-app-id";
+  static constexpr char kChromeAppId[] = "chrome-app-id";
+  static constexpr char kArcAppId[] = "arc-app-id";
+  static constexpr char kNonExistentAppId[] = "null";
+
+  static constexpr char kWebAppUrl[] = "https://web.app";
+  static constexpr char kArcAppPackageName[] = "com.package.name";
+
+  static constexpr AppIdPolicyIdPair kAppIdPolicyIdMapping[] = {
+      {kWebAppId, kWebAppUrl},
+      {kArcAppId, kArcAppPackageName},
+      {kChromeAppId, kChromeAppId}};
+
+ private:
+  void CreateAppsAndTasks() {
+    resulting_tasks_ = std::make_unique<ResultingTasks>();
+
+    std::vector<FullTaskDescriptor>& tasks = resulting_tasks()->tasks;
+    for (const auto& [app_id, _] : kAppIdPolicyIdMapping) {
+      tasks.emplace_back(
+          TaskDescriptor{app_id, TASK_TYPE_FILE_HANDLER, "action-id"},
+          /*task_title=*/"Task", Verb::VERB_OPEN_WITH,
+          GURL("https://example.com/app.png"), false, false, false);
+    }
+
+    AddFakeAppToAppService(kWebAppId, /*package_name=*/{},
+                           /*policy_ids=*/{kWebAppUrl}, apps::AppType::kWeb);
+    AddFakeAppToAppService(kChromeAppId, /*package_name=*/{},
+                           /*policy_ids=*/{kChromeAppId},
+                           apps::AppType::kChromeApp);
+    AddFakeAppToAppService(kArcAppId, /*package_name=*/kArcAppPackageName,
+                           /*policy_ids=*/{kArcAppPackageName},
+                           apps::AppType::kArc);
+  }
+
+  static bool IsDefaultTask(const FullTaskDescriptor& ftd) {
+    return ftd.is_default;
+  }
+
+  std::unique_ptr<ResultingTasks> resulting_tasks_;
+  std::vector<extensions::EntryInfo> entries_;
+};
+
+// Check that no default tasks are set if no policy is set.
+TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest, CheckNoPolicyAssignment) {
+  entries().emplace_back(base::FilePath::FromUTF8Unsafe("foo.txt"),
+                         "text/plain", false);
+
+  UpdateDefaultHandlersPrefs(/*empty*/);
+  ASSERT_FALSE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
+                                                      resulting_tasks()));
+  CheckNoPolicyAssignment();
+}
+
+// Check that setting policy to a non-existent app yields an error.
+TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest,
+       CheckAssignmentToNonExistentApp) {
+  entries().emplace_back(base::FilePath::FromUTF8Unsafe("foo.txt"),
+                         "text/plain", false);
+
+  UpdateDefaultHandlersPrefs({{".txt", kNonExistentAppId}});
+  ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
+                                                     resulting_tasks()));
+  CheckConflictingPolicyAssignment();
+}
+
+// Check that assigning different apps to handle different file extensions
+// leads to a conflict.
+TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest,
+       CheckConflictingPolicyAssignment) {
+  entries().emplace_back(base::FilePath::FromUTF8Unsafe("foo.txt"),
+                         "text/plain", false);
+  entries().emplace_back(base::FilePath::FromUTF8Unsafe("foo.csv"), "text/csv",
+                         false);
+
+  UpdateDefaultHandlersPrefs({{".txt", kWebAppUrl}, {".csv", kChromeAppId}});
+  ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
+                                                     resulting_tasks()));
+  CheckConflictingPolicyAssignment();
+}
+
+class FileManagerFileTaskPolicyDefaultHandlersTestPerAppType
+    : public FileManagerFileTaskPolicyDefaultHandlersTest,
+      public testing::WithParamInterface<AppIdPolicyIdPair> {
+ public:
+  // This is required to correctly instantiate TEST_SUITE_P.
+  using FileManagerFileTaskPolicyDefaultHandlersTest::kAppIdPolicyIdMapping;
+};
+
+// Check that default tasks are set correctly by policy_id.
+TEST_P(FileManagerFileTaskPolicyDefaultHandlersTestPerAppType,
+       ChooseAndSetDefaultTaskFromPolicyPrefsForSingleFileExtension) {
+  entries().emplace_back(base::FilePath::FromUTF8Unsafe("foo.txt"),
+                         "text/plain", false);
+
+  const auto [app_id, policy_id] = GetParam();
+  UpdateDefaultHandlersPrefs({{".txt", policy_id}});
+  ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
+                                                     resulting_tasks()));
+  CheckCorrectPolicyAssignment(app_id);
+}
+
+// Check that default tasks are set correctly by policy_id for multiple
+// file_extensions.
+TEST_P(FileManagerFileTaskPolicyDefaultHandlersTestPerAppType,
+       ChooseAndSetDefaultTaskFromPolicyPrefsForMultipleFileExtensions) {
+  entries().emplace_back(base::FilePath::FromUTF8Unsafe("foo.txt"),
+                         "text/plain", false);
+  entries().emplace_back(base::FilePath::FromUTF8Unsafe("foo.csv"), "text/csv",
+                         false);
+
+  const auto [app_id, policy_id] = GetParam();
+  UpdateDefaultHandlersPrefs({{".txt", policy_id}, {".csv", policy_id}});
+  ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
+                                                     resulting_tasks()));
+  CheckCorrectPolicyAssignment(app_id);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /**/,
+    FileManagerFileTaskPolicyDefaultHandlersTestPerAppType,
+    testing::ValuesIn(FileManagerFileTaskPolicyDefaultHandlersTestPerAppType::
+                          kAppIdPolicyIdMapping));
+
+class FileManagerFileTaskPreferencesTest
+    : public FileManagerFileTaskWithAppServiceTest {
+ public:
+  // Updates the default task preferences per the given dictionary values.
+  // Used for testing ChooseAndSetDefaultTask.
+  void UpdateDefaultTaskPreferences(const base::Value::Dict& mime_types,
+                                    const base::Value::Dict& suffixes) {
+    profile()->GetTestingPrefService()->SetDict(prefs::kDefaultTasksByMimeType,
+                                                mime_types.Clone());
+    profile()->GetTestingPrefService()->SetDict(prefs::kDefaultTasksBySuffix,
+                                                suffixes.Clone());
+  }  // namespace file_manager::file_tasks
 };
 
 // Test that the right task is chosen from multiple choices per mime types
@@ -451,7 +637,8 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   std::string app_id = "zabcdefg";
   TaskType task_type = TASK_TYPE_ARC_APP;
 
-  AddFakeAppToAppService(app_id, package, apps::AppType::kArc);
+  AddFakeAppToAppService(app_id, package, /*policy_ids=*/{},
+                         apps::AppType::kArc);
 
   // Set the default app preference.
   std::string files_app_id = package + "/" + activity;
@@ -496,7 +683,8 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   TaskType task_type = TASK_TYPE_ARC_APP;
   std::string mime_type = "image/png";
 
-  AddFakeAppToAppService(app_id, package, apps::AppType::kArc);
+  AddFakeAppToAppService(app_id, package, /*policy_ids=*/{},
+                         apps::AppType::kArc);
 
   // Update default task preferences with our task descriptor (which is in the
   // format given from App Service file tasks).
@@ -514,28 +702,6 @@ TEST_F(FileManagerFileTaskPreferencesTest,
   ASSERT_EQ(*default_task_id, files_task_id);
 }
 
-class FileManagerFileTaskWithAppServiceTest : public testing::Test {
- public:
-  void SetUp() override {
-    TestingProfile::Builder profile_builder;
-    profile_ = profile_builder.Build();
-    app_service_test_.SetUp(profile_.get());
-    app_service_proxy_ =
-        apps::AppServiceProxyFactory::GetForProfile(profile_.get());
-    ASSERT_TRUE(app_service_proxy_);
-  }
-
-  TestingProfile* profile() { return profile_.get(); }
-
- protected:
-  apps::AppServiceProxy* app_service_proxy_ = nullptr;
-
- private:
-  content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
-  apps::AppServiceTest app_service_test_;
-};
-
 // Test that the office PWA file handler is hidden from the available file
 // handlers when opening an office file.
 TEST_F(FileManagerFileTaskWithAppServiceTest, OfficePwaHandlerHidden) {
@@ -544,7 +710,8 @@ TEST_F(FileManagerFileTaskWithAppServiceTest, OfficePwaHandlerHidden) {
     std::string mime_type;
   };
 
-  // Enable `kUploadOfficeToCloud` flag as the hiding happens behind this flag.
+  // Enable `kUploadOfficeToCloud` flag as the hiding happens behind this
+  // flag.
   base::test::ScopedFeatureList scoped_feature_list{
       ash::features::kUploadOfficeToCloud};
 
@@ -565,7 +732,7 @@ TEST_F(FileManagerFileTaskWithAppServiceTest, OfficePwaHandlerHidden) {
     file_manager::test::AddFakeWebApp(extension_misc::kOfficePwaAppId,
                                       fake_office_file_type.mime_type,
                                       fake_office_file_type.file_extension,
-                                      "something", true, app_service_proxy_);
+                                      "something", true, app_service_proxy());
 
     base::FilePath test_file_path = web_app::CreateTestFileWithExtension(
         fake_office_file_type.file_extension);

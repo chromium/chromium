@@ -361,6 +361,12 @@ chrome.fileManagerPrivate.UserType = {
   ORGANIZATION: 'kOrganization'
 };
 
+/** @enum {string} */
+chrome.fileManagerPrivate.PolicyDefaultHandlerStatus = {
+  DEFAULT_HANDLER_ASSIGNED_BY_POLICY: 'default_handler_assigned_by_policy',
+  INCORRECT_ASSIGNMENT: 'incorrect_assignment',
+};
+
 /**
  * @typedef {{
  *   appId: string,
@@ -381,6 +387,15 @@ chrome.fileManagerPrivate.FileTaskDescriptor;
  * }}
  */
 chrome.fileManagerPrivate.FileTask;
+
+/**
+ * @typedef {{
+ *   tasks: !Array<!chrome.fileManagerPrivate.FileTask>,
+ *   policyDefaultHandlerStatus:
+ * (!chrome.fileManagerPrivate.PolicyDefaultHandlerStatus|undefined)
+ * }}
+ */
+chrome.fileManagerPrivate.ResultingTasks;
 
 /**
  * @typedef {{

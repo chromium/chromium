@@ -152,19 +152,19 @@ function testPromise(promise) {
 function launchWithEntries(isolatedEntries) {
   // TODO(mtomasz): Remove this hack once chrome.FileManager API can work on
   // isolated entries.
-  return new Promise(
-      function(fulfill, reject) {
-        chrome.fileManagerPrivate.resolveIsolatedEntries(
-            isolatedEntries,
-            function(entries) {
-              fulfill(entries);
-            });
-      })
+  return new Promise(function(fulfill, reject) {
+           chrome.fileManagerPrivate.resolveIsolatedEntries(
+               isolatedEntries, function(entries) {
+                 fulfill(entries);
+               });
+         })
       .then(
           function(entries) {
             var tasksPromise = new Promise(function(fulfill) {
-              chrome.fileManagerPrivate.getFileTasks(entries, fulfill);
-            }).then(function(tasks) {
+                                 chrome.fileManagerPrivate.getFileTasks(
+                                     entries, fulfill);
+                               }).then(function(resultingTasks) {
+              const tasks = resultingTasks.tasks;
               chrome.test.assertEq(1, tasks.length);
               chrome.test.assertEq("ChromeOS File handler extension",
                                    tasks[0].title);

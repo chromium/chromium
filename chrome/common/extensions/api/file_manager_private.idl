@@ -411,6 +411,13 @@ enum SyncStatus {
   error
 };
 
+// Describes how admin policy affects the default task in a ResultingTasks.
+// See chrome/browser/ash/file_manager/file_tasks.h for details.
+enum PolicyDefaultHandlerStatus {
+  default_handler_assigned_by_policy,
+  incorrect_assignment
+};
+
 // These three fields together uniquely identify a task.
 dictionary FileTaskDescriptor {
   DOMString appId;
@@ -443,6 +450,15 @@ dictionary FileTask {
   // types: ["*/*"]). Partial wild card (e.g. types: ["image/*"]) is not
   // generic file handler.
   boolean isGenericFileHandler;
+};
+
+// Represents a set of tasks capable of handling file entries.
+// See chrome/browser/ash/file_manager/file_tasks.h for details.
+dictionary ResultingTasks {
+  FileTask[] tasks;
+
+  // Note that this field is non-null if and only if at least one entry has been affected by policy.
+  PolicyDefaultHandlerStatus? policyDefaultHandlerStatus;
 };
 
 // Additional entry properties.
@@ -1133,8 +1149,8 @@ callback BooleanCallback = void(boolean result);
 // |result| Result of the task execution.
 callback ExecuteTaskCallback = void(TaskResult result);
 
-// |tasks| The list of matched file entries for this task.
-callback GetFileTasksCallback = void(FileTask[] tasks);
+// |resultingTasks| The list of matched file entries for this task.
+callback GetFileTasksCallback = void(ResultingTasks resultingTasks);
 
 // |result| Mime type of the file.
 callback GetMimeTypeCallback = void(DOMString result);

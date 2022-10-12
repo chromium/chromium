@@ -174,7 +174,7 @@ export function setUp() {
         FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED: 'test_fpvdns_task',
       },
       getFileTasks: function(entries, callback) {
-        setTimeout(callback.bind(null, [mockTask]), 0);
+        setTimeout(callback.bind(null, {tasks: [mockTask]}), 0);
       },
       executeTask: function(descriptor, entries, onViewFiles) {
         onViewFiles('failed');
@@ -398,30 +398,30 @@ export function testToOpenRtfFile(callback) {
 export function testOpenTaskPicker(callback) {
   window.chrome.fileManagerPrivate.getFileTasks = (entries, callback) => {
     setTimeout(
-        callback.bind(
-            null,
-            [
-              {
-                descriptor: {
-                  appId: 'handler-extension-id1',
-                  taskType: 'app',
-                  actionId: 'any',
-                },
-                isDefault: false,
-                isGenericFileHandler: false,
-                title: 'app 1',
+        callback.bind(null, {
+          tasks: [
+            {
+              descriptor: {
+                appId: 'handler-extension-id1',
+                taskType: 'app',
+                actionId: 'any',
               },
-              {
-                descriptor: {
-                  appId: 'handler-extension-id2',
-                  taskType: 'app',
-                  actionId: 'any',
-                },
-                isDefault: false,
-                isGenericFileHandler: false,
-                title: 'app 2',
+              isDefault: false,
+              isGenericFileHandler: false,
+              title: 'app 1',
+            },
+            {
+              descriptor: {
+                appId: 'handler-extension-id2',
+                taskType: 'app',
+                actionId: 'any',
               },
-            ]),
+              isDefault: false,
+              isGenericFileHandler: false,
+              title: 'app 2',
+            },
+          ],
+        }),
         0);
   };
 
@@ -454,30 +454,32 @@ export function testOpenWithMostRecentlyExecuted(callback) {
         callback.bind(
             null,
             // File tasks is sorted by last executed time, latest first.
-            [
-              {
-                descriptor: latestTaskDescriptor,
-                isDefault: false,
-                isGenericFileHandler: false,
-                title: 'app 1',
-              },
-              {
-                descriptor: oldTaskDescriptor,
-                isDefault: false,
-                isGenericFileHandler: false,
-                title: 'app 2',
-              },
-              {
-                descriptor: {
-                  appId: 'handler-extension-never-executed',
-                  taskType: 'app',
-                  actionId: 'any',
+            {
+              tasks: [
+                {
+                  descriptor: latestTaskDescriptor,
+                  isDefault: false,
+                  isGenericFileHandler: false,
+                  title: 'app 1',
                 },
-                isDefault: false,
-                isGenericFileHandler: false,
-                title: 'app 3',
-              },
-            ]),
+                {
+                  descriptor: oldTaskDescriptor,
+                  isDefault: false,
+                  isGenericFileHandler: false,
+                  title: 'app 2',
+                },
+                {
+                  descriptor: {
+                    appId: 'handler-extension-never-executed',
+                    taskType: 'app',
+                    actionId: 'any',
+                  },
+                  isDefault: false,
+                  isGenericFileHandler: false,
+                  title: 'app 3',
+                },
+              ],
+            }),
         0);
   };
 
@@ -548,7 +550,7 @@ function setUpInstallLinuxPackage() {
     title: '__MSG_INSTALL_LINUX_PACKAGE__',
   };
   window.chrome.fileManagerPrivate.getFileTasks = (entries, callback) => {
-    setTimeout(callback.bind(null, [fileTask]), 0);
+    setTimeout(callback.bind(null, {tasks: [fileTask]}), 0);
   };
   return fileManager;
 }
@@ -591,19 +593,19 @@ export function testOpenInstallLinuxPackageDialog(callback) {
 export function testToOpenTiniFileOpensImportCrostiniImageDialog(callback) {
   window.chrome.fileManagerPrivate.getFileTasks = (entries, callback) => {
     setTimeout(
-        callback.bind(
-            null,
-            [
-              {
-                descriptor: {
-                  appId: LEGACY_FILES_EXTENSION_ID,
-                  taskType: 'app',
-                  actionId: 'import-crostini-image',
-                },
-                isDefault: false,
-                isGenericFileHandler: false,
+        callback.bind(null, {
+          tasks: [
+            {
+              descriptor: {
+                appId: LEGACY_FILES_EXTENSION_ID,
+                taskType: 'app',
+                actionId: 'import-crostini-image',
               },
-            ]),
+              isDefault: false,
+              isGenericFileHandler: false,
+            },
+          ],
+        }),
         0);
   };
 

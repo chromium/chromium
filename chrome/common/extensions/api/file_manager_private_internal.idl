@@ -37,7 +37,7 @@ namespace fileManagerPrivateInternal {
   callback GetContentMetadataCallback = void(
       fileManagerPrivate.MediaMetadata result);
   callback ExecuteTaskCallback = void(fileManagerPrivate.TaskResult result);
-  callback GetFileTasksCallback = void(fileManagerPrivate.FileTask[] tasks);
+  callback GetFileTasksCallback = void(fileManagerPrivate.ResultingTasks resultingTasks);
   callback GetUrlCallback = void(DOMString url);
   callback GetUrlCallback = void(DOMString url);
   callback GetDisallowedTransfersCallback =

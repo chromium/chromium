@@ -381,7 +381,7 @@ test.util.sync.overrideTasks = (contentWindow, taskList) => {
   const getFileTasks = (entries, onTasks) => {
     // Call onTask asynchronously (same with original getFileTasks).
     setTimeout(() => {
-      onTasks(taskList);
+      onTasks({tasks: taskList});
     }, 0);
   };
 

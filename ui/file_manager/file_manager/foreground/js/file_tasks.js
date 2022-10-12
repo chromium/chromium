@@ -144,12 +144,13 @@ export class FileTasks {
     // Cannot use fake entries with getFileTasks.
     entries = entries.filter(e => !util.isFakeEntry(e));
     if (entries.length !== 0) {
-      tasks = await new Promise(
+      const resultingTasks = await new Promise(
           fulfill => chrome.fileManagerPrivate.getFileTasks(entries, fulfill));
-      if (!tasks) {
+      if (!resultingTasks || !resultingTasks.tasks) {
         throw new Error(
             'Cannot get file tasks: ' + chrome.runtime.lastError.message);
       }
+      tasks = resultingTasks.tasks;
     }
 
     // Linux package installation is currently only supported for a single file

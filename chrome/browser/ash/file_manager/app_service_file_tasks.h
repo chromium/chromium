@@ -50,6 +50,30 @@ void ExecuteAppServiceTask(
     const std::vector<std::string>& mime_types,
     FileTaskFinishedCallback done);
 
+// Returns the default handler specified in `DefaultHandlersForFileExtensions`
+// policy for the given |file_extension|, if any.
+absl::optional<std::string> GetPolicyDefaultHandlerForFileExtension(
+    Profile* profile,
+    const std::string& file_extension);
+
+// Checks `DefaultHandlersForFileExtensions` policy and maybe sets the default
+// task. Returns false to indicate that the caller may set the default task and
+// true if default has been set by this function or default should not be set
+// due to some assignment conflict.
+// The exact rules are
+//    * If there are no default handlers for the given |entries|, returns false
+//      to allow the caller to specify the default task on its own.
+//    * If there's exactly one unique default handler for the given |entries|
+//      and the corresponding task is listed in |resulting_tasks|, marks it as
+//      default, sets the policy default handler status to
+//      `kDefaultHandlerAssignedByPolicy` and returns true.
+//    * In all other cases sets the policy default handler status to
+//      `kIncorrectAssignment` and returns true.
+bool ChooseAndSetDefaultTaskFromPolicyPrefs(
+    Profile* profile,
+    const std::vector<extensions::EntryInfo>& entries,
+    ResultingTasks* resulting_tasks);
+
 }  // namespace file_manager::file_tasks
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_APP_SERVICE_FILE_TASKS_H_
