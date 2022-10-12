@@ -54,7 +54,7 @@ static std::u16string GetMessageForStatus(AllowStatus status) {
     case AllowStatus::kVmPolicyBlocked:
     case AllowStatus::kUserPrefBlocked:
       return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_ADMIN);
-    case AllowStatus::kBlockedOnBetaStable:
+    case AllowStatus::kBlockedOnStable:
       return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_CHANNEL);
     case AllowStatus::kBlockedByFlag:
       return l10n_util::GetStringUTF16(IDS_BOREALIS_DISALLOWED_FLAG);
