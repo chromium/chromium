@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/updater/win/installer/installer.h"
+#include "chrome/updater/win/ui/l10n_util.h"
 
 // http://blogs.msdn.com/oldnewthing/archive/2004/10/25/247180.aspx
 extern "C" IMAGE_DOS_HEADER __ImageBase;
@@ -19,10 +20,13 @@ int WINAPI wWinMain(HINSTANCE /* instance */,
   updater::ProcessExitResult result =
       updater::WMain(reinterpret_cast<HMODULE>(&__ImageBase));
 
-  if (result.exit_code != updater::SUCCESS_EXIT_CODE) {
-    std::wstring error = updater::GetLocalizedErrorString(result.exit_code);
-    ::MessageBoxEx(nullptr, error.c_str(), nullptr, 0, 0);
+  // If errors occur, display UI only when the metainstaller runs without
+  // command line arguments.
+  if (result.exit_code != updater::SUCCESS_EXIT_CODE &&
+      wcslen(command_line) == 0) {
+    ::MessageBoxEx(nullptr,
+                   updater::GetLocalizedErrorString(result.exit_code).c_str(),
+                   nullptr, 0, 0);
   }
-
   return result.exit_code;
 }

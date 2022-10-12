@@ -118,6 +118,7 @@ template("generate_installer") {
       ":lib",
       ":version",
       "//build/win:default_exe_manifest",
+      "//chrome/updater:base",
     ]
   }
 }
