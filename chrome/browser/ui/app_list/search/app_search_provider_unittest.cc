@@ -45,9 +45,6 @@
 #include "components/services/app_service/public/cpp/stub_icon_loader.h"
 #include "components/sync/model/string_ordinal.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync_sessions/mock_sync_sessions_client.h"
-#include "components/sync_sessions/open_tabs_ui_delegate_impl.h"
-#include "components/sync_sessions/synced_session_tracker.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension_builder.h"
@@ -97,10 +94,6 @@ base::Time MicrosecondsSinceEpoch(int microseconds) {
       base::Microseconds(microseconds));
 }
 
-}  // namespace
-
-const base::Time kTestCurrentTime = MicrosecondsSinceEpoch(100000);
-
 bool MoreRelevant(const ChromeSearchResult* result1,
                   const ChromeSearchResult* result2) {
   return result1->relevance() > result2->relevance();
@@ -125,6 +118,8 @@ void UpdateIconKey(apps::AppServiceProxy& proxy, const std::string& app_id) {
                                   false /* should_notify_initialized */);
 }
 
+}  // namespace
+
 class AppSearchProviderTest : public AppListTestBase {
  public:
   AppSearchProviderTest() = default;
@@ -145,25 +140,11 @@ class AppSearchProviderTest : public AppListTestBase {
   }
 
   void CreateSearch() {
-    clock_.SetNow(kTestCurrentTime);
     search_controller_ = std::make_unique<TestSearchController>();
     auto app_search = std::make_unique<AppSearchProvider>(
         profile_.get(), nullptr, &clock_, model_updater_.get());
     app_search_ = app_search.get();
     search_controller_->AddProvider(0, std::move(app_search));
-  }
-
-  void CreateSearchWithContinueReading() {
-    CreateSearch();
-
-    session_tracker_ = std::make_unique<sync_sessions::SyncedSessionTracker>(
-        &mock_sync_sessions_client_);
-    open_tabs_ui_delegate_ =
-        std::make_unique<sync_sessions::OpenTabsUIDelegateImpl>(
-            &mock_sync_sessions_client_, session_tracker_.get(),
-            base::DoNothing());
-    app_search_->set_open_tabs_ui_delegate_for_testing(
-        open_tabs_ui_delegate_.get());
   }
 
   std::string RunQuery(const std::string& query) {
@@ -179,54 +160,10 @@ class AppSearchProviderTest : public AppListTestBase {
       sorted_results.emplace_back(result.get());
     std::sort(sorted_results.begin(), sorted_results.end(), &MoreRelevant);
 
-    // If the query is empty and we're in the non-productivity launcher, every
-    // other result is a chip result identical to the tile result. Skip these.
-    const int increment =
-        (!app_list_features::IsCategoricalSearchEnabled() && query.empty()) ? 2
-                                                                            : 1;
     std::string result_str;
-    for (size_t i = 0; i < sorted_results.size(); i += increment) {
+    for (auto* result : sorted_results) {
       if (!result_str.empty())
         result_str += ',';
-
-      result_str += base::UTF16ToUTF8(sorted_results[i]->title());
-    }
-    return result_str;
-  }
-
-  // Used for testing Continue Reading. Because the result is placed in the
-  // container based on index flags instead of relevance, use this methodology
-  // to generate list of test results.
-  std::string RunQueryNotSortingByRelevance(const std::string& query) {
-    search_controller_->StartSearch(base::UTF8ToUTF16(query));
-
-    std::vector<ChromeSearchResult*> non_relevance_results;
-    std::vector<ChromeSearchResult*> priority_results;
-    for (const auto& result : results()) {
-      if (result->display_index() == ash::kFirstIndex &&
-          (result->display_type() == ash::SearchResultDisplayType::kChip ||
-           result->display_type() == ash::SearchResultDisplayType::kTile)) {
-        priority_results.emplace_back(result.get());
-      } else {
-        non_relevance_results.emplace_back(result.get());
-      }
-    }
-
-    if (priority_results.size() != 0) {
-      non_relevance_results.insert(non_relevance_results.begin(),
-                                   priority_results.begin(),
-                                   priority_results.end());
-    }
-
-    // If the query is empty, every other result is a chip result identical to
-    // the tile result. Skip these.
-    const int increment = query.empty() ? 2 : 1;
-    std::string result_str;
-    for (size_t i = 0; i < non_relevance_results.size(); i += increment) {
-      auto* result = non_relevance_results[i];
-      if (!result_str.empty())
-        result_str += ',';
-
       result_str += base::UTF16ToUTF8(result->title());
     }
     return result_str;
@@ -285,20 +222,12 @@ class AppSearchProviderTest : public AppListTestBase {
   }
 
   const SearchProvider::Results& results() {
-    if (app_list_features::IsCategoricalSearchEnabled()) {
-      return search_controller_->last_results();
-    } else {
-      return app_search_->results();
-    }
+    return search_controller_->last_results();
   }
 
   ArcAppTest& arc_test() { return arc_test_; }
 
   void CallViewClosing() { app_search_->ViewClosing(); }
-
-  sync_sessions::SyncedSessionTracker* session_tracker() {
-    return session_tracker_.get();
-  }
 
  private:
   base::SimpleTestClock clock_;
@@ -308,12 +237,6 @@ class AppSearchProviderTest : public AppListTestBase {
   AppSearchProvider* app_search_ = nullptr;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   ArcAppTest arc_test_;
-
-  // For continue reading.
-  testing::NiceMock<sync_sessions::MockSyncSessionsClient>
-      mock_sync_sessions_client_;
-  std::unique_ptr<sync_sessions::SyncedSessionTracker> session_tracker_;
-  std::unique_ptr<sync_sessions::OpenTabsUIDelegateImpl> open_tabs_ui_delegate_;
 };
 
 TEST_F(AppSearchProviderTest, Basic) {
@@ -446,7 +369,7 @@ TEST_F(AppSearchProviderTest, FetchRecommendations) {
   EXPECT_EQ("Packaged App 2,Packaged App 1,Hosted App", RunQuery(""));
 
   // Times in the future should just be handled as highest priority.
-  prefs->SetLastLaunchTime(kHostedAppId, kTestCurrentTime + base::Seconds(5));
+  prefs->SetLastLaunchTime(kHostedAppId, base::Time::Now() + base::Seconds(5));
   prefs->SetLastLaunchTime(kPackagedApp1Id, MicrosecondsSinceEpoch(10));
   prefs->SetLastLaunchTime(kPackagedApp2Id, MicrosecondsSinceEpoch(5));
   // Allow async callbacks to run.
@@ -693,11 +616,6 @@ TEST_F(AppSearchProviderTest, AppServiceIconCache) {
   EXPECT_FALSE(results().empty());
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
-  if (!app_list_features::IsCategoricalSearchEnabled()) {
-    // Verify the search results are cleared async.
-    EXPECT_TRUE(results().empty());
-  }
-
   EXPECT_EQ(2, stub_icon_loader.NumLoadIconFromIconKeyCalls());
 
   // The icon has been added to the map, so issuing the same "pa" query should
