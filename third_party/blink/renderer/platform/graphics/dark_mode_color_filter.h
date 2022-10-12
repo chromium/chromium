@@ -25,6 +25,12 @@ class PLATFORM_EXPORT DarkModeColorFilter {
   virtual ~DarkModeColorFilter();
   virtual SkColor InvertColor(SkColor color) const = 0;
   virtual sk_sp<SkColorFilter> ToSkColorFilter() const = 0;
+  virtual SkColor AdjustColorForHigherConstrast(
+      SkColor adjusted_color,
+      const SkColor background,
+      float reference_contrast_ratio) {
+    return adjusted_color;
+  }
 };
 
 }  // namespace blink

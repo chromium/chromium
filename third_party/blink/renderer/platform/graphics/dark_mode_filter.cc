@@ -137,25 +137,38 @@ DarkModeImagePolicy DarkModeFilter::GetDarkModeImagePolicy() const {
   return immutable_.settings.image_policy;
 }
 
-// Heuristic to maintain contrast for borders (see: crbug.com/1263545)
+// Heuristic to maintain contrast for borders and selections (see:
+// crbug.com/1263545,crbug.com/1298969)
 SkColor DarkModeFilter::AdjustDarkenColor(SkColor color,
                                           DarkModeFilter::ElementRole role,
                                           SkColor contrast_background) {
-  if (role != DarkModeFilter::ElementRole::kBorder)
-    return color;
-
   if (contrast_background == 0)
     contrast_background = SK_ColorDark;
 
-  if (color == SkColorSetARGB(SkColorGetA(color), 0, 0, 0))
-    return color;
+  switch (role) {
+    case ElementRole::kBorder: {
+      if (color == SkColorSetARGB(SkColorGetA(color), 0, 0, 0))
+        return color;
 
-  if (color_utils::GetContrastRatio(color, contrast_background) <
-      color_utils::kMinimumReadableContrastRatio)
-    return color;
+      if (color_utils::GetContrastRatio(color, contrast_background) <
+          color_utils::kMinimumReadableContrastRatio)
+        return color;
 
-  return AdjustDarkenColor(Color::FromSkColor(color).Dark().Rgb(), role,
-                           contrast_background);
+      return AdjustDarkenColor(Color::FromSkColor(color).Dark().Rgb(), role,
+                               contrast_background);
+    }
+    case ElementRole::kSelection: {
+      if (!immutable_.color_filter)
+        return color;
+
+      return immutable_.color_filter->AdjustColorForHigherConstrast(
+          color, contrast_background,
+          color_utils::kMinimumVisibleContrastRatio);
+    }
+    default:
+      return color;
+  }
+  NOTREACHED();
 }
 
 SkColor DarkModeFilter::InvertColorIfNeeded(SkColor color,
@@ -270,6 +283,7 @@ bool DarkModeFilter::ShouldApplyToColor(SkColor color, ElementRole role) {
       return immutable_.foreground_classifier->ShouldInvertColor(color) ==
              DarkModeResult::kApplyFilter;
     case ElementRole::kBackground:
+    case ElementRole::kSelection:
       DCHECK(immutable_.background_classifier);
       return immutable_.background_classifier->ShouldInvertColor(color) ==
              DarkModeResult::kApplyFilter;

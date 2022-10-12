@@ -36,7 +36,8 @@ class PLATFORM_EXPORT DarkModeFilter {
     kListSymbol,
     kBackground,
     kSVG,
-    kBorder
+    kBorder,
+    kSelection
   };
   enum class ImageType { kNone, kIcon, kSeparator, kPhoto };
 

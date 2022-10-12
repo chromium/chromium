@@ -10,6 +10,7 @@
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/effects/SkHighContrastFilter.h"
 #include "third_party/skia/include/effects/SkTableColorFilter.h"
+#include "ui/gfx/color_utils.h"
 
 namespace blink {
 namespace {
@@ -73,6 +74,31 @@ class LABColorFilter : public DarkModeColorFilter {
     return AdjustGray(inverted_color);
   }
 
+  SkColor AdjustColorForHigherConstrast(
+      SkColor adjusted_color,
+      SkColor background,
+      float reference_contrast_ratio) override {
+    if (color_utils::GetContrastRatio(adjusted_color, background) >=
+        reference_contrast_ratio)
+      return adjusted_color;
+
+    SkColor best_color = adjusted_color;
+    constexpr int MaxLightness = 100;
+    int min_lightness = GetLabSkV3Data(adjusted_color).x;
+    for (int low = min_lightness, high = MaxLightness + 1; low < high;) {
+      const int lightness = (low + high) / 2;
+      const SkColor color = AdjustColorByLightness(adjusted_color, lightness);
+      const float contrast = color_utils::GetContrastRatio(color, background);
+      if (contrast > reference_contrast_ratio) {
+        high = lightness;
+        best_color = color;
+      } else {
+        low = high + 1;
+      }
+    }
+    return best_color;
+  }
+
   sk_sp<SkColorFilter> ToSkColorFilter() const override { return filter_; }
 
  private:
@@ -97,6 +123,36 @@ class LABColorFilter : public DarkModeColorFilter {
     }
 
     return color;
+  }
+
+  SkColor AdjustColorByLightness(SkColor reference_color, int lightness) {
+    SkColor new_color = AdjustLightness(reference_color, lightness);
+    SkScalar hsv[3];
+    SkColorToHSV(reference_color, hsv);
+    const float hue = hsv[0];
+    SkColorToHSV(new_color, hsv);
+    if (hsv[0] != hue)
+      hsv[0] = hue;
+
+    return SkHSVToColor(SkColorGetA(reference_color), hsv);
+  }
+
+  SkColor AdjustLightness(SkColor color, int lightness) {
+    SkV3 lab = GetLabSkV3Data(color);
+    if (lab.x != lightness)
+      lab.x = lightness;
+    SkV3 rgb = transformer_.LABToSRGB(lab);
+
+    return SkColorSetARGB(SkColorGetA(color),
+                          static_cast<unsigned int>(rgb.x * 255 + 0.5),
+                          static_cast<unsigned int>(rgb.y * 255 + 0.5),
+                          static_cast<unsigned int>(rgb.z * 255 + 0.5));
+  }
+
+  SkV3 GetLabSkV3Data(SkColor color) {
+    SkV3 rgb = {SkColorGetR(color) / 255.0f, SkColorGetG(color) / 255.0f,
+                SkColorGetB(color) / 255.0f};
+    return transformer_.SRGBToLAB(rgb);
   }
 
   const lab::DarkModeSRGBLABTransformer transformer_;

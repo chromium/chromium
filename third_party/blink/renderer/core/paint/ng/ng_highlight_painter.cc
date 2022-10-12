@@ -374,7 +374,7 @@ void NGHighlightPainter::SelectionPaintState::PaintSelectionBackground(
                                                selection_style_.current_color);
 
   AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kSelection));
 
   if (!rotation) {
     PaintRect(context, RectInPhysicalSpace(), color, auto_dark_mode);
@@ -928,9 +928,11 @@ void NGHighlightPainter::PaintHighlightOverlays(
 
       // TODO(dazabani@igalia.com) paint rects pixel-snapped in physical space,
       // not writing-mode space (SelectionPaintState::PaintSelectionBackground)
-      PaintRect(paint_info_.context, PhysicalOffset(box_origin_),
-                fragment_item_.LocalRect(text, clamped_start, clamped_end),
-                background_color, background_auto_dark_mode_);
+      PaintRect(
+          paint_info_.context, PhysicalOffset(box_origin_),
+          fragment_item_.LocalRect(text, clamped_start, clamped_end),
+          background_color,
+          PaintAutoDarkMode(style_, DarkModeFilter::ElementRole::kSelection));
 
       if (layer.text_style.shadow) {
         text_painter_.Paint(

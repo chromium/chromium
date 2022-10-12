@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <style>
-body {
-  background-color: #808080;
-}
 .block {
   font-size: 20px;
-  height: 50px;
+  height: 40px;
   margin: 10px;
   padding: 10px;
   border: 1px solid #000;
 }
+
+.background {
+  background-color: #808080;
+}
+
 .selectionbw::selection {
   color: black;
   background-color: white;
@@ -30,13 +32,26 @@ body {
 <div id="selectionstart" class="block selectionbw">
     selection style of black on white
 </div>
-<div id="selectionend" class="block selectionwb">
+<div class="block selectionbw background">
+    selection style of black on white
+</div>
+<div class="block selectionwb">
     selection style of white on black
 </div>
+<div id="selectionend" class="block selectionwb background">
+    selection style of white on black
+</div>
+
 <div id="highlightstart" class="block highlightbw">
     highlight style of white on black
 </div>
-<div id="highlightend" class="block highlightwb">
+<div class="block highlightbw background">
+    highlight style of white on black
+</div>
+<div class="block highlightwb">
+    highlight style of black on white
+</div>
+<div id="highlightend" class="block highlightwb background">
     highlight style of black on white
 </div>
 <script>
@@ -44,7 +59,6 @@ body {
     selectionRange.setStartBefore(document.getElementById('selectionstart'));
     selectionRange.setEndAfter(document.getElementById('selectionend'));
     window.getSelection().addRange(selectionRange);
-
     let highlightRange = new Range();
     highlightRange.setStartBefore(document.getElementById('highlightstart'));
     highlightRange.setEndAfter(document.getElementById('highlightend'));

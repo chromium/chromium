@@ -605,7 +605,7 @@ void InlineTextBoxPainter::PaintSingleMarkerBackgroundRun(
   context.DrawHighlightForText(
       font, inline_text_box_.ConstructTextRun(style), local_origin, sel_height,
       background_color,
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground),
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kSelection),
       start_pos, end_pos);
 }
 
@@ -1006,7 +1006,7 @@ void InlineTextBoxPainter::PaintTextMarkerBackground(
   context.Clip(gfx::RectF(box_rect));
   context.DrawHighlightForText(
       font, run, gfx::PointF(box_origin), box_rect.Height().ToInt(), color,
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground),
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kSelection),
       paint_offsets.first, paint_offsets.second);
 }
 

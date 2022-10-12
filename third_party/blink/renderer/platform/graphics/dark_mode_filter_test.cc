@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 
-#include "base/logging.h"
-#include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
