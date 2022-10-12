@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/promos_manager/promos_manager_unittest.h"
-
 #import <Foundation/Foundation.h>
 #import <set>
 #import <vector>
@@ -18,6 +16,7 @@
 #import "ios/chrome/browser/promos_manager/impression_limit.h"
 #import "ios/chrome/browser/promos_manager/promo.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/promos_manager/promos_manager_impl.h"
 #import "testing/platform_test.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,12 +34,38 @@ int TodaysDay() {
 
 }  // namespace
 
-PromosManagerTest::PromosManagerTest() {
+class PromosManagerImplTest : public PlatformTest {
+ public:
+  PromosManagerImplTest();
+  ~PromosManagerImplTest() override;
+
+  // Creates a mock promo without impression limits.
+  Promo* TestPromo();
+
+  // Creates a mock promo with impression limits.
+  Promo* TestPromoWithImpressionLimits();
+
+  // Creates mock impression limits.
+  NSArray<ImpressionLimit*>* TestImpressionLimits();
+
+ protected:
+  // Creates PromosManager with empty pref data.
+  void CreatePromosManager();
+
+  // Create pref registry for tests.
+  void CreatePrefs();
+
+  std::unique_ptr<TestingPrefServiceSimple> local_state_;
+  std::unique_ptr<PromosManagerImpl> promos_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+PromosManagerImplTest::PromosManagerImplTest() {
   scoped_feature_list_.InitWithFeatures({kFullscreenPromosManager}, {});
 }
-PromosManagerTest::~PromosManagerTest() {}
+PromosManagerImplTest::~PromosManagerImplTest() {}
 
-NSArray<ImpressionLimit*>* PromosManagerTest::TestImpressionLimits() {
+NSArray<ImpressionLimit*>* PromosManagerImplTest::TestImpressionLimits() {
   static NSArray<ImpressionLimit*>* limits;
   static dispatch_once_t onceToken;
 
@@ -55,23 +80,23 @@ NSArray<ImpressionLimit*>* PromosManagerTest::TestImpressionLimits() {
   return limits;
 }
 
-Promo* PromosManagerTest::TestPromo() {
+Promo* PromosManagerImplTest::TestPromo() {
   return [[Promo alloc] initWithIdentifier:promos_manager::Promo::Test];
 }
 
-Promo* PromosManagerTest::TestPromoWithImpressionLimits() {
+Promo* PromosManagerImplTest::TestPromoWithImpressionLimits() {
   return [[Promo alloc] initWithIdentifier:promos_manager::Promo::Test
                        andImpressionLimits:TestImpressionLimits()];
 }
 
-void PromosManagerTest::CreatePromosManager() {
+void PromosManagerImplTest::CreatePromosManager() {
   CreatePrefs();
-  promos_manager_ = std::make_unique<PromosManager>(local_state_.get());
+  promos_manager_ = std::make_unique<PromosManagerImpl>(local_state_.get());
   promos_manager_->Init();
 }
 
 // Create pref registry for tests.
-void PromosManagerTest::CreatePrefs() {
+void PromosManagerImplTest::CreatePrefs() {
   local_state_ = std::make_unique<TestingPrefServiceSimple>();
 
   local_state_->registry()->RegisterListPref(
@@ -82,9 +107,9 @@ void PromosManagerTest::CreatePrefs() {
       prefs::kIosPromosManagerSingleDisplayActivePromos);
 }
 
-// Tests the initializer correctly creates a PromosManager* with the
+// Tests the initializer correctly creates a PromosManagerImpl* with the
 // specified Pref service.
-TEST_F(PromosManagerTest, InitWithPrefService) {
+TEST_F(PromosManagerImplTest, InitWithPrefService) {
   CreatePromosManager();
 
   EXPECT_NE(local_state_->FindPreference(prefs::kIosPromosManagerImpressions),
@@ -102,45 +127,45 @@ TEST_F(PromosManagerTest, InitWithPrefService) {
 
 // Tests promos_manager::NameForPromo correctly returns the string
 // representation of a given promo.
-TEST_F(PromosManagerTest, ReturnsNameForTestPromo) {
+TEST_F(PromosManagerImplTest, ReturnsNameForTestPromo) {
   EXPECT_EQ(promos_manager::NameForPromo(promos_manager::Promo::Test),
             "promos_manager::Promo::Test");
 }
 
 // Tests promos_manager::PromoForName correctly returns the
 // promos_manager::Promo given its string name.
-TEST_F(PromosManagerTest, ReturnsTestPromoForName) {
+TEST_F(PromosManagerImplTest, ReturnsTestPromoForName) {
   EXPECT_EQ(promos_manager::PromoForName("promos_manager::Promo::Test"),
             promos_manager::Promo::Test);
 }
 
 // Tests promos_manager::PromoForName correctly returns absl::nullopt for bad
 // input.
-TEST_F(PromosManagerTest, ReturnsNulloptForBadName) {
+TEST_F(PromosManagerImplTest, ReturnsNulloptForBadName) {
   EXPECT_FALSE(promos_manager::PromoForName("promos_manager::Promo::FOOBAR")
                    .has_value());
 }
 
-// Tests PromosManagerTest::TestPromo() correctly creates one mock promo.
-TEST_F(PromosManagerTest, CreatesPromo) {
+// Tests PromosManagerImplTest::TestPromo() correctly creates one mock promo.
+TEST_F(PromosManagerImplTest, CreatesPromo) {
   Promo* promo = TestPromo();
 
   EXPECT_NE(promo, nil);
   EXPECT_EQ((int)promo.impressionLimits.count, 0);
 }
 
-// Tests PromosManagerTest::TestPromoWithImpressionLimits() correctly creates
-// one mock promo with mock impression limits.
-TEST_F(PromosManagerTest, CreatesPromoWithImpressionLimits) {
+// Tests PromosManagerImplTest::TestPromoWithImpressionLimits() correctly
+// creates one mock promo with mock impression limits.
+TEST_F(PromosManagerImplTest, CreatesPromoWithImpressionLimits) {
   Promo* promoWithImpressionLimits = TestPromoWithImpressionLimits();
 
   EXPECT_NE(promoWithImpressionLimits, nil);
   EXPECT_EQ((int)promoWithImpressionLimits.impressionLimits.count, 2);
 }
 
-// Tests PromosManagerTest::TestImpressionLimits() correctly creates two mock
-// impression limits.
-TEST_F(PromosManagerTest, CreatesImpressionLimits) {
+// Tests PromosManagerImplTest::TestImpressionLimits() correctly creates two
+// mock impression limits.
+TEST_F(PromosManagerImplTest, CreatesImpressionLimits) {
   NSArray<ImpressionLimit*>* impressionLimits = TestImpressionLimits();
 
   EXPECT_NE(impressionLimits, nil);
@@ -152,7 +177,7 @@ TEST_F(PromosManagerTest, CreatesImpressionLimits) {
 
 // Tests PromosManager::ImpressionCounts() correctly returns a counts list from
 // an impression counts map.
-TEST_F(PromosManagerTest, ReturnsImpressionCounts) {
+TEST_F(PromosManagerImplTest, ReturnsImpressionCounts) {
   std::map<promos_manager::Promo, int> promo_impression_counts = {
       {promos_manager::Promo::Test, 3},
       {promos_manager::Promo::AppStoreRating, 1},
@@ -167,7 +192,7 @@ TEST_F(PromosManagerTest, ReturnsImpressionCounts) {
 
 // Tests PromosManager::ImpressionCounts() correctly returns an empty counts
 // list for an empty impression counts map.
-TEST_F(PromosManagerTest, ReturnsEmptyImpressionCounts) {
+TEST_F(PromosManagerImplTest, ReturnsEmptyImpressionCounts) {
   std::map<promos_manager::Promo, int> promo_impression_counts;
   std::vector<int> counts;
 
@@ -176,7 +201,7 @@ TEST_F(PromosManagerTest, ReturnsEmptyImpressionCounts) {
 
 // Tests PromosManager::TotalImpressionCount() correctly adds the counts of
 // different promos from an impression counts map.
-TEST_F(PromosManagerTest, ReturnsTotalImpressionCount) {
+TEST_F(PromosManagerImplTest, ReturnsTotalImpressionCount) {
   std::map<promos_manager::Promo, int> promo_impression_counts = {
       {promos_manager::Promo::Test, 3},
       {promos_manager::Promo::AppStoreRating, 1},
@@ -190,7 +215,7 @@ TEST_F(PromosManagerTest, ReturnsTotalImpressionCount) {
 
 // Tests PromosManager::TotalImpressionCount() returns zero for an empty
 // impression counts map.
-TEST_F(PromosManagerTest, ReturnsZeroForTotalImpressionCount) {
+TEST_F(PromosManagerImplTest, ReturnsZeroForTotalImpressionCount) {
   std::map<promos_manager::Promo, int> promo_impression_counts;
 
   EXPECT_EQ(promos_manager_->TotalImpressionCount(promo_impression_counts), 0);
@@ -198,7 +223,7 @@ TEST_F(PromosManagerTest, ReturnsZeroForTotalImpressionCount) {
 
 // Tests PromosManager::MaxImpressionCount() correctly returns the max
 // impression count from an impression counts map.
-TEST_F(PromosManagerTest, ReturnsMaxImpressionCount) {
+TEST_F(PromosManagerImplTest, ReturnsMaxImpressionCount) {
   std::map<promos_manager::Promo, int> promo_impression_counts = {
       {promos_manager::Promo::Test, 3},
       {promos_manager::Promo::AppStoreRating, 1},
@@ -211,7 +236,7 @@ TEST_F(PromosManagerTest, ReturnsMaxImpressionCount) {
 
 // Tests PromosManager::MaxImpressionCount() correctly returns zero for an empty
 // impression counts map.
-TEST_F(PromosManagerTest, ReturnsZeroForMaxImpressionCount) {
+TEST_F(PromosManagerImplTest, ReturnsZeroForMaxImpressionCount) {
   std::map<promos_manager::Promo, int> promo_impression_counts;
 
   EXPECT_EQ(promos_manager_->MaxImpressionCount(promo_impression_counts), 0);
@@ -219,7 +244,7 @@ TEST_F(PromosManagerTest, ReturnsZeroForMaxImpressionCount) {
 
 // Tests PromosManager::AnyImpressionLimitTriggered() correctly detects an
 // impression limit is triggered.
-TEST_F(PromosManagerTest, DetectsSingleImpressionLimitTriggered) {
+TEST_F(PromosManagerImplTest, DetectsSingleImpressionLimitTriggered) {
   ImpressionLimit* thricePerWeek = [[ImpressionLimit alloc] initWithLimit:3
                                                                forNumDays:7];
   NSArray<ImpressionLimit*>* limits = @[
@@ -236,7 +261,7 @@ TEST_F(PromosManagerTest, DetectsSingleImpressionLimitTriggered) {
 
 // Tests PromosManager::AnyImpressionLimitTriggered() correctly detects an
 // impression limit is triggered over multiple impression limits.
-TEST_F(PromosManagerTest, DetectsOneOfMultipleImpressionLimitsTriggered) {
+TEST_F(PromosManagerImplTest, DetectsOneOfMultipleImpressionLimitsTriggered) {
   ImpressionLimit* onceEveryTwoDays = [[ImpressionLimit alloc] initWithLimit:1
                                                                   forNumDays:2];
   ImpressionLimit* thricePerWeek = [[ImpressionLimit alloc] initWithLimit:3
@@ -254,7 +279,7 @@ TEST_F(PromosManagerTest, DetectsOneOfMultipleImpressionLimitsTriggered) {
 
 // Tests PromosManager::AnyImpressionLimitTriggered() correctly detects no
 // impression limits are triggered.
-TEST_F(PromosManagerTest, DetectsNoImpressionLimitTriggered) {
+TEST_F(PromosManagerImplTest, DetectsNoImpressionLimitTriggered) {
   ImpressionLimit* onceEveryTwoDays = [[ImpressionLimit alloc] initWithLimit:1
                                                                   forNumDays:2];
   ImpressionLimit* thricePerWeek = [[ImpressionLimit alloc] initWithLimit:3
@@ -269,7 +294,7 @@ TEST_F(PromosManagerTest, DetectsNoImpressionLimitTriggered) {
 
 // Tests PromosManager::CanShowPromo() correctly allows a promo to be shown
 // because it hasn't met any impression limits.
-TEST_F(PromosManagerTest, DecidesCanShowPromo) {
+TEST_F(PromosManagerImplTest, DecidesCanShowPromo) {
   CreatePromosManager();
 
   const std::vector<promos_manager::Impression> zeroImpressions = {};
@@ -280,7 +305,7 @@ TEST_F(PromosManagerTest, DecidesCanShowPromo) {
 
 // Tests PromosManager::CanShowPromo() correctly denies promos from being shown
 // as they've triggered impression limits.
-TEST_F(PromosManagerTest, DecidesCannotShowPromo) {
+TEST_F(PromosManagerImplTest, DecidesCannotShowPromo) {
   CreatePromosManager();
 
   int today = TodaysDay();
@@ -316,7 +341,7 @@ TEST_F(PromosManagerTest, DecidesCannotShowPromo) {
 
 // Tests PromosManager::LeastRecentlyShown() correctly returns a list of active
 // promos sorted by least recently shown.
-TEST_F(PromosManagerTest, ReturnsLeastRecentlyShown) {
+TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShown) {
   const std::set<promos_manager::Promo> active_promos = {
       promos_manager::Promo::Test,
       promos_manager::Promo::CredentialProviderExtension,
@@ -350,7 +375,7 @@ TEST_F(PromosManagerTest, ReturnsLeastRecentlyShown) {
 // Tests PromosManager::LeastRecentlyShown() correctly returns a list of
 // active / promos sorted by least recently shown (with some impressions /
 // belonging to inactive promo campaigns).
-TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownWithSomeInactivePromos) {
+TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShownWithSomeInactivePromos) {
   const std::set<promos_manager::Promo> active_promos = {
       promos_manager::Promo::Test,
       promos_manager::Promo::AppStoreRating,
@@ -379,7 +404,7 @@ TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownWithSomeInactivePromos) {
 
 // Tests PromosManager::LeastRecentlyShown() gracefully returns a list of
 // active / promos when multiple promos are tied for least recently shown.
-TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownBreakingTies) {
+TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShownBreakingTies) {
   const std::set<promos_manager::Promo> active_promos = {
       promos_manager::Promo::Test,
       promos_manager::Promo::CredentialProviderExtension,
@@ -411,7 +436,7 @@ TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownBreakingTies) {
 // Tests PromosManager::LeastRecentlyShown() gracefully returns a single promo
 // in a list when the impression history contains only one active promo
 // campaign.
-TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownWithOnlyOnePromoActive) {
+TEST_F(PromosManagerImplTest, ReturnsLeastRecentlyShownWithOnlyOnePromoActive) {
   const std::set<promos_manager::Promo> active_promos = {
       promos_manager::Promo::Test,
   };
@@ -438,7 +463,7 @@ TEST_F(PromosManagerTest, ReturnsLeastRecentlyShownWithOnlyOnePromoActive) {
 
 // Tests PromosManager::LeastRecentlyShown() gracefully returns an empty array
 // when there are no active promo campaigns.
-TEST_F(PromosManagerTest,
+TEST_F(PromosManagerImplTest,
        ReturnsEmptyListWhenLeastRecentlyShownHasNoActivePromoCampaigns) {
   const std::set<promos_manager::Promo> active_promos;
 
@@ -462,7 +487,7 @@ TEST_F(PromosManagerTest,
 
 // Tests PromosManager::LeastRecentlyShown() gracefully returns an empty array
 // when no impression history and no active promos exist.
-TEST_F(PromosManagerTest,
+TEST_F(PromosManagerImplTest,
        ReturnsEmptyListWhenLeastRecentlyShownHasNoImpressionHistory) {
   const std::set<promos_manager::Promo> active_promos;
   const std::vector<promos_manager::Impression> impressions;
@@ -474,7 +499,7 @@ TEST_F(PromosManagerTest,
 
 // Tests PromosManager::LeastRecentlyShown() sorts unshown promos before shown
 // promos.
-TEST_F(PromosManagerTest,
+TEST_F(PromosManagerImplTest,
        SortsUnshownPromosBeforeShownPromosForLeastRecentlyShown) {
   const std::set<promos_manager::Promo> active_promos = {
       promos_manager::Promo::Test,
@@ -505,7 +530,7 @@ TEST_F(PromosManagerTest,
 // Tests PromosManager::ImpressionHistory() correctly ingests impression history
 // (base::Value::List) and returns corresponding
 // std::vector<promos_manager::Impression>.
-TEST_F(PromosManagerTest, ReturnsImpressionHistory) {
+TEST_F(PromosManagerImplTest, ReturnsImpressionHistory) {
   int today = TodaysDay();
 
   base::Value::Dict first_impression;
@@ -543,7 +568,7 @@ TEST_F(PromosManagerTest, ReturnsImpressionHistory) {
 // Tests PromosManager::ImpressionHistory() correctly ingests empty impression
 // history (base::Value::List) and returns empty
 // std::vector<promos_manager::Impression>.
-TEST_F(PromosManagerTest, ReturnsBlankImpressionHistoryForBlankPrefs) {
+TEST_F(PromosManagerImplTest, ReturnsBlankImpressionHistoryForBlankPrefs) {
   base::Value::List impressions;
 
   std::vector<promos_manager::Impression> result =
@@ -555,7 +580,8 @@ TEST_F(PromosManagerTest, ReturnsBlankImpressionHistoryForBlankPrefs) {
 // Tests PromosManager::ImpressionHistory() correctly ingests impression history
 // with malformed data (base::Value::List) and returns corresponding
 // std::vector<promos_manager::Impression> without malformed entries.
-TEST_F(PromosManagerTest, ReturnsImpressionHistoryBySkippingMalformedEntries) {
+TEST_F(PromosManagerImplTest,
+       ReturnsImpressionHistoryBySkippingMalformedEntries) {
   int today = TodaysDay();
 
   base::Value::Dict first_impression;
@@ -588,7 +614,7 @@ TEST_F(PromosManagerTest, ReturnsImpressionHistoryBySkippingMalformedEntries) {
 // Tests PromosManager::ActivePromos() correctly ingests active promos
 // (base::Value::List) and returns corresponding
 // std::vector<promos_manager::Promo>.
-TEST_F(PromosManagerTest, ReturnsActivePromos) {
+TEST_F(PromosManagerImplTest, ReturnsActivePromos) {
   base::Value::List promos;
   promos.Append("promos_manager::Promo::DefaultBrowser");
   promos.Append("promos_manager::Promo::AppStoreRating");
@@ -608,7 +634,7 @@ TEST_F(PromosManagerTest, ReturnsActivePromos) {
 
 // Tests PromosManager::ActivePromos() correctly ingests empty active promos
 // (base::Value::List) and returns empty std::set<promos_manager::Promo>.
-TEST_F(PromosManagerTest, ReturnsBlankActivePromosForBlankPrefs) {
+TEST_F(PromosManagerImplTest, ReturnsBlankActivePromosForBlankPrefs) {
   base::Value::List promos;
 
   std::set<promos_manager::Promo> result =
@@ -620,7 +646,7 @@ TEST_F(PromosManagerTest, ReturnsBlankActivePromosForBlankPrefs) {
 // Tests PromosManager::ActivePromos() correctly ingests active promos with
 // malformed data (base::Value::List) and returns corresponding
 // std::vector<promos_manager::Promo> with malformed entries pruned.
-TEST_F(PromosManagerTest, ReturnsActivePromosAndSkipsMalformedData) {
+TEST_F(PromosManagerImplTest, ReturnsActivePromosAndSkipsMalformedData) {
   base::Value::List promos;
   promos.Append("promos_manager::Promo::DefaultBrowser");
   promos.Append("promos_manager::Promo::AppStoreRating");
@@ -640,7 +666,7 @@ TEST_F(PromosManagerTest, ReturnsActivePromosAndSkipsMalformedData) {
 // Tests PromosManager::RegisterPromoForContinuousDisplay() correctly registers
 // a promo for continuous display by writing the promo's name to the pref
 // `kIosPromosManagerActivePromos`.
-TEST_F(PromosManagerTest, RegistersPromoForContinuousDisplay) {
+TEST_F(PromosManagerImplTest, RegistersPromoForContinuousDisplay) {
   CreatePromosManager();
   EXPECT_TRUE(
       local_state_->GetList(prefs::kIosPromosManagerActivePromos).empty());
@@ -674,7 +700,7 @@ TEST_F(PromosManagerTest, RegistersPromoForContinuousDisplay) {
 // a promo for continuous display by writing the promo's name to the pref
 // `kIosPromosManagerActivePromos` and immediately updates active_promos_ to
 // reflect the new state.
-TEST_F(PromosManagerTest,
+TEST_F(PromosManagerImplTest,
        RegistersPromoForContinuousDisplayAndImmediatelyUpdateVariables) {
   CreatePromosManager();
   EXPECT_TRUE(
@@ -697,7 +723,7 @@ TEST_F(PromosManagerTest,
 // Tests PromosManager::RegisterPromoForContinuousDisplay() correctly registers
 // a promo—for the very first time—for continuous display by writing the
 // promo's name to the pref `kIosPromosManagerActivePromos`.
-TEST_F(PromosManagerTest,
+TEST_F(PromosManagerImplTest,
        RegistersPromoForContinuousDisplayForEmptyActivePromos) {
   CreatePromosManager();
   EXPECT_TRUE(
@@ -717,7 +743,8 @@ TEST_F(PromosManagerTest,
 // an already-registered promo for continuous display by first erasing, and then
 // re-writing, the promo's name to the pref `kIosPromosManagerActivePromos`;
 // tests no duplicate entries are created.
-TEST_F(PromosManagerTest, RegistersAlreadyRegisteredPromoForContinuousDisplay) {
+TEST_F(PromosManagerImplTest,
+       RegistersAlreadyRegisteredPromoForContinuousDisplay) {
   CreatePromosManager();
   EXPECT_TRUE(
       local_state_->GetList(prefs::kIosPromosManagerActivePromos).empty());
@@ -749,7 +776,7 @@ TEST_F(PromosManagerTest, RegistersAlreadyRegisteredPromoForContinuousDisplay) {
 // first erasing, and then re-writing, the promo's name to the pref
 // `kIosPromosManagerActivePromos`; tests no duplicate entries are created.
 TEST_F(
-    PromosManagerTest,
+    PromosManagerImplTest,
     RegistersAlreadyRegisteredPromoForContinuousDisplayForEmptyActivePromos) {
   CreatePromosManager();
   EXPECT_TRUE(
@@ -773,7 +800,7 @@ TEST_F(
 // Tests PromosManager::RegisterPromoForSingleDisplay() correctly registers
 // a promo for single display by writing the promo's name to the pref
 // `kIosPromosManagerSingleDisplayActivePromos`.
-TEST_F(PromosManagerTest, RegistersPromoForSingleDisplay) {
+TEST_F(PromosManagerImplTest, RegistersPromoForSingleDisplay) {
   CreatePromosManager();
   EXPECT_TRUE(
       local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
@@ -815,7 +842,7 @@ TEST_F(PromosManagerTest, RegistersPromoForSingleDisplay) {
 // a promo for single display by writing the promo's name to the pref
 // `kIosPromosManagerSingleDisplayActivePromos` and immediately updates
 // single_display_active_promos_ to reflect the new state.
-TEST_F(PromosManagerTest,
+TEST_F(PromosManagerImplTest,
        RegistersPromoForSingleDisplayAndImmediatelyUpdateVariables) {
   CreatePromosManager();
   EXPECT_TRUE(
@@ -839,7 +866,8 @@ TEST_F(PromosManagerTest,
 // Tests PromosManager::RegisterPromoForSingleDisplay() correctly registers
 // a promo for single display—for the very first time—by writing the promo's
 // name to the pref `kIosPromosManagerSingleDisplayActivePromos`.
-TEST_F(PromosManagerTest, RegistersPromoForSingleDisplayForEmptyActivePromos) {
+TEST_F(PromosManagerImplTest,
+       RegistersPromoForSingleDisplayForEmptyActivePromos) {
   CreatePromosManager();
   EXPECT_TRUE(
       local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
@@ -863,7 +891,7 @@ TEST_F(PromosManagerTest, RegistersPromoForSingleDisplayForEmptyActivePromos) {
 // re-writing, the promo's name to the pref
 // `kIosPromosManagerSingleDisplayActivePromos`; tests no duplicate entries are
 // created.
-TEST_F(PromosManagerTest, RegistersAlreadyRegisteredPromoForSingleDisplay) {
+TEST_F(PromosManagerImplTest, RegistersAlreadyRegisteredPromoForSingleDisplay) {
   CreatePromosManager();
   EXPECT_TRUE(
       local_state_->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
@@ -902,7 +930,7 @@ TEST_F(PromosManagerTest, RegistersAlreadyRegisteredPromoForSingleDisplay) {
 // first erasing, and then re-writing, the promo's name to the pref
 // `kIosPromosManagerSingleDisplayActivePromos`; tests no duplicate entries are
 // created.
-TEST_F(PromosManagerTest,
+TEST_F(PromosManagerImplTest,
        RegistersAlreadyRegisteredPromoForSingleDisplayForEmptyActivePromos) {
   CreatePromosManager();
   EXPECT_TRUE(
@@ -929,7 +957,7 @@ TEST_F(PromosManagerTest,
 
 // Tests PromosManager::InitializePromoImpressionLimits() correctly registers
 // promo-specific impression limits.
-TEST_F(PromosManagerTest, RegistersPromoSpecificImpressionLimits) {
+TEST_F(PromosManagerImplTest, RegistersPromoSpecificImpressionLimits) {
   CreatePromosManager();
 
   ImpressionLimit* onceEveryTwoDays = [[ImpressionLimit alloc] initWithLimit:1
@@ -962,7 +990,7 @@ TEST_F(PromosManagerTest, RegistersPromoSpecificImpressionLimits) {
 }
 
 // Tests PromosManager::RecordImpression() correctly records a new impression.
-TEST_F(PromosManagerTest, RecordsImpression) {
+TEST_F(PromosManagerImplTest, RecordsImpression) {
   CreatePromosManager();
   promos_manager_->RecordImpression(promos_manager::Promo::DefaultBrowser);
 
@@ -995,7 +1023,7 @@ TEST_F(PromosManagerTest, RecordsImpression) {
 
 // Tests PromosManager::RecordImpression() correctly records a new impression
 // and immediately updates impression_history_ to reflect the new state
-TEST_F(PromosManagerTest, RecordsImpressionAndImmediatelyUpdateVariables) {
+TEST_F(PromosManagerImplTest, RecordsImpressionAndImmediatelyUpdateVariables) {
   CreatePromosManager();
 
   promos_manager_->RecordImpression(promos_manager::Promo::DefaultBrowser);
@@ -1008,7 +1036,7 @@ TEST_F(PromosManagerTest, RecordsImpressionAndImmediatelyUpdateVariables) {
 
 // Tests PromosManager::DeregisterPromo() correctly deregisters a currently
 // active promo campaign.
-TEST_F(PromosManagerTest, DeregistersActivePromo) {
+TEST_F(PromosManagerImplTest, DeregistersActivePromo) {
   CreatePromosManager();
 
   EXPECT_EQ(local_state_->GetList(prefs::kIosPromosManagerActivePromos).size(),
@@ -1052,7 +1080,8 @@ TEST_F(PromosManagerTest, DeregistersActivePromo) {
 // Tests PromosManager::DeregisterPromo() correctly deregisters a currently
 // active promo campaign and immediately updates active_promos_ &
 // single_display_active_promos_ to reflect the new state.
-TEST_F(PromosManagerTest, DeregistersActivePromoAndImmediatelyUpdateVariables) {
+TEST_F(PromosManagerImplTest,
+       DeregistersActivePromoAndImmediatelyUpdateVariables) {
   CreatePromosManager();
 
   EXPECT_EQ(local_state_->GetList(prefs::kIosPromosManagerActivePromos).size(),
@@ -1083,7 +1112,7 @@ TEST_F(PromosManagerTest, DeregistersActivePromoAndImmediatelyUpdateVariables) {
 
 // Tests PromosManager::DeregisterPromo() gracefully handles deregistration if
 // the promo doesn't exist in a given active promos list.
-TEST_F(PromosManagerTest, DeregistersNonExistentPromo) {
+TEST_F(PromosManagerImplTest, DeregistersNonExistentPromo) {
   CreatePromosManager();
 
   EXPECT_EQ(local_state_->GetList(prefs::kIosPromosManagerActivePromos).size(),
@@ -1116,7 +1145,7 @@ TEST_F(PromosManagerTest, DeregistersNonExistentPromo) {
 
 // Tests a given single-display promo is automatically deregistered after its
 // impression is recorded.
-TEST_F(PromosManagerTest,
+TEST_F(PromosManagerImplTest,
        DeregistersSingleDisplayPromoAfterRecordedImpression) {
   CreatePromosManager();
 

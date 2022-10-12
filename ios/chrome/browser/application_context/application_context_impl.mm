@@ -60,7 +60,7 @@
 #import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/features.h"
-#import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/promos_manager/promos_manager_impl.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
 #import "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
 #import "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
@@ -474,7 +474,7 @@ BrowserPolicyConnectorIOS* ApplicationContextImpl::GetBrowserPolicyConnector() {
 PromosManager* ApplicationContextImpl::GetPromosManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (IsFullscreenPromosManagerEnabled() && !promos_manager_) {
-    promos_manager_ = std::make_unique<PromosManager>(GetLocalState());
+    promos_manager_ = std::make_unique<PromosManagerImpl>(GetLocalState());
   }
   return promos_manager_.get();
 }

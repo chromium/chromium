@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/features.h"
-#import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/ui/promos_manager/bannered_promo_view_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator+internal.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_action_handler.h"
@@ -40,17 +39,11 @@ PromosManagerCoordinatorTest::PromosManagerCoordinatorTest() {
 PromosManagerCoordinatorTest::~PromosManagerCoordinatorTest() {}
 
 void PromosManagerCoordinatorTest::CreatePromosManagerCoordinator() {
-  CreatePromosManager();
+  CreatePrefs();
 
   coordinator_ = [[PromosManagerCoordinator alloc]
       initWithBaseViewController:view_controller_
                          browser:browser_.get()];
-}
-
-void PromosManagerCoordinatorTest::CreatePromosManager() {
-  CreatePrefs();
-  promos_manager_ = std::make_unique<PromosManager>(local_state_.get());
-  promos_manager_->Init();
 }
 
 // Create pref registry for tests.

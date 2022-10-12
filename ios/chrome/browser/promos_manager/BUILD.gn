@@ -22,6 +22,27 @@ source_set("promos_manager") {
   ]
 }
 
+source_set("internal") {
+  sources = [
+    "promos_manager_impl.h",
+    "promos_manager_impl.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [
+    ":constants",
+    ":promos_manager",
+    ":types",
+    "//base",
+    "//components/prefs",
+    "//third_party/abseil-cpp:absl",
+  ]
+  deps = [
+    ":features",
+    "//ios/chrome/browser/prefs:pref_names",
+  ]
+}
+
 source_set("types") {
   sources = [
     "impression_limit.h",
@@ -53,17 +74,35 @@ source_set("features") {
   deps = [ "//base" ]
 }
 
-source_set("unit_tests") {
+source_set("test_support") {
   testonly = true
   sources = [
-    "promos_manager_unittest.h",
-    "promos_manager_unittest.mm",
+    "mock_promos_manager.h",
+    "mock_promos_manager.mm",
   ]
+  frameworks = [ "Foundation.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [
+    ":constants",
+    ":promos_manager",
+    ":types",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "promos_manager_impl_unittest.mm" ]
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     ":constants",
     ":features",
+    ":internal",
     ":promos_manager",
     ":types",
     "//base",

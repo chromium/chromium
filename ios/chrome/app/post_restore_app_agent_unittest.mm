@@ -5,6 +5,7 @@
 #import "ios/chrome/app/post_restore_app_agent.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -12,6 +13,8 @@
 #import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/promos_manager/constants.h"
+#import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -20,6 +23,7 @@
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -28,6 +32,9 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using ::testing::_;
+using ::testing::AnyNumber;
 
 namespace {
 const char kFakePreRestoreAccountEmail[] = "person@example.org";
@@ -42,7 +49,7 @@ class PostRestoreAppAgentTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   PostRestoreAppAgent* appAgent_;
-  std::unique_ptr<PromosManager> promos_manager_;
+  std::unique_ptr<MockPromosManager> promos_manager_;
   AuthenticationService* auth_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mockAppState_;
@@ -56,9 +63,9 @@ class PostRestoreAppAgentTest : public PlatformTest {
     [appAgent_ setAppState:mockAppState_];
   }
 
-  PromosManager* CreatePromosManager() {
-    promos_manager_ = std::make_unique<PromosManager>(local_state_.Get());
-    promos_manager_->Init();
+  MockPromosManager* CreatePromosManager() {
+    promos_manager_ = std::make_unique<MockPromosManager>();
+
     return promos_manager_.get();
   }
 
@@ -72,19 +79,6 @@ class PostRestoreAppAgentTest : public PlatformTest {
     auth_service_ =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
     return auth_service_;
-  }
-
-  int CountSingleDisplayActivePromos() {
-    return local_state_.Get()
-        ->GetList(prefs::kIosPromosManagerSingleDisplayActivePromos)
-        .size();
-  }
-
-  void ExpectRegisteredPromo(promos_manager::Promo promo) {
-    const base::Value::List& promos = local_state_.Get()->GetList(
-        prefs::kIosPromosManagerSingleDisplayActivePromos);
-    EXPECT_EQ(promos.size(), unsigned(1));
-    EXPECT_EQ(promos[0], promos_manager::NameForPromo(promo));
   }
 
   void MockAppStateChange(InitStage initStage) {
@@ -115,36 +109,43 @@ class PostRestoreAppAgentTest : public PlatformTest {
 };
 
 TEST_F(PostRestoreAppAgentTest, maybeRegisterPromo) {
-  // Ensure that no promos are registered initially.
-  EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
+  EXPECT_CALL(*promos_manager_.get(), RegisterPromoForSingleDisplay(_))
+      .Times(0);
+  EXPECT_CALL(*promos_manager_.get(), RegisterPromoForContinuousDisplay(_))
+      .Times(0);
 
   // Scenarios which should not register a promo.
   ClearPreRestoreIdentity(local_state_.Get());
   MockAppStateChange(InitStageFinal);
-  EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
 
   SetFakePreRestoreAccountInfo();
   MockAppStateChange(InitStageFinal);
-  EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
 
   ClearPreRestoreIdentity(local_state_.Get());
   EnableFeatureVariationFullscreen();
   MockAppStateChange(InitStageFinal);
-  EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
 }
 
 TEST_F(PostRestoreAppAgentTest, registerPromoFullscreen) {
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostRestoreSignInFullscreen))
+      .Times(1);
+
   EnableFeatureVariationFullscreen();
   SetFakePreRestoreAccountInfo();
   MockAppStateChange(InitStageFinal);
-  ExpectRegisteredPromo(promos_manager::Promo::PostRestoreSignInFullscreen);
 }
 
 TEST_F(PostRestoreAppAgentTest, registerPromoAlert) {
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostRestoreSignInAlert))
+      .Times(1);
+
   EnableFeatureVariationAlert();
   SetFakePreRestoreAccountInfo();
   MockAppStateChange(InitStageFinal);
-  ExpectRegisteredPromo(promos_manager::Promo::PostRestoreSignInAlert);
 }
 
 TEST_F(PostRestoreAppAgentTest, registerPromoDisablesReauthPrompt) {
@@ -157,49 +158,50 @@ TEST_F(PostRestoreAppAgentTest, registerPromoDisablesReauthPrompt) {
 }
 
 TEST_F(PostRestoreAppAgentTest, deregisterPromoFullscreen) {
-  promos_manager_->RegisterPromoForSingleDisplay(
-      promos_manager::Promo::PostRestoreSignInFullscreen);
-  EXPECT_EQ(CountSingleDisplayActivePromos(), 1);
+  EXPECT_CALL(*promos_manager_.get(), DeregisterPromo(_)).Times(1);
+  EXPECT_CALL(
+      *promos_manager_.get(),
+      DeregisterPromo(promos_manager::Promo::PostRestoreSignInFullscreen))
+      .Times(1);
 
   EnableFeatureVariationAlert();
+  SetFakePreRestoreAccountInfo();
   ClearPreRestoreIdentity(local_state_.Get());
   MockAppStateChange(InitStageFinal);
-  EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
 }
 
 TEST_F(PostRestoreAppAgentTest, deregisterPromoAlert) {
-  promos_manager_->RegisterPromoForSingleDisplay(
-      promos_manager::Promo::PostRestoreSignInAlert);
-  EXPECT_EQ(CountSingleDisplayActivePromos(), 1);
+  EXPECT_CALL(*promos_manager_.get(), DeregisterPromo(_)).Times(1);
+  EXPECT_CALL(*promos_manager_.get(),
+              DeregisterPromo(promos_manager::Promo::PostRestoreSignInAlert))
+      .Times(1);
 
-  EnableFeatureVariationAlert();
+  EnableFeatureVariationFullscreen();
+  SetFakePreRestoreAccountInfo();
   ClearPreRestoreIdentity(local_state_.Get());
   MockAppStateChange(InitStageFinal);
-  EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
 }
 
 TEST_F(PostRestoreAppAgentTest, featureVariationSwitchToFullscreen) {
-  // Simulate that the Alert promo was previously registered.
-  promos_manager_->RegisterPromoForSingleDisplay(
-      promos_manager::Promo::PostRestoreSignInAlert);
-  EXPECT_EQ(CountSingleDisplayActivePromos(), 1);
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostRestoreSignInFullscreen))
+      .Times(1);
 
   EnableFeatureVariationFullscreen();
   SetFakePreRestoreAccountInfo();
 
   MockAppStateChange(InitStageFinal);
-  ExpectRegisteredPromo(promos_manager::Promo::PostRestoreSignInFullscreen);
 }
 
 TEST_F(PostRestoreAppAgentTest, featureVariationSwitchToAlert) {
-  // Simulate that the Fullscreen promo was previously registered.
-  promos_manager_->RegisterPromoForSingleDisplay(
-      promos_manager::Promo::PostRestoreSignInFullscreen);
-  EXPECT_EQ(CountSingleDisplayActivePromos(), 1);
+  EXPECT_CALL(*promos_manager_.get(),
+              RegisterPromoForSingleDisplay(
+                  promos_manager::Promo::PostRestoreSignInAlert))
+      .Times(1);
 
   EnableFeatureVariationAlert();
   SetFakePreRestoreAccountInfo();
 
   MockAppStateChange(InitStageFinal);
-  ExpectRegisteredPromo(promos_manager::Promo::PostRestoreSignInAlert);
 }

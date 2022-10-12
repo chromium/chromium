@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
-#import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_coordinator.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/platform_test.h"
@@ -27,14 +26,10 @@ class PromosManagerCoordinatorTest : public PlatformTest {
   // Creates PromosManagerCoordinator.
   void CreatePromosManagerCoordinator();
 
-  // Creates PromosManager with empty pref data.
-  void CreatePromosManager();
-
   // Create pref registry for tests.
   void CreatePrefs();
 
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
-  std::unique_ptr<PromosManager> promos_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
   PromosManagerCoordinator* coordinator_;
   base::test::TaskEnvironment task_environment_;

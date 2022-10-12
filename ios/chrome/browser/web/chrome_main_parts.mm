@@ -402,7 +402,9 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
   // Ensure the Fullscren Promos Manager is initialized.
   PromosManager* promos_manager = application_context_->GetPromosManager();
-  promos_manager->Init();
+  if (promos_manager) {
+    promos_manager->Init();
+  }
 }
 
 void IOSChromeMainParts::PostMainMessageLoopRun() {
