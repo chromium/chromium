@@ -130,7 +130,8 @@ class EGLImageBacking::GLTextureEGLImageRepresentation
 
   void EndAccess() override { shared_.EndAccess(); }
 
-  gles2::Texture* GetTexture() override {
+  gles2::Texture* GetTexture(int plane_index) override {
+    DCHECK_EQ(plane_index, 0);
     return shared_.texture_holder()->texture();
   }
 
@@ -162,8 +163,9 @@ class EGLImageBacking::GLTexturePassthroughEGLImageRepresentation
 
   void EndAccess() override { shared_.EndAccess(); }
 
-  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
-      override {
+  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
+      int plane_index) override {
+    DCHECK_EQ(plane_index, 0);
     // TODO(https://crbug.com/1172769): Remove this CHECK.
     CHECK(shared_.texture_holder()->texture_passthrough());
     return shared_.texture_holder()->texture_passthrough();

@@ -37,7 +37,7 @@ class GLTextureGLCommonRepresentation : public GLTextureImageRepresentation {
 
  private:
   // GLTextureImageRepresentation:
-  gles2::Texture* GetTexture() override;
+  gles2::Texture* GetTexture(int plane_index) override;
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 
@@ -65,8 +65,8 @@ class GLTexturePassthroughGLCommonRepresentation
 
  private:
   // GLTexturePassthroughImageRepresentation:
-  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
-      override;
+  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
+      int plane_index) override;
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 

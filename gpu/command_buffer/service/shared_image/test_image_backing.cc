@@ -24,7 +24,10 @@ class TestGLTextureImageRepresentation : public GLTextureImageRepresentation {
       : GLTextureImageRepresentation(manager, backing, tracker),
         texture_(texture) {}
 
-  gles2::Texture* GetTexture() override { return texture_; }
+  gles2::Texture* GetTexture(int plane_index) override {
+    DCHECK_EQ(plane_index, 0);
+    return texture_;
+  }
   bool BeginAccess(GLenum mode) override {
     return static_cast<TestImageBacking*>(backing())->can_access();
   }
@@ -44,8 +47,9 @@ class TestGLTexturePassthroughImageRepresentation
       : GLTexturePassthroughImageRepresentation(manager, backing, tracker),
         texture_(std::move(texture)) {}
 
-  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
-      override {
+  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
+      int plane_index) override {
+    DCHECK_EQ(plane_index, 0);
     return texture_;
   }
   bool BeginAccess(GLenum mode) override {

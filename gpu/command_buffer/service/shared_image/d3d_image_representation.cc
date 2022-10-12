@@ -22,7 +22,9 @@ GLTexturePassthroughD3DImageRepresentation::
       texture_(std::move(texture)) {}
 
 const scoped_refptr<gles2::TexturePassthrough>&
-GLTexturePassthroughD3DImageRepresentation::GetTexturePassthrough() {
+GLTexturePassthroughD3DImageRepresentation::GetTexturePassthrough(
+    int plane_index) {
+  DCHECK_EQ(plane_index, 0);
   return texture_;
 }
 
@@ -31,7 +33,8 @@ GLTexturePassthroughD3DImageRepresentation::
 
 bool GLTexturePassthroughD3DImageRepresentation::BeginAccess(GLenum mode) {
   // Bind the GLImage if necessary.
-  auto texture = GetTexturePassthrough();
+  auto texture =
+      GLTexturePassthroughImageRepresentation::GetTexturePassthrough();
   if (texture->is_bind_pending()) {
     GLenum target = texture->target();
     gl::GLImage* image = texture->GetLevelImage(target, 0);

@@ -34,8 +34,8 @@ class GLTexturePassthroughD3DImageRepresentation
       scoped_refptr<gles2::TexturePassthrough> texture);
   ~GLTexturePassthroughD3DImageRepresentation() override;
 
-  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
-      override;
+  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
+      int plane_index) override;
 
  private:
   bool BeginAccess(GLenum mode) override;

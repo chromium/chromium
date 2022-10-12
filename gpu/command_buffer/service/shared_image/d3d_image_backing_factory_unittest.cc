@@ -1566,12 +1566,12 @@ void D3DImageBackingFactoryTest::RunVideoTest(bool use_shared_handle,
 
     api->glActiveTextureFn(GL_TEXTURE0);
     api->glBindTextureFn(GL_TEXTURE_EXTERNAL_OES,
-                         y_texture->GetTextureBase()->service_id());
+                         y_texture->GetTexturePassthrough()->service_id());
     ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
 
     api->glActiveTextureFn(GL_TEXTURE1);
     api->glBindTextureFn(GL_TEXTURE_EXTERNAL_OES,
-                         uv_texture->GetTextureBase()->service_id());
+                         uv_texture->GetTexturePassthrough()->service_id());
     ASSERT_EQ(api->glGetErrorFn(), static_cast<GLenum>(GL_NO_ERROR));
 
     api->glUseProgramFn(program);
@@ -1770,7 +1770,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
       SharedImageRepresentation::AllowUnclearedAccess::kNo);
   ASSERT_NE(y_access, nullptr);
 
-  GLuint y_texture_id = y_texture->GetTextureBase()->service_id();
+  GLuint y_texture_id = y_texture->GetTexturePassthrough()->service_id();
   api->glBindTextureFn(GL_TEXTURE_2D, y_texture_id);
   api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                    GL_TEXTURE_2D, y_texture_id, 0);
@@ -1805,7 +1805,7 @@ TEST_F(D3DImageBackingFactoryTest, CreateFromSharedMemory) {
       SharedImageRepresentation::AllowUnclearedAccess::kNo);
   ASSERT_NE(uv_access, nullptr);
 
-  GLuint uv_texture_id = uv_texture->GetTextureBase()->service_id();
+  GLuint uv_texture_id = uv_texture->GetTexturePassthrough()->service_id();
   api->glBindTextureFn(GL_TEXTURE_2D, uv_texture_id);
   api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                    GL_TEXTURE_2D, uv_texture_id, 0);

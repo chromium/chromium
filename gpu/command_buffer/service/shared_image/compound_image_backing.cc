@@ -93,15 +93,17 @@ class WrappedGLTextureCompoundImageRepresentation
 
   void EndAccess() final { wrapped_->EndAccess(); }
 
-  gpu::TextureBase* GetTextureBase() final {
-    return wrapped_->GetTextureBase();
+  gpu::TextureBase* GetTextureBase(int plane_index) final {
+    return wrapped_->GetTextureBase(plane_index);
   }
 
   bool SupportsMultipleConcurrentReadAccess() final {
     return wrapped_->SupportsMultipleConcurrentReadAccess();
   }
 
-  gles2::Texture* GetTexture() final { return wrapped_->GetTexture(); }
+  gles2::Texture* GetTexture(int plane_index) final {
+    return wrapped_->GetTexture(plane_index);
+  }
 
  private:
   std::unique_ptr<GLTextureImageRepresentation> wrapped_;
@@ -134,17 +136,17 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
   }
   void EndAccess() final { wrapped_->EndAccess(); }
 
-  gpu::TextureBase* GetTextureBase() final {
-    return wrapped_->GetTextureBase();
+  gpu::TextureBase* GetTextureBase(int plane_index) final {
+    return wrapped_->GetTextureBase(plane_index);
   }
 
   bool SupportsMultipleConcurrentReadAccess() final {
     return wrapped_->SupportsMultipleConcurrentReadAccess();
   }
 
-  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
-      final {
-    return wrapped_->GetTexturePassthrough();
+  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
+      int plane_index) final {
+    return wrapped_->GetTexturePassthrough(plane_index);
   }
 
  private:

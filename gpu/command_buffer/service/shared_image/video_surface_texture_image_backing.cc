@@ -117,7 +117,9 @@ class VideoSurfaceTextureImageBacking::GLTextureVideoImageRepresentation
   GLTextureVideoImageRepresentation& operator=(
       const GLTextureVideoImageRepresentation&) = delete;
 
-  gles2::Texture* GetTexture() override {
+  gles2::Texture* GetTexture(int plane_index) override {
+    DCHECK_EQ(plane_index, 0);
+
     auto* texture = gles2::Texture::CheckedCast(texture_->GetTextureBase());
     DCHECK(texture);
 
@@ -134,8 +136,8 @@ class VideoSurfaceTextureImageBacking::GLTextureVideoImageRepresentation
 
     // If we passed a GLImage to BindStreamTextureImage(), mark it as bound.
     if (!base::FeatureList::IsEnabled(kPassNullForGLImageWhenBindingTexture)) {
-      GetTexture()->SetLevelImageState(GetTexture()->target(), 0,
-                                       gles2::Texture::BOUND);
+      gles2::Texture* texture = GLTextureImageRepresentation::GetTexture();
+      texture->SetLevelImageState(texture->target(), 0, gles2::Texture::BOUND);
     }
 
     return true;
@@ -143,8 +145,9 @@ class VideoSurfaceTextureImageBacking::GLTextureVideoImageRepresentation
 
   void EndAccess() override {
     if (!base::FeatureList::IsEnabled(kPassNullForGLImageWhenBindingTexture)) {
-      GetTexture()->SetLevelImageState(GetTexture()->target(), 0,
-                                       gles2::Texture::UNBOUND);
+      gles2::Texture* texture = GLTextureImageRepresentation::GetTexture();
+      texture->SetLevelImageState(texture->target(), 0,
+                                  gles2::Texture::UNBOUND);
     }
   }
 
@@ -176,8 +179,9 @@ class VideoSurfaceTextureImageBacking::
   GLTexturePassthroughVideoImageRepresentation& operator=(
       const GLTexturePassthroughVideoImageRepresentation&) = delete;
 
-  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
-      override {
+  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
+      int plane_index) override {
+    DCHECK_EQ(plane_index, 0);
     return passthrough_texture_;
   }
 

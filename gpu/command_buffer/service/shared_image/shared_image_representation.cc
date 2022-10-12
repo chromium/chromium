@@ -66,6 +66,11 @@ GLTextureImageRepresentationBase::BeginScopedAccess(
       base::PassKey<GLTextureImageRepresentationBase>(), this);
 }
 
+gpu::TextureBase* GLTextureImageRepresentationBase::GetTextureBase() {
+  DCHECK(format().is_single_plane());
+  return GetTextureBase(0);
+}
+
 bool GLTextureImageRepresentationBase::BeginAccess(GLenum mode) {
   return true;
 }
@@ -74,8 +79,14 @@ bool GLTextureImageRepresentationBase::SupportsMultipleConcurrentReadAccess() {
   return false;
 }
 
-gpu::TextureBase* GLTextureImageRepresentation::GetTextureBase() {
-  return GetTexture();
+gpu::TextureBase* GLTextureImageRepresentation::GetTextureBase(
+    int plane_index) {
+  return GetTexture(plane_index);
+}
+
+gles2::Texture* GLTextureImageRepresentation::GetTexture() {
+  DCHECK(format().is_single_plane());
+  return GetTexture(0);
 }
 
 void GLTextureImageRepresentation::UpdateClearedStateOnEndAccess() {
@@ -96,8 +107,15 @@ void GLTextureImageRepresentation::UpdateClearedStateOnBeginAccess() {
     texture->SetLevelClearedRect(texture->target(), 0, cleared_rect);
 }
 
-gpu::TextureBase* GLTexturePassthroughImageRepresentation::GetTextureBase() {
-  return GetTexturePassthrough().get();
+gpu::TextureBase* GLTexturePassthroughImageRepresentation::GetTextureBase(
+    int plane_index) {
+  return GetTexturePassthrough(plane_index).get();
+}
+
+const scoped_refptr<gles2::TexturePassthrough>&
+GLTexturePassthroughImageRepresentation::GetTexturePassthrough() {
+  DCHECK(format().is_single_plane());
+  return GetTexturePassthrough(0);
 }
 
 bool SkiaImageRepresentation::SupportsMultipleConcurrentReadAccess() {

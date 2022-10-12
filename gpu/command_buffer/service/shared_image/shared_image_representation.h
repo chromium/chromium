@@ -192,7 +192,11 @@ class GPU_GLES2_EXPORT GLTextureImageRepresentationBase
       GLenum mode,
       AllowUnclearedAccess allow_uncleared);
 
-  virtual gpu::TextureBase* GetTextureBase() = 0;
+  // Gets the texture associated with the `plane_index` for SharedImageFormat.
+  virtual gpu::TextureBase* GetTextureBase(int plane_index) = 0;
+  // Calls GetTextureBase with `plane_index` = 0 for single planar formats eg.
+  // RGB.
+  gpu::TextureBase* GetTextureBase();
 
  protected:
   friend class SkiaGLImageRepresentation;
@@ -221,9 +225,12 @@ class GPU_GLES2_EXPORT GLTextureImageRepresentation
       : GLTextureImageRepresentationBase(manager, backing, tracker) {}
 
   // TODO(ericrk): Move this to the ScopedAccess object. crbug.com/1003686
-  virtual gles2::Texture* GetTexture() = 0;
+  // Gets the texture associated with the `plane_index` for SharedImageFormat.
+  virtual gles2::Texture* GetTexture(int plane_index) = 0;
+  // Calls GetTexture with `plane_index` = 0 for single planar formats eg. RGB.
+  gles2::Texture* GetTexture();
 
-  gpu::TextureBase* GetTextureBase() override;
+  gpu::TextureBase* GetTextureBase(int plane_index) override;
 
  protected:
   friend class WrappedGLTextureCompoundImageRepresentation;
@@ -241,10 +248,15 @@ class GPU_GLES2_EXPORT GLTexturePassthroughImageRepresentation
       : GLTextureImageRepresentationBase(manager, backing, tracker) {}
 
   // TODO(ericrk): Move this to the ScopedAccess object. crbug.com/1003686
-  virtual const scoped_refptr<gles2::TexturePassthrough>&
-  GetTexturePassthrough() = 0;
+  // Gets the passthrough texture associated with the `plane_index` for
+  // SharedImageFormat.
+  virtual const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
+      int plane_index) = 0;
+  // Calls GetTexturePassthrough with `plane_index` = 0 for single planar
+  // formats eg. RGB.
+  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough();
 
-  gpu::TextureBase* GetTextureBase() override;
+  gpu::TextureBase* GetTextureBase(int plane_index) override;
 
  private:
   friend class WrappedGLTexturePassthroughCompoundImageRepresentation;

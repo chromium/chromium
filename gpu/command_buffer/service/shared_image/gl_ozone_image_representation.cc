@@ -193,7 +193,8 @@ GLTextureOzoneImageRepresentation::~GLTextureOzoneImageRepresentation() {
     texture_holder_->MarkContextLost();
 }
 
-gles2::Texture* GLTextureOzoneImageRepresentation::GetTexture() {
+gles2::Texture* GLTextureOzoneImageRepresentation::GetTexture(int plane_index) {
+  DCHECK_EQ(plane_index, 0);
   return texture_holder_->texture();
 }
 
@@ -276,7 +277,9 @@ GLTexturePassthroughOzoneImageRepresentation::
 }
 
 const scoped_refptr<gles2::TexturePassthrough>&
-GLTexturePassthroughOzoneImageRepresentation::GetTexturePassthrough() {
+GLTexturePassthroughOzoneImageRepresentation::GetTexturePassthrough(
+    int plane_index) {
+  DCHECK_EQ(plane_index, 0);
   return texture_holder_->texture_passthrough();
 }
 

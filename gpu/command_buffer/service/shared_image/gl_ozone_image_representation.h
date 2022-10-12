@@ -81,7 +81,7 @@ class GLTextureOzoneImageRepresentation : public GLTextureImageRepresentation {
   ~GLTextureOzoneImageRepresentation() override;
 
   // GLTextureImageRepresentation implementation.
-  gles2::Texture* GetTexture() override;
+  gles2::Texture* GetTexture(int plane_index) override;
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 
@@ -120,8 +120,8 @@ class GLTexturePassthroughOzoneImageRepresentation
   ~GLTexturePassthroughOzoneImageRepresentation() override;
 
   // GLTexturePassthroughImageRepresentation implementation.
-  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
-      override;
+  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
+      int plane_index) override;
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;
 

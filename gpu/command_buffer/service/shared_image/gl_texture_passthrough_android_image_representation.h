@@ -26,8 +26,8 @@ class GLTexturePassthroughAndroidImageRepresentation
   GLTexturePassthroughAndroidImageRepresentation& operator=(
       const GLTexturePassthroughAndroidImageRepresentation&) = delete;
 
-  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough()
-      override;
+  const scoped_refptr<gles2::TexturePassthrough>& GetTexturePassthrough(
+      int plane_index) override;
 
   bool BeginAccess(GLenum mode) override;
   void EndAccess() override;

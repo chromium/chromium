@@ -57,7 +57,8 @@ GLTextureGLCommonRepresentation::~GLTextureGLCommonRepresentation() {
     client_->GLTextureImageRepresentationRelease(has_context());
 }
 
-gles2::Texture* GLTextureGLCommonRepresentation::GetTexture() {
+gles2::Texture* GLTextureGLCommonRepresentation::GetTexture(int plane_index) {
+  DCHECK_EQ(plane_index, 0);
   return texture_;
 }
 
@@ -104,7 +105,9 @@ GLTexturePassthroughGLCommonRepresentation::
 }
 
 const scoped_refptr<gles2::TexturePassthrough>&
-GLTexturePassthroughGLCommonRepresentation::GetTexturePassthrough() {
+GLTexturePassthroughGLCommonRepresentation::GetTexturePassthrough(
+    int plane_index) {
+  DCHECK_EQ(plane_index, 0);
   return texture_passthrough_;
 }
 

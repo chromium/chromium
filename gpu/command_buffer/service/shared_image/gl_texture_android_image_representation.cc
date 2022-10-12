@@ -24,7 +24,9 @@ GLTextureAndroidImageRepresentation::~GLTextureAndroidImageRepresentation() {
     texture_->RemoveLightweightRef(has_context());
 }
 
-gles2::Texture* GLTextureAndroidImageRepresentation::GetTexture() {
+gles2::Texture* GLTextureAndroidImageRepresentation::GetTexture(
+    int plane_index) {
+  DCHECK_EQ(plane_index, 0);
   return texture_;
 }
 

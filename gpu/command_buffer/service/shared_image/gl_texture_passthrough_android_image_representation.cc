@@ -29,7 +29,9 @@ GLTexturePassthroughAndroidImageRepresentation::
 }
 
 const scoped_refptr<gles2::TexturePassthrough>&
-GLTexturePassthroughAndroidImageRepresentation::GetTexturePassthrough() {
+GLTexturePassthroughAndroidImageRepresentation::GetTexturePassthrough(
+    int plane_index) {
+  DCHECK_EQ(plane_index, 0);
   return texture_;
 }
 
