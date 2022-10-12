@@ -317,9 +317,6 @@ TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
           stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
 
   // Turn off password sync.
-  auto model_type_set = sync_service_.GetActiveDataTypes();
-  model_type_set.Remove(syncer::PASSWORDS);
-  sync_service_.SetActiveDataTypes(model_type_set);
   syncer::UserSelectableTypeSet user_selectable_type_set =
       sync_service_.GetUserSettings()->GetSelectedTypes();
   user_selectable_type_set.Remove(syncer::UserSelectableType::kPasswords);

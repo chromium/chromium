@@ -1187,7 +1187,10 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript) {
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Enable password sync.
-  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
 
   // Add two forms, but only one already has a known issue.
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
@@ -1259,7 +1262,10 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_WeakCredentials) {
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Enable password sync.
-  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
 
   // Add two forms: One that is leaked and weak and one that is only weak.
   PasswordForm form1 =
@@ -1309,7 +1315,9 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_SyncDisabled) {
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Disable password sync.
-  sync_service().SetActiveDataTypes(syncer::ModelTypeSet());
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
 
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form1, InsecureType::kLeaked);
@@ -1336,7 +1344,10 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_FeatureDisabled) {
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Enable password sync.
-  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
 
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form1, InsecureType::kLeaked);
@@ -1362,7 +1373,10 @@ TEST_F(PasswordCheckDelegateTest, HasStartableScript_CacheFresh) {
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Enable password sync.
-  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
 
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form1, InsecureType::kLeaked);
@@ -1394,7 +1408,10 @@ TEST_F(PasswordCheckDelegateTest,
 
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Enable password sync.
-  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
 
   PasswordForm form1 = MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   AddIssueToForm(&form1, InsecureType::kLeaked);

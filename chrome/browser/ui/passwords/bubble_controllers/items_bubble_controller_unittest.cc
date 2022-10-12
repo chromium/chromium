@@ -218,12 +218,17 @@ TEST_F(ItemsBubbleControllerTest, ShouldReturnPasswordSyncState) {
   sync_service()->SetDisableReasons({});
   sync_service()->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  sync_service()->SetActiveDataTypes({});
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
 
   EXPECT_EQ(controller()->GetPasswordSyncState(),
             password_manager::SyncState::kNotSyncing);
 
-  sync_service()->SetActiveDataTypes({syncer::ModelTypeSet(syncer::PASSWORDS)});
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
   EXPECT_EQ(
       controller()->GetPasswordSyncState(),
       password_manager::SyncState::kAccountPasswordsActiveNormalEncryption);

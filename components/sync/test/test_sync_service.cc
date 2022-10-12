@@ -33,9 +33,7 @@ SyncCycleSnapshot MakeDefaultCycleSnapshot() {
 }  // namespace
 
 TestSyncService::TestSyncService()
-    : user_settings_(this),
-      active_data_types_(ModelTypeSet::All()),
-      last_cycle_snapshot_(MakeDefaultCycleSnapshot()) {}
+    : user_settings_(this), last_cycle_snapshot_(MakeDefaultCycleSnapshot()) {}
 
 TestSyncService::~TestSyncService() = default;
 
@@ -98,8 +96,8 @@ void TestSyncService::SetFirstSetupComplete(bool first_setup_complete) {
     user_settings_.ClearFirstSetupComplete();
 }
 
-void TestSyncService::SetActiveDataTypes(const ModelTypeSet& types) {
-  active_data_types_ = types;
+void TestSyncService::SetFailedDataTypes(const ModelTypeSet& types) {
+  failed_data_types_ = types;
 }
 
 void TestSyncService::SetLastCycleSnapshot(const SyncCycleSnapshot& snapshot) {
@@ -214,7 +212,7 @@ ModelTypeSet TestSyncService::GetActiveDataTypes() const {
   if (transport_state_ != TransportState::ACTIVE) {
     return ModelTypeSet();
   }
-  return active_data_types_;
+  return Difference(GetPreferredDataTypes(), failed_data_types_);
 }
 
 void TestSyncService::StopAndClear() {}

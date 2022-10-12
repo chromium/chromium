@@ -405,7 +405,10 @@ TEST_F(ChromePasswordManagerClientTest, LogEntryNotifyRenderer) {
 }
 
 TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
-  sync_service_->SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service_->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
   sync_service_->SetIsUsingExplicitPassphrase(false);
 
   ChromePasswordManagerClient* client = GetClient();
@@ -432,7 +435,10 @@ TEST_F(ChromePasswordManagerClientTest, GetPasswordSyncState) {
             client->GetPasswordSyncState());
 
   // Report correctly if we aren't syncing passwords.
-  sync_service_->SetActiveDataTypes(syncer::ModelTypeSet(syncer::BOOKMARKS));
+  sync_service_->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kBookmarks));
 
   EXPECT_EQ(password_manager::SyncState::kNotSyncing,
             client->GetPasswordSyncState());
@@ -1062,7 +1068,9 @@ void ChromePasswordManagerClientAndroidTest::SetUpGenerationPreconditions(
 
   // Password sync needs to be enabled for generation
   sync_service()->SetIsUsingExplicitPassphrase(false);
-  sync_service()->SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kPasswords});
 
   // Make sure the main frame is focused, so that a focus event on the password
   // field later is considered valid.

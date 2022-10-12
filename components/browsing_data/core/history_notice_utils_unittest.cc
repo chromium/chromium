@@ -73,20 +73,26 @@ TEST_F(HistoryNoticeUtilsTest, SyncingWithWrongParameters) {
   history_service()->SetOtherFormsOfBrowsingHistoryPresent(true);
 
   // ...the response is false if there's custom passphrase...
-  sync_service()->SetActiveDataTypes(syncer::ModelTypeSet::All());
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true,
+      /*types=*/syncer::UserSelectableTypeSet::All());
   sync_service()->SetIsUsingExplicitPassphrase(true);
   ExpectShouldPopupDialogAboutOtherFormsOfBrowsingHistoryWithResult(false);
 
   // ...or even if there's no custom passphrase, but we're not syncing history.
-  syncer::ModelTypeSet only_passwords(syncer::PASSWORDS);
-  sync_service()->SetActiveDataTypes(only_passwords);
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
   sync_service()->SetIsUsingExplicitPassphrase(false);
   ExpectShouldPopupDialogAboutOtherFormsOfBrowsingHistoryWithResult(false);
 }
 
 TEST_F(HistoryNoticeUtilsTest, WebHistoryStates) {
   // If history Sync is active...
-  sync_service()->SetActiveDataTypes(syncer::ModelTypeSet::All());
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true,
+      /*types=*/syncer::UserSelectableTypeSet::All());
 
   // ...the result is true if both web history queries return true...
   history_service()->SetWebAndAppActivityEnabled(true);

@@ -18,12 +18,10 @@ namespace {
 
 class TestSyncService : public syncer::TestSyncService {
  public:
-  TestSyncService() { SetActiveDataTypes({}); }
-
-  void AddActiveDataType(syncer::ModelType type) {
-    syncer::ModelTypeSet active_types = GetActiveDataTypes();
-    active_types.Put(type);
-    SetActiveDataTypes(active_types);
+  TestSyncService() {
+    GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/syncer::UserSelectableTypeSet());
   }
 
   void FireOnStateChangeOnAllObservers() {
@@ -94,7 +92,11 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest, PersonalizedDataCollection) {
   EXPECT_FALSE(helper->IsEnabled());
   EXPECT_TRUE(state_changed_notifications_.empty());
 
-  sync_service_.AddActiveDataType(syncer::ModelType::HISTORY_DELETE_DIRECTIVES);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kHistory));
+
   sync_service_.FireOnStateChangeOnAllObservers();
   EXPECT_TRUE(helper->IsEnabled());
   EXPECT_EQ(1U, state_changed_notifications_.size());

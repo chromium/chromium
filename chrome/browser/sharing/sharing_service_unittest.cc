@@ -308,8 +308,10 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
 TEST_F(SharingServiceTest, DeviceRegistration) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::PREFERENCES});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPreferences));
 
   EXPECT_EQ(SharingService::State::DISABLED,
             GetSharingService()->GetStateForTesting());
@@ -346,7 +348,10 @@ TEST_F(SharingServiceTest, DeviceRegistration) {
 TEST_F(SharingServiceTest, DeviceRegistrationPreferenceNotAvailable) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  test_sync_service_.SetActiveDataTypes(syncer::DEVICE_INFO);
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
+  test_sync_service_.SetFailedDataTypes(syncer::SHARING_MESSAGE);
 
   EXPECT_EQ(SharingService::State::DISABLED,
             GetSharingService()->GetStateForTesting());
@@ -367,8 +372,6 @@ TEST_F(SharingServiceTest, DeviceRegistrationTransportMode) {
 
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::SHARING_MESSAGE});
 
   EXPECT_EQ(SharingService::State::DISABLED,
             GetSharingService()->GetStateForTesting());
@@ -386,8 +389,10 @@ TEST_F(SharingServiceTest, DeviceRegistrationTransportMode) {
 TEST_F(SharingServiceTest, DeviceRegistrationTransientError) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::PREFERENCES});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPreferences));
 
   EXPECT_EQ(SharingService::State::DISABLED,
             GetSharingService()->GetStateForTesting());
@@ -426,8 +431,10 @@ TEST_F(SharingServiceTest, DeviceUnregistrationSyncDisabled) {
 TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::PREFERENCES});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPreferences));
 
   // Create new SharingService instance with feature enabled at constructor.
   GetSharingService();
@@ -490,7 +497,10 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
             GetSharingService()->GetStateForTesting());
 
   // Disable syncing of preference and un-registration should happen.
-  test_sync_service_.SetActiveDataTypes(syncer::DEVICE_INFO);
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
   EXPECT_CALL(*fcm_handler_, StopListening()).Times(1);
   test_sync_service_.FireStateChanged();
   EXPECT_EQ(2, sharing_device_registration_->registration_attempts());
@@ -502,8 +512,10 @@ TEST_F(SharingServiceTest, DeviceRegisterAndUnregister) {
 TEST_F(SharingServiceTest, StartListeningToFCMAtConstructor) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::PREFERENCES});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPreferences));
 
   // Create new SharingService instance with FCM already registered at
   // constructor.

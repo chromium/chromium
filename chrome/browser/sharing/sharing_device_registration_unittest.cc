@@ -256,8 +256,10 @@ TEST_F(SharingDeviceRegistrationTest, IsSharedClipboardSupported_False) {
 }
 
 TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_Success) {
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::PREFERENCES, syncer::SHARING_MESSAGE});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPreferences));
   SetInstanceIDFCMResult(instance_id::InstanceID::Result::SUCCESS);
   SetInstanceIDFCMToken(kVapidFCMToken);
   fake_device_info_sync_service_.GetDeviceInfoTracker()->Add(
@@ -314,8 +316,9 @@ TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_Vapid_Only) {
 }
 
 TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_SenderIDOnly) {
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::SHARING_MESSAGE});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
   SetInstanceIDFCMResult(instance_id::InstanceID::Result::SUCCESS);
   SetInstanceIDFCMToken(kVapidFCMToken);
   fake_device_info_sync_service_.GetDeviceInfoTracker()->Add(
@@ -338,7 +341,9 @@ TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_SenderIDOnly) {
 
 TEST_F(SharingDeviceRegistrationTest, RegisterDeviceTest_InternalError) {
   scoped_feature_list_.InitAndDisableFeature(kSharingSendViaSync);
-  test_sync_service_.SetActiveDataTypes({});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
   SetInstanceIDFCMResult(instance_id::InstanceID::Result::SUCCESS);
   SetInstanceIDFCMToken(kVapidFCMToken);
   fake_device_info_sync_service_.GetDeviceInfoTracker()->Add(
@@ -413,8 +418,9 @@ TEST_F(SharingDeviceRegistrationTest, UnregisterDeviceTest_Success) {
 }
 
 TEST_F(SharingDeviceRegistrationTest, UnregisterDeviceTest_SenderIDonly) {
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::SHARING_MESSAGE});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
   SetInstanceIDFCMResult(instance_id::InstanceID::Result::SUCCESS);
   fake_device_info_sync_service_.GetDeviceInfoTracker()->Add(
       fake_device_info_sync_service_.GetLocalDeviceInfoProvider()

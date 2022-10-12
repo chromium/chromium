@@ -143,9 +143,10 @@ TEST_F(DevToolsUIBindingsSyncInfoTest, SyncDisabled) {
 }
 
 TEST_F(DevToolsUIBindingsSyncInfoTest, PreferencesNotSynced) {
-  syncer::ModelTypeSet activeDataTypes;
-  activeDataTypes.Put(syncer::ModelType::BOOKMARKS);
-  sync_service_->SetActiveDataTypes(activeDataTypes);
+  sync_service_->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kBookmarks));
 
   base::Value info =
       DevToolsUIBindings::GetSyncInformationForProfile(&profile_);

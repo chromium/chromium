@@ -51,7 +51,9 @@ TEST_F(VapidKeyManagerTest, CreateKeyFlow) {
 }
 
 TEST_F(VapidKeyManagerTest, SkipCreateKeyFlow) {
-  test_sync_service_.SetActiveDataTypes({});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
 
   // No keys stored in preferences.
   EXPECT_EQ(absl::nullopt, sharing_sync_preference_.GetVapidKey());

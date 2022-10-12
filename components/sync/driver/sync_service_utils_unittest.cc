@@ -23,7 +23,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfSyncNotAllowed) {
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
-  service.SetActiveDataTypes(ProtocolTypes());
 
   EXPECT_EQ(UploadState::NOT_ACTIVE,
             GetUploadToGoogleState(&service, syncer::BOOKMARKS));
@@ -47,7 +46,6 @@ TEST(SyncServiceUtilsTest,
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
-  service.SetActiveDataTypes(ProtocolTypes());
   service.SetEmptyLastCycleSnapshot();
 
   // By default, if sync isn't disabled, we should be INITIALIZING.
@@ -75,7 +73,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForModelType) {
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/false,
       /*types=*/{syncer::UserSelectableType::kBookmarks});
-  service.SetActiveDataTypes(ModelTypeSet(syncer::BOOKMARKS));
 
   // Sanity check: Upload is ACTIVE for this model type.
   ASSERT_EQ(UploadState::ACTIVE,
@@ -103,7 +100,7 @@ TEST(SyncServiceUtilsTest,
                  syncer::UserSelectableType::kPreferences});
 
   // But one of them fails to actually start up!
-  service.SetActiveDataTypes(ModelTypeSet(syncer::BOOKMARKS));
+  service.SetFailedDataTypes(ModelTypeSet(syncer::PREFERENCES));
 
   // Sanity check: Upload is ACTIVE for the model type that did start up.
   ASSERT_EQ(UploadState::ACTIVE,
@@ -120,7 +117,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfLocalSyncEnabled) {
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
-  service.SetActiveDataTypes(ProtocolTypes());
   service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 
@@ -142,7 +138,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledOnPersistentAuthError) {
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
-  service.SetActiveDataTypes(ProtocolTypes());
   service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 
@@ -178,7 +173,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledIfCustomPassphraseInUse) {
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
-  service.SetActiveDataTypes(ProtocolTypes());
   service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 
@@ -210,7 +204,6 @@ TEST(SyncServiceUtilsTest, UploadToGoogleDisabledForSecondaryAccount) {
   service.GetUserSettings()->SetSelectedTypes(
       /*sync_everything=*/true,
       /*types=*/UserSelectableTypeSet::All());
-  service.SetActiveDataTypes(ProtocolTypes());
   service.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
   service.SetNonEmptyLastCycleSnapshot();
 

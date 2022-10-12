@@ -81,7 +81,9 @@ TEST_F(PasswordFeatureManagerImplTest,
   sync_service_.SetHasSyncConsent(false);
   sync_service_.SetDisableReasons({});
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-  sync_service_.SetActiveDataTypes({});
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
 
   ASSERT_EQ(password_manager_util::GetPasswordSyncState(&sync_service_),
             password_manager::SyncState::kNotSyncing);
@@ -103,7 +105,9 @@ TEST_F(PasswordFeatureManagerImplTest,
   sync_service_.SetHasSyncConsent(false);
   sync_service_.SetDisableReasons({});
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-  sync_service_.SetActiveDataTypes({});
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
 
   ASSERT_EQ(password_manager_util::GetPasswordSyncState(&sync_service_),
             password_manager::SyncState::kNotSyncing);
@@ -149,7 +153,10 @@ TEST_F(PasswordFeatureManagerImplTest,
   sync_service_.SetHasSyncConsent(true);
   sync_service_.SetDisableReasons({});
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-  sync_service_.SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
 
   ASSERT_EQ(password_manager_util::GetPasswordSyncState(&sync_service_),
             password_manager::SyncState::kSyncingNormalEncryption);
@@ -165,7 +172,9 @@ TEST_F(PasswordFeatureManagerImplTest,
   sync_service_.SetDisableReasons(
       {syncer::SyncService::DisableReason::DISABLE_REASON_USER_CHOICE});
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-  sync_service_.SetActiveDataTypes({});
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
 
   ASSERT_EQ(password_manager_util::GetPasswordSyncState(&sync_service_),
             password_manager::SyncState::kNotSyncing);
@@ -203,7 +212,10 @@ TEST_F(PasswordFeatureManagerImplTest,
   sync_service_.SetHasSyncConsent(true);
   sync_service_.SetDisableReasons({});
   sync_service_.SetTransportState(syncer::SyncService::TransportState::ACTIVE);
-  sync_service_.SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
 
   EXPECT_TRUE(password_feature_manager_
                   .AreRequirementsForAutomatedPasswordChangeFulfilled());

@@ -119,11 +119,12 @@ TEST_F(SyncUtilsTest, IsHistorySyncEnabled) {
 
   // Just history being synced should also be sufficient for the method to
   // return true.
-  sync_service.SetActiveDataTypes(
-      {syncer::ModelType::HISTORY_DELETE_DIRECTIVES});
-  EXPECT_TRUE(SyncUtils::IsHistorySyncEnabled(&sync_service));
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kHistory));
 
-  sync_service.SetActiveDataTypes(syncer::ModelTypeSet::All());
+  EXPECT_TRUE(SyncUtils::IsHistorySyncEnabled(&sync_service));
 
   // The method should return false if:
 
@@ -131,10 +132,15 @@ TEST_F(SyncUtilsTest, IsHistorySyncEnabled) {
   EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(nullptr));
 
   // History is not being synced.
-  sync_service.SetActiveDataTypes({syncer::ModelType::AUTOFILL});
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kAutofill));
   EXPECT_FALSE(SyncUtils::IsHistorySyncEnabled(&sync_service));
 
-  sync_service.SetActiveDataTypes(syncer::ModelTypeSet::All());
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/true,
+      /*types=*/syncer::UserSelectableTypeSet::All());
 
   // Local sync is enabled.
   sync_service.SetLocalSyncEnabled(true);

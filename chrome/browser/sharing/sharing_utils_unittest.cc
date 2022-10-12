@@ -45,8 +45,10 @@ TEST_F(SharingUtilsTest, SyncEnabled_FullySynced) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   // PREFERENCES is actively synced.
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::PREFERENCES});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPreferences));
 
   EXPECT_TRUE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_FALSE(IsSyncDisabledForSharing(&test_sync_service_));
@@ -60,7 +62,9 @@ TEST_F(SharingUtilsTest, SyncDisabled_FullySynced_MissingDataTypes) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   // Missing PREFERENCES.
-  test_sync_service_.SetActiveDataTypes({syncer::DEVICE_INFO});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
 
   EXPECT_FALSE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_TRUE(IsSyncDisabledForSharing(&test_sync_service_));
@@ -74,9 +78,6 @@ TEST_F(SharingUtilsTest, SyncEnabled_SigninOnly) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   // SHARING_MESSAGE is actively synced.
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::SHARING_MESSAGE});
-
   EXPECT_TRUE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_FALSE(IsSyncDisabledForSharing(&test_sync_service_));
 }
@@ -89,7 +90,10 @@ TEST_F(SharingUtilsTest, SyncDisabled_SigninOnly_MissingDataTypes) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   // Missing SHARING_MESSAGE.
-  test_sync_service_.SetActiveDataTypes({syncer::DEVICE_INFO});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
+  test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
 
   EXPECT_FALSE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_TRUE(IsSyncDisabledForSharing(&test_sync_service_));
@@ -98,8 +102,10 @@ TEST_F(SharingUtilsTest, SyncDisabled_SigninOnly_MissingDataTypes) {
 TEST_F(SharingUtilsTest, SyncDisabled_Disabled) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::DISABLED);
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::PREFERENCES});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPreferences));
 
   EXPECT_FALSE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_TRUE(IsSyncDisabledForSharing(&test_sync_service_));
@@ -108,8 +114,10 @@ TEST_F(SharingUtilsTest, SyncDisabled_Disabled) {
 TEST_F(SharingUtilsTest, SyncDisabled_Configuring) {
   test_sync_service_.SetTransportState(
       syncer::SyncService::TransportState::CONFIGURING);
-  test_sync_service_.SetActiveDataTypes(
-      {syncer::DEVICE_INFO, syncer::PREFERENCES});
+  test_sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPreferences));
 
   EXPECT_FALSE(IsSyncEnabledForSharing(&test_sync_service_));
   EXPECT_FALSE(IsSyncDisabledForSharing(&test_sync_service_));

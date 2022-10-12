@@ -311,7 +311,10 @@ TEST_F(PasswordCheckManagerTest,
        RunCheckAfterLastInitializationAutomaticChangeOn) {
   identity_test_env().MakeAccountAvailable(kTestEmail);
   // Enable password sync
-  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
        password_manager::features::kPasswordDomainCapabilitiesFetching,
@@ -431,7 +434,9 @@ TEST_F(PasswordCheckManagerTest,
        CorrectlyCreatesUIStructWithPasswordScriptsSyncOff) {
   InitializeManager();
   // Disable password sync
-  sync_service().SetActiveDataTypes(syncer::ModelTypeSet());
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet());
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
        password_manager::features::kPasswordDomainCapabilitiesFetching,
@@ -462,7 +467,10 @@ TEST_F(PasswordCheckManagerTest,
        CorrectlyCreatesUIStructWithPasswordScriptsSyncOn) {
   InitializeManager();
   // Enable password sync
-  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
        password_manager::features::kPasswordDomainCapabilitiesFetching,
@@ -493,7 +501,10 @@ TEST_F(PasswordCheckManagerTest,
        CorrectlyCreatesUIStructWithPasswordScriptsEmptyUsername) {
   InitializeManager();
   // Enable password sync
-  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
        password_manager::features::kPasswordDomainCapabilitiesFetching,
@@ -528,7 +539,10 @@ TEST_F(PasswordCheckManagerTest,
        CorrectlyCreatesUIStructWithScriptsFetchingButAutomaticChangeOff) {
   InitializeManager();
   // Enable password sync
-  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
   feature_list().InitWithFeatures(
       /*enabled_features=*/
       {password_manager::features::kPasswordScriptsFetching,
@@ -563,7 +577,10 @@ TEST_F(PasswordCheckManagerTest,
        CorrectlyCreatesUIStructWithScriptsFetchingButNoAvailableScript) {
   InitializeManager();
   // Enable password sync
-  sync_service().SetActiveDataTypes(syncer::ModelTypeSet(syncer::PASSWORDS));
+  sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/syncer::UserSelectableTypeSet(
+          syncer::UserSelectableType::kPasswords));
   feature_list().InitWithFeatures(
       {password_manager::features::kPasswordScriptsFetching,
        password_manager::features::kPasswordDomainCapabilitiesFetching,

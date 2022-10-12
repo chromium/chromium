@@ -93,7 +93,9 @@ TEST(GetUserPopulationForProfileTest, PopulatesSync) {
     sync_service->SetTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service->SetLocalSyncEnabled(false);
-    sync_service->SetActiveDataTypes(syncer::ModelTypeSet::All());
+    sync_service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/true,
+        /*types=*/syncer::UserSelectableTypeSet::All());
 
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_TRUE(population.is_history_sync_enabled());
@@ -103,7 +105,9 @@ TEST(GetUserPopulationForProfileTest, PopulatesSync) {
     sync_service->SetTransportState(
         syncer::SyncService::TransportState::DISABLED);
     sync_service->SetLocalSyncEnabled(false);
-    sync_service->SetActiveDataTypes(syncer::ModelTypeSet::All());
+    sync_service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/true,
+        /*types=*/syncer::UserSelectableTypeSet::All());
 
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());
@@ -113,7 +117,9 @@ TEST(GetUserPopulationForProfileTest, PopulatesSync) {
     sync_service->SetTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service->SetLocalSyncEnabled(true);
-    sync_service->SetActiveDataTypes(syncer::ModelTypeSet::All());
+    sync_service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/true,
+        /*types=*/syncer::UserSelectableTypeSet::All());
 
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());
@@ -123,7 +129,9 @@ TEST(GetUserPopulationForProfileTest, PopulatesSync) {
     sync_service->SetTransportState(
         syncer::SyncService::TransportState::ACTIVE);
     sync_service->SetLocalSyncEnabled(false);
-    sync_service->SetActiveDataTypes(syncer::ModelTypeSet());
+    sync_service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/syncer::UserSelectableTypeSet());
 
     ChromeUserPopulation population = GetUserPopulationForProfile(&profile);
     EXPECT_FALSE(population.is_history_sync_enabled());

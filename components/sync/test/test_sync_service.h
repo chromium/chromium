@@ -48,9 +48,8 @@ class TestSyncService : public SyncService {
   void ClearAuthError();
 
   void SetFirstSetupComplete(bool first_setup_complete);
-  // TODO(crbug.com/1356216): reconsider SetActiveDataTypes() use in tests. It
-  // should set the active types from the user selected types; did not fail.
-  void SetActiveDataTypes(const ModelTypeSet& types);
+  void SetFailedDataTypes(const ModelTypeSet& types);
+
   void SetLastCycleSnapshot(const SyncCycleSnapshot& snapshot);
   // Convenience versions of the above, for when the caller doesn't care about
   // the particular values in the snapshot, just whether there is one.
@@ -135,7 +134,7 @@ class TestSyncService : public SyncService {
   bool setup_in_progress_ = false;
   GoogleServiceAuthError auth_error_;
 
-  ModelTypeSet active_data_types_;
+  ModelTypeSet failed_data_types_;
 
   bool detailed_sync_status_engine_available_ = false;
   SyncStatus detailed_sync_status_;
