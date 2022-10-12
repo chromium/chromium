@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
+import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("context_menu") {
@@ -13,6 +14,7 @@ source_set("context_menu") {
     "//base",
     "//components/url_formatter",
     "//ios/web/common",
+    "//ios/web/common:features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -33,6 +35,7 @@ optimize_js("all_frames_context_menu_js") {
 
   primary_script = "resources/all_frames_context_menu.js"
   sources = [ "resources/all_frames_context_menu.js" ]
+  deps = [ ":surrounding_text_js" ]
 }
 
 optimize_js("main_frame_context_menu_js") {
@@ -40,6 +43,11 @@ optimize_js("main_frame_context_menu_js") {
 
   primary_script = "resources/main_frame_context_menu.js"
   sources = [ "resources/main_frame_context_menu.js" ]
+}
+
+compile_ts("surrounding_text_js") {
+  allow_js = true
+  sources = [ "resources/surrounding_text.js" ]
 }
 
 source_set("unittests") {

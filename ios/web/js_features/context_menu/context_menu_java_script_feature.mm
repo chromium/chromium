@@ -7,6 +7,7 @@
 #import "base/callback.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
+#import "ios/web/common/features.h"
 #import "ios/web/js_features/context_menu/context_menu_params_utils.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
@@ -74,6 +75,8 @@ void ContextMenuJavaScriptFeature::GetElementAtPoint(
   parameters.push_back(base::Value(point.y));
   parameters.push_back(base::Value(web_content_size.width));
   parameters.push_back(base::Value(web_content_size.height));
+  parameters.push_back(base::Value(
+      base::FeatureList::IsEnabled(web::features::kLongPressSurroundingText)));
   CallJavaScriptFunction(main_frame, "findElementAtPoint", parameters);
 }
 

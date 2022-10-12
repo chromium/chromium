@@ -51,6 +51,9 @@ struct ContextMenuParams {
   // nonempty (it can not be empty).
   NSString* text;
 
+  // The text associated with the selected character after a long press.
+  NSString* surrounding_text;
+
   // The text for the "title" attribute of the HTML element. Can be null.
   NSString* title_attribute;
 
@@ -59,6 +62,9 @@ struct ContextMenuParams {
 
   // The offset in text where the tap occurs. Can be null = 0.
   double text_offset;
+
+  // The offset in surrounding_text where the long press occurs. Can be 0.
+  double surrounding_text_offset;
 };
 
 }  // namespace web

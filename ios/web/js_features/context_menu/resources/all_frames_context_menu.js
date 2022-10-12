@@ -8,6 +8,8 @@
 
 // Requires functions from base.js and common.js
 
+import {getSurroundingText} from '//ios/web/js_features/context_menu/resources/surrounding_text.js';
+
 // The minimum opacity for an element to be considered as opaque. Elements
 // with a higher opacity will prevent selection of images underneath.
 var OPACITY_THRESHOLD = 0.9;
@@ -97,6 +99,8 @@ var getResponseForImageElement = function(element, src) {
  *                 coordinates.
  * @param {number} y Vertical center of the selected point in page
  *                 coordinates.
+ * @param {bool} Enables getting the surrounding characters if
+ *               true.
  * @return {!Object} An object of the form {
  *                     {@code tagName} tag name of the text element.
  *                     {@code innerText} The inner text of the link.
@@ -104,10 +108,12 @@ var getResponseForImageElement = function(element, src) {
  *                         innertText.
  *                   }.
  */
-var getResponseForTextElement = function(element, x, y) {
+var getResponseForTextElement = function(
+    element, x, y, extractSurroundingText) {
   var result = {
     tagName: element.tagName,
   };
+
   // caretRangeFromPoint is custom WebKit method.
   if (document.caretRangeFromPoint) {
     var range = document.caretRangeFromPoint(x, y);
@@ -116,11 +122,17 @@ var getResponseForTextElement = function(element, x, y) {
       if (textNode.nodeType == 3) {
         result.textOffset = range.startOffset;
         result.innerText = textNode.nodeValue;
+
+        if (extractSurroundingText) {
+          var textAndStartPos = getSurroundingText(range);
+          result.surroundingText = textAndStartPos['text'];
+          result.surroundingTextOffset = textAndStartPos['pos'];
+        }
       }
     }
   }
   return result;
-}
+};
 
 /**
  * Finds the url of the image or link under the selected point. Sends details
@@ -134,8 +146,11 @@ var getResponseForTextElement = function(element, x, y) {
  *                 coordinates.
  * @param {number} y Vertical center of the selected point in page
  *                 coordinates.
+ * @param {bool} Enables getting the surrounding characters if
+ *               true.
  */
-__gCrWeb['findElementAtPointInPageCoordinates'] = function(requestId, x, y) {
+__gCrWeb['findElementAtPointInPageCoordinates'] = function(
+    requestId, x, y, extractSurroundingText) {
   var hitCoordinates = spiralCoordinates_(x, y);
   var processedElements = new Set();
   var firstDefaultElement = [];
@@ -164,8 +179,11 @@ __gCrWeb['findElementAtPointInPageCoordinates'] = function(requestId, x, y) {
   }
 
   if (firstDefaultElement.length > 0) {
-    sendFindElementAtPointResponse(requestId, getResponseForTextElement(
-      firstDefaultElement[0], x - window.pageXOffset, y - window.pageYOffset));
+    sendFindElementAtPointResponse(
+        requestId,
+        getResponseForTextElement(
+            firstDefaultElement[0], x - window.pageXOffset,
+            y - window.pageYOffset, extractSurroundingText));
     return;
   }
 

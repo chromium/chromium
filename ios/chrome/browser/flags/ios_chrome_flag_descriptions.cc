@@ -174,6 +174,11 @@ extern const char kMapsExperienceKitDescription[] =
     "When enabled, long pressing on an address will trigger Experience Kit Maps"
     "location and directions handling";
 
+extern const char kLongPressSurroundingTextName[] =
+    "Enable Long Press Surrounding Text";
+extern const char kLongPressSurroundingTextDescription[] =
+    "When enabled, long pressing a text will analyze larger part of the text.";
+
 const char kContentSuggestionsUIModuleRefreshName[] =
     "Content Suggestions UI Module Refresh";
 const char kContentSuggestionsUIModuleRefreshDescription[] =

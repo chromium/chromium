@@ -47,6 +47,14 @@ extern const char kContextMenuElementTextOffset[];
 // only).
 extern const char kContextMenuElementAlt[];
 
+// Optional key. Reprensents the extended text surrounding the selected
+// character.
+extern const char kContextMenuElementSurroundingText[];
+
+// Optional key. Reprensents the extended offset of the a selected character
+// within its surrounding text.
+extern const char kContextMenuElementSurroundingTextOffset[];
+
 }  // namespace web
 
 #endif  // IOS_WEB_JS_FEATURES_CONTEXT_MENU_CONTEXT_MENU_CONSTANTS_H_

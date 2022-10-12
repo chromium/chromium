@@ -19,5 +19,7 @@ const char kContextMenuElementReferrerPolicy[] = "referrerPolicy";
 const char kContextMenuElementInnerText[] = "innerText";
 const char kContextMenuElementTextOffset[] = "textOffset";
 const char kContextMenuElementAlt[] = "alt";
+const char kContextMenuElementSurroundingText[] = "surroundingText";
+const char kContextMenuElementSurroundingTextOffset[] = "surroundingTextOffset";
 
 }  // namespace web

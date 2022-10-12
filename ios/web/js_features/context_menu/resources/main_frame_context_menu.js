@@ -23,13 +23,12 @@
  * @param {number} webViewWidth the width of web view.
  * @param {number} webViewHeight the height of web view.
  */
-__gCrWeb['findElementAtPoint'] =
-    function(requestId, x, y, webViewWidth, webViewHeight) {
-      var scale = getPageWidth() / webViewWidth;
-      __gCrWeb.findElementAtPointInPageCoordinates(requestId,
-                                                   x * scale,
-                                                   y * scale);
-    };
+__gCrWeb['findElementAtPoint'] = function(
+    requestId, x, y, webViewWidth, webViewHeight, surroundingTextEnabled) {
+  var scale = getPageWidth() / webViewWidth;
+  __gCrWeb.findElementAtPointInPageCoordinates(
+      requestId, x * scale, y * scale, surroundingTextEnabled);
+};
 
 /**
  * Returns the margin in points around touchable elements (e.g. links for

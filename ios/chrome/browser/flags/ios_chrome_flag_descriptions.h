@@ -142,6 +142,10 @@ extern const char kCalendarExperienceKitDescription[];
 extern const char kEnableExpKitCalendarTextClassifierName[];
 extern const char kEnableExpKitCalendarTextClassifierDescription[];
 
+// Title and description for the flag to enable long press surrounding text.
+extern const char kLongPressSurroundingTextName[];
+extern const char kLongPressSurroundingTextDescription[];
+
 // Title and description for the flag to enable experience kit maps location and
 // directions.
 extern const char kMapsExperienceKitName[];

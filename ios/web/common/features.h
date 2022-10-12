@@ -69,6 +69,10 @@ BASE_DECLARE_FEATURE(kUseLoadSimulatedRequestForOfflinePage);
 // Feature flag that enable web page detected intents annotations.
 BASE_DECLARE_FEATURE(kEnableWebPageAnnotations);
 
+// Feature flag that enables getting more of the surrounding text when the user
+// long presses at a certain location.
+BASE_DECLARE_FEATURE(kLongPressSurroundingText);
+
 // When true, user control for camera and/or microphone access should be
 // enabled.
 bool IsMediaPermissionsControlEnabled();

@@ -2624,6 +2624,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-long-press-surrounding-text",
+    "owners": [ "erahmaoui@google.com", "djean@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-machine-learning-model-loader-web-platform-api",
     "owners": [ "honglinyu" ],
     "expiry_milestone": 130

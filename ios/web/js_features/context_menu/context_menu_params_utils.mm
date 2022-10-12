@@ -68,6 +68,18 @@ ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element) {
     params.text_offset = *text_offset;
   }
 
+  std::string* surrounding_text =
+      element->FindStringKey(kContextMenuElementSurroundingText);
+  if (surrounding_text && !surrounding_text->empty()) {
+    params.surrounding_text = base::SysUTF8ToNSString(*surrounding_text);
+  }
+
+  absl::optional<double> surrounding_text_offset =
+      element->FindDoubleKey(web::kContextMenuElementSurroundingTextOffset);
+  if (surrounding_text_offset.has_value()) {
+    params.surrounding_text_offset = *surrounding_text_offset;
+  }
+
   return params;
 }
 
