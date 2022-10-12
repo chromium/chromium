@@ -11,8 +11,7 @@
 
 namespace ash {
 
-class FeaturePodButton;
-class FeaturePodsContainerView;
+class FeatureTilesContainerView;
 class PageIndicatorView;
 class QuickSettingsFooter;
 class QuickSettingsHeader;
@@ -31,7 +30,7 @@ class SlidersContainerView : public views::View {
 
   ~SlidersContainerView() override;
 
-  // Get height of the view.
+  // Gets height of the view.
   int GetHeight() const;
 
   // views::View:
@@ -52,41 +51,43 @@ class ASH_EXPORT QuickSettingsView : public views::View {
 
   ~QuickSettingsView() override;
 
-  // Add feature pod button to `feature_pods_`.
-  void AddFeaturePodButton(FeaturePodButton* button);
+  // Sets the maximum height that the view can take.
+  void SetMaxHeight(int max_height);
 
-  // Add slider view.
+  // Adds slider view.
   void AddSliderView(views::View* slider_view);
 
-  // Add media controls view to `media_controls_container_`;
+  // Adds media controls view to `media_controls_container_`;
   void AddMediaControlsView(views::View* media_controls);
 
-  // Hide the main view and show the given `detailed_view`.
+  // Hides the main view and shows the given `detailed_view`.
   void SetDetailedView(views::View* detailed_view);
 
-  // Remove the detailed view set by SetDetailedView, and show the main view.
+  // Removes the detailed view set by SetDetailedView, and shows the main view.
   // It deletes `detailed_view` and children.
   void ResetDetailedView();
 
-  // Save and restore keyboard focus of the currently focused element. Called
+  // Saves and restores keyboard focus of the currently focused element. Called
   // before transitioning into a detailed view.
   void SaveFocus();
   void RestoreFocus();
 
-  // Get current height of the view (including the message center).
+  // Gets current height of the view (including the message center).
   int GetCurrentHeight() const;
 
-  // Returns the number of visible feature pods.
-  int GetVisibleFeaturePodCount() const;
+  // Calculates how many rows to use based on the max available height.
+  // FeatureTilesContainer can adjust it's height by reducing the number of rows
+  // it uses.
+  int CalculateHeightForFeatureTilesContainer();
 
-  // Get the accessible name for the currently shown detailed view.
+  // Gets the accessible name for the currently shown detailed view.
   std::u16string GetDetailedViewAccessibleName() const;
 
   // Returns true if a detailed view is being shown in the tray. (e.g Bluetooth
   // Settings).
   bool IsDetailedViewShown() const;
 
-  // Show media controls view.
+  // Shows media controls view.
   void ShowMediaControls();
 
   // views::View:
@@ -95,8 +96,8 @@ class ASH_EXPORT QuickSettingsView : public views::View {
   void Layout() override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
-  FeaturePodsContainerView* feature_pods_container() {
-    return feature_pods_container_;
+  FeatureTilesContainerView* feature_tiles_container() {
+    return feature_tiles_container_;
   }
 
   View* detailed_view() { return detailed_view_container_; }
@@ -111,13 +112,13 @@ class ASH_EXPORT QuickSettingsView : public views::View {
  private:
   class SystemTrayContainer;
 
-  // Unowned.
+  // Owned by UnifiedSystemTrayBubble.
   UnifiedSystemTrayController* const controller_;
 
   // Owned by views hierarchy.
   SystemTrayContainer* system_tray_container_ = nullptr;
   QuickSettingsHeader* header_ = nullptr;
-  FeaturePodsContainerView* feature_pods_container_ = nullptr;
+  FeatureTilesContainerView* feature_tiles_container_ = nullptr;
   PageIndicatorView* page_indicator_view_ = nullptr;
   SlidersContainerView* sliders_container_ = nullptr;
   QuickSettingsFooter* footer_ = nullptr;
@@ -125,6 +126,9 @@ class ASH_EXPORT QuickSettingsView : public views::View {
 
   // Null if media::kGlobalMediaControlsForChromeOS is disabled.
   UnifiedMediaControlsContainer* media_controls_container_ = nullptr;
+
+  // The maximum height available to the view.
+  int max_height_ = 0;
 
   // The view that is saved by calling SaveFocus().
   views::View* saved_focused_view_ = nullptr;

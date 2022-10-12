@@ -29,6 +29,9 @@ constexpr int kTrayImageItemPadding = 3;
 // The width of the tray menu.
 constexpr int kTrayMenuWidth = 360;
 
+// The width of the revamped tray menu.
+constexpr int kRevampedTrayMenuWidth = 440;
+
 extern const int kTrayPopupAutoCloseDelayInSeconds;
 extern const int kTrayPopupAutoCloseDelayInSecondsWithSpokenFeedback;
 extern const int kTrayPopupPaddingHorizontal;
@@ -142,6 +145,7 @@ constexpr int kUnifiedNotificationMinimumHeight = 40;
 constexpr int kUnifiedBackButtonLeftPadding = 16;
 constexpr auto kUnifiedTopShortcutPadding = gfx::Insets::VH(0, 16);
 constexpr auto kUnifiedNotificationHiddenPadding = gfx::Insets::VH(6, 16);
+constexpr int kUnifiedNotificationSeparatorThickness = 1;
 constexpr gfx::Insets kUnifiedCircularButtonFocusPadding(4);
 constexpr gfx::Insets kTrayBackgroundFocusPadding(1);
 constexpr gfx::Insets kUnifiedSystemInfoBatteryIconPadding =
@@ -199,7 +203,14 @@ constexpr int kUnifiedFeaturePodMaxRows = 3;
 constexpr int kUnifiedFeaturePodMinRows = 1;
 constexpr int kUnifiedFeaturePodMaxItemsInCollapsed = 5;
 constexpr int kUnifiedFeaturePodsPageSpacing = 48;
-constexpr int kUnifiedNotificationSeparatorThickness = 1;
+
+// Constants used in FeatureTiles of QuickSettingsView.
+constexpr int kFeatureTileItemsInRow = 2;
+constexpr int kFeatureTileMaxRows = 4;
+constexpr int kFeatureTileMinRows = 1;
+constexpr int kFeatureTileHeight = 64;
+
+// Height of the page indicator view.
 constexpr int kPageIndicatorViewMaxHeight = 20;
 
 // Constants used in system tray page transition animations.

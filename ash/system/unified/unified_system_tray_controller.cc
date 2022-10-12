@@ -609,6 +609,10 @@ void UnifiedSystemTrayController::LoadIsExpandedPref() {
 }
 
 void UnifiedSystemTrayController::InitFeaturePods() {
+  // TODO(crbug/1368717): use FeatureTiles.
+  if (ash::features::IsQsRevampEnabled())
+    return;
+
   if (ash::features::IsQuickSettingsNetworkRevampEnabled()) {
     AddFeaturePodItem(std::make_unique<NetworkFeaturePodController>(this));
   } else {
@@ -632,17 +636,10 @@ void UnifiedSystemTrayController::InitFeaturePods() {
     AddFeaturePodItem(std::make_unique<DarkModeFeaturePodController>(this));
   if (base::FeatureList::IsEnabled(features::kShelfParty))
     AddFeaturePodItem(std::make_unique<ShelfPartyFeaturePodController>());
-
   if (media::ShouldEnableAutoFraming())
     AddFeaturePodItem(std::make_unique<AutozoomFeaturePodController>());
-
   // If you want to add a new feature pod item, add here.
-  if (features::IsQsRevampEnabled()) {
-    quick_settings_metrics_util::RecordQsFeaturePodCount(
-        quick_settings_view_->GetVisibleFeaturePodCount(),
-        Shell::Get()->tablet_mode_controller()->InTabletMode());
-    return;
-  }
+
   quick_settings_metrics_util::RecordQsFeaturePodCount(
       unified_view_->GetVisibleFeaturePodCount(),
       Shell::Get()->tablet_mode_controller()->InTabletMode());
@@ -660,10 +657,7 @@ void UnifiedSystemTrayController::AddFeaturePodItem(
     quick_settings_metrics_util::RecordVisibleQsFeature(
         controller->GetCatalogName());
   }
-  if (features::IsQsRevampEnabled())
-    quick_settings_view_->AddFeaturePodButton(button);
-  else
-    unified_view_->AddFeaturePodButton(button);
+  unified_view_->AddFeaturePodButton(button);
 
   feature_pod_controllers_.push_back(std::move(controller));
 }
