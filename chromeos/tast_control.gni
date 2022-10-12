@@ -36,6 +36,9 @@ tast_disabled_tests_from_chrome_all = [
   "policy.DownloadRestrictions",
   "policy.ManagedBookmarks",
   "policy.NewTabPageLocation",
+  "policy.NotificationsAllowedForUrls",
+  "policy.NotificationsBlockedForUrls",
+  "policy.PinnedLauncherApps",
 
   # b/251877700
   "policy.DefaultSearchProviderEnabled",
