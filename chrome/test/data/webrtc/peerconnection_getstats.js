@@ -147,6 +147,8 @@ let kRTCInboundRtpStreamStats = new RTCStats(kRTCReceivedRtpStreamStats, {
   estimatedPlayoutTimestamp: 'number',
   fractionLost: 'number',  // Obsolete, moved to RTCRemoteInboundRtpStreamStats.
   decoderImplementation: 'string',
+  framesAssembledFromMultiplePackets: 'number',
+  totalAssemblyTime: 'number',
 });
 addRTCStatsToAllowlist(
     Presence.MANDATORY, 'inbound-rtp', kRTCInboundRtpStreamStats);
