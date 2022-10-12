@@ -59,7 +59,8 @@ class OsSettingsProvider : public SearchProvider,
                            public apps::AppRegistryCache::Observer,
                            public ash::settings::mojom::SearchResultsObserver {
  public:
-  explicit OsSettingsProvider(Profile* profile);
+  OsSettingsProvider(Profile* profile,
+                     ash::settings::OsSettingsManager* settings_manager);
   ~OsSettingsProvider() override;
 
   OsSettingsProvider(const OsSettingsProvider&) = delete;

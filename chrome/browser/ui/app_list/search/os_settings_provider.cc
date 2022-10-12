@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_manager_factory.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_handler.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -37,7 +36,6 @@ using Subpage = chromeos::settings::mojom::Subpage;
 using Section = chromeos::settings::mojom::Section;
 
 constexpr char kOsSettingsResultPrefix[] = "os-settings://";
-constexpr double kScoreEps = 1.0e-5;
 
 constexpr size_t kNumRequestedResults = 5u;
 constexpr size_t kMaxShownResults = 2u;
@@ -162,10 +160,10 @@ void OsSettingsResult::Open(int event_flags) {
                                                                url_path_);
 }
 
-OsSettingsProvider::OsSettingsProvider(Profile* profile)
-    : profile_(profile),
-      settings_manager_(
-          ash::settings::OsSettingsManagerFactory::GetForProfile(profile)) {
+OsSettingsProvider::OsSettingsProvider(
+    Profile* profile,
+    ash::settings::OsSettingsManager* settings_manager)
+    : profile_(profile), settings_manager_(settings_manager) {
   DCHECK(profile_);
 
   if (settings_manager_) {
@@ -252,26 +250,9 @@ void OsSettingsProvider::OnSearchReturned(
 
   SearchProvider::Results search_results;
 
-  // Categorical search doesn't pin settings to the top of the results, but old
-  // search does. Handle both cases.
-  //
-  // TODO(crbug.com/1199206): This can be cleaned up once categorical search is
-  // launched.
-  if (app_list_features::IsCategoricalSearchEnabled()) {
-    for (const auto& result :
-         FilterResults(query, sorted_results, hierarchy_)) {
-      search_results.emplace_back(std::make_unique<OsSettingsResult>(
-          profile_, result, result->relevance_score, icon_, last_query_));
-    }
-  } else {
-    int i = 0;
-    for (const auto& result :
-         FilterResults(query, sorted_results, hierarchy_)) {
-      const double score = 1.0 - i * kScoreEps;
-      search_results.emplace_back(std::make_unique<OsSettingsResult>(
-          profile_, result, score, icon_, last_query_));
-      ++i;
-    }
+  for (const auto& result : FilterResults(query, sorted_results, hierarchy_)) {
+    search_results.emplace_back(std::make_unique<OsSettingsResult>(
+        profile_, result, result->relevance_score, icon_, last_query_));
   }
 
   UMA_HISTOGRAM_TIMES("Apps.AppList.OsSettingsProvider.QueryTime",
