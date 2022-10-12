@@ -460,8 +460,11 @@ int SearchResultListView::DoUpdate() {
     std::vector<AppListNotifier::Result> notifier_results;
     for (const auto* result : displayed_results)
       notifier_results.emplace_back(result->id(), result->metrics_type());
-    notifier->NotifyResultsUpdated(SearchResultDisplayType::kList,
-                                   notifier_results);
+    notifier->NotifyResultsUpdated(
+        list_type_ == SearchResultListType::kAnswerCard
+            ? SearchResultDisplayType::kAnswerCard
+            : SearchResultDisplayType::kList,
+        notifier_results);
   }
   return displayed_results.size();
 }
