@@ -76,8 +76,6 @@ Status RsaSign(const blink::WebCryptoKey& key,
     return Status::ErrorUnexpectedKeyType();
 
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  bssl::ScopedEVP_MD_CTX ctx;
-  EVP_PKEY_CTX* pctx = nullptr;  // Owned by |ctx|.
 
   EVP_PKEY* private_key = nullptr;
   const EVP_MD* digest = nullptr;
@@ -85,9 +83,11 @@ Status RsaSign(const blink::WebCryptoKey& key,
   if (status.IsError())
     return status;
 
-  // NOTE: A call to EVP_DigestSignFinal() with a NULL second parameter
-  // returns a maximum allocation size, while the call without a NULL returns
-  // the real one, which may be smaller.
+  // NOTE: A call to EVP_DigestSign() with a NULL second parameter returns a
+  // maximum allocation size, while the call without a NULL returns the real
+  // one, which may be smaller.
+  bssl::ScopedEVP_MD_CTX ctx;
+  EVP_PKEY_CTX* pctx = nullptr;  // Owned by |ctx|.
   size_t sig_len = 0;
   if (!EVP_DigestSignInit(ctx.get(), &pctx, digest, nullptr, private_key)) {
     return Status::OperationError();
@@ -98,14 +98,15 @@ Status RsaSign(const blink::WebCryptoKey& key,
   if (status.IsError())
     return status;
 
-  if (!EVP_DigestSignUpdate(ctx.get(), data.data(), data.size()) ||
-      !EVP_DigestSignFinal(ctx.get(), nullptr, &sig_len)) {
+  if (!EVP_DigestSign(ctx.get(), nullptr, &sig_len, data.data(), data.size())) {
     return Status::OperationError();
   }
 
   buffer->resize(sig_len);
-  if (!EVP_DigestSignFinal(ctx.get(), buffer->data(), &sig_len))
+  if (!EVP_DigestSign(ctx.get(), buffer->data(), &sig_len, data.data(),
+                      data.size())) {
     return Status::OperationError();
+  }
 
   buffer->resize(sig_len);
   return Status::Success();
@@ -120,8 +121,6 @@ Status RsaVerify(const blink::WebCryptoKey& key,
     return Status::ErrorUnexpectedKeyType();
 
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
-  bssl::ScopedEVP_MD_CTX ctx;
-  EVP_PKEY_CTX* pctx = nullptr;  // Owned by |ctx|.
 
   EVP_PKEY* public_key = nullptr;
   const EVP_MD* digest = nullptr;
@@ -129,6 +128,8 @@ Status RsaVerify(const blink::WebCryptoKey& key,
   if (status.IsError())
     return status;
 
+  bssl::ScopedEVP_MD_CTX ctx;
+  EVP_PKEY_CTX* pctx = nullptr;  // Owned by |ctx|.
   if (!EVP_DigestVerifyInit(ctx.get(), &pctx, digest, nullptr, public_key))
     return Status::OperationError();
 
@@ -137,11 +138,9 @@ Status RsaVerify(const blink::WebCryptoKey& key,
   if (status.IsError())
     return status;
 
-  if (!EVP_DigestVerifyUpdate(ctx.get(), data.data(), data.size()))
-    return Status::OperationError();
-
   *signature_match =
-      1 == EVP_DigestVerifyFinal(ctx.get(), signature.data(), signature.size());
+      1 == EVP_DigestVerify(ctx.get(), signature.data(), signature.size(),
+                            data.data(), data.size());
   return Status::Success();
 }
 

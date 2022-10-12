@@ -190,20 +190,22 @@ class EcdsaImplementation : public EcAlgorithm {
     if (status.IsError())
       return status;
 
-    // NOTE: A call to EVP_DigestSignFinal() with a NULL second parameter
-    // returns a maximum allocation size, while the call without a NULL returns
-    // the real one, which may be smaller.
+    // NOTE: A call to EVP_DigestSign() with a NULL second parameter returns a
+    // maximum allocation size, while the call without a NULL returns the real
+    // one, which may be smaller.
     bssl::ScopedEVP_MD_CTX ctx;
     size_t sig_len = 0;
     if (!EVP_DigestSignInit(ctx.get(), nullptr, digest, nullptr, private_key) ||
-        !EVP_DigestSignUpdate(ctx.get(), data.data(), data.size()) ||
-        !EVP_DigestSignFinal(ctx.get(), nullptr, &sig_len)) {
+        !EVP_DigestSign(ctx.get(), nullptr, &sig_len, data.data(),
+                        data.size())) {
       return Status::OperationError();
     }
 
     buffer->resize(sig_len);
-    if (!EVP_DigestSignFinal(ctx.get(), buffer->data(), &sig_len))
+    if (!EVP_DigestSign(ctx.get(), buffer->data(), &sig_len, data.data(),
+                        data.size())) {
       return Status::OperationError();
+    }
     buffer->resize(sig_len);
 
     // ECDSA signing in BoringSSL outputs a DER-encoded (r,s). WebCrypto however
@@ -242,14 +244,13 @@ class EcdsaImplementation : public EcAlgorithm {
 
     bssl::ScopedEVP_MD_CTX ctx;
     if (!EVP_DigestVerifyInit(ctx.get(), nullptr, digest, nullptr,
-                              public_key) ||
-        !EVP_DigestVerifyUpdate(ctx.get(), data.data(), data.size())) {
+                              public_key)) {
       return Status::OperationError();
     }
 
     *signature_match =
-        1 == EVP_DigestVerifyFinal(ctx.get(), der_signature.data(),
-                                   der_signature.size());
+        1 == EVP_DigestVerify(ctx.get(), der_signature.data(),
+                              der_signature.size(), data.data(), data.size());
     return Status::Success();
   }
 };
