@@ -83,7 +83,9 @@ inline J_COLOR_SPACE rgbOutputColorSpace() {
 
 namespace {
 
-const int exifMarker = JPEG_APP0 + 1;
+constexpr int kExifMarker = JPEG_APP0 + 1;
+constexpr unsigned kExifAPP1SignatureSize = 6;
+constexpr unsigned kExifHeaderSize = 8;
 
 // JPEG only supports a denominator of 8.
 const unsigned g_scale_denominator = 8;
@@ -233,31 +235,38 @@ static float ReadUnsignedRational(const uint8_t* data, bool is_big_endian) {
   return float(nom) / float(denom);
 }
 
-static bool CheckExifHeader(jpeg_saved_marker_ptr marker,
-                            bool& is_big_endian,
-                            unsigned& ifd_offset) {
-  // For exif data, the APP1 block is followed by 'E', 'x', 'i', 'f', '\0',
-  // then a fill byte, and then a tiff file that contains the metadata.
-  // A tiff file starts with 'I', 'I' (intel / little endian byte order) or
-  // 'M', 'M' (motorola / big endian byte order), followed by (uint16_t)42,
-  // followed by an uint32_t with the offset to the tag block, relative to the
-  // tiff file start.
-  const unsigned kExifHeaderSize = 14;
-  if (!(marker->marker == exifMarker &&
-        marker->data_length >= kExifHeaderSize && marker->data[0] == 'E' &&
-        marker->data[1] == 'x' && marker->data[2] == 'i' &&
-        marker->data[3] == 'f' &&
-        marker->data[4] == '\0'
-        // data[5] is a fill byte
-        && ((marker->data[6] == 'I' && marker->data[7] == 'I') ||
-            (marker->data[6] == 'M' && marker->data[7] == 'M'))))
+static bool IsExifData(jpeg_saved_marker_ptr marker) {
+  // For EXIF data, the APP1 block is followed by 'E', 'x', 'i', 'f', '\0',
+  // then a fill byte, and then a TIFF file that contains the metadata.
+  if (marker->marker != kExifMarker)
     return false;
-
-  is_big_endian = marker->data[6] == 'M';
-  if (ReadUint16(marker->data + 8, is_big_endian) != 42)
+  if (marker->data_length < kExifAPP1SignatureSize)
     return false;
+  const uint8_t kExifAPP1Signature[5] = {'E', 'x', 'i', 'f', '\0'};
+  if (memcmp(marker->data, kExifAPP1Signature, sizeof(kExifAPP1Signature)) != 0)
+    return false;
+  return true;
+}
 
-  ifd_offset = ReadUint32(marker->data + 10, is_big_endian);
+static bool ReadExifHeader(base::span<const uint8_t> data,
+                           bool& is_big_endian) {
+  // A TIFF file starts with 'I', 'I' (Intel / little endian byte order) or
+  // 'M', 'M' (Motorola / big endian byte order), followed by (uint16_t)42,
+  // followed by an uint32_t with the offset to the initial (0th) IFD tag
+  // block, relative to the TIFF file start.
+  //
+  // Header in summary:
+  // <byte-order tag> (2 bytes), <magic> (2 bytes), <0th IFD offset> (4 bytes)
+  if (data.size() < kExifHeaderSize)
+    return false;
+  const uint8_t byte_order = data[0];
+  if (byte_order != data[1])
+    return false;
+  if (byte_order != 'I' && byte_order != 'M')
+    return false;
+  is_big_endian = byte_order == 'M';
+  if (ReadUint16(data.data() + 2, is_big_endian) != 42)
+    return false;
   return true;
 }
 
@@ -321,9 +330,11 @@ static void ReadExifDirectory(const uint8_t* dir_start,
   const uint8_t* ifd =
       dir_start + 2;  // Skip over the uint16 that was just read.
 
-  // Every ifd entry is 2 bytes of tag, 2 bytes of contents datatype,
-  // 4 bytes of number-of-elements, and 4 bytes of either offset to the
-  // tag data, or if the data is small enough, the inlined data itself.
+  // A TIFF image file directory (IFD) consists of a uint16_t describing the
+  // number of IFD entries, followed by that many entries. Every IFD entry is 2
+  // bytes of tag, 2 bytes of contents datatype, 4 bytes of number-of-elements,
+  // and 4 bytes of either offset to the tag data, or if the data is small
+  // enough, the inlined data itself.
   const int kIfdEntrySize = 12;
   for (unsigned i = 0; i < tag_count && data_end - ifd >= kIfdEntrySize;
         ++i, ifd += kIfdEntrySize) {
@@ -408,31 +419,33 @@ static void ReadExifDirectory(const uint8_t* dir_start,
   }
 }
 
+static bool ReadExif(base::span<const uint8_t> data,
+                     DecodedImageMetaData& metadata) {
+  bool is_big_endian;
+  if (!ReadExifHeader(data, is_big_endian))
+    return false;
+  const unsigned ifd_offset = ReadUint32(data.data() + 4, is_big_endian);
+  if (ifd_offset < kExifHeaderSize || ifd_offset >= data.size())
+    return false;
+
+  const uint8_t* data_end = data.data() + data.size();
+  const uint8_t* data_start = data.data();
+  const uint8_t* ifd0 = data_start + ifd_offset;
+  ReadExifDirectory(ifd0, data_start, data_end, is_big_endian, metadata);
+  return true;
+}
+
 static void ReadImageMetaData(jpeg_decompress_struct* info, DecodedImageMetaData& metadata) {
   // The JPEG decoder looks at EXIF metadata.
   // FIXME: Possibly implement XMP and IPTC support.
   for (jpeg_saved_marker_ptr marker = info->marker_list; marker;
        marker = marker->next) {
-    bool is_big_endian;
-    unsigned ifd_offset;
-    if (!CheckExifHeader(marker, is_big_endian, ifd_offset))
+    if (!IsExifData(marker))
       continue;
-    const unsigned kOffsetToTiffData =
-        6;  // Account for 'Exif\0<fill byte>' header.
-    if (marker->data_length < kOffsetToTiffData ||
-        ifd_offset >= marker->data_length - kOffsetToTiffData)
-      continue;
-
-    // The jpeg exif container format contains a tiff block for metadata.
-    // A tiff image file directory (ifd) consists of a uint16_t describing
-    // the number of ifd entries, followed by that many entries.
-    // When touching this code, it's useful to look at the tiff spec:
-    // http://partners.adobe.com/public/developer/en/tiff/TIFF6.pdf
-    const uint8_t* data_end = marker->data + marker->data_length;
-    const uint8_t* data_start = marker->data + kOffsetToTiffData;
-    const uint8_t* ifd0 = data_start + ifd_offset;
-
-    ReadExifDirectory(ifd0, data_start, data_end, is_big_endian, metadata);
+    base::span<const uint8_t> exif_data(
+        marker->data + kExifAPP1SignatureSize,
+        marker->data_length - kExifAPP1SignatureSize);
+    ReadExif(exif_data, metadata);
   }
 }
 
@@ -499,7 +512,7 @@ class JPEGImageReader final {
     setup_read_icc_profile(&info_);
 
     // Keep APP1 blocks, for obtaining exif data.
-    jpeg_save_markers(&info_, exifMarker, 0xFFFF);
+    jpeg_save_markers(&info_, kExifMarker, 0xFFFF);
   }
 
   JPEGImageReader(const JPEGImageReader&) = delete;
