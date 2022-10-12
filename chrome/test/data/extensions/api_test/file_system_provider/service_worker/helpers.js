@@ -227,6 +227,11 @@ export const remoteProvider = {
    */
   getOpenedFiles: async () => callServiceWorker('getOpenedFiles'),
   /**
+   * @param {string} key
+   * @param {?} value
+   */
+  setConfig: async (key, value) => callServiceWorker('setConfig', key, value),
+  /**
    * @param {string} handlerName
    * @param {boolean} enabled
    */
