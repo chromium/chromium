@@ -97,7 +97,7 @@ void SurfaceSavedFrame::RequestCopyOfOutput(Surface* surface) {
   DCHECK_EQ(copy_request_count_, ExpectedResultCount());
 
   if (copy_request_count_ == 0) {
-    frame_result_.emplace();
+    InitFrameResult();
     std::move(directive_finished_callback_).Run(directive_.sequence_id());
   }
 }
@@ -157,7 +157,7 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
 
   ++valid_result_count_;
   if (!frame_result_) {
-    frame_result_.emplace();
+    InitFrameResult();
     // Resize to the number of shared elements, even if some will be nullopts.
     frame_result_->shared_results.resize(directive_.shared_elements().size());
   }
@@ -206,7 +206,7 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
       SkImageInfo::MakeN32Premul(kDefaultTextureSizeForTesting.width(),
                                  kDefaultTextureSizeForTesting.height()));
 
-  frame_result_.emplace();
+  InitFrameResult();
   frame_result_->root_result.bitmap = std::move(bitmap);
   frame_result_->root_result.draw_data.size = kDefaultTextureSizeForTesting;
   frame_result_->root_result.draw_data.target_transform.MakeIdentity();
@@ -218,6 +218,11 @@ void SurfaceSavedFrame::CompleteSavedFrameForTesting() {
   valid_result_count_ = ExpectedResultCount();
   weak_factory_.InvalidateWeakPtrs();
   DCHECK(IsValid());
+}
+
+void SurfaceSavedFrame::InitFrameResult() {
+  frame_result_.emplace();
+  frame_result_->empty_resource_ids = GetEmptyResourceIds();
 }
 
 SurfaceSavedFrame::RenderPassDrawData::RenderPassDrawData() = default;

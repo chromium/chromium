@@ -53,6 +53,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   ReturnedResource ToReturnedResource() const;
   static std::vector<ReturnedResource> ReturnResources(
       const std::vector<TransferableResource>& input);
+  bool is_null() const { return mailbox_holder.mailbox.IsZero(); }
 
   static TransferableResource MakeSoftware(const SharedBitmapId& id,
                                            const gfx::Size& size,

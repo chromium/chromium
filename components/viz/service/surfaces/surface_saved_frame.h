@@ -76,6 +76,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
     OutputCopyResult root_result;
     std::vector<absl::optional<OutputCopyResult>> shared_results;
+    base::flat_set<SharedElementResourceId> empty_resource_ids;
   };
 
   SurfaceSavedFrame(CompositorFrameTransitionDirective directive,
@@ -111,6 +112,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
                                   std::unique_ptr<CopyOutputResult> result);
 
   size_t ExpectedResultCount() const;
+  void InitFrameResult();
 
   // Collects metadata to create a copy of the source CompositorFrame for shared
   // element snapshots.

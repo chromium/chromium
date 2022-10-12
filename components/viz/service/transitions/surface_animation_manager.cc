@@ -444,6 +444,7 @@ bool SurfaceAnimationManager::ProcessAnimateRendererDirective(
   // structure which has transferable resources.
   saved_textures_.emplace(
       transferable_resource_tracker_.ImportResources(std::move(saved_frame)));
+  empty_resource_ids_.clear();
   return true;
 }
 
@@ -1208,6 +1209,9 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
 
     if (texture_it != saved_textures_->element_id_to_resource.end()) {
       const auto& transferable_resource = texture_it->second;
+      if (transferable_resource.is_null())
+        return true;
+
       resource_list->push_back(transferable_resource);
 
       // GPU textures are flipped but software bitmaps are not.

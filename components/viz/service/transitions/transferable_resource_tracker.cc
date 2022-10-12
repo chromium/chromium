@@ -58,6 +58,12 @@ TransferableResourceTracker::ImportResources(
       }
     }
   }
+
+  for (auto resource_id : frame_copy->empty_resource_ids) {
+    DCHECK(!resource_frame.element_id_to_resource.contains(resource_id));
+    resource_frame.element_id_to_resource[resource_id] = TransferableResource();
+  }
+
   return resource_frame;
 }
 
