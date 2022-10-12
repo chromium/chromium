@@ -195,7 +195,7 @@
          * @returns {Promise} Returns an array of cookies objects as defined in the spec:
          *                    https://w3c.github.io/webdriver/#cookies
          */
-         get_all_cookies: function(context=null) {
+        get_all_cookies: function(context=null) {
             return window.test_driver_internal.get_all_cookies(context);
         },
 
@@ -208,12 +208,16 @@
          *                                to run the call, or null for the current
          *                                browsing context.
          *
-         * @returns {Promise} Returns null if no such cookie exists or
-         *                    the matching cookie object as defined in the spec:
+         * @returns {Promise} Returns the matching cookie as defined in the spec:
          *                    https://w3c.github.io/webdriver/#cookies
+         *                    Rejected if no such cookie exists.
          */
-         get_named_cookie: function(name, context=null) {
-            return window.test_driver_internal.get_named_cookie(name, context);
+         get_named_cookie: async function(name, context=null) {
+            let cookie = await window.test_driver_internal.get_named_cookie(name, context);
+            if (!cookie) {
+                throw new Error("no such cookie");
+            }
+            return cookie;
         },
 
         /**

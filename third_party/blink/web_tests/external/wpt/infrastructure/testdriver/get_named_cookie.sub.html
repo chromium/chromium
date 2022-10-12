@@ -62,8 +62,11 @@ promise_test(async t => {
   assert_equals(cookie["sameSite"], "Lax");
 
   // test4 [Secure] Omitted
-  cookie = await test_driver.get_named_cookie("test4");
-  assert_equals(cookie, null);
+  try {
+    await test_driver.get_named_cookie("test4");
+  } catch(e) {
+    assert_equals(e.message, "no such cookie");
+  }
 
   // test5 [SameSite Strict]
   cookie = await test_driver.get_named_cookie("test5");
@@ -77,8 +80,11 @@ promise_test(async t => {
   assert_equals(cookie["sameSite"], "Strict");
 
   // test6 [SameSite None] Omitted
-  cookie = await test_driver.get_named_cookie("test6");
-  assert_equals(cookie, null);
+  try {
+    await test_driver.get_named_cookie("test6");
+  } catch(e) {
+    assert_equals(e.message, "no such cookie");
+  }
 
   // test7 [SameSite Strict]
   cookie = await test_driver.get_named_cookie("test7");
