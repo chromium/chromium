@@ -7,6 +7,10 @@
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 
+#if defined(LEAK_SANITIZER)
+#include <sanitizer/lsan_interface.h>
+#endif
+
 #include "base/check_op.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -23,7 +27,13 @@ FakeKeychain::FakeKeychain(const std::string& keychain_access_group)
           CFStringCreateWithCString(kCFAllocatorDefault,
                                     keychain_access_group.data(),
                                     kCFStringEncodingUTF8)) {}
-FakeKeychain::~FakeKeychain() = default;
+FakeKeychain::~FakeKeychain() {
+  // Avoid shutdown leak of error string in Security.framework.
+  // See https://github.com/apple-oss-distributions/Security/blob/Security-60158.140.3/OSX/libsecurity_keychain/lib/SecBase.cpp#L88
+#if defined(LEAK_SANITIZER)
+  __lsan_do_leak_check();
+#endif
+}
 
 base::ScopedCFTypeRef<SecKeyRef> FakeKeychain::KeyCreateRandomKey(
     CFDictionaryRef params,
