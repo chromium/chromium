@@ -65,6 +65,57 @@ public class MessageAnimationCoordinatorUnitTest {
         mAnimationCoordinator.setMessageQueueDelegate(mQueueDelegate);
     }
 
+    @Test
+    @SmallTest
+    public void testDoNothing_withoutStacking() {
+        MessageState m1 = buildMessageState();
+        // Initial setup
+        mAnimationCoordinator.updateWithoutStacking(m1, false, () -> {});
+
+        // Again with same candidates.
+        mAnimationCoordinator.updateWithoutStacking(m1, false, () -> {});
+
+        verify(m1.handler, never()).hide(anyInt(), anyInt(), anyBoolean());
+        verify(m1.handler).show(anyInt(), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testShowMessages_withoutStacking() {
+        // Initial values should be null.
+        var currentMessage = mAnimationCoordinator.getCurrentDisplayedMessage();
+        Assert.assertNull(currentMessage);
+
+        MessageState m1 = buildMessageState();
+        MessageState m2 = buildMessageState();
+        mAnimationCoordinator.updateWithoutStacking(m1, false, () -> {});
+
+        verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
+        verify(m1.handler, never()).hide(anyInt(), anyInt(), anyBoolean());
+
+        currentMessage = mAnimationCoordinator.getCurrentDisplayedMessage();
+        Assert.assertEquals(m1, currentMessage);
+    }
+
+    @Test
+    @SmallTest
+    public void testHideMessage_withoutStacking() {
+        MessageState m1 = buildMessageState();
+        MessageState m2 = buildMessageState();
+        mAnimationCoordinator.updateWithoutStacking(m1, false, () -> {});
+
+        verify(m1.handler).show(Position.INVISIBLE, Position.FRONT);
+        verify(m2.handler, never()).show(Position.INVISIBLE, Position.FRONT);
+
+        mAnimationCoordinator.updateWithoutStacking(m2, false,
+                () -> { mAnimationCoordinator.updateWithoutStacking(m2, false, () -> {}); });
+        verify(m1.handler).hide(Position.FRONT, Position.INVISIBLE, true);
+        verify(m2.handler).show(Position.INVISIBLE, Position.FRONT);
+
+        var currentMessage = mAnimationCoordinator.getCurrentDisplayedMessage();
+        Assert.assertEquals(m2, currentMessage);
+    }
+
     // Test incoming candidates are same with current displayed ones.
     // [m1, m2] -> [m1, m2]
     @Test
