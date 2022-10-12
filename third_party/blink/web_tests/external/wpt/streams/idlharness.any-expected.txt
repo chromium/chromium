@@ -16,7 +16,7 @@ PASS ReadableStream interface: operation getReader(optional ReadableStreamGetRea
 PASS ReadableStream interface: operation pipeThrough(ReadableWritablePair, optional StreamPipeOptions)
 PASS ReadableStream interface: operation pipeTo(WritableStream, optional StreamPipeOptions)
 PASS ReadableStream interface: operation tee()
-FAIL ReadableStream interface: async iterable<any> Cannot read properties of undefined (reading 'writable')
+FAIL ReadableStream interface: async iterable<any> Cannot read properties of undefined (reading 'value')
 PASS ReadableStream must be primary interface of new ReadableStream()
 PASS Stringification of new ReadableStream()
 PASS ReadableStream interface: new ReadableStream() must inherit property "locked" with the proper type

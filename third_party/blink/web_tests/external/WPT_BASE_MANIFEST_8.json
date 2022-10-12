@@ -1888,6 +1888,13 @@
       ]
      ],
      "crashtests": {
+      "balance-with-forced-break.html": [
+       "794f76176652756a400cfd77c13c89a1eb50c95e",
+       [
+        null,
+        {}
+       ]
+      ],
       "chrome-bug-1293905.html": [
        "2f1bd84528f5f6da7337f3cdae2ad77520d59a7a",
        [
@@ -123813,6 +123820,32 @@
        {}
       ]
      ],
+     "child-border-box-and-max-content-001.html": [
+      "8d3cda88b44e9bc60ee3a8e344b05f80aabcbe3f",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/child-border-box-and-max-content-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "child-border-box-and-max-content-002.html": [
+      "fe3e6db0d7a1f243ff383b8e9f9f5527a78f6750",
+      [
+       null,
+       [
+        [
+         "/css/css-grid/child-border-box-and-max-content-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "chrome-bug-001.html": [
       "7b24f41a47eeb090ec53e9a6e37a4f8a977ca802",
       [
@@ -163765,6 +163798,45 @@
        [
         [
          "/css/css-sizing/block-size-with-min-or-max-content-table-1-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "border-box-and-max-content-001.html": [
+      "85c35e0656a721be81901bfec741fd6185364f21",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/border-box-and-max-content-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "border-box-and-max-content-002.html": [
+      "e6e47cd68ea7613cbc464feec4a02c5e3c1671e8",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/border-box-and-max-content-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "border-box-and-max-content-003.html": [
+      "3a6f179b09514fd1a392f8080b273f6a0f8002ed",
+      [
+       null,
+       [
+        [
+         "/css/css-sizing/border-box-and-max-content-003-ref.html",
          "=="
         ]
        ],
@@ -255291,7 +255363,7 @@
     ],
     "idl": {
      "idlharness.tentative.https.window-expected.txt": [
-      "d9c1f41bfb8a63aca5cb86b5acd703b18e0f508a",
+      "0ad43dafb348853b70d12bb5c960e18b5bc8ff55",
       []
      ]
     },
@@ -282782,6 +282854,14 @@
        []
       ]
      },
+     "child-border-box-and-max-content-001-ref.html": [
+      "df8393a1f0310b7b524d49b05962600602c1500e",
+      []
+     ],
+     "child-border-box-and-max-content-002-ref.html": [
+      "df8393a1f0310b7b524d49b05962600602c1500e",
+      []
+     ],
      "grid-child-percent-basis-resize-1-ref.html": [
       "2ee6b077d3c6a9375029209a6ce202478db437a4",
       []
@@ -283579,7 +283659,7 @@
     },
     "css-highlight-api": {
      "idlharness.window-expected.txt": [
-      "2dc1113198c950dce316bf6267276e7beb98d6a6",
+      "27d19d246468da345b6a500d7983b438a260eaf8",
       []
      ],
      "painting": {
@@ -290850,6 +290930,18 @@
       "0810c428b56ae8ef412ef11b8e66b9aa54e1ca83",
       []
      ],
+     "border-box-and-max-content-001-ref.html": [
+      "73947be7a708ad6a842083617cc54c07a24dcbce",
+      []
+     ],
+     "border-box-and-max-content-002-ref.html": [
+      "6627a55abcbc818b0539d77da994a839e903cbe1",
+      []
+     ],
+     "border-box-and-max-content-003-ref.html": [
+      "c4ecda02504d0c64105bc77d4db9b05bac3ad997",
+      []
+     ],
      "box-sizing-border-box-001-ref.xht": [
       "e886a0f05e3afb7c2a43c66649def5287383de35",
       []
@@ -296159,7 +296251,7 @@
     },
     "css-toggle": {
      "idlharness.tentative-expected.txt": [
-      "726f347b2a8055affdece2c07e6f21f7e393e380",
+      "64237dac75226bea5cc88062f35bbc0d0b740a7a",
       []
      ],
      "parsing": {
@@ -305206,7 +305298,7 @@
      []
     ],
     "idlharness.window-expected.txt": [
-     "b71557194b9fb86116c385ec4621965831e2b0ec",
+     "f5a0bf2ff29a847b97ac74a65da31866571f1bec",
      []
     ]
    },
@@ -309538,7 +309630,7 @@
      []
     ],
     "idlharness.any-expected.txt": [
-     "ff790e6bc73c40abbc87f9cdcf31224a8ad1417e",
+     "4fe4540271c298c38658dbe0e1b24e5fede9363f",
      []
     ],
     "idlharness.any.serviceworker-expected.txt": [
@@ -311979,7 +312071,7 @@
       []
      ],
      "FileSystemDirectoryHandle-move.js": [
-      "ddaa61604439489cfca4332f7aeec35370d09536",
+      "abdbc9ef2bf372f5960c433cd769b457fde5e137",
       []
      ]
     }
@@ -314254,6 +314346,10 @@
         "4b52fe3cfba16f5624df32a83d492b2a434fa86e",
         []
        ],
+       "plugin-document.historical-expected.txt": [
+        "99122163c4b9e7b9e70df9c4251261d0d264a8f9",
+        []
+       ],
        "refresh": {
         "README.md": [
          "52548db656496d731a5dab305a7630086074d160",
@@ -314381,6 +314477,14 @@
         ],
         "page-with-top-navigating-iframe.html": [
          "568e44296f10dfc083e2358ae4b3a5b7d4916a38",
+         []
+        ],
+        "portable-document-format-sample-valid.pdf": [
+         "d008b1f23a7a17a7c9ae2c50d881a51eb4cc8fac",
+         []
+        ],
+        "portable-document-format-sample-valid.pdf.headers": [
+         "5a8e57e4823cbe59021b8c4dfcad36bfde3b86a0",
          []
         ],
         "redirect.py": [
@@ -332558,7 +332662,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "82272a9154b28a6bc508c84c891bf02eb434c80a",
+     "4d08294d16bbd9e53efd3cf8df713e8302a4bdf4",
      []
     ],
     "resources": {
@@ -332681,7 +332785,7 @@
     ]
    },
    "lint.ignore": [
-    "8b1b7037a17be14efe3393ec4dc73223395ef823",
+    "95288fc538e546447560755aa57a6de6f683e521",
     []
    ],
    "loading": {
@@ -335784,6 +335888,26 @@
      []
     ]
    },
+   "page-unload-beacon": {
+    "META.yml": [
+     "18b08c1ed5117b028bf1571e7110546cca89f4f8",
+     []
+    ],
+    "resources": {
+     "get_beacon.py": [
+      "32cb9a9ba30638bf0e5c7e54655ae87e7085978d",
+      []
+     ],
+     "pending_beacon-helper.js": [
+      "636e8d8023c40f8e918d04e85b6e685f54c21641",
+      []
+     ],
+     "set_beacon.py": [
+      "1c71f23e57849481b7deb204cb859ef25f6e4356",
+      []
+     ]
+    }
+   },
    "page-visibility": {
     "DIR_METADATA": [
      "ad88c7283bfa1315fe5d8d47084a600d4fa4c588",
@@ -336185,22 +336309,6 @@
      "b50f18ecce3ac62d3193a86d668f457c1e9629ab",
      []
     ]
-   },
-   "pending_beacon": {
-    "resources": {
-     "get_beacon.py": [
-      "32cb9a9ba30638bf0e5c7e54655ae87e7085978d",
-      []
-     ],
-     "pending_beacon-helper.js": [
-      "238fcb8bce69db6d27983f4f39ea2d66b1c9bdc5",
-      []
-     ],
-     "set_beacon.py": [
-      "1c71f23e57849481b7deb204cb859ef25f6e4356",
-      []
-     ]
-    }
    },
    "performance-timeline": {
     "DIR_METADATA": [
@@ -339882,7 +339990,7 @@
      []
     ],
     "idlharness.js": [
-     "d2fb0366c8022ae0ad6a48a31243a03d46aa3260",
+     "622f974077db387f8a9268a885a6f7fe4511ea4d",
      []
     ],
     "idlharness.js.headers": [
@@ -340076,7 +340184,7 @@
      []
     ],
     "META.yml": [
-     "3ddb3b0507d54269c54a552227771a0bf9131a0e",
+     "8f5bd75ca7b32face08d400d641513297638ec59",
      []
     ],
     "event-before-promise-expected.txt": [
@@ -344506,19 +344614,19 @@
      []
     ],
     "idlharness.any-expected.txt": [
-     "8e95f41db054a80a99402162462533622d65a9ea",
+     "92b38c177ee22998bb6939c924a5212c2ee88e34",
      []
     ],
     "idlharness.any.serviceworker-expected.txt": [
-     "8e95f41db054a80a99402162462533622d65a9ea",
+     "92b38c177ee22998bb6939c924a5212c2ee88e34",
      []
     ],
     "idlharness.any.sharedworker-expected.txt": [
-     "8e95f41db054a80a99402162462533622d65a9ea",
+     "92b38c177ee22998bb6939c924a5212c2ee88e34",
      []
     ],
     "idlharness.any.worker-expected.txt": [
-     "8e95f41db054a80a99402162462533622d65a9ea",
+     "92b38c177ee22998bb6939c924a5212c2ee88e34",
      []
     ],
     "piping": {
@@ -348370,7 +348478,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "76aab478badabd8f32121e93362b62846f34cdd9",
+     "3bdcca8fc5b510b6f181ca2e412a2d81f256b345",
      []
     ],
     "js": {
@@ -349774,7 +349882,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "2395c21142c47d96f052fc8dbc2c9e88c4c15d44",
+     "d1ccccf5c716f33e7d5eec1eeff9394d9cf0fb9b",
      []
     ]
    },
@@ -349784,11 +349892,11 @@
      []
     ],
     "idlharness.https.any-expected.txt": [
-     "a25b11f8dd6a31517a2e52611e4f24ebec5e4441",
+     "8f3597f750fe129fdc1a9767350606d1a72c6b2d",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "e6ca824cea24033688d6fbe5932e16cdf8215bc6",
+     "21d0d61afc33675f6780646bbefa71ca6c8728e6",
      []
     ],
     "resources": {
@@ -350010,7 +350118,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "aab3ad3d13619265e1a3e7e5e5815b1d625048e8",
+     "c9ca12c2a86b5aa8b283b99f8a2b2feb18572a3a",
      []
     ],
     "legacy": {
@@ -353237,7 +353345,7 @@
       []
      ],
      "idlharness.https.window-expected.txt": [
-      "a282a3c3c74aebbd27b4b89fe5b68431a5514bee",
+      "ce8dc9018edcf0bbe05c65b1b4c4843594b2a7bd",
       []
      ]
     },
@@ -414246,6 +414354,20 @@
        {}
       ]
      ],
+     "revert-in-fallback.html": [
+      "ae99e5192fd2587332c23b6a0ff604956a845e17",
+      [
+       null,
+       {}
+      ]
+     ],
+     "revert-layer-in-fallback.html": [
+      "ed20821fb93290c1dd1217f02325bda885daa090",
+      [
+       null,
+       {}
+      ]
+     ],
      "test_variable_legal_values.html": [
       "1d86c0834ccb1da7965edf56f9a4aefc0a041421",
       [
@@ -458313,6 +458435,13 @@
          {}
         ]
        ],
+       "plugin-document.historical.html": [
+        "547917b795a0a5833501f0481938e7e2c1c0dcda",
+        [
+         null,
+         {}
+        ]
+       ],
        "redirect-to-about.window.js": [
         "548091189545cec50662347b4dfbffc8be1b210b",
         [
@@ -459997,6 +460126,32 @@
          {}
         ]
        ],
+       "history-state-after-bfcache.window.js": [
+        "5f04890a72805c00ea07eae302f294b632362c2a",
+        [
+         "html/browsers/history/the-history-interface/history-state-after-bfcache.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "Navigating back to a bfcached page does not reset history.state"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ]
+          ]
+         }
+        ]
+       ],
        "history_back.html": [
         "042da4e61b261c26742bb11c0215ba2709878062",
         [
@@ -460086,6 +460241,32 @@
         [
          null,
          {}
+        ]
+       ],
+       "history_go_zero_which_document.window.js": [
+        "f697783f3e586ef9b3b1049839c74c99cf7d4e9f",
+        [
+         "html/browsers/history/the-history-interface/history_go_zero_which_document.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "history.go(0) on an iframe must reload the iframe's document, not the parent document"
+           ],
+           [
+            "script",
+            "/common/dispatcher/dispatcher.js"
+           ],
+           [
+            "script",
+            "/common/utils.js"
+           ],
+           [
+            "script",
+            "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+           ]
+          ]
+         }
         ]
        ],
        "history_properties_only_fully_active.html": [
@@ -522098,6 +522279,134 @@
      ]
     ]
    },
+   "page-unload-beacon": {
+    "pending_beacon-basic.tentative.window.js": [
+     "efc9ed2617e3b90b90302b06826ca729f60eb763",
+     [
+      "page-unload-beacon/pending_beacon-basic.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_beacon-deactivate.tentative.window.js": [
+     "74c0852adc322a7194ab0bc3aca83a358572d462",
+     [
+      "page-unload-beacon/pending_beacon-deactivate.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_beacon-sendnow.tentative.window.js": [
+     "00baccd0c1ab42c0dfa08def5f23ad6ba21eed9b",
+     [
+      "page-unload-beacon/pending_beacon-sendnow.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_get_beacon-cors.tentative.https.window.js": [
+     "10bb3a0bed7f4888aaab7c7f6551f4a9a447c60e",
+     [
+      "page-unload-beacon/pending_get_beacon-cors.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_get_beacon-send.tentative.window.js": [
+     "8c6e826af5b578b5893babb5e0ee90e37b37cc09",
+     [
+      "page-unload-beacon/pending_get_beacon-send.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_post_beacon-cors.tentative.https.window.js": [
+     "01511d22c1b7bc58cfd86ca3725b0514f292d058",
+     [
+      "page-unload-beacon/pending_post_beacon-cors.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "pending_post_beacon-sendwithdata.tentative.window.js": [
+     "77e91479e8b990b2b8240dc3fd6853e4d25ab980",
+     [
+      "page-unload-beacon/pending_post_beacon-sendwithdata.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "./resources/pending_beacon-helper.js"
+        ]
+       ]
+      }
+     ]
+    ]
+   },
    "page-visibility": {
     "iframe-session-history.html": [
      "e0232153167e680b66e6d5eb1ca637f31ea7c934",
@@ -523081,134 +523390,6 @@
       null,
       {
        "testdriver": true
-      }
-     ]
-    ]
-   },
-   "pending_beacon": {
-    "pending_beacon-basic.tentative.window.js": [
-     "efc9ed2617e3b90b90302b06826ca729f60eb763",
-     [
-      "pending_beacon/pending_beacon-basic.tentative.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "./resources/pending_beacon-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_beacon-deactivate.tentative.window.js": [
-     "74c0852adc322a7194ab0bc3aca83a358572d462",
-     [
-      "pending_beacon/pending_beacon-deactivate.tentative.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "./resources/pending_beacon-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_beacon-sendnow.tentative.window.js": [
-     "00baccd0c1ab42c0dfa08def5f23ad6ba21eed9b",
-     [
-      "pending_beacon/pending_beacon-sendnow.tentative.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "./resources/pending_beacon-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_get_beacon-cors.tentative.https.window.js": [
-     "10bb3a0bed7f4888aaab7c7f6551f4a9a447c60e",
-     [
-      "pending_beacon/pending_get_beacon-cors.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/get-host-info.sub.js"
-        ],
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "./resources/pending_beacon-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_get_beacon-send.tentative.window.js": [
-     "8c6e826af5b578b5893babb5e0ee90e37b37cc09",
-     [
-      "pending_beacon/pending_get_beacon-send.tentative.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "./resources/pending_beacon-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_post_beacon-cors.tentative.https.window.js": [
-     "01511d22c1b7bc58cfd86ca3725b0514f292d058",
-     [
-      "pending_beacon/pending_post_beacon-cors.tentative.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/get-host-info.sub.js"
-        ],
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "./resources/pending_beacon-helper.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "pending_post_beacon-sendwithdata.tentative.window.js": [
-     "77e91479e8b990b2b8240dc3fd6853e4d25ab980",
-     [
-      "pending_beacon/pending_post_beacon-sendwithdata.tentative.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/common/utils.js"
-        ],
-        [
-         "script",
-         "./resources/pending_beacon-helper.js"
-        ]
-       ]
       }
      ]
     ]
@@ -542441,7 +542622,7 @@
      ]
     ],
     "lock-basic.html": [
-     "f0ed5abaac36f39554adab1ca1e56088640c6c48",
+     "1ae26567fc2249ac1db40db52dbc01625a06e0d2",
      [
       null,
       {
@@ -551829,7 +552010,7 @@
      ]
     ],
     "requestStorageAccess.sub.window.js": [
-     "4600f5214315c47bfac4019b75fcc4c6ab9cc7a7",
+     "84d347875517da3043ef109c99fb6d0f0c844784",
      [
       "storage-access-api/requestStorageAccess.sub.window.html",
       {
@@ -576703,7 +576884,7 @@
    },
    "webnn": {
     "idlharness.https.any.js": [
-     "cce10ca9434f474f506a6ca7bea54e603baf7213",
+     "ffb5011864f6700601648c0b41e4fcc26fd48af5",
      [
       "webnn/idlharness.https.any.html",
       {

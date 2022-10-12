@@ -10,7 +10,7 @@ PASS CustomStateSet interface object name
 PASS CustomStateSet interface: existence and properties of interface prototype object
 PASS CustomStateSet interface: existence and properties of interface prototype object's "constructor" property
 PASS CustomStateSet interface: existence and properties of interface prototype object's @@unscopables property
-FAIL CustomStateSet interface: setlike<DOMString> assert_equals: entries enumerable expected false but got true
+FAIL CustomStateSet interface: setlike<DOMString> assert_equals: clear function object length should be 1 expected 1 but got 0
 PASS CustomStateSet interface: operation add(DOMString)
 PASS CustomStateSet must be primary interface of customStateSet
 PASS Stringification of customStateSet

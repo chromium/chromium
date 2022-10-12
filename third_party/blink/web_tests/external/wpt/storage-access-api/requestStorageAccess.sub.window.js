@@ -33,10 +33,9 @@ test(() => {
 }, "[" + testPrefix + "] document.requestStorageAccess() should be supported on the document interface");
 
 promise_test(t => {
-  return promise_rejects_exactly(
-    t, undefined, document.requestStorageAccess(),
+  return promise_rejects_dom(t, "NotAllowedError", document.requestStorageAccess(),
     "document.requestStorageAccess() call without user gesture");
-}, "[" + testPrefix + "] document.requestStorageAccess() should be rejected by default with no user gesture");
+}, "[" + testPrefix + "] document.requestStorageAccess() should be rejected with a NotAllowedError by default with no user gesture");
 
 // Logic to load test cases within combinations of iFrames.
 if (topLevelDocument) {

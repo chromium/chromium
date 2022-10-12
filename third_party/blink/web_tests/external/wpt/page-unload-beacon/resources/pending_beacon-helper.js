@@ -92,7 +92,7 @@ function generatePayload(size) {
 
 function generateSetBeaconURL(uuid, options) {
   const host = (options && options.host) || '';
-  let url = `${host}/pending_beacon/resources/set_beacon.py?uuid=${uuid}`;
+  let url = `${host}/page-unload-beacon/resources/set_beacon.py?uuid=${uuid}`;
   if (options) {
     if (options.expectOrigin !== undefined) {
       url = `${url}&expectOrigin=${options.expectOrigin}`;
@@ -141,7 +141,7 @@ async function expectBeacon(uuid, options) {
   const res = await poll(
       async () => {
         const res = await fetch(
-            `/pending_beacon/resources/get_beacon.py?uuid=${uuid}`,
+            `/page-unload-beacon/resources/get_beacon.py?uuid=${uuid}`,
             {cache: 'no-store'});
         return await res.json();
       },

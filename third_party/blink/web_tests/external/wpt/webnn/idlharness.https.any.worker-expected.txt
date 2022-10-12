@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-Found 391 tests; 98 PASS, 293 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS idl_test setup
+Found 391 tests; 97 PASS, 294 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'createContext')"
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
 PASS Partial interface MLContext: member names are unique

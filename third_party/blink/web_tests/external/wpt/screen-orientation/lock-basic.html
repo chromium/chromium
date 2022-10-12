@@ -55,7 +55,14 @@ promise_test(async t => {
   for (const orientation of orientations) {
     const promiseToChange = screen.orientation.lock(orientation);
     assert_true(promiseToChange instanceof Promise, "Expected an instance of Promise");
-    await promiseToChange;
+    try {
+      await promiseToChange;
+    } catch(err) {
+      if (err.name === "NotSupportedError") {
+        continue;
+      }
+      assert_unreached("Unknown error: " + err);
+    }
     const type = screen.orientation.type;
     switch (orientation) {
     case 'any':

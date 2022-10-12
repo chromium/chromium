@@ -9,7 +9,7 @@ PASS Highlight interface object name
 PASS Highlight interface: existence and properties of interface prototype object
 PASS Highlight interface: existence and properties of interface prototype object's "constructor" property
 PASS Highlight interface: existence and properties of interface prototype object's @@unscopables property
-FAIL Highlight interface: setlike<AbstractRange> assert_equals: entries enumerable expected false but got true
+FAIL Highlight interface: setlike<AbstractRange> assert_equals: clear function object length should be 1 expected 1 but got 0
 PASS Highlight interface: attribute priority
 PASS Highlight interface: attribute type
 PASS Highlight must be primary interface of new Highlight(new Range())
@@ -22,7 +22,7 @@ PASS HighlightRegistry interface object name
 PASS HighlightRegistry interface: existence and properties of interface prototype object
 PASS HighlightRegistry interface: existence and properties of interface prototype object's "constructor" property
 PASS HighlightRegistry interface: existence and properties of interface prototype object's @@unscopables property
-FAIL HighlightRegistry interface: maplike<DOMString, Highlight> assert_equals: entries enumerable expected false but got true
+FAIL HighlightRegistry interface: maplike<DOMString, Highlight> assert_equals: clear function object length should be 1 expected 1 but got 0
 PASS HighlightRegistry must be primary interface of CSS.highlights
 PASS Stringification of CSS.highlights
 PASS CSS namespace: operation escape(CSSOMString)

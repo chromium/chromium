@@ -1,6 +1,6 @@
 This is a testharness.js-based test.
-Found 389 tests; 158 PASS, 231 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS idl_test setup
+Found 389 tests; 157 PASS, 232 FAIL, 0 TIMEOUT, 0 NOTRUN.
+FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'MLGraphBuilder': parameter 1 is not of type 'MLContext'."
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
 PASS Partial interface MLContext: member names are unique

@@ -28,13 +28,13 @@ idl_test(
       MLGraph: ['graph']
     });
 
-    ExecutionArray.forEach(executionType => {
+    for (const executionType of ExecutionArray) {
       const isSync = executionType === 'sync';
       if (self.GLOBAL.isWindow() && isSync) {
-        return;
+        continue;
       }
 
-      DeviceTypeArray.forEach(async (deviceType) => {
+      for (const deviceType of DeviceTypeArray) {
         self.context = navigator.ml.createContext({deviceType});
         self.builder = new MLGraphBuilder(context);
         self.input = builder.input('input', {type: 'float32', dimensions: [1, 1, 5, 5]});
@@ -47,7 +47,7 @@ idl_test(
         } else {
           self.graph = await builder.buildAsync({output});
         }
-      });
-    });
+      }
+    }
   }
 );
