@@ -98,6 +98,7 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
     @Override
     public boolean requestStartStylusWriting(StylusWritingImeCallback imeCallback) {
         Log.d(TAG, "Requesting Stylus Writing");
+        StylusApiOption.recordStylusHandwritingTriggered(Api.ANDROID);
         mInputMethodManager.startStylusHandwriting(mTargetView);
         return true;
     }

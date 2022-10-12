@@ -94051,6 +94051,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="MemoryCached StyleSheetContents was reused"/>
 </enum>
 
+<enum name="StylusHandwritingApi">
+  <int value="0" label="Android API"/>
+  <int value="1" label="DirectWriting API"/>
+</enum>
+
+<enum name="StylusHandwritingGesture">
+  <int value="0" label="DirectWriting, Delete Text"/>
+  <int value="1" label="DirectWriting, Add Space Or Text"/>
+  <int value="2" label="DirectWriting, Remove Spaces"/>
+</enum>
+
 <enum name="SubframeDownloadSandboxOriginAdGesture">
   <obsolete>
     Deprecated as of 03/2019.

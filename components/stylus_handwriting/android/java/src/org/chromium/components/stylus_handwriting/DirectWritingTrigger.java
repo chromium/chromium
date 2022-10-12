@@ -110,6 +110,7 @@ class DirectWritingTrigger
         if (!mDwServiceEnabled || !mBinder.isServiceConnected()) return false;
         mStylusWritingImeCallback = imeCallback;
         mCallback.setImeCallback(imeCallback);
+        StylusApiOption.recordStylusHandwritingTriggered(Api.DIRECT_WRITING);
         mStylusWritingDetected = true;
         // We know writing can be started but wait for onEditElementFocusedForStylusWriting to be
         // called to get the focused edit bounds and caret position.

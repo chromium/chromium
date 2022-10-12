@@ -1018,6 +1018,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InputMethod.StylusHandwriting.Gesture"
+    enum="StylusHandwritingGesture" expires_after="2023-03-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>embedded-experience@google.com</owner>
+  <summary>
+    Recorded when a user on Android is interacting with a text field using a
+    stylus device and the IME recognises that interaction as a gesture (such as
+    selecting or deleting text).
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.StylusHandwriting.Triggered"
+    enum="StylusHandwritingApi" expires_after="2023-03-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>embedded-experience@google.com</owner>
+  <summary>
+    When an Android user is interacting with a text field using a stylus and
+    there is an available API on the device, we trigger stylus handwriting. This
+    histogram records which API is available (plain Android or DirectWriting)
+    and when it is triggered.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.SystemEmojiPicker.Delay" units="ms"
     expires_after="2023-02-26">
   <owner>jopalmer@chromium.org</owner>
