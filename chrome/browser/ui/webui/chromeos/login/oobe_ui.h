@@ -111,8 +111,6 @@ class OobeUI : public ui::MojoWebUIController {
   // Re-evaluate OOBE display placement.
   void OnDisplayConfigurationChanged();
 
-  void OnSystemTrayBubbleShown();
-
   // Find a *View instance provided by a given *Handler type.
   //
   // This is the same as GetHandler() except the return type is limited to the

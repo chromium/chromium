@@ -9,7 +9,9 @@
 #include <string>
 
 #include "ash/public/cpp/locale_update_controller.h"
+#include "ash/public/cpp/system_tray_observer.h"
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -30,7 +32,8 @@ namespace ash {
 
 class WelcomeScreen : public BaseScreen,
                       public input_method::InputMethodManager::Observer,
-                      public ChromeVoxHintDetector::Observer {
+                      public ChromeVoxHintDetector::Observer,
+                      public ash::SystemTrayObserver {
  public:
   using TView = WelcomeView;
 
@@ -117,7 +120,6 @@ class WelcomeScreen : public BaseScreen,
   }
 
   // ChromeVox hint.
-  void CancelChromeVoxHintIdleDetection();
   ChromeVoxHintDetector* GetChromeVoxHintDetectorForTesting();
 
  protected:
@@ -131,8 +133,13 @@ class WelcomeScreen : public BaseScreen,
   void OnUserActionDeprecated(const std::string& action_id) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
+  void CancelChromeVoxHintIdleDetection();
   // ChromeVoxHintDetector::Observer:
   void OnShouldGiveChromeVoxHint() override;
+
+  // SystemTrayObserver:
+  void OnFocusLeavingSystemTray(bool reverse) override;
+  void OnSystemTrayBubbleShown() override;
 
   // InputMethodManager::Observer:
   void InputMethodChanged(input_method::InputMethodManager* manager,
@@ -178,6 +185,10 @@ class WelcomeScreen : public BaseScreen,
   // the screen is not hidden.
   void UpdateChromadMigrationOobeFlow(bool exists);
 
+  void OnAccessibilityStatusChanged(
+      const ash::AccessibilityStatusEventDetails& details);
+  void UpdateA11yState();
+
   // Adds data to the OOBE.WelcomeScreen.UserChangedLocale metric and calls
   // exit_callback with given Result
   void Exit(Result result) const;
@@ -203,6 +214,8 @@ class WelcomeScreen : public BaseScreen,
   // This local flag should be true if the OOBE flow is operating as part of the
   // Chromad to cloud device migration. If so, this screen should be skipped.
   bool is_chromad_migration_oobe_flow_ = false;
+
+  base::CallbackListSubscription accessibility_subscription_;
 
   base::WeakPtr<ash::quick_start::TargetDeviceBootstrapController>
       bootstrap_controller_;

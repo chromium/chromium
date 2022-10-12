@@ -53,6 +53,7 @@ class MockWelcomeView : public WelcomeView {
   MOCK_METHOD(void, ShowRemoraRequisitionDialog, ());
   MOCK_METHOD(void, GiveChromeVoxHint, ());
   MOCK_METHOD(void, CancelChromeVoxHintIdleDetection, ());
+  MOCK_METHOD(void, UpdateA11yState, (const A11yState&));
   MOCK_METHOD(void, SetQuickStartEnabled, ());
 
  private:

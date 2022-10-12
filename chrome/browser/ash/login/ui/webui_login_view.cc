@@ -380,12 +380,7 @@ void WebUILoginView::OnFocusLeavingSystemTray(bool reverse) {
   AboutToRequestFocusFromTabTraversal(reverse);
 }
 
-void WebUILoginView::OnSystemTrayBubbleShown() {
-  if (!GetOobeUI())
-    return;
-
-  GetOobeUI()->OnSystemTrayBubbleShown();
-}
+void WebUILoginView::OnSystemTrayBubbleShown() {}
 
 void WebUILoginView::OnLoginPromptVisible() {
   if (!observing_system_tray_focus_ && LoginScreenClientImpl::HasInstance()) {

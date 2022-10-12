@@ -51,7 +51,19 @@ class WelcomeView {
 
   // ChromeVox hint.
   virtual void GiveChromeVoxHint() = 0;
-  virtual void CancelChromeVoxHintIdleDetection() = 0;
+
+  struct A11yState {
+    // Whether or not the corresponding feature is turned on.
+    const bool high_contrast;
+    const bool large_cursor;
+    const bool spoken_feedback;
+    const bool select_to_speak;
+    const bool screen_magnifier;
+    const bool docked_magnifier;
+    const bool virtual_keyboard;
+  };
+  // Updates a11y menu state based on the current a11y features state(on/off).
+  virtual void UpdateA11yState(const A11yState& state) = 0;
 
   virtual void SetQuickStartEnabled() = 0;
 };
@@ -80,7 +92,7 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   void ShowEditRequisitionDialog(const std::string& requisition) override;
   void ShowRemoraRequisitionDialog() override;
   void GiveChromeVoxHint() override;
-  void CancelChromeVoxHintIdleDetection() override;
+  void UpdateA11yState(const A11yState& state) override;
   void SetQuickStartEnabled() override;
 
   // BaseScreenHandler:
@@ -105,13 +117,6 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
   void HandleSetDeviceRequisition(const std::string& requisition);
   void HandleRecordChromeVoxHintSpokenSuccess();
 
-  // Notification of a change in the accessibility settings.
-  void OnAccessibilityStatusChanged(
-      const ash::AccessibilityStatusEventDetails& details);
-
-  // Updates a11y menu state based on the current a11y features state(on/off).
-  void UpdateA11yState();
-
   // Returns available timezones.
   static base::Value::List GetTimezoneList();
 
@@ -120,8 +125,6 @@ class WelcomeScreenHandler : public WelcomeView, public BaseScreenHandler {
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  base::CallbackListSubscription accessibility_subscription_;
 };
 
 }  // namespace chromeos

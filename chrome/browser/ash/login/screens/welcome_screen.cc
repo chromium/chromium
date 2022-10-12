@@ -34,6 +34,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
@@ -190,6 +191,12 @@ WelcomeScreen::WelcomeScreen(WelcomeView* view,
   ad_migration_utils::CheckChromadMigrationOobeFlow(
       base::BindOnce(&WelcomeScreen::UpdateChromadMigrationOobeFlow,
                      weak_ptr_factory_.GetWeakPtr()));
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+  CHECK(accessibility_manager);
+  accessibility_subscription_ = accessibility_manager->RegisterCallback(
+      base::BindRepeating(&WelcomeScreen::OnAccessibilityStatusChanged,
+                          base::Unretained(this)));
+  UpdateA11yState();
 }
 
 WelcomeScreen::~WelcomeScreen() {
@@ -197,6 +204,7 @@ WelcomeScreen::~WelcomeScreen() {
     view_->Unbind();
 
   input_method::InputMethodManager::Get()->RemoveObserver(this);
+  CancelChromeVoxHintIdleDetection();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -390,6 +398,10 @@ void WelcomeScreen::ShowImpl() {
     bootstrap_controller_->GetFeatureSupportStatusAsync(
         base::BindOnce(&WelcomeScreen::OnFeatureSupportStatusDetermined,
                        weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  if (LoginScreenClientImpl::HasInstance()) {
+    LoginScreenClientImpl::Get()->AddSystemTrayObserver(this);
   }
 }
 
@@ -626,6 +638,9 @@ void WelcomeScreen::NotifyLocaleChange() {
 
 void WelcomeScreen::CancelChromeVoxHintIdleDetection() {
   chromevox_hint_detector_.reset();
+  if (LoginScreenClientImpl::HasInstance()) {
+    LoginScreenClientImpl::Get()->RemoveSystemTrayObserver(this);
+  }
 }
 
 void WelcomeScreen::OnShouldGiveChromeVoxHint() {
@@ -635,6 +650,12 @@ void WelcomeScreen::OnShouldGiveChromeVoxHint() {
     view_->GiveChromeVoxHint();
     chromevox_hint_detector_.reset();
   }
+}
+
+void WelcomeScreen::OnFocusLeavingSystemTray(bool reverse) {}
+
+void WelcomeScreen::OnSystemTrayBubbleShown() {
+  CancelChromeVoxHintIdleDetection();
 }
 
 ChromeVoxHintDetector* WelcomeScreen::GetChromeVoxHintDetectorForTesting() {
@@ -650,6 +671,36 @@ void WelcomeScreen::UpdateChromadMigrationOobeFlow(bool exists) {
   // Simulates a user action, in case this screen is already shown and this OOBE
   // flow is part of Chromad to cloud migration.
   OnUserActionDeprecated(kUserActionContinueButtonClicked);
+}
+
+void WelcomeScreen::OnAccessibilityStatusChanged(
+    const ash::AccessibilityStatusEventDetails& details) {
+  if (details.notification_type ==
+      ash::AccessibilityNotificationType::kManagerShutdown) {
+    accessibility_subscription_ = {};
+  } else {
+    UpdateA11yState();
+  }
+}
+
+void WelcomeScreen::UpdateA11yState() {
+  DCHECK(MagnificationManager::Get());
+  DCHECK(AccessibilityManager::Get());
+  const WelcomeView::A11yState a11y_state{
+      .high_contrast = AccessibilityManager::Get()->IsHighContrastEnabled(),
+      .large_cursor = AccessibilityManager::Get()->IsLargeCursorEnabled(),
+      .spoken_feedback = AccessibilityManager::Get()->IsSpokenFeedbackEnabled(),
+      .select_to_speak = AccessibilityManager::Get()->IsSelectToSpeakEnabled(),
+      .screen_magnifier = MagnificationManager::Get()->IsMagnifierEnabled(),
+      .docked_magnifier =
+          MagnificationManager::Get()->IsDockedMagnifierEnabled(),
+      .virtual_keyboard =
+          AccessibilityManager::Get()->IsVirtualKeyboardEnabled()};
+  if (a11y_state.spoken_feedback)
+    CancelChromeVoxHintIdleDetection();
+  if (view_) {
+    view_->UpdateA11yState(a11y_state);
+  }
 }
 
 void WelcomeScreen::Exit(Result result) const {

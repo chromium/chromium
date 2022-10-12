@@ -57,12 +57,6 @@ WelcomeScreenHandler::WelcomeScreenHandler(CoreOobeView* core_oobe_view)
     : BaseScreenHandler(kScreenId), core_oobe_view_(core_oobe_view) {
   set_user_acted_method_path_deprecated("login.WelcomeScreen.userActed");
   DCHECK(core_oobe_view_);
-
-  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
-  CHECK(accessibility_manager);
-  accessibility_subscription_ = accessibility_manager->RegisterCallback(
-      base::BindRepeating(&WelcomeScreenHandler::OnAccessibilityStatusChanged,
-                          base::Unretained(this)));
 }
 
 WelcomeScreenHandler::~WelcomeScreenHandler() {
@@ -302,7 +296,6 @@ void WelcomeScreenHandler::InitializeDeprecated() {
   // Reload localized strings if they are already resolved.
   if (screen_ && !screen_->language_list().empty())
     ReloadLocalizedContent();
-  UpdateA11yState();
 }
 
 // WelcomeScreenHandler, private: ----------------------------------------------
@@ -335,10 +328,6 @@ void WelcomeScreenHandler::GiveChromeVoxHint() {
   CallJS("login.WelcomeScreen.maybeGiveChromeVoxHint");
 }
 
-void WelcomeScreenHandler::CancelChromeVoxHintIdleDetection() {
-  screen_->CancelChromeVoxHintIdleDetection();
-}
-
 void WelcomeScreenHandler::SetQuickStartEnabled() {
   DCHECK(features::IsOobeQuickStartEnabled());
   CallJS("login.WelcomeScreen.setQuickStartEnabled");
@@ -349,35 +338,15 @@ void WelcomeScreenHandler::HandleRecordChromeVoxHintSpokenSuccess() {
                             true);
 }
 
-void WelcomeScreenHandler::OnAccessibilityStatusChanged(
-    const ash::AccessibilityStatusEventDetails& details) {
-  if (details.notification_type ==
-      ash::AccessibilityNotificationType::kManagerShutdown) {
-    accessibility_subscription_ = {};
-  } else {
-    UpdateA11yState();
-  }
-}
-
-void WelcomeScreenHandler::UpdateA11yState() {
+void WelcomeScreenHandler::UpdateA11yState(const A11yState& state) {
   base::Value::Dict a11y_info;
-  a11y_info.Set("highContrastEnabled",
-                AccessibilityManager::Get()->IsHighContrastEnabled());
-  a11y_info.Set("largeCursorEnabled",
-                AccessibilityManager::Get()->IsLargeCursorEnabled());
-  a11y_info.Set("spokenFeedbackEnabled",
-                AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-  a11y_info.Set("selectToSpeakEnabled",
-                AccessibilityManager::Get()->IsSelectToSpeakEnabled());
-  DCHECK(MagnificationManager::Get());
-  a11y_info.Set("screenMagnifierEnabled",
-                MagnificationManager::Get()->IsMagnifierEnabled());
-  a11y_info.Set("dockedMagnifierEnabled",
-                MagnificationManager::Get()->IsDockedMagnifierEnabled());
-  a11y_info.Set("virtualKeyboardEnabled",
-                AccessibilityManager::Get()->IsVirtualKeyboardEnabled());
-  if (screen_ && AccessibilityManager::Get()->IsSpokenFeedbackEnabled())
-    CancelChromeVoxHintIdleDetection();
+  a11y_info.Set("highContrastEnabled", state.high_contrast);
+  a11y_info.Set("largeCursorEnabled", state.large_cursor);
+  a11y_info.Set("spokenFeedbackEnabled", state.spoken_feedback);
+  a11y_info.Set("selectToSpeakEnabled", state.select_to_speak);
+  a11y_info.Set("screenMagnifierEnabled", state.screen_magnifier);
+  a11y_info.Set("dockedMagnifierEnabled", state.docked_magnifier);
+  a11y_info.Set("virtualKeyboardEnabled", state.virtual_keyboard);
   CallJS("login.WelcomeScreen.refreshA11yInfo", std::move(a11y_info));
 }
 

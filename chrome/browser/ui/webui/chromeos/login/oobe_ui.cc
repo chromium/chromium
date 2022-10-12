@@ -751,11 +751,6 @@ void OobeUI::OnDisplayConfigurationChanged() {
     UpScaleOobe();
 }
 
-void OobeUI::OnSystemTrayBubbleShown() {
-  if (current_screen_ == WelcomeView::kScreenId)
-    GetHandler<WelcomeScreenHandler>()->CancelChromeVoxHintIdleDetection();
-}
-
 WEB_UI_CONTROLLER_TYPE_IMPL(OobeUI)
 
 }  // namespace chromeos
