@@ -34,6 +34,10 @@ extern const char kTrackedDirectoryName[];
 // the Trash directory and its children.
 extern const char kDirectorySetupHistogramName[];
 
+// The histogram used to record the various types of failures that might occur
+// when trying to trash an item.
+extern const char kFailedTrashingHistogramName[];
+
 struct TrashLocation {
   TrashLocation(const base::FilePath supplied_relative_folder_path,
                 const base::FilePath supplied_mount_point_path,
@@ -111,6 +115,15 @@ enum class DirectorySetupUmaType {
   FAILED_XATTR = 2,
   FAILED_PARENT_FOLDER_PERMISSIONS = 3,
   kMaxValue = FAILED_PARENT_FOLDER_PERMISSIONS,
+};
+
+// Enum of possible UMA values for histogram FileBrowser.Trash.FailedTrashing.
+// Keep the order of this in sync with FailedTrashingType in
+// tools/metrics/histograms/enums.xml.
+enum class FailedTrashingUmaType {
+  FAILED_WRITING_METADATA = 0,
+  FAILED_MOVING_FILE = 1,
+  kMaxValue = FAILED_MOVING_FILE,
 };
 
 }  // namespace file_manager::trash

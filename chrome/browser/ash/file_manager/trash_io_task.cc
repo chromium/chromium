@@ -90,6 +90,10 @@ void RecordDirectorySetupMetric(trash::DirectorySetupUmaType type) {
   UMA_HISTOGRAM_ENUMERATION(trash::kDirectorySetupHistogramName, type);
 }
 
+void RecordFailedTrashingMetric(trash::FailedTrashingUmaType type) {
+  UMA_HISTOGRAM_ENUMERATION(trash::kFailedTrashingHistogramName, type);
+}
+
 base::File::Error SetTrackedExtendedAttribute(const base::FilePath& path) {
   auto tracked_name = base::StrCat({"trash_", path.BaseName().value()});
   if (lsetxattr(path.value().c_str(), trash::kTrackedDirectoryName,
@@ -504,6 +508,8 @@ void TrashIOTask::OnWriteMetadata(size_t source_idx,
                                   const storage::FileSystemURL& destination_url,
                                   bool success) {
   if (!success) {
+    RecordFailedTrashingMetric(
+        trash::FailedTrashingUmaType::FAILED_WRITING_METADATA);
     TrashComplete(source_idx, output_idx, base::File::FILE_ERROR_FAILED);
     return;
   }
@@ -531,7 +537,7 @@ void TrashIOTask::TrashFile(size_t source_idx,
 
   auto complete_callback =
       base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                         base::BindOnce(&TrashIOTask::TrashComplete,
+                         base::BindOnce(&TrashIOTask::OnMoveComplete,
                                         weak_ptr_factory_.GetWeakPtr(),
                                         source_idx, output_idx + 1));
 
@@ -553,6 +559,8 @@ void TrashIOTask::OnMoveComplete(size_t source_idx,
   DCHECK(output_idx < progress_.outputs.size());
   if (error != base::File::FILE_OK) {
     LOG(ERROR) << "Failed to move the file to trash folder: " << error;
+    RecordFailedTrashingMetric(
+        trash::FailedTrashingUmaType::FAILED_MOVING_FILE);
     auto complete_callback = base::BindPostTask(
         base::SequencedTaskRunnerHandle::Get(),
         base::BindOnce(&TrashIOTask::TrashComplete,

@@ -36593,6 +36593,11 @@ Called by update_extension_permission.py.-->
   </int>
 </enum>
 
+<enum name="FailedTrashingType">
+  <int value="0" label="Failed to write the metadata file"/>
+  <int value="1" label="Failed to move the file to the .Trash/info folder"/>
+</enum>
+
 <enum name="FallbackDNSTestResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>

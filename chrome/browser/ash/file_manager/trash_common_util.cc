@@ -21,6 +21,8 @@ constexpr char kTrashInfoExtension[] = ".trashinfo";
 constexpr char kTrackedDirectoryName[] = "user.TrackedDirectoryName";
 constexpr char kDirectorySetupHistogramName[] =
     "FileBrowser.Trash.DirectorySetupFailed";
+constexpr char kFailedTrashingHistogramName[] =
+    "FileBrowser.Trash.FailedTrashing";
 
 TrashLocation::TrashLocation(const base::FilePath supplied_relative_folder_path,
                              const base::FilePath supplied_mount_point_path,
