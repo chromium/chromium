@@ -39,6 +39,7 @@ namespace policy {
 
 namespace {
 const char kCompanyPattern[] = "company.com";
+const char kFilename[] = "example.txt";
 }  // namespace
 
 class DlpReportingManagerTest : public testing::Test {
@@ -273,13 +274,18 @@ TEST_F(DlpReportingManagerTest, CreateEventWithUnknownRestriction) {
 }
 
 TEST_F(DlpReportingManagerTest, CreateEventForFilesRestriction) {
-  DlpPolicyEvent event = policy::CreateDlpPolicyEvent(
+  auto event_builder = DlpPolicyEventBuilder::Event(
       kCompanyPattern, DlpRulesManager::Restriction::kFiles,
       DlpRulesManager::Level::kAllow);
+  event_builder->SetContentName(kFilename);
+
+  DlpPolicyEvent event = event_builder->Create();
+
   EXPECT_EQ(event.source().url(), kCompanyPattern);
   EXPECT_FALSE(event.has_destination());
   EXPECT_EQ(event.restriction(), DlpPolicyEvent_Restriction_FILES);
   EXPECT_EQ(event.mode(), DlpPolicyEvent_Mode_UNDEFINED_MODE);
+  EXPECT_EQ(event.content_name(), kFilename);
 }
 
 TEST_F(DlpReportingManagerTest, Timestamp) {

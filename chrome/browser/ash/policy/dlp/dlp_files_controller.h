@@ -229,7 +229,8 @@ class DlpFilesController {
       std::vector<FileDaemonInfo> restricted_files_sources,
       std::vector<FileDaemonInfo> warned_files_sources,
       std::vector<std::string> warned_src_patterns,
-      const DlpFileDestination& destination,
+      const DlpFileDestination& dst,
+      const absl::optional<std::string>& dst_pattern,
       FileAction files_action,
       IsFilesTransferRestrictedCallback callback,
       bool should_proceed);
@@ -248,16 +249,14 @@ class DlpFilesController {
                          GetDlpMetadataCallback result_callback,
                          const ::dlp::GetFilesSourcesResponse response);
 
-  // Reports an event if a `DlpReportingManager` instance exists.
+  // Reports an event if a `DlpReportingManager` instance exists. When
+  // `dst_pattern` is missing, we report `dst.component.value()` instead. When
+  // `level` is missing, we report a warning proceeded event.
   void MaybeReportEvent(const FileDaemonInfo& file,
                         const DlpFileDestination& dst,
                         const absl::optional<std::string>& dst_pattern,
-                        DlpRulesManager::Level level);
-  void MaybeReportEvent(const FileDaemonInfo& file,
-                        const DlpFileDestination& dst,
-                        DlpRulesManager::Level level);
-  void MaybeReportWarnProceededEvent(const std::string& src,
-                                     const DlpFileDestination& dst);
+                        absl::optional<DlpRulesManager::Level> level);
+
   // Closes warning dialog if `response` has error.
   ::dlp::CheckFilesTransferResponse MaybeCloseDialog(
       ::dlp::CheckFilesTransferResponse response);

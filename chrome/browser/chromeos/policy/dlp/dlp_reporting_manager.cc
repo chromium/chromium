@@ -133,45 +133,48 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    DlpRulesManager::Restriction restriction,
-                                    DlpRulesManager::Level level) {
-  DlpPolicyEvent event;
+// static
+std::unique_ptr<DlpPolicyEventBuilder> DlpPolicyEventBuilder::Event(
+    const std::string& src_pattern,
+    DlpRulesManager::Restriction restriction,
+    DlpRulesManager::Level level) {
+  std::unique_ptr<DlpPolicyEventBuilder> event_builder(
+      new DlpPolicyEventBuilder());
+  event_builder->SetSourcePattern(src_pattern);
+  event_builder->SetRestriction(restriction);
+  event_builder->event.set_mode(DlpRulesManagerLevel2DlpEventMode(level));
+  return event_builder;
+}
 
-  DlpPolicyEventSource* event_source = new DlpPolicyEventSource;
-  event_source->set_url(src_pattern);
-  event.set_allocated_source(event_source);
+// static
+std::unique_ptr<DlpPolicyEventBuilder>
+DlpPolicyEventBuilder::WarningProceededEvent(
+    const std::string& src_pattern,
+    DlpRulesManager::Restriction restriction) {
+  std::unique_ptr<DlpPolicyEventBuilder> event_builder(
+      new DlpPolicyEventBuilder());
+  event_builder->SetSourcePattern(src_pattern);
+  event_builder->SetRestriction(restriction);
+  event_builder->event.set_mode(DlpPolicyEvent_Mode_WARN_PROCEED);
+  return event_builder;
+}
 
-  event.set_restriction(
-      DlpRulesManagerRestriction2DlpEventRestriction(restriction));
+DlpPolicyEventBuilder::DlpPolicyEventBuilder() {
   int64_t timestamp_micro =
       (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds();
   event.set_timestamp_micro(timestamp_micro);
   event.set_user_type(GetCurrentUserType());
-  event.set_mode(DlpRulesManagerLevel2DlpEventMode(level));
-
-  return event;
 }
 
-DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    const std::string& dst_pattern,
-                                    DlpRulesManager::Restriction restriction,
-                                    DlpRulesManager::Level level) {
-  auto event = CreateDlpPolicyEvent(src_pattern, restriction, level);
-
+void DlpPolicyEventBuilder::SetDestinationPattern(
+    const std::string& dst_pattern) {
   DlpPolicyEventDestination* event_destination = new DlpPolicyEventDestination;
   event_destination->set_url(dst_pattern);
   event.set_allocated_destination(event_destination);
-
-  return event;
 }
 
-DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    DlpRulesManager::Component dst_component,
-                                    DlpRulesManager::Restriction restriction,
-                                    DlpRulesManager::Level level) {
-  auto event = CreateDlpPolicyEvent(src_pattern, restriction, level);
-
+void DlpPolicyEventBuilder::SetDestinationComponent(
+    DlpRulesManager::Component dst_component) {
   DlpPolicyEventDestination* event_destination = new DlpPolicyEventDestination;
   switch (dst_component) {
     case (DlpRulesManager::Component::kArc):
@@ -198,8 +201,54 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
       break;
   }
   event.set_allocated_destination(event_destination);
+}
 
+void DlpPolicyEventBuilder::SetContentName(const std::string& content_name) {
+  event.set_content_name(content_name);
+}
+
+DlpPolicyEvent DlpPolicyEventBuilder::Create() {
   return event;
+}
+
+void DlpPolicyEventBuilder::SetSourcePattern(const std::string& src_pattern) {
+  DlpPolicyEventSource* event_source = new DlpPolicyEventSource;
+  event_source->set_url(src_pattern);
+  event.set_allocated_source(event_source);
+}
+
+void DlpPolicyEventBuilder::SetRestriction(
+    DlpRulesManager::Restriction restriction) {
+  event.set_restriction(
+      DlpRulesManagerRestriction2DlpEventRestriction(restriction));
+}
+
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+                                    DlpRulesManager::Restriction restriction,
+                                    DlpRulesManager::Level level) {
+  auto event_builder =
+      DlpPolicyEventBuilder::Event(src_pattern, restriction, level);
+  return event_builder->Create();
+}
+
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+                                    const std::string& dst_pattern,
+                                    DlpRulesManager::Restriction restriction,
+                                    DlpRulesManager::Level level) {
+  auto event_builder =
+      DlpPolicyEventBuilder::Event(src_pattern, restriction, level);
+  event_builder->SetDestinationPattern(dst_pattern);
+  return event_builder->Create();
+}
+
+DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
+                                    DlpRulesManager::Component dst_component,
+                                    DlpRulesManager::Restriction restriction,
+                                    DlpRulesManager::Level level) {
+  auto event_builder =
+      DlpPolicyEventBuilder::Event(src_pattern, restriction, level);
+  event_builder->SetDestinationComponent(dst_component);
+  return event_builder->Create();
 }
 
 DlpReportingManager::DlpReportingManager()

@@ -68,4 +68,6 @@ message DlpPolicyEvent {
   optional bool restriction_enforced = 5;
   optional int64 timestamp_micro = 6;
   optional UserType user_type = 7;
+  // Currently used for the filename involved in a file event.
+  optional string content_name = 8;
 }

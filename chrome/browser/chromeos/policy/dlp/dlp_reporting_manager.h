@@ -16,6 +16,38 @@
 class DlpPolicyEvent;
 
 namespace policy {
+
+// Helper class used to build custom DLP policy events.
+class DlpPolicyEventBuilder {
+ public:
+  // Possible event types.
+  static std::unique_ptr<DlpPolicyEventBuilder> Event(
+      const std::string& src_pattern,
+      DlpRulesManager::Restriction restriction,
+      DlpRulesManager::Level level);
+  static std::unique_ptr<DlpPolicyEventBuilder> WarningProceededEvent(
+      const std::string& src_pattern,
+      DlpRulesManager::Restriction restriction);
+
+  // Setters used to define event properties.
+  void SetDestinationPattern(const std::string& dst_pattern);
+  void SetDestinationComponent(DlpRulesManager::Component dst_component);
+  void SetContentName(const std::string& content_name);
+
+  // Stops the creation and returns the created event.
+  DlpPolicyEvent Create();
+
+ private:
+  DlpPolicyEventBuilder();
+
+  // Private setters used to define mandatory event properties set up internally
+  // when a DlpPolicyEventBuilder is built.
+  void SetSourcePattern(const std::string& src_pattern);
+  void SetRestriction(DlpRulesManager::Restriction restriction);
+
+  DlpPolicyEvent event;
+};
+
 // helper function to create DlpPolicyEvents to be enqueued or used to test
 // against.
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
@@ -69,6 +101,7 @@ class DlpReportingManager {
   void ReportWarningProceededEvent(Args... args) {
     ReportEvent(CreateDlpPolicyWarningProceededEvent(args...));
   }
+  void ReportEvent(DlpPolicyEvent event);
 
   size_t events_reported() const { return events_reported_; }
 
@@ -84,8 +117,6 @@ class DlpReportingManager {
 
  private:
   void OnEventEnqueued(reporting::Status status);
-
-  void ReportEvent(DlpPolicyEvent event);
 
   // Counter for the number of events reported from login.
   size_t events_reported_ = 0;

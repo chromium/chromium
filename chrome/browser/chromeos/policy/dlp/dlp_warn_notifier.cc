@@ -56,7 +56,7 @@ base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpFilesWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
     const std::vector<DlpConfidentialFile>& confidential_files,
     absl::optional<DlpRulesManager::Component> dst_component,
-    const std::string& destination_pattern,
+    const absl::optional<std::string>& destination_pattern,
     DlpFilesController::FileAction files_action) {
   return ShowDlpWarningDialog(
       std::move(callback),

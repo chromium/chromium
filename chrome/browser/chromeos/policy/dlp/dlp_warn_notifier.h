@@ -57,7 +57,7 @@ class DlpWarnNotifier : public views::WidgetObserver {
       OnDlpRestrictionCheckedCallback callback,
       const std::vector<DlpConfidentialFile>& confidential_files,
       absl::optional<DlpRulesManager::Component> dst_component,
-      const std::string& destination_pattern,
+      const absl::optional<std::string>& destination_pattern,
       DlpFilesController::FileAction files_action);
 
   // Shows a warning dialog that informs the user that screen sharing is not

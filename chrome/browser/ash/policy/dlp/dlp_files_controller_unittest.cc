@@ -694,15 +694,22 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnIsDlpPolicyMatched) {
   const auto file4 = DlpFilesController::FileDaemonInfo(
       kInode4, base::FilePath(kFilePath4), kExampleUrl4);
 
-  const auto event1 = CreateDlpPolicyEvent(
-      kExampleUrl1, DlpRulesManager::Component::kUnknownComponent,
-      DlpRulesManager::Restriction::kFiles, DlpRulesManager::Level::kBlock);
-  const auto event2 = CreateDlpPolicyEvent(
-      kExampleUrl2, DlpRulesManager::Component::kUnknownComponent,
-      DlpRulesManager::Restriction::kFiles, DlpRulesManager::Level::kReport);
-  const auto event3 = CreateDlpPolicyEvent(
-      kExampleUrl3, DlpRulesManager::Component::kUnknownComponent,
-      DlpRulesManager::Restriction::kFiles, DlpRulesManager::Level::kWarn);
+  auto CreateEvent = [](const std::string& src, DlpRulesManager::Level level,
+                        const std::string& filename) {
+    auto event_builder = DlpPolicyEventBuilder::Event(
+        src, DlpRulesManager::Restriction::kFiles, level);
+    event_builder->SetDestinationComponent(
+        DlpRulesManager::Component::kUnknownComponent);
+    event_builder->SetContentName(filename);
+    return event_builder->Create();
+  };
+
+  const auto event1 =
+      CreateEvent(kExampleUrl1, DlpRulesManager::Level::kBlock, kFilePath1);
+  const auto event2 =
+      CreateEvent(kExampleUrl2, DlpRulesManager::Level::kReport, kFilePath2);
+  const auto event3 =
+      CreateEvent(kExampleUrl3, DlpRulesManager::Level::kWarn, kFilePath3);
 
   base::TimeDelta cooldown_time =
       event_storage_->GetDeduplicationCooldownForTesting();
@@ -824,12 +831,16 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnIsFilesTransferRestricted) {
   MockIsFilesTransferRestrictedCallback cb;
   EXPECT_CALL(cb, Run(disallowed_files)).Times(::testing::AnyNumber());
 
-  const auto event1 = CreateDlpPolicyEvent(kExampleUrl1, dst_url,
-                                           DlpRulesManager::Restriction::kFiles,
-                                           DlpRulesManager::Level::kBlock);
-  const auto event2 = CreateDlpPolicyEvent(
-      kExampleUrl1, DlpRulesManager::Component::kUsb,
-      DlpRulesManager::Restriction::kFiles, DlpRulesManager::Level::kBlock);
+  auto event_builder = DlpPolicyEventBuilder::Event(
+      kExampleUrl1, DlpRulesManager::Restriction::kFiles,
+      DlpRulesManager::Level::kBlock);
+  event_builder->SetContentName(kFilePath1);
+
+  event_builder->SetDestinationPattern(dst_url);
+  const auto event1 = event_builder->Create();
+
+  event_builder->SetDestinationComponent(DlpRulesManager::Component::kUsb);
+  const auto event2 = event_builder->Create();
 
   base::TimeDelta cooldown_time =
       event_storage_->GetDeduplicationCooldownForTesting();
@@ -893,9 +904,12 @@ TEST_F(DlpFilesControllerTest, CheckReportingOnMixedCalls) {
   MockIsFilesTransferRestrictedCallback cb;
   EXPECT_CALL(cb, Run(disallowed_files)).Times(1);
 
-  const auto event = CreateDlpPolicyEvent(kExampleUrl1, dst_url,
-                                          DlpRulesManager::Restriction::kFiles,
-                                          DlpRulesManager::Level::kBlock);
+  auto event_builder = DlpPolicyEventBuilder::Event(
+      kExampleUrl1, DlpRulesManager::Restriction::kFiles,
+      DlpRulesManager::Level::kBlock);
+  event_builder->SetContentName(kFilePath1);
+  event_builder->SetDestinationPattern(dst_url);
+  const auto event = event_builder->Create();
 
   // Report a single `event` after this call
   files_controller_->IsFilesTransferRestricted(
@@ -1422,7 +1436,7 @@ TEST_P(DlpFilesWarningDialogContentTest,
   }
   DlpWarnDialog::DlpWarnDialogOptions expected_dialog_options(
       DlpWarnDialog::Restriction::kFiles, expected_files,
-      DlpRulesManager::Component::kUsb, /*destination_pattern=*/"",
+      DlpRulesManager::Component::kUsb, /*destination_pattern=*/absl::nullopt,
       transfer_info.files_action);
 
   EXPECT_CALL(*rules_manager_,
