@@ -840,6 +840,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest,
       i, TabCloseTypes::CLOSE_USER_GESTURE);
 
   // Simulate recording the UKMs to clear the local usage time records.
+  website_metrics()->OnFiveMinutes();
   website_metrics()->OnTwoHours();
   VerifyUsageTimeUkm(GURL("https://a.example.org"), UrlContent::kFullUrl,
                      /*promotable=*/false);

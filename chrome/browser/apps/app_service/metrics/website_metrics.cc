@@ -257,7 +257,6 @@ void WebsiteMetrics::OnFiveMinutes() {
 }
 
 void WebsiteMetrics::OnTwoHours() {
-  SaveUsageTime();
   RecordUsageTime();
 
   std::map<GURL, UrlInfo> url_infos;
