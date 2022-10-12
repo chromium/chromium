@@ -107,6 +107,16 @@ component("controller") {
 
   configs -= [ "//build/config/compiler:default_symbols" ]
   configs += blink_symbols_config
+
+  # These targets are not necessary to build the Blink renderer, however, these
+  # targets are quite useful for Blink developers to get error if any when
+  # adding/editing *.idl files, especially because it's very easy to forget to
+  # add generated bindings files to the lists defined in
+  # generated_in_{core,modules}.gni. Hence, run the check scripts here.
+  deps += [
+    "//third_party/blink/renderer/bindings:check_generated_file_list",
+    "//third_party/blink/renderer/bindings:validate_web_idl",
+  ]
 }
 
 group("blink_unittests_data") {
