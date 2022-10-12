@@ -65,23 +65,25 @@ const String& AnimationUAStyles() {
   return kAnimationUAStyles;
 }
 
-absl::optional<String> ComputeSnapshotViewportOffset(
-    gfx::Insets physical_insets,
+absl::optional<String> GetSnapshotViewportOffsetTransform(
+    const gfx::Vector2d& offset,
     float device_pixel_ratio) {
-  if (!physical_insets.top() && !physical_insets.left())
+  if (!offset.x() && !offset.y())
     return absl::nullopt;
 
-  // Since we're using these in style, convert from physical pixels to CSS
+  // Since we're using the offset in style, convert from physical pixels to CSS
   // pixels.
-  gfx::InsetsF css_insets =
-      gfx::ScaleInsets(gfx::InsetsF(physical_insets), 1.f / device_pixel_ratio);
+  gfx::Vector2dF css_offset =
+      gfx::ScaleVector2d(offset, 1.f / device_pixel_ratio);
 
   // The root is translated up and left so that the coordinate space for all
   // children has its origin at the point that is the top-left when all UI is
   // hidden. This requires non-root shared elements to be shifted back down and
   // right.
-  return String::Format("transform: translate(-%.3fpx, -%.3fpx);",
-                        css_insets.left(), css_insets.top());
+  DCHECK_LE(css_offset.x(), 0.f);
+  DCHECK_LE(css_offset.y(), 0.f);
+  return String::Format("transform: translate(%.3fpx, %.3fpx);", css_offset.x(),
+                        css_offset.y());
 }
 
 absl::optional<String> ComputeInsetDifference(PhysicalRect reference_rect,
@@ -659,7 +661,7 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
       LayoutSize size;
       viz::SharedElementResourceId snapshot_id;
       if (old_root_data_ && old_root_data_->tags.Contains(document_transition_tag)) {
-        size = LayoutSize(GetRootContainerSize());
+        size = LayoutSize(GetSnapshotViewportRect().size());
         snapshot_id = old_root_data_->snapshot_id;
       } else {
         DCHECK(document_transition_tag);
@@ -690,7 +692,7 @@ PseudoElement* DocumentTransitionStyleTracker::CreatePseudoElement(
       LayoutSize size;
       viz::SharedElementResourceId snapshot_id;
       if (new_root_data_ && new_root_data_->tags.Contains(document_transition_tag)) {
-        size = LayoutSize(GetRootContainerSize());
+        size = LayoutSize(GetSnapshotViewportRect().size());
         snapshot_id = new_root_data_->snapshot_id;
       } else {
         DCHECK(document_transition_tag);
@@ -745,14 +747,15 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
                                          ->GetLayoutObject()
                                          ->StyleRef()
                                          .EffectiveZoom();
-    TransformationMatrix viewport_matrix =
+    TransformationMatrix snapshot_matrix =
         layout_object->LocalToAbsoluteTransform();
 
-    gfx::Insets viewport_insets = GetViewportWidgetInsets();
-    viewport_matrix.PostTranslate(viewport_insets.left(),
-                                  viewport_insets.top());
+    gfx::Vector2d snapshot_to_fixed_offset =
+        -GetSnapshotViewportRect().OffsetFromOrigin();
+    snapshot_matrix.PostTranslate(snapshot_to_fixed_offset.x(),
+                                  snapshot_to_fixed_offset.y());
 
-    viewport_matrix.Zoom(1.0 / device_pixel_ratio);
+    snapshot_matrix.Zoom(1.0 / device_pixel_ratio);
 
     // ResizeObserverEntry is created to reuse the logic for parsing object size
     // for different types of LayoutObjects.
@@ -778,7 +781,7 @@ void DocumentTransitionStyleTracker::RunPostPrePaintSteps() {
     WritingMode writing_mode = layout_object->StyleRef().GetWritingMode();
 
     ContainerProperties container_properties(border_box_size_in_css_space,
-                                             viewport_matrix);
+                                             snapshot_matrix);
     if (!element_data->container_properties.empty() &&
         element_data->container_properties.back() == container_properties &&
         visual_overflow_rect_in_layout_space ==
@@ -976,40 +979,68 @@ DocumentTransitionStyleTracker::StyleRulesToInclude() const {
   return StyleRequest::kAll;
 }
 
-gfx::Size DocumentTransitionStyleTracker::GetRootContainerSize() const {
-  DCHECK(document_->GetLayoutView());
-  DCHECK(document_->GetFrame());
+namespace {
 
-  // Start with the full FrameView size, i.e. the position: fixed viewport and
-  // expand the viewport by any insetting UI such as the mobile URL bar,
-  // virtual-keyboard, etc.
-  gfx::Size container_size = document_->View()->Size();
-  gfx::Insets viewport_insets = GetViewportWidgetInsets();
+// Returns the outsets applied by browser UI on the fixed viewport that will
+// transform it into the snapshot viewport.
+gfx::Outsets GetFixedToSnapshotViewportOutsets(Document& document) {
+  DCHECK(document.View());
+  DCHECK(document.GetPage());
+  DCHECK(document.GetFrame());
 
-  container_size.Enlarge(viewport_insets.width(), viewport_insets.height());
-  return container_size;
-}
+  if (!document.GetFrame()->IsOutermostMainFrame())
+    return gfx::Outsets();
 
-gfx::Insets DocumentTransitionStyleTracker::GetViewportWidgetInsets() const {
-  Page* page = document_->GetPage();
-  DCHECK(page);
+  Page& page = *document.GetPage();
 
-  gfx::Insets insets;
-  BrowserControls& controls = page->GetBrowserControls();
+  int top = 0;
+  int right = 0;
+  int bottom = 0;
+  int left = 0;
 
   // TODO(bokan): This assumes any shown ratio implies controls are shown. We
   // many need to do some synchronization to make this work seamlessly with URL
   // bar animations.
-  if (page->GetBrowserControls().TopShownRatio()) {
-    insets.set_top(controls.TopHeight() - controls.TopMinHeight());
-    insets.set_bottom(controls.BottomHeight() - controls.BottomMinHeight());
+  BrowserControls& controls = page.GetBrowserControls();
+  if (page.GetBrowserControls().TopShownRatio()) {
+    top += controls.TopHeight() - controls.TopMinHeight();
+    bottom += controls.BottomHeight() - controls.BottomMinHeight();
   }
 
   // TODO(bokan): Account for virtual-keyboard
 
   // TODO(bokan): Account for scrollbars.
 
-  return insets;
+  gfx::Outsets outsets;
+  outsets.set_top(top);
+  outsets.set_right(right);
+  outsets.set_bottom(bottom);
+  outsets.set_left(left);
+  return outsets;
+}
+}  // namespace
+
+gfx::Rect DocumentTransitionStyleTracker::GetSnapshotViewportRect() const {
+  DCHECK(document_->GetLayoutView());
+  DCHECK(document_->View());
+  DCHECK(document_->GetFrame());
+
+  LocalFrameView& view = *document_->View();
+
+  // Start with the full FrameView size, i.e. the position: fixed viewport and
+  // expand the viewport by any insetting UI such as the mobile URL bar,
+  // virtual-keyboard, etc. Note: the FrameView size already includes
+  // scrollbars.
+  gfx::Rect snapshot_viewport_rect(view.Size());
+  snapshot_viewport_rect.Outset(GetFixedToSnapshotViewportOutsets(*document_));
+
+  return snapshot_viewport_rect;
+}
+
+gfx::Vector2d DocumentTransitionStyleTracker::GetRootSnapshotPaintOffset()
+    const {
+  gfx::Outsets outsets = GetFixedToSnapshotViewportOutsets(*document_);
+  return gfx::Vector2d(outsets.left(), outsets.top());
 }
 
 void DocumentTransitionStyleTracker::InvalidateStyle() {
@@ -1116,8 +1147,8 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
   // Position the root container behind any viewport insetting widgets (such
   // as the URL bar) so that it's stable across a transition.
   absl::optional<String> snapshot_viewport_offset =
-      ComputeSnapshotViewportOffset(GetViewportWidgetInsets(),
-                                    device_pixel_ratio);
+      GetSnapshotViewportOffsetTransform(
+          GetSnapshotViewportRect().OffsetFromOrigin(), device_pixel_ratio);
   if (snapshot_viewport_offset) {
     builder.AddRootStyles(*snapshot_viewport_offset);
   }
@@ -1215,7 +1246,7 @@ const String& DocumentTransitionStyleTracker::UAStyleSheet() {
         builder.AddAnimationAndBlending(
             document_transition_tag, element_data->cached_container_properties);
       } else if (element_data->new_snapshot_id.IsValid() && tag_is_old_root) {
-        auto layout_view_size = LayoutSize(GetRootContainerSize());
+        auto layout_view_size = LayoutSize(GetSnapshotViewportRect().size());
         // Note that we want the size in css space, which means we need to undo
         // the effective zoom.
         layout_view_size.Scale(

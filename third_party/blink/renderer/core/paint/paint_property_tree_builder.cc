@@ -2911,10 +2911,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
   if (auto* supplement =
           DocumentTransitionSupplement::FromIfExists(object_.GetDocument())) {
     if (object_.IsDocumentElement() && !supplement->GetTransition()->IsIdle()) {
-      gfx::Insets inset =
-          supplement->GetTransition()->GetViewportWidgetInsets();
-      PhysicalOffset offset =
-          PhysicalOffset(LayoutUnit(inset.left()), LayoutUnit(inset.top()));
+      PhysicalOffset offset = PhysicalOffset(
+          supplement->GetTransition()->GetRootSnapshotPaintOffset());
       context_.current.paint_offset += offset;
       context_.absolute_position.paint_offset += offset;
       context_.fixed_position.paint_offset += offset;

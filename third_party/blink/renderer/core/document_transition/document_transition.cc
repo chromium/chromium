@@ -529,18 +529,18 @@ void DocumentTransition::WillCommitCompositorFrame() {
     PauseRendering();
 }
 
-gfx::Insets DocumentTransition::GetViewportWidgetInsets() const {
+gfx::Rect DocumentTransition::GetSnapshotViewportRect() const {
   if (!style_tracker_)
-    return gfx::Insets();
+    return gfx::Rect();
 
-  return style_tracker_->GetViewportWidgetInsets();
+  return style_tracker_->GetSnapshotViewportRect();
 }
 
-gfx::Size DocumentTransition::GetRootContainerSize() const {
+gfx::Vector2d DocumentTransition::GetRootSnapshotPaintOffset() const {
   if (!style_tracker_)
-    return gfx::Size();
+    return gfx::Vector2d();
 
-  return style_tracker_->GetRootContainerSize();
+  return style_tracker_->GetRootSnapshotPaintOffset();
 }
 
 void DocumentTransition::PauseRendering() {

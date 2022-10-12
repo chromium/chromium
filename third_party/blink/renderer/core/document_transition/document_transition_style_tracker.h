@@ -43,19 +43,22 @@ class DocumentTransitionStyleTracker
     ContainerProperties() = default;
     ContainerProperties(const LayoutSize& size,
                         const TransformationMatrix& matrix)
-        : border_box_size_in_css_space(size), viewport_matrix(matrix) {}
+        : border_box_size_in_css_space(size), snapshot_matrix(matrix) {}
 
     bool operator==(const ContainerProperties& other) const {
       return border_box_size_in_css_space ==
                  other.border_box_size_in_css_space &&
-             viewport_matrix == other.viewport_matrix;
+             snapshot_matrix == other.snapshot_matrix;
     }
     bool operator!=(const ContainerProperties& other) const {
       return !(*this == other);
     }
 
     LayoutSize border_box_size_in_css_space;
-    TransformationMatrix viewport_matrix;
+
+    // Transforms a point from local space into the snapshot viewport. For
+    // details of the snapshot viewport, see README.md.
+    TransformationMatrix snapshot_matrix;
   };
 
   explicit DocumentTransitionStyleTracker(Document& document);
@@ -149,14 +152,17 @@ class DocumentTransitionStyleTracker
 
   VectorOf<Element> GetTransitioningElements() const;
 
-  // In physical pixels. The size we should use for the snapshot and pseudo
-  // elements. This is intended to be stable across navigations and expands the
-  // current viewport size to a state where all insetting UI is retracted.
-  gfx::Size GetRootContainerSize() const;
+  // In physical pixels. Returns the snapshot viewport rect, relative to the
+  // fixed viewport origin. See README.md for a detailed description of the
+  // snapshot viewport.
+  gfx::Rect GetSnapshotViewportRect() const;
 
-  // In physical pixels. Returns how much viewport-insetting UI widgets such as
-  // the virtual keyboard or mobile URL bar are insetting the viewport.
-  gfx::Insets GetViewportWidgetInsets() const;
+  // In physical pixels. Returns the offset within the root snapshot which
+  // should be used as the paint origin. The root snapshot fills the snapshot
+  // viewport, which is overlaid by viewport-insetting UI widgets such as the
+  // mobile URL bar. Because of this, we offset paint so that content is
+  // painted where it appears on the screen (rather than under the UI).
+  gfx::Vector2d GetRootSnapshotPaintOffset() const;
 
  private:
   class ImageWrapperPseudoElement;

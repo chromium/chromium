@@ -137,8 +137,8 @@ class CORE_EXPORT DocumentTransition
 
   // In physical pixels. See comments on equivalent methods in
   // DocumentTransitionStyleTracker for info.
-  gfx::Insets GetViewportWidgetInsets() const;
-  gfx::Size GetRootContainerSize() const;
+  gfx::Rect GetSnapshotViewportRect() const;
+  gfx::Vector2d GetRootSnapshotPaintOffset() const;
 
  private:
   friend class DocumentTransitionTest;

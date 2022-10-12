@@ -48,12 +48,12 @@ html
    |_ ::page-transition-container(foo)
    |  |_ ::page-transition-image-wrapper(foo)
    |     |_ ::page-transition-outgoing-image(foo)
-   |     |_ ::page-transition-incoming-iage(foo)
+   |     |_ ::page-transition-incoming-image(foo)
    |
    |_ ::page-transition-container(bar)
    |  |_ ::page-transition-image-wrapper(bar)
    |     |_ ::page-transition-outgoing-image(bar)
-   |     |_ ::page-transition-incoming-iage(bar)
+   |     |_ ::page-transition-incoming-image(bar)
 ```
 
 The ::page-transition pseudo element is the root of this pseudo element tree. This
@@ -105,6 +105,56 @@ to tag elements in the new DOM. This ID always refers to a live snapshot and
 provides the content for ::page-transition-incoming-iage pseudo elements.
 The old_snapshot_id now refers to the cached version displayed by
 ::page-transition-outgoing-image pseudo elements.
+
+## Viewport Sizes
+
+See [SET and Viewports](https://docs.google.com/document/d/1UAxgN6fWDiUUsSlBOksxn3UEQ7GStjMbW8LT-UPvTdQ/edit?usp=sharing)
+for some of the design discussion and more details.
+
+A transition can take place between states with different viewport sizes. For
+example, the mobile URL bar is forced to show when a navigation occurs; in a
+situation like this the snapshot will be taken with the URL bar hidden but
+transition to a document shrunken by the URL bar. Other examples of UI widgets
+like this are the virtual-keyboard and root scrollbars.
+
+Viewport widgets inset the "fixed viewport" so to avoid a moving coordinate
+space we introduce the concept of a "snapshot viewport". The snapshot viewport
+is invariant with respect to whether viewport widgets are shown or not, neither
+its position nor its size change. When all widgets are hidden, it is equal to
+the fixed viewport.
+
+┌──────────────────────┐                              ┌────────────────────┐
+│┼────────────────────┼│                              │                    │
+││    URL BAR         ││                              │                    │
+├┴────────────────────┴┤   ┌───────────────────────┐  │                    │
+│                      │   │                       │  │                    │
+│                      │   │                       │  │                    │
+│   <PAGE CONTENT>     │   │    Fixed Viewport     │  │                    │
+│                      │   │                       │  │  Snapshot Viewport │
+│                      │   │                       │  │                    │
+│                      │   │                       │  │                    │
+├┬────────────────────┬┤   └───────────────────────┘  │                    │
+││                    ││                              │                    │
+││  Virtual Keyboard  ││                              │                    │
+││                    ││                              │                    │
+│┼────────────────────┼│                              │                    │
+└──────────────────────┘                              └────────────────────┘
+     _The snapshot and fixed viewports when the mobile URL bar and virtual
+                          keyboard are shown._
+
+The root ::page-transition pseudo is shifted up and left so that its origin is
+at the snapshot viewport origin. This is a no-op if no viewport widgets are
+hidden. If the widgets are showing this causes ::page-transition to be
+positioned at a negative offset relative to the fixed viewport (i.e. it's origin
+is underneath the mobile URL bar). This creates a stable coordinate space during
+the transition. Shared element's viewport transforms account for this and are
+computed relative to the snapshot viewport origin.
+
+The root snapshot is sized to the snapshot viewport's size, which may be larger
+than the current fixed viewport. Painting is offset within the snapshot so that
+page content is rendered at the correct location (i.e. the snapshot will paint
+the background color in the region overlaid by the URL bar).
+
 
 ## Additional Notes
 

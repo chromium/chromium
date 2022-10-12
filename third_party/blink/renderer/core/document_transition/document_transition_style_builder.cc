@@ -95,7 +95,7 @@ String DocumentTransitionStyleBuilder::AddKeyframes(
         }
       })CSS",
       ComputedStyleUtils::ValueForTransformationMatrix(
-          source_properties.viewport_matrix, 1, false)
+          source_properties.snapshot_matrix, 1, false)
           ->CssText()
           .Utf8()
           .c_str(),
@@ -147,7 +147,7 @@ void DocumentTransitionStyleBuilder::AddContainerStyles(
       properties.border_box_size_in_css_space.Width().ToFloat(),
       properties.border_box_size_in_css_space.Height().ToFloat(),
       ComputedStyleUtils::ValueForTransformationMatrix(
-          properties.viewport_matrix, 1, false)
+          properties.snapshot_matrix, 1, false)
           ->CssText()
           .Utf8()
           .c_str(),
