@@ -146,10 +146,14 @@ public class ModalDialogManager {
     public @interface ModalDialogPriority {
         int LOW = 1;
         int HIGH = 2;
+
         // This is intended to be used only by those dialogs which are meant to block any access to
-        // a subset of Chrome features when they are being shown. For example, incognito re-auth
-        // feature uses this to gate the user's access to Incognito feature unless they
-        // re-authenticate successfully. For most of the clients, using just HIGH should suffice.
+        // a subset of Chrome features when they are being shown. This also decouples the dialog
+        // from any suspend calls! For example, incognito re-auth feature uses this to gate the
+        // user's access to Incognito feature unless they re-authenticate successfully and it
+        // ensures that the dialog doesn't get removed because of any other Chrome clients.
+        // STOP: Other Chrome clients should just rely on HIGH instead! Check with the existing
+        // clients if you still intend on using this.
         int VERY_HIGH = 3;
 
         int RANGE_MIN = LOW;
@@ -325,12 +329,25 @@ public class ModalDialogManager {
             return;
         }
 
-        // Put the new dialog in pending list if the dialog type is suspended or the current dialog
-        // is of higher priority.
-        if (mSuspendedTypes.contains(dialogType)
-                || (isShowing() && mCurrentPriority >= dialogPriority)) {
-            mPendingDialogContainer.put(dialogType, dialogPriority, model, showAsNext);
-            return;
+        // The requested dialog is of very high priority. This needs special treatment when
+        // considering to put in pending list or not.
+        if (dialogPriority == ModalDialogPriority.VERY_HIGH) {
+            // We only put the requested dialog in pending list if the currently shown dialog
+            // also has a VERY_HIGH priority.
+            if (isShowing() && mCurrentPriority >= dialogPriority) {
+                assert mCurrentPriority
+                        == ModalDialogPriority.VERY_HIGH : "Higher priority is not supported.";
+                mPendingDialogContainer.put(dialogType, dialogPriority, model, showAsNext);
+                return;
+            }
+        } else {
+            // Put the new dialog in pending list if the dialog type is suspended or the current
+            // dialog is of higher priority.
+            if ((mSuspendedTypes.contains(dialogType))
+                    || (isShowing() && mCurrentPriority >= dialogPriority)) {
+                mPendingDialogContainer.put(dialogType, dialogPriority, model, showAsNext);
+                return;
+            }
         }
 
         if (isShowing()) suspendCurrentDialog();
@@ -375,6 +392,7 @@ public class ModalDialogManager {
         mCurrentPresenter.setDialogModel(null, null);
         for (ModalDialogManagerObserver o : mObserverList) o.onDialogDismissed(model);
         mCurrentPresenter = null;
+        mCurrentPriority = ModalDialogPriority.LOW;
         mDismissingCurrentDialog = false;
         dispatchOnLastDialogDismissedIfEmpty();
         showNextDialog();
@@ -439,16 +457,21 @@ public class ModalDialogManager {
     }
 
     /**
-     * Suspend all dialogs of the specified type, including the one currently shown. These dialogs
-     * will be prevented from showing unless {@link #resumeType(int, int)} is called after the
-     * suspension. If the current dialog is suspended, it will be moved back to the first dialog
-     * in the pending list. Any dialogs of the specified type in the pending list will be skipped.
+     * Suspend all dialogs of the specified type, including the one currently shown. The currently
+     * shown dialog would be suspended if its priority is not VERY_HIGH.
+     *
+     * These dialogs will be prevented from showing unless {@link #resumeType(int, int)} is called
+     * after the suspension. If the current dialog is suspended, it will be moved back to the first
+     * dialog in the pending list. Any dialogs of the specified type in the pending list will be
+     * skipped.
+     *
      * @param dialogType The specified type of dialogs to be suspended.
      * @return A token to use when resuming the suspended type.
      */
     public int suspendType(@ModalDialogType int dialogType) {
         mSuspendedTypes.add(dialogType);
-        if (isShowing() && dialogType == mCurrentType) {
+        if (isShowing() && dialogType == mCurrentType
+                && mCurrentPriority != ModalDialogPriority.VERY_HIGH) {
             suspendCurrentDialog();
             showNextDialog();
         }
