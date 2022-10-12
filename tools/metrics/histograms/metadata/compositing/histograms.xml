@@ -711,6 +711,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.SkiaRenderer.DirectlyDrawableRenderPassWithRPDQ"
+    units="boolean" expires_after="2023-04-01">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>vmpstr@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Logged for every nested RenderPass to indicate whether it could have been
+    drawn directly because it has a single RPDQ and no other effect which would
+    require producing a render pass.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.SkiaRenderer.DrawTileDrawQuad.CDT.IsTranslateOnly"
     units="boolean" expires_after="2022-12-04">
   <owner>penghuang@chromium.org</owner>

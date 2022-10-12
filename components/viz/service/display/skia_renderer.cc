@@ -1706,6 +1706,18 @@ void SkiaRenderer::DrawQuadParams::ApplyScissor(
 
 const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
     const AggregatedRenderPass* pass) {
+  bool is_directly_drawable_with_single_rpdq = false;
+  const auto* draw_quad = CanPassBeDrawnDirectlyInternal(
+      pass, &is_directly_drawable_with_single_rpdq);
+  UMA_HISTOGRAM_BOOLEAN(
+      "Compositing.SkiaRenderer.DirectlyDrawableRenderPassWithRPDQ",
+      is_directly_drawable_with_single_rpdq);
+  return draw_quad;
+}
+
+const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectlyInternal(
+    const AggregatedRenderPass* pass,
+    bool* is_directly_drawable_with_single_rpdq) {
   // If render pass bypassing is disabled for testing
   if (settings_->disable_render_pass_bypassing)
     return nullptr;
@@ -1724,9 +1736,10 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   // For simplicity in their draw implementations, debug borders, picture quads,
   // and nested render passes cannot bypass a render pass
   // (their draw functions do not accept DrawRPDQParams either).
+  // Note: The check for RPDQ is at the end of the function to log whether other
+  // vetoes would prevent optimizing this case.
   DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
-  if (quad->material == DrawQuad::Material::kAggregatedRenderPass ||
-      quad->material == DrawQuad::Material::kDebugBorder ||
+  if (quad->material == DrawQuad::Material::kDebugBorder ||
       quad->material == DrawQuad::Material::kPictureContent)
     return nullptr;
 
@@ -1785,6 +1798,28 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
 
   if (ShouldApplyGradientMask(quad))
     return nullptr;
+
+  if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
+    const auto* render_pass_quad =
+        AggregatedRenderPassDrawQuad::MaterialCast(quad);
+    if (render_pass_quad->mask_resource_id())
+      return nullptr;
+
+    const auto nested_render_pass_id = render_pass_quad->render_pass_id;
+    auto it = base::ranges::find_if(
+        *current_frame()->render_passes_in_draw_order,
+        [&nested_render_pass_id](const auto& render_pass) {
+          return render_pass->id == nested_render_pass_id;
+        });
+
+    DCHECK(it != current_frame()->render_passes_in_draw_order->end());
+    const auto& nested_render_pass = *it;
+    if (nested_render_pass->filters.IsEmpty() &&
+        nested_render_pass->backdrop_filters.IsEmpty()) {
+      *is_directly_drawable_with_single_rpdq = true;
+    }
+    return nullptr;
+  }
 
   // The quad type knows how to apply RPDQ filters, and the quad settings can
   // be merged into the RPDQs settings in CalculateBypassParams.
