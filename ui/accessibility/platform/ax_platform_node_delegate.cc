@@ -21,6 +21,12 @@ void AXPlatformNodeDelegate::SetNode(AXNode& node) {
   node_ = &node;
 }
 
+ui::AXNodeID AXPlatformNodeDelegate::GetId() const {
+  if (node_)
+    return node_->id();
+  return kInvalidAXNodeID;
+}
+
 AXTreeManager* AXPlatformNodeDelegate::GetTreeManager() const {
   return AXTreeManager::FromID(GetTreeData().tree_id);
 }

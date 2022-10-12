@@ -342,7 +342,6 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   InternalChildIterator InternalChildrenBegin() const;
   InternalChildIterator InternalChildrenEnd() const;
 
-  ui::AXNodeID GetId() const;
   gfx::RectF GetLocation() const;
 
   // See `AXNode::IsRootWebAreaForPresentationalIframe()`.

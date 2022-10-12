@@ -316,10 +316,6 @@ BrowserAccessibility::AllChildrenRange::Iterator::operator*() {
   return parent_->manager()->GetFromAXNode(child);
 }
 
-ui::AXNodeID BrowserAccessibility::GetId() const {
-  return node()->id();
-}
-
 gfx::RectF BrowserAccessibility::GetLocation() const {
   return GetData().relative_bounds.bounds;
 }
