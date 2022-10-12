@@ -70,17 +70,32 @@ async def test_session_status(websocket):
 
 
 @pytest.mark.asyncio
-async def test_channel(websocket):
+async def test_channel_non_empty(websocket):
     await send_JSON_command(websocket, {
-        "id": 5,
+        "id": 6000,
         "method": "session.status",
         "params": {},
         "channel": "SOME_CHANNEL"
     })
     resp = await read_JSON_message(websocket)
     assert resp == {
-        "id": 5,
+        "id": 6000,
         "channel": "SOME_CHANNEL",
+        "result": {
+            "ready": False,
+            "message": "already connected"}}
+
+@pytest.mark.asyncio
+async def test_channel_empty(websocket):
+    await send_JSON_command(websocket, {
+        "id": 7000,
+        "method": "session.status",
+        "params": {},
+        "channel": ""
+    })
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        "id": 7000,
         "result": {
             "ready": False,
             "message": "already connected"}}

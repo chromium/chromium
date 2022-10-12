@@ -160,29 +160,31 @@ async def test_subscribeToOneChannel_eventReceivedWithProperChannel(
 @pytest.mark.asyncio
 async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
       websocket, context_id):
-    await subscribe(websocket, "log.entryAdded", None,
-                    "999_FIRST_SUBSCRIBED_CHANNEL")
-    await subscribe(websocket, "log.entryAdded", context_id,
-                    "000_SECOND_SUBSCRIBED_CHANNEL")
-    await subscribe(websocket, "log.entryAdded", context_id,
-                    "555_THIRD_SUBSCRIBED_CHANNEL")
+    empty_channel = ""
+    channel_2 = "999_SECOND_SUBSCRIBED_CHANNEL"
+    channel_3 = "000_THIRD_SUBSCRIBED_CHANNEL"
+    channel_4 = "555_FOURTH_SUBSCRIBED_CHANNEL"
+
+    await subscribe(websocket, "log.entryAdded", None, empty_channel)
+    await subscribe(websocket, "log.entryAdded", None, channel_2)
+    await subscribe(websocket, "log.entryAdded", context_id, channel_3)
+    await subscribe(websocket, "log.entryAdded", context_id, channel_4)
     # Re-subscribe with specific BrowsingContext.
     await subscribe(websocket, "log.entryAdded", context_id,
-                    "000_SECOND_SUBSCRIBED_CHANNEL")
+                    channel_3)
     # Re-subscribe.
-    await subscribe(websocket, "log.entryAdded", None,
-                    "999_FIRST_SUBSCRIBED_CHANNEL")
+    await subscribe(websocket, "log.entryAdded", None, channel_2)
 
     await execute_command(websocket, {
         "method": "session.subscribe",
-        "channel": "000_SECOND_SUBSCRIBED_CHANNEL",
+        "channel": channel_3,
         "params": {
             "events": ["log.entryAdded"]}})
     # Subscribe with a context. The initial subscription should still have
     # higher priority.
     await execute_command(websocket, {
         "method": "session.subscribe",
-        "channel": "999_FIRST_SUBSCRIBED_CHANNEL",
+        "channel": channel_2,
         "params": {
             "events": ["log.entryAdded"],
             "cointext": context_id
@@ -196,23 +198,30 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
             "target": {"context": context_id},
             "awaitPromise": True}})
 
+    # Empty string channel is considered as no channel provided.
     resp = await read_JSON_message(websocket)
     recursive_compare({
         "method": "log.entryAdded",
-        "channel": "999_FIRST_SUBSCRIBED_CHANNEL",
         "params": any_value},
         resp)
 
     resp = await read_JSON_message(websocket)
     recursive_compare({
         "method": "log.entryAdded",
-        "channel": "000_SECOND_SUBSCRIBED_CHANNEL",
+        "channel": channel_2,
         "params": any_value},
         resp)
 
     resp = await read_JSON_message(websocket)
     recursive_compare({
         "method": "log.entryAdded",
-        "channel": "555_THIRD_SUBSCRIBED_CHANNEL",
+        "channel": channel_3,
+        "params": any_value},
+        resp)
+
+    resp = await read_JSON_message(websocket)
+    recursive_compare({
+        "method": "log.entryAdded",
+        "channel": channel_4,
         "params": any_value},
         resp)

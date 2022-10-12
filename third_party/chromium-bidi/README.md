@@ -87,7 +87,7 @@ Command = {
 }
 ```
 
-If provided, the very same `channel` is added to the response:
+If provided and non-empty string, the very same `channel` is added to the response:
 
 ```cddl
 CommandResponse = {

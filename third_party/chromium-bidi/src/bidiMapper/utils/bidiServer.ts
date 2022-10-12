@@ -153,7 +153,7 @@ export class BidiServer extends EventEmitter implements IBidiServer {
     }
 
     // Extract amd validate id, method and params.
-    const { id, method, params, channel } = messageObj;
+    const { id, method, params } = messageObj;
 
     const idType = this.#getJsonType(id);
     if (idType !== 'number' || !Number.isInteger(id) || id < 0) {
@@ -172,10 +172,15 @@ export class BidiServer extends EventEmitter implements IBidiServer {
       throw new Error(`Expected object params but got ${paramsType}`);
     }
 
+    let channel = messageObj.channel;
     if (channel !== undefined) {
       const channelType = this.#getJsonType(channel);
       if (channelType !== 'string') {
         throw new Error(`Expected string channel but got ${channelType}`);
+      }
+      // Empty string channel is considered as no channel provided.
+      if (channel === '') {
+        channel = undefined;
       }
     }
 
