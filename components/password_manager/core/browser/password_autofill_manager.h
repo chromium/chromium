@@ -58,9 +58,7 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
       const std::u16string& value,
       int frontend_id,
       const autofill::Suggestion::BackendId& backend_id) override;
-  void DidAcceptSuggestion(const std::u16string& value,
-                           int frontend_id,
-                           const autofill::Suggestion::Payload& payload,
+  void DidAcceptSuggestion(const autofill::Suggestion& suggestion,
                            int position) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
                                    int frontend_id,

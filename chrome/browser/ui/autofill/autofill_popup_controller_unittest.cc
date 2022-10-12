@@ -120,11 +120,9 @@ class MockAutofillExternalDelegate : public AutofillExternalDelegate {
     return AutofillExternalDelegate::GetWeakPtr();
   }
 
-  MOCK_METHOD0(ClearPreviewedForm, void());
-  MOCK_METHOD0(OnPopupSuppressed, void());
-  MOCK_METHOD4(
-      DidAcceptSuggestion,
-      void(const std::u16string&, int, const Suggestion::Payload&, int));
+  MOCK_METHOD(void, ClearPreviewedForm, (), (override));
+  MOCK_METHOD(void, OnPopupSuppressed, (), (override));
+  MOCK_METHOD(void, DidAcceptSuggestion, (const Suggestion&, int), (override));
 };
 
 class MockAutofillPopupView : public AutofillPopupView {
@@ -134,13 +132,15 @@ class MockAutofillPopupView : public AutofillPopupView {
   MockAutofillPopupView& operator=(MockAutofillPopupView&) = delete;
   ~MockAutofillPopupView() override = default;
 
-  MOCK_METHOD0(Show, void());
-  MOCK_METHOD0(Hide, void());
-  MOCK_METHOD2(OnSelectedRowChanged,
-               void(absl::optional<int> previous_row_selection,
-                    absl::optional<int> current_row_selection));
-  MOCK_METHOD0(OnSuggestionsChanged, void());
-  MOCK_METHOD0(GetAxUniqueId, absl::optional<int32_t>());
+  MOCK_METHOD(void, Show, (), (override));
+  MOCK_METHOD(void, Hide, (), (override));
+  MOCK_METHOD(void,
+              OnSelectedRowChanged,
+              (absl::optional<int> previous_row_selection,
+               absl::optional<int> current_row_selection),
+              (override));
+  MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
+  MOCK_METHOD(absl::optional<int32_t>, GetAxUniqueId, (), (override));
 };
 
 class TestAutofillPopupController : public AutofillPopupControllerImpl {
@@ -170,9 +170,12 @@ class TestAutofillPopupController : public AutofillPopupControllerImpl {
   using AutofillPopupControllerImpl::SelectPreviousLine;
   using AutofillPopupControllerImpl::SetSelectedLine;
   using AutofillPopupControllerImpl::SetValues;
-  MOCK_METHOD0(OnSuggestionsChanged, void());
-  MOCK_METHOD1(Hide, void(PopupHidingReason reason));
-  MOCK_METHOD0(GetRootAXPlatformNodeForWebContents, ui::AXPlatformNode*());
+  MOCK_METHOD(void, OnSuggestionsChanged, (), (override));
+  MOCK_METHOD(void, Hide, (PopupHidingReason reason), (override));
+  MOCK_METHOD(ui::AXPlatformNode*,
+              GetRootAXPlatformNodeForWebContents,
+              (),
+              (override));
 
   void DoHide() { DoHide(PopupHidingReason::kTabGone); }
 
@@ -209,9 +212,11 @@ class MockAxPlatformNodeDelegate : public ui::AXPlatformNodeDelegateBase {
   MockAxPlatformNodeDelegate& operator=(MockAxPlatformNodeDelegate&) = delete;
   ~MockAxPlatformNodeDelegate() override = default;
 
-  MOCK_METHOD1(GetFromNodeID, ui::AXPlatformNode*(int32_t id));
-  MOCK_METHOD2(GetFromTreeIDAndNodeID,
-               ui::AXPlatformNode*(const ui::AXTreeID& tree_id, int32_t id));
+  MOCK_METHOD(ui::AXPlatformNode*, GetFromNodeID, (int32_t id), (override));
+  MOCK_METHOD(ui::AXPlatformNode*,
+              GetFromTreeIDAndNodeID,
+              (const ui::AXTreeID& tree_id, int32_t id),
+              (override));
 };
 
 class MockAxPlatformNode : public ui::AXPlatformNodeBase {

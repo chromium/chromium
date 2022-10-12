@@ -423,9 +423,12 @@ void GetFormField(autofill::FormFieldData* field,
     _pendingAutocompleteFieldID = uniqueFieldID;
     if (_popupDelegate) {
       // TODO(966411): Replace 0 with the index of the selected suggestion.
-      _popupDelegate->DidAcceptSuggestion(SysNSStringToUTF16(suggestion.value),
-                                          suggestion.identifier,
-                                          autofill::Suggestion::BackendId(), 0);
+      autofill::Suggestion autofill_suggestion;
+      autofill_suggestion.main_text.value =
+          SysNSStringToUTF16(suggestion.value);
+      autofill_suggestion.frontend_id = suggestion.identifier;
+      autofill_suggestion.payload = autofill::Suggestion::BackendId();
+      _popupDelegate->DidAcceptSuggestion(autofill_suggestion, 0);
     }
     return;
   }

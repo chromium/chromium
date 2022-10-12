@@ -184,8 +184,8 @@ void AutofillPopupControllerImpl::UpdateDataListValues(
   // Add a separator if there are any other values.
   if (!suggestions_.empty() &&
       suggestions_[0].frontend_id != POPUP_ITEM_ID_SEPARATOR) {
-    suggestions_.insert(suggestions_.begin(), Suggestion());
-    suggestions_[0].frontend_id = POPUP_ITEM_ID_SEPARATOR;
+    suggestions_.insert(suggestions_.begin(),
+                        Suggestion(POPUP_ITEM_ID_SEPARATOR));
   }
 
   // Prepend the parameters to the suggestions we already have.
@@ -328,9 +328,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
         ->NotifyEvent("autofill_virtual_card_suggestion_accepted");
   }
 
-  delegate_->DidAcceptSuggestion(suggestion.main_text.value,
-                                 suggestion.frontend_id, suggestion.payload,
-                                 index);
+  delegate_->DidAcceptSuggestion(suggestion, index);
 }
 
 gfx::NativeView AutofillPopupControllerImpl::container_view() const {

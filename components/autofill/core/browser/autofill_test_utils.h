@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 
 class PrefService;
 
@@ -497,6 +498,11 @@ void AddFieldPredictionsToForm(
     const std::vector<::autofill::AutofillQueryResponse::FormSuggestion::
                           FieldSuggestion::FieldPrediction>& field_predictions,
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion);
+
+Suggestion CreateAutofillSuggestion(
+    int frontend_id = 0,
+    const std::u16string& main_text_value = std::u16string(),
+    const Suggestion::Payload& payload = Suggestion::Payload());
 
 }  // namespace test
 }  // namespace autofill

@@ -58,6 +58,7 @@ struct Suggestion {
 
   Suggestion();
   explicit Suggestion(std::u16string main_text);
+  explicit Suggestion(int frontend_id);
   // Constructor for unit tests. It will convert the strings from UTF-8 to
   // UTF-16.
   Suggestion(base::StringPiece main_text,

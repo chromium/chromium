@@ -39,6 +39,8 @@ Suggestion::Suggestion() = default;
 Suggestion::Suggestion(std::u16string main_text)
     : main_text(std::move(main_text), Text::IsPrimary(true)) {}
 
+Suggestion::Suggestion(int frontend_id) : frontend_id(frontend_id) {}
+
 Suggestion::Suggestion(base::StringPiece main_text,
                        base::StringPiece label,
                        std::string icon,

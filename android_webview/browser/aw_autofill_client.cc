@@ -366,9 +366,7 @@ void AwAutofillClient::SuggestionSelected(JNIEnv* env,
                                           const JavaParamRef<jobject>& object,
                                           jint position) {
   if (delegate_) {
-    delegate_->DidAcceptSuggestion(suggestions_[position].main_text.value,
-                                   suggestions_[position].frontend_id,
-                                   suggestions_[position].payload, position);
+    delegate_->DidAcceptSuggestion(suggestions_[position], position);
   }
 }
 

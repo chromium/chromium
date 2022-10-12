@@ -3146,12 +3146,14 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     base::UserActionTester user_action_tester;
     std::string guid("10000000-0000-0000-0000-000000000001");  // local card
     external_delegate_->OnQuery(0, form, form.fields.front(), gfx::RectF());
-    Suggestion::BackendId backend_id = Suggestion::BackendId(guid);
+
     external_delegate_->DidAcceptSuggestion(
-        u"Test",
-        autofill_manager().suggestion_generator()->MakeFrontendId(
-            backend_id, Suggestion::BackendId()),
-        backend_id, 0);
+        test::CreateAutofillSuggestion(
+            autofill_manager().suggestion_generator()->MakeFrontendId(
+                Suggestion::BackendId(guid), Suggestion::BackendId()),
+            u"Test", Suggestion::BackendId(guid)),
+        0);
+
     EXPECT_EQ(1,
               user_action_tester.GetActionCount("Autofill_SelectedSuggestion"));
   }
@@ -3169,10 +3171,11 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
   // Simulate selecting a "Clear form" suggestion.
   {
     base::UserActionTester user_action_tester;
-    std::string guid("10000000-0000-0000-0000-000000000001");  // local card
     external_delegate_->OnQuery(0, form, form.fields.front(), gfx::RectF());
+
     external_delegate_->DidAcceptSuggestion(
-        std::u16string(), POPUP_ITEM_ID_CLEAR_FORM, Suggestion::BackendId(), 0);
+        Suggestion(POPUP_ITEM_ID_CLEAR_FORM), 0);
+
     EXPECT_EQ(1, user_action_tester.GetActionCount("Autofill_ClearedForm"));
   }
 
@@ -3191,12 +3194,14 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     base::UserActionTester user_action_tester;
     std::string guid("10000000-0000-0000-0000-000000000001");  // local card
     external_delegate_->OnQuery(0, form, form.fields.front(), gfx::RectF());
-    Suggestion::BackendId backend_id = Suggestion::BackendId(guid);
+
     external_delegate_->DidAcceptSuggestion(
-        u"Test",
-        autofill_manager().suggestion_generator()->MakeFrontendId(
-            backend_id, Suggestion::BackendId()),
-        backend_id, 0);
+        test::CreateAutofillSuggestion(
+            autofill_manager().suggestion_generator()->MakeFrontendId(
+                Suggestion::BackendId(guid), Suggestion::BackendId()),
+            u"Test", Suggestion::BackendId(guid)),
+        0);
+
     EXPECT_EQ(1,
               user_action_tester.GetActionCount("Autofill_SelectedSuggestion"));
   }
@@ -3343,12 +3348,14 @@ TEST_F(AutofillMetricsTest, ProfileCheckoutFlowUserActions) {
   {
     base::UserActionTester user_action_tester;
     external_delegate_->OnQuery(0, form, form.fields.front(), gfx::RectF());
-    Suggestion::BackendId backend_id = Suggestion::BackendId(kTestGuid);
+
     external_delegate_->DidAcceptSuggestion(
-        u"Test",
-        autofill_manager().suggestion_generator()->MakeFrontendId(
-            Suggestion::BackendId(), backend_id),
-        backend_id, 0);
+        test::CreateAutofillSuggestion(
+            autofill_manager().suggestion_generator()->MakeFrontendId(
+                Suggestion::BackendId(), Suggestion::BackendId(kTestGuid)),
+            u"Test", Suggestion::BackendId(kTestGuid)),
+        0);
+
     EXPECT_EQ(1,
               user_action_tester.GetActionCount("Autofill_SelectedSuggestion"));
   }

@@ -1116,5 +1116,15 @@ void AddFieldPredictionsToForm(
   }
 }
 
+Suggestion CreateAutofillSuggestion(int frontend_id,
+                                    const std::u16string& main_text_value,
+                                    const Suggestion::Payload& payload) {
+  Suggestion suggestion;
+  suggestion.frontend_id = frontend_id;
+  suggestion.main_text.value = main_text_value;
+  suggestion.payload = payload;
+  return suggestion;
+}
+
 }  // namespace test
 }  // namespace autofill
