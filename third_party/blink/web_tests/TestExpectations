@@ -7268,3 +7268,6 @@ crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-resource
 crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Skip ]
 crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-websql.js [ Skip ]
 crbug.com/1349331 http/tests/devtools/oopif/oopif-storage.js [ Skip ]
+
+# Sheriff 2022-10-12
+crbug.com/1367495 [ Debug Linux ] virtual/threaded-no-composited-antialiasing/animations/direction-and-fill/animation-direction-reverse-timing-functions.html [ Failure Pass ]
