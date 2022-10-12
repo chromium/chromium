@@ -72,10 +72,10 @@
             aria-labelledby="lockScreenOptionsTitle"
             deep-link-focus-id$="[[Setting.kChangeAuthPinV2]]">
           <cr-radio-button name="password" class="list-item underbar"
-              label=$i18n{lockScreenPasswordOnly}>
+              label="$i18n{lockScreenPasswordOnly}">
           </cr-radio-button>
           <cr-radio-button name="pin+password" class="list-item-start"
-              label=$i18n{lockScreenPinOrPassword}>
+              label="$i18n{lockScreenPinOrPassword}">
           </cr-radio-button>
           <template is="dom-if"
               if="[[showConfigurePinButton_(selectedUnlockType)]]">
