@@ -481,6 +481,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Icon.AppsWithEmptyIconFile" units="web apps"
+    expires_after="2023-08-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the number of web apps that have empty icon files. This gets
+    recorded at browser profile start up in both the Lacros and Ash processes.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Icon.AppsWithGeneratedIconBitmap" units="web apps"
     expires_after="2023-08-01">
   <owner>alancutter@chromium.org</owner>
@@ -515,6 +525,16 @@ chromium-metrics-reviews@google.com.
     icon and a manifest update clobbered the correct value of is_generated_icon
     (https://crbug.com/1317922). This gets recorded at browser profile start up
     in both the Lacros and Ash processes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Icon.AppsWithMissingIconFile" units="web apps"
+    expires_after="2023-08-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the number of web apps that have missing icon files. This gets
+    recorded at browser profile start up in both the Lacros and Ash processes.
   </summary>
 </histogram>
 

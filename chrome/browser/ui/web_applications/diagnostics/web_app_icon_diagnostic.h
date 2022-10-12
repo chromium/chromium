@@ -28,6 +28,8 @@ class WebAppIconDiagnostic {
     bool has_generated_icon_flag_false_negative = false;
     bool has_generated_icon_bitmap = false;
     bool has_empty_icon_bitmap = false;
+    bool has_empty_icon_file = false;
+    bool has_missing_icon_file = false;
     // TODO(https://crbug.com/1353659): Add more checks.
   };
 
@@ -46,6 +48,13 @@ class WebAppIconDiagnostic {
   void DiagnoseGeneratedOrEmptyIconBitmap(base::OnceClosure done_callback,
                                           IconPurpose purpose,
                                           SkBitmap icon_bitmap);
+
+  void CheckForEmptyOrMissingIconFiles(
+      base::OnceCallback<void(WebAppIconManager::IconFilesCheck)>
+          icon_files_callback);
+  void DiagnoseEmptyOrMissingIconFiles(
+      base::OnceClosure done_callback,
+      WebAppIconManager::IconFilesCheck icon_files_check);
 
   const raw_ptr<Profile> profile_;
   const AppId app_id_;

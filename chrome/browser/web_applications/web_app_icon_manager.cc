@@ -371,6 +371,30 @@ TypedResult<std::vector<uint8_t>> ReadCompressedIconBlocking(
   return {.value = {icon_data.begin(), icon_data.end()}};
 }
 
+WebAppIconManager::IconFilesCheck CheckForEmptyOrMissingIconFilesBlocking(
+    scoped_refptr<FileUtilsWrapper> utils,
+    const base::FilePath& web_apps_directory,
+    const AppId& app_id,
+    base::flat_map<IconPurpose, SortedSizesPx> purpose_to_sizes) {
+  WebAppIconManager::IconFilesCheck result;
+  for (auto it : purpose_to_sizes) {
+    const IconPurpose& purpose = it.first;
+    const SortedSizesPx& square_sizes = it.second;
+    for (SquareSizePx size : square_sizes) {
+      base::FilePath icon_path =
+          GetIconFileName(web_apps_directory, IconId(app_id, purpose, size));
+      base::File::Info file_info;
+      if (utils->GetFileInfo(icon_path, &file_info)) {
+        if (file_info.size == 0)
+          ++result.empty;
+      } else {
+        ++result.missing;
+      }
+    }
+  }
+  return result;
+}
+
 void WrapReadCompressedIconWithPurposeCallback(
     WebAppIconManager::ReadCompressedIconWithPurposeCallback callback,
     IconPurpose purpose,
@@ -1017,6 +1041,26 @@ void WebAppIconManager::OnReadUiScaleFactorsIcons(
       ConvertUiScaleFactorsBitmapsToImageSkia(icon_bitmaps, size_in_dip));
 }
 
+void WebAppIconManager::CheckForEmptyOrMissingIconFiles(
+    const AppId& app_id,
+    base::OnceCallback<void(IconFilesCheck)> callback) const {
+  const WebApp* web_app = registrar_->GetAppById(app_id);
+  if (!web_app) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  base::flat_map<IconPurpose, SortedSizesPx> purpose_to_sizes;
+  for (IconPurpose purpose : kIconPurposes)
+    purpose_to_sizes[purpose] = web_app->downloaded_icon_sizes(purpose);
+
+  icon_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(CheckForEmptyOrMissingIconFilesBlocking, utils_,
+                     web_apps_directory_, app_id, std::move(purpose_to_sizes)),
+      std::move(callback));
+}
+
 void WebAppIconManager::SetFaviconReadCallbackForTesting(
     FaviconReadCallback callback) {
   favicon_read_callback_ = std::move(callback);
@@ -1025,6 +1069,12 @@ void WebAppIconManager::SetFaviconReadCallbackForTesting(
 void WebAppIconManager::SetFaviconMonochromeReadCallbackForTesting(
     FaviconReadCallback callback) {
   favicon_monochrome_read_callback_ = std::move(callback);
+}
+
+base::FilePath WebAppIconManager::GetIconFilePathForTesting(const AppId& app_id,
+                                                            IconPurpose purpose,
+                                                            SquareSizePx size) {
+  return GetIconFileName(web_apps_directory_, IconId(app_id, purpose, size));
 }
 
 base::WeakPtr<const WebAppIconManager> WebAppIconManager::GetWeakPtr() const {

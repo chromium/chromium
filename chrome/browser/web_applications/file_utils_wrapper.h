@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/files/file.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 
@@ -41,6 +42,8 @@ class FileUtilsWrapper : public base::RefCountedThreadSafe<FileUtilsWrapper> {
   bool DirectoryExists(const base::FilePath& path);
 
   bool CreateDirectory(const base::FilePath& full_path);
+
+  bool GetFileInfo(const base::FilePath& file_path, base::File::Info* info);
 
   int ReadFile(const base::FilePath& filename, char* data, int max_size);
 

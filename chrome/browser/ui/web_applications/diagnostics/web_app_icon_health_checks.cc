@@ -97,6 +97,10 @@ void WebAppIconHealthChecks::RecordDiagnosticResults() {
       count(&Result::has_generated_icon_flag_false_negative));
   base::UmaHistogramCounts100("WebApp.Icon.AppsWithEmptyIconBitmap",
                               count(&Result::has_empty_icon_bitmap));
+  base::UmaHistogramCounts100("WebApp.Icon.AppsWithEmptyIconFile",
+                              count(&Result::has_empty_icon_file));
+  base::UmaHistogramCounts100("WebApp.Icon.AppsWithMissingIconFile",
+                              count(&Result::has_missing_icon_file));
   // TODO(https://crbug.com/1353659):
   // Measure:
   // - Bitmap:

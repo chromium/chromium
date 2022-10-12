@@ -46,6 +46,12 @@ void WebAppIconDiagnostic::Run(
       base::BindOnce(&WebAppIconDiagnostic::DiagnoseGeneratedOrEmptyIconBitmap,
                      GetWeakPtr()),
 
+      base::BindOnce(&WebAppIconDiagnostic::CheckForEmptyOrMissingIconFiles,
+                     GetWeakPtr()),
+
+      base::BindOnce(&WebAppIconDiagnostic::DiagnoseEmptyOrMissingIconFiles,
+                     GetWeakPtr()),
+
       base::BindOnce(&WebAppIconDiagnostic::CallResultCallback, GetWeakPtr()));
 }
 
@@ -94,6 +100,21 @@ void WebAppIconDiagnostic::DiagnoseGeneratedOrEmptyIconBitmap(
   result_->has_generated_icon_flag_false_negative =
       !result_->has_generated_icon_flag && result_->has_generated_icon_bitmap;
 
+  std::move(done_callback).Run();
+}
+
+void WebAppIconDiagnostic::CheckForEmptyOrMissingIconFiles(
+    base::OnceCallback<void(WebAppIconManager::IconFilesCheck)>
+        icon_files_callback) {
+  provider_->icon_manager().CheckForEmptyOrMissingIconFiles(
+      app_id_, std::move(icon_files_callback));
+}
+
+void WebAppIconDiagnostic::DiagnoseEmptyOrMissingIconFiles(
+    base::OnceClosure done_callback,
+    WebAppIconManager::IconFilesCheck icon_files_check) {
+  result_->has_empty_icon_file = icon_files_check.empty > 0;
+  result_->has_missing_icon_file = icon_files_check.missing > 0;
   std::move(done_callback).Run();
 }
 

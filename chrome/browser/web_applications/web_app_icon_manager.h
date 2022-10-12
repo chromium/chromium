@@ -171,22 +171,34 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
                                SquareSizeDip size_in_dip,
                                ReadImageSkiaCallback callback);
 
+  struct IconFilesCheck {
+    size_t empty = 0;
+    size_t missing = 0;
+  };
+  void CheckForEmptyOrMissingIconFiles(
+      const AppId& app_id,
+      base::OnceCallback<void(IconFilesCheck)> callback) const;
+
   void SetFaviconReadCallbackForTesting(FaviconReadCallback callback);
   void SetFaviconMonochromeReadCallbackForTesting(FaviconReadCallback callback);
+
+  base::FilePath GetIconFilePathForTesting(const AppId& app_id,
+                                           IconPurpose purpose,
+                                           SquareSizePx size);
 
   // Collects icon read/write errors (unbounded) if the |kRecordWebAppDebugInfo|
   // flag is enabled to be used by: chrome://web-app-internals
   const std::vector<std::string>* error_log() const { return error_log_.get(); }
   std::vector<std::string>* error_log() { return error_log_.get(); }
 
-  base::WeakPtr<const WebAppIconManager> GetWeakPtr() const;
-  base::WeakPtr<WebAppIconManager> GetWeakPtr();
-
  private:
   static void WrapReadIconWithPurposeCallback(
       ReadIconWithPurposeCallback callback,
       IconPurpose purpose,
       SkBitmap bitmap);
+
+  base::WeakPtr<const WebAppIconManager> GetWeakPtr() const;
+  base::WeakPtr<WebAppIconManager> GetWeakPtr();
 
   absl::optional<IconSizeAndPurpose> FindIconMatchSmaller(
       const AppId& app_id,
