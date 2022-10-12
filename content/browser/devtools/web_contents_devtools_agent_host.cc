@@ -56,8 +56,10 @@ class WebContentsDevToolsAgentHost::AutoAttacher
       return;
     base::flat_set<scoped_refptr<DevToolsAgentHost>> pages =
         UpdateAssociatedPages();
-    for (auto& page : pages)
-      DispatchTargetInfoChanged(page.get());
+    if (update_target_info) {
+      for (auto& page : pages)
+        DispatchTargetInfoChanged(page.get());
+    }
   }
 
   void WillInitiatePrerender(FrameTreeNode* ftn) {
