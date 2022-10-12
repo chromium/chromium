@@ -197,11 +197,11 @@ void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
             base::FeatureList* feature_list,
             PrefService* local_state) {
   // The client would not be assigned to any group because features controlled
-  // by the experiment is already overridden from the command line. This handles
+  // by the experiment if the feature is already overridden. This handles
   // scenarios where FRE is forced for testing purposes.
   if (feature_list->IsFeatureOverriddenFromCommandLine(
           kEnableFREUIModuleIOS.name) ||
-      feature_list->IsFeatureOverriddenFromCommandLine(
+      feature_list->IsFeatureOverridden(
           signin::kNewMobileIdentityConsistencyFRE.name)) {
     return;
   }
