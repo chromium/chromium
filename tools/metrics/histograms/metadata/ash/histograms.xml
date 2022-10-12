@@ -1358,6 +1358,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeskApi.{Method}.Result" units="BooleanSuccess"
+    expires_after="2023-10-07">
+  <owner>aprilzhou@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Recorded when a desk API {Method} method succeeded or failed.
+  </summary>
+  <token key="Method">
+    <variant name="AllDesk" summary="set to all desks"/>
+    <variant name="LaunchDesk" summary="launch desk"/>
+    <variant name="RemoveDesk" summary="remove desk"/>
+    <variant name="SwitchDesk" summary="switch desk"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.Desks.AnimationLatency.DeskActivation" units="ms"
     expires_after="2023-04-23">
   <owner>amusbach@chromium.org</owner>
