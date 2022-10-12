@@ -86,28 +86,6 @@ TEST(IPCMessageTest, Bitmap) {
   EXPECT_FALSE(IPC::ParamTraits<SkBitmap>::Read(&bad_msg, &iter, &bad_output));
 }
 
-TEST(IPCMessageTest, ListValue) {
-  base::ListValue input;
-  input.GetList().Append(42.42);
-  input.GetList().Append("forty");
-  input.GetList().Append(base::Value());
-
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
-  IPC::WriteParam(&msg, input);
-
-  base::ListValue output;
-  base::PickleIterator iter(msg);
-  EXPECT_TRUE(IPC::ReadParam(&msg, &iter, &output));
-
-  EXPECT_EQ(input, output);
-
-  // Also test the corrupt case.
-  IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
-  bad_msg.WriteInt(99);
-  iter = base::PickleIterator(bad_msg);
-  EXPECT_FALSE(IPC::ReadParam(&bad_msg, &iter, &output));
-}
-
 TEST(IPCMessageTest, DictionaryValue) {
   base::DictionaryValue input;
   input.SetKey("null", base::Value());

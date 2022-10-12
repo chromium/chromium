@@ -1175,22 +1175,6 @@ void ParamTraits<base::FilePath>::Log(const param_type& p, std::string* l) {
   ParamTraits<base::FilePath::StringType>::Log(p.value(), l);
 }
 
-void ParamTraits<base::ListValue>::Write(base::Pickle* m, const param_type& p) {
-  WriteListValue(p.GetList(), 0, m);
-}
-
-bool ParamTraits<base::ListValue>::Read(const base::Pickle* m,
-                                        base::PickleIterator* iter,
-                                        param_type* r) {
-  return ReadListValue(m, iter, 0, &(r->GetList()));
-}
-
-void ParamTraits<base::ListValue>::Log(const param_type& p, std::string* l) {
-  std::string json;
-  base::JSONWriter::Write(p, &json);
-  l->append(json);
-}
-
 void ParamTraits<base::Value::List>::Write(base::Pickle* m,
                                            const param_type& p) {
   WriteListValue(p, 0, m);

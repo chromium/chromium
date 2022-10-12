@@ -724,16 +724,6 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<base::FilePath> {
 };
 
 template <>
-struct COMPONENT_EXPORT(IPC) ParamTraits<base::ListValue> {
-  typedef base::ListValue param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<base::Value::List> {
   typedef base::Value::List param_type;
   static void Write(base::Pickle* m, const param_type& p);
