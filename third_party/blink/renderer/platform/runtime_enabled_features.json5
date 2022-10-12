@@ -2750,7 +2750,7 @@
     },
     {
       name: "ViewportMetaInteractiveWidgetProperty",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ViewportSegments",

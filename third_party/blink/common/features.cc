@@ -240,7 +240,7 @@ BASE_FEATURE(kAnchorElementInteraction,
 // and ChromeOS behavior.
 BASE_FEATURE(kOSKResizesVisualViewportByDefault,
              "OSKResizesVisualViewportByDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable browser-initiated dedicated worker script loading
 // (PlzDedicatedWorker). https://crbug.com/906991
