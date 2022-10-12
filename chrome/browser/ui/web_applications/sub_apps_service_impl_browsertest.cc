@@ -441,9 +441,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   UnhashedAppId unhashed_sub_app_id =
       GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
 
-  std::vector<blink::mojom::SubAppsServiceAddResultPtr> results;
+  std::vector<blink::mojom::SubAppsServiceAddResultPtr> expected =
+      Result(blink::mojom::SubAppsServiceAddResultCode::kParentAppUninstalled,
+             unhashed_sub_app_id);
 
-  EXPECT_EQ(std::move(results), CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
+  EXPECT_EQ(expected, CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
 }
 
 // Add call should fail if the parent app is uninstalled between the add call
@@ -495,9 +497,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   UnhashedAppId unhashed_sub_app_id =
       GenerateAppIdUnhashed(/*manifest_id=*/absl::nullopt, kSubAppUrl);
 
-  std::vector<blink::mojom::SubAppsServiceAddResultPtr> results;
+  std::vector<blink::mojom::SubAppsServiceAddResultPtr> expected =
+      Result(blink::mojom::SubAppsServiceAddResultCode::kParentAppUninstalled,
+             unhashed_sub_app_id);
 
-  EXPECT_EQ(std::move(results), CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
+  EXPECT_EQ(expected, CallAdd({{unhashed_sub_app_id, kSubAppUrl}}));
 }
 
 // Verify that Add fails for an empty list.

@@ -26,6 +26,9 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
+using blink::mojom::SubAppsServiceAddResult;
+using blink::mojom::SubAppsServiceAddResultCode;
+using blink::mojom::SubAppsServiceAddResultPtr;
 using blink::mojom::SubAppsServiceListResult;
 using blink::mojom::SubAppsServiceResult;
 
@@ -137,8 +140,13 @@ void SubAppsServiceImpl::Add(
   // check there and then running the current function, and the parent app being
   // installed/uninstalled.
   if (!parent_app_id) {
-    std::move(result_callback).Run(/*mojom_results=*/{});
-    return;
+    std::vector<SubAppsServiceAddResultPtr> result;
+    for (const auto& sub_app : sub_apps) {
+      result.emplace_back(SubAppsServiceAddResult::New(
+          sub_app->unhashed_app_id,
+          SubAppsServiceAddResultCode::kParentAppUninstalled));
+    }
+    return std::move(result_callback).Run(/*mojom_results=*/std::move(result));
   }
 
   const GURL& parent_app_url = render_frame_host().GetLastCommittedURL();
