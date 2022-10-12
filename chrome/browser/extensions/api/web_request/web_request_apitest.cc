@@ -509,10 +509,8 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
   std::unique_ptr<NavigateTabMessageHandler> navigationHandler_;
 };
 
-// TODO(crbug.com/1093066): The JS file for this test uses XmlHttpRequest,
-// which needs to be migrated to use fetch() to be compatible with
-// service workers.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestApi) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       WebRequestApi) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_api")) << message_;
 }
@@ -922,7 +920,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ASSERT_TRUE(RunExtensionTest("webrequest/test_blocking_cookie")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, WebRequestExtraHeaders) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       WebRequestExtraHeaders) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_extra_headers")) << message_;
 }

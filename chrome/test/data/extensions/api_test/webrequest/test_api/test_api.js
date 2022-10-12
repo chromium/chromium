@@ -142,25 +142,21 @@ chrome.test.runTests([
 
     chrome.test.getConfig(function(config) {
       var url = 'http://127.0.0.1:' + config.testServer.port + '/simple.html';
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', url);
-      xhr.onload = function() {
+      fetch(url).then((response) => {
         chrome.webRequest.onHeadersReceived.removeListener(
             callbackWithBadHeadersResponse);
-        var responseHeaders = xhr.getAllResponseHeaders() || '';
+        var responseHeaders = response.headers.toString() || '';
         chrome.test.assertTrue(
             responseHeaders.indexOf('X-Header-With-Invalid-Value') === -1);
         // TODO(robwu): If possible, check whether an error with the following
         // message has been logged to the JavaScript console:
         // "Header 'X-Header-With-Invalid-Value' has an invalid value"
         chrome.test.succeed();
-      };
-      xhr.onerror = function() {
+      }).catch((e) => {
         chrome.webRequest.onHeadersReceived.removeListener(
             callbackWithBadHeadersResponse);
-        chrome.test.fail();
-      };
-      xhr.send();
+        chrome.test.fail(e);
+      });
     });
   }
 ]);
