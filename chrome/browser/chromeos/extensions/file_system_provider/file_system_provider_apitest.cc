@@ -359,6 +359,13 @@ IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, BigFile) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, Configure) {
+  ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/configure",
+                               {.extension_url = "test.html"},
+                               {.load_as_component = true}))
+      << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(FileSystemProviderServiceWorkerApiTest, CopyEntry) {
   ASSERT_TRUE(RunExtensionTest("file_system_provider/service_worker/copy_entry",
                                {.extension_url = "test.html"},

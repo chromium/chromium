@@ -202,6 +202,7 @@ export class TestFileSystemProvider {
     this.setHandlerEnabled('onAbortRequested', true);
     this.setHandlerEnabled('onAddWatcherRequested', true);
     this.setHandlerEnabled('onCloseFileRequested', true);
+    this.setHandlerEnabled('onConfigureRequested', true);
     this.setHandlerEnabled('onCopyEntryRequested', true);
     this.setHandlerEnabled('onCreateFileRequested', true);
     this.setHandlerEnabled('onDeleteEntryRequested', true);
@@ -455,6 +456,23 @@ export class TestFileSystemProvider {
     delete this.openedFiles[options.openRequestId];
     onSuccess();
   };
+
+  /**
+   *
+   * @param {!chrome.fileSystemProvider.ConfigureRequestedOptions} options
+   * @param {function()} onSuccess
+   * @param {function(chrome.fileSystemProvider.ProviderError)} onError Error
+   *     callback.
+   */
+  onConfigureRequested(options, onSuccess, onError) {
+    this.recordEvent('onConfigureRequested', options);
+    const error = this.testConfig['onConfigureRequestedError'];
+    if (error) {
+      onError(error);
+    } else {
+      onSuccess();
+    }
+  }
 
   /**
    * FSP: implementation of copying an entry within the same file system.
