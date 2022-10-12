@@ -1011,11 +1011,6 @@ WebTimeRanges WebMediaPlayerMS::Seekable() const {
   return WebTimeRanges();
 }
 
-void WebMediaPlayerMS::OnFrozen() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(paused_);
-}
-
 bool WebMediaPlayerMS::DidLoadingProgress() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return true;

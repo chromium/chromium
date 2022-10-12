@@ -39,7 +39,6 @@ class EmptyWebMediaPlayer : public WebMediaPlayer,
   void OnRequestPictureInPicture() override {}
   WebTimeRanges Buffered() const override;
   WebTimeRanges Seekable() const override;
-  void OnFrozen() override {}
   bool SetSinkId(const WebString& sink_id,
                  WebSetSinkIdCompleteCallback) override {
     return false;

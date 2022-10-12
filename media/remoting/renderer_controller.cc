@@ -96,7 +96,6 @@ MediaObserverClient::ReasonToSwitchToLocal GetSwitchReason(
       return MediaObserverClient::ReasonToSwitchToLocal::PIPELINE_ERROR;
     case ROUTE_TERMINATED:
     case MEDIA_ELEMENT_DESTROYED:
-    case MEDIA_ELEMENT_FROZEN:
     case START_RACE:
     case SERVICE_GONE:
       return MediaObserverClient::ReasonToSwitchToLocal::ROUTE_TERMINATED;
@@ -370,14 +369,6 @@ void RendererController::OnPaused() {
   is_paused_ = true;
   // Cancel the start if in the middle of delayed start.
   CancelDelayedStart();
-}
-
-void RendererController::OnFrozen() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(is_paused_);
-
-  // If the element is frozen we want to stop remoting.
-  UpdateAndMaybeSwitch(UNKNOWN_START_TRIGGER, MEDIA_ELEMENT_FROZEN);
 }
 
 RemotingCompatibility RendererController::GetVideoCompatibility() const {
