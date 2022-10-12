@@ -63,14 +63,16 @@
 <template is="dom-if" if="[[!shouldShowCompletionInfo_]]">
   <div id="review-header" class="header-with-icon">
     <iron-icon role="img" icon="settings:notifications-none"></iron-icon>
-    <div class="header-group-wrapper">
+    <cr-expand-button id="expandButton" class="header-group-wrapper" no-hover
+        expanded="{{notificationPermissionReviewListExpanded_}}">
       <h2>$i18n{safetyCheckNotificationPermissionReviewPrimaryLabel}</h2>
       <div class="secondary">
         $i18n{safetyCheckNotificationPermissionReviewSecondaryLabel}
       </div>
-    </div>
+    </cr-expand-button>
   </div>
-  <div class="notification-permissions-list">
+  <iron-collapse class="notification-permissions-list"
+      opened="[[notificationPermissionReviewListExpanded_]]">
     <template id="notificationPermissionReviewList" is="dom-repeat"
         items="[[notificationPermissionReviewList_]]">
       <div class$="cr-row [[getClassForIndex_(index)]]">
@@ -95,9 +97,8 @@
         </cr-icon-button>
       </div>
     </template>
-  </div>
-  <paper-tooltip id="tooltip"
-      fit-to-visible-bounds manual-mode position="top">
+  </iron-collapse>
+  <paper-tooltip id="tooltip" fit-to-visible-bounds manual-mode position="top">
     $i18n{safetyCheckNotificationPermissionReviewDontAllowLabel}
   </paper-tooltip>
   <cr-action-menu role-description="$i18n{menu}">

@@ -59,6 +59,12 @@ export class SettingsReviewNotificationPermissionsElement extends
         value: null,
       },
 
+      /* If the list of notification permissions is expanded or collapsed. */
+      notificationPermissionReviewListExpanded_: {
+        type: Boolean,
+        value: true,
+      },
+
       /* The last origin that the user interacted with. */
       lastOrigin_: String,
 
@@ -81,6 +87,7 @@ export class SettingsReviewNotificationPermissionsElement extends
   }
 
   private notificationPermissionReviewList_: NotificationPermission[]|null;
+  private notificationPermissionReviewListExpanded_: boolean;
   private shouldShowCompletionInfo_: boolean;
   private browserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();

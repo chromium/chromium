@@ -304,4 +304,34 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     assertTrue(isChildVisible(testElement, '.notification-permissions-list'));
     assertFalse(isChildVisible(testElement, '#done-header'));
   });
+
+  test('Collapsible List', async function() {
+    const expandButton =
+        testElement.shadowRoot!.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+
+    const notificationPermissionList =
+        testElement.shadowRoot!.querySelector('iron-collapse');
+    assertTrue(!!notificationPermissionList);
+
+    // Button and list start out expanded.
+    assertTrue(expandButton.expanded);
+    assertTrue(notificationPermissionList.opened);
+
+    // User collapses the list.
+    expandButton.click();
+    flush();
+
+    // Button and list are collapsed.
+    assertFalse(expandButton.expanded);
+    assertFalse(notificationPermissionList.opened);
+
+    // User expands the list.
+    expandButton.click();
+    flush();
+
+    // Button and list are expanded.
+    assertTrue(expandButton.expanded);
+    assertTrue(notificationPermissionList.opened);
+  });
 });
