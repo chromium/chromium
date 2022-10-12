@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -321,7 +322,7 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
     if (pending_copy_output_request.subtree_capture_id.is_valid()) {
       EXPECT_EQ(capture_bounds_, request->area());
     } else {
-      EXPECT_EQ(size_set_.source_rect, request->area());
+      EXPECT_TRUE(size_set_.source_rect.Contains(request->area()));
     }
     EXPECT_EQ(gfx::Rect(size_set_.expected_content_rect.size()),
               request->result_selection());
@@ -483,6 +484,28 @@ MATCHER_P2(IsLetterboxedFrame, color, content_rect, "") {
          IsLetterboxedPlane(VideoFrame::kVPlane, color.v);
 }
 
+class TestVideoCaptureOverlay : public VideoCaptureOverlay {
+ public:
+  using PropertiesCallback =
+      base::RepeatingCallback<void(const CapturedFrameProperties&)>;
+  TestVideoCaptureOverlay(
+      FrameSource* frame_source,
+      mojo::PendingReceiver<mojom::FrameSinkVideoCaptureOverlay> receiver,
+      PropertiesCallback properties_cb)
+      : VideoCaptureOverlay(frame_source, std::move(receiver)),
+        properties_cb_(std::move(properties_cb)) {}
+  ~TestVideoCaptureOverlay() override = default;
+
+  OnceRenderer MakeRenderer(
+      const CapturedFrameProperties& properties) override {
+    properties_cb_.Run(properties);
+    return {};
+  }
+
+ private:
+  PropertiesCallback properties_cb_;
+};
+
 }  // namespace
 
 class FrameSinkVideoCapturerTest : public testing::Test {
@@ -608,6 +631,11 @@ class FrameSinkVideoCapturerTest : public testing::Test {
   gfx::Rect ExpandRectToI420SubsampleBoundaries(const gfx::Rect& rect) {
     return FrameSinkVideoCapturerImpl::ExpandRectToI420SubsampleBoundaries(
         rect);
+  }
+
+  void InsertOverlay(std::unique_ptr<VideoCaptureOverlay> overlay) {
+    capturer_->overlays_.insert_or_assign(capturer_->overlays_.size() + 1,
+                                          std::move(overlay));
   }
 
  protected:
@@ -1706,6 +1734,53 @@ TEST_F(FrameSinkVideoCapturerTest, HandlesFrameWithRegionCroppedToZero) {
   EXPECT_FALSE(IsRefreshRetryTimerRunning());
 }
 
+TEST_F(FrameSinkVideoCapturerTest, ProperlyHandlesCaptureSizeForOverlay) {
+  SwitchToSizeSet(kSizeSets[4]);
+  constexpr gfx::Rect kValidCropBounds{1, 2, 639, 477};
+  (kSizeSets[4].source_rect.Contains(kValidCropBounds));
+  const auto kCropId = RegionCaptureCropId::CreateRandom();
+
+  // First, create the overlay.
+  mojo::Remote<mojom::FrameSinkVideoCaptureOverlay> overlay_remote;
+  absl::optional<VideoCaptureOverlay::CapturedFrameProperties> frame_properties;
+  auto test_overlay = std::make_unique<TestVideoCaptureOverlay>(
+      capturer_.get(), overlay_remote.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting(
+          [&](const VideoCaptureOverlay::CapturedFrameProperties& properties) {
+            frame_properties = properties;
+          }));
+  InsertOverlay(std::move(test_overlay));
+
+  // Change to the appropriate target.
+  VideoCaptureTarget target(kVideoCaptureTarget.frame_sink_id, kCropId);
+  frame_sink_.set_crop_bounds(kValidCropBounds);
+  frame_sink_.SetCopyOutputColor(YUVColor{0x80, 0x80, 0x80});
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(target))
+      .WillRepeatedly(Return(&frame_sink_));
+  capturer_->ChangeTarget(std::move(target), /*crop_version=*/0);
+
+  MockConsumer consumer;
+  EXPECT_CALL(consumer, OnFrameCapturedMock());
+  StartCapture(&consumer);
+
+  // With the start, an immediate refresh occurred. Simulate a copy result and
+  // expect to see the refresh frame delivered to the consumer.
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+
+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+  frame_sink_.SendCopyOutputResult(0);
+  ASSERT_EQ(1, consumer.num_frames_received());
+  consumer.SendDoneNotification(0);
+
+  // The overlay should have been rendered with the compositor region using
+  // the entire frame, which is larger than the sub region.
+  EXPECT_TRUE(frame_properties) << "didn't produce an overlay.";
+  EXPECT_EQ(kSizeSets[4].source_rect, frame_properties->compositor_region);
+  EXPECT_EQ(kValidCropBounds, frame_properties->sub_region);
+  EXPECT_EQ((gfx::Rect{0, 2, 16, 12}), frame_properties->content_region);
+}
+
 TEST_F(FrameSinkVideoCapturerTest, HandlesSubtreeCaptureId) {
   SwitchToSizeSet(kSizeSets[4]);
   constexpr gfx::Rect kCaptureBounds{1, 2, 1024, 768};
@@ -1725,6 +1800,52 @@ TEST_F(FrameSinkVideoCapturerTest, HandlesSubtreeCaptureId) {
 
   // The frame sink's capture ID should have been set as a side-effect.
   EXPECT_EQ(kCaptureId, frame_sink_.current_capture_id());
+}
+
+TEST_F(FrameSinkVideoCapturerTest, ProperlyHandlesSubtreeSizeForOverlay) {
+  SwitchToSizeSet(kSizeSets[4]);
+  constexpr gfx::Rect kCaptureBounds{1, 2, 639, 477};
+  constexpr SubtreeCaptureId kCaptureId{1234567u};
+
+  // First, create the overlay.
+  mojo::Remote<mojom::FrameSinkVideoCaptureOverlay> overlay_remote;
+  absl::optional<VideoCaptureOverlay::CapturedFrameProperties> frame_properties;
+  auto test_overlay = std::make_unique<TestVideoCaptureOverlay>(
+      capturer_.get(), overlay_remote.BindNewPipeAndPassReceiver(),
+      base::BindLambdaForTesting(
+          [&](const VideoCaptureOverlay::CapturedFrameProperties& properties) {
+            frame_properties = properties;
+          }));
+  InsertOverlay(std::move(test_overlay));
+
+  // Change to the appropriate target.
+  VideoCaptureTarget target(kVideoCaptureTarget.frame_sink_id, kCaptureId);
+  frame_sink_.set_capture_bounds(kCaptureBounds);
+  frame_sink_.SetCopyOutputColor(YUVColor{0x80, 0x80, 0x80});
+  EXPECT_CALL(frame_sink_manager_, FindCapturableFrameSink(target))
+      .WillRepeatedly(Return(&frame_sink_));
+  capturer_->ChangeTarget(std::move(target), /*crop_version=*/0);
+
+  MockConsumer consumer;
+  EXPECT_CALL(consumer, OnFrameCapturedMock());
+  StartCapture(&consumer);
+
+  // With the start, an immediate refresh occurred. Simulate a copy result and
+  // expect to see the refresh frame delivered to the consumer.
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+
+  ASSERT_EQ(1, frame_sink_.num_copy_results());
+  EXPECT_FALSE(IsRefreshRetryTimerRunning());
+  frame_sink_.SendCopyOutputResult(0);
+  ASSERT_EQ(1, consumer.num_frames_received());
+  consumer.SendDoneNotification(0);
+
+  // The overlay should have been rendered with the content and compositor
+  // regions set to the same value.
+  EXPECT_TRUE(frame_properties) << "didn't produce an overlay.";
+  EXPECT_EQ(kCaptureBounds, frame_properties->compositor_region);
+  EXPECT_EQ(kCaptureBounds, frame_properties->sub_region);
+  EXPECT_EQ((gfx::Rect{0, 2, 16, 12}), frame_properties->content_region);
 }
 
 TEST_F(FrameSinkVideoCapturerTest, HandlesNullSubTargetPtrCorrectly) {

@@ -49,7 +49,7 @@ namespace viz {
 //
 // The blit algorithm uses naive linear blending. Thus, the use of non-linear
 // color spaces will cause losses in color accuracy.
-class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
+class VIZ_SERVICE_EXPORT VideoCaptureOverlay
     : public mojom::FrameSinkVideoCaptureOverlay {
  public:
   // Interface for notifying the frame source when changes to the overlay's
@@ -89,7 +89,7 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
   VideoCaptureOverlay(const VideoCaptureOverlay&) = delete;
   VideoCaptureOverlay& operator=(const VideoCaptureOverlay&) = delete;
 
-  ~VideoCaptureOverlay() final;
+  ~VideoCaptureOverlay() override;
 
   // mojom::FrameSinkVideoCaptureOverlay implementation:
   void SetImageAndBounds(const SkBitmap& image, const gfx::RectF& bounds) final;
@@ -122,7 +122,7 @@ class VIZ_SERVICE_EXPORT VideoCaptureOverlay final
   // a VideoFrame. The overlay's position and size are computed based on the
   // given content |region_in_frame|. Returns a null OnceCallback if there is
   // nothing to render at this time.
-  OnceRenderer MakeRenderer(const CapturedFrameProperties& properties);
+  virtual OnceRenderer MakeRenderer(const CapturedFrameProperties& properties);
 
   struct BlendInformation {
     // Source region that we will blend from, expressed in the coordinate system
