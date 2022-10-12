@@ -79,8 +79,10 @@ void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
     // Enable pin and challenge-response authentication for any users who can
     // use them.
     for (const user_manager::User* user : filtered_users) {
-      UpdatePinKeyboardState(user->GetAccountId());
-      UpdateChallengeResponseAuthAvailability(user->GetAccountId());
+      if (!user->IsDeviceLocalAccount()) {
+        UpdatePinKeyboardState(user->GetAccountId());
+        UpdateChallengeResponseAuthAvailability(user->GetAccountId());
+      }
     }
   }
 
