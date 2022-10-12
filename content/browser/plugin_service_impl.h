@@ -10,8 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
-#include "base/sequence_checker.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -34,7 +32,7 @@ class PluginServiceFilter;
 struct ContentPluginInfo;
 
 // This class responds to requests from renderers for the list of plugins, and
-// also a proxy object for plugin instances.
+// also a proxy object for plugin instances. It lives on the UI thread.
 class CONTENT_EXPORT PluginServiceImpl : public PluginService {
  public:
   // Returns the PluginServiceImpl singleton.
@@ -80,7 +78,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
   // Returns the plugin process host corresponding to the plugin process that
   // has been started by this service. This will start a process to host the
   // 'plugin_path' if needed. If the process fails to start, the return value
-  // is NULL. Must be called on the IO thread.
+  // is NULL.
   PpapiPluginProcessHost* FindOrStartPpapiPluginProcess(
       int render_process_id,
       const base::FilePath& plugin_path,
@@ -88,8 +86,7 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
       const absl::optional<url::Origin>& origin_lock);
 
   // Opens a channel to a plugin process for the given mime type, starting
-  // a new plugin process if necessary.  This must be called on the IO thread
-  // or else a deadlock can occur.
+  // a new plugin process if necessary.
   void OpenChannelToPpapiPlugin(int render_process_id,
                                 const base::FilePath& plugin_path,
                                 const base::FilePath& profile_data_directory,
@@ -132,14 +129,8 @@ class CONTENT_EXPORT PluginServiceImpl : public PluginService {
 
   int max_ppapi_processes_per_profile_ = kDefaultMaxPpapiProcessesPerProfile;
 
-  // Weak pointer; set during the startup on UI thread and must outlive us.
+  // Weak pointer; set during the startup and must outlive us.
   raw_ptr<PluginServiceFilter> filter_ = nullptr;
-
-  // Used to load plugins from disk.
-  scoped_refptr<base::SequencedTaskRunner> plugin_list_task_runner_;
-
-  // Used to verify that loading plugins from disk is done sequentially.
-  base::SequenceChecker plugin_list_sequence_checker_;
 
   // Used to detect if a given plugin is crashing over and over.
   std::map<base::FilePath, std::vector<base::Time>> crash_times_;

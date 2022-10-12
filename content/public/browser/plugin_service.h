@@ -30,12 +30,7 @@ class PluginServiceFilter;
 struct ContentPluginInfo;
 struct WebPluginInfo;
 
-// This must be created on the main thread but it's only called on the IO/file
-// thread unless otherwise noted. This is an asynchronous wrapper around the
-// PluginList interface for querying plugin information. This must be used
-// instead of that to avoid doing expensive disk operations on the IO/UI
-// threads.
-// TODO(http://crbug.com/990013): Only use this on the UI thread.
+// This class lives on the UI thread.
 class CONTENT_EXPORT PluginService {
  public:
   using GetPluginsCallback =
@@ -48,7 +43,6 @@ class CONTENT_EXPORT PluginService {
   // to throw away their cache of the plugin list, and optionally also reload
   // all the pages with plugins. If |browser_context| is nullptr, purges the
   // cache in all renderers.
-  // NOTE: can only be called on the UI thread.
   static void PurgePluginListCache(BrowserContext* browser_context,
                                    bool reload_pages);
 
@@ -58,8 +52,8 @@ class CONTENT_EXPORT PluginService {
   virtual void Init() = 0;
 
   // Gets the plugin in the list of plugins that matches the given url and mime
-  // type. Returns true if the data is frome a stale plugin list, false if it
-  // is up to date. This can be called from any thread.
+  // type. Returns true if the data is from a stale plugin list, false if it is
+  // up to date.
   virtual bool GetPluginInfoArray(
       const GURL& url,
       const std::string& mime_type,
@@ -69,8 +63,7 @@ class CONTENT_EXPORT PluginService {
 
   // Gets plugin info for an individual plugin and filters the plugins using
   // the |browser_context|. This will report whether the data is stale via
-  // |is_stale| and returns whether or not the plugin can be found. This must be
-  // called from the UI thread.
+  // |is_stale| and returns whether or not the plugin can be found.
   virtual bool GetPluginInfo(content::BrowserContext* browser_context,
                              const GURL& url,
                              const std::string& mime_type,
@@ -82,25 +75,21 @@ class CONTENT_EXPORT PluginService {
   // Get plugin info by plugin path (including disabled plugins). Returns true
   // if the plugin is found and WebPluginInfo has been filled in |info|. This
   // will use cached data in the plugin list.
-  // This can be called from any thread.
   virtual bool GetPluginInfoByPath(const base::FilePath& plugin_path,
                                    WebPluginInfo* info) = 0;
 
   // Returns the display name for the plugin identified by the given path. If
   // the path doesn't identify a plugin, or the plugin has no display name,
   // this will attempt to generate a display name from the path.
-  // This can be called from any thread.
   virtual std::u16string GetPluginDisplayNameByPath(
       const base::FilePath& plugin_path) = 0;
 
   // Asynchronously loads plugins if necessary and then calls back to the
   // provided function on the calling sequence on completion.
-  // This can be called from any thread.
   virtual void GetPlugins(GetPluginsCallback callback) = 0;
 
   // Synchronously loads plugins if necessary and returns the list of plugin
-  // infos. This can be called from any thread. This method is expected to
-  // not perform any disk IO.
+  // infos.
   virtual std::vector<WebPluginInfo> GetPluginsSynchronous() = 0;
 
   // Returns information about a plugin if it exists, otherwise `nullptr`. The
