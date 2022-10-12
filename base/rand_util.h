@@ -16,6 +16,10 @@
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 
+#if !BUILDFLAG(IS_NACL)
+#include "third_party/boringssl/src/include/openssl/rand.h"
+#endif
+
 namespace base {
 
 namespace internal {
@@ -78,7 +82,6 @@ BASE_EXPORT void RandBytes(void* output, size_t output_length);
 BASE_EXPORT std::string RandBytesAsString(size_t length);
 
 // An STL UniformRandomBitGenerator backed by RandUint64.
-// TODO(tzik): Consider replacing this with a faster implementation.
 class RandomBitGenerator {
  public:
   using result_type = uint64_t;
@@ -89,6 +92,24 @@ class RandomBitGenerator {
   RandomBitGenerator() = default;
   ~RandomBitGenerator() = default;
 };
+
+#if !BUILDFLAG(IS_NACL)
+class NonAllocatingRandomBitGenerator {
+ public:
+  using result_type = uint64_t;
+  static constexpr result_type min() { return 0; }
+  static constexpr result_type max() { return UINT64_MAX; }
+  result_type operator()() const {
+    uint64_t result;
+    RAND_get_system_entropy_for_custom_prng(reinterpret_cast<uint8_t*>(&result),
+                                            sizeof(result));
+    return result;
+  }
+
+  NonAllocatingRandomBitGenerator() = default;
+  ~NonAllocatingRandomBitGenerator() = default;
+};
+#endif
 
 // Shuffles [first, last) randomly. Thread-safe.
 template <typename Itr>

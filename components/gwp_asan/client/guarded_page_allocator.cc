@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <random>
 #include <utility>
 
 #include "base/allocator/partition_allocator/gwp_asan_support.h"
@@ -21,6 +22,7 @@
 #include "components/gwp_asan/common/allocator_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "components/gwp_asan/common/pack_stack_trace.h"
+#include "third_party/boringssl/src/include/openssl/rand.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/crash/core/app/crashpad.h"  // nogncheck
@@ -66,7 +68,9 @@ uint64_t ReportTid() {
 template <typename T>
 T RandomEviction(std::vector<T>* list) {
   DCHECK(!list->empty());
-  size_t rand = base::RandGenerator(list->size());
+  std::uniform_int_distribution<uint64_t> distribution(0, list->size() - 1);
+  base::NonAllocatingRandomBitGenerator generator;
+  size_t rand = distribution(generator);
   T out = (*list)[rand];
   (*list)[rand] = list->back();
   list->pop_back();
