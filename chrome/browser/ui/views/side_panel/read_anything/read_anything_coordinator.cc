@@ -9,10 +9,11 @@
 #include <utility>
 
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
@@ -73,6 +74,19 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
   for (Observer& obs : observers_) {
     obs.OnCoordinatorDestroyed();
   }
+
+  // Deregister Read Anything from the global side panel registry. This removes
+  // Read Anything as a side panel entry observer.
+  Browser* browser = &GetBrowser();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view)
+    return;
+  SidePanelCoordinator* side_panel_coordinator =
+      browser_view->side_panel_coordinator();
+  SidePanelRegistry* global_registry =
+      side_panel_coordinator->GetGlobalSidePanelRegistry();
+  global_registry->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 }
 
 void ReadAnythingCoordinator::CreateAndRegisterEntry(
@@ -83,7 +97,7 @@ void ReadAnythingCoordinator::CreateAndRegisterEntry(
       ui::ImageModel::FromVectorIcon(kReaderModeIcon, ui::kColorIcon),
       base::BindRepeating(&ReadAnythingCoordinator::CreateContainerView,
                           base::Unretained(this)));
-  side_panel_entry_observation_.Observe(side_panel_entry.get());
+  side_panel_entry->AddObserver(this);
   global_registry->Register(std::move(side_panel_entry));
 }
 
