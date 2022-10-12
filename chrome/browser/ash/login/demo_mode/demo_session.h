@@ -177,10 +177,13 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   bool started() const { return started_; }
 
-  base::FilePath DemoAppComponentPath() {
-    DCHECK(!demo_app_component_path_.empty());
-    return demo_app_component_path_;
-  }
+  // Returns the Demo App component path, which defines the directory that the
+  // Demo Mode SWA should source its content from.
+  // If the demo-mode-swa-content-directory switch is set, we retrieve the
+  // content from there. Otherwise, the default location at
+  // /run/imageloader/demo-mode-app is used. When copying the directory to a
+  // custom location, make sure the permissions are set to 555.
+  base::FilePath GetDemoAppComponentPath();
 
   const DemoResources* resources() const { return demo_resources_.get(); }
 
@@ -262,7 +265,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   bool splash_screen_removed_ = false;
   bool screensaver_activated_ = false;
 
-  base::FilePath demo_app_component_path_;
+  base::FilePath default_demo_app_component_path_;
 
   base::WeakPtrFactory<DemoSession> weak_ptr_factory_{this};
 };

@@ -629,6 +629,13 @@ void DemoSession::OnSessionStateChanged() {
   }
 }
 
+base::FilePath DemoSession::GetDemoAppComponentPath() {
+  DCHECK(!DemoSession::default_demo_app_component_path_.empty());
+  return base::FilePath(GetSwitchOrDefault(
+      switches::kDemoModeSwaContentDirectory,
+      DemoSession::default_demo_app_component_path_.value()));
+}
+
 void LaunchDemoSystemWebApp() {
   // SystemWebAppManager won't run this callback if the profile is destroyed,
   // so we don't need to worry about there being no active user profile
@@ -644,7 +651,7 @@ void DemoSession::OnDemoAppComponentLoaded(
                  << static_cast<int>(error);
     return;
   }
-  demo_app_component_path_ = path;
+  default_demo_app_component_path_ = path;
   Profile* profile = ProfileManager::GetActiveUserProfile();
   ash::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
       FROM_HERE, base::BindOnce(&LaunchDemoSystemWebApp));

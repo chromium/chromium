@@ -101,6 +101,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDefaultWallpaperLarge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDefaultWallpaperSmall[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDemoModeHighlightsApp[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDemoModeScreensaverApp[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kDemoModeSwaContentDirectory[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDerelictDetectionTimeout[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDerelictIdleTimeout[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kDisableArcCpuRestriction[];

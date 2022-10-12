@@ -315,6 +315,10 @@ const char kDemoModeHighlightsApp[] = "demo-mode-highlights-extension";
 // App ID to use for screensaver app in demo mode.
 const char kDemoModeScreensaverApp[] = "demo-mode-screensaver-extension";
 
+// Directory from which to fetch the demo mode SWA content (instead of
+// downloading from Omaha).
+const char kDemoModeSwaContentDirectory[] = "demo-mode-swa-content-directory";
+
 // Time in seconds before a machine at OOBE is considered derelict.
 const char kDerelictDetectionTimeout[] = "derelict-detection-timeout";
 
