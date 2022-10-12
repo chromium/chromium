@@ -311,7 +311,7 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
       ChromeAccountManagerService* accountManagerService =
           ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
       DCHECK(accountManagerService);
-      ChromeIdentity* account =
+      id<SystemIdentity> account =
           AuthenticationServiceFactory::GetForBrowserState(browserState)
               ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
       DCHECK(account) << "The user must be signed in to share a tab";
