@@ -13,7 +13,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -67,7 +66,7 @@ public class ShareSheetUsageRankingHelper {
 
     private final BottomSheetController mBottomSheetController;
     private final ShareSheetPropertyModelBuilder mPropertyModelBuilder;
-    private final Supplier<Profile> mProfileSupplier;
+    private final Profile mProfile;
 
     private ShareSheetBottomSheetContent mBottomSheet;
     private long mShareStartTime;
@@ -90,16 +89,15 @@ public class ShareSheetUsageRankingHelper {
      * @param linkToggleMetricsDetails {@link LinkToggleMetricsDetails} to record link toggle
      *         metrics, and contains the {@link LinkToggleState} to update to.
      * @param propertyModelBuilder The {@link ShareSheetPropertyModelBuilder} for the share sheet.
-     * @param profileSupplier A profile supplier to pull the current profile of the User.
+     * @param profile The current profile of the User.
      */
     ShareSheetUsageRankingHelper(BottomSheetController bottomSheetController,
             ShareSheetBottomSheetContent bottomSheet, long shareStartTime,
             int linkGenerationStatusForMetrics, LinkToggleMetricsDetails linkToggleMetricsDetails,
-            ShareSheetPropertyModelBuilder propertyModelBuilder,
-            Supplier<Profile> profileSupplier) {
+            ShareSheetPropertyModelBuilder propertyModelBuilder, Profile profile) {
         mBottomSheetController = bottomSheetController;
         mPropertyModelBuilder = propertyModelBuilder;
-        mProfileSupplier = profileSupplier;
+        mProfile = profile;
         mBottomSheet = bottomSheet;
         mShareStartTime = shareStartTime;
         mLinkGenerationStatusForMetrics = linkGenerationStatusForMetrics;
@@ -115,9 +113,6 @@ public class ShareSheetUsageRankingHelper {
     void createThirdPartyPropertyModelsFromUsageRanking(Activity activity, ShareParams params,
             Set<Integer> contentTypes, boolean saveLastUsed,
             Callback<List<PropertyModel>> callback) {
-        Profile profile = mProfileSupplier.get();
-        assert profile != null;
-
         String type = contentTypesToTypeForRanking(contentTypes);
 
         PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
@@ -165,10 +160,10 @@ public class ShareSheetUsageRankingHelper {
 
         // TODO(ellyjones): Does !saveLastUsed always imply that we shouldn't incorporate the share
         // into our ranking?
-        boolean persist = !profile.isOffTheRecord() && saveLastUsed;
+        boolean persist = !mProfile.isOffTheRecord() && saveLastUsed;
 
         ShareRankingBridge.rank(
-                profile, type, availableActivities, fold, length, persist, ranking -> {
+                mProfile, type, availableActivities, fold, length, persist, ranking -> {
                     onThirdPartyShareTargetsReceived(
                             callback, resolveInfos, activity, params, saveLastUsed, ranking);
                 });
@@ -258,12 +253,11 @@ public class ShareSheetUsageRankingHelper {
                 /*accessibilityDescription=*/null,
                 (shareParams)
                         -> {
-                    Profile profile = mProfileSupplier.get();
                     ShareSheetCoordinator.recordShareMetrics("SharingHubAndroid.MoreSelected",
                             mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails,
-                            mShareStartTime, profile);
+                            mShareStartTime, mProfile);
                     mBottomSheetController.hideContent(mBottomSheet, true);
-                    ShareHelper.showDefaultShareUi(params, profile, saveLastUsed);
+                    ShareHelper.showDefaultShareUi(params, mProfile, saveLastUsed);
                     // Reset callback to prevent cancel() being called when the custom sheet is
                     // closed. The callback will be called by ShareHelper on actions from the
                     // default share UI.

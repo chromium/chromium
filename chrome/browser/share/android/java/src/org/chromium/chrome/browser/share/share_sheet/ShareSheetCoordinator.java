@@ -69,7 +69,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private final BottomSheetObserver mBottomSheetObserver;
     private final LargeIconBridge mIconBridge;
     private final Tracker mFeatureEngagementTracker;
-    private final Supplier<Profile> mProfileSupplier;
+    private final Profile mProfile;
 
     private long mShareStartTime;
     private boolean mExcludeFirstParty;
@@ -99,7 +99,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
      * @param modelBuilder The {@link ShareSheetPropertyModelBuilder} for the share sheet.
      * @param isIncognito Whether the share sheet was opened in incognito mode or not.
      * @param imageEditorModuleProvider Image Editor module entry point if present in the APK.
-     * @param profileSupplier A profile supplier to pull the current profile of the User.
+     * @param profile The current profile of the User.
      */
     // TODO(crbug/1022172): Should be package-protected once modularization is complete.
     public ShareSheetCoordinator(BottomSheetController controller,
@@ -107,7 +107,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             ShareSheetPropertyModelBuilder modelBuilder, Callback<Tab> printTab,
             LargeIconBridge iconBridge, boolean isIncognito,
             ImageEditorModuleProvider imageEditorModuleProvider, Tracker featureEngagementTracker,
-            Supplier<Profile> profileSupplier) {
+            Profile profile) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
@@ -144,10 +144,10 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         mBottomSheetController.addObserver(mBottomSheetObserver);
         mIconBridge = iconBridge;
         mFeatureEngagementTracker = featureEngagementTracker;
-        mProfileSupplier = profileSupplier;
+        mProfile = profile;
         mShareSheetUsageRankingHelper = new ShareSheetUsageRankingHelper(mBottomSheetController,
                 mBottomSheet, mShareStartTime, mLinkGenerationStatusForMetrics,
-                mLinkToggleMetricsDetails, mPropertyModelBuilder, mProfileSupplier);
+                mLinkToggleMetricsDetails, mPropertyModelBuilder, mProfile);
     }
 
     protected void destroy() {
@@ -298,7 +298,7 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 mWindowAndroid, mTabProvider, mBottomSheetController, mBottomSheet, shareParams,
                 mPrintTabCallback, mIsIncognito, mShareStartTime, this, mImageEditorModuleProvider,
                 mFeatureEngagementTracker, getUrlToShare(shareParams, chromeShareExtras),
-                mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails, mProfileSupplier);
+                mLinkGenerationStatusForMetrics, mLinkToggleMetricsDetails, mProfile);
         mIsMultiWindow = ApiCompatibilityUtils.isInMultiWindowMode(activity);
 
         return mChromeProvidedSharingOptionsProvider.getPropertyModels(

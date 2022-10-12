@@ -27,7 +27,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.LooperMode;
 
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
@@ -89,8 +88,6 @@ public class ShareSheetUsageRankingHelperTest {
     private Activity mActivity;
     private ShareParams mParams;
     private ShareSheetUsageRankingHelper mShareSheetUsageRankingHelper;
-    private ObservableSupplierImpl<Profile> mProfileSupplier;
-    private long mShareStartTime;
     private @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.MAX;
     private LinkToggleMetricsDetails mLinkToggleMetricsDetails =
             new LinkToggleMetricsDetails(LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED);
@@ -107,16 +104,13 @@ public class ShareSheetUsageRankingHelperTest {
         when(mContentTypes.contains(ShareSheetPropertyModelBuilder.ContentType.IMAGE))
                 .thenReturn(true);
 
-        mProfileSupplier = new ObservableSupplierImpl<>();
-        mProfileSupplier.set(mProfile);
-
         mParams = new ShareParams.Builder(mWindow, "title", MOCK_URL)
                           .setCallback(mTargetChosenCallback)
                           .build();
 
         mShareSheetUsageRankingHelper = new ShareSheetUsageRankingHelper(mBottomSheetController,
-                mBottomSheet, mShareStartTime, mLinkGenerationStatusForMetrics,
-                mLinkToggleMetricsDetails, mPropertyModelBuilder, mProfileSupplier);
+                mBottomSheet, /* shareStartTime=*/1234, mLinkGenerationStatusForMetrics,
+                mLinkToggleMetricsDetails, mPropertyModelBuilder, mProfile);
     }
 
     @Test

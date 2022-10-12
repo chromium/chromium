@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 
 import android.app.Activity;
 import android.os.Build;
-import android.os.Looper;
 import android.support.test.runner.lifecycle.Stage;
 import android.view.View;
 
@@ -33,10 +32,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
@@ -75,6 +74,7 @@ import java.util.List;
 /**
  * Unit tests {@link ChromeProvidedSharingOptionsProvider}.
  */
+@Batch(Batch.UNIT_TESTS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures(
         {ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT, ChromeFeatureList.WEBNOTES_STYLIZE})
@@ -122,11 +122,9 @@ public class ChromeProvidedSharingOptionsProviderTest {
     private Activity mActivity;
     private ChromeProvidedSharingOptionsProvider mChromeProvidedSharingOptionsProvider;
     private UserActionTester mActionTester;
-    private ObservableSupplierImpl<Profile> mProfileSupplier;
 
     @Before
     public void setUp() {
-        Looper.prepare();
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
@@ -143,8 +141,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
         Mockito.doNothing().when(mBottomSheetController).hideContent(any(), anyBoolean());
 
         TrackerFactory.setTrackerForTests(mTracker);
-        mProfileSupplier = new ObservableSupplierImpl<>();
-        mProfileSupplier.set(mProfile);
         mActivityTestRule.launchActivity(null);
         ApplicationTestUtils.waitForActivityState(mActivityTestRule.getActivity(), Stage.RESUMED);
         mActivity = mActivityTestRule.getActivity();
@@ -489,7 +485,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 /*imageEditorModuleProvider*/ null, mTracker, URL, linkGenerationStatus,
                 new LinkToggleMetricsDetails(
                         LinkToggleState.COUNT, DetailedContentType.NOT_SPECIFIED),
-                mProfileSupplier);
+                mProfile);
     }
 
     private boolean propertyModelsContain(List<PropertyModel> propertyModels, int labelId) {
@@ -514,7 +510,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     private void assertCorrectLinkGenerationMetrics(
             List<PropertyModel> propertyModels, @LinkGeneration int linkGenerationStatus) {
-        Looper.prepare();
         mActionTester = new UserActionTester();
         View view = Mockito.mock(View.class);
         for (PropertyModel propertyModel : propertyModels) {
