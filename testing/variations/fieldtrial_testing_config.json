@@ -4848,6 +4848,9 @@
                     "name": "ForceGpuMainThreadToNormalPriorityDrDc",
                     "enable_features": [
                         "ForceGpuMainThreadToNormalPriorityDrDc"
+                    ],
+                    "disable_features": [
+                        "RawDraw"
                     ]
                 }
             ]
