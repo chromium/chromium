@@ -23,9 +23,9 @@
 namespace {
 
 const char kForcedRendering[] =
-    "Rendering was performed in a subtree hidden by content-visibility:hidden.";
+    "Rendering was performed in a subtree hidden by content-visibility.";
 const char kForcedRenderingMax[] =
-    "Rendering was performed in a subtree hidden by content-visibility:hidden. "
+    "Rendering was performed in a subtree hidden by content-visibility. "
     "Further messages will be suppressed.";
 constexpr unsigned kMaxConsoleMessages = 500;
 
@@ -452,9 +452,12 @@ void DisplayLockDocumentState::IssueForcedRenderWarning(Element* element) {
   // accessing content-visibility: hidden subtrees intentionally.
   if (forced_render_warnings_ < kMaxConsoleMessages) {
     forced_render_warnings_++;
+    auto level =
+        RuntimeEnabledFeatures::WarnOnContentVisibilityRenderAccessEnabled()
+            ? mojom::blink::ConsoleMessageLevel::kWarning
+            : mojom::blink::ConsoleMessageLevel::kVerbose;
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kJavaScript,
-        mojom::blink::ConsoleMessageLevel::kVerbose,
+        mojom::blink::ConsoleMessageSource::kJavaScript, level,
         forced_render_warnings_ == kMaxConsoleMessages ? kForcedRenderingMax
                                                        : kForcedRendering);
     console_message->SetNodes(document_->GetFrame(),

@@ -505,9 +505,11 @@ void DisplayLockContext::UpgradeForcedScope(ForcedPhase old_phase,
       MarkAncestorsForPrePaintIfNeeded();
     }
 
-    if (emit_warnings && v8::Isolate::GetCurrent()->InContext() &&
-        !IsActivatable(DisplayLockActivationReason::kAny) && document_ &&
-        element_) {
+    if (emit_warnings && v8::Isolate::GetCurrent()->InContext() && document_ &&
+        element_ &&
+        (!IsActivatable(DisplayLockActivationReason::kAny) ||
+         RuntimeEnabledFeatures::
+             WarnOnContentVisibilityRenderAccessEnabled())) {
       document_->GetDisplayLockDocumentState().IssueForcedRenderWarning(
           element_);
     }

@@ -2769,6 +2769,12 @@
       implied_by: ["SystemWakeLock"],
     },
     {
+      // When enabled, this will issue a warning to the console any time
+      // rendering is forced withing content-visibility subtrees (both
+      // content-visibility: auto and content-visibility: hidden).
+      name: "WarnOnContentVisibilityRenderAccess",
+    },
+    {
       name: "WebAnimationsAPI",
       status: "stable",
       implied_by: ["AnimationWorklet"],
