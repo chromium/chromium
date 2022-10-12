@@ -450,30 +450,19 @@ void AssistantPageView::InitLayout() {
 
 void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
   // Blur
-  if (features::IsProductivityLauncherEnabled() ||
-      (in_tablet_mode && features::IsDarkLightModeEnabled() &&
-       features::IsBackgroundBlurEnabled())) {
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  } else {
-    layer()->SetBackgroundBlur(0.0f);
-    layer()->SetBackdropFilterQuality(0.0f);
-  }
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
   // Color
   const auto* color_provider =
       GetWidget() ? GetWidget()->GetColorProvider() : nullptr;
+
   // ColorProvide might be nullptr in tests or this function is triggered before
   // `this` is added to the view hierarchy.
-  if (color_provider && features::IsProductivityLauncherEnabled()) {
+  if (color_provider)
     layer()->SetColor(color_provider->GetColor(kColorAshShieldAndBase80));
-  } else if (color_provider && features::IsDarkLightModeEnabled()) {
-    layer()->SetColor(color_provider->GetColor(
-        features::IsBackgroundBlurEnabled() ? kColorAshShieldAndBase80
-                                            : kColorAshShieldAndBase95));
-  } else {
+  else
     layer()->SetColor(SK_ColorWHITE);
-  }
 }
 
 // TODO(crbug.com/1359096): Clean up this function and its relative code path.
