@@ -6,11 +6,6 @@ import("//tools/typescript/ts_library.gni")
 
 # Defines a target that compiles one or more TypeScript and JavaScript input
 # files.
-# NOTE: Since ts_library produces files with hardcoded names at
-# `target_gen_dir`, only a single `compile_ts` target may exist in a BUILD
-# file. However, even with this restriction, unrelated TypeScript files may be
-# compiled together in a single `compile_ts` target, then be used in multiple,
-# separate `optimize_js` instances.
 #
 # Variables
 #   sources:
