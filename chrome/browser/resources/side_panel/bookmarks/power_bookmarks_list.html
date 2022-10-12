@@ -42,18 +42,21 @@
       description="[[getBookmarkDescription_(item, descriptions_.*)]]"
       compact="[[compact_]]">
     <div slot="extra-content-container">
-      <template is="dom-if" if="[[showDiscountedPrice_(item)]]" restamp>
-        <power-bookmark-chip class="chip-discounted">
-          <div class="icon icon-tracked icon-discounted"></div>
-          <div class="price-discounted">$200</div>
-          <div class="price-original">$500</div>
-        </power-bookmark-chip>
-      </template>
-      <template is="dom-if" if="[[!showDiscountedPrice_(item)]]" restamp>
-        <power-bookmark-chip>
-          <div class="icon icon-tracked"></div>
-          <div>$200</div>
-        </power-bookmark-chip>
+      <template is="dom-if"
+          if="[[isPriceTracked_(item, showPriceTracking_)]]" restamp>
+        <template is="dom-if" if="[[showDiscountedPrice_(item)]]" restamp>
+          <power-bookmark-chip class="chip-discounted">
+            <div class="icon icon-tracked icon-discounted"></div>
+            <div class="price-discounted">[[getCurrentPrice_(item)]]</div>
+            <div class="price-original">[[getPreviousPrice_(item)]]</div>
+          </power-bookmark-chip>
+        </template>
+        <template is="dom-if" if="[[!showDiscountedPrice_(item)]]" restamp>
+          <power-bookmark-chip>
+            <div class="icon icon-tracked"></div>
+            <div>[[getCurrentPrice_(item)]]</div>
+          </power-bookmark-chip>
+        </template>
       </template>
     </div>
   </power-bookmark-row>

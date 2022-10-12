@@ -41,6 +41,11 @@ export class PowerBookmarksListElement extends PolymerElement {
         type: Boolean,
         value: true,
       },
+
+      showPriceTracking_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -49,10 +54,11 @@ export class PowerBookmarksListElement extends PolymerElement {
       BookmarksApiProxyImpl.getInstance();
   private shoppingListApi_: ShoppingListApiProxy =
       ShoppingListApiProxyImpl.getInstance();
-  private productInfos_: BookmarkProductInfo[];
+  private productInfos_ = new Map<string, BookmarkProductInfo>();
   private shoppingListenerIds_: number[] = [];
   private compact_: boolean;
   private descriptions_ = new Map<string, string>();
+  private showPriceTracking_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -67,8 +73,11 @@ export class PowerBookmarksListElement extends PolymerElement {
       });
     });
     this.shoppingListApi_.getAllPriceTrackedBookmarkProductInfo().then(res => {
-      this.productInfos_ = res.productInfos;
-      if (this.productInfos_.length > 0) {
+      res.productInfos.forEach(
+          product =>
+              this.productInfos_.set(product.bookmarkId.toString(), product));
+      if (this.productInfos_.size > 0) {
+        this.showPriceTracking_ = true;
         chrome.metricsPrivate.recordUserAction(
             'Commerce.PriceTracking.SidePanel.TrackedProductsShown');
       }
@@ -76,8 +85,7 @@ export class PowerBookmarksListElement extends PolymerElement {
     const callbackRouter = this.shoppingListApi_.getCallbackRouter();
     this.shoppingListenerIds_.push(
         callbackRouter.priceTrackedForBookmark.addListener(
-            (product: BookmarkProductInfo) =>
-                this.onBookmarkPriceTracked(product)),
+            () => this.onBookmarkPriceTracked()),
     );
   }
 
@@ -117,22 +125,55 @@ export class PowerBookmarksListElement extends PolymerElement {
     return this.get(`descriptions_.${bookmark.id}`);
   }
 
+  private getProductInfos_(): BookmarkProductInfo[] {
+    return Array.from(this.productInfos_.values());
+  }
+
+  private isPriceTracked_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      boolean {
+    return this.productInfos_.has(bookmark.id);
+  }
+
   /**
    * Whether the given price-tracked bookmark should display as if discounted.
    */
-  private showDiscountedPrice_(): boolean {
-    // TODO: Incorporate actual price tracking data here
-    return true;
+  private showDiscountedPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      boolean {
+    const bookmarkProductInfo = this.productInfos_.get(bookmark.id);
+    if (bookmarkProductInfo) {
+      return bookmarkProductInfo.info.previousPrice.length > 0;
+    }
+    return false;
   }
 
-  private onBookmarkPriceTracked(product: BookmarkProductInfo) {
+  private getCurrentPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      string {
+    const bookmarkProductInfo = this.productInfos_.get(bookmark.id);
+    if (bookmarkProductInfo) {
+      return bookmarkProductInfo.info.currentPrice;
+    } else {
+      return '';
+    }
+  }
+
+  private getPreviousPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
+      string {
+    const bookmarkProductInfo = this.productInfos_.get(bookmark.id);
+    if (bookmarkProductInfo) {
+      return bookmarkProductInfo.info.previousPrice;
+    } else {
+      return '';
+    }
+  }
+
+  private onBookmarkPriceTracked() {
     // Here we only control the visibility of ShoppingListElement. The same
     // signal will also be handled in ShoppingListElement to update shopping
     // list.
-    if (this.productInfos_.length > 0) {
+    if (this.productInfos_.size > 0) {
       return;
     }
-    this.push('productInfos_', product);
+    this.showPriceTracking_ = true;
     chrome.metricsPrivate.recordUserAction(
         'Commerce.PriceTracking.SidePanel.TrackedProductsShown');
   }
