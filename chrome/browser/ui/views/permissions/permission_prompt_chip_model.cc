@@ -99,9 +99,7 @@ PermissionPromptChipModel::PermissionPromptChipModel(
     chip_theme_ = OmniboxChipTheme::kLowVisibility;
   } else {
     prompt_style_ = PermissionPromptStyle::kChip;
-    should_bubble_start_open_ =
-        permissions::PermissionUtil::ShouldPermissionBubbleStartOpen(
-            delegate_.value());
+    should_bubble_start_open_ = true;
 
     should_expand_ = true;
 

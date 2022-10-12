@@ -320,13 +320,13 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureInsensitiveBrowserTest,
   animation_api.SetStartTime(now);
   animation_api.Step(now + animation->GetSlideDuration());
 
-  // After animation ended, the chip is expanded and no bubble is shown, because
-  // the gesture sensitive request feature is not enabled.
+  // After animation ended, the chip is expanded and a bubble is shown.
   EXPECT_TRUE(lbv->chip_controller()->IsPermissionPromptChipVisible());
-  EXPECT_FALSE(lbv->chip_controller()->IsBubbleShowing());
+  EXPECT_TRUE(lbv->chip_controller()->IsBubbleShowing());
 
-  // Because no bubble is shown, the collapse callback timer should be running.
-  EXPECT_TRUE(lbv->chip_controller()->is_collapse_timer_running_for_testing());
+  // Because a bubble is shown, the collapse callback timer should not be
+  // running.
+  EXPECT_FALSE(lbv->chip_controller()->is_collapse_timer_running_for_testing());
   EXPECT_FALSE(lbv->chip_controller()->is_dismiss_timer_running_for_testing());
 
   // Type something in the omnibox.

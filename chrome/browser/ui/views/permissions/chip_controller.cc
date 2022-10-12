@@ -310,11 +310,6 @@ void ChipController::CollapseConfirmation() {
   GetLocationBarView()->ResetConfirmationChipShownTime();
 }
 
-bool ChipController::should_start_open_for_testing() {
-  CHECK_IS_TEST();
-  return permission_prompt_model_->ShouldBubbleStartOpen();
-}
-
 bool ChipController::should_expand_for_testing() {
   CHECK_IS_TEST();
   return permission_prompt_model_->ShouldExpand();

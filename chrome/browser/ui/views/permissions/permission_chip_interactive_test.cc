@@ -209,38 +209,6 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
 
-IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
-                       ChipAutoPopupBubbleDisabled) {
-  ASSERT_FALSE(base::FeatureList::IsEnabled(
-      permissions::features::kPermissionChipGestureSensitive));
-  ASSERT_FALSE(base::FeatureList::IsEnabled(
-      permissions::features::kPermissionChipRequestTypeSensitive));
-
-  RequestPermission(permissions::RequestType::kGeolocation);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kNotifications);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kMidiSysex);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
-}
-
 class LocationBarIconOverrideTest
     : public PermissionChipInteractiveTest,
       public ::testing::WithParamInterface<ChipFeatureConfig> {
@@ -312,7 +280,8 @@ IN_PROC_BROWSER_TEST_P(LocationBarIconOverrideTest,
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   test_api_->manager()->Accept();
 
@@ -637,41 +606,6 @@ class ChipRequestTypeSensitiveEnabledInteractiveTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-// `kGeolocation` and `kNotifications` are excluded from the sensitive request
-// type experiment.
-IN_PROC_BROWSER_TEST_F(ChipRequestTypeSensitiveEnabledInteractiveTest,
-                       ChipAutoPopupBubbleEnabled) {
-  ASSERT_FALSE(base::FeatureList::IsEnabled(
-      permissions::features::kPermissionChipGestureSensitive));
-  ASSERT_TRUE(base::FeatureList::IsEnabled(
-      permissions::features::kPermissionChipRequestTypeSensitive));
-
-  RequestPermission(permissions::RequestType::kGeolocation);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kNotifications);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
-
-  test_api_->manager()->Accept();
-  base::RunLoop().RunUntilIdle();
-
-  RequestPermission(permissions::RequestType::kMidiSysex);
-
-  EXPECT_EQ(
-      test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::
-          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
-}
 
 class ChipDisabledInteractiveTest : public PermissionChipInteractiveTest {
  public:
@@ -1287,7 +1221,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   test_api_->manager()->Accept();
   base::RunLoop().RunUntilIdle();
@@ -1296,7 +1231,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 }
 
 IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
@@ -1310,7 +1246,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
     EXPECT_EQ(
         test_api_->manager()->current_request_prompt_disposition_for_testing(),
-        permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+        permissions::PermissionPromptDisposition::
+            LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
     test_api_->manager()->Accept();
     base::RunLoop().RunUntilIdle();
@@ -1429,7 +1366,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   test_api_->manager()->Accept();
   base::RunLoop().RunUntilIdle();
@@ -1450,7 +1388,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   test_api_->manager()->Accept();
   base::RunLoop().RunUntilIdle();
@@ -1471,7 +1410,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   test_api_->manager()->Accept();
   base::RunLoop().RunUntilIdle();
@@ -1492,7 +1432,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   test_api_->manager()->Accept();
   base::RunLoop().RunUntilIdle();
@@ -1513,7 +1454,8 @@ IN_PROC_BROWSER_TEST_F(QuietChipPermissionPromptBubbleViewInteractiveTest,
 
   EXPECT_EQ(
       test_api_->manager()->current_request_prompt_disposition_for_testing(),
-      permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP);
+      permissions::PermissionPromptDisposition::
+          LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 
   test_api_->manager()->Accept();
   base::RunLoop().RunUntilIdle();

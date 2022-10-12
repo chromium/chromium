@@ -43,7 +43,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   ChipController(const ChipController&) = delete;
   ChipController& operator=(const ChipController&) = delete;
 
-  // PermissionRequestManager::Observer
+  // PermissionRequestManager::Observer:
   void OnPermissionRequestManagerDestructed() override;
 
   void OnBubbleRemoved() override;
@@ -55,7 +55,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void OnNavigation(content::NavigationHandle* navigation_handle) override;
   void OnRequestDecided(permissions::PermissionAction permissions) override;
 
-  // BubbleOwnerDelegate
+  // BubbleOwnerDelegate:
   bool IsBubbleShowing() override;
   bool IsAnimating() const override;
   void RestartTimersOnMouseHover() override;
@@ -64,7 +64,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // Initializes the permission prompt model as well as the permission request
-  // manager and observes the prompt bubble
+  // manager and observes the prompt bubble.
   void InitializePermissionPrompt(
       content::WebContents* web_contents,
       permissions::PermissionPrompt::Delegate* delegate);
@@ -83,18 +83,14 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // Hide and clean up permission parts of the chip.
   void ResetPermissionPromptChip();
 
-  // State
   bool IsPermissionPromptChipVisible() {
     return chip_ && chip_->GetVisible() && permission_prompt_model_;
   }
 
-  // Update browser.
   void UpdateBrowser(Browser* browser) { browser_ = browser; }
 
   views::Widget* GetBubbleWidget();
 
-  // Testing helpers.
-  bool should_start_open_for_testing();
   bool should_expand_for_testing();
 
   bool is_collapse_timer_running_for_testing() {
@@ -130,7 +126,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   }
 
  private:
-  // Animations.
   void AnimateExpand(
       base::RepeatingCallback<void()> expand_anmiation_ended_callback);
 
@@ -150,7 +145,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void ClosePermissionPromptBubbleWithReason(
       views::Widget::ClosedReason reason);
 
-  // Statistics
   void RecordRequestChipButtonPressed(const char* recordKey);
 
   // Event handling.

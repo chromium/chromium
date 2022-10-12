@@ -401,38 +401,15 @@ GURL PermissionUtil::GetCanonicalOrigin(ContentSettingsType permission,
       return requesting_origin;
   }
 }
-bool PermissionUtil::ShouldPermissionBubbleStartOpen(
-    PermissionPrompt::Delegate* prompt_delegate) {
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionChipGestureSensitive)) {
-    std::vector<permissions::PermissionRequest*> requests =
-        prompt_delegate->Requests();
-    const bool has_gesture =
-        std::any_of(requests.begin(), requests.end(),
-                    [](permissions::PermissionRequest* request) {
-                      return request->GetGestureType() ==
-                             permissions::PermissionRequestGestureType::GESTURE;
-                    });
-    if (has_gesture)
-      return true;
-  }
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kPermissionChipRequestTypeSensitive)) {
-    // Notifications and geolocation are targeted here because they are usually
-    // not necessary for the website to function correctly, so they can safely
-    // be given less prominence.
-    std::vector<permissions::PermissionRequest*> requests =
-        prompt_delegate->Requests();
-    const bool is_geolocation_or_notifications = std::any_of(
-        requests.begin(), requests.end(),
-        [](permissions::PermissionRequest* request) {
-          permissions::RequestType request_type = request->request_type();
-          return request_type == permissions::RequestType::kNotifications ||
-                 request_type == permissions::RequestType::kGeolocation;
-        });
-    if (!is_geolocation_or_notifications)
-      return true;
-  }
-  return false;
+
+bool PermissionUtil::HasUserGesture(PermissionPrompt::Delegate* delegate) {
+  const std::vector<permissions::PermissionRequest*>& requests =
+      delegate->Requests();
+  return std::any_of(
+      requests.begin(), requests.end(),
+      [](permissions::PermissionRequest* request) {
+        return request->GetGestureType() ==
+               permissions::PermissionRequestGestureType::GESTURE;
+      });
 }
 }  // namespace permissions

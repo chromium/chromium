@@ -72,11 +72,8 @@ PermissionPromptChip::GetPromptDisposition() const {
                      LOCATION_BAR_LEFT_QUIET_CHIP;
   }
 
-  return permissions::PermissionUtil::ShouldPermissionBubbleStartOpen(
-             delegate())
-             ? permissions::PermissionPromptDisposition::
-                   LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE
-             : permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP;
+  return permissions::PermissionPromptDisposition::
+      LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE;
 }
 
 views::Widget* PermissionPromptChip::GetPromptBubbleWidgetForTesting() {

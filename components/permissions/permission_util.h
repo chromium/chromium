@@ -136,8 +136,10 @@ class PermissionUtil {
   static GURL GetCanonicalOrigin(ContentSettingsType permission,
                                  const GURL& requesting_origin,
                                  const GURL& embedding_origin);
-  static bool ShouldPermissionBubbleStartOpen(
-      PermissionPrompt::Delegate* prompt_delegate);
+
+  // Returns `true` if at least one of the `delegate->Requests()` was requested
+  // with a user gesture.
+  static bool HasUserGesture(PermissionPrompt::Delegate* delegate);
 };
 
 }  // namespace permissions
