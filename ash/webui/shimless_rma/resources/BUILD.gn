@@ -178,8 +178,8 @@ js_library("critical_error_page") {
     ":base_page",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -188,8 +188,8 @@ js_library("hardware_error_page") {
     ":base_page",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -231,8 +231,8 @@ js_library("onboarding_choose_destination_page") {
     ":base_page",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list = [ "//ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js" ]
 }
@@ -283,8 +283,8 @@ js_library("onboarding_select_components_page") {
     ":mojo_interface_provider",
     ":repair_component_chip",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert",
   ]
 }
@@ -295,11 +295,11 @@ js_library("onboarding_network_page") {
     ":icons",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:network_config",
     "//ash/webui/common/resources/network:network_list",
     "//ash/webui/common/resources/network:onc_mojo",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:util",
   ]
@@ -314,9 +314,9 @@ js_library("onboarding_update_page") {
     ":base_page",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -346,8 +346,8 @@ js_library("reboot_page") {
     ":base_page",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -440,8 +440,8 @@ js_library("wrapup_repair_complete_page") {
     ":base_page",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",

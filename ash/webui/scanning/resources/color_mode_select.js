@@ -6,8 +6,8 @@ import './scanning.mojom-lite.js';
 import './scan_settings_section.js';
 import './strings.m.js';
 
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {alphabeticalCompare, getColorModeString} from './scanning_app_util.js';

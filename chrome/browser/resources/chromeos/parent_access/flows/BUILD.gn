@@ -7,9 +7,9 @@ import("//tools/polymer/html_to_js.gni")
 
 js_library("local_web_approvals_after") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//chrome/browser/ui/webui/chromeos/parent_access:mojo_bindings_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 

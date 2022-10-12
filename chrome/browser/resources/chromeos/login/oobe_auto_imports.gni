@@ -91,6 +91,9 @@ oobe_namespace_rewrites = [
 
 oobe_migrated_imports = [
   "chrome/browser/resources/gaia_auth_host/authenticator.html",
+  "ash/webui/common/resources/cr_scrollable_behavior.html",
+  "ash/webui/common/resources/i18n_behavior.html",
+  "ash/webui/common/resources/web_ui_listener_behavior.html",
   "ash/webui/common/resources/bluetooth/bluetooth_pairing_enter_code_page.html",
   "ash/webui/common/resources/multidevice_setup/button_bar.html",
   "ash/webui/common/resources/multidevice_setup/fake_mojo_service.html",
@@ -130,13 +133,10 @@ oobe_migrated_imports = [
   "ui/webui/resources/cr_elements/cr_lottie/cr_lottie.html",
   "ui/webui/resources/cr_elements/cr_radio_button/cr_card_radio_button.html",
   "ui/webui/resources/cr_elements/cr_radio_group/cr_radio_group.html",
-  "ui/webui/resources/cr_elements/cr_scrollable_behavior.html",
   "ui/webui/resources/cr_elements/cr_shared_style.css.html",
   "ui/webui/resources/cr_elements/cr_shared_vars.css.html",
   "ui/webui/resources/cr_elements/cr_toggle/cr_toggle.html",
   "ui/webui/resources/cr_elements/md_select.css.html",
-  "ui/webui/resources/cr_elements/i18n_behavior.html",
-  "ui/webui/resources/cr_elements/web_ui_listener_behavior.html",
   "ui/webui/resources/html/assert.html",
   "ui/webui/resources/html/parse_html_subset.html",
   "ui/webui/resources/html/util.html",

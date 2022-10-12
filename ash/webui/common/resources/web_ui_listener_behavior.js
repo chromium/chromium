@@ -9,7 +9,8 @@
  * it in new code.
  */
 
-import {WebUIListener, addWebUIListener, removeWebUIListener} from '../js/cr.m.js';
+import {addWebUIListener, removeWebUIListener, WebUIListener} from 'chrome://resources/js/cr.m.js';
+
 
 /** @polymerBehavior */
 // eslint-disable-next-line no-var
@@ -57,4 +58,3 @@ export class WebUIListenerBehaviorInterface {
    */
   addWebUIListener(eventName, callback) {}
 }
-

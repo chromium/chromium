@@ -45,24 +45,24 @@ js_library("color_mode_select") {
   deps = [
     ":scanning_app_util",
     ":select_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("loading_page") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("file_type_select") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -70,26 +70,26 @@ js_library("page_size_select") {
   deps = [
     ":scanning_app_util",
     ":select_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("resolution_select") {
   deps = [
     ":select_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("scan_done_section") {
   deps = [
     ":scanning_app_types",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -98,17 +98,17 @@ js_library("scan_preview") {
     ":action_toolbar",
     ":scanning_app_types",
     ":scanning_app_util",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("scan_to_select") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -116,25 +116,25 @@ js_library("scanner_select") {
   deps = [
     ":scanning_app_types",
     ":scanning_app_util",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("multi_page_checkbox") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("multi_page_scan") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -155,9 +155,9 @@ js_library("scanning_app") {
     ":scanning_app_util",
     ":scanning_browser_proxy",
     ":source_select",
+    "//ash/webui/common/resources:cr_container_shadow_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_toast/cr_toast_externs.js" ]
@@ -176,9 +176,9 @@ js_library("source_select") {
   deps = [
     ":scanning_app_util",
     ":select_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/scanning/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 

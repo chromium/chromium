@@ -52,13 +52,11 @@ generate_grd("build_grd") {
       "cr_components/customize_themes:build_grdp",
       "cr_components/help_bubble:build_grdp",
       "cr_components/most_visited:build_grdp",
-      "cr_elements:build_grdp",
       "js/browser_command:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
     grdp_files += [
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
       "$target_gen_dir/cr_components/app_management/resources.grdp",
       "$target_gen_dir/cr_components/customize_themes/resources.grdp",
       "$target_gen_dir/cr_components/help_bubble/resources.grdp",
@@ -137,10 +135,6 @@ group("closure_compile") {
     "js:closure_compile",
     "js:closure_compile_modules",
   ]
-
-  if (include_polymer && is_chromeos_ash) {
-    deps += [ "cr_elements:closure_compile" ]
-  }
 }
 
 # TypeScript targets
@@ -148,18 +142,10 @@ group("closure_compile") {
 preprocessed_folder = "$target_gen_dir/preprocessed"
 
 checked_in_dts_files = [
-  "cr_elements/cr_scrollable_behavior.d.ts",
-  "cr_elements/i18n_behavior.d.ts",
-  "cr_elements/policy/cr_policy_indicator_behavior.d.ts",
-  "cr_elements/web_ui_listener_behavior.d.ts",
   "js/parse_html_subset.d.ts",
   "js/promise_resolver.d.ts",
   "js/static_types.d.ts",
 ]
-
-if (is_chromeos_ash) {
-  checked_in_dts_files += [ "cr_elements/cr_container_shadow_behavior.d.ts" ]
-}
 
 # Copies checked-in .d.ts files to the preprocess folder so that they are
 # discovered by TSC the same way generated .d.ts files are.

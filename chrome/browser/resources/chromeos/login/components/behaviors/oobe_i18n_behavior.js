@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/cr_elements/i18n_behavior.js';
+// #import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 // #import {SanitizeInnerHtmlOpts} from 'chrome://resources/js/parse_html_subset.js';
 // #import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on

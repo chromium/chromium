@@ -97,8 +97,8 @@ js_library("confirmation_page") {
 js_library("help_content") {
   deps = [
     ":feedback_types",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui//webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -168,8 +168,8 @@ js_library("search_page") {
     ":feedback_types",
     ":help_content",
     ":mojo_interface_provider",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 

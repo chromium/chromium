@@ -13,7 +13,7 @@ import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {assert} from '//resources/js/assert.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CellularMetadata} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';

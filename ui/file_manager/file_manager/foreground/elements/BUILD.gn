@@ -75,6 +75,7 @@ html_to_js("web_components") {
 
 js_library("files_format_dialog") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/file_manager/file_manager/common/js:files_app_entry_types",
@@ -82,7 +83,6 @@ js_library("files_format_dialog") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/foreground/js:file_rename",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list = [
     "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",

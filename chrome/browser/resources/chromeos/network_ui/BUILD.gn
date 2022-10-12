@@ -84,9 +84,9 @@ js_type_check("closure_compile") {
 js_library("network_ui") {
   deps = [
     ":network_ui_browser_proxy",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:onc_mojo",
     "//ash/webui/common/resources/network_health:network_diagnostics",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }
@@ -94,14 +94,14 @@ js_library("network_ui") {
 js_library("network_logs_ui") {
   deps = [
     ":network_ui_browser_proxy",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
   ]
 }
 
 js_library("network_metrics_ui") {
   deps = [
     ":network_ui_browser_proxy",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
   ]
 }
 

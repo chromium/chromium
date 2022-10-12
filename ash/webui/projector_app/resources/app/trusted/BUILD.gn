@@ -16,10 +16,10 @@ js_library("trusted_app") {
     "trusted_app_comm_factory.js",
   ]
   deps = [
+    "//ash/webui/common/resources:web_ui_listener_behavior",
     "//ash/webui/common/resources/post_message_api:post_message_api_client",
     "//ash/webui/common/resources/post_message_api:post_message_api_request_handler",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
   ]
   externs_list = [
     "../../common/projector_app.externs.js",

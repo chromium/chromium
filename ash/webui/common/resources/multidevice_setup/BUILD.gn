@@ -55,7 +55,7 @@ js_library("multidevice_setup") {
     ":setup_succeeded_page",
     ":start_setup_page",
     "//ash/services/multidevice_setup/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -89,7 +89,7 @@ js_library("start_setup_page") {
     ":ui_page_container_behavior",
     "//ash/services/device_sync/public/mojom:mojom_webui_js",
     "//ash/services/multidevice_setup/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
@@ -97,7 +97,7 @@ js_library("start_setup_page") {
 
 js_library("ui_page_container_behavior") {
   deps = [
-    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ui/webui/resources/js:cr.m",
   ]
 }

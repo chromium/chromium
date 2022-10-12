@@ -55,7 +55,6 @@ non_preprocessed_files = [
   "cr_tree_test.ts",
   "cr_view_manager_test.ts",
   "find_shortcut_mixin_test.ts",
-  "i18n_behavior_test.js",
   "i18n_mixin_test.ts",
   "iron_list_focus_test.ts",
   "list_property_update_mixin_tests.ts",
@@ -63,12 +62,7 @@ non_preprocessed_files = [
 ]
 
 if (is_chromeos_ash) {
-  non_preprocessed_files += [
-    "cr_container_shadow_behavior_test.ts",
-    "cr_policy_indicator_behavior_tests.ts",
-    "cr_scrollable_behavior_tests.ts",
-    "cr_searchable_drop_down_tests.ts",
-  ]
+  non_preprocessed_files += [ "cr_searchable_drop_down_tests.ts" ]
 }
 
 preprocessed_folder = "$target_gen_dir/preprocessed"

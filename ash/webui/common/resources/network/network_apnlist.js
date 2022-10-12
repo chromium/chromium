@@ -14,8 +14,8 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './network_property_list_mojo.js';
 import './network_shared.css.js';
 
+import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {OncMojo} from '//resources/ash/common/network/onc_mojo.js';
-import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 import {assert} from '//resources/js/assert.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnState, ApnType, ManagedApnProperties, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';

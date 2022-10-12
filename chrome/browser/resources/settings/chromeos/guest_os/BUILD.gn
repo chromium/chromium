@@ -39,8 +39,8 @@ js_library("guest_os_shared_usb_devices") {
     ":guest_os_container_select",
     ":guest_os_shared_usb_devices_add_dialog",
     "..:metrics_recorder",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js" ]
@@ -51,7 +51,7 @@ js_library("guest_os_shared_usb_devices_add_dialog") {
     ":guest_os_browser_proxy",
     ":guest_os_container_select",
     "..:metrics_recorder",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -65,8 +65,8 @@ js_library("guest_os_shared_paths") {
   deps = [
     ":guest_os_browser_proxy",
     "..:metrics_recorder",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 

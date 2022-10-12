@@ -33,8 +33,8 @@ js_library("audio") {
     "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
+    "//ash/webui/common/resources:i18n_behavior",
     "//chromeos/ash/components/audio/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 
   externs_list =
@@ -123,8 +123,8 @@ js_library("power") {
     "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
   ]
 }
 
@@ -136,7 +136,7 @@ js_library("storage") {
     "..:route_origin_behavior",
     "../..:router",
     "//ash/webui/common/resources:focus_without_ink_js",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -145,15 +145,15 @@ js_library("storage") {
 js_library("storage_external") {
   deps = [
     ":device_page_browser_proxy",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
   ]
 }
 
 js_library("storage_external_entry") {
   deps = [
     "..:prefs_behavior",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
   ]
 }
 

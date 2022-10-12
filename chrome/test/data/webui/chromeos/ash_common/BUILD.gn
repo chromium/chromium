@@ -3,6 +3,39 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [ "chrome://webui-test/*|" +
+                    rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                target_gen_dir) ]
+  in_files = [
+    "cr_container_shadow_behavior_test.ts",
+    "cr_policy_indicator_behavior_tests.ts",
+    "cr_policy_strings.ts",
+    "cr_scrollable_behavior_tests.ts",
+    "list_property_update_behavior_tests.ts",
+  ]
+  deps = [
+    "../..:build_ts",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_chromeos_ash_common"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "chromeos/ash_common"
+}
 
 js_type_check("closure_compile") {
   is_polymer3 = true

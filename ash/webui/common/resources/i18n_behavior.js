@@ -12,8 +12,8 @@
  * code.
  */
 
-import {parseHtmlSubset, SanitizeInnerHtmlOpts, sanitizeInnerHtml} from '../js/parse_html_subset.js';
-import {loadTimeData} from '../js/load_time_data.m.js';
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {parseHtmlSubset, sanitizeInnerHtml, SanitizeInnerHtmlOpts} from '//resources/js/parse_html_subset.js';
 
 /** @polymerBehavior */
 export const I18nBehavior = {
@@ -183,4 +183,3 @@ export class I18nBehaviorInterface {
    */
   i18nExists(id) {}
 }
-

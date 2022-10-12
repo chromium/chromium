@@ -32,3 +32,52 @@ var AshCommonResourcesListPropertyUpdateBehaviorTest =
 TEST_F('AshCommonResourcesListPropertyUpdateBehaviorTest', 'All', function() {
   mocha.run();
 });
+
+var AshCommonResourcesI18nBehaviorTest =
+    class extends AshCommonResourcesBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=chromeos/ash_common/i18n_behavior_test.js';
+  }
+};
+
+TEST_F('AshCommonResourcesI18nBehaviorTest', 'All', function() {
+  mocha.run();
+});
+
+var AshCommonResourcesContainerShadowBehaviorTest =
+    class extends AshCommonResourcesBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=chromeos/ash_common/cr_container_shadow_behavior_test.js';
+  }
+};
+
+TEST_F('AshCommonResourcesContainerShadowBehaviorTest', 'All', function() {
+  mocha.run();
+});
+
+
+var AshCommonResourcesPolicyIndicatorBehaviorTest =
+    class extends AshCommonResourcesBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=chromeos/ash_common/cr_policy_indicator_behavior_tests.js';
+  }
+};
+
+TEST_F('AshCommonResourcesPolicyIndicatorBehaviorTest', 'All', function() {
+  mocha.run();
+});
+
+var AshCommonResourcesScrollableBehaviorTest =
+    class extends AshCommonResourcesBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://webui-test/test_loader.html?module=chromeos/ash_common/cr_scrollable_behavior_tests.js';
+  }
+};
+
+TEST_F('AshCommonResourcesScrollableBehaviorTest', 'All', function() {
+  mocha.run();
+});

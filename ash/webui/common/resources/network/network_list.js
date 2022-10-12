@@ -11,7 +11,7 @@ import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {CrScrollableBehavior} from '//resources/cr_elements/cr_scrollable_behavior.js';
+import {CrScrollableBehavior} from '//resources/ash/common/cr_scrollable_behavior.js';
 import {ListPropertyUpdateBehavior} from '//resources/ash/common/list_property_update_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {GlobalPolicy} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';

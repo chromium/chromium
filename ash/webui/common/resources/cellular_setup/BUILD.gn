@@ -37,8 +37,8 @@ js_type_check("closure_compile_module") {
 
 js_library("base_page") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -46,15 +46,15 @@ js_library("final_page") {
   deps = [
     ":base_page",
     ":cellular_setup_delegate",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
   ]
 }
 
 js_library("activation_verification_page") {
   deps = [
     ":base_page",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
@@ -64,32 +64,32 @@ js_library("activation_code_page") {
   deps = [
     ":cellular_setup_delegate",
     ":subflow_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("confirmation_code_page") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("profile_discovery_list_item") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("profile_discovery_list_page") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -137,9 +137,9 @@ js_library("provisioning_page") {
     ":base_page",
     ":cellular_setup_delegate",
     ":webview_post_util",
+    "//ash/webui/common/resources:i18n_behavior",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert",
   ]
   externs_list = [
@@ -152,8 +152,8 @@ js_library("button_bar") {
   deps = [
     ":cellular_types",
     "//ash/webui/common/resources:focus_without_ink_js",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -176,9 +176,9 @@ js_library("psim_flow_ui") {
     ":provisioning_page",
     ":setup_loading_page",
     ":subflow_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
@@ -197,13 +197,13 @@ js_library("esim_flow_ui") {
     ":profile_discovery_list_item",
     ":profile_discovery_list_page",
     ":subflow_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:cellular_utils",
     "//ash/webui/common/resources/network:mojo_interface_provider",
     "//ash/webui/common/resources/network:network_listener_behavior",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
     "//chromeos/services/network_config/public/mojom:mojom_webui_js",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/metrics_private.js" ]
@@ -211,8 +211,8 @@ js_library("esim_flow_ui") {
 
 js_library("cellular_eid_dialog") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//chromeos/ash/services/cellular_setup/public/mojom:mojom_webui_js",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -223,8 +223,8 @@ js_library("cellular_setup") {
     ":cellular_types",
     ":esim_flow_ui",
     ":psim_flow_ui",
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:cellular_utils",
     "//ash/webui/common/resources/network:mojo_interface_provider",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }

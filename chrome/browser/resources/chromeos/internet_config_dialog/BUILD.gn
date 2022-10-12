@@ -67,10 +67,10 @@ js_type_check("closure_compile") {
 
 js_library("internet_config_dialog") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/network:cr_policy_network_behavior_mojo",
     "//ash/webui/common/resources/network:network_config",
     "//ash/webui/common/resources/network:onc_mojo",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert",
   ]
 

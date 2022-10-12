@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './log_object.js';
 import './shared_style.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/cr_elements/web_ui_listener_behavior.js';
+import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NearbyLogsBrowserProxy} from './nearby_logs_browser_proxy.js';

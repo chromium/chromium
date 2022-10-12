@@ -11,7 +11,7 @@ import '//resources/cr_elements/cr_lottie/cr_lottie.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
-import {WebUIListenerBehavior} from '//resources/cr_elements/web_ui_listener_behavior.js';
+import {WebUIListenerBehavior} from '//resources/ash/common/web_ui_listener_behavior.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ConnectivityStatus} from 'chrome://resources/mojo/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js';

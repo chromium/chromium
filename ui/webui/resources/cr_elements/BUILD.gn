@@ -3,28 +3,14 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
 import("//ui/webui/resources/include_polymer.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 import("./cr_elements.gni")
 
 preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_elements"
-
-if (include_polymer) {
-  preprocess_src_manifest = "preprocessed_src_manifest.json"
-
-  generate_grd("build_grdp") {
-    grd_prefix = "cr_elements"
-    out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
-    public_deps = [ ":preprocess" ]
-    manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
-    resource_path_prefix = "cr_elements"
-  }
-}
 
 group("preprocess") {
   public_deps = [
@@ -36,7 +22,6 @@ group("preprocess") {
     public_deps += [
       ":css_wrapper_files",
       ":html_wrapper_files",
-      ":preprocess_src",
     ]
   }
 }
@@ -51,72 +36,6 @@ preprocess_if_expr("preprocess_ts") {
   if (include_polymer) {
     in_files += web_component_files_polymer_ts + polymer_html_files +
                 icons_html_files + css_files
-  }
-}
-
-if (include_polymer) {
-  preprocess_if_expr("preprocess_src") {
-    in_folder = "."
-    out_folder = preprocess_folder
-    out_manifest = "$target_gen_dir/$preprocess_src_manifest"
-
-    in_files = [
-      "i18n_behavior.js",
-      "web_ui_listener_behavior.js",
-    ]
-
-    if (is_chromeos_ash) {
-      in_files += [
-        "cr_container_shadow_behavior.js",
-        "cr_scrollable_behavior.js",
-        "policy/cr_policy_indicator_behavior.js",
-      ]
-    }
-  }
-}
-
-group("closure_compile") {
-  deps = [ ":cr_elements_module_resources" ]
-  if (is_chromeos_ash) {
-    deps += [ "policy:closure_compile_module" ]
-  }
-}
-
-js_type_check("cr_elements_module_resources") {
-  is_polymer3 = true
-  deps = [
-    ":i18n_behavior",
-    ":web_ui_listener_behavior",
-  ]
-  if (is_chromeos_ash) {
-    deps += [
-      ":cr_container_shadow_behavior",
-      ":cr_scrollable_behavior",
-    ]
-  }
-}
-
-js_library("i18n_behavior") {
-  deps = [
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:parse_html_subset",
-  ]
-}
-
-js_library("web_ui_listener_behavior") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-if (is_chromeos_ash) {
-  js_library("cr_container_shadow_behavior") {
-    deps = [ "//ui/webui/resources/js:assert" ]
-  }
-
-  js_library("cr_scrollable_behavior") {
-    deps = [
-      "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-      "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    ]
   }
 }
 

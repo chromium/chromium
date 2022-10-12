@@ -8,7 +8,7 @@
  * cleanly and concisely. It includes some constants and utility methods.
  */
 
-import {I18nBehavior} from 'chrome://resources/cr_elements/i18n_behavior.js';
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 
 import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubFeatureAccessStatus} from './multidevice_constants.js';
 

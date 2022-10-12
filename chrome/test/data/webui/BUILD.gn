@@ -444,10 +444,7 @@ ts_library("build_ts") {
   ]
 
   if (is_chromeos_ash) {
-    in_files += [
-      "cr_focus_row_behavior_test.ts",
-      "chromeos/ash_common/list_property_update_behavior_tests.ts",
-    ]
+    in_files += [ "cr_focus_row_behavior_test.ts" ]
   }
 
   deps = [ "//ui/webui/resources:library" ]
@@ -483,7 +480,10 @@ generate_grd("build_grd") {
   ]
 
   if (is_chromeos_ash) {
-    input_files += [ "chromeos/arc_account_picker/test_util.js" ]
+    input_files += [
+      "chromeos/arc_account_picker/test_util.js",
+      "chromeos/ash_common/i18n_behavior_test.js",
+    ]
   }
 
   if (enable_webui_certificate_viewer) {
@@ -609,6 +609,7 @@ generate_grd("build_grd") {
   if (is_chromeos_ash) {
     input_files += [ "chromeos/test_store.js" ]
     deps += [
+      "chromeos/ash_common:build_grdp",
       "chromeos/cloud_upload:build_grdp",
       "chromeos/manage_mirrorsync:build_grdp",
       "chromeos/personalization_app:build_grdp",
@@ -619,6 +620,7 @@ generate_grd("build_grd") {
       "//ui/file_manager:build_tests_grdp",
     ]
     grdp_files += [
+      "$target_gen_dir/chromeos/ash_common/resources.grdp",
       "$target_gen_dir/chromeos/cloud_upload/resources.grdp",
       "$target_gen_dir/chromeos/personalization_app/resources.grdp",
       "$target_gen_dir/chromeos/shortcut_customization/resources.grdp",

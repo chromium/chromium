@@ -31,9 +31,8 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './pin_keyboard_icons.html.js';
 
+import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
 
 import {getTemplate} from './pin_keyboard.html.js';
 

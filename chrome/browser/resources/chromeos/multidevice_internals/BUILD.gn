@@ -96,7 +96,7 @@ js_library("notification_form") {
   deps = [
     ":multidevice_phonehub_browser_proxy",
     ":types",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
   ]
 }
 
@@ -134,8 +134,8 @@ js_library("logging_tab") {
     ":log_object",
     ":multidevice_logs_browser_proxy",
     ":types",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -180,7 +180,7 @@ js_library("quick_action_controller_form") {
   deps = [
     ":multidevice_phonehub_browser_proxy",
     ":types",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
   ]
 }
 
@@ -194,7 +194,7 @@ js_library("phonehub_tab") {
     ":phone_status_model_form",
     ":quick_action_controller_form",
     ":types",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }

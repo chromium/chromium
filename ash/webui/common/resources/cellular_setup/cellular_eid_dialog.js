@@ -10,7 +10,7 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 
-import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {flush, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EuiccProperties, QRCode} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 

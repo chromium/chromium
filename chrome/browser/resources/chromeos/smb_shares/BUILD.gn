@@ -15,17 +15,17 @@ js_type_check("closure_compile") {
 
 js_library("smb_share_dialog") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/smb_shares:add_smb_share_dialog",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("smb_credentials_dialog") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources/smb_shares:smb_browser_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",

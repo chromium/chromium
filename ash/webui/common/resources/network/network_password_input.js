@@ -14,7 +14,7 @@ import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import './cr_policy_network_indicator_mojo.js';
 import './network_shared.css.js';
 
-import {I18nBehavior} from '//resources/cr_elements/i18n_behavior.js';
+import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';

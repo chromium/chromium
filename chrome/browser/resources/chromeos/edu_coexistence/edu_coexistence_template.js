@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.js';
+import {CrScrollableBehavior} from 'chrome://resources/ash/common/cr_scrollable_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 Polymer({

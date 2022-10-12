@@ -123,8 +123,8 @@ js_library("nearby_contact_visibility") {
   deps = [
     ":nearby_contact_manager",
     ":nearby_share_settings_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -153,8 +153,8 @@ js_library("nearby_onboarding_one_page") {
     ":nearby_metrics_logger",
     ":nearby_page_template",
     ":nearby_share_settings_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -163,8 +163,8 @@ js_library("nearby_onboarding_page") {
     ":nearby_metrics_logger",
     ":nearby_page_template",
     ":nearby_share_settings_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -174,11 +174,11 @@ js_library("nearby_page_template") {
 
 js_library("nearby_preview") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
     "//chrome/browser/ui/webui/nearby_share:share_type_js_library_for_compile",
     "//chromeos/ash/services/nearby/public/mojom:nearby_share_target_types_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:assert",
   ]
 }
@@ -210,8 +210,8 @@ js_library("nearby_visibility_page") {
     ":nearby_contact_visibility",
     ":nearby_page_template",
     ":nearby_share_settings_behavior",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }

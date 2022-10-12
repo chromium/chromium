@@ -26,8 +26,8 @@ js_library("plugin_vm_detail_view") {
     "../:util",
     "../../..:os_route",
     "../../../..:router",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:web_ui_listener_behavior",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]

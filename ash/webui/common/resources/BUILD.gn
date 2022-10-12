@@ -101,12 +101,16 @@ non_web_component_files = [
   "cellular_setup/mojo_interface_provider.js",
   "cellular_setup/subflow_behavior.js",
   "cellular_setup/webview_post_util.js",
+  "cr_container_shadow_behavior.js",
   "cr_picture/cr_picture_types.js",
   "cr_picture/png.js",
   "cr_picture/webcam_utils.js",
+  "cr_policy_indicator_behavior.js",
+  "cr_scrollable_behavior.js",
   "focus_row_js.js",
   "focus_row_behavior.js",
   "focus_without_ink_js.js",
+  "i18n_behavior.js",
   "keyboard_shortcut_list_js.js",
   "list_property_update_behavior.js",
   "multidevice_setup/fake_mojo_service.js",
@@ -131,6 +135,7 @@ non_web_component_files = [
   "store/store_client.js",
   "traffic_counters/traffic_counters_adapter.js",
   "quick_unlock/lock_screen_constants.js",
+  "web_ui_listener_behavior.js",
 ]
 
 icons_html_files = [
@@ -299,9 +304,13 @@ ts_definitions("generate_definitions") {
 }
 
 checked_in_dts_files = [
+  "cr_container_shadow_behavior.d.ts",
+  "cr_scrollable_behavior.d.ts",
+  "cr_policy_indicator_behavior.d.ts",
   "fake_method_resolver.d.ts",
   "fake_observables.d.ts",
   "focus_row_behavior.d.ts",
+  "i18n_behavior.d.ts",
   "keyboard_diagram.d.ts",
   "keyboard_key.d.ts",
   "list_property_update_behavior.d.ts",
@@ -309,6 +318,7 @@ checked_in_dts_files = [
   "page_toolbar.d.ts",
   "navigation_view_panel.d.ts",
   "navigation_selector.d.ts",
+  "web_ui_listener_behavior.d.ts",
 
   "bluetooth/bluetooth_base_page.d.ts",
   "bluetooth/bluetooth_battery_icon_percentage.d.ts",
@@ -407,6 +417,21 @@ js_type_check("closure_compile_local") {
   ]
 }
 
+js_library("cr_container_shadow_behavior") {
+  deps = [ "//ui/webui/resources/js:assert" ]
+}
+
+js_library("cr_policy_indicator_behavior") {
+  deps = [ "//ui/webui/resources/js:assert" ]
+}
+
+js_library("cr_scrollable_behavior") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 js_library("fake_observables") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
@@ -439,19 +464,26 @@ js_library("focus_without_ink_js") {
   ]
 }
 
+js_library("i18n_behavior") {
+  deps = [
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:parse_html_subset",
+  ]
+}
+
 js_library("keyboard_diagram") {
   deps = [
     ":keyboard_key",
     ":keyboard_layouts",
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
 js_library("keyboard_key") {
   deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:i18n_behavior",
   ]
 }
 
@@ -489,4 +521,8 @@ js_library("page_toolbar") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+}
+
+js_library("web_ui_listener_behavior") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }

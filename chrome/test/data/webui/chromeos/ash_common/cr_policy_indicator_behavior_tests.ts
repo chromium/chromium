@@ -7,7 +7,7 @@
 // clang-format off
 import './cr_policy_strings.js';
 
-import {CrPolicyIndicatorBehavior, CrPolicyIndicatorType} from 'chrome://resources/cr_elements/policy/cr_policy_indicator_behavior.js';
+import {CrPolicyIndicatorBehavior, CrPolicyIndicatorType} from 'chrome://resources/ash/common/cr_policy_indicator_behavior.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
