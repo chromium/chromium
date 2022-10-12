@@ -35,7 +35,7 @@ constexpr const char kSandboxRootDirectoryName[] = "";
 
 void GetDirectoryImpl(ScriptPromiseResolver* resolver, bool allow_access) {
   ExecutionContext* context = resolver->GetExecutionContext();
-  if (!resolver->GetScriptState()->ContextIsValid())
+  if (!context || !resolver->GetScriptState()->ContextIsValid())
     return;
 
   if (!allow_access) {
