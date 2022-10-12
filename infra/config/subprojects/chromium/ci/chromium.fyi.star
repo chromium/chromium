@@ -1115,6 +1115,9 @@ ci.builder(
     reclient_jobs = 250,
     os = os.MAC_DEFAULT,
     cores = None,
+    reclient_bootstrap_env = {
+        "GLOG_vmodule": "bridge*=2",
+    },
 )
 
 ci.builder(
@@ -1132,6 +1135,9 @@ ci.builder(
     reclient_jobs = 250,
     os = os.MAC_DEFAULT,
     cores = None,
+    reclient_bootstrap_env = {
+        "GLOG_vmodule": "bridge*=2",
+    },
 )
 
 ci.builder(
@@ -1150,6 +1156,9 @@ ci.builder(
     os = os.MAC_DEFAULT,
     cores = None,
     cpu = cpu.ARM64,
+    reclient_bootstrap_env = {
+        "GLOG_vmodule": "bridge*=2",
+    },
 )
 
 ci.builder(
@@ -1304,6 +1313,9 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
     os = os.MAC_DEFAULT,
     ssd = True,
     cores = None,
+    reclient_bootstrap_env = {
+        "GLOG_vmodule": "bridge*=2",
+    },
 )
 
 ci.builder(
