@@ -1700,11 +1700,6 @@ BASE_FEATURE(kReverseScrollGestures,
 BASE_FEATURE(kRgbKeyboard, "RgbKeyboard", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the system tray to show more information in larger screen.
-BASE_FEATURE(kScalableStatusArea,
-             "ScalableStatusArea",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the system tray to show more information in larger screen.
 BASE_FEATURE(kSeamlessRefreshRateSwitching,
              "SeamlessRefreshRateSwitching",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2919,10 +2914,6 @@ bool IsSamlNotificationOnPasswordChangeSuccessEnabled() {
 
 bool IsSavedDesksEnabled() {
   return base::FeatureList::IsEnabled(kEnableSavedDesks);
-}
-
-bool IsScalableStatusAreaEnabled() {
-  return base::FeatureList::IsEnabled(kScalableStatusArea);
 }
 
 bool IsSeparateNetworkIconsEnabled() {

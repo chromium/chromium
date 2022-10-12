@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/notification_icons_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
@@ -12,7 +11,6 @@
 #include "ash/system/unified/notification_counter_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -24,9 +22,7 @@ const char kBatteryNotificationNotifierId[] = "ash.battery";
 const char kUsbNotificationNotifierId[] = "ash.power";
 }  // namespace
 
-class NotificationIconsControllerTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class NotificationIconsControllerTest : public AshTestBase {
  public:
   NotificationIconsControllerTest() = default;
   ~NotificationIconsControllerTest() override = default;
@@ -34,16 +30,13 @@ class NotificationIconsControllerTest
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    scoped_feature_list_.InitWithFeatureState(features::kScalableStatusArea,
-                                              IsScalableStatusAreaEnabled());
+
     tray_ = std::make_unique<UnifiedSystemTray>(GetPrimaryShelf());
     notification_icons_controller_ =
         std::make_unique<NotificationIconsController>(tray_.get());
     notification_icons_controller_->AddNotificationTrayItems(
         tray_->tray_container());
   }
-
-  bool IsScalableStatusAreaEnabled() { return GetParam(); }
 
   void TearDown() override {
     notification_icons_controller_.reset();
@@ -84,16 +77,11 @@ class NotificationIconsControllerTest
 
  protected:
   int notification_id_ = 0;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<UnifiedSystemTray> tray_;
   std::unique_ptr<NotificationIconsController> notification_icons_controller_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         NotificationIconsControllerTest,
-                         testing::Bool() /* IsScalableStatusAreaEnabled() */);
-
-TEST_P(NotificationIconsControllerTest, DisplayChanged) {
+TEST_F(NotificationIconsControllerTest, DisplayChanged) {
   AddNotification(true /* is_pinned */, false /* is_critical_warning */);
   AddNotification(false /* is_pinned */, false /* is_critical_warning */);
 
@@ -101,9 +89,9 @@ TEST_P(NotificationIconsControllerTest, DisplayChanged) {
 
   // Notification icons should be shown in medium screen size.
   UpdateDisplay("800x700");
-  EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            notification_icons_controller_->tray_items().back()->GetVisible());
-  EXPECT_EQ(IsScalableStatusAreaEnabled(), separator()->GetVisible());
+  EXPECT_TRUE(
+      notification_icons_controller_->tray_items().back()->GetVisible());
+  EXPECT_TRUE(separator()->GetVisible());
 
   // Notification icons should not be shown in small screen size.
   UpdateDisplay("600x500");
@@ -113,12 +101,12 @@ TEST_P(NotificationIconsControllerTest, DisplayChanged) {
 
   // Notification icons should be shown in large screen size.
   UpdateDisplay("1680x800");
-  EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            notification_icons_controller_->tray_items().back()->GetVisible());
-  EXPECT_EQ(IsScalableStatusAreaEnabled(), separator()->GetVisible());
+  EXPECT_TRUE(
+      notification_icons_controller_->tray_items().back()->GetVisible());
+  EXPECT_TRUE(separator()->GetVisible());
 }
 
-TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
+TEST_F(NotificationIconsControllerTest, ShowNotificationIcons) {
   UpdateDisplay("800x700");
 
   // Icons get added from RTL, so we check the end of the vector first.
@@ -144,30 +132,26 @@ TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
   // notification is added.
   std::string id0 =
       AddNotification(true /* is_pinned */, false /* is_critical_warning */);
-  EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            notification_icons_controller_->tray_items()[end]->GetVisible());
+  EXPECT_TRUE(notification_icons_controller_->tray_items()[end]->GetVisible());
   EXPECT_FALSE(
       notification_icons_controller_->tray_items()[end - 1]->GetVisible());
-  EXPECT_EQ(IsScalableStatusAreaEnabled(), separator()->GetVisible());
+  EXPECT_TRUE(separator()->GetVisible());
 
   std::string id1 =
       AddNotification(false /* is_pinned */, true /* is_critical_warning */);
-  EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            notification_icons_controller_->tray_items()[end]->GetVisible());
-  EXPECT_EQ(
-      IsScalableStatusAreaEnabled(),
+  EXPECT_TRUE(notification_icons_controller_->tray_items()[end]->GetVisible());
+  EXPECT_TRUE(
       notification_icons_controller_->tray_items()[end - 1]->GetVisible());
-  EXPECT_EQ(IsScalableStatusAreaEnabled(), separator()->GetVisible());
+  EXPECT_TRUE(separator()->GetVisible());
 
   // Remove the critical warning notification should make the tray show only one
   // icon.
   message_center::MessageCenter::Get()->RemoveNotification(id1,
                                                            false /* by_user */);
-  EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            notification_icons_controller_->tray_items()[end]->GetVisible());
+  EXPECT_TRUE(notification_icons_controller_->tray_items()[end]->GetVisible());
   EXPECT_FALSE(
       notification_icons_controller_->tray_items()[end - 1]->GetVisible());
-  EXPECT_EQ(IsScalableStatusAreaEnabled(), separator()->GetVisible());
+  EXPECT_TRUE(separator()->GetVisible());
 
   // Remove the pinned notification, no icon is shown.
   message_center::MessageCenter::Get()->RemoveNotification(id0,
@@ -178,7 +162,7 @@ TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
   EXPECT_FALSE(separator()->GetVisible());
 }
 
-TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
+TEST_F(NotificationIconsControllerTest, NotShowNotificationIcons) {
   UpdateDisplay("800x700");
 
   // Icons get added from RTL, so we check the end of the vector first.
@@ -221,7 +205,7 @@ TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
                    ->count_for_display_for_testing());
 }
 
-TEST_P(NotificationIconsControllerTest, NotificationItemInQuietMode) {
+TEST_F(NotificationIconsControllerTest, NotificationItemInQuietMode) {
   UpdateDisplay("800x700");
   message_center::MessageCenter::Get()->SetQuietMode(true);
 
@@ -238,13 +222,11 @@ TEST_P(NotificationIconsControllerTest, NotificationItemInQuietMode) {
 
   auto id2 = AddNotification(/*is_pinned=*/true, /*is_critical_warning=*/false,
                              kCapsLockNotifierId);
-  EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            notification_icons_controller_->tray_items().back()->GetVisible());
-  if (IsScalableStatusAreaEnabled()) {
-    EXPECT_EQ(id2, notification_icons_controller_->tray_items()
-                       .back()
-                       ->GetNotificationId());
-  }
+  EXPECT_TRUE(
+      notification_icons_controller_->tray_items().back()->GetVisible());
+  EXPECT_EQ(
+      id2,
+      notification_icons_controller_->tray_items().back()->GetNotificationId());
 
   message_center::MessageCenter::Get()->RemoveNotification(id2,
                                                            /*by_user=*/false);

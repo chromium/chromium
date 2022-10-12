@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/notification_icons_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -204,7 +203,6 @@ void NotificationIconsController::UpdateNotificationIndicators() {
 void NotificationIconsController::OnSystemTrayButtonSizeChanged(
     UnifiedSystemTrayModel::SystemTrayButtonSize system_tray_size) {
   icons_view_visible_ =
-      features::IsScalableStatusAreaEnabled() &&
       system_tray_size != UnifiedSystemTrayModel::SystemTrayButtonSize::kSmall;
   UpdateNotificationIcons();
   UpdateNotificationIndicators();

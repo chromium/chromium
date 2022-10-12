@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/vm_camera_mic_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -136,8 +135,7 @@ void NotificationCounterView::Update() {
   // notifications not showing. Otherwise, show the count of total
   // notifications.
   size_t notification_count;
-  if (features::IsScalableStatusAreaEnabled() &&
-      controller_->icons_view_visible() &&
+  if (controller_->icons_view_visible() &&
       controller_->TrayItemHasNotification()) {
     notification_count = message_center_utils::GetNotificationCount() -
                          controller_->TrayNotificationIconsCount();
