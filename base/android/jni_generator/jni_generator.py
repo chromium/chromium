@@ -1553,18 +1553,18 @@ def GetScriptName():
   return os.sep.join(script_components[base_index:])
 
 
-def _RemoveStaleHeaders(path, output_names):
+def _RemoveStaleHeaders(path, output_files):
   if not os.path.isdir(path):
     return
   # Do not remove output files so that timestamps on declared outputs are not
   # modified unless their contents are changed (avoids reverse deps needing to
   # be rebuilt).
-  preserve = set(output_names)
+  preserve = set(output_files)
   for root, _, files in os.walk(path):
     for f in files:
-      if f not in preserve:
-        file_path = os.path.join(root, f)
-        if os.path.isfile(file_path) and file_path.endswith('.h'):
+      file_path = os.path.join(root, f)
+      if file_path not in preserve:
+        if os.path.isfile(file_path) and os.path.splitext(file_path)[1] == '.h':
           os.remove(file_path)
 
 
@@ -1596,17 +1596,13 @@ See SampleForTests.java for more details.
       action='append',
       required=True,
       dest='input_files',
-      help='Input filenames, or paths within a .jar if '
+      help='Input file names, or paths within a .jar if '
       '--jar-file is used.')
-  parser.add_argument('--output_dir', required=True, help='Output directory.')
-  # TODO(agrieve): --prev_output_dir used only to make incremental builds work.
-  #     Remove --prev_output_dir at some point after 2022.
-  parser.add_argument('--prev_output_dir',
-                      help='Delete headers found in this directory.')
-  parser.add_argument('--output_name',
-                      action='append',
-                      dest='output_names',
-                      help='Output filenames within output directory.')
+  parser.add_argument(
+      '--output_file',
+      action='append',
+      dest='output_files',
+      help='Output file names.')
   parser.add_argument(
       '--script_name',
       default=GetScriptName(),
@@ -1655,28 +1651,22 @@ See SampleForTests.java for more details.
   parser.add_argument(
       '--split_name',
       help='Split name that the Java classes should be loaded from.')
-  # TODO(agrieve): --stamp used only to make incremental builds work.
-  #     Remove --stamp at some point after 2022.
-  parser.add_argument('--stamp',
-                      help='Process --prev_output_dir and touch this file.')
   args = parser.parse_args()
   input_files = args.input_files
-  output_names = args.output_names
-
-  if args.prev_output_dir:
-    _RemoveStaleHeaders(args.prev_output_dir, [])
-
-  if args.stamp:
-    build_utils.Touch(args.stamp)
-    sys.exit(0)
-
-  if output_names:
+  output_files = args.output_files
+  if output_files:
+    output_dirs = set(os.path.dirname(f) for f in output_files)
+    if len(output_dirs) != 1:
+      parser.error(
+          'jni_generator only supports a single output directory per target '
+          '(got {})'.format(output_dirs))
+    output_dir = output_dirs.pop()
     # Remove existing headers so that moving .java source files but not updating
     # the corresponding C++ include will be a compile failure (otherwise
     # incremental builds will usually not catch this).
-    _RemoveStaleHeaders(args.output_dir, output_names)
+    _RemoveStaleHeaders(output_dir, output_files)
   else:
-    output_names = [None] * len(input_files)
+    output_files = [None] * len(input_files)
   temp_dir = tempfile.mkdtemp()
   try:
     if args.jar_file:
@@ -1684,11 +1674,7 @@ See SampleForTests.java for more details.
         z.extractall(temp_dir, input_files)
       input_files = [os.path.join(temp_dir, f) for f in input_files]
 
-    for java_path, header_name in zip(input_files, output_names):
-      if header_name:
-        header_path = os.path.join(args.output_dir, header_name)
-      else:
-        header_path = None
+    for java_path, header_path in zip(input_files, output_files):
       GenerateJNIHeader(java_path, header_path, args)
   finally:
     shutil.rmtree(temp_dir)
