@@ -44,6 +44,26 @@ bool ShouldSendOnIO(crdtp::span<uint8_t> method) {
                             crdtp::SpanLt());
 }
 
+// During navigation, we only suspend the main-thread messages. The IO thread
+// messages should go through so that the renderer can be woken up
+// via the IO thread even if the renderer does not process message loops.
+//
+// In particular, we are looking to deadlocking the renderer when
+// reloading the page during the instrumentation pause (crbug.com/1354043):
+//
+// - If we are in the pause, there is no way to commit or fail the navigation
+//   in the renderer because the instrumentation pause does not process message
+//   loops.
+// - At the same time, the instrumentation pause could not wake up if
+//   the resume message was blocked by the suspension of message sending during
+//   navigation.
+//
+// To give the renderer a chance to wake up, we always forward the messages
+// for the IO thread to the renderer.
+bool ShouldSuspendDuringNavigation(crdtp::span<uint8_t> method) {
+  return !ShouldSendOnIO(method);
+}
+
 // Async control commands (such as CSS.enable) are idempotant and can
 // be safely replayed in the new render frame host. We will always forward
 // them to the new renderer on cross process navigation. Main rationale for
@@ -366,7 +386,8 @@ void DevToolsSession::FallThrough(int call_id,
 
   auto it = pending_messages_.emplace(pending_messages_.end(), call_id, method,
                                       message);
-  if (suspended_sending_messages_to_agent_)
+  if (suspended_sending_messages_to_agent_ &&
+      ShouldSuspendDuringNavigation(method))
     return;
 
   DispatchToAgent(pending_messages_.back());
