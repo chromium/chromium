@@ -40,7 +40,7 @@ export interface SettingsReviewNotificationPermissionsElement {
 enum Actions {
   BLOCK = 'block',
   IGNORE = 'ignore',
-  RESET = 'reset'
+  RESET = 'reset',
 }
 
 const SettingsReviewNotificationPermissionsElementBase =
@@ -66,6 +66,12 @@ export class SettingsReviewNotificationPermissionsElement extends
 
       /* The last origin that the user interacted with. */
       lastOrigin_: String,
+
+      /* Action type for use in bindings. */
+      actionsEnum_: {
+        type: Object,
+        value: Actions,
+      },
     };
   }
 
@@ -209,6 +215,32 @@ export class SettingsReviewNotificationPermissionsElement extends
     this.$.undoToast.hide();
   }
 
+  private getAriaLabelText_(): string {
+    if (!this.lastUserAction_ || !this.lastOrigin_) {
+      return '';
+    }
+    switch (this.lastUserAction_) {
+      case Actions.BLOCK: {
+        return this.i18n(
+            'safetyCheckNotificationPermissionReviewDontAllowAriaLabel',
+            this.lastOrigin_);
+      }
+      case Actions.IGNORE: {
+        return this.i18n(
+            'safetyCheckNotificationPermissionReviewIgnoreAriaLabel',
+            this.lastOrigin_);
+      }
+      case Actions.RESET: {
+        return this.i18n(
+            'safetyCheckNotificationPermissionReviewResetAriaLabel',
+            this.lastOrigin_);
+      }
+      default: {
+        assertNotReached();
+      }
+    }
+  }
+
   /**
    * Retrieve the list of domains that send lots of notification and implicitly
    * trigger the update of the display list.
@@ -216,6 +248,15 @@ export class SettingsReviewNotificationPermissionsElement extends
   private async populateList_() {
     this.notificationPermissionReviewList_ =
         await this.browserProxy_.getNotificationPermissionReview();
+  }
+
+  private getMoreActionsAriaLabelText_(): string {
+    if (!this.lastOrigin_) {
+      return '';
+    }
+    return this.i18n(
+        'safetyCheckNotificationPermissionReviewMoreActionsAriaLabel',
+        this.lastOrigin_);
   }
 }
 

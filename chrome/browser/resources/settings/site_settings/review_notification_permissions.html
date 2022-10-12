@@ -68,12 +68,13 @@
       </div>
       <cr-icon-button iron-icon="cr20:block" id="block"
           on-click="onBlockNotificationPermissionClick_"
-          aria-label$="[[getDisplayName_(item)]]"
-          aria-describedby$="displayName_[[index]]"
+          aria-label="[[getAriaLabelText_(
+              actionsEnum_.BLOCK, lastOrigin_)]]"
           focus-row-control focus-type="show-detail"
           on-pointerenter="onShowTooltip_" actionable></cr-icon-button>
       <cr-icon-button id="actionMenuButton" class="icon-more-vert"
           on-click="onShowActionMenuClick_"
+          aria-label="[[getMoreActionsAriaLabelText_(lastOrigin_)]]"
           title="$i18n{moreActions}" focus-row-control focus-type="menu">
       </cr-icon-button>
     </div>
@@ -86,10 +87,14 @@
 <cr-lazy-render id="actionMenu">
   <template>
     <cr-action-menu role-description="$i18n{menu}">
-      <button class="dropdown-item" id="ignore" on-click="onIgnoreClick_">
+      <button class="dropdown-item" id="ignore" on-click="onIgnoreClick_"
+          aria-label="[[getAriaLabelText_(
+              actionsEnum_.IGNORE, lastOrigin_)]]">
         $i18n{safetyCheckNotificationPermissionReviewIgnoreLabel}
       </button>
-      <button class="dropdown-item" id="reset" on-click="onResetClick_">
+      <button class="dropdown-item" id="reset" on-click="onResetClick_"
+          aria-label="[[getAriaLabelText_(
+              actionsEnum_.RESET, lastOrigin_)]]">
         $i18n{safetyCheckNotificationPermissionReviewResetLabel}
       </button>
     </cr-action-menu>

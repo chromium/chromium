@@ -2019,14 +2019,26 @@
      =1 {About 1 notification a day}
      other {About {NUM_NOTIFICATION} notifications a day}}
   </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_DONT_ALLOW_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is for 'don't allow' action for a website in the module.">
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_DONT_ALLOW_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is for the action to block notifications from a specific website.">
     Don't allow
   </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_IGNORE_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is to manually set users to allow the website so that the permissions will be never revoked later.">
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_DONT_ALLOW_ARIA_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This ARIA (accessibility) label is for the action to block notifications from a specific website.">
+    Don't allow notifications from <ph name="WEBSITE">$1<ex>website.com</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_IGNORE_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is for the action to allow the website so that the permissions will be never revoked later.">
     Always allow notifications from this site
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_IGNORE_ARIA_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This ARIA (accessibility) label is is for the action to allow the website so that the permissions will be never revoked later.">
+    Always allow notifications from <ph name="WEBSITE">$1<ex>website.com</ex></ph>
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_RESET_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is for resetings the permission to the 'ask' state.">
     Don’t allow but ask later
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_RESET_ARIA_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This ARIA (accessibility) label is for resetings the permission to the 'ask' state.">
+    Don’t allow notifications from <ph name="WEBSITE">$1<ex>website.com</ex></ph> but ask later
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_MORE_ACTIONS_ARIA_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This ARIA (accessibility) label is to show more actions for a notification permissions item.">
+    More actions for <ph name="WEBSITE">$1<ex>website.com</ex></ph>
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSION_REVIEW_UNDO" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is for undoing the current action after blocking permission for a site.">
     Undo
