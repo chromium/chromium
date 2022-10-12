@@ -2486,6 +2486,7 @@
     {
       name: "StorageBuckets",
       status: "experimental",
+      base_feature: "StorageBuckets",
     },
     {
       name: "StorageFoundationAPI",
