@@ -14,6 +14,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
@@ -876,6 +877,7 @@ void InterceptionJob::Detach() {
   if (state_ == State::kAuthRequired) {
     state_ = State::kRequestSent;
     waiting_for_resolution_ = false;
+    TRACE_EVENT_NESTABLE_ASYNC_END0("devtools", "Fetch.requestPaused", this);
     std::move(pending_auth_callback_).Run(true, absl::nullopt);
     return;
   }
@@ -889,7 +891,7 @@ Response InterceptionJob::InnerContinueRequest(
         "Invalid state for continueInterceptedRequest");
   }
   waiting_for_resolution_ = false;
-
+  TRACE_EVENT_NESTABLE_ASYNC_END0("devtools", "Fetch.requestPaused", this);
   if (modifications->intercept_response.isJust()) {
     if (modifications->intercept_response.fromJust()) {
       if (stage_ == InterceptionStage::REQUEST)
@@ -1384,6 +1386,7 @@ void InterceptionJob::NotifyClientWithCookies(
       protocol::NetworkHandler::CreateRequestFromResourceRequest(
           create_loader_params_->request, cookie_line);
 
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("devtools", "Fetch.requestPaused", this);
   waiting_for_resolution_ = true;
   interceptor_->request_intercepted_callback_.Run(std::move(request_info));
 }
