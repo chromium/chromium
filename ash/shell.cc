@@ -1089,8 +1089,7 @@ void Shell::Init(
 
   wallpaper_controller_ = WallpaperControllerImpl::Create(local_state_);
 
-  if (features::IsRgbKeyboardEnabled() &&
-      rgb_keyboard_manager_->IsRgbKeyboardSupported()) {
+  if (features::IsRgbKeyboardEnabled()) {
     // Initialized after |wallpaper_controller_| because we will need to observe
     // when the extracted wallpaper color changes.
     keyboard_backlight_color_controller_ =

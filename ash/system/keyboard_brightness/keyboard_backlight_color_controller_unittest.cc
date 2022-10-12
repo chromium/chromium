@@ -3,9 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
-
-#include <memory>
-
 #include "ash/constants/ash_features.h"
 #include "ash/rgb_keyboard/rgb_keyboard_util.h"
 #include "ash/shell.h"
@@ -83,13 +80,8 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    controller_ = std::make_unique<KeyboardBacklightColorController>();
+    controller_ = Shell::Get()->keyboard_backlight_color_controller();
     wallpaper_controller_ = Shell::Get()->wallpaper_controller();
-  }
-
-  void TearDown() override {
-    controller_.reset();
-    AshTestBase::TearDown();
   }
 
  protected:
@@ -105,7 +97,7 @@ class KeyboardBacklightColorControllerTest : public AshTestBase {
     controller_->displayed_color_for_testing_ = SK_ColorTRANSPARENT;
   }
 
-  std::unique_ptr<KeyboardBacklightColorController> controller_;
+  KeyboardBacklightColorController* controller_ = nullptr;
   WallpaperControllerImpl* wallpaper_controller_ = nullptr;
 
  private:

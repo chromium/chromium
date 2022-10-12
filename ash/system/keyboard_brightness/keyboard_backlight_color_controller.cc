@@ -73,7 +73,12 @@ KeyboardBacklightColorController::GetBacklightColor(
   if (account_id.empty())
     return personalization_app::mojom::BacklightColor::kWallpaper;
   auto* pref_service = GetUserPrefService(account_id);
-  DCHECK(pref_service);
+  if (!pref_service) {
+    // TODO(b/238463679): Migrate to local state pref. There may be a timing
+    // issue that results in null pref service. Defaults to |kWallpaper| when
+    // that happens.
+    return personalization_app::mojom::BacklightColor::kWallpaper;
+  }
   return static_cast<personalization_app::mojom::BacklightColor>(
       pref_service->GetInteger(prefs::kPersonalizationKeyboardBacklightColor));
 }
