@@ -14,6 +14,7 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "device/base/features.h"
 #include "device/vr/openxr/openxr_input_helper.h"
@@ -80,6 +81,34 @@ mojom::XREye GetEyeFromIndex(int i) {
   }
 }
 
+const char* GetXrSessionStateName(XrSessionState state) {
+  switch (state) {
+    case XR_SESSION_STATE_UNKNOWN:
+      return "Unknown";
+    case XR_SESSION_STATE_IDLE:
+      return "Idle";
+    case XR_SESSION_STATE_READY:
+      return "Ready";
+    case XR_SESSION_STATE_SYNCHRONIZED:
+      return "Synchronized";
+    case XR_SESSION_STATE_VISIBLE:
+      return "Visible";
+    case XR_SESSION_STATE_FOCUSED:
+      return "Focused";
+    case XR_SESSION_STATE_STOPPING:
+      return "Stopping";
+    case XR_SESSION_STATE_LOSS_PENDING:
+      return "Loss_Pending";
+    case XR_SESSION_STATE_EXITING:
+      return "Exiting";
+    case XR_SESSION_STATE_MAX_ENUM:
+      return "Max_Enum";
+  }
+
+  NOTREACHED();
+  return "Unknown";
+}
+
 }  // namespace
 
 std::unique_ptr<OpenXrApiWrapper> OpenXrApiWrapper::Create(
@@ -118,6 +147,7 @@ OpenXrApiWrapper::~OpenXrApiWrapper() {
 }
 
 void OpenXrApiWrapper::Reset() {
+  SetXrSessionState(XR_SESSION_STATE_UNKNOWN);
   anchor_manager_.reset();
   unbounded_space_ = XR_NULL_HANDLE;
   local_space_ = XR_NULL_HANDLE;
@@ -1258,6 +1288,7 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
       // We only have will only have one session and we should make sure the
       // session that is having state_changed event is ours.
       DCHECK(session_state_changed->session == session_);
+      SetXrSessionState(session_state_changed->state);
       switch (session_state_changed->state) {
         case XR_SESSION_STATE_READY:
           xr_result = BeginSession();
@@ -1286,6 +1317,10 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
       }
     } else if (event_data.type == XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING) {
       DCHECK(session_ != XR_NULL_HANDLE);
+      // TODO(https://crbug.com/1335240): Properly handle Instance Loss Pending.
+      LOG(ERROR) << "Received Instance Loss Event";
+      TRACE_EVENT_INSTANT0("xr", "InstanceLossPendingEvent",
+                           TRACE_EVENT_SCOPE_THREAD);
       Uninitialize();
       return XR_ERROR_INSTANCE_LOST;
     } else if (event_data.type ==
@@ -1307,6 +1342,10 @@ XrResult OpenXrApiWrapper::ProcessEvents() {
           reinterpret_cast<XrEventDataInteractionProfileChanged*>(&event_data);
       DCHECK_EQ(interaction_profile_changed->session, session_);
       xr_result = input_helper_->OnInteractionProfileChanged();
+    } else {
+      DVLOG(1) << __func__ << " Unhandled event type: " << event_data.type;
+      TRACE_EVENT_INSTANT1("xr", "UnandledXrEvent", TRACE_EVENT_SCOPE_THREAD,
+                           "type", event_data.type);
     }
 
     if (XR_FAILED(xr_result)) {
@@ -1419,6 +1458,28 @@ bool OpenXrApiWrapper::GetStageParameters(XrExtent2Df& stage_bounds,
 
   local_from_stage = gfx::ComposeTransform(local_from_stage_decomp);
   return true;
+}
+
+void OpenXrApiWrapper::SetXrSessionState(XrSessionState new_state) {
+  if (session_state_ == new_state)
+    return;
+
+  const char* old_state_name = GetXrSessionStateName(session_state_);
+  const char* new_state_name = GetXrSessionStateName(new_state);
+  DVLOG(1) << __func__ << " Transitioning from: " << old_state_name
+           << " to: " << new_state_name;
+
+  if (session_state_ != XR_SESSION_STATE_UNKNOWN) {
+    TRACE_EVENT_NESTABLE_ASYNC_END1("xr", "XRSessionState", this, "state",
+                                    old_state_name);
+  }
+
+  if (new_state != XR_SESSION_STATE_UNKNOWN) {
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("xr", "XRSessionState", this, "state",
+                                      new_state_name);
+  }
+
+  session_state_ = new_state;
 }
 
 bool OpenXrApiWrapper::StageParametersEnabled() const {

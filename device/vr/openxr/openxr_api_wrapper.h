@@ -160,6 +160,8 @@ class OpenXrApiWrapper {
   void CreateSharedMailboxes();
   void ReleaseColorSwapchainImages();
 
+  void SetXrSessionState(XrSessionState new_state);
+
   // The session is running only after xrBeginSession and before xrEndSession.
   // It is not considered running after creation but before xrBeginSession.
   bool session_running_;
@@ -176,6 +178,9 @@ class OpenXrApiWrapper {
   std::unique_ptr<OpenXRInputHelper> input_helper_;
 
   // OpenXR objects
+
+  // Tracks the session state throughout the lifetime of the Wrapper.
+  XrSessionState session_state_ = XR_SESSION_STATE_UNKNOWN;
 
   // These objects are initialized on successful initialization.
   XrInstance instance_;
