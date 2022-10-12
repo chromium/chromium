@@ -8060,7 +8060,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Denser",
+                    "name": "Denser_V4",
                     "params": {
                         "mode": "denser"
                     },
