@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -66,6 +65,7 @@ class Frame;
 class LocalDOMWindow;
 class LocalFrame;
 class XPathNSResolver;
+class ScriptState;
 
 // Determines how a V8 -> C++ union conversion should be performed: when the
 // JavaScript value being converted is either undefined or null, kNullable will

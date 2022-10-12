@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -59,6 +58,7 @@ namespace blink {
 class Blob;
 class ExecutionContext;
 class ImageBitmapSource;
+class ScriptState;
 
 class MODULES_EXPORT ImageBitmapFactories final
     : public GarbageCollected<ImageBitmapFactories>,

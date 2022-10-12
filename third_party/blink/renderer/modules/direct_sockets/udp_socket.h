@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -37,6 +36,7 @@ class IPEndPoint;
 namespace blink {
 
 class UDPSocketOptions;
+class ScriptState;
 class SocketCloseOptions;
 
 // UDPSocket interface from udp_socket.idl

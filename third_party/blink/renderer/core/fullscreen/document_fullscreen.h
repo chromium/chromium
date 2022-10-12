@@ -29,13 +29,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class Document;
 class Element;
+class ScriptState;
 
 class CORE_EXPORT DocumentFullscreen {
   STATIC_ONLY(DocumentFullscreen);

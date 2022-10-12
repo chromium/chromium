@@ -9,9 +9,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
+
+class ScriptState;
 
 // This class is for testing.
 class TestUnderlyingSource final : public UnderlyingSourceBase {

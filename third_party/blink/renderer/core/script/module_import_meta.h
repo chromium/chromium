@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
@@ -16,6 +15,7 @@
 namespace blink {
 
 class Modulator;
+class ScriptState;
 
 // Represents import.meta data structure, which is the return value of
 // https://html.spec.whatwg.org/C/#hostgetimportmetaproperties

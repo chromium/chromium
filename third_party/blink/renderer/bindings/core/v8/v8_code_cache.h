@@ -10,7 +10,6 @@
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -28,6 +27,7 @@ class CachedMetadata;
 class ClassicScript;
 class KURL;
 class ModuleRecordProduceCacheData;
+class ScriptState;
 
 namespace mojom {
 class CodeCacheHost;

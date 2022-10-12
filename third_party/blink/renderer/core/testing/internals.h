@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -77,6 +76,7 @@ class Range;
 class ReadableStream;
 class RecordTest;
 class ScriptPromiseResolver;
+class ScriptState;
 class ScrollState;
 class SequenceTest;
 class ShadowRoot;

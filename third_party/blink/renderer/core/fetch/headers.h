@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -17,6 +16,7 @@ namespace blink {
 
 class ByteStringSequenceSequenceOrByteStringByteStringRecord;
 class ExceptionState;
+class ScriptState;
 
 using HeadersInit = ByteStringSequenceSequenceOrByteStringByteStringRecord;
 

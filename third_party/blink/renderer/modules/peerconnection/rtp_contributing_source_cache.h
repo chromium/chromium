@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_contributing_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_synchronization_source.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_source.h"
@@ -25,6 +24,7 @@
 namespace blink {
 
 class RTCPeerConnection;
+class ScriptState;
 
 // Implements RTCRtpReceiver.getSynchronizationSources/getContributingSources as
 // well as a cache of the result. The cache serves two purposes:

@@ -8,12 +8,13 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
 class ScriptPromise;
+class ScriptState;
 
 // ScriptEvaluationResult encapsulates the result of a classic or module script
 // evaluation:

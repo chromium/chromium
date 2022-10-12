@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
@@ -21,6 +20,7 @@ namespace blink {
 
 class File;
 class Transferables;
+class ScriptState;
 
 // Serializes V8 values according to the HTML structured clone algorithm:
 // https://html.spec.whatwg.org/C/#structured-clone
