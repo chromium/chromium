@@ -276,7 +276,7 @@ js_library("gaia_signin.m") {
     "../..:display_manager.m",
     "../../../../gaia_auth_host:authenticator",
     "../../components:gaia_dialog.m",
-    "../../components:notification_card.m",
+    "../../components:notification_card",
     "../../components:oobe_types.m",
     "../../components:security_token_pin",
     "../../components/behaviors:login_screen_behavior.m",

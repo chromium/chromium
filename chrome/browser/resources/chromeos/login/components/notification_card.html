@@ -4,16 +4,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-
-<link rel="import" href="./oobe_icons.html">
-<link rel="import" href="./common_styles/common_styles.html">
-
 <!--
   A simple warning notification card with a button, link (optional) and icon.
   Example:
@@ -31,67 +21,62 @@ found in the LICENSE file.
     'linkclick' - fired on link click.
 
 -->
-<dom-module id="notification-card">
-  <template>
-    <style include="oobe-common-styles">
-      #container {
-        padding: 40px;
-      }
+<style include="oobe-common-styles">
+  #container {
+    padding: 40px;
+  }
 
-      #icon-container {
-        margin-bottom: 14px;
-      }
+  #icon-container {
+    margin-bottom: 14px;
+  }
 
-      :host iron-icon {
-        color: var(--cros-icon-color-warning);
-        height: 28px;
-        width: 28px;
-      }
+  :host iron-icon {
+    color: var(--cros-icon-color-warning);
+    height: 28px;
+    width: 28px;
+  }
 
-      #text-container {
-        /* TODO(https://crbug.com/1320715) Revise the color */
-        color: var(--cros-text-color-primary);
-        line-height: 130%;
-        max-width: 240px;
-        text-align: center;
-      }
+  #text-container {
+    /* TODO(https://crbug.com/1320715) Revise the color */
+    color: var(--cros-text-color-primary);
+    line-height: 130%;
+    max-width: 240px;
+    text-align: center;
+  }
 
-      a {
-        /* TODO(https://crbug.com/1320715) Revise the color
-        color: rgb(17, 85, 204);  #1155CC
-        */
-        cursor: pointer;
-        text-decoration: none;
-      }
+  a {
+    /* TODO(https://crbug.com/1320715) Revise the color
+    color: rgb(17, 85, 204);  #1155CC
+    */
+    cursor: pointer;
+    text-decoration: none;
+  }
 
-      a:focus {
-        /* TODO(https://crbug.com/1320715) Revise the color
-        outline-color: rgb(77, 144, 254);  #4D90FE
-        */
-        transition: outline-color 200ms;
-      }
-    </style>
-    <div id="container" class="vertical layout center fit">
-      <div class="flex vertical layout center center-justified">
-        <div id="icon-container" class="vertical layout center">
-          <iron-icon icon="cr:warning">
-          </iron-icon>
-        </div>
-        <div id="text-container">
-          <slot></slot>
-        </div>
-      </div>
-      <div class="self-stretch horizontal-reverse layout justified center">
-        <gaia-button id="submitButton" on-click="buttonClicked_"
-            hidden$="[[!buttonLabel]]">
-          <span>[[buttonLabel]]</span>
-        </gaia-button>
-        <a on-click="linkClicked_" hidden$="{{!linkLabel}}" is="action-link"
-            class="oobe-local-link">
-          <span>[[linkLabel]]</span>
-        </a>
-      </div>
+  a:focus {
+    /* TODO(https://crbug.com/1320715) Revise the color
+    outline-color: rgb(77, 144, 254);  #4D90FE
+    */
+    transition: outline-color 200ms;
+  }
+</style>
+<div id="container" class="vertical layout center fit">
+  <div class="flex vertical layout center center-justified">
+    <div id="icon-container" class="vertical layout center">
+      <iron-icon icon="cr:warning">
+      </iron-icon>
     </div>
-  </template>
-  <script src="notification_card.js"></script>
-</dom-module>
+    <div id="text-container">
+      <slot></slot>
+    </div>
+  </div>
+  <div class="self-stretch horizontal-reverse layout justified center">
+    <gaia-button id="submitButton" on-click="buttonClicked_"
+        hidden$="[[!buttonLabel]]">
+      <span>[[buttonLabel]]</span>
+    </gaia-button>
+    <a on-click="linkClicked_" hidden$="{{!linkLabel}}" is="action-link"
+        class="oobe-local-link">
+      <span>[[linkLabel]]</span>
+    </a>
+  </div>
+</div>

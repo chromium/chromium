@@ -109,6 +109,7 @@ oobe_migrated_imports = [
   "ash/webui/common/resources/network/network_list_types.html",
   "ash/webui/common/resources/network/network_select.html",
   "ash/webui/common/resources/network/onc_mojo.html",
+  "chrome/browser/resources/chromeos/login/components/notification_card.html",
   "chrome/browser/resources/chromeos/login/components/security_token_pin.html",
   "chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.html",
   "ash/webui/common/resources/quick_unlock/lock_screen_constants.html",

@@ -29,7 +29,7 @@ group("closure_compile") {
     ":keyboard_utils_for_injection.m",
     ":long_touch_detector.m",
     ":network_select_login.m",
-    ":notification_card.m",
+    ":notification_card",
     ":oobe_a11y_option.m",
     ":oobe_apps_list.m",
     ":oobe_carousel.m",
@@ -64,7 +64,6 @@ group("polymer3_elements") {
                   ":gaia_input_form_module",
                   ":hd_iron_icon_module",
                   ":network_select_login_module",
-                  ":notification_card_module",
                   ":oobe_a11y_option_module",
                   ":oobe_a11y_option_module",
                   ":oobe_apps_list_module",
@@ -162,10 +161,10 @@ js_library("network_select_login.m") {
   extra_deps = [ ":network_select_login_module" ]
 }
 
-js_library("notification_card.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/notification_card.m.js" ]
+js_library("notification_card") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/notification_card.js" ]
   deps = []
-  extra_deps = [ ":notification_card_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("oobe_a11y_option.m") {
@@ -328,15 +327,6 @@ polymer_modulizer("network_select_login") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("notification_card") {
-  js_file = "notification_card.js"
-  html_file = "notification_card.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("oobe_a11y_option") {
   js_file = "oobe_a11y_option.js"
   html_file = "oobe_a11y_option.html"
@@ -426,5 +416,8 @@ js_modulizer("modulize") {
 }
 
 html_to_js("web_components") {
-  js_files = [ "security_token_pin.js" ]
+  js_files = [
+    "security_token_pin.js",
+    "notification_card.js",
+  ]
 }
