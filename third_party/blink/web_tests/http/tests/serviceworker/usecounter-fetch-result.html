@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<title>Service Worker: kSerivceWorkerFallbackMainResource UseCounter</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helpers.js"></script>
+<script>
+  // |kSerivceWorkerFallbackMainResource| in web_feature.mojom.
+  const kFeature = 4369;
+  const kUrl = 'resources/fetch-fallback-worker.js';
+  const kScope = 'resources/fetch-fallback-window.html';
+
+  function isUseCounted(win, feature) {
+    return win.internals.isUseCounted(win.document, feature);
+  }
+
+  function observeUseCounter(win, feature) {
+    return win.internals.observeUseCounter(win.document, feature);
+  }
+
+  // Use a window instead of an iframe because UseCounter is shared among frames
+  // in a document and these tests cannot be conducted in such an environment.
+  // A window has its own UseCounter.
+  function openWindow(t, url) {
+    return new Promise(resolve => {
+      const win = window.open(url, '_blank');
+      t.add_cleanup(() => win.close());
+      window.onmessage = t.step_func(e => {
+        assert_equals(e.data, 'LOADED');
+        resolve(win);
+      });
+    });
+  }
+
+  function fetchSubResource({ t, win, handledByFetchHandler }) {
+    win.postMessage({ type: 'FETCH_SUBRESOURCE', handledByFetchHandler });
+    return new Promise(resolve => {
+      window.onmessage = t.step_func(e => {
+        assert_equals(e.data, 'SUBRESOURCE_LOADED');
+        resolve();
+      });
+    });
+  }
+
+  async function registerServiceWorker(t) {
+    const registration = await service_worker_unregister_and_register(t, kUrl, kScope);
+    t.add_cleanup(async () => {
+      await registration.unregister();
+    });
+    // ServiceWorker might be already activated.
+    await wait_for_state(t, registration.installing || registration.active, 'activated');
+  }
+
+  promise_test(async t => {
+    // Activate the ServiceWorker before opening the window.
+    await registerServiceWorker(t);
+
+    const win1 = await openWindow(t, kScope);
+    // Request to add the new subresource to the window, which will not be
+    // captured by the ServiceWorker's fetch handler.
+    await fetchSubResource({ t, win: win1, handledByFetchHandler: false });
+
+    // win2 with handledByFetchHandler: true
+    const win2 = await openWindow(t, kScope);
+
+    // Request to add the new subresource to the window, which will be
+    // captured by the ServiceWorker's fetch handler.
+    await fetchSubResource({ t, win: win2, handledByFetchHandler: true });
+
+    // Make sure if the UseCounter is recorded.
+    await observeUseCounter(win2, kFeature);
+    assert_true(isUseCounted(win2, kFeature));
+
+    // UseCounter is not recorded since the subresource response is not handled
+    // by the ServiceWorker fetch handler.
+    assert_false(isUseCounted(win1, kFeature));
+  }, 'ServiceWorkerFallbackMainResource is recorded when the ServiceWorker' +
+  'fetch handler is fallback for the main resource, but handles subresources.');
+
+  promise_test(async t => {
+    // Activate the ServiceWorker before opening the window.
+    await registerServiceWorker(t);
+    const win = await openWindow(t, kScope);
+
+    // Request to add the new subresource to the window, which will be captured
+    // by ServiceWorker's fetch handler.
+    await fetchSubResource({ t, win, handledByFetchHandler: false });
+
+    assert_false(isUseCounted(win, kFeature));
+  }, 'ServiceWorkerFallbackMainResource is not recorded if there are no ' +
+  'subresource requests handled by ServiceWorker.');
+
+  promise_test(async t => {
+    // Opening the window first.
+    const win = await openWindow(t, kScope);
+    // Make sure if the UseCounter is not recorded.
+    assert_false(isUseCounted(win, kFeature));
+    // Then register the ServiceWorker. Wait for Client.claim() being called
+    // to let the ServiceWorker controls win.
+    const controllerChangePromise = new Promise(resolve => {
+      const { serviceWorker } = win.navigator;
+      serviceWorker.addEventListener('controllerchange', () => {
+        return resolve(serviceWorker.controller);
+      });
+    });
+    await registerServiceWorker(t);
+    await controllerChangePromise;
+
+    // Request to add the new subresource to the window, which will be captured
+    // by ServiceWorker's fetch handler.
+    await fetchSubResource({ t, win, handledByFetchHandler: true });
+    // Make sure if the UseCounter is not recorded again.
+    assert_false(isUseCounted(win, kFeature));
+  }, 'ServiceWorkerFallbackMainResource is not recorded if the main page is ' +
+  'not SW-controlled at the navigation timing.');
+</script>
+
+</html>

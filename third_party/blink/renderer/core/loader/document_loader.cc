@@ -244,6 +244,8 @@ struct SameSizeAsDocumentLoader
   WebNavigationType navigation_type;
   DocumentLoadTiming document_load_timing;
   base::TimeTicks time_of_last_data_received;
+  mojom::blink::ControllerServiceWorkerMode
+      service_worker_initial_controller_mode;
   std::unique_ptr<WebServiceWorkerNetworkProvider>
       service_worker_network_provider;
   DocumentPolicy::ParsedDocumentPolicy document_policy;
@@ -533,6 +535,11 @@ DocumentLoader::DocumentLoader(
       }
       fenced_frame_reporting_->metadata.insert(destination, std::move(data));
     }
+  }
+
+  if (service_worker_network_provider_) {
+    service_worker_initial_controller_mode_ =
+        service_worker_network_provider_->GetControllerServiceWorkerMode();
   }
 
   frame_->SetAncestorOrSelfHasCSPEE(params_->ancestor_or_self_has_cspee);
@@ -2966,6 +2973,16 @@ bool DocumentLoader::IsReloadedOrFormSubmitted() const {
       return true;
     default:
       return false;
+  }
+}
+
+void DocumentLoader::MaybeRecordServiceWorkerFallbackMainResource(
+    bool was_subresource_fetched_via_service_worker) {
+  if (was_subresource_fetched_via_service_worker &&
+      !response_.WasFetchedViaServiceWorker() &&
+      service_worker_initial_controller_mode_ ==
+          mojom::blink::ControllerServiceWorkerMode::kControlled) {
+    CountUse(WebFeature::kSerivceWorkerFallbackMainResource);
   }
 }
 

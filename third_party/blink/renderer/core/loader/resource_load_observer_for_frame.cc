@@ -273,6 +273,9 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
                                   mojom::blink::WebFeature::kExpectCTHeader);
   }
 
+  document_->Loader()->MaybeRecordServiceWorkerFallbackMainResource(
+      response.WasFetchedViaServiceWorker());
+
   std::unique_ptr<AlternateSignedExchangeResourceInfo> alternate_resource_info;
 
   // See if this is a prefetch for a SXG.

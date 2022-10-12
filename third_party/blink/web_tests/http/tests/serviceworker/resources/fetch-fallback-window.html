@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>Service Worker: Fetch Fallback</title>
+<script>
+  window.addEventListener('load', e => {
+    window.opener.postMessage('LOADED', '*');
+  });
+  window.addEventListener('message', async e => {
+    const { type, handledByFetchHandler } = e.data;
+    if (type === 'FETCH_SUBRESOURCE') {
+      const path = './blank.html';
+      const url = handledByFetchHandler ?
+        `${path}?respond-from-service-worker` : path;
+      await fetch(url);
+      window.opener.postMessage('SUBRESOURCE_LOADED');
+    }
+  });
+</script>
