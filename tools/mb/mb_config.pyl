@@ -274,6 +274,7 @@
       'fuchsia-fyi-x64-asan': 'asan_lsan_bot_fuchsia',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
       'fuchsia-x64-chrome-rel': 'release_bot_fuchsia_cfv2_script_chrome',
+      'fuchsia-x64-workstation': 'release_bot_fuchsia_workstation',
     },
 
     'chromium.fuzz': {
@@ -401,7 +402,6 @@
       'fuchsia-code-coverage': 'fuchsia_clang_code_coverage',
       'fuchsia-fyi-arm64-cfv2-script': 'release_bot_fuchsia_cfv2_script_arm64',
       'fuchsia-fyi-cfv2-script': 'release_bot_fuchsia_cfv2_script',
-      'fuchsia-fyi-x64-wst': 'fuchsia_workstation_bot',
       'ios-fieldtrial-rel': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios-m1-simulator-cronet': 'ios_cronet_xctest_arm64',
@@ -1138,6 +1138,7 @@
       'fuchsia-x64-cast-receiver-rel': 'release_trybot_fuchsia_cast_receiver',
       'fuchsia-x64-chrome-rel': 'release_trybot_fuchsia_cfv2_script_chrome',
       'fuchsia-x64-rel': 'release_trybot_fuchsia',
+      'fuchsia-x64-workstation': 'release_trybot_fuchsia_workstation',
       # TODO(crbug.com/1294938): Remove this bot after the transition.
       'fuchsia_arm64': 'release_trybot_fuchsia_arm64',
       # TODO(crbug.com/1294938): Remove this bot after the transition.
@@ -2566,11 +2567,6 @@
       'official_optimize_goma_trybot', 'fuchsia',
     ],
 
-    'fuchsia_workstation_bot': [
-      'release_bot', 'fuchsia', 'fuchsia_include_workstation_image',
-      'fuchsia_chrome'
-    ],
-
     'gn_linux_upload': [
       'gn_linux_upload', 'official', 'goma',
     ],
@@ -3467,6 +3463,11 @@
       'release_bot', 'fuchsia',  'fuchsia_cfv2_script', 'fuchsia_chrome',
     ],
 
+    'release_bot_fuchsia_workstation': [
+      'release_bot', 'fuchsia', 'fuchsia_include_workstation_image',
+      'fuchsia_chrome'
+    ],
+
     'release_bot_mac_strip_minimal_symbols': [
       'release_bot', 'mac_strip', 'minimal_symbols',
     ],
@@ -3610,6 +3611,11 @@
 
     'release_trybot_fuchsia_cfv2_script_chrome': [
       'release_trybot', 'fuchsia', 'fuchsia_cfv2_script', 'fuchsia_chrome',
+    ],
+
+    'release_trybot_fuchsia_workstation': [
+      'release_trybot', 'fuchsia', 'fuchsia_include_workstation_image',
+      'fuchsia_chrome'
     ],
 
     'release_trybot_minimal_symbols_reclient': [

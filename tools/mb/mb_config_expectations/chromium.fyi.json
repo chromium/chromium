@@ -809,19 +809,6 @@
       "use_goma": true
     }
   },
-  "fuchsia-fyi-x64-wst": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "fuchsia_additional_boot_images": [
-        "//third_party/fuchsia-sdk/images/qemu-x64-release/"
-      ],
-      "fuchsia_browser_type": "chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "target_os": "fuchsia",
-      "use_goma": true
-    }
-  },
   "ios-fieldtrial-rel": {
     "gn_args": {
       "enable_run_ios_unittests_with_xctest": true,

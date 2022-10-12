@@ -187,6 +187,11 @@ try_.builder(
     },
 )
 
+try_.builder(
+    name = "fuchsia-x64-workstation",
+    mirrors = ["ci/fuchsia-x64-workstation"],
+)
+
 # TODO(crbug.com/1294938): Remove this bot after the soft CQ transition.
 try_.builder(
     name = "fuchsia_arm64",

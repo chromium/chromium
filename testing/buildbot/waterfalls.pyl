@@ -2597,6 +2597,28 @@
           'gtest_tests': 'fuchsia_chrome_large_gtests',
         },
       },
+      'fuchsia-x64-workstation': {
+        'browser_config': 'fuchsia-chrome',
+        'os_type': 'fuchsia',
+        'mixins': [
+          'fuchsia-test-workstation',
+          'linux-bionic',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'kvm': '1',
+            },
+          ],
+        },
+        'test_suites': {
+          # TODO(crbug.com/1372220): Consider running all telemetry tests.
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_experimental_tests',
+          # TODO(crbug.com/1372220): Consider running more gtests here, Ideally
+          # "fuchsia_gtests".
+          'gtest_tests': 'fuchsia_chrome_large_gtests',
+        },
+      },
     },
   },
   {
@@ -3127,30 +3149,6 @@
         },
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
-        },
-      },
-      'fuchsia-fyi-x64-wst': {
-        'browser_config': 'fuchsia-chrome',
-        'os_type': 'fuchsia',
-        'mixins': [
-          'linux-bionic',
-        ],
-        'args': [
-          '--custom-image=workstation.qemu-x64-release',
-        ],
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
-        },
-        'test_suites': {
-          # TODO(crbug.com/1372220): Consider running all telemetry tests.
-          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_experimental_tests',
-          # TODO(crbug.com/1372220): Consider running more gtests here, Ideally
-          # "fuchsia_gtests".
-          'gtest_tests': 'fuchsia_chrome_large_gtests',
         },
       },
       'ios-fieldtrial-rel': {

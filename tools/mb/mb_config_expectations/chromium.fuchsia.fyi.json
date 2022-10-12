@@ -51,5 +51,18 @@
       "use_cfv2_script": true,
       "use_goma": true
     }
+  },
+  "fuchsia-x64-workstation": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "fuchsia_additional_boot_images": [
+        "//third_party/fuchsia-sdk/images/qemu-x64-release/"
+      ],
+      "fuchsia_browser_type": "chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
   }
 }

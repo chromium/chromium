@@ -244,24 +244,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "fuchsia-fyi-x64-wst",
-    console_view_entry = [
-        consoles.console_view_entry(
-            category = "fuchsia|x64",
-            short_name = "work",
-        ),
-        consoles.console_view_entry(
-            branch_selector = branches.MAIN,
-            console_view = "sheriff.fuchsia",
-            category = "fyi|x64",
-            short_name = "work",
-        ),
-    ],
-    notifies = ["cr-fuchsia"],
-    os = os.LINUX_DEFAULT,
-)
-
-ci.builder(
     name = "lacros-amd64-generic-rel-fyi",
     console_view_entry = consoles.console_view_entry(
         category = "lacros",
