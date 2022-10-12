@@ -45,17 +45,22 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
   static scoped_refptr<WebGPUMailboxTexture> FromExistingMailbox(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       WGPUDevice device,
-      WGPUTextureUsage usage,
+      const WGPUTextureDescriptor& desc,
       const gpu::Mailbox& mailbox,
       const gpu::SyncToken& sync_token,
       gpu::webgpu::MailboxFlags mailbox_flags =
-          gpu::webgpu::WEBGPU_MAILBOX_NONE);
+          gpu::webgpu::WEBGPU_MAILBOX_NONE,
+      base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback =
+          {});
 
   static scoped_refptr<WebGPUMailboxTexture> FromVideoFrame(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       WGPUDevice device,
       WGPUTextureUsage usage,
       scoped_refptr<media::VideoFrame> video_frame);
+
+  void SetNeedsPresent(bool needs_present) { needs_present_ = needs_present; }
+  void Dissociate();
 
   ~WebGPUMailboxTexture();
 
@@ -68,20 +73,23 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
   WebGPUMailboxTexture(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       WGPUDevice device,
-      WGPUTextureUsage usage,
+      const WGPUTextureDescriptor& desc,
       const gpu::Mailbox& mailbox,
       const gpu::SyncToken& sync_token,
       gpu::webgpu::MailboxFlags mailbox_flags,
-      base::OnceCallback<void(const gpu::SyncToken&)> destroy_callback,
+      base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback,
       std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource);
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   WGPUDevice device_;
-  base::OnceCallback<void(const gpu::SyncToken&)> destroy_callback_;
+  base::OnceCallback<void(const gpu::SyncToken&)> finished_access_callback_;
   WGPUTexture texture_;
+  uint32_t wire_device_id_ = 0;
+  uint32_t wire_device_generation_ = 0;
   uint32_t wire_texture_id_ = 0;
   uint32_t wire_texture_generation_ = 0;
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource_;
+  bool needs_present_ = false;
 };
 
 }  // namespace blink

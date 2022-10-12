@@ -49,8 +49,9 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   void SetFilterQuality(cc::PaintFlags::FilterQuality);
   void Neuter();
   void DiscardCurrentSwapBuffer();
-  WGPUTexture GetNewTexture(const WGPUTextureDescriptor& desc,
-                            SkAlphaType alpha_type);
+  scoped_refptr<WebGPUMailboxTexture> GetNewTexture(
+      const WGPUTextureDescriptor& desc,
+      SkAlphaType alpha_type);
 
   // Copy swapchain's texture to a video frame.
   // This happens at the end of an animation frame. Dawn's access to the
@@ -102,7 +103,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
  private:
   // Holds resources and synchronization for one of the swapchain images.
-  struct SwapBuffer {
+  struct SwapBuffer : WTF::RefCounted<SwapBuffer> {
     SwapBuffer(
         base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
         gpu::Mailbox mailbox,
@@ -114,6 +115,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
 
     gfx::Size size;
     gpu::Mailbox mailbox;
+    scoped_refptr<WebGPUMailboxTexture> mailbox_texture;
 
     // A weak ptr to the context provider so that the destructor can
     // destroy shared images.
@@ -128,15 +130,15 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   uint32_t GetTextureTarget() const;
   bool IsOverlayCandidate() const;
 
-  std::unique_ptr<WebGPUSwapBufferProvider::SwapBuffer> NewOrRecycledSwapBuffer(
+  scoped_refptr<WebGPUSwapBufferProvider::SwapBuffer> NewOrRecycledSwapBuffer(
       gpu::SharedImageInterface* sii,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider,
       const gfx::Size& size,
       SkAlphaType alpha_type);
 
-  void RecycleSwapBuffer(std::unique_ptr<SwapBuffer> swap_buffer);
+  void RecycleSwapBuffer(scoped_refptr<SwapBuffer> swap_buffer);
 
-  void MailboxReleased(std::unique_ptr<SwapBuffer> swap_buffer,
+  void MailboxReleased(scoped_refptr<SwapBuffer> swap_buffer,
                        const gpu::SyncToken& sync_token,
                        bool lost_resource);
 
@@ -145,7 +147,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   // components (Compositor/Skia).
   // After this method returns, Dawn won't be able to access the mailbox
   // anymore.
-  void ReleaseWGPUTextureAccessIfNeeded(bool for_transfer);
+  void ReleaseWGPUTextureAccessIfNeeded();
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   Client* client_;
@@ -157,16 +159,12 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   // recycling.
   static constexpr int kMaxRecycledSwapBuffers = 3;
 
-  WTF::Vector<std::unique_ptr<SwapBuffer>> unused_swap_buffers_;
-  std::unique_ptr<SwapBuffer> last_swap_buffer_;
+  WTF::Vector<scoped_refptr<SwapBuffer>> unused_swap_buffers_;
+  scoped_refptr<SwapBuffer> last_swap_buffer_;
   viz::ResourceFormat format_;
   WGPUTextureUsage usage_;
 
-  uint32_t wire_device_id_ = 0;
-  uint32_t wire_device_generation_ = 0;
-  uint32_t wire_texture_id_ = 0;
-  uint32_t wire_texture_generation_ = 0;
-  std::unique_ptr<SwapBuffer> current_swap_buffer_;
+  scoped_refptr<SwapBuffer> current_swap_buffer_;
 };
 
 }  // namespace blink

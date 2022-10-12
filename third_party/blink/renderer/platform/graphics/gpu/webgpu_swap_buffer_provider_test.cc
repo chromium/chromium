@@ -26,6 +26,8 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
     // real WebGPU device.
     procs()->deviceReference = [](WGPUDevice) {};
     procs()->deviceRelease = [](WGPUDevice) {};
+    procs()->textureReference = [](WGPUTexture) {};
+    procs()->textureRelease = [](WGPUTexture) {};
   }
 
   MOCK_METHOD(gpu::webgpu::ReservedTexture,
@@ -86,7 +88,7 @@ class FakeProviderClient : public WebGPUSwapBufferProvider::Client {
     texture = nullptr;
   }
 
-  WGPUTexture texture;
+  scoped_refptr<WebGPUMailboxTexture> texture;
 };
 
 class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
@@ -117,7 +119,7 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
   }
   ~WebGPUSwapBufferProviderForTests() override { *alive_ = false; }
 
-  WGPUTexture GetNewTexture(const gfx::Size& size) {
+  scoped_refptr<WebGPUMailboxTexture> GetNewTexture(const gfx::Size& size) {
     // The alpha type is an optimization hint so just pass in opaque here.
     texture_desc_.size.width = size.width();
     texture_desc_.size.height = size.height();

@@ -171,7 +171,9 @@ GPUCanvasContext::GPUCanvasContext(
   texture_descriptor_.sampleCount = 1;
 }
 
-GPUCanvasContext::~GPUCanvasContext() {}
+GPUCanvasContext::~GPUCanvasContext() {
+  alpha_clearer_ = nullptr;
+}
 
 void GPUCanvasContext::Trace(Visitor* visitor) const {
   visitor->Trace(device_);
@@ -648,14 +650,19 @@ GPUTexture* GPUCanvasContext::ReplaceCurrentTexture() {
   SkAlphaType alpha_type = alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque
                                ? kOpaque_SkAlphaType
                                : kPremul_SkAlphaType;
-  WGPUTexture dawn_client_texture =
+  scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       swap_buffers_->GetNewTexture(texture_descriptor_, alpha_type);
-
-  if (!dawn_client_texture) {
+  if (!mailbox_texture) {
     texture_ = GPUTexture::CreateError(device_, &texture_descriptor_);
     return texture_;
   }
-  texture_ = MakeGarbageCollected<GPUTexture>(device_, dawn_client_texture);
+
+  mailbox_texture->SetNeedsPresent(true);
+
+  texture_ = MakeGarbageCollected<GPUTexture>(
+      device_, texture_descriptor_.format,
+      static_cast<WGPUTextureUsage>(texture_descriptor_.usage),
+      std::move(mailbox_texture));
   new_texture_required_ = false;
 
   return texture_;
@@ -678,7 +685,12 @@ void GPUCanvasContext::OnTextureTransferred() {
   // For alpha mode Opaque, clear the alpha channel to 1.0.
   switch (alpha_mode_) {
     case V8GPUCanvasAlphaMode::Enum::kOpaque: {
-      alpha_clearer_->ClearAlpha(texture_);
+      // `alpha_clearer_` will be deleted if OnTextureTransferred is called
+      // during ~GPUCanvasContext -> ~WebGPUSwapBufferProvider ->
+      // ~WebGPUMailboxTexture
+      if (alpha_clearer_) {
+        alpha_clearer_->ClearAlpha(texture_);
+      }
       break;
     }
     case V8GPUCanvasAlphaMode::Enum::kPremultiplied:
