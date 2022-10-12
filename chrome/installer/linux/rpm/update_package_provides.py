@@ -56,7 +56,6 @@ LIBRARY_FILTER = set([
     "libsmime3.so",
     "libstdc++.so",
     "libuuid.so",
-    "libwayland-client.so",
     "libxcb.so",
     "libxcb-dri3.so.0",
     "libxkbcommon.so.0",

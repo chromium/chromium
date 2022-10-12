@@ -44,6 +44,3 @@ libcurl.so.4()(64bit)
 
 # For OS integration.
 xdg-utils
-
-# For ANGLE with Wayland support - Fedora and openSUSE use different package names
-libwayland-client.so.0()(64bit)
