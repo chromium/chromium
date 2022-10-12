@@ -26,7 +26,6 @@ source_set("tangible_sync") {
     "//ios/chrome/browser/first_run",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",
-    "//ios/chrome/browser/signin:constants",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/signin",

@@ -135,14 +135,14 @@
           "FirstRun.Stage", first_run::kTangibleSyncScreenCompletionWithSync);
     }
     DCHECK(self.coordinatorCompleted);
-    self.coordinatorCompleted(YES);
+    self.coordinatorCompleted();
     self.coordinatorCompleted = nil;
   }
 }
 
 - (void)tangibleSyncMediatorUserRemoved:(TangibleSyncMediator*)mediator {
   DCHECK(self.coordinatorCompleted);
-  self.coordinatorCompleted(NO);
+  self.coordinatorCompleted();
   self.coordinatorCompleted = nil;
 }
 
@@ -169,7 +169,7 @@
   // sync as requested.
   syncService->StopAndClear();
   DCHECK(self.coordinatorCompleted);
-  self.coordinatorCompleted(NO);
+  self.coordinatorCompleted();
   self.coordinatorCompleted = nil;
 }
 

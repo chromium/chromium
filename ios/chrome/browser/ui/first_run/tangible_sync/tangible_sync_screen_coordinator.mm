@@ -78,8 +78,8 @@
       initFirstRunWithBaseNavigationController:self.baseNavigationController
                                        browser:self.browser];
   __weak __typeof(self) weakSelf = self;
-  _tangibleSyncCoordinator.coordinatorCompleted = ^(bool success) {
-    [weakSelf tangibleSyncCoordinatorCompletedWithSuccess:success];
+  _tangibleSyncCoordinator.coordinatorCompleted = ^() {
+    [weakSelf tangibleSyncCoordinatorCompleted];
   };
   [_tangibleSyncCoordinator start];
 }
@@ -94,13 +94,9 @@
 
 #pragma mark - Private
 
-// Dismisses the current screen, and stops the FRE if `success` is `false`.
-- (void)tangibleSyncCoordinatorCompletedWithSuccess:(bool)success {
-  if (success) {
-    [_delegate screenWillFinishPresenting];
-  } else {
-    [_delegate skipAllScreens];
-  }
+// Dismisses the current screen.
+- (void)tangibleSyncCoordinatorCompleted {
+  [_delegate screenWillFinishPresenting];
 }
 
 @end
