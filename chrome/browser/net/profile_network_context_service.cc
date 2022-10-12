@@ -429,6 +429,14 @@ void ProfileNetworkContextService::OnTrustTokenBlockingChanged(
       block_trust_tokens));
 }
 
+void ProfileNetworkContextService::OnFirstPartySetsEnabledChanged(
+    bool enabled) {
+  // Update all FPS Access Delegates on the FPS service to be `enabled`.
+  first_party_sets::FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
+      profile_)
+      ->OnFirstPartySetsEnabledChanged(enabled);
+}
+
 std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {
   // If reduce accept language is enabled, only return the first language
   // without expanding the language list.

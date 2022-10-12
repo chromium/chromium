@@ -16,6 +16,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -63,7 +64,8 @@ class EnabledPolicyBrowsertest
       public ::testing::WithParamInterface<std::tuple<bool, PrefState>> {
  public:
   EnabledPolicyBrowsertest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
+        pref_enabled_(GetPrefState() != PrefState::kDisabled) {
     if (IsFeatureEnabled()) {
       scoped_feature_list_.InitWithFeatures(
           {features::kFirstPartySets,
@@ -161,28 +163,44 @@ class EnabledPolicyBrowsertest
 
   std::vector<std::string> ExpectedCrossSiteCookiesInCrossPartyContext() {
     // Returns the expected cookies that are accessible in a cross-site,
-    // cros-party context.
+    // cross-party context.
     if (IsFirstPartySetsEnabled()) {
       return {};
     }
     return kSameSiteNoneCookies;
   }
 
+  // Reverses the state of the First-Party Sets enabled preference.
+  void FlipEnabledPolicy() {
+    pref_enabled_ = !pref_enabled_;
+    policy_map().Set(policy::key::kFirstPartySetsEnabled,
+                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                     POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                     base::Value(pref_enabled_), nullptr);
+
+    provider_.UpdateChromePolicy(policy_map());
+  }
+
+  bool IsFirstPartySetsEnabled() {
+    return IsFeatureEnabled() && IsPrefEnabled();
+  }
+
+  // Clear cookies for the current browser context, returning the number
+  // cleared.
+  uint32_t ClearCookies() {
+    return content::DeleteCookies(web_contents()->GetBrowserContext(),
+                                  network::mojom::CookieDeletionFilter());
+  }
+
  private:
   bool IsFeatureEnabled() { return std::get<0>(GetParam()); }
   PrefState GetPrefState() { return std::get<1>(GetParam()); }
-  bool IsPrefEnabled() { return GetPrefState() == PrefState::kEnabled; }
-
-  bool IsFirstPartySetsEnabled() {
-    if (GetPrefState() == PrefState::kDefault) {
-      return IsFeatureEnabled();
-    }
-    return IsFeatureEnabled() && IsPrefEnabled();
-  }
+  bool IsPrefEnabled() { return pref_enabled_; }
 
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
   PolicyMap policies_;
+  bool pref_enabled_;
 };
 
 IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
@@ -206,7 +224,19 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
 
 IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SetCrossSiteSamePartyEmbedWithFpsPrimaryTopLevel) {
+  std::vector<std::string> expected_cookies =
+      ExpectedCrossSiteCookiesInSamePartyContext();
   // Cross-site, same-party iframe (B embedded in A).
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+          web_contents(), https_server(), "a.test(%s)",
+          SetSamePartyCookiesUrl(kHostB)),
+      UnorderedPointwise(net::CanonicalCookieNameIs(), expected_cookies));
+
+  // Clear cookies from above and flip the First-Party Sets enabled pref.
+  ASSERT_EQ(ClearCookies(), expected_cookies.size());
+  FlipEnabledPolicy();
+
   EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
                   web_contents(), https_server(), "a.test(%s)",
                   SetSamePartyCookiesUrl(kHostB)),
@@ -216,7 +246,19 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
 
 IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SetCrossSiteSamePartyEmbedWithFpsPrimaryLeaf) {
+  std::vector<std::string> expected_cookies =
+      ExpectedCrossSiteCookiesInSamePartyContext();
   // Cross-site, same-party iframe (A embedded in B).
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+          web_contents(), https_server(), "b.test(%s)",
+          SetSamePartyCookiesUrl(kHostA)),
+      UnorderedPointwise(net::CanonicalCookieNameIs(), expected_cookies));
+
+  // Clear cookies from above and flip the First-Party Sets enabled pref.
+  ASSERT_EQ(ClearCookies(), expected_cookies.size());
+  FlipEnabledPolicy();
+
   EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
                   web_contents(), https_server(), "b.test(%s)",
                   SetSamePartyCookiesUrl(kHostA)),
@@ -227,7 +269,19 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
 IN_PROC_BROWSER_TEST_P(
     EnabledPolicyBrowsertest,
     SetCrossSiteSamePartyWithTwoNestedSamePartyContextFrames) {
+  std::vector<std::string> expected_cookies =
+      ExpectedCrossSiteCookiesInSamePartyContext();
   // Cross-site, same-party nested iframe (A embedded in B embedded in A).
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+          web_contents(), https_server(), "a.test(b.test(%s))",
+          SetSamePartyCookiesUrl(kHostA)),
+      UnorderedPointwise(net::CanonicalCookieNameIs(), expected_cookies));
+
+  // Clear cookies from above and flip the First-Party Sets enabled pref.
+  ASSERT_EQ(ClearCookies(), expected_cookies.size());
+  FlipEnabledPolicy();
+
   EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
                   web_contents(), https_server(), "a.test(b.test(%s))",
                   SetSamePartyCookiesUrl(kHostA)),
@@ -238,8 +292,20 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     EnabledPolicyBrowsertest,
     SetCrossSiteSamePartyWithThreeNestedSamePartyContextFrames) {
+  std::vector<std::string> expected_cookies =
+      ExpectedCrossSiteCookiesInSamePartyContext();
   // Cross-site, same-party nested iframe (A embedded in B embedded in C
   // embedded in A).
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+          web_contents(), https_server(), "a.test(c.test(b.test(%s)))",
+          SetSamePartyCookiesUrl(kHostA)),
+      UnorderedPointwise(net::CanonicalCookieNameIs(), expected_cookies));
+
+  // Clear cookies from above and flip the First-Party Sets enabled pref.
+  ASSERT_EQ(ClearCookies(), expected_cookies.size());
+  FlipEnabledPolicy();
+
   EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
                   web_contents(), https_server(), "a.test(c.test(b.test(%s)))",
                   SetSamePartyCookiesUrl(kHostA)),
@@ -259,7 +325,19 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
 
 IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SetCrossSiteCrossPartyEmbedWithFpsLeaf) {
+  std::vector<std::string> expected_cookies =
+      ExpectedCrossSiteCookiesInCrossPartyContext();
   // Cross-site, cross-party iframe (A embedded in D).
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+          web_contents(), https_server(), "d.test(%s)",
+          SetSamePartyCookiesUrl(kHostA)),
+      UnorderedPointwise(net::CanonicalCookieNameIs(), expected_cookies));
+
+  // Clear cookies from above and flip the First-Party Sets enabled pref.
+  ASSERT_EQ(ClearCookies(), expected_cookies.size());
+  FlipEnabledPolicy();
+
   EXPECT_THAT(
       content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
           web_contents(), https_server(), "d.test(%s)",
@@ -271,7 +349,21 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
 IN_PROC_BROWSER_TEST_P(
     EnabledPolicyBrowsertest,
     SetCrossSiteCrossPartyWithTwoNestedCrossPartyContextFrames) {
-  // Cross-site, cross-party nested iframe (A embedded in B embedded in D).
+  std::vector<std::string> expected_cookies =
+      ExpectedCrossSiteCookiesInCrossPartyContext();
+  // Cross-site, cross-party nested iframe (A embedded in B embedded in
+  // D).
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+          web_contents(), https_server(), "d.test(b.test(%s))",
+          SetSamePartyCookiesUrl(kHostA)),
+      UnorderedPointwise(net::CanonicalCookieNameIs(),
+                         ExpectedCrossSiteCookiesInCrossPartyContext()));
+
+  // Clear cookies from above and flip the First-Party Sets enabled pref.
+  ASSERT_EQ(ClearCookies(), expected_cookies.size());
+  FlipEnabledPolicy();
+
   EXPECT_THAT(
       content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
           web_contents(), https_server(), "d.test(b.test(%s))",
@@ -322,12 +414,36 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                                                   {0}, EchoCookiesUrl(kHostB)),
       net::CookieStringIs(UnorderedPointwise(
           net::NameIs(), ExpectedCrossSiteCookiesInSamePartyContext())));
+
+  // Clear cookies from above and flip the First-Party Sets enabled pref.
+  ASSERT_EQ(ClearCookies(), 3u);
+  FlipEnabledPolicy();
+
+  ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostB));
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetContentFromLeaf(web_contents(),
+                                                  https_server(), "a.test(%s)",
+                                                  {0}, EchoCookiesUrl(kHostB)),
+      net::CookieStringIs(UnorderedPointwise(
+          net::NameIs(), ExpectedCrossSiteCookiesInSamePartyContext())));
 }
 
 IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                        SendCrossSiteSamePartyWithEmbedFpsPrimaryLeaf) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Cross-site, same-party iframe (A embedded in B).
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetContentFromLeaf(web_contents(),
+                                                  https_server(), "b.test(%s)",
+                                                  {0}, EchoCookiesUrl(kHostA)),
+      net::CookieStringIs(UnorderedPointwise(
+          net::NameIs(), ExpectedCrossSiteCookiesInSamePartyContext())));
+
+  // Clear cookies from above and flip the First-Party Sets enabled pref.
+  ASSERT_EQ(ClearCookies(), 3u);
+  FlipEnabledPolicy();
+
+  ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   EXPECT_THAT(
       content::ArrangeFramesAndGetContentFromLeaf(web_contents(),
                                                   https_server(), "b.test(%s)",
@@ -347,6 +463,18 @@ IN_PROC_BROWSER_TEST_P(
           EchoCookiesUrl(kHostA)),
       net::CookieStringIs(UnorderedPointwise(
           net::NameIs(), ExpectedCrossSiteCookiesInSamePartyContext())));
+
+  // Clear cookies from above and flip the First-Party Sets enabled pref.
+  ASSERT_EQ(ClearCookies(), 3u);
+  FlipEnabledPolicy();
+
+  ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetContentFromLeaf(
+          web_contents(), https_server(), "a.test(b.test(%s))", {0, 0},
+          EchoCookiesUrl(kHostA)),
+      net::CookieStringIs(UnorderedPointwise(
+          net::NameIs(), ExpectedCrossSiteCookiesInSamePartyContext())));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -355,6 +483,18 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Cross-site, same-party nested iframe (A embedded in B embedded in C
   // embedded in A).
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetContentFromLeaf(
+          web_contents(), https_server(), "a.test(c.test(b.test(%s)))",
+          {0, 0, 0}, EchoCookiesUrl(kHostA)),
+      net::CookieStringIs(UnorderedPointwise(
+          net::NameIs(), ExpectedCrossSiteCookiesInSamePartyContext())));
+
+  // Clear cookies from above and flip the First-Party Sets enabled pref.
+  ASSERT_EQ(ClearCookies(), 3u);
+  FlipEnabledPolicy();
+
+  ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   EXPECT_THAT(
       content::ArrangeFramesAndGetContentFromLeaf(
           web_contents(), https_server(), "a.test(c.test(b.test(%s)))",
@@ -384,6 +524,18 @@ IN_PROC_BROWSER_TEST_P(EnabledPolicyBrowsertest,
                                                   {0}, EchoCookiesUrl(kHostA)),
       net::CookieStringIs(UnorderedPointwise(
           net::NameIs(), ExpectedCrossSiteCookiesInCrossPartyContext())));
+
+  // Clear cookies from above and flip the First-Party Sets enabled pref.
+  ASSERT_EQ(ClearCookies(), 3u);
+  FlipEnabledPolicy();
+
+  ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetContentFromLeaf(web_contents(),
+                                                  https_server(), "d.test(%s)",
+                                                  {0}, EchoCookiesUrl(kHostA)),
+      net::CookieStringIs(UnorderedPointwise(
+          net::NameIs(), ExpectedCrossSiteCookiesInCrossPartyContext())));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -391,6 +543,18 @@ IN_PROC_BROWSER_TEST_P(
     SendCrossSiteCrossPartyWithTwoNestedCrossPartyContextFrames) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Cross-site, cross-party nested iframe (A embedded in B embedded in D).
+  EXPECT_THAT(
+      content::ArrangeFramesAndGetContentFromLeaf(
+          web_contents(), https_server(), "d.test(b.test(%s))", {0, 0},
+          EchoCookiesUrl(kHostA)),
+      net::CookieStringIs(UnorderedPointwise(
+          net::NameIs(), ExpectedCrossSiteCookiesInCrossPartyContext())));
+
+  // Clear cookies from above and flip the First-Party Sets enabled pref.
+  ASSERT_EQ(ClearCookies(), 3u);
+  FlipEnabledPolicy();
+
+  ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   EXPECT_THAT(
       content::ArrangeFramesAndGetContentFromLeaf(
           web_contents(), https_server(), "d.test(b.test(%s))", {0, 0},
@@ -661,6 +825,5 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Values(PrefState::kDefault,
                                          PrefState::kDisabled,
                                          PrefState::kEnabled)));
-
 }  // namespace
 }  // namespace policy
