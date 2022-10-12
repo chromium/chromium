@@ -707,7 +707,7 @@
     },
     {
       name: "CSSLastBaseline",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSLayoutAPI",
