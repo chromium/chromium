@@ -9,9 +9,9 @@
 
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
 
-@class ChromeIdentity;
 @class SigninPromoViewConfigurator;
 @class SigninPromoViewMediator;
+@protocol SystemIdentity;
 
 // Handles identity update notifications.
 @protocol SigninPromoViewConsumer <NSObject>
@@ -38,7 +38,7 @@
 // once the sign-in is done.
 // `mediator` is in charge to record all histograms and user actions.
 - (void)signinPromoViewMediator:(SigninPromoViewMediator*)mediator
-    shouldOpenSigninWithIdentity:(ChromeIdentity*)identity
+    shouldOpenSigninWithIdentity:(id<SystemIdentity>)identity
                      promoAction:(signin_metrics::PromoAction)promoAction
                       completion:
                           (ShowSigninCommandCompletionCallback)completion;

@@ -274,10 +274,11 @@ using signin_metrics::PromoAction;
 }
 
 - (void)openReauthDialogAsSyncIsInAuthError {
-  ChromeIdentity* identity =
-      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (self.authService->HasCachedMDMErrorForIdentity(identity)) {
-    self.authService->ShowMDMErrorDialogForIdentity(identity);
+  AuthenticationService* authService = self.authService;
+  id<SystemIdentity> identity =
+      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (authService->HasCachedMDMErrorForIdentity(identity)) {
+    authService->ShowMDMErrorDialogForIdentity(identity);
     return;
   }
   // Sync enters in a permanent auth error state when fetching an access token

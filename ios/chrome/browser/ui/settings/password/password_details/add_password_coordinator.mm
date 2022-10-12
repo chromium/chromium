@@ -84,14 +84,14 @@
           self.browser->GetBrowserState());
   DCHECK(authenticationService);
   NSString* syncingUserEmail = nil;
-  ChromeIdentity* chromeIdentity =
+  id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
-  if (chromeIdentity) {
+  if (identity) {
     SyncSetupService* syncSetupService =
         SyncSetupServiceFactory::GetForBrowserState(
             self.browser->GetBrowserState());
     if (syncSetupService->IsDataTypeActive(syncer::PASSWORDS)) {
-      syncingUserEmail = chromeIdentity.userEmail;
+      syncingUserEmail = identity.userEmail;
     }
   }
 

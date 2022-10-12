@@ -213,20 +213,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
 
   // Update the title with the name with the currently signed-in account.
-  ChromeIdentity* authenticatedIdentity =
-      [self authService]->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  AuthenticationService* authService = self.authService;
+  id<SystemIdentity> authenticatedIdentity =
+      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+
   NSString* title = nil;
   if (authenticatedIdentity) {
-    title = [authenticatedIdentity userFullName];
+    title = authenticatedIdentity.userFullName;
     if (!title) {
-      title = [authenticatedIdentity userEmail];
+      title = authenticatedIdentity.userEmail;
     }
   }
   self.title = title;
 
   [super loadModel];
 
-  if (![self authService]->HasPrimaryIdentity(signin::ConsentLevel::kSignin))
+  if (!authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin))
     return;
 
   TableViewModel* model = self.tableViewModel;
@@ -241,7 +243,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(_browser->GetBrowserState());
 
-  NSString* authenticatedEmail = [authenticatedIdentity userEmail];
+  NSString* authenticatedEmail = authenticatedIdentity.userEmail;
   for (const auto& account : identityManager->GetAccountsWithRefreshTokens()) {
     id<SystemIdentity> identity =
         self.accountManagerService->GetIdentityWithGaiaID(account.gaia);
@@ -278,7 +280,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierSignOut];
   [model addItem:[self signOutItem]
       toSectionWithIdentifier:SectionIdentifierSignOut];
-  AuthenticationService* authService = [self authService];
 
   BOOL hasSyncConsent =
       authService->HasPrimaryIdentity(signin::ConsentLevel::kSync);

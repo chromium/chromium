@@ -265,7 +265,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   PasswordsCoordinator* _passwordsCoordinator;
 
   // Identity object and observer used for Account Item refresh.
-  ChromeIdentity* _identity;
+  id<SystemIdentity> _identity;
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
 
@@ -1884,7 +1884,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   identityAccountItem.image =
       self.accountManagerService->GetIdentityAvatarWithIdentity(
           _identity, IdentityAvatarSize::TableViewIcon);
-  identityAccountItem.text = [_identity userFullName];
+  identityAccountItem.text = _identity.userFullName;
   identityAccountItem.detailText = _identity.userEmail;
 }
 
@@ -2027,7 +2027,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 #pragma mark Sign in
 
-- (void)showSignInWithIdentity:(ChromeIdentity*)identity
+- (void)showSignInWithIdentity:(id<SystemIdentity>)identity
                    promoAction:(signin_metrics::PromoAction)promoAction
                     completion:(ShowSigninCommandCompletionCallback)completion {
   DCHECK(!self.isSigninInProgress);
@@ -2309,7 +2309,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 - (void)signinPromoViewMediator:(SigninPromoViewMediator*)mediator
-    shouldOpenSigninWithIdentity:(ChromeIdentity*)identity
+    shouldOpenSigninWithIdentity:(id<SystemIdentity>)identity
                      promoAction:(signin_metrics::PromoAction)promoAction
                       completion:
                           (ShowSigninCommandCompletionCallback)completion {

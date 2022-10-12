@@ -118,7 +118,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
 
   ~ClearBrowsingDataManagerTest() override { [manager_ disconnect]; }
 
-  ChromeIdentity* fake_identity() {
+  id<SystemIdentity> fake_identity() {
     return account_manager_service_->GetDefaultIdentity();
   }
 
