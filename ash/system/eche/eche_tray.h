@@ -41,7 +41,7 @@ class Widget;
 }  // namespace views
 
 namespace ui {
-class Event;
+class KeyEvent;
 }  // namespace ui
 
 namespace gfx {
@@ -88,7 +88,6 @@ class ASH_EXPORT EcheTray : public TrayBackgroundView,
   void Initialize() override;
   void CloseBubble() override;
   void ShowBubble() override;
-  bool PerformAction(const ui::Event& event) override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
   void OnVirtualKeyboardVisibilityChanged() override;

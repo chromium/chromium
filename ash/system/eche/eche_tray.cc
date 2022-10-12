@@ -180,6 +180,18 @@ EcheTray::EcheTray(Shelf* shelf)
       icon_(
           tray_container()->AddChildView(std::make_unique<views::ImageView>())),
       event_interceptor_(std::make_unique<EventInterceptor>(this)) {
+  SetPressedCallback(base::BindRepeating(
+      [](EcheTray* eche_tray, const ui::Event& event) {
+        // The `bubble_` is cached, so don't check for existence (which is the
+        // base TrayBackgroundView implementation), check for visibility to
+        // decide on whether to show or hide.
+        if (eche_tray->IsBubbleVisible()) {
+          eche_tray->HideBubble();
+          return;
+        }
+        eche_tray->ShowBubble();
+      },
+      base::Unretained(this)));
   const int icon_padding = (kTrayItemSize - kIconSize) / 2;
 
   icon_->SetBorder(
@@ -249,6 +261,12 @@ void EcheTray::CloseBubble() {
 }
 
 void EcheTray::ShowBubble() {
+#ifdef FAKE_BUBBLE_FOR_DEBUG
+  LoadBubble(GURL("http://google.com"), std::move(gfx::Image()),
+             u"visible_name");
+  return;
+#endif
+
   if (!bubble_)
     return;
   SetIconVisibility(true);
@@ -271,20 +289,6 @@ void EcheTray::ShowBubble() {
   bubble_->GetBubbleWidget()->GetNativeWindow()->AddPreTargetHandler(
       event_interceptor_.get());
   shelf()->UpdateAutoHideState();
-}
-
-bool EcheTray::PerformAction(const ui::Event& event) {
-  // Simply toggle between visible/invisibvle
-  if (IsBubbleVisible()) {
-    HideBubble();
-  } else {
-#ifdef FAKE_BUBBLE_FOR_DEBUG
-    LoadBubble(GURL("http://google.com"), std::move(gfx::Image()),
-               u"visible_name");
-#endif
-    ShowBubble();
-  }
-  return true;
 }
 
 TrayBubbleView* EcheTray::GetBubbleView() {
