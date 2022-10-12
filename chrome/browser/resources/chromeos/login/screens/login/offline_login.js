@@ -12,7 +12,7 @@ import '//resources/cr_elements/cr_dialog/cr_dialog.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '../../components/gaia_header.m.js';
 import '../../components/gaia_input_form.m.js';
-import '../../components/gaia_button.m.js';
+import '../../components/gaia_button.js';
 import '../../components/common_styles/oobe_dialog_host_styles.m.js';
 import '../../components/dialogs/oobe_content_dialog.m.js';
 import '../../components/buttons/oobe_back_button.m.js';

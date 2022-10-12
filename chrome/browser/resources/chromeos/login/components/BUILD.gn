@@ -20,7 +20,7 @@ group("closure_compile") {
 
     # Local targets
     ":display_manager_types.m",
-    ":gaia_button.m",
+    ":gaia_button",
     ":gaia_dialog.m",
     ":gaia_header.m",
     ":gaia_input_form.m",
@@ -58,7 +58,6 @@ group("polymer3_elements") {
                   "progress_list_item:polymer3_elements",
 
                   # Local targets
-                  ":gaia_button_module",
                   ":gaia_dialog_module",
                   ":gaia_header_module",
                   ":gaia_input_form_module",
@@ -87,14 +86,14 @@ js_library("display_manager_types.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("gaia_button.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_button.m.js" ]
+js_library("gaia_button") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_button.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list =
       [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
-  extra_deps = [ ":gaia_button_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("gaia_dialog.m") {
@@ -273,15 +272,6 @@ js_library("web_view_loader.m") {
   extra_deps = [ ":modulize" ]
 }
 
-polymer_modulizer("gaia_button") {
-  js_file = "gaia_button.js"
-  html_file = "gaia_button.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("gaia_dialog") {
   js_file = "gaia_dialog.js"
   html_file = "gaia_dialog.html"
@@ -417,7 +407,8 @@ js_modulizer("modulize") {
 
 html_to_js("web_components") {
   js_files = [
-    "security_token_pin.js",
+    "gaia_button.js",
     "notification_card.js",
+    "security_token_pin.js",
   ]
 }

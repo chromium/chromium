@@ -4,11 +4,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-
 <!--
   Material design buttons that mimic GAIA's buttons.
 
@@ -20,40 +15,36 @@ found in the LICENSE file.
              that looks more like a link.
     'disabled' - button is disabled when the attribute is set.
 -->
-<dom-module id="gaia-button">
-  <template>
-    <style>
-      :host {
-        display: inline-block;
-      }
+<style>
+  :host {
+    display: inline-block;
+  }
 
-      :host([link]) cr-button {
-        background-color: transparent;
-        border: none;
-        border-radius: 0;
-        box-shadow: none;
-        color: var(--cros-link-color);
-        font-weight: 400;
-        margin: 0 -0.57em;
-        min-width: 0;
-      }
+  :host([link]) cr-button {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    color: var(--cros-link-color);
+    font-weight: 400;
+    margin: 0 -0.57em;
+    min-width: 0;
+  }
 
-      :host([link]) cr-button:focus {
-        background-color: var(--cros-button-active-shadow-color-ambient-primary);
-      }
+  :host([link]) cr-button:focus {
+    background-color: var(--cros-button-active-shadow-color-ambient-primary);
+  }
 
-      :host-context(.focus-outline-visible):host([link]) cr-button:focus {
-        font-weight: 500;
-      }
+  :host-context(.focus-outline-visible):host([link]) cr-button:focus {
+    font-weight: 500;
+  }
 
-      :host([link]) cr-button[disabled] {
-        color: var(--cros-color-disabled);
-      }
-    </style>
-    <cr-button id="button" disabled="[[disabled]]" on-click="onClick_"
-        noink$="[[link]]">
-      <slot></slot>
-    </cr-button>
-  </template>
-  <script src="gaia_button.js"></script>
-</dom-module>
+  :host([link]) cr-button[disabled] {
+    color: var(--cros-color-disabled);
+  }
+</style>
+<cr-button id="button" disabled="[[disabled]]" on-click="onClick_"
+    noink$="[[link]]">
+  <slot></slot>
+</cr-button>
+

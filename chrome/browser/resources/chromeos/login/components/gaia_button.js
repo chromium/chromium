@@ -6,13 +6,17 @@
  * @fileoverview Polymer element wrapping gaia styled button for login/oobe.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/polymer/v3_0/paper-styles/color.js';
+
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 
 /**
  * @constructor
  * @extends {PolymerElement}
  */
-const GaiaButtonBase = Polymer.mixinBehaviors([], Polymer.Element);
+const GaiaButtonBase = mixinBehaviors([], PolymerElement);
 
 /**
  * @typedef {{
@@ -21,12 +25,15 @@ const GaiaButtonBase = Polymer.mixinBehaviors([], Polymer.Element);
  */
 GaiaButtonBase.$;
 
+/** @polymer */
 class GaiaButton extends GaiaButtonBase {
   static get is() {
     return 'gaia-button';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -43,10 +50,6 @@ class GaiaButton extends GaiaButtonBase {
         value: false,
       },
     };
-  }
-
-  constructor() {
-    super();
   }
 
   focus() {

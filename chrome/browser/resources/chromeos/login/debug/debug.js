@@ -418,6 +418,15 @@ cr.define('cr.ui.login.debug', function() {
           id: 'creds',
           trigger: (screen) => {
             screen.setUIStep('creds');
+            screen.isDomainJoin = false;
+          },
+          data: {},
+        },
+        {
+          id: 'creds(isDomainJoin)',
+          trigger: (screen) => {
+            screen.setUIStep('creds');
+            screen.isDomainJoin = true;
           },
           data: {},
         },
