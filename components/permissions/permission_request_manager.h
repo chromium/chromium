@@ -219,6 +219,10 @@ class PermissionRequestManager
     return &observer_list_;
   }
 
+  bool has_pending_requests() {
+    return !pending_permission_requests_.IsEmpty();
+  }
+
  private:
   friend class test::PermissionRequestManagerTestApi;
   friend class content::WebContentsUserData<PermissionRequestManager>;
