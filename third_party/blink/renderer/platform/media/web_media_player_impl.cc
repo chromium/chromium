@@ -382,8 +382,6 @@ MimeType TranslateMimeTypeToHistogramEnum(const std::string& mime_type) {
 
 }  // namespace
 
-class BufferedDataSourceHostImpl;
-
 STATIC_ASSERT_ENUM(WebMediaPlayer::kCorsModeUnspecified,
                    UrlData::CORS_UNSPECIFIED);
 STATIC_ASSERT_ENUM(WebMediaPlayer::kCorsModeAnonymous, UrlData::CORS_ANONYMOUS);
@@ -3916,9 +3914,15 @@ void WebMediaPlayerImpl::OnFirstFrame(base::TimeTicks frame_time) {
   media_metrics_provider_->SetTimeToFirstFrame(elapsed);
   RecordTimingUMA("Media.TimeToFirstFrame", elapsed);
 
-  // Needed to signal HTMLVideoElement that it should remove the poster image.
-  if (client_ && has_poster_)
-    client_->Repaint();
+  media::PipelineStatistics ps = GetPipelineStatistics();
+  if (client_) {
+    client_->OnFirstFrame(frame_time, ps.video_bytes_decoded);
+
+    // Needed to signal HTMLVideoElement that it should remove the poster image.
+    if (has_poster_) {
+      client_->Repaint();
+    }
+  }
 }
 
 void WebMediaPlayerImpl::RecordTimingUMA(const std::string& key,
@@ -4086,6 +4090,12 @@ void WebMediaPlayerImpl::ReportSessionUMAs() const {
     uma_name += GetRendererName(renderer_type_);
     base::UmaHistogramCounts10M(uma_name, video_frame_readback_count_);
   }
+}
+
+bool WebMediaPlayerImpl::PassedTimingAllowOriginCheck() const {
+  if (mb_data_source_)
+    return mb_data_source_->PassedTimingAllowOriginCheck();
+  return true;
 }
 
 }  // namespace blink

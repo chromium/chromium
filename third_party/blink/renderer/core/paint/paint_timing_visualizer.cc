@@ -61,18 +61,17 @@ void PaintTimingVisualizer::DumpTextDebuggingRect(const LayoutObject& object,
   DumpTrace(std::move(value));
 }
 
-void PaintTimingVisualizer::DumpImageDebuggingRect(
-    const LayoutObject& object,
-    const gfx::RectF& rect,
-    const MediaTiming& media_timing) {
+void PaintTimingVisualizer::DumpImageDebuggingRect(const LayoutObject& object,
+                                                   const gfx::RectF& rect,
+                                                   bool is_loaded,
+                                                   const KURL& url) {
   std::unique_ptr<TracedValue> value = std::make_unique<TracedValue>();
   RecordObject(object, value);
   RecordRects(gfx::ToRoundedRect(rect), value);
   value->SetBoolean("is_image", true);
   value->SetBoolean("is_svg", object.IsSVG());
-  value->SetBoolean("is_image_loaded",
-                    media_timing.IsSufficientContentLoadedForPaint());
-  value->SetString("image_url", media_timing.Url().StrippedForUseAsReferrer());
+  value->SetBoolean("is_image_loaded", is_loaded);
+  value->SetString("image_url", url.StrippedForUseAsReferrer());
   DumpTrace(std::move(value));
 }
 

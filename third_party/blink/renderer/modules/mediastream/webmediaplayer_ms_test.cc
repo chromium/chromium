@@ -540,6 +540,7 @@ class WebMediaPlayerMSTest
   void DurationChanged() override {}
   void SizeChanged() override;
   void SetCcLayer(cc::Layer* layer) override;
+  void OnFirstFrame(base::TimeTicks, size_t) override {}
   WebMediaPlayer::TrackId AddAudioTrack(const WebString& id,
                                         AudioTrackKind,
                                         const WebString& label,

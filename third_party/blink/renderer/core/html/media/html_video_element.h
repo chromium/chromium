@@ -93,6 +93,9 @@ class CORE_EXPORT HTMLVideoElement final
 
   bool HasAvailableVideoFrame() const;
 
+  void OnFirstFrame(base::TimeTicks frame_time,
+                    size_t bytes_to_first_frame) final;
+
   KURL PosterImageURL() const override;
 
   // Returns whether the current poster image URL is the default for the

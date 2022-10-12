@@ -168,6 +168,9 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   uint64_t AudioDecodedByteCount() const override;
   uint64_t VideoDecodedByteCount() const override;
 
+  // WebRTC doesn't need TAO checks, as the timing is already available through
+  // getStats().
+  bool PassedTimingAllowOriginCheck() const override { return true; }
   bool HasAvailableVideoFrame() const override;
 
   void SetVolumeMultiplier(double multiplier) override;

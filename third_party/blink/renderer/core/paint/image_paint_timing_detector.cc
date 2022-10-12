@@ -332,8 +332,10 @@ bool ImagePaintTimingDetector::RecordImage(
         gfx::RectF mapped_visual_rect =
             frame_view_->GetPaintTimingDetector().CalculateVisualRect(
                 image_border, current_paint_chunk_properties);
-        visualizer->DumpImageDebuggingRect(object, mapped_visual_rect,
-                                           media_timing);
+        visualizer->DumpImageDebuggingRect(
+            object, mapped_visual_rect,
+            media_timing.IsSufficientContentLoadedForPaint(),
+            media_timing.Url());
       }
       return true;
     }
@@ -377,8 +379,9 @@ uint64_t ImagePaintTimingDetector::ComputeImageRectSize(
     const MediaTiming& media_timing) {
   if (absl::optional<PaintTimingVisualizer>& visualizer =
           frame_view_->GetPaintTimingDetector().Visualizer()) {
-    visualizer->DumpImageDebuggingRect(object, mapped_visual_rect,
-                                       media_timing);
+    visualizer->DumpImageDebuggingRect(
+        object, mapped_visual_rect,
+        media_timing.IsSufficientContentLoadedForPaint(), media_timing.Url());
   }
   uint64_t rect_size = mapped_visual_rect.size().GetArea();
   // Transform visual rect to window before calling downscale.
@@ -433,7 +436,15 @@ bool ImageRecordsManager::OnFirstAnimatedFramePainted(
     unsigned current_frame_index) {
   base::WeakPtr<ImageRecord> record = GetPendingImage(record_id);
   DCHECK(record);
-  if (record->first_animated_frame_time.is_null()) {
+  if (!record->media_timing->GetFirstVideoFrameTime().is_null()) {
+    // If this is a video record, then we can get the first frame time from the
+    // MediaTiming object, and can use that to set the first frame time in the
+    // ImageRecord object.
+    record->first_animated_frame_time =
+        record->media_timing->GetFirstVideoFrameTime();
+  } else if (record->first_animated_frame_time.is_null()) {
+    // Otherwise, this is an animated images, and so we should wait for the
+    // presentation callback to fire to set the first frame presentation time.
     record->queue_animated_paint = true;
     QueueToMeasurePaintTime(record_id, record, current_frame_index);
     return true;
