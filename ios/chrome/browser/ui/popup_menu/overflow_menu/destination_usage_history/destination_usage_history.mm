@@ -36,20 +36,24 @@ constexpr double kDampening = 1.1;
 constexpr int kInitialBufferNumClicks = 3;  // clicks
 
 // The dictionary key used for storing rankings.
-const std::string kRankingKey = "ranking";
+const char kRankingKey[] = "ranking";
 
 // The default destinations ranking, based on statistical usage of the old
 // overflow menu.
-std::vector<overflow_menu::Destination> kDefaultRanking = {
-    overflow_menu::Destination::Bookmarks,
-    overflow_menu::Destination::History,
-    overflow_menu::Destination::ReadingList,
-    overflow_menu::Destination::Passwords,
-    overflow_menu::Destination::Downloads,
-    overflow_menu::Destination::RecentTabs,
-    overflow_menu::Destination::SiteInfo,
-    overflow_menu::Destination::Settings,
-};
+std::vector<overflow_menu::Destination> DefaultDestinationsRanking() {
+  std::vector<overflow_menu::Destination> default_ranking = {
+      overflow_menu::Destination::Bookmarks,
+      overflow_menu::Destination::History,
+      overflow_menu::Destination::ReadingList,
+      overflow_menu::Destination::Passwords,
+      overflow_menu::Destination::Downloads,
+      overflow_menu::Destination::RecentTabs,
+      overflow_menu::Destination::SiteInfo,
+      overflow_menu::Destination::Settings,
+  };
+
+  return default_ranking;
+}
 
 // The number of days since the Unix epoch; one day, in this context, runs from
 // UTC midnight to UTC midnight.
@@ -279,7 +283,10 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
   const base::Value::Dict& history =
       self.prefService->GetDict(prefs::kOverflowMenuDestinationUsageHistory);
 
-  for (overflow_menu::Destination destination : kDefaultRanking) {
+  std::vector<overflow_menu::Destination> defaultRanking =
+      DefaultDestinationsRanking();
+
+  for (overflow_menu::Destination destination : defaultRanking) {
     const std::string path =
         today + "." + overflow_menu::StringNameForDestination(destination);
     update->SetByDottedPath(
@@ -331,14 +338,17 @@ base::Value::List List(std::vector<overflow_menu::Destination>& ranking) {
 - (const base::Value::List)calculateNewRanking:
                                (const base::Value::List*)previousRanking
                       numAboveFoldDestinations:(int)numAboveFoldDestinations {
-  if (!previousRanking)
-    return List(kDefaultRanking);
+  if (!previousRanking) {
+    std::vector<overflow_menu::Destination> defaultRanking =
+        DefaultDestinationsRanking();
+
+    return List(defaultRanking);
+  }
 
   if (numAboveFoldDestinations >= static_cast<int>(previousRanking->size()))
     return previousRanking->Clone();
 
-  std::vector<overflow_menu::Destination> prevRanking =
-      previousRanking ? Vector(previousRanking) : kDefaultRanking;
+  std::vector<overflow_menu::Destination> prevRanking = Vector(previousRanking);
   std::vector<overflow_menu::Destination> newRanking =
       [self updatedRankWithCurrentRanking:prevRanking
                  numAboveFoldDestinations:numAboveFoldDestinations];
