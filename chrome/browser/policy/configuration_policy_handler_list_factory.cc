@@ -1774,6 +1774,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     commerce::kShoppingListEnabledPrefName,
     base::Value::Type::BOOLEAN},
 #endif  // !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID)
+  { key::kVirtualKeyboardResizesLayoutByDefault,
+    prefs::kVirtualKeyboardResizesLayoutByDefault,
+    base::Value::Type::BOOLEAN},
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 // clang-format on
 

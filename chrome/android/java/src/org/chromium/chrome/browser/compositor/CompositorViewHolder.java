@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -69,6 +70,7 @@ import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -259,6 +261,8 @@ public class CompositorViewHolder extends FrameLayout
     private View mUrlBar;
 
     private ApplicationViewportInsetSupplier mApplicationViewportInsetSupplier;
+
+    private PrefService mPrefService;
 
     /**
      * Creates a {@link CompositorView}.
@@ -652,8 +656,8 @@ public class CompositorViewHolder extends FrameLayout
     /**
      * This is called when the native library are ready.
      */
-    public void onNativeLibraryReady(
-            WindowAndroid windowAndroid, TabContentManager tabContentManager) {
+    public void onNativeLibraryReady(WindowAndroid windowAndroid,
+            TabContentManager tabContentManager, PrefService prefService) {
         mCompositorView.initNativeCompositor(
                 SysUtils.isLowEndDevice(), windowAndroid, tabContentManager);
 
@@ -664,6 +668,7 @@ public class CompositorViewHolder extends FrameLayout
 
         mApplicationBottomInsetSupplier = windowAndroid.getApplicationBottomInsetProvider();
         mApplicationBottomInsetSupplier.addObserver(mBottomInsetObserver);
+        mPrefService = prefService;
     }
 
     /**
@@ -912,6 +917,17 @@ public class CompositorViewHolder extends FrameLayout
 
     private static boolean isAttachedToWindow(View view) {
         return view != null && view.getWindowToken() != null;
+    }
+
+    @VirtualKeyboardMode.EnumType
+    private int defaultVirtualKeyboardMode() {
+        if (mPrefService.getBoolean(Pref.VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT)) {
+            return VirtualKeyboardMode.RESIZES_CONTENT;
+        }
+        if (ChromeFeatureList.sOSKResizesVisualViewportByDefault.isEnabled()) {
+            return VirtualKeyboardMode.RESIZES_VISUAL;
+        }
+        return VirtualKeyboardMode.RESIZES_CONTENT;
     }
 
     private boolean oskResizesVisualViewport() {
@@ -1549,9 +1565,7 @@ public class CompositorViewHolder extends FrameLayout
     @VisibleForTesting
     void updateVirtualKeyboardMode(@VirtualKeyboardMode.EnumType int newMode) {
         if (newMode == VirtualKeyboardMode.UNSET) {
-            newMode = ChromeFeatureList.sOSKResizesVisualViewportByDefault.isEnabled()
-                    ? VirtualKeyboardMode.RESIZES_VISUAL
-                    : VirtualKeyboardMode.RESIZES_CONTENT;
+            newMode = defaultVirtualKeyboardMode();
         }
 
         if (mVirtualKeyboardMode == newMode) return;

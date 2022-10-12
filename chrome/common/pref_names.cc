@@ -3626,4 +3626,11 @@ const char kShouldShowPriceTrackFUEBubble[] =
 const char kStrictMimetypeCheckForWorkerScriptsEnabled[] =
     "strict_mime_type_check_for_worker_scripts_enabled";
 
+#if BUILDFLAG(IS_ANDROID)
+// If true, the virtual keyboard will resize the layout viewport by default.
+// Has no effect otherwise.
+const char kVirtualKeyboardResizesLayoutByDefault[] =
+    "virtual_keyboard_resizes_layout_by_default";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace prefs

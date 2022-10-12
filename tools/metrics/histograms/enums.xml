@@ -32580,6 +32580,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1021" label="DefaultHandlersForFileExtensions"/>
   <int value="1022" label="IsolatedWebAppInstallForceList"/>
   <int value="1023" label="DeskAPIThirdPartyAllowlist"/>
+  <int value="1024" label="VirtualKeyboardResizesLayoutByDefault"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

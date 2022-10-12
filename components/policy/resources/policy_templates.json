@@ -35563,7 +35563,40 @@ This policy has no effect if the option to keep existing browsing data is not av
 
       Leaving the policy unset allows <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> to select default handlers according to the internal logic.
       '''
-    }
+    },
+    {
+      'name': 'VirtualKeyboardResizesLayoutByDefault',
+      'owners': ['andruud@chromium.org', 'bokan@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['android'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'The default virtual keyboard resize behavior is changed to resize the layout viewport',
+        },
+        {
+          'value': False,
+          'caption': 'The default virtual keyboard resize behavior is not modified',
+        },
+      ],
+      'example_value': True,
+      'default': False,
+      'id': 1024,
+      'caption': '''The virtual keyboard resizes the layout viewport by default''',
+      'tags': [],
+      'desc': '''Setting the policy to True causes the virtual keyboard to resize the layout viewport by default.
+      Other states (False/unset) have no effect.
+
+      Note that this only affects the default resizing behavior: if a page requests a specific behavior using a &lt;meta&gt; tag or the Virtual Keyboard API, then that requested behavior will still apply.
+
+      Note also that this is an "escape hatch" policy that's intended to be short-lived.
+      '''
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -36575,6 +36608,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1023,
+  'highest_id_currently_used': 1024,
   'highest_atomic_group_id_currently_used': 43
 }

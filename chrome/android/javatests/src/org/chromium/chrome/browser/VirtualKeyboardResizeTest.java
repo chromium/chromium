@@ -27,14 +27,19 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
@@ -55,6 +60,10 @@ public class VirtualKeyboardResizeTest {
 
     private EmbeddedTestServer mTestServer;
 
+    private static PrefService getPrefService() {
+        return UserPrefs.get(Profile.getLastUsedRegularProfile());
+    }
+
     @Before
     public void setUp() {
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
@@ -63,10 +72,16 @@ public class VirtualKeyboardResizeTest {
     @After
     public void tearDown() {
         mTestServer.stopAndDestroyServer();
+
+        // Some tests set this pref. Clear it to ensure that state does not leak between tests.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getPrefService().clearPref(Pref.VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT);
+        });
     }
 
     private void startMainActivityWithURL(String url) {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
     }
 
     private void navigateToURL(String url) {
@@ -182,6 +197,47 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
+     * This is the same as testVirtualKeyboardDefaultResizeMode, except that the
+     * OSKResizesVisualViewportByDefault flag is enabled. Normally this would cause the default
+     * resize behavior to be "resize-visual", but since the
+     * VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT is set to "true", the default resize behavior
+     * should ultimately be forced to "resize-content".
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT})
+    public void testVirtualKeyboardDefaultResizeModeWithPref() throws Throwable {
+        startMainActivityWithURL("/chrome/test/data/android/about.html");
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getPrefService().setBoolean(Pref.VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT, true);
+        });
+
+        // Load the page after changing the pref.
+        navigateToURL("/chrome/test/data/android/page_with_editable.html");
+        int initialHeight = getPageInnerHeight();
+        double initialVVHeight = getVisualViewportHeight();
+
+        DOMUtils.clickNode(getWebContents(), TEXTFIELD_DOM_ID);
+        assertWaitForKeyboardStatus(true);
+
+        double keyboardHeight = getKeyboardHeightDp();
+
+        // Use less than or equal since the keyboard may actually include accessories like the
+        // Autofill bar. +1px delta to account for device scale factor rounding.
+        assertWaitForPageHeight(lessThanOrEqualTo((int) (initialHeight - keyboardHeight + 1.0)));
+        assertWaitForVisualViewportHeight(
+                lessThanOrEqualTo(initialVVHeight - keyboardHeight + 1.0));
+
+        // Hide the OSK and ensure the state is correctly restored to the initial height.
+        hideKeyboard();
+        assertWaitForKeyboardStatus(false);
+
+        assertWaitForPageHeight(Matchers.is(initialHeight));
+        assertWaitForVisualViewportHeight(
+                Matchers.closeTo((double) initialVVHeight, /*error=*/1.0));
+    }
+
+    /**
      * Tests the OSKResizesVisualViewportByDefault flag changes Chrome's default behavior to the
      * virtual keyboard resizing only the visual viewport, but not the page's initial containing
      * block or layout viewport.
@@ -222,8 +278,16 @@ public class VirtualKeyboardResizeTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT})
     public void testResizesVisualMetaTag() throws Throwable {
-        startMainActivityWithURL(
-                "/chrome/test/data/android/page_with_editable.html?resizes-visual");
+        startMainActivityWithURL("/chrome/test/data/android/about.html");
+
+        // Setting the pref should have no effect on the result, since the <meta> tag explicitly
+        // sets a *non-default* OSK resize behavior.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getPrefService().setBoolean(Pref.VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT, true);
+        });
+
+        // Load the page after changing the pref.
+        navigateToURL("/chrome/test/data/android/page_with_editable.html?resizes-visual");
 
         int initialHeight = getPageInnerHeight();
         double initialVVHeight = getVisualViewportHeight();
@@ -405,5 +469,43 @@ public class VirtualKeyboardResizeTest {
 
             assertWaitForPageHeight(Matchers.is(initialHeight));
         }
+    }
+
+    /**
+     * Test that the virtual keyboard mode is affected by the
+     * VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT pref on navigations.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT})
+    public void testModeAfterNavigationWithPref() throws Throwable {
+        startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html");
+
+        Assert.assertEquals(mActivityTestRule.getActivity()
+                                    .getCompositorViewHolderForTesting()
+                                    .getVirtualKeyboardModeForTesting(),
+                VirtualKeyboardMode.RESIZES_VISUAL);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            getPrefService().setBoolean(Pref.VIRTUAL_KEYBOARD_RESIZES_LAYOUT_BY_DEFAULT, true);
+        });
+
+        navigateToURL("/chrome/test/data/android/page_with_editable.html");
+        Assert.assertEquals(mActivityTestRule.getActivity()
+                                    .getCompositorViewHolderForTesting()
+                                    .getVirtualKeyboardModeForTesting(),
+                VirtualKeyboardMode.RESIZES_CONTENT);
+
+        navigateToURL("/chrome/test/data/android/page_with_editable.html?overlays-content");
+        Assert.assertEquals(mActivityTestRule.getActivity()
+                                    .getCompositorViewHolderForTesting()
+                                    .getVirtualKeyboardModeForTesting(),
+                VirtualKeyboardMode.OVERLAYS_CONTENT);
+
+        openInNewTab("/chrome/test/data/android/page_with_editable.html");
+        Assert.assertEquals(mActivityTestRule.getActivity()
+                                    .getCompositorViewHolderForTesting()
+                                    .getVirtualKeyboardModeForTesting(),
+                VirtualKeyboardMode.RESIZES_CONTENT);
     }
 }

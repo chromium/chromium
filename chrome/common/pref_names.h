@@ -1278,6 +1278,10 @@ extern const char kShouldShowPriceTrackFUEBubble[];
 
 extern const char kStrictMimetypeCheckForWorkerScriptsEnabled[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kVirtualKeyboardResizesLayoutByDefault[];
+#endif
+
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_
