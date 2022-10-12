@@ -4382,6 +4382,10 @@ const char kNtpChromeCartModuleName[] = "NTP Chrome Cart Module";
 const char kNtpChromeCartModuleDescription[] =
     "Shows the chrome cart module on the New Tab Page.";
 
+const char kNtpDesktopLensName[] = "NTP Desktop Lens Entrypoint";
+const char kNtpDesktopLensDescription[] =
+    "Shows a Lens entrypoint and upload dialog in desktop NTP when enabled.";
+
 const char kNtpDriveModuleName[] = "NTP Drive Module";
 const char kNtpDriveModuleDescription[] =
     "Shows the Google Drive module on the New Tab Page";

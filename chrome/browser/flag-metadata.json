@@ -4807,6 +4807,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "ntp-desktop-lens",
+    "owners": [ "yowakita", "tiborg" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "ntp-drive-module",
     "owners": [ "mahmadi", "tiborg" ],
     "expiry_milestone": 108

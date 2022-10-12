@@ -61932,6 +61932,7 @@ from previous Chrome versions.
   <int value="1044928476"
       label="AllowDownloadResumptionWithoutStrongValidators:enabled"/>
   <int value="1045152062" label="SecurePaymentConfirmationBrowser:enabled"/>
+  <int value="1045179357" label="NtpRealboxLensSearch:disabled"/>
   <int value="1046786976" label="RgbKeyboard:disabled"/>
   <int value="1046878091" label="PasswordForceSaving:enabled"/>
   <int value="1046981538" label="OfflinePagesShowAlternateDinoPage:disabled"/>
@@ -63407,6 +63408,7 @@ from previous Chrome versions.
   <int value="1949908940" label="disable-zip-archiver-unpacker"/>
   <int value="1949996482" label="CSSColorSchemeUARendering:disabled"/>
   <int value="1950191981" label="OverlayNewLayout:enabled"/>
+  <int value="1950930453" label="NtpRealboxLensSearch:enabled"/>
   <int value="1951466218" label="enable-data-reduction-proxy-lite-page"/>
   <int value="1951645673" label="PasswordsKeyboardAccessory:disabled"/>
   <int value="1952339754"

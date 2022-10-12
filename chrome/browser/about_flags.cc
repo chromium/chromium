@@ -6101,6 +6101,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpSafeBrowsingModule,
                                     kNtpSafeBrowsingModuleVariations,
                                     "DesktopNtpModules")},
+
+    {"ntp-desktop-lens", flag_descriptions::kNtpDesktopLensName,
+     flag_descriptions::kNtpDesktopLensDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpRealboxLensSearch)},
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)

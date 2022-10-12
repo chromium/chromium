@@ -2493,6 +2493,9 @@ extern const char kNtpCacheOneGoogleBarDescription[];
 extern const char kNtpChromeCartModuleName[];
 extern const char kNtpChromeCartModuleDescription[];
 
+extern const char kNtpDesktopLensName[];
+extern const char kNtpDesktopLensDescription[];
+
 extern const char kNtpDriveModuleName[];
 extern const char kNtpDriveModuleDescription[];
 
