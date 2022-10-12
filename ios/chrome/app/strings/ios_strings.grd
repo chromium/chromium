@@ -1366,8 +1366,20 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD" desc="The title for the manual fallback UI with all passwords without filter." meaning="The title for a list where the user is about to select a password or username to be filled in a form [Length: 10em]">
         Passwords
       </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that allows the user to select a saved password from a list, and fill it into the active field. [30em]">
+        Select Password...
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE" desc="The contents of a dialog asking the user to confirm they trust the current site before selecting a saved password to fill.">
+        If you trust <ph name="SITE">$1<ex>example.com</ex></ph>, you can use a saved password to sign in.
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_TITLE" desc="The title of a dialog asking the user to confirm they trust the current site before selecting a saved password to fill.">
+        Select Password
+      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that is used to trigger password generation on the active field. [30em]">
         Suggest Password...
+      </message>
+      <message name="IDS_IOS_MANUAL_FALLBACK_SUGGEST_STRONG_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that is used to trigger password generation on the active field. 'Strong' refers to the fact that the password is randomly-generated, and thus hard to guess and unlikely to be reused. [30em]">
+        Suggest Strong Password...
       </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS" desc="The title for the button in the manual fallback passwords UI that is used to open a list of all the user credentials where they can select one to fill a form. This button is showed at the same time as a different button with  IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS as title. [30em]">
         Use Other Password...
@@ -2590,6 +2602,9 @@ Try to use a unique password for every site.
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORD_DELETE_BUTTON" desc="Button that the user can press to delete a saved password or a site-bound exception preventing saving passwords. [Length: single line available]">
         Delete
+      </message>
+      <message name="IDS_IOS_SETTINGS_PASSWORD_EMPTY_TITLE" desc="Text shown on the Password Manager screen when the user doesn't have any saved passwords to display.">
+        You'll find your passwords here
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORD_HIDDEN_LABEL" desc="Accessibility label stating that the element is displaying a hidden password.">
         Hidden, Password
