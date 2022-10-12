@@ -488,11 +488,8 @@ class JSONResponse(object):
     def getheader(self, header):
         """Gets the value of the header with the given name.
 
-        Delegates to HTTPMessage.getheader(), which is case-insensitive."""
-        if six.PY3:
-            return self._raw_response.getheader(header)
-        else:
-            return self._raw_response.info().getheader(header)
+        Delegates to request.Response.headers, which is case-insensitive."""
+        return self._raw_response.headers.get(header)
 
 
 class GitHubError(Exception):

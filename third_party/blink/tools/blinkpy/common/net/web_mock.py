@@ -29,6 +29,7 @@
 import json
 from requests.exceptions import HTTPError
 from requests import Response
+from requests.structures import CaseInsensitiveDict
 
 from blinkpy.common.net.rpc import RESPONSE_PREFIX
 
@@ -75,11 +76,7 @@ class MockResponse(object):
         self.body = values.get('body', '')
         # The name of the headers (keys) are case-insensitive, and values are stripped.
         headers_raw = values.get('headers', {})
-        self.headers = {
-            key.lower(): value.strip()
-            for key, value in headers_raw.items()
-        }
-        self._info = MockInfo(self.headers)
+        self.headers = CaseInsensitiveDict(headers_raw)
 
         if int(self.status_code) >= 400:
             response = Response()
@@ -92,19 +89,5 @@ class MockResponse(object):
     def getcode(self):
         return self.status_code
 
-    def getheader(self, header):
-        return self.headers.get(header.lower(), None)
-
     def json(self):
         return json.loads(self.body)
-
-    def info(self):
-        return self._info
-
-
-class MockInfo(object):
-    def __init__(self, headers):
-        self._headers = headers
-
-    def getheader(self, header):
-        return self._headers.get(header.lower(), None)
