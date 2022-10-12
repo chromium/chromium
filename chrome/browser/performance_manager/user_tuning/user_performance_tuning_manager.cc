@@ -4,6 +4,7 @@
 
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/values.h"
@@ -56,6 +57,9 @@ class HighEfficiencyModeToggleDelegateImpl
 }  // namespace
 
 const uint64_t UserPerformanceTuningManager::kLowBatteryThresholdPercent = 20;
+
+const char UserPerformanceTuningManager::kForceDeviceHasBattery[] =
+    "force-device-has-battery";
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(
     UserPerformanceTuningManager::PreDiscardResourceUsage);
@@ -196,6 +200,12 @@ void UserPerformanceTuningManager::Start() {
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kBatterySaverModeAvailable)) {
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(kForceDeviceHasBattery)) {
+      force_has_battery_ = true;
+      has_battery_ = true;
+    }
+
     pref_change_registrar_.Add(
         performance_manager::user_tuning::prefs::kBatterySaverModeState,
         base::BindRepeating(
@@ -307,7 +317,8 @@ void UserPerformanceTuningManager::OnBatteryStateSampled(
     return;
 
   bool had_battery = has_battery_;
-  has_battery_ = battery_state->battery_count > 0;
+  has_battery_ = force_has_battery_ || battery_state->battery_count > 0;
+
   // If the "has battery" state changed, notify observers.
   if (had_battery != has_battery_) {
     for (auto& obs : observers_) {

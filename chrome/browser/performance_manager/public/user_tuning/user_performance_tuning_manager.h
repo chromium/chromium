@@ -190,6 +190,7 @@ class UserPerformanceTuningManager
       high_efficiency_mode_toggle_delegate_;
 
   bool has_battery_ = false;
+  bool force_has_battery_ = false;
   bool on_battery_power_ = false;
   bool is_below_low_battery_threshold_ = false;
 
@@ -198,6 +199,9 @@ class UserPerformanceTuningManager
       battery_state_sampler_obs_{this};
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<Observer> observers_;
+
+  // Command line switch for overriding the device has battery flag.
+  static const char kForceDeviceHasBattery[];
 };
 
 }  // namespace performance_manager::user_tuning
