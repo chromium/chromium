@@ -693,9 +693,9 @@ PhysicalRect PaintLayerScrollableArea::VisibleScrollSnapportRect(
 }
 
 gfx::Size PaintLayerScrollableArea::ContentsSize() const {
-  PhysicalOffset offset(
-      GetLayoutBox()->ClientLeft() + GetLayoutBox()->Location().X(),
-      GetLayoutBox()->ClientTop() + GetLayoutBox()->Location().Y());
+  LayoutPoint location = GetLayoutBox()->Location();
+  PhysicalOffset offset(GetLayoutBox()->ClientLeft() + location.X(),
+                        GetLayoutBox()->ClientTop() + location.Y());
   // TODO(crbug.com/962299): The pixel snapping is incorrect in some cases.
   return PixelSnappedContentsSize(offset);
 }
@@ -2324,14 +2324,16 @@ void PaintLayerScrollableArea::UpdateScrollableAreaSet() {
   if (!frame_view)
     return;
 
+  const bool has_horizontal_overflow = HasHorizontalOverflow();
+  const bool has_vertical_overflow = HasVerticalOverflow();
   bool has_overflow =
       !GetLayoutBox()->Size().IsZero() &&
-      ((HasHorizontalOverflow() && GetLayoutBox()->ScrollsOverflowX()) ||
-       (HasVerticalOverflow() && GetLayoutBox()->ScrollsOverflowY()));
+      ((has_horizontal_overflow && GetLayoutBox()->ScrollsOverflowX()) ||
+       (has_vertical_overflow && GetLayoutBox()->ScrollsOverflowY()));
 
   bool overflows_in_block_direction = GetLayoutBox()->IsHorizontalWritingMode()
-                                          ? HasVerticalOverflow()
-                                          : HasHorizontalOverflow();
+                                          ? has_vertical_overflow
+                                          : has_horizontal_overflow;
 
   if (overflows_in_block_direction) {
     DCHECK(CanHaveOverflowScrollbars(*GetLayoutBox()));

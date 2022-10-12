@@ -1583,7 +1583,7 @@ void LayoutBox::SetLocationAndUpdateOverflowControlsIfNeeded(
   // will cause inconsistent layout. Also we should be careful not to set
   // this LayoutBox NeedsLayout. This will be unnecessary when we support
   // subpixel layout of scrollable area and overflow controls.
-  if (PixelSnappedBorderBoxRect().size() !=
+  if (PixelSnappedBorderBoxSize(PhysicalOffset(location)) !=
       old_pixel_snapped_border_rect_size) {
     bool needed_layout = NeedsLayout();
     PaintLayerScrollableArea::FreezeScrollbarsScope freeze_scrollbar;
