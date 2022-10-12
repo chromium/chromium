@@ -12,12 +12,29 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "printing/backend/print_backend.h"
 #include "printing/mojom/print.mojom.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/types/expected.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace printing {
 
 namespace {
+
+#if BUILDFLAG(IS_WIN)
+// Default XML with feature not of interest.
+constexpr char kXmlDefaultCapabilities[] =
+    R"(<?xml version="1.0" encoding="UTF-8"?>
+    <psf:PrintCapabilities>
+      <!-- Need at least one psf:Feature for
+      ParseValueForXpsPrinterCapabilities() to consider it valid XML -->
+      <psf:Feature name="TestFeature">
+      </psf:Feature>
+    </psf:PrintCapabilities>)";
+#endif  // BUILDFLAG(IS_WIN)
 
 mojom::ResultCode ReportErrorAccessDenied(const base::Location& from_here) {
   DLOG(ERROR) << from_here.ToString() << " failed, access denied";
@@ -123,6 +140,26 @@ bool TestPrintBackend::IsValidPrinter(const std::string& printer_name) {
   return base::Contains(printer_map_, printer_name);
 }
 
+#if BUILDFLAG(IS_WIN)
+base::expected<std::string, mojom::ResultCode>
+TestPrintBackend::GetXmlPrinterCapabilitiesForXpsDriver(
+    const std::string& printer_name) {
+  auto found = printer_map_.find(printer_name);
+  if (found == printer_map_.end())
+    return base::unexpected(ReportErrorNoDevice(FROM_HERE));
+
+  const PrinterData* data = found->second.get();
+  if (data->blocked_by_permissions)
+    return base::unexpected(ReportErrorAccessDenied(FROM_HERE));
+
+  // XML capabilities might not have been provided.
+  if (data->capabilities_xml.empty())
+    return base::unexpected(ReportErrorNoData(FROM_HERE));
+
+  return data->capabilities_xml;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 void TestPrintBackend::SetDefaultPrinterName(const std::string& printer_name) {
   if (default_printer_name_ == printer_name)
     return;
@@ -151,6 +188,9 @@ void TestPrintBackend::AddValidPrinter(
     std::unique_ptr<PrinterBasicInfo> info) {
   AddPrinter(printer_name, std::move(caps), std::move(info),
              /*blocked_by_permissions=*/false);
+#if BUILDFLAG(IS_WIN)
+  SetXmlCapabilitiesForPrinter(printer_name, kXmlDefaultCapabilities);
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void TestPrintBackend::AddInvalidDataPrinter(const std::string& printer_name) {
@@ -165,6 +205,20 @@ void TestPrintBackend::AddAccessDeniedPrinter(const std::string& printer_name) {
   AddPrinter(printer_name, /*caps=*/nullptr, /*info=*/nullptr,
              /*blocked_by_permissions=*/true);
 }
+
+#if BUILDFLAG(IS_WIN)
+void TestPrintBackend::SetXmlCapabilitiesForPrinter(
+    const std::string& printer_name,
+    const std::string& capabilities_xml) {
+  auto found = printer_map_.find(printer_name);
+  if (found == printer_map_.end()) {
+    DLOG(ERROR) << "Unable to find printer.  Unknown printer name: "
+                << printer_name;
+    return;
+  }
+  found->second->capabilities_xml = capabilities_xml;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void TestPrintBackend::AddPrinter(
     const std::string& printer_name,

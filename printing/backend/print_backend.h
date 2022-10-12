@@ -261,7 +261,8 @@ class COMPONENT_EXPORT(PRINT_BACKEND) PrintBackend
 
   // This method uses the XPS API to get the printer capabilities.
   // Returns raw XML string on success, or mojom::ResultCode on failure.
-  base::expected<std::string, mojom::ResultCode>
+  // This method is virtual to support testing.
+  virtual base::expected<std::string, mojom::ResultCode>
   GetXmlPrinterCapabilitiesForXpsDriver(const std::string& printer_name);
 
 #endif  // BUILDFLAG(IS_WIN)
