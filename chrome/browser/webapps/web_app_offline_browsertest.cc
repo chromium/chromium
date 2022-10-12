@@ -435,8 +435,16 @@ class WebAppOfflineDarkModeTest
 
 // Testing offline page in dark mode for a web app with a manifest and no
 // service worker.
+// TODO(crbug.com/1373750): tests are flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_WebAppOfflineDarkModeNoServiceWorker \
+  DISABLED_WebAppOfflineDarkModeNoServiceWorker
+#else
+#define MAYBE_WebAppOfflineDarkModeNoServiceWorker \
+  WebAppOfflineDarkModeNoServiceWorker
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
-                       WebAppOfflineDarkModeNoServiceWorker) {
+                       MAYBE_WebAppOfflineDarkModeNoServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
@@ -482,9 +490,16 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 
 // Testing offline page in dark mode for a web app with a manifest and service
 // worker that does not handle offline error.
-// TODO(1295430): Flaky on both Linux and Windows CI bots
+// TODO(crbug.com/1373750): tests are flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_WebAppOfflineDarkModeEmptyServiceWorker \
+  DISABLED_WebAppOfflineDarkModeEmptyServiceWorker
+#else
+#define MAYBE_WebAppOfflineDarkModeEmptyServiceWorker \
+  WebAppOfflineDarkModeEmptyServiceWorker
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
-                       WebAppOfflineDarkModeEmptyServiceWorker) {
+                       MAYBE_WebAppOfflineDarkModeEmptyServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* web_contents =
@@ -530,8 +545,16 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 
 // Testing offline page in dark mode for a web app with a manifest that has not
 // provided dark mode colors.
+// TODO(crbug.com/1373750): tests are flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_WebAppOfflineNoDarkModeColorsProvided \
+  DISABLED_WebAppOfflineNoDarkModeColorsProvided
+#else
+#define MAYBE_WebAppOfflineNoDarkModeColorsProvided \
+  WebAppOfflineNoDarkModeColorsProvided
+#endif
 IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
-                       WebAppOfflineNoDarkModeColorsProvided) {
+                       MAYBE_WebAppOfflineNoDarkModeColorsProvided) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* web_contents =
