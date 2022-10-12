@@ -373,9 +373,10 @@ IpczResult Transport::SerializeObject(ObjectBase& object,
   header.reserved[1] = 0;
   header.reserved[2] = 0;
 
-  const HandleOwner handle_owner = remote_process_.IsValid()
-                                       ? HandleOwner::kRecipient
-                                       : HandleOwner::kSender;
+  const HandleOwner handle_owner =
+      remote_process_.IsValid() && source_type() == kBroker
+          ? HandleOwner::kRecipient
+          : HandleOwner::kSender;
   header.handle_owner = handle_owner;
 
   auto handle_data = base::make_span(reinterpret_cast<HANDLE*>(&header + 1),
