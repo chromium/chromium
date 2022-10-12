@@ -28,13 +28,13 @@ npm run server
 ChromeDriver and EdgeDriver can be run by:
 
 ```sh
-{$DRIVER_BINARY_PATH} --port=8080
+$DRIVER_BINARY_PATH --port=8080
 ```
 
 Firefox can be run by:
 
 ```sh
-{$FIREFOX_BINARY_PATH} --remote-debugging-port=8080
+$FIREFOX_BINARY_PATH --remote-debugging-port=8080
 ```
 
 CDP-BiDi Mapper can be run from the project root:
