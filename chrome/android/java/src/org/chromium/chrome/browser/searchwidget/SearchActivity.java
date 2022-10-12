@@ -123,6 +123,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
     /** Main content view. */
     private ViewGroup mContentView;
+    private View mAnchorView;
 
     /** Whether the user is now allowed to perform searches. */
     private boolean mIsActivityUsable;
@@ -184,7 +185,9 @@ public class SearchActivity extends AsyncInitializationActivity
         // Build the search box.
         mSearchBox = (SearchActivityLocationBarLayout) mContentView.findViewById(
                 R.id.search_location_bar);
-        View anchorView = mContentView.findViewById(R.id.toolbar);
+        mAnchorView = mContentView.findViewById(R.id.toolbar);
+        updateAnchorViewLayoutForActiveColorFlag();
+
         OverrideUrlLoadingDelegate overrideUrlLoadingDelegate =
                 (String url, @PageTransition int transition, String postDataType, byte[] postData,
                         boolean incognito) -> {
@@ -198,7 +201,7 @@ public class SearchActivity extends AsyncInitializationActivity
             getOnBackPressedDispatcher().addCallback(this, backPressManager.getCallback());
         }
         // clang-format off
-        mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, anchorView,
+        mLocationBarCoordinator = new LocationBarCoordinator(mSearchBox, mAnchorView,
                 mProfileSupplier, PrivacyPreferencesManagerImpl.getInstance(),
                 mSearchBoxDataProvider, null, new WindowDelegate(getWindow()), getWindowAndroid(),
                 /*activityTabSupplier=*/() -> null, getModalDialogManagerSupplier(),
@@ -557,5 +560,26 @@ public class SearchActivity extends AsyncInitializationActivity
 
     LocationBarCoordinator getLocationBarCoordinatorForTesting() {
         return mLocationBarCoordinator;
+    }
+
+    /**
+     * Increase the toolbar vertical height and bottom padding if the omnibox phase 2 active feature
+     * flag is enabled.
+     */
+    private void updateAnchorViewLayoutForActiveColorFlag() {
+        if (!(OmniboxFeatures.shouldShowModernizeVisualUpdate(mAnchorView.getContext())
+                    && OmniboxFeatures.shouldShowActiveColorOnOmnibox())) {
+            return;
+        }
+
+        var layoutParams = mAnchorView.getLayoutParams();
+        layoutParams.height = getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                + getResources().getDimensionPixelSize(R.dimen.toolbar_url_focus_height_increase);
+        mAnchorView.setLayoutParams(layoutParams);
+
+        mAnchorView.setPaddingRelative(mAnchorView.getPaddingStart(), mAnchorView.getPaddingTop(),
+                mAnchorView.getPaddingEnd(),
+                getResources().getDimensionPixelSize(
+                        R.dimen.toolbar_url_focus_bottom_padding_increase));
     }
 }

@@ -42,7 +42,6 @@ import org.chromium.ui.widget.Toast;
 public class SearchActivityLocationBarLayout extends LocationBarLayout {
     private boolean mPendingSearchPromoDecision;
     private boolean mPendingBeginQuery;
-    private boolean mHasWindowFocus;
 
     public SearchActivityLocationBarLayout(Context context, AttributeSet attrs) {
         super(context, attrs, R.layout.location_bar_base);
@@ -74,8 +73,8 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         }
         setBackground(backgroundDrawable);
 
-        // Expand status view's left and right space to match the expanded interface on the regular
-        // omnibox.
+        // Expand status view's left and right space, and expand the vertical padding of the
+        // location bar to match the expanded interface on the regular omnibox.
         setUrlFocusChangePercent(1f);
     }
 

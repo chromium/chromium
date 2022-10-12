@@ -972,6 +972,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             mHomeButton.setVisibility(toolbarButtonVisibility);
         }
 
+        updateToolbarLayoutForExpansionAnimationOnActiveColor();
         updateLocationBarLayoutForExpansionAnimation();
     }
 
@@ -1095,6 +1096,33 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         mLocationBar.getPhoneCoordinator().invalidate();
         invalidate();
         TraceEvent.end("ToolbarPhone.updateLocationBarLayoutForExpansionAnimation");
+    }
+
+    /**
+     * Updates the toolbar height and bottom padding, as the result of either a focus change or
+     * scrolling the New Tab Page.
+     */
+    private void updateToolbarLayoutForExpansionAnimationOnActiveColor() {
+        if (!(OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())
+                    && OmniboxFeatures.shouldShowActiveColorOnOmnibox())) {
+            return;
+        }
+
+        int heightIncrease = (int) (getResources().getDimensionPixelSize(
+                                            R.dimen.toolbar_url_focus_height_increase)
+                * mUrlExpansionFraction);
+        int bottomPaddingIncrease =
+                (int) (getResources().getDimensionPixelSize(
+                               R.dimen.toolbar_url_focus_bottom_padding_increase)
+                        * mUrlExpansionFraction);
+
+        var layoutParams = getLayoutParams();
+        layoutParams.height = getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                + heightIncrease;
+        setLayoutParams(layoutParams);
+
+        setPaddingRelative(
+                getPaddingStart(), getPaddingTop(), getPaddingEnd(), bottomPaddingIncrease);
     }
 
     /**
