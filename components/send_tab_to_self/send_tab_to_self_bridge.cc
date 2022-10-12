@@ -664,7 +664,7 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
     if (unique_device_names.insert(device_names.full_name).second) {
       TargetDeviceInfo target_device_info(
           device_names.full_name, device_names.short_name, device->guid(),
-          device->device_type(), device->last_updated_timestamp());
+          device->form_factor(), device->last_updated_timestamp());
       target_device_info_sorted_list_.push_back(target_device_info);
 
       short_names_counter[device_names.short_name]++;

@@ -91,6 +91,10 @@ class DeviceInfo {
     std::array<uint8_t, 65> peer_public_key_x962;
   };
 
+  //
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync_device_info
+  //
   enum class OsType {
     kUnknown = 0,
     kWindows = 1,
@@ -103,6 +107,10 @@ class DeviceInfo {
     kFuchsia = 8
   };
 
+  //
+  // A Java counterpart will be generated for this enum.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.sync_device_info
+  //
   enum class FormFactor { kUnknown = 0, kDesktop = 1, kPhone = 2, kTablet = 3 };
 
   DeviceInfo(const std::string& guid,

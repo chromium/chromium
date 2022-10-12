@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "chrome/browser/ui/views/hover_button.h"
-#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace send_tab_to_self {
@@ -32,12 +32,11 @@ class SendTabToSelfBubbleDeviceButton : public HoverButton {
 
   const std::string& device_name() const { return device_name_; }
   const std::string& device_guid() const { return device_guid_; }
-  sync_pb::SyncEnums::DeviceType device_type() const { return device_type_; }
 
  private:
   std::string device_name_;
   std::string device_guid_;
-  sync_pb::SyncEnums::DeviceType device_type_;
+  syncer::DeviceInfo::FormFactor device_form_factor_;
 };
 
 }  // namespace send_tab_to_self

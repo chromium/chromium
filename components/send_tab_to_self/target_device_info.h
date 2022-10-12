@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync_device_info/device_info.h"
 
 namespace syncer {
 class DeviceInfo;
@@ -27,7 +27,7 @@ struct TargetDeviceInfo {
   TargetDeviceInfo(const std::string& full_name,
                    const std::string& short_name,
                    const std::string& cache_guid,
-                   const sync_pb::SyncEnums::DeviceType device_type,
+                   const syncer::DeviceInfo::FormFactor form_factor,
                    base::Time last_updated_timestamp);
   TargetDeviceInfo(const TargetDeviceInfo& other);
   ~TargetDeviceInfo();
@@ -42,8 +42,8 @@ struct TargetDeviceInfo {
   std::string device_name;
   // Device guid.
   std::string cache_guid;
-  // Device type.
-  sync_pb::SyncEnums::DeviceType device_type;
+  // Device Form Factor.
+  syncer::DeviceInfo::FormFactor form_factor;
   // Last updated timestamp.
   base::Time last_updated_timestamp;
 };

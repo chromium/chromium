@@ -22,7 +22,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.send_tab_to_self.TargetDeviceInfo.DeviceType;
+import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
@@ -63,9 +63,9 @@ public class SendTabToSelfAndroidBridgeTest {
     @SuppressWarnings("unchecked")
     public void testGetAllTargetDeviceInfos() {
         TargetDeviceInfo[] expected = new TargetDeviceInfo[] {
-                new TargetDeviceInfo("name1", "guid1", DeviceType.CHROMEOS, 123L),
-                new TargetDeviceInfo("name2", "guid2", DeviceType.LINUX, 456L),
-                new TargetDeviceInfo("name3", "guid3", DeviceType.PHONE, 789L)};
+                new TargetDeviceInfo("name1", "guid1", FormFactor.DESKTOP, 123L),
+                new TargetDeviceInfo("name2", "guid2", FormFactor.DESKTOP, 456L),
+                new TargetDeviceInfo("name3", "guid3", FormFactor.PHONE, 789L)};
         when(mNativeMock.getAllTargetDeviceInfos(eq(mProfile))).thenReturn(expected);
 
         List<TargetDeviceInfo> actual =

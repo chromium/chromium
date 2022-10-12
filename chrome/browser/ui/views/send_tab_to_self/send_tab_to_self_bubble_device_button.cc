@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync_device_info/device_info.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -26,11 +27,13 @@ namespace send_tab_to_self {
 namespace {
 
 std::unique_ptr<views::ImageView> CreateIcon(
-    const sync_pb::SyncEnums::DeviceType device_type) {
+    const syncer::DeviceInfo::FormFactor device_form_factor) {
   static constexpr int kPrimaryIconSize = 20;
+  // TODO(crbug.com/1368080): Update condition to handle a tablet device case.
   auto icon = std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-      device_type == sync_pb::SyncEnums::TYPE_PHONE ? kHardwareSmartphoneIcon
-                                                    : kHardwareComputerIcon,
+      device_form_factor == syncer::DeviceInfo::FormFactor::kPhone
+          ? kHardwareSmartphoneIcon
+          : kHardwareComputerIcon,
       ui::kColorIcon, kPrimaryIconSize));
   constexpr auto kPrimaryIconBorder = gfx::Insets(6);
   icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
@@ -62,12 +65,12 @@ SendTabToSelfBubbleDeviceButton::SendTabToSelfBubbleDeviceButton(
                       &SendTabToSelfDevicePickerBubbleView::DeviceButtonPressed,
                       base::Unretained(bubble),
                       base::Unretained(this)),
-                  CreateIcon(device_info.device_type),
+                  CreateIcon(device_info.form_factor),
                   base::UTF8ToUTF16(device_info.device_name),
                   GetLastUpdatedTime(device_info)) {
   device_name_ = device_info.device_name;
   device_guid_ = device_info.cache_guid;
-  device_type_ = device_info.device_type;
+  device_form_factor_ = device_info.form_factor;
   SetEnabled(true);
 }
 

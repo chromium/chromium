@@ -14,6 +14,7 @@
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/target_device_info.h"
+#import "components/sync_device_info/device_info.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/send_tab_to_self/send_tab_to_self_manage_devices_item.h"
@@ -253,8 +254,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     deviceItem.text = base::SysUTF8ToNSString(iter->device_name);
     deviceItem.detailText =
         [self sendTabToSelfdaysSinceLastUpdate:daysSinceLastUpdate];
-    switch (iter->device_type) {
-      case sync_pb::SyncEnums::TYPE_TABLET:
+    switch (iter->form_factor) {
+      case syncer::DeviceInfo::FormFactor::kTablet:
         if (UseSymbols()) {
           deviceItem.iconImage =
               DefaultSymbolWithPointSize(kIPadSymbol, kSymbolSize);
@@ -263,7 +264,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
               [UIImage imageNamed:@"send_tab_to_self_tablet"];
         }
         break;
-      case sync_pb::SyncEnums::TYPE_PHONE:
+      case syncer::DeviceInfo::FormFactor::kPhone:
         if (UseSymbols()) {
           deviceItem.iconImage =
               DefaultSymbolWithPointSize(kIPhoneSymbol, kSymbolSize);
@@ -272,10 +273,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
               [UIImage imageNamed:@"send_tab_to_self_smartphone"];
         }
         break;
-      case sync_pb::SyncEnums::TYPE_WIN:
-      case sync_pb::SyncEnums::TYPE_MAC:
-      case sync_pb::SyncEnums::TYPE_LINUX:
-      case sync_pb::SyncEnums::TYPE_CROS:
+      case syncer::DeviceInfo::FormFactor::kDesktop:
         if (UseSymbols()) {
           deviceItem.iconImage =
               DefaultSymbolWithPointSize(kLaptopSymbol, kSymbolSize);

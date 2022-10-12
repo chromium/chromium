@@ -24,7 +24,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.share.send_tab_to_self.TargetDeviceInfo.DeviceType;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -34,6 +33,7 @@ import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.R;
+import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -84,8 +84,8 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     public void testDevicePickerBottomSheet() throws Throwable {
         long todayTimestamp = Calendar.getInstance().getTimeInMillis();
         List<TargetDeviceInfo> devices = Arrays.asList(
-                new TargetDeviceInfo("My Phone", "guid1", DeviceType.PHONE, todayTimestamp),
-                new TargetDeviceInfo("My Computer", "guid2", DeviceType.WIN,
+                new TargetDeviceInfo("My Phone", "guid1", FormFactor.PHONE, todayTimestamp),
+                new TargetDeviceInfo("My Computer", "guid2", FormFactor.DESKTOP,
                         todayTimestamp - TimeUnit.DAYS.toMillis(1)));
         View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             DevicePickerBottomSheetContent sheetContent =

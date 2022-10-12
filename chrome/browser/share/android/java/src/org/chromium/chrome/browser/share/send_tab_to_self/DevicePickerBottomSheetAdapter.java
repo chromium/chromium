@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.R;
+import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.util.Calendar;
@@ -84,14 +85,12 @@ public class DevicePickerBottomSheetAdapter extends BaseAdapter {
 
     private static Drawable getDrawableForDeviceType(
             Context context, TargetDeviceInfo targetDevice) {
-        switch (targetDevice.deviceType) {
-            case TargetDeviceInfo.DeviceType.CHROMEOS:
-            case TargetDeviceInfo.DeviceType.LINUX:
-            case TargetDeviceInfo.DeviceType.MACOSX:
-            case TargetDeviceInfo.DeviceType.WIN: {
+        // TODO(crbug.com/1368080): Update cases to handle a tablet device case.
+        switch (targetDevice.formFactor) {
+            case FormFactor.DESKTOP: {
                 return AppCompatResources.getDrawable(context, R.drawable.computer_black_24dp);
             }
-            case TargetDeviceInfo.DeviceType.PHONE: {
+            case FormFactor.PHONE: {
                 return AppCompatResources.getDrawable(context, R.drawable.smartphone_black_24dp);
             }
         }

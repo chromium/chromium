@@ -52,6 +52,7 @@ source_set("send_tab_to_self_ui") {
     "resources:send_tab_to_self_tablet",
     "//base",
     "//components/send_tab_to_self",
+    "//components/sync_device_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/infobars/presentation:positioner",

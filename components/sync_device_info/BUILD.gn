@@ -4,6 +4,10 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
 
 static_library("sync_device_info") {
   sources = [
@@ -134,5 +138,16 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     deps += [ "//chromeos/system" ]
+  }
+}
+
+if (is_android) {
+  java_cpp_enum("java_enums") {
+    sources = [ "//components/sync_device_info/device_info.h" ]
+  }
+
+  android_library("sync_device_info_java") {
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    srcjar_deps = [ ":java_enums" ]
   }
 }

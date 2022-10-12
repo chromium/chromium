@@ -38,12 +38,11 @@ class SendTabToSelfBubbleControllerMock : public SendTabToSelfBubbleController {
     base::SimpleTestClock clock;
     return {
         {"Device_1", "Device_1", "device_guid_1",
-         sync_pb::SyncEnums_DeviceType_TYPE_LINUX, clock.Now() - base::Days(0)},
+         syncer::DeviceInfo::FormFactor::kDesktop, clock.Now() - base::Days(0)},
         {"Device_2", "Device_2", "device_guid_2",
-         sync_pb::SyncEnums_DeviceType_TYPE_WIN, clock.Now() - base::Days(1)},
+         syncer::DeviceInfo::FormFactor::kDesktop, clock.Now() - base::Days(1)},
         {"Device_3", "Device_3", "device_guid_3",
-         sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
-         clock.Now() - base::Days(5)}};
+         syncer::DeviceInfo::FormFactor::kPhone, clock.Now() - base::Days(5)}};
   }
 
   AccountInfo GetSharingAccountInfo() override {
