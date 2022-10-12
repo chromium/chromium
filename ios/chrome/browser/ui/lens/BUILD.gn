@@ -7,6 +7,8 @@ source_set("coordinator") {
   sources = [
     "lens_coordinator.h",
     "lens_coordinator.mm",
+    "lens_modal_animator.h",
+    "lens_modal_animator.mm",
   ]
   deps = [
     ":lens_entrypoint",

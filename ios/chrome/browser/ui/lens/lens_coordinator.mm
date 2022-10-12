@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/ui/commands/toolbar_commands.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
+#import "ios/chrome/browser/ui/lens/lens_modal_animator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
@@ -43,6 +44,9 @@
 
 // The Lens viewController.
 @property(nonatomic, strong) UIViewController* viewController;
+
+// The animator for dismissing the Lens view.
+@property(nonatomic, strong) LensModalAnimator* transitionAnimator;
 
 // Whether or not a Lens Web page load was triggered from the Lens UI.
 @property(nonatomic, assign) BOOL lensWebPageLoadTriggeredFromInputSelection;
@@ -103,6 +107,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 
   self.loadingWebState = nil;
   self.lensWebPageLoadTriggeredFromInputSelection = NO;
+  self.transitionAnimator = [[LensModalAnimator alloc] init];
   _webStateListObservation->Observe(browser->GetWebStateList());
 }
 
@@ -112,6 +117,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 
   [self dismissViewController];
   self.loadingWebState = nullptr;
+  self.transitionAnimator = nil;
   self.lensWebPageLoadTriggeredFromInputSelection = NO;
 
   _webStateListObservation.reset();
@@ -187,6 +193,12 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   }
 
   self.viewController = viewController;
+
+  // Set the transitioning delegate of the view controller to customize
+  // modal dismiss animations.
+  const LensModalAnimator* transitionAnimator = self.transitionAnimator;
+  DCHECK(transitionAnimator);
+  [viewController setTransitioningDelegate:transitionAnimator];
 
   [viewController
       setModalPresentationStyle:UIModalPresentationOverCurrentContext];
