@@ -51,6 +51,29 @@ TEST(AudioParameters, Constructor_ParameterValues) {
   EXPECT_EQ(expected_channel_layout, params.channel_layout());
   EXPECT_EQ(expected_rate, params.sample_rate());
   EXPECT_EQ(expected_samples, params.frames_per_buffer());
+  EXPECT_FALSE(params.RequireEncapsulation());
+}
+
+TEST(AudioParameters, Constructor_ParameterValuesPlusHardwareCapabilities) {
+  AudioParameters::Format expected_format =
+      AudioParameters::AUDIO_PCM_LOW_LATENCY;
+  int expected_channels = 6;
+  constexpr ChannelLayout expected_channel_layout = CHANNEL_LAYOUT_5_1;
+  int expected_rate = 44100;
+  int expected_samples = 880;
+
+  AudioParameters::HardwareCapabilities hardware_capabilities(0, true);
+  AudioParameters params(
+      expected_format,
+      ChannelLayoutConfig::FromLayout<expected_channel_layout>(), expected_rate,
+      expected_samples, hardware_capabilities);
+
+  EXPECT_EQ(expected_format, params.format());
+  EXPECT_EQ(expected_channels, params.channels());
+  EXPECT_EQ(expected_channel_layout, params.channel_layout());
+  EXPECT_EQ(expected_rate, params.sample_rate());
+  EXPECT_EQ(expected_samples, params.frames_per_buffer());
+  EXPECT_TRUE(params.RequireEncapsulation());
 }
 
 TEST(AudioParameters, GetBytesPerBuffer) {

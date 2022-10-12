@@ -255,6 +255,48 @@ TEST(AudioBufferTest, CreateBitstreamBuffer) {
   EXPECT_FALSE(buffer->end_of_stream());
 }
 
+TEST(AudioBufferTest, CopyBitstreamFromIECDts) {
+  const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_STEREO;
+  const int kChannelCount = ChannelLayoutToChannelCount(kChannelLayout);
+  constexpr int kFrameCount = 512;
+  constexpr uint8_t kTestData[] = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10,
+                                   11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+                                   22, 23, 24, 25, 26, 27, 28, 29, 30, 31};
+  const base::TimeDelta kTimestamp = base::Microseconds(1337);
+  const uint8_t* const data[] = {kTestData};
+
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CopyBitstreamFrom(
+      kSampleFormatIECDts, kChannelLayout, kChannelCount, kSampleRate,
+      kFrameCount, data, sizeof(kTestData), kTimestamp);
+
+  EXPECT_EQ(kChannelLayout, buffer->channel_layout());
+  EXPECT_EQ(kFrameCount, buffer->frame_count());
+  EXPECT_EQ(kSampleRate, buffer->sample_rate());
+  EXPECT_EQ(kFrameCount, buffer->frame_count());
+  EXPECT_EQ(kTimestamp, buffer->timestamp());
+  EXPECT_TRUE(buffer->IsBitstreamFormat());
+  EXPECT_FALSE(buffer->end_of_stream());
+}
+
+TEST(AudioBufferTest, CreateBitstreamBufferIECDts) {
+  const ChannelLayout kChannelLayout = CHANNEL_LAYOUT_MONO;
+  const int kChannelCount = ChannelLayoutToChannelCount(kChannelLayout);
+  const int kFrameCount = 512;
+  const int kDataSize = 2048;
+
+  scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateBitstreamBuffer(
+      kSampleFormatIECDts, kChannelLayout, kChannelCount, kSampleRate,
+      kFrameCount, kDataSize);
+
+  EXPECT_EQ(kChannelLayout, buffer->channel_layout());
+  EXPECT_EQ(kFrameCount, buffer->frame_count());
+  EXPECT_EQ(kSampleRate, buffer->sample_rate());
+  EXPECT_EQ(kFrameCount, buffer->frame_count());
+  EXPECT_EQ(kNoTimestamp, buffer->timestamp());
+  EXPECT_TRUE(buffer->IsBitstreamFormat());
+  EXPECT_FALSE(buffer->end_of_stream());
+}
+
 TEST(AudioBufferTest, CreateEOSBuffer) {
   scoped_refptr<AudioBuffer> buffer = AudioBuffer::CreateEOSBuffer();
   EXPECT_TRUE(buffer->end_of_stream());
@@ -291,6 +333,27 @@ TEST(AudioBufferTest, ReadBitstream) {
 
   scoped_refptr<AudioBuffer> buffer = MakeBitstreamAudioBuffer(
       kSampleFormatEac3, channel_layout, channels, kSampleRate, 1, 1, frames,
+      data_size, start_time);
+  EXPECT_TRUE(buffer->IsBitstreamFormat());
+
+  std::unique_ptr<AudioBus> bus = AudioBus::Create(channels, frames);
+  buffer->ReadFrames(frames, 0, 0, bus.get());
+
+  EXPECT_TRUE(bus->is_bitstream_format());
+  EXPECT_EQ(frames, bus->GetBitstreamFrames());
+  EXPECT_EQ(data_size, bus->GetBitstreamDataSize());
+  VerifyBitstreamAudioBus(bus.get(), data_size, 1, 1);
+}
+
+TEST(AudioBufferTest, ReadBitstreamIECDts) {
+  const ChannelLayout channel_layout = CHANNEL_LAYOUT_MONO;
+  const int channels = ChannelLayoutToChannelCount(channel_layout);
+  const int frames = 512;
+  const size_t data_size = frames * 2 * 2;
+  const base::TimeDelta start_time;
+
+  scoped_refptr<AudioBuffer> buffer = MakeBitstreamAudioBuffer(
+      kSampleFormatIECDts, channel_layout, channels, kSampleRate, 1, 1, frames,
       data_size, start_time);
   EXPECT_TRUE(buffer->IsBitstreamFormat());
 

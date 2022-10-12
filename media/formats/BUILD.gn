@@ -392,3 +392,13 @@ if (proprietary_codecs) {
     ]
   }
 }
+
+if (enable_platform_dts_audio) {
+  fuzzer_test("dts_util_fuzzer") {
+    sources = [ "dts/dts_util_fuzzer.cc" ]
+    deps = [
+      "//media",
+      "//base",
+    ]
+  }
+}
