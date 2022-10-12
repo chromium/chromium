@@ -52,8 +52,6 @@ class AXImageAnnotator;
 class RenderFrameImpl;
 class RenderAccessibilityManager;
 
-using BlinkAXTreeSerializer = ui::AXTreeSerializer<blink::WebAXObject>;
-
 // The browser process implements native accessibility APIs, allowing assistive
 // technology (e.g., screen readers, magnifiers) to access and control the web
 // contents with high-level APIs. These APIs are also used by automation tools,
