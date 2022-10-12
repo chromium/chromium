@@ -103,7 +103,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 - (NSString*)methodNameForAttribute:(NSString*)attribute;
 
 - (NSString*)valueForRange:(NSRange)range;
-- (NSAttributedString*)attributedValueForRange:(NSRange)range;
 - (NSRect)frameForRange:(NSRange)range;
 
 // Find the index of the given row among the descendants of this object

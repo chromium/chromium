@@ -10,6 +10,9 @@
 #include "ui/accessibility/ax_export.h"
 
 // Private WebKit accessibility attributes.
+AX_EXPORT constexpr NSString* const
+    NSAccessibilityAttributedStringForTextMarkerRangeParameterizedAttribute =
+        @"AXAttributedStringForTextMarkerRange";
 AX_EXPORT constexpr NSString* const NSAccessibilityAccessKeyAttribute =
     @"AXAccessKey";
 AX_EXPORT constexpr NSString* const NSAccessibilityARIAAtomicAttribute =

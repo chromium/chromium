@@ -14,13 +14,17 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_platform_node_mac.h"
 #include "ui/accessibility/platform/ax_private_attributes_mac.h"
 #include "ui/accessibility/platform/ax_private_roles_mac.h"
+#include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/base/l10n/l10n_util.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/strings/grit/ax_strings.h"
+
+using AXRange = ui::AXPlatformNodeDelegate::AXRange;
 
 namespace ui {
 
@@ -707,6 +711,53 @@ bool IsAXSetter(SEL selector) {
   return has_image_semantics;
 }
 
+- (void)addMisspelledTextAttributes:(const AXRange&)axRange
+                           toString:
+                               (NSMutableAttributedString*)attributedString {
+  int anchorStartOffset = 0;
+  [attributedString beginEditing];
+  for (const AXRange& leafTextRange : axRange) {
+    DCHECK(!leafTextRange.IsNull());
+    DCHECK_EQ(leafTextRange.anchor()->GetAnchor(),
+              leafTextRange.focus()->GetAnchor())
+        << "An anchor range should only span a single object.";
+
+    ui::AXNode* anchor = leafTextRange.focus()->GetAnchor();
+
+    DCHECK(anchor) << "A non-null position should have a non-null anchor node.";
+    const std::vector<int32_t>& markerTypes =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
+    const std::vector<int>& markerStarts =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
+    const std::vector<int>& markerEnds =
+        anchor->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
+
+    DCHECK_EQ(markerTypes.size(), markerStarts.size());
+    DCHECK_EQ(markerTypes.size(), markerEnds.size());
+
+    for (size_t i = 0; i < markerTypes.size(); ++i) {
+      if (!(markerTypes[i] &
+            static_cast<int32_t>(ax::mojom::MarkerType::kSpelling))) {
+        continue;
+      }
+
+      int misspellingStart = anchorStartOffset + markerStarts[i];
+      int misspellingEnd = anchorStartOffset + markerEnds[i];
+      int misspellingLength = misspellingEnd - misspellingStart;
+      DCHECK_LE(static_cast<unsigned long>(misspellingEnd),
+                [attributedString length]);
+      DCHECK_GT(misspellingLength, 0);
+      [attributedString
+          addAttribute:NSAccessibilityMarkedMisspelledTextAttribute
+                 value:@YES
+                 range:NSMakeRange(misspellingStart, misspellingLength)];
+    }
+
+    anchorStartOffset += leafTextRange.GetText().length();
+  }
+  [attributedString endEditing];
+}
+
 - (NSString*)getName {
   return base::SysUTF8ToNSString(_node->GetName());
 }
@@ -1090,6 +1141,24 @@ bool IsAXSetter(SEL selector) {
     [axAttributes addObject:NSAccessibilityTitleUIElementAttribute];
 
   return axAttributes.autorelease();
+}
+
+- (NSArray*)accessibilityParameterizedAttributeNames {
+  if (!_node)
+    return @[];
+
+  // General attributes.
+  NSMutableArray* ret = [NSMutableArray
+      arrayWithObjects:
+          NSAccessibilityAttributedStringForTextMarkerRangeParameterizedAttribute,
+          nil];
+
+  if (_node->HasState(ax::mojom::State::kEditable)) {
+    [ret addObjectsFromArray:@[
+      NSAccessibilityAttributedStringForRangeParameterizedAttribute
+    ]];
+  }
+  return ret;
 }
 
 // Despite it being deprecated, AppKit internally calls this function sometimes
@@ -1755,14 +1824,48 @@ bool IsAXSetter(SEL selector) {
   if (![parameter isKindOfClass:[NSValue class]])
     return nil;
 
-  // TODO(https://crbug.com/958811): Implement this for real.
-  base::scoped_nsobject<NSAttributedString> attributedString(
-      [[NSAttributedString alloc]
-          initWithString:[self AXStringForRange:parameter]]);
+  // TODO(https://crbug.com/958811): Finish implementation.
+  // Currently, we only decorate the attributed string with misspelling
+  // information.
   // TODO(tapted): views::WordLookupClient has a way to obtain the actual
   // decorations, and BridgedContentView has a conversion function that creates
   // an NSAttributedString. Refactor things so they can be used here.
-  return attributedString.autorelease();
+
+  NSRange range = [(NSValue*)parameter rangeValue];
+  std::u16string textContent = _node->GetTextContentUTF16();
+  if (NSMaxRange(range) > textContent.length())
+    return nil;
+
+  // We potentially need to add text attributes to the whole text content
+  // because a spelling mistake might start or end outside the given range.
+  NSMutableAttributedString* attributedTextContent =
+      [[[NSMutableAttributedString alloc]
+          initWithString:base::SysUTF16ToNSString(textContent)] autorelease];
+  if (!_node->IsText()) {
+    AXRange axRange(_node->GetDelegate()->CreateTextPositionAt(0),
+                    _node->GetDelegate()->CreateTextPositionAt(
+                        static_cast<int>(textContent.length())));
+    [self addMisspelledTextAttributes:axRange toString:attributedTextContent];
+  }
+
+  return [attributedTextContent attributedSubstringFromRange:range];
+}
+
+- (NSAttributedString*)AXAttributedStringForTextMarkerRange:(id)markerRange {
+  AXRange axRange = ui::AXTextMarkerRangeToAXRange(markerRange);
+  if (axRange.IsNull())
+    return nil;
+
+  NSString* text = base::SysUTF16ToNSString(axRange.GetText());
+  if ([text length] == 0)
+    return nil;
+
+  NSMutableAttributedString* attributedText =
+      [[[NSMutableAttributedString alloc] initWithString:text] autorelease];
+  // Currently, we only decorate the attributed string with misspelling
+  // information.
+  [self addMisspelledTextAttributes:axRange toString:attributedText];
+  return attributedText;
 }
 
 - (NSString*)ChromeAXNodeId {
