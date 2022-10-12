@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 
+#include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -110,6 +111,7 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
 
  protected:
   raw_ptr<MockShoppingListUiTabHelper> mock_tab_helper_;
+  base::UserActionTester user_action_tester_;
 
  private:
   base::test::ScopedFeatureList test_features_;
@@ -129,10 +131,17 @@ TEST_F(PriceTrackingIconViewIntegrationTest,
   ON_CALL(*GetTabHelper(), ShouldShowPriceTrackingIconView)
       .WillByDefault(testing::Return(true));
 
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.OmniboxChipShown"),
+            0);
+
   NavigateAndCommitActiveTab(GURL(kTrackableUrl));
 
   auto* icon_view = GetChip();
   VerifyIconState(icon_view, /*is_price_tracked=*/true);
+  EXPECT_EQ(user_action_tester_.GetActionCount(
+                "Commerce.PriceTracking.OmniboxChipShown"),
+            1);
 }
 
 TEST_F(PriceTrackingIconViewIntegrationTest,

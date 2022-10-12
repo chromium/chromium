@@ -15,6 +15,7 @@
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_details.h"
 #include "content/public/browser/web_contents.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -85,6 +86,12 @@ void ShoppingListUiTabHelper::RegisterProfilePrefs(
 
 void ShoppingListUiTabHelper::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
+  if (!load_details.is_in_active_page ||
+      web_contents()->GetLastCommittedURL() ==
+          load_details.previous_main_frame_url) {
+    return;
+  }
+
   last_fetched_image_ = gfx::Image();
   last_fetched_image_url_ = GURL();
 
