@@ -81,8 +81,7 @@ public class OptionalButtonViewTest {
         mMockAnimationChecker = Mockito.mock(BooleanSupplier.class);
         when(mMockAnimationChecker.getAsBoolean()).thenReturn(true);
         TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
                 "action_chip_with_different_color", "false");
 
         FeatureList.setTestValues(testValues);
@@ -367,8 +366,7 @@ public class OptionalButtonViewTest {
 
         // Alternative color is controlled by a field trial param.
         TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
                 "action_chip_with_different_color", "true");
         FeatureList.setTestValues(testValues);
 

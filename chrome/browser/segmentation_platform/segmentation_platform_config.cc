@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -81,9 +82,15 @@ bool IsEnabledContextualPageActions() {
   if (!base::FeatureList::IsEnabled(features::kContextualPageActions))
     return false;
 
-  return base::FeatureList::IsEnabled(
-             features::kContextualPageActionPriceTracking) &&
-         base::FeatureList::IsEnabled(commerce::kShoppingList);
+  bool is_price_tracking_enabled =
+      base::FeatureList::IsEnabled(
+          features::kContextualPageActionPriceTracking) &&
+      base::FeatureList::IsEnabled(commerce::kShoppingList);
+
+  bool is_reader_mode_enabled =
+      base::FeatureList::IsEnabled(features::kContextualPageActionReaderMode);
+
+  return is_price_tracking_enabled || is_reader_mode_enabled;
 }
 
 std::unique_ptr<Config> GetConfigForContextualPageActions(
@@ -91,25 +98,19 @@ std::unique_ptr<Config> GetConfigForContextualPageActions(
   auto config = std::make_unique<Config>();
   config->segmentation_key = kContextualPageActionsKey;
   config->segmentation_uma_name = kContextualPageActionsUmaName;
-  if (base::FeatureList::IsEnabled(
-          features::kContextualPageActionPriceTracking) &&
-      base::FeatureList::IsEnabled(commerce::kShoppingList)) {
-    config->AddSegmentId(
-        SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
-        std::make_unique<PriceTrackingActionModel>());
+  config->AddSegmentId(
+      SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
+      std::make_unique<PriceTrackingActionModel>());
 
-    auto shopping_service_getter = base::BindRepeating(
-        commerce::ShoppingServiceFactory::GetForBrowserContextIfExists,
-        context);
-    auto bookmark_model_getter = base::BindRepeating(
-        BookmarkModelFactory::GetForBrowserContext, context);
-    auto price_tracking_input_delegate =
-        std::make_unique<processing::PriceTrackingInputDelegate>(
-            shopping_service_getter, bookmark_model_getter);
-    config
-        ->input_delegates[proto::CustomInput_FillPolicy_PRICE_TRACKING_HINTS] =
-        std::move(price_tracking_input_delegate);
-  }
+  auto shopping_service_getter = base::BindRepeating(
+      commerce::ShoppingServiceFactory::GetForBrowserContextIfExists, context);
+  auto bookmark_model_getter =
+      base::BindRepeating(BookmarkModelFactory::GetForBrowserContext, context);
+  auto price_tracking_input_delegate =
+      std::make_unique<processing::PriceTrackingInputDelegate>(
+          shopping_service_getter, bookmark_model_getter);
+  config->input_delegates[proto::CustomInput_FillPolicy_PRICE_TRACKING_HINTS] =
+      std::move(price_tracking_input_delegate);
   config->on_demand_execution = true;
   return config;
 }

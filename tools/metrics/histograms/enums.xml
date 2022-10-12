@@ -1418,6 +1418,7 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Voice"/>
   <int value="5" label="Auto"/>
   <int value="6" label="Price tracking"/>
+  <int value="7" label="Reader mode"/>
 </enum>
 
 <enum name="AdaptiveToolbarRadioButtonState">
@@ -58334,6 +58335,7 @@ from previous Chrome versions.
   <int value="-1112782121" label="AndroidSigninPromos:disabled"/>
   <int value="-1111094917" label="Cormorant:enabled"/>
   <int value="-1109826787" label="AccessibilityExposeDisplayNone:enabled"/>
+  <int value="-1109309340" label="ContextualPageActionReaderMode:enabled"/>
   <int value="-1108636917" label="DetectedSourceLanguageOption:enabled"/>
   <int value="-1107762575" label="enable-data-reduction-proxy-config-client"/>
   <int value="-1107103335" label="FsNosymfollow:enabled"/>
@@ -62261,6 +62263,7 @@ from previous Chrome versions.
   <int value="1269940659" label="EnumerateAudioDevices:enabled"/>
   <int value="1269952439" label="AndroidAIAFetching:disabled"/>
   <int value="1271871811" label="LegacyTLSEnforced:enabled"/>
+  <int value="1272040421" label="ContextualPageActionReaderMode:disabled"/>
   <int value="1272699563" label="enable-hosted-mode"/>
   <int value="1272923911" label="NewMessageListView:disabled"/>
   <int value="1274277775" label="SimLockPolicy:disabled"/>

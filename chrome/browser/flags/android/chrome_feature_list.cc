@@ -399,6 +399,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &safe_browsing::kCreateSafebrowsingOnStartup,
     &segmentation_platform::features::kContextualPageActions,
     &segmentation_platform::features::kContextualPageActionPriceTracking,
+    &segmentation_platform::features::kContextualPageActionReaderMode,
     &send_tab_to_self::kSendTabToSelfSigninPromo,
     &send_tab_to_self::kSendTabToSelfV2,
     &share::kCormorant,

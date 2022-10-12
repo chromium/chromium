@@ -134,7 +134,7 @@ public class OptionalButtonCoordinator {
                 && buttonData.getButtonSpec().getActionChipLabelResId() != Resources.ID_NULL) {
             if (!mFeatureEngagementTracker.isInitialized()
                     || !mFeatureEngagementTracker.shouldTriggerHelpUI(
-                            FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_ACTION_CHIP)) {
+                            FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP)) {
                 ((ButtonDataImpl) buttonData).updateActionChipResourceId(Resources.ID_NULL);
             }
         }
@@ -218,7 +218,7 @@ public class OptionalButtonCoordinator {
             mFeatureEngagementTracker.addOnInitializedCallback(isReady -> {
                 if (!isReady) return;
                 mFeatureEngagementTracker.dismissed(
-                        FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_ACTION_CHIP);
+                        FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
             });
         }
 

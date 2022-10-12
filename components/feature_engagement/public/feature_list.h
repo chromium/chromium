@@ -59,10 +59,10 @@ DEFINE_VARIATION_PARAM(kIPHAutoDarkUserEducationMessageFeature,
                        "IPH_AutoDarkUserEducationMessage");
 DEFINE_VARIATION_PARAM(kIPHAutoDarkUserEducationMessageOptInFeature,
                        "IPH_AutoDarkUserEducationMessageOptIn");
-DEFINE_VARIATION_PARAM(kIPHContextualPageActionsPriceTrackingFeature,
-                       "IPH_ContextualPageActions_PriceTracking");
-DEFINE_VARIATION_PARAM(kIPHContextualPageActionsPriceTrackingActionChipFeature,
-                       "IPH_ContextualPageActions_PriceTrackingActionChip");
+DEFINE_VARIATION_PARAM(kIPHContextualPageActionsQuietVariantFeature,
+                       "IPH_ContextualPageActions_QuietVariant");
+DEFINE_VARIATION_PARAM(kIPHContextualPageActionsActionChipFeature,
+                       "IPH_ContextualPageActions_ActionChip");
 DEFINE_VARIATION_PARAM(kIPHCrowFeature, "IPH_Crow");
 DEFINE_VARIATION_PARAM(kIPHDataSaverDetailFeature, "IPH_DataSaverDetail");
 DEFINE_VARIATION_PARAM(kIPHDataSaverMilestonePromoFeature,
@@ -283,7 +283,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHAutoDarkOptOutFeature),
         VARIATION_ENTRY(kIPHAutoDarkUserEducationMessageFeature),
         VARIATION_ENTRY(kIPHAutoDarkUserEducationMessageOptInFeature),
-        VARIATION_ENTRY(kIPHContextualPageActionsPriceTrackingFeature),
+        VARIATION_ENTRY(kIPHContextualPageActionsQuietVariantFeature),
         VARIATION_ENTRY(kIPHCrowFeature),
         VARIATION_ENTRY(kIPHDataSaverDetailFeature),
         VARIATION_ENTRY(kIPHDataSaverMilestonePromoFeature),

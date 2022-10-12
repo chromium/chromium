@@ -891,8 +891,11 @@ extern const char kCastForceEnableRemotingQueryDescription[];
 extern const char kContextualPageActionsName[];
 extern const char kContextualPageActionsDescription[];
 
-extern const char kContextualPageActionsWithPriceTrackingName[];
-extern const char kContextualPageActionsWithPriceTrackingDescription[];
+extern const char kContextualPageActionsPriceTrackingName[];
+extern const char kContextualPageActionsPriceTrackingDescription[];
+
+extern const char kContextualPageActionsReaderModeName[];
+extern const char kContextualPageActionsReaderModeDescription[];
 
 extern const char kGpuRasterizationName[];
 extern const char kGpuRasterizationDescription[];

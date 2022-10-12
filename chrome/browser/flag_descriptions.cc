@@ -1607,10 +1607,15 @@ const char kContextualPageActionsName[] = "Contextual page actions";
 const char kContextualPageActionsDescription[] =
     "Enables contextual page action feature.";
 
-const char kContextualPageActionsWithPriceTrackingName[] =
-    "Contextual page actions with price tracking";
-const char kContextualPageActionsWithPriceTrackingDescription[] =
+const char kContextualPageActionsPriceTrackingName[] =
+    "Contextual page actions - price tracking";
+const char kContextualPageActionsPriceTrackingDescription[] =
     "Enables price tracking as a contextual page action.";
+
+const char kContextualPageActionsReaderModeName[] =
+    "Contextual page actions - reader mode";
+const char kContextualPageActionsReaderModeDescription[] =
+    "Enables reader mode as a contextual page action.";
 
 const char kHandwritingGestureEditingName[] = "Handwriting Gestures Editing";
 const char kHandwritingGestureEditingDescription[] =

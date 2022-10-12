@@ -70,7 +70,7 @@ public class PriceTrackingButtonController extends BaseButtonDataProvider {
         }
 
         IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(tab.getContext().getResources(),
-                FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING,
+                FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT,
                 /* stringId = */ R.string.iph_price_tracking_menu_item,
                 /* accessibilityStringId = */ R.string.iph_price_tracking_menu_item);
         return iphCommandBuilder;

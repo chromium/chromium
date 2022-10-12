@@ -73,7 +73,7 @@ public class AdaptiveToolbarFeatures {
     @IntDef({AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.NONE,
             AdaptiveToolbarButtonVariant.NEW_TAB, AdaptiveToolbarButtonVariant.SHARE,
             AdaptiveToolbarButtonVariant.VOICE, AdaptiveToolbarButtonVariant.AUTO,
-            AdaptiveToolbarButtonVariant.PRICE_TRACKING})
+            AdaptiveToolbarButtonVariant.PRICE_TRACKING, AdaptiveToolbarButtonVariant.READER_MODE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface AdaptiveToolbarButtonVariant {
         int UNKNOWN = 0;
@@ -83,7 +83,8 @@ public class AdaptiveToolbarFeatures {
         int VOICE = 4;
         int AUTO = 5;
         int PRICE_TRACKING = 6;
-        int NUM_ENTRIES = 7;
+        int READER_MODE = 7;
+        int NUM_ENTRIES = 8;
     }
 
     /** @return Whether the button variant is a dynamic action. */
@@ -97,6 +98,7 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.AUTO:
                 return false;
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
+            case AdaptiveToolbarButtonVariant.READER_MODE:
                 return true;
         }
         return false;
@@ -121,7 +123,7 @@ public class AdaptiveToolbarFeatures {
     /** @return Whether the contextual page actions should show the action chip version. */
     public static boolean shouldShowActionChip() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, "action_chip", false);
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", false);
     }
 
     /**
@@ -130,7 +132,7 @@ public class AdaptiveToolbarFeatures {
      */
     public static int getContextualPageActionDelayMs() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING, "action_chip_time_ms",
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip_time_ms",
                 DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS);
     }
 
@@ -139,8 +141,8 @@ public class AdaptiveToolbarFeatures {
      */
     public static boolean shouldUseAlternativeActionChipColor() {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
-                "action_chip_with_different_color", false);
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip_with_different_color",
+                false);
     }
 
     /**
@@ -150,9 +152,20 @@ public class AdaptiveToolbarFeatures {
         // TODO(shaktisahu): These checks must match the ones when creating config. Maybe introduce
         // a something common for android clients.
         return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS)
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING)
+                && isAnyContextualPageActionButtonEnabled();
+    }
+
+    private static boolean isAnyContextualPageActionButtonEnabled() {
+        return isPriceTrackingPageActionEnabled() || isReaderModePageActionEnabled();
+    }
+
+    private static boolean isPriceTrackingPageActionEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST);
+    }
+
+    private static boolean isReaderModePageActionEnabled() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE);
     }
 
     /**

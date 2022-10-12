@@ -60,6 +60,10 @@ BASE_FEATURE(kContextualPageActionPriceTracking,
              "ContextualPageActionPriceTracking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualPageActionReaderMode,
+             "ContextualPageActionReaderMode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSegmentationPlatformSegmentInfoCache,
              "SegmentationPlatformSegmentInfoCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
