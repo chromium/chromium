@@ -34,6 +34,7 @@ NSString* const kFirstRunForceEnabled = @"FirstRunForceEnabled";
 NSString* const kOriginServerHost = @"AlternateOriginServerHost";
 NSString* const kWhatsNewPromoStatus = @"WhatsNewPromoStatus";
 NSString* const kClearApplicationGroup = @"ClearApplicationGroup";
+NSString* const kNextPromoForDisplayOverride = @"NextPromoForDisplayOverride";
 BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              "EnableThirdPartyKeyboardWorkaround",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -123,6 +124,11 @@ bool IsThirdPartyKeyboardWorkaroundEnabled() {
 
   // Check if the Finch experiment is turned on.
   return base::FeatureList::IsEnabled(kEnableThirdPartyKeyboardWorkaround);
+}
+
+NSString* GetForcedPromoToDisplay() {
+  return [[NSUserDefaults standardUserDefaults]
+      stringForKey:kNextPromoForDisplayOverride];
 }
 
 }  // namespace experimental_flags

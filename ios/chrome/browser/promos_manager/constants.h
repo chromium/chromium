@@ -17,6 +17,9 @@ extern const std::string kImpressionPromoKey;
 // Dictionary key for `day` in stored impression (base::Value).
 extern const std::string kImpressionDayKey;
 
+// Prefix used when stringifying promos.
+extern const std::string kPromoStringifyPrefix;
+
 // The max number of days for impression history to be stored & maintained.
 extern const int kNumDaysImpressionHistoryStored;
 

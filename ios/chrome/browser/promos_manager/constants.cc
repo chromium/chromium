@@ -12,8 +12,6 @@ namespace promos_manager {
 const std::string kImpressionPromoKey = "promo";
 const std::string kImpressionDayKey = "day";
 const int kNumDaysImpressionHistoryStored = 365;
-
-// Prefix used when stringifying promos.
 const std::string kPromoStringifyPrefix = "promos_manager::Promo::";
 
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be

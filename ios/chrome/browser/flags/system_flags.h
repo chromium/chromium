@@ -72,6 +72,11 @@ bool MustClearApplicationGroupSandbox();
 // Whether the DCheckIsFatal feature should be disabled.
 bool AreDCHECKCrashesDisabled();
 
+// Returns the name of the promo to be forced to display when the app is
+// launched or resumed. Returns empty string if no promo is to be forced
+// to display. Always returns nil for users in stable/beta.
+NSString* GetForcedPromoToDisplay();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_FLAGS_SYSTEM_FLAGS_H_

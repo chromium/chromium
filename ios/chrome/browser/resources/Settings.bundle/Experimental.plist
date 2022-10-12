@@ -136,6 +136,26 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Force Promo</string>
+			<key>Key</key>
+			<string>NextPromoForDisplayOverride</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>Values</key>
+			<array>
+				<string></string>
+				<string>promos_manager::Promo::AppStoreRating</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Disabled (No Promos Forced)</string>
+				<string>App Store Rating</string>
+			</array>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Debug Settings</string>
