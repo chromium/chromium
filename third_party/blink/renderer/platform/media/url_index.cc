@@ -122,11 +122,6 @@ void UrlData::set_mime_type(std::string mime_type) {
   mime_type_ = std::move(mime_type);
 }
 
-void UrlData::set_passed_timing_allow_origin_check(
-    bool passed_timing_allow_origin_check) {
-  passed_timing_allow_origin_check_ = passed_timing_allow_origin_check;
-}
-
 void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Copy any cached data over to the new location.

@@ -280,16 +280,11 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
     // default, we'd be able to use the value of
     // largest_image_record->first_animated_frame_time directly.
-    if (image_record && image_record->media_timing) {
-      if (!image_record->media_timing->GetFirstVideoFrameTime().is_null()) {
-        // Set the video flag.
-        largest_contentful_paint_type_ |=
-            blink::LargestContentfulPaintType::kVideo;
-      } else if (image_record->media_timing->IsPaintedFirstFrame()) {
-        // Set the animated image flag.
-        largest_contentful_paint_type_ |=
-            blink::LargestContentfulPaintType::kAnimatedImage;
-      }
+    if (image_record && image_record->media_timing &&
+        image_record->media_timing->IsPaintedFirstFrame()) {
+      // Set the animated image flag.
+      largest_contentful_paint_type_ |=
+          blink::LargestContentfulPaintType::kAnimatedImage;
     }
   }
   largest_image_paint_time_ = image_paint_time;

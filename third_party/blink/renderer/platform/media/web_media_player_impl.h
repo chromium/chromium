@@ -232,8 +232,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   uint64_t AudioDecodedByteCount() const override;
   uint64_t VideoDecodedByteCount() const override;
 
-  bool PassedTimingAllowOriginCheck() const override;
-
   void SetVolumeMultiplier(double multiplier) override;
   void SetPersistentState(bool persistent) override;
   void SetPowerExperimentState(bool state) override;

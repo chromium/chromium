@@ -142,7 +142,6 @@ class BLINK_PLATFORM_EXPORT WebURLResponse {
   void SetIsLegacyTLSVersion(bool);
   void SetHasRangeRequested(bool);
   void SetTimingAllowPassed(bool);
-  bool TimingAllowPassed() const;
 
   void SetSecurityStyle(SecurityStyle);
 

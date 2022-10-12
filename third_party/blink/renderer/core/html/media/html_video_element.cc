@@ -58,8 +58,6 @@
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
-#include "third_party/blink/renderer/core/loader/resource/video_timing.h"
-#include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -402,29 +400,6 @@ bool HTMLVideoElement::HasAvailableVideoFrame() const {
   if (auto* wmp = GetWebMediaPlayer())
     return wmp->HasAvailableVideoFrame();
   return false;
-}
-
-void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
-                                    size_t bytes_to_first_frame) {
-  DCHECK(GetWebMediaPlayer());
-  LayoutObject* layout_object = GetLayoutObject();
-  // HasLocalBorderBoxProperties will be false in some cases, specifically
-  // picture-in-picture video may return false here.
-  if (layout_object &&
-      layout_object->FirstFragment().HasLocalBorderBoxProperties()) {
-    VideoTiming* video_timing = MakeGarbageCollected<VideoTiming>();
-    video_timing->SetFirstVideoFrameTime(frame_time);
-    video_timing->SetIsSufficientContentLoadedForPaint();
-    video_timing->SetUrl(currentSrc());
-    video_timing->SetContentSizeForEntropy(bytes_to_first_frame);
-    video_timing->SetTimingAllowPassed(
-        GetWebMediaPlayer()->PassedTimingAllowOriginCheck());
-
-    PaintTimingDetector::NotifyImagePaint(
-        *layout_object, videoVisibleSize(), *video_timing,
-        layout_object->FirstFragment().LocalBorderBoxProperties(),
-        layout_object->AbsoluteBoundingBoxRect());
-  }
 }
 
 void HTMLVideoElement::webkitEnterFullscreen() {

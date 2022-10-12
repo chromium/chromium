@@ -619,10 +619,6 @@ void ImageResourceContent::EmulateLoadStartedForInspector(
   info_->EmulateLoadStartedForInspector(fetcher, url, initiator_name);
 }
 
-void ImageResourceContent::SetIsSufficientContentLoadedForPaint() {
-  NOTREACHED();
-}
-
 bool ImageResourceContent::IsSufficientContentLoadedForPaint() const {
   return IsLoaded();
 }

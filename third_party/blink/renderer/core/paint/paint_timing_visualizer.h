@@ -17,7 +17,7 @@ namespace blink {
 
 class LayoutObject;
 class LocalFrameView;
-class KURL;
+class MediaTiming;
 
 // While Largest Contentful Paint only concerns about the largest contentful
 // rect, the smaller rects used in its computation are helpful for debugging
@@ -33,8 +33,7 @@ class CORE_EXPORT PaintTimingVisualizer {
   void DumpTextDebuggingRect(const LayoutObject&, const gfx::RectF&);
   void DumpImageDebuggingRect(const LayoutObject&,
                               const gfx::RectF&,
-                              bool is_loaded,
-                              const KURL& url);
+                              const MediaTiming&);
   void RecordMainFrameViewport(LocalFrameView& frame_view);
   inline void OnViewportChanged() { need_recording_viewport = true; }
 

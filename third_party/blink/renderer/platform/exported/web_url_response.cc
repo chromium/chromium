@@ -229,10 +229,6 @@ void WebURLResponse::SetHasRangeRequested(bool value) {
   resource_response_->SetHasRangeRequested(value);
 }
 
-bool WebURLResponse::TimingAllowPassed() const {
-  return resource_response_->TimingAllowPassed();
-}
-
 void WebURLResponse::SetTimingAllowPassed(bool value) {
   resource_response_->SetTimingAllowPassed(value);
 }

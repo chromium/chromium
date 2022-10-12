@@ -527,8 +527,6 @@ class CORE_EXPORT HTMLMediaElement
   void Repaint() final;
   void DurationChanged() final;
   void SizeChanged() final;
-  void OnFirstFrame(base::TimeTicks frame_time,
-                    size_t bytes_to_first_frame) override {}
 
   void SetCcLayer(cc::Layer*) final;
   WebMediaPlayer::TrackId AddAudioTrack(const WebString&,

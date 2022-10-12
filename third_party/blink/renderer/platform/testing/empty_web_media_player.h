@@ -77,7 +77,6 @@ class EmptyWebMediaPlayer : public WebMediaPlayer,
   }
   void RegisterFrameSinkHierarchy() override {}
   void UnregisterFrameSinkHierarchy() override {}
-  bool PassedTimingAllowOriginCheck() const override { return true; }
 };
 
 }  // namespace blink

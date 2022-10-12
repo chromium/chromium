@@ -87,7 +87,6 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   void SuspendForFrameClosed() override {}
 
   void SetWouldTaintOrigin(bool taint) { would_taint_origin_ = taint; }
-  bool PassedTimingAllowOriginCheck() const override { return true; }
 
   void Paint(cc::PaintCanvas* canvas,
              const gfx::Rect& rect,
