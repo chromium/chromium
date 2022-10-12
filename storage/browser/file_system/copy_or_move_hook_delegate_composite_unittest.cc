@@ -20,6 +20,7 @@
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate_composite.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/test/mock_copy_or_move_hook_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -39,54 +40,6 @@ struct TestParameter {
   // Error / status returned by the different instances of
   // CopyOrMoveHookDelegate.
   std::vector<base::File::Error> status;
-};
-
-class MockCopyOrMoveHookDelegate : public CopyOrMoveHookDelegate {
- public:
-  MOCK_METHOD((void),
-              OnBeginProcessFile,
-              (const FileSystemURL& source_url,
-               const FileSystemURL& destination_url,
-               StatusCallback callback),
-              (override));
-
-  MOCK_METHOD((void),
-              OnBeginProcessDirectory,
-              (const FileSystemURL& source_url,
-               const FileSystemURL& destination_url,
-               StatusCallback callback),
-              (override));
-
-  MOCK_METHOD((void),
-              OnProgress,
-              (const FileSystemURL& source_url,
-               const FileSystemURL& destination_url,
-               int64_t size),
-              (override));
-
-  MOCK_METHOD((void),
-              OnError,
-              (const FileSystemURL& source_url,
-               const FileSystemURL& destination_url,
-               base::File::Error error),
-              (override));
-
-  MOCK_METHOD((void),
-              OnEndCopy,
-              (const FileSystemURL& source_url,
-               const FileSystemURL& destination_url),
-              (override));
-
-  MOCK_METHOD((void),
-              OnEndMove,
-              (const FileSystemURL& source_url,
-               const FileSystemURL& destination_url),
-              (override));
-
-  MOCK_METHOD((void),
-              OnEndRemoveSource,
-              (const FileSystemURL& source_url),
-              (override));
 };
 
 class CopyOrMoveHookDelegateCompositeTest

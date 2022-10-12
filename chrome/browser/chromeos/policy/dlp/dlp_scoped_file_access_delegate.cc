@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
 
 #include "base/process/process_handle.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_file_access_copy_or_move_delegate_factory.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -34,7 +35,13 @@ void DlpScopedFileAccessDelegate::Initialize(chromeos::DlpClient* client) {
 
 DlpScopedFileAccessDelegate::DlpScopedFileAccessDelegate(
     chromeos::DlpClient* client)
-    : client_(client) {}
+    : client_(client) {
+  DlpFileAccessCopyOrMoveDelegateFactory::Initialize();
+}
+
+DlpScopedFileAccessDelegate::~DlpScopedFileAccessDelegate() {
+  DlpFileAccessCopyOrMoveDelegateFactory::DeleteInstance();
+}
 
 void DlpScopedFileAccessDelegate::RequestFilesAccess(
     const std::vector<base::FilePath>& files,

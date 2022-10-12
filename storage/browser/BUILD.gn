@@ -388,6 +388,8 @@ static_library("test_support") {
     "test/mock_blob_util.h",
     "test/mock_bytes_provider.cc",
     "test/mock_bytes_provider.h",
+    "test/mock_copy_or_move_hook_delegate.cc",
+    "test/mock_copy_or_move_hook_delegate.h",
     "test/mock_file_change_observer.cc",
     "test/mock_file_change_observer.h",
     "test/mock_file_update_observer.cc",

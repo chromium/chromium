@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
@@ -28,6 +29,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "components/file_access/file_access_copy_or_move_delegate_factory.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
@@ -42,6 +44,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/file_system_test_file_set.h"
+#include "storage/browser/test/mock_copy_or_move_hook_delegate.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
@@ -1541,6 +1544,61 @@ TEST(CopyOrMoveOperationDelegateTest,
   EXPECT_TRUE(helper.FileExists(src_file_1, kDefaultFileSize));
   EXPECT_FALSE(
       helper.FileExists(dest_file_1, AsyncFileTestHelper::kDontCheckSize));
+}
+
+class MockFileAccessCopyOrMoveDelegateFactory
+    : public file_access::FileAccessCopyOrMoveDelegateFactory {
+ public:
+  MOCK_METHOD(std::unique_ptr<storage::CopyOrMoveHookDelegate>,
+              MakeHook,
+              (),
+              (override));
+};
+
+TEST(CopyOrMoveOperationDelegateTest, InjectHook) {
+  FileSystemOperation::CopyOrMoveOptionSet options;
+  CopyOrMoveOperationDelegateTestHelper helper(
+      "http://foo", kFileSystemTypePersistent, kFileSystemTypePersistent,
+      options);
+  helper.SetUp();
+
+  MockFileAccessCopyOrMoveDelegateFactory factory;
+  std::unique_ptr<MockCopyOrMoveHookDelegate> hook_delegate =
+      std::make_unique<MockCopyOrMoveHookDelegate>();
+  ON_CALL(*hook_delegate.get(), OnBeginProcessFile)
+      .WillByDefault([](const FileSystemURL&, const FileSystemURL&,
+                        base::OnceCallback<void(base::File::Error)> cb) {
+        std::move(cb).Run(base::File::FILE_OK);
+      });
+  EXPECT_CALL(*hook_delegate.get(), OnBeginProcessFile).Times(3);
+  EXPECT_CALL(*hook_delegate.get(), OnEndCopy).Times(3);
+  EXPECT_CALL(factory, MakeHook).WillOnce([&hook_delegate] {
+    return std::move(hook_delegate);
+  });
+
+  FileSystemURL src = helper.GenerateSourceUrlFromPath("a");
+  FileSystemURL src_file_1 = helper.GenerateSourceUrlFromPath("a/file 1");
+  FileSystemURL src_file_2 = helper.GenerateSourceUrlFromPath("a/file 2");
+  FileSystemURL dest = helper.GenerateDestinationUrlFromPath("b");
+  FileSystemURL dest_file_1 = helper.GenerateDestinationUrlFromPath("b/file 1");
+  FileSystemURL dest_file_2 = helper.GenerateDestinationUrlFromPath("b/file 2");
+
+  ASSERT_EQ(base::File::FILE_OK, helper.CreateDirectory(src));
+  ASSERT_EQ(base::File::FILE_OK,
+            helper.CreateFile(src_file_1, kDefaultFileSize));
+  ASSERT_EQ(base::File::FILE_OK,
+            helper.CreateFile(src_file_2, kDefaultFileSize));
+
+  ASSERT_EQ(base::File::FILE_OK, helper.Copy(src, dest));
+
+  EXPECT_TRUE(helper.DirectoryExists(src));
+  EXPECT_TRUE(helper.DirectoryExists(dest));
+  // Check: file 2 is properly copied.
+  EXPECT_TRUE(helper.FileExists(src_file_2, kDefaultFileSize));
+  EXPECT_TRUE(helper.FileExists(dest_file_2, kDefaultFileSize));
+  // Check: file 1 is properly copied.
+  EXPECT_TRUE(helper.FileExists(src_file_1, kDefaultFileSize));
+  EXPECT_TRUE(helper.FileExists(dest_file_1, kDefaultFileSize));
 }
 
 }  // namespace storage

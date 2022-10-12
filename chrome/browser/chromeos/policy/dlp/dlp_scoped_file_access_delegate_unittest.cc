@@ -6,10 +6,15 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/dbus/dlp/fake_dlp_client.h"
+#include "components/file_access/file_access_copy_or_move_delegate_factory.h"
 #include "components/file_access/scoped_file_access_delegate.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,6 +87,66 @@ TEST_F(DlpScopedFileAccessDelegateTest,
 TEST_F(DlpScopedFileAccessDelegateTest, TestMultipleInstances) {
   DlpScopedFileAccessDelegate::Initialize(nullptr);
   EXPECT_NO_FATAL_FAILURE(DlpScopedFileAccessDelegate::Initialize(nullptr));
+}
+
+class DlpScopedFileAccessDelegateTaskTest : public testing::Test {
+ public:
+  content::BrowserTaskEnvironment browser_task_environment_;
+  chromeos::FakeDlpClient fake_dlp_client_;
+  scoped_refptr<base::SingleThreadTaskRunner> UIThread_ =
+      content::GetUIThreadTaskRunner({});
+  scoped_refptr<base::SingleThreadTaskRunner> IOThread_ =
+      content::GetIOThreadTaskRunner({});
+
+  void SetUp() override {
+    file_access::ScopedFileAccessDelegate::DeleteInstance();
+    browser_task_environment_.RunUntilIdle();
+  }
+
+  void TestPreInit() {
+    EXPECT_FALSE(
+        file_access::FileAccessCopyOrMoveDelegateFactory::HasInstance());
+    UIThread_->PostTask(
+        FROM_HERE, base::BindOnce(&DlpScopedFileAccessDelegateTaskTest::Init,
+                                  base::Unretained(this)));
+  }
+
+  void Init() {
+    DlpScopedFileAccessDelegate::Initialize(&fake_dlp_client_);
+    IOThread_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DlpScopedFileAccessDelegateTaskTest::TestPostInit,
+                       base::Unretained(this)));
+  }
+
+  void TestPostInit() {
+    EXPECT_TRUE(
+        file_access::FileAccessCopyOrMoveDelegateFactory::HasInstance());
+    UIThread_->PostTask(
+        FROM_HERE, base::BindOnce(&DlpScopedFileAccessDelegateTaskTest::Delete,
+                                  base::Unretained(this)));
+  }
+
+  void Delete() {
+    file_access::ScopedFileAccessDelegate::DeleteInstance();
+    IOThread_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DlpScopedFileAccessDelegateTaskTest::TestPostDelete,
+                       base::Unretained(this)));
+  }
+
+  void TestPostDelete() {
+    EXPECT_FALSE(
+        file_access::FileAccessCopyOrMoveDelegateFactory::HasInstance());
+  }
+};
+
+TEST_F(DlpScopedFileAccessDelegateTaskTest, TestSync) {
+  IOThread_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DlpScopedFileAccessDelegateTaskTest::TestPreInit,
+                     base::Unretained(this)));
+  browser_task_environment_.RunUntilIdle();
 }
 
 }  // namespace policy

@@ -28,7 +28,7 @@ namespace policy {
 class DlpScopedFileAccessDelegate
     : public file_access::ScopedFileAccessDelegate {
  public:
-  ~DlpScopedFileAccessDelegate() override = default;
+  ~DlpScopedFileAccessDelegate() override;
 
   // Initializes the singleton instance.
   static void Initialize(chromeos::DlpClient* client);
