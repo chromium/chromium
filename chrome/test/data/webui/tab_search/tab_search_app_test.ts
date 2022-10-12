@@ -720,4 +720,30 @@ suite('TabSearchAppTest', () => {
     assertEquals(3, queryRows().length);
   });
 
+  [true, false].forEach((windowActive) => {
+    test(
+        `Available height set correctly when the window's active state is ${
+            windowActive}`,
+        async () => {
+          await setupTest(
+              createProfileData({
+                windows: [{
+                  active: windowActive,
+                  height: SAMPLE_WINDOW_HEIGHT,
+                  tabs: generateSampleTabsFromSiteNames(['OpenTab1'], true),
+                }],
+                recentlyClosedTabs:
+                    generateSampleRecentlyClosedTabsFromSiteNames(
+                        ['RecentlyClosedTab1', 'RecentlyClosedTab2']),
+                recentlyClosedSectionExpanded: true,
+              }),
+              {
+                recentlyClosedDefaultItemDisplayCount: 1,
+              });
+
+          assertEquals(
+              SAMPLE_WINDOW_HEIGHT,
+              tabSearchApp.getAvailableHeightForTesting());
+        });
+  });
 });

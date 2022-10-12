@@ -295,7 +295,12 @@ export class TabSearchAppElement extends PolymerElement {
         setTimeout(() => this.apiProxy_.showUI(), 0);
       });
 
-      this.availableHeight_ = profileData.windows.find((t) => t.active)!.height;
+      // TODO(crbug.com/c/1349350): Determine why no active window is reported
+      // in some cases on ChromeOS and Linux.
+      const activeWindow = profileData.windows.find((t) => t.active);
+      this.availableHeight_ =
+          activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
+
       this.tabsChanged_(profileData);
     });
   }
@@ -755,6 +760,10 @@ export class TabSearchAppElement extends PolymerElement {
 
   getSearchTextForTesting(): string {
     return this.searchText_;
+  }
+
+  getAvailableHeightForTesting(): number {
+    return this.availableHeight_;
   }
 
   static get template() {
