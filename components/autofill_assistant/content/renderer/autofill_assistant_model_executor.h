@@ -11,6 +11,7 @@
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
+#include "components/autofill_assistant/content/renderer/autofill_assistant_model_executor_result.h"
 #include "components/autofill_assistant/content/renderer/model_metadata.pb.h"
 #include "components/optimization_guide/core/base_model_executor.h"
 #include "components/optimization_guide/core/base_model_executor_helpers.h"
@@ -27,11 +28,11 @@ namespace autofill_assistant {
 // node signals.
 class AutofillAssistantModelExecutor
     : public optimization_guide::BaseModelExecutor<
-          std::pair<int, int>,
+          ModelExecutorResult,
           const blink::AutofillAssistantNodeSignals&> {
  public:
   using ExecutionTask = optimization_guide::GenericModelExecutionTask<
-      std::pair<int, int>,
+      ModelExecutorResult,
       const blink::AutofillAssistantNodeSignals&>;
   using SparseVector = std::vector<std::pair<std::pair<int, int>, int>>;
   using SparseMap = base::flat_map<std::pair<int, int>, int>;
@@ -49,7 +50,7 @@ class AutofillAssistantModelExecutor
   bool InitializeModelFromFile(base::File model_file);
 
   // Execute the model with the given input.
-  absl::optional<std::pair<int, int>> ExecuteModelWithInput(
+  absl::optional<ModelExecutorResult> ExecuteModelWithInput(
       const blink::AutofillAssistantNodeSignals& node_signals);
 
  protected:
@@ -57,7 +58,7 @@ class AutofillAssistantModelExecutor
   bool Preprocess(
       const std::vector<TfLiteTensor*>& input_tensors,
       const blink::AutofillAssistantNodeSignals& node_signals) override;
-  absl::optional<std::pair<int, int>> Postprocess(
+  absl::optional<ModelExecutorResult> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 
  private:
