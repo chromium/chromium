@@ -5,11 +5,13 @@
 #include <algorithm>
 
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/sync_socket.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -269,7 +271,8 @@ void SpeechRecognitionServiceTest::LaunchService() {
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
-          /*enable_formatting=*/true, "en-US", /* is_server_based=*/false,
+          /*enable_formatting=*/true, kUsEnglishLocale,
+          /*is_server_based=*/false,
           media::mojom::RecognizerClientType::kLiveCaption),
       base::BindOnce(
           [](bool* p_is_multichannel_supported, base::RunLoop* run_loop,
@@ -300,7 +303,7 @@ void SpeechRecognitionServiceTest::LaunchServiceWithAudioSourceFetcher() {
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kIme,
-          /*enable_formatting=*/false, "en-US"),
+          /*enable_formatting=*/false, kUsEnglishLocale),
       base::BindOnce(
           [](bool* p_is_multichannel_supported, base::RunLoop* run_loop,
              bool is_multichannel_supported) {
@@ -504,6 +507,53 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {
 #endif
 
   audio_source_fetcher_->Stop();
+  base::RunLoop().RunUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CompromisedRenderer) {
+  // Create temporary SODA files.
+  SetUpPrefs();
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath config_dir =
+      GetSodaLanguagePacksDirectory()
+          .AppendASCII(kUsEnglishLocale)
+          .Append("1.1.1")
+          .Append(kSodaLanguagePackDirectoryRelativePath);
+  base::CreateDirectory(config_dir);
+  ASSERT_TRUE(base::PathExists(config_dir));
+  base::FilePath config_file_path = config_dir.Append("config_file");
+  ASSERT_EQ(base::WriteFile(config_file_path, nullptr, 0), 0);
+  ASSERT_TRUE(base::PathExists(config_file_path));
+  g_browser_process->local_state()->SetFilePath(prefs::kSodaEnUsConfigPath,
+                                                config_file_path);
+
+  // Launch the Speech Recognition service.
+  auto* browser_context =
+      static_cast<content::BrowserContext*>(browser()->profile());
+  auto* service = new ChromeSpeechRecognitionService(browser_context);
+  service->BindSpeechRecognitionContext(
+      speech_recognition_context_.BindNewPipeAndPassReceiver());
+
+  // Bind the recognizer pipes used to send audio and receive results.
+  auto run_loop = std::make_unique<base::RunLoop>();
+  speech_recognition_context_->BindRecognizer(
+      speech_recognition_recognizer_.BindNewPipeAndPassReceiver(),
+      speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
+      media::mojom::SpeechRecognitionOptions::New(
+          media::mojom::SpeechRecognitionMode::kCaption,
+          /*enable_formatting=*/true, kUsEnglishLocale,
+          /*is_server_based=*/false,
+          media::mojom::RecognizerClientType::kLiveCaption),
+      base::BindOnce([](base::RunLoop* run_loop,
+                        bool is_multichannel_supported) { run_loop->Quit(); },
+                     run_loop.get()));
+  run_loop->Run();
+
+  // Simulate a compromised renderer by changing the language and immediately
+  // resetting the recognizer and verify that the subsequent callbacks do not
+  // cause any crashes.
+  speech_recognition_recognizer_->OnLanguageChanged(kUsEnglishLocale);
+  speech_recognition_recognizer_.reset();
   base::RunLoop().RunUntilIdle();
 }
 
