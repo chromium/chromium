@@ -32,6 +32,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document_parser_timing.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/html_input_stream.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 
 namespace blink {
 
@@ -199,7 +201,7 @@ void HTMLParserScriptRunner::
 
   if (!IsExecutingScript()) {
     // TODO(kouhei, hiroshige): Investigate why we need checkpoint here.
-    Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
+    document_->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
     // The parser cannot be unblocked as a microtask requested another
     // resource
     if (!document_->IsScriptExecutionReady())
@@ -247,7 +249,7 @@ void HTMLParserScriptRunner::ExecutePendingDeferredScriptAndDispatchEvent(
 
   if (!IsExecutingScript()) {
     // TODO(kouhei, hiroshige): Investigate why we need checkpoint here.
-    Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
+    document_->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
   }
 
   DoExecuteScript(pending_script, *document_);
@@ -515,7 +517,7 @@ void HTMLParserScriptRunner::ProcessScriptElementInternal(
     // JavaScript execution context stack is empty, then perform a microtask
     // checkpoint. ...</spec>
     if (!IsExecutingScript())
-      Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
+      document_->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
 
     // <spec>... Let the old insertion point have the same value as the current
     // insertion point. Let the insertion point be just before the next input

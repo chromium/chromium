@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_characteristic_properties.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -296,7 +298,10 @@ void BluetoothRemoteGATTCharacteristic::NotificationsCallback(
       !deferred_value_change_data_.empty()) {
     // Ensure promises are resolved before dispatching events allows them
     // to add listeners.
-    blink::Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
+    resolver->GetExecutionContext()
+        ->GetAgent()
+        ->event_loop()
+        ->PerformMicrotaskCheckpoint();
     // Dispatch deferred characteristicvaluechanged events created during the
     // registration of notifications.
     auto deferred_value_change_data = std::move(deferred_value_change_data_);

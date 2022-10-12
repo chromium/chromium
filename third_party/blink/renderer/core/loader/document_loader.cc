@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
 #include "third_party/blink/renderer/core/dom/weak_identifier_map.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/security_context_init.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent_factory.h"
@@ -139,6 +140,7 @@
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
@@ -1591,6 +1593,11 @@ void DocumentLoader::SetDefersLoading(LoaderFreezeMode mode) {
 void DocumentLoader::DetachFromFrame(bool flush_microtask_queue) {
   DCHECK(frame_);
   StopLoading();
+  // `frame_` may become null because this method can get re-entered. If it
+  // is null we've already run the code below so just return early.
+  if (!frame_)
+    return;
+
   if (flush_microtask_queue) {
     // Flush microtask queue so that they all run on pre-navigation context.
     // TODO(dcheng): This is a temporary hack that should be removed. This is
@@ -1603,10 +1610,12 @@ void DocumentLoader::DetachFromFrame(bool flush_microtask_queue) {
     // since flushing microtasks can only be done after any other JS (which can
     // queue additional microtasks) has run. Once it is possible to associate
     // microtasks with a v8::Context, remove this hack.
-    Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
+    frame_->GetDocument()
+        ->GetAgent()
+        ->event_loop()
+        ->PerformMicrotaskCheckpoint();
   }
   ScriptForbiddenScope forbid_scripts;
-
   // If that load cancellation triggered another detach, leave.
   // (fast/frames/detach-frame-nested-no-crash.html is an example of this.)
   if (!frame_)

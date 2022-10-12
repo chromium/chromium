@@ -34,16 +34,8 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
-
-void Microtask::PerformCheckpoint(v8::Isolate* isolate) {
-  if (ScriptForbiddenScope::IsScriptForbidden())
-    return;
-  DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
-  v8::MicrotasksScope::PerformCheckpoint(isolate);
-}
 
 static void MicrotaskFunctionCallback(void* data) {
   std::unique_ptr<base::OnceClosure> task =

@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -69,6 +70,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -215,7 +217,7 @@ class AnimationAnimationTestNoCompositing : public PaintTestConfigurations,
   void SimulateAwaitReady() { SimulateFrame(last_frame_time); }
 
   void SimulateMicrotask() {
-    Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
+    GetDocument().GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
   }
 
   void SimulateFrameForScrollAnimations() {

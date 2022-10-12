@@ -64,8 +64,6 @@ class PLATFORM_EXPORT Microtask {
   STATIC_ONLY(Microtask);
 
  public:
-  static void PerformCheckpoint(v8::Isolate*);
-
   // TODO(yukishiino): Make all microtasks pass in the ScriptState they want to be
   // executed in. Until then, all microtasks have to keep track of their
   // ScriptState themselves.

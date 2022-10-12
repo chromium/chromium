@@ -352,7 +352,7 @@ class CORE_EXPORT Document : public ContainerNode,
   ~Document() override;
 
   // Constructs a Document instance without a subclass for testing.
-  static Document* CreateForTest();
+  static Document* CreateForTest(ExecutionContext* execution_context = nullptr);
 
   static Range* CreateRangeAdjustedToTreeScope(const TreeScope&,
                                                const Position&);

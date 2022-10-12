@@ -1412,7 +1412,7 @@ void InspectorOverlayAgent::PageLayoutInvalidated(bool resized) {
     resize_timer_active_ = false;
     // Handle the resize in the next cycle to decouple overlay page rebuild from
     // the main page layout to avoid document lifecycle issues caused by
-    // Microtask::PerformCheckpoint() called when we rebuild the overlay page.
+    // EventLoop::PerformCheckpoint() called when we rebuild the overlay page.
     resize_timer_.Stop();
     resize_timer_.StartOneShot(base::Seconds(0), FROM_HERE);
     return;

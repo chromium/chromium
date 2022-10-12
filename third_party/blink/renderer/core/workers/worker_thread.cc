@@ -324,10 +324,11 @@ void WorkerThread::DidProcessTask(const base::PendingTask& pending_task) {
   // metrics for microtasks are counted as a part of the preceding task.
   GlobalScope()->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
 
-  // Microtask::PerformCheckpoint() runs microtasks and its completion hooks for
-  // the default microtask queue. The default queue may contain the microtasks
-  // queued by V8 itself, and legacy blink::MicrotaskQueue::EnqueueMicrotask.
-  // The completion hook contains IndexedDB clean-up task, as described at
+  // EventLoop::PerformIsolateGlobalMicrotasksCheckpoint() runs microtasks and
+  // its completion hooks for the default microtask queue. The default queue may
+  // contain the microtasks queued by V8 itself, and legacy
+  // blink::MicrotaskQueue::EnqueueMicrotask. The completion hook contains
+  // IndexedDB clean-up task, as described at
   // https://html.spec.whatwg.org/C#perform-a-microtask-checkpoint
   // TODO(tzik): Move rejected promise handling to EventLoop.
 

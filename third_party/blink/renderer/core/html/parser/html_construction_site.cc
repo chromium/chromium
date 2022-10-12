@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/throw_on_dynamic_markup_insertion_count_incrementer.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -65,6 +66,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 
 namespace blink {
@@ -981,7 +983,7 @@ Element* HTMLConstructionSite::CreateElement(
     // checkpoints, but note the spec is different--it talks about the
     // JavaScript stack, not the script nesting level.
     if (0u == reentry_permit_->ScriptNestingLevel())
-      Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
+      document.GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
 
     // "6.3 Push a new element queue onto the custom element
     // reactions stack."

@@ -66,13 +66,14 @@ DocumentInit::DocumentInit(const DocumentInit&) = default;
 
 DocumentInit::~DocumentInit() = default;
 
-DocumentInit& DocumentInit::ForTest() {
+DocumentInit& DocumentInit::ForTest(ExecutionContext* execution_context) {
   DCHECK(!execution_context_);
   DCHECK(!window_);
 #if DCHECK_IS_ON()
   DCHECK(!for_test_);
   for_test_ = true;
 #endif
+  execution_context_ = execution_context;
   return *this;
 }
 

@@ -90,7 +90,7 @@ class CORE_EXPORT DocumentInit final {
     kUnspecified
   };
 
-  DocumentInit& ForTest();
+  DocumentInit& ForTest(ExecutionContext* execution_context = nullptr);
 
   // Actually constructs the Document based on the provided state.
   Document* CreateDocument() const;

@@ -136,6 +136,7 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -196,6 +197,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
@@ -8546,7 +8548,7 @@ TEST_F(WebFrameTest, FullscreenNestedExit) {
   Fullscreen::RequestFullscreen(*iframe_body);
 
   web_view_impl->DidEnterFullscreen();
-  Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
+  top_doc->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
   UpdateAllLifecyclePhases(web_view_impl);
 
   // We are now in nested fullscreen, with both documents having a non-empty
