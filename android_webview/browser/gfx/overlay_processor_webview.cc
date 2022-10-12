@@ -7,6 +7,7 @@
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
 #include "base/android/android_hardware_buffer_compat.h"
+#include "base/android/build_info.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -577,7 +578,36 @@ class OverlayProcessorWebView::Manager
       transaction.SetCrop(surface, crop_rect);
       transaction.SetBuffer(surface, buffer, resource->TakeBeginReadFence());
     } else {
-      transaction.SetBuffer(surface, nullptr, base::ScopedFD());
+      // Android T has a bug where setting empty buffer to ASurfaceControl will
+      // result in surface completely missing from ASurfaceTransactionStats in
+      // OnComplete callback. To workaround it we create 1x1 buffer instead of
+      // setting empty one.
+      const bool need_empty_buffer_workaround =
+          base::android::BuildInfo::GetInstance()->sdk_int() >=
+          base::android::SDK_VERSION_T;
+      if (need_empty_buffer_workaround) {
+        // We never delete this buffer.
+        static AHardwareBuffer* fake_buffer = nullptr;
+        if (!fake_buffer) {
+          AHardwareBuffer_Desc hwb_desc = {};
+          hwb_desc.width = 1;
+          hwb_desc.height = 1;
+          hwb_desc.format = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
+          hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE;
+          hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
+          hwb_desc.layers = 1;
+
+          // Allocate an AHardwareBuffer.
+          base::AndroidHardwareBufferCompat::GetInstance().Allocate(
+              &hwb_desc, &fake_buffer);
+          if (!fake_buffer) {
+            LOG(ERROR) << "Failed to allocate AHardwareBuffer";
+          }
+        }
+        buffer = fake_buffer;
+      }
+
+      transaction.SetBuffer(surface, buffer, base::ScopedFD());
     }
   }
 
