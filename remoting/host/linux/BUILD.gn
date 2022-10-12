@@ -63,19 +63,8 @@ if (enable_me2me_host) {
     outputs = [ "$root_build_dir/remoting/setup-url-forwarder" ]
   }
 
-  copy("connect_xrandr_outputs_script") {
-    sources = [ "connect_xrandr_outputs.sh" ]
-    outputs = [ "$root_build_dir/remoting/connect-xrandr-outputs" ]
-  }
-
-  copy("connect_xrandr_outputs_desktop_entry") {
-    sources = [ "crd-connect-xrandr-outputs.desktop" ]
-    outputs = [ "$root_build_dir/remoting/crd-connect-xrandr-outputs.desktop" ]
-  }
-
   group("remoting_dev_me2me_host") {
     deps = [
-      ":connect_xrandr_outputs_script",
       ":remoting_me2me_host_copy_host_wrapper",
       ":remoting_me2me_host_copy_script",
       ":remoting_me2me_host_copy_setup_url_forwarder_script",
