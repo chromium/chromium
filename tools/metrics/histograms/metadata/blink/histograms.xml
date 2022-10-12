@@ -850,7 +850,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.EffectiveZoom" units="%" expires_after="2022-11-23">
+<histogram name="Blink.EffectiveZoom" units="%" expires_after="2023-11-23">
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
