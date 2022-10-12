@@ -273,7 +273,10 @@ IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
 // to load a MimeHandlerView. The test passes if MHV loads. This is to catch the
 // potential race between the cross-origin renderer initiated navigation and
 // the navigation to "about:blank" started from the browser.
-IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest, NavigationRaceFromEmbedder) {
+//
+// Disabled on all platforms due to flakiness: https://crbug.com/1182355.
+IN_PROC_BROWSER_TEST_F(ChromeMimeHandlerViewTest,
+                       DISABLED_NavigationRaceFromEmbedder) {
   const std::string kTestName = "test_navigation_race_embedder";
   auto cross_origin_url =
       embedded_test_server()->GetURL("b.com", "/test_page.html").spec();
