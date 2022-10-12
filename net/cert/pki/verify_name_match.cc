@@ -5,7 +5,6 @@
 #include "net/cert/pki/verify_name_match.h"
 
 #include "base/check.h"
-#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
@@ -139,7 +138,7 @@ enum CharsetEnforcement {
       success = NormalizeDirectoryString(ENFORCE_ASCII, output);
       break;
     default:
-      NOTREACHED();
+      // NOTREACHED
       success = false;
       break;
   }

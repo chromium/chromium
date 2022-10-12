@@ -11,7 +11,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/cert/pki/cert_issuer_source.h"
@@ -459,7 +458,7 @@ const ParsedCertificate* CertPathBuilderResultPath::GetTrustedCert() const {
       return nullptr;
   }
 
-  NOTREACHED();
+  assert(0);  // NOTREACHED
   return nullptr;
 }
 

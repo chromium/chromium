@@ -4,8 +4,6 @@
 
 #include "net/cert/pki/trust_store.h"
 
-#include "base/notreached.h"
-
 namespace net {
 
 CertificateTrust CertificateTrust::ForTrustAnchor() {
@@ -49,7 +47,7 @@ bool CertificateTrust::IsTrustAnchor() const {
       return true;
   }
 
-  NOTREACHED();
+  assert(0);  // NOTREACHED
   return false;
 }
 
@@ -64,7 +62,7 @@ bool CertificateTrust::IsDistrusted() const {
       return false;
   }
 
-  NOTREACHED();
+  assert(0);  // NOTREACHED
   return false;
 }
 
@@ -79,7 +77,7 @@ bool CertificateTrust::HasUnspecifiedTrust() const {
       return false;
   }
 
-  NOTREACHED();
+  assert(0);  // NOTREACHED
   return true;
 }
 
