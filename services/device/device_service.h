@@ -51,7 +51,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/device/media_transfer_protocol/mtp_device_manager.h"
-#include "services/device/public/mojom/bluetooth_system.mojom.h"
 #endif
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
@@ -184,8 +183,6 @@ class DeviceService : public mojom::DeviceService {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  void BindBluetoothSystemFactory(
-      mojo::PendingReceiver<mojom::BluetoothSystemFactory> receiver) override;
   void BindMtpManager(
       mojo::PendingReceiver<mojom::MtpManager> receiver) override;
 #endif

@@ -28,9 +28,6 @@ import "services/device/public/mojom/nfc_provider.mojom";
 import "services/device/public/mojom/device_posture_provider.mojom";
 
 [EnableIf=is_chromeos_ash]
-import "services/device/public/mojom/bluetooth_system.mojom";
-
-[EnableIf=is_chromeos_ash]
 import "services/device/public/mojom/mtp_manager.mojom";
 
 [EnableIf=enable_hid]
@@ -79,10 +76,6 @@ interface DeviceService {
   // Binds a HidManager endpoint.
   [EnableIf=enable_hid]
   BindHidManager(pending_receiver<HidManager> receiver);
-
-  // Binds a BluetoothSystemFactory endpoint.
-  [EnableIf=is_chromeos_ash]
-  BindBluetoothSystemFactory(pending_receiver<BluetoothSystemFactory> receiver);
 
   // Binds a MtpManager endpoint.
   [EnableIf=is_chromeos_ash]

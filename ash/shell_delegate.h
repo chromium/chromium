@@ -14,7 +14,6 @@
 #include "chromeos/ui/base/window_pin_type.h"
 #include "components/version_info/channel.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/device/public/mojom/bluetooth_system.mojom-forward.h"
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -101,10 +100,6 @@ class ASH_EXPORT ShellDelegate {
   // Return the height of WebUI tab strip used to determine if a tab has
   // dragged out of it.
   virtual int GetBrowserWebUITabStripHeight() = 0;
-
-  // Binds a BluetoothSystemFactory receiver if possible.
-  virtual void BindBluetoothSystemFactory(
-      mojo::PendingReceiver<device::mojom::BluetoothSystemFactory> receiver) {}
 
   // Binds a fingerprint receiver in the Device Service if possible.
   virtual void BindFingerprint(

@@ -208,11 +208,6 @@ int ChromeShellDelegate::GetBrowserWebUITabStripHeight() {
   return TabStripUILayout::GetContainerHeight();
 }
 
-void ChromeShellDelegate::BindBluetoothSystemFactory(
-    mojo::PendingReceiver<device::mojom::BluetoothSystemFactory> receiver) {
-  content::GetDeviceService().BindBluetoothSystemFactory(std::move(receiver));
-}
-
 void ChromeShellDelegate::BindFingerprint(
     mojo::PendingReceiver<device::mojom::Fingerprint> receiver) {
   content::GetDeviceService().BindFingerprint(std::move(receiver));

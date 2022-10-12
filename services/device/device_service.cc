@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/device/binder_overrides.h"
-#include "services/device/bluetooth/bluetooth_system_factory.h"
 #include "services/device/compute_pressure/pressure_manager_impl.h"
 #include "services/device/device_posture/device_posture_platform_provider.h"
 #include "services/device/device_posture/device_posture_provider_impl.h"
@@ -249,11 +248,6 @@ void DeviceService::BindHidManager(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-void DeviceService::BindBluetoothSystemFactory(
-    mojo::PendingReceiver<mojom::BluetoothSystemFactory> receiver) {
-  BluetoothSystemFactory::CreateFactory(std::move(receiver));
-}
-
 void DeviceService::BindMtpManager(
     mojo::PendingReceiver<mojom::MtpManager> receiver) {
   if (!mtp_device_manager_)

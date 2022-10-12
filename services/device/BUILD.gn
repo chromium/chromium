@@ -72,10 +72,7 @@ source_set("lib") {
   }
 
   if (is_chromeos_ash && use_dbus) {
-    deps += [
-      "//services/device/bluetooth:bluetooth_system",
-      "//services/device/media_transfer_protocol",
-    ]
+    deps += [ "//services/device/media_transfer_protocol" ]
   }
 
   if (is_serial_enabled_platform) {
@@ -189,7 +186,6 @@ source_set("tests") {
     "//services/device/geolocation:test_support",
     "//services/device/power_monitor",
     "//services/device/public/cpp:device_features",
-    "//services/device/public/cpp/bluetooth:bluetooth_tests",
     "//services/device/public/cpp/power_monitor",
     "//services/device/public/mojom",
     "//services/device/wake_lock",
@@ -242,7 +238,6 @@ source_set("tests") {
       "//chromeos/ash/components/dbus/biod:test_support",
       "//chromeos/ash/components/dbus/shill",
       "//chromeos/ash/components/network:test_support",
-      "//services/device/bluetooth:bluetooth_system_tests",
       "//services/device/fingerprint",
       "//third_party/protobuf:protobuf_lite",
     ]

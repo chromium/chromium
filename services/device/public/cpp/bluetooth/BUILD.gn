@@ -8,27 +8,5 @@ source_set("bluetooth") {
     "bluetooth_utils.h",
   ]
 
-  deps = [
-    "//base",
-    "//device/bluetooth",
-    "//device/bluetooth/public/cpp:cpp",
-    "//device/bluetooth/strings",
-    "//services/device/public/mojom",
-    "//ui/base",
-  ]
-}
-
-source_set("bluetooth_tests") {
-  testonly = true
-
-  sources = [ "bluetooth_utils_unittest.cc" ]
-
-  deps = [
-    ":bluetooth",
-    "//base",
-    "//device/bluetooth/strings:strings_grit",
-    "//services/device/public/mojom",
-    "//testing/gtest",
-    "//ui/base",
-  ]
+  deps = [ "//device/bluetooth/public/cpp:cpp" ]
 }

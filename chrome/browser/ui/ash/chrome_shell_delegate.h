@@ -44,9 +44,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   bool ShouldWaitForTouchPressAck(gfx::NativeWindow window) override;
   bool IsTabDrag(const ui::OSExchangeData& drop_data) override;
   int GetBrowserWebUITabStripHeight() override;
-  void BindBluetoothSystemFactory(
-      mojo::PendingReceiver<device::mojom::BluetoothSystemFactory> receiver)
-      override;
   void BindFingerprint(
       mojo::PendingReceiver<device::mojom::Fingerprint> receiver) override;
   void BindMultiDeviceSetup(

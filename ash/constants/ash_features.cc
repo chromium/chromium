@@ -1961,11 +1961,6 @@ BASE_FEATURE(kUseAuthFactors,
              "UseAuthFactors",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables using the BluetoothSystem Mojo interface for Bluetooth operations.
-BASE_FEATURE(kUseBluetoothSystemInAsh,
-             "UseBluetoothSystemInAsh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, the login shelf view is placed in its own widget instead of
 // sharing the shelf widget with other components.
 BASE_FEATURE(kUseLoginShelfWidget,
