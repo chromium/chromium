@@ -10,6 +10,8 @@ export const MARK_RADIUS = 10;
 export const MARK_COLOR =
     'rgba(var(--cros-icon-color-prominent), var(--cros-second-tone-opacity))';
 export const TRAIL_COLOR = 'var(--google-blue-50)';
+export const TRAIL_MAX_OPACITY = 0.3;
+export const MAX_TOUCH_PRESSURE = 255;
 export const SOURCE_OVER = 'source-over';
 export const DESTINATION_OVER = 'destination-over';
 
@@ -19,7 +21,8 @@ export const DESTINATION_OVER = 'destination-over';
  */
 interface DrawingProvider {
   // For touchscreen tester to draw a trail on screen.
-  drawTrail(x0: number, y0: number, x1: number, y1: number): void;
+  drawTrail(x0: number, y0: number, x1: number, y1: number, pressure: number):
+      void;
 
   // For touchscreen tester to draw a trial mark on screen.
   drawTrailMark(x: number, y: number): void;
@@ -88,9 +91,11 @@ export class CanvasDrawingProvider implements DrawingProvider {
   /**
    * Draw a line on canvas.
    */
-  drawTrail(x0: number, y0: number, x1: number, y1: number): void {
+  drawTrail(x0: number, y0: number, x1: number, y1: number, pressure: number):
+      void {
     assert(this.ctx);
-    this.ctx.strokeStyle = TRAIL_COLOR;
+    this.ctx.strokeStyle =
+        `rgba(${TRAIL_COLOR}, ${this.getOpacityFromPressure(pressure)})`;
     this.ctx.beginPath();
     this.ctx.moveTo(x0, y0);
     this.ctx.lineTo(x1, y1);
@@ -109,5 +114,14 @@ export class CanvasDrawingProvider implements DrawingProvider {
     this.ctx.arc(x, y, MARK_RADIUS, 0, 2 * Math.PI);
     this.ctx.fill();
     this.ctx.globalCompositeOperation = DESTINATION_OVER;
+  }
+
+  /**
+   * Get trail's opacity based on touch pressure for touchscreen.
+   * TODO(wenyu): this function needs further fine-tune based on the
+   * distribution of pressure value.
+   */
+  private getOpacityFromPressure(pressure: number): number {
+    return TRAIL_MAX_OPACITY * (pressure / MAX_TOUCH_PRESSURE);
   }
 }

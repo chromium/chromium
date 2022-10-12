@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CanvasDrawingProvider, DESTINATION_OVER, LINE_CAP, LINE_WIDTH, MARK_COLOR, MARK_RADIUS, TRAIL_COLOR} from 'chrome://diagnostics/drawing_provider.js';
+import {CanvasDrawingProvider, DESTINATION_OVER, LINE_CAP, LINE_WIDTH, MARK_COLOR, MARK_RADIUS, MAX_TOUCH_PRESSURE, TRAIL_COLOR, TRAIL_MAX_OPACITY} from 'chrome://diagnostics/drawing_provider.js';
 
 import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 
@@ -61,18 +61,21 @@ export function drawingProviderTestSuite() {
     const y0 = 15;
     const x1 = 20;
     const y1 = 25;
+    const pressure = 100;
     const expectedMock = [
       'beginPath',
       `moveTo:${x0}~${y0}`,
       `lineTo:${x1}~${y1}`,
       'stroke',
     ];
+    const expectedStrokeStyle = `rgba(${TRAIL_COLOR}, ${
+        TRAIL_MAX_OPACITY * (pressure / MAX_TOUCH_PRESSURE)})`;
 
     const drawingProvider = initializeDrawingProvider();
-    drawingProvider.drawTrail(x0, y0, x1, y1);
+    drawingProvider.drawTrail(x0, y0, x1, y1, pressure);
 
     assertDeepEquals(expectedMock, drawingProvider.getCtx().getMock());
-    assertEquals(TRAIL_COLOR, drawingProvider.getStrokeStyle());
+    assertEquals(expectedStrokeStyle, drawingProvider.getStrokeStyle());
   });
 
   test('TestDrawTrailMark', () => {
