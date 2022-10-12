@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/web/common/uikit_ui_util.h"
 
 // UI Util containing functions that require UIKit.

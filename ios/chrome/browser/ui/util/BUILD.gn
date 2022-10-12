@@ -41,7 +41,6 @@ source_set("util") {
     "top_view_controller.mm",
     "transparent_link_button.h",
     "transparent_link_button.mm",
-    "ui_util.h",
     "uikit_ui_util.h",
     "uikit_ui_util.mm",
   ]
