@@ -183,6 +183,7 @@ class MixerInput {
 
  private:
   bool SetFilterGroupInternal(FilterGroup* filter_group);
+  void CreateChannelMixer(int playout_channel, FilterGroup* filter_group);
   // Reads data from the source. Returns the number of frames actually filled
   // (<= |num_frames|).
   int FillAudioData(int num_frames,
@@ -204,6 +205,7 @@ class MixerInput {
   const std::string device_id_;
   const AudioContentType content_type_;
   int source_read_size_ = 0;
+  int playout_channel_ = 0;
 
   FilterGroup* filter_group_ = nullptr;
   scoped_refptr<FilterGroupTag> filter_group_tag_;

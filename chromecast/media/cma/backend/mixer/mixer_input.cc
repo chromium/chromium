@@ -146,6 +146,7 @@ bool MixerInput::SetFilterGroupInternal(FilterGroup* filter_group) {
     filter_group_tag_ = filter_group->tag();
 
     prerender_pipeline_ = filter_group->CreatePrerenderPipeline(num_channels_);
+    playout_channel_ = source_->playout_channel();
 
     AudioPostProcessor2::Config config;
     config.output_sample_rate = output_samples_per_second_;
@@ -154,23 +155,13 @@ bool MixerInput::SetFilterGroupInternal(FilterGroup* filter_group) {
     config.output_frames_per_write = filter_group->input_frames_per_write();
     CHECK(prerender_pipeline_->SetOutputConfig(config));
     prerender_pipeline_->SetContentType(content_type_);
-    prerender_pipeline_->UpdatePlayoutChannel(source_->playout_channel());
+    prerender_pipeline_->UpdatePlayoutChannel(playout_channel_);
     DCHECK_EQ(prerender_pipeline_->GetInputSampleRate(),
               output_samples_per_second_);
     DCHECK_EQ(prerender_pipeline_->NumOutputChannels(), num_channels_);
     prerender_delay_seconds_ = prerender_pipeline_->GetDelaySeconds();
 
-    int effective_channels = num_channels_;
-    ::media::ChannelLayout channel_layout = channel_layout_;
-    const int playout_channel = source_->playout_channel();
-    if (playout_channel != kChannelAll && playout_channel < num_channels_) {
-      effective_channels = 1;
-      channel_layout = ::media::CHANNEL_LAYOUT_MONO;
-    }
-    channel_mixer_ = std::make_unique<InterleavedChannelMixer>(
-        channel_layout, effective_channels,
-        mixer::GuessChannelLayout(filter_group->num_channels()),
-        filter_group->num_channels(), filter_group->input_frames_per_write());
+    CreateChannelMixer(playout_channel_, filter_group);
   }
   filter_group_ = filter_group;
   return (filter_group != nullptr);
@@ -179,6 +170,20 @@ bool MixerInput::SetFilterGroupInternal(FilterGroup* filter_group) {
 void MixerInput::SetPostProcessorConfig(const std::string& name,
                                         const std::string& config) {
   prerender_pipeline_->SetPostProcessorConfig(name, config);
+}
+
+void MixerInput::CreateChannelMixer(int playout_channel,
+                                    FilterGroup* filter_group) {
+  int effective_channels = num_channels_;
+  ::media::ChannelLayout channel_layout = channel_layout_;
+  if (playout_channel != kChannelAll && playout_channel < num_channels_) {
+    effective_channels = 1;
+    channel_layout = ::media::CHANNEL_LAYOUT_MONO;
+  }
+  channel_mixer_ = std::make_unique<InterleavedChannelMixer>(
+      channel_layout, effective_channels,
+      mixer::GuessChannelLayout(filter_group->num_channels()),
+      filter_group->num_channels(), filter_group->input_frames_per_write());
 }
 
 void MixerInput::AddAudioOutputRedirector(
@@ -240,6 +245,13 @@ bool MixerInput::Render(
                            num_output_frames, num_channels_,
                            interleaved_.data());
 
+  const int playout_channel = source_->playout_channel();
+  if (playout_channel != playout_channel_) {
+    prerender_pipeline_->UpdatePlayoutChannel(playout_channel);
+    CreateChannelMixer(playout_channel, filter_group_);
+    playout_channel_ = playout_channel;
+  }
+
   const bool is_silence = (filled == 0);
   prerender_pipeline_->ProcessFrames(interleaved_.data(), num_output_frames,
                                      InstantaneousVolume(), TargetVolume(),
@@ -257,12 +269,12 @@ void MixerInput::RenderInterleaved(int num_output_frames) {
   // bother doing channel selection since the result would be the same as
   // doing nothing anyway.
   float* data = prerender_pipeline_->GetOutputBuffer();
-  const int playout_channel = source_->playout_channel();
-  if (playout_channel != kChannelAll && playout_channel < num_channels_) {
+
+  if (playout_channel_ != kChannelAll && playout_channel_ < num_channels_) {
     // Keep only the samples from the selected channel.
     float* dest = interleaved_.data();
     for (int f = 0; f < num_output_frames; ++f) {
-      dest[f] = data[f * num_channels_ + playout_channel];
+      dest[f] = data[f * num_channels_ + playout_channel_];
     }
     data = dest;
   }
