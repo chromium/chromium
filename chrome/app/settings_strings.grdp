@@ -2019,6 +2019,9 @@
      =1 {About 1 notification a day}
      other {About {NUM_NOTIFICATION} notifications a day}}
   </message>
+  <message name="IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSION_REVIEW_DONE_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is to inform users that there are no more permissions left to review.">
+    All done for now
+  </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_DONT_ALLOW_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is for the action to block notifications from a specific website.">
     Don't allow
   </message>

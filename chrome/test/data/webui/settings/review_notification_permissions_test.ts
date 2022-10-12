@@ -7,7 +7,9 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {SettingsReviewNotificationPermissionsElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrActionMenuElement} from 'chrome://settings/settings.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
@@ -25,6 +27,17 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
   const detail_1 = 'About 4 notifications a day';
   const origin_2 = 'www.example2.com';
   const detail_2 = 'About 1 notification a day';
+
+  const mock_data = [
+    {
+      origin: origin_1,
+      notificationInfoString: detail_1,
+    },
+    {
+      origin: origin_2,
+      notificationInfoString: detail_2,
+    },
+  ];
 
   function assertNotification(
       toastShouldBeOpen: boolean, toastText?: string): void {
@@ -56,16 +69,6 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    const mock_data = [
-      {
-        origin: origin_1,
-        notificationInfoString: detail_1,
-      },
-      {
-        origin: origin_2,
-        notificationInfoString: detail_2,
-      },
-    ];
     browserProxy.setNotificationPermissionReview(mock_data);
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
 
@@ -86,9 +89,9 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
    *     open the action menu for.
    */
   function openActionMenu(index: number) {
-    const menu_empty = testElement.shadowRoot!.querySelector('cr-action-menu');
-    assertTrue(menu_empty === null);
-
+    const menu_empty = testElement.shadowRoot!.querySelector(
+                           'cr-action-menu') as CrActionMenuElement;
+    assertFalse(isVisible(menu_empty.getDialog()));
     const item = testElement.shadowRoot!.querySelectorAll('.cr-row')[index]!;
     (item.querySelector('#actionMenuButton')! as HTMLElement).click();
     flush();
@@ -273,5 +276,32 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     await browserProxy.whenCalled('resetNotificationPermissionForOrigin');
 
     await assertUndo('allowNotificationPermissionForOrigin', 0);
+  });
+
+  test('Completion State', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    flush();
+
+    // Before review, header and list of permissions are visible.
+    assertTrue(isChildVisible(testElement, '#review-header'));
+    assertTrue(isChildVisible(testElement, '.notification-permissions-list'));
+    assertFalse(isChildVisible(testElement, '#done-header'));
+
+    // Through reviewing permissions the permission list is empty and only the
+    // completion info is visible.
+    webUIListenerCallback('notification-permission-review-list-changed', []);
+    await flushTasks();
+    assertFalse(isChildVisible(testElement, '#review-header'));
+    assertFalse(isChildVisible(testElement, '.notification-permissions-list'));
+    assertTrue(isChildVisible(testElement, '#done-header'));
+
+    // The element returns to showing the list of permissions when new items are
+    // added while the completion state is visible.
+    webUIListenerCallback(
+        'notification-permission-review-list-changed', mock_data);
+    await flushTasks();
+    assertTrue(isChildVisible(testElement, '#review-header'));
+    assertTrue(isChildVisible(testElement, '.notification-permissions-list'));
+    assertFalse(isChildVisible(testElement, '#done-header'));
   });
 });

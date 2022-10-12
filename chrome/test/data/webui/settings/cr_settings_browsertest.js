@@ -556,6 +556,10 @@ TEST_F('CrSettingsPrivacyPageTest', 'PrivacyGuide2Disabled', function() {
   runMochaSuite('PrivacyGuide2Disabled');
 });
 
+TEST_F('CrSettingsPrivacyPageTest', 'NotificationPermissionReview', function() {
+  runMochaSuite('NotificationPermissionReview');
+});
+
 // TODO(crbug.com/1043665): flaky crash on Linux Tests (dbg).
 TEST_F(
     'CrSettingsPrivacyPageTest', 'DISABLED_PrivacyPageSoundTests', function() {

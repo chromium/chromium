@@ -13,11 +13,19 @@
   .header-with-icon {
     align-items: center;
     display: flex;
+    padding-top: 15px;
   }
 
   .header-with-icon h2 {
     padding-bottom: 5px;
-    padding-top: 15px;
+    padding-top: 0;
+  }
+
+  .header-with-icon iron-icon {
+    border-radius: 50%;
+    height: 20px;
+    padding: 6px;
+    width: 20px;
   }
 
   .header-group-wrapper {
@@ -28,84 +36,96 @@
     margin-inline-start: 32px;
   }
 
-  #headerIcon {
-    background-color: rgb(236, 243, 254);
-    border-radius: 50%;
-    fill: rgb(27, 110, 243);
-    height: 20px;
-    padding: 6px;
-    width: 20px;
+  iron-icon[icon='settings:notifications-none'] {
+    background-color: var(--google-blue-50);
+    fill: var(--google-blue-600);
   }
 
   @media (prefers-color-scheme: dark) {
-    #headerIcon {
-      background-color: rgb(44, 58, 79);
-      fill: rgb(123, 170, 247);
+    iron-icon[icon='settings:notifications-none'] {
+      background-color: var(--google-blue-300);
+      fill: var(--grey-900-white-4-percent);
+    }
   }
-}
+
+  iron-icon[icon='cr:check'] {
+    background-color: var(--google-green-50);
+    fill: var(--google-green-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    iron-icon[icon='cr:check'] {
+      background-color: var(--google-green-300);
+      fill: var(--grey-900-white-4-percent);
+    }
+  }
 </style>
-<div class="header-with-icon">
-  <iron-icon role="img" icon="settings:notifications-none" id="headerIcon">
-  </iron-icon>
-  <div class="header-group-wrapper">
-    <h2>$i18n{safetyCheckNotificationPermissionReviewPrimaryLabel}</h2>
-    <div class="secondary">
-      $i18n{safetyCheckNotificationPermissionReviewSecondaryLabel}
+<template is="dom-if" if="[[!shouldShowCompletionInfo_]]">
+  <div id="review-header" class="header-with-icon">
+    <iron-icon role="img" icon="settings:notifications-none"></iron-icon>
+    <div class="header-group-wrapper">
+      <h2>$i18n{safetyCheckNotificationPermissionReviewPrimaryLabel}</h2>
+      <div class="secondary">
+        $i18n{safetyCheckNotificationPermissionReviewSecondaryLabel}
+      </div>
     </div>
   </div>
-</div>
-<div class="notification-permissions-list">
-  <template id="notificationPermissionReviewList" is="dom-repeat"
-      items="[[notificationPermissionReviewList_]]">
-    <div class$="cr-row [[getClassForIndex_(index)]]">
-      <site-favicon url="[[item.origin]]"></site-favicon>
-      <div id="displayName_[[index]]" class="display-name cr-padded-text">
-        <div class="site-representation">
-          <span class="url-directionality">[[getDisplayName_(item)]]</span>
+  <div class="notification-permissions-list">
+    <template id="notificationPermissionReviewList" is="dom-repeat"
+        items="[[notificationPermissionReviewList_]]">
+      <div class$="cr-row [[getClassForIndex_(index)]]">
+        <site-favicon url="[[item.origin]]"></site-favicon>
+        <div id="displayName_[[index]]" class="display-name cr-padded-text">
+          <div class="site-representation">
+            <span class="url-directionality">[[getDisplayName_(item)]]</span>
+          </div>
+          <div class="second-line secondary">[[item.notificationInfoString]]
+          </div>
         </div>
-        <div class="second-line secondary">[[item.notificationInfoString]]
-        </div>
+        <cr-icon-button iron-icon="cr20:block" id="block"
+            on-click="onBlockNotificationPermissionClick_"
+            aria-label="[[getAriaLabelText_(
+                actionsEnum_.BLOCK, lastOrigin_)]]"
+            focus-row-control focus-type="show-detail"
+            on-pointerenter="onShowTooltip_" actionable></cr-icon-button>
+        <cr-icon-button id="actionMenuButton" class="icon-more-vert"
+            on-click="onShowActionMenuClick_"
+            aria-label="[[getMoreActionsAriaLabelText_(lastOrigin_)]]"
+            title="$i18n{moreActions}" focus-row-control focus-type="menu">
+        </cr-icon-button>
       </div>
-      <cr-icon-button iron-icon="cr20:block" id="block"
-          on-click="onBlockNotificationPermissionClick_"
-          aria-label="[[getAriaLabelText_(
-              actionsEnum_.BLOCK, lastOrigin_)]]"
-          focus-row-control focus-type="show-detail"
-          on-pointerenter="onShowTooltip_" actionable></cr-icon-button>
-      <cr-icon-button id="actionMenuButton" class="icon-more-vert"
-          on-click="onShowActionMenuClick_"
-          aria-label="[[getMoreActionsAriaLabelText_(lastOrigin_)]]"
-          title="$i18n{moreActions}" focus-row-control focus-type="menu">
-      </cr-icon-button>
-    </div>
-  </template>
-</div>
-<paper-tooltip id="tooltip"
-    fit-to-visible-bounds manual-mode position="top">
-  $i18n{safetyCheckNotificationPermissionReviewDontAllowLabel}
-</paper-tooltip>
-<cr-lazy-render id="actionMenu">
-  <template>
-    <cr-action-menu role-description="$i18n{menu}">
-      <button class="dropdown-item" id="ignore" on-click="onIgnoreClick_"
-          aria-label="[[getAriaLabelText_(
-              actionsEnum_.IGNORE, lastOrigin_)]]">
-        $i18n{safetyCheckNotificationPermissionReviewIgnoreLabel}
-      </button>
-      <button class="dropdown-item" id="reset" on-click="onResetClick_"
-          aria-label="[[getAriaLabelText_(
-              actionsEnum_.RESET, lastOrigin_)]]">
-        $i18n{safetyCheckNotificationPermissionReviewResetLabel}
-      </button>
-    </cr-action-menu>
-  </template>
-</cr-lazy-render>
+    </template>
+  </div>
+  <paper-tooltip id="tooltip"
+      fit-to-visible-bounds manual-mode position="top">
+    $i18n{safetyCheckNotificationPermissionReviewDontAllowLabel}
+  </paper-tooltip>
+  <cr-action-menu role-description="$i18n{menu}">
+    <button class="dropdown-item" id="ignore" on-click="onIgnoreClick_"
+        aria-label="[[getAriaLabelText_(
+            actionsEnum_.IGNORE, lastOrigin_)]]">
+      $i18n{safetyCheckNotificationPermissionReviewIgnoreLabel}
+    </button>
+    <button class="dropdown-item" id="reset" on-click="onResetClick_"
+        aria-label="[[getAriaLabelText_(
+            actionsEnum_.RESET, lastOrigin_)]]">
+      $i18n{safetyCheckNotificationPermissionReviewResetLabel}
+    </button>
+  </cr-action-menu>
+</template>
 <cr-toast id="undoToast" duration="5000">
   <div id="undoNotification">
     [[getUndoNotificationText_(lastUserAction_, lastOrigin_)]]
   </div>
-  <cr-button aria-label="$i18n{undoDescription}"
-      on-click="onUndoButtonClick_">
-      $i18n{safetyCheckNotificationPermissionReviewUndo}
+  <cr-button aria-label="$i18n{undoDescription}" on-click="onUndoButtonClick_">
+    $i18n{safetyCheckNotificationPermissionReviewUndo}
   </cr-button>
 </cr-toast>
+<template is="dom-if" if="[[shouldShowCompletionInfo_]]">
+  <div id="done-header" class="header-with-icon">
+    <iron-icon role="img" icon="cr:check"></iron-icon>
+    <div class="header-group-wrapper">
+      $i18n{safetyCheckNotificationPermissionReviewDoneLabel}
+    </div>
+  </div>
+</template>

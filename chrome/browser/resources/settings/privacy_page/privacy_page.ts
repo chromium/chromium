@@ -22,10 +22,10 @@ import '../settings_shared.css.js';
 import './privacy_guide/privacy_guide_dialog.js';
 
 import {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -39,7 +39,7 @@ import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {ChooserType, ContentSettingsTypes, NotificationSetting} from '../site_settings/constants.js';
-import {SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
+import {NotificationPermission, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {getTemplate} from './privacy_page.html.js';
 import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_page_browser_proxy.js';
@@ -171,6 +171,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         computed: 'computeEnablePrivacyGuidePage_(showPrivacyGuideEntryPoint_)',
       },
 
+      showNotificationPermissionsReview_: {
+        type: Boolean,
+        value: false,
+      },
+
       isPrivacySandboxRestricted_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
@@ -264,6 +269,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableWebBluetoothNewPermissionsBackend_: boolean;
   private showPrivacyGuideEntryPoint_: boolean;
   private enablePrivacyGuidePage_: boolean;
+  private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
   private safetyCheckNotificationPermissionsEnabled_: boolean;
   private focusConfig_: FocusConfig;
@@ -273,6 +279,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       PrivacyPageBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private siteSettingsBrowserProxy_: SiteSettingsPrefsBrowserProxy =
+      SiteSettingsPrefsBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -291,14 +299,21 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         (status: BlockAutoplayStatus) =>
             this.onBlockAutoplayStatusChanged_(status));
 
-    SiteSettingsPrefsBrowserProxyImpl.getInstance()
-        .getCookieSettingDescription()
-        .then(
-            (description: string) => this.cookieSettingDescription_ =
-                description);
+    this.siteSettingsBrowserProxy_.getCookieSettingDescription().then(
+        (description: string) => this.cookieSettingDescription_ = description);
+
     this.addWebUIListener(
         'cookieSettingDescriptionChanged',
         (description: string) => this.cookieSettingDescription_ = description);
+
+    this.addWebUIListener(
+        'notification-permission-review-list-changed',
+        (sites: NotificationPermission[]) =>
+            this.onReviewNotificationPermissionListChanged_(sites));
+
+    this.siteSettingsBrowserProxy_.getNotificationPermissionReview().then(
+        (sites: NotificationPermission[]) =>
+            this.onReviewNotificationPermissionListChanged_(sites));
 
     this.addWebUIListener(
         'is-managed-changed', this.onIsManagedChanged_.bind(this));
@@ -426,6 +441,19 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     // the page is reloaded.
     this.showPrivacyGuideEntryPoint_ =
         this.showPrivacyGuideEntryPoint_ && !syncStatus.childUser;
+  }
+
+  private onReviewNotificationPermissionListChanged_(
+      permissions: NotificationPermission[]) {
+    // The notification permissions review is shown when there are items to
+    // review (provided the feature is enabled). Once visible it remains that
+    // way to show completion info, even if the list is emptied.
+    if (this.showNotificationPermissionsReview_) {
+      return;
+    }
+    this.showNotificationPermissionsReview_ =
+        this.safetyCheckNotificationPermissionsEnabled_ &&
+        permissions.length > 0;
   }
 
   private computeEnablePrivacyGuidePage_() {

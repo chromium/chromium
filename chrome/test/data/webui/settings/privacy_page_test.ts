@@ -510,3 +510,78 @@ suite('HappinessTrackingSurveys', function() {
     assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);
   });
 });
+
+suite('NotificationPermissionReview', function() {
+  let page: SettingsPrivacyPageElement;
+  let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
+
+  const oneElementMockData = [{
+    origin: 'www.example.com',
+    notificationInfoString: 'About 4 notifications a day',
+  }];
+
+  setup(function() {
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_NOTIFICATIONS);
+    siteSettingsBrowserProxy = new TestSiteSettingsPrefsBrowserProxy();
+    SiteSettingsPrefsBrowserProxyImpl.setInstance(siteSettingsBrowserProxy);
+    document.body.innerHTML = '';
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  function createPage() {
+    page = document.createElement('settings-privacy-page');
+    document.body.appendChild(page);
+    return flushTasks();
+  }
+
+  test('InvisibleWhenFeatureDisabled', async function() {
+    loadTimeData.overrideValues({
+      safetyCheckNotificationPermissionsEnabled: false,
+    });
+    siteSettingsBrowserProxy.setNotificationPermissionReview([]);
+    await createPage();
+
+    assertFalse(isChildVisible(page, 'review-notification-permissions'));
+  });
+
+  test('InvisibleWhenFeatureDisabledWithItemsToReview', async function() {
+    loadTimeData.overrideValues({
+      safetyCheckNotificationPermissionsEnabled: false,
+    });
+    siteSettingsBrowserProxy.setNotificationPermissionReview(
+        oneElementMockData);
+    await createPage();
+
+    assertFalse(isChildVisible(page, 'review-notification-permissions'));
+  });
+
+  test('VisibilityWithChangingPermissionList', async function() {
+    loadTimeData.overrideValues({
+      safetyCheckNotificationPermissionsEnabled: true,
+    });
+
+    // The element is not visible when there is nothing to review.
+    siteSettingsBrowserProxy.setNotificationPermissionReview([]);
+    await createPage();
+    assertFalse(isChildVisible(page, 'review-notification-permissions'));
+
+    // The element becomes visible if the list of permissions is no longer
+    // empty.
+    webUIListenerCallback(
+        'notification-permission-review-list-changed', oneElementMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(page, 'review-notification-permissions'));
+
+    // Once visible, it remains visible regardless of list length.
+    webUIListenerCallback('notification-permission-review-list-changed', []);
+    await flushTasks();
+    assertTrue(isChildVisible(page, 'review-notification-permissions'));
+    webUIListenerCallback(
+        'notification-permission-review-list-changed', oneElementMockData);
+    await flushTasks();
+    assertTrue(isChildVisible(page, 'review-notification-permissions'));
+  });
+});
