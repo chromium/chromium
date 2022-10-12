@@ -17,7 +17,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
-#include "chromeos/crosapi/mojom/cert_database.mojom.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #include "components/version_info/version_info.h"
@@ -50,12 +50,6 @@ constexpr char kRootCaCert[] = "root_ca_cert.pem";
 // A PEM-encoded certificate which was signed by the Authority specified in
 // |kRootCaCert|.
 constexpr char kServerCert[] = "ok_cert.pem";
-
-bool IsMojoCertDatabaseVersionAtLeast(int required_version) {
-  DCHECK(chromeos::LacrosService::Get());
-  return (chromeos::LacrosService::Get()->GetInterfaceVersion(
-              crosapi::mojom::CertDatabase::Uuid_) >= required_version);
-}
 
 base::FilePath GetTestCertsPath() {
   base::FilePath test_data_dir;
@@ -277,14 +271,6 @@ IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, ImmediatelyAfterLaunch) {
 // Tests that when Ash imports a new certificate, Lacros receives a
 // notification about it.
 IN_PROC_BROWSER_TEST_F(CertDbInitializerTest, CertsChangedNotificationFromAsh) {
-  if (!IsMojoCertDatabaseVersionAtLeast(
-          crosapi::mojom::CertDatabase::
-              kAddAshCertDatabaseObserverMinVersion) &&
-      !chromeos::IsAshVersionAtLeastForTesting(base::Version({101, 0, 4917}))) {
-    LOG(WARNING) << "Ash is too old, skipping the test.";
-    return;
-  }
-
   auto& keystore_crosapi = chromeos::LacrosService::Get()
                                ->GetRemote<crosapi::mojom::KeystoreService>();
 
