@@ -1016,6 +1016,23 @@
           'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
         }
       },
+      'android-nougat-x86-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'isolate_profile_data',
+          'nougat-x86-emulator',
+          'emulator-4-cores',
+          'linux-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'test_suites': {
+          'gtest_tests': 'android_nougat_emulator_gtests',
+          'junit_tests': 'chromium_junit_tests',
+          'isolated_scripts': 'nougat_isolated_scripts',
+          'scripts': 'chromium_android_scripts',
+        },
+      },
       'android-pie-arm64-coverage-experimental-rel': {
         'mixins': [
           'has_native_resultdb_integration',
@@ -1240,23 +1257,6 @@
         'test_suites': {
           'gtest_tests': 'android_marshmallow_emulator_gtests',
           'isolated_scripts': 'monochrome_public_apk_checker_isolated_script',
-          'scripts': 'chromium_android_scripts',
-        },
-      },
-      'android-nougat-x86-rel': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'isolate_profile_data',
-          'nougat-x86-emulator',
-          'emulator-4-cores',
-          'linux-bionic',
-          'x86-64',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_nougat_emulator_gtests',
-          'junit_tests': 'chromium_junit_tests',
-          'isolated_scripts': 'nougat_isolated_scripts',
           'scripts': 'chromium_android_scripts',
         },
       },

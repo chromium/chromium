@@ -4,3 +4,6 @@
 
 # TODO(crbug.com/1233309)
 -org.chromium.content.browser.GestureDetectorResetTest.testSeparateClicksAreRegisteredOnReload
+
+# TODO(crbug.com/1370059)
+-org.chromium.content.browser.accessibility.WebContentsAccessibilityEventsTest.test_immediateRefresh
