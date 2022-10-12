@@ -54,7 +54,7 @@ public class CredentialLeakDialogBridge {
         if (isChangeAutomaticallyAvailable) {
             headerDrawableId = R.drawable.password_checkup_change_automatically;
         } else {
-            headerDrawableId = PasswordManagerHelper.usesUnifiedPasswordManagerUI()
+            headerDrawableId = PasswordManagerHelper.usesUnifiedPasswordManagerBranding()
                     ? R.drawable.password_check_header_red
                     : R.drawable.password_checkup_warning;
         };

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
-import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerUI;
+import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerBranding;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -71,7 +71,7 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
         mSheetItemListView.setLayoutManager(new LinearLayoutManager(
                 mSheetItemListView.getContext(), LinearLayoutManager.VERTICAL, false));
         mSheetItemListView.setItemAnimator(null);
-        if (usesUnifiedPasswordManagerUI()) {
+        if (usesUnifiedPasswordManagerBranding()) {
             // TODO(crbug.com/1217070): update the layout xml once feature is rolled out
             final TextView titleTextView = mContentView.findViewById(R.id.sheet_title);
             titleTextView.setText(R.string.all_passwords_bottom_sheet_title_gpm);
@@ -106,7 +106,7 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
     void setWarning(CharSequence warningMessage) {
         final TextView warningTextView = mContentView.findViewById(R.id.sheet_warning);
         warningTextView.setText(warningMessage);
-        if (usesUnifiedPasswordManagerUI()) {
+        if (usesUnifiedPasswordManagerBranding()) {
             // TODO(crbug.com/1217070): remove from the layout xml once feature roll out
             final TextView warningSecondTextView =
                     mContentView.findViewById(R.id.sheet_warning_second);

@@ -91,7 +91,7 @@ std::u16string GetDescription(CredentialLeakType leak_type) {
   const bool uses_password_manager_google_branding = true;
 #elif BUILDFLAG(IS_ANDROID)
   const bool uses_password_manager_updated_naming =
-      password_manager::features::UsesUnifiedPasswordManagerUi();
+      password_manager::features::UsesUnifiedPasswordManagerBranding();
   const bool uses_password_manager_google_branding =
       password_manager_util::UsesPasswordManagerGoogleBranding(
           IsSyncingPasswordsNormally(leak_type));
@@ -152,7 +152,7 @@ std::u16string GetTitle(CredentialLeakType leak_type) {
           password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
 #elif BUILDFLAG(IS_ANDROID)
   const bool uses_password_manager_updated_naming =
-      password_manager::features::UsesUnifiedPasswordManagerUi();
+      password_manager::features::UsesUnifiedPasswordManagerBranding();
 #else
   const bool uses_password_manager_updated_naming = true;
 #endif
@@ -239,7 +239,7 @@ LeakDialogTraits::LeakDialogTraits(CredentialLeakType leak_type)
       uses_password_manager_google_branding_(true)
 #elif BUILDFLAG(IS_ANDROID)
       uses_password_manager_updated_naming_(
-          password_manager::features::UsesUnifiedPasswordManagerUi()),
+          password_manager::features::UsesUnifiedPasswordManagerBranding()),
       uses_password_manager_google_branding_(
           password_manager_util::UsesPasswordManagerGoogleBranding(
               IsSyncingPasswordsNormally(leak_type)))

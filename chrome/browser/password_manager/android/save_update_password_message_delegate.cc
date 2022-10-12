@@ -191,7 +191,7 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
 
   std::u16string description = GetMessageDescription(
       pending_credentials, update_password,
-      password_manager::features::UsesUnifiedPasswordManagerUi());
+      password_manager::features::UsesUnifiedPasswordManagerBranding());
   message_->SetDescription(description);
 
   update_password_ = update_password;
@@ -200,7 +200,7 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(
       GetPrimaryButtonTextId(update_password, use_followup_button_text)));
 
-  if (password_manager::features::UsesUnifiedPasswordManagerUi()) {
+  if (password_manager::features::UsesUnifiedPasswordManagerBranding()) {
     message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
         IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
     message_->DisableIconTint();
@@ -224,7 +224,7 @@ void SaveUpdatePasswordMessageDelegate::SetupCogMenu(
   message->SetSecondaryIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
   message->SetSecondaryButtonMenuText(l10n_util::GetStringUTF16(
-      password_manager::features::UsesUnifiedPasswordManagerUi()
+      password_manager::features::UsesUnifiedPasswordManagerBranding()
           ? IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM
           : IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON));
   message->SetSecondaryActionCallback(base::BindRepeating(

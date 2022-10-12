@@ -285,6 +285,13 @@ BASE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly,
 BASE_FEATURE(kUnifiedPasswordManagerReenrollment,
              "UnifiedPasswordManagerReenrollment",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables all UI branding changes related to Unified Password Manager:
+// the strings containing 'Password Manager' and the password manager
+// icon.
+BASE_FEATURE(kUnifiedPasswordManagerAndroidBranding,
+             "UnifiedPasswordManagerAndroidBranding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables support of sending additional votes on username first flow. The votes
@@ -381,9 +388,12 @@ bool UsesUnifiedPasswordManagerUi() {
   NOTREACHED() << "Define explicitly whether UI is required!";
   return false;
 }
-#endif  // IS_ANDROID
 
-#if BUILDFLAG(IS_ANDROID)
+bool UsesUnifiedPasswordManagerBranding() {
+  return (UsesUnifiedPasswordManagerUi() ||
+          base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroidBranding));
+}
+
 bool RequiresMigrationForUnifiedPasswordManager() {
   if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid))
     return false;
@@ -399,9 +409,7 @@ bool RequiresMigrationForUnifiedPasswordManager() {
   NOTREACHED() << "Define explicitly whether migration is required!";
   return false;
 }
-#endif  // IS_ANDROID
 
-#if BUILDFLAG(IS_ANDROID)
 bool ManagesLocalPasswordsInUnifiedPasswordManager() {
   if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerAndroid))
     return false;

@@ -31,7 +31,7 @@ class PasswordManagerDialogViewBinder {
             // TODO(crbug.com/1271552): Cropping was needed for previous image version.
             // Depending on feature status, remove this or inline the cropping into
             // password_manager_dialog_with_help_button.xml.
-            if (!PasswordManagerHelper.usesUnifiedPasswordManagerUI()) {
+            if (!PasswordManagerHelper.usesUnifiedPasswordManagerBranding()) {
                 dialogView.cropImageToText();
             }
         } else if (TITLE == propertyKey) {

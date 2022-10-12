@@ -59,7 +59,7 @@ public class PasswordGenerationDialogMediator {
                                 R.string.password_generation_dialog_use_password_button)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
                                 R.string.password_generation_dialog_cancel_button);
-        if (PasswordManagerHelper.usesUnifiedPasswordManagerUI()) {
+        if (PasswordManagerHelper.usesUnifiedPasswordManagerBranding()) {
             builder = builder.with(ModalDialogProperties.TITLE_ICON, customView.getContext(),
                                      new PasswordManagerResourceProviderImpl()
                                              .getPasswordManagerIcon())

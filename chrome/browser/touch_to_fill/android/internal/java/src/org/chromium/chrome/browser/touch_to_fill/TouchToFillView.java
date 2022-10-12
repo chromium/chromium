@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.touch_to_fill;
 
-import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerUI;
+import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerBranding;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -77,7 +77,7 @@ class TouchToFillView implements BottomSheetContent {
          */
         private int selectBackgroundDrawable(
                 int position, boolean containsFillButton, int itemCount) {
-            if (!usesUnifiedPasswordManagerUI()) {
+            if (!usesUnifiedPasswordManagerBranding()) {
                 return R.drawable.touch_to_fill_credential_background;
             }
             if (containsFillButton) { // Round all the corners of the only item.
@@ -167,7 +167,7 @@ class TouchToFillView implements BottomSheetContent {
                                                               : View.LAYOUT_DIRECTION_LTR;
         mContentView.setLayoutDirection(layoutDirection);
 
-        if (usesUnifiedPasswordManagerUI()) {
+        if (usesUnifiedPasswordManagerBranding()) {
             mSheetItemListView.addItemDecoration(new HorizontalDividerItemDecoration(
                     mContentView.getResources().getDimensionPixelSize(
                             R.dimen.touch_to_fill_sheet_items_spacing),
@@ -371,10 +371,10 @@ class TouchToFillView implements BottomSheetContent {
             totalHeight += getHeightWithMargins(child, false);
         }
         // Since the last element is fully visible, add the conclusive margin.
-        totalHeight +=
-                getContentView().getResources().getDimensionPixelSize(usesUnifiedPasswordManagerUI()
-                                ? R.dimen.touch_to_fill_sheet_bottom_padding_button_modern
-                                : R.dimen.touch_to_fill_sheet_bottom_padding_button);
+        totalHeight += getContentView().getResources().getDimensionPixelSize(
+                usesUnifiedPasswordManagerBranding()
+                        ? R.dimen.touch_to_fill_sheet_bottom_padding_button_modern
+                        : R.dimen.touch_to_fill_sheet_bottom_padding_button);
         return totalHeight;
     }
 
@@ -425,7 +425,8 @@ class TouchToFillView implements BottomSheetContent {
     private @Px int getInsetDisplayWidth() {
         return mContentView.getContext().getResources().getDisplayMetrics().widthPixels
                 - 2
-                * mContentView.getResources().getDimensionPixelSize(usesUnifiedPasswordManagerUI()
+                * mContentView.getResources().getDimensionPixelSize(
+                        usesUnifiedPasswordManagerBranding()
                                 ? R.dimen.touch_to_fill_sheet_margin_modern
                                 : R.dimen.touch_to_fill_sheet_margin);
     }

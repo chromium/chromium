@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.password_manager;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING;
 
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
@@ -341,6 +342,11 @@ public class PasswordManagerHelper {
         }
         assert false : "Whether to use UI is undefined for variation: " + variation;
         return false;
+    }
+
+    public static boolean usesUnifiedPasswordManagerBranding() {
+        return usesUnifiedPasswordManagerUI()
+                || ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID_BRANDING);
     }
 
     // TODO(http://crbug.com/1371422): Remove method and manage eviction from native code

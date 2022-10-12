@@ -35,7 +35,7 @@ void GeneratedPasswordSavedMessageDelegate::HandleDismissCallback(
 void GeneratedPasswordSavedMessageDelegate::ShowPrompt(
     content::WebContents* web_contents,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> saved_form) {
-  using password_manager::features::UsesUnifiedPasswordManagerUi;
+  using password_manager::features::UsesUnifiedPasswordManagerBranding;
 
   message_ = std::make_unique<messages::MessageWrapper>(
       messages::MessageIdentifier::GENERATED_PASSWORD_SAVED,
@@ -48,7 +48,7 @@ void GeneratedPasswordSavedMessageDelegate::ShowPrompt(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CONFIRM_SAVED_TITLE));
 
   std::u16string description;
-  if (UsesUnifiedPasswordManagerUi()) {
+  if (UsesUnifiedPasswordManagerBranding()) {
     description = l10n_util::GetStringUTF16(
         IDS_PASSWORD_MANAGER_GENERATED_PASSWORD_SAVED_MESSAGE_DESCRIPTION);
   } else {
@@ -63,7 +63,7 @@ void GeneratedPasswordSavedMessageDelegate::ShowPrompt(
 
   message_->SetDescription(description);
   message_->SetPrimaryButtonText(l10n_util::GetStringUTF16(IDS_OK));
-  if (UsesUnifiedPasswordManagerUi()) {
+  if (UsesUnifiedPasswordManagerBranding()) {
     message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
         IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP));
     message_->DisableIconTint();

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.hasChosenToSyncPasswords;
+import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerBranding;
 import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerUI;
 
 import android.content.Context;
@@ -340,7 +341,7 @@ public class MainSettings extends PreferenceFragmentCompat
 
     private void updatePasswordsPreference() {
         Preference passwordsPreference = findPreference(PREF_PASSWORDS);
-        if (usesUnifiedPasswordManagerUI()) {
+        if (usesUnifiedPasswordManagerBranding()) {
             // TODO(crbug.com/1217070): Move this to the layout xml once the feature is rolled out
             passwordsPreference.setTitle(getPasswordsPreferenceElementTitle());
         }

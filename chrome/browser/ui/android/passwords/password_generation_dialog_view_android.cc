@@ -60,7 +60,7 @@ void PasswordGenerationDialogViewAndroid::Show(
   std::u16string explanation_text;
   if (account_info.has_value()) {
     explanation_text = l10n_util::GetStringFUTF16(
-        password_manager::features::UsesUnifiedPasswordManagerUi()
+        password_manager::features::UsesUnifiedPasswordManagerBranding()
             ? IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION_UPM_BRANDED
             : IDS_PASSWORD_GENERATION_DIALOG_DESCRIPTION,
         base::UTF8ToUTF16(account_info.value().email));

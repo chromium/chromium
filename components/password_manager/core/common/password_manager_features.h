@@ -80,6 +80,7 @@ BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroid);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerErrorMessages);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerReenrollment);
+BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroidBranding);
 #endif
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
 
@@ -196,18 +197,19 @@ bool IsAutomatedPasswordChangeEnabled();
 
 #if BUILDFLAG(IS_ANDROID)
 // Returns true if the unified password manager feature is active and in a stage
-// that allows to use the new UI.
+// that allows to use the new feature end-to-end.
 bool UsesUnifiedPasswordManagerUi();
-#endif  // IS_ANDROID
 
-#if BUILDFLAG(IS_ANDROID)
+// Returns true when unified password manager strings & icons should be
+// displayed. It provides the option to enable the UPM branding UI earlier then
+// the UPM feature itself.
+bool UsesUnifiedPasswordManagerBranding();
+
 // Returns true if the unified password manager feature is active and in a stage
 // that requires migrating existing credentials. Independent of
 // whether only non-syncable data needs to be migrated or full credentials.
 bool RequiresMigrationForUnifiedPasswordManager();
-#endif  // IS_ANDROID
 
-#if BUILDFLAG(IS_ANDROID)
 // Returns true if the unified password manager feature is active and in a stage
 // that uses the unified storage for passwords that remain local on the device.
 bool ManagesLocalPasswordsInUnifiedPasswordManager();
