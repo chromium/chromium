@@ -86073,6 +86073,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Cached StyleSheetContents was reused"/>
 </enum>
 
+<enum name="RestoreFailedNoParentType">
+  <int value="0" label="Single item, no parent"/>
+  <int value="1" label="Multiple items all with same parent"/>
+  <int value="2" label="Multiple items with different parents"/>
+  <int value="3"
+      label="Multiple items with some parents removed, some still existing"/>
+</enum>
+
 <enum name="RestoreResult">
   <int value="0" label="Finish"/>
   <int value="1" label="Not finish"/>

@@ -13,7 +13,7 @@ import {FileOperationProgressEvent} from '../../common/js/file_operation_common.
 import {FileType} from '../../common/js/file_type.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
 import {metrics} from '../../common/js/metrics.js';
-import {TrashEntry} from '../../common/js/trash.js';
+import {RestoreFailedType, RestoreFailedTypesUMA, RestoreFailedUMA, TrashEntry} from '../../common/js/trash.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {xfm} from '../../common/js/xfm.js';
@@ -1306,6 +1306,9 @@ CommandHandler
     if (failedParents && failedParents.length > 0) {
       // Only a single item is being trashed and the parent doesn't exist.
       if (failedParents.length === 1 && infoEntries.length === 0) {
+        metrics.recordEnum(
+            RestoreFailedUMA, RestoreFailedType.SINGLE_ITEM,
+            RestoreFailedTypesUMA);
         fileManager.ui.alertDialog.show(
             strf('CANT_RESTORE_SINGLE_ITEM', failedParents[0].parentName));
         return;
@@ -1317,18 +1320,28 @@ CommandHandler
             p => p.parentName === failedParents[0].parentName);
         // All the items were from the same parent folder.
         if (isParentFolderSame) {
+          metrics.recordEnum(
+              RestoreFailedUMA, RestoreFailedType.MULTIPLE_ITEMS_SAME_PARENTS,
+              RestoreFailedTypesUMA);
           fileManager.ui.alertDialog.show(strf(
               'CANT_RESTORE_MULTIPLE_ITEMS_SAME_PARENTS',
               failedParents[0].parentName));
           return;
         }
         // All the items are from different parent folders.
+        metrics.recordEnum(
+            RestoreFailedUMA,
+            RestoreFailedType.MULTIPLE_ITEMS_DIFFERENT_PARENTS,
+            RestoreFailedTypesUMA);
         fileManager.ui.alertDialog.show(
             str('CANT_RESTORE_MULTIPLE_ITEMS_DIFFERENT_PARENTS'));
         return;
       }
       // A mix of items with parents and without parents are attempting to be
       // restored.
+      metrics.recordEnum(
+          RestoreFailedUMA, RestoreFailedType.MULTIPLE_ITEMS_MIXED,
+          RestoreFailedTypesUMA);
       fileManager.ui.alertDialog.show(str('CANT_RESTORE_SOME_ITEMS'));
       return;
     }

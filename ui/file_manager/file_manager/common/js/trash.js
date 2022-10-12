@@ -567,3 +567,34 @@ export function createTrashReaders(volumeManager) {
   });
   return readers;
 }
+
+// The UMA to track the enum that is reported below.
+export const RestoreFailedUMA = 'Trash.RestoreFailedNoParent';
+
+export const RestoreFailedType = {
+  // A single item has attempted to be restored but the parent has been removed.
+  SINGLE_ITEM: 'single-item',
+
+  // Multiple items have attempted to be restored where they all shared the same
+  // parent folder, but it has been removed.
+  MULTIPLE_ITEMS_SAME_PARENTS: 'multiple-items-same-parents',
+
+  // Multiple items have attempted to be restored and they all have different
+  // parent folders but all the parent folders have been removed.
+  MULTIPLE_ITEMS_DIFFERENT_PARENTS: 'multiple-items-different-parents',
+
+  // Multiple items have attempted to be restored from different parents with
+  // some parent folders still existing and some have been removed.
+  MULTIPLE_ITEMS_MIXED: 'multiple-items-mixed',
+};
+
+/**
+ * Keep the order of this in sync with RestoreFailedNoParentType in
+ * tools/metrics/histograms/enums.xml.
+ */
+export const RestoreFailedTypesUMA = [
+  RestoreFailedType.SINGLE_ITEM,                       // 0
+  RestoreFailedType.MULTIPLE_ITEMS_SAME_PARENTS,       // 1
+  RestoreFailedType.MULTIPLE_ITEMS_DIFFERENT_PARENTS,  // 2
+  RestoreFailedType.MULTIPLE_ITEMS_MIXED,              // 3
+];
