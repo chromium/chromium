@@ -43,16 +43,6 @@ class FetchUrlTest : public testing::Test,
       : io_thread_("io"),
         response_(kSendHello),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-    // The first executed test constructs a CacheTransparencySettings singletone
-    // inside services/network/url_loader.cc.
-    // This object is affined to the sequence that created it, i.e.
-    // to the IO sequence created and destroyed by the first test.
-    // The following test creates a new IO sequence and tries to use there
-    // the singletone affined to the already destroyed sequence.
-    // This leads to the sequence affinity check failure.
-    // In order to alleviate this we destroy this singletone before each test.
-    network::URLLoader::ResetPervasivePayloadsListForTesting();
-
     CHECK(io_thread_.StartWithOptions(
         base::Thread::Options(base::MessagePumpType::IO, 0)));
 

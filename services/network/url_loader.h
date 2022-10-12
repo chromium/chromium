@@ -70,8 +70,9 @@ class OriginAccessList;
 
 constexpr size_t kMaxFileUploadRequestsPerBatch = 64;
 
-class NetToMojoPendingBuffer;
+class CacheTransparencySettings;
 class KeepaliveStatisticsRecorder;
+class NetToMojoPendingBuffer;
 class ScopedThrottlingToken;
 class URLLoaderFactory;
 
@@ -178,7 +179,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
-      bool third_party_cookies_enabled);
+      bool third_party_cookies_enabled,
+      const CacheTransparencySettings* cache_transparency_settings);
 
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
@@ -295,8 +297,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       const net::IsolationInfo& factory_isolation_info,
       bool automatically_assign_isolation_info,
       const ResourceRequest& request);
-
-  static void ResetPervasivePayloadsListForTesting();
 
  private:
   // This class is used to set the URLLoader as user data on a URLRequest. This
@@ -634,6 +634,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       url_loader_network_observer_ = nullptr;
   const mojo::Remote<mojom::DevToolsObserver> devtools_observer_remote_;
   const raw_ptr<mojom::DevToolsObserver> devtools_observer_ = nullptr;
+
+  const raw_ptr<const CacheTransparencySettings> cache_transparency_settings_;
 
   // Indicates |url_request_| is fetch upload request and that has streaming
   // body.

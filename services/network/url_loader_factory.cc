@@ -341,7 +341,7 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
       std::move(keepalive_statistics_recorder), std::move(trust_token_factory),
       std::move(cookie_observer), std::move(url_loader_network_observer),
       std::move(devtools_observer), std::move(accept_ch_frame_observer),
-      third_party_cookies_enabled);
+      third_party_cookies_enabled, context_->cache_transparency_settings());
 
   if (context_->GetMemoryCache())
     loader->SetMemoryCache(context_->GetMemoryCache()->GetWeakPtr());

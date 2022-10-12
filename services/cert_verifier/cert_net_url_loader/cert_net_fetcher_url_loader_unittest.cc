@@ -186,8 +186,6 @@ class CertNetFetcherURLLoaderTest : public PlatformTest {
   }
 
   void TeardownOnNetworkThread() {
-    network::URLLoader::ResetPervasivePayloadsListForTesting();
-
     if (!test_util_)
       return;
     test_util_->fetcher()->Shutdown();

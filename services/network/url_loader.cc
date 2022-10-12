@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/containers/flat_map.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
@@ -25,7 +24,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
@@ -61,6 +59,7 @@
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "services/network/cache_transparency_settings.h"
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 #include "services/network/data_pipe_element_reader.h"
 #include "services/network/network_service_memory_cache_writer.h"
@@ -372,134 +371,6 @@ T* PtrOrFallback(const mojo::Remote<T>& remote, T* fallback) {
   return remote.is_bound() ? remote.get() : fallback;
 }
 
-// Feature configuration for Cache Transparency is expensive to calculate, so it
-// is cached. Not threadsafe.
-class CacheTransparencySettings {
- public:
-  // This is not threadsafe, but it doesn't need to be.
-  static const CacheTransparencySettings& Get() {
-    if (!singleton_instance_) {
-      singleton_instance_ = new CacheTransparencySettings();
-    }
-    return *singleton_instance_;
-  }
-
-  static void ResetForTesting() {
-    // `singleton_instance_` needs to be leaked at shutdown but not during
-    // tests.
-    delete singleton_instance_;
-    singleton_instance_ = nullptr;
-  }
-
-  CacheTransparencySettings(CacheTransparencySettings&) = delete;
-  CacheTransparencySettings& operator=(const CacheTransparencySettings&) =
-      delete;
-
-  bool enabled() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return enabled_;
-  }
-
-  bool PervasivePayloadsEnabled() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return pervasive_payloads_enabled_;
-  }
-
-  absl::optional<int> GetIndexForURL(const GURL& url) const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    if (!pervasive_payloads_enabled_ || !url.is_valid())
-      return absl::nullopt;
-
-    auto it = map_.find(url.spec());
-    if (it == map_.end()) {
-      return absl::nullopt;
-    }
-    return std::distance(map_.begin(), it);
-  }
-
-  absl::optional<std::string> GetChecksumForURL(const GURL& url) const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    if (!enabled_ || !url.is_valid())
-      return absl::nullopt;
-
-    auto it = map_.find(url.spec());
-    if (it == map_.end()) {
-      return absl::nullopt;
-    }
-    return it->second;
-  }
-
- private:
-  using PervasivePayloadsMap = base::flat_map<std::string, std::string>;
-
-  CacheTransparencySettings()
-      : enabled_(
-            base::FeatureList::IsEnabled(features::kCacheTransparency) &&
-            base::FeatureList::IsEnabled(features::kPervasivePayloadsList)),
-        pervasive_payloads_enabled_(
-            base::FeatureList::IsEnabled(features::kPervasivePayloadsList)),
-        map_(CreateMap()) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  }
-
-  ~CacheTransparencySettings() = default;
-
-  PervasivePayloadsMap CreateMap() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!pervasive_payloads_enabled_)
-      return PervasivePayloadsMap();
-
-    const std::string comma_separated =
-        features::kCacheTransparencyPervasivePayloads.Get();
-    auto split = base::SplitStringPiece(
-        comma_separated, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (split.empty()) {
-      // The code below safely produces an empty map in this case.
-      DLOG(WARNING) << "Pervasive payload list is empty.";
-    } else {
-      const auto version_string = split[0];
-      int version_number = 0;
-      if (StringToInt(version_string, &version_number)) {
-        base::UmaHistogramExactLinear("Network.CacheTransparency.ListVersion",
-                                      version_number, 101);
-      } else {
-        LOG(WARNING) << "Could not parse pervasive payload version number";
-      }
-      // The number of items cannot be large, so this O(N) algorithm is
-      // acceptable.
-      split.erase(split.begin());
-    }
-    if (split.size() % 2 == 1) {
-      DLOG(WARNING)
-          << "Pervasive payload list contains an odd number of elements."
-          << comma_separated;
-    }
-    using Container = PervasivePayloadsMap::container_type;
-    Container pairs;
-    pairs.reserve(split.size() / 2);
-    // `split` has to fit in memory, therefore split.size() cannot be the
-    // largest possible value, therefore adding 1 to i will not overflow.
-    for (size_t i = 0; i + 1 < split.size(); i += 2) {
-      pairs.emplace_back(split[i], split[i + 1]);
-    }
-    return PervasivePayloadsMap(std::move(pairs));
-  }
-
-  SEQUENCE_CHECKER(sequence_checker_);
-  const bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
-  const bool pervasive_payloads_enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
-  const PervasivePayloadsMap map_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // This is normally leaked to avoid running a destructor. It's only
-  // re-allocated in tests.
-  static CacheTransparencySettings* singleton_instance_;
-};
-
-CacheTransparencySettings* CacheTransparencySettings::singleton_instance_ =
-    nullptr;
-
 bool HasFlagsIncompatibleWithSingleKeyedCache(int load_flags) {
   return load_flags &
          (net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
@@ -582,7 +453,8 @@ URLLoader::URLLoader(
         url_loader_network_observer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
-    bool third_party_cookies_enabled)
+    bool third_party_cookies_enabled,
+    const CacheTransparencySettings* cache_transparency_settings)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
@@ -629,6 +501,7 @@ URLLoader::URLLoader(
       devtools_observer_remote_(std::move(devtools_observer)),
       devtools_observer_(PtrOrFallback(devtools_observer_remote_,
                                        context.GetDevToolsObserver())),
+      cache_transparency_settings_(cache_transparency_settings),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       allow_http1_for_streaming_upload_(
           request.request_body &&
@@ -742,8 +615,9 @@ URLLoader::URLLoader(
 
   int request_load_flags = request.load_flags;
 
-  if (CacheTransparencySettings::Get().PervasivePayloadsEnabled()) {
-    auto index = CacheTransparencySettings::Get().GetIndexForURL(request.url);
+  if (cache_transparency_settings_ &&
+      cache_transparency_settings_->pervasive_payloads_enabled()) {
+    auto index = cache_transparency_settings_->GetIndexForURL(request.url);
     if (index.has_value()) {
       // Remember that a pervasive payload was found so we can annotate the
       // URLLoaderCompletionStatus with it later.
@@ -755,10 +629,11 @@ URLLoader::URLLoader(
     }
   }
 
-  if (CacheTransparencySettings::Get().enabled() &&
+  if (cache_transparency_settings_ &&
+      cache_transparency_settings_->cache_transparency_enabled() &&
       ThirdPartyCookiesEnabled()) {
     auto checksum =
-        CacheTransparencySettings::Get().GetChecksumForURL(request.url);
+        cache_transparency_settings_->GetChecksumForURL(request.url);
     if (checksum.has_value()) {
       CacheTransparencyCacheNotUsedReason cache_not_used_reason =
           CacheTransparencyCacheNotUsedReason::kTryingSingleKeyedCache;
@@ -1482,11 +1357,6 @@ absl::optional<net::IsolationInfo> URLLoader::GetIsolationInfo(
   }
 
   return absl::nullopt;
-}
-
-// static
-void URLLoader::ResetPervasivePayloadsListForTesting() {
-  CacheTransparencySettings::ResetForTesting();
 }
 
 void URLLoader::OnAuthRequired(net::URLRequest* url_request,

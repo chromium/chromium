@@ -83,6 +83,7 @@
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_test_job.h"
 #include "net/url_request/url_request_test_util.h"
+#include "services/network/cache_transparency_settings.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/ip_address_space_util.h"
@@ -661,7 +662,8 @@ struct URLLoaderOptions {
         keepalive_request_size, std::move(keepalive_statistics_recorder),
         std::move(trust_token_helper_factory), std::move(cookie_observer),
         std::move(url_loader_network_observer), std::move(devtools_observer),
-        std::move(accept_ch_frame_observer), third_party_cookies_enabled);
+        std::move(accept_ch_frame_observer), third_party_cookies_enabled,
+        cache_transparency_settings);
   }
 
   int32_t options = mojom::kURLLoadOptionNone;
@@ -681,6 +683,7 @@ struct URLLoaderOptions {
   mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer =
       mojo::NullRemote();
   bool third_party_cookies_enabled = true;
+  CacheTransparencySettings* cache_transparency_settings = nullptr;
 
  private:
   bool used = false;
@@ -6838,16 +6841,6 @@ class URLLoaderCacheTransparencyTest : public URLLoaderTest {
         features::kCacheTransparency);
     split_cache_feature_.InitAndEnableFeature(
         net::features::kSplitCacheByNetworkIsolationKey);
-
-    // The URL changes for every test, so we have to force the list to be
-    // re-read from the feature parameter.
-    URLLoader::ResetPervasivePayloadsListForTesting();
-  }
-
-  void TearDown() override {
-    URLLoaderTest::TearDown();
-
-    URLLoader::ResetPervasivePayloadsListForTesting();
   }
 
   void OnServerReceivedRequest(
@@ -6871,9 +6864,12 @@ class URLLoaderCacheTransparencyTest : public URLLoaderTest {
     std::unique_ptr<URLLoader> url_loader;
     context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
     context().mutable_factory_params().is_corb_enabled = false;
+    CacheTransparencySettings cache_transparency_settings;
     URLLoaderOptions url_loader_options;
     url_loader_options.third_party_cookies_enabled =
         third_party_cookies_enabled_;
+    url_loader_options.cache_transparency_settings =
+        &cache_transparency_settings;
     url_loader = url_loader_options.MakeURLLoader(
         context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.BindNewPipeAndPassReceiver(), request, client->CreateRemote());
