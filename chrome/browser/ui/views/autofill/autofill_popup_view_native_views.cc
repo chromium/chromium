@@ -1437,8 +1437,11 @@ void AutofillPopupViewNativeViews::OnSelectedRowChanged(
     rows_[*previous_row_selection]->SetSelected(false);
   }
 
-  if (current_row_selection)
-    rows_[*current_row_selection]->SetSelected(true);
+  if (current_row_selection) {
+    AutofillPopupRowView* current_row = rows_[*current_row_selection];
+    current_row->SetSelected(true);
+    current_row->ScrollViewToVisible();
+  }
 
   NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
 }
