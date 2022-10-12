@@ -88,6 +88,8 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     assertFalse(testElement.$.expandIcon.hidden);
     assertEquals(
         'false', testElement.$.toggleButton.getAttribute('aria-expanded'));
+    assertEquals(
+        'false', testElement.$.expandIcon.getAttribute('aria-expanded'));
     const originList = testElement.$.originList.get();
     assertTrue(originList.classList.contains('iron-collapse-closed'));
     assertEquals('true', originList.getAttribute('aria-hidden'));
@@ -95,6 +97,8 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     testElement.$.toggleButton.click();
     assertEquals(
         'true', testElement.$.toggleButton.getAttribute('aria-expanded'));
+    assertEquals(
+        'true', testElement.$.expandIcon.getAttribute('aria-expanded'));
     assertTrue(originList.classList.contains('iron-collapse-opened'));
     assertEquals('false', originList.getAttribute('aria-hidden'));
   });

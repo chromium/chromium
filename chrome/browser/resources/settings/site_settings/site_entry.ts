@@ -447,6 +447,8 @@ export class SiteEntryElement extends SiteEntryElementBase {
     collapseChild.toggle();
     this.$.toggleButton.setAttribute(
         'aria-expanded', collapseChild.opened ? 'true' : 'false');
+    this.$.expandIcon.setAttribute(
+        'aria-expanded', collapseChild.opened ? 'true' : 'false');
     this.$.expandIcon.toggleClass('icon-expand-more');
     this.$.expandIcon.toggleClass('icon-expand-less');
     this.fire('iron-resize');
