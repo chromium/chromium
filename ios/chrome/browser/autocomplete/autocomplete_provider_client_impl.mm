@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #import "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #import "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
+#import "ios/chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
@@ -136,12 +137,14 @@ AutocompleteProviderClientImpl::GetDocumentSuggestionsService(
 
 ZeroSuggestCacheService*
 AutocompleteProviderClientImpl::GetZeroSuggestCacheService() {
-  return nullptr;
+  return ios::ZeroSuggestCacheServiceFactory::GetForBrowserState(
+      browser_state_);
 }
 
 const ZeroSuggestCacheService*
 AutocompleteProviderClientImpl::GetZeroSuggestCacheService() const {
-  return nullptr;
+  return ios::ZeroSuggestCacheServiceFactory::GetForBrowserState(
+      browser_state_);
 }
 
 OmniboxPedalProvider* AutocompleteProviderClientImpl::GetPedalProvider() const {

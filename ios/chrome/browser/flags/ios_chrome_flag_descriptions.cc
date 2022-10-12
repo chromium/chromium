@@ -591,6 +591,11 @@ const char kOmniboxZeroSuggestPrefetchingDescription[] =
     "Enables prefetching of the zero prefix suggestions for eligible users "
     "on the New Tab page.";
 
+const char kOmniboxZeroSuggestInMemoryCachingName[] =
+    "Omnibox Zero Prefix Suggestion in-memory caching";
+const char kOmniboxZeroSuggestInMemoryCachingDescription[] =
+    "Enables in-memory caching of zero prefix suggestions.";
+
 const char kIOSOmniboxUpdatedPopupUIName[] = "Popup refresh";
 const char kIOSOmniboxUpdatedPopupUIDescription[] =
     "Enable the new Popup implementation with Actions";

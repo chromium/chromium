@@ -20,6 +20,8 @@ source_set("autocomplete") {
     "shortcuts_backend_factory.mm",
     "tab_matcher_impl.h",
     "tab_matcher_impl.mm",
+    "zero_suggest_cache_service_factory.cc",
+    "zero_suggest_cache_service_factory.h",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
