@@ -368,6 +368,11 @@ constexpr int kChromeSqlDiagnosticsIndices[] = {1, 2, 3, 4,  5, 6,
 constexpr MessageInfo kChromeSqlDiagnostics = {kChromeSqlDiagnosticsIndices,
                                                nullptr};
 
+// Proto Message: SequenceManagerTask
+constexpr int kSequenceManagerTaskIndices[] = {1, 2, -1};
+constexpr MessageInfo kSequenceManagerTask = {kSequenceManagerTaskIndices,
+                                              nullptr};
+
 // Proto Message: AndroidToolbar
 constexpr int kAndroidToolbarIndices[] = {1, 2, 3, -1};
 constexpr MessageInfo kAndroidToolbar = {kAndroidToolbarIndices, nullptr};
@@ -383,7 +388,7 @@ constexpr int kTrackEventIndices[] = {
     35,   36,   38,   39,   40,   41,   42,   43,   47,   48,   1001, 1002,
     1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014,
     1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1028,
-    1031, 1032, 1033, 1034, 1036, 1038, 1039, 1041, 1042, -1};
+    1031, 1032, 1033, 1034, 1036, 1038, 1039, 1040, 1041, 1042, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -452,6 +457,7 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     &kAndroidIPC,
     &kChromeSqlDiagnostics,
+    &kSequenceManagerTask,
     &kAndroidToolbar,
     &kActiveProcesses};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
