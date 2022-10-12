@@ -312,17 +312,6 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
       should_execute_asynchronously
           ? blink::mojom::EvaluationTiming::kAsynchronous
           : blink::mojom::EvaluationTiming::kSynchronous;
-  // Historically, when `kSynchronous` is used, we did not block the load
-  // event. We preserve this here for now to ensure we don't break anything.
-  // However, this is probably wrong, since the execution context could be
-  // paused, triggering an asynchronous execution of the script even when
-  // `kSynchronous` is used.
-  // TODO(crbug.com/1354639): Change this to block the load event, even with
-  // `kSynchronous`.
-  blink::mojom::LoadEventBlockingOption blocking_option =
-      should_execute_asynchronously
-          ? blink::mojom::LoadEventBlockingOption::kBlock
-          : blink::mojom::LoadEventBlockingOption::kDoNotBlock;
 
   int32_t world_id = blink::kMainDOMWorldId;
   switch (injector_->GetExecutionWorld()) {
@@ -339,7 +328,7 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
   }
   render_frame_->GetWebFrame()->RequestExecuteScript(
       world_id, sources, injector_->IsUserGesture(), execution_option,
-      blocking_option,
+      blink::mojom::LoadEventBlockingOption::kBlock,
       base::BindOnce(&ScriptInjection::OnJsInjectionCompleted,
                      weak_ptr_factory_.GetWeakPtr()),
       blink::BackForwardCacheAware::kPossiblyDisallow,
