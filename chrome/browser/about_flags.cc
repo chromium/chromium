@@ -2714,29 +2714,6 @@ const FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kPermissionIconTimeout6000[] = {
-    {"PermissionIconTimeoutMs", "6000"}};
-const FeatureEntry::FeatureParam kPermissionIconTimeout4000[] = {
-    {"PermissionIconTimeoutMs", "4000"}};
-const FeatureEntry::FeatureParam kPermissionIconTimeout3000[] = {
-    {"PermissionIconTimeoutMs", "3000"}};
-const FeatureEntry::FeatureParam kPermissionIconTimeout2000[] = {
-    {"PermissionIconTimeoutMs", "2000"}};
-
-const FeatureEntry::FeatureVariation
-    kPageInfoDiscoverabilityTimeoutVariations[] = {
-        {"Long (6s)", kPermissionIconTimeout6000,
-         std::size(kPermissionIconTimeout6000), nullptr},
-        {"Medium (4s)", kPermissionIconTimeout4000,
-         std::size(kPermissionIconTimeout4000), nullptr},
-        {"Short (3s)", kPermissionIconTimeout3000,
-         std::size(kPermissionIconTimeout3000), nullptr},
-        {"Extra-Short (2s)", kPermissionIconTimeout2000,
-         std::size(kPermissionIconTimeout2000), nullptr},
-};
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 // The variations of --metrics-settings-android.
 const FeatureEntry::FeatureParam kMetricsSettingsAndroidAlternativeOne[] = {
     {"fre", "1"}};
@@ -7540,16 +7517,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordScriptsFetchingName,
      flag_descriptions::kPasswordScriptsFetchingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordScriptsFetching)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"page-info-discoverability-timeouts",
-     flag_descriptions::kPageInfoDiscoverabilityTimeoutsName,
-     flag_descriptions::kPageInfoDiscoverabilityTimeoutsDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         page_info::kPageInfoDiscoverability,
-         kPageInfoDiscoverabilityTimeoutVariations,
-         "kPageInfoDiscoverabilityTimeoutVariations")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

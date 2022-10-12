@@ -128,7 +128,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.setStatusClickListener(this);
         mMediator.updateStatusVisibility();
         mMediator.setStoreIconController();
-        mMediator.readFeatureListParams();
     }
 
     /** @param urlHasFocus Whether the url currently has focus. */

@@ -3863,11 +3863,6 @@ const char kOfflinePagesLivePageSharingDescription[] =
     "Enables to share current loaded page as offline page by saving as MHTML "
     "first.";
 
-const char kPageInfoDiscoverabilityTimeoutsName[] =
-    "Page info discoverability timeouts";
-const char kPageInfoDiscoverabilityTimeoutsDescription[] =
-    "Configure different timeouts for the permission icon in the omnibox.";
-
 const char kPageInfoHistoryName[] = "Page info history";
 const char kPageInfoHistoryDescription[] =
     "Enable a history sub page to the page info menu, and a button to forget "

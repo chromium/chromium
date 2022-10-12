@@ -17,10 +17,6 @@ namespace page_info {
 BASE_DECLARE_FEATURE(kPageInfoHistory);
 // Enables the store info row for Page Info.
 BASE_DECLARE_FEATURE(kPageInfoStoreInfo);
-
-// Used to experiment with different permission timeouts. The underlying feature
-// itself is already launched.
-BASE_DECLARE_FEATURE(kPageInfoDiscoverability);
 #endif
 
 // Enables the "About this site" section in Page Info.

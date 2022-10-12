@@ -5329,11 +5329,6 @@
     "expiry_milestone": 109
   },
   {
-    "name": "page-info-discoverability-timeouts",
-    "owners": [ "eokoyomon", "dullweber" ],
-    "expiry_milestone": 103
-  },
-  {
     "name": "page-info-hide-site-settings",
     "owners": [
       "zsalata@google.com",

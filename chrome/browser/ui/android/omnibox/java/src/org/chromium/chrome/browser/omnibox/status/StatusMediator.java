@@ -22,7 +22,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
@@ -745,11 +744,5 @@ public class StatusMediator implements PermissionDialogController.Observer,
     @Override
     public void onTemplateURLServiceChanged() {
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
-    }
-
-    public void readFeatureListParams() {
-        mPermissionIconDisplayTimeoutMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.PAGE_INFO_DISCOVERABILITY, PERMISSION_ICON_TIMEOUT_MS_PARAM,
-                PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS);
     }
 }

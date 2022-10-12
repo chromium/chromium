@@ -464,7 +464,6 @@ public abstract class ChromeFeatureList {
     public static final String PAGE_INFO_ABOUT_THIS_SITE_MORE_INFO =
             "PageInfoAboutThisSiteMoreInfo";
     public static final String PAGE_INFO_ABOUT_THIS_SITE_NON_EN = "PageInfoAboutThisSiteNonEn";
-    public static final String PAGE_INFO_DISCOVERABILITY = "PageInfoDiscoverability";
     public static final String PAINT_PREVIEW_DEMO = "PaintPreviewDemo";
     public static final String PAINT_PREVIEW_SHOW_ON_STARTUP = "PaintPreviewShowOnStartup";
     public static final String PASSWORD_DOMAIN_CAPABILITIES_FETCHING =

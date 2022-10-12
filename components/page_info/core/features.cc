@@ -18,10 +18,6 @@ BASE_FEATURE(kPageInfoHistory,
 BASE_FEATURE(kPageInfoStoreInfo,
              "PageInfoStoreInfo",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPageInfoDiscoverability,
-             "PageInfoDiscoverability",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 extern bool IsAboutThisSiteFeatureEnabled(const std::string& locale) {
