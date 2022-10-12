@@ -296,6 +296,16 @@ def get_current_xcode_info():
   }
 
 
+def init_test_result_defaults():
+  return {
+      'version': 3,
+      'path_delimiter': '.',
+      'seconds_since_epoch': int(time.time()),
+      # This will be overwritten when the tests complete successfully.
+      'interrupted': True
+  }
+
+
 class TestRunner(object):
   """Base class containing common functionality."""
 
@@ -352,12 +362,7 @@ class TestRunner(object):
     self.readline_timeout = (
         kwargs.get('readline_timeout') or constants.READLINE_TIMEOUT)
 
-    self.test_results = {}
-    self.test_results['version'] = 3
-    self.test_results['path_delimiter'] = '.'
-    self.test_results['seconds_since_epoch'] = int(time.time())
-    # This will be overwritten when the tests complete successfully.
-    self.test_results['interrupted'] = True
+    self.test_results = init_test_result_defaults()
 
     if self.xctest:
       plugins_dir = os.path.join(self.app_path, 'PlugIns')

@@ -9,6 +9,11 @@ class Error(Exception):
   pass
 
 
+class ExcessShardsError(Error):
+  """The test suite is misconfigured to have more shards than test cases"""
+  pass
+
+
 class IOSRuntimeHandlingError(Error):
   """Base class for iOS runtime package related errors."""
   pass

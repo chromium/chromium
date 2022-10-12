@@ -28,6 +28,7 @@ import traceback
 import constants
 import shard_util
 import test_runner
+import test_runner_errors
 import variations_runner
 import wpr_runner
 import xcodebuild_runner
@@ -107,8 +108,17 @@ class Runner():
     else:
       return (True, is_legacy_xcode)
 
+  def use_xcodebuild_runner(self, args):
+    return args.xcode_parallelization or args.xcodebuild_device_runner
+
   def resolve_test_cases(self):
     """Forms |self.args.test_cases| considering swarming shard and cmd inputs.
+
+    Raises:
+      ExcessShardsError: If this test suite is configured to run on more than
+      one shard, there are more shards than test cases (resulting in
+      self.args.test_cases being empty) and the test suite uses the
+      xcodebuild runner (ex. to run EG tests).
 
     Note:
     - Xcode intallation is required before invoking this method since it
@@ -130,11 +140,14 @@ class Runner():
     if gtest_total_shards > 1:
       self.args.test_cases = shard_util.shard_test_cases(
           self.args, gtest_shard_index, gtest_total_shards)
+
       if self.args.test_cases:
         assert (
-            self.args.xcode_parallelization or
-            self.args.xcodebuild_device_runner
+            self.use_xcodebuild_runner(self.args)
         ), 'Only real XCTests can use sharding by shard_util.shard_test_cases()'
+      else:
+        if self.use_xcodebuild_runner(self.args):
+          raise test_runner_errors.ExcessShardsError()
     else:
       self.args.test_cases = self.args.test_cases or []
       if self.args.gtest_filter:
@@ -171,8 +184,6 @@ class Runner():
     if not install_success:
       raise test_runner.XcodeVersionNotFoundError(self.args.xcode_build_version)
 
-    self.resolve_test_cases()
-
     # Sharding env var is required to shard GTest.
     env_vars = self.args.env_var + self.sharding_env_vars()
 
@@ -183,6 +194,8 @@ class Runner():
       os.makedirs(self.args.out_dir)
 
     try:
+      self.resolve_test_cases()
+
       if self.args.xcode_parallelization:
         tr = xcodebuild_runner.SimulatorParallelTestRunner(
             self.args.app,
@@ -279,6 +292,12 @@ class Runner():
 
       logging.info("Using test runner %s" % type(tr).__name__)
       return 0 if tr.launch() else 1
+    except test_runner_errors.ExcessShardsError as e:
+      logging.error("Test suite misconfigured to have excess shards.")
+      summary['step_text'] = '%s%s' % (e.__class__.__name__,
+                                       ': %s' % e.args[0] if e.args else '')
+
+      return 2
     except test_runner.DeviceError as e:
       sys.stderr.write(traceback.format_exc())
       summary['step_text'] = '%s%s' % (e.__class__.__name__,
@@ -310,24 +329,26 @@ class Runner():
 
       with open(os.path.join(self.args.out_dir, 'summary.json'), 'w') as f:
         json.dump(summary, f)
-      if tr:
-        with open(os.path.join(self.args.out_dir, 'full_results.json'),
-                  'w') as f:
-          json.dump(tr.test_results, f)
 
-        # The value of test-launcher-summary-output is set by the recipe
-        # and passed here via swarming.py. This argument defaults to
-        # ${ISOLATED_OUTDIR}/output.json. out-dir is set to ${ISOLATED_OUTDIR}
+      test_results = (
+          tr.test_results if tr else test_runner.init_test_result_defaults())
 
-        # TODO(crbug.com/1031338) - the content of this output.json will
-        # work with Chromium recipe because we use the noop_merge merge script,
-        # but will require structural changes to support the default gtest
-        # merge script (ref: //testing/merge_scripts/standard_gtest_merge.py)
-        output_json_path = (
-            self.args.test_launcher_summary_output or
-            os.path.join(self.args.out_dir, 'output.json'))
-        with open(output_json_path, 'w') as f:
-          json.dump(tr.test_results, f)
+      with open(os.path.join(self.args.out_dir, 'full_results.json'), 'w') as f:
+        json.dump(test_results, f)
+
+      # The value of test-launcher-summary-output is set by the recipe
+      # and passed here via swarming.py. This argument defaults to
+      # ${ISOLATED_OUTDIR}/output.json. out-dir is set to ${ISOLATED_OUTDIR}
+
+      # TODO(crbug.com/1031338) - the content of this output.json will
+      # work with Chromium recipe because we use the noop_merge merge script,
+      # but will require structural changes to support the default gtest
+      # merge script (ref: //testing/merge_scripts/standard_gtest_merge.py)
+      output_json_path = (
+          self.args.test_launcher_summary_output or
+          os.path.join(self.args.out_dir, 'output.json'))
+      with open(output_json_path, 'w') as f:
+        json.dump(test_results, f)
 
       # Move the iOS runtime back to cache dir if the Xcode package is not
       # legacy (i.e. Xcode program & runtimes are in different CIPD packages.)
@@ -596,7 +617,7 @@ class Runner():
       """
       Runs argument validation
       """
-      if (not (args.xcode_parallelization or args.xcodebuild_device_runner) and
+      if (not self.use_xcodebuild_runner(args) and
           (args.iossim or args.platform or args.version)):
         # If any of --iossim, --platform, or --version
         # are specified then they must all be specified.
