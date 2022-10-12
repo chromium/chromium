@@ -141,6 +141,15 @@ export class TestFileSystemProvider {
           TestFileSystemProvider.FILE_READ_SUCCESS,
           new Date(2014, 1, 25, 7, 36, 12),
           TestFileSystemProvider.INITIAL_TEXT),
+      // A big file to test access at offset greater than the max unsigned
+      // 32-bit value.
+      (() => {
+        const entry = Entry.file(
+            TestFileSystemProvider.FILE_BIG, new Date(2014, 1, 25, 7, 36, 12),
+            '');
+        entry.metadata.size = 6 * 1024 * 1024 * 1024;
+        return entry;
+      })(),
     ]);
 
     /**
@@ -654,6 +663,23 @@ export class TestFileSystemProvider {
       return;
     }
 
+    if (filePath == '/' + TestFileSystemProvider.FILE_BIG) {
+      // This file is not intended to be read below the max 32-bit unsigned
+      // value, so fail immediately.
+      if (options.offset <= 2 ** 32 - 1) {
+        onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+        return;
+      }
+      // The return value does not matter, so just return a string of "A"s.
+      onSuccess(
+          /*data=*/ new Uint8Array(options.length)
+              .fill('A'.charCodeAt(0))
+              .buffer,
+          /*hasMore=*/ false,
+      );
+      return;
+    }
+
     onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
   }
 
@@ -842,6 +868,14 @@ TestFileSystemProvider.FILE_BLOCKS_FOREVER = 'blocks-forever.txt';
  * @const
  */
 TestFileSystemProvider.FILE_READ_SUCCESS = 'read-normal.txt';
+
+/**
+ * A file bigger than the max unsigned 32-bit value.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_BIG = 'read-big.txt';
 
 /**
  * Initial contents of default testing files.
