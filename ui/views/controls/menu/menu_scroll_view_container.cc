@@ -98,7 +98,7 @@ class MenuScrollButton : public View {
     host_->GetMenuItem()->GetMenuController()->OnDragExitedScrollButton(host_);
   }
 
-  void OnMouseExited(const ui::MouseEvent& event) override {
+  void OnMouseEntered(const ui::MouseEvent& event) override {
     host_->GetMenuItem()->GetMenuController()->SetEnabledScrollButtons(true);
   }
 
