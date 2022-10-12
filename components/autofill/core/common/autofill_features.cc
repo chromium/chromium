@@ -320,7 +320,7 @@ BASE_FEATURE(kAutofillEnableSupportForPhoneNumberTrunkTypes,
 // TODO(crbug.com/1314360): Remove once launched.
 BASE_FEATURE(kAutofillRefillModifiedCreditCardExpirationDates,
              "AutofillRefillModifiedCreditCardExpirationDates",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables autofill to function within a FencedFrame, and is disabled by
 // default.
