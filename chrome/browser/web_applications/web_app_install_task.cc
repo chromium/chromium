@@ -172,16 +172,6 @@ void WebAppInstallTask::ExpectAppId(const AppId& expected_app_id) {
   expected_app_id_ = expected_app_id;
 }
 
-void WebAppInstallTask::SetInstallParams(
-    const WebAppInstallParams& install_params) {
-  if (!install_params.locally_installed) {
-    DCHECK(!install_params.add_to_applications_menu);
-    DCHECK(!install_params.add_to_desktop);
-    DCHECK(!install_params.add_to_quick_launch_bar);
-  }
-  install_params_ = install_params;
-}
-
 void WebAppInstallTask::InstallWebAppFromManifest(
     content::WebContents* contents,
     bool bypass_service_worker_check,

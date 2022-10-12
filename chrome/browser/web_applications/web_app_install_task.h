@@ -75,8 +75,6 @@ class WebAppInstallTask : content::WebContentsObserver {
     return expected_app_id_;
   }
 
-  void SetInstallParams(const WebAppInstallParams& install_params);
-
   // Checks a WebApp installability, retrieves manifest and icons and
   // then performs the actual installation.
   void InstallWebAppFromManifest(content::WebContents* web_contents,
@@ -93,15 +91,6 @@ class WebAppInstallTask : content::WebContentsObserver {
       WebAppInstallFlow flow,
       WebAppInstallDialogCallback dialog_callback,
       OnceInstallCallback callback);
-
-  // Load |install_url| and install SubApp. Posts |LoadUrl| task to |url_loader|
-  // immediately. Doesn't memorize |url_loader| pointer.
-  void LoadAndInstallSubAppFromURL(const GURL& install_url,
-                                   const AppId& expected_app_id,
-                                   content::WebContents* contents,
-                                   WebAppUrlLoader* url_loader,
-                                   WebAppInstallDialogCallback dialog_callback,
-                                   OnceInstallCallback install_callback);
 
   // Starts a web app installation process using prefilled
   // |web_app_install_info| which holds all the data needed for installation.

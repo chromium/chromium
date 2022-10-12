@@ -66,19 +66,10 @@ class WebAppInstallManager final : public SyncInstallDelegate {
                      WebAppSyncBridge* sync_bridge,
                      WebAppTranslationManager* translation_manager);
 
-  void InstallSubApp(const AppId& parent_app_id,
-                     const GURL& install_url,
-                     const AppId& expected_app_id,
-                     WebAppInstallDialogCallback dialog_callback,
-                     OnceInstallCallback install_callback);
-
   // Returns whether the an installation is already running with the
   // same web contents.
   bool IsInstallingForWebContents(
       const content::WebContents* web_contents) const;
-
-  // Returns the number of running web app installations.
-  std::size_t GetInstallTaskCountForTesting() const;
 
   // SyncInstallDelegate:
   void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
@@ -148,10 +139,6 @@ class WebAppInstallManager final : public SyncInstallDelegate {
 
   base::WeakPtr<WebAppInstallManager> GetWeakPtr();
 
-  void EnqueueInstallAppFromSync(
-      const AppId& sync_app_id,
-      std::unique_ptr<WebAppInstallInfo> install_info,
-      OnceInstallCallback callback);
   bool IsAppIdAlreadyEnqueued(const AppId& app_id) const;
 
   void EnqueueTask(std::unique_ptr<WebAppInstallTask> task,

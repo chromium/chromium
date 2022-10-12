@@ -99,10 +99,6 @@ bool WebAppInstallManager::IsInstallingForWebContents(
       });
 }
 
-std::size_t WebAppInstallManager::GetInstallTaskCountForTesting() const {
-  return tasks_.size();
-}
-
 void WebAppInstallManager::SetSubsystems(
     WebAppRegistrar* registrar,
     OsIntegrationManager* os_integration_manager,
