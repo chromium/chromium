@@ -181,6 +181,7 @@ js_library("drive_sync_handler") {
     "//ui/file_manager/file_manager/externs/background:drive_sync_handler",
     "//ui/file_manager/file_manager/externs/background:progress_center",
     "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
