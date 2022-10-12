@@ -111,6 +111,10 @@ class PageLiveStateDataImpl
   void SetIsActiveTabForTesting(bool value) override {
     set_is_active_tab(value);
   }
+  void SetContentSettingsForTesting(
+      const std::map<ContentSettingsType, ContentSetting>& settings) override {
+    set_content_settings(settings);
+  }
 
   void set_is_connected_to_usb_device(bool is_connected_to_usb_device) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

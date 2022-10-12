@@ -148,6 +148,8 @@ class PageLiveStateDecorator::Data {
   virtual void SetIsAutoDiscardableForTesting(bool value) = 0;
   virtual void SetWasDiscardedForTesting(bool value) = 0;
   virtual void SetIsActiveTabForTesting(bool value) = 0;
+  virtual void SetContentSettingsForTesting(
+      const std::map<ContentSettingsType, ContentSetting>& settings) = 0;
 
  protected:
   base::ObserverList<PageLiveStateObserver> observers_

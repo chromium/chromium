@@ -352,6 +352,12 @@ PageDiscardingHelper::CanUrgentlyDiscard(
       return CanUrgentlyDiscardResult::kProtected;
     if (live_state_data->IsConnectedToUSBDevice())
       return CanUrgentlyDiscardResult::kProtected;
+    if (live_state_data->IsActiveTab())
+      return CanUrgentlyDiscardResult::kProtected;
+    if (live_state_data->IsContentSettingTypeAllowed(
+            ContentSettingsType::NOTIFICATIONS)) {
+      return CanUrgentlyDiscardResult::kProtected;
+    }
 #if !BUILDFLAG(IS_CHROMEOS)
     // TODO(sebmarchand): Skip this check if the Entreprise memory limit is set.
     if (live_state_data->WasDiscarded())
@@ -368,12 +374,6 @@ PageDiscardingHelper::CanUrgentlyDiscard(
   // TODO(sebmarchand): Do not discard pages if they're connected to DevTools.
 
   // TODO(sebmarchand): Do not discard crashed tabs.
-
-  // TODO(sebmarchand): Do not discard tabs that are the active ones in a tab
-  // strip.
-
-  // TODO(sebmarchand): Do not try to discard PageNode not attached to a tab
-  // strip.
 
   return CanUrgentlyDiscardResult::kEligible;
 }
