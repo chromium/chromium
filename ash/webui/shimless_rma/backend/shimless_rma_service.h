@@ -324,7 +324,10 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   mojo::Remote<mojom::HardwareWriteProtectionStateObserver>
       hwwp_state_observer_;
   mojo::Remote<mojom::PowerCableStateObserver> power_cable_observer_;
-  mojo::Remote<mojom::ExternalDiskStateObserver> external_disk_state_observer_;
+  // ExternalDiskStateObserver is used to detect external disks for saving logs
+  // and installing firmware.
+  mojo::RemoteSet<mojom::ExternalDiskStateObserver>
+      external_disk_state_observers_;
   // HardwareVerificationStatusObserver is used by landing and OS update pages.
   mojo::RemoteSet<mojom::HardwareVerificationStatusObserver>
       hardware_verification_observers_;

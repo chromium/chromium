@@ -13,7 +13,7 @@ import {disableAllButtons, enableAllButtons} from 'chrome://shimless-rma/shimles
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {isVisible} from '../../test_util.js';
+import {eventToPromise, isVisible} from '../../test_util.js';
 
 export function shimlessRMAAppTest() {
   /** @type {?ShimlessRma} */
@@ -794,5 +794,29 @@ export function shimlessRMAAppTest() {
     const logsDialog = component.shadowRoot.querySelector('#logsDialog');
     assertTrue(!!logsDialog);
     assertFalse(logsDialog.open);
+  });
+
+  test('KeyboardShortcutOpensLogsDialog', async () => {
+    await initializeShimlessRMAApp(fakeStates, fakeChromeVersion[0]);
+
+    // Confirm logs dialog starts closed.
+    const logsDialog = component.shadowRoot.querySelector('#logsDialog');
+    assertTrue(!!logsDialog);
+    assertFalse(logsDialog.open);
+
+    const keydownEventPromise = eventToPromise('keydown', component);
+    component.dispatchEvent(new KeyboardEvent(
+        'keydown',
+        {
+          bubbles: true,
+          composed: true,
+          key: 'L',
+          altKey: true,
+          shiftKey: true,
+        },
+        ));
+
+    await keydownEventPromise;
+    assertTrue(logsDialog.open);
   });
 }

@@ -950,26 +950,12 @@ void ShimlessRmaService::WriteProtectManuallyEnabled(
 }
 
 void ShimlessRmaService::GetLog(GetLogCallback callback) {
-  if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
-    LOG(ERROR) << "GetLog called from incorrect state "
-               << state_proto_.state_case();
-    std::move(callback).Run("",
-                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
-    return;
-  }
   RmadClient::Get()->GetLog(base::BindOnce(&ShimlessRmaService::OnGetLog,
                                            weak_ptr_factory_.GetWeakPtr(),
                                            std::move(callback)));
 }
 
 void ShimlessRmaService::SaveLog(SaveLogCallback callback) {
-  if (state_proto_.state_case() != rmad::RmadState::kRepairComplete) {
-    LOG(ERROR) << "SaveLog called from incorrect state "
-               << state_proto_.state_case();
-    std::move(callback).Run(base::FilePath(""),
-                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
-    return;
-  }
   RmadClient::Get()->SaveLog(base::BindOnce(&ShimlessRmaService::OnSaveLog,
                                             weak_ptr_factory_.GetWeakPtr(),
                                             std::move(callback)));
@@ -1148,8 +1134,9 @@ void ShimlessRmaService::PowerCableState(bool plugged_in) {
 
 void ShimlessRmaService::ExternalDiskState(bool detected) {
   last_external_disk_state_ = detected;
-  if (external_disk_state_observer_.is_bound()) {
-    external_disk_state_observer_->OnExternalDiskStateChanged(detected);
+  for (auto& external_disk_state_observer : external_disk_state_observers_) {
+    external_disk_state_observer->OnExternalDiskStateChanged(
+        *last_external_disk_state_);
   }
 }
 
@@ -1244,10 +1231,12 @@ void ShimlessRmaService::ObservePowerCableState(
 
 void ShimlessRmaService::ObserveExternalDiskState(
     ::mojo::PendingRemote<mojom::ExternalDiskStateObserver> observer) {
-  external_disk_state_observer_.Bind(std::move(observer));
+  external_disk_state_observers_.Add(std::move(observer));
   if (last_external_disk_state_) {
-    external_disk_state_observer_->OnExternalDiskStateChanged(
-        *last_external_disk_state_);
+    for (auto& external_disk_state_observer : external_disk_state_observers_) {
+      external_disk_state_observer->OnExternalDiskStateChanged(
+          *last_external_disk_state_);
+    }
   }
 }
 

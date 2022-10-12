@@ -501,6 +501,11 @@ export class ShimlessRma extends ShimlessRmaBase {
     this.openLogsDialogCallback_ = () => {
       this.openLogsDialog_();
     };
+
+    /** @private {?Function} */
+    this.onKeyDownCallback_ = (event) => {
+      this.isOpenLogsKeyboardShortcut_(event);
+    };
   }
 
   /** @override */
@@ -520,6 +525,8 @@ export class ShimlessRma extends ShimlessRmaBase {
     window.addEventListener(
         'fatal-hardware-error', this.fatalHardwareErrorCallback_);
     window.addEventListener('open-logs-dialog', this.openLogsDialogCallback_);
+
+    window.addEventListener('keydown', this.onKeyDownCallback_);
   }
 
   /** @override */
@@ -540,6 +547,8 @@ export class ShimlessRma extends ShimlessRmaBase {
         'fatal-hardware-error', this.fatalHardwareErrorCallback_);
     window.removeEventListener(
         'open-logs-dialog', this.openLogsDialogCallback_);
+
+    window.removeEventListener('keydown', this.onKeyDownCallback_);
   }
 
   /** @override */
@@ -989,6 +998,22 @@ export class ShimlessRma extends ShimlessRmaBase {
         return 'shimless-icon:warning';
       default:
         return '';
+    }
+  }
+
+  /**
+   * Opens the logs dialog if the `Alt + Shift + L` keyboard shortcut is
+   * pressed.
+   * @param {Event} event
+   * @private
+   */
+  isOpenLogsKeyboardShortcut_(event) {
+    const altKeyPressed = event.altKey;
+    const shiftKeyPressed = event.shiftKey;
+    const lKeyPressed = event.key.toLowerCase() === 'l';
+
+    if (altKeyPressed && shiftKeyPressed && lKeyPressed) {
+      this.openLogsDialog_();
     }
   }
 }
