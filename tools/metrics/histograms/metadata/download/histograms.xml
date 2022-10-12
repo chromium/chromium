@@ -119,6 +119,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.Bubble.ProcessedCommand" enum="DownloadCommand"
+    expires_after="2023-01-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records each time a download command is executed on download bubble. For V1,
+    it is logged when the main button is clicked. For V2, it is logged when the
+    quick action is clicked. Actions on the security subpage is also included.
+    Actions on context menu are excluded. Clicking the trasparent button is also
+    excluded. This histogram is added for debugging purpose and will be removed
+    afterwards.
+  </summary>
+</histogram>
+
 <histogram
     name="Download.Bubble.Subpage.{DownloadDangerTypeString}.{ButtonType}ButtonActionTime"
     units="ms" expires_after="2023-03-07">
@@ -184,6 +198,30 @@ chromium-metrics-reviews@google.com.
   <owner>qinmin@chromium.org</owner>
   <owner>clank-downloads@google.com</owner>
   <summary>Records why the download is canceled.</summary>
+</histogram>
+
+<histogram name="Download.Complete.IsOpenWhenCompleteSet" enum="BooleanSet"
+    expires_after="2023-01-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records each time a non-temporary download is completed. If it is set to
+    true, this download will open immediately. This can happen if the user has
+    clicked the open button before the download is completed. This histogram is
+    added for debugging purpose and will be removed afterwards.
+  </summary>
+</histogram>
+
+<histogram name="Download.Complete.IsShouldOpenFileBasedOnExtensionSet"
+    enum="BooleanSet" expires_after="2023-01-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records each time a non-temporary download is completed. If it is set to
+    true, this download will open immediately. This can happen if the user has
+    set auto open for this file type. This histogram is added for debugging
+    purpose and will be removed afterwards.
+  </summary>
 </histogram>
 
 <histogram name="Download.ContentType.Audio" enum="DownloadAudioType"
@@ -720,6 +758,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.NotPreferredOpeningInBrowserReasons"
+    enum="DownloadNotPreferredOpeningInBrowserReason"
+    expires_after="2023-01-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records each time when determining whether the download should be opened in
+    browser. For new download, it is logged when determining download target.
+    For old download, it is logged when the download is going to open or the
+    context menu is going to show. Logged at most one time for each download.
+    This histogram is added for debugging purpose and will be removed
+    afterwards.
+  </summary>
+</histogram>
+
 <histogram name="Download.Open.ContentType" enum="DownloadContentType"
     expires_after="2023-03-26">
   <owner>bhatiarohit@google.com</owner>
@@ -728,6 +781,22 @@ chromium-metrics-reviews@google.com.
     Content types of the downloads being opened. This histogram is logged
     whenever a download is opened, whether from the shelf/bubble or
     chrome://downloads. Logged on Desktop platforms.
+  </summary>
+</histogram>
+
+<histogram name="Download.OpenButtonPressed.IsDownloadCompleted"
+    enum="BooleanCompleted" expires_after="2023-01-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records each time a download open button is pressed, either on download
+    shelf or download bubble. If the open button is pressed before the download
+    is completed, the download will be auto opened when it is completed. If the
+    open button is pressed when the download is already completed, the download
+    will open immediately, either in browser or in system handler. The total
+    count of this histogram is useful to compare whether download bubble has
+    changed user behavior on clicking the open button. This histogram is added
+    for debugging purpose and will be removed afterwards.
   </summary>
 </histogram>
 
@@ -1176,6 +1245,19 @@ chromium-metrics-reviews@google.com.
     uploading data. This metric records whether a given request includes upload
     data. It is recorded upon starting a download or upload, immediately after
     the client indicates whether the request includes upload data.
+  </summary>
+</histogram>
+
+<histogram name="Download.SetAlwaysOpenTo" enum="BooleanEnabled"
+    expires_after="2023-01-07">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records each time the auto open setting is changed by the user. If it is set
+    to true, this type of download will be auto opened once it is completed.
+    This setting is false by default. Changes on this setting are preserved
+    across startup. This histogram is added for debugging purpose and will be
+    removed afterwards.
   </summary>
 </histogram>
 

@@ -174,6 +174,19 @@ bool ShouldSendDownloadReport(download::DownloadDangerType danger_type) {
 }
 #endif
 
+// Enum representing reasons why a download is not preferred to be opened in
+// browser.
+enum class NotOpenedInBrowserReason {
+  // The total number of checks. This value should be used as the denominator
+  // when calculating the percentage of a specific reason below.
+  TOTAL_DOWNLOAD_CHECKED = 0,
+  DOWNLOAD_PATH_EMPTY = 1,
+  NOT_PREFERRED_IN_DELEGATE = 2,
+  CANNOT_BE_HANDLED_SAFELY = 3,
+
+  kMaxValue = CANNOT_BE_HANDLED_SAFELY
+};
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -783,6 +796,7 @@ void DownloadItemModel::ExecuteCommand(DownloadCommands* download_commands,
     case DownloadCommands::ALWAYS_OPEN_TYPE: {
       bool is_checked = IsCommandChecked(download_commands,
                                          DownloadCommands::ALWAYS_OPEN_TYPE);
+      base::UmaHistogramBoolean("Download.SetAlwaysOpenTo", !is_checked);
       DownloadPrefs* prefs = DownloadPrefs::FromBrowserContext(profile());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_MAC)
@@ -1178,6 +1192,24 @@ void DownloadItemModel::DetermineAndSetShouldPreferOpeningInBrowser(
   if (!delegate)
     return;
 
+  // TODO(crbug.com/1372476): Remove this histogram and the associated enum
+  // after debugging.
+  base::UmaHistogramEnumeration(
+      "Download.NotPreferredOpeningInBrowserReasons",
+      NotOpenedInBrowserReason::TOTAL_DOWNLOAD_CHECKED);
+  if (target_path.empty()) {
+    base::UmaHistogramEnumeration(
+        "Download.NotPreferredOpeningInBrowserReasons",
+        NotOpenedInBrowserReason::DOWNLOAD_PATH_EMPTY);
+  } else if (!delegate->IsOpenInBrowserPreferreredForFile(target_path)) {
+    base::UmaHistogramEnumeration(
+        "Download.NotPreferredOpeningInBrowserReasons",
+        NotOpenedInBrowserReason::NOT_PREFERRED_IN_DELEGATE);
+  } else if (!is_filetype_handled_safely) {
+    base::UmaHistogramEnumeration(
+        "Download.NotPreferredOpeningInBrowserReasons",
+        NotOpenedInBrowserReason::CANNOT_BE_HANDLED_SAFELY);
+  }
   if (!target_path.empty() &&
       delegate->IsOpenInBrowserPreferreredForFile(target_path) &&
       is_filetype_handled_safely) {

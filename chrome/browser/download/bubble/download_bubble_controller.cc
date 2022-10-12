@@ -394,6 +394,8 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     DownloadUIModel* model,
     DownloadCommands::Command command) {
   DownloadCommands commands(model->GetWeakPtr());
+  base::UmaHistogramExactLinear("Download.Bubble.ProcessedCommand", command,
+                                DownloadCommands::MAX + 1);
   switch (command) {
     case DownloadCommands::KEEP:
     case DownloadCommands::DISCARD:

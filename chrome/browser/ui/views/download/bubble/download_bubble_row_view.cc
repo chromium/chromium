@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_controller.h"
@@ -579,6 +580,7 @@ void DownloadBubbleRowView::OnMainButtonPressed() {
   if (ui_info_.has_subpage) {
     navigation_handler_->OpenSecurityDialog(this);
   } else {
+    RecordDownloadOpenButtonPressed(model_->IsDone());
     DownloadCommands(model_->GetWeakPtr())
         .ExecuteCommand(DownloadCommands::OPEN_WHEN_COMPLETE);
   }

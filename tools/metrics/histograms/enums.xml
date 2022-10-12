@@ -27766,6 +27766,26 @@ Called by update_document_policy_enum.py.-->
   <int value="5" label="Empty local path"/>
 </enum>
 
+<enum name="DownloadCommand">
+  <int value="1" label="Show in folder"/>
+  <int value="2" label="Open when complete"/>
+  <int value="3" label="Always open type"/>
+  <int value="4" label="Platform open"/>
+  <int value="5" label="Cancel"/>
+  <int value="6" label="Pause"/>
+  <int value="7" label="Resume"/>
+  <int value="8" label="Discard"/>
+  <int value="9" label="Keep"/>
+  <int value="10" label="Learn more scanning"/>
+  <int value="11" label="Learn more interrupted"/>
+  <int value="12" label="Learn more mixed content"/>
+  <int value="13" label="Copy to clipboard"/>
+  <int value="14" label="Deep scan"/>
+  <int value="15" label="Bypass deep scanning"/>
+  <int value="16" label="Review"/>
+  <int value="17" label="Retry"/>
+</enum>
+
 <enum name="DownloadConnectionSecurity">
   <int value="0"
       label="Final download url and the redirects before it all use https"/>
@@ -28681,6 +28701,13 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="TASK_REMOVED"/>
   <int value="3" label="LOW_MEMORY"/>
   <int value="4" label="START_STICKY"/>
+</enum>
+
+<enum name="DownloadNotPreferredOpeningInBrowserReason">
+  <int value="0" label="TOTAL_DOWNLOAD_CHECKED"/>
+  <int value="1" label="DOWNLOAD_PATH_EMPTY"/>
+  <int value="2" label="NOT_PREFERRED_IN_DELEGATE"/>
+  <int value="3" label="CANNOT_BE_HANDLED_SAFELY"/>
 </enum>
 
 <enum name="DownloadOpenMethod">
