@@ -89,9 +89,13 @@ class CreditCardCVCAuthenticator
   ~CreditCardCVCAuthenticator() override;
 
   // Authentication
-  void Authenticate(const CreditCard* card,
-                    base::WeakPtr<Requester> requester,
-                    PersonalDataManager* personal_data_manager);
+  void Authenticate(
+      const CreditCard* card,
+      base::WeakPtr<Requester> requester,
+      PersonalDataManager* personal_data_manager,
+      absl::optional<std::string> vcn_context_token = absl::nullopt,
+      absl::optional<CardUnmaskChallengeOption> selected_challenge_option =
+          absl::nullopt);
 
   // payments::FullCardRequest::ResultDelegate
   void OnFullCardRequestSucceeded(

@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 
 namespace autofill {
@@ -27,7 +28,9 @@ CreditCardCVCAuthenticator::~CreditCardCVCAuthenticator() {}
 void CreditCardCVCAuthenticator::Authenticate(
     const CreditCard* card,
     base::WeakPtr<Requester> requester,
-    PersonalDataManager* personal_data_manager) {
+    PersonalDataManager* personal_data_manager,
+    absl::optional<std::string> vcn_context_token,
+    absl::optional<CardUnmaskChallengeOption> selected_challenge_option) {
   requester_ = requester;
   if (!card) {
     return OnFullCardRequestFailed(
@@ -36,18 +39,39 @@ void CreditCardCVCAuthenticator::Authenticate(
   full_card_request_ = std::make_unique<payments::FullCardRequest>(
       client_, client_->GetPaymentsClient(), personal_data_manager);
 
-  absl::optional<GURL> last_committed_primary_main_frame_origin;
-  if (card->record_type() == CreditCard::VIRTUAL_CARD &&
-      client_->GetLastCommittedPrimaryMainFrameURL().is_valid()) {
-    last_committed_primary_main_frame_origin =
+  if (card->record_type() == CreditCard::VIRTUAL_CARD) {
+    // `vcn_context_token` and `challenge_option` are required for
+    // `FullCardRequest::GetFullVirtualCardViaCVC()`, so DCHECK that they are
+    // present. The caller of Authenticate() should ensure to always set these
+    // variables for the virtual card case.
+    DCHECK(vcn_context_token);
+    DCHECK(selected_challenge_option);
+    DCHECK_EQ(selected_challenge_option->type,
+              CardUnmaskChallengeOptionType::kCvc);
+
+    const GURL& last_committed_primary_main_frame_origin =
         client_->GetLastCommittedPrimaryMainFrameURL()
             .DeprecatedGetOriginAsURL();
+
+    // We need a valid last committed primary main frame origin for virtual card
+    // CVC unmasking. Thus, if it is not a valid last committed primary main
+    // frame origin, end the card unmasking and treat it as a transient failure.
+    if (!last_committed_primary_main_frame_origin.is_valid()) {
+      return OnFullCardRequestFailed(
+          payments::FullCardRequest::FailureType::
+              VIRTUAL_CARD_RETRIEVAL_TRANSIENT_FAILURE);
+    }
+
+    return full_card_request_->GetFullVirtualCardViaCVC(
+        *card, AutofillClient::UnmaskCardReason::kAutofill,
+        weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
+        last_committed_primary_main_frame_origin, *vcn_context_token,
+        *selected_challenge_option);
   }
 
   full_card_request_->GetFullCard(
       *card, AutofillClient::UnmaskCardReason::kAutofill,
-      weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
-      last_committed_primary_main_frame_origin);
+      weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr());
 }
 
 void CreditCardCVCAuthenticator::OnFullCardRequestSucceeded(

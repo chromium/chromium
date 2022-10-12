@@ -115,21 +115,28 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // Retrieves the pan for |card| after querying the user for CVC and invokes
   // Delegate::OnFullCardRequestSucceeded() or
   // Delegate::OnFullCardRequestFailed(). Only one request should be active at a
-  // time. |last_committed_primary_main_frame_origin| is the full origin of the
-  // primary main frame where the card retrieval happens.
-  // |last_committed_primary_main_frame_origin| needs to be specified if the
-  // full card request is for a virtual card.
+  // time.
   //
   // If the card is local, has a non-empty GUID, and the user has updated its
   // expiration date, then this function will write the new information to
   // autofill table on disk.
-  void GetFullCard(
+  void GetFullCard(const CreditCard& card,
+                   AutofillClient::UnmaskCardReason reason,
+                   base::WeakPtr<ResultDelegate> result_delegate,
+                   base::WeakPtr<UIDelegate> ui_delegate);
+
+  // Refer to the comment above `GetFullCard()` for the high level overview of
+  // how this function works. The additional fields in this function are
+  // Virtual Card specific fields that are required in the UnmaskCardRequest for
+  // unmasking a Virtual Card via CVC authentication.
+  void GetFullVirtualCardViaCVC(
       const CreditCard& card,
       AutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::WeakPtr<UIDelegate> ui_delegate,
-      absl::optional<GURL> last_committed_primary_main_frame_origin =
-          absl::nullopt);
+      const GURL& last_committed_primary_main_frame_origin,
+      const std::string& vcn_context_token,
+      const CardUnmaskChallengeOption& selected_challenge_option);
 
   // Retrieves the pan for |card| through a FIDO assertion and invokes
   // Delegate::OnFullCardRequestSucceeded() or
@@ -166,6 +173,13 @@ class FullCardRequest final : public CardUnmaskDelegate {
     return unmask_response_details_;
   }
 
+  payments::PaymentsClient::UnmaskRequestDetails*
+  GetUnmaskRequestDetailsForTesting() const {
+    return request_.get();
+  }
+
+  bool GetShouldUnmaskCardForTesting() const { return should_unmask_card_; }
+
  private:
   friend class autofill::BrowserAutofillManagerTest;
   friend class autofill::AutofillMetricsTest;
@@ -173,18 +187,21 @@ class FullCardRequest final : public CardUnmaskDelegate {
   friend class autofill::CreditCardAccessManagerTest;
   friend class autofill::CreditCardCVCAuthenticatorTest;
 
-  // Retrieves the pan for |card| and invokes
-  // Delegate::OnFullCardRequestSucceeded() or
-  // Delegate::OnFullCardRequestFailed(). Only one request should be active at a
-  // time.
+  // Retrieves the pan for `card` and invokes
+  // `Delegate::OnFullCardRequestSucceeded()` or
+  // `Delegate::OnFullCardRequestFailed()`. Only one request should be active at
+  // a time.
   //
-  // If |ui_delegate| is set, then the user is queried for CVC.
-  // Else if |fido_assertion_info| is a dictionary, FIDO verification is used.
-  // |last_committed_primary_main_frame_origin| is full origin of the primary
-  // main frame on which the card is unmasked. |context_token| is used for
-  // providing context of the request to the server to link related requests.
-  // |last_committed_primary_main_frame_origin| and |context_token| need to be
-  // specified if the full card request is for a virtual card.
+  // If `ui_delegate` is set, then the user is queried for CVC.
+  // Else if `fido_assertion_info` is a dictionary, FIDO verification is used.
+  // `last_committed_primary_main_frame_origin` is the full origin of the
+  // primary main frame on which the card is unmasked. `context_token` is used
+  // for providing context of the request to the server to link related
+  // requests. `selected_challenge_option` is the challenge option that was
+  // selected for authentication when the user was challenged with several
+  // authentication methods. `last_committed_primary_main_frame_origin`,
+  // `context_token`, and `selected_challenge_option` need to be specified if
+  // the full card request is for a virtual card.
   //
   // If the card is local, has a non-empty GUID, and the user has updated its
   // expiration date, then this function will write the new information to
@@ -196,7 +213,8 @@ class FullCardRequest final : public CardUnmaskDelegate {
       base::WeakPtr<UIDelegate> ui_delegate,
       absl::optional<base::Value> fido_assertion_info,
       absl::optional<GURL> last_committed_primary_main_frame_origin,
-      absl::optional<std::string> context_token);
+      absl::optional<std::string> context_token,
+      absl::optional<CardUnmaskChallengeOption> selected_challenge_option);
 
   // CardUnmaskDelegate:
   void OnUnmaskPromptAccepted(

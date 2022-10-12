@@ -2154,6 +2154,7 @@ TEST_F(CreditCardAccessManagerTest, RiskBasedVirtualCardUnmasking_Success) {
       AutofillMetrics::ServerCardUnmaskResult::kRiskBasedUnmasked, 1);
 }
 
+#if !BUILDFLAG(IS_IOS)
 // Ensures the virtual card risk-based unmasking response is handled correctly
 // and authentication is delegated to the OTP authenticator, when only the OTP
 // challenge option is returned.
@@ -2180,7 +2181,21 @@ TEST_F(CreditCardAccessManagerTest,
       AutofillMetrics::ServerCardUnmaskResult::kAuthenticationUnmasked, 1);
 }
 
-#if !BUILDFLAG(IS_IOS)
+TEST_F(
+    CreditCardAccessManagerTest,
+    RiskBasedVirtualCardUnmasking_CreditCardAccessManagerReset_TriggersOtpAuthenticatorResetOnFlowCancelled) {
+  MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(
+      /*fido_authenticator_is_user_opted_in=*/false,
+      /*is_user_verifiable=*/false);
+  // This check already happens in
+  // MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(), but double
+  // checking here helps show this test works correctly.
+  EXPECT_TRUE(otp_authenticator_->on_challenge_option_selected_invoked());
+
+  credit_card_access_manager_->OnVirtualCardUnmaskCancelled();
+  EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
+}
+
 // Ensures that the virtual card risk-based unmasking response is handled
 // correctly and authentication is delegated to the FIDO authenticator, when
 // only the FIDO challenge options is returned.
@@ -2587,21 +2602,6 @@ TEST_F(CreditCardAccessManagerTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.ServerCardUnmask.VirtualCard.Result.UnspecifiedFlowType",
       AutofillMetrics::ServerCardUnmaskResult::kFlowCancelled, 1);
-}
-
-TEST_F(
-    CreditCardAccessManagerTest,
-    RiskBasedVirtualCardUnmasking_CreditCardAccessManagerReset_TriggersOtpAuthenticatorResetOnFlowCancelled) {
-  MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(
-      /*fido_authenticator_is_user_opted_in=*/false,
-      /*is_user_verifiable=*/false);
-  // This check already happens in
-  // MockCardUnmaskFlowUpToAuthenticationSelectionDialogAccepted(), but double
-  // checking here helps show this test works correctly.
-  EXPECT_TRUE(otp_authenticator_->on_challenge_option_selected_invoked());
-
-  credit_card_access_manager_->OnVirtualCardUnmaskCancelled();
-  EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
 }
 
 }  // namespace autofill
