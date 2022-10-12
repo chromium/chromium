@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(b/250633393): This proto will need to be moved to the events directory.
+// It is not currently possible because the events directory is not yet
+// replicated to ChromeOS.
+
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
