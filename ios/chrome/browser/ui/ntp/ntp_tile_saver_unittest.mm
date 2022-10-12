@@ -53,6 +53,14 @@ class NTPTileSaverControllerTest : public BlockCleanupTest {
   UIImage* CreateMockImage(UIColor* color) {
     mock_image_ = ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
         CGSizeMake(10, 10), color);
+    if (@available(iOS 16.1, *)) {
+      // Save the image to disk and reload it.
+      NSData* image_data = UIImagePNGRepresentation(mock_image_);
+      NSURL* mock_image_url = [NSFileManager.defaultManager.temporaryDirectory
+          URLByAppendingPathComponent:@"mock_image"];
+      [image_data writeToURL:mock_image_url atomically:YES];
+      mock_image_ = [UIImage imageWithContentsOfFile:mock_image_url.path];
+    }
     return mock_image_;
   }
 
