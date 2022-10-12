@@ -1,15 +1,18 @@
 # WebDriver BiDi for Chromium [![chromium-bidi on npm](https://img.shields.io/npm/v/chromium-bidi)](https://www.npmjs.com/package/chromium-bidi)
 
 This is an implementation of the
-[WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol with some extensions (**BiDi+**)
-for Chromium, implemented as a JavaScript layer translating between BiDi and CDP, running
-inside a Chrome tab.
+[WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol with some
+extensions (**BiDi+**)
+for Chromium, implemented as a JavaScript layer translating between BiDi and CDP,
+running inside a Chrome tab.
 
-Current status can be checked in [WPT WebDriver BiDi status](https://wpt.fyi/results/webdriver/tests/bidi).
+Current status can be checked
+in [WPT WebDriver BiDi status](https://wpt.fyi/results/webdriver/tests/bidi).
 
 ## BiDi+
 
-**"BiDi+"** is an extension of the WebDriver BiDi protocol. In addition to the [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) it has:
+**"BiDi+"** is an extension of the WebDriver BiDi protocol. In addition to
+the [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) it has:
 
 ### Command `cdp.sendCommand`
 
@@ -31,7 +34,8 @@ CdpSendCommandResult = {
 }
 ```
 
-The command runs the described [CDP command](https://chromedevtools.github.io/devtools-protocol)
+The command runs the
+described [CDP command](https://chromedevtools.github.io/devtools-protocol)
 and returns result.
 
 ### Command `cdp.getSession`
@@ -71,6 +75,7 @@ CdpEventReceivedParameters = {
 The event contains a CDP event.
 
 ## Field `channel`
+
 Each command can be extended with a `channel`:
 
 ```cddl
@@ -81,7 +86,9 @@ Command = {
    Extensible,
 }
 ```
+
 If provided, the very same `channel` is added to the response:
+
 ```cddl
 CommandResponse = {
    id: js-uint,
@@ -100,9 +107,10 @@ ErrorResponse = {
 }
 ```
 
-When client uses commands [`session.subscribe`](https://w3c.github.io/webdriver-bidi/#command-session-subscribe) 
-and [`session.unsubscribe`](https://w3c.github.io/webdriver-bidi/#command-session-unsubscribe) 
-with `channel`, the subscriptions are handled per channel, and the corresponding 
+When client uses
+commands [`session.subscribe`](https://w3c.github.io/webdriver-bidi/#command-session-subscribe)
+and [`session.unsubscribe`](https://w3c.github.io/webdriver-bidi/#command-session-unsubscribe)
+with `channel`, the subscriptions are handled per channel, and the corresponding
 `channel` filed is added to the event message:
 
 ```cddl
@@ -129,8 +137,7 @@ This will run the server on port `8080`:
 npm run server
 ```
 
-Use the `PORT=` environment variable or `--port=` argument to run it on
-another port:
+Use the `PORT=` environment variable or `--port=` argument to run it on another port:
 
 ```sh
 PORT=8081 npm run server
@@ -149,8 +156,8 @@ Use the CLI argument `--headless=false` to run browser in headful mode:
 npm run server -- --headless=false
 ```
 
-Use the `CHANNEL=...` environment variable or `--channel=...` argument with one
-of the following values to run the specific Chrome channel: `chrome`,
+Use the `CHANNEL=...` environment variable or `--channel=...` argument with one of
+the following values to run the specific Chrome channel: `chrome`,
 `chrome-beta`, `chrome-canary`, `chrome-dev`.
 
 The requested Chrome version should be installed.
@@ -183,8 +190,8 @@ npm run unit
 
 ## e2e tests
 
-The e2e tests are written using Python, in order to learn how to eventually do
-this in web-platform-tests.
+The e2e tests are written using Python, in order to learn how to eventually do this
+in web-platform-tests.
 
 ### Installation
 
@@ -196,8 +203,8 @@ python3 -m pip install --user -r tests/requirements.txt
 
 ### Running
 
-The e2e tests require BiDi server running on the same host. By default, tests
-try to connect to the port `8080`. The server can be run from the project root:
+The e2e tests require BiDi server running on the same host. By default, tests try to
+connect to the port `8080`. The server can be run from the project root:
 
 ```sh
 npm run e2e
@@ -211,15 +218,15 @@ PORT=8081 npm run e2e
 
 ## Examples
 
-The examples are stored in the `/examples` folder and are intended to show who
-the BiDi protocol can be used. Examples are based on
+The examples are stored in the `/examples` folder and are intended to show who the
+BiDi protocol can be used. Examples are based on
 [Puppeteer's examples](https://github.com/puppeteer/puppeteer/tree/main/examples)
 .
 
 ### Installation
 
-The examples are written using Python, to align with e2e test. Python 3.6+ and
-some dependencies are required:
+The examples are written using Python, to align with e2e test. Python 3.6+ and some
+dependencies are required:
 
 ```sh
 python3 -m pip install --user -r tests/requirements.txt
@@ -227,8 +234,8 @@ python3 -m pip install --user -r tests/requirements.txt
 
 ### Running
 
-The examples require BiDi server running on the same host on the port `8080`.
-The server can be run from the project root:
+The examples require BiDi server running on the same host on the port `8080`. The
+server can be run from the project root:
 
 ```sh
 npm run server
@@ -243,8 +250,8 @@ python3 examples/cross-browser.py
 ## WPT
 
 WPT is added as
-a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules). To get
-run WPT tests:
+a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules). To get run
+WPT tests:
 
 ### Check out WPT and setup
 
@@ -286,8 +293,8 @@ This must be run in a PowerShell session with Administrator privileges:
 python wpt make-hosts-file | Out-File $env:SystemRoot\System32\drivers\etc\hosts -Encoding ascii -Append
 ```
 
-If you are behind a proxy, you also need to make sure the domains above are
-excluded from your proxy lookups.
+If you are behind a proxy, you also need to make sure the domains above are excluded
+from your proxy lookups.
 
 #### 5. Set the `WPT_BROWSER_PATH` environment variable to a Chrome, Edge or Chromium binary to launch. For example, on macOS:
 
@@ -349,19 +356,20 @@ npm run build
 # How does it work?
 
 The architecture is described in the
-[WebDriver BiDi in Chrome Context implementation plan](https://docs.google.com/document/d/1VfQ9tv0wPSnb5TI-MOobjoQ5CXLnJJx9F_PxOMQc8kY).
+[WebDriver BiDi in Chrome Context implementation plan](https://docs.google.com/document/d/1VfQ9tv0wPSnb5TI-MOobjoQ5CXLnJJx9F_PxOMQc8kY)
+.
 
 There are 2 main modules:
 
-1. backend WS server in `src`. It runs webSocket server, and for each ws
-   connection runs an instance of browser with BiDi Mapper.
-2. front-end BiDi Mapper in `src/bidiMapper`. Gets BiDi commands from the
-   backend, and map them to CDP commands.
+1. backend WS server in `src`. It runs webSocket server, and for each ws connection
+   runs an instance of browser with BiDi Mapper.
+2. front-end BiDi Mapper in `src/bidiMapper`. Gets BiDi commands from the backend,
+   and map them to CDP commands.
 
 ## Contributing
 
-The BiDi commands are processed in the `src/bidiMapper/commandProcessor.ts`. To
-add a new command, add it to `_processCommand`, write and call processor for it.
+The BiDi commands are processed in the `src/bidiMapper/commandProcessor.ts`. To add a
+new command, add it to `_processCommand`, write and call processor for it.
 
 ## Publish new `npm` release
 

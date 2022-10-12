@@ -16,11 +16,13 @@
 # This script implements Puppeteer's `examples/cross-browser.js` scenario using WebDriver BiDi.
 # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js
 
-from pathlib import Path
 import asyncio
 import json
 import logging
 import os
+from pathlib import Path
+
+import requests
 import websockets
 
 logging.basicConfig(
@@ -31,8 +33,32 @@ logging.basicConfig(
 
 async def get_websocket():
     port = os.getenv('PORT', 8080)
-    url = f'ws://localhost:{port}/session'
-    return await websockets.connect(url)
+
+    # Try to connect directly via WebSocket. If not available, connect via
+    # WebDriver Classic with BiDi capabilities.
+    try:
+        websocket = await websockets.connect(f'ws://localhost:{port}/session')
+        # Init BiDi session.
+        await run_and_wait_command({
+            "id": 0,
+            "method": "session.new",
+            "params": {}}, websocket)
+        return websocket
+    except websockets.exceptions.InvalidStatusCode:
+        # Fall back. Try to connect via WebDriver Classic, and upgrade to BiDi.
+        # Create a WebDriver Classic session with BiDi capabilities.
+        new_session = requests.post(
+            f'http://localhost:{port}/session',
+            json={
+                "capabilities": {
+                    "alwaysMatch": {
+                        "acceptInsecureCerts": True,
+                        "webSocketUrl": True}}}
+        ).json()
+
+        # Get BiDi websocket URL.
+        ws_url = new_session["value"]["capabilities"]["webSocketUrl"]
+        return await websockets.connect(ws_url)
 
 
 async def send_JSON_command(command, websocket):
@@ -135,7 +161,7 @@ async def main():
                     return `${title} - ${anchor.href}`;
                 });
             }""",
-            "args": [results_selector],
+            "arguments": [results_selector],
             "target": {"context": context_id},
             "awaitPromise": True}},
         websocket)

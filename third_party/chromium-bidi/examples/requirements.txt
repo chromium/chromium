@@ -1,2 +1,2 @@
-pytest-asyncio==0.14.0
+requests==2.28.1
 websockets==8.1

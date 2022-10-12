@@ -37,10 +37,10 @@ jobs:
         run: python -m pip install -r tests/requirements.txt
       - name: Run e2e tests
         run: CHANNEL=chrome-dev npm run e2e
+      - name: Install Python dependencies for example scripts
+        run: python -m pip install -r examples/requirements.txt
       - name: Run examples/cross-browser.py
-        run: python3 examples/cross-browser.py
-      - name: Run examples/cross-browser-simplified.py
-        run: python3 examples/cross-browser-simplified.py
+        run: python examples/cross-browser.py
 
   e2e-headful:
     timeout-minutes: 15
