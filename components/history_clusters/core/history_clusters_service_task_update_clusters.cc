@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/clustering_backend.h"
+#include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/history_clusters_db_tasks.h"
 #include "components/history_clusters/core/history_clusters_debug_jsons.h"
 #include "components/history_clusters/core/history_clusters_service.h"
@@ -47,7 +48,8 @@ void HistoryClustersServiceTaskUpdateClusters::Start() {
       FROM_HERE,
       std::make_unique<GetAnnotatedVisitsToCluster>(
           incomplete_visit_context_annotations_, base::Time(),
-          continuation_params_, false, 2, false,
+          continuation_params_, false,
+          GetConfig().persist_clusters_recluster_window_days, false,
           base::BindOnce(&HistoryClustersServiceTaskUpdateClusters::
                              OnGotAnnotatedVisitsToCluster,
                          weak_ptr_factory_.GetWeakPtr())),

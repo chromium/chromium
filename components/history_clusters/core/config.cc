@@ -112,6 +112,12 @@ Config::Config() {
             internal::kPersistedClusters,
             "max_persisted_cluster_visits_to_fetch_soft_cap",
             max_persisted_cluster_visits_to_fetch_soft_cap);
+
+    persist_clusters_recluster_window_days =
+        base::GetFieldTrialParamByFeatureAsInt(
+            internal::kPersistedClusters,
+            "persist_clusters_recluster_window_days",
+            persist_clusters_recluster_window_days);
   }
 
   // The `kOmniboxAction` feature and child params.

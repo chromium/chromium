@@ -112,6 +112,12 @@ struct Config {
   // visits in case there are a few very large clusters in the same batch.
   size_t max_persisted_cluster_visits_to_fetch_soft_cap = 1000;
 
+  // The number of days of persisted clusters to recluster when updating
+  // clusters. E.g., if set to 2, and clusters up to 1/10 have been persisted,
+  // then the next request will include visits from clusters from 1/8 and 1/9,
+  // and unclustered visits from 1/10.
+  size_t persist_clusters_recluster_window_days = 2;
+
   // The `kOmniboxAction` feature and child params.
 
   // Enables the Journeys Omnibox Action chip. `kJourneys` must also be enabled
