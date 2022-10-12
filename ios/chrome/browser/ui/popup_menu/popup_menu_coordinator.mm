@@ -140,6 +140,9 @@ enum class IOSOverflowMenuActionType {
 }
 
 - (void)stop {
+  if (self.isShowingPopupMenu) {
+    [self dismissPopupMenuAnimated:NO];
+  }
   [self.popupMenuHelpCoordinator stop];
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.overflowMenuMediator disconnect];
@@ -152,7 +155,7 @@ enum class IOSOverflowMenuActionType {
 #pragma mark - Public
 
 - (BOOL)isShowingPopupMenu {
-  return self.presenter != nil;
+  return self.presenter != nil || self.overflowMenuMediator != nil;
 }
 
 - (void)startPopupMenuHelpCoordinator {
