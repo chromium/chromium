@@ -45,7 +45,9 @@ export async function getVolumeInfo(fileSystemId) {
 /**
  * @param {number=} openedFilesLimit Limit of opened files at once. If 0 or
  *     unspecified, then not limited.
- * @returns {!Promise<!FileSystem>} mounted filesystem instance.
+ * @returns {!Promise<{fileSystem: !FileSystem, volumeInfo:
+ *     !chrome.fileManagerPrivate.VolumeMetadata}>} information about the
+ *     mounted filesystem instance.
  */
 async function mount(openedFilesLimit) {
   const fileSystemId = TestFileSystemProvider.FILESYSTEM_ID;
@@ -68,7 +70,7 @@ async function mount(openedFilesLimit) {
   if (!fileSystem) {
     throw new Error(`filesystem not found for volume: ${volumeInfo.volumeId}`);
   }
-  return fileSystem;
+  return {fileSystem, volumeInfo};
 };
 
 /**
@@ -104,10 +106,13 @@ export function startReadTextFromBlob(blob) {
 }
 
 export class MountedTestFileSystem {
-  /** @param {!FileSystem} fileSystem */
-  constructor(fileSystem) {
-    /** @type {!FileSystem} */
+  /**
+   * @param {!FileSystem} fileSystem
+   * @param {!chrome.fileManagerPrivate.VolumeMetadata} volumeInfo
+   */
+  constructor(fileSystem, volumeInfo) {
     this.fileSystem = fileSystem;
+    this.volumeInfo = volumeInfo;
   }
 
   /**
@@ -119,7 +124,9 @@ export class MountedTestFileSystem {
     await promisifyWithLastError(chrome.fileSystemProvider.unmount, {
       fileSystemId: TestFileSystemProvider.FILESYSTEM_ID,
     });
-    this.fileSystem = await mount(openedFilesLimit);
+    const {fileSystem, volumeInfo} = await mount(openedFilesLimit);
+    this.fileSystem = fileSystem;
+    this.volumeInfo = volumeInfo;
   }
 
   /**
@@ -159,7 +166,8 @@ export class MountedTestFileSystem {
  * @return {!Promise<!MountedTestFileSystem>}
  */
 export async function mountTestFileSystem(openedFilesLimit) {
-  return new MountedTestFileSystem(await mount(openedFilesLimit));
+  const {fileSystem, volumeInfo} = await mount(openedFilesLimit);
+  return new MountedTestFileSystem(fileSystem, volumeInfo);
 }
 
 /**
