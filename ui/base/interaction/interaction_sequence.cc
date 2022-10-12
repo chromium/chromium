@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/callback_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_auto_reset.h"
@@ -65,6 +66,14 @@ void SetDefaultMustRemainVisibleValue(InteractionSequence::Step* step,
   // If the following step is to hide the same element, the default is false.
   if (next && next->type == InteractionSequence::StepType::kHidden &&
       (next->id == step->id || next->element_name == step->element_name)) {
+    step->must_remain_visible = false;
+    return;
+  }
+
+  // If the following step is a re-show of the same element or element ID, the
+  // default is false.
+  if (next && next->type == InteractionSequence::StepType::kShown &&
+      next->id == step->id && next->transition_only_on_event) {
     step->must_remain_visible = false;
     return;
   }
@@ -477,7 +486,9 @@ void InteractionSequence::OnTriggerDuringStepTransition(
     return;
 
   switch (next_step()->type) {
+    case StepType::kHidden:
     case StepType::kActivated:
+    case StepType::kShown:
       // We should know the identifier and name ahead of time for activation
       // steps, so just make sure nothing has gone awry.
       DCHECK(element->identifier() == next_step()->id);
@@ -499,18 +510,23 @@ void InteractionSequence::OnTriggerDuringStepTransition(
 
   // Barring disaster, we will immediately transition as soon as we finish
   // processing the current step.
-  next_step()->element = element;
   trigger_during_callback_ = true;
 
-  // Since we've hit the trigger for the next step, we need to make sure we
-  // clean up (and possibly abort) if the element goes away before we can
-  // finish processing the current step.
-  next_step()->subscription =
-      ElementTracker::GetElementTracker()->AddElementHiddenCallback(
-          element->identifier(), element->context(),
-          base::BindRepeating(
-              &InteractionSequence::OnElementHiddenDuringStepTransition,
-              base::Unretained(this)));
+  if (next_step()->type == StepType::kHidden) {
+    next_step()->element = nullptr;
+    next_step()->subscription = base::CallbackListSubscription();
+  } else {
+    // Since we've hit the trigger for the next step, we need to make sure we
+    // clean up (and possibly abort) if the element goes away before we can
+    // finish processing the current step.
+    next_step()->element = element;
+    next_step()->subscription =
+        ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+            element->identifier(), element->context(),
+            base::BindRepeating(
+                &InteractionSequence::OnElementHiddenDuringStepTransition,
+                base::Unretained(this)));
+  }
 }
 
 void InteractionSequence::OnElementHiddenDuringStepTransition(
@@ -554,26 +570,57 @@ void InteractionSequence::MaybeWatchForTriggerDuringStepTransition() {
       return;
   }
 
-  if (next_step()->type == StepType::kActivated && next_step()->id) {
-    // If the next step is an activation step and we already know the ID (i.e.
-    // it's either not a named element or the element in question has been
-    // named) then add the appropriate temporary callback.
-    next_step()->subscription =
-        ElementTracker::GetElementTracker()->AddElementActivatedCallback(
-            next_step()->id, GetElementContext(named_element),
-            base::BindRepeating(
-                &InteractionSequence::OnTriggerDuringStepTransition,
-                base::Unretained((this))));
-  } else if (next_step()->type == StepType::kCustomEvent) {
-    // If the next step is a custom event, we might not yet know the name or ID
-    // of the element, but we can still listen for the custom event type. We'll
-    // filter out irrelevant elements in the callback itself.
-    next_step()->subscription =
-        ElementTracker::GetElementTracker()->AddCustomEventCallback(
-            next_step()->custom_event_type, GetElementContext(named_element),
-            base::BindRepeating(
-                &InteractionSequence::OnTriggerDuringStepTransition,
-                base::Unretained((this))));
+  // If the next step is a discrete event, listen for the event so we don't miss
+  // it during the step callback.
+  switch (next_step()->type) {
+    case StepType::kActivated:
+      // For activation events the ID of the next node must be known.
+      if (next_step()->id) {
+        next_step()->subscription =
+            ElementTracker::GetElementTracker()->AddElementActivatedCallback(
+                next_step()->id, GetElementContext(named_element),
+                base::BindRepeating(
+                    &InteractionSequence::OnTriggerDuringStepTransition,
+                    base::Unretained((this))));
+      }
+      break;
+    case StepType::kCustomEvent:
+      // For custom events the ID is not necessary because ElementTracker allows
+      // just listening for the event.
+      next_step()->subscription =
+          ElementTracker::GetElementTracker()->AddCustomEventCallback(
+              next_step()->custom_event_type, GetElementContext(named_element),
+              base::BindRepeating(
+                  &InteractionSequence::OnTriggerDuringStepTransition,
+                  base::Unretained((this))));
+      break;
+    case StepType::kShown:
+      // For shown events, the ID must be known and the event need only be
+      // observed if the state change itself is being observed or the element
+      // might immediately become invisible again.
+      if ((next_step()->transition_only_on_event ||
+           !next_step()->must_remain_visible.value()) &&
+          next_step()->id) {
+        next_step()->subscription =
+            ElementTracker::GetElementTracker()->AddElementShownCallback(
+                next_step()->id, GetElementContext(named_element),
+                base::BindRepeating(
+                    &InteractionSequence::OnTriggerDuringStepTransition,
+                    base::Unretained((this))));
+      }
+      break;
+    case StepType::kHidden:
+      // For hidden events, the ID must be known. Only watch if the state change
+      // itself is the step transition.
+      if (next_step()->transition_only_on_event && next_step()->id) {
+        next_step()->subscription =
+            ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+                next_step()->id, GetElementContext(named_element),
+                base::BindRepeating(
+                    &InteractionSequence::OnTriggerDuringStepTransition,
+                    base::Unretained((this))));
+      }
+      break;
   }
 }
 
@@ -670,11 +717,7 @@ void InteractionSequence::DoStepTransition(TrackedElement* element) {
 
 void InteractionSequence::StageNextStep() {
   auto* const tracker = ElementTracker::GetElementTracker();
-
   Step* const next = next_step();
-  DCHECK(!trigger_during_callback_ || next->type == StepType::kActivated ||
-         next->type == StepType::kCustomEvent ||
-         next->type == StepType::kHidden);
 
   // Note that if the target element for the next step was activated and then
   // hidden during the previous step transition, `next_element` could be null.
@@ -707,7 +750,15 @@ void InteractionSequence::StageNextStep() {
 
   switch (next->type) {
     case StepType::kShown:
-      if (next_element && !next->transition_only_on_event) {
+      if (trigger_during_callback_) {
+        trigger_during_callback_ = false;
+        if (next->must_remain_visible.value() && !next_element) {
+          Abort(AbortedReason::kElementHiddenDuringStep);
+          return;
+        } else {
+          DoStepTransition(next_element);
+        }
+      } else if (next_element && !next->transition_only_on_event) {
         DoStepTransition(next_element);
       } else {
         DCHECK(!next->uses_named_element());

@@ -105,11 +105,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
                       }))
                   .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetType(ui::InteractionSequence::StepType::kHidden)
-                       .SetElementID(kPrimaryTabPageElementId)
-                       .Build())
-          .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetTransitionOnlyOnEvent(true)
                        .SetElementID(kPrimaryTabPageElementId)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence*,

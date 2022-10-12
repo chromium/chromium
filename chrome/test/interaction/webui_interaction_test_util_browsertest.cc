@@ -165,6 +165,7 @@ IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilTest,
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kHidden)
+                       .SetTransitionOnlyOnEvent(true)
                        .SetElementID(kWebUIInteractionTestUtilTestId)
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
@@ -192,6 +193,7 @@ IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilTest, LoadPage) {
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
                        .SetElementID(kWebUIInteractionTestUtilTestId)
+                       .SetMustRemainVisible(false)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
@@ -199,17 +201,18 @@ IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilTest, LoadPage) {
                            }))
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetType(ui::InteractionSequence::StepType::kHidden)
-                       .SetElementID(kWebUIInteractionTestUtilTestId)
-                       .Build())
-          .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetTransitionOnlyOnEvent(true)
                        .SetElementID(kWebUIInteractionTestUtilTestId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             EXPECT_EQ(url, util->web_contents()->GetURL());
+                           }))
                        .Build())
           .Build();
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
-  DCHECK_EQ(url, util->web_contents()->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilTest, IsPageLoaded) {
@@ -240,6 +243,7 @@ IN_PROC_BROWSER_TEST_F(WebUIInteractionTestUtilTest, IsPageLoaded) {
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kHidden)
                        .SetElementID(kWebUIInteractionTestUtilTestId)
+                       .SetTransitionOnlyOnEvent(true)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* sequence,
                                ui::TrackedElement* element) {
