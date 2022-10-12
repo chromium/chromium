@@ -16,7 +16,6 @@
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_client.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
-#include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -59,11 +58,6 @@ class MockCameraHalServer : public cros::mojom::CameraHalServer {
                void(cros::mojom::CameraPrivacySwitchState state));
   MOCK_METHOD1(GetAutoFramingSupported,
                void(GetAutoFramingSupportedCallback callback));
-
-  void SetCameraEffect(::cros::mojom::EffectsConfigPtr config,
-                       SetCameraEffectCallback callback) override {
-    std::move(callback).Run(::cros::mojom::SetEffectResult::kOk);
-  }
 
   mojo::PendingRemote<cros::mojom::CameraHalServer> GetPendingRemote() {
     return receiver_.BindNewPipeAndPassRemote();
