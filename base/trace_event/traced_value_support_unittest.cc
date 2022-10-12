@@ -37,7 +37,7 @@ struct WeakData {
     std::move(context).WriteString(data_);
   }
 
-  base::WeakPtr<WeakData> GetWeakPtr() const {
+  base::WeakPtr<const WeakData> GetWeakPtr() const {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -65,7 +65,7 @@ TEST(TracedValueSupportTest, Optional) {
 
 TEST(TracedValueSupportTest, WeakPtr) {
   std::unique_ptr<WeakData> data = std::make_unique<WeakData>("weak");
-  base::WeakPtr<WeakData> weak_ptr = data->GetWeakPtr();
+  base::WeakPtr<const WeakData> weak_ptr = data->GetWeakPtr();
   EXPECT_EQ(perfetto::TracedValueToString(weak_ptr), "weak");
   data.reset();
   EXPECT_EQ(perfetto::TracedValueToString(weak_ptr), "0x0");
