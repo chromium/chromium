@@ -90,10 +90,13 @@ void LayoutSVGContainer::UpdateLayout() {
 
   if (!IsSVGHiddenContainer()) {
     SetTransformAffectsVectorEffect(false);
+    ClearSVGDescendantMayHaveTransformRelatedAnimation();
     for (auto* child = FirstChild(); child; child = child->NextSibling()) {
-      if (child->TransformAffectsVectorEffect()) {
+      if (child->TransformAffectsVectorEffect())
         SetTransformAffectsVectorEffect(true);
-        break;
+      if (child->StyleRef().HasCurrentTransformRelatedAnimation() ||
+          child->SVGDescendantMayHaveTransformRelatedAnimation()) {
+        SetSVGDescendantMayHaveTransformRelatedAnimation();
       }
     }
   }

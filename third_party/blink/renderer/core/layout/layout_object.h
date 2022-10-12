@@ -3637,6 +3637,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return bitfields_.TransformAffectsVectorEffect();
   }
 
+  bool SVGDescendantMayHaveTransformRelatedAnimation() const {
+    NOT_DESTROYED();
+    return bitfields_.SVGDescendantMayHaveTransformRelatedAnimation();
+  }
+  void SetSVGDescendantMayHaveTransformRelatedAnimation();
+
   bool ShouldSkipNextLayoutShiftTracking() const {
     NOT_DESTROYED();
     return bitfields_.ShouldSkipNextLayoutShiftTracking();
@@ -3887,6 +3893,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetTransformAffectsVectorEffect(b);
   }
 
+  void ClearSVGDescendantMayHaveTransformRelatedAnimation() {
+    NOT_DESTROYED();
+    DCHECK(IsSVGChild());
+    bitfields_.SetSVGDescendantMayHaveTransformRelatedAnimation(false);
+  }
+
   void SetMightTraversePhysicalFragments(bool b) {
     NOT_DESTROYED();
     bitfields_.SetMightTraversePhysicalFragments(b);
@@ -4102,6 +4114,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           is_table_column_constraints_dirty_(false),
           is_grid_placement_dirty_(true),
           transform_affects_vector_effect_(false),
+          svg_descendant_may_have_transform_related_animation_(false),
           is_layout_ng_object_for_formatted_text(false),
           should_skip_next_layout_shift_tracking_(true),
           should_assume_paint_offset_translation_for_layout_shift_tracking_(
@@ -4424,6 +4437,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // included).
     ADD_BOOLEAN_BITFIELD(transform_affects_vector_effect_,
                          TransformAffectsVectorEffect);
+
+    // For SVG child objects, indicates if this object or any descendant may
+    // have transform-related animation. This flag is set on all ancestors up
+    // to the SVG root (not included) when an SVG child starts a
+    // transform-related animation. It's cleared lazily during layout of an
+    // SVG container if the container doesn't have any animating descendants.
+    ADD_BOOLEAN_BITFIELD(svg_descendant_may_have_transform_related_animation_,
+                         SVGDescendantMayHaveTransformRelatedAnimation);
+
     ADD_BOOLEAN_BITFIELD(is_layout_ng_object_for_formatted_text,
                          IsLayoutNGObjectForFormattedText);
 

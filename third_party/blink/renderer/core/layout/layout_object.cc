@@ -4996,6 +4996,30 @@ bool LayoutObject::ForceLegacyLayoutForChildren() const {
   return false;
 }
 
+void LayoutObject::SetSVGDescendantMayHaveTransformRelatedAnimation() {
+  NOT_DESTROYED();
+  auto* object = this;
+  while (!object->IsSVGRoot()) {
+    DCHECK(object->IsSVGChild());
+    if (object->SVGDescendantMayHaveTransformRelatedAnimation())
+      break;
+    if (object->IsSVGHiddenContainer())
+      return;
+    object->bitfields_.SetSVGDescendantMayHaveTransformRelatedAnimation(true);
+    object = object->Parent();
+    if (!object)
+      return;
+  }
+  // If we have set SetSVGDescendantMayHaveTransformRelatedAnimation() for
+  // any object, set the enclosing layer needs repaint because some
+  // LayoutSVGContainer may paint differently by ignoring the cull rect.
+  // See SVGContainerPainter.
+  if (object != this) {
+    if (auto* layer = object->EnclosingLayer())
+      layer->SetNeedsRepaint();
+  }
+}
+
 bool IsMenuList(const LayoutObject* object) {
   if (!object)
     return false;

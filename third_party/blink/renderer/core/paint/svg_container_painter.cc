@@ -33,6 +33,10 @@ bool SVGContainerPainter::CanUseCullRect() const {
   // paint its descendants so we cannot skip painting.
   if (layout_svg_container_.IsSVGHiddenContainer())
     return false;
+
+  if (layout_svg_container_.SVGDescendantMayHaveTransformRelatedAnimation())
+    return false;
+
   return SVGModelObjectPainter::CanUseCullRect(
       layout_svg_container_.StyleRef());
 }

@@ -2328,19 +2328,21 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   // Animation utility functions.
+  bool HasCurrentTransformRelatedAnimation() const {
+    return HasCurrentTransformAnimation() || HasCurrentScaleAnimation() ||
+           HasCurrentRotateAnimation() || HasCurrentTranslateAnimation();
+  }
   bool HasCurrentCompositableAnimation() const {
-    return HasCurrentOpacityAnimation() || HasCurrentTransformAnimation() ||
-           HasCurrentScaleAnimation() || HasCurrentRotateAnimation() ||
-           HasCurrentTranslateAnimation() || HasCurrentFilterAnimation() ||
-           HasCurrentBackdropFilterAnimation() ||
+    return HasCurrentOpacityAnimation() ||
+           HasCurrentTransformRelatedAnimation() ||
+           HasCurrentFilterAnimation() || HasCurrentBackdropFilterAnimation() ||
            (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
             HasCurrentBackgroundColorAnimation());
   }
   bool ShouldCompositeForCurrentAnimations() const {
-    return HasCurrentOpacityAnimation() || HasCurrentTransformAnimation() ||
-           HasCurrentScaleAnimation() || HasCurrentRotateAnimation() ||
-           HasCurrentTranslateAnimation() || HasCurrentFilterAnimation() ||
-           HasCurrentBackdropFilterAnimation();
+    return HasCurrentOpacityAnimation() ||
+           HasCurrentTransformRelatedAnimation() ||
+           HasCurrentFilterAnimation() || HasCurrentBackdropFilterAnimation();
   }
   bool RequiresPropertyNodeForAnimation() const {
     return IsRunningOpacityAnimationOnCompositor() ||
@@ -2382,9 +2384,8 @@ class ComputedStyle : public ComputedStyleBase,
   }
   bool HasTransform() const {
     return HasTransformOperations() || HasOffset() ||
-           HasCurrentTransformAnimation() || HasCurrentScaleAnimation() ||
-           HasCurrentRotateAnimation() || HasCurrentTranslateAnimation() ||
-           Translate() || Rotate() || Scale();
+           HasCurrentTransformRelatedAnimation() || Translate() || Rotate() ||
+           Scale();
   }
   bool HasTransformOperations() const {
     return !Transform().Operations().empty();

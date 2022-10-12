@@ -148,12 +148,20 @@ void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
 
   if (!Parent())
     return;
-  if (diff.BlendModeChanged() && !IsSVGHiddenContainer()) {
-    DCHECK(IsBlendingAllowed());
-    Parent()->DescendantIsolationRequirementsChanged(
-        StyleRef().HasBlendMode() ? kDescendantIsolationRequired
-                                  : kDescendantIsolationNeedsUpdate);
+
+  if (!IsSVGHiddenContainer()) {
+    if (diff.BlendModeChanged()) {
+      DCHECK(IsBlendingAllowed());
+      Parent()->DescendantIsolationRequirementsChanged(
+          StyleRef().HasBlendMode() ? kDescendantIsolationRequired
+                                    : kDescendantIsolationNeedsUpdate);
+    }
+    if (StyleRef().HasCurrentTransformRelatedAnimation() &&
+        !old_style->HasCurrentTransformRelatedAnimation()) {
+      Parent()->SetSVGDescendantMayHaveTransformRelatedAnimation();
+    }
   }
+
   if (diff.HasDifference())
     LayoutSVGResourceContainer::StyleChanged(*this, diff);
 }
