@@ -7260,3 +7260,11 @@ crbug.com/1349331 http/tests/devtools/storage-panel-dom-storage.js [ Skip ]
 
 crbug.com/1279220 [ Win ] virtual/percent-based-scrolling/fast/scrolling/scrollbars/touch-scrolling-on-root-scrollbar.html [ Pass Timeout ]
 crbug.com/1279220 [ Linux ] fast/scrolling/non-composited-scroller-in-position-fixed-scroller.html [ Failure Pass ]
+
+# Temporarily disable tests to show storage keys in DOMStorage instead of origin
+crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Skip ]
+crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Skip ]
+crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Skip ]
+crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Skip ]
+crbug.com/1349331 http/tests/devtools/application-panel/resources-panel-websql.js [ Skip ]
+crbug.com/1349331 http/tests/devtools/oopif/oopif-storage.js [ Skip ]
