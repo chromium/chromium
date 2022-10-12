@@ -18,7 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 
@@ -134,7 +134,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1186376")
+    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_addAlert() {
         performTest("add-alert.html", "add-alert-expected-android.txt");
     }
@@ -381,7 +381,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_ariaMenuItemFocus() {
         performTest("aria-menuitem-focus.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -530,7 +530,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_ariaTreeItemFocus() {
         performTest("aria-treeitem-focus.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -561,21 +561,21 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1186376")
+    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_caretHide() {
         performTest("caret-hide.html", "caret-hide-expected-android.txt");
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1186376")
+    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_caretMoveHiddenInput() {
         performTest("caret-move-hidden-input.html", "caret-move-hidden-input-expected-android.txt");
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1186376")
+    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_caretMove() {
         performTest("caret-move.html", "caret-move-expected-android.txt");
     }
@@ -684,14 +684,14 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_focusListbox() {
         performTest("focus-listbox.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_focusListboxMultiselect() {
         performTest("focus-listbox-multiselect.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -752,7 +752,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_listboxFocus() {
         performTest("listbox-focus.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -853,7 +853,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_menulistFocus() {
         performTest("menulist-focus.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -977,7 +977,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1186376")
+    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_scrollHorizontalScrollPercentChanged() {
         performTest("scroll-horizontal-scroll-percent-change.html",
                 "scroll-horizontal-scroll-percent-change-expected-android.txt");
@@ -985,7 +985,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1186376")
+    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_scrollVerticalScrollPercentChanged() {
         performTest("scroll-vertical-scroll-percent-change.html",
                 "scroll-vertical-scroll-percent-change-expected-android.txt");
@@ -1047,7 +1047,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_tbodyFocus() {
         performTest("tbody-focus.html", EMPTY_EXPECTATIONS_FILE);
     }
@@ -1098,14 +1098,14 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_tfootFocus() {
         performTest("tfoot-focus.html", EMPTY_EXPECTATIONS_FILE);
     }
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1190218")
+    @DisabledTest(message = "https://crbug.com/1190218")
     public void test_theadFocus() {
         performTest("thead-focus.html", EMPTY_EXPECTATIONS_FILE);
     }

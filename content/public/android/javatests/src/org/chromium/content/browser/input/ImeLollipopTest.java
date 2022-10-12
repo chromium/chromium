@@ -20,8 +20,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -49,7 +49,7 @@ public class ImeLollipopTest {
     @Test
     @MediumTest
     @Feature({"TextInput"})
-    @FlakyTest(message = "crbug.com/1153705")
+    @DisabledTest(message = "crbug.com/1153705")
     public void testUpdateCursorAnchorInfo() throws Throwable {
         requestCursorUpdates(InputConnection.CURSOR_UPDATE_MONITOR);
 

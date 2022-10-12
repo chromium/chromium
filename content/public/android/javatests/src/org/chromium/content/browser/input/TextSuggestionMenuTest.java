@@ -27,7 +27,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -146,7 +145,7 @@ public class TextSuggestionMenuTest {
 
     @Test
     @LargeTest
-    @FlakyTest(message = "https://crbug.com/1348267")
+    @DisabledTest(message = "https://crbug.com/1348267")
     public void testApplySuggestion() throws InterruptedException, Throwable, TimeoutException {
         WebContents webContents = mRule.getWebContents();
 
@@ -266,7 +265,7 @@ public class TextSuggestionMenuTest {
 
     @Test
     @LargeTest
-    @FlakyTest(message = "https://crbug.com/1156419")
+    @DisabledTest(message = "https://crbug.com/1156419")
     public void suggestionMenuDismissal() throws InterruptedException, Throwable, TimeoutException {
         WebContents webContents = mRule.getWebContents();
 

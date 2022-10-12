@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
@@ -65,7 +65,7 @@ public class NavigationTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @FlakyTest(message = "https://crbug.com/1316064")
+    @DisabledTest(message = "https://crbug.com/1316064")
     public void testDirectedNavigationHistory() throws Throwable {
         ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl(URL_1);
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
