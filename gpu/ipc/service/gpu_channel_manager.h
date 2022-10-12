@@ -29,6 +29,7 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
+#include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shader_translator_cache.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
@@ -140,7 +141,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // Remove the channel for a particular renderer.
   void RemoveChannel(int client_id);
 
-  void OnContextLost(bool synthetic_loss);
+  void OnContextLost(int context_lost_count, bool synthetic_loss);
 
   const GpuPreferences& gpu_preferences() const { return gpu_preferences_; }
   const GpuDriverBugWorkarounds& gpu_driver_bug_workarounds() const {
@@ -193,6 +194,11 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
 
   SharedImageManager* shared_image_manager() const {
     return shared_image_manager_;
+  }
+
+  bool use_passthrough_cmd_decoder() const {
+    return gpu_preferences_.use_passthrough_cmd_decoder &&
+           gles2::PassthroughCommandDecoderSupported();
   }
 
   // Retrieve GPU Resource consumption statistics for the task manager

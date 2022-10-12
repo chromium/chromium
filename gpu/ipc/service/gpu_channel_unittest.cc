@@ -238,7 +238,8 @@ TEST_F(GpuChannelExitForContextLostTest,
   ASSERT_TRUE(channel);
 
   // Put channel manager into shutdown state.
-  channel_manager()->OnContextLost(false /* synthetic_loss */);
+  channel_manager()->OnContextLost(-1 /* context_lost_count */,
+                                   false /* synthetic_loss */);
 
   // Calling OnContextLost() above may destroy the gpu channel via post task.
   // Ensure that post task has happened.
@@ -270,7 +271,8 @@ TEST_F(GpuChannelExitForContextLostTest,
        CreateFailsDuringLostContextShutdown_2) {
   // Put channel manager into shutdown state. Do this before creating a channel,
   // as doing this may destroy any active channels.
-  channel_manager()->OnContextLost(false /* synthetic_loss */);
+  channel_manager()->OnContextLost(-1 /* context_lost_count */,
+                                   false /* synthetic_loss */);
 
   int32_t kClientId = 1;
   GpuChannel* channel = CreateChannel(kClientId, false);
