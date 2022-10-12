@@ -7152,6 +7152,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCNAME_SIDE_PANEL_RESIZE" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel resize handle is focused.">
         Side Panel Resize Handle
       </message>
+      <message name="IDS_ACCNAME_SIDE_PANEL_SELECTOR" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the side panel header combobox is focused.">
+        Side Panel Selector
+      </message>
       <message name="IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE" desc="The name of the Customize Chrome feature in the side panel combo box.">
         Customize Chrome
       </message>
