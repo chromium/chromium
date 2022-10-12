@@ -348,11 +348,16 @@ enum ServerFieldType {
 
   // Reserved for a server-side-only use: 127
 
+  // Type of a field that asks for a numeric quantity. Not fillable by Autofill.
+  // The purpose is to ignore false positive server classification for numeric
+  // types that a prone to false-positive votes.
+  NUMERIC_QUANTITY = 128,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // Please update enum `AutofillServerFieldType` in
   // `tools/metrics/histogram/enums.xml` for metrics tracking.
-  MAX_VALID_FIELD_TYPE = 128,
+  MAX_VALID_FIELD_TYPE = 129,
 };
 
 enum class FieldTypeGroup {

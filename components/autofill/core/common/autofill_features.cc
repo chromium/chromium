@@ -63,6 +63,12 @@ BASE_FEATURE(kAutofillAddressProfileSavePromptAddressVerificationSupport,
              "AutofillAddressProfileSavePromptAddressVerificationSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use the heuristic parser to detected unfillable numeric types in field labels
+// and grant the heuristic precedence over non-override server predictions.
+BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantitites,
+             "AutofillGivePrecedenceToNumericQuantitites",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(crbug.com/1135188): Remove this feature flag after the explicit save
 // prompts for address profiles is complete.
 // When enabled, address profile save problem will contain a dropdown for

@@ -1298,6 +1298,18 @@
       }
     ]
   },
+  "NUMERIC_QUANTITY": {
+    "en": [
+      {
+        "pattern_identifier": "en_numeric_quantity_preserving",
+        "positive_pattern": "size|height|quantity|length|amount",
+        "positive_score": 0.95,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "match_field_input_types": ["TEXT", "SELECT", "TEXT_AREA", "NUMBER", "SEARCH"]
+      }
+    ]
+   },
   "PRICE": {
     "en": [
       {

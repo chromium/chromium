@@ -648,6 +648,78 @@ TEST_P(AutofillPerfectFillingMetricsTest,
       BucketsAre(test_case.credit_card_buckets));
 }
 
+// Test the emission of collisions between NUMERIC_QUANTITY and server
+// predictions as well as the potential false positives.
+TEST_F(AutofillMetricsTest, NumericQuantityCollision) {
+  // Those metrics are only collected when the numeric quantities are not
+  // getting precedence over server predictions.
+  base::test::ScopedFeatureList numeric_quanity_feature_list;
+  numeric_quanity_feature_list.InitAndDisableFeature(
+      features::kAutofillGivePrecedenceToNumericQuantitites);
+
+  // Set up our form data.
+  test::FormDescription form_description = {
+      .description_for_logging = "AutofilledStateFieldSource",
+      .fields = {{.server_type = NO_SERVER_DATA,
+                  .heuristic_type = NUMERIC_QUANTITY,
+                  .is_autofilled = false},
+                 // We add a second field to make sure the metrics are only
+                 // recorded for the field with the numeric quantity prediction.
+                 {.server_type = ADDRESS_HOME_LINE1,
+                  .heuristic_type = ADDRESS_HOME_LINE1,
+                  .is_autofilled = false}}};
+
+  // Helper to submit the `form` and test the expectations. `collision`
+  // indicates that there was a collision between the NUMERIC_QUANTITY
+  // prediction and a server prediction.
+  // If `autofill_used` and a `collision` exists, the histogram to
+  // track `false_positive` is checked.
+  auto SubmitAndTest = [this](const FormData& form, bool collision,
+                              bool autofill_used, bool false_positive) {
+    base::HistogramTester histogram_tester;
+    SubmitForm(form);
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.NumericQuantityCollidesWithServerPrediction", collision, 1);
+    if (collision && autofill_used) {
+      histogram_tester.ExpectUniqueSample(
+          "Autofill.AcceptedFilledFieldWithNumericQuantityHeuristicPrediction",
+          false_positive, 1);
+    }
+  };
+
+  {
+    SCOPED_TRACE(
+        "No collision case - The numeric quanity does not collide with a "
+        "server prediction.");
+    FormData form = GetAndAddSeenForm(form_description);
+    SubmitAndTest(form, /*collision=*/false, /*autofill_used=*/false,
+                  /*false_positive=*/false);
+  }
+  {
+    SCOPED_TRACE("Collision, but nothing is filled.");
+    // Add a server prediction to create a collision.
+    form_description.fields[0].server_type = NAME_FIRST;
+    FormData form = GetAndAddSeenForm(form_description);
+    SubmitAndTest(form, /*collision=*/true, /*autofill_used=*/false,
+                  /*false_positive=*/false);
+  }
+  {
+    SCOPED_TRACE("Collision, the field is autofilled.");
+    form_description.fields[0].is_autofilled = true;
+    FormData form = GetAndAddSeenForm(form_description);
+    SubmitAndTest(form, /*collision=*/true, /*autofill_used=*/true,
+                  /*false_positive=*/true);
+  }
+  {
+    SCOPED_TRACE(
+        "Collision, the field is autofilled and subsequently changed.");
+    FormData form = GetAndAddSeenForm(form_description);
+    SimulateUserChangedTextField(form, form.fields[0]);
+    SubmitAndTest(form, /*collision=*/true, /*autofill_used=*/true,
+                  /*false_positive=*/false);
+  }
+}
+
 // Test that we log quality metrics appropriately.
 TEST_F(AutofillMetricsTest, QualityMetrics) {
   // Set up our form data.
