@@ -26,6 +26,7 @@ source_set("post_restore_signin") {
     ":features",
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/ui/authentication:authentication_constants",
@@ -53,6 +54,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/ui/post_restore_signin:features",
+    "//ios/chrome/test:test_support",
     "//third_party/ocmock",
     "//ui/base",
   ]

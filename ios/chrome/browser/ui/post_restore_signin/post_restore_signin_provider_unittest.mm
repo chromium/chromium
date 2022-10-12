@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/post_restore_signin/metrics.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
@@ -39,13 +40,13 @@ class PostRestoreSignInProviderTest : public PlatformTest {
     accountInfo.email = std::string(kFakePreRestoreAccountEmail);
     accountInfo.given_name = std::string(kFakePreRestoreAccountGivenName);
     accountInfo.full_name = std::string(kFakePreRestoreAccountFullName);
-    StorePreRestoreIdentity(accountInfo);
+    StorePreRestoreIdentity(local_state_.Get(), accountInfo);
   }
 
   void ClearUserName() {
     AccountInfo accountInfo;
     accountInfo.email = std::string(kFakePreRestoreAccountEmail);
-    StorePreRestoreIdentity(accountInfo);
+    StorePreRestoreIdentity(local_state_.Get(), accountInfo);
     // Reinstantiate a provider so that it picks up the changes.
     provider_ = [[PostRestoreSignInProvider alloc] init];
   }
@@ -69,6 +70,7 @@ class PostRestoreSignInProviderTest : public PlatformTest {
         {});
   }
 
+  IOSChromeScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mock_handler_;
   PostRestoreSignInProvider* provider_;
@@ -160,4 +162,25 @@ TEST_F(PostRestoreSignInProviderTest, recordsDisplayed) {
   [provider_ promoWasDisplayed];
   histogram_tester.ExpectBucketCount(kIOSPostRestoreSigninDisplayedHistogram,
                                      true, 1);
+}
+
+TEST_F(PostRestoreSignInProviderTest, clearsPreRestoreIdentity) {
+  // Test the Alert cancel.
+  SetFakePreRestoreAccountInfo();
+  EXPECT_TRUE(GetPreRestoreIdentity(local_state_.Get()).has_value());
+  [provider_ standardPromoAlertCancelAction];
+  EXPECT_FALSE(GetPreRestoreIdentity(local_state_.Get()).has_value());
+
+  // Test the Fullscreen cancel.
+  SetFakePreRestoreAccountInfo();
+  EXPECT_TRUE(GetPreRestoreIdentity(local_state_.Get()).has_value());
+  [provider_ standardPromoDismissAction];
+  EXPECT_FALSE(GetPreRestoreIdentity(local_state_.Get()).has_value());
+
+  // Test that it is cleared when the user chooses to sign in.
+  SetFakePreRestoreAccountInfo();
+  EXPECT_TRUE(GetPreRestoreIdentity(local_state_.Get()).has_value());
+  SetupMockHandler();
+  [provider_ standardPromoAlertDefaultAction];
+  EXPECT_FALSE(GetPreRestoreIdentity(local_state_.Get()).has_value());
 }

@@ -508,9 +508,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       addAgent:[[PostRestoreAppAgent alloc]
                    initWithPromosManager:GetApplicationContext()
                                              ->GetPromosManager()
-                   authenticationService:
-                       AuthenticationServiceFactory::GetForBrowserState(
-                           self.appState.mainBrowserState)]];
+                   authenticationService:AuthenticationServiceFactory::
+                                             GetForBrowserState(
+                                                 self.appState.mainBrowserState)
+                              localState:GetApplicationContext()
+                                             ->GetLocalState()]];
 }
 
 // This initialization must happen before any windows are created.

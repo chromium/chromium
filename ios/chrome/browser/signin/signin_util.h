@@ -14,6 +14,7 @@
 #include "ios/chrome/browser/signin/constants.h"
 
 @class ChromeIdentity;
+class PrefService;
 
 namespace signin {
 enum class Tribool;
@@ -38,13 +39,13 @@ signin::Tribool IsFirstSessionAfterDeviceRestore();
 
 // Stores a user's account info in memory, when we detect that it was
 // forgotten during a device restore.
-void StorePreRestoreIdentity(AccountInfo account);
+void StorePreRestoreIdentity(PrefService* local_state, AccountInfo account);
 
 // Clears the identity that was signed-in before the restore.
-void ClearPreRestoreIdentity();
+void ClearPreRestoreIdentity(PrefService* local_state);
 
 // Returns the identity that was signed-in before the restore, but is now
 // not signed-in.
-absl::optional<AccountInfo> GetPreRestoreIdentity();
+absl::optional<AccountInfo> GetPreRestoreIdentity(PrefService* local_state);
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_

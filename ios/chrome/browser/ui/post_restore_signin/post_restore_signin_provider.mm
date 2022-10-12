@@ -9,6 +9,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
@@ -32,6 +33,9 @@
 // Returns the given name of the last account that was signed in pre-restore.
 @property(readonly) NSString* userGivenName;
 
+// Local state is used to retrieve and/or clear the pre-restore identity.
+@property(nonatomic, assign) PrefService* localState;
+
 @end
 
 @implementation PostRestoreSignInProvider {
@@ -42,8 +46,10 @@
 #pragma mark - Initializers
 
 - (instancetype)init {
-  if (self = [super init])
-    _accountInfo = GetPreRestoreIdentity();
+  if (self = [super init]) {
+    _localState = GetApplicationContext()->GetLocalState();
+    _accountInfo = GetPreRestoreIdentity(_localState);
+  }
   return self;
 }
 
@@ -91,6 +97,7 @@
 - (void)standardPromoAlertCancelAction {
   base::UmaHistogramEnumeration(kIOSPostRestoreSigninChoiceHistogram,
                                 IOSPostRestoreSigninChoice::Dismiss);
+  ClearPreRestoreIdentity(_localState);
 }
 
 #pragma mark - StandardPromoAlertProvider
@@ -162,6 +169,7 @@
 - (void)standardPromoDismissAction {
   base::UmaHistogramEnumeration(kIOSPostRestoreSigninChoiceHistogram,
                                 IOSPostRestoreSigninChoice::Dismiss);
+  ClearPreRestoreIdentity(_localState);
 }
 
 #pragma mark - Internal
@@ -187,6 +195,7 @@
 
   base::UmaHistogramEnumeration(kIOSPostRestoreSigninChoiceHistogram,
                                 IOSPostRestoreSigninChoice::Continue);
+  ClearPreRestoreIdentity(_localState);
 
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperationReauthenticate

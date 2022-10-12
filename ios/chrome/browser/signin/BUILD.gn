@@ -116,6 +116,7 @@ source_set("signin_util") {
     ":constants",
     ":signin_util_internal",
     "//base",
+    "//components/prefs",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser",
     "//ios/public/provider/chrome/browser/signin",

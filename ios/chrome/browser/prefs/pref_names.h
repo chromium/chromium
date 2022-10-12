@@ -31,6 +31,7 @@ extern const char kIosBookmarkSigninPromoDisplayedCount[];
 extern const char kIosShareChromeCount[];
 extern const char kIosShareChromeLastShare[];
 extern const char kIosDiscoverFeedLastRefreshTime[];
+extern const char kIosPreRestoreAccountInfo[];
 extern const char kIosPromosManagerActivePromos[];
 extern const char kIosPromosManagerImpressions[];
 extern const char kIosPromosManagerSingleDisplayActivePromos[];

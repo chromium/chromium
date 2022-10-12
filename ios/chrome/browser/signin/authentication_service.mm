@@ -642,7 +642,8 @@ void AuthenticationService::HandleForgottenIdentity(
     AccountInfo extended_account_info =
         identity_manager_->FindExtendedAccountInfoByAccountId(
             account_info.account_id);
-    StorePreRestoreIdentity(extended_account_info);
+    StorePreRestoreIdentity(GetApplicationContext()->GetLocalState(),
+                            extended_account_info);
   }
 
   // Sign the user out.

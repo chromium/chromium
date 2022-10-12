@@ -50,7 +50,8 @@ class PostRestoreAppAgentTest : public PlatformTest {
   void CreateAppAgent() {
     appAgent_ =
         [[PostRestoreAppAgent alloc] initWithPromosManager:CreatePromosManager()
-                                     authenticationService:CreateAuthService()];
+                                     authenticationService:CreateAuthService()
+                                                localState:local_state_.Get()];
     mockAppState_ = OCMClassMock([AppState class]);
     [appAgent_ setAppState:mockAppState_];
   }
@@ -95,7 +96,7 @@ class PostRestoreAppAgentTest : public PlatformTest {
   void SetFakePreRestoreAccountInfo() {
     AccountInfo accountInfo;
     accountInfo.email = kFakePreRestoreAccountEmail;
-    StorePreRestoreIdentity(accountInfo);
+    StorePreRestoreIdentity(local_state_.Get(), accountInfo);
   }
 
   void EnableFeatureVariationFullscreen() {
@@ -118,7 +119,7 @@ TEST_F(PostRestoreAppAgentTest, maybeRegisterPromo) {
   EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
 
   // Scenarios which should not register a promo.
-  ClearPreRestoreIdentity();
+  ClearPreRestoreIdentity(local_state_.Get());
   MockAppStateChange(InitStageFinal);
   EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
 
@@ -126,7 +127,7 @@ TEST_F(PostRestoreAppAgentTest, maybeRegisterPromo) {
   MockAppStateChange(InitStageFinal);
   EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
 
-  ClearPreRestoreIdentity();
+  ClearPreRestoreIdentity(local_state_.Get());
   EnableFeatureVariationFullscreen();
   MockAppStateChange(InitStageFinal);
   EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
@@ -161,7 +162,7 @@ TEST_F(PostRestoreAppAgentTest, deregisterPromoFullscreen) {
   EXPECT_EQ(CountSingleDisplayActivePromos(), 1);
 
   EnableFeatureVariationAlert();
-  ClearPreRestoreIdentity();
+  ClearPreRestoreIdentity(local_state_.Get());
   MockAppStateChange(InitStageFinal);
   EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
 }
@@ -172,7 +173,7 @@ TEST_F(PostRestoreAppAgentTest, deregisterPromoAlert) {
   EXPECT_EQ(CountSingleDisplayActivePromos(), 1);
 
   EnableFeatureVariationAlert();
-  ClearPreRestoreIdentity();
+  ClearPreRestoreIdentity(local_state_.Get());
   MockAppStateChange(InitStageFinal);
   EXPECT_EQ(CountSingleDisplayActivePromos(), 0);
 }

@@ -8,15 +8,17 @@
 #import "ios/chrome/app/application_delegate/app_state_agent.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 
-class PromosManager;
 class AuthenticationService;
+class PrefService;
+class PromosManager;
 
 // App agent that displays the Post Restore UI when needed.
 @interface PostRestoreAppAgent : NSObject <AppStateAgent>
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                 authenticationService:
-                    (AuthenticationService*)authenticationService;
+                    (AuthenticationService*)authenticationService
+                           localState:(PrefService*)localState;
 
 @end
 

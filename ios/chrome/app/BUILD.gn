@@ -316,7 +316,6 @@ source_set("post_restore_app_agent") {
     "//base",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
-    "//ios/chrome/browser/application_context:application_context",
     "//ios/chrome/browser/promos_manager:promos_manager",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:signin_util",

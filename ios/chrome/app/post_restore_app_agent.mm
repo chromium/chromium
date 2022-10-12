@@ -5,7 +5,6 @@
 #import "ios/chrome/app/post_restore_app_agent.h"
 
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/signin_util.h"
@@ -33,6 +32,9 @@
 // The AuthenticationManager is used to reset the reauth infobar prompt.
 @property(nonatomic, assign) AuthenticationService* authenticationService;
 
+// Local state is used to retrieve and/or clear the pre-restore identity.
+@property(nonatomic, assign) PrefService* localState;
+
 // Stores the PostRestoreSignInType which can be kAlert, kFullscreen, or
 // kDisabled.
 @property(nonatomic)
@@ -54,13 +56,15 @@
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager
                 authenticationService:
-                    (AuthenticationService*)authenticationService {
+                    (AuthenticationService*)authenticationService
+                           localState:(PrefService*)localState {
   DCHECK(authenticationService);
 
   self = [super init];
   if (self) {
     _promosManager = promosManager;
     _authenticationService = authenticationService;
+    _localState = localState;
   }
   return self;
 }
@@ -99,9 +103,7 @@
   _featureEnabled =
       _postRestoreSignInType !=
       post_restore_signin::features::PostRestoreSignInType::kDisabled;
-  _hasAccountInfo = GetPreRestoreIdentity().has_value();
-  if (_promosManager == nil)
-    _promosManager = GetApplicationContext()->GetPromosManager();
+  _hasAccountInfo = GetPreRestoreIdentity(_localState).has_value();
 }
 
 // Returns the correct promo type depending on which feature variation is
@@ -128,8 +130,12 @@
 // otherwise deregister the promo.
 - (void)maybeRegisterPromo {
   if (!self.shouldRegisterPromo) {
-    if (_promosManager)
+    if (_promosManager) {
       [self deregisterPromos];
+    }
+    if (_hasAccountInfo) {
+      ClearPreRestoreIdentity(_localState);
+    }
     return;
   }
 

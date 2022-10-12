@@ -92,6 +92,9 @@ const char kIosBookmarkSigninPromoDisplayedCount[] =
 const char kIosDiscoverFeedLastRefreshTime[] =
     "ios.discover_feed.last_refresh_time";
 
+// The user's account info from before a device restore.
+const char kIosPreRestoreAccountInfo[] = "ios.pre_restore_account_info";
+
 // List preference maintaining the list of continuous-display, active promo
 // campaigns.
 const char kIosPromosManagerActivePromos[] = "ios.promos_manager.active_promos";
