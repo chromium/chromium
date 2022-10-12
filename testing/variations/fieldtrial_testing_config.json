@@ -2140,7 +2140,9 @@
                 "windows",
                 "mac",
                 "chromeos",
-                "chromeos_lacros"
+                "chromeos_lacros",
+                "linux",
+                "ios"
             ],
             "experiments": [
                 {
