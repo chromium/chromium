@@ -16,21 +16,21 @@
     flex-direction: row;
     height: 30px;
     justify-content: center;
-    padding-inline-end: 8px;
-    padding-inline-start: 4px;
-  }
-
-  :host([shown-middle-slot-promo-id_]) #promoAndDismissContainer {
-    padding-inline-end: 0;
-    padding-inline-start: 2px;
   }
 
   #promoContainer {
     align-items: center;
     display: flex;
     overflow-x: clip;
+    padding-inline-end: 8px;
+  }
+
+  :host([shown-middle-slot-promo-id_]) #promoContainer {
     padding-inline-end: 2px;
-    padding-inline-start: 2px;
+  }
+
+  #promoContainer > :first-child {
+    padding-inline-start: 8px;
   }
 
   a {
@@ -46,7 +46,7 @@
   }
 
   .image + * {
-    margin-inline-start: 4px;
+    padding-inline-start: 4px;
   }
 
   img {
