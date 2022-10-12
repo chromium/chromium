@@ -177,4 +177,11 @@ std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
       /*queue_family_index=*/queue_family_index);
 }
 
+ui::ScopedEGLImage CreateEGLImageFromAHardwareBuffer(AHardwareBuffer* buffer) {
+  EGLint egl_image_attribs[] = {EGL_IMAGE_PRESERVED_KHR, EGL_FALSE, EGL_NONE};
+  EGLClientBuffer client_buffer = eglGetNativeClientBufferANDROID(buffer);
+  return ui::MakeScopedEGLImage(EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID,
+                                client_buffer, egl_image_attribs);
+}
+
 }  // namespace gpu

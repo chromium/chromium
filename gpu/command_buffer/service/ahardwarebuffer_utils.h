@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/gpu_gles2_export.h"
+#include "ui/gl/scoped_egl_image.h"
 
 extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
 
@@ -78,6 +79,10 @@ std::unique_ptr<VulkanImage> CreateVkImageFromAhbHandle(
     const gfx::Size& size,
     const viz::SharedImageFormat& format,
     uint32_t queue_family_index);
+
+// Creates an EGLImage from |buffer|, setting EGL_IMAGE_PRESERVED_KHR to false.
+GPU_GLES2_EXPORT ui::ScopedEGLImage CreateEGLImageFromAHardwareBuffer(
+    AHardwareBuffer* buffer);
 
 }  // namespace gpu
 

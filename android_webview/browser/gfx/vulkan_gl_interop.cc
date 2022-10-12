@@ -9,6 +9,7 @@
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/ipc/common/android/android_image_reader_utils.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
@@ -223,12 +224,8 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
     pending_draw->image_size = gfx::Size(params.width, params.height);
 
     // Create an EGLImage for the buffer.
-    EGLint egl_image_attribs[] = {EGL_IMAGE_PRESERVED_KHR, EGL_FALSE, EGL_NONE};
-    EGLClientBuffer client_buffer =
-        eglGetNativeClientBufferANDROID(pending_draw->scoped_buffer.get());
-    pending_draw->egl_image =
-        ui::MakeScopedEGLImage(EGL_NO_CONTEXT, EGL_NATIVE_BUFFER_ANDROID,
-                               client_buffer, egl_image_attribs);
+    pending_draw->egl_image = gpu::CreateEGLImageFromAHardwareBuffer(
+        pending_draw->scoped_buffer.get());
     if (!pending_draw->egl_image.is_valid()) {
       LOG(ERROR) << "Failed to initialize EGLImage for AHardwareBuffer";
       return;
