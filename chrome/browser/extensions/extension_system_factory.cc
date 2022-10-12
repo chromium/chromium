@@ -101,8 +101,9 @@ KeyedService* ExtensionSystemFactory::BuildServiceInstanceFor(
 
 content::BrowserContext* ExtensionSystemFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  // Separate instance in incognito.
-  return context;
+  return ProfileSelections::BuildForRegularAndIncognito(
+             /*force_guest=*/true, /*force_system=*/false)
+      .ApplyProfileSelection(Profile::FromBrowserContext(context));
 }
 
 bool ExtensionSystemFactory::ServiceIsCreatedWithBrowserContext() const {

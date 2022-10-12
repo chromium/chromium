@@ -62,7 +62,8 @@ KeyedService* ExtensionPrefsFactory::BuildServiceInstanceFor(
 
 content::BrowserContext* ExtensionPrefsFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  return ExtensionsBrowserClient::Get()->GetOriginalContext(context);
+  return ExtensionsBrowserClient::Get()->GetRedirectedContextInIncognito(
+      context, /*force_guest_profile=*/true, /*force_system_profile=*/false);
 }
 
 }  // namespace extensions

@@ -1027,6 +1027,13 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       DependsOn(ExtensionRegistryFactory::GetInstance());
       DependsOn(ProcessMapFactory::GetInstance());
     }
+
+    content::BrowserContext* GetBrowserContextToUse(
+        content::BrowserContext* context) const override {
+      return ExtensionsBrowserClient::Get()->GetContextForRegularAndIncognito(
+          context, /*force_guest_profile=*/true,
+          /*force_system_profile=*/false);
+    }
   };
 
   raw_ptr<content::BrowserContext> browser_context_;

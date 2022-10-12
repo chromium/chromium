@@ -23,6 +23,7 @@ source_set("announcement_notification") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
     "//components/keyed_service/content",
     "//components/pref_registry",
     "//components/prefs:prefs",

@@ -6,6 +6,7 @@
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/lazy_background_task_queue_factory.h"
 #include "extensions/browser/process_manager.h"
 
@@ -52,7 +53,8 @@ BrowserContext* ProcessManagerFactory::GetBrowserContextToUse(
     BrowserContext* context) const {
   // ProcessManager::Create handles guest and incognito profiles, returning an
   // IncognitoProcessManager in incognito mode.
-  return context;
+  return ExtensionsBrowserClient::Get()->GetContextForRegularAndIncognito(
+      context, /*force_guest_profile=*/true, /*force_system_profile=*/false);
 }
 
 }  // namespace extensions

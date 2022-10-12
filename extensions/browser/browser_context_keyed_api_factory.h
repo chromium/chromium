@@ -35,15 +35,17 @@ class BrowserContextKeyedAPI : public KeyedService {
   static const bool kServiceHasOwnInstanceInIncognito = false;
 
   // The next two flags allows to force the selection for the System and Guest
-  // Profiles despite the experiments being activated. Setting the value to true
-  // in subclasses to force the selection.
+  // Profiles despite the experiments being activated. Values can be overridden
+  // in subclasses by redefining the variables and setting a different value.
   //
   // Part of experiment to remove System Profile selection by default with
-  // `kSystemProfileSelectionDefaultNone`.
+  // `kSystemProfileSelectionDefaultNone`. By default do not force the value (do
+  // not create extension services) for the System Profile.
   static const bool kForceSelectionForSystemProfile = false;
   // Part of experiment to remove Guest Profile selection by default with
-  // `kGuestProfileSelectionDefaultNone`.
-  static const bool kForceSelectionForGuestProfile = false;
+  // `kGuestProfileSelectionDefaultNone`. By default force the value (create
+  // extension services) for the Guest Profile.
+  static const bool kForceSelectionForGuestProfile = true;
 
   // If set to false, don't start the service at BrowserContext creation time.
   // (The default differs from the BrowserContextKeyedServiceFactory default,

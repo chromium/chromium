@@ -8,6 +8,7 @@
 #include "apps/app_restore_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/extensions_browser_client.h"
 
 namespace apps {
 
@@ -38,6 +39,13 @@ KeyedService* AppRestoreServiceFactory::BuildServiceInstanceFor(
 
 bool AppRestoreServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
+}
+
+content::BrowserContext* AppRestoreServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return extensions::ExtensionsBrowserClient::Get()
+      ->GetRedirectedContextInIncognito(context, /*force_guest_profile=*/true,
+                                        /*force_system_profile=*/false);
 }
 
 }  // namespace apps

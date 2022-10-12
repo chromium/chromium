@@ -10,12 +10,10 @@
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"  // nogncheck
-#include "chrome/browser/profiles/incognito_helpers.h"  // nogncheck
-#include "chrome/browser/profiles/profile.h"            // nogncheck
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_delegate.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service.h"
 #include "chrome/browser/updates/announcement_notification/empty_announcement_notification_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/updates/announcement_notification/announcement_notification_delegate_android.h"
@@ -57,16 +55,10 @@ KeyedService* AnnouncementNotificationServiceFactory::BuildServiceInstanceFor(
       profile, pref, std::move(delegate), base::DefaultClock::GetInstance());
 }
 
-content::BrowserContext*
-AnnouncementNotificationServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
-}
-
 AnnouncementNotificationServiceFactory::AnnouncementNotificationServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "AnnouncementNotificationService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }
 
