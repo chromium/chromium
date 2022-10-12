@@ -49,6 +49,7 @@ enum Token {
   kConfigMacCatalina,
   kConfigMacBigSur,
   kConfigMacMonterey,
+  kConfigMacVentura,
   kConfigMac,
   kConfigLinux,
   kConfigChromeOS,
@@ -112,6 +113,7 @@ const TokenInfo kTokenData[] = {
     {"catalina", GPUTestConfig::kOsMacCatalina},
     {"bigsur", GPUTestConfig::kOsMacBigSur},
     {"monterey", GPUTestConfig::kOsMacMonterey},
+    {"ventura", GPUTestConfig::kOsMacVentura},
     {"mac", GPUTestConfig::kOsMac},
     {"linux", GPUTestConfig::kOsLinux},
     {"chromeos", GPUTestConfig::kOsChromeOS},
@@ -283,6 +285,7 @@ bool GPUTestExpectationsParser::ParseConfig(
       case kConfigMacCatalina:
       case kConfigMacBigSur:
       case kConfigMacMonterey:
+      case kConfigMacVentura:
       case kConfigMac:
       case kConfigLinux:
       case kConfigChromeOS:
@@ -350,6 +353,7 @@ bool GPUTestExpectationsParser::ParseLine(
       case kConfigMacCatalina:
       case kConfigMacBigSur:
       case kConfigMacMonterey:
+      case kConfigMacVentura:
       case kConfigMac:
       case kConfigLinux:
       case kConfigChromeOS:
@@ -480,6 +484,7 @@ bool GPUTestExpectationsParser::UpdateTestConfig(GPUTestConfig* config,
     case kConfigMacCatalina:
     case kConfigMacBigSur:
     case kConfigMacMonterey:
+    case kConfigMacVentura:
     case kConfigMac:
     case kConfigLinux:
     case kConfigChromeOS:
