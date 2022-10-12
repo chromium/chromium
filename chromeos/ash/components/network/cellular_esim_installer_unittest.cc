@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -45,6 +46,8 @@ const char kTestEuiccPath[] = "/org/chromium/Hermes/Euicc/0";
 const char kTestEid[] = "12345678901234567890123456789012";
 const char kInstallViaQrCodeHistogram[] =
     "Network.Cellular.ESim.InstallViaQrCode.Result";
+const char kESimInstallNonUserErrorSuccessRate[] =
+    "Network.Cellular.ESim.Installation.NonUserErrorSuccessRate";
 
 const char kUserInstallOperationHistogram[] =
     "Network.Cellular.ESim.UserInstall.OperationResult.All";
@@ -227,6 +230,16 @@ class CellularESimInstallerTest : public testing::Test {
         kInstallViaQrCodeHistogram, expected_hermes_status, expected_count);
     HistogramTesterPtr()->ExpectBucketCount(
         kInstallESimResultHistogram, expected_install_result, expected_count);
+
+    if (expected_hermes_status == HermesResponseStatus::kSuccess ||
+        !base::Contains(kHermesUserErrorCodes, expected_hermes_status)) {
+      HistogramTesterPtr()->ExpectBucketCount(
+          kESimInstallNonUserErrorSuccessRate, expected_hermes_status,
+          expected_count);
+    } else {
+      HistogramTesterPtr()->ExpectBucketCount(
+          kESimInstallNonUserErrorSuccessRate, expected_hermes_status, 0);
+    }
   }
 
   void CheckDetailedESimInstallHistograms(

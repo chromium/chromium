@@ -8,6 +8,12 @@
 
 namespace ash {
 
+const std::array<HermesResponseStatus, 4> kHermesUserErrorCodes = {
+    HermesResponseStatus::kErrorMalformedResponse,
+    HermesResponseStatus::kErrorAlreadyDisabled,
+    HermesResponseStatus::kErrorAlreadyEnabled,
+    HermesResponseStatus::kErrorInvalidActivationCode};
+
 HermesResponseStatus HermesResponseStatusFromErrorName(
     const std::string& error_name) {
   if (error_name == hermes::kErrorAlreadyDisabled) {

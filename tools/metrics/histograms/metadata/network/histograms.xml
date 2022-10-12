@@ -336,6 +336,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Cellular.ESim.Installation.NonUserErrorSuccessRate"
+    enum="HermesResponseStatus" expires_after="2023-07-30">
+  <owner>nikhilcn@chromium.org</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    This metric is emitted when user attempts to install an eSIM profile. We
+    record all hermes response status codes that are within our control. User
+    and Carrier related errors such as invalid qr code, malformed carrier
+    response are omitted. This will be used to measure the success rate of
+    installing an eSIM profile when the input is valid and external dependencies
+    are operating without errors.
+
+    Emitted once the operation completes.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.ESim.InstallationResult"
     enum="NetworkCellularESimInstallResult" expires_after="2023-04-09">
   <owner>azeemarshad@chromium.org</owner>
