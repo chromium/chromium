@@ -83,6 +83,9 @@ export const OptionType = {
   JAPANESE_KEYMAP_STYLE: 'JapaneseKeymapStyle',
   JAPANESE_MANAGE_USER_DICTIONARY: 'JapaneseManageUserDictionary',
   JAPANESE_CLEAR_PERSONALIZATION_DATA: 'JapaneseClearPersonalizationData',
+  JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS: 'JapaneseDisableSuggestions',
+  JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE:
+      'AutomaticallySendStatisticsToGoogle',
   // Options for Korean input method.
   KOREAN_ENABLE_SYLLABLE_INPUT: 'koreanEnableSyllableInput',
   KOREAN_KEYBOARD_LAYOUT: 'koreanKeyboardLayout',
@@ -150,6 +153,9 @@ export const OPTION_DEFAULT = {
   [OptionType.JAPANESE_SECTION_SHORTCUT]:
       JAPANESE_SECTION_SHORTCUT.DIGITS_123456789,
   [OptionType.JAPANESE_KEYMAP_STYLE]: JAPANESE_KEYMAP_STYLE.CUSTOM,
+  [OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS]: true,
+  [OptionType.JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE]: true,
+
   // Options for Korean input method.
   [OptionType.KOREAN_ENABLE_SYLLABLE_INPUT]: true,
   [OptionType.KOREAN_KEYBOARD_LAYOUT]: KeyboardLayout.SET2,
@@ -283,15 +289,12 @@ const Settings = {
       }],
     },
     {
-      // TODO(b/234790486): Customize privacy with the correct values. The
-      // correct values are the ones from the legacy settings page that used to
-      // be found in
-      // chrome-extension://jkghodnilhceideoidjikpgommlajknk/mozc_option.html.
-      // This is still missing 2 settings, but will do that separately.
       title: SettingsHeaders.PRIVACY,
-      optionNames: [{
-        name: OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA,
-      }],
+      optionNames: [
+        {name: OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA},
+        {name: OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS},
+        {name: OptionType.JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE},
+      ],
     },
   ],
   [SettingsType.ZHUYIN_SETTINGS]: [{
@@ -456,6 +459,8 @@ export function getOptionUiType(option) {
     case OptionType.JAPANESE_AUTOMATICALLY_SWITCH_TO_HALFWIDTH:
     case OptionType.JAPANESE_USE_SYSTEM_DICTIONARY:
     case OptionType.JAPANESE_USE_INPUT_HISTORY:
+    case OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS:
+    case OptionType.JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE:
     case OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION:
     case OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING:
     case OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS:
@@ -593,6 +598,10 @@ export function getOptionLabelName(option) {
       return 'inputMethodOptionsJapaneseManageUserDictionary';
     case OptionType.JAPANESE_CLEAR_PERSONALIZATION_DATA:
       return 'inputMethodOptionsJapaneseClearPersonalizationData';
+    case OptionType.JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS:
+      return 'inputMethodOptionsJapaneseDisablePersonalizedSuggestions';
+    case OptionType.JAPANESE_AUTOMATICALLY_SEND_STATISTICS_TO_GOOGLE:
+      return 'inputMethodOptionsJapaneseAutomaticallySendStatisticsToGoogle';
     case OptionType.XKB_LAYOUT:
       return 'inputMethodOptionsXkbLayout';
     case OptionType.EDIT_USER_DICT:
