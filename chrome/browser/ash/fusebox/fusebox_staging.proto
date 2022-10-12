@@ -19,27 +19,5 @@ option optimize_for = LITE_RUNTIME;
 
 package fusebox_staging;
 
-message DirEntryProto {
-  optional bool is_directory = 1;
-  optional string name = 2;
-  optional uint32 mode_bits = 3;
-}
-
-message ReadDir2RequestProto {
-  optional int32 cancel_error_code = 1;
-  optional uint64 cookie = 2;
-  optional string file_system_url = 3;
-}
-
-message ReadDir2ResponseProto {
-  optional int32 posix_error_code = 1;
-  optional uint64 cookie = 2;
-  repeated DirEntryProto entries = 3;
-}
-
-message ListStoragesRequestProto {}
-
-message ListStoragesResponseProto {
-  optional int32 posix_error_code = 1;
-  repeated string storages = 2;
-}
+// There are no fusebox_staging definitions at this time. They're all in the
+// canonical fusebox.proto file.

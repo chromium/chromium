@@ -286,7 +286,7 @@ bool Server::ReadDir2MapEntry::Reply(uint64_t cookie,
                                      ReadDir2Callback callback) {
   if (callback) {
     if (callback_) {
-      fusebox_staging::ReadDir2ResponseProto response_proto;
+      ReadDir2ResponseProto response_proto;
       response_proto.set_posix_error_code(EINVAL);
       std::move(callback_).Run(response_proto);
     }
@@ -301,7 +301,7 @@ bool Server::ReadDir2MapEntry::Reply(uint64_t cookie,
     response_.set_cookie(has_more_ ? cookie : 0);
   }
   std::move(callback_).Run(std::move(response_));
-  response_ = fusebox_staging::ReadDir2ResponseProto();
+  response_ = ReadDir2ResponseProto();
   return (posix_error_code_ != 0) || !has_more_;
 }
 
@@ -483,7 +483,7 @@ void Server::ReadDir(std::string fs_url_as_string,
           common.fs_url, std::move(outer_callback)));
 }
 
-void Server::ReadDir2(fusebox_staging::ReadDir2RequestProto request_proto,
+void Server::ReadDir2(ReadDir2RequestProto request_proto,
                       ReadDir2Callback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -498,12 +498,12 @@ void Server::ReadDir2(fusebox_staging::ReadDir2RequestProto request_proto,
   auto common = ParseFileSystemURL(moniker_map_, prefix_map_, fs_url_as_string);
   if (common.is_moniker_root ||
       (common.error_code != base::File::Error::FILE_OK)) {
-    fusebox_staging::ReadDir2ResponseProto response_proto;
+    ReadDir2ResponseProto response_proto;
     response_proto.set_posix_error_code(FileErrorToErrno(common.error_code));
     std::move(callback).Run(response_proto);
     return;
   } else if (cancel_error_code) {
-    fusebox_staging::ReadDir2ResponseProto response_proto;
+    ReadDir2ResponseProto response_proto;
     response_proto.set_posix_error_code(cancel_error_code);
     std::move(callback).Run(response_proto);
     return;
@@ -512,7 +512,7 @@ void Server::ReadDir2(fusebox_staging::ReadDir2RequestProto request_proto,
   if (cookie) {
     auto iter = read_dir_2_map_.find(cookie);
     if (iter == read_dir_2_map_.end()) {
-      fusebox_staging::ReadDir2ResponseProto response_proto;
+      ReadDir2ResponseProto response_proto;
       response_proto.set_posix_error_code(EINVAL);
       std::move(callback).Run(response_proto);
     } else if (iter->second.Reply(cookie, std::move(callback))) {
@@ -570,11 +570,11 @@ void Server::Stat(std::string fs_url_as_string, StatCallback callback) {
           common.fs_url, metadata_fields, std::move(outer_callback)));
 }
 
-void Server::ListStorages(fusebox_staging::ListStoragesRequestProto request,
+void Server::ListStorages(ListStoragesRequestProto request,
                           ListStoragesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  fusebox_staging::ListStoragesResponseProto response;
+  ListStoragesResponseProto response;
   response.add_storages(kMonikerSubdir);
   for (const auto& i : prefix_map_) {
     response.add_storages(i.first);

@@ -126,9 +126,8 @@ class Server {
   //
   // TODO(crbug.com/1363861): document the D-Bus protocol separately.
   using ReadDir2Callback =
-      base::OnceCallback<void(fusebox_staging::ReadDir2ResponseProto response)>;
-  void ReadDir2(fusebox_staging::ReadDir2RequestProto request,
-                ReadDir2Callback callback);
+      base::OnceCallback<void(ReadDir2ResponseProto response)>;
+  void ReadDir2(ReadDir2RequestProto request, ReadDir2Callback callback);
 
   // Stat returns the file or directory's metadata.
   using StatCallback = base::OnceCallback<void(int32_t posix_error_code,
@@ -141,9 +140,9 @@ class Server {
 
   // ListStorages returns the active subdir names. Active means passed to
   // RegisterFSURLPrefix without a subsequent UnregisterFSURLPrefix.
-  using ListStoragesCallback = base::OnceCallback<void(
-      fusebox_staging::ListStoragesResponseProto response)>;
-  void ListStorages(fusebox_staging::ListStoragesRequestProto request,
+  using ListStoragesCallback =
+      base::OnceCallback<void(ListStoragesResponseProto response)>;
+  void ListStorages(ListStoragesRequestProto request,
                     ListStoragesCallback callback);
 
   // MakeTempDir makes a temporary directory that has two file paths: an
@@ -203,7 +202,7 @@ class Server {
     bool Reply(uint64_t cookie, ReadDir2Callback callback);
 
     int32_t posix_error_code_ = 0;
-    fusebox_staging::ReadDir2ResponseProto response_;
+    ReadDir2ResponseProto response_;
     bool has_more_ = true;
 
     ReadDir2Callback callback_;

@@ -112,7 +112,7 @@ void CallReverseReplyToReadDir(uint64_t cookie,
 
 void ReplyToReadDir2(dbus::MethodCall* method_call,
                      dbus::ExportedObject::ResponseSender sender,
-                     fusebox_staging::ReadDir2ResponseProto response_proto) {
+                     fusebox::ReadDir2ResponseProto response_proto) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
@@ -150,10 +150,9 @@ void ReplyToStat(dbus::MethodCall* method_call,
   std::move(sender).Run(std::move(response));
 }
 
-void ReplyToListStorages(
-    dbus::MethodCall* method_call,
-    dbus::ExportedObject::ResponseSender sender,
-    fusebox_staging::ListStoragesResponseProto response_proto) {
+void ReplyToListStorages(dbus::MethodCall* method_call,
+                         dbus::ExportedObject::ResponseSender sender,
+                         fusebox::ListStoragesResponseProto response_proto) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::unique_ptr<dbus::Response> response =
@@ -312,9 +311,9 @@ void FuseBoxServiceProvider::ReadDir2(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   dbus::MessageReader reader(method_call);
-  fusebox_staging::ReadDir2RequestProto request_proto;
+  fusebox::ReadDir2RequestProto request_proto;
   if (!reader.PopArrayOfBytesAsProto(&request_proto)) {
-    fusebox_staging::ReadDir2ResponseProto response_proto;
+    fusebox::ReadDir2ResponseProto response_proto;
     response_proto.set_posix_error_code(EINVAL);
     ReplyToReadDir2(method_call, std::move(sender), response_proto);
     return;
@@ -346,9 +345,9 @@ void FuseBoxServiceProvider::ListStorages(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   dbus::MessageReader reader(method_call);
-  fusebox_staging::ListStoragesRequestProto request_proto;
+  fusebox::ListStoragesRequestProto request_proto;
   if (!reader.PopArrayOfBytesAsProto(&request_proto)) {
-    fusebox_staging::ListStoragesResponseProto response_proto;
+    fusebox::ListStoragesResponseProto response_proto;
     response_proto.set_posix_error_code(EINVAL);
     ReplyToListStorages(method_call, std::move(sender), response_proto);
     return;
