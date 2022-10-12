@@ -682,20 +682,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.MaxOutputStreamsPerInputStream" units="streams"
-    expires_after="2022-10-23">
-  <owner>saza@chromium.org</owner>
-  <owner>olka@chromium.org</owner>
-  <summary>
-    The maximum number of concurrently active (playing and not muting by
-    diverting to a fake AudioOutputStream) OutputStreams observed when at least
-    one InputStream is recording. The metric is reported each time the number of
-    actively recording input streams drops to 0. The metric provides an estimate
-    of the number of output streams that may need to be mixed for echo
-    cancellation.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.Output.Win.{AudioOutputMethod}Error"
     enum="Hresult" expires_after="M113">
   <owner>dalecurtis@chromium.org</owner>
