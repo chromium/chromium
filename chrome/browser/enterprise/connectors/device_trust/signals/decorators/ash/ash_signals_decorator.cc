@@ -83,6 +83,12 @@ void AshSignalsDecorator::Decorate(base::Value::Dict& signals,
   signals.Set(device_signals::names::kDiskEncrypted,
               static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
 
+  // Also, there is no way to remove the need for a password when logging into a
+  // device, including when the screen is locked. A password or pin is always
+  // required.
+  signals.Set(device_signals::names::kScreenLockSecured,
+              static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
+
   const ash::DeviceState* device_state =
       GetCurrentlyActiveDeviceState(profile_);
   if (device_state) {

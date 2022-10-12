@@ -164,6 +164,12 @@ IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest,
   ASSERT_TRUE(disk_encrypted);
   EXPECT_EQ(disk_encrypted.value(),
             static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
+
+  auto screen_lock_secured =
+      signals.FindInt(device_signals::names::kScreenLockSecured);
+  ASSERT_TRUE(screen_lock_secured);
+  EXPECT_EQ(screen_lock_secured.value(),
+            static_cast<int32_t>(enterprise_signals::SettingValue::ENABLED));
 }
 
 IN_PROC_BROWSER_TEST_F(AshSignalsDecoratorBrowserTest, TestNetworkSignals) {

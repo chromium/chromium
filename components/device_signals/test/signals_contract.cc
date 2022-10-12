@@ -140,6 +140,8 @@ GetSignalsContract() {
       base::BindRepeating(VerifyIsString, names::kDeviceHostName);
   contract[names::kMacAddresses] = base::BindRepeating(
       VerifyIsStringArray, names::kMacAddresses, /*enforce_value=*/false);
+  contract[names::kScreenLockSecured] =
+      base::BindRepeating(VerifyIsSettingInteger, names::kScreenLockSecured);
 
 #if BUILDFLAG(IS_WIN)
   contract[names::kChromeCleanupEnabled] =
@@ -163,9 +165,6 @@ GetSignalsContract() {
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  contract[names::kScreenLockSecured] =
-      base::BindRepeating(VerifyIsSettingInteger, names::kScreenLockSecured);
-
   contract[names::kAllowScreenLock] =
       base::BindRepeating(VerifyUnset, names::kAllowScreenLock);
   contract[names::kImei] = base::BindRepeating(VerifyUnset, names::kImei);
@@ -174,9 +173,6 @@ GetSignalsContract() {
   // Chrome OS Signals.
   contract[names::kAllowScreenLock] =
       base::BindRepeating(VerifyIsBoolean, names::kAllowScreenLock);
-
-  contract[names::kScreenLockSecured] =
-      base::BindRepeating(VerifyUnset, names::kScreenLockSecured);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   return contract;
