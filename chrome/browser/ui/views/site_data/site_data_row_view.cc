@@ -184,6 +184,7 @@ SiteDataRowView::SiteDataRowView(
   state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   state_label_->SetVisible(is_fully_partitioned_ ||
                            setting_ != CONTENT_SETTING_ALLOW);
+  state_label_->SetMultiLine(true);
   layout->AddPaddingRow(views::TableLayout::kFixedSize, vertical_padding);
 }
 
