@@ -245,6 +245,7 @@ source_set("unit_tests") {
     "pattern_account_restriction_unittest.mm",
     "resized_avatar_cache_unittest.mm",
     "signin_browser_state_info_updater_unittest.mm",
+    "signin_util_unittest.mm",
     "user_approved_account_list_manager_unittest.mm",
   ]
   deps = [
