@@ -138,9 +138,12 @@ MetricReportingManagerLacros::MetricReportingManagerLacros(
         }
 
         instance->telemetry_report_queue_ =
-            instance->delegate_->CreateMetricReportQueue(
+            instance->delegate_->CreatePeriodicUploadReportQueue(
                 EventType::kUser, Destination::TELEMETRY_METRIC,
-                Priority::SLOW_BATCH);
+                Priority::MANUAL_BATCH_LACROS,
+                instance->device_reporting_settings_.get(),
+                ::policy::key::kReportUploadFrequency,
+                GetDefaultReportUploadFrequency());
 
         instance->delegate_->RegisterObserverWithCrosApiClient(instance.get());
         instance->delayed_init_timer_.Start(
@@ -187,6 +190,9 @@ void MetricReportingManagerLacros::DelayedInit() {
   }
 
   InitNetworkCollectors();
+  initial_upload_timer_.Start(FROM_HERE, delegate_->GetInitialUploadDelay(),
+                              this,
+                              &MetricReportingManagerLacros::UploadTelemetry);
 }
 
 void MetricReportingManagerLacros::InitNetworkCollectors() {
@@ -221,5 +227,13 @@ void MetricReportingManagerLacros::InitPeriodicCollector(
       sampler_ptr, metric_report_queue, device_reporting_settings_.get(),
       enable_setting_path, setting_enabled_default_value, rate_setting_path,
       default_rate, rate_unit_to_ms));
+}
+
+void MetricReportingManagerLacros::UploadTelemetry() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!telemetry_report_queue_) {
+    return;
+  }
+  telemetry_report_queue_->Upload();
 }
 }  // namespace reporting::metrics

@@ -264,7 +264,7 @@ class MetricReportingManagerTest
     ON_CALL(
         *mock_delegate_,
         CreateMetricReportQueue(EventType::kUser, Destination::TELEMETRY_METRIC,
-                                Priority::SLOW_BATCH))
+                                Priority::MANUAL_BATCH))
         .WillByDefault(Return(ByMove(std::move(user_telemetry_queue))));
     ON_CALL(*mock_delegate_,
             CreateMetricReportQueue(EventType::kDevice,

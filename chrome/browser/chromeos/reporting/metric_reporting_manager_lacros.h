@@ -90,6 +90,9 @@ class MetricReportingManagerLacros : public KeyedService,
                              base::TimeDelta default_rate,
                              int rate_unit_to_ms = 1);
 
+  // Flushes all enqueued telemetry data and uploads them.
+  void UploadTelemetry();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   const raw_ptr<Profile> profile_;

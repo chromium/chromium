@@ -79,13 +79,6 @@ class MockDelegate : public metrics::MetricReportingManagerLacros::Delegate {
               (metrics::MetricReportingManagerLacros* const),
               (override));
 
-  MOCK_METHOD(std::unique_ptr<MetricReportQueue>,
-              CreateMetricReportQueue,
-              (EventType event_type,
-               Destination destination,
-               Priority priority),
-              (override));
-
   MOCK_METHOD(std::unique_ptr<CollectorBase>,
               CreatePeriodicCollector,
               (Sampler * sampler,
@@ -93,6 +86,17 @@ class MockDelegate : public metrics::MetricReportingManagerLacros::Delegate {
                ReportingSettings* reporting_settings,
                const std::string& enable_setting_path,
                bool setting_enabled_default_value,
+               const std::string& rate_setting_path,
+               base::TimeDelta default_rate,
+               int rate_unit_to_ms),
+              (override));
+
+  MOCK_METHOD(std::unique_ptr<MetricReportQueue>,
+              CreatePeriodicUploadReportQueue,
+              (EventType event_type,
+               Destination destination,
+               Priority priority,
+               ReportingSettings* reporting_settings,
                const std::string& rate_setting_path,
                base::TimeDelta default_rate,
                int rate_unit_to_ms),
@@ -155,9 +159,9 @@ class MetricReportingManagerLacrosTest
 TEST_F(MetricReportingManagerLacrosTest, InitiallyDeprovisioned) {
   int periodic_collector_count = 0;
 
-  ON_CALL(*delegate_, CreateMetricReportQueue(EventType::kUser,
-                                              Destination::TELEMETRY_METRIC,
-                                              Priority::SLOW_BATCH))
+  ON_CALL(*delegate_, CreatePeriodicUploadReportQueue(
+                          EventType::kUser, Destination::TELEMETRY_METRIC,
+                          Priority::MANUAL_BATCH_LACROS, _, _, _, 1))
       .WillByDefault(Return(ByMove(std::move(telemetry_queue_))));
 
   ON_CALL(*delegate_, IsAffiliated(profile_.get())).WillByDefault(Return(true));
@@ -198,9 +202,9 @@ TEST_P(MetricReportingManagerLacrosTelemetryTest, Default) {
   auto* const telemetry_queue_ptr = telemetry_queue_.get();
   int periodic_collector_count = 0;
 
-  ON_CALL(*delegate_, CreateMetricReportQueue(EventType::kUser,
-                                              Destination::TELEMETRY_METRIC,
-                                              Priority::SLOW_BATCH))
+  ON_CALL(*delegate_, CreatePeriodicUploadReportQueue(
+                          EventType::kUser, Destination::TELEMETRY_METRIC,
+                          Priority::MANUAL_BATCH_LACROS, _, _, _, 1))
       .WillByDefault(Return(ByMove(std::move(telemetry_queue_))));
 
   ON_CALL(*delegate_, CreatePeriodicCollector(
