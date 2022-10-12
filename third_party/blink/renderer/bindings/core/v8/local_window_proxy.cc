@@ -227,6 +227,7 @@ void LocalWindowProxy::CreateContext() {
   v8::ExtensionConfiguration extension_configuration =
       ScriptController::ExtensionsFor(GetFrame()->DomWindow());
 
+  DCHECK(GetFrame()->DomWindow());
   v8::Local<v8::Context> context;
   {
     v8::Isolate* isolate = GetIsolate();
@@ -249,7 +250,9 @@ void LocalWindowProxy::CreateContext() {
               ->InstanceTemplate();
       CHECK(!global_template.IsEmpty());
       context = v8::Context::New(isolate, &extension_configuration,
-                                 global_template, global_proxy);
+                                 global_template, global_proxy,
+                                 v8::DeserializeInternalFieldsCallback(),
+                                 GetFrame()->DomWindow()->GetMicrotaskQueue());
       VLOG(1) << "A context is created NOT from snapshot";
     }
   }
@@ -259,7 +262,6 @@ void LocalWindowProxy::CreateContext() {
   DidAttachGlobalObject();
 #endif
 
-  DCHECK(GetFrame()->DomWindow());
   script_state_ = MakeGarbageCollected<ScriptState>(context, world_,
                                                     GetFrame()->DomWindow());
 
