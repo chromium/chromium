@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -95,7 +96,8 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
                 dismissalDurationSeconds);
     }
 
-    private TranslateMessage(@NonNull Context context, @NonNull MessageDispatcher messageDispatcher,
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    TranslateMessage(@NonNull Context context, @NonNull MessageDispatcher messageDispatcher,
             @NonNull WebContents webContents, long nativeTranslateMessage,
             int dismissalDurationSeconds) {
         mContext = context;
