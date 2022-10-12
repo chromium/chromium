@@ -96,6 +96,10 @@ bool IsHardwareVP8EncodingSupported(
   if (base::StartsWith(receiver_model_name, "Chromecast")) {
     return false;
   }
+  // Sabrina devices sometimes advertise as Eureka Dongle
+  if (base::StartsWith(receiver_model_name, "Eureka Dongle")) {
+    return false;
+  }
 #endif
 
   for (const auto& vea_profile : profiles) {
