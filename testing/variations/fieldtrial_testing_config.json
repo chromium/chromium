@@ -2089,6 +2089,21 @@
             ]
         }
     ],
+    "BrowserProcessBackgroundPurgeAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BrowserProcessMemoryPurge"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserSwitcherNoneIsGreylist": [
         {
             "platforms": [
