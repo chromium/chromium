@@ -7874,6 +7874,25 @@
             ]
         }
     ],
+    "PageInfoAboutThisSiteDescriptionPlaceholder": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PageInfoAboutThisSiteDescriptionPlaceholder"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageInfoAboutThisSiteMoreInfo": [
         {
             "platforms": [
