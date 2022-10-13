@@ -154,10 +154,6 @@ BASE_FEATURE(kClientStorageAccessContextAuditing,
              "ClientStorageAccessContextAuditing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kConsolidatedSiteStorageControls,
-             "ConsolidatedSiteStorageControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables or disables "usm" service in the list of user services returned by
 // userInfo Gaia message.

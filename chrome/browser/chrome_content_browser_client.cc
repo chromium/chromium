@@ -6035,24 +6035,6 @@ bool ChromeContentBrowserClient::HandleWebUI(
                                  chrome::kChromeUIHelpHost);
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kConsolidatedSiteStorageControls)) {
-    // Replace deprecated Site Data page URL with the All Sites page, which
-    // contains storage controls for sites.
-    if (url->SchemeIs(content::kChromeUIScheme) &&
-        url->host() == chrome::kChromeUISettingsHost) {
-      if (url->path() == chrome::kChromeUISiteDataDeprecatedPath) {
-        *url = ReplaceURLHostAndPath(*url, chrome::kChromeUISettingsHost,
-                                     chrome::kChromeUIAllSitesPath);
-        UMA_HISTOGRAM_BOOLEAN("Settings.AllSites.DeprecatedRedirect", true);
-      } else if (url->path() == chrome::kChromeUIAllSitesPath) {
-        // Log un-redirected navigations to the page as well to provide context
-        // for the raw number of redirects.
-        UMA_HISTOGRAM_BOOLEAN("Settings.AllSites.DeprecatedRedirect", false);
-      }
-    }
-  }
-
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1003960): Remove when issue is resolved.
   if (url->SchemeIs(content::kChromeUIScheme) &&

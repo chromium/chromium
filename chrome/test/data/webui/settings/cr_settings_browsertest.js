@@ -688,15 +688,6 @@ var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   get browsePreload() {
     return 'chrome://settings/test_loader.html?module=settings/cookies_page_test.js';
   }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      enabled: [
-        'features::kConsolidatedSiteStorageControls',
-      ],
-    };
-  }
 };
 
 // Flaky on MacOS bots and times out on Linux Dbg: https://crbug.com/1240747
@@ -712,50 +703,6 @@ TEST_F('CrSettingsCookiesPageTest', 'MAYBE_CookiesPageTest', function() {
 TEST_F('CrSettingsCookiesPageTest', 'FirstPartySetsUIEnabled', function() {
   runMochaSuite('CrSettingsCookiesPageTest_FirstPartySetsUIEnabled');
 });
-
-// Flaky on MacOS bots and times out on Linux Dbg: https://crbug.com/1240747
-GEN('#if (BUILDFLAG(IS_MAC)) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
-GEN('#define MAYBE_ConsolidatedControlsEnabled DISABLED_ConsolidatedControlsEnabled');
-GEN('#else');
-GEN('#define MAYBE_ConsolidatedControlsEnabled ConsolidatedControlsEnabled');
-GEN('#endif');
-TEST_F(
-    'CrSettingsCookiesPageTest', 'MAYBE_ConsolidatedControlsEnabled',
-    function() {
-      runMochaSuite('CrSettingsCookiesPageTest_consolidatedControlsEnabled');
-    });
-
-var CrSettingsCookiesPageConsolidatedDisabledTest =
-    class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/cookies_page_test.js';
-  }
-
-  /** @override */
-  get featureListInternal() {
-    return {
-      disabled: [
-        'features::kConsolidatedSiteStorageControls',
-        // TODO(crbug.com/1238757)- Remove this when consolidated storage
-        // launches.
-        'privacy_sandbox::kPrivacySandboxSettings3',
-      ],
-    };
-  }
-};
-
-// Flaky on MacOS bots and times out on Linux Dbg: https://crbug.com/1240747
-GEN('#if (BUILDFLAG(IS_MAC)) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))');
-GEN('#define MAYBE_ConsolidatedControlsDisabled DISABLED_ConsolidatedControlsDisabled');
-GEN('#else');
-GEN('#define MAYBE_ConsolidatedControlsDisabled ConsolidatedControlsDisaled');
-GEN('#endif');
-TEST_F(
-    'CrSettingsCookiesPageConsolidatedDisabledTest',
-    'MAYBE_ConsolidatedControlsDisabled', function() {
-      runMochaSuite('CrSettingsCookiesPageTest_consolidatedControlsDisabled');
-    });
 
 var CrSettingsRouteTest = class extends CrSettingsBrowserTest {
   /** @override */
@@ -810,52 +757,6 @@ TEST_F('CrSettingsAdvancedPageTest', 'MAYBE_Load', function() {
   mocha.run();
 });
 
-
-var CrSettingsSiteDataTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/site_data_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      disabled: [
-        'features::kConsolidatedSiteStorageControls',
-        // TODO(crbug.com/1238757)- Remove this when consolidated storage
-        // launches.
-        'privacy_sandbox::kPrivacySandboxSettings3',
-      ],
-    };
-  }
-};
-
-TEST_F('CrSettingsSiteDataTest', 'All', function() {
-  mocha.run();
-});
-
-var CrSettingsSiteDataDetailsSubpageTest = class extends CrSettingsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/site_data_details_subpage_tests.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      disabled: [
-        'features::kConsolidatedSiteStorageControls',
-        // TODO(crbug.com/1238757)- Remove this when consolidated storage
-        // launches.
-        'privacy_sandbox::kPrivacySandboxSettings3',
-      ],
-    };
-  }
-};
-
-TEST_F('CrSettingsSiteDataDetailsSubpageTest', 'All', function() {
-  mocha.run();
-});
 
 var CrSettingsReviewNotificationPermissionsTest =
     class extends CrSettingsBrowserTest {

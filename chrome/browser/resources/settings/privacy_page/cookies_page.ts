@@ -140,12 +140,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
         },
       },
 
-      enableConsolidatedSiteStorageControls_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('consolidatedSiteStorageControlsEnabled'),
-      },
-
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
@@ -167,7 +161,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   private cookiesContentSettingType_: ContentSettingsTypes;
   private exceptionListsReadOnly_: boolean;
   private blockAllPref_: chrome.settingsPrivate.PrefObject;
-  private enableConsolidatedSiteStorageControls_: boolean;
   focusConfig: FocusConfig;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -175,24 +168,15 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
 
   private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     assert(!oldConfig);
-    assert(
-        this.enableConsolidatedSiteStorageControls_ ?
-            routes.SITE_SETTINGS_ALL :
-            routes.SITE_SETTINGS_SITE_DATA);
     const selectSiteDataLinkRow = () => {
       const toFocus =
           this.shadowRoot!.querySelector<HTMLElement>('#site-data-trigger');
       assert(toFocus);
       focusWithoutInk(toFocus);
     };
-    if (this.enableConsolidatedSiteStorageControls_) {
-      this.focusConfig.set(
-          `${routes.SITE_SETTINGS_ALL.path}_${routes.COOKIES.path}`,
-          selectSiteDataLinkRow);
-    } else {
-      this.focusConfig.set(
-          routes.SITE_SETTINGS_SITE_DATA.path, selectSiteDataLinkRow);
-    }
+    this.focusConfig.set(
+        `${routes.SITE_SETTINGS_ALL.path}_${routes.COOKIES.path}`,
+        selectSiteDataLinkRow);
   }
 
   override currentRouteChanged(route: Route) {
@@ -213,18 +197,8 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   }
   // </if>
 
-  private getSiteDataLabel_(): string {
-    return this.enableConsolidatedSiteStorageControls_ ?
-        this.i18n('cookiePageAllSitesLink') :
-        this.i18n('siteSettingsCookieLink');
-  }
-
   private onSiteDataClick_() {
-    if (this.enableConsolidatedSiteStorageControls_) {
-      Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
-    } else {
-      Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
-    }
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
   }
 
   private onGeneratedPrefsUpdated_() {

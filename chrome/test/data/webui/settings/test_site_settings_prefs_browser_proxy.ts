@@ -73,6 +73,8 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'resetNotificationPermissionForOrigin',
       'allowNotificationPermissionForOrigin',
       'undoIgnoreNotificationPermissionForOrigin',
+      'getFpsMembershipLabel',
+      'getNumCookiesString',
     ]);
 
 
@@ -634,5 +636,20 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
 
   undoIgnoreNotificationPermissionForOrigin(origin: string): void {
     this.methodCalled('undoIgnoreNotificationPermissionForOrigin', origin);
+  }
+
+  getFpsMembershipLabel(fpsNumMembers: number, fpsOwner: string) {
+    this.methodCalled('getFpsMembershipLabel', fpsNumMembers, fpsOwner);
+    return Promise.resolve([
+      `${fpsNumMembers}`,
+      (fpsNumMembers === 1 ? 'site' : 'sites'),
+      `in ${fpsOwner}'s group`,
+    ].join(' '));
+  }
+
+  getNumCookiesString(numCookies: number) {
+    this.methodCalled('getNumCookiesString', numCookies);
+    return Promise.resolve(
+        `${numCookies} ` + (numCookies === 1 ? 'cookie' : 'cookies'));
   }
 }

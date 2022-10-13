@@ -17,7 +17,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -502,33 +501,6 @@ TEST_F(ChromeContentBrowserClientTest, HandleWebUIReverse) {
   GURL chrome_settings(chrome::kChromeUISettingsURL);
   EXPECT_TRUE(test_content_browser_client.HandleWebUIReverse(&chrome_settings,
                                                              &profile_));
-}
-
-TEST_F(ChromeContentBrowserClientTest, RedirectSiteDataURL) {
-  base::test::ScopedFeatureList feature_list(
-      features::kConsolidatedSiteStorageControls);
-
-  TestChromeContentBrowserClient test_content_browser_client;
-  base::HistogramTester histogram_tester;
-  const std::string histogram_name = "Settings.AllSites.DeprecatedRedirect";
-
-  GURL settings_url = GURL(chrome::kChromeUISettingsURL);
-  settings_url = net::AppendQueryParameter(settings_url, "foo", "bar");
-
-  GURL::Replacements replacements;
-  replacements.SetPathStr(chrome::kChromeUISiteDataDeprecatedPath);
-  GURL site_data_url = settings_url.ReplaceComponents(replacements);
-
-  replacements.SetPathStr(chrome::kChromeUIAllSitesPath);
-  GURL all_sites_url = settings_url.ReplaceComponents(replacements);
-
-  test_content_browser_client.HandleWebUI(&site_data_url, &profile_);
-  EXPECT_EQ(all_sites_url, site_data_url);
-  histogram_tester.ExpectUniqueSample(histogram_name, true, 1);
-
-  test_content_browser_client.HandleWebUI(&all_sites_url, &profile_);
-  histogram_tester.ExpectBucketCount(histogram_name, false, 1);
-  histogram_tester.ExpectTotalCount(histogram_name, 2);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

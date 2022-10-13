@@ -376,9 +376,6 @@ extern const char kChromeLabsDescription[];
 extern const char kCommerceHintAndroidName[];
 extern const char kCommerceHintAndroidDescription[];
 
-extern const char kConsolidatedSiteStorageControlsName[];
-extern const char kConsolidatedSiteStorageControlsDescription[];
-
 extern const char kConsumerAutoUpdateToggleAllowedName[];
 extern const char kConsumerAutoUpdateToggleAllowedDescription[];
 

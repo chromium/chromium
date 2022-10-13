@@ -15,7 +15,6 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import '../controls/settings_toggle_button.js';
 import '../prefs/prefs.js';
 import '../site_settings/settings_category_default_radio_group.js';
-import '../site_settings/site_data_details_subpage.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
@@ -220,7 +219,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       },
 
       searchFilter_: String,
-      siteDataFilter_: String,
 
       /**
        * Expose ContentSettingsTypes enum to HTML bindings.
@@ -274,7 +272,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private safetyCheckNotificationPermissionsEnabled_: boolean;
   private focusConfig_: FocusConfig;
   private searchFilter_: string;
-  private siteDataFilter_: string;
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -343,19 +340,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private onBlockAutoplayToggleChange_(event: Event) {
     const target = event.target as SettingsToggleButtonElement;
     this.browserProxy_.setBlockAutoplayEnabled(target.checked);
-  }
-
-  /**
-   * This is a workaround to connect the remove all button to the subpage.
-   */
-  private onRemoveAllCookiesFromSite_() {
-    // Intentionally not casting to SiteDataDetailsSubpageElement, as this would
-    // require importing site_data_details_subpage.js and would endup in the
-    // main JS bundle.
-    const node = this.shadowRoot!.querySelector('site-data-details-subpage');
-    if (node) {
-      node.removeAll();
-    }
   }
 
   private onClearBrowsingDataTap_() {

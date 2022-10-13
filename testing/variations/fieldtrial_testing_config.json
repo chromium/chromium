@@ -3125,26 +3125,6 @@
             ]
         }
     ],
-    "ConsolidatedSiteStorageControls": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ConsolidatedSiteStorageControls"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContentCaptureExperiment": [
         {
             "platforms": [

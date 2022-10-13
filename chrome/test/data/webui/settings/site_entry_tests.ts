@@ -5,20 +5,18 @@
 // clang-format off
 import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {LocalDataBrowserProxyImpl, SiteEntryElement, SiteSettingsPrefsBrowserProxyImpl, SortMethod} from 'chrome://settings/lazy_load.js';
+import {SiteEntryElement, SiteSettingsPrefsBrowserProxyImpl, SortMethod} from 'chrome://settings/lazy_load.js';
 import {Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestLocalDataBrowserProxy} from './test_local_data_browser_proxy.js';
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 import {createOriginInfo,createSiteGroup} from './test_util.js';
 
 // clang-format on
 
-suite('SiteEntry_DisabledConsolidatedControls', function() {
+suite('SiteEntry', function() {
   /**
    * An example eTLD+1 Object with multiple origins grouped under it.
    */
@@ -41,27 +39,14 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
   let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
   /**
-   * The mock local data proxy object to use during test.
-   */
-  let localDataBrowserProxy: TestLocalDataBrowserProxy;
-
-  /**
    * A site list element created before each test.
    */
   let testElement: SiteEntryElement;
 
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      consolidatedSiteStorageControlsEnabled: false,
-    });
-  });
-
   // Initialize a site-list before each test.
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    localDataBrowserProxy = new TestLocalDataBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
-    LocalDataBrowserProxyImpl.setInstance(localDataBrowserProxy);
 
     document.body.innerHTML =
         window.trustedTypes!.emptyHTML as unknown as string;
@@ -145,41 +130,6 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
         Router.getInstance().getQueryParameters().get('site'));
   });
 
-  test('with single origin, shows overflow menu', function() {
-    testElement.siteGroup = TEST_SINGLE_SITE_GROUP;
-    flush();
-    const overflowMenuButton =
-        testElement.$$<HTMLElement>('#overflowMenuButton')!;
-    assertFalse(
-        overflowMenuButton.closest<HTMLElement>('.row-aligned')!.hidden);
-  });
-
-  test('clear data for single origin fires the right method', async function() {
-    testElement.siteGroup =
-        JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
-    flush();
-
-    const collapseChild = testElement.$.originList.get();
-    flush();
-    const originList = collapseChild.querySelectorAll('.hr');
-    assertEquals(3, originList.length);
-
-    for (let i = 0; i < originList.length; i++) {
-      const menuOpened = eventToPromise('open-menu', testElement);
-      const originEntry = originList[i]!;
-      const overflowMenuButton =
-          originEntry.querySelector<HTMLElement>('#originOverflowMenuButton')!;
-      overflowMenuButton.click();
-      const openMenuEvent = await menuOpened;
-
-      const args = openMenuEvent.detail;
-      const {actionScope, index, origin} = args;
-      assertEquals('origin', actionScope);
-      assertEquals(testElement.listIndex, index);
-      assertEquals(testElement.siteGroup.origins[i]!.origin, origin);
-    }
-  });
-
   test(
       'moving from grouped to ungrouped does not get stuck in opened state',
       function() {
@@ -213,7 +163,7 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     testElement.siteGroup = testSiteGroup;
 
     flush();
-    const args = await localDataBrowserProxy.whenCalled('getNumCookiesString');
+    const args = await browserProxy.whenCalled('getNumCookiesString');
     assertEquals(3, args);
     assertFalse(cookiesLabel.hidden);
     assertEquals('· 3 cookies', cookiesLabel.textContent!.trim());
@@ -234,7 +184,7 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
     testElement.siteGroup = testSiteGroup;
 
     flush();
-    const args = await localDataBrowserProxy.whenCalled('getNumCookiesString');
+    const args = await browserProxy.whenCalled('getNumCookiesString');
     assertEquals(3, args);
     assertFalse(cookiesLabel.hidden);
     assertEquals('· 3 cookies', cookiesLabel.textContent!.trim());
@@ -443,57 +393,6 @@ suite('SiteEntry_DisabledConsolidatedControls', function() {
         origins[2]!.querySelector<HTMLElement>(
                        '#originSiteRepresentation')!.innerText.trim());
   });
-});
-
-suite('SiteEntry_EnabledConsolidatedControls', function() {
-  /**
-   * An example eTLD+1 Object with multiple origins grouped under it.
-   */
-  const TEST_MULTIPLE_SITE_GROUP = createSiteGroup('example.com', [
-    'http://example.com',
-    'https://www.example.com',
-    'https://login.example.com',
-  ]);
-  /**
-   * An example eTLD+1 Object with a single origin in it.
-   */
-  const TEST_SINGLE_SITE_GROUP = createSiteGroup('foo.com', [
-    'https://login.foo.com',
-  ]);
-
-  /**
-   * The mock proxy object to use during test.
-   */
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
-
-  /**
-   * The mock local data proxy object to use during test.
-   */
-  let localDataBrowserProxy: TestLocalDataBrowserProxy;
-
-  /**
-   * A site list element created before each test.
-   */
-  let testElement: SiteEntryElement;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      consolidatedSiteStorageControlsEnabled: true,
-    });
-  });
-
-  // Initialize a site-list before each test.
-  setup(function() {
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    localDataBrowserProxy = new TestLocalDataBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
-    LocalDataBrowserProxyImpl.setInstance(localDataBrowserProxy);
-
-    document.body.innerHTML =
-        window.trustedTypes!.emptyHTML as unknown as string;
-    testElement = document.createElement('site-entry');
-    document.body.appendChild(testElement);
-  });
 
   test('remove site fires correct event for individual site', async function() {
     testElement.siteGroup =
@@ -628,7 +527,7 @@ suite('SiteEntry_EnabledConsolidatedControls', function() {
     testElement.siteGroup = fooSiteGroup;
     flush();
 
-    await localDataBrowserProxy.whenCalled('getFpsMembershipLabel');
+    await browserProxy.whenCalled('getFpsMembershipLabel');
     // Assert first party set membership information is set correctly.
     assertFalse(fpsMembershipLabel.hidden);
     assertEquals(

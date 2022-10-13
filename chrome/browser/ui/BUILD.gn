@@ -1666,8 +1666,6 @@ static_library("ui") {
       "webui/settings/search_engines_handler.h",
       "webui/settings/settings_clear_browsing_data_handler.cc",
       "webui/settings/settings_clear_browsing_data_handler.h",
-      "webui/settings/settings_cookies_view_handler.cc",
-      "webui/settings/settings_cookies_view_handler.h",
       "webui/settings/settings_localized_strings_provider.cc",
       "webui/settings/settings_localized_strings_provider.h",
       "webui/settings/settings_media_devices_selection_handler.cc",
