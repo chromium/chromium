@@ -246,6 +246,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   bool HasErrorPage(int http_status_code) override;
   bool SuppressDifferentOriginSubframeJSDialogs(
       content::BrowserContext* browser_context) override;
+  void OnDisplayInsecureContent(content::WebContents* web_contents) override;
 
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;

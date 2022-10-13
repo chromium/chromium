@@ -4573,6 +4573,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.OptionallyBlockableMixedContentLoaded.Mode"
+    enum="WebViewMixedContentMode" expires_after="2023-08-25">
+  <owner>ntfschr@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the mixed content mode set when an app loads optionally blockable
+    mixed content (images, audio, or video). This histogram is logged on page
+    load, once per subresource (i.e. a single page load can cause multiple
+    records if the page contains multiple mixed content subresources).
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.OriginsVisited" units="origins"
     expires_after="2023-02-15">
   <owner>mvanouwerkerk@chromium.org</owner>

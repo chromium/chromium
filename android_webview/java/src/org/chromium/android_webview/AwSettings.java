@@ -1712,6 +1712,7 @@ public class AwSettings {
         }
     }
 
+    @CalledByNative
     public int getMixedContentMode() {
         synchronized (mAwSettingsLock) {
             return mMixedContentMode;

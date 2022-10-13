@@ -48,6 +48,7 @@
 #include "base/feature_list.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -1058,6 +1059,17 @@ bool AwContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
     content::BrowserContext* browser_context) {
   return base::FeatureList::IsEnabled(
       features::kWebViewSuppressDifferentOriginSubframeJSDialogs);
+}
+
+void AwContentBrowserClient::OnDisplayInsecureContent(
+    content::WebContents* web_contents) {
+  AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
+  if (aw_settings) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Android.WebView.OptionallyBlockableMixedContentLoaded.Mode",
+        aw_settings->GetMixedContentMode(),
+        AwSettings::MixedContentMode::COUNT);
+  }
 }
 
 // static

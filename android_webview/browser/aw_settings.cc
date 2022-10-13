@@ -112,6 +112,10 @@ bool AwSettings::GetAllowThirdPartyCookies() {
   return allow_third_party_cookies_;
 }
 
+AwSettings::MixedContentMode AwSettings::GetMixedContentMode() {
+  return mixed_content_mode_;
+}
+
 void AwSettings::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   delete this;
 }
@@ -185,6 +189,7 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateWillSuppressErrorStateLocked(env, obj);
   UpdateCookiePolicyLocked(env, obj);
   UpdateAllowFileAccessLocked(env, obj);
+  UpdateMixedContentModeLocked(env, obj);
 }
 
 void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
@@ -323,6 +328,16 @@ void AwSettings::UpdateAllowFileAccessLocked(JNIEnv* env,
     return;
 
   allow_file_access_ = Java_AwSettings_getAllowFileAccess(env, obj);
+}
+
+void AwSettings::UpdateMixedContentModeLocked(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  if (!web_contents())
+    return;
+
+  mixed_content_mode_ = static_cast<MixedContentMode>(
+      Java_AwSettings_getMixedContentMode(env, obj));
 }
 
 void AwSettings::RenderViewHostChanged(content::RenderViewHost* old_host,

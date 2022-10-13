@@ -2339,6 +2339,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsFileSystemURLNavigationAllowed(
       content::BrowserContext* browser_context,
       const GURL& url);
+
+  // Called when optionally blockable insecure content is displayed on a secure
+  // page (resulting in mixed content).
+  virtual void OnDisplayInsecureContent(WebContents* web_contents) {}
 };
 
 }  // namespace content

@@ -235,6 +235,10 @@ void SSLManager::DidDisplayMixedContent() {
     ukm::SourceId source_id = main_frame->GetPageUkmSourceId();
     LogMixedContentMetrics(MixedContentType::kOptionallyBlockableMixedContent,
                            source_id, ukm::UkmRecorder::Get());
+    WebContents* contents = WebContents::FromRenderFrameHost(main_frame);
+    if (contents) {
+      GetContentClient()->browser()->OnDisplayInsecureContent(contents);
+    }
   }
   UpdateLastCommittedEntry(SSLStatus::DISPLAYED_INSECURE_CONTENT, 0);
 }

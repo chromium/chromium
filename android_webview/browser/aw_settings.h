@@ -42,6 +42,13 @@ class AwSettings : public content::WebContentsObserver {
     CONSTANT_WEBVIEW = 2,
   };
 
+  enum MixedContentMode {
+    MIXED_CONTENT_ALWAYS_ALLOW = 0,
+    MIXED_CONTENT_NEVER_ALLOW = 1,
+    MIXED_CONTENT_COMPATIBILITY_MODE = 2,
+    COUNT,
+  };
+
   static AwSettings* FromWebContents(content::WebContents* web_contents);
   static bool GetAllowSniffingFileUrls();
 
@@ -54,6 +61,7 @@ class AwSettings : public content::WebContentsObserver {
 
   bool GetJavaScriptCanOpenWindowsAutomatically();
   bool GetAllowThirdPartyCookies();
+  MixedContentMode GetMixedContentMode();
 
   // Called from Java. Methods with "Locked" suffix require that the settings
   // access lock is held during their execution.
@@ -93,6 +101,9 @@ class AwSettings : public content::WebContentsObserver {
   void UpdateAllowFileAccessLocked(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
+  void UpdateMixedContentModeLocked(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
 
   void PopulateWebPreferences(blink::web_pref::WebPreferences* web_prefs);
   bool GetAllowFileAccess();
@@ -130,6 +141,7 @@ class AwSettings : public content::WebContentsObserver {
   bool allow_third_party_cookies_;
   bool allow_file_access_;
   bool enterprise_authentication_app_link_policy_enabled_;
+  MixedContentMode mixed_content_mode_;
 
   scoped_refptr<AwContentsOriginMatcher> xrw_allowlist_matcher_;
 
