@@ -4832,25 +4832,6 @@
             ]
         }
     ],
-    "ForwardMemoryPressureEventsToGpuProcess": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "mac",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ForwardMemoryPressureEventsToGpuProcess"
-                    ]
-                }
-            ]
-        }
-    ],
     "GMSCoreEmoji": [
         {
             "platforms": [
