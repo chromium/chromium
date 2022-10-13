@@ -8,6 +8,7 @@ import './print_management_shared.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
@@ -27,43 +28,43 @@ interface PrintJobClearHistoryDialogElement {
 
 class PrintJobClearHistoryDialogElement extends
     PrintJobClearHistoryDialogElementBase {
-  static get is() {
+  static get is(): string {
     return 'print-job-clear-history-dialog';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
-      shouldDisableClearButton_: {
+      shouldDisableClearButton: {
         type: Boolean,
         value: false,
       },
     };
   }
 
-  private shouldDisableClearButton_: boolean;
-  private mojoInterfaceProvider_ = getMetadataProvider();
+  private shouldDisableClearButton: boolean;
+  private mojoInterfaceProvider = getMetadataProvider();
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.$.clearDialog.showModal();
   }
 
-  private onCancelButtonClick_() {
+  private onCancelButtonClick(): void {
     this.$.clearDialog.close();
   }
 
-  private onClearButtonClick_() {
-    this.shouldDisableClearButton_ = true;
-    this.mojoInterfaceProvider_.deleteAllPrintJobs().then(
-        this.onClearedHistory_.bind(this));
+  private onClearButtonClick(): void {
+    this.shouldDisableClearButton = true;
+    this.mojoInterfaceProvider.deleteAllPrintJobs().then(
+        this.onClearedHistory.bind(this));
   }
 
-  private onClearedHistory_(clearedHistoryResult: {success: boolean}) {
+  private onClearedHistory(clearedHistoryResult: {success: boolean}): void {
     if (clearedHistoryResult.success) {
       this.dispatchEvent(new CustomEvent(
           'all-history-cleared', {bubbles: true, composed: true}));

@@ -60,65 +60,65 @@
 <div id="rowWrapper" focus-row-container>
   <!-- TODO(crbug/1073693): Update the a11y based on expert guidance -->
   <div class="list-item flex-center"
-      aria-label$="[[jobEntryAriaLabel_]]">
-    <iron-icon id="fileIcon" class$="[[fileIconClass_]]" icon="[[fileIcon_]]"
+      aria-label$="[[jobEntryAriaLabel]]">
+    <iron-icon id="fileIcon" class$="[[fileIconClass]]" icon="[[fileIcon]]"
         alt="">
     </iron-icon>
     <div id="jobTitle" class="file-name-column overflow-ellipsis"
         aria-hidden="true">
-      [[jobTitle_]]
+      [[jobTitle]]
     </div>
     <div id="printerName"
         class="printer-name-column overflow-ellipsis padded-left"
         aria-hidden="true">
-      [[printerName_]]
+      [[printerName]]
     </div>
     <div id="creationTime" class="date-column overflow-ellipsis padded-left"
         aria-hidden="true">
-      [[creationTime_]]
+      [[creationTime]]
     </div>
 
-    <template is="dom-if" if="[[isCompletedPrintJob_(jobEntry)]]" restamp>
+    <template is="dom-if" if="[[isCompletedPrintJob(jobEntry)]]" restamp>
       <div id="completionStatus"
           class="status-column overflow-ellipsis padded-left"
           focus-row-control
           focus-type="completedStatus"
           aria-hidden="true">
-        [[completionStatus_]]
+        [[completionStatus]]
       </div>
     </template>
 
-    <template is="dom-if" if="[[!isCompletedPrintJob_(jobEntry)]]" restamp>
+    <template is="dom-if" if="[[!isCompletedPrintJob(jobEntry)]]" restamp>
         <iron-media-query query="(min-width: 768px)"
-            query-matches="{{showFullOngoingStatus_}}">
+            query-matches="{{showFullOngoingStatus}}">
         </iron-media-query>
         <div id="activeStatusContainer"
             class="status-column padded-left flex-center">
           <!-- Non-error printing status -->
-          <template is="dom-if" if="[[!ongoingErrorStatus_]]" restamp>
-            <template is="dom-if" if="[[showFullOngoingStatus_]]">
+          <template is="dom-if" if="[[!ongoingErrorStatus]]" restamp>
+            <template is="dom-if" if="[[showFullOngoingStatus]]">
               <div id="numericalProgress" aria-hidden="true">
-                [[readableProgress_]]
+                [[readableProgress]]
               </div>
               <paper-progress
-                  value="[[computePrintPagesProgress_(
+                  value="[[computePrintPagesProgress(
                       jobEntry.activePrintJobInfo.printedPages,
                       jobEntry.numberOfPages)]]"
                   aria-hidden="true">
               </paper-progress>
             </template>
-            <div class="collapsed-status" hidden="[[showFullOngoingStatus_]]"
+            <div class="collapsed-status" hidden="[[showFullOngoingStatus]]"
                 aria-hidden="true">
               [[i18n('collapsedPrintingText')]]
             </div>
           </template>
           <!-- Error printing status -->
-          <template is="dom-if" if="[[ongoingErrorStatus_]]" restamp>
+          <template is="dom-if" if="[[ongoingErrorStatus]]" restamp>
             <div id="ongoingError" class="overflow-ellipsis" aria-hidden="true"
-                hidden="[[!showFullOngoingStatus_]]">
-              [[ongoingErrorStatus_]]
+                hidden="[[!showFullOngoingStatus]]">
+              [[ongoingErrorStatus]]
             </div>
-            <div hidden="[[showFullOngoingStatus_]]" aria-hidden="true">
+            <div hidden="[[showFullOngoingStatus]]" aria-hidden="true">
               [[i18n('stoppedGeneric')]]
             </div>
           </template>
@@ -127,7 +127,7 @@
               focus-row-control
               focus-type="cancelPrintJob"
               aria-hidden="true"
-            on-click="onCancelPrintJobClicked_">
+            on-click="onCancelPrintJobClicked">
           </cr-icon-button>
         </div>
     </template>

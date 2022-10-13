@@ -16,9 +16,10 @@ import './print_management_shared.css.js';
 import './strings.m.js';
 
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getMetadataProvider} from './mojo_interface_provider.js';
@@ -62,176 +63,176 @@ export interface PrintManagementElement {
 
 export class PrintManagementElement extends PrintManagementElementBase
     implements PrintJobsObserverInterface {
-  static get is() {
+  static get is(): string {
     return 'print-management';
   }
 
-  static get template() {
+  static get template(): HTMLTemplateElement {
     return getTemplate();
   }
 
-  static get properties() {
+  static get properties(): PolymerElementProperties {
     return {
-      printJobs_: {
+      printJobs: {
         type: Array,
         value: () => [],
       },
 
-      printJobHistoryExpirationPeriod_: {
+      printJobHistoryExpirationPeriod: {
         type: String,
         value: '',
       },
 
-      activeHistoryInfoIcon_: {
+      activeHistoryInfoIcon: {
         type: String,
         value: '',
       },
 
-      isPolicyControlled_: {
+      isPolicyControlled: {
         type: Boolean,
         value: false,
       },
 
-      ongoingPrintJobs_: {
+      ongoingPrintJobs: {
         type: Array,
         value: () => [],
       },
 
       // Used by FocusRowBehavior to track the last focused element on a row.
-      lastFocused_: Object,
+      lastFocused: Object,
 
       // Used by FocusRowBehavior to track if the list has been blurred.
-      listBlurred_: Boolean,
+      listBlurred: Boolean,
 
-      showClearAllButton_: {
+      showClearAllButton: {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
       },
 
-      showClearAllDialog_: {
+      showClearAllDialog: {
         type: Boolean,
         value: false,
       },
 
-      deletePrintJobHistoryAllowedByPolicy_: {
+      deletePrintJobHistoryAllowedByPolicy: {
         type: Boolean,
         value: true,
       },
 
-      shouldDisableClearAllButton_: {
+      shouldDisableClearAllButton: {
         type: Boolean,
-        computed: 'computeShouldDisableClearAllButton_(printJobs_,' +
-            'deletePrintJobHistoryAllowedByPolicy_)',
+        computed: 'computeShouldDisableClearAllButton(printJobs,' +
+            'deletePrintJobHistoryAllowedByPolicy)',
       },
 
       /**
        * Receiver responsible for observing print job updates notification
        * events.
        */
-      printJobsObserverReceiver_: {type: Object},
+      printJobsObserverReceiver: {type: Object},
     };
   }
 
-  static get observers() {
-    return ['onClearAllButtonUpdated_(shouldDisableClearAllButton_)'];
+  static get observers(): string[] {
+    return ['onClearAllButtonUpdated(shouldDisableClearAllButton)'];
   }
 
   constructor() {
     super();
 
-    this.mojoInterfaceProvider_ = getMetadataProvider();
+    this.mojoInterfaceProvider = getMetadataProvider();
 
     window.CrPolicyStrings = {
       controlledSettingPolicy:
           loadTimeData.getString('clearAllPrintJobPolicyIndicatorToolTip'),
     };
 
-    this.addEventListener('all-history-cleared', () => this.getPrintJobs_());
-    this.addEventListener('remove-print-job', (e) => this.removePrintJob_(e));
+    this.addEventListener('all-history-cleared', () => this.getPrintJobs());
+    this.addEventListener('remove-print-job', (e) => this.removePrintJob(e));
   }
 
-  private mojoInterfaceProvider_: PrintingMetadataProviderInterface;
-  private isPolicyControlled_: boolean;
-  private printJobs_: PrintJobInfo[];
-  private printJobHistoryExpirationPeriod_: string;
-  private activeHistoryInfoIcon_: string;
-  private ongoingPrintJobs_: PrintJobInfo[];
-  private lastFocused_: Element;
-  private listBlurred_: boolean;
-  private showClearAllButton_: boolean;
-  private showClearAllDialog_: boolean;
-  private deletePrintJobHistoryAllowedByPolicy_: boolean;
-  private shouldDisableClearAllButton_: boolean;
-  private printJobsObserverReceiver_: PrintJobsObserverReceiver;
+  private mojoInterfaceProvider: PrintingMetadataProviderInterface;
+  private isPolicyControlled: boolean;
+  private printJobs: PrintJobInfo[];
+  private printJobHistoryExpirationPeriod: string;
+  private activeHistoryInfoIcon: string;
+  private ongoingPrintJobs: PrintJobInfo[];
+  private lastFocused: Element;
+  private listBlurred: boolean;
+  private showClearAllButton: boolean;
+  private showClearAllDialog: boolean;
+  private deletePrintJobHistoryAllowedByPolicy: boolean;
+  private shouldDisableClearAllButton: boolean;
+  private printJobsObserverReceiver: PrintJobsObserverReceiver;
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
-    this.getPrintJobHistoryExpirationPeriod_();
-    this.startObservingPrintJobs_();
-    this.fetchDeletePrintJobHistoryPolicy_();
+    this.getPrintJobHistoryExpirationPeriod();
+    this.startObservingPrintJobs();
+    this.fetchDeletePrintJobHistoryPolicy();
   }
 
-  override disconnectedCallback() {
+  override disconnectedCallback(): void {
     super.disconnectedCallback();
 
-    this.printJobsObserverReceiver_.$.close();
+    this.printJobsObserverReceiver.$.close();
   }
 
-  private startObservingPrintJobs_() {
-    this.printJobsObserverReceiver_ = new PrintJobsObserverReceiver((this));
-    this.mojoInterfaceProvider_
+  private startObservingPrintJobs(): void {
+    this.printJobsObserverReceiver = new PrintJobsObserverReceiver((this));
+    this.mojoInterfaceProvider
         .observePrintJobs(
-            this.printJobsObserverReceiver_.$.bindNewPipeAndPassRemote())
+            this.printJobsObserverReceiver.$.bindNewPipeAndPassRemote())
         .then(() => {
-          this.getPrintJobs_();
+          this.getPrintJobs();
         });
   }
 
-  private fetchDeletePrintJobHistoryPolicy_() {
-    this.mojoInterfaceProvider_.getDeletePrintJobHistoryAllowedByPolicy().then(
+  private fetchDeletePrintJobHistoryPolicy(): void {
+    this.mojoInterfaceProvider.getDeletePrintJobHistoryAllowedByPolicy().then(
         (param) => {
-          this.onGetDeletePrintHistoryPolicy_(param);
+          this.onGetDeletePrintHistoryPolicy(param);
         });
   }
 
-  private onGetDeletePrintHistoryPolicy_(responseParam:
-                                             {isAllowedByPolicy: boolean}) {
-    this.showClearAllButton_ = true;
-    this.deletePrintJobHistoryAllowedByPolicy_ =
-        responseParam.isAllowedByPolicy;
+  private onGetDeletePrintHistoryPolicy(responseParam: {
+    isAllowedByPolicy: boolean,
+  }): void {
+    this.showClearAllButton = true;
+    this.deletePrintJobHistoryAllowedByPolicy = responseParam.isAllowedByPolicy;
   }
 
-  onAllPrintJobsDeleted() {
-    this.getPrintJobs_();
+  onAllPrintJobsDeleted(): void {
+    this.getPrintJobs();
   }
 
-  onPrintJobUpdate(job: PrintJobInfo) {
+  onPrintJobUpdate(job: PrintJobInfo): void {
     // Only update ongoing print jobs.
     assert(job.activePrintJobInfo);
 
     // Check if |job| is an existing ongoing print job and requires an update
     // or if |job| is a new ongoing print job.
-    const idx = this.getIndexOfOngoingPrintJob_(job.id);
+    const idx = this.getIndexOfOngoingPrintJob(job.id);
     if (idx !== -1) {
       // Replace the existing ongoing print job with its updated entry.
-      this.splice('ongoingPrintJobs_', idx, 1, job);
+      this.splice('ongoingPrintJobs', idx, 1, job);
     } else {
       // New ongoing print jobs are appended to the ongoing print
       // jobs list.
-      this.push('ongoingPrintJobs_', job);
+      this.push('ongoingPrintJobs', job);
     }
 
     if (job.activePrintJobInfo?.activeState ===
         ActivePrintJobState.kDocumentDone) {
       // This print job is now completed, next step is to update the history
       // list with the recently stored print job.
-      this.getPrintJobs_();
+      this.getPrintJobs();
     }
   }
 
-  private onPrintJobsReceived_(jobs: {printJobs: PrintJobInfo[]}) {
+  private onPrintJobsReceived(jobs: {printJobs: PrintJobInfo[]}): void {
     // TODO(crbug/1073690): Update this when BigInt is supported for
     // updateList().
     const ongoingList = [];
@@ -246,19 +247,19 @@ export class PrintManagementElement extends PrintManagementElementBase
     }
 
     // Sort the print jobs in chronological order.
-    this.ongoingPrintJobs_ = ongoingList.sort(comparePrintJobsChronologically);
-    this.printJobs_ = historyList.sort(comparePrintJobsReverseChronologically);
+    this.ongoingPrintJobs = ongoingList.sort(comparePrintJobsChronologically);
+    this.printJobs = historyList.sort(comparePrintJobsReverseChronologically);
   }
 
-  private getPrintJobs_() {
-    this.mojoInterfaceProvider_.getPrintJobs().then(
-        this.onPrintJobsReceived_.bind(this));
+  private getPrintJobs(): void {
+    this.mojoInterfaceProvider.getPrintJobs().then(
+        this.onPrintJobsReceived.bind(this));
   }
 
-  private onPrintJobHistoryExpirationPeriodReceived_(printJobPolicyInfo: {
+  private onPrintJobHistoryExpirationPeriodReceived(printJobPolicyInfo: {
     expirationPeriodInDays: number,
     isFromPolicy: boolean,
-  }) {
+  }): void {
     const expirationPeriod = printJobPolicyInfo.expirationPeriodInDays;
     // If print jobs are not persisted, we can return early since the tooltip
     // section won't be shown.
@@ -266,63 +267,62 @@ export class PrintManagementElement extends PrintManagementElementBase
       return;
     }
 
-    this.isPolicyControlled_ = printJobPolicyInfo.isFromPolicy;
-    this.activeHistoryInfoIcon_ =
-        this.isPolicyControlled_ ? 'enterpriseIcon' : 'infoIcon';
+    this.isPolicyControlled = printJobPolicyInfo.isFromPolicy;
+    this.activeHistoryInfoIcon =
+        this.isPolicyControlled ? 'enterpriseIcon' : 'infoIcon';
 
     switch (expirationPeriod) {
       case METADATA_STORED_INDEFINITELY:
-        this.printJobHistoryExpirationPeriod_ =
+        this.printJobHistoryExpirationPeriod =
             loadTimeData.getString('printJobHistoryIndefinitePeriod');
         break;
       case METADATA_STORED_FOR_ONE_DAY:
-        this.printJobHistoryExpirationPeriod_ =
+        this.printJobHistoryExpirationPeriod =
             loadTimeData.getString('printJobHistorySingleDay');
         break;
       default:
-        this.printJobHistoryExpirationPeriod_ = loadTimeData.getStringF(
+        this.printJobHistoryExpirationPeriod = loadTimeData.getStringF(
             'printJobHistoryExpirationPeriod',
             expirationPeriod,
         );
     }
   }
 
-  private getPrintJobHistoryExpirationPeriod_() {
-    this.mojoInterfaceProvider_.getPrintJobHistoryExpirationPeriod().then(
-        this.onPrintJobHistoryExpirationPeriodReceived_.bind(this));
+  private getPrintJobHistoryExpirationPeriod(): void {
+    this.mojoInterfaceProvider.getPrintJobHistoryExpirationPeriod().then(
+        this.onPrintJobHistoryExpirationPeriodReceived.bind(this));
   }
 
-  private removePrintJob_(e: RemovePrintJobEvent) {
-    const idx = this.getIndexOfOngoingPrintJob_(e.detail);
+  private removePrintJob(e: RemovePrintJobEvent): void {
+    const idx = this.getIndexOfOngoingPrintJob(e.detail);
     if (idx !== -1) {
-      this.splice('ongoingPrintJobs_', idx, 1);
+      this.splice('ongoingPrintJobs', idx, 1);
     }
   }
 
-  private onClearHistoryClicked_() {
-    this.showClearAllDialog_ = true;
+  private onClearHistoryClicked(): void {
+    this.showClearAllDialog = true;
   }
 
-  private onClearHistoryDialogClosed_() {
-    this.showClearAllDialog_ = false;
+  private onClearHistoryDialogClosed(): void {
+    this.showClearAllDialog = false;
   }
 
-  private getIndexOfOngoingPrintJob_(expectedId: string): number {
-    return this.ongoingPrintJobs_.findIndex(
+  private getIndexOfOngoingPrintJob(expectedId: string): number {
+    return this.ongoingPrintJobs.findIndex(
         arrJob => arrJob.id === expectedId,
     );
   }
 
-  private computeShouldDisableClearAllButton_(): boolean {
-    return !this.deletePrintJobHistoryAllowedByPolicy_ ||
-        !this.printJobs_.length;
+  private computeShouldDisableClearAllButton(): boolean {
+    return !this.deletePrintJobHistoryAllowedByPolicy || !this.printJobs.length;
   }
 
-  private onClearAllButtonUpdated_() {
+  private onClearAllButtonUpdated(): void {
     this.$.deleteIcon.classList.toggle(
-        'delete-enabled', !this.shouldDisableClearAllButton_);
+        'delete-enabled', !this.shouldDisableClearAllButton);
     this.$.deleteIcon.classList.toggle(
-        'delete-disabled', this.shouldDisableClearAllButton_);
+        'delete-disabled', this.shouldDisableClearAllButton);
   }
 }
 

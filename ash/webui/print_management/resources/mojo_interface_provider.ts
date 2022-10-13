@@ -7,7 +7,7 @@ import {PrintingMetadataProvider, PrintingMetadataProviderInterface} from './pri
 let metadataProvider: PrintingMetadataProviderInterface|null = null;
 
 export function setMetadataProviderForTesting(
-    testProvider: PrintingMetadataProviderInterface) {
+    testProvider: PrintingMetadataProviderInterface): void {
   metadataProvider = testProvider;
 }
 
