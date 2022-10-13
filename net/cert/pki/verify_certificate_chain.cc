@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"

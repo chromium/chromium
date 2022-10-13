@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/check.h"
 #include "base/numerics/clamped_math.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/common_cert_errors.h"

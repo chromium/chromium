@@ -4,7 +4,6 @@
 
 #include "net/cert/pki/signature_algorithm.h"
 
-#include "base/check.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/der/input.h"

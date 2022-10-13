@@ -4,7 +4,6 @@
 
 #include "net/cert/pki/verify_name_match.h"
 
-#include "base/check.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/parse_name.h"
