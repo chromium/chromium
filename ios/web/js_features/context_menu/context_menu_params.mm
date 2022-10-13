@@ -15,7 +15,8 @@ ContextMenuParams::ContextMenuParams()
       tag_name(nil),
       referrer_policy(ReferrerPolicyDefault),
       location(CGPointZero),
-      text_offset(0) {}
+      text_offset(0),
+      surrounding_text_offset(0) {}
 
 ContextMenuParams::ContextMenuParams(const ContextMenuParams& other) = default;
 
