@@ -146,7 +146,7 @@ class OverlayTargeter : public aura::WindowTargeter {
         // triggered.
         if (event->type() == ui::ET_MOUSE_PRESSED ||
             event->type() == ui::ET_TOUCH_PRESSED) {
-          annotations->CloseBubble();
+          annotations->ClickedOutsideBubble();
         }
       }
     }

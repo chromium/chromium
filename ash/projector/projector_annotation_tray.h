@@ -5,24 +5,15 @@
 #ifndef ASH_PROJECTOR_PROJECTOR_ANNOTATION_TRAY_H_
 #define ASH_PROJECTOR_PROJECTOR_ANNOTATION_TRAY_H_
 
-#include <string>
-
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/view_click_listener.h"
 #include "base/scoped_observation.h"
 
-namespace views {
-class ImageView;
-class Widget;
-}  // namespace views
-
 namespace ash {
 
 class HoverHighlightView;
-class Shelf;
-class TrayBubbleView;
 class TrayBubbleWrapper;
 
 // Pen colors.
@@ -43,6 +34,7 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   ~ProjectorAnnotationTray() override;
 
   // TrayBackgroundView:
+  bool PerformAction(const ui::Event& event) override;
   void ClickedOutsideBubble() override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
@@ -51,6 +43,8 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
 
   // SessionObserver:
