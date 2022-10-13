@@ -20,7 +20,7 @@
     width: calc(100% + 8px);
   }
 
-  :host([is-dragging_]), 
+  :host([is-dragging_]),
   :host([is-loading_]) {
     --upload-dialog-drag-drop-background: var(--google-blue-50);
   }
@@ -246,9 +246,14 @@
   }
 </style>
 
+<ntp-lens-form id="lensForm"
+               on-loading="handleFormLoading_"
+               on-error="handleFormError_">
+</ntp-lens-form>
+
 <div id="dialog" hidden$="{{isHidden_}}" tabindex="-1" lang="$i18n{language}">
   <div id="container">
-    <cr-icon-button id="closeButton" class="icon-clear" 
+    <cr-icon-button id="closeButton" class="icon-clear"
         title="$i18n{lensSearchUploadDialogCloseButtonLabel}"
         on-click="onCloseButtonClick_">
     </cr-icon-button>
@@ -262,7 +267,10 @@
           <div id="dragDropIllustration"></div>
           <div class="drag-drop-title">
             <span id="dragText">$i18n{lensSearchUploadDialogDragTitle}</span>
-            <span tabindex="0" role="button" id="uploadText">
+            <span tabindex="0"
+                  role="button"
+                  id="uploadText"
+                  on-click="onUploadFileClick_">
               $i18n{lensSearchUploadDialogUploadFileTitle}
             </span>
           </div>
@@ -275,7 +283,7 @@
           </div>
           <div id="inputContainer">
             <input id="inputBox" autocomplete="false" autocorrect="false"
-                placeholder="$i18n{lensSearchUploadDialogTextPlaceholder}" 
+                placeholder="$i18n{lensSearchUploadDialogTextPlaceholder}"
                 text="text">
             <div id="inputSubmit" tabindex="0" role="button">
               $i18n{lensSearchUploadDialogSearchButtonLabel}

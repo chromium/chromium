@@ -145,6 +145,17 @@ TEST_F('NewTabPageVoiceSearchOverlayTest', 'All', function() {
   mocha.run();
 });
 
+var NewTabPageLensFormTest = class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/lens_form_test.js';
+  }
+};
+
+TEST_F('NewTabPageLensFormTest', 'All', function() {
+  mocha.run();
+});
+
 var NewTabPageLensUploadDialogTest = class extends NewTabPageBrowserTest {
   /** @override */
   get browsePreload() {

@@ -18,6 +18,7 @@ non_preprocessed_files = [
                            "customize_shortcuts_test.ts",
                            "doodle_share_dialog_focus_test.ts",
                            "doodle_share_dialog_test.ts",
+                           "lens_form_test.ts",
                            "lens_upload_dialog_test.ts",
                            "logo_test.ts",
                            "metrics_test_support.ts",

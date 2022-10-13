@@ -8,6 +8,7 @@ import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {LensErrorType, LensFormElement} from './lens_form.js';
 import {getTemplate} from './lens_upload_dialog.html.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -29,6 +30,7 @@ enum DialogState {
 export interface LensUploadDialogElement {
   $: {
     dialog: HTMLDivElement,
+    lensForm: LensFormElement,
   };
 }
 
@@ -161,6 +163,18 @@ export class LensUploadDialogElement extends PolymerElement {
 
   private onOfflineRetryButtonClick_() {
     this.setOnlineState_();
+  }
+
+  private onUploadFileClick_() {
+    this.$.lensForm.openSystemFilePicker();
+  }
+
+  private handleFormLoading_() {
+    this.dialogState_ = DialogState.LOADING;
+  }
+
+  private handleFormError_(_event: CustomEvent<LensErrorType>) {
+    // TODO(crbug.com/1367506): Implement error state.
   }
 }
 declare global {

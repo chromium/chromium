@@ -29,6 +29,7 @@ web_component_files =
       "customize_shortcuts.ts",
       "doodle_share_dialog.ts",
       "iframe.ts",
+      "lens_form.ts",
       "lens_upload_dialog.ts",
       "logo.ts",
       "middle_slot_promo.ts",

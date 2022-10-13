@@ -20,6 +20,7 @@ export {CustomizeBackgroundsElement} from './customize_backgrounds.js';
 export {CustomizeDialogElement} from './customize_dialog.js';
 export {CustomizeModulesElement} from './customize_modules.js';
 export {CustomizeShortcutsElement} from './customize_shortcuts.js';
+export {LensErrorType, LensFormElement} from './lens_form.js';
 export {LensUploadDialogElement} from './lens_upload_dialog.js';
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';
 export {ChromeCartProxy} from './modules/cart/chrome_cart_proxy.js';
