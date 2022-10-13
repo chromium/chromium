@@ -17,6 +17,7 @@
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "url/gurl.h"
 
@@ -70,11 +71,13 @@ ShoppingListHandler::ShoppingListHandler(
     mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver,
     bookmarks::BookmarkModel* bookmark_model,
     ShoppingService* shopping_service,
+    PrefService* prefs,
     const std::string& locale)
     : remote_page_(std::move(remote_page)),
       receiver_(this, std::move(receiver)),
       bookmark_model_(bookmark_model),
       shopping_service_(shopping_service),
+      pref_service_(prefs),
       locale_(locale) {
   if (base::FeatureList::IsEnabled(kShoppingList)) {
     scoped_observation_.Observe(bookmark_model);
@@ -86,7 +89,7 @@ ShoppingListHandler::~ShoppingListHandler() = default;
 
 void ShoppingListHandler::GetAllPriceTrackedBookmarkProductInfo(
     GetAllPriceTrackedBookmarkProductInfoCallback callback) {
-  if (!base::FeatureList::IsEnabled(kShoppingList)) {
+  if (!IsShoppingListEnabled(pref_service_)) {
     std::move(callback).Run({});
     return;
   }

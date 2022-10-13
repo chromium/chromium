@@ -293,6 +293,11 @@ bool IsShoppingListAllowedForEnterprise(PrefService* prefs) {
   return !pref || pref->GetBool();
 }
 
+bool IsShoppingListEnabled(PrefService* prefs) {
+  return base::FeatureList::IsEnabled(kShoppingList) &&
+         IsShoppingListAllowedForEnterprise(prefs);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 base::TimeDelta GetDiscountFetchDelay() {
   auto delay_from_component =

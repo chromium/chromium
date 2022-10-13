@@ -11,12 +11,14 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/commerce/core/webui/shopping_list_handler.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -48,16 +50,21 @@ class ShoppingListHandlerTest : public testing::Test {
   void SetUp() override {
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
     shopping_service_ = std::make_unique<MockShoppingService>();
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    RegisterPrefs(pref_service_->registry());
+    SetShoppingListEnterprisePolicyPref(pref_service_.get(), true);
     handler_ = std::make_unique<commerce::ShoppingListHandler>(
         page_.BindAndGetRemote(),
         mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler>(),
-        bookmark_model_.get(), shopping_service_.get(), "en-us");
+        bookmark_model_.get(), shopping_service_.get(), pref_service_.get(),
+        "en-us");
   }
 
   MockPage page_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<commerce::ShoppingListHandler> handler_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList features_;
 };

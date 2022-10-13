@@ -232,7 +232,7 @@ void BookmarkBubbleView::ShowBubble(
                                   base::Unretained(bubble_delegate))))
       .SetInitiallyFocusedField(kBookmarkName);
 
-  if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
+  if (commerce::IsShoppingListEnabled(profile->GetPrefs())) {
     absl::optional<commerce::ProductInfo> product_info =
         commerce::ShoppingServiceFactory::GetForBrowserContext(profile)
             ->GetAvailableProductInfoForUrl(url);

@@ -172,7 +172,7 @@ void ReadingListUI::CreateShoppingListHandler(
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
   shopping_list_handler_ = std::make_unique<commerce::ShoppingListHandler>(
       std::move(page), std::move(receiver), bookmark_model, shopping_service,
-      g_browser_process->GetApplicationLocale());
+      profile->GetPrefs(), g_browser_process->GetApplicationLocale());
 }
 
 void ReadingListUI::SetActiveTabURL(const GURL& url) {

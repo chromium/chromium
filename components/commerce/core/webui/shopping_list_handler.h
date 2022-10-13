@@ -17,6 +17,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+class PrefService;
+
 namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
@@ -33,6 +35,7 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
       mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler> receiver,
       bookmarks::BookmarkModel* bookmark_model,
       ShoppingService* shopping_service,
+      PrefService* prefs,
       const std::string& locale);
   ShoppingListHandler(const ShoppingListHandler&) = delete;
   ShoppingListHandler& operator=(const ShoppingListHandler&) = delete;
@@ -68,6 +71,7 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   // down prior to the rest of the browser.
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<ShoppingService> shopping_service_;
+  raw_ptr<PrefService> pref_service_;
   const std::string locale_;
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<bookmarks::BookmarkModel,

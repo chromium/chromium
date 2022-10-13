@@ -75,6 +75,12 @@ void BookmarkUpdateManager::RunUpdate() {
   pref_service_->SetTime(kShoppingListBookmarkLastUpdateTime,
                          last_update_time_);
 
+  // If something like the enterprise policy was turned off, simply block the
+  // update logic. In the future we can observe the preference and remove or
+  // re-add the scheduled update, but this is easier for now.
+  if (!IsShoppingListEnabled(pref_service_))
+    return;
+
   scheduled_task_ = nullptr;
   ScheduleUpdate();
 

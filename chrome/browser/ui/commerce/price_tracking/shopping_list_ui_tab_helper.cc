@@ -95,8 +95,7 @@ void ShoppingListUiTabHelper::NavigationEntryCommitted(
   last_fetched_image_ = gfx::Image();
   last_fetched_image_url_ = GURL();
 
-  if (!shopping_service_ || !prefs_ ||
-      !IsShoppingListAllowedForEnterprise(prefs_))
+  if (!shopping_service_ || !prefs_ || !IsShoppingListEnabled(prefs_))
     return;
 
   // Cancel any pending callbacks by invalidating any weak pointers.

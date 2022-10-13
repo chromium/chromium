@@ -8,9 +8,11 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
+#include "components/prefs/pref_service.h"
 #include "url/gurl.h"
 
 namespace commerce {
@@ -39,6 +41,10 @@ const bookmarks::BookmarkNode* AddProductBookmark(
   power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model, node,
                                             std::move(meta));
   return node;
+}
+
+void SetShoppingListEnterprisePolicyPref(PrefService* prefs, bool enabled) {
+  prefs->SetBoolean(kShoppingListEnabledPrefName, enabled);
 }
 
 }  // namespace commerce

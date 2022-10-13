@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/clock.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -47,6 +48,7 @@ class BookmarkUpdateManagerTest : public testing::Test {
     EXPECT_FALSE(IsUpdateScheduled());
 
     RegisterPrefs(pref_service_->registry());
+    pref_service_->SetTime(kShoppingListBookmarkLastUpdateTime, base::Time());
   }
 
   void TearDown() override { update_manager_->CancelUpdates(); }
@@ -60,7 +62,8 @@ class BookmarkUpdateManagerTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList test_features_;
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
@@ -120,10 +123,6 @@ TEST_F(BookmarkUpdateManagerTest, RunScheduledTask) {
   test_features_.InitWithFeatures(
       {kShoppingList, kCommerceAllowOnDemandBookmarkUpdates}, {});
 
-  // Set this up so the task runs immediately (last update was a year ago).
-  pref_service_->SetTime(kShoppingListBookmarkLastUpdateTime,
-                         base::Time::Now() - base::Days(365));
-
   const int64_t cluster_id = 123L;
   const bookmarks::BookmarkNode* bookmark = AddProductBookmark(
       bookmark_model_.get(), u"Title", GURL("http://example.com"), cluster_id);
@@ -139,6 +138,7 @@ TEST_F(BookmarkUpdateManagerTest, RunScheduledTask) {
       std::move(info_map));
 
   update_manager_->ScheduleUpdate();
+  task_environment_.FastForwardBy(base::Days(1));
   base::RunLoop().RunUntilIdle();
 
   auto meta = power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_.get(),
@@ -151,6 +151,42 @@ TEST_F(BookmarkUpdateManagerTest, RunScheduledTask) {
       base::Time::Now() -
       pref_service_->GetTime(kShoppingListBookmarkLastUpdateTime);
   EXPECT_TRUE(time_since_last < base::Minutes(1));
+}
+
+TEST_F(BookmarkUpdateManagerTest, RunScheduledTask_BlockedByPolicy) {
+  test_features_.InitWithFeatures(
+      {kShoppingList, kCommerceAllowOnDemandBookmarkUpdates}, {});
+
+  SetShoppingListEnterprisePolicyPref(pref_service_.get(), false);
+
+  const std::string title = "Title";
+  const int64_t cluster_id = 123L;
+  const bookmarks::BookmarkNode* bookmark = AddProductBookmark(
+      bookmark_model_.get(), u"Title", GURL("http://example.com"), cluster_id);
+
+  ProductInfo new_info;
+  new_info.title = "Updated Title";
+  new_info.product_cluster_id = cluster_id;
+
+  std::map<int64_t, ProductInfo> info_map;
+  info_map[bookmark->id()] = new_info;
+  shopping_service_->SetResponsesForGetUpdatedProductInfoForBookmarks(
+      std::move(info_map));
+
+  update_manager_->ScheduleUpdate();
+  task_environment_.FastForwardBy(base::Hours(6));
+  base::RunLoop().RunUntilIdle();
+
+  auto meta = power_bookmarks::GetNodePowerBookmarkMeta(bookmark_model_.get(),
+                                                        bookmark);
+
+  // The bookmark should not have been updated.
+  EXPECT_EQ(meta->shopping_specifics().title(), title);
+
+  // Even though the update was blocked, we're still scheduling the noop task.
+  // Make sure the previous time was recorded (recorded time is not default).
+  EXPECT_TRUE(pref_service_->GetTime(kShoppingListBookmarkLastUpdateTime) !=
+              base::Time());
 }
 
 }  // namespace commerce

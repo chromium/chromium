@@ -306,6 +306,9 @@ bool IsFakeDataEnabled();
 bool isContextualConsentEnabled();
 // Check if the shopping list feature is allowed for enterprise.
 bool IsShoppingListAllowedForEnterprise(PrefService* prefs);
+// Check if the shopping list is enabled. This only checks the feature flag and
+// whether the feature is allowed by enterprise policy.
+bool IsShoppingListEnabled(PrefService* prefs);
 
 #if !BUILDFLAG(IS_ANDROID)
 // Get the time delay between discount fetches.

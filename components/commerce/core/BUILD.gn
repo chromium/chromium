@@ -41,8 +41,11 @@ source_set("feature_list_unittests") {
   deps = [
     ":commerce_heuristics_data",
     ":feature_list",
+    ":pref_names",
+    ":shopping_service_test_support",
     "//base",
     "//base/test:test_support",
+    "//components/prefs:test_support",
     "//testing/gtest",
     "//third_party/re2:re2",
   ]

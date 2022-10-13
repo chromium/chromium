@@ -8,6 +8,7 @@
 #include <string>
 
 class GURL;
+class PrefService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -26,6 +27,10 @@ const bookmarks::BookmarkNode* AddProductBookmark(
     bool is_price_tracked = false,
     const int64_t price_micros = 0L,
     const std::string& currency_code = "usd");
+
+// Sets the state of the enterprise policy for the shopping list feature for
+// testing.
+void SetShoppingListEnterprisePolicyPref(PrefService* prefs, bool enabled);
 
 }  // namespace commerce
 
