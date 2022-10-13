@@ -1805,11 +1805,6 @@ void ListValue::Append(base::Value::List in_list) {
   list().emplace_back(std::move(in_list));
 }
 
-void ListValue::Swap(ListValue* other) {
-  CHECK(other->is_list());
-  list().swap(other->list());
-}
-
 ValueView::ValueView(const Value& value)
     : data_view_(
           value.Visit([](const auto& member) { return ViewType(member); })) {}

@@ -1410,11 +1410,6 @@ class BASE_EXPORT ListValue : public Value {
   void Append(base::Value::Dict in_dict);
   void Append(base::Value::List in_list);
 
-  // Swaps contents with the `other` list.
-  //
-  // DEPRECATED: prefer `base::Value::List` + `std::swap()`.
-  void Swap(ListValue* other);
-
   // Iteration: Use a range-based for loop over `base::Value::List` directly
   // instead.
 };
