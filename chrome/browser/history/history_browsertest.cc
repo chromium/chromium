@@ -32,6 +32,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -39,6 +40,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/webui/untrusted_web_ui_browsertest_util.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -358,14 +360,20 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, InvalidURLNoHistory) {
 
 // URLs with special schemes should not go in history.
 IN_PROC_BROWSER_TEST_F(HistoryBrowserTest, InvalidSchemeNoHistory) {
-  GURL about_blank("about:blank");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), about_blank));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   ExpectEmptyHistory();
-  GURL view_source("view-source:about:blank");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), view_source));
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("view-source:about:blank")));
   ExpectEmptyHistory();
-  GURL chrome("chrome://about");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chrome));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://about")));
+  ExpectEmptyHistory();
+
+  content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
+      std::make_unique<ui::TestUntrustedWebUIConfig>("test-host"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("chrome-untrusted://test-host/title1.html")));
   ExpectEmptyHistory();
 }
 

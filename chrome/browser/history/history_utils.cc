@@ -20,6 +20,7 @@ bool CanAddURLToHistory(const GURL& url) {
       url.SchemeIs(url::kContentScheme) ||
       url.SchemeIs(content::kChromeDevToolsScheme) ||
       url.SchemeIs(content::kChromeUIScheme) ||
+      url.SchemeIs(content::kChromeUIUntrustedScheme) ||
       url.SchemeIs(content::kViewSourceScheme) ||
       url.SchemeIs(chrome::kChromeNativeScheme) ||
       url.SchemeIs(chrome::kChromeSearchScheme) ||
