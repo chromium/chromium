@@ -247,6 +247,16 @@ class FileSystemAccessManagerImplTest : public testing::Test {
         path_type, file_path, kBindingContext.process_id(),
         token_remote.InitWithNewPipeAndPassReceiver());
 
+    EXPECT_CALL(
+        permission_context_,
+        ConfirmSensitiveEntryAccess_(
+            kTestStorageKey.origin(),
+            FileSystemAccessPermissionContext::PathType::kLocal, file_path,
+            FileSystemAccessPermissionContext::HandleType::kFile,
+            ui::SelectFileDialog::Type::SELECT_OPEN_FILE, kFrameId, testing::_))
+        .WillOnce(RunOnceCallback<6>(
+            FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
+
     // Expect permission requests when the token is sent to be redeemed.
     EXPECT_CALL(
         permission_context_,
@@ -264,10 +274,14 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 
     // Attempt to resolve `token_remote` and store the resulting
     // FileSystemAccessFileHandle in `file_remote`.
-    base::test::TestFuture<blink::mojom::FileSystemAccessEntryPtr> future;
+    base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                           blink::mojom::FileSystemAccessEntryPtr>
+        future;
     manager_remote_->GetEntryFromDataTransferToken(std::move(token_remote),
                                                    future.GetCallback());
-    auto file_system_access_entry = future.Take();
+    DCHECK_EQ(future.Get<0>()->status,
+              blink::mojom::FileSystemAccessStatus::kOk);
+    auto file_system_access_entry = std::get<1>(future.Take());
 
     ASSERT_FALSE(file_system_access_entry.is_null());
     ASSERT_TRUE(file_system_access_entry->entry_handle->is_file());
@@ -290,6 +304,17 @@ class FileSystemAccessManagerImplTest : public testing::Test {
         path_type, dir_path, kBindingContext.process_id(),
         token_remote.InitWithNewPipeAndPassReceiver());
 
+    EXPECT_CALL(
+        permission_context_,
+        ConfirmSensitiveEntryAccess_(
+            kTestStorageKey.origin(),
+            FileSystemAccessPermissionContext::PathType::kLocal, dir_path,
+            FileSystemAccessPermissionContext::HandleType::kDirectory,
+            ui::SelectFileDialog::Type::SELECT_UPLOAD_FOLDER, kFrameId,
+            testing::_))
+        .WillOnce(RunOnceCallback<6>(
+            FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
+
     // Expect permission requests when the token is sent to be redeemed.
     EXPECT_CALL(
         permission_context_,
@@ -307,11 +332,14 @@ class FileSystemAccessManagerImplTest : public testing::Test {
 
     // Attempt to resolve `token_remote` and store the resulting
     // FileSystemAccessDirectoryHandle in `dir_remote`.
-    base::test::TestFuture<blink::mojom::FileSystemAccessEntryPtr>
+    base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                           blink::mojom::FileSystemAccessEntryPtr>
         get_entry_future;
     manager_remote_->GetEntryFromDataTransferToken(
         std::move(token_remote), get_entry_future.GetCallback());
-    auto file_system_access_entry = get_entry_future.Take();
+    DCHECK_EQ(get_entry_future.Get<0>()->status,
+              blink::mojom::FileSystemAccessStatus::kOk);
+    auto file_system_access_entry = std::get<1>(get_entry_future.Take());
 
     ASSERT_FALSE(file_system_access_entry.is_null());
     ASSERT_TRUE(file_system_access_entry->entry_handle->is_directory());
@@ -1252,6 +1280,74 @@ TEST_F(FileSystemAccessManagerImplTest,
   manager_remote_->GetEntryFromDataTransferToken(std::move(token_remote),
                                                  base::DoNothing());
   EXPECT_EQ("Invalid renderer ID.", bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       GetEntryFromDataTransferToken_File_SensitivePath) {
+  base::FilePath file_path = dir_.GetPath().AppendASCII("mr_file");
+  ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
+      token_remote;
+  manager_->CreateFileSystemAccessDataTransferToken(
+      FileSystemAccessEntryFactory::PathType::kLocal, file_path,
+      kBindingContext.process_id(),
+      token_remote.InitWithNewPipeAndPassReceiver());
+
+  EXPECT_CALL(
+      permission_context_,
+      ConfirmSensitiveEntryAccess_(
+          kTestStorageKey.origin(),
+          FileSystemAccessPermissionContext::PathType::kLocal, file_path,
+          FileSystemAccessPermissionContext::HandleType::kFile,
+          ui::SelectFileDialog::Type::SELECT_OPEN_FILE, kFrameId, testing::_))
+      .WillOnce(RunOnceCallback<6>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort));
+
+  // Attempt to resolve `token_remote` should abort.
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         blink::mojom::FileSystemAccessEntryPtr>
+      get_entry_future;
+  manager_remote_->GetEntryFromDataTransferToken(
+      std::move(token_remote), get_entry_future.GetCallback());
+  DCHECK_EQ(get_entry_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kOperationAborted);
+  auto file_system_access_entry = std::get<1>(get_entry_future.Take());
+  EXPECT_TRUE(file_system_access_entry.is_null());
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       GetEntryFromDataTransferToken_Directory_SensitivePath) {
+  const base::FilePath& kDirPath = dir_.GetPath().AppendASCII("mr_directory");
+  ASSERT_TRUE(base::CreateDirectory(kDirPath));
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
+      token_remote;
+  manager_->CreateFileSystemAccessDataTransferToken(
+      FileSystemAccessEntryFactory::PathType::kLocal, kDirPath,
+      kBindingContext.process_id(),
+      token_remote.InitWithNewPipeAndPassReceiver());
+
+  EXPECT_CALL(permission_context_,
+              ConfirmSensitiveEntryAccess_(
+                  kTestStorageKey.origin(),
+                  FileSystemAccessPermissionContext::PathType::kLocal, kDirPath,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  ui::SelectFileDialog::Type::SELECT_UPLOAD_FOLDER, kFrameId,
+                  testing::_))
+      .WillOnce(RunOnceCallback<6>(
+          FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort));
+
+  // Attempt to resolve `token_remote` should abort.
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         blink::mojom::FileSystemAccessEntryPtr>
+      get_entry_future;
+  manager_remote_->GetEntryFromDataTransferToken(
+      std::move(token_remote), get_entry_future.GetCallback());
+  DCHECK_EQ(get_entry_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kOperationAborted);
+  auto file_system_access_entry = std::get<1>(get_entry_future.Take());
+  EXPECT_TRUE(file_system_access_entry.is_null());
 }
 
 // FileSystemAccessManager should refuse to resolve a

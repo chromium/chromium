@@ -513,6 +513,18 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       GetEntryFromDataTransferTokenCallback token_resolved_callback,
       FileSystemAccessPermissionContext::HandleType file_type);
 
+  // Calls `token_resolved_callback` with a FileSystemAccessEntry representing
+  // the file/directory at `file_path`. Called by
+  // ResolveDataTransferTokenWithFileType after it verifies the token does not
+  // refer to a sensitive path.
+  void DidVerifySensitiveDirectoryAccessForDataTransfer(
+      const BindingContext& binding_context,
+      const base::FilePath& file_path,
+      const storage::FileSystemURL& url,
+      FileSystemAccessPermissionContext::HandleType file_type,
+      GetEntryFromDataTransferTokenCallback token_resolved_callback,
+      FileSystemAccessPermissionContext::SensitiveEntryResult result);
+
   // `root_permission_path` is path that the user selected in a file or
   // directory picker which led to the site having access to this URL. All
   // permissions related to the URL are based on this path.

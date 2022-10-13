@@ -675,6 +675,55 @@ void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
     HandleType file_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!permission_context_) {
+    DidVerifySensitiveDirectoryAccessForDataTransfer(
+        binding_context, file_path, url, file_type,
+        std::move(token_resolved_callback), SensitiveEntryResult::kAllowed);
+    return;
+  }
+
+  // Drag-and-dropped files cannot be from a sandboxed file system.
+  DCHECK(url.type() == storage::FileSystemType::kFileSystemTypeLocal ||
+         url.type() == storage::FileSystemType::kFileSystemTypeExternal);
+  PathType path_type =
+      url.type() == storage::FileSystemType::kFileSystemTypeLocal
+          ? PathType::kLocal
+          : PathType::kExternal;
+  // TODO(https://crbug.com/1370433): Update ConfirmSensitiveEntryAccess() to
+  // take a UserAction and show a prompt specific to D&D accordingly. For now,
+  // run the same security checks and show the same prompt for D&D as for the
+  // file picker.
+  ui::SelectFileDialog::Type dialog_type =
+      file_type == HandleType::kFile
+          ? ui::SelectFileDialog::Type::SELECT_OPEN_FILE
+          : ui::SelectFileDialog::Type::SELECT_UPLOAD_FOLDER;
+  permission_context_->ConfirmSensitiveEntryAccess(
+      binding_context.storage_key.origin(), path_type, file_path, file_type,
+      dialog_type, binding_context.frame_id,
+      base::BindOnce(&FileSystemAccessManagerImpl::
+                         DidVerifySensitiveDirectoryAccessForDataTransfer,
+                     weak_factory_.GetWeakPtr(), binding_context, file_path,
+                     url, file_type, std::move(token_resolved_callback)));
+}
+
+void FileSystemAccessManagerImpl::
+    DidVerifySensitiveDirectoryAccessForDataTransfer(
+        const BindingContext& binding_context,
+        const base::FilePath& file_path,
+        const storage::FileSystemURL& url,
+        HandleType file_type,
+        GetEntryFromDataTransferTokenCallback token_resolved_callback,
+        SensitiveEntryResult result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (result != SensitiveEntryResult::kAllowed) {
+    std::move(token_resolved_callback)
+        .Run(file_system_access_error::FromStatus(
+                 blink::mojom::FileSystemAccessStatus::kOperationAborted),
+             blink::mojom::FileSystemAccessEntryPtr());
+    return;
+  }
+
   SharedHandleState shared_handle_state =
       GetSharedHandleStateForPath(file_path, binding_context.storage_key,
                                   file_type, UserAction::kDragAndDrop);
@@ -692,7 +741,8 @@ void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
         file_path.BaseName().AsUTF8Unsafe());
   }
 
-  std::move(token_resolved_callback).Run(std::move(entry));
+  std::move(token_resolved_callback)
+      .Run(file_system_access_error::Ok(), std::move(entry));
 }
 
 void FileSystemAccessManagerImpl::GetFileHandleFromToken(
