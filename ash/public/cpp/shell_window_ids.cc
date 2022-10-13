@@ -44,23 +44,34 @@ constexpr std::array<int, 5> kPostDesksActivatableContainersIds = {
     kShellWindowId_ShelfBubbleContainer,
 };
 
+// List of desk container IDs. Can't use desks_util since we're in ash/public
+// here.
+constexpr std::array<int, 16> kDeskContainerIds = {
+    kShellWindowId_DefaultContainerDeprecated,
+    kShellWindowId_DeskContainerB,
+    kShellWindowId_DeskContainerC,
+    kShellWindowId_DeskContainerD,
+    kShellWindowId_DeskContainerE,
+    kShellWindowId_DeskContainerF,
+    kShellWindowId_DeskContainerG,
+    kShellWindowId_DeskContainerH,
+    kShellWindowId_DeskContainerI,
+    kShellWindowId_DeskContainerJ,
+    kShellWindowId_DeskContainerK,
+    kShellWindowId_DeskContainerL,
+    kShellWindowId_DeskContainerM,
+    kShellWindowId_DeskContainerN,
+    kShellWindowId_DeskContainerO,
+    kShellWindowId_DeskContainerP,
+};
+
 }  // namespace
 
 std::vector<int> GetActivatableShellWindowIds() {
   std::vector<int> ids(kPreDesksActivatableContainersIds.begin(),
                        kPreDesksActivatableContainersIds.end());
 
-  // Add the desks containers IDs. Can't use desks_util since we're in
-  // ash/public here.
-  ids.emplace_back(kShellWindowId_DefaultContainerDeprecated);
-  ids.emplace_back(kShellWindowId_DeskContainerB);
-  ids.emplace_back(kShellWindowId_DeskContainerC);
-  ids.emplace_back(kShellWindowId_DeskContainerD);
-  ids.emplace_back(kShellWindowId_DeskContainerE);
-  ids.emplace_back(kShellWindowId_DeskContainerF);
-  ids.emplace_back(kShellWindowId_DeskContainerG);
-  ids.emplace_back(kShellWindowId_DeskContainerH);
-
+  ids.insert(ids.end(), kDeskContainerIds.begin(), kDeskContainerIds.end());
   ids.insert(ids.end(), kPostDesksActivatableContainersIds.begin(),
              kPostDesksActivatableContainersIds.end());
   return ids;

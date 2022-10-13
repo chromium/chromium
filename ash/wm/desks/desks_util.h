@@ -25,7 +25,12 @@ namespace ash {
 
 namespace desks_util {
 
-constexpr size_t kMaxNumberOfDesks = 8;
+// Note: the max number of desks depends on a runtime flag and the function
+// `GetMaxNumberOfDesks` below will return that value. The value returned from
+// that function will not be more than this constant.
+constexpr size_t kDesksUpperLimit = 16;
+
+ASH_EXPORT size_t GetMaxNumberOfDesks();
 
 ASH_EXPORT std::vector<int> GetDesksContainersIds();
 

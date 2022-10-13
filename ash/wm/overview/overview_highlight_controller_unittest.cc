@@ -884,7 +884,8 @@ TEST_P(DesksOverviewHighlightControllerTest,
     SendKey(ui::VKEY_TAB);
   }
   EXPECT_FALSE(new_desk_button->GetEnabled());
-  EXPECT_EQ(desks_util::kMaxNumberOfDesks, desks_controller->desks().size());
+  EXPECT_EQ(desks_util::GetMaxNumberOfDesks(),
+            desks_controller->desks().size());
 }
 
 TEST_P(DesksOverviewHighlightControllerTest, ZeroStateOfDesksBar) {

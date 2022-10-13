@@ -104,23 +104,9 @@ constexpr char kNumberOfWindowsClosedBySaveAndRecall[] =
     "Ash.Desks.NumberOfWindowsClosed.SaveRecall";
 constexpr char kNumberOfWindowsClosedByApi[] =
     "Ash.Desks.NumberOfWindowsClosed.Api";
-
-constexpr char kNumberOfWindowsOnDesk_1_HistogramName[] =
-    "Ash.Desks.NumberOfWindowsOnDesk_1";
-constexpr char kNumberOfWindowsOnDesk_2_HistogramName[] =
-    "Ash.Desks.NumberOfWindowsOnDesk_2";
-constexpr char kNumberOfWindowsOnDesk_3_HistogramName[] =
-    "Ash.Desks.NumberOfWindowsOnDesk_3";
-constexpr char kNumberOfWindowsOnDesk_4_HistogramName[] =
-    "Ash.Desks.NumberOfWindowsOnDesk_4";
-constexpr char kNumberOfWindowsOnDesk_5_HistogramName[] =
-    "Ash.Desks.NumberOfWindowsOnDesk_5";
-constexpr char kNumberOfWindowsOnDesk_6_HistogramName[] =
-    "Ash.Desks.NumberOfWindowsOnDesk_6";
-constexpr char kNumberOfWindowsOnDesk_7_HistogramName[] =
-    "Ash.Desks.NumberOfWindowsOnDesk_7";
-constexpr char kNumberOfWindowsOnDesk_8_HistogramName[] =
-    "Ash.Desks.NumberOfWindowsOnDesk_8";
+// Used for histograms from "Ash.Desks.NumberOfWindowsOnDesk_1" up to 16.
+constexpr char kNumberOfWindowsOnDeskHistogramPrefix[] =
+    "Ash.Desks.NumberOfWindowsOnDesk_";
 
 constexpr char kNumberOfDeskTraversalsHistogramName[] =
     "Ash.Desks.NumberOfDeskTraversals";
@@ -132,10 +118,23 @@ constexpr int kDeskTraversalsMaxValue = 20;
 constexpr base::TimeDelta kDeskTraversalsTimeout = base::Seconds(5);
 
 constexpr int kDeskDefaultNameIds[] = {
-    IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE, IDS_ASH_DESKS_DESK_2_MINI_VIEW_TITLE,
-    IDS_ASH_DESKS_DESK_3_MINI_VIEW_TITLE, IDS_ASH_DESKS_DESK_4_MINI_VIEW_TITLE,
-    IDS_ASH_DESKS_DESK_5_MINI_VIEW_TITLE, IDS_ASH_DESKS_DESK_6_MINI_VIEW_TITLE,
-    IDS_ASH_DESKS_DESK_7_MINI_VIEW_TITLE, IDS_ASH_DESKS_DESK_8_MINI_VIEW_TITLE};
+    IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_2_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_3_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_4_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_5_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_6_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_7_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_8_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_9_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_10_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_11_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_12_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_13_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_14_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_15_MINI_VIEW_TITLE,
+    IDS_ASH_DESKS_DESK_16_MINI_VIEW_TITLE,
+};
 
 // Appends the given |windows| to the end of the currently active overview mode
 // session such that the most-recently used window is added first. If
@@ -419,7 +418,7 @@ DesksController* DesksController::Get() {
 
 // static
 std::u16string DesksController::GetDeskDefaultName(size_t desk_index) {
-  DCHECK_LT(desk_index, desks_util::kMaxNumberOfDesks);
+  DCHECK_LT(desk_index, desks_util::GetMaxNumberOfDesks());
   return l10n_util::GetStringUTF16(kDeskDefaultNameIds[desk_index]);
 }
 
@@ -493,7 +492,7 @@ bool DesksController::AreDesksBeingModified() const {
 }
 
 bool DesksController::CanCreateDesks() const {
-  return desks_.size() < desks_util::kMaxNumberOfDesks;
+  return desks_.size() < desks_util::GetMaxNumberOfDesks();
 }
 
 Desk* DesksController::GetNextDesk(bool use_target_active_desk) const {
@@ -1699,7 +1698,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
   desks_restore_util::UpdatePrimaryUserDeskMetricsPrefs();
 
-  DCHECK_LE(available_container_ids_.size(), desks_util::kMaxNumberOfDesks);
+  DCHECK_LE(available_container_ids_.size(), desks_util::GetMaxNumberOfDesks());
 
   if (close_type == DeskCloseType::kCloseAllWindowsAndWait) {
     ShowDeskRemovalUndoToast(
@@ -1961,60 +1960,19 @@ void DesksController::GetAllDesks(std::vector<const Desk*>& out_desks) const {
 }
 
 void DesksController::ReportNumberOfWindowsPerDeskHistogram() const {
+  DCHECK_LE(desks_.size(), desks_util::kDesksUpperLimit);
   for (size_t i = 0; i < desks_.size(); ++i) {
     const size_t windows_count = desks_[i]->windows().size();
-    switch (i) {
-      case 0:
-        UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsOnDesk_1_HistogramName,
-                                 windows_count);
-        break;
-
-      case 1:
-        UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsOnDesk_2_HistogramName,
-                                 windows_count);
-        break;
-
-      case 2:
-        UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsOnDesk_3_HistogramName,
-                                 windows_count);
-        break;
-
-      case 3:
-        UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsOnDesk_4_HistogramName,
-                                 windows_count);
-        break;
-
-      case 4:
-        UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsOnDesk_5_HistogramName,
-                                 windows_count);
-        break;
-
-      case 5:
-        UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsOnDesk_6_HistogramName,
-                                 windows_count);
-        break;
-
-      case 6:
-        UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsOnDesk_7_HistogramName,
-                                 windows_count);
-        break;
-
-      case 7:
-        UMA_HISTOGRAM_COUNTS_100(kNumberOfWindowsOnDesk_8_HistogramName,
-                                 windows_count);
-        break;
-
-      default:
-        NOTREACHED();
-        break;
-    }
+    base::UmaHistogramCounts100(
+        kNumberOfWindowsOnDeskHistogramPrefix + base::NumberToString(i + 1),
+        windows_count);
   }
 }
 
 void DesksController::ReportDesksCountHistogram() const {
-  DCHECK_LE(desks_.size(), desks_util::kMaxNumberOfDesks);
+  DCHECK_LE(desks_.size(), desks_util::kDesksUpperLimit);
   UMA_HISTOGRAM_EXACT_LINEAR(kDesksCountHistogramName, desks_.size(),
-                             desks_util::kMaxNumberOfDesks);
+                             desks_util::kDesksUpperLimit + 1);
 }
 
 void DesksController::RecordAndResetNumberOfWeeklyActiveDesks() {

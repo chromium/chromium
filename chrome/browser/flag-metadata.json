@@ -1655,6 +1655,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "enable-16-desks",
+    "owners": [ "dandersson", "janetmac" ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "enable-accelerated-video-decode",
     "owners": [ "media-dev@chromium.org" ],
     "expiry_milestone": 93

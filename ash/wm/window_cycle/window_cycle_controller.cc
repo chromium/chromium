@@ -92,7 +92,7 @@ void ReportPossibleDesksSwitchStats(int active_desk_container_id_before_cycle) {
                active_desk_container_id_before_cycle);
   base::UmaHistogramExactLinear(kAltTabDesksSwitchDistanceHistogramName,
                                 desks_switch_distance,
-                                desks_util::kMaxNumberOfDesks);
+                                desks_util::kDesksUpperLimit);
 }
 
 }  // namespace

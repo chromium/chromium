@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
@@ -25,7 +26,7 @@ namespace desks_util {
 
 namespace {
 
-constexpr std::array<int, kMaxNumberOfDesks> kDesksContainersIds = {
+constexpr std::array<int, kDesksUpperLimit> kDesksContainersIds = {
     kShellWindowId_DefaultContainerDeprecated,
     kShellWindowId_DeskContainerB,
     kShellWindowId_DeskContainerC,
@@ -34,13 +35,28 @@ constexpr std::array<int, kMaxNumberOfDesks> kDesksContainersIds = {
     kShellWindowId_DeskContainerF,
     kShellWindowId_DeskContainerG,
     kShellWindowId_DeskContainerH,
+    kShellWindowId_DeskContainerI,
+    kShellWindowId_DeskContainerJ,
+    kShellWindowId_DeskContainerK,
+    kShellWindowId_DeskContainerL,
+    kShellWindowId_DeskContainerM,
+    kShellWindowId_DeskContainerN,
+    kShellWindowId_DeskContainerO,
+    kShellWindowId_DeskContainerP,
 };
+
+// Default max number of desks (that is, enable-16-desks is off).
+constexpr size_t kDesksDefaultLimit = 8;
 
 }  // namespace
 
+size_t GetMaxNumberOfDesks() {
+  return features::Is16DesksEnabled() ? kDesksUpperLimit : kDesksDefaultLimit;
+}
+
 std::vector<int> GetDesksContainersIds() {
   return std::vector<int>(kDesksContainersIds.begin(),
-                          kDesksContainersIds.end());
+                          kDesksContainersIds.begin() + GetMaxNumberOfDesks());
 }
 
 std::vector<aura::Window*> GetDesksContainers(aura::Window* root) {
@@ -85,6 +101,30 @@ const char* GetDeskContainerName(int container_id) {
     case kShellWindowId_DeskContainerH:
       return "Desk_Container_H";
 
+    case kShellWindowId_DeskContainerI:
+      return "Desk_Container_I";
+
+    case kShellWindowId_DeskContainerJ:
+      return "Desk_Container_J";
+
+    case kShellWindowId_DeskContainerK:
+      return "Desk_Container_K";
+
+    case kShellWindowId_DeskContainerL:
+      return "Desk_Container_L";
+
+    case kShellWindowId_DeskContainerM:
+      return "Desk_Container_M";
+
+    case kShellWindowId_DeskContainerN:
+      return "Desk_Container_N";
+
+    case kShellWindowId_DeskContainerO:
+      return "Desk_Container_O";
+
+    case kShellWindowId_DeskContainerP:
+      return "Desk_Container_P";
+
     default:
       NOTREACHED();
       return "";
@@ -104,7 +144,15 @@ bool IsDeskContainerId(int id) {
          id == kShellWindowId_DeskContainerE ||
          id == kShellWindowId_DeskContainerF ||
          id == kShellWindowId_DeskContainerG ||
-         id == kShellWindowId_DeskContainerH;
+         id == kShellWindowId_DeskContainerH ||
+         id == kShellWindowId_DeskContainerI ||
+         id == kShellWindowId_DeskContainerJ ||
+         id == kShellWindowId_DeskContainerK ||
+         id == kShellWindowId_DeskContainerL ||
+         id == kShellWindowId_DeskContainerM ||
+         id == kShellWindowId_DeskContainerN ||
+         id == kShellWindowId_DeskContainerO ||
+         id == kShellWindowId_DeskContainerP;
 }
 
 int GetActiveDeskContainerId() {

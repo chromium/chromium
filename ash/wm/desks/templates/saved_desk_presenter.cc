@@ -409,7 +409,7 @@ void SavedDeskPresenter::LaunchSavedDesk(
         /*text=*/
         l10n_util::GetStringFUTF16(
             IDS_ASH_DESKS_TEMPLATES_REACH_MAXIMUM_DESK_TOAST,
-            base::FormatNumber(desks_util::kMaxNumberOfDesks))};
+            base::FormatNumber(desks_util::GetMaxNumberOfDesks()))};
     ToastManager::Get()->Show(toast_data);
     return;
   }

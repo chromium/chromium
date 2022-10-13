@@ -78,6 +78,14 @@ enum ShellWindowId {
   kShellWindowId_DeskContainerF,
   kShellWindowId_DeskContainerG,
   kShellWindowId_DeskContainerH,
+  kShellWindowId_DeskContainerI,
+  kShellWindowId_DeskContainerJ,
+  kShellWindowId_DeskContainerK,
+  kShellWindowId_DeskContainerL,
+  kShellWindowId_DeskContainerM,
+  kShellWindowId_DeskContainerN,
+  kShellWindowId_DeskContainerO,
+  kShellWindowId_DeskContainerP,
 
   // The container for top-level windows with the 'always-on-top' flag set.
   kShellWindowId_AlwaysOnTopContainer,

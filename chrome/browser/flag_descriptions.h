@@ -2851,6 +2851,9 @@ extern const char kCalendarModelDebugModeDescription[];
 extern const char kDefaultLinkCapturingInBrowserName[];
 extern const char kDefaultLinkCapturingInBrowserDescription[];
 
+extern const char kDesks16Name[];
+extern const char kDesks16Description[];
+
 extern const char kDesksCloseAllName[];
 extern const char kDesksCloseAllDescription[];
 

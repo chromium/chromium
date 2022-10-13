@@ -80,9 +80,7 @@ PrefService* GetPrimaryUserPrefService() {
 // DesksController.
 bool IsValidDeskIndex(int desk_index) {
   return desk_index >= 0 &&
-         desk_index <
-             static_cast<int>(DesksController::Get()->desks().size()) &&
-         desk_index < int{desks_util::kMaxNumberOfDesks};
+         desk_index < static_cast<int>(DesksController::Get()->desks().size());
 }
 
 base::Time GetTime(int year, int month, int day_of_month, int day_of_week) {
@@ -151,12 +149,15 @@ void RestorePrimaryUserDesks() {
       primary_user_prefs->GetList(prefs::kDesksMetricsList);
 
   // First create the same number of desks.
-  const size_t restore_size = desks_names_list.size();
+  size_t restore_size = desks_names_list.size();
 
-  // If we don't have any restore data, or the list is corrupt for some reason,
-  // abort.
-  if (!restore_size || restore_size > desks_util::kMaxNumberOfDesks)
+  // If we don't have any restore data, abort.
+  if (restore_size == 0)
     return;
+
+  // If we have more restore data than the *current* max, clamp it. This can
+  // happen if the restore data was created when more desks were permitted.
+  restore_size = std::min(restore_size, desks_util::GetMaxNumberOfDesks());
 
   auto* desks_controller = DesksController::Get();
   while (desks_controller->desks().size() < restore_size)

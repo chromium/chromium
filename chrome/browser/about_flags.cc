@@ -9729,6 +9729,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"vc-controls-ui", flag_descriptions::kVcControlsUiName,
      flag_descriptions::kVcControlsUiDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kVcControlsUi)},
+    {"enable-16-desks", flag_descriptions::kDesks16Name,
+     flag_descriptions::kDesks16Description, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnable16Desks)},
 #endif
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -686,6 +686,11 @@ BASE_FEATURE(kEcheSWADisableStunServer,
              "EcheSWADisableStunServer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, allows the creation of up to 16 desks (default is 8).
+BASE_FEATURE(kEnable16Desks,
+             "Enable16Desks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables background blur for the app list, shelf, unified system tray,
 // autoclick menu, etc. Also enables the AppsGridView mask layer, slower devices
 // may have choppier app list animations while in this mode. crbug.com/765292.
@@ -2174,6 +2179,10 @@ bool IsAvatarsCloudMigrationEnabled() {
 
 bool DoWindowsFollowCursor() {
   return base::FeatureList::IsEnabled(kWindowsFollowCursor);
+}
+
+bool Is16DesksEnabled() {
+  return base::FeatureList::IsEnabled(kEnable16Desks);
 }
 
 bool IsAdaptiveChargingEnabled() {
