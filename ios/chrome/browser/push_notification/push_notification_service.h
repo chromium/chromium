@@ -19,6 +19,7 @@ class PushNotificationClientManager;
 class PushNotificationService {
  public:
   using CompletionHandler = void (^)(NSError* error);
+  using PreferenceMap = NSDictionary<NSString*, NSNumber*>*;
 
   PushNotificationService();
   virtual ~PushNotificationService();
@@ -38,7 +39,7 @@ class PushNotificationService {
   // notification server.
   void UpdateFeaturePushNotificationPreferences(
       NSString* account_id,
-      NSDictionary<NSString*, NSNumber*>* preference_map,
+      PreferenceMap preference_map,
       CompletionHandler completion_handler) {}
 
   // Registers each PushNotificationClient's prefs. Each
