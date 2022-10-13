@@ -37,7 +37,11 @@ void ShowGenericUiAction::OnInterruptFinished() {
       base::BindOnce(&ShowGenericUiAction::OnViewInflationFinished,
                      weak_ptr_factory_.GetWeakPtr(), false),
       base::BindRepeating(&ShowGenericUiAction::OnRequestBackendUserData,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&ShowGenericUiAction::OnShowAccountScreen,
+                          weak_ptr_factory_.GetWeakPtr())
+
+  );
 }
 
 ShowGenericUiAction::ShowGenericUiAction(ActionDelegate* delegate,
@@ -105,7 +109,19 @@ void ShowGenericUiAction::InternalProcessAction(
                      weak_ptr_factory_.GetWeakPtr(),
                      /* first_inflation= */ true),
       base::BindRepeating(&ShowGenericUiAction::OnRequestBackendUserData,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindRepeating(&ShowGenericUiAction::OnShowAccountScreen,
                           weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ShowGenericUiAction::OnShowAccountScreen(
+    const ShowAccountScreenProto& proto) {
+  if (!proto.has_gms_account_intent_screen_id()) {
+    LOG(ERROR) << "Screen information not present in ShowAccountScreenProto";
+    return;
+  }
+  delegate_->ShowAccountScreen(
+      proto, delegate_->GetEmailAddressForAccessTokenAccount());
 }
 
 void ShowGenericUiAction::OnRequestBackendUserData(

@@ -40,6 +40,10 @@ void EndAction(base::WeakPtr<BasicInteractions> basic_interactions,
 void RequestBackendData(base::WeakPtr<BasicInteractions> basic_interactions,
                         const RequestBackendDataProto& proto);
 
+// Requests user's account screen.
+void ShowAccountScreen(base::WeakPtr<BasicInteractions> basic_interactions,
+                       const ShowAccountScreenProto& proto);
+
 // Enables or disables a particular user action.
 void ToggleUserAction(base::WeakPtr<BasicInteractions> basic_interactions,
                       const ToggleUserActionProto& proto);
@@ -49,6 +53,7 @@ void ToggleUserAction(base::WeakPtr<BasicInteractions> basic_interactions,
 void ShowInfoPopup(const InfoPopupProto& proto,
                    base::android::ScopedJavaGlobalRef<jobject> jcontext,
                    base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
+                   base::android::ScopedJavaGlobalRef<jobject> jdelegate,
                    const std::string& close_display_str);
 
 // Displays a list popup on the screen.

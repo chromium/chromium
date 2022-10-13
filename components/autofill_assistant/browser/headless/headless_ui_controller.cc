@@ -139,9 +139,18 @@ void HeadlessUiController::SetGenericUi(
     base::OnceCallback<void(const ClientStatus&)>
         view_inflation_finished_callback,
     base::RepeatingCallback<void(const RequestBackendDataProto&)>
-        request_backend_data_callback) {
+        request_backend_data_callback,
+    base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+        show_account_screen_callback) {
   VLOG(2) << "Unexpected UI method called: " << __func__;
 }
+
+void HeadlessUiController::ShowAccountScreen(
+    const ShowAccountScreenProto& proto,
+    const std::string& email_address) {
+  VLOG(2) << "Unexpected UI method called: " << __func__;
+}
+
 void HeadlessUiController::SetPersistentGenericUi(
     std::unique_ptr<GenericUserInterfaceProto> generic_ui,
     base::OnceCallback<void(const ClientStatus&)>

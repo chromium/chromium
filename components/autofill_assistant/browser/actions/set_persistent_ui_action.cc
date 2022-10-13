@@ -13,6 +13,7 @@ bool IsCallbackAllowed(const CallbackProto::KindCase kind) {
   switch (kind) {
     case CallbackProto::kEndAction:
     case CallbackProto::kRequestBackendData:
+    case CallbackProto::kShowAccountScreen:
     case CallbackProto::kToggleUserAction:
     case CallbackProto::kSetUserActions:
     case CallbackProto::KIND_NOT_SET:

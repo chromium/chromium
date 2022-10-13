@@ -55,6 +55,7 @@ message CallbackProto {
     ClearViewContainerProto clear_view_container = 15;
     ForEachProto for_each = 16;
     RequestBackendDataProto request_backend_data = 17;
+    ShowAccountScreenProto show_account_screen = 18;
   }
   // Optional model identifier pointing to a single boolean. If set, the
   // callback will only be invoked if the condition is true.
@@ -454,4 +455,9 @@ message ForEachProto {
 
   // The callbacks to invoke for every iteration of the loop.
   repeated CallbackProto callbacks = 3;
+}
+
+message ShowAccountScreenProto {
+  // The id of the the GMS screen to show to the user.
+  optional int32 gms_account_intent_screen_id = 1;
 }

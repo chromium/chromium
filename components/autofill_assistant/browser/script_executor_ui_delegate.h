@@ -89,7 +89,16 @@ class ScriptExecutorUiDelegate : public WaitForDomObserver {
       base::OnceCallback<void(const ClientStatus&)>
           view_inflation_finished_callback,
       base::RepeatingCallback<void(const RequestBackendDataProto&)>
-          request_backend_data_callback) = 0;
+          request_backend_data_callback,
+      base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+          show_account_screen_callback) = 0;
+
+  // Displays the user's |email_address| account page in a platform-appropriate
+  // way. On Android, for example, this is accomplished by firing an intent to
+  // the GMS core library. |proto| defines which part of the user's account page
+  // should be displayed.
+  virtual void ShowAccountScreen(const ShowAccountScreenProto& proto,
+                                 const std::string& email_address) = 0;
 
   // Sets the persistent generic UI to show to the user.
   virtual void SetPersistentGenericUi(

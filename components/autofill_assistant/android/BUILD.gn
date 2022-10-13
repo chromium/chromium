@@ -73,6 +73,7 @@ android_library("java") {
     "java/src/org/chromium/components/autofill_assistant/AssistantPeekHeightCoordinator.java",
     "java/src/org/chromium/components/autofill_assistant/AssistantRootViewContainer.java",
     "java/src/org/chromium/components/autofill_assistant/AssistantTagsForTesting.java",
+    "java/src/org/chromium/components/autofill_assistant/AssistantTextLinkDelegate.java",
     "java/src/org/chromium/components/autofill_assistant/AssistantTextUtils.java",
     "java/src/org/chromium/components/autofill_assistant/AutofillAssistantActionHandlerImpl.java",
     "java/src/org/chromium/components/autofill_assistant/AutofillAssistantClient.java",

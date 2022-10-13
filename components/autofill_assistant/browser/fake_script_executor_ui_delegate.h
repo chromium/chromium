@@ -81,7 +81,11 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
       base::OnceCallback<void(const ClientStatus&)>
           view_inflation_finished_callback,
       base::RepeatingCallback<void(const RequestBackendDataProto&)>
-          request_backend_data_callback) override;
+          request_backend_data_callback,
+      base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+          show_account_screen_callback) override;
+  void ShowAccountScreen(const ShowAccountScreenProto& proto,
+                         const std::string& email_address) override;
   void SetPersistentGenericUi(
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
       base::OnceCallback<void(const ClientStatus&)>
@@ -118,8 +122,19 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
     return request_backend_data_callback_;
   }
 
+  const base::RepeatingCallback<void(const ShowAccountScreenProto&)>&
+  GetShowAccountScreenCallback() {
+    return show_account_screen_callback_;
+  }
+
   const GenericUserInterfaceProto* GetPersistentGenericUi() {
     return persistent_generic_ui_.get();
+  }
+
+  const std::string& GetUserEmail() { return user_email_; }
+
+  const ShowAccountScreenProto& GetShowAccountScreenProto() {
+    return show_account_screen_proto_;
   }
 
   InfoBox* GetInfoBox() { return info_box_.get(); }
@@ -162,8 +177,12 @@ class FakeScriptExecutorUiDelegate : public ScriptExecutorUiDelegate {
       view_inflation_finished_callback_;
   base::RepeatingCallback<void(const RequestBackendDataProto&)>
       request_backend_data_callback_;
+  base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+      show_account_screen_callback_;
   std::unique_ptr<GenericUserInterfaceProto> persistent_generic_ui_;
   std::vector<InterruptNotification> interrupt_notification_history_;
+  ShowAccountScreenProto show_account_screen_proto_;
+  std::string user_email_;
 };
 
 }  // namespace autofill_assistant

@@ -201,14 +201,21 @@ class MockActionDelegate : public ActionDelegate {
            base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>));
   MOCK_METHOD0(RequireUI, void());
   MOCK_METHOD0(SetExpandSheetForPromptAction, bool());
-  MOCK_METHOD4(
+  MOCK_METHOD5(
       SetGenericUi,
       void(std::unique_ptr<GenericUserInterfaceProto> generic_ui,
            base::OnceCallback<void(const ClientStatus&)> end_action_callback,
            base::OnceCallback<void(const ClientStatus&)>
                view_inflation_finished_callback,
            base::RepeatingCallback<void(const RequestBackendDataProto&)>
-               request_backend_data_callback));
+               request_backend_data_callback,
+           base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+               show_account_screen_callback));
+  MOCK_METHOD(void,
+              ShowAccountScreen,
+              (const ShowAccountScreenProto& proto,
+               const std::string& email_address),
+              (override));
 
   MOCK_METHOD2(SetPersistentGenericUi,
                void(std::unique_ptr<GenericUserInterfaceProto> generic_ui,

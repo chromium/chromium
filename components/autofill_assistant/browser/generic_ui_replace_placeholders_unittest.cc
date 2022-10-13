@@ -282,6 +282,12 @@ TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInCallbacks) {
   request_backend_data->mutable_request_phone_numbers()
       ->set_output_profiles_model_identifier("backend_output_profiles_${i}");
 
+  auto* show_account_screen = input.mutable_interactions()
+                                  ->add_interactions()
+                                  ->add_callbacks()
+                                  ->mutable_show_account_screen();
+  show_account_screen->set_gms_account_intent_screen_id(4);
+
   ReplacePlaceholdersInGenericUi(&input, mappings);
 
   EXPECT_THAT(callback_with_condition->condition_model_identifier(),
@@ -336,6 +342,7 @@ TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInCallbacks) {
   EXPECT_THAT(request_backend_data->request_phone_numbers()
                   .output_profiles_model_identifier(),
               "backend_output_profiles_1");
+  EXPECT_THAT(show_account_screen->gms_account_intent_screen_id(), 4);
 }
 
 TEST(GenericUiReplacePlaceholdersTest, ReplacePlaceholdersInModel) {

@@ -982,8 +982,21 @@ TEST_F(UiControllerTest, SetGenericUi) {
   }
   ui_controller_->SetGenericUi(
       std::make_unique<GenericUserInterfaceProto>(GenericUserInterfaceProto()),
-      base::DoNothing(), base::DoNothing(), base::DoNothing());
+      base::DoNothing(), base::DoNothing(), base::DoNothing(),
+      base::DoNothing());
   ui_controller_->ClearGenericUi();
+}
+
+TEST_F(UiControllerTest, ShowAccountScreen) {
+  EXPECT_CALL(
+      mock_observer_,
+      OnShowAccountScreen(
+          Property(&ShowAccountScreenProto::gms_account_intent_screen_id, 4),
+          "abc@xyz.com"));
+
+  ShowAccountScreenProto proto;
+  proto.set_gms_account_intent_screen_id(4);
+  ui_controller_->ShowAccountScreen(proto, "abc@xyz.com");
 }
 
 TEST_F(UiControllerTest, OnShowFirstMessageShowsDefaultInitialStatusMessage) {

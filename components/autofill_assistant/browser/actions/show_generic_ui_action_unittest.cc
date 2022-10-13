@@ -45,16 +45,17 @@ class ShowGenericUiActionTest : public testing::Test {
     content::WebContentsTester::For(web_contents_.get())
         ->SetLastCommittedURL(GURL(kFakeUrl));
 
-    ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _))
+    ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _))
         .WillByDefault(Invoke(
             [&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
                 base::OnceCallback<void(const ClientStatus&)>
                     end_action_callback,
                 base::OnceCallback<void(const ClientStatus&)>
                     view_inflation_finished_callback,
-
                 base::RepeatingCallback<void(const RequestBackendDataProto&)>
-                    request_backend_data_callback) {
+                    request_backend_data_callback,
+                base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+                    show_account_screen_callback) {
               std::move(view_inflation_finished_callback)
                   .Run(ClientStatus(ACTION_APPLIED));
               std::move(end_action_callback).Run(ClientStatus(ACTION_APPLIED));
@@ -102,14 +103,16 @@ class ShowGenericUiActionTest : public testing::Test {
 };
 
 TEST_F(ShowGenericUiActionTest, FailedViewInflationEndsAction) {
-  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _))
+  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _))
       .WillByDefault(Invoke(
           [&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
               base::OnceCallback<void(const ClientStatus&)> end_action_callback,
               base::OnceCallback<void(const ClientStatus&)>
                   view_inflation_finished_callback,
               base::RepeatingCallback<void(const RequestBackendDataProto&)>
-                  request_backend_data_callback) {
+                  request_backend_data_callback,
+              base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+                  show_account_screen_callback) {
             std::move(view_inflation_finished_callback)
                 .Run(ClientStatus(INVALID_ACTION));
           }));
@@ -125,7 +128,7 @@ TEST_F(ShowGenericUiActionTest, FailedViewInflationEndsAction) {
 TEST_F(ShowGenericUiActionTest, GoesIntoPromptState) {
   InSequence seq;
   EXPECT_CALL(mock_action_delegate_, Prompt(_, _, _, _, _)).Times(1);
-  EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _)).Times(1);
+  EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _)).Times(1);
   EXPECT_CALL(mock_action_delegate_, ClearGenericUi()).Times(1);
   EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt(Eq(true))).Times(1);
   EXPECT_CALL(
@@ -165,7 +168,7 @@ TEST_F(ShowGenericUiActionTest, NonEmptyOutputModel) {
 
   proto_.add_output_model_identifiers("value_2");
 
-  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _))
+  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _))
       .WillByDefault(Invoke(
           [this](
               std::unique_ptr<GenericUserInterfaceProto> generic_ui,
@@ -173,7 +176,9 @@ TEST_F(ShowGenericUiActionTest, NonEmptyOutputModel) {
               base::OnceCallback<void(const ClientStatus&)>
                   view_inflation_finished_callback,
               base::RepeatingCallback<void(const RequestBackendDataProto&)>
-                  request_backend_data_callback) {
+                  request_backend_data_callback,
+              base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+                  show_account_screen_callback) {
             std::move(view_inflation_finished_callback)
                 .Run(ClientStatus(ACTION_APPLIED));
             user_model_.SetValue(
@@ -212,7 +217,7 @@ TEST_F(ShowGenericUiActionTest, OutputModelNotSubsetOfInputModel) {
   proto_.add_output_model_identifiers("value_2");
   proto_.add_output_model_identifiers("value_3");
 
-  EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _)).Times(0);
   EXPECT_CALL(mock_action_delegate_, ClearGenericUi()).Times(1);
   EXPECT_CALL(
       callback_,
@@ -266,7 +271,7 @@ TEST_F(ShowGenericUiActionTest, ElementPreconditionMissesIdentifier) {
       ->add_filters()
       ->set_css_selector("selector");
 
-  EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _)).Times(0);
   EXPECT_CALL(mock_action_delegate_, ClearGenericUi()).Times(1);
   EXPECT_CALL(
       callback_,
@@ -280,14 +285,16 @@ TEST_F(ShowGenericUiActionTest, ElementPreconditionMissesIdentifier) {
 }
 
 TEST_F(ShowGenericUiActionTest, EndActionOnNavigation) {
-  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _))
+  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _))
       .WillByDefault(Invoke(
           [&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
               base::OnceCallback<void(const ClientStatus&)> end_action_callback,
               base::OnceCallback<void(const ClientStatus&)>
                   view_inflation_finished_callback,
               base::RepeatingCallback<void(const RequestBackendDataProto&)>
-                  request_backend_data_callback) {
+                  request_backend_data_callback,
+              base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+                  show_account_screen_callback) {
             std::move(view_inflation_finished_callback)
                 .Run(ClientStatus(ACTION_APPLIED));
           }));
@@ -320,14 +327,16 @@ TEST_F(ShowGenericUiActionTest, BreakingNavigationBeforeUiIsSet) {
                    bool browse_mode, bool browse_mode_invisible) {
         std::move(end_navigation_callback).Run();
       });
-  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _))
+  ON_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _))
       .WillByDefault(Invoke(
           [&](std::unique_ptr<GenericUserInterfaceProto> generic_ui,
               base::OnceCallback<void(const ClientStatus&)> end_action_callback,
               base::OnceCallback<void(const ClientStatus&)>
                   view_inflation_finished_callback,
               base::RepeatingCallback<void(const RequestBackendDataProto&)>
-                  request_backend_data_callback) {
+                  request_backend_data_callback,
+              base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+                  show_account_screen_callback) {
             std::move(view_inflation_finished_callback)
                 .Run(ClientStatus(ACTION_APPLIED));
             // Also end action when UI is set. At this point, the action should
@@ -464,6 +473,48 @@ TEST_F(ShowGenericUiActionTest, RequestPhoneNumbersNoBackendCall) {
   action->OnRequestBackendUserData(request);
   request.set_output_success_model_identifier("output_success");
   action->OnRequestBackendUserData(request);
+}
+
+TEST_F(ShowGenericUiActionTest, OnShowAccountScreenSucceeds) {
+  ShowAccountScreenProto proto;
+  proto.set_gms_account_intent_screen_id(10004);
+  EXPECT_CALL(
+      mock_action_delegate_,
+      ShowAccountScreen(
+          Property(&ShowAccountScreenProto::gms_account_intent_screen_id,
+                   10004),
+          _))
+      .Times(1);
+
+  ActionProto action_proto;
+  *action_proto.mutable_show_generic_ui() = proto_;
+  auto action = std::make_unique<ShowGenericUiAction>(&mock_action_delegate_,
+                                                      action_proto);
+
+  action->OnShowAccountScreen(proto);
+}
+
+TEST_F(ShowGenericUiActionTest, OnShowAccountScreenFail) {
+  EXPECT_CALL(mock_action_delegate_, ShowAccountScreen).Times(0);
+
+  ActionProto action_proto;
+  *action_proto.mutable_show_generic_ui() = proto_;
+  auto action = std::make_unique<ShowGenericUiAction>(&mock_action_delegate_,
+                                                      action_proto);
+
+  ShowAccountScreenProto proto;
+  action->OnShowAccountScreen(proto);
+}
+
+TEST_F(ShowGenericUiActionTest, OnInterruptFinished) {
+  EXPECT_CALL(mock_action_delegate_, SetGenericUi(_, _, _, _, _)).Times(1);
+
+  ActionProto action_proto;
+  *action_proto.mutable_show_generic_ui() = proto_;
+  auto action = std::make_unique<ShowGenericUiAction>(&mock_action_delegate_,
+                                                      action_proto);
+
+  action->OnInterruptFinished();
 }
 
 // TODO(b/161652848): Add test coverage for element checks and interrupts.

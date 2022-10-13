@@ -666,6 +666,15 @@ bool BasicInteractions::RequestBackendData(
   return true;
 }
 
+bool BasicInteractions::ShowAccountScreen(const ShowAccountScreenProto& proto) {
+  if (!show_account_screen_callback_) {
+    DVLOG(2) << "Failed to ShowAccountScreen: no callback set";
+    return false;
+  }
+  show_account_screen_callback_.Run(proto);
+  return true;
+}
+
 bool BasicInteractions::NotifyViewInflationFinished(
     const ClientStatus& status) {
   if (!view_inflation_finished_callback_) {
@@ -687,6 +696,8 @@ bool BasicInteractions::NotifyPersistentViewInflationFinished(
 void BasicInteractions::ClearCallbacks() {
   end_action_callback_.Reset();
   view_inflation_finished_callback_.Reset();
+  request_backend_data_callback_.Reset();
+  show_account_screen_callback_.Reset();
 }
 
 void BasicInteractions::ClearPersistentUiCallbacks() {
@@ -709,6 +720,12 @@ void BasicInteractions::SetRequestBackendDataCallback(
     base::RepeatingCallback<void(const RequestBackendDataProto&)>
         request_backend_data_callback) {
   request_backend_data_callback_ = std::move(request_backend_data_callback);
+}
+
+void BasicInteractions::SetShowAccountScreenCallback(
+    base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+        show_account_screen_callback) {
+  show_account_screen_callback_ = std::move(show_account_screen_callback);
 }
 
 void BasicInteractions::SetPersistentViewInflationFinishedCallback(

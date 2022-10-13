@@ -480,7 +480,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
     JNIEnv* env,
     const InfoPopupProto& info_popup_proto,
     const JavaRef<jobject>& jinfo_page_util,
-    const std::string& close_display_str) {
+    const std::string& close_display_str,
+    const JavaRef<jobject>& jdelegate) {
   base::android::ScopedJavaLocalRef<jobject> jpositive_button = nullptr;
   base::android::ScopedJavaLocalRef<jobject> jnegative_button = nullptr;
   base::android::ScopedJavaLocalRef<jobject> jneutral_button = nullptr;
@@ -512,7 +513,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
       env,
       base::android::ConvertUTF8ToJavaString(env, info_popup_proto.title()),
       base::android::ConvertUTF8ToJavaString(env, info_popup_proto.text()),
-      jpositive_button, jnegative_button, jneutral_button);
+      jpositive_button, jnegative_button, jneutral_button, jdelegate);
 }
 
 void ShowJavaInfoPopup(JNIEnv* env,

@@ -105,7 +105,11 @@ class UiController : public ScriptExecutorUiDelegate,
       base::OnceCallback<void(const ClientStatus&)>
           view_inflation_finished_callback,
       base::RepeatingCallback<void(const RequestBackendDataProto&)>
-          request_backend_data_callback) override;
+          request_backend_data_callback,
+      base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+          show_account_screen_callback) override;
+  void ShowAccountScreen(const ShowAccountScreenProto& proto,
+                         const std::string& email_address) override;
   void SetPersistentGenericUi(
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
       base::OnceCallback<void(const ClientStatus&)>
@@ -113,7 +117,6 @@ class UiController : public ScriptExecutorUiDelegate,
   void ClearGenericUi() override;
   void ClearPersistentGenericUi() override;
   void SetShowFeedbackChip(bool show_feedback_chip) override;
-
   void SetExpandSheetForPromptAction(bool expand) override;
   void SetCollectUserDataOptions(CollectUserDataOptions* options) override;
   void SetCollectUserDataUiState(bool loading,
@@ -122,6 +125,8 @@ class UiController : public ScriptExecutorUiDelegate,
                                             collect_user_data_options) override;
   const CollectUserDataOptions* GetLastSuccessfulUserDataOptions()
       const override;
+
+  // Overrides autofill_assistant::WaitForDomObserver:
   void OnInterruptStarted() override;
   void OnInterruptFinished() override;
 

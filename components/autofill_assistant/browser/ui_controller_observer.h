@@ -92,6 +92,10 @@ class UiControllerObserver : public base::CheckedObserver {
   virtual void OnGenericUserInterfaceChanged(
       const GenericUserInterfaceProto* generic_ui) = 0;
 
+  // Called when user account screen has been requested.
+  virtual void OnShowAccountScreen(const ShowAccountScreenProto& proto,
+                                   const std::string& email_address) = 0;
+
   // Called when the persistent generic user interface to show has been changed
   // or cleared.
   virtual void OnPersistentGenericUserInterfaceChanged(

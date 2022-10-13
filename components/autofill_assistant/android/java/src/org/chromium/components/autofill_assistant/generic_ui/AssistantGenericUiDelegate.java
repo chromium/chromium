@@ -7,10 +7,11 @@ package org.chromium.components.autofill_assistant.generic_ui;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.autofill_assistant.AssistantTextLinkDelegate;
 
 /** Delegate for the generic user interface. */
 @JNINamespace("autofill_assistant")
-public class AssistantGenericUiDelegate {
+public class AssistantGenericUiDelegate implements AssistantTextLinkDelegate {
     private long mNativeAssistantGenericUiDelegate;
 
     @CalledByNative
@@ -34,7 +35,8 @@ public class AssistantGenericUiDelegate {
                 AssistantGenericUiDelegate.this, modelIdentifier, value);
     }
 
-    void onTextLinkClicked(int link) {
+    @Override
+    public void onTextLinkClicked(int link) {
         assert mNativeAssistantGenericUiDelegate != 0;
         AssistantGenericUiDelegateJni.get().onTextLinkClicked(
                 mNativeAssistantGenericUiDelegate, AssistantGenericUiDelegate.this, link);

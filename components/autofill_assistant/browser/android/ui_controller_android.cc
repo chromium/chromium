@@ -92,7 +92,8 @@ ScopedJavaLocalRef<jobject> CreateOptionalJavaInfoPopup(
   if (login_choice.info_popup.has_value()) {
     jinfo_popup = CreateJavaInfoPopup(
         env, *login_choice.info_popup, jinfo_page_util,
-        GetDisplayStringUTF8(ClientSettingsProto::CLOSE, client_settings));
+        GetDisplayStringUTF8(ClientSettingsProto::CLOSE, client_settings),
+        /* jdelegate= */ nullptr);
   }
   return jinfo_popup;
 }
@@ -1869,7 +1870,8 @@ void UiControllerAndroid::OnFormChanged(const FormProto* form,
         ui_controller_android_utils::CreateJavaInfoPopup(
             env, form->info_popup(), GetInfoPageUtil(),
             GetDisplayStringUTF8(ClientSettingsProto::CLOSE,
-                                 execution_delegate_->GetClientSettings())));
+                                 execution_delegate_->GetClientSettings()),
+            nullptr));
   } else {
     Java_AssistantFormModel_clearInfoPopup(env, GetFormModel());
   }
@@ -1982,6 +1984,15 @@ void UiControllerAndroid::OnGenericUserInterfaceChanged(
       AttachCurrentThread(), GetGenericUiModel(),
       generic_ui_controller_ != nullptr ? generic_ui_controller_->GetRootView()
                                         : nullptr);
+}
+
+void UiControllerAndroid::OnShowAccountScreen(
+    const ShowAccountScreenProto& proto,
+    const std::string& email_address) {
+  JNIEnv* env = AttachCurrentThread();
+  Java_AutofillAssistantUiController_showGmsAccountScreenIntent(
+      env, java_object_, proto.gms_account_intent_screen_id(),
+      base::android::ConvertUTF8ToJavaString(env, email_address));
 }
 
 void UiControllerAndroid::OnPersistentGenericUserInterfaceChanged(

@@ -79,11 +79,14 @@ ValueProto ToNativeValue(JNIEnv* env,
 // Returns an instance of |AssistantInfoPopup| for |proto|.
 // close_display_str is used to provide a Close button when a button is not
 // configured in proto.
+// |jdelegate| needs to be a implementation of |AssistantTextLinkDelegate|
+// and can be |nullptr|.
 base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
     JNIEnv* env,
     const InfoPopupProto& proto,
     const base::android::JavaRef<jobject>& jinfo_page_util,
-    const std::string& close_display_str);
+    const std::string& close_display_str,
+    const base::android::JavaRef<jobject>& jdelegate);
 
 // Shows an instance of |AssistantInfoPopup| on the screen.
 void ShowJavaInfoPopup(JNIEnv* env,

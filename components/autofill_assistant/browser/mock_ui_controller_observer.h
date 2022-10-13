@@ -56,6 +56,11 @@ class MockUiControllerObserver : public UiControllerObserver {
   MOCK_METHOD1(OnTtsButtonVisibilityChanged, void(bool visible));
   MOCK_METHOD1(OnTtsButtonStateChanged, void(TtsButtonState state));
   MOCK_METHOD0(OnFeedbackFormRequested, void());
+  MOCK_METHOD(void,
+              OnShowAccountScreen,
+              (const ShowAccountScreenProto& proto,
+               const std::string& email_address),
+              (override));
 };
 
 }  // namespace autofill_assistant

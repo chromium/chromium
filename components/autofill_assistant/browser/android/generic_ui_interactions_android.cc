@@ -55,6 +55,14 @@ void RequestBackendData(base::WeakPtr<BasicInteractions> basic_interactions,
   basic_interactions->RequestBackendData(proto);
 }
 
+void ShowAccountScreen(base::WeakPtr<BasicInteractions> basic_interactions,
+                       const ShowAccountScreenProto& proto) {
+  if (!basic_interactions) {
+    return;
+  }
+  basic_interactions->ShowAccountScreen(proto);
+}
+
 void ToggleUserAction(base::WeakPtr<BasicInteractions> basic_interactions,
                       const ToggleUserActionProto& proto) {
   if (!basic_interactions) {
@@ -66,13 +74,14 @@ void ToggleUserAction(base::WeakPtr<BasicInteractions> basic_interactions,
 void ShowInfoPopup(const InfoPopupProto& proto,
                    base::android::ScopedJavaGlobalRef<jobject> jcontext,
                    base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
+                   base::android::ScopedJavaGlobalRef<jobject> jdelegate,
                    const std::string& close_display_str) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto jcontext_local = base::android::ScopedJavaLocalRef<jobject>(jcontext);
   ui_controller_android_utils::ShowJavaInfoPopup(
       env,
       ui_controller_android_utils::CreateJavaInfoPopup(
-          env, proto, jinfo_page_util, close_display_str),
+          env, proto, jinfo_page_util, close_display_str, jdelegate),
       jcontext_local);
 }
 

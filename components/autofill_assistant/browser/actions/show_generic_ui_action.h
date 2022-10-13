@@ -31,6 +31,7 @@ class ShowGenericUiAction : public Action, public WaitForDomObserver {
   void OnInterruptFinished() override;
 
   void OnRequestBackendUserData(const RequestBackendDataProto& request);
+  void OnShowAccountScreen(const ShowAccountScreenProto& proto);
 
  private:
   // Overrides Action:

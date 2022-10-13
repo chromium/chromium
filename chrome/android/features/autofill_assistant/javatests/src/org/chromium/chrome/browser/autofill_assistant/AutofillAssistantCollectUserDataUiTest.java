@@ -1316,7 +1316,7 @@ public class AutofillAssistantCollectUserDataUiTest {
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
 
         AssistantInfoPopup infoPopup = new AssistantInfoPopup("Guest checkout", "Text explanation.",
-                new AssistantDialogButton(null, "Close", null), null, null);
+                new AssistantDialogButton(null, "Close", null), null, null, null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             model.set(AssistantCollectUserDataModel.DELEGATE, delegate);
             model.set(AssistantCollectUserDataModel.VISIBLE, true);
@@ -1344,7 +1344,7 @@ public class AutofillAssistantCollectUserDataUiTest {
         AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
 
-        AssistantInfoPopup infoPopup = new AssistantInfoPopup("", "", null, null, null);
+        AssistantInfoPopup infoPopup = new AssistantInfoPopup("", "", null, null, null, null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             model.set(AssistantCollectUserDataModel.DELEGATE, delegate);
             model.set(AssistantCollectUserDataModel.VISIBLE, true);
@@ -1368,7 +1368,7 @@ public class AutofillAssistantCollectUserDataUiTest {
         AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
 
-        AssistantInfoPopup infoPopup = new AssistantInfoPopup("", "", null, null, null);
+        AssistantInfoPopup infoPopup = new AssistantInfoPopup("", "", null, null, null, null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             model.set(AssistantCollectUserDataModel.DELEGATE, delegate);
             model.set(AssistantCollectUserDataModel.VISIBLE, true);
@@ -1393,7 +1393,7 @@ public class AutofillAssistantCollectUserDataUiTest {
         AutofillAssistantCollectUserDataTestHelper.MockDelegate delegate =
                 new AutofillAssistantCollectUserDataTestHelper.MockDelegate();
 
-        AssistantInfoPopup infoPopup = new AssistantInfoPopup("", "", null, null, null);
+        AssistantInfoPopup infoPopup = new AssistantInfoPopup("", "", null, null, null, null);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             model.set(AssistantCollectUserDataModel.DELEGATE, delegate);
             model.set(AssistantCollectUserDataModel.VISIBLE, true);

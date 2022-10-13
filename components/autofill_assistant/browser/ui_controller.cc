@@ -468,15 +468,26 @@ void UiController::SetGenericUi(
     base::OnceCallback<void(const ClientStatus&)>
         view_inflation_finished_callback,
     base::RepeatingCallback<void(const RequestBackendDataProto&)>
-        request_backend_data_callback) {
+        request_backend_data_callback,
+    base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+        show_account_screen_callback) {
   generic_user_interface_ = std::move(generic_ui);
   basic_interactions_.SetEndActionCallback(std::move(end_action_callback));
   basic_interactions_.SetViewInflationFinishedCallback(
       std::move(view_inflation_finished_callback));
   basic_interactions_.SetRequestBackendDataCallback(
       std::move(request_backend_data_callback));
+  basic_interactions_.SetShowAccountScreenCallback(
+      std::move(show_account_screen_callback));
   for (UiControllerObserver& observer : observers_) {
     observer.OnGenericUserInterfaceChanged(generic_user_interface_.get());
+  }
+}
+
+void UiController::ShowAccountScreen(const ShowAccountScreenProto& proto,
+                                     const std::string& email_address) {
+  for (UiControllerObserver& observer : observers_) {
+    observer.OnShowAccountScreen(proto, email_address);
   }
 }
 

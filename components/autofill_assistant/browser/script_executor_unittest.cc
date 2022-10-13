@@ -2324,14 +2324,18 @@ TEST_F(ScriptExecutorTest, SetGenericUi) {
   base::MockCallback<
       base::RepeatingCallback<void(const RequestBackendDataProto&)>>
       request_backend_data_callback;
-  ui_delegate_.SetGenericUi(std::make_unique<GenericUserInterfaceProto>(),
-                            end_action_callback.Get(),
-                            view_inflation_finished_callback.Get(),
-                            request_backend_data_callback.Get());
+  base::MockCallback<
+      base::RepeatingCallback<void(const ShowAccountScreenProto&)>>
+      show_account_screen_callback;
+  ui_delegate_.SetGenericUi(
+      std::make_unique<GenericUserInterfaceProto>(), end_action_callback.Get(),
+      view_inflation_finished_callback.Get(),
+      request_backend_data_callback.Get(), show_account_screen_callback.Get());
   ASSERT_NE(nullptr, ui_delegate_.GetGenericUi());
   ASSERT_FALSE(ui_delegate_.GetEndActionCallback().is_null());
   ASSERT_FALSE(ui_delegate_.GetViewInflationFinishedCallback().is_null());
   ASSERT_FALSE(ui_delegate_.GetRequestBackendDataCallback().is_null());
+  ASSERT_FALSE(ui_delegate_.GetShowAccountScreenCallback().is_null());
 }
 
 TEST_F(ScriptExecutorTest, SetPersistentGenericUi) {
@@ -2365,6 +2369,17 @@ TEST_F(ScriptExecutorTest, RequestUserData) {
   EXPECT_THAT(delegate_.GetStateHistory(),
               ElementsAre(AutofillAssistantState::RUNNING,
                           AutofillAssistantState::PROMPT));
+}
+
+TEST_F(ScriptExecutorTest, ShowAccountScreen) {
+  ShowAccountScreenProto proto;
+  proto.set_gms_account_intent_screen_id(4);
+  executor_->ShowAccountScreen(proto, "abc@xyz.com");
+
+  EXPECT_EQ(ui_delegate_.GetUserEmail(), "abc@xyz.com");
+  EXPECT_EQ(
+      ui_delegate_.GetShowAccountScreenProto().gms_account_intent_screen_id(),
+      4);
 }
 
 TEST_F(ScriptExecutorTest, CollectUserData) {

@@ -12,6 +12,7 @@
 #include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
 #include "components/autofill_assistant/browser/mock_execution_delegate.h"
+#include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/value_util.h"
@@ -575,6 +576,55 @@ TEST_F(BasicInteractionsTest, RequestBackendDataWithCallbackSucceeds) {
       Run(Property(&RequestBackendDataProto::output_success_model_identifier,
                    "output_success")));
   EXPECT_TRUE(basic_interactions_.RequestBackendData(request));
+}
+
+TEST_F(BasicInteractionsTest, RequestBackendDataFailOnClearedCallbacks) {
+  base::MockCallback<
+      base::RepeatingCallback<void(const RequestBackendDataProto&)>>
+      callback;
+  basic_interactions_.SetRequestBackendDataCallback(callback.Get());
+  RequestBackendDataProto request;
+  request.set_output_success_model_identifier("output_success");
+  EXPECT_CALL(
+      callback,
+      Run(Property(&RequestBackendDataProto::output_success_model_identifier,
+                   "output_success")));
+  EXPECT_TRUE(basic_interactions_.RequestBackendData(request));
+
+  EXPECT_CALL(callback, Run(request)).Times(0);
+  basic_interactions_.ClearCallbacks();
+  EXPECT_FALSE(basic_interactions_.RequestBackendData(request));
+}
+
+TEST_F(BasicInteractionsTest, ShowAccountScreenFails) {
+  EndActionProto proto;
+  EXPECT_FALSE(basic_interactions_.ShowAccountScreen(ShowAccountScreenProto{}));
+}
+
+TEST_F(BasicInteractionsTest, ShowAccountScreenSucceeds) {
+  base::MockCallback<
+      base::RepeatingCallback<void(const ShowAccountScreenProto&)>>
+      callback;
+  basic_interactions_.SetShowAccountScreenCallback(callback.Get());
+  ShowAccountScreenProto proto;
+  proto.set_gms_account_intent_screen_id(10004);
+  EXPECT_CALL(callback, Run(proto));
+  EXPECT_TRUE(basic_interactions_.ShowAccountScreen(proto));
+}
+
+TEST_F(BasicInteractionsTest, ShowAccountScreenFailOnClearedCallbacks) {
+  base::MockCallback<
+      base::RepeatingCallback<void(const ShowAccountScreenProto&)>>
+      callback;
+  basic_interactions_.SetShowAccountScreenCallback(callback.Get());
+  ShowAccountScreenProto proto;
+  proto.set_gms_account_intent_screen_id(10004);
+  EXPECT_CALL(callback, Run(proto));
+  EXPECT_TRUE(basic_interactions_.ShowAccountScreen(proto));
+
+  EXPECT_CALL(callback, Run(proto)).Times(0);
+  basic_interactions_.ClearCallbacks();
+  EXPECT_FALSE(basic_interactions_.ShowAccountScreen(proto));
 }
 
 TEST_F(BasicInteractionsTest, EndActionWithoutCallbackFails) {

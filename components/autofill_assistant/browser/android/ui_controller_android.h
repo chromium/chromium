@@ -143,6 +143,8 @@ class UiControllerAndroid : public EmptyControllerObserver,
       const PromptQrCodeScanProto* qr_code_scan) override;
   void OnGenericUserInterfaceChanged(
       const GenericUserInterfaceProto* generic_ui) override;
+  void OnShowAccountScreen(const ShowAccountScreenProto& proto,
+                           const std::string& email_address) override;
   void OnPersistentGenericUserInterfaceChanged(
       const GenericUserInterfaceProto* generic_ui) override;
   void OnTtsButtonVisibilityChanged(bool visible) override;

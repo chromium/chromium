@@ -259,7 +259,9 @@ class ScriptExecutor : public ActionDelegate,
       base::OnceCallback<void(const ClientStatus&)>
           view_inflation_finished_callback,
       base::RepeatingCallback<void(const RequestBackendDataProto&)>
-          request_backend_data_callback) override;
+          request_backend_data_callback,
+      base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+          show_account_screen_callback) override;
   void SetPersistentGenericUi(
       std::unique_ptr<GenericUserInterfaceProto> generic_ui,
       base::OnceCallback<void(const ClientStatus&)>
@@ -277,6 +279,8 @@ class ScriptExecutor : public ActionDelegate,
       const CollectUserDataOptions& options,
       base::OnceCallback<void(bool, const GetUserDataResponseProto&)> callback)
       override;
+  void ShowAccountScreen(const ShowAccountScreenProto& proto,
+                         const std::string& email_address) override;
   void SetCollectUserDataUiState(bool loading,
                                  UserDataEventField event_field) override;
   bool SupportsExternalActions() override;

@@ -201,8 +201,14 @@ InteractionHandlerAndroid::CreateInteractionCallbackFromProto(
       return absl::optional<InteractionCallback>(base::BindRepeating(
           &android_interactions::ShowInfoPopup,
           proto.show_info_popup().info_popup(), jcontext_, jinfo_page_util_,
+          jdelegate_,
           GetDisplayStringUTF8(ClientSettingsProto::CLOSE,
                                basic_interactions_->GetClientSettings())));
+    }
+    case CallbackProto::kShowAccountScreen: {
+      return absl::optional<InteractionCallback>(base::BindRepeating(
+          &android_interactions::ShowAccountScreen,
+          basic_interactions_->GetWeakPtr(), proto.show_account_screen()));
     }
     case CallbackProto::kShowListPopup:
       if (!proto.show_list_popup().has_item_names()) {

@@ -481,6 +481,7 @@ void ReplacePlaceholdersInCallback(
       }
       return;
     case CallbackProto::kShowInfoPopup:
+    case CallbackProto::kShowAccountScreen:
     case CallbackProto::kEndAction:
     case CallbackProto::KIND_NOT_SET:
       return;

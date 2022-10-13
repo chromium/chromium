@@ -5,6 +5,8 @@
 package org.chromium.components.autofill_assistant;
 
 import android.content.Context;
+import android.text.method.LinkMovementMethod;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -25,17 +27,21 @@ public class AssistantInfoPopup {
     private final AssistantDialogButton mNegativeButton;
     @Nullable
     private final AssistantDialogButton mNeutralButton;
+    @Nullable
+    private final AssistantTextLinkDelegate mTextLinkDelegate;
 
     @CalledByNative
     public AssistantInfoPopup(String title, String text,
             @Nullable AssistantDialogButton positiveButton,
             @Nullable AssistantDialogButton negativeButton,
-            @Nullable AssistantDialogButton neutralButton) {
+            @Nullable AssistantDialogButton neutralButton,
+            @Nullable AssistantTextLinkDelegate textLinkDelegate) {
         mTitle = title;
         mText = text;
         mPositiveButton = positiveButton;
         mNegativeButton = negativeButton;
         mNeutralButton = neutralButton;
+        mTextLinkDelegate = textLinkDelegate;
     }
 
     public String getTitle() {
@@ -54,7 +60,12 @@ public class AssistantInfoPopup {
                                 org.chromium.components.autofill_assistant.R.style
                                         .ThemeOverlay_BrowserUI_AlertDialog)
                         .setTitle(mTitle)
-                        .setMessage(mText);
+                        .setMessage(mTextLinkDelegate == null
+                                        ? mText
+                                        : AssistantTextUtils.applyVisualAppearanceTags(
+                                                mText, context, (linkId) -> {
+                                                    mTextLinkDelegate.onTextLinkClicked(linkId);
+                                                }));
 
         if (mPositiveButton != null) {
             builder.setPositiveButton(mPositiveButton.getLabel(),
@@ -68,6 +79,11 @@ public class AssistantInfoPopup {
             builder.setNeutralButton(
                     mNeutralButton.getLabel(), (dialog, which) -> mNeutralButton.onClick(context));
         }
-        builder.show();
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        if (mTextLinkDelegate != null) {
+            ((TextView) alertDialog.findViewById(android.R.id.message))
+                    .setMovementMethod(LinkMovementMethod.getInstance());
+        }
     }
 }

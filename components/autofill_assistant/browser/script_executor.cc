@@ -740,11 +740,14 @@ void ScriptExecutor::SetGenericUi(
     base::OnceCallback<void(const ClientStatus&)>
         view_inflation_finished_callback,
     base::RepeatingCallback<void(const RequestBackendDataProto&)>
-        request_backend_data_callback) {
+        request_backend_data_callback,
+    base::RepeatingCallback<void(const ShowAccountScreenProto&)>
+        show_account_screen_callback) {
   ui_delegate_->SetGenericUi(std::move(generic_ui),
                              std::move(end_action_callback),
                              std::move(view_inflation_finished_callback),
-                             std::move(request_backend_data_callback));
+                             std::move(request_backend_data_callback),
+                             std::move(show_account_screen_callback));
 }
 
 void ScriptExecutor::SetPersistentGenericUi(
@@ -1144,6 +1147,11 @@ void ScriptExecutor::RequestUserData(
       options, run_id_, user_data_,
       base::BindOnce(&ScriptExecutor::OnRequestUserData,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ScriptExecutor::ShowAccountScreen(const ShowAccountScreenProto& proto,
+                                       const std::string& email_address) {
+  ui_delegate_->ShowAccountScreen(proto, email_address);
 }
 
 void ScriptExecutor::SetCollectUserDataUiState(bool loading,
