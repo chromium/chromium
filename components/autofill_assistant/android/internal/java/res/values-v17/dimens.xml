@@ -59,6 +59,11 @@ found in the LICENSE file.
 
     <dimen name="autofill_assistant_root_view_top_padding">12dp</dimen>
 
+    <!-- TODO (b/253214983): Revisit the UX regarding the padding used for legal disclaimer. -->
+    <dimen name="autofill_assistant_legal_disclaimer_view_vertical_padding">12dp</dimen>
+    <dimen name="autofill_assistant_legal_disclaimer_view_left_padding">27dp</dimen>
+    <dimen name="autofill_assistant_legal_disclaimer_view_right_padding">18dp</dimen>
+
     <dimen name="autofill_assistant_loading_spinner_size">20dp</dimen>
     <dimen name="autofill_assistant_loading_spinner_padding">4dp</dimen>
 </resources>
