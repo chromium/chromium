@@ -33,6 +33,7 @@
 
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/delivery_type_names.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
@@ -109,6 +110,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
     const AtomicString& name,
     base::TimeTicks time_origin,
     bool cross_origin_isolated_capability,
+    mojom::blink::CacheState cache_state,
     bool is_secure_transport,
     HeapVector<Member<PerformanceServerTiming>> server_timing,
     ExecutionContext* context)
@@ -117,6 +119,7 @@ PerformanceResourceTiming::PerformanceResourceTiming(
       cross_origin_isolated_capability_(cross_origin_isolated_capability),
       context_type_(mojom::blink::RequestContextType::HYPERLINK),
       request_destination_(network::mojom::RequestDestination::kDocument),
+      cache_state_(cache_state),
       is_secure_transport_(is_secure_transport),
       server_timing_(std::move(server_timing)) {
   DCHECK(context);

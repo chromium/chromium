@@ -62,6 +62,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
       const AtomicString& name,
       base::TimeTicks time_origin,
       bool cross_origin_isolated_capability,
+      mojom::blink::CacheState cache_state,
       bool is_secure_transport,
       HeapVector<Member<PerformanceServerTiming>> server_timing,
       ExecutionContext* context);

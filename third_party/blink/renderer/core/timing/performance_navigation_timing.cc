@@ -62,6 +62,7 @@ PerformanceNavigationTiming::PerformanceNavigationTiming(
                : g_empty_atom,
           time_origin,
           cross_origin_isolated_capability,
+          info->CacheState(),
           base::Contains(url::GetSecureSchemes(),
                          window->Url().Protocol().Ascii()),
           std::move(server_timing),
