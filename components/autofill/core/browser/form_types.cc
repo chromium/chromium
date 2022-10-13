@@ -30,4 +30,21 @@ FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
       return FormType::kUnknownFormType;
   }
 }
+
+base::StringPiece FormTypeToStringPiece(FormType form_type) {
+  switch (form_type) {
+    case FormType::kAddressForm:
+      return "AddressForm";
+    case FormType::kCreditCardForm:
+      return "CreditCardForm";
+    case FormType::kPasswordForm:
+      return "PasswordForm";
+    case FormType::kUnknownFormType:
+      return "UnknownFormType";
+  }
+
+  NOTREACHED();
+  return "UnknownFormType";
+}
+
 }  // namespace autofill

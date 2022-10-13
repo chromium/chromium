@@ -19,6 +19,8 @@ enum class FormType : int {
 
 FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group);
 
+base::StringPiece FormTypeToStringPiece(FormType form_type);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_TYPES_H_
