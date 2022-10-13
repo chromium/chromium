@@ -103,7 +103,7 @@
 #pragma mark - ChromeAccountManagerServiceObserver
 
 - (void)identityListChanged {
-  ChromeIdentity* identity = self.authenticationService->GetPrimaryIdentity(
+  id<SystemIdentity> identity = self.authenticationService->GetPrimaryIdentity(
       signin::ConsentLevel::kSignin);
   if (!identity) {
     [self.delegate userRemoved];
@@ -134,8 +134,9 @@
   } else {
     // TODO(crbug.com/1254359): Dedupe duplicated code, here and in
     // user_signin_mediator.
-    ChromeIdentity* identity = self.authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
+    id<SystemIdentity> identity =
+        self.authenticationService->GetPrimaryIdentity(
+            signin::ConsentLevel::kSignin);
     DCHECK(identity);
 
     sync_pb::UserConsentTypes::SyncConsent syncConsent;
@@ -150,8 +151,8 @@
     }
 
     CoreAccountId coreAccountId = self.identityManager->PickAccountIdForAccount(
-        base::SysNSStringToUTF8([identity gaiaID]),
-        base::SysNSStringToUTF8([identity userEmail]));
+        base::SysNSStringToUTF8(identity.gaiaID),
+        base::SysNSStringToUTF8(identity.userEmail));
     self.consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
     self.authenticationService->GrantSyncConsent(identity);
 
