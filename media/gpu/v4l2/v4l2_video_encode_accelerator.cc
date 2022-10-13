@@ -399,10 +399,10 @@ void V4L2VideoEncodeAccelerator::InitializeTask(const Config& config) {
   // Notify VideoEncoderInfo after initialization.
   VideoEncoderInfo encoder_info;
   encoder_info.implementation_name = "V4L2VideoEncodeAccelerator";
-  encoder_info.has_trusted_rate_controller = true;
-  encoder_info.is_hardware_accelerated = true;
-  encoder_info.supports_native_handle = true;
-  encoder_info.supports_simulcast = false;
+  DCHECK(!encoder_info.has_trusted_rate_controller);
+  DCHECK(encoder_info.is_hardware_accelerated);
+  DCHECK(encoder_info.supports_native_handle);
+  DCHECK(!encoder_info.supports_simulcast);
 
   // V4L2VideoEncodeAccelerator doesn't support either temporal-SVC or
   // spatial-SVC. A single stream shall be output at the desired FPS.

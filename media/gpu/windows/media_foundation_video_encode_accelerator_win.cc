@@ -544,7 +544,7 @@ void MediaFoundationVideoEncodeAccelerator::EncoderInitializeTask(
 
   VideoEncoderInfo encoder_info;
   encoder_info.implementation_name = "MediaFoundationVideoEncodeAccelerator";
-  encoder_info.has_trusted_rate_controller = true;
+  encoder_info.has_trusted_rate_controller = false;
   DCHECK(encoder_info.is_hardware_accelerated);
   DCHECK(encoder_info.supports_native_handle);
   DCHECK(!encoder_info.supports_simulcast);

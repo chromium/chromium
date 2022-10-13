@@ -702,7 +702,7 @@ RTCVideoEncoder::Impl::Impl(media::GpuVideoAcceleratorFactories* gpu_factories,
 #endif
   encoder_info_.supports_native_handle = true;
   encoder_info_.implementation_name = "ExternalEncoder";
-  encoder_info_.has_trusted_rate_controller = true;
+  encoder_info_.has_trusted_rate_controller = false;
   encoder_info_.is_hardware_accelerated = true;
   encoder_info_.is_qp_trusted = true;
   encoder_info_.fps_allocation[0] = {
