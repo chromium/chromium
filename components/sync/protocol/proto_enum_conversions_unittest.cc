@@ -96,5 +96,10 @@ TEST(ProtoEnumConversionsTest, GetConsentStatusString) {
   TestEnumStringsNonEmpty(sync_pb::UserConsentTypes::ConsentStatus);
 }
 
+TEST(ProtoEnumConversionsTest, GetVirtualCardEnrollmentTypeString) {
+  TestEnumStringsNonEmpty(
+      sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentType);
+}
+
 }  // namespace
 }  // namespace syncer

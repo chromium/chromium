@@ -240,6 +240,12 @@ message WalletMaskedCreditCard {
     UNENROLLED_AND_ELIGIBLE = 4;
   }
 
+  enum VirtualCardEnrollmentType {
+    TYPE_UNSPECIFIED = 0;
+    ISSUER = 1;
+    NETWORK = 2;
+  }
+
   // Server-generated unique ID string. This is opaque to the client.
   // This is the legacy version of |instrument_id|.
   optional string id = 1;
@@ -285,11 +291,15 @@ message WalletMaskedCreditCard {
   // The state of virtual card enrollment.
   optional VirtualCardEnrollmentState virtual_card_enrollment_state = 16;
 
-  // The URL for the client to fetche the card art image.
+  // The URL for the client to fetch the card art image.
   optional string card_art_url = 17;
 
   // The product description for the card. Used to be shown in the UI.
   optional string product_description = 18;
+
+  // The type of virtual card enrollment. TYPE_UNSPECIFIED indicates that the
+  // card is unenrolled.
+  optional VirtualCardEnrollmentType virtual_card_enrollment_type = 19;
 }
 
 // Different than an AutofillProfile because this represents some known address

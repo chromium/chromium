@@ -122,6 +122,10 @@ const char* ProtoEnumToString(
         virtual_card_enrollment_state);
 
 const char* ProtoEnumToString(
+    sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentType
+        virtual_card_enrollment_type);
+
+const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::WalletCardStatus wallet_card_status);
 
 const char* ProtoEnumToString(
