@@ -22,9 +22,6 @@ class FakePermissionContext : public PermissionContextBase {
       : PermissionContextBase(browser_context,
                               content_settings_type,
                               permissions_policy_feature) {}
-
-  // PermissionContextBase:
-  bool IsRestrictedToSecureOrigins() const override { return true; }
 };
 
 class FakePermissionContextAlwaysAllow : public FakePermissionContext {

@@ -98,10 +98,6 @@ ContentSetting CameraPanTiltZoomPermissionContext::GetPermissionStatusInternal(
       render_frame_host, requesting_origin, embedding_origin);
 }
 
-bool CameraPanTiltZoomPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

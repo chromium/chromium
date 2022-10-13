@@ -40,8 +40,4 @@ ContentSetting WakeLockPermissionContext::GetPermissionStatusInternal(
   }
 }
 
-bool WakeLockPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 }  // namespace permissions

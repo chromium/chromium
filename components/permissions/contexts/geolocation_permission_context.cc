@@ -71,10 +71,6 @@ void GeolocationPermissionContext::UpdateTabContext(
   }
 }
 
-bool GeolocationPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 device::mojom::GeolocationControl*
 GeolocationPermissionContext::GetGeolocationControl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

@@ -37,8 +37,6 @@ class DeniedPermissionContext : public permissions::PermissionContextBase {
       const GURL& embedding_origin) const override {
     return CONTENT_SETTING_BLOCK;
   }
-
-  bool IsRestrictedToSecureOrigins() const override { return true; }
 };
 
 // A permission context with default behavior, which is restricted to secure
@@ -48,9 +46,6 @@ class SafePermissionContext : public permissions::PermissionContextBase {
   using PermissionContextBase::PermissionContextBase;
   SafePermissionContext(const SafePermissionContext&) = delete;
   SafePermissionContext& operator=(const SafePermissionContext&) = delete;
-
- protected:
-  bool IsRestrictedToSecureOrigins() const override { return true; }
 };
 
 // Used by the CameraPanTiltZoomPermissionContext to query which devices support

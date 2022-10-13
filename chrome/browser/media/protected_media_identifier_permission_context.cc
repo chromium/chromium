@@ -122,14 +122,6 @@ void ProtectedMediaIdentifierPermissionContext::UpdateTabContext(
   }
 }
 
-bool ProtectedMediaIdentifierPermissionContext::IsRestrictedToSecureOrigins()
-    const {
-  // EME is not supported on insecure origins, see https://goo.gl/Ks5zf7
-  // Note that origins allowlisted by --unsafely-treat-insecure-origin-as-secure
-  // flag will be treated as "secure" so they will not be affected.
-  return true;
-}
-
 // TODO(xhwang): We should consolidate the "protected content" related pref
 // across platforms.
 bool ProtectedMediaIdentifierPermissionContext::

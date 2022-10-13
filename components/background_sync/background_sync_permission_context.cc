@@ -24,7 +24,3 @@ void BackgroundSyncPermissionContext::DecidePermission(
   // The user should never be prompted to authorize background sync.
   NOTREACHED();
 }
-
-bool BackgroundSyncPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}

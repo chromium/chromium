@@ -21,7 +21,6 @@ class SensorPermissionContext : public PermissionContextBase {
   void UpdateTabContext(const PermissionRequestID& id,
                         const GURL& requesting_frame,
                         bool allowed) override;
-  bool IsRestrictedToSecureOrigins() const override;
 };
 
 }  // namespace permissions

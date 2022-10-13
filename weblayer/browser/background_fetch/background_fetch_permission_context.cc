@@ -18,10 +18,6 @@ BackgroundFetchPermissionContext::BackgroundFetchPermissionContext(
                             blink::mojom::PermissionsPolicyFeature::kNotFound) {
 }
 
-bool BackgroundFetchPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 ContentSetting BackgroundFetchPermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,

@@ -39,7 +39,3 @@ void DisplayCapturePermissionContext::UpdateContentSetting(
     bool is_one_time) {
   NOTREACHED();
 }
-
-bool DisplayCapturePermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}

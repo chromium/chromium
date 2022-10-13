@@ -199,7 +199,3 @@ void NotificationPermissionContext::DecidePermission(
       id, requesting_origin, embedding_origin, user_gesture,
       std::move(callback));
 }
-
-bool NotificationPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}

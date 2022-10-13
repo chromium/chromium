@@ -119,7 +119,6 @@ class NotificationPermissionContext
       const GURL& embedding_origin,
       bool user_gesture,
       permissions::BrowserPermissionCallback callback) override;
-  bool IsRestrictedToSecureOrigins() const override;
 
   base::WeakPtrFactory<NotificationPermissionContext> weak_factory_ui_thread_{
       this};

@@ -32,8 +32,4 @@ void PaymentHandlerPermissionContext::DecidePermission(
   NOTREACHED();
 }
 
-bool PaymentHandlerPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 }  // namespace payments

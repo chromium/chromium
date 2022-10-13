@@ -46,9 +46,6 @@ class MediaStreamDevicePermissionContext
                        const GURL& embedding_origin) override;
 
  private:
-  // PermissionContextBase:
-  bool IsRestrictedToSecureOrigins() const override;
-
 #if BUILDFLAG(IS_ANDROID)
   // PermissionContextBase:
   void UpdateTabContext(const permissions::PermissionRequestID& id,

@@ -26,8 +26,4 @@ ContentSetting MidiPermissionContext::GetPermissionStatusInternal(
   return CONTENT_SETTING_ALLOW;
 }
 
-bool MidiPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 }  // namespace permissions

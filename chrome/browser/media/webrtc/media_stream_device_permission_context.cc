@@ -233,7 +233,3 @@ void MediaStreamDevicePermissionContext::ResetPermission(
     const GURL& embedding_origin) {
   NOTREACHED() << "ResetPermission is not implemented";
 }
-
-bool MediaStreamDevicePermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}

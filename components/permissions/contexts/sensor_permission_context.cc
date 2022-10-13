@@ -37,8 +37,4 @@ void SensorPermissionContext::UpdateTabContext(const PermissionRequestID& id,
     content_settings->OnContentBlocked(ContentSettingsType::SENSORS);
 }
 
-bool SensorPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 }  // namespace permissions

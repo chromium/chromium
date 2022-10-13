@@ -132,7 +132,3 @@ void DurableStoragePermissionContext::UpdateContentSetting(
                                       ContentSettingsType::DURABLE_STORAGE,
                                       content_setting);
 }
-
-bool DurableStoragePermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}

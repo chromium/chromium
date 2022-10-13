@@ -60,8 +60,4 @@ void NfcPermissionContext::UpdateTabContext(const PermissionRequestID& id,
     content_settings->OnContentBlocked(ContentSettingsType::NFC);
 }
 
-bool NfcPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 }  // namespace permissions

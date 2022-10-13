@@ -36,9 +36,6 @@ class DisplayCapturePermissionContext
                             const GURL& embedding_origin,
                             ContentSetting content_setting,
                             bool is_one_time) override;
-
- private:
-  bool IsRestrictedToSecureOrigins() const override;
 };
 
 #endif  // CHROME_BROWSER_DISPLAY_CAPTURE_DISPLAY_CAPTURE_PERMISSION_CONTEXT_H_

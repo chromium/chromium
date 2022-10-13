@@ -27,7 +27,6 @@ class ClipboardSanitizedWritePermissionContext : public PermissionContextBase {
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
-  bool IsRestrictedToSecureOrigins() const override;
 };
 
 }  // namespace permissions

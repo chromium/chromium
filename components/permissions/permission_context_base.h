@@ -165,7 +165,7 @@ class PermissionContextBase : public content_settings::Observer {
                                     bool is_one_time);
 
   // Whether the permission should be restricted to secure origins.
-  virtual bool IsRestrictedToSecureOrigins() const = 0;
+  virtual bool IsRestrictedToSecureOrigins() const;
 
   // Called by PermissionDecided when the user has made a permission decision.
   // Subclasses may override this method to perform context-specific logic

@@ -16,9 +16,6 @@ class LocalFontsPermissionContext : public permissions::PermissionContextBase {
   LocalFontsPermissionContext(const LocalFontsPermissionContext&) = delete;
   LocalFontsPermissionContext& operator=(const LocalFontsPermissionContext&) =
       delete;
-
- protected:
-  bool IsRestrictedToSecureOrigins() const override;
 };
 
 #endif  // COMPONENTS_PERMISSIONS_CONTEXTS_LOCAL_FONTS_PERMISSION_CONTEXT_H_

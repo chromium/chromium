@@ -42,8 +42,4 @@ void MidiSysexPermissionContext::UpdateTabContext(const PermissionRequestID& id,
   }
 }
 
-bool MidiSysexPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 }  // namespace permissions

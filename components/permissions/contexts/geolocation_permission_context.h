@@ -79,7 +79,6 @@ class GeolocationPermissionContext : public PermissionContextBase {
   void UpdateTabContext(const PermissionRequestID& id,
                         const GURL& requesting_frame,
                         bool allowed) override;
-  bool IsRestrictedToSecureOrigins() const override;
 
   device::mojom::GeolocationControl* GetGeolocationControl();
 

@@ -64,11 +64,6 @@ bool PeriodicBackgroundSyncPermissionContext::IsTwaInstalled(
 }
 #endif
 
-bool PeriodicBackgroundSyncPermissionContext::IsRestrictedToSecureOrigins()
-    const {
-  return true;
-}
-
 GURL PeriodicBackgroundSyncPermissionContext::GetDefaultSearchEngineUrl()
     const {
   auto* template_url_service = TemplateURLServiceFactory::GetForProfile(

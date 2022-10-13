@@ -33,10 +33,6 @@ ContentSetting WindowManagementPermissionContext::GetPermissionStatusInternal(
 }
 #endif  // IS_ANDROID
 
-bool WindowManagementPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 void WindowManagementPermissionContext::UserMadePermissionDecision(
     const PermissionRequestID& id,
     const GURL& requesting_origin,

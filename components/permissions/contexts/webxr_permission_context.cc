@@ -29,10 +29,6 @@ WebXrPermissionContext::WebXrPermissionContext(
 
 WebXrPermissionContext::~WebXrPermissionContext() = default;
 
-bool WebXrPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 #if BUILDFLAG(IS_ANDROID)
 // There are two other permissions that need to check corresponding OS-level
 // permissions, and they take two different approaches to this. Geolocation only

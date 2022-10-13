@@ -30,9 +30,4 @@ ClipboardSanitizedWritePermissionContext::GetPermissionStatusInternal(
   return CONTENT_SETTING_ALLOW;
 }
 
-bool ClipboardSanitizedWritePermissionContext::IsRestrictedToSecureOrigins()
-    const {
-  return true;
-}
-
 }  // namespace permissions

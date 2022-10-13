@@ -15,7 +15,3 @@ LocalFontsPermissionContext::LocalFontsPermissionContext(
           blink::mojom::PermissionsPolicyFeature::kLocalFonts) {}
 
 LocalFontsPermissionContext::~LocalFontsPermissionContext() = default;
-
-bool LocalFontsPermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}

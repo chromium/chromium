@@ -39,8 +39,4 @@ void ClipboardReadWritePermissionContext::UpdateTabContext(
   }
 }
 
-bool ClipboardReadWritePermissionContext::IsRestrictedToSecureOrigins() const {
-  return true;
-}
-
 }  // namespace permissions

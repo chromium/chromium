@@ -21,8 +21,6 @@ class WebXrPermissionContext : public PermissionContextBase {
 
  private:
   // PermissionContextBase:
-  bool IsRestrictedToSecureOrigins() const override;
-
 #if BUILDFLAG(IS_ANDROID)
   // On Android we need to do some additional checking for OS level permissions,
   // which do not need to happen on Desktop. Note that NotifyPermissionSet is

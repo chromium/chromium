@@ -202,6 +202,10 @@ void PermissionContextBase::RequestPermission(
                    std::move(callback));
 }
 
+bool PermissionContextBase::IsRestrictedToSecureOrigins() const {
+  return true;
+}
+
 void PermissionContextBase::UserMadePermissionDecision(
     const PermissionRequestID& id,
     const GURL& requesting_origin,

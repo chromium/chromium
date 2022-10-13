@@ -29,7 +29,6 @@ class WindowManagementPermissionContext : public PermissionContextBase {
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
 #endif  // IS_ANDROID
-  bool IsRestrictedToSecureOrigins() const override;
   void UserMadePermissionDecision(const PermissionRequestID& id,
                                   const GURL& requesting_origin,
                                   const GURL& embedding_origin,

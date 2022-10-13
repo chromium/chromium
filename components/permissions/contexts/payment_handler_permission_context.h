@@ -40,7 +40,6 @@ class PaymentHandlerPermissionContext
       const GURL& embedding_origin,
       bool user_gesture,
       permissions::BrowserPermissionCallback callback) override;
-  bool IsRestrictedToSecureOrigins() const override;
 };
 
 }  // namespace payments

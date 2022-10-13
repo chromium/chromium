@@ -33,7 +33,6 @@ class DurableStoragePermissionContext
                             const GURL& embedding_origin,
                             ContentSetting content_setting,
                             bool is_one_time) override;
-  bool IsRestrictedToSecureOrigins() const override;
 };
 
 #endif  // CHROME_BROWSER_STORAGE_DURABLE_STORAGE_PERMISSION_CONTEXT_H_

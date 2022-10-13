@@ -27,7 +27,6 @@ class BackgroundFetchPermissionContext
 
  private:
   // PermissionContextBase implementation.
-  bool IsRestrictedToSecureOrigins() const override;
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
