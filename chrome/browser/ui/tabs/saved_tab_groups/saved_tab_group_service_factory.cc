@@ -17,8 +17,9 @@ SavedTabGroupServiceFactory& SavedTabGroupServiceFactory::GetInstance() {
 // static
 SavedTabGroupKeyedService* SavedTabGroupServiceFactory::GetForProfile(
     Profile* profile) {
+  DCHECK(profile);
   return static_cast<SavedTabGroupKeyedService*>(
-      GetInstance().GetServiceForBrowserContext(profile, true /* create */));
+      GetInstance().GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
 SavedTabGroupServiceFactory::SavedTabGroupServiceFactory()
@@ -28,6 +29,7 @@ SavedTabGroupServiceFactory::~SavedTabGroupServiceFactory() = default;
 
 KeyedService* SavedTabGroupServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  DCHECK(context);
   Profile* profile = Profile::FromBrowserContext(context);
   return new SavedTabGroupKeyedService(profile);
 }

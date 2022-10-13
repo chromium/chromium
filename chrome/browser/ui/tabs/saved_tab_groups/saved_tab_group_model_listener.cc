@@ -18,8 +18,11 @@
 SavedTabGroupModelListener::SavedTabGroupModelListener() = default;
 
 SavedTabGroupModelListener::SavedTabGroupModelListener(
-    SavedTabGroupModel* model)
-    : model_(model) {
+    SavedTabGroupModel* model,
+    Profile* profile)
+    : model_(model), profile_(profile) {
+  DCHECK(model);
+  DCHECK(profile);
   BrowserList::GetInstance()->AddObserver(this);
   for (Browser* browser : *BrowserList::GetInstance())
     OnBrowserAdded(browser);
@@ -47,7 +50,7 @@ TabStripModel* SavedTabGroupModelListener::GetTabStripModelWithTabGroupId(
 }
 
 void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {
-  if (model_->profile() != browser->profile())
+  if (profile_ != browser->profile())
     return;
   if (observed_browsers_.count(browser)) {
     // TODO(crbug.com/1345680): Investigate the root cause of duplicate calls.
@@ -58,7 +61,7 @@ void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {
 }
 
 void SavedTabGroupModelListener::OnBrowserRemoved(Browser* browser) {
-  if (model_->profile() != browser->profile())
+  if (profile_ != browser->profile())
     return;
   observed_browsers_.erase(browser);
   browser->tab_strip_model()->RemoveObserver(this);

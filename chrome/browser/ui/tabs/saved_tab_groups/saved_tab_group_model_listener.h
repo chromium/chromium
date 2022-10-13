@@ -14,6 +14,7 @@
 class Browser;
 class SavedTabGroupModel;
 class TabStripModel;
+class Profile;
 
 // Serves to maintain and listen to browsers who contain saved tab groups and
 // update the model if a saved tab group was changed.
@@ -22,7 +23,8 @@ class SavedTabGroupModelListener : public BrowserListObserver,
  public:
   // Used for testing.
   SavedTabGroupModelListener();
-  explicit SavedTabGroupModelListener(SavedTabGroupModel* model);
+  explicit SavedTabGroupModelListener(SavedTabGroupModel* model,
+                                      Profile* profile);
   SavedTabGroupModelListener(const SavedTabGroupModelListener&) = delete;
   SavedTabGroupModelListener& operator=(
       const SavedTabGroupModelListener& other) = delete;
@@ -41,6 +43,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
  private:
   base::flat_set<raw_ptr<Browser>> observed_browsers_;
   raw_ptr<SavedTabGroupModel> model_ = nullptr;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_MODEL_LISTENER_H_

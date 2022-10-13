@@ -5,13 +5,14 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_KEYED_SERVICE_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_KEYED_SERVICE_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 
 class Profile;
 
+// Serves to instantiate and own the SavedTabGroup infrastructure for the
+// browser.
 class SavedTabGroupKeyedService : public KeyedService {
  public:
   explicit SavedTabGroupKeyedService(Profile* profile);
@@ -25,9 +26,15 @@ class SavedTabGroupKeyedService : public KeyedService {
   Profile* profile() { return profile_; }
 
  private:
-  SavedTabGroupModel model_;
-  SavedTabGroupModelListener listener_;
+  // The profile used to instantiate the keyed service.
   raw_ptr<Profile> profile_ = nullptr;
+
+  // The current representation of this profiles saved tab groups.
+  SavedTabGroupModel model_;
+
+  // Listens to and observers all tabstrip models; updating the
+  // SavedTabGroupModel when necessary.
+  SavedTabGroupModelListener listener_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_KEYED_SERVICE_H_
