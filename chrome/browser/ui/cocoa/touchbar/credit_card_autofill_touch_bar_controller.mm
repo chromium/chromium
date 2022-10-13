@@ -177,7 +177,6 @@ NSImage* GetCreditCardTouchBarImage(int iconId) {
 }
 
 - (void)acceptCreditCard:(id)sender {
-  ui::LogTouchBarUMA(ui::TouchBarAction::CREDIT_CARD_AUTOFILL);
   _controller->AcceptSuggestion([sender tag]);
 }
 

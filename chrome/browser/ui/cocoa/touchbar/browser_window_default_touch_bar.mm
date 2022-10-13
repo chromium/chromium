@@ -114,30 +114,6 @@ NSButton* CreateTouchBarButton(const gfx::VectorIcon& icon,
                                        owner, command, tooltip_id);
 }
 
-ui::TouchBarAction TouchBarActionFromCommand(int command) {
-  switch (command) {
-    case IDC_BACK:
-      return ui::TouchBarAction::BACK;
-    case IDC_FORWARD:
-      return ui::TouchBarAction::FORWARD;
-    case IDC_STOP:
-      return ui::TouchBarAction::STOP;
-    case IDC_RELOAD:
-      return ui::TouchBarAction::RELOAD;
-    case IDC_HOME:
-      return ui::TouchBarAction::HOME;
-    case IDC_FOCUS_LOCATION:
-      return ui::TouchBarAction::SEARCH;
-    case IDC_BOOKMARK_THIS_TAB:
-      return ui::TouchBarAction::STAR;
-    case IDC_NEW_TAB:
-      return ui::TouchBarAction::NEW_TAB;
-    default:
-      NOTREACHED();
-      return ui::TouchBarAction::TOUCH_BAR_ACTION_COUNT;
-  }
-}
-
 // A class registered for C++ notifications. This is used to detect changes in
 // the profile preferences and the back/forward commands.
 class TouchBarNotificationBridge : public CommandObserver,
@@ -612,7 +588,6 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 - (void)executeCommand:(id)sender {
   int command = [sender tag];
-  ui::LogTouchBarUMA(TouchBarActionFromCommand(command));
   _browser->command_controller()->ExecuteCommand(command);
 }
 

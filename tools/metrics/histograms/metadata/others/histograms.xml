@@ -13979,13 +13979,6 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
-<histogram name="TouchBar.Default.Metrics" enum="DefaultTouchBarActions"
-    expires_after="2022-09-11">
-  <owner>ellyjones@chromium.org</owner>
-  <owner>chrome-mac-dev@google.com</owner>
-  <summary>Tracks the usage of the default touch bar buttons.</summary>
-</histogram>
-
 <histogram name="Touchpad.Acceleration.Changed" enum="BooleanEnabled"
     expires_after="M87">
   <owner>zentaro@chromium.org</owner>

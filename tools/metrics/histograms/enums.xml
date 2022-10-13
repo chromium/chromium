@@ -24716,19 +24716,6 @@ Called by update_debug_scenarios.py.-->
   <int value="8" label="DSP set to new engine with no previous value in prefs"/>
 </enum>
 
-<enum name="DefaultTouchBarActions">
-  <int value="0" label="Back"/>
-  <int value="1" label="Forward"/>
-  <int value="2" label="Stop"/>
-  <int value="3" label="Reload"/>
-  <int value="4" label="Home"/>
-  <int value="5" label="Search"/>
-  <int value="6" label="Star"/>
-  <int value="7" label="New Tab"/>
-  <int value="8" label="Credit Card Autofill"/>
-  <int value="9" label="Text Suggestion"/>
-</enum>
-
 <enum name="DefaultWebClientState">
   <int value="0" label="Not default">Chrome is not the default web client.</int>
   <int value="1" label="Is default">Chrome is the default web client.</int>

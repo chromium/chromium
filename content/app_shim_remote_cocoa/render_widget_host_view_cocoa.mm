@@ -500,8 +500,6 @@ void ExtractUnderlines(NSAttributedString* string,
   replacementRange.location += _availableTextOffset;
   [self insertText:selectedResult.replacementString
       replacementRange:replacementRange];
-
-  ui::LogTouchBarUMA(ui::TouchBarAction::TEXT_SUGGESTION);
 }
 
 - (void)candidateListTouchBarItem:(NSCandidateListTouchBarItem*)anItem

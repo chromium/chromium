@@ -12,25 +12,6 @@
 
 namespace ui {
 
-// The touch bar actions that are being recorded in a histogram. These values
-// should not be re-ordered or removed.
-enum TouchBarAction {
-  BACK = 0,
-  FORWARD,
-  STOP,
-  RELOAD,
-  HOME,
-  SEARCH,
-  STAR,
-  NEW_TAB,
-  CREDIT_CARD_AUTOFILL,
-  TEXT_SUGGESTION,
-  TOUCH_BAR_ACTION_COUNT
-};
-
-// Logs the sample's UMA metrics into the DefaultTouchBar.Metrics histogram.
-COMPONENT_EXPORT(UI_BASE) void LogTouchBarUMA(TouchBarAction command);
-
 // Creates a touch bar identifier with the given |id|.
 COMPONENT_EXPORT(UI_BASE) NSString* GetTouchBarId(NSString* touch_bar_id);
 

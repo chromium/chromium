@@ -5,15 +5,9 @@
 #import "ui/base/cocoa/touch_bar_util.h"
 
 #include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 
 namespace ui {
-
-void LogTouchBarUMA(TouchBarAction command) {
-  UMA_HISTOGRAM_ENUMERATION("TouchBar.Default.Metrics", command,
-                            TOUCH_BAR_ACTION_COUNT);
-}
 
 NSString* GetTouchBarId(NSString* touch_bar_id) {
   NSString* chrome_bundle_id =
