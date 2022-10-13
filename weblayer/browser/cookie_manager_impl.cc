@@ -107,7 +107,7 @@ CookieManagerImpl::~CookieManagerImpl() = default;
 void CookieManagerImpl::SetCookie(const GURL& url,
                                   const std::string& value,
                                   SetCookieCallback callback) {
-  CHECK(SetCookieInternal(url, value, std::move(callback)));
+  SetCookieInternal(url, value, std::move(callback));
 }
 
 void CookieManagerImpl::GetCookie(const GURL& url, GetCookieCallback callback) {
@@ -146,12 +146,12 @@ base::CallbackListSubscription CookieManagerImpl::AddCookieChangedCallback(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-bool CookieManagerImpl::SetCookie(
+void CookieManagerImpl::SetCookie(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& url,
     const base::android::JavaParamRef<jstring>& value,
     const base::android::JavaParamRef<jobject>& callback) {
-  return SetCookieInternal(
+  SetCookieInternal(
       GURL(ConvertJavaStringToUTF8(url)), ConvertJavaStringToUTF8(value),
       base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                      base::android::ScopedJavaGlobalRef<jobject>(callback)));
@@ -208,13 +208,14 @@ bool CookieManagerImpl::FireFlushTimerForTesting() {
   return true;
 }
 
-bool CookieManagerImpl::SetCookieInternal(const GURL& url,
+void CookieManagerImpl::SetCookieInternal(const GURL& url,
                                           const std::string& value,
                                           SetCookieCallback callback) {
   auto cc = net::CanonicalCookie::Create(url, value, base::Time::Now(),
                                          absl::nullopt, absl::nullopt);
   if (!cc) {
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
   browser_context_->GetDefaultStoragePartition()
@@ -224,7 +225,6 @@ bool CookieManagerImpl::SetCookieInternal(const GURL& url,
           net::cookie_util::AdaptCookieAccessResultToBool(
               base::BindOnce(&CookieManagerImpl::OnCookieSet,
                              weak_factory_.GetWeakPtr(), std::move(callback))));
-  return true;
 }
 
 int CookieManagerImpl::AddCookieChangedCallbackInternal(

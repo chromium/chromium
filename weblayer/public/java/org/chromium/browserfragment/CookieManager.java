@@ -87,7 +87,13 @@ public class CookieManager {
                 mDelegate.getCookie(uri, new IStringCallback.Stub() {
                     @Override
                     public void onResult(String result) {
-                        completer.set(result);
+                        if (result != null) {
+                            completer.set(result);
+                        } else {
+                            // TODO(rayankans): Improve exception reporting.
+                            completer.setException(
+                                    new IllegalArgumentException("Failed to get cookie"));
+                        }
                         mPendingGetCompleters.remove(completer);
                     }
                 });

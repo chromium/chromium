@@ -28,9 +28,11 @@ import java.util.List;
 @JNINamespace("weblayer")
 public final class CookieManagerImpl extends ICookieManager.Stub {
     private long mNativeCookieManager;
+    private ProfileImpl mProfile;
 
-    CookieManagerImpl(long nativeCookieManager) {
+    CookieManagerImpl(long nativeCookieManager, ProfileImpl profile) {
         mNativeCookieManager = nativeCookieManager;
+        mProfile = profile;
     }
 
     public void destroy() {
@@ -40,19 +42,44 @@ public final class CookieManagerImpl extends ICookieManager.Stub {
     @Override
     public boolean setCookie(String url, String value, IObjectWrapper callback) {
         StrictModeWorkaround.apply();
+
+        WebLayerOriginVerificationScheduler originVerifier =
+                WebLayerOriginVerificationScheduler.getInstance();
+
         ValueCallback<Boolean> valueCallback =
                 (ValueCallback<Boolean>) ObjectWrapper.unwrap(callback, ValueCallback.class);
-        Callback<Boolean> baseCallback = (Boolean result) -> valueCallback.onReceiveValue(result);
-        return CookieManagerImplJni.get().setCookie(mNativeCookieManager, url, value, baseCallback);
+
+        originVerifier.verify(url, mProfile, (verified) -> {
+            if (!verified) {
+                valueCallback.onReceiveValue(false);
+                return;
+            }
+            Callback<Boolean> baseCallback =
+                    (Boolean result) -> valueCallback.onReceiveValue(result);
+            CookieManagerImplJni.get().setCookie(mNativeCookieManager, url, value, baseCallback);
+        });
+
+        return true;
     }
 
     @Override
     public void getCookie(String url, IObjectWrapper callback) {
         StrictModeWorkaround.apply();
+
+        WebLayerOriginVerificationScheduler originVerifier =
+                WebLayerOriginVerificationScheduler.getInstance();
+
         ValueCallback<String> valueCallback =
                 (ValueCallback<String>) ObjectWrapper.unwrap(callback, ValueCallback.class);
-        Callback<String> baseCallback = (String result) -> valueCallback.onReceiveValue(result);
-        CookieManagerImplJni.get().getCookie(mNativeCookieManager, url, baseCallback);
+
+        originVerifier.verify(url, mProfile, (verified) -> {
+            if (!verified) {
+                valueCallback.onReceiveValue(null);
+                return;
+            }
+            Callback<String> baseCallback = (String result) -> valueCallback.onReceiveValue(result);
+            CookieManagerImplJni.get().getCookie(mNativeCookieManager, url, baseCallback);
+        });
     }
 
     @Override
@@ -114,7 +141,7 @@ public final class CookieManagerImpl extends ICookieManager.Stub {
 
     @NativeMethods
     interface Natives {
-        boolean setCookie(
+        void setCookie(
                 long nativeCookieManagerImpl, String url, String value, Callback<Boolean> callback);
         void getCookie(long nativeCookieManagerImpl, String url, Callback<String> callback);
         void getResponseCookies(

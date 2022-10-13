@@ -45,7 +45,7 @@ class CookieManagerImpl : public CookieManager {
       CookieChangedCallback callback) override;
 
 #if BUILDFLAG(IS_ANDROID)
-  bool SetCookie(JNIEnv* env,
+  void SetCookie(JNIEnv* env,
                  const base::android::JavaParamRef<jstring>& url,
                  const base::android::JavaParamRef<jstring>& value,
                  const base::android::JavaParamRef<jobject>& callback);
@@ -68,7 +68,7 @@ class CookieManagerImpl : public CookieManager {
   bool FireFlushTimerForTesting();
 
  private:
-  bool SetCookieInternal(const GURL& url,
+  void SetCookieInternal(const GURL& url,
                          const std::string& value,
                          SetCookieCallback callback);
   int AddCookieChangedCallbackInternal(const GURL& url,

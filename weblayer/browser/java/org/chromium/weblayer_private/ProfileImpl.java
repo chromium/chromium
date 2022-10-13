@@ -84,8 +84,8 @@ public final class ProfileImpl
         mIsIncognito = isIncognito;
         mName = name;
         mNativeProfile = ProfileImplJni.get().createProfile(name, ProfileImpl.this, mIsIncognito);
-        mCookieManager =
-                new CookieManagerImpl(ProfileImplJni.get().getCookieManager(mNativeProfile));
+        mCookieManager = new CookieManagerImpl(
+                ProfileImplJni.get().getCookieManager(mNativeProfile), ProfileImpl.this);
         mPrerenderController = new PrerenderControllerImpl(
                 ProfileImplJni.get().getPrerenderController(mNativeProfile));
         mOnDestroyCallback = onDestroyCallback;

@@ -27,7 +27,6 @@ class CookieManagerDelegate extends ICookieManagerDelegate.Stub {
 
     @Override
     public void setCookie(String uri, String value, IBooleanCallback callback) {
-        // TODO(rayankans): Only apply this to 1P |uri|s.
         mHandler.post(() -> {
             mCookieManager.setCookie(Uri.parse(uri), value, (Boolean v) -> {
                 try {
@@ -40,7 +39,6 @@ class CookieManagerDelegate extends ICookieManagerDelegate.Stub {
 
     @Override
     public void getCookie(String uri, IStringCallback callback) {
-        // TODO(rayankans): Only apply this to 1P |uri|s.
         mHandler.post(() -> {
             mCookieManager.getCookie(Uri.parse(uri), (String result) -> {
                 try {
