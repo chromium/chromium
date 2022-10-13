@@ -10362,6 +10362,12 @@ namespace CSS
     method dpcm
     method dpi
     method dppx
+    method dvb
+    method dvh
+    method dvi
+    method dvmax
+    method dvmin
+    method dvw
     method em
     method escape
     method ex
@@ -10369,6 +10375,12 @@ namespace CSS
     method grad
     method in
     method kHz
+    method lvb
+    method lvh
+    method lvi
+    method lvmax
+    method lvmin
+    method lvw
     method mm
     method ms
     method number
@@ -10381,8 +10393,16 @@ namespace CSS
     method rem
     method s
     method supports
+    method svb
+    method svh
+    method svi
+    method svmax
+    method svmin
+    method svw
     method turn
+    method vb
     method vh
+    method vi
     method vmax
     method vmin
     method vw
