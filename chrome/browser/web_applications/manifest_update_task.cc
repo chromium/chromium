@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
@@ -241,16 +242,15 @@ bool& ManifestUpdateTask::BypassWindowCloseWaitingForTesting() {
 ManifestUpdateTask::ManifestUpdateTask(
     const GURL& url,
     const AppId& app_id,
-    content::WebContents* web_contents,
+    base::WeakPtr<content::WebContents> web_contents,
     StoppedCallback stopped_callback,
-    bool hang_for_testing,
     WebAppRegistrar& registrar,
     WebAppIconManager& icon_manager,
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* install_finalizer,
     OsIntegrationManager& os_integration_manager,
     WebAppSyncBridge* sync_bridge)
-    : content::WebContentsObserver(web_contents),
+    : web_contents_(web_contents),
       registrar_(registrar),
       icon_manager_(icon_manager),
       ui_manager_(*ui_manager),
@@ -259,10 +259,8 @@ ManifestUpdateTask::ManifestUpdateTask(
       sync_bridge_(sync_bridge),
       url_(url),
       app_id_(app_id),
-      stopped_callback_(std::move(stopped_callback)),
-      hang_for_testing_(hang_for_testing) {
-  // Task starts by waiting for DidFinishLoad() to be called.
-  stage_ = Stage::kPendingPageLoad;
+      stopped_callback_(std::move(stopped_callback)) {
+  Start();
 }
 
 ManifestUpdateTask::~ManifestUpdateTask() {
@@ -274,50 +272,39 @@ ManifestUpdateTask::~ManifestUpdateTask() {
 #endif
 }
 
-// content::WebContentsObserver:
-void ManifestUpdateTask::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  if (stage_ != Stage::kPendingPageLoad || hang_for_testing_)
+void ManifestUpdateTask::Start() {
+  // We perform this check at the start as an early exit in case
+  // web_contents are destroyed before the task has started as well
+  // as ensuring that the web_contents_ are not destroyed when the
+  // InstallableManager is being invoked.
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
     return;
-
-  if (render_frame_host->GetParentOrOuterDocument())
-    return;
-
+  }
   stage_ = Stage::kPendingInstallableData;
   webapps::InstallableParams params;
   params.valid_primary_icon = true;
   params.valid_manifest = true;
   params.check_webapp_manifest_display = false;
-  webapps::InstallableManager::FromWebContents(web_contents())
+  webapps::InstallableManager::FromWebContents(web_contents_.get())
       ->GetData(params,
                 base::BindOnce(&ManifestUpdateTask::OnDidGetInstallableData,
                                AsWeakPtr()));
 }
 
-// content::WebContentsObserver:
-void ManifestUpdateTask::WebContentsDestroyed() {
-  switch (stage_) {
-    case Stage::kPendingPageLoad:
-    case Stage::kPendingInstallableData:
-    case Stage::kPendingIconDownload:
-    case Stage::kPendingIconReadFromDisk:
-    case Stage::kPendingAppIdentityCheck:
-      DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
-      return;
-    case Stage::kPendingWindowsClosed:
-    case Stage::kPendingMaybeReadExistingIcons:
-    case Stage::kPendingInstallation:
-    case Stage::kPendingAssociationsUpdate:
-      // These stages should have stopped listening to the web contents.
-      NOTREACHED() << static_cast<int>(stage_);
-      Observe(nullptr);
-      break;
-  }
+bool ManifestUpdateTask::IsWebContentsDestroyed() {
+  return !web_contents_ || web_contents_->IsBeingDestroyed();
 }
 
 void ManifestUpdateTask::OnDidGetInstallableData(
     const webapps::InstallableData& data) {
+  // At this point, the ManifestUpdateTask is still collecting data, and this
+  // check ensures that the web_contents are still alive by the time we
+  // load icon contents.
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK_EQ(stage_, Stage::kPendingInstallableData);
 
   if (!data.NoBlockingErrors()) {
@@ -325,7 +312,7 @@ void ManifestUpdateTask::OnDidGetInstallableData(
     return;
   }
 
-  CHECK(!web_contents()->IsBeingDestroyed());
+  CHECK(!web_contents_->IsBeingDestroyed());
 
   install_info_.emplace();
   UpdateWebAppInfoFromManifest(data.manifest, data.manifest_url,
@@ -449,12 +436,18 @@ bool ManifestUpdateTask::IsUpdateNeededForManifest() const {
 }
 
 void ManifestUpdateTask::UpdateAfterWindowsClose() {
+  // Ensure that the web_contents are still alive when the profile is being
+  // constructed from the browser context.
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK(stage_ == Stage::kPendingInstallableData ||
          stage_ == Stage::kPendingAppIdentityCheck);
   stage_ = Stage::kPendingWindowsClosed;
 
   Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+      Profile::FromBrowserContext(web_contents_.get()->GetBrowserContext());
   keep_alive_ = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::APP_MANIFEST_UPDATE, KeepAliveRestartOption::DISABLED);
   if (!profile->IsOffTheRecord()) {
@@ -463,9 +456,6 @@ void ManifestUpdateTask::UpdateAfterWindowsClose() {
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
         profile, ProfileKeepAliveOrigin::kWebAppUpdate);
   }
-
-  Observe(nullptr);
-
   if (BypassWindowCloseWaitingForTesting()) {
     OnAllAppWindowsClosed();
   } else {
@@ -479,6 +469,12 @@ void ManifestUpdateTask::UpdateAfterWindowsClose() {
 }
 
 void ManifestUpdateTask::LoadAndCheckIconContents() {
+  // We need this check to ensure that the web_contents_ are still alive
+  // when the icon_downloader_ has started.
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK_EQ(stage_, Stage::kPendingInstallableData);
   stage_ = Stage::kPendingIconDownload;
 
@@ -486,7 +482,7 @@ void ManifestUpdateTask::LoadAndCheckIconContents() {
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*install_info_);
 
   icon_downloader_.emplace(
-      web_contents(), std::move(icon_urls),
+      web_contents_.get(), std::move(icon_urls),
       base::BindOnce(&ManifestUpdateTask::OnIconsDownloaded, AsWeakPtr()));
   icon_downloader_->SkipPageFavicons();
   icon_downloader_->FailAllIfAnyFail();
@@ -497,6 +493,13 @@ void ManifestUpdateTask::OnIconsDownloaded(
     IconsDownloadedResult result,
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
+  // At this point the ManifestUpdateTask is still at the kPendingIconDownload
+  // stage, so it is better to do a web_contents check before ending all icon
+  // reads.
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK_EQ(stage_, Stage::kPendingIconDownload);
 
   // TODO(crbug.com/1238622): Report `result` and `icons_http_results` in
@@ -521,6 +524,13 @@ void ManifestUpdateTask::OnIconsDownloaded(
 
 void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
                                         IconBitmaps disk_icon_bitmaps) {
+  // We still need to ensure that the web_contents_ are kept alive throughout
+  // the app identity check call to invoke the web_app identity update dialog
+  // in the end.
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK_EQ(stage_, Stage::kPendingIconReadFromDisk);
 
   if (disk_icon_bitmaps.empty()) {
@@ -651,7 +661,7 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
 
   ui_manager_.ShowWebAppIdentityUpdateDialog(
       app_id_, title_change, icon_change, old_title, new_title, *before_icon,
-      *after_icon, web_contents(),
+      *after_icon, web_contents_.get(),
       base::BindOnce(&ManifestUpdateTask::OnPostAppIdentityUpdateCheck,
                      AsWeakPtr()));
 
@@ -661,6 +671,12 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
 
 void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
     AppIdentityUpdate app_identity_update_allowed) {
+  // Perform an early exit if the web_contents are destroyed before calling
+  // UpdateAfterWindowsClose().
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
 
   app_identity_update_allowed_ =
@@ -694,6 +710,12 @@ IconDiff ManifestUpdateTask::IsUpdateNeededForIconContents(
 
 void ManifestUpdateTask::OnAllShortcutsMenuIconsRead(
     ShortcutsMenuIconBitmaps disk_shortcuts_menu_icon_bitmaps) {
+  // Perform an early exit if the web_contents are destroyed before calling
+  // UpdateAfterWindowsClose().
+  if (IsWebContentsDestroyed()) {
+    DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
+    return;
+  }
   DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
 
   DCHECK(install_info_.has_value());
@@ -745,8 +767,6 @@ bool ManifestUpdateTask::IsUpdateNeededForWebAppOriginAssociations() const {
 void ManifestUpdateTask::NoManifestUpdateRequired() {
   DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
   stage_ = Stage::kPendingAssociationsUpdate;
-
-  Observe(nullptr);
 
   if (!IsUpdateNeededForWebAppOriginAssociations()) {
     DestroySelf(ManifestUpdateResult::kAppUpToDate);

@@ -63,11 +63,6 @@ void InstallableTaskQueue::Next() {
   tasks_.pop_front();
 }
 
-void InstallableTaskQueue::Reset() {
-  tasks_.clear();
-  paused_tasks_.clear();
-}
-
 void InstallableTaskQueue::ResetWithError(InstallableStatusCode code) {
   std::deque<InstallableTask> tasks = std::move(tasks_);
   std::deque<InstallableTask> paused_tasks = std::move(paused_tasks_);

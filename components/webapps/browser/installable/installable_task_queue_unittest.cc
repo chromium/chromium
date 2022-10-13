@@ -58,7 +58,7 @@ TEST_F(InstallableTaskQueueUnitTest, PausingMakesNextTaskAvailable) {
   EXPECT_TRUE(task_queue.HasPaused());
   EXPECT_TRUE(IsEqual(task2, task_queue.Current()));
 
-  task_queue.Reset();
+  task_queue.ResetWithError(InstallableStatusCode::NO_ERROR_DETECTED);
   EXPECT_FALSE(task_queue.HasCurrent());
   EXPECT_FALSE(task_queue.HasPaused());
 }
@@ -86,7 +86,7 @@ TEST_F(InstallableTaskQueueUnitTest, PausedTaskCanBeRetrieved) {
   EXPECT_TRUE(task_queue.HasCurrent());
   EXPECT_TRUE(IsEqual(task1, task_queue.Current()));
 
-  task_queue.Reset();
+  task_queue.ResetWithError(InstallableStatusCode::NO_ERROR_DETECTED);
   EXPECT_FALSE(task_queue.HasCurrent());
   EXPECT_FALSE(task_queue.HasPaused());
 }

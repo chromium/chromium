@@ -17,7 +17,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace webapps {
@@ -154,8 +153,7 @@ IconDiff HaveIconBitmapsChanged(
 //  - Wait for all app windows to be closed.
 //  - Reinstall the web app using the fetched data.
 class ManifestUpdateTask final
-    : public base::SupportsWeakPtr<ManifestUpdateTask>,
-      public content::WebContentsObserver {
+    : public base::SupportsWeakPtr<ManifestUpdateTask> {
  public:
   using UpdatePendingCallback = base::OnceCallback<void(const GURL& url)>;
   using StoppedCallback = base::OnceCallback<void(const ManifestUpdateTask&,
@@ -170,9 +168,8 @@ class ManifestUpdateTask final
 
   ManifestUpdateTask(const GURL& url,
                      const AppId& app_id,
-                     content::WebContents* web_contents,
+                     base::WeakPtr<content::WebContents> web_contents,
                      StoppedCallback stopped_callback,
-                     bool hang_for_testing,
                      WebAppRegistrar& registrar,
                      WebAppIconManager& icon_manager,
                      WebAppUiManager* ui_manager,
@@ -180,19 +177,14 @@ class ManifestUpdateTask final
                      OsIntegrationManager& os_integration_manager,
                      WebAppSyncBridge* sync_bridge);
 
-  ~ManifestUpdateTask() override;
+  ~ManifestUpdateTask();
 
   const GURL& url() const { return url_; }
   const AppId& app_id() const { return app_id_; }
-
-  // content::WebContentsObserver:
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
-  void WebContentsDestroyed() override;
+  void Start();
 
  private:
   enum class Stage {
-    kPendingPageLoad,
     kPendingInstallableData,
     kPendingIconDownload,
     kPendingIconReadFromDisk,
@@ -202,7 +194,14 @@ class ManifestUpdateTask final
     kPendingInstallation,
     kPendingAssociationsUpdate,
   };
-
+  // We perform this check for the following Stages:
+  // kPendingInstallableData
+  // kPendingIconDownload
+  // kPendingIconReadFromDisk
+  // kPendingAppIdentityCheck
+  // For all other stages, we no longer need to observe the web_contents
+  // and the upgrade can proceed as expected.
+  bool IsWebContentsDestroyed();
   void OnDidGetInstallableData(const webapps::InstallableData& data);
   bool IsUpdateNeededForManifest() const;
   void LoadAndCheckIconContents();
@@ -230,6 +229,7 @@ class ManifestUpdateTask final
                               OsHooksErrors os_hooks_errors);
   void DestroySelf(ManifestUpdateResult result);
 
+  base::WeakPtr<content::WebContents> web_contents_;
   WebAppRegistrar& registrar_;
   WebAppIconManager& icon_manager_;
   WebAppUiManager& ui_manager_;
@@ -249,7 +249,6 @@ class ManifestUpdateTask final
   const GURL url_;
   const AppId app_id_;
   StoppedCallback stopped_callback_;
-  bool hang_for_testing_ = false;
   bool app_identity_update_allowed_ = false;
 
 #if DCHECK_IS_ON()

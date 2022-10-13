@@ -13,9 +13,11 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/commands/sub_app_install_command.h"
+#include "chrome/browser/web_applications/manifest_update_task.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -344,6 +346,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddList) {
 
 // Verify that Add works if PWA is launched as standalone window.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddStandaloneWindow) {
+  // This is to ensure that for manifest updates, we auto
+  // accept the identity dialog and bypass the window closing requirement.
+  chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+  ManifestUpdateTask::BypassWindowCloseWaitingForTesting() = true;
+
   NavigateToParentApp();
   InstallParentApp();
   content::WebContents* web_contents = OpenApplication(parent_app_id_);
@@ -848,6 +855,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
 
 // Remove works with one app.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveOneApp) {
+  // This is to ensure that for manifest updates, we auto
+  // accept the identity dialog and bypass the window closing requirement.
+  chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+  ManifestUpdateTask::BypassWindowCloseWaitingForTesting() = true;
+
   InstallParentApp();
   NavigateToParentApp();
   BindRemote();
@@ -882,6 +894,11 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailRegularApp) {
 
 // Remove fails for a sub-app with a different parent_app_id.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, RemoveFailWrongParent) {
+  // This is to ensure that for manifest updates, we auto
+  // accept the identity dialog and bypass the window closing requirement.
+  chrome::SetAutoAcceptAppIdentityUpdateForTesting(true);
+  ManifestUpdateTask::BypassWindowCloseWaitingForTesting() = true;
+
   // SubApp plays the parent app here, SubApp2 is its sub-app, SubApp3 is the
   // other "parent app".
   AppId parent_app = InstallPWA(GetURL(kSubAppPath));

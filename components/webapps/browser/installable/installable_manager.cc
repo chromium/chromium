@@ -474,8 +474,8 @@ bool InstallableManager::IsComplete(const InstallableParams& params) const {
          (!params.valid_splash_icon || IsIconFetchComplete(IconUsage::kSplash));
 }
 
-void InstallableManager::Reset(absl::optional<InstallableStatusCode> error) {
-  DCHECK(!error || error.value() != NO_ERROR_DETECTED);
+void InstallableManager::Reset(InstallableStatusCode error) {
+  DCHECK(error != NO_ERROR_DETECTED);
   // Prevent any outstanding callbacks to or from this object from being called.
   weak_factory_.InvalidateWeakPtrs();
   icons_.clear();
@@ -484,11 +484,9 @@ void InstallableManager::Reset(absl::optional<InstallableStatusCode> error) {
   screenshots_downloading_ = 0;
   is_screenshots_fetch_complete_ = false;
 
-  // If we have paused tasks, we are waiting for a service worker.
-  if (error)
-    task_queue_.ResetWithError(error.value());
-  else
-    task_queue_.Reset();
+  // If we have paused tasks, we are waiting for a service worker. Execute the
+  // callbacks with the status_code being passed for the paused tasks.
+  task_queue_.ResetWithError(error);
 
   eligibility_ = std::make_unique<EligiblityProperty>();
   manifest_ = std::make_unique<ManifestProperty>();
@@ -1042,7 +1040,9 @@ void InstallableManager::DidUpdateWebManifestURL(content::RenderFrameHost* rfh,
 }
 
 void InstallableManager::WebContentsDestroyed() {
-  Reset();
+  // This ensures that we do not just hang callbacks on web_contents being
+  // destroyed.
+  Reset(RENDERER_EXITING);
   Observe(nullptr);
 }
 

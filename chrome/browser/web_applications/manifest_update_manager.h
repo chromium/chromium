@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_MANIFEST_UPDATE_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_MANIFEST_UPDATE_MANAGER_H_
 
+#include <map>
 #include <memory>
 
 #include "base/callback.h"
@@ -65,7 +66,6 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
                    const absl::optional<AppId>& app_id,
                    content::WebContents* web_contents);
   bool IsUpdateConsumed(const AppId& app_id);
-  // bool ResetUpdateStateForTesting(const AppId& app_id)
   bool IsUpdateTaskPending(const AppId& app_id);
 
   // WebAppInstallManagerObserver:
@@ -87,6 +87,36 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   void ResetManifestThrottleForTesting(const AppId& app_id);
 
  private:
+  // This class is used to either observe the url loading or web_contents
+  // destruction before manifest update tasks can be scheduled. Once any
+  // of those events have been fired, observing is stopped.
+  class PreUpdateWebContentsObserver;
+
+  // Store information regarding the entire manifest update in different stages.
+  // The following steps are followed for the update:
+  // 1. The UpdateStage is initialized by passing an observer, who waits till
+  // page loading has finished. During the lifetime of the observer,
+  // the update_task stays uninitialized.
+  // 2. The update_task is initialized as soon as the observer fires a
+  // DidFinishLoad and the observer is destructed. This ensures that at any
+  // point, either the observer or the update_task exists, but not both. This
+  // helps reason about the entire process at different stages of its
+  // functionality. This class is owned by the ManifestUpdateManager, and is
+  // guaranteed to hold an observer OR an update_task always, but never both.
+  struct UpdateStage {
+    UpdateStage(const GURL& url,
+                std::unique_ptr<PreUpdateWebContentsObserver> observer);
+    ~UpdateStage();
+
+    GURL url;
+    std::unique_ptr<PreUpdateWebContentsObserver> observer;
+    std::unique_ptr<ManifestUpdateTask> update_task;
+  };
+
+  void StartUpdateTaskAfterPageLoad(
+      const AppId& app_id,
+      base::WeakPtr<content::WebContents> web_contents);
+
   bool MaybeConsumeUpdateCheck(const GURL& origin, const AppId& app_id);
   absl::optional<base::Time> GetLastUpdateCheckTime(const AppId& app_id) const;
   void SetLastUpdateCheckTime(const GURL& origin,
@@ -111,8 +141,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};
 
-  base::flat_map<AppId, std::unique_ptr<ManifestUpdateTask>> tasks_;
-
+  std::map<AppId, UpdateStage> update_stages_;
   base::flat_map<AppId, base::Time> last_update_check_;
 
   absl::optional<base::Time> time_override_for_testing_;

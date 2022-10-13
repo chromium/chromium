@@ -23,7 +23,6 @@
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
@@ -200,11 +199,11 @@ class InstallableManager
   // Returns true if |params| requires no more work to be done.
   bool IsComplete(const InstallableParams& params) const;
 
-  // Resets members to empty and removes all queued tasks.
+  // Resets members to empty and reports the given |error| to all queued tasks
+  // to run queued callbacks before removing the tasks.
   // Called when navigating to a new page or if the WebContents is destroyed
   // whilst waiting for a callback.
-  // If populated, the given |error| is reported to all queued tasks.
-  void Reset(absl::optional<InstallableStatusCode> error = absl::nullopt);
+  void Reset(InstallableStatusCode error);
 
   // Sets the fetched bit on the installable and icon subtasks.
   // Called if no manifest (or an empty manifest) was fetched from the site.

@@ -58,9 +58,6 @@ class InstallableTaskQueue {
   // Advances to the next task.
   void Next();
 
-  // Clears all tasks from the main and paused list.
-  void Reset();
-
   // Clears all tasks from the main and paused list, and then calls the callback
   // on all of them with the given status code.
   void ResetWithError(InstallableStatusCode code);
