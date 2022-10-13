@@ -51,6 +51,7 @@
   }
 
   :host([in-side-panel_]) .label-row {
+    min-height: 44px;
     padding-inline-start: 16px;
   }
 
@@ -60,14 +61,18 @@
     font-weight: 500;
   }
 
-  .debug-info {
-    color: var(--cr-secondary-text-color);
+  :host([in-side-panel_]) .label {
+    font-size: .875rem;  /* 14px */
+    line-height: calc(10/7); /* 20px */
   }
 
-  #label-and-timestamp {
-    display: flex;
-    flex-direction: column;
-    row-gap: 2px;
+  :host([in-side-panel_]) .timestamp {
+    font-size: .75rem;  /* 12px */
+    line-height: calc(5/3); /* 20px */
+  }
+
+  .debug-info {
+    color: var(--cr-secondary-text-color);
   }
 
   #related-searches {
@@ -129,15 +134,7 @@
   <!-- In the side panel the label and timestamp should be stacked on the
        left, while outside the side panel the timestamp and the menu should
        be side by side on the right. -->
-  <div class="label-row" hidden="[[!inSidePanel_]]">
-    <div id="label-and-timestamp">
-      <div id="labelSidePanel" class="label"></div>
-      <div class="debug-info">[[cluster.debugInfo]]</div>
-      <div class="timestamp">[[cluster.visits.0.relativeDate]]</div>
-    </div>
-    <cluster-menu></cluster-menu>
-  </div>
-  <div class="label-row" hidden="[[inSidePanel_]]">
+  <div class="label-row">
     <div id="label" class="label"></div>
     <div class="debug-info">[[cluster.debugInfo]]</div>
     <div class="timestamp-and-menu">

@@ -37,7 +37,6 @@ const HistoryClusterElementBase = I18nMixin(PolymerElement);
 interface HistoryClusterElement {
   $: {
     label: HTMLElement,
-    labelSidePanel: HTMLElement,
     container: HTMLElement,
   };
 }
@@ -311,9 +310,8 @@ class HistoryClusterElement extends HistoryClusterElementBase {
       return 'no_label';
     }
 
-    const label = this.inSidePanel_ ? this.$.labelSidePanel : this.$.label;
     insertHighlightedTextWithMatchesIntoElement(
-        label, this.cluster.label!, this.cluster.labelMatchPositions);
+        this.$.label, this.cluster.label!, this.cluster.labelMatchPositions);
     return this.cluster.label!;
   }
 
