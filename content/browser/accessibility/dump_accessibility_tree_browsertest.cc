@@ -2838,8 +2838,9 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityP) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityParam) {
   RunHtmlTest(FILE_PATH_LITERAL("param.html"));
 }
-
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityPopupApi) {
+// TODO(crbug.com/1367886): Test flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       DISABLED_AccessibilityPopupApi) {
   RunHtmlTest(FILE_PATH_LITERAL("popup-api.html"));
 }
 
