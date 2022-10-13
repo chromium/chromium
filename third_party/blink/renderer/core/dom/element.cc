@@ -3824,7 +3824,17 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
   if (UNLIKELY(context || !style->IsContentVisibilityVisible())) {
     if (!context)
       context = &EnsureDisplayLockContext();
-    context->SetRequestedState(style->ContentVisibility());
+    AtomicString toggle_visibility = style->ToggleVisibility();
+    if (!toggle_visibility.IsNull()) {
+      CSSToggle* toggle =
+          CSSToggle::FindToggleInScope(*this, toggle_visibility);
+      if (!toggle || toggle->ValueIsActive()) {
+        // The element is not in scope for a toggle, or it is in scope and
+        // the toggle is active, therefore it is visible.
+        toggle_visibility = g_null_atom;
+      }
+    }
+    context->SetRequestedState(style->ContentVisibility(), toggle_visibility);
     context->AdjustElementStyle(style.get());
   }
 

@@ -2091,7 +2091,8 @@ class ComputedStyle : public ComputedStyleBase,
   }
 
   bool IsContentVisibilityVisible() const {
-    return ContentVisibility() == EContentVisibility::kVisible;
+    return ContentVisibility() == EContentVisibility::kVisible &&
+           ToggleVisibility().IsNull();
   }
 
   // Interleaving roots are elements that may require layout to fully update

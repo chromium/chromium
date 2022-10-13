@@ -101,6 +101,11 @@ class CORE_EXPORT CSSToggle : public ScriptWrappable, public ToggleRoot {
   bool ValueMatches(const State& other,
                     const States* states_override = nullptr) const;
 
+  // Is the value a non-zero (active) value?
+  bool ValueIsActive(const States* states_override = nullptr) const {
+    return !ValueMatches(State(0u), states_override);
+  }
+
  private:
   void setStatesInternal(const States& states, ExceptionState& exception_state);
   void SetValueAndCheckGroup(const State& value);
