@@ -94,6 +94,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 
   font_metrics_.SetAscent(ascent);
   font_metrics_.SetDescent(descent);
+  font_metrics_.SetCapHeight(metrics.fCapHeight);
 
   float skia_underline_value;
   if (metrics.hasUnderlinePosition(&skia_underline_value))

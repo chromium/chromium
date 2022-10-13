@@ -66,6 +66,9 @@ class FontMetrics {
 
   float FloatHeight() const { return float_ascent_ + float_descent_; }
 
+  float CapHeight() const { return cap_height_; }
+  void SetCapHeight(float cap_height) { cap_height_ = cap_height; }
+
   float FloatLineGap() const { return line_gap_; }
   void SetLineGap(float line_gap) { line_gap_ = line_gap; }
 
@@ -188,6 +191,7 @@ class FontMetrics {
 
   void Reset() {
     units_per_em_ = kGDefaultUnitsPerEm;
+    cap_height_ = 0;
     float_ascent_ = 0;
     float_descent_ = 0;
     int_ascent_ = 0;
@@ -205,6 +209,7 @@ class FontMetrics {
   PLATFORM_EXPORT int IntAscentInternal(FontBaseline baseline_type) const;
 
   unsigned units_per_em_ = kGDefaultUnitsPerEm;
+  float cap_height_ = 0;
   float float_ascent_ = 0;
   float float_descent_ = 0;
   float line_gap_ = 0;
