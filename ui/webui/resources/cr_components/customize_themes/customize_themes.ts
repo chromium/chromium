@@ -132,6 +132,7 @@ export class CustomizeThemesElement extends CustomizeThemesElementBase {
       this.showManagedThemeDialog_ = true;
       return;
     }
+    this.$.colorPicker.focus();
     this.$.colorPicker.click();
   }
 
