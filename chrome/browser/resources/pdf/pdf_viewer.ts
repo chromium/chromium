@@ -503,8 +503,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private onPresentClick_() {
     const scroller = this.$.scroller;
 
-    this.viewport.saveZoomState();
-
     Promise
         .all([
           eventToPromise('fullscreenchange', scroller),
@@ -528,9 +526,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
             // Ensure that directional keys still work after exiting.
             this.shadowRoot!.querySelector('embed')!.focus();
-
-            // Set zoom back to original zoom before presentation mode.
-            this.viewport.restoreZoomState();
           });
 
           // Nothing else to do here. The viewport will be updated as a result
