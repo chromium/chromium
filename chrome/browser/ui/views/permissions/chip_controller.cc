@@ -338,7 +338,9 @@ void ChipController::AnimateExpand(
 void ChipController::HandleConfirmation(
     permissions::PermissionAction user_decision) {
   SyncChipWithModel();
-  if (active_chip_permission_request_manager_.has_value() &&
+  if (user_decision != permissions::PermissionAction::IGNORED &&
+      user_decision != permissions::PermissionAction::DISMISSED &&
+      active_chip_permission_request_manager_.has_value() &&
       !active_chip_permission_request_manager_.value()
            ->has_pending_requests() &&
       permission_prompt_model_->CanDisplayConfirmation()) {
