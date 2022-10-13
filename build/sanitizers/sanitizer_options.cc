@@ -41,25 +41,19 @@ SANITIZER_HOOK_ATTRIBUTE void _sanitizer_options_link_helper() {}
 //   symbolize=1 - enable in-process symbolization.
 //   external_symbolizer_path=... - provides the path to llvm-symbolizer
 //     relative to the main executable
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) | BUILDFLAG(IS_APPLE)
 const char kAsanDefaultOptions[] =
     "strip_path_prefix=/../../ fast_unwind_on_fatal=1 "
     "detect_stack_use_after_return=1 symbolize=1 detect_leaks=0 "
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
     "bin/llvm-symbolizer";
-
-#elif BUILDFLAG(IS_APPLE)
-const char* kAsanDefaultOptions =
-    "strip_path_prefix=/../../ fast_unwind_on_fatal=1 "
-    "detect_stack_use_after_return=1 ";
-
 #elif BUILDFLAG(IS_WIN)
 const char* kAsanDefaultOptions =
     "strip_path_prefix=\\..\\..\\ fast_unwind_on_fatal=1 "
     "detect_stack_use_after_return=1 symbolize=1 "
     "external_symbolizer_path=%d/../../third_party/"
     "llvm-build/Release+Asserts/bin/llvm-symbolizer.exe";
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE) || \
     BUILDFLAG(IS_WIN)
@@ -123,12 +117,8 @@ SANITIZER_HOOK_ATTRIBUTE const char *__tsan_default_suppressions() {
 //     relative to the main executable
 const char kMsanDefaultOptions[] =
     "strip_path_prefix=/../../ "
-
-#if !BUILDFLAG(IS_APPLE)
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
-    "bin/llvm-symbolizer"
-#endif
-    ;
+    "bin/llvm-symbolizer";
 
 SANITIZER_HOOK_ATTRIBUTE const char *__msan_default_options() {
   return kMsanDefaultOptions;
@@ -153,7 +143,7 @@ SANITIZER_HOOK_ATTRIBUTE const char *__msan_default_options() {
 const char kLsanDefaultOptions[] =
     "strip_path_prefix=/../../ use_poisoned=1 "
 
-#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
     "bin/llvm-symbolizer "
 #endif
@@ -189,12 +179,8 @@ SANITIZER_HOOK_ATTRIBUTE const char *__lsan_default_suppressions() {
 //   print_stacktrace=1 - print the stacktrace when UBSan reports an error.
 const char kUbsanDefaultOptions[] =
     "print_stacktrace=1 strip_path_prefix=/../../ "
-
-#if !BUILDFLAG(IS_APPLE)
     "external_symbolizer_path=%d/../../third_party/llvm-build/Release+Asserts/"
-    "bin/llvm-symbolizer"
-#endif
-    ;
+    "bin/llvm-symbolizer";
 
 SANITIZER_HOOK_ATTRIBUTE const char* __ubsan_default_options() {
   return kUbsanDefaultOptions;
