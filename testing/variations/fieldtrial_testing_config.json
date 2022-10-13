@@ -8002,6 +8002,30 @@
             ]
         }
     ],
+    "PartitionAllocUnretainedDanglingPtr": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "mode": "dump_without_crashing"
+                    },
+                    "enable_features": [
+                        "PartitionAllocUnretainedDanglingPtr"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocUseAlternateDistribution": [
         {
             "platforms": [
