@@ -243,6 +243,9 @@ AxisEdge CrossAxisStaticPositionEdge(const ComputedStyle& style,
 
 void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
     HeapVector<Member<LayoutBox>>& oof_children) {
+  if (oof_children.empty())
+    return;
+
   HeapVector<Member<LayoutBox>> oofs;
   std::swap(oofs, oof_children);
 
@@ -251,18 +254,16 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   const LayoutUnit previous_consumed_block_size =
       BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
 
-  // If fragmentation is present we place all the OOF candidates within the
-  // last fragment. The last fragment has the most up-to-date container sizing
-  // info.
+  // We will attempt to add OOFs in the fragment in which their static
+  // position belongs. However, the last fragment has the most up-to-date flex
+  // size information (e.g. any expanded rows, etc), so for center aligned
+  // items, we could end up with an incorrect static position.
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     should_process_block_end = !container_builder_.DidBreakSelf() &&
                                !container_builder_.HasChildBreakInside();
     if (should_process_block_end) {
       // Recompute the total block size in case |total_intrinsic_block_size_|
-      // changed as a result of fragmentation. Note that center aligned OOFs
-      // may receive an incorrect static position if the total block size is
-      // different as a result of fragmentation since we only update this once
-      // we reach the last fragment.
+      // changed as a result of fragmentation.
       total_block_size_ = ComputeBlockSizeForFragment(
           ConstraintSpace(), Style(), BorderPadding(),
           total_intrinsic_block_size_, container_builder_.InlineSize());
