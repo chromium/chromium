@@ -183,6 +183,9 @@
       'filepath': 'ash/webui/common/'\
                   '|chrome/test/data/webui/chromeos/ash_common/',
     },
+    'ash_wm_desks': {
+      'filepath': 'ash/wm/desks/',
+    },
     'assistive': {
       'filepath': 'ash/ambient/'\
                   '|ash/app_list/views/assistant/'\
@@ -2286,6 +2289,8 @@
     'ash_webui_common': ['gavinwill+watch-ash-webui-common@chromium.org',
                          'jimmyxgong+watch-ash-webui-common@chromium.org',
                          'zentaro+watch-ash-webui-common@chromium.org'],
+    'ash_wm_desks': ['dandersson@chromium.org',
+                     'bicioglu@google.com'],
     'assistive': ['croissant-eng+reviews@chromium.org'],
     'audio_service': ['marinaciocea+watch@chromium.org',
                       'olka+watch@chromium.org'],
