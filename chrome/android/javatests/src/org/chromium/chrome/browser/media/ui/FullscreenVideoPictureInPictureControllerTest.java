@@ -118,6 +118,7 @@ public class FullscreenVideoPictureInPictureControllerTest {
     @CommandLineFlags.Add({"enable-features=Portals"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @DisabledTest(message = "https://crbug.com/1374237/")
     public void testExitPipOnPortalActivation() throws Throwable {
         testExitOn(()
                            -> JavaScriptUtils.executeJavaScript(getWebContents(),
