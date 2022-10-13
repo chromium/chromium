@@ -274,4 +274,8 @@ void TestBrowserAutofillManager::SetCallParentUploadFormData(bool value) {
   call_parent_upload_form_data_ = value;
 }
 
+std::string TestBrowserAutofillManager::GetAddressFormFlowId() {
+  return address_form_interactions_flow_id_for_test()->AsLowercaseString();
+}
+
 }  // namespace autofill

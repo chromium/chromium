@@ -375,6 +375,13 @@ void AutofillClientImpl::OpenPromoCodeOfferDetailsURL(const GURL& url) {
   NOTREACHED();
 }
 
+autofill::FormInteractionsFlowId
+AutofillClientImpl::GetCurrentFormInteractionsFlowId() {
+  // Currently not in use here. See `ChromeAutofillClient` for a proper
+  // implementation.
+  return {};
+}
+
 void AutofillClientImpl::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   NOTREACHED();

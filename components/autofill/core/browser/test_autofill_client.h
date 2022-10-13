@@ -197,6 +197,7 @@ class TestAutofillClient : public AutofillClient {
   void ExecuteCommand(int id) override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   LogManager* GetLogManager() const override;
+  FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
 
   // RiskDataLoader:
   void LoadRiskData(

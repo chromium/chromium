@@ -227,6 +227,7 @@ class ChromeAutofillClient
   void ExecuteCommand(int id) override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   LogManager* GetLogManager() const override;
+  FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
 
   // RiskDataLoader:
   void LoadRiskData(
@@ -268,6 +269,8 @@ class ChromeAutofillClient
   std::unique_ptr<FormDataImporter> form_data_importer_;
   base::WeakPtr<AutofillPopupControllerImpl> popup_controller_;
   std::unique_ptr<LogManager> log_manager_;
+  FormInteractionsFlowId flow_id_{};
+  base::Time flow_id_date_;
   // If set to true, the popup will stay open regardless of external changes on
   // the test machine, that may normally cause the popup to be hidden
   bool keep_popup_open_for_testing_ = false;

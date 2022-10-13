@@ -43,6 +43,7 @@ static_library("common") {
     "form_field_data.h",
     "form_field_data_predictions.cc",
     "form_field_data_predictions.h",
+    "form_interactions_flow.h",
     "gaia_id_hash.cc",
     "gaia_id_hash.h",
     "html_field_types.cc",

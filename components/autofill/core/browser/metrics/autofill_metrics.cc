@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -31,6 +32,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/language/core/browser/language_usage_metrics.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -2715,9 +2717,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFormSubmitted(
           std::min(form_interaction_counts.form_element_user_modifications,
                    kFormUserInteractionsOverflowBucket))
       .SetAutofillFills(std::min(form_interaction_counts.autofill_fills,
-                                 kFormUserInteractionsOverflowBucket))
-      .SetAutocompleteFills(std::min(form_interaction_counts.autocomplete_fills,
-                                     kFormUserInteractionsOverflowBucket));
+                                 kFormUserInteractionsOverflowBucket));
   if (form_parsed_timestamp.is_null())
     DCHECK(state == NON_FILLABLE_FORM_OR_NEW_DATA ||
            state == FILLABLE_FORM_AUTOFILLED_NONE_DID_NOT_SHOW_SUGGESTIONS)
@@ -2738,14 +2738,20 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogKeyMetrics(
     bool suggestions_shown,
     bool edited_autofilled_field,
     bool suggestion_filled,
-    autofill_assistant::AutofillAssistantIntent intent) {
+    autofill_assistant::AutofillAssistantIntent intent,
+    const FormInteractionCounts& form_interaction_counts,
+    const FormInteractionsFlowId& flow_id) {
   if (!CanLog())
     return;
 
   ukm::builders::Autofill_KeyMetrics builder(source_id_);
   builder.SetFillingReadiness(data_to_fill_available)
       .SetFillingAssistance(suggestion_filled)
-      .SetFormTypes(FormTypesToBitVector(form_types));
+      .SetFormTypes(FormTypesToBitVector(form_types))
+      .SetAutofillFills(form_interaction_counts.autofill_fills)
+      .SetFormElementUserModifications(
+          form_interaction_counts.form_element_user_modifications)
+      .SetFlowId(base::HashMetricName(flow_id->AsLowercaseString()));
 
   if (intent != autofill_assistant::AutofillAssistantIntent::UNDEFINED_INTENT)
     builder.SetAutofillAssistantIntent(static_cast<int64_t>(intent));

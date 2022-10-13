@@ -24,7 +24,7 @@ AddressFormEventLogger::AddressFormEventLogger(
     : FormEventLoggerBase("Address",
                           is_in_any_main_frame,
                           form_interactions_ukm_logger,
-                          client ? client->GetLogManager() : nullptr) {}
+                          client) {}
 
 AddressFormEventLogger::~AddressFormEventLogger() = default;
 
@@ -58,6 +58,9 @@ void AddressFormEventLogger::OnDidFillSuggestion(
 
   base::RecordAction(
       base::UserMetricsAction("Autofill_FilledProfileSuggestion"));
+
+  ++form_interaction_counts_.autofill_fills;
+  UpdateFlowId();
 }
 
 void AddressFormEventLogger::OnDidSeeFillableDynamicForm(

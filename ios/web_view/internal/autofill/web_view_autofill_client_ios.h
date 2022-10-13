@@ -133,6 +133,7 @@ class WebViewAutofillClientIOS : public AutofillClient {
   bool AreServerCardsSupported() const override;
   void ExecuteCommand(int id) override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
+  autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
 
   // RiskDataLoader:
   void LoadRiskData(

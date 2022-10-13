@@ -29,7 +29,7 @@ CreditCardFormEventLogger::CreditCardFormEventLogger(
     : FormEventLoggerBase("CreditCard",
                           is_in_any_main_frame,
                           form_interactions_ukm_logger,
-                          client ? client->GetLogManager() : nullptr),
+                          client),
       current_authentication_flow_(UnmaskAuthFlowType::kNone),
       personal_data_manager_(personal_data_manager),
       client_(client) {}
@@ -173,6 +173,9 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
       base::UserMetricsAction("Autofill_FilledCreditCardSuggestion"));
 
   form_interactions_ukm_logger_->Record(std::move(builder));
+
+  ++form_interaction_counts_.autofill_fills;
+  UpdateFlowId();
 }
 
 void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptShown(

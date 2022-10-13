@@ -42,11 +42,11 @@ FormEventLoggerBase::FormEventLoggerBase(
     const std::string& form_type_name,
     bool is_in_any_main_frame,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    LogManager* log_manager)
+    AutofillClient* client)
     : form_type_name_(form_type_name),
       is_in_any_main_frame_(is_in_any_main_frame),
       form_interactions_ukm_logger_(form_interactions_ukm_logger),
-      log_manager_(log_manager) {}
+      client_(*client) {}
 
 FormEventLoggerBase::~FormEventLoggerBase() {
   // Don't record Funnel and Key metrics for the ablation group as they don't
@@ -270,8 +270,8 @@ void FormEventLoggerBase::LogUkmInteractedWithForm(
 }
 
 void FormEventLoggerBase::RecordFunnelAndKeyMetrics() {
-  LogBuffer funnel_rows(IsLoggingActive(log_manager_));
-  LogBuffer key_metrics_rows(IsLoggingActive(log_manager_));
+  LogBuffer funnel_rows(IsLoggingActive(client_->GetLogManager()));
+  LogBuffer key_metrics_rows(IsLoggingActive(client_->GetLogManager()));
 
   LOG_AF(funnel_rows) << Tr{} << "Form Type: " << form_type_name_;
   LOG_AF(key_metrics_rows) << Tr{} << "Form Type: " << form_type_name_;
@@ -355,7 +355,8 @@ void FormEventLoggerBase::RecordFunnelAndKeyMetrics() {
       form_interactions_ukm_logger_->LogKeyMetrics(
           submitted_form_types_, has_logged_data_to_fill_available_,
           has_logged_suggestions_shown_, has_logged_edited_autofilled_field_,
-          has_logged_suggestion_filled_, intent_);
+          has_logged_suggestion_filled_, intent_, form_interaction_counts_,
+          flow_id_);
     }
   }
   if (has_logged_typed_into_non_filled_field_ ||
@@ -373,12 +374,12 @@ void FormEventLoggerBase::RecordFunnelAndKeyMetrics() {
         << Tr{} << "FormSubmission.Submission" << has_logged_will_submit_;
   }
 
-  LOG_AF(log_manager_) << LoggingScope::kMetrics << LogMessage::kFunnelMetrics
-                       << Tag{"table"} << std::move(funnel_rows)
-                       << CTag{"table"};
-  LOG_AF(log_manager_) << LoggingScope::kMetrics << LogMessage::kKeyMetrics
-                       << Tag{"table"} << std::move(key_metrics_rows)
-                       << CTag{"table"};
+  LOG_AF(client_->GetLogManager())
+      << LoggingScope::kMetrics << LogMessage::kFunnelMetrics << Tag{"table"}
+      << std::move(funnel_rows) << CTag{"table"};
+  LOG_AF(client_->GetLogManager())
+      << LoggingScope::kMetrics << LogMessage::kKeyMetrics << Tag{"table"}
+      << std::move(key_metrics_rows) << CTag{"table"};
 }
 
 void FormEventLoggerBase::RecordAblationMetrics() {
@@ -482,6 +483,19 @@ void FormEventLoggerBase::LogImpactOfHeuristicsThreshold(
 autofill_assistant::AutofillAssistantIntent
 FormEventLoggerBase::autofill_assistant_intent() const {
   return intent_;
+}
+
+void FormEventLoggerBase::OnTextFieldDidChange(
+    const FieldGlobalId& field_global_id) {
+  if (field_global_id != last_field_global_id_modified_by_user_) {
+    ++form_interaction_counts_.form_element_user_modifications;
+    last_field_global_id_modified_by_user_ = field_global_id;
+    UpdateFlowId();
+  }
+}
+
+void FormEventLoggerBase::UpdateFlowId() {
+  flow_id_ = client_->GetCurrentFormInteractionsFlowId();
 }
 
 }  // namespace autofill

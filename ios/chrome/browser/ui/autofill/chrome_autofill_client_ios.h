@@ -141,6 +141,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
   bool AreServerCardsSupported() const override;
   void ExecuteCommand(int id) override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
+  FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
 
   // RiskDataLoader:
   void LoadRiskData(

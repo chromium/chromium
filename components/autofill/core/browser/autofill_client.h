@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
+#include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
 #include "components/translate/core/browser/language_state.h"
@@ -762,6 +763,14 @@ class AutofillClient : public RiskDataLoader {
   // details page for the offers in a promo code suggestions popup. Every offer
   // in a promo code suggestions popup links to the same offer details page.
   virtual void OpenPromoCodeOfferDetailsURL(const GURL& url) = 0;
+
+  // Updates and returns the current form interactions flow id. This is used as
+  // an approximation for keeping track of the number of user interactions with
+  // related forms for logging. Example implementation: the flow id is set to a
+  // GUID on the first call. That same GUID will be returned for consecutive
+  // calls in the next 20 minutes. Afterwards a new GUID is set and the pattern
+  // repeated.
+  virtual FormInteractionsFlowId GetCurrentFormInteractionsFlowId() = 0;
 };
 
 }  // namespace autofill

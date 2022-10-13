@@ -300,6 +300,10 @@ class MockAutofillClient : public autofill::AutofillClient {
               OpenPromoCodeOfferDetailsURL,
               (const GURL& url),
               (override));
+  MOCK_METHOD(autofill::FormInteractionsFlowId,
+              GetCurrentFormInteractionsFlowId,
+              (),
+              (override));
 };
 
 PasswordForm GetTestAndroidCredential() {

@@ -4,16 +4,15 @@
 
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 
-#include <memory>
-
-#include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/public/prefs.h"
 #include "components/prefs/pref_service.h"
@@ -62,6 +61,60 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
   raw_ptr<ChromeAutofillClient> chrome_autofill_client_ = nullptr;
   raw_ptr<TestPersonalDataManager> personal_data_manager_ = nullptr;
 };
+
+TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_BelowMaxFlowTime) {
+  // Arbitrary fixed date to avoid using Now().
+  base::Time july_2022 = base::Time::FromDoubleT(1658620440);
+  base::TimeDelta below_max_flow_time = base::Minutes(10);
+
+  autofill::TestAutofillClock test_clock(july_2022);
+
+  FormInteractionsFlowId first_interaction_flow_id =
+      client()->GetCurrentFormInteractionsFlowId();
+
+  test_clock.Advance(below_max_flow_time);
+
+  EXPECT_EQ(first_interaction_flow_id,
+            client()->GetCurrentFormInteractionsFlowId());
+}
+
+TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AboveMaxFlowTime) {
+  // Arbitrary fixed date to avoid using Now().
+  base::Time july_2022 = base::Time::FromDoubleT(1658620440);
+  base::TimeDelta above_max_flow_time = base::Minutes(21);
+
+  autofill::TestAutofillClock test_clock(july_2022);
+
+  FormInteractionsFlowId first_interaction_flow_id =
+      client()->GetCurrentFormInteractionsFlowId();
+
+  test_clock.Advance(above_max_flow_time);
+
+  EXPECT_NE(first_interaction_flow_id,
+            client()->GetCurrentFormInteractionsFlowId());
+}
+
+TEST_F(ChromeAutofillClientTest, GetFormInteractionsFlowId_AdvancedTwice) {
+  // Arbitrary fixed date to avoid using Now().
+  base::Time july_2022 = base::Time::FromDoubleT(1658620440);
+  base::TimeDelta above_half_max_flow_time = base::Minutes(15);
+
+  autofill::TestAutofillClock test_clock(july_2022);
+
+  FormInteractionsFlowId first_interaction_flow_id =
+      client()->GetCurrentFormInteractionsFlowId();
+
+  test_clock.Advance(above_half_max_flow_time);
+
+  FormInteractionsFlowId second_interaction_flow_id =
+      client()->GetCurrentFormInteractionsFlowId();
+
+  test_clock.Advance(above_half_max_flow_time);
+
+  EXPECT_EQ(first_interaction_flow_id, second_interaction_flow_id);
+  EXPECT_NE(first_interaction_flow_id,
+            client()->GetCurrentFormInteractionsFlowId());
+}
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeAutofillClientTest, IsFastCheckoutSupportedWithDisabledFeature) {

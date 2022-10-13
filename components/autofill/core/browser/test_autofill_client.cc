@@ -386,6 +386,10 @@ LogManager* TestAutofillClient::GetLogManager() const {
   return log_manager_.get();
 }
 
+FormInteractionsFlowId TestAutofillClient::GetCurrentFormInteractionsFlowId() {
+  return {};
+}
+
 void TestAutofillClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   std::move(callback).Run("some risk data");

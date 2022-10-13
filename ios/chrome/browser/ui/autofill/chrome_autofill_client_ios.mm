@@ -487,6 +487,13 @@ void ChromeAutofillClientIOS::OpenPromoCodeOfferDetailsURL(const GURL& url) {
       /*is_renderer_initiated=*/false));
 }
 
+autofill::FormInteractionsFlowId
+ChromeAutofillClientIOS::GetCurrentFormInteractionsFlowId() {
+  // Currently not in use here. See `ChromeAutofillClient` for a proper
+  // implementation.
+  return {};
+}
+
 void ChromeAutofillClientIOS::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   std::move(callback).Run(

@@ -489,8 +489,6 @@ BrowserAutofillManager::BrowserAutofillManager(
 
   CountryNames::SetLocaleString(app_locale_);
   offer_manager_ = client->GetAutofillOfferManager();
-
-  form_interactions_counter_ = std::make_unique<FormInteractionsCounter>();
 }
 
 BrowserAutofillManager::~BrowserAutofillManager() {
@@ -969,8 +967,8 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     profile_form_bitmask = data_util::DetermineGroups(*form_structure);
   }
 
+  auto* logger = GetEventFormLogger(autofill_field->Type().group());
   if (!autofill_field->is_autofilled) {
-    auto* logger = GetEventFormLogger(autofill_field->Type().group());
     if (logger)
       logger->OnTypedIntoNonFilledField();
   }
@@ -990,7 +988,6 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
         autofill_field->Type().group(),
         client()->GetSecurityLevelForUmaHistograms(), profile_form_bitmask);
 
-    auto* logger = GetEventFormLogger(autofill_field->Type().group());
     if (logger)
       logger->OnEditedAutofilledField();
 
@@ -1005,8 +1002,8 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
 
   UpdateInitialInteractionTimestamp(timestamp);
 
-  form_interactions_counter_->OnTextFieldDidChange(
-      autofill_field->GetFieldSignature());
+  if (logger)
+    logger->OnTextFieldDidChange(autofill_field->global_id());
 }
 
 bool BrowserAutofillManager::IsFormNonSecure(const FormData& form) const {
@@ -1544,7 +1541,6 @@ void BrowserAutofillManager::OnSingleFieldSuggestionSelected(
     int frontend_id) {
   single_field_form_fill_router_->OnSingleFieldSuggestionSelected(value,
                                                                   frontend_id);
-  form_interactions_counter_->OnAutocompleteFill();
 }
 
 void BrowserAutofillManager::OnUserHideSuggestions(const FormData& form,
@@ -1825,17 +1821,20 @@ void BrowserAutofillManager::UploadFormDataAsyncCallback(
       submitted_form->ShouldBeQueried()) {
     autofill_assistant::AutofillAssistantIntent intent =
         autofill_assistant::AutofillAssistantIntent::UNDEFINED_INTENT;
+    FormInteractionCounts form_interaction_counts = {};
     if (submitted_form->field_count() > 0) {
       const AutofillField* autofill_field = submitted_form->field(0);
       auto* logger = GetEventFormLogger(autofill_field->Type().group());
-      if (logger)
+      if (logger) {
         intent = logger->autofill_assistant_intent();
+        form_interaction_counts = logger->form_interaction_counts();
+      }
     }
 
     submitted_form->LogQualityMetrics(
         submitted_form->form_parsed_timestamp(), interaction_time,
         submission_time, form_interactions_ukm_logger(), did_show_suggestions_,
-        observed_submission, form_interactions_counter_->GetCounts(), intent);
+        observed_submission, form_interaction_counts, intent);
   }
   if (submitted_form->ShouldBeUploaded())
     UploadFormData(*submitted_form, observed_submission);
@@ -1906,7 +1905,6 @@ void BrowserAutofillManager::Reset() {
   fast_checkout_delegate_->Reset();
   touch_to_fill_delegate_->Reset();
   filling_context_.clear();
-  form_interactions_counter_ = std::make_unique<FormInteractionsCounter>();
 }
 
 bool BrowserAutofillManager::RefreshDataModels() {
@@ -2226,14 +2224,12 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       credit_card_form_event_logger_->OnDidFillSuggestion(
           credit_card_, *form_structure, *autofill_field, newly_filled_fields,
           base::flat_set<FieldGlobalId>(std::move(safe_fields)), sync_state_);
-      form_interactions_counter_->OnAutofillFill();
     }
 
     if (!is_credit_card) {
       address_form_event_logger_->OnDidFillSuggestion(
           *absl::get<const AutofillProfile*>(profile_or_credit_card),
           *form_structure, *autofill_field, sync_state_);
-      form_interactions_counter_->OnAutofillFill();
     }
   }
 

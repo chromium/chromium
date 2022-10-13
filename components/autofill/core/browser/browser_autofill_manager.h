@@ -30,7 +30,6 @@
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
-#include "components/autofill/core/browser/metrics/form_interactions_counter.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -424,6 +423,10 @@ class BrowserAutofillManager : public AutofillManager,
       std::unique_ptr<CreditCardAccessManager> manager) {
     credit_card_access_manager_ = std::move(manager);
   }
+
+  const FormInteractionsFlowId& address_form_interactions_flow_id_for_test() {
+    return address_form_event_logger_->form_interactions_flow_id_for_test();
+  }
 #endif  // UNIT_TEST
 
  private:
@@ -787,10 +790,6 @@ class BrowserAutofillManager : public AutofillManager,
   // Used to record metrics. This should be set at the beginning of the
   // interaction and re-used throughout the context of this manager.
   AutofillSyncSigninState sync_state_ = AutofillSyncSigninState::kNumSyncStates;
-
-  // Used to keep track of user interactions with text fields, Autocomplete and
-  // Autofill.
-  std::unique_ptr<FormInteractionsCounter> form_interactions_counter_;
 
   // Helps with measuring whether phone number is collected and whether it is in
   // conjunction with WebOTP or OneTimeCode (OTC).

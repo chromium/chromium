@@ -352,6 +352,13 @@ void AwAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
   NOTIMPLEMENTED();
 }
 
+autofill::FormInteractionsFlowId
+AwAutofillClient::GetCurrentFormInteractionsFlowId() {
+  // Currently not in use here. See `ChromeAutofillClient` for a proper
+  // implementation.
+  return {};
+}
+
 void AwAutofillClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   NOTIMPLEMENTED();

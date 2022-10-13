@@ -14,6 +14,7 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
@@ -67,6 +68,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/public/prefs.h"
 #include "components/autofill_assistant/browser/public/runtime_manager.h"
@@ -1149,6 +1151,18 @@ void ChromeAutofillClient::OpenPromoCodeOfferDetailsURL(const GURL& url) {
 
 LogManager* ChromeAutofillClient::GetLogManager() const {
   return log_manager_.get();
+}
+
+FormInteractionsFlowId
+ChromeAutofillClient::GetCurrentFormInteractionsFlowId() {
+  constexpr base::TimeDelta max_flow_time = base::Minutes(20);
+  base::Time now = AutofillClock::Now();
+
+  if (now - flow_id_date_ > max_flow_time || now < flow_id_date_) {
+    flow_id_ = FormInteractionsFlowId(base::GUID::GenerateRandomV4());
+    flow_id_date_ = now;
+  }
+  return flow_id_;
 }
 
 void ChromeAutofillClient::LoadRiskData(

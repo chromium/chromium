@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_TEST_BASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_TEST_BASE_H_
 
+#include "base/metrics/metrics_hashes.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
@@ -169,6 +170,10 @@ class AutofillMetricsBaseTest : public testing::Test {
 
   TestPersonalDataManager& personal_data() {
     return *autofill_client_->GetPersonalDataManager();
+  }
+
+  uint64_t address_form_flow_id_hash() {
+    return base::HashMetricName(autofill_manager().GetAddressFormFlowId());
   }
 
   const bool is_in_any_main_frame_ = true;

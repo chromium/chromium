@@ -383,6 +383,13 @@ void WebViewAutofillClientIOS::OpenPromoCodeOfferDetailsURL(const GURL& url) {
       /*is_renderer_initiated=*/false));
 }
 
+autofill::FormInteractionsFlowId
+WebViewAutofillClientIOS::GetCurrentFormInteractionsFlowId() {
+  // Currently not in use here. See `ChromeAutofillClient` for a proper
+  // implementation.
+  return {};
+}
+
 void WebViewAutofillClientIOS::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
   [bridge_ loadRiskData:std::move(callback)];
