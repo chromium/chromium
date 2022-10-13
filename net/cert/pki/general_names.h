@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/strings/string_piece_forward.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/cert_error_id.h"

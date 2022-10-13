@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/ocsp_revocation_status.h"

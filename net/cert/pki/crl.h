@@ -5,7 +5,6 @@
 #ifndef NET_CERT_PKI_CRL_H_
 #define NET_CERT_PKI_CRL_H_
 
-#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/general_names.h"
