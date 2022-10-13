@@ -413,12 +413,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Holdback_20221012",
+                    "name": "Holdback_20221013",
                     "enable_features": [
                         "AndroidBatteryMetricsReportOnUIThread"
                     ],
                     "disable_features": [
-                        "AndroidScrollOptimizations"
+                        "AndroidScrollOptimizations",
+                        "ToolbarPhoneOptimizations"
                     ]
                 }
             ]
@@ -10668,21 +10669,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ThrottleIntersectionObserverUMA"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ToolbarPhoneOptimizations": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ToolbarPhoneOptimizations"
                     ]
                 }
             ]
