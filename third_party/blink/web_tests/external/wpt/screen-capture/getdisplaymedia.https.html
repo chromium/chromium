@@ -59,7 +59,6 @@ promise_test( async t => {
  {video: true},
  {video: true, audio: false},
  {audio: false},
- {audio: true},
  {},
  undefined
 ].forEach(constraints => promise_test(async t => {
@@ -93,6 +92,7 @@ promise_test( async t => {
 
 [
  {video: true, audio: true},
+ {audio: true},
 ].forEach(constraints => promise_test(async t => {
   const stream = await getDisplayMedia(constraints);
   t.add_cleanup(() => stopTracks(stream));

@@ -22,7 +22,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_user_media_stream_constraints.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -351,7 +351,8 @@ class MediaDevicesTest : public PageTestBase {
 
 TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
   V8TestingScope scope;
-  MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
+  UserMediaStreamConstraints* constraints =
+      UserMediaStreamConstraints::Create();
   ScriptPromise promise =
       GetMediaDevices(scope.GetWindow())
           ->getUserMedia(scope.GetScriptState(), constraints,

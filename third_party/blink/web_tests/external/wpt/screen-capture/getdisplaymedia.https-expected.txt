@@ -1,12 +1,11 @@
 This is a testharness.js-based test.
-Found 56 tests; 51 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 56 tests; 52 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getDisplayMedia in navigator.mediaDevices
 FAIL getDisplayMedia() must require user activation assert_unreached: Should have rejected: getDisplayMedia should have returned an already-rejected promise. Reached unreachable code
 FAIL getDisplayMedia() must adhere to frameRate if set assert_greater_than_equal: expected a number greater than or equal to 2.5 but got NaN
 PASS getDisplayMedia({"video":true}) must succeed with video
 PASS getDisplayMedia({"video":true,"audio":false}) must succeed with video
 PASS getDisplayMedia({"audio":false}) must succeed with video
-FAIL getDisplayMedia({"audio":true}) must succeed with video promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getDisplayMedia' on 'MediaDevices': Audio only requests are not supported"
 PASS getDisplayMedia({}) must succeed with video
 PASS getDisplayMedia(undefined) must succeed with video
 FAIL getDisplayMedia({"video":false}) must fail with TypeError assert_unreached: Should have rejected: getDisplayMedia should have returned an already-rejected promise. Reached unreachable code
@@ -19,6 +18,7 @@ PASS getDisplayMedia({"video":{"frameRate":{"min":4}}}) must fail with TypeError
 PASS getDisplayMedia({"video":{"frameRate":{"exact":4}}}) must fail with TypeError
 PASS getDisplayMedia({"video":false,"audio":true}) must fail with TypeError
 PASS getDisplayMedia({"video":true,"audio":true}) must succeed with video maybe audio
+PASS getDisplayMedia({"audio":true}) must succeed with video maybe audio
 PASS getDisplayMedia({video: {"width":{"max":360}}}) must be constrained
 PASS getDisplayMedia({video: {"height":{"max":240}}}) must be constrained
 PASS getDisplayMedia({video: {"width":{"max":360},"height":{"max":240}}}) must be constrained

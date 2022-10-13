@@ -29,14 +29,15 @@
 namespace blink {
 
 class CaptureHandleConfig;
+class DisplayMediaStreamOptions;
 class ExceptionState;
 class LocalFrame;
 class Navigator;
-class MediaStreamConstraints;
 class MediaTrackSupportedConstraints;
 class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
+class UserMediaStreamConstraints;
 
 class MODULES_EXPORT MediaDevices final
     : public EventTargetWithInlineData,
@@ -55,7 +56,7 @@ class MODULES_EXPORT MediaDevices final
   ScriptPromise enumerateDevices(ScriptState*, ExceptionState&);
   MediaTrackSupportedConstraints* getSupportedConstraints() const;
   ScriptPromise getUserMedia(ScriptState*,
-                             const MediaStreamConstraints*,
+                             const UserMediaStreamConstraints*,
                              ExceptionState&);
   ScriptPromise SendUserMediaRequest(ScriptState*,
                                      UserMediaRequestType,
@@ -63,11 +64,11 @@ class MODULES_EXPORT MediaDevices final
                                      ExceptionState&);
 
   ScriptPromise getDisplayMediaSet(ScriptState*,
-                                   const MediaStreamConstraints*,
+                                   const DisplayMediaStreamOptions*,
                                    ExceptionState&);
 
   ScriptPromise getDisplayMedia(ScriptState*,
-                                const MediaStreamConstraints*,
+                                const DisplayMediaStreamOptions*,
                                 ExceptionState&);
 
   void setCaptureHandleConfig(ScriptState*,

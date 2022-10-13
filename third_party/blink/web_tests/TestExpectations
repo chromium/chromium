@@ -6040,11 +6040,6 @@ crbug.com/1238130 external/wpt/animation-worklet/worklet-animation-with-scroll-t
 # Sheriff 2021-07-29
 crbug.com/626703 http/tests/security/cross-frame-access-put.html [ Failure Pass ]
 
-# Sheriff 2021-07-30
-crbug.com/1234619 external/wpt/screen-capture/permissions-policy-audio+video.https.sub.html [ Failure ]
-crbug.com/1234619 external/wpt/screen-capture/permissions-policy-audio.https.sub.html [ Failure ]
-crbug.com/1234619 external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Failure ]
-
 # Sheriff 2021-08-02
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Failure Pass ]
 
