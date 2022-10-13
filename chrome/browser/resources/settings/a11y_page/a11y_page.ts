@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_shared.css.js';
-// <if expr="not is_macosx and not chromeos_ash">
+// <if expr="not is_macosx and not is_chromeos">
 import './captions_subpage.js';
 import '../settings_page/settings_subpage.js';
 // </if>
@@ -67,7 +67,7 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
         notify: true,
       },
 
-      // <if expr="not chromeos_ash">
+      // <if expr="not is_chromeos">
       enableLiveCaption_: {
         type: Boolean,
         value: function() {
@@ -127,7 +127,7 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
     };
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   private enableLiveCaption_: boolean;
   private showFocusHighlightOption_: boolean;
   // </if>
@@ -172,7 +172,7 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
     }
   }
 
-  // <if expr="not chromeos_ash">
+  // <if expr="not is_chromeos">
   private onFocusHighlightChange_(event: Event) {
     chrome.metricsPrivate.recordBoolean(
         'Accessibility.FocusHighlight.ToggleEnabled',
@@ -180,7 +180,7 @@ class SettingsA11yPageElement extends SettingsA11yPageElementBase {
   }
   // </if>
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   private onManageSystemAccessibilityFeaturesTap_() {
     if (loadTimeData.valueExists(
             'isAccessibilityOSSettingsVisibilityEnabled') &&

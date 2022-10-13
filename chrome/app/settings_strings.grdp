@@ -113,6 +113,11 @@
       Show a quick highlight on the focused object
     </message>
   </if>
+  <if expr="chromeos_lacros">
+    <message name="IDS_SETTINGS_ACCESSIBILITY_MANAGE_ACCESSIBILITY_FEATURES" desc="In the settings tab, the title of a link that opens a screen allowing the user to change accessibility features.">
+      Manage accessibility features
+    </message>
+  </if>
 
   <!-- Appearance Page -->
   <message name="IDS_SETTINGS_APPEARANCE" desc="Name of the settings page which displays appearance preferences.">
