@@ -11,6 +11,8 @@ import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -237,7 +239,8 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
 
             assert mConstraintsObserver == null;
             if (constraintsSupplier != null) {
-                mConstraintsObserver = new ConstraintsChecker(this, constraintsSupplier);
+                mConstraintsObserver = new ConstraintsChecker(
+                        this, constraintsSupplier, new Handler(Looper.getMainLooper()));
             }
 
             assert mTabSupplier == null;
