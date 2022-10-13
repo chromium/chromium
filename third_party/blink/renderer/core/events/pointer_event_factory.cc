@@ -105,8 +105,12 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
 
   // If width/height is unknown we let PointerEventInit set it to 1.
   // See https://w3c.github.io/pointerevents/#dom-pointerevent-width
+  //
+  // For pointerup, even known width/height is ignored in favor of the default
+  // value of 1.  See https://github.com/w3c/pointerevents/issues/225.
   if (web_pointer_event_in_root_frame.HasWidth() &&
-      web_pointer_event_in_root_frame.HasHeight()) {
+      web_pointer_event_in_root_frame.HasHeight() &&
+      web_pointer_event.GetType() != WebInputEvent::Type::kPointerUp) {
     float scale_factor = 1.0f;
     if (dom_window && dom_window->GetFrame())
       scale_factor = 1.0f / dom_window->GetFrame()->PageZoomFactor();
