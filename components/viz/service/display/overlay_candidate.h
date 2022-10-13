@@ -83,15 +83,16 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // will be shown via an overlay.
   static bool RequiresOverlay(const DrawQuad* quad);
 
+  // Returns |candidate|'s |display_rect| transformed to its target space.
+  // If |candidate| holds an arbitrary transform, this will be the smallest axis
+  // aligned bounding rect containing |transform| applied to |display_rect|.
+  // If |candidate| holds an overlay transform, this will just be
+  // |display_rect|, which is already in its target space.
+  static gfx::RectF DisplayRectInTargetSpace(const OverlayCandidate& candidate);
+
   OverlayCandidate();
   OverlayCandidate(const OverlayCandidate& other);
   ~OverlayCandidate();
-
-  // Transform |content_rect| to target space. I.e. with |transform| applied.
-  // |content_rect| will be the smallest axis aligned bounding rect containing
-  // the transformed rect.
-  // This is a no-op if |transform| is |gfx::OverlayTransform|.
-  void TransformRectToTargetSpace(gfx::RectF& content_rect) const;
 
   // Transformation to apply to layer during composition.
   // Note: A |gfx::OverlayTransform| transforms the buffer within its bounds and

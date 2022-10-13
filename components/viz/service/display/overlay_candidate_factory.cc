@@ -248,33 +248,14 @@ float OverlayCandidateFactory::EstimateVisibleDamage(
       0.f, quad_damage.size().GetArea() - occluded_damage_estimate_total);
 }
 
-// static
-bool OverlayCandidate::RequiresOverlay(const DrawQuad* quad) {
-  // Regular priority hint.
-  switch (quad->material) {
-    case DrawQuad::Material::kTextureContent:
-      return TextureDrawQuad::MaterialCast(quad)->protected_video_type ==
-                 gfx::ProtectedVideoType::kHardwareProtected ||
-             TextureDrawQuad::MaterialCast(quad)->overlay_priority_hint ==
-                 OverlayPriority::kRequired;
-    case DrawQuad::Material::kVideoHole:
-      return true;
-    case DrawQuad::Material::kYuvVideoContent:
-      return YUVVideoDrawQuad::MaterialCast(quad)->protected_video_type ==
-             gfx::ProtectedVideoType::kHardwareProtected;
-    default:
-      return false;
-  }
-}
-
 bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
     const OverlayCandidate& candidate,
     QuadList::ConstIterator quad_list_begin,
     QuadList::ConstIterator quad_list_end,
     const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
         render_pass_backdrop_filters) const {
-  gfx::RectF target_rect = candidate.display_rect;
-  candidate.TransformRectToTargetSpace(target_rect);
+  gfx::RectF target_rect =
+      OverlayCandidate::DisplayRectInTargetSpace(candidate);
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
        ++overlap_iter) {
     if (overlap_iter->material == DrawQuad::Material::kAggregatedRenderPass) {
@@ -680,8 +661,8 @@ gfx::RectF OverlayCandidateFactory::GetDamageRect(
     // original surface. Here the |unassigned_surface_damage_| will contain all
     // unassigned damage and we use it to conservatively estimate the damage for
     // this quad. We limit the damage to the candidates quad rect in question.
-    gfx::RectF intersection = candidate.display_rect;
-    candidate.TransformRectToTargetSpace(intersection);
+    gfx::RectF intersection =
+        OverlayCandidate::DisplayRectInTargetSpace(candidate);
     intersection.Intersect(gfx::RectF(unassigned_surface_damage_));
     return intersection;
   }

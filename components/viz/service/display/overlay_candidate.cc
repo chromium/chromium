@@ -7,10 +7,13 @@
 #include "cc/base/math_util.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
+#include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/debugger/viz_debugger.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_transform_utils.h"
+#include "ui/gfx/video_types.h"
 
 namespace viz {
 
@@ -44,9 +47,8 @@ bool OverlayCandidate::IsOccluded(const OverlayCandidate& candidate,
                                   QuadList::ConstIterator quad_list_end) {
   // The rects are rounded as they're snapped by the compositor to pixel unless
   // it is AA'ed, in which case, it won't be overlaid.
-  gfx::RectF target_rect_f = candidate.display_rect;
-  candidate.TransformRectToTargetSpace(target_rect_f);
-  gfx::Rect target_rect = gfx::ToRoundedRect(target_rect_f);
+  gfx::Rect target_rect =
+      gfx::ToRoundedRect(DisplayRectInTargetSpace(candidate));
 
   // Check that no visible quad overlaps the candidate.
   for (auto overlap_iter = quad_list_begin; overlap_iter != quad_list_end;
@@ -87,11 +89,33 @@ void OverlayCandidate::ApplyClip(OverlayCandidate& candidate,
   }
 }
 
-void OverlayCandidate::TransformRectToTargetSpace(
-    gfx::RectF& content_rect) const {
-  if (absl::holds_alternative<gfx::Transform>(transform)) {
-    content_rect = absl::get<gfx::Transform>(transform).MapRect(content_rect);
+// static
+bool OverlayCandidate::RequiresOverlay(const DrawQuad* quad) {
+  // Regular priority hint.
+  switch (quad->material) {
+    case DrawQuad::Material::kTextureContent:
+      return TextureDrawQuad::MaterialCast(quad)->protected_video_type ==
+                 gfx::ProtectedVideoType::kHardwareProtected ||
+             TextureDrawQuad::MaterialCast(quad)->overlay_priority_hint ==
+                 OverlayPriority::kRequired;
+    case DrawQuad::Material::kVideoHole:
+      return true;
+    case DrawQuad::Material::kYuvVideoContent:
+      return YUVVideoDrawQuad::MaterialCast(quad)->protected_video_type ==
+             gfx::ProtectedVideoType::kHardwareProtected;
+    default:
+      return false;
   }
+}
+
+// static
+gfx::RectF OverlayCandidate::DisplayRectInTargetSpace(
+    const OverlayCandidate& candidate) {
+  if (absl::holds_alternative<gfx::Transform>(candidate.transform)) {
+    return absl::get<gfx::Transform>(candidate.transform)
+        .MapRect(candidate.display_rect);
+  }
+  return candidate.display_rect;
 }
 
 }  // namespace viz
