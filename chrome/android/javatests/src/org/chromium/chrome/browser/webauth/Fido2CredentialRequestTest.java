@@ -1387,10 +1387,13 @@ public class Fido2CredentialRequestTest {
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
         mRequest.cancelConditionalGetAssertion(mFrameHost);
-        mFido2ApiCallHelper.invokeSuccessCallback();
-        mCallback.blockUntilCalled();
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.ABORT_ERROR), mCallback.getStatus());
+
+        // Also validate that when the FIDO getCredentials call is completed, nothing happens.
+        // The MockBrowserBridge will assert if onCredentialsDetailsListReceived is called.
+        mMockBrowserBridge.setExpectedCredentialDetailsList(new ArrayList<>());
+        mFido2ApiCallHelper.invokeSuccessCallback();
     }
 
     @Test
@@ -1407,7 +1410,6 @@ public class Fido2CredentialRequestTest {
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
         mRequest.cancelConditionalGetAssertion(mFrameHost);
-        mCallback.blockUntilCalled();
         Assert.assertEquals(
                 Integer.valueOf(AuthenticatorStatus.ABORT_ERROR), mCallback.getStatus());
     }

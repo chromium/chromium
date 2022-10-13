@@ -241,6 +241,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     public void cancelConditionalGetAssertion(RenderFrameHost frameHost) {
         if (mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST) {
             mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
+            returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
             return;
         }
 
@@ -335,7 +336,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 || mConditionalUiState == ConditionalUiState.CANCEL_PENDING;
 
         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
-            returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
+            // The request was completed synchronously when the cancellation was received.
             return;
         }
 
