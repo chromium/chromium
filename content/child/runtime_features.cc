@@ -545,24 +545,6 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
       WebRuntimeFeatures::EnablePendingBeaconAPI(true);
     }
   }
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::kBackForwardCacheSendNotRestoredReasons)) {
-    // The Chromium flag `kBackForwardCacheSendNotRestoredReasons` is true,
-    // which enables the parts of the API's implementation in Chromium.
-    if (blink::features::
-            kBackForwardCacheSendNotRestoredReasonsRequiresOriginTrial.Get()) {
-      // `kBackForwardCacheSendNotRestoredReasonsRequiresOriginTrial`=true
-      // specifies that execution context needs to have an origin trial token in
-      // order to use the BackForwardCacheNotRestoredReasons web API. So disable
-      // the RuntimeEnabledFeature flag BackForwardCacheNotRestoredReasons here
-      // and let the existence of OT token to decide whether the web API is
-      // enabled.
-      WebRuntimeFeatures::EnableBackForwardCacheNotRestoredReasons(false);
-    } else {
-      WebRuntimeFeatures::EnableBackForwardCacheNotRestoredReasons(true);
-    }
-  }
 }
 
 // Ensures that the various ways of enabling/disabling features do not produce

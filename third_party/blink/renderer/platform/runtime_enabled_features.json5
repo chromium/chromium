@@ -342,6 +342,9 @@
       name: "BackForwardCacheNotRestoredReasons",
       status: "experimental",
       origin_trial_feature_name: "BackForwardCacheNotRestoredReasons",
+      base_feature: "BackForwardCacheSendNotRestoredReasons",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
       public: true,
     },
     {

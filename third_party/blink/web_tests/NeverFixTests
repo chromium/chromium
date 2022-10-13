@@ -1954,7 +1954,3 @@ crbug.com/1293679 virtual/pending-beacon/external/wpt/page-unload-beacon/* [ Pas
 # Experimental JS shared memory features
 crbug.com/1351118 wpt_internal/js/shared_memory/* [ Skip ]
 crbug.com/1351118 virtual/js-shared-memory/wpt_internal/js/shared_memory/* [ Pass ]
-
-# Feature is not yet launched, so skip the base.
-crbug.com/1326344 external/wpt/performance-timeline/not-restored-reasons/* [ Skip ]
-crbug.com/1326344 virtual/not-restored-reasons/external/wpt/performance-timeline/not-restored-reasons/* [ Pass ]

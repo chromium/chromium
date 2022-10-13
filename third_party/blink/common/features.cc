@@ -97,14 +97,6 @@ BASE_FEATURE(kBackForwardCacheDedicatedWorker,
              "BackForwardCacheDedicatedWorker",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBackForwardCacheSendNotRestoredReasons,
-             "BackForwardCacheSendNotRestoredReasons",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool>
-    kBackForwardCacheSendNotRestoredReasonsRequiresOriginTrial = {
-        &kBackForwardCacheSendNotRestoredReasons, "requires_origin_trial",
-        false};
-
 // Enable intervention for download that was initiated from or occurred in an ad
 // frame without user activation.
 BASE_FEATURE(kBlockingDownloadsInAdFrameWithoutUserActivation,
