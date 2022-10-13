@@ -274,19 +274,15 @@ void AXWindowObjWrapper::OnCaretBoundsChanged(
 }
 
 void AXWindowObjWrapper::OnWindowDestroyed(aura::Window* window) {
+  if (is_root_window_)
+    aura_obj_cache_->OnRootWindowObjDestroyed(window_);
+
   aura_obj_cache_->Remove(window, nullptr);
 }
 
 void AXWindowObjWrapper::OnWindowDestroying(aura::Window* window) {
-  if (window == window_)
-    window_destroying_ = true;
-
-  Widget* widget = GetWidgetForWindow(window);
-  if (widget)
-    aura_obj_cache_->Remove(widget);
-
-  if (is_root_window_)
-    aura_obj_cache_->OnRootWindowObjDestroyed(window_);
+  DCHECK_EQ(window, window_);
+  window_destroying_ = true;
 }
 
 void AXWindowObjWrapper::OnWindowHierarchyChanged(
