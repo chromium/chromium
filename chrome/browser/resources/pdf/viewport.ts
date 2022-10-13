@@ -77,6 +77,13 @@ export class Viewport implements ViewportInterface {
   private internalZoom_: number = 1;
 
   /**
+   * Zoom state used to change zoom and fitting type to what it was
+   * originally when saved.
+   */
+  private savedZoom_: number|null = null;
+  private savedFittingType_: FittingType|null = null;
+
+  /**
    * Predefined zoom factors to be used when zooming in/out. These are in
    * ascending order.
    */
@@ -589,6 +596,30 @@ export class Viewport implements ViewportInterface {
       this.setZoomInternal_(this.clampZoom_(newZoom));
       this.updateViewport_();
     });
+  }
+
+  /**
+   * Save the current zoom and fitting type.
+   */
+  saveZoomState() {
+    this.savedZoom_ = this.internalZoom_;
+    this.savedFittingType_ = this.fittingType_;
+  }
+
+  /**
+   * Set zoom and fitting type to what it was when saved. See saveZoomState().
+   */
+  restoreZoomState() {
+    assert(
+        this.savedZoom_ !== null && this.savedFittingType_ !== null,
+        'No saved zoom state exists');
+    if (this.savedFittingType_ === FittingType.NONE) {
+      this.setZoom(this.savedZoom_);
+    } else {
+      this.setFittingType(this.savedFittingType_);
+    }
+    this.savedZoom_ = null;
+    this.savedFittingType_ = null;
   }
 
   /** @param e Event containing the old browser zoom. */
