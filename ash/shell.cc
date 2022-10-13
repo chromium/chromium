@@ -1166,8 +1166,8 @@ void Shell::Init(
 
   screen_position_controller_ = std::make_unique<ScreenPositionController>();
 
-  frame_throttling_controller_ =
-      std::make_unique<FrameThrottlingController>(context_factory);
+  frame_throttling_controller_ = std::make_unique<FrameThrottlingController>(
+      context_factory->GetHostFrameSinkManager());
 
   if (features::IsTabClusterUIEnabled())
     tab_cluster_ui_controller_ = std::make_unique<TabClusterUIController>();

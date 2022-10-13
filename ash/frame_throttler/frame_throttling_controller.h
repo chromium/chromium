@@ -23,9 +23,9 @@ class WindowTreeHost;
 class Window;
 }
 
-namespace ui {
-class ContextFactory;
-}
+namespace viz {
+class HostFrameSinkManager;
+}  // namespace viz
 
 namespace ash {
 
@@ -51,7 +51,8 @@ class ASH_EXPORT FrameThrottlingController final
     : public aura::WindowTreeHostObserver,
       public aura::WindowObserver {
  public:
-  explicit FrameThrottlingController(ui::ContextFactory* context_factory);
+  explicit FrameThrottlingController(
+      viz::HostFrameSinkManager* host_frame_sink_manager);
   FrameThrottlingController(const FrameThrottlingController&) = delete;
   FrameThrottlingController& operator=(const FrameThrottlingController&) =
       delete;
@@ -67,9 +68,35 @@ class ASH_EXPORT FrameThrottlingController final
 
   void OnWindowTreeHostCreated(aura::WindowTreeHost* host);
 
-  // Starts to throttle the framerate of |windows|.
-  void StartThrottling(const std::vector<aura::Window*>& windows);
-  // Ends throttling of all throttled windows.
+  // Starts to throttle the frame rate of |windows| at the custom
+  // |requested_frame_interval|. The |requested_frame_interval| is used unless
+  // the controller is actively throttling other windows not specified via
+  // StartThrottling() at a frame rate higher than the one requested here.
+  //
+  // Examples:
+  // Case 1: Controller is throttling a window specified via
+  //         OnCompositingFrameSinksToThrottleUpdated() at 20 fps, and
+  //         StartThrottling(<new window>, 30fps) is called. Both windows
+  //         will be throttled at 30 fps.
+  // Case 2: Controller is throttling a window specified via
+  //         OnCompositingFrameSinksToThrottleUpdated() at 20 fps, and
+  //         StartThrottling(<new window>, 15fps) is called. Both windows
+  //         will be throttled at 20 fps.
+  // Case 3: Controller is not throttling any windows, and
+  //         StartThrottling(<new window>, 15fps) is called. The new window
+  //         will be throttled at 15 fps.
+  //
+  // The higher frame rate is always picked to ensure all UIs are smooth enough,
+  // even if it comes at the cost of more power consumption.
+  //
+  // If the |requested_frame_interval| is zero, the default throttled frame rate
+  // is used internally.
+  void StartThrottling(
+      const std::vector<aura::Window*>& windows,
+      base::TimeDelta requested_frame_interval = base::TimeDelta());
+
+  // Ends throttling of all windows specified via StartThrottling(). The
+  // throttled frame rate for any remaining windows returns to the default.
   void EndThrottling();
 
   std::vector<viz::FrameSinkId> GetFrameSinkIdsToThrottle() const;
@@ -78,10 +105,21 @@ class ASH_EXPORT FrameThrottlingController final
   void RemoveArcObserver(FrameThrottlingObserver* observer);
   bool HasArcObserver(FrameThrottlingObserver* observer);
 
-  uint8_t throttled_fps() const { return throttled_fps_; }
+  // The current frame interval being used. Note this applies to all windows
+  // that the controller is currently throttling. The viz service does not allow
+  // for multiple simultaneous frame rates.
+  base::TimeDelta current_throttled_frame_interval() const {
+    return current_throttled_frame_interval_;
+  }
+
+  // Returns 1 / current_throttled_frame_interval() rounded to the nearest
+  // integer. Note if the frame interval is very large, this may legitimately
+  // return 0 fps.
+  uint8_t GetCurrentThrottledFrameRate() const;
 
  private:
-  void StartThrottlingArc(const std::vector<aura::Window*>& windows);
+  void StartThrottlingArc(const std::vector<aura::Window*>& windows,
+                          uint8_t throttled_fps);
   void EndThrottlingArc();
 
   // Collect the lacros window in the given |window|. This function recursively
@@ -107,10 +145,15 @@ class ASH_EXPORT FrameThrottlingController final
       aura::Window* lacros_window);
 
   void UpdateThrottlingOnFrameSinks();
+  void SetWindowsManuallyThrottled(bool windows_manually_throttled);
+  void SetCurrentThrottledFrameInterval();
+  // Whether there are any windows to throttle besides the ones specified via
+  // StartThrottling().
+  bool HasCompositingBasedThrottling() const;
 
   void ResetThrottleCandidates(ThrottleCandidates* candidates);
 
-  ui::ContextFactory* context_factory_ = nullptr;
+  viz::HostFrameSinkManager* const host_frame_sink_manager_;
   base::ObserverList<FrameThrottlingObserver> observers_;
   base::ObserverList<FrameThrottlingObserver> arc_observers_;
 
@@ -127,8 +170,16 @@ class ASH_EXPORT FrameThrottlingController final
   // when UI is not in such modes.
   ThrottleCandidates manually_throttled_candidates_;
 
-  // The fps used for throttling.
-  uint8_t throttled_fps_ = kDefaultThrottleFps;
+  // The default frame interval that should be used when a custom interval is
+  // not requested via StartThrottling(). This value is effectively immutable.
+  base::TimeDelta default_throttled_frame_interval_;
+  // The current frame interval used for throttling. Changes according to which
+  // windows are throttled and what frame rates were requested by the caller.
+  base::TimeDelta current_throttled_frame_interval_;
+  // The latest |requested_frame_interval| provided in StartThrottling().
+  // May be zero if one was not requested.
+  base::TimeDelta latest_custom_throttled_frame_interval_;
+
   bool windows_manually_throttled_ = false;
 };
 

@@ -12,13 +12,14 @@
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "base/command_line.h"
+#include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/compositor/compositor.h"
 
 namespace ash {
 
@@ -85,16 +86,19 @@ void FrameThrottlingController::ResetThrottleCandidates(
 }
 
 FrameThrottlingController::FrameThrottlingController(
-    ui::ContextFactory* context_factory)
-    : context_factory_(context_factory) {
+    viz::HostFrameSinkManager* host_frame_sink_manager)
+    : host_frame_sink_manager_(host_frame_sink_manager) {
+  DCHECK(host_frame_sink_manager_);
+  int default_fps = kDefaultThrottleFps;
   const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
   if (cl->HasSwitch(switches::kFrameThrottleFps)) {
-    int value;
-    if (base::StringToInt(cl->GetSwitchValueASCII(switches::kFrameThrottleFps),
-                          &value)) {
-      throttled_fps_ = value;
+    if (!base::StringToInt(cl->GetSwitchValueASCII(switches::kFrameThrottleFps),
+                           &default_fps)) {
+      default_fps = kDefaultThrottleFps;
     }
   }
+  default_throttled_frame_interval_ = base::Hertz(default_fps);
+  current_throttled_frame_interval_ = default_throttled_frame_interval_;
 }
 
 FrameThrottlingController::~FrameThrottlingController() {
@@ -102,7 +106,10 @@ FrameThrottlingController::~FrameThrottlingController() {
 }
 
 void FrameThrottlingController::StartThrottling(
-    const std::vector<aura::Window*>& windows) {
+    const std::vector<aura::Window*>& windows,
+    base::TimeDelta requested_frame_interval) {
+  latest_custom_throttled_frame_interval_ = requested_frame_interval;
+
   if (windows_manually_throttled_)
     EndThrottling();
 
@@ -126,6 +133,7 @@ void FrameThrottlingController::StartThrottling(
     ash::AppType type =
         static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType));
     switch (type) {
+      case ash::AppType::NON_APP:
       case ash::AppType::BROWSER:
         CollectFrameSinkIds(
             window, &manually_throttled_candidates_.browser_frame_sink_ids);
@@ -144,25 +152,26 @@ void FrameThrottlingController::StartThrottling(
 
   // Throttle browser and lacros windows.
   if (!manually_throttled_candidates_.IsEmpty()) {
+    SetWindowsManuallyThrottled(true);
     UpdateThrottlingOnFrameSinks();
     for (const auto& lacros_candidate :
          manually_throttled_candidates_.lacros_candidates) {
       lacros_candidate.first->SetProperty(ash::kFrameRateThrottleKey, true);
     }
-    windows_manually_throttled_ = true;
   }
 
   // Do not throttle arc if at least one arc window should not be throttled.
   if (!arc_windows.empty() && (arc_windows.size() == all_arc_windows.size())) {
-    StartThrottlingArc(arc_windows);
-    windows_manually_throttled_ = true;
+    SetWindowsManuallyThrottled(true);
+    StartThrottlingArc(arc_windows, GetCurrentThrottledFrameRate());
   }
 }
 
 void FrameThrottlingController::StartThrottlingArc(
-    const std::vector<aura::Window*>& arc_windows) {
+    const std::vector<aura::Window*>& arc_windows,
+    uint8_t throttled_fps) {
   for (auto& arc_observer : arc_observers_) {
-    arc_observer.OnThrottlingStarted(arc_windows, throttled_fps_);
+    arc_observer.OnThrottlingStarted(arc_windows, throttled_fps);
   }
 }
 
@@ -174,12 +183,15 @@ void FrameThrottlingController::EndThrottlingArc() {
 
 void FrameThrottlingController::EndThrottling() {
   if (windows_manually_throttled_) {
+    SetWindowsManuallyThrottled(false);
     ResetThrottleCandidates(&manually_throttled_candidates_);
     UpdateThrottlingOnFrameSinks();
     EndThrottlingArc();
-
-    windows_manually_throttled_ = false;
   }
+}
+
+uint8_t FrameThrottlingController::GetCurrentThrottledFrameRate() const {
+  return base::ClampRound(current_throttled_frame_interval_.ToHz());
 }
 
 void FrameThrottlingController::OnCompositingFrameSinksToThrottleUpdated(
@@ -268,8 +280,33 @@ FrameThrottlingController::GetFrameSinkIdsToThrottle() const {
 }
 
 void FrameThrottlingController::UpdateThrottlingOnFrameSinks() {
-  context_factory_->GetHostFrameSinkManager()->Throttle(
-      GetFrameSinkIdsToThrottle(), base::Hertz(throttled_fps_));
+  SetCurrentThrottledFrameInterval();
+  host_frame_sink_manager_->Throttle(GetFrameSinkIdsToThrottle(),
+                                     current_throttled_frame_interval_);
+}
+
+void FrameThrottlingController::SetWindowsManuallyThrottled(
+    bool windows_manually_throttled) {
+  windows_manually_throttled_ = windows_manually_throttled;
+  // The current frame interval is partially dictated by
+  // |windows_manually_throttled_|, so it may have changed.
+  SetCurrentThrottledFrameInterval();
+}
+
+void FrameThrottlingController::SetCurrentThrottledFrameInterval() {
+  // Implements the criteria described above StartThrottling() in the header.
+  bool use_latest_custom_throttled_frame_interval =
+      windows_manually_throttled_ &&
+      latest_custom_throttled_frame_interval_.is_positive() &&
+      (!HasCompositingBasedThrottling() ||
+       latest_custom_throttled_frame_interval_ <=
+           default_throttled_frame_interval_);
+  current_throttled_frame_interval_ =
+      use_latest_custom_throttled_frame_interval
+          ? latest_custom_throttled_frame_interval_
+          : default_throttled_frame_interval_;
+  DVLOG(1) << "Throttled frame interval set to "
+           << current_throttled_frame_interval_;
 }
 
 void FrameThrottlingController::AddArcObserver(
@@ -331,6 +368,14 @@ void FrameThrottlingController::CollectLacrosCandidates(
   }
   for (auto* child : window->children())
     CollectLacrosCandidates(child, candidates, lacros_window);
+}
+
+bool FrameThrottlingController::HasCompositingBasedThrottling() const {
+  for (const auto& [_, candidates] : host_to_candidates_map_) {
+    if (!candidates.IsEmpty())
+      return true;
+  }
+  return false;
 }
 
 }  // namespace ash

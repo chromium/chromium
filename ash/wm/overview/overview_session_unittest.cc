@@ -3409,7 +3409,6 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
   testing::NiceMock<MockFrameThrottlingObserver> observer;
   FrameThrottlingController* frame_throttling_controller =
       Shell::Get()->frame_throttling_controller();
-  uint8_t throttled_fps = frame_throttling_controller->throttled_fps();
   frame_throttling_controller->AddArcObserver(&observer);
 
   const int window_count = 5;
@@ -3425,9 +3424,10 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
   std::vector<aura::Window*> windows_to_throttle(window_count, nullptr);
   std::transform(windows.begin(), windows.end(), windows_to_throttle.begin(),
                  [](std::unique_ptr<aura::Window>& w) { return w.get(); });
-  EXPECT_CALL(observer, OnThrottlingStarted(testing::UnorderedElementsAreArray(
-                                                windows_to_throttle),
-                                            throttled_fps));
+  EXPECT_CALL(observer,
+              OnThrottlingStarted(
+                  testing::UnorderedElementsAreArray(windows_to_throttle),
+                  frame_throttling_controller->GetCurrentThrottledFrameRate()));
   ToggleOverview();
 
   // Add a new window to overview.
@@ -3437,9 +3437,10 @@ TEST_P(OverviewSessionTest, FrameThrottlingArc) {
                           static_cast<int>(AppType::ARC_APP));
   windows_to_throttle.push_back(new_window.get());
   EXPECT_CALL(observer, OnThrottlingEnded());
-  EXPECT_CALL(observer, OnThrottlingStarted(testing::UnorderedElementsAreArray(
-                                                windows_to_throttle),
-                                            throttled_fps));
+  EXPECT_CALL(observer,
+              OnThrottlingStarted(
+                  testing::UnorderedElementsAreArray(windows_to_throttle),
+                  frame_throttling_controller->GetCurrentThrottledFrameRate()));
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
   grid->AppendItem(new_window.get(), /*reposition=*/false, /*animate=*/false,
                    /*use_spawn_animation=*/false);
