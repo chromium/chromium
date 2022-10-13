@@ -47,8 +47,7 @@ std::string SimulateGroupAssignment(
           study.name(), processed_study.total_probability(),
           processed_study.GetDefaultExperimentName(), entropy_value));
 
-  for (int i = 0; i < study.experiment_size(); ++i) {
-    const Study_Experiment& experiment = study.experiment(i);
+  for (const auto& experiment : study.experiment()) {
     // TODO(asvitkine): This needs to properly handle the case where a group was
     // forced via forcing_flag in the current state, so that it is not treated
     // as changed.
@@ -64,9 +63,9 @@ std::string SimulateGroupAssignment(
 // or NULL if it does not exist.
 const Study_Experiment* FindExperiment(const Study& study,
                                        const std::string& experiment_name) {
-  for (int i = 0; i < study.experiment_size(); ++i) {
-    if (study.experiment(i).name() == experiment_name)
-      return &study.experiment(i);
+  for (const auto& experiment : study.experiment()) {
+    if (experiment.name() == experiment_name)
+      return &experiment;
   }
   return nullptr;
 }
@@ -82,10 +81,10 @@ bool VariationParamsAreEqual(const Study& study,
   if (static_cast<int>(params.size()) != experiment.param_size())
     return false;
 
-  for (int i = 0; i < experiment.param_size(); ++i) {
+  for (const auto& param : experiment.param()) {
     std::map<std::string, std::string>::const_iterator it =
-        params.find(experiment.param(i).name());
-    if (it == params.end() || it->second != experiment.param(i).value())
+        params.find(param.name());
+    if (it == params.end() || it->second != param.value())
       return false;
   }
 
@@ -127,8 +126,8 @@ VariationsSeedSimulator::Result VariationsSeedSimulator::ComputeDifferences(
   GetCurrentTrialState(&current_state);
 
   Result result;
-  for (size_t i = 0; i < processed_studies.size(); ++i) {
-    const Study& study = *processed_studies[i].study();
+  for (const auto& processed_study : processed_studies) {
+    const Study& study = *processed_study.study();
     std::map<std::string, std::string>::const_iterator it =
         current_state.find(study.name());
 
@@ -147,11 +146,10 @@ VariationsSeedSimulator::Result VariationsSeedSimulator::ComputeDifferences(
     const std::string& selected_group = it->second;
     ChangeType change_type = NO_CHANGE;
     if (study.consistency() == Study_Consistency_PERMANENT) {
-      change_type = PermanentStudyGroupChanged(processed_studies[i],
-                                               selected_group, layers);
+      change_type =
+          PermanentStudyGroupChanged(processed_study, selected_group, layers);
     } else if (study.consistency() == Study_Consistency_SESSION) {
-      change_type = SessionStudyGroupChanged(processed_studies[i],
-                                             selected_group);
+      change_type = SessionStudyGroupChanged(processed_study, selected_group);
     }
 
     switch (change_type) {
