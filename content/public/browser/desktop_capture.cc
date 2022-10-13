@@ -18,6 +18,11 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #endif
 
+#if defined(WEBRTC_USE_PIPEWIRE)
+#include "base/environment.h"
+#include "base/nix/xdg_util.h"
+#endif
+
 namespace content::desktop_capture {
 
 webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions() {
@@ -85,7 +90,13 @@ void BindAuraWindowCapturer(
 
 bool CanUsePipeWire() {
 #if defined(WEBRTC_USE_PIPEWIRE)
-  return webrtc::DesktopCapturer::IsRunningUnderWayland() &&
+  static base::nix::SessionType session_type = base::nix::SessionType::kUnset;
+  if (session_type == base::nix::SessionType::kUnset) {
+    std::unique_ptr<base::Environment> env = base::Environment::Create();
+    session_type = base::nix::GetSessionType(*env);
+  }
+
+  return session_type == base::nix::SessionType::kWayland &&
          base::FeatureList::IsEnabled(features::kWebRtcPipeWireCapturer);
 #else
   return false;

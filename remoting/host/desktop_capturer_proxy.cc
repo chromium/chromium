@@ -32,6 +32,8 @@
 #endif
 
 #if defined(REMOTING_USE_WAYLAND)
+#include "base/environment.h"
+#include "base/nix/xdg_util.h"
 #include "remoting/host/linux/wayland_desktop_capturer.h"
 #endif
 
@@ -96,7 +98,14 @@ void DesktopCapturerProxy::Core::CreateCapturer(
         std::make_unique<AuraDesktopCapturer>());
   }
 #elif defined(REMOTING_USE_WAYLAND)
-  if (options.allow_pipewire() && DesktopCapturer::IsRunningUnderWayland()) {
+  static base::nix::SessionType session_type = base::nix::SessionType::kUnset;
+  if (session_type == base::nix::SessionType::kUnset) {
+    std::unique_ptr<base::Environment> env = base::Environment::Create();
+    session_type = base::nix::GetSessionType(*env);
+  }
+
+  if (options.allow_pipewire() &&
+      session_type == base::nix::SessionType::kWayland) {
     // Even though wayland itself has mechanism to detect surface damage in a
     // fine grained fashion, the framebuffer handed over by the compositor over
     // to the pipewire stream contains the entire scene (and not just the delta)
