@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("webnn") {
   sources = [
+    "ml_graph.cc",
+    "ml_graph.h",
     "ml_graph_builder.cc",
     "ml_graph_builder.h",
     "ml_operand.cc",

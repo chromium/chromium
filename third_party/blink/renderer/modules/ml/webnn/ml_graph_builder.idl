@@ -91,4 +91,6 @@ dictionary MLClampOptions {
   [RaisesException] MLOperand reshape(MLOperand input, sequence<long> newShape);
 
   [RaisesException] MLOperand softmax(MLOperand input);
+
+  [CallWith=ScriptState, RaisesException] Promise<MLGraph> buildAsync(MLNamedOperands outputs);
 };

@@ -2041,6 +2041,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_context.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_context.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_graph.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_graph.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_graph_builder.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_graph_builder.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_ml_model.cc",

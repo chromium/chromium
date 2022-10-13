@@ -5157,10 +5157,14 @@ interface ML
 interface MLContext
     attribute @@toStringTag
     method constructor
+interface MLGraph
+    attribute @@toStringTag
+    method constructor
 interface MLGraphBuilder
     attribute @@toStringTag
     method add
     method averagePool2d
+    method buildAsync
     method clamp
     method constant
     method constructor

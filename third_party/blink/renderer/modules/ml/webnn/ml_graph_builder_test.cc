@@ -10,17 +10,32 @@
 #include "base/numerics/checked_math.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -1624,6 +1639,195 @@ TEST_F(MLGraphBuilderTest, ElementWiseBinaryTest) {
               scope.GetExceptionState().Code());
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "The input types don't match.");
+  }
+}
+
+class FakeMLGraphBackend final : public MLGraph {
+ public:
+  // Create and build a FakeMLGraphBackend object. Resolve the promise with
+  // this concrete object if no errors.
+  static void ValidateAndBuildAsync(MLContext* context,
+                                    const MLNamedOperands& named_outputs,
+                                    ScriptPromiseResolver* resolver) {
+    auto* graph = MakeGarbageCollected<FakeMLGraphBackend>(context);
+    graph->BuildAsync(named_outputs, resolver);
+  }
+
+  // The constructor shouldn't be called directly. The callers should use
+  // ValidateAndBuildAsync() method instead.
+  explicit FakeMLGraphBackend(MLContext* context) : MLGraph(context) {}
+
+  ~FakeMLGraphBackend() override = default;
+
+ private:
+  // Simpliy resolve the promise with this FakeMLGraphBackend object for testing
+  // the input and output resources info.
+  void BuildAsyncImpl(const MLNamedOperands& named_outputs,
+                      ScriptPromiseResolver* resolver) override {
+    resolver->Resolve(this);
+  }
+};
+
+FakeMLGraphBackend* ToFakeMLGraphBackend(V8TestingScope* scope,
+                                         ScriptValue value) {
+  return NativeValueTraits<FakeMLGraphBackend>::NativeValue(
+      scope->GetIsolate(), value.V8Value(), scope->GetExceptionState());
+}
+
+TEST_F(MLGraphBuilderTest, BuildAsyncTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope);
+  auto* script_state = scope.GetScriptState();
+  {
+    // Test throwing exception if the named outputs is empty.
+    MLNamedOperands named_outputs;
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    ScriptPromiseTester tester(script_state, resolver->Promise());
+    FakeMLGraphBackend::ValidateAndBuildAsync(builder->GetContext(),
+                                              named_outputs, resolver);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+    auto* exception = V8DOMException::ToImplWithTypeCheck(
+        scope.GetIsolate(), tester.Value().V8Value());
+    EXPECT_NE(exception, nullptr);
+    EXPECT_EQ(exception->name(), "DataError");
+    EXPECT_EQ(exception->message(),
+              "At least one output needs to be provided.");
+  }
+  {
+    // Test throwing exception if the named output is an input operand.
+    auto* input = BuildInput(scope, builder, "input", {3, 4, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    ScriptPromiseTester tester(script_state, resolver->Promise());
+    FakeMLGraphBackend::ValidateAndBuildAsync(builder->GetContext(),
+                                              {{"output", input}}, resolver);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+    auto* exception = V8DOMException::ToImplWithTypeCheck(
+        scope.GetIsolate(), tester.Value().V8Value());
+    EXPECT_NE(exception, nullptr);
+    EXPECT_EQ(exception->name(), "DataError");
+    EXPECT_EQ(exception->message(),
+              "The operand with name \"output\" is not an output operand.");
+  }
+  {
+    // Test throwing exception if the named output is a constant operand.
+    auto* constant = BuildConstant(scope, builder, {3, 4, 5},
+                                   V8MLOperandType::Enum::kFloat32);
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    ScriptPromiseTester tester(script_state, resolver->Promise());
+    FakeMLGraphBackend::ValidateAndBuildAsync(builder->GetContext(),
+                                              {{"output", constant}}, resolver);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+    auto* exception = V8DOMException::ToImplWithTypeCheck(
+        scope.GetIsolate(), tester.Value().V8Value());
+    EXPECT_NE(exception, nullptr);
+    EXPECT_EQ(exception->name(), "DataError");
+    EXPECT_EQ(exception->message(),
+              "The operand with name \"output\" is not an output operand.");
+  }
+  {
+    // Test throwing exception if the named outputs is a mix of input and
+    // constant operands.
+    auto* input = BuildInput(scope, builder, "input", {3, 4, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* constant = BuildConstant(scope, builder, {3, 4, 5},
+                                   V8MLOperandType::Enum::kFloat32);
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    ScriptPromiseTester tester(script_state, resolver->Promise());
+    FakeMLGraphBackend::ValidateAndBuildAsync(
+        builder->GetContext(), {{"output1", input}, {"output2", constant}},
+        resolver);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+    auto* exception = V8DOMException::ToImplWithTypeCheck(
+        scope.GetIsolate(), tester.Value().V8Value());
+    EXPECT_NE(exception, nullptr);
+    EXPECT_EQ(exception->name(), "DataError");
+    EXPECT_EQ(exception->message(),
+              "The operand with name \"output1\" is not an output operand.");
+  }
+  {
+    // Test throwing exception if two inputs have the same name.
+    auto* a = BuildInput(scope, builder, "a", {3, 4, 5},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "a", {3, 4, 5},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* c = builder->add(a, b, scope.GetExceptionState());
+    ASSERT_NE(c, nullptr);
+
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    ScriptPromiseTester tester(script_state, resolver->Promise());
+    FakeMLGraphBackend::ValidateAndBuildAsync(builder->GetContext(), {{"c", c}},
+                                              resolver);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsRejected());
+    auto* exception = V8DOMException::ToImplWithTypeCheck(
+        scope.GetIsolate(), tester.Value().V8Value());
+    EXPECT_NE(exception, nullptr);
+    EXPECT_EQ(exception->name(), "DataError");
+    EXPECT_EQ(exception->message(), "The input name \"a\" is duplicated.");
+  }
+  {
+    // Test building a fake graph with two inputs, one gemm operation and one
+    // output.
+    auto* a = BuildInput(scope, builder, "a", {3, 4},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* b = BuildInput(scope, builder, "b", {4, 3},
+                         V8MLOperandType::Enum::kFloat32);
+    auto* c = BuildGemm(scope, builder, a, b);
+
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    ScriptPromiseTester tester(script_state, resolver->Promise());
+    FakeMLGraphBackend::ValidateAndBuildAsync(builder->GetContext(), {{"c", c}},
+                                              resolver);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    auto* graph = ToFakeMLGraphBackend(&scope, tester.Value());
+    EXPECT_NE(graph, nullptr);
+    const auto& inputs = graph->GetInputResourcesInfo();
+    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(2));
+    EXPECT_EQ(inputs.at("a").type, a->Type());
+    EXPECT_EQ(inputs.at("a").byte_length, a->ByteLength());
+    EXPECT_EQ(inputs.at("b").type, b->Type());
+    EXPECT_EQ(inputs.at("b").byte_length, b->ByteLength());
+    const auto& outputs = graph->GetOutputResourcesInfo();
+    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(outputs.at("c").type, c->Type());
+    EXPECT_EQ(outputs.at("c").byte_length, c->ByteLength());
+  }
+  {
+    // Test building a fake graph with conv2d, add and relu operations.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 3, 3},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* conv2d = BuildConv2d(scope, builder, input, filter);
+    auto* bias =
+        BuildConstant(scope, builder, {1}, V8MLOperandType::Enum::kFloat32);
+    auto* add = builder->add(conv2d, bias, scope.GetExceptionState());
+    ASSERT_NE(add, nullptr);
+    auto* output = builder->relu(add, scope.GetExceptionState());
+    ASSERT_NE(output, nullptr);
+
+    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+    ScriptPromiseTester tester(script_state, resolver->Promise());
+    FakeMLGraphBackend::ValidateAndBuildAsync(builder->GetContext(),
+                                              {{"output", output}}, resolver);
+    tester.WaitUntilSettled();
+    EXPECT_TRUE(tester.IsFulfilled());
+    auto* graph = ToFakeMLGraphBackend(&scope, tester.Value());
+    EXPECT_NE(graph, nullptr);
+    const auto& inputs = graph->GetInputResourcesInfo();
+    EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(inputs.at("input").type, input->Type());
+    EXPECT_EQ(inputs.at("input").byte_length, input->ByteLength());
+    const auto& outputs = graph->GetOutputResourcesInfo();
+    EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
+    EXPECT_EQ(outputs.at("output").type, output->Type());
+    EXPECT_EQ(outputs.at("output").byte_length, output->ByteLength());
   }
 }
 

@@ -8,12 +8,15 @@
 
 #include "base/numerics/checked_math.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -543,6 +546,10 @@ MLGraphBuilder::~MLGraphBuilder() = default;
 void MLGraphBuilder::Trace(Visitor* visitor) const {
   visitor->Trace(ml_context_);
   ScriptWrappable::Trace(visitor);
+}
+
+MLContext* MLGraphBuilder::GetContext() const {
+  return ml_context_;
 }
 
 MLOperand* MLGraphBuilder::input(String name,
@@ -1076,6 +1083,27 @@ MLOperand* MLGraphBuilder::softmax(const MLOperand* input,
   }
   softmax->Connect({input}, {output});
   return output;
+}
+
+ScriptPromise MLGraphBuilder::buildAsync(ScriptState* script_state,
+                                         const MLNamedOperands& named_outputs,
+                                         ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid script state");
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto promise = resolver->Promise();
+
+  // TODO(ningxin.hu@intel.com): Create a concrete MLGraph object that builds
+  // the platform specific graph for hardware acceleration. For example:
+  // MLGraphXnnpack::ValidateAndBuildAsync(ml_context_, outputs, resolver);
+
+  resolver->Reject(MakeGarbageCollected<DOMException>(
+      DOMExceptionCode::kNotSupportedError, "Not implemented"));
+  return promise;
 }
 
 }  // namespace blink

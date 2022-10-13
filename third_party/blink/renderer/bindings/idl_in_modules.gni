@@ -457,6 +457,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/ml/ml_tensor.idl",
           "//third_party/blink/renderer/modules/ml/ml_tensor_info.idl",
           "//third_party/blink/renderer/modules/ml/navigator_ml.idl",
+          "//third_party/blink/renderer/modules/ml/webnn/ml_graph.idl",
           "//third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.idl",
           "//third_party/blink/renderer/modules/ml/webnn/ml_operand_descriptor.idl",
           "//third_party/blink/renderer/modules/ml/webnn/ml_operand.idl",

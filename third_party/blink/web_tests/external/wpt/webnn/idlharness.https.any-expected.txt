@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 389 tests; 157 PASS, 232 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 389 tests; 164 PASS, 225 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'MLGraphBuilder': parameter 1 is not of type 'MLContext'."
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -163,7 +163,7 @@ PASS MLGraphBuilder interface: operation input(DOMString, MLOperandDescriptor)
 FAIL MLGraphBuilder interface: operation constant(MLOperandDescriptor, MLBufferView) assert_equals: property has wrong .length expected 1 but got 2
 FAIL MLGraphBuilder interface: operation constant(double, optional MLOperandType) assert_equals: property has wrong .length expected 1 but got 2
 PASS MLGraphBuilder interface: member build
-FAIL MLGraphBuilder interface: operation buildAsync(MLNamedOperands) assert_own_property: interface prototype object missing non-static operation expected property "buildAsync" missing
+PASS MLGraphBuilder interface: operation buildAsync(MLNamedOperands)
 FAIL MLGraphBuilder interface: operation batchNormalization(MLOperand, MLOperand, MLOperand, optional MLBatchNormalizationOptions) assert_own_property: interface prototype object missing non-static operation expected property "batchNormalization" missing
 PASS MLGraphBuilder interface: operation clamp(MLOperand, optional MLClampOptions)
 PASS MLGraphBuilder interface: operation clamp(optional MLClampOptions)
@@ -374,12 +374,12 @@ FAIL MLGraphBuilder interface: calling tanh(MLOperand) on builder with too few a
 FAIL MLGraphBuilder interface: builder must inherit property "tanh()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: builder must inherit property "transpose(MLOperand, optional MLTransposeOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
 FAIL MLGraphBuilder interface: calling transpose(MLOperand, optional MLTransposeOptions) on builder with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: builder is not defined"
-FAIL MLGraph interface: existence and properties of interface object assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
-FAIL MLGraph interface object length assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
-FAIL MLGraph interface object name assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
-FAIL MLGraph interface: existence and properties of interface prototype object assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
-FAIL MLGraph interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
-FAIL MLGraph interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "MLGraph" expected property "MLGraph" missing
+PASS MLGraph interface: existence and properties of interface object
+PASS MLGraph interface object length
+PASS MLGraph interface object name
+PASS MLGraph interface: existence and properties of interface prototype object
+PASS MLGraph interface: existence and properties of interface prototype object's "constructor" property
+PASS MLGraph interface: existence and properties of interface prototype object's @@unscopables property
 FAIL MLGraph must be primary interface of graph assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
 FAIL Stringification of graph assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: graph is not defined"
 FAIL MLCommandEncoder interface: existence and properties of interface object assert_own_property: self does not have own property "MLCommandEncoder" expected property "MLCommandEncoder" missing
