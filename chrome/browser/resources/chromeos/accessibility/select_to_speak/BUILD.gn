@@ -105,14 +105,12 @@ js2gtest("select_to_speak_extjs_tests") {
     "../common/testing/accessibility_test_base.js",
     "../common/testing/callback_helper.js",
     "../common/testing/e2e_test_base.js",
+    "../common/testing/fake_chrome_event.js",
+    "../common/testing/fake_settings_private.js",
     "../common/testing/mock_storage.js",
     "../common/testing/mock_tts.js",
     "select_to_speak_e2e_test_base.js",
     "pipe.jpg",
-  ]
-  extra_js_files = [
-    "fake_settings_private.js",
-    "fake_chrome_event.js",
   ]
 
   # The test base classes generate C++ code with these deps.

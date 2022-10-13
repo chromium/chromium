@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['fake_chrome_event.js']);
 GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../common/testing/fake_chrome_event.js']);
+GEN_INCLUDE(['../common/testing/fake_settings_private.js']);
 GEN_INCLUDE(['../common/testing/mock_tts.js']);
-GEN_INCLUDE(['fake_settings_private.js']);
 
 SelectToSpeakEnhancedNetworkTtsVoicesTest = class extends SelectToSpeakE2ETest {
   constructor() {
