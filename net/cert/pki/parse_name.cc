@@ -4,7 +4,6 @@
 
 #include "net/cert/pki/parse_name.h"
 
-#include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "net/der/parse_values.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
