@@ -5,6 +5,7 @@
 #include "base/allocator/partition_allocator/extended_api.h"
 
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 
