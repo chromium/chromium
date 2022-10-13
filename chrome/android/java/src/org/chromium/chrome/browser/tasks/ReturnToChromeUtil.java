@@ -160,10 +160,11 @@ public final class ReturnToChromeUtil {
      * @return true if past threshold, false if not past threshold or experiment cannot be loaded.
      */
     public static boolean shouldShowTabSwitcher(final long lastBackgroundedTimeMillis) {
-        long tabSwitcherAfterMillis =
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_RETURN_TIME)
-                ? getReturnTimeFromSegmentation()
-                : TAB_SWITCHER_ON_RETURN_MS.getValue();
+        long tabSwitcherAfterMillis = TAB_SWITCHER_ON_RETURN_MS.getValue();
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.START_SURFACE_RETURN_TIME)
+                && TAB_SWITCHER_ON_RETURN_MS.getValue() != 0) {
+            tabSwitcherAfterMillis = getReturnTimeFromSegmentation();
+        }
 
         if (lastBackgroundedTimeMillis == -1) {
             // No last background timestamp set, use control behavior unless "immediate" was set.

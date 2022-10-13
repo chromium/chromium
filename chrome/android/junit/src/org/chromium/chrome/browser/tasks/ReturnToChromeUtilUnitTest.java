@@ -204,6 +204,7 @@ public class ReturnToChromeUtilUnitTest {
         TAB_SWITCHER_ON_RETURN_MS.setForTesting(0);
         Assert.assertEquals(0, TAB_SWITCHER_ON_RETURN_MS.getValue());
         Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(-1));
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowTabSwitcher(System.currentTimeMillis() - 1));
 
         // If immediate return is enabled by {@link ChromeFeatureList.START_SURFACE_RETURN_TIME},
         // returns true:
