@@ -10,9 +10,6 @@
 #import "base/callback_helpers.h"
 #import "base/command_line.h"
 #import "base/no_destructor.h"
-#import "base/task/sequenced_task_runner.h"
-#import "base/task/thread_pool.h"
-#import "base/threading/sequenced_task_runner_handle.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/password_manager/core/browser/login_database.h"
@@ -76,17 +73,6 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForProfileStorage(
           context->GetStatePath()));
-
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner(
-      base::SequencedTaskRunnerHandle::Get());
-  // USER_VISIBLE priority is chosen for the background task runner, because
-  // the passwords obtained through tasks on the background runner influence
-  // what the user sees.
-  // TODO(crbug.com/741660): Create the task runner inside password_manager
-  // component instead.
-  scoped_refptr<base::SequencedTaskRunner> db_task_runner(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
   scoped_refptr<password_manager::PasswordStore> store =
       base::MakeRefCounted<password_manager::PasswordStore>(
