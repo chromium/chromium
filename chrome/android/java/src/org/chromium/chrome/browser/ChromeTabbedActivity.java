@@ -1742,7 +1742,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 /* appMenuBlocker= */ this, this::supportsAppMenu, this::supportsFindInPage,
                 getTabCreatorManagerSupplier(), getFullscreenManager(),
                 getCompositorViewHolderSupplier(), getTabContentManagerSupplier(),
-                this::getSnackbarManager, getActivityType(), this::shouldShowOverviewPageOnStart,
+                this::getSnackbarManager, getActivityType(), this::isInOverviewMode,
                 this::isWarmOnResume,
                 /* appMenuDelegate= */ this,
                 /* statusBarColorProvider= */ this, new ObservableSupplierImpl<>(),
