@@ -175,6 +175,18 @@ BASE_FEATURE(kMicrotaskQueuePerWindowAgent,
              "BlinkSchedulerMicroTaskQueuePerWindowAgent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMicrotaskQueuePerPaintWorklet,
+             "BlinkSchedulerMicroTaskQueuePerPaintWorklet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMicrotaskQueuePerAnimationWorklet,
+             "BlinkSchedulerMicroTaskQueuePerAnimationWorklet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kMicrotaskQueuePerAudioWorklet,
+             "BlinkSchedulerMicroTaskQueuePerAudioWorklet",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace scheduler
 }  // namespace blink
 

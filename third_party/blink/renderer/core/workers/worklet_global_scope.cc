@@ -53,14 +53,15 @@ WorkletGlobalScope::WorkletGlobalScope(
 WorkletGlobalScope::WorkletGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     WorkerReportingProxy& reporting_proxy,
-    WorkerThread* worker_thread)
+    WorkerThread* worker_thread,
+    bool create_microtask_queue)
     : WorkletGlobalScope(std::move(creation_params),
                          reporting_proxy,
                          worker_thread->GetIsolate(),
                          ThreadType::kOffMainThread,
                          nullptr /* frame */,
                          worker_thread,
-                         false /* create_microtask_queue */) {}
+                         create_microtask_queue) {}
 
 // Partial implementation of the "set up a worklet environment settings object"
 // algorithm:

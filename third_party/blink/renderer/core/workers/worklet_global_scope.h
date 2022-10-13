@@ -125,9 +125,12 @@ class CORE_EXPORT WorkletGlobalScope
 
   // Constructs an instance as a threaded worklet. Must be called on a worker
   // thread.
+  // When |create_microtask_queue| is true, creates a microtask queue separated
+  // from the Isolate's default microtask queue.
   WorkletGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                      WorkerReportingProxy&,
-                     WorkerThread*);
+                     WorkerThread*,
+                     bool create_microtask_queue);
 
   const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const override;
 

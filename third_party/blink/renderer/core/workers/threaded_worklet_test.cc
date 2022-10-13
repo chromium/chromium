@@ -169,7 +169,8 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
   WorkerOrWorkletGlobalScope* CreateWorkerGlobalScope(
       std::unique_ptr<GlobalScopeCreationParams> creation_params) final {
     auto* global_scope = MakeGarbageCollected<FakeWorkletGlobalScope>(
-        std::move(creation_params), GetWorkerReportingProxy(), this);
+        std::move(creation_params), GetWorkerReportingProxy(), this,
+        /*create_microtask_queue=*/true);
     EXPECT_FALSE(global_scope->IsMainThreadWorkletGlobalScope());
     EXPECT_TRUE(global_scope->IsThreadedWorkletGlobalScope());
     return global_scope;
