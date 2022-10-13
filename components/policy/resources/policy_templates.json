@@ -34513,7 +34513,7 @@ This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTIN
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'features' : {
-        'dynamic_refresh': False,
+        'dynamic_refresh': True,
         'per_profile': True,
       },
       'items': [
