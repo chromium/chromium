@@ -10,7 +10,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -55,22 +54,12 @@ public class FollowManagementCoordinator {
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 
-        // Set up the toolbar and back button.
-        Toolbar toolbar = mView.findViewById(R.id.action_bar);
-        toolbar.setNavigationIcon(R.drawable.back_arrow);
-        toolbar.setNavigationOnClickListener(this::handleBackArrowClick);
-
         mMediator = new FollowManagementMediator(
                 activity, listItems, new MediatorObserver(), WebFeedFaviconFetcher.createDefault());
     }
 
     public View getView() {
         return mView;
-    }
-
-    private void handleBackArrowClick(View view) {
-        // Navigate back.
-        mActivity.finish();
     }
 
     private class MediatorObserver implements FollowManagementMediator.Observer {
