@@ -125,6 +125,12 @@ class MODULES_EXPORT UserMediaRequest final
   bool Video() const;
   MediaConstraints AudioConstraints() const;
   MediaConstraints VideoConstraints() const;
+  // The MediaStreamType for the audio part of a request with audio. Returns
+  // NO_SERVICE for requests where Audio() == false.
+  mojom::blink::MediaStreamType AudioMediaStreamType() const;
+  // The MediaStreamType for the video part of a request with video. Returns
+  // NO_SERVICE for requests where Video() == false.
+  mojom::blink::MediaStreamType VideoMediaStreamType() const;
 
   // Flag tied to whether or not the similarly named Origin Trial is
   // enabled. Will be removed at end of trial. See: http://crbug.com/789152.

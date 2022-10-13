@@ -64,6 +64,8 @@
 
 namespace blink {
 
+using mojom::blink::MediaStreamType;
+
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -598,6 +600,73 @@ MediaConstraints UserMediaRequest::AudioConstraints() const {
 
 MediaConstraints UserMediaRequest::VideoConstraints() const {
   return video_;
+}
+
+MediaStreamType UserMediaRequest::AudioMediaStreamType() const {
+  if (!Audio()) {
+    return MediaStreamType::NO_SERVICE;
+  }
+  if (MediaRequestType() == UserMediaRequestType::kDisplayMedia) {
+    return MediaStreamType::DISPLAY_AUDIO_CAPTURE;
+  }
+  if (MediaRequestType() == UserMediaRequestType::kDisplayMediaSet) {
+    return MediaStreamType::NO_SERVICE;
+  }
+  DCHECK_EQ(UserMediaRequestType::kUserMedia, MediaRequestType());
+
+  // Check if this is a getUserMedia display capture.
+  const MediaConstraints& constraints = AudioConstraints();
+  String source_constraint =
+      constraints.Basic().media_stream_source.Exact().empty()
+          ? String()
+          : String(constraints.Basic().media_stream_source.Exact()[0]);
+  if (!source_constraint.empty()) {
+    // This is a getUserMedia display capture call.
+    if (source_constraint == blink::kMediaStreamSourceTab) {
+      return MediaStreamType::GUM_TAB_AUDIO_CAPTURE;
+    } else if (source_constraint == blink::kMediaStreamSourceDesktop ||
+               source_constraint == blink::kMediaStreamSourceSystem) {
+      return MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE;
+    }
+    return MediaStreamType::NO_SERVICE;
+  }
+
+  return MediaStreamType::DEVICE_AUDIO_CAPTURE;
+}
+
+MediaStreamType UserMediaRequest::VideoMediaStreamType() const {
+  if (!Video()) {
+    return MediaStreamType::NO_SERVICE;
+  }
+  if (MediaRequestType() == UserMediaRequestType::kDisplayMedia) {
+    return should_prefer_current_tab()
+               ? MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB
+               : MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  }
+  if (MediaRequestType() == UserMediaRequestType::kDisplayMediaSet) {
+    DCHECK(!should_prefer_current_tab());
+    return MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET;
+  }
+  DCHECK_EQ(UserMediaRequestType::kUserMedia, MediaRequestType());
+
+  // Check if this is a getUserMedia display capture.
+  const MediaConstraints& constraints = VideoConstraints();
+  String source_constraint =
+      constraints.Basic().media_stream_source.Exact().empty()
+          ? String()
+          : String(constraints.Basic().media_stream_source.Exact()[0]);
+  if (!source_constraint.empty()) {
+    // This is a getUserMedia display capture call.
+    if (source_constraint == blink::kMediaStreamSourceTab) {
+      return MediaStreamType::GUM_TAB_VIDEO_CAPTURE;
+    } else if (source_constraint == blink::kMediaStreamSourceDesktop ||
+               source_constraint == blink::kMediaStreamSourceScreen) {
+      return MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE;
+    }
+    return MediaStreamType::NO_SERVICE;
+  }
+
+  return MediaStreamType::DEVICE_VIDEO_CAPTURE;
 }
 
 bool UserMediaRequest::ShouldDisableHardwareNoiseSuppression() const {

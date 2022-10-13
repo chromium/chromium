@@ -170,84 +170,19 @@ std::string GetOnTrackStartedLogString(
 
 void InitializeAudioTrackControls(UserMediaRequest* user_media_request,
                                   TrackControls* track_controls) {
+  track_controls->stream_type = user_media_request->AudioMediaStreamType();
   if (user_media_request->MediaRequestType() ==
-      UserMediaRequestType::kDisplayMedia) {
-    track_controls->requested = true;
-    track_controls->stream_type = MediaStreamType::DISPLAY_AUDIO_CAPTURE;
-    return;
-  } else if (user_media_request->MediaRequestType() ==
-             UserMediaRequestType::kDisplayMediaSet) {
+      UserMediaRequestType::kDisplayMediaSet) {
     track_controls->requested = false;
-    track_controls->stream_type = MediaStreamType::NO_SERVICE;
-    return;
-  }
-
-  DCHECK_EQ(UserMediaRequestType::kUserMedia,
-            user_media_request->MediaRequestType());
-  const MediaConstraints& constraints = user_media_request->AudioConstraints();
-  DCHECK(!constraints.IsNull());
-  track_controls->requested = true;
-
-  MediaStreamType* stream_type = &track_controls->stream_type;
-  *stream_type = MediaStreamType::NO_SERVICE;
-
-  String source_constraint =
-      constraints.Basic().media_stream_source.Exact().empty()
-          ? String()
-          : String(constraints.Basic().media_stream_source.Exact()[0]);
-  if (!source_constraint.empty()) {
-    if (source_constraint == blink::kMediaStreamSourceTab) {
-      *stream_type = MediaStreamType::GUM_TAB_AUDIO_CAPTURE;
-    } else if (source_constraint == blink::kMediaStreamSourceDesktop ||
-               source_constraint == blink::kMediaStreamSourceSystem) {
-      *stream_type = MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE;
-    }
   } else {
-    *stream_type = MediaStreamType::DEVICE_AUDIO_CAPTURE;
+    track_controls->requested = true;
   }
 }
 
 void InitializeVideoTrackControls(UserMediaRequest* user_media_request,
                                   TrackControls* track_controls) {
-  if (user_media_request->MediaRequestType() ==
-      UserMediaRequestType::kDisplayMedia) {
-    track_controls->requested = true;
-    track_controls->stream_type =
-        user_media_request->should_prefer_current_tab()
-            ? MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB
-            : MediaStreamType::DISPLAY_VIDEO_CAPTURE;
-    return;
-  } else if (user_media_request->MediaRequestType() ==
-             UserMediaRequestType::kDisplayMediaSet) {
-    DCHECK(!user_media_request->should_prefer_current_tab());
-    track_controls->requested = true;
-    track_controls->stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET;
-    return;
-  }
-
-  DCHECK_EQ(UserMediaRequestType::kUserMedia,
-            user_media_request->MediaRequestType());
-  const MediaConstraints& constraints = user_media_request->VideoConstraints();
-  DCHECK(!constraints.IsNull());
+  track_controls->stream_type = user_media_request->VideoMediaStreamType();
   track_controls->requested = true;
-
-  MediaStreamType* stream_type = &track_controls->stream_type;
-  *stream_type = MediaStreamType::NO_SERVICE;
-
-  String source_constraint =
-      constraints.Basic().media_stream_source.Exact().empty()
-          ? String()
-          : String(constraints.Basic().media_stream_source.Exact()[0]);
-  if (!source_constraint.empty()) {
-    if (source_constraint == blink::kMediaStreamSourceTab) {
-      *stream_type = MediaStreamType::GUM_TAB_VIDEO_CAPTURE;
-    } else if (source_constraint == blink::kMediaStreamSourceDesktop ||
-               source_constraint == blink::kMediaStreamSourceScreen) {
-      *stream_type = MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE;
-    }
-  } else {
-    *stream_type = MediaStreamType::DEVICE_VIDEO_CAPTURE;
-  }
 }
 
 bool IsSameDevice(const MediaStreamDevice& device,
