@@ -226,13 +226,10 @@ base::Value Vector2dFToDict(const gfx::Vector2dF& v) {
   return PointFToDict(gfx::PointF(v.x(), v.y()));
 }
 
-bool Vector2dFFromDict(const base::Value& dict, gfx::Vector2dF* v) {
+bool Vector2dFFromDict(const base::Value::Dict& dict, gfx::Vector2dF* v) {
   DCHECK(v);
-  if (!dict.is_dict())
-    return false;
-
   gfx::PointF point;
-  if (!PointFFromDict(dict.GetDict(), &point))
+  if (!PointFFromDict(dict, &point))
     return false;
 
   v->set_x(point.x());
@@ -1188,11 +1185,7 @@ struct ContentDrawQuadCommon {
 };
 
 absl::optional<ContentDrawQuadCommon> GetContentDrawQuadCommonFromDict(
-    const base::Value& dict_value) {
-  if (!dict_value.is_dict())
-    return absl::nullopt;
-
-  const base::Value::Dict& dict = dict_value.GetDict();
+    const base::Value::Dict& dict) {
   const base::Value::Dict* tex_coord_rect = dict.FindDict("tex_coord_rect");
   const base::Value::Dict* texture_size = dict.FindDict("texture_size");
   absl::optional<bool> is_premultiplied = dict.FindBool("is_premultiplied");
@@ -1415,7 +1408,7 @@ bool CompositorRenderPassDrawQuadFromDict(
   const base::Value::Dict* mask_uv_rect = dict.FindDict("mask_uv_rect");
   const base::Value::Dict* mask_texture_size =
       dict.FindDict("mask_texture_size");
-  const base::Value* filters_scale = dict_value.FindDictKey("filters_scale");
+  const base::Value::Dict* filters_scale = dict.FindDict("filters_scale");
   const base::Value::Dict* filters_origin = dict.FindDict("filters_origin");
   const base::Value::Dict* tex_coord_rect = dict.FindDict("tex_coord_rect");
   absl::optional<double> backdrop_filter_quality =
@@ -1586,7 +1579,7 @@ bool TileDrawQuadFromDict(const base::Value& dict,
     return false;
 
   absl::optional<ContentDrawQuadCommon> content_common =
-      GetContentDrawQuadCommonFromDict(dict);
+      GetContentDrawQuadCommonFromDict(dict.GetDict());
   if (!content_common)
     return false;
 
