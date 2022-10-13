@@ -1303,7 +1303,13 @@ class GLHelperPixelReadbackTest
 
 // Per pixel tests, all sizes are small so that we can print
 // out the generated bitmaps.
-TEST_P(GLHelperPixelReadbackTest, ScaleTest) {
+// TODO(crbug.com/1367486): Very flaky on Linux ASAN.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ScaleTest DISABLED_ScaleTest
+#else
+#define MAYBE_ScaleTest ScaleTest
+#endif
+TEST_P(GLHelperPixelReadbackTest, MAYBE_ScaleTest) {
   unsigned int q_index = std::get<0>(GetParam());
   unsigned int x = std::get<1>(GetParam());
   unsigned int y = std::get<2>(GetParam());
