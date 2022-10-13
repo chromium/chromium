@@ -32,12 +32,11 @@ constexpr uint8_t kMinQP = 4;
 // resolution (180p).
 constexpr uint8_t kMaxQP = 117;
 
-// The upper limitation of the quantization parameter for the software rate
-// controller. This is larger than |kMaxQP| because a driver might ignore the
-// specified maximum quantization parameter when the driver determines the
-// value, but it doesn't ignore the quantization parameter by the software rate
-// controller.
-constexpr uint8_t kMaxQPForSoftwareRateCtrl = 127;
+// WebRTC's default qp values are 15 and 106 for screen sharing, respectively,
+// Set smaller qp values for zero hertz tab sharing, which is triggered when qp
+// values are consecutively less than or equal to 15.
+constexpr uint8_t kScreenMinQP = 8;
+constexpr uint8_t kScreenMaxQP = 106;
 
 // Convert Qindex, whose range is 0-127, to the quantizer parameter used in
 // libvpx vp8 rate control, whose range is 0-63.
@@ -319,7 +318,11 @@ bool VP8VaapiVideoEncoderDelegate::Initialize(
   else
     initial_bitrate_allocation.SetBitrate(0, 0, config.bitrate.target_bps());
 
-  current_params_.max_qp = kMaxQPForSoftwareRateCtrl;
+  if (config.content_type ==
+      VideoEncodeAccelerator::Config::ContentType::kDisplay) {
+    current_params_.min_qp = kScreenMinQP;
+    current_params_.max_qp = kScreenMaxQP;
+  }
 
   // |rate_ctrl_| might be injected for tests.
   if (!rate_ctrl_) {
