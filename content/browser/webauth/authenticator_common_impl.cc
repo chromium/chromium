@@ -986,9 +986,9 @@ void AuthenticatorCommonImpl::GetAssertion(
 
   WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
   if (proxy) {
-    if (options->remote_desktop_client_override) {
-      // Don't allow proxying of an already proxied request.
-      CompleteMakeCredentialRequest(
+    if (options->is_conditional || options->remote_desktop_client_override) {
+      // Don't allow proxying of an already proxied or conditional request.
+      CompleteGetAssertionRequest(
           blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
       return;
     }
@@ -1263,6 +1263,13 @@ void AuthenticatorCommonImpl::IsConditionalMediationAvailable(
               GetRenderFrameHost());
   if (embedder_isuvpaa_override.has_value()) {
     std::move(callback).Run(*embedder_isuvpaa_override);
+    return;
+  }
+
+  if (GetWebAuthnRequestProxyIfActive()) {
+    // Conditional requests cannot be proxied, signal the feature as
+    // unavailable.
+    std::move(callback).Run(false);
     return;
   }
 #if BUILDFLAG(IS_MAC)

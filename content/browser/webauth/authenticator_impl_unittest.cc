@@ -179,6 +179,8 @@ constexpr char kCryptotokenOrigin[] =
     "chrome-extension://kmendfapggjehodndflmmgagdbamhnfd";
 constexpr char kTestExtensionOrigin[] =
     "chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef";
+static constexpr char kCorpCrdOrigin[] =
+    "https://remotedesktop.corp.google.com";
 
 constexpr uint8_t kTestChallengeBytes[] = {
     0x68, 0x71, 0x34, 0x96, 0x82, 0x22, 0xEC, 0x17, 0x20, 0x2E, 0x42,
@@ -3438,8 +3440,6 @@ TEST_F(AuthenticatorContentBrowserClientTest,
 class AuthenticatorImplRemoteDesktopClientOverrideTest
     : public AuthenticatorContentBrowserClientTest {
  protected:
-  static constexpr char kCorpCrdOrigin[] =
-      "https://remotedesktop.corp.google.com";
   static constexpr char kOtherRdpOrigin[] = "https://myrdp.test";
   static constexpr char kExampleOrigin[] = "https://example.test";
   static constexpr char kExampleRpId[] = "example.test";
@@ -3448,7 +3448,7 @@ class AuthenticatorImplRemoteDesktopClientOverrideTest
   static constexpr char kOtherAppid[] = "https://other.test/appid.json";
 
   void SetUp() override {
-    AuthenticatorContentBrowserClientTest ::SetUp();
+    AuthenticatorContentBrowserClientTest::SetUp();
     // Authorize `kCorpCrdOrigin` to exercise the extension. In //chrome, this
     // is controlled by the `WebAuthenticationRemoteProxiedRequestsAllowed`
     // enterprise policy.
@@ -7409,13 +7409,14 @@ class ResidentKeyTestAuthenticatorContentBrowserClient
 };
 
 class ResidentKeyAuthenticatorImplTest : public UVAuthenticatorImplTest {
- protected:
-  ResidentKeyAuthenticatorImplTest() = default;
-
+ public:
   ResidentKeyAuthenticatorImplTest(const ResidentKeyAuthenticatorImplTest&) =
       delete;
   ResidentKeyAuthenticatorImplTest& operator=(
       const ResidentKeyAuthenticatorImplTest&) = delete;
+
+ protected:
+  ResidentKeyAuthenticatorImplTest() = default;
 
   void SetUp() override {
     UVAuthenticatorImplTest::SetUp();
@@ -9496,6 +9497,8 @@ class AuthenticatorImplWithRequestProxyTest : public AuthenticatorImplTest {
 
   raw_ptr<ContentBrowserClient> old_client_ = nullptr;
   TestAuthenticatorContentBrowserClient test_client_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnGoogleCorpRemoteDesktopClientPrivilege};
 };
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, Inactive) {
@@ -9523,6 +9526,17 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, IsUVPAA) {
     EXPECT_EQ(cb.value(), is_uvpaa);
     EXPECT_EQ(request_proxy().observations().num_isuvpaa, ++i);
   }
+}
+
+TEST_F(AuthenticatorImplWithRequestProxyTest, IsConditionalMediationAvailable) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  TestIsUvpaaCallback cb;
+  authenticator->IsConditionalMediationAvailable(cb.callback());
+  cb.WaitForCallback();
+  EXPECT_FALSE(cb.value());
+  EXPECT_EQ(request_proxy().observations().num_isuvpaa, 0u);
 }
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential) {
@@ -9574,6 +9588,22 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredentialOriginAndRpIds) {
               test_case.expected_status);
     EXPECT_EQ(request_proxy().observations().create_requests.size(), 0u);
   }
+}
+
+// Tests that attempting to make a credential when a request is already proxied
+// fails with NotAllowedError.
+TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredentialAlreadyProxied) {
+  GURL origin(kCorpCrdOrigin);
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->remote_desktop_client_override_origin = url::Origin::Create(origin);
+  NavigateAndCommit(origin);
+  auto request = GetTestPublicKeyCredentialCreationOptions();
+  request->remote_desktop_client_override =
+      RemoteDesktopClientOverride::New(url::Origin::Create(origin), true);
+  MakeCredentialResult result = AuthenticatorMakeCredential(std::move(request));
+
+  EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  EXPECT_EQ(request_proxy().observations().create_requests.size(), 0u);
 }
 
 TEST_F(AuthenticatorImplWithRequestProxyTest, AppId) {
@@ -9675,6 +9705,33 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertion) {
       url::Origin::Create(GURL(kTestOrigin1));
   expected->remote_desktop_client_override->same_origin_with_ancestors = true;
   EXPECT_EQ(request_proxy().observations().get_requests.at(0), expected);
+}
+
+// Tests that attempting to get an assertion when a request is already proxied
+// fails with NotAllowedError.
+TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertionAlreadyProxied) {
+  GURL origin(kCorpCrdOrigin);
+  test_client_.GetTestWebAuthenticationDelegate()
+      ->remote_desktop_client_override_origin = url::Origin::Create(origin);
+  NavigateAndCommit(origin);
+  auto request = GetTestPublicKeyCredentialRequestOptions();
+  request->remote_desktop_client_override =
+      RemoteDesktopClientOverride::New(url::Origin::Create(origin), true);
+  GetAssertionResult result = AuthenticatorGetAssertion(std::move(request));
+
+  EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  EXPECT_EQ(request_proxy().observations().get_requests.size(), 0u);
+}
+
+// Verify that Conditional UI requests are not proxied.
+TEST_F(AuthenticatorImplWithRequestProxyTest, GetAssertionConditionalUI) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  auto request = GetTestPublicKeyCredentialRequestOptions();
+  request->is_conditional = true;
+  GetAssertionResult result = AuthenticatorGetAssertion(std::move(request));
+
+  EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  EXPECT_EQ(request_proxy().observations().get_requests.size(), 0u);
 }
 
 // Verify requests with an attached proxy run RP ID checks.
