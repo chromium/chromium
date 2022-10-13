@@ -235,10 +235,11 @@ class FilesRequestHandlerTest : public BaseTest {
     RunUntilDone();
 
     EXPECT_GE(paths.size(),
-              fake_files_request_handler_->GetRequestTokensForTesting().size());
-    for (auto& token :
-         fake_files_request_handler_->GetRequestTokensForTesting()) {
-      EXPECT_FALSE(token.empty());
+              fake_files_request_handler_->request_tokens_to_ack_final_actions()
+                  .size());
+    for (const auto& token_and_action :
+         fake_files_request_handler_->request_tokens_to_ack_final_actions()) {
+      EXPECT_FALSE(token_and_action.first.empty());
     }
   }
 

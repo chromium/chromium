@@ -34,12 +34,15 @@ bool RequestHandlerBase::UploadData() {
   return UploadDataImpl();
 }
 
-void RequestHandlerBase::AppendRequestTokensTo(
-    std::vector<std::string>* request_tokens) {
-  request_tokens->reserve(request_tokens->size() + request_tokens_.size());
-  std::move(std::begin(request_tokens_), std::end(request_tokens_),
-            std::back_inserter(*request_tokens));
-  request_tokens_.clear();
+void RequestHandlerBase::AppendFinalActionsTo(
+    std::map<std::string, ContentAnalysisAcknowledgement::FinalAction>*
+        final_actions) {
+  DCHECK(final_actions);
+  final_actions->insert(
+      std::make_move_iterator(request_tokens_to_ack_final_actions_.begin()),
+      std::make_move_iterator(request_tokens_to_ack_final_actions_.end()));
+
+  request_tokens_to_ack_final_actions_.clear();
 }
 
 void RequestHandlerBase::PrepareRequest(

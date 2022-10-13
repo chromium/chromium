@@ -142,6 +142,9 @@ TriggeredRule::Action GetHighestPrecedenceAction(
 TriggeredRule::Action GetHighestPrecedenceAction(
     const TriggeredRule::Action& action_1,
     const TriggeredRule::Action& action_2);
+ContentAnalysisAcknowledgement::FinalAction GetHighestPrecedenceAction(
+    const ContentAnalysisAcknowledgement::FinalAction& action_1,
+    const ContentAnalysisAcknowledgement::FinalAction& action_2);
 
 // Struct used to persist metadata about a file in base::SupportsUserData
 // through ScanResult.
@@ -222,6 +225,11 @@ safe_browsing::EventResult CalculateEventResult(
     const AnalysisSettings& settings,
     bool allowed_by_scan_result,
     bool should_warn);
+
+// Calculates the ContentAnalysisAcknowledgement::FinalAction for an action
+// based on the response it got from scanning.
+ContentAnalysisAcknowledgement::FinalAction GetAckFinalAction(
+    const ContentAnalysisResponse& response);
 
 // User data to persist a save package's final callback allowing/denying
 // completion. This is used since the callback can be called either when

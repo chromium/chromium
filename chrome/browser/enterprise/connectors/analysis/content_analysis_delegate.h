@@ -352,9 +352,10 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // Always nullptr for non-file content scanning.
   std::unique_ptr<FilesRequestHandler> files_request_handler_;
 
-  // The request tokens of all the requests that make up the user action
-  // represented by this ContentAnalysisDelegate instance.
-  std::vector<std::string> request_tokens_;
+  // A mapping of request tokens to ack final actions for all requests that make
+  // up the user action represented by this ContentAnalysisDelegate.
+  std::map<std::string, ContentAnalysisAcknowledgement::FinalAction>
+      final_actions_;
 
   base::TimeTicks upload_start_time_;
 

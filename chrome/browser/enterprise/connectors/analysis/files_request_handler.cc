@@ -260,8 +260,10 @@ void FilesRequestHandler::FileRequestCallback(
     safe_browsing::BinaryUploadService::Result upload_result,
     enterprise_connectors::ContentAnalysisResponse response) {
   // Remember to send an ack for this response.
-  if (upload_result == safe_browsing::BinaryUploadService::Result::SUCCESS)
-    request_tokens_.push_back(response.request_token());
+  if (upload_result == safe_browsing::BinaryUploadService::Result::SUCCESS) {
+    request_tokens_to_ack_final_actions_[response.request_token()] =
+        GetAckFinalAction(response);
+  }
 
   DCHECK_EQ(results_.size(), paths_.size());
   if (upload_result ==

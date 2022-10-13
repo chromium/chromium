@@ -87,9 +87,10 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
   }
 
   void SetExpectedFinalAction(
+      const std::string& request_token,
       enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
           final_action) {
-    final_action_ = final_action;
+    request_tokens_to_final_actions_[request_token] = final_action;
   }
 
   void SetShouldAutomaticallyAuthorize(bool authorize) {
@@ -101,10 +102,13 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
 
  private:
   void MaybeAcknowledge(std::unique_ptr<Ack> ack) override {
-    EXPECT_EQ(final_action_, ack->ack().final_action());
+    EXPECT_TRUE(ack);
 
     ++ack_count_;
-    ASSERT_TRUE(base::Contains(requests_tokens_, ack->ack().request_token()));
+    ASSERT_TRUE(base::Contains(request_tokens_to_final_actions_,
+                               ack->ack().request_token()));
+    ASSERT_EQ(ack->ack().final_action(),
+              request_tokens_to_final_actions_.at(ack->ack().request_token()));
   }
 
   void UploadForDeepScanning(std::unique_ptr<Request> request) override {
@@ -124,13 +128,10 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
           ASSERT_FALSE(file.empty());
           ASSERT_TRUE(prepared_file_results_.count(file));
           ASSERT_TRUE(prepared_file_responses_.count(file));
-          requests_tokens_.push_back(
-              prepared_file_responses_[file].request_token());
           request->FinishRequest(prepared_file_results_[file],
                                  prepared_file_responses_[file]);
           break;
         case AnalysisConnector::BULK_DATA_ENTRY:
-          requests_tokens_.push_back(prepared_text_response_.request_token());
           request->FinishRequest(prepared_text_result_,
                                  prepared_text_response_);
           break;
@@ -163,12 +164,11 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
   std::map<std::string, BinaryUploadService::Result> prepared_file_results_;
   std::map<std::string, ContentAnalysisResponse> prepared_file_responses_;
 
-  std::vector<std::string> requests_tokens_;
   int requests_count_ = 0;
   int ack_count_ = 0;
   bool should_automatically_authorize_ = false;
-  ContentAnalysisAcknowledgement::FinalAction final_action_ =
-      ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
+  std::map<std::string, ContentAnalysisAcknowledgement::FinalAction>
+      request_tokens_to_final_actions_;
 };
 
 FakeBinaryUploadService* FakeBinaryUploadServiceStorage() {
@@ -449,11 +449,13 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Files) {
   FakeBinaryUploadServiceStorage()->SetResponseForFile(
       created_file_paths()[0].AsUTF8Unsafe(),
       BinaryUploadService::Result::SUCCESS, ok_response);
+  FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
+      kScanId1, ContentAnalysisAcknowledgement::ALLOW);
   FakeBinaryUploadServiceStorage()->SetResponseForFile(
       created_file_paths()[1].AsUTF8Unsafe(),
       BinaryUploadService::Result::SUCCESS, bad_response);
   FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
-      ContentAnalysisAcknowledgement::BLOCK);
+      kScanId2, ContentAnalysisAcknowledgement::BLOCK);
 
   bool called = false;
   base::RunLoop run_loop;
@@ -518,7 +520,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBrowserTest, Texts) {
   FakeBinaryUploadServiceStorage()->SetResponseForText(
       BinaryUploadService::Result::SUCCESS, response);
   FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
-      ContentAnalysisAcknowledgement::BLOCK);
+      kScanId1, ContentAnalysisAcknowledgement::BLOCK);
 
   // The DLP verdict means an event should be reported. The content size is
   // equal to the length of the concatenated texts (2 * 100 * 'a').
@@ -987,7 +989,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
       created_file_paths()[0].AsUTF8Unsafe(),
       BinaryUploadService::Result::SUCCESS, response);
   FakeBinaryUploadServiceStorage()->SetExpectedFinalAction(
-      ContentAnalysisAcknowledgement::BLOCK);
+      kScanId1, ContentAnalysisAcknowledgement::BLOCK);
   validator.ExpectDangerousDeepScanningResultAndSensitiveDataEvent(
       /*url*/ "about:blank",
       /*filename*/ "foo.doc",

@@ -118,25 +118,6 @@ bool* UIEnabledStorage() {
   return &enabled;
 }
 
-ContentAnalysisAcknowledgement::FinalAction GetFinalAction(
-    FinalContentAnalysisResult final_result) {
-  auto final_action = ContentAnalysisAcknowledgement::ALLOW;
-  switch (final_result) {
-    case FinalContentAnalysisResult::FAILURE:
-    case FinalContentAnalysisResult::LARGE_FILES:
-    case FinalContentAnalysisResult::ENCRYPTED_FILES:
-      final_action = ContentAnalysisAcknowledgement::BLOCK;
-      break;
-    case FinalContentAnalysisResult::WARNING:
-      final_action = ContentAnalysisAcknowledgement::WARN;
-      break;
-    case FinalContentAnalysisResult::SUCCESS:
-      break;
-  }
-
-  return final_action;
-}
-
 }  // namespace
 
 ContentAnalysisDelegate::Data::Data() = default;
@@ -368,7 +349,7 @@ void ContentAnalysisDelegate::StringRequestCallback(
     enterprise_connectors::ContentAnalysisResponse response) {
   // Remember to send an ack for this response.
   if (result == safe_browsing::BinaryUploadService::Result::SUCCESS)
-    request_tokens_.push_back(response.request_token());
+    final_actions_[response.request_token()] = GetAckFinalAction(response);
 
   int64_t content_size = 0;
   for (const std::string& entry : data_.text)
@@ -409,7 +390,7 @@ void ContentAnalysisDelegate::StringRequestCallback(
 void ContentAnalysisDelegate::FilesRequestCallback(
     std::vector<RequestHandlerResult> results) {
   // Remember to send acks for any responses.
-  files_request_handler_->AppendRequestTokensTo(&request_tokens_);
+  files_request_handler_->AppendFinalActionsTo(&final_actions_);
 
   // No reporting here, because the MultiFileRequestHandler does that.
   DCHECK_EQ(results.size(), result_.paths_results.size());
@@ -452,7 +433,7 @@ void ContentAnalysisDelegate::PageRequestCallback(
     enterprise_connectors::ContentAnalysisResponse response) {
   // Remember to send an ack for this response.
   if (result == safe_browsing::BinaryUploadService::Result::SUCCESS)
-    request_tokens_.push_back(response.request_token());
+    final_actions_[response.request_token()] = GetAckFinalAction(response);
 
   RecordDeepScanMetrics(access_point_,
                         base::TimeTicks::Now() - upload_start_time_,
@@ -667,15 +648,12 @@ void ContentAnalysisDelegate::AckAllRequests() {
   if (!upload_service)
     return;
 
-  // Calculate final action applied to all requests.
-  auto final_action = GetFinalAction(final_result_);
-
-  for (auto& token : request_tokens_) {
+  for (const auto& token_and_action : final_actions_) {
     auto ack = std::make_unique<safe_browsing::BinaryUploadService::Ack>(
         data_.settings.cloud_or_local_settings);
-    ack->set_request_token(token);
+    ack->set_request_token(token_and_action.first);
     ack->set_status(ContentAnalysisAcknowledgement::SUCCESS);
-    ack->set_final_action(final_action);
+    ack->set_final_action(token_and_action.second);
     upload_service->MaybeAcknowledge(std::move(ack));
   }
 }

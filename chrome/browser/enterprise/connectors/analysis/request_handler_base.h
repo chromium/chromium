@@ -45,9 +45,11 @@ class RequestHandlerBase {
   // the background and false if there is nothing to do.
   bool UploadData();
 
-  // Moves the tokens of all file requests being handled to the end of the
-  // given vector.
-  void AppendRequestTokensTo(std::vector<std::string>* request_tokens);
+  // Moves the tokens-actions mapping of all file requests being handled to the
+  // given map.
+  void AppendFinalActionsTo(
+      std::map<std::string, ContentAnalysisAcknowledgement::FinalAction>*
+          final_actions);
 
   // This method is called after a user has bypassed a scanning warning and is
   // expected to send one or more reports corresponding to the data that was
@@ -55,11 +57,12 @@ class RequestHandlerBase {
   virtual void ReportWarningBypass(
       absl::optional<std::u16string> user_justification) = 0;
 
-  // After All file requests have been processed, this call can be used to
-  // retrieve any request tokens stored internally.  There should one for
-  // each successful request and they must all be non-empty.
-  const std::vector<std::string>& GetRequestTokensForTesting() const {
-    return request_tokens_;
+  // After all file requests have been processed, this call can be used to
+  // retrieve any final actions stored internally.  There should one for
+  // each successful request.
+  const std::map<std::string, ContentAnalysisAcknowledgement::FinalAction>&
+  request_tokens_to_ack_final_actions() const {
+    return request_tokens_to_ack_final_actions_;
   }
 
  private:
@@ -87,9 +90,10 @@ class RequestHandlerBase {
   uint64_t user_action_requests_count_;
   safe_browsing::DeepScanAccessPoint access_point_;
 
-  // The request tokens of all the requests that make up the user action
-  // represented by this ContentAnalysisDelegate instance.
-  std::vector<std::string> request_tokens_;
+  // A mapping of request tokens (corresponding to one user action) to their Ack
+  // final action.
+  std::map<std::string, ContentAnalysisAcknowledgement::FinalAction>
+      request_tokens_to_ack_final_actions_;
 
   base::TimeTicks upload_start_time_;
 };

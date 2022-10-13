@@ -42,6 +42,20 @@ bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
   }
 }
 
+ContentAnalysisAcknowledgement::FinalAction RuleActionToAckAction(
+    TriggeredRule::Action action) {
+  switch (action) {
+    case TriggeredRule::ACTION_UNSPECIFIED:
+      return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
+    case TriggeredRule::REPORT_ONLY:
+      return ContentAnalysisAcknowledgement::REPORT_ONLY;
+    case TriggeredRule::WARN:
+      return ContentAnalysisAcknowledgement::WARN;
+    case TriggeredRule::BLOCK:
+      return ContentAnalysisAcknowledgement::BLOCK;
+  }
+}
+
 }  // namespace
 
 bool ResultShouldAllowDataUse(
@@ -116,6 +130,24 @@ safe_browsing::EventResult CalculateEventResult(
              ? safe_browsing::EventResult::ALLOWED
              : (should_warn ? safe_browsing::EventResult::WARNED
                             : safe_browsing::EventResult::BLOCKED);
+}
+
+ContentAnalysisAcknowledgement::FinalAction GetAckFinalAction(
+    const ContentAnalysisResponse& response) {
+  auto final_action = ContentAnalysisAcknowledgement::ALLOW;
+  for (const auto& result : response.results()) {
+    if (!result.has_status() ||
+        result.status() != ContentAnalysisResponse::Result::SUCCESS) {
+      continue;
+    }
+
+    for (const auto& rule : result.triggered_rules()) {
+      final_action = GetHighestPrecedenceAction(
+          final_action, RuleActionToAckAction(rule.action()));
+    }
+  }
+
+  return final_action;
 }
 
 ReportingSettings::ReportingSettings() = default;
@@ -244,6 +276,37 @@ TriggeredRule::Action GetHighestPrecedenceAction(
   }
   NOTREACHED();
   return TriggeredRule::ACTION_UNSPECIFIED;
+}
+
+ContentAnalysisAcknowledgement::FinalAction GetHighestPrecedenceAction(
+    const ContentAnalysisAcknowledgement::FinalAction& action_1,
+    const ContentAnalysisAcknowledgement::FinalAction& action_2) {
+  // Don't use the enum's int values to determine precedence since that
+  // may introduce bugs for new actions later.
+  //
+  // The current precedence is BLOCK > WARN > REPORT_ONLY > ALLOW > UNSPECIFIED
+  if (action_1 == ContentAnalysisAcknowledgement::BLOCK ||
+      action_2 == ContentAnalysisAcknowledgement::BLOCK) {
+    return ContentAnalysisAcknowledgement::BLOCK;
+  }
+  if (action_1 == ContentAnalysisAcknowledgement::WARN ||
+      action_2 == ContentAnalysisAcknowledgement::WARN) {
+    return ContentAnalysisAcknowledgement::WARN;
+  }
+  if (action_1 == ContentAnalysisAcknowledgement::REPORT_ONLY ||
+      action_2 == ContentAnalysisAcknowledgement::REPORT_ONLY) {
+    return ContentAnalysisAcknowledgement::REPORT_ONLY;
+  }
+  if (action_1 == ContentAnalysisAcknowledgement::ALLOW ||
+      action_2 == ContentAnalysisAcknowledgement::ALLOW) {
+    return ContentAnalysisAcknowledgement::ALLOW;
+  }
+  if (action_1 == ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED ||
+      action_2 == ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED) {
+    return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
+  }
+  NOTREACHED();
+  return ContentAnalysisAcknowledgement::ACTION_UNSPECIFIED;
 }
 
 FileMetadata::FileMetadata(const std::string& filename,
