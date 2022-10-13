@@ -14,6 +14,8 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,7 +79,7 @@ class TestNotificationListener
 
 }  // anonymous namespace
 
-class NotificationEventDispatcherImplTest : public ::testing::Test {
+class NotificationEventDispatcherImplTest : public RenderViewHostTestHarness {
  public:
   NotificationEventDispatcherImplTest()
       : dispatcher_(new NotificationEventDispatcherImpl()) {}
@@ -90,11 +92,9 @@ class NotificationEventDispatcherImplTest : public ::testing::Test {
   ~NotificationEventDispatcherImplTest() override { delete dispatcher_; }
 
   // Waits until the task runner managing the Mojo connection has finished.
-  void WaitForMojoTasksToComplete() { task_environment_.RunUntilIdle(); }
+  void WaitForMojoTasksToComplete() { task_environment()->RunUntilIdle(); }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
-
   // Using a raw pointer because NotificationEventDispatcherImpl is a singleton
   // with private constructor and destructor, so unique_ptr is not an option.
   raw_ptr<NotificationEventDispatcherImpl> dispatcher_;
@@ -103,11 +103,13 @@ class NotificationEventDispatcherImplTest : public ::testing::Test {
 TEST_F(NotificationEventDispatcherImplTest,
        DispatchNonPersistentShowEvent_NotifiesCorrectRegisteredListener) {
   auto listener = std::make_unique<TestNotificationListener>();
-  dispatcher_->RegisterNonPersistentNotificationListener(kPrimaryUniqueId,
-                                                         listener->GetRemote());
+  dispatcher_->RegisterNonPersistentNotificationListener(
+      kPrimaryUniqueId, listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
   auto other_listener = std::make_unique<TestNotificationListener>();
   dispatcher_->RegisterNonPersistentNotificationListener(
-      kSomeOtherUniqueId, other_listener->GetRemote());
+      kSomeOtherUniqueId, other_listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
 
   dispatcher_->DispatchNonPersistentShowEvent(kPrimaryUniqueId);
 
@@ -125,10 +127,91 @@ TEST_F(NotificationEventDispatcherImplTest,
 }
 
 TEST_F(NotificationEventDispatcherImplTest,
+       DispatchNonPersistentEvent_DocumentInBFCache) {
+  auto listener = std::make_unique<TestNotificationListener>();
+  const WeakDocumentPtr document = main_rfh()->GetWeakDocumentPtr();
+  RenderFrameHostImpl* rfh =
+      static_cast<RenderFrameHostImpl*>(document.AsRenderFrameHostIfValid());
+  EXPECT_TRUE(rfh);
+  // The rfh should be initially in active lifecycle state.
+  EXPECT_TRUE(
+      rfh->IsInLifecycleState(RenderFrameHost::LifecycleState::kActive));
+  dispatcher_->RegisterNonPersistentNotificationListener(
+      kPrimaryUniqueId, listener->GetRemote(), document);
+
+  dispatcher_->DispatchNonPersistentShowEvent(kPrimaryUniqueId);
+
+  WaitForMojoTasksToComplete();
+
+  // After dispatching the show and click events when the rfh is active,
+  // the counter should increment as expected.
+  EXPECT_EQ(listener->on_show_count(), 1);
+  EXPECT_EQ(listener->on_click_count(), 0);
+  EXPECT_EQ(listener->on_close_count(), 0);
+
+  dispatcher_->DispatchNonPersistentClickEvent(kPrimaryUniqueId,
+                                               base::DoNothing());
+
+  WaitForMojoTasksToComplete();
+
+  EXPECT_EQ(listener->on_show_count(), 1);
+  EXPECT_EQ(listener->on_click_count(), 1);
+  EXPECT_EQ(listener->on_close_count(), 0);
+
+  dispatcher_->DispatchNonPersistentShowEvent(kPrimaryUniqueId);
+
+  WaitForMojoTasksToComplete();
+
+  EXPECT_EQ(listener->on_show_count(), 2);
+  EXPECT_EQ(listener->on_click_count(), 1);
+  EXPECT_EQ(listener->on_close_count(), 0);
+
+  // Simulate the scenario where the rfh is put into the back/forward cache
+  // by setting the lifecycle state explicitly.
+  rfh->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  EXPECT_TRUE(rfh->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kInBackForwardCache));
+
+  dispatcher_->DispatchNonPersistentClickEvent(kPrimaryUniqueId,
+                                               base::DoNothing());
+
+  WaitForMojoTasksToComplete();
+
+  dispatcher_->DispatchNonPersistentCloseEvent(kPrimaryUniqueId,
+                                               base::DoNothing());
+
+  WaitForMojoTasksToComplete();
+
+  // Now the dispatched click and close events should not invoke the listener.
+  EXPECT_EQ(listener->on_show_count(), 2);
+  EXPECT_EQ(listener->on_click_count(), 1);
+  EXPECT_EQ(listener->on_close_count(), 0);
+
+  // Simulate the scenario where the rfh is back to active state and
+  // dispatch a close event.
+  rfh->SetLifecycleState(RenderFrameHostImpl::LifecycleStateImpl::kActive);
+  EXPECT_FALSE(rfh->IsInLifecycleState(
+      RenderFrameHost::LifecycleState::kInBackForwardCache));
+
+  dispatcher_->DispatchNonPersistentCloseEvent(kPrimaryUniqueId,
+                                               base::DoNothing());
+
+  WaitForMojoTasksToComplete();
+
+  // Since the rfh is active, the dispatched close event should result in
+  // the increment of the close counter.
+  EXPECT_EQ(listener->on_show_count(), 2);
+  EXPECT_EQ(listener->on_click_count(), 1);
+  EXPECT_EQ(listener->on_close_count(), 1);
+}
+
+TEST_F(NotificationEventDispatcherImplTest,
        RegisterNonPersistentListener_FirstListenerGetsOnClose) {
   auto original_listener = std::make_unique<TestNotificationListener>();
   dispatcher_->RegisterNonPersistentNotificationListener(
-      kPrimaryUniqueId, original_listener->GetRemote());
+      kPrimaryUniqueId, original_listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
 
   dispatcher_->DispatchNonPersistentShowEvent(kPrimaryUniqueId);
 
@@ -136,7 +219,8 @@ TEST_F(NotificationEventDispatcherImplTest,
 
   auto replacement_listener = std::make_unique<TestNotificationListener>();
   dispatcher_->RegisterNonPersistentNotificationListener(
-      kPrimaryUniqueId, replacement_listener->GetRemote());
+      kPrimaryUniqueId, replacement_listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
 
   WaitForMojoTasksToComplete();
 
@@ -148,7 +232,8 @@ TEST_F(NotificationEventDispatcherImplTest,
        RegisterNonPersistentListener_SecondListenerGetsOnShow) {
   auto original_listener = std::make_unique<TestNotificationListener>();
   dispatcher_->RegisterNonPersistentNotificationListener(
-      kPrimaryUniqueId, original_listener->GetRemote());
+      kPrimaryUniqueId, original_listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
 
   dispatcher_->DispatchNonPersistentShowEvent(kPrimaryUniqueId);
 
@@ -158,7 +243,8 @@ TEST_F(NotificationEventDispatcherImplTest,
 
   auto replacement_listener = std::make_unique<TestNotificationListener>();
   dispatcher_->RegisterNonPersistentNotificationListener(
-      kPrimaryUniqueId, replacement_listener->GetRemote());
+      kPrimaryUniqueId, replacement_listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
 
   dispatcher_->DispatchNonPersistentShowEvent(kPrimaryUniqueId);
 
@@ -172,13 +258,15 @@ TEST_F(NotificationEventDispatcherImplTest,
        RegisterNonPersistentListener_ReplacedListenerGetsOnClick) {
   auto original_listener = std::make_unique<TestNotificationListener>();
   dispatcher_->RegisterNonPersistentNotificationListener(
-      kPrimaryUniqueId, original_listener->GetRemote());
+      kPrimaryUniqueId, original_listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
 
   dispatcher_->DispatchNonPersistentShowEvent(kPrimaryUniqueId);
 
   auto replacement_listener = std::make_unique<TestNotificationListener>();
   dispatcher_->RegisterNonPersistentNotificationListener(
-      kPrimaryUniqueId, replacement_listener->GetRemote());
+      kPrimaryUniqueId, replacement_listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
 
   WaitForMojoTasksToComplete();
 
@@ -196,11 +284,13 @@ TEST_F(NotificationEventDispatcherImplTest,
 TEST_F(NotificationEventDispatcherImplTest,
        DispatchNonPersistentClickEvent_NotifiesCorrectRegisteredListener) {
   auto listener = std::make_unique<TestNotificationListener>();
-  dispatcher_->RegisterNonPersistentNotificationListener(kPrimaryUniqueId,
-                                                         listener->GetRemote());
+  dispatcher_->RegisterNonPersistentNotificationListener(
+      kPrimaryUniqueId, listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
   auto other_listener = std::make_unique<TestNotificationListener>();
   dispatcher_->RegisterNonPersistentNotificationListener(
-      kSomeOtherUniqueId, other_listener->GetRemote());
+      kSomeOtherUniqueId, other_listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
 
   dispatcher_->DispatchNonPersistentClickEvent(kPrimaryUniqueId,
                                                base::DoNothing());
@@ -222,11 +312,13 @@ TEST_F(NotificationEventDispatcherImplTest,
 TEST_F(NotificationEventDispatcherImplTest,
        DispatchNonPersistentCloseEvent_NotifiesCorrectRegisteredListener) {
   auto listener = std::make_unique<TestNotificationListener>();
-  dispatcher_->RegisterNonPersistentNotificationListener(kPrimaryUniqueId,
-                                                         listener->GetRemote());
+  dispatcher_->RegisterNonPersistentNotificationListener(
+      kPrimaryUniqueId, listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
   auto other_listener = std::make_unique<TestNotificationListener>();
   dispatcher_->RegisterNonPersistentNotificationListener(
-      kSomeOtherUniqueId, other_listener->GetRemote());
+      kSomeOtherUniqueId, other_listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
 
   dispatcher_->DispatchNonPersistentCloseEvent(kPrimaryUniqueId,
                                                base::DoNothing());
@@ -248,8 +340,9 @@ TEST_F(NotificationEventDispatcherImplTest,
 TEST_F(NotificationEventDispatcherImplTest,
        DispatchMultipleNonPersistentEvents_StopsNotifyingAfterClose) {
   auto listener = std::make_unique<TestNotificationListener>();
-  dispatcher_->RegisterNonPersistentNotificationListener(kPrimaryUniqueId,
-                                                         listener->GetRemote());
+  dispatcher_->RegisterNonPersistentNotificationListener(
+      kPrimaryUniqueId, listener->GetRemote(),
+      main_rfh()->GetWeakDocumentPtr());
 
   dispatcher_->DispatchNonPersistentShowEvent(kPrimaryUniqueId);
   dispatcher_->DispatchNonPersistentClickEvent(kPrimaryUniqueId,

@@ -14,6 +14,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/notification_event_dispatcher.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
@@ -55,19 +56,48 @@ class CONTENT_EXPORT NotificationEventDispatcherImpl
       const std::string& notification_id,
       base::OnceClosure completed_closure) override;
 
-  // Registers |listener| to receive the show, click and close events of the
-  // non-persistent notification identified by |notification_id|.
+  // Registers the associated document weak pointer and the listener to receive
+  // the show, click and close events of the non-persistent notification
+  // identified by `notification_id`. For more information about the
+  // `event_document_ptr`, see the comments of `weak_document_ptr_` property in
+  // `BlinkNotificationServiceImpl`.
   void RegisterNonPersistentNotificationListener(
       const std::string& notification_id,
       mojo::PendingRemote<blink::mojom::NonPersistentNotificationListener>
-          event_listener_remote);
+          event_listener_remote,
+      const WeakDocumentPtr& event_document_ptr);
 
  private:
+  struct NonPersistentNotificationListenerInfo {
+    NonPersistentNotificationListenerInfo(
+        mojo::Remote<blink::mojom::NonPersistentNotificationListener> remote,
+        WeakDocumentPtr document);
+    NonPersistentNotificationListenerInfo(
+        NonPersistentNotificationListenerInfo&&);
+    NonPersistentNotificationListenerInfo(
+        const NonPersistentNotificationListenerInfo&) = delete;
+    NonPersistentNotificationListenerInfo& operator=(
+        const NonPersistentNotificationListenerInfo&) = delete;
+    ~NonPersistentNotificationListenerInfo();
+
+    mojo::Remote<blink::mojom::NonPersistentNotificationListener> remote;
+    // This is used to determine if the associated document that registers the
+    // listeners is in back/forward cache when the event is dispatched.
+    WeakDocumentPtr document;
+  };
+
   friend class NotificationEventDispatcherImplTest;
   friend struct base::DefaultSingletonTraits<NotificationEventDispatcherImpl>;
 
   NotificationEventDispatcherImpl();
   ~NotificationEventDispatcherImpl() override;
+
+  // Checks if the event listener for the `notification_id` should be fired.
+  // It returns false if:
+  // 1. The event listener is not found from the map, or
+  // 2. The document is currently in back/forward cache.
+  bool ShouldDispatchNonPersistentNotificationEvent(
+      const std::string& notification_id);
 
   // Removes all references to the listener registered to receive events
   // from the non-persistent notification identified by |notification_id|,
@@ -82,9 +112,8 @@ class CONTENT_EXPORT NotificationEventDispatcherImpl
   void HandleConnectionErrorForNonPersistentNotificationListener(
       const std::string& notification_id);
 
-  // Notification Id -> listener.
-  std::map<std::string,
-           mojo::Remote<blink::mojom::NonPersistentNotificationListener>>
+  // Mapping between the notification id and the event listener.
+  std::map<std::string, NonPersistentNotificationListenerInfo>
       non_persistent_notification_listeners_;
 };
 
