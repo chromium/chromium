@@ -408,16 +408,10 @@ UserMediaRequest* UserMediaRequest::Create(
   std::string display_surface_constraint;
 
   if (media_type == UserMediaRequestType::kUserMedia && !video.IsNull()) {
-    if (video.Basic().pan.HasMandatory()) {
-      error_state.ThrowTypeError("Mandatory pan constraint is not supported");
-      return nullptr;
-    }
-    if (video.Basic().tilt.HasMandatory()) {
-      error_state.ThrowTypeError("Mandatory tilt constraint is not supported");
-      return nullptr;
-    }
-    if (video.Basic().zoom.HasMandatory()) {
-      error_state.ThrowTypeError("Mandatory zoom constraint is not supported");
+    if (video.Basic().pan.HasMandatory() || video.Basic().tilt.HasMandatory() ||
+        video.Basic().zoom.HasMandatory()) {
+      error_state.ThrowTypeError(
+          "Mandatory pan-tilt-zoom constraints are not supported");
       return nullptr;
     }
   } else if (media_type == UserMediaRequestType::kDisplayMedia ||
