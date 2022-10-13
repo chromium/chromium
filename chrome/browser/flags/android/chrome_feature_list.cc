@@ -1052,7 +1052,7 @@ BASE_FEATURE(kToolbarMicIphAndroid,
 
 BASE_FEATURE(kToolbarPhoneOptimizations,
              "ToolbarPhoneOptimizations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kToolbarScrollAblationAndroid,
              "ToolbarScrollAblationAndroid",
