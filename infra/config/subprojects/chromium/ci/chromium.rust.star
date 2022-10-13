@@ -19,9 +19,6 @@ ci.defaults.set(
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     os = os.LINUX_DEFAULT,
     notifies = ["chrome-rust-experiments"],
-
-    # TODO(crbug.com/1362440): remove this.
-    omit_python2 = False,
 )
 
 consoles.console_view(
