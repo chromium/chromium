@@ -2035,6 +2035,21 @@
             ]
         }
     ],
+    "BluetoothQualityReport": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221013",
+                    "enable_features": [
+                        "BluetoothQualityReport"
+                    ]
+                }
+            ]
+        }
+    ],
     "BrowserPeriodicYieldingToNative": [
         {
             "platforms": [
