@@ -332,10 +332,12 @@ void UnifiedSystemTrayBubble::RecordTimeToClick() {
 
 void UnifiedSystemTrayBubble::OnTabletModeStarted() {
   UpdateBubbleBounds();
+  tray_->CloseBubble();
 }
 
 void UnifiedSystemTrayBubble::OnTabletModeEnded() {
   UpdateBubbleBounds();
+  tray_->CloseBubble();
 }
 
 void UnifiedSystemTrayBubble::OnAutoHideStateChanged(
