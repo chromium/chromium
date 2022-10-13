@@ -1338,6 +1338,8 @@ public class FeedStream implements Stream {
     public interface Natives {
         long init(FeedStream caller, @StreamKind int streamKind,
                 long nativeFeedReliabilityLoggingBridge);
+        long initWebFeed(
+                FeedStream caller, byte[] webFeedId, long nativeFeedReliabilityLoggingBridge);
         void reportFeedViewed(long nativeFeedStream, FeedStream caller);
         void reportSliceViewed(long nativeFeedStream, FeedStream caller, String sliceId);
         void reportPageLoaded(long nativeFeedStream, FeedStream caller, boolean inNewTab);

@@ -39,16 +39,30 @@ static jlong JNI_FeedStream_Init(JNIEnv* env,
                                  jint stream_kind,
                                  jlong native_feed_reliability_logging_bridge) {
   return reinterpret_cast<intptr_t>(
-      new FeedStream(j_this, stream_kind,
+      new FeedStream(j_this, stream_kind, std::string(),
                      reinterpret_cast<FeedReliabilityLoggingBridge*>(
                          native_feed_reliability_logging_bridge)));
 }
 
+static jlong JNI_FeedStream_InitWebFeed(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_this,
+    const JavaParamRef<jbyteArray>& j_web_feed_id,
+    jlong native_feed_reliability_logging_bridge) {
+  std::string web_feed_id;
+  base::android::JavaByteArrayToString(env, j_web_feed_id, &web_feed_id);
+  return reinterpret_cast<intptr_t>(new FeedStream(
+      j_this, static_cast<jint>(StreamKind::kChannel), web_feed_id,
+      reinterpret_cast<FeedReliabilityLoggingBridge*>(
+          native_feed_reliability_logging_bridge)));
+}
+
 FeedStream::FeedStream(const JavaRef<jobject>& j_this,
                        jint stream_kind,
+                       std::string web_feed_id,
                        FeedReliabilityLoggingBridge* reliability_logging_bridge)
-    : ::feed::FeedStreamSurface(
-          StreamType(static_cast<StreamKind>(stream_kind))),
+    : ::feed::FeedStreamSurface(StreamType(static_cast<StreamKind>(stream_kind),
+                                           std::move(web_feed_id))),
       feed_stream_api_(nullptr),
       reliability_logging_bridge_(reliability_logging_bridge) {
   java_ref_.Reset(j_this);

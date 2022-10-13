@@ -25,6 +25,7 @@ class FeedStream : public ::feed::FeedStreamSurface {
  public:
   explicit FeedStream(const base::android::JavaRef<jobject>& j_this,
                       jint stream_kind,
+                      std::string web_feed_id,
                       FeedReliabilityLoggingBridge* reliability_logging_bridge);
   FeedStream(const FeedStream&) = delete;
   FeedStream& operator=(const FeedStream&) = delete;
