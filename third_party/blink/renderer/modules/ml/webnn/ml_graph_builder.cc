@@ -176,30 +176,40 @@ absl::optional<double> CalculateConv2dOutputSize(
     const uint32_t beginning_padding,
     const uint32_t ending_padding,
     const uint32_t stride,
-    const uint32_t dilation) {
+    const uint32_t dilation,
+    String& error_message) {
   // Calculate the dilated filter sizes.
-  auto checked_dilated_filter_size =
+  auto checked_effective_filter_size =
       (base::MakeCheckedNum<uint32_t>(filter_size) - 1) * dilation + 1;
-  if (!checked_dilated_filter_size.IsValid()) {
+  if (!checked_effective_filter_size.IsValid()) {
+    error_message = "The effective filter size is too large.";
     return absl::nullopt;
   }
 
   // Calculate the output size in double precision floating point number that
   // ensures all dimension values of type uint32_t can be exactly represented.
   // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
+  // The max value of checked_output_size should be 3 * UINT_MAX + 1, assert it
+  // is less than max integer value of double type.
   auto checked_output_size =
-      (base::MakeCheckedNum<double>(input_size) - checked_dilated_filter_size +
-       beginning_padding + ending_padding) /
+      (base::MakeCheckedNum<double>(input_size) -
+       checked_effective_filter_size + beginning_padding + ending_padding) /
           stride +
       1;
 
-  // Check if the value is valid for rounding to uint32_t type.
-  double float_output_size;
-  if (!checked_output_size.IsValid<uint32_t>() ||
-      !checked_output_size.AssignIfValid(&float_output_size)) {
+  if (checked_output_size.ValueOrDie() < 0) {
+    error_message =
+        "The input size is too small to fill the convolution window.";
     return absl::nullopt;
   }
-  return float_output_size;
+
+  // Check if the value is valid for rounding to uint32_t type.
+  if (!checked_output_size.IsValid<uint32_t>()) {
+    error_message = "The output size is too large.";
+    return absl::nullopt;
+  }
+
+  return checked_output_size.ValueOrDie();
 }
 
 struct FloatSize2D {
@@ -319,23 +329,24 @@ absl::optional<FloatSize2D> ValidateAndCalculateConv2dOutputSizes(
     padding_ending_width = padding_sizes_width.value().end;
   }
 
+  String error_message;
   auto float_output_height = CalculateConv2dOutputSize(
       input_height, filter_height, padding_beginning_height,
-      padding_ending_height, stride_height, dilation_height);
+      padding_ending_height, stride_height, dilation_height, error_message);
   if (!float_output_height) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "Overflow occurred when calculating the output height.");
+        "Failed to calculate the output height: " + error_message);
     return absl::nullopt;
   }
 
   auto float_output_width = CalculateConv2dOutputSize(
       input_width, filter_width, padding_beginning_width, padding_ending_width,
-      stride_width, dilation_width);
+      stride_width, dilation_width, error_message);
   if (!float_output_width) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kDataError,
-        "Overflow occurred when calculating the output width.");
+        "Failed to calculate the output width: " + error_message);
     return absl::nullopt;
   }
 

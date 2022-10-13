@@ -304,12 +304,27 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
   V8TestingScope scope;
   auto* builder = CreateMLGraphBuilder(scope);
   {
-    // Test conv2d without padding.
+    // Test conv2d with default options.
     auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
                              V8MLOperandType::Enum::kFloat32);
     auto* filter = BuildConstant(scope, builder, {1, 1, 3, 3},
                                  V8MLOperandType::Enum::kFloat32);
-    auto* output = BuildConv2d(scope, builder, input, filter);
+    auto* options = MLConv2dOptions::Create();
+    EXPECT_TRUE(options->hasAutoPad());
+    EXPECT_EQ(options->autoPad(), V8MLAutoPad::Enum::kExplicit);
+    EXPECT_FALSE(options->hasBias());
+    EXPECT_FALSE(options->hasDilations());
+    EXPECT_FALSE(options->hasActivation());
+    EXPECT_TRUE(options->hasFilterLayout());
+    EXPECT_EQ(options->filterLayout(),
+              V8MLConv2dFilterOperandLayout::Enum::kOihw);
+    EXPECT_TRUE(options->hasInputLayout());
+    EXPECT_EQ(options->inputLayout(), V8MLInputOperandLayout::Enum::kNchw);
+    EXPECT_TRUE(options->hasGroups());
+    EXPECT_EQ(options->groups(), 1);
+    EXPECT_FALSE(options->hasPadding());
+    EXPECT_FALSE(options->hasStrides());
+    auto* output = BuildConv2d(scope, builder, input, filter, options);
     EXPECT_EQ(output->Dimensions(), Vector<uint32_t>({1, 1, 3, 3}));
   }
   {
@@ -541,6 +556,408 @@ TEST_F(MLGraphBuilderTest, Conv2dTest) {
               DOMExceptionCode::kDataError);
     EXPECT_EQ(scope.GetExceptionState().Message(),
               "Invalid output operand: The byte length is too large.");
+  }
+  {
+    // Test throwing exception when the input is not a 4-D tensor.
+    auto* input = BuildInput(scope, builder, "input", {1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 2, 2, 1},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input should be a 4-D tensor.");
+  }
+  {
+    // Test throwing exception when the filter is not a 4-D tensor.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter =
+        BuildConstant(scope, builder, {2, 2}, V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The filter should be a 4-D tensor.");
+  }
+  {
+    // Test throwing exception when the filter type doesn't match the input
+    // type.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kInt32);
+    auto* options = MLConv2dOptions::Create();
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The filter type doesn't match the input type.");
+  }
+  {
+    // Test throwing exception when the length of padding is not 4.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setPadding({2, 2});
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The length of padding should be 4.");
+  }
+  {
+    // Test throwing exception when one padding value is smaller than 0.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setPadding({0, 1, 2, -2});
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "All paddings should be greater than or equal to 0.");
+  }
+  {
+    // Test throwing exception when the length of strides is not 2.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setStrides({2});
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The length of strides should be 2.");
+  }
+  {
+    // Test throwing exception when one stride value is smaller than 1.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setStrides({1, 0});
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "All strides should be greater than or equal to 1.");
+  }
+  {
+    // Test throwing exception when the length of dilations is not 2.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setDilations({1});
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The length of dilations should be 2.");
+  }
+  {
+    // Test throwing exception when the one dilation value is smaller than 1.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setDilations({1, -1});
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "All dilations should be greater than or equal to 1.");
+  }
+  {
+    // Test throwing exception when input_channels % groups() != 0.
+    auto* input = BuildInput(scope, builder, "input", {1, 4, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setGroups(3);
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The groups must evenly divide the input "
+              "channels to filter input channels.");
+  }
+  {
+    // Test throwing exception when filter_input_channels != input_channels /
+    // groups().
+    auto* input = BuildInput(scope, builder, "input", {1, 4, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setGroups(2);
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The groups must evenly divide the input "
+              "channels to filter input channels.");
+  }
+  {
+    // Test throwing exception when the groups is smaller than 1.
+    auto* input = BuildInput(scope, builder, "input", {1, 4, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setGroups(0);
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The groups should be greater than or equal to 1.");
+  }
+  {
+    // Test throwing exception due to overflow when calculating the padding
+    // along the height dimension.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 23567, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setStrides({193232, 3});
+    options->setDilations({232328, 2});
+    options->setAutoPad(V8MLAutoPad::Enum::kSameUpper);
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Overflow occurred when calculating "
+              "the padding along the height dimension.");
+  }
+  {
+    // Test throwing exception due to overflow when calculating the padding
+    // along the width dimension.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 28476},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setStrides({1, 284234});
+    options->setDilations({1, 434329});
+    options->setAutoPad(V8MLAutoPad::Enum::kSameLower);
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Overflow occurred when calculating "
+              "the padding along the width dimension.");
+  }
+  {
+    // Test throwing exception due to overflow when calculating the effective
+    // filter height.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 434983, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setDilations({328442, 1});
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "Failed to calculate the output height: The effective filter size is "
+        "too large.");
+  }
+  {
+    // Test throwing exception due to overflow when calculating the effective
+    // filter width.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 234545},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setDilations({2, 843452});
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(
+        scope.GetExceptionState().Message(),
+        "Failed to calculate the output width: The effective filter size is "
+        "too large.");
+  }
+  {
+    // Test throwing exception due to underflow when calculating the output
+    // height.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 4, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setDilations({4, 1});
+    options->setPadding({1, 1, 1, 1});
+    options->setStrides({2, 2});
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Failed to calculate the output height: The input size is too "
+              "small to fill the convolution window.");
+  }
+  {
+    // Test throwing exception due to underflow when calculating the output
+    // width.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 8},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    options->setDilations({1, 4});
+    options->setPadding({1, 1, 1, 1});
+    options->setStrides({2, 2});
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "Failed to calculate the output width: The input size is too "
+              "small to fill the convolution window.");
+  }
+  {
+    // Test throwing exception when the bias is not a 1-D tensor.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    auto* bias =
+        BuildConstant(scope, builder, {1, 2}, V8MLOperandType::Enum::kFloat32);
+    options->setBias(bias);
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The bias should be a 1-D tensor.");
+  }
+  {
+    // Test throwing exception when the bias is not a 1-D tensor.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    auto* bias =
+        BuildConstant(scope, builder, {1, 2}, V8MLOperandType::Enum::kFloat32);
+    options->setBias(bias);
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The bias should be a 1-D tensor.");
+  }
+  {
+    // Test throwing exception when the bias is not a 1-D tensor.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    auto* bias =
+        BuildConstant(scope, builder, {1, 2}, V8MLOperandType::Enum::kFloat32);
+    options->setBias(bias);
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The bias should be a 1-D tensor.");
+  }
+  {
+    // Test throwing exception when the bias shape is not equal to
+    // [output_channels].
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    auto* bias =
+        BuildConstant(scope, builder, {2}, V8MLOperandType::Enum::kFloat32);
+    options->setBias(bias);
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The bias shape should be [1].");
+  }
+  {
+    // Test throwing exception when the bias type doesn't match input type.
+    auto* input = BuildInput(scope, builder, "input", {1, 1, 5, 5},
+                             V8MLOperandType::Enum::kFloat32);
+    auto* filter = BuildConstant(scope, builder, {1, 1, 2, 2},
+                                 V8MLOperandType::Enum::kFloat32);
+    auto* options = MLConv2dOptions::Create();
+    auto* bias =
+        BuildConstant(scope, builder, {1}, V8MLOperandType::Enum::kInt32);
+    options->setBias(bias);
+    auto* output =
+        builder->conv2d(input, filter, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The bias type doesn't match input type.");
   }
 }
 
