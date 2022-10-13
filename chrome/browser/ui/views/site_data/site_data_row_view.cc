@@ -18,6 +18,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
@@ -258,6 +259,9 @@ void SiteDataRowView::OnDeleteIconClicked() {
   // easier. All the related items to the dialog have the same lifecycle and are
   // created when dialog is shown and are deleted when the dialog is destroyed.
   SetVisible(false);
+
+  // The row is hidden, advance focus to the next row.
+  GetFocusManager()->AdvanceFocus(/*reverse=*/false);
 }
 
 void SiteDataRowView::OnBlockMenuItemClicked(int event_flags) {
