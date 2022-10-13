@@ -58,6 +58,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/about_settings/AboutSettingsBridge.java",
   "java/src/org/chromium/chrome/browser/about_settings/HyperlinkPreference.java",
   "java/src/org/chromium/chrome/browser/about_settings/LegalInformationSettings.java",
+  "java/src/org/chromium/chrome/browser/accessibility/AccessibilityTabHelper.java",
   "java/src/org/chromium/chrome/browser/accessibility/settings/ChromeAccessibilitySettingsDelegate.java",
   "java/src/org/chromium/chrome/browser/accessibility_tab_switcher/AccessibilityTabModelAdapter.java",
   "java/src/org/chromium/chrome/browser/accessibility_tab_switcher/AccessibilityTabModelListItem.java",

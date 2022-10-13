@@ -34,7 +34,6 @@ import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.net.NetError;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
@@ -105,14 +104,6 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
     @Override
     public void initWebContents(WebContents webContents) {
         mObserver = new Observer(webContents);
-
-        // For browser tabs, we want to set accessibility focus to the page when it loads. This
-        // is not the default behavior for embedded web views.
-        WebContentsAccessibility.fromWebContents(webContents).setShouldFocusOnPageLoad(true);
-
-        // Enable image descriptions feature normally, but not for Chrome Custom Tabs.
-        WebContentsAccessibility.fromWebContents(webContents)
-                .setIsImageDescriptionsCandidate(!mTab.isCustomTab());
 
         for (Callback<WebContents> callback : mInitObservers) callback.onResult(webContents);
     }

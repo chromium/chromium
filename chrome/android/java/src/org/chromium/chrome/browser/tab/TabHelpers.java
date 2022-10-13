@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import org.chromium.chrome.browser.SwipeRefreshHandler;
+import org.chromium.chrome.browser.accessibility.AccessibilityTabHelper;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantTabHelper;
 import org.chromium.chrome.browser.complex_tasks.TaskTabHelper;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchTabHelper;
@@ -39,6 +40,7 @@ public final class TabHelpers {
         if (ReaderModeManager.isEnabled()) ReaderModeManager.createForTab(tab);
         AutofillAssistantTabHelper.createForTab(tab);
         PasswordCheckUkmRecorder.createForTab(tab);
+        AccessibilityTabHelper.createForTab(tab);
 
         // The following will start prefetching data for the price drops feature, so
         // we should only do it if the user is eligible for the feature (e.g. has sync enabled).

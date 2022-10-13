@@ -152,6 +152,16 @@ public class AccessibilityEventDispatcher {
     }
 
     /**
+     * Helper method to cancel all posted Runnables if the Client object is being destroyed early.
+     */
+    public void clearQueue() {
+        for (Long uuid : mPendingEvents.keySet()) {
+            mClient.removeRunnable(mPendingEvents.get(uuid));
+        }
+        mPendingEvents.clear();
+    }
+
+    /**
      * Helper method to update the list of relevant event types to be dispatched.
      * @param relevantEventTypes        Set<Integer> relevant event types
      */

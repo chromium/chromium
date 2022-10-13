@@ -63,6 +63,7 @@ import android.text.style.URLSpan;
 import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityEvent;
@@ -95,6 +96,7 @@ import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
@@ -119,7 +121,8 @@ import java.util.Set;
 @JNINamespace("content")
 public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompat
         implements AccessibilityStateChangeListener, WebContentsAccessibility, WindowEventObserver,
-                   UserData, BrowserAccessibilityState.Listener {
+                   UserData, BrowserAccessibilityState.Listener,
+                   ViewAndroidDelegate.ContainerViewObserver {
     // Public catch-all TAG for logging in the accessibility component.
     public static final String TAG = "ClankAccessibility";
 
@@ -179,7 +182,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     private final AccessibilityDelegate mDelegate;
     protected AccessibilityManager mAccessibilityManager;
-    protected final Context mContext;
+    protected Context mContext;
     private String mProductVersion;
     protected long mNativeObj;
     private Rect mAccessibilityFocusRect;
@@ -290,9 +293,12 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mProductVersion = mDelegate.getProductVersion();
         mAccessibilityManager =
                 (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
-        if (mDelegate.getWebContents() != null) {
-            mCaptioningController = new CaptioningController(mDelegate.getWebContents());
-            WindowEventObserverManager.from(mDelegate.getWebContents()).addObserver(this);
+
+        WebContents webContents = mDelegate.getWebContents();
+        if (webContents != null) {
+            mCaptioningController = new CaptioningController(webContents);
+            WindowEventObserverManager.from(webContents).addObserver(this);
+            webContents.getViewAndroidDelegate().addObserver(this);
         } else {
             refreshState();
         }
@@ -412,7 +418,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // Register a broadcast receiver for locale change.
         if (mView.isAttachedToWindow()) registerLocaleChangeReceiver();
 
-        // Define an initial set of relevant events if OnDemand feature is enabled.
+        // TODO(mschillaci,jacklynch): Move into {refreshNativeState} or similar method once
+        //                            {BrowserAccessibilityState.Listener} has more granularity.
+        // Define a set of relevant AccessibilityEvents if the OnDemand feature is enabled.
         if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
             Runnable serviceMaskRunnable = () -> {
                 int serviceEventMask =
@@ -423,6 +431,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             };
             mView.post(serviceMaskRunnable);
         }
+
+        // Send state values set by embedders to native-side objects.
+        refreshNativeState();
 
         TraceEvent.end("WebContentsAccessibilityImpl.onNativeInit");
     }
@@ -527,6 +538,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         TraceEvent.begin("WebContentsAccessibilityImpl.onAttachedToWindow");
         mAccessibilityManager.addAccessibilityStateChangeListener(this);
         refreshState();
+        refreshNativeState();
         mCaptioningController.startListening();
         registerLocaleChangeReceiver();
         TraceEvent.end("WebContentsAccessibilityImpl.onAttachedToWindow");
@@ -547,21 +559,44 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @Override
     public void onWindowAndroidChanged(WindowAndroid windowAndroid) {
         TraceEvent.begin("WebContentsAccessibilityImpl.onWindowAndroidChanged");
-        // Delete this object when switching between WindowAndroids/Activities.
-        if (mDelegate.getWebContents() != null) {
-            WindowEventObserverManager.from(mDelegate.getWebContents()).removeObserver(this);
-            ((WebContentsImpl) mDelegate.getWebContents())
-                    .removeUserData(WebContentsAccessibilityImpl.class);
+        // When the WindowAndroid changes, we must update our Context reference to the new value.
+        // We also need to remove all references to the previous context, which in this case would
+        // be the reference in any existing SuggestionSpans. To remove these, clear our cache to
+        // recycle all nodes. Any other AccessibilityNodeInfo objects that were created would have
+        // been passed to the Framework, which can handle clean-up on its end. We do not want to
+        // delete |this| because the object is (largely) not WindowAndroid dependent.
+        mNodeInfoCache.clear();
+        if (windowAndroid != null && windowAndroid.getContext().get() != null) {
+            mContext = windowAndroid.getContext().get();
         }
 
-        deleteEarly();
         TraceEvent.end("WebContentsAccessibilityImpl.onWindowAndroidChanged");
+    }
+
+    @Override
+    public void onUpdateContainerView(ViewGroup view) {
+        // When the ContainerView is updated, we must update the |mView| variable and remove all
+        // previous references to it. We clear the AccessibilityEventDispatcher queue, which may
+        // have posted Runnable(s) to the old view. We also clear the AccessibilityNodeInfo cache
+        // since some objects may still be referencing the old view as their parent or source. We
+        // do not want to delete |this| because the object is (largely) not ContainerView dependent.
+        mEventDispatcher.clearQueue();
+        mNodeInfoCache.clear();
+        mView = view;
     }
 
     @Override
     public void destroy() {
         TraceEvent.begin("WebContentsAccessibilityImpl.destroy");
-        if (mDelegate.getWebContents() == null) deleteEarly();
+        mNodeInfoCache.clear();
+        mEventDispatcher.clearQueue();
+        if (mDelegate.getWebContents() == null) {
+            deleteEarly();
+        } else {
+            WindowEventObserverManager.from(mDelegate.getWebContents()).removeObserver(this);
+            ((WebContentsImpl) mDelegate.getWebContents())
+                    .removeUserData(WebContentsAccessibilityImpl.class);
+        }
         TraceEvent.end("WebContentsAccessibilityImpl.destroy");
     }
 
@@ -579,6 +614,27 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
      */
     public void refreshState() {
         setState(mAccessibilityManager.isEnabled());
+    }
+
+    private void refreshNativeState() {
+        try (TraceEvent te = TraceEvent.scoped("WebContentsAccessibilityImpl.refreshNativeState")) {
+            if (!isNativeInitialized()) return;
+
+            // Update the AXMode based on screen reader status.
+            WebContentsAccessibilityImplJni.get().setAXMode(mNativeObj,
+                    BrowserAccessibilityState.screenReaderMode(),
+                    /* isAccessibilityEnabled= */ true);
+
+            // Update the state of how passwords are exposed based on user settings.
+            WebContentsAccessibilityImplJni.get().setPasswordRules(mNativeObj,
+                    AccessibilityAutofillHelper.shouldRespectDisplayedPasswordText(),
+                    AccessibilityAutofillHelper.shouldExposePasswordText());
+
+            // Update the state of enabling/disabling the image descriptions feature. To enable the
+            // feature, this instance must be a candidate and a screen reader must be enabled.
+            WebContentsAccessibilityImplJni.get().setAllowImageDescriptions(mNativeObj,
+                    mIsImageDescriptionsCandidate && BrowserAccessibilityState.screenReaderMode());
+        }
     }
 
     // AccessibilityNodeProvider
@@ -760,24 +816,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     @Override
     public void onBrowserAccessibilityStateChanged(boolean newScreenReaderEnabledState) {
-        if (!isNativeInitialized()) return;
+        refreshNativeState();
 
-        // Update the AXMode based on screen reader status.
-        WebContentsAccessibilityImplJni.get().setAXMode(mNativeObj, newScreenReaderEnabledState,
-                /* isAccessibilityEnabled= */ true);
-
-        // Update the state of how passwords are exposed based on user settings.
-        WebContentsAccessibilityImplJni.get().setPasswordRules(mNativeObj,
-                AccessibilityAutofillHelper.shouldRespectDisplayedPasswordText(),
-                AccessibilityAutofillHelper.shouldExposePasswordText());
-
-        // Update the state of enabling/disabling the image descriptions feature. To enable the
-        // feature, this instance must be a candidate and a screen reader must be enabled.
-        WebContentsAccessibilityImplJni.get().setAllowImageDescriptions(
-                mNativeObj, mIsImageDescriptionsCandidate && newScreenReaderEnabledState);
-
+        // TODO(mschillaci,jacklynch): Move into {refreshNativeState} or similar method once
+        //                            {BrowserAccessibilityState.Listener} has more granularity.
         // Update the list of events we dispatch to enabled services.
-        if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
+        if (isNativeInitialized()
+                && ContentFeatureList.isEnabled(
+                        ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
             int serviceEventMask = BrowserAccessibilityState.getAccessibilityServiceEventTypeMask();
             mEventDispatcher.updateRelevantEventTypes(convertMaskToEventTypes(serviceEventMask));
         }
@@ -1073,6 +1119,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
     }
 
+    // TODO(mschillaci,jacklynch): Move into {refreshNativeState} once {BrowserAccessibilityState.
+    //                             Listener} provides more granularity.
     public void updateAXModeFromNativeAccessibilityState() {
         if (!isNativeInitialized()) return;
         // Update the AXMode based on screen reader status.
