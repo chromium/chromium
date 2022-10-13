@@ -239,17 +239,19 @@ class AsyncPoll(object):
         :param condition: A callable function whose return value will
             be returned by this function.
         """
-        result = None
-        traceback = None
-
         async def poll():
             result = None
+            traceback = None
+            start = self.clock.time()
+            end = start + self.timeout
 
-            while True:
+            while not self.clock.time() >= end:
                 next = self.clock.time() + self.interval
 
                 try:
                     result = condition(self.session)
+                except (KeyboardInterrupt, SystemExit):
+                    raise
                 except self.exceptions:
                     _, _, traceback = sys.exc_info()
 
@@ -262,13 +264,13 @@ class AsyncPoll(object):
 
                 await asyncio.sleep(interval_new)
 
-        try :
-            result = await asyncio.wait_for(poll(), timeout=self.timeout)
-        except asyncio.TimeoutError:
             if self.exc_cls is not None:
-                message = f"Timed out after {self.timeout} seconds"
+                elapsed = round((self.clock.time() - start), 1)
+                message = f"Timed out after {elapsed} seconds"
                 if self.exc_msg is not None:
                     message = f"{message} with message: {self.exc_msg}"
                 raise self.exc_cls(message=message).with_traceback(traceback)
             else:
                 return result
+
+        return await poll()

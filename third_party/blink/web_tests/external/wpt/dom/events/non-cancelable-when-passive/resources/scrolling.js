@@ -28,7 +28,7 @@ async function runTest({target, eventName, passive, expectCancelable}) {
 
     await new test_driver.Actions()
       .scroll(pos_x, pos_y, delta_x, delta_y).send();
-    await waitFor(() => arrived);
+    await t.step_wait(() => arrived, `Didn't get event ${eventName} on ${target.localName}`);
     assert_equals(cancelable, expectCancelable);
   });
 }

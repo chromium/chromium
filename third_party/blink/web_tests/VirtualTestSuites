@@ -1251,7 +1251,7 @@
     "prefix": "pending-beacon",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "external/wpt/page-unload-beacon",
+      "external/wpt/unload-beacon",
       "wpt_internal/pending_beacon"
     ],
     "args": [

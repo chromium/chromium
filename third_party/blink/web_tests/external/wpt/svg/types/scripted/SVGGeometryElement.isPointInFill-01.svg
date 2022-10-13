@@ -25,16 +25,6 @@
   <script><![CDATA[
     'use strict';
 
-    setup(function() {
-      window.myPoint = document.documentElement.createSVGPoint();
-    });
-
-    function adaptPoint(point) {
-      myPoint.x = point.x;
-      myPoint.y = point.y;
-      return myPoint;
-    }
-
     const pointsToTest = [
       { x: 150, y: 150 },
       { x: 275, y: 150 },
@@ -45,13 +35,13 @@
     function testPoints(element) {
       const expected = [true, true, true, false, false];
       pointsToTest.forEach(function(point, index) {
-        assert_equals(element.isPointInFill(adaptPoint(point)),
+        assert_equals(element.isPointInFill(point),
                       expected[index], "point at " + point.x + ", " + point.y);
       });
     }
     function testResultVector(element) {
       return pointsToTest.map(function(point) {
-        return element.isPointInFill(adaptPoint(point));
+        return element.isPointInFill(point);
       });
     }
 
@@ -64,12 +54,12 @@
 
     test(function() {
       let circleAtOrigin = document.getElementById("circle-at-origin");
-      assert_false(circleAtOrigin.isPointInFill(adaptPoint({ x: NaN, y: 0 })), "x is NaN");
-      assert_false(circleAtOrigin.isPointInFill(adaptPoint({ x: Infinity, y: 0 })), "x is Infinity");
-      assert_false(circleAtOrigin.isPointInFill(adaptPoint({ x: -Infinity, y: 0 })), "x is -Infinity");
-      assert_false(circleAtOrigin.isPointInFill(adaptPoint({ x: 0, y: NaN })), "y is NaN");
-      assert_false(circleAtOrigin.isPointInFill(adaptPoint({ x: 0, y: Infinity })), "y is Infinity");
-      assert_false(circleAtOrigin.isPointInFill(adaptPoint({ x: 0, y: -Infinity })), "y is -Infinity");
+      assert_false(circleAtOrigin.isPointInFill({ x: NaN, y: 0 }), "x is NaN");
+      assert_false(circleAtOrigin.isPointInFill({ x: Infinity, y: 0 }), "x is Infinity");
+      assert_false(circleAtOrigin.isPointInFill({ x: -Infinity, y: 0 }), "x is -Infinity");
+      assert_false(circleAtOrigin.isPointInFill({ x: 0, y: NaN }), "y is NaN");
+      assert_false(circleAtOrigin.isPointInFill({ x: 0, y: Infinity }), "y is Infinity");
+      assert_false(circleAtOrigin.isPointInFill({ x: 0, y: -Infinity }), "y is -Infinity");
     }, document.title + ", non-finite argument.");
 
     test(function() {
@@ -98,9 +88,9 @@
 
     test(function() {
       let evenOdd = document.getElementById("rectangular-outline-evenodd");
-      assert_false(evenOdd.isPointInFill(adaptPoint({ x: 250, y: 250 })));
+      assert_false(evenOdd.isPointInFill({ x: 250, y: 250 }));
       let nonZeroWinding = document.getElementById("rectangular-outline-nonzero");
-      assert_true(nonZeroWinding.isPointInFill(adaptPoint({ x: 360, y: 250 })));
+      assert_true(nonZeroWinding.isPointInFill({ x: 360, y: 250 }));
     }, document.title + ", 'fill-rule'.");
 
     test(function() {
@@ -128,7 +118,7 @@
 
     test(function() {
       let nonZeroWinding = document.getElementById("rectangular-outline-nonzero-in-clip");
-      assert_true(nonZeroWinding.isPointInFill(adaptPoint({ x: 250, y: 250 })));
+      assert_true(nonZeroWinding.isPointInFill({ x: 250, y: 250 }));
     }, document.title + ", 'clip-rule' never overrides 'fill-rule'.");
     ]]></script>
 </svg>

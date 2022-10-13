@@ -35,8 +35,8 @@ promise_test(async t => {
 }, "Test without 'allow-orientation-lock' sandboxing directive");
 
 promise_test(async t => {
-  const disallowedIframe = document.getElementById("allowedIframe");
-  disallowedIframe.src = "resources/sandboxed-iframe-locking.html";
+  const allowedIframe = document.getElementById("allowedIframe");
+  allowedIframe.src = "resources/sandboxed-iframe-locking.html";
 
   const message = await wait_result();
 

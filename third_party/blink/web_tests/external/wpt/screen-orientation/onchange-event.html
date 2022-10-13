@@ -9,14 +9,15 @@ promise_test(async t => {
     try {
       await document.exitFullscreen();
     } catch (e) {}
+    screen.orientation.unlock();
   });
   await test_driver.bless("request full screen", () => {
     return document.documentElement.requestFullscreen();
   });
-  const type = screen.orientation.type;
+  const type = screen.orientation.type.startsWith("portrait") ? "portrait" : "landscape";
   screen.orientation.onchange = t.unreached_func("change event should not be fired");
   await screen.orientation.lock(type);
-  assert_equals(screen.orientation.type, type);
+  assert_true(screen.orientation.type.startsWith(type));
 }, "Test that orientationchange event is not fired when the orientation does not change.");
 
 promise_test(async t => {
@@ -30,22 +31,24 @@ promise_test(async t => {
     return document.documentElement.requestFullscreen();
   });
   let orientations = [
-    'portrait-primary',
-    'portrait-secondary',
-    'landscape-primary',
-    'landscape-secondary'
+    'portrait',
+    'landscape',
   ];
-  if (screen.orientation.type.includes('portrait')) {
+  if (screen.orientation.type.startsWith('portrait')) {
     orientations = orientations.reverse();
   }
   const orientationWatcher = new EventWatcher(t, screen.orientation, 'change');
 
   for (const orientation of orientations) {
     // change event is fired before resolving promise by lock.
-    const promise = screen.orientation.lock(orientation);
-    await orientationWatcher.wait_for('change');
-    await promise;
-    assert_equals(screen.orientation.type, orientation);
+    let lockPromise = screen.orientation.lock(orientation);
+    const result = await Promise.race([
+      lockPromise,
+      orientationWatcher.wait_for('change'),
+    ]);
+    assert_true(result instanceof Event, "The event must be fired first.");
+    assert_true(screen.orientation.type.startsWith(orientation), "The orientation must match");
+    await lockPromise;
   }
 }, "Test that orientationchange event is fired when the orientation changes.");
 </script>

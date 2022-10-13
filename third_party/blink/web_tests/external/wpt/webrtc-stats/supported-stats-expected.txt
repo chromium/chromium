@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 237 tests; 215 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 245 tests; 215 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getStats succeeds
 PASS Validating stats
 PASS codec's payloadType
@@ -164,6 +164,14 @@ PASS media-source's kind
 PASS media-source's timestamp
 PASS media-source's type
 PASS media-source's id
+FAIL media-playout's synthesizedSamplesDuration assert_true: Is synthesizedSamplesDuration present expected true got false
+FAIL media-playout's synthesizedSamplesEvents assert_true: Is synthesizedSamplesEvents present expected true got false
+FAIL media-playout's totalSamplesDuration assert_true: Is totalSamplesDuration present expected true got false
+FAIL media-playout's totalPlayoutDelay assert_true: Is totalPlayoutDelay present expected true got false
+FAIL media-playout's totalSamplesCount assert_true: Is totalSamplesCount present expected true got false
+FAIL media-playout's timestamp assert_true: Is timestamp present expected true got false
+FAIL media-playout's type assert_true: Is type present expected true got false
+FAIL media-playout's id assert_true: Is id present expected true got false
 PASS transport's packetsSent
 PASS transport's packetsReceived
 PASS transport's bytesSent
