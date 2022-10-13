@@ -850,11 +850,11 @@ class PolicyTemplateChecker(object):
         for value in required_values:
           names = value_to_names[value]
           if not any(name in policy['desc'].lower() for name in names):
-            self._Warning((
-                'Policy %s doesn\'t seem to describe what happens when it is '
-                'set to %s. If possible update the description to describe this'
-                ' while using at least one of %s') %
-                          (policy.get('name'), value, names))
+            self._PolicyError(
+                'Description does not describe what happens when it is '
+                f'set to {value}. If possible update the description to '
+                f'describe this while using at least one of {names}', policy,
+                'desc')
 
       values_seen = set()
       for item in items:
