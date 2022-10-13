@@ -18,10 +18,6 @@
 #    sources = [ "foo.xml", "bar.xml" ]
 #    generator_type = "protocol-client"  # optional, "all" is the default
 #  }
-#
-# TODO(crbug.com/1366678): remove the "all" option for the generator type
-# to make it possible for the client and the server to use scanners of different
-# versions.
 
 import("//third_party/wayland/features.gni")
 
@@ -66,10 +62,6 @@ template("wayland_protocol") {
       # In all the other cases(generation of protocols from
       # //third_party/wayland-protocols), private source with server and client
       # headers are generated.
-      #
-      # TODO(crbug.com/1366678): this should be split to two branches, each of
-      # them generating only one header (either client or server) and the
-      # matching implementation file.
       protocol_outputs += [
         "${dir}/${name}-protocol.c",
         "${dir}/${name}-server-protocol.h",
