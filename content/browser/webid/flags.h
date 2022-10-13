@@ -27,6 +27,9 @@ bool IsFedCmIdpSigninStatusEnabled();
 // Whether FedCM iframe support is enabled.
 bool IsFedCmIframeSupportEnabled();
 
+// Whether metrics endpoint is enabled.
+bool IsFedCmMetricsEndpointEnabled();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_WEBID_FLAGS_H_

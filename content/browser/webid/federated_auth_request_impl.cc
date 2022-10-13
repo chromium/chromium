@@ -1173,7 +1173,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
           token_response_time_ - select_account_time_,
           token_response_time_ - start_time_);
 
-      if (endpoints_.metrics.is_valid()) {
+      if (endpoints_.metrics.is_valid() && IsFedCmMetricsEndpointEnabled()) {
         network_manager_->SendSuccessfulTokenRequestMetrics(
             endpoints_.metrics, show_accounts_dialog_time_ - start_time_,
             select_account_time_ - show_accounts_dialog_time_,
@@ -1260,7 +1260,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
     AddInspectorIssue(result);
     AddConsoleErrorMessage(result);
 
-    if (endpoints_.metrics.is_valid()) {
+    if (endpoints_.metrics.is_valid() && IsFedCmMetricsEndpointEnabled()) {
       network_manager_->SendFailedTokenRequestMetrics(
           endpoints_.metrics,
           FederatedAuthRequestResultToMetricsEndpointErrorCode(result));

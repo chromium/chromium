@@ -61172,6 +61172,7 @@ from previous Chrome versions.
   <int value="550741462" label="WebAppBorderless:disabled"/>
   <int value="552317551" label="MediaAppHandlesPdf:disabled"/>
   <int value="552421509" label="AssistMultiWordExpanded:enabled"/>
+  <int value="553197994" label="FedCmMetricsEndpoint:enabled"/>
   <int value="555959995" label="ChromeSharingHub:enabled"/>
   <int value="556555487"
       label="AutofillDoNotUploadSaveUnsupportedCards:disabled"/>
@@ -63094,6 +63095,7 @@ from previous Chrome versions.
   <int value="1731522433" label="enable-offer-store-unmasked-wallet-cards"/>
   <int value="1731612996" label="CrostiniFiles:disabled"/>
   <int value="1733390925" label="force-enable-stylus-tools"/>
+  <int value="1733740363" label="FedCmMetricsEndpoint:disabled"/>
   <int value="1734685331" label="NtpShoppingTasksModule:enabled"/>
   <int value="1735934914" label="OverlayScrollbarFlashWhenMouseEnter:disabled"/>
   <int value="1736698988" label="FsNosymfollow:disabled"/>

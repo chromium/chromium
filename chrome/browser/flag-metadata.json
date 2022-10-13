@@ -3587,6 +3587,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "fedcm-metrics-endpoint",
+    "owners": ["yigu", "web-identity-eng@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "fedcm-multi-idp",
     "owners": ["npm", "web-identity-eng@google.com"],
     "expiry_milestone": 120

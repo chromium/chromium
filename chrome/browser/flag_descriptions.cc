@@ -1507,6 +1507,11 @@ const char kFedCmName[] = "FedCM";
 const char kFedCmDescription[] =
     "Enables JavaScript API to intermediate federated identity requests.";
 
+const char kFedCmMetricsEndpointName[] = "FedCmMetricsEndpoint";
+const char kFedCmMetricsEndpointDescription[] =
+    "Allows the FedCM API to send performance measurement to the metrics "
+    "endpoint on the identity provider side. Requires FedCM to be enabled.";
+
 const char kFedCmMultiIdpName[] = "FedCmMultiIdp";
 const char kFedCmMultiIdpDescription[] =
     "Allows the FedCM API to request multiple identity providers "

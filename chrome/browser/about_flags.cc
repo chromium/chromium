@@ -8347,6 +8347,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kFedCm,
                                     kFedCmFeatureVariations,
                                     "FedCmFeatureVariations")},
+
+    {"fedcm-metrics-endpoint", flag_descriptions::kFedCmMetricsEndpointName,
+     flag_descriptions::kFedCmMetricsEndpointDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmMetricsEndpoint)},
+
     {"fedcm-multi-idp", flag_descriptions::kFedCmMultiIdpName,
      flag_descriptions::kFedCmMultiIdpDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmMultipleIdentityProviders)},

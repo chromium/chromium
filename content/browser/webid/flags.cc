@@ -42,4 +42,8 @@ bool IsFedCmIframeSupportEnabled() {
       false);
 }
 
+bool IsFedCmMetricsEndpointEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmMetricsEndpoint);
+}
+
 }  // namespace content
