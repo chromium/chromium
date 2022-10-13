@@ -102,7 +102,6 @@ import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
-import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -223,7 +222,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
     private LayoutManagerImpl mLayoutManager;
 
-    private TabObserver mTabObserver;
     private BookmarkModelObserver mBookmarksObserver;
     private FindToolbarObserver mFindToolbarObserver;
 
@@ -1529,12 +1527,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mToolbar.removeUrlExpansionObserver(mStatusBarColorController);
         mToolbar.destroy();
-
-        if (mTabObserver != null) {
-            Tab currentTab = mLocationBarModel.getTab();
-            if (currentTab != null) currentTab.removeObserver(mTabObserver);
-            mTabObserver = null;
-        }
 
         mIncognitoStateProvider.destroy();
         mTabCountProvider.destroy();
