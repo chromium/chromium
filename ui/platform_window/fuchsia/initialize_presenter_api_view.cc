@@ -4,10 +4,10 @@
 //
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 
-#include <fuchsia/ui/policy/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
+#include <zircon/rights.h>
 
 #include <utility>
 
@@ -29,6 +29,15 @@ FlatlandPresentViewCallback& GetFlatlandViewPresenterInternal() {
   return *view_presenter;
 }
 
+::fuchsia::ui::views::ViewRef CloneViewRef(
+    const ::fuchsia::ui::views::ViewRef& view_ref) {
+  ::fuchsia::ui::views::ViewRef dup;
+  zx_status_t status =
+      view_ref.reference.duplicate(ZX_RIGHT_SAME_RIGHTS, &dup.reference);
+  ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
+  return dup;
+}
+
 }  // namespace
 
 void InitializeViewTokenAndPresentView(
@@ -45,10 +54,15 @@ void InitializeViewTokenAndPresentView(
   // Request Presenter to show the view full-screen.
   auto presenter = base::ComponentContextForProcess()
                        ->svc()
-                       ->Connect<::fuchsia::ui::policy::Presenter>();
+                       ->Connect<::fuchsia::element::GraphicalPresenter>();
 
-  presenter->PresentOrReplaceView(std::move(view_tokens.view_holder_token),
-                                  nullptr);
+  ::fuchsia::element::ViewSpec view_spec;
+  view_spec.set_view_holder_token(std::move(view_tokens.view_holder_token));
+  view_spec.set_view_ref(
+      CloneViewRef(window_properties_out->view_ref_pair.view_ref));
+  presenter->PresentView(std::move(view_spec), nullptr,
+                         window_properties_out->view_controller.NewRequest(),
+                         [](auto) {});
 }
 
 void SetScenicViewPresenter(ScenicPresentViewCallback view_presenter) {

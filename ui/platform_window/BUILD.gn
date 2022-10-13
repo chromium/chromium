@@ -36,7 +36,6 @@ component("platform_window") {
 
     public_deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
-      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views",
       "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
