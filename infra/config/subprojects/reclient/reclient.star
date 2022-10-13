@@ -195,6 +195,7 @@ fyi_reclient_test_builder(
         "RBE_ip_timeout": "-1s",
         "GLOG_vmodule": "bridge*=2",
     },
+    reclient_profiler_service = "reclient-mac",
 )
 
 fyi_reclient_staging_builder(

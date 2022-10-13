@@ -50,7 +50,8 @@
       "RBE_ip_timeout": "-1s"
     },
     "instance": "rbe-chromium-untrusted-test",
-    "metrics_project": "chromium-reclient-metrics"
+    "metrics_project": "chromium-reclient-metrics",
+    "profiler_service": "reclient-mac"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
