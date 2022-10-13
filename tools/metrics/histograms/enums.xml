@@ -57056,6 +57056,7 @@ from previous Chrome versions.
   <int value="-1913801713"
       label="UploadCrashReportsUsingJobScheduler:disabled"/>
   <int value="-1913734393" label="CrosPrivacyHub:disabled"/>
+  <int value="-1913552656" label="VCBackgroundReplace:enabled"/>
   <int value="-1912999136" label="enable-automatic-password-saving:enabled"/>
   <int value="-1911918596" label="WebviewAccelerateSmallCanvases:disabled"/>
   <int value="-1911316813" label="BlockTabUnders:disabled"/>
@@ -57715,6 +57716,7 @@ from previous Chrome versions.
   <int value="-1510524610"
       label="RTCDisallowPlanBOutsideDeprecationTrial:enabled"/>
   <int value="-1508852757" label="CreditCardAutofillTouchBar:disabled"/>
+  <int value="-1508837668" label="VCPortraitRelighting:enabled"/>
   <int value="-1507722271" label="ImprovedDesksKeyboardShortcuts:enabled"/>
   <int value="-1506880454"
       label="SupervisedUserCommittedInterstitials:disabled"/>
@@ -62948,6 +62950,7 @@ from previous Chrome versions.
   <int value="1643700095" label="PermissionQuietChip:enabled"/>
   <int value="1643712769" label="PrintWithReducedRasterization:enabled"/>
   <int value="1644340731" label="NearbySharingSelfShareUI:enabled"/>
+  <int value="1644405691" label="VCPortraitRelighting:disabled"/>
   <int value="1645141340" label="DesksCloseAll:enabled"/>
   <int value="1645447927" label="MixedContentSiteSetting:disabled"/>
   <int value="1645479440" label="HistoryManipulationIntervention:disabled"/>
@@ -63189,6 +63192,7 @@ from previous Chrome versions.
   <int value="1800509458" label="DriveFsChromeNetworking:disabled"/>
   <int value="1800603694" label="DXGIWaitableSwapChain:disabled"/>
   <int value="1801585504" label="ContextMenuShopWithGoogleLens:enabled"/>
+  <int value="1802821192" label="VCBackgroundReplace:disabled"/>
   <int value="1802874714" label="QueryTilesEnableQueryEditing:disabled"/>
   <int value="1803465156" label="enable-zero-suggest-most-visited"/>
   <int value="1803470125" label="SyncUSSSessions:enabled"/>

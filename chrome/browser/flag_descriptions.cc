@@ -3105,6 +3105,16 @@ const char kVCBackgroundBlurName[] = "Enable vc background blur";
 const char kVCBackgroundBlurDescription[] =
     "Enables background blur feature for video conferencing on chromebooks.";
 
+const char kVCBackgroundReplaceName[] = "Enable vc background replacement";
+const char kVCBackgroundReplaceDescription[] =
+    "Enables background replacement feature for video conferencing on "
+    "chromebooks. THIS WILL OVERRIDE BACKGROUND BLUR.";
+
+const char kVCPortraitRelightingName[] = "Enable vc portrait relighting";
+const char kVCPortraitRelightingDescription[] =
+    "Enables portrait relighting feature for video conferencing on "
+    "chromebooks. THIS WILL OVERRIDE BACKGROUND BLUR & REPLACE.";
+
 const char kV8VmFutureName[] = "Future V8 VM features";
 const char kV8VmFutureDescription[] =
     "This enables upcoming and experimental V8 VM features. "

@@ -22,10 +22,6 @@ CAPTURE_EXPORT extern const char kAutoFramingOverride[];
 constexpr char kAutoFramingForceEnabled[] = "force-enabled";
 constexpr char kAutoFramingForceDisabled[] = "force-disabled";
 
-CAPTURE_EXPORT extern const char kEffectsOverride[];
-constexpr char kEffectsForceEnabled[] = "force-enabled";
-constexpr char kEffectsForceDisabled[] = "force-disabled";
-
 }  // namespace switches
 
 namespace features {
