@@ -299,7 +299,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   const bool permission_allowed = (content_setting == CONTENT_SETTING_ALLOW);
   UpdateTabContext(id, requesting_origin, permission_allowed);
 
-  if (!permission_allowed) {
+  if (!permission_allowed || !persist) {
     if (content_setting == CONTENT_SETTING_DEFAULT) {
       content_setting = CONTENT_SETTING_ASK;
     }

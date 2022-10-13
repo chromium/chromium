@@ -778,6 +778,11 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIForOriginBrowserTest,
       base::StrCat({"https://", kHostB, ":",
                     base::NumberToString(https_server().port())})));
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
+  // Repeated calls should also return true.
+  EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(),
+      base::StrCat({"https://", kHostB, ":",
+                    base::NumberToString(https_server().port())})));
 
   // Navigate iframe to a cross-site, cookie-reading endpoint, and verify that
   // the cookie is sent:
