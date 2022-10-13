@@ -118,36 +118,10 @@ SymbolMap::SymbolMap() {
 void SymbolMap::Populate() {
   zx_handle_t process = zx_process_self();
 
-  // Try to fetch the name of the process' main executable, which was set as the
-  // name of the |process| kernel object.
-  // TODO(crbug.com/1131250): Object names can only have up to ZX_MAX_NAME_LEN
-  // characters, so if we keep hitting problems with truncation, find a way to
-  // plumb argv[0] through to here instead, e.g. using
-  // CommandLine::GetProgramName().
-  char app_name[std::extent<decltype(SymbolMap::Module::name)>()];
-  zx_status_t status =
-      zx_object_get_property(process, ZX_PROP_NAME, app_name, sizeof(app_name));
-  if (status == ZX_OK) {
-    // The process name may have a process type suffix at the end (e.g.
-    // "context", "renderer", gpu"), which doesn't belong in the module list.
-    // Trim the suffix from the name.
-    for (size_t i = 0; i < std::size(app_name) && app_name[i] != '\0'; ++i) {
-      if (app_name[i] == ':') {
-        app_name[i] = 0;
-        break;
-      }
-    }
-  } else {
-    DPLOG(WARNING)
-        << "Couldn't get name, falling back to 'app' for program name: "
-        << status;
-    strlcat(app_name, "app", sizeof(app_name));
-  }
-
   // Retrieve the debug info struct.
   uintptr_t debug_addr;
-  status = zx_object_get_property(process, ZX_PROP_PROCESS_DEBUG_ADDR,
-                                  &debug_addr, sizeof(debug_addr));
+  zx_status_t status = zx_object_get_property(
+      process, ZX_PROP_PROCESS_DEBUG_ADDR, &debug_addr, sizeof(debug_addr));
   if (status != ZX_OK) {
     DPLOG(ERROR) << "Couldn't get symbol map for process: " << status;
     return;
@@ -202,7 +176,8 @@ void SymbolMap::Populate() {
       strlcpy(next_entry.name, elf_library_name->data(),
               elf_library_name->size() + 1);
     } else {
-      StringPiece link_map_name(lmap->l_name[0] ? lmap->l_name : app_name);
+      StringPiece link_map_name(lmap->l_name[0] ? lmap->l_name
+                                                : "<executable>");
 
       // The "module" stack trace annotation doesn't allow for strings which
       // resemble paths, so extract the filename portion from |link_map_name|.
