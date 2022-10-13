@@ -13,13 +13,11 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class DictionaryValue;
 class FilePath;
-class ListValue;
-class Value;
 }
 
 namespace extensions {
@@ -39,7 +37,7 @@ namespace subtle {
 // Appends a dictionary {'key': 'value'} to |list|.
 void AppendKeyValuePair(const char* key,
                         base::Value value,
-                        base::ListValue* list);
+                        base::Value::List& list);
 
 }  // namespace subtle
 
@@ -90,8 +88,7 @@ class RawDataPresenter : public UploadDataPresenter {
   void FeedNextFile(const std::string& filename);
   FRIEND_TEST_ALL_PREFIXES(WebRequestUploadDataPresenterTest, RawData);
 
-  const bool success_;
-  std::unique_ptr<base::ListValue> list_;
+  base::Value::List list_;
 };
 
 // This class inspects the contents of bytes elements. It uses the

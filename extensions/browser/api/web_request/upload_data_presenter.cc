@@ -15,10 +15,6 @@
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
 #include "net/base/upload_file_element_reader.h"
 
-using base::DictionaryValue;
-using base::ListValue;
-using base::Value;
-
 namespace keys = extension_web_request_api_constants;
 
 namespace {
@@ -41,56 +37,46 @@ namespace subtle {
 
 void AppendKeyValuePair(const char* key,
                         base::Value value,
-                        base::ListValue* list) {
+                        base::Value::List& list) {
   base::Value::Dict dictionary;
   dictionary.Set(key, std::move(value));
-  list->Append(base::Value(std::move(dictionary)));
+  list.Append(std::move(dictionary));
 }
 
 }  // namespace subtle
 
 UploadDataPresenter::~UploadDataPresenter() {}
 
-RawDataPresenter::RawDataPresenter()
-  : success_(true),
-    list_(new base::ListValue) {
-}
-RawDataPresenter::~RawDataPresenter() {}
+RawDataPresenter::RawDataPresenter() = default;
+
+RawDataPresenter::~RawDataPresenter() = default;
 
 void RawDataPresenter::FeedBytes(base::StringPiece bytes) {
-  if (!success_)
-    return;
-
   FeedNextBytes(bytes.data(), bytes.size());
 }
 
 void RawDataPresenter::FeedFile(const base::FilePath& path) {
-  if (!success_)
-    return;
-
   FeedNextFile(path.AsUTF8Unsafe());
 }
 
 bool RawDataPresenter::Succeeded() {
-  return success_;
+  return true;
 }
 
 absl::optional<base::Value> RawDataPresenter::TakeResult() {
-  if (!success_)
-    return absl::nullopt;
-  return base::Value::FromUniquePtrValue(std::move(list_));
+  return base::Value(std::move(list_));
 }
 
 void RawDataPresenter::FeedNextBytes(const char* bytes, size_t size) {
   subtle::AppendKeyValuePair(
       keys::kRequestBodyRawBytesKey,
-      base::Value(base::as_bytes(base::make_span(bytes, size))), list_.get());
+      base::Value(base::as_bytes(base::make_span(bytes, size))), list_);
 }
 
 void RawDataPresenter::FeedNextFile(const std::string& filename) {
   // Insert the file path instead of the contents, which may be too large.
   subtle::AppendKeyValuePair(keys::kRequestBodyRawFileKey,
-                             base::Value(filename), list_.get());
+                             base::Value(filename), list_);
 }
 
 ParsedDataPresenter::ParsedDataPresenter(
