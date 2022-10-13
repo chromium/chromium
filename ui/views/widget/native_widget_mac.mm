@@ -550,6 +550,9 @@ void NativeWidgetMac::StackAtTop() {
 }
 
 bool NativeWidgetMac::IsStackedAbove(gfx::NativeView native_view) {
+  if (!GetNSWindowMojo())
+    return false;
+
   // -[NSApplication orderedWindows] are ordered front-to-back.
   NSWindow* first = GetNativeWindow().GetNativeNSWindow();
   NSWindow* second = [native_view.GetNativeNSView() window];
