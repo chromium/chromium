@@ -61,7 +61,7 @@ parsing, of course.
 
 Unfortunately, it is very rare to find a grammar trivial enough that we can
 trust ourselves to parse it successfully or fail safely. (But see
-[Normalization](#Normalization) for a potential example.) Therefore, we do need
+[Normalization](#normalization) for a potential example.) Therefore, we do need
 to concern ourselves with the provenance of such inputs.
 
 Any arbitrary peer on the Internet is an untrustworthy source, unless we get
