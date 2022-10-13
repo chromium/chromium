@@ -208,19 +208,19 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {ga, {usb, cable}, {}, {}, {t(usb), add}, mss},
 
       // If the platform authenticator has a credential it should activate.
-      {ga, {usb, internal}, {has_plat}, {}, {t(internal), t(usb)}, plat_ui},
+      {ga, {usb, internal}, {has_plat}, {}, {t(usb), t(internal)}, plat_ui},
       // ... but with an empty allow list the user should be prompted first.
       {ga,
        {usb, internal},
        {has_plat, one_cred, empty_al},
        {},
-       {t(internal), t(usb)},
+       {t(usb), t(internal)},
        use_pk},
       {ga,
        {usb, internal},
        {has_plat, two_cred, empty_al},
        {},
-       {t(internal), t(usb)},
+       {t(usb), t(internal)},
        use_pk_multi},
 
       // MakeCredential with attachment=platform shows the 'Create a passkey'
@@ -242,7 +242,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {usb, internal},
        {},
        {},
-       {t(internal), t(usb)},
+       {t(usb), t(internal)},
 #if BUILDFLAG(IS_MAC)
        create_pk
 #else
