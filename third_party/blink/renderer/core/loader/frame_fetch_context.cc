@@ -181,6 +181,10 @@ mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
 
 }  // namespace
 
+static bool PermitRecordReplayBrowserEvents() {
+  return recordreplay::IsRecordingOrReplaying() && v8::IsMainThread();
+}
+
 struct FrameFetchContext::FrozenState final : GarbageCollected<FrozenState> {
   FrozenState(const KURL& url,
               scoped_refptr<const SecurityOrigin> parent_security_origin,
@@ -386,6 +390,35 @@ void FrameFetchContext::PrepareRequest(
     virtual_time_pauser = frame_scheduler->CreateWebScopedVirtualTimePauser(
         request.Url().GetString(),
         WebScopedVirtualTimePauser::VirtualTaskDuration::kNonInstant);
+  }
+
+  // Capture the record replay bookmark for the network request here,
+  // where the devtools stack id is taken.
+  if (PermitRecordReplayBrowserEvents()) {
+    // We must allow user agent scripts when taking a new bookmark.
+    ScriptForbiddenScope::AllowUserAgentScript allow_script;
+    std::string url_string = request.Url().GetString().Utf8().c_str();
+    uint64_t bookmark = recordreplay::NewBookmark();
+    request.SetRecordReplayBookmark(bookmark);
+    base::DictionaryValue dict;
+    String loader_id = IdentifiersFactory::LoaderId(document_loader_);
+    uint64_t identifier = request.InspectorId();
+    String request_id = IdentifiersFactory::RequestId(document_loader_, identifier);
+    dict.SetString("requestUrl", url_string);
+    dict.SetString("requestMethod", request.HttpMethod().Utf8());
+    dict.SetString("requestId", request_id.Utf8());
+
+    base::ListValue headers;
+    for (auto header : request.HttpHeaderFields()) {
+      base::DictionaryValue header_obj;
+      header_obj.SetString("name", header.key.Utf8());
+      header_obj.SetString("value", header.value.Utf8());
+      headers.Append(std::move(header_obj));
+    }
+    dict.SetKey("requestHeaders", std::move(headers));
+
+    recordreplay::OnNetworkRequest(request_id.Utf8().c_str(), "http", bookmark);
+    recordreplay::BrowserEvent("Network.PrepareRequest", dict);
   }
 
   probe::PrepareRequest(Probe(), document_loader_, request, options,

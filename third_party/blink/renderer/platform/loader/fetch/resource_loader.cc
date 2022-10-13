@@ -211,6 +211,10 @@ void LogCnameAliasMetrics(const CnameAliasMetricInfo& info) {
 
 }  // namespace
 
+static bool PermitRecordReplayBrowserEvents() {
+  return recordreplay::IsRecordingOrReplaying() && v8::IsMainThread();
+}
+
 // CodeCacheRequest handles the requests to fetch data from code cache.
 // This owns WebCodeCacheLoader that actually loads the data from the
 // code cache. This class performs the necessary checks of matching the
@@ -1130,6 +1134,16 @@ void ResourceLoader::DidStartLoadingResponseBody(
 
 void ResourceLoader::DidReceiveData(const char* data, int length) {
   CHECK_GE(length, 0);
+
+  if (PermitRecordReplayBrowserEvents()) {
+    base::DictionaryValue dict;
+    dict.SetDouble("identifier", (double) resource_->InspectorId());
+    if (data) {
+      dict.SetString("data", base::StringPiece(data, length));
+    }
+    recordreplay::BrowserEvent("Network.DidReceiveData", dict);
+  }
+
 
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
     observer->DidReceiveData(resource_->InspectorId(),
