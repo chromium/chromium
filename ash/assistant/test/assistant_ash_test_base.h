@@ -99,11 +99,6 @@ class AssistantAshTestBase : public AshTestBase {
   // Return true if the Assistant UI is visible.
   bool IsVisible();
 
-  // Return the actual displayed Assistant main view.
-  // Can only be used after |ShowAssistantUi| has been called.
-  // Only exists for fullscreen launcher.
-  views::View* main_view();
-
   // This is the top-level Assistant specific view.
   // Can only be used after |ShowAssistantUi| has been called.
   // Exists for both bubble launcher and fullscreen launcher.

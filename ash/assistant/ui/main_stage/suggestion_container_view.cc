@@ -156,7 +156,7 @@ void SuggestionContainerView::InitLayout() {
   layout_manager_ =
       content_view()->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::VH(0, assistant::ui::GetHorizontalPadding()),
+          gfx::Insets::VH(0, assistant::ui::kHorizontalPadding),
           /*between_child_spacing=*/kSpacingDip));
 
   layout_manager_->set_cross_axis_alignment(

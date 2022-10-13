@@ -179,7 +179,7 @@ void AssistantOnboardingView::OnUiVisibilityChanged(
 void AssistantOnboardingView::InitLayout() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets::VH(0, assistant::ui::GetHorizontalMargin())));
+      gfx::Insets::VH(0, assistant::ui::kHorizontalMargin)));
 
   // Greeting.
   greeting_ = AddChildView(std::make_unique<views::Label>());

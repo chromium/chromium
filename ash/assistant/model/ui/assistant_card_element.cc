@@ -33,8 +33,8 @@ class AssistantCardElement::Processor : public AshWebView::Observer {
   }
 
   void Process() {
-    const int width_dip = card_element_->viewport_width() -
-                          2 * assistant::ui::GetHorizontalMargin();
+    const int width_dip =
+        card_element_->viewport_width() - 2 * assistant::ui::kHorizontalMargin;
 
     // Configure parameters for the card. We want to configure the size as:
     // - width: It should be width_dip.

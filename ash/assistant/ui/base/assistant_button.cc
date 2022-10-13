@@ -152,16 +152,10 @@ void AssistantButton::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   // Updates inkdrop color and opacity.
-  const bool is_enabled = features::IsProductivityLauncherEnabled();
-  const bool base_color =
-      is_enabled ? GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor)
-                 : SK_ColorBLACK;
-  const float opacity = is_enabled ? StyleUtil::GetInkDropOpacity()
-                                   : StyleUtil::kDarkInkDropOpacity;
-
   auto* ink_drop = views::InkDrop::Get(this);
-  ink_drop->SetBaseColor(base_color);
-  ink_drop->SetVisibleOpacity(opacity);
+  ink_drop->SetBaseColor(
+      GetColorProvider()->GetColor(kColorAshInkDropOpaqueColor));
+  ink_drop->SetVisibleOpacity(StyleUtil::GetInkDropOpacity());
 
   if (!icon_color_type_.has_value() || !icon_description_.has_value())
     return;

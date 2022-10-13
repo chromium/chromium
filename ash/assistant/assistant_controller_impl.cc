@@ -75,13 +75,7 @@ void AssistantControllerImpl::SetAssistant(assistant::Assistant* assistant) {
   assistant_ui_controller_.SetAssistant(assistant);
 
   OnAccessibilityStatusChanged();
-
-  bool dark_mode_enabled = false;
-  if (ash::features::IsProductivityLauncherEnabled() ||
-      ash::features::IsDarkLightModeEnabled()) {
-    dark_mode_enabled = DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
-  }
-  OnColorModeChanged(dark_mode_enabled);
+  OnColorModeChanged(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
 
   if (assistant) {
     for (AssistantControllerObserver& observer : observers_)

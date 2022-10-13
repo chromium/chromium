@@ -213,14 +213,6 @@ bool AssistantAshTestBase::IsVisible() {
   return test_api_->IsVisible();
 }
 
-views::View* AssistantAshTestBase::main_view() {
-  DCHECK(!features::IsProductivityLauncherEnabled())
-      << "ProductivityLauncher does not have a main_view(). Prefer "
-         "page_view(), which is supported both with and without "
-         "ProductivityLauncher enabled.";
-  return test_api_->main_view();
-}
-
 views::View* AssistantAshTestBase::page_view() {
   return test_api_->page_view();
 }

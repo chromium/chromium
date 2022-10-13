@@ -135,7 +135,7 @@ void UiElementContainerView::OnContentsPreferredSizeChanged(
 
 void UiElementContainerView::InitLayout() {
   // Content.
-  const int horizontal_margin = assistant::ui::GetHorizontalMargin();
+  const int horizontal_margin = assistant::ui::kHorizontalMargin;
   content_view()->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::TLBR(0, horizontal_margin, kPaddingBottomDip,

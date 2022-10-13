@@ -20,17 +20,6 @@ const gfx::FontList& GetDefaultFontList() {
   return *font_list;
 }
 
-int GetHorizontalMargin() {
-  // Expected margin for productivity launcher case is 24. But
-  // AppListBubbleAssistantPage is shifted by 1px, i.e. has 1px margin. See
-  // b/233384263 for details.
-  return features::IsProductivityLauncherEnabled() ? 23 : 32;
-}
-
-int GetHorizontalPadding() {
-  return features::IsProductivityLauncherEnabled() ? 20 : 14;
-}
-
 }  // namespace ui
 }  // namespace assistant
 }  // namespace ash
