@@ -7,6 +7,7 @@ package org.chromium.components.autofill_assistant.generic_ui;
 import static org.chromium.components.autofill_assistant.AssistantAccessibilityUtils.setAccessibility;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -27,6 +28,7 @@ import org.chromium.components.autofill_assistant.LayoutUtils;
 import org.chromium.components.autofill_assistant.R;
 import org.chromium.components.autofill_assistant.user_data.AssistantVerticalExpander;
 import org.chromium.components.autofill_assistant.user_data.AssistantVerticalExpanderAccordion;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** Generic view factory. */
@@ -143,12 +145,16 @@ public class AssistantViewFactory {
 
     /** Creates a {@code ChromeImageView} widget. */
     @CalledByNative
-    public static ChromeImageView createImageView(
-            Context context, String identifier, AssistantDrawable image) {
+    public static ChromeImageView createImageView(Context context, String identifier,
+            AssistantDrawable image, boolean useIconSemanticTinting) {
         ChromeImageView imageView = new ChromeImageView(context);
         imageView.setTag(identifier);
         image.getDrawable(context, result -> {
             if (result != null) {
+                if (useIconSemanticTinting) {
+                    result.setColorFilter(SemanticColorUtils.getDefaultIconColorAccent1(context),
+                            PorterDuff.Mode.SRC_IN);
+                }
                 imageView.setImageDrawable(result);
             }
         });

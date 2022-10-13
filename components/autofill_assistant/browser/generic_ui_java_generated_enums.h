@@ -39,6 +39,7 @@ enum class DrawableIcon {
   GROCERY = 13,
   VISIBILITY_ON = 14,
   VISIBILITY_OFF = 15,
+  INFO = 16,
 };
 
 }  // namespace autofill_assistant

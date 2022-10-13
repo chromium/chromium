@@ -218,6 +218,8 @@ public abstract class AssistantDrawable {
                     return R.drawable.ic_visibility_black;
                 case AssistantDrawableIcon.VISIBILITY_OFF:
                     return R.drawable.ic_visibility_off_black;
+                case AssistantDrawableIcon.INFO:
+                    return R.drawable.btn_info;
             }
 
             return INVALID_ICON_ID;

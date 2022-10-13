@@ -244,8 +244,9 @@ base::android::ScopedJavaGlobalRef<jobject> CreateJavaView(
         VLOG(1) << "Failed to create image for " << proto.identifier();
         return nullptr;
       }
-      jview = Java_AssistantViewFactory_createImageView(env, jcontext,
-                                                        jidentifier, jimage);
+      jview = Java_AssistantViewFactory_createImageView(
+          env, jcontext, jidentifier, jimage,
+          proto.image_view().use_icon_semantic_tinting());
       break;
     }
     case ViewProto::kVerticalExpanderView: {

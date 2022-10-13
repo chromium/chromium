@@ -109,6 +109,7 @@ message DrawableProto {
     GROCERY = 13;
     VISIBILITY_ON = 14;
     VISIBILITY_OFF = 15;
+    INFO = 16;
   }
 
   oneof drawable {
@@ -266,6 +267,9 @@ message DividerViewProto {}
 
 message ImageViewProto {
   optional DrawableProto image = 1;
+  // Setting this will apply default icon color accent1 tint
+  // to the image. Exact tint is specified in |SemanticColorUtils|.
+  optional bool use_icon_semantic_tinting = 2;
 }
 
 // A text input widget. Note: View identifier is mandatory!

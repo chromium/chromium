@@ -80,6 +80,8 @@ DrawableIcon MapDrawableIcon(DrawableProto::Icon icon) {
       return DrawableIcon::VISIBILITY_ON;
     case DrawableProto::VISIBILITY_OFF:
       return DrawableIcon::VISIBILITY_OFF;
+    case DrawableProto::INFO:
+      return DrawableIcon::INFO;
   }
 }
 
