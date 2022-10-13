@@ -38,6 +38,7 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
+#include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/push_pull_fifo.h"
 #include "third_party/blink/renderer/platform/audio/vector_math.h"
@@ -105,8 +106,9 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
   SendLogMessage(
       String::Format("%s => (FIFO size=%u bytes)", __func__, fifo_->length()));
 
+  WebAudioSinkDescriptor sink_descriptor(WebString::FromASCII(std::string()));
   web_audio_device_ = Platform::Current()->CreateAudioDevice(
-      number_of_output_channels, latency_hint, this);
+      sink_descriptor, number_of_output_channels, latency_hint, this);
   DCHECK(web_audio_device_);
 
   callback_buffer_size_ = web_audio_device_->FramesPerBuffer();

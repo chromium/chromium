@@ -116,7 +116,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   unsigned AudioHardwareOutputChannels() override;
   base::TimeDelta GetHungRendererDelay() override;
   std::unique_ptr<blink::WebAudioDevice> CreateAudioDevice(
-      unsigned output_channels,
+      const blink::WebAudioSinkDescriptor& sink_descriptor,
+      unsigned number_of_output_channels,
       const blink::WebAudioLatencyHint& latency_hint,
       blink::WebAudioDevice::RenderCallback* callback) override;
   bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,

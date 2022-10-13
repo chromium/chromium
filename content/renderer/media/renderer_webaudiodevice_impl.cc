@@ -29,6 +29,7 @@
 using blink::AudioDeviceFactory;
 using blink::WebAudioDevice;
 using blink::WebAudioLatencyHint;
+using blink::WebAudioSinkDescriptor;
 using blink::WebLocalFrame;
 using blink::WebVector;
 using blink::WebView;
@@ -110,6 +111,7 @@ media::AudioParameters GetOutputDeviceParameters(
 }  // namespace
 
 std::unique_ptr<RendererWebAudioDeviceImpl> RendererWebAudioDeviceImpl::Create(
+    const WebAudioSinkDescriptor& sink_descriptor,
     media::ChannelLayout layout,
     int number_of_output_channels,
     const blink::WebAudioLatencyHint& latency_hint,
@@ -117,12 +119,13 @@ std::unique_ptr<RendererWebAudioDeviceImpl> RendererWebAudioDeviceImpl::Create(
     const base::UnguessableToken& session_id) {
   return std::unique_ptr<RendererWebAudioDeviceImpl>(
       new RendererWebAudioDeviceImpl(
-          layout, number_of_output_channels, latency_hint, callback, session_id,
-          base::BindOnce(&GetOutputDeviceParameters),
+          sink_descriptor, layout, number_of_output_channels, latency_hint,
+          callback, session_id, base::BindOnce(&GetOutputDeviceParameters),
           base::BindOnce(&FrameTokenFromCurrentContext)));
 }
 
 RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
+    const WebAudioSinkDescriptor& sink_descriptor,
     media::ChannelLayout layout,
     int number_of_output_channels,
     const blink::WebAudioLatencyHint& latency_hint,
@@ -130,7 +133,8 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
     const base::UnguessableToken& session_id,
     OutputDeviceParamsCallback device_params_cb,
     RenderFrameTokenCallback render_frame_token_cb)
-    : latency_hint_(latency_hint),
+    : sink_descriptor_(sink_descriptor),
+      latency_hint_(latency_hint),
       client_callback_(callback),
       session_id_(session_id),
       frame_token_(std::move(render_frame_token_cb).Run()) {
@@ -139,7 +143,7 @@ RendererWebAudioDeviceImpl::RendererWebAudioDeviceImpl(
 
   media::AudioParameters hardware_params(
       std::move(device_params_cb)
-          .Run(frame_token_, session_id_, std::string()));
+          .Run(frame_token_, session_id_, sink_descriptor_.SinkId().Ascii()));
 
   // On systems without audio hardware the returned parameters may be invalid.
   // In which case just choose whatever we want for the fake device.
@@ -186,7 +190,8 @@ void RendererWebAudioDeviceImpl::Start() {
 
   sink_ = AudioDeviceFactory::GetInstance()->NewAudioRendererSink(
       GetLatencyHintSourceType(latency_hint_.Category()), frame_token_,
-      media::AudioSinkParameters(session_id_, std::string()));
+      media::AudioSinkParameters(session_id_,
+                                 sink_descriptor_.SinkId().Ascii()));
 
   // Use a task runner instead of the render thread for fake Render() calls
   // since it has special connotations for Blink and garbage collection. Timeout

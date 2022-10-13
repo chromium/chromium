@@ -18,6 +18,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
+#include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
 namespace base {
@@ -43,6 +44,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   ~RendererWebAudioDeviceImpl() override;
 
   static std::unique_ptr<RendererWebAudioDeviceImpl> Create(
+      const blink::WebAudioSinkDescriptor& sink_descriptor,
       media::ChannelLayout layout,
       int number_of_output_channels,
       const blink::WebAudioLatencyHint& latency_hint,
@@ -86,13 +88,15 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   // Callback get render frame token for current context (for tests).
   using RenderFrameTokenCallback = base::OnceCallback<blink::LocalFrameToken()>;
 
-  RendererWebAudioDeviceImpl(media::ChannelLayout layout,
-                             int number_of_output_channels,
-                             const blink::WebAudioLatencyHint& latency_hint,
-                             blink::WebAudioDevice::RenderCallback* callback,
-                             const base::UnguessableToken& session_id,
-                             OutputDeviceParamsCallback device_params_cb,
-                             RenderFrameTokenCallback render_frame_token_cb);
+  RendererWebAudioDeviceImpl(
+      const blink::WebAudioSinkDescriptor& sink_descriptor,
+      media::ChannelLayout layout,
+      int number_of_output_channels,
+      const blink::WebAudioLatencyHint& latency_hint,
+      blink::WebAudioDevice::RenderCallback* callback,
+      const base::UnguessableToken& session_id,
+      OutputDeviceParamsCallback device_params_cb,
+      RenderFrameTokenCallback render_frame_token_cb);
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> GetSilentSinkTaskRunner();
@@ -100,6 +104,9 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   void SendLogMessage(const std::string& message);
 
   media::AudioParameters sink_params_;
+
+  // To cache the device identifier for sink creation.
+  const blink::WebAudioSinkDescriptor sink_descriptor_;
 
   const blink::WebAudioLatencyHint latency_hint_;
 

@@ -125,6 +125,7 @@ class URLLoaderThrottle;
 class UserMetricsAction;
 class WebAudioBus;
 class WebAudioLatencyHint;
+class WebAudioSinkDescriptor;
 class WebCrypto;
 class WebDedicatedWorker;
 class WebDedicatedWorkerHostFactoryClient;
@@ -209,6 +210,7 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Creates an audio output device platform interface for Web Audio API.
   virtual std::unique_ptr<WebAudioDevice> CreateAudioDevice(
+      const WebAudioSinkDescriptor& sink_descriptor,
       unsigned number_of_output_channels,
       const WebAudioLatencyHint& latency_hint,
       WebAudioDevice::RenderCallback*) {

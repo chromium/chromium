@@ -46,14 +46,16 @@ media::AudioParameters MockGetOutputDeviceParameters(
 class RendererWebAudioDeviceImplUnderTest : public RendererWebAudioDeviceImpl {
  public:
   RendererWebAudioDeviceImplUnderTest(
+      const blink::WebAudioSinkDescriptor& sink_descriptor,
       media::ChannelLayout layout,
-      int channels,
+      int number_of_output_channels,
       const blink::WebAudioLatencyHint& latency_hint,
       blink::WebAudioDevice::RenderCallback* callback,
       const base::UnguessableToken& session_id)
       : RendererWebAudioDeviceImpl(
+            sink_descriptor,
             layout,
-            channels,
+            number_of_output_channels,
             latency_hint,
             callback,
             session_id,
@@ -71,16 +73,20 @@ class RendererWebAudioDeviceImplTest
   RendererWebAudioDeviceImplTest() {}
 
   void SetupDevice(blink::WebAudioLatencyHint latencyHint) {
+    blink::WebAudioSinkDescriptor
+        sink_descriptor(blink::WebString::FromASCII(std::string()));
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
-        media::CHANNEL_LAYOUT_MONO, 1, latencyHint, this,
+        sink_descriptor, media::CHANNEL_LAYOUT_MONO, 1, latencyHint, this,
         base::UnguessableToken());
     webaudio_device_->SetSilentSinkTaskRunnerForTesting(
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
   void SetupDevice(media::ChannelLayout layout, int channels) {
+    blink::WebAudioSinkDescriptor
+        sink_descriptor(blink::WebString::FromASCII(std::string()));
     webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
-        layout, channels,
+        sink_descriptor, layout, channels,
         blink::WebAudioLatencyHint(
             blink::WebAudioLatencyHint::kCategoryInteractive),
         this, base::UnguessableToken());
