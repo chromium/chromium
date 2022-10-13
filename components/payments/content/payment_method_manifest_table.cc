@@ -101,10 +101,10 @@ bool PaymentMethodManifestTable::MigrateToVersion(
 }
 
 void PaymentMethodManifestTable::RemoveExpiredData() {
-  const time_t now_date_in_seconds = base::Time::NowFromSystemTime().ToTimeT();
+  const base::Time now_date_in_seconds = base::Time::NowFromSystemTime();
   sql::Statement s(db_->GetUniqueStatement(
       "DELETE FROM payment_method_manifest WHERE expire_date < ?"));
-  s.BindInt64(0, now_date_in_seconds);
+  s.BindTime(0, now_date_in_seconds);
   s.Run();
 }
 
@@ -114,8 +114,8 @@ bool PaymentMethodManifestTable::ClearSecurePaymentConfirmationCredentials(
   sql::Statement s(db_->GetUniqueStatement(
       "DELETE FROM secure_payment_confirmation_instrument WHERE (date_created "
       ">= ? AND date_created < ?) OR (date_created = 0)"));
-  s.BindInt64(0, begin.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  s.BindInt64(1, end.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  s.BindTime(0, begin);
+  s.BindTime(1, end);
   return s.Run();
 }
 
@@ -136,12 +136,12 @@ bool PaymentMethodManifestTable::AddManifest(
       db_->GetUniqueStatement("INSERT INTO payment_method_manifest "
                               "(expire_date, method_name, web_app_id) "
                               "VALUES (?, ?, ?)"));
-  const time_t expire_date_in_seconds =
-      base::Time::NowFromSystemTime().ToTimeT() +
-      PAYMENT_METHOD_MANIFEST_VALID_TIME_IN_SECONDS;
+  const base::Time expire_date =
+      base::Time::FromTimeT(base::Time::NowFromSystemTime().ToTimeT() +
+                            PAYMENT_METHOD_MANIFEST_VALID_TIME_IN_SECONDS);
   for (const auto& id : web_app_ids) {
     int index = 0;
-    s2.BindInt64(index++, expire_date_in_seconds);
+    s2.BindTime(index++, expire_date);
     s2.BindString(index++, payment_method);
     s2.BindString(index, id);
     if (!s2.Run())
@@ -230,8 +230,7 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationCredential(
     s3.BindBlob(index++, credential.user_id);
     s3.BindString(index++, std::string());
     s3.BindBlob(index++, std::vector<uint8_t>());
-    s3.BindInt64(index++,
-                 base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    s3.BindTime(index++, base::Time::Now());
 
     if (!s3.Run())
       return false;

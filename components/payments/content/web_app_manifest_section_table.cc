@@ -102,10 +102,10 @@ bool WebAppManifestSectionTable::MigrateToVersion(
 }
 
 void WebAppManifestSectionTable::RemoveExpiredData() {
-  const time_t now_date_in_seconds = base::Time::NowFromSystemTime().ToTimeT();
+  const base::Time now = base::Time::NowFromSystemTime();
   sql::Statement s(db_->GetUniqueStatement(
       "DELETE FROM web_app_manifest_section WHERE expire_date < ? "));
-  s.BindInt64(0, now_date_in_seconds);
+  s.BindTime(0, now);
   s.Run();
 }
 
@@ -130,12 +130,12 @@ bool WebAppManifestSectionTable::AddWebAppManifest(
       db_->GetUniqueStatement("INSERT INTO web_app_manifest_section "
                               "(expire_date, id, min_version, fingerprints) "
                               "VALUES (?, ?, ?, ?)"));
-  const time_t expire_date_in_seconds =
-      base::Time::NowFromSystemTime().ToTimeT() +
-      WEB_APP_MANIFEST_VALID_TIME_IN_SECONDS;
+  const base::Time expire_date =
+      base::Time::FromTimeT(base::Time::NowFromSystemTime().ToTimeT() +
+                            WEB_APP_MANIFEST_VALID_TIME_IN_SECONDS);
   for (const auto& section : manifest) {
     int index = 0;
-    s2.BindInt64(index++, expire_date_in_seconds);
+    s2.BindTime(index++, expire_date);
     s2.BindString(index++, section.id);
     s2.BindInt64(index++, section.min_version);
     std::unique_ptr<std::vector<uint8_t>> serialized_fingerprints =
