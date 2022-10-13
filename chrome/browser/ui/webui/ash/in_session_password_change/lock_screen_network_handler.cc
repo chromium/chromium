@@ -119,13 +119,13 @@ void NetworkConfigMessageHandler::GetHostname(const base::Value::List& args) {
   std::string callback_id = args[0].GetString();
   std::string hostname =
       NetworkHandler::Get()->network_state_handler()->hostname();
-  Respond(callback_id, base::Value(hostname));
+  Respond(callback_id, hostname);
 }
 
 void NetworkConfigMessageHandler::Respond(const std::string& callback_id,
-                                          const base::Value& response) {
+                                          base::ValueView response) {
   AllowJavascript();
-  ResolveJavascriptCallback(base::Value(callback_id), response);
+  ResolveJavascriptCallback(callback_id, response);
 }
 
 }  // namespace ash

@@ -177,47 +177,44 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
     const login::GaiaContext& context,
     const std::string& partition_name,
     net::CookieAccessResult result) {
-  base::DictionaryValue params;
+  base::Value::Dict params;
 
-  params.SetStringKey("webviewPartitionName", partition_name);
+  params.Set("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
 
-  params.SetStringKey("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
-  params.SetStringKey("clientId",
-                      GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  params.SetBoolKey("dontResizeNonEmbeddedPages", false);
-  params.SetBoolKey("enableGaiaActionButtons", false);
+  params.Set("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
+  params.Set("clientId", GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  params.Set("dontResizeNonEmbeddedPages", false);
+  params.Set("enableGaiaActionButtons", false);
 
   std::string hosted_domain = GetHostedDomain(context.gaia_id);
 
   if (hosted_domain.empty()) {
     LOG(ERROR) << "Couldn't get hosted_domain from account info.";
-    params.SetBoolKey("doSamlRedirect", force_saml_redirect_for_testing_);
+    params.Set("doSamlRedirect", force_saml_redirect_for_testing_);
   } else {
-    params.SetStringKey(
-        "enterpriseEnrollmentDomain",
-        force_saml_redirect_for_testing_ ? kIdpTestingDomain : hosted_domain);
-    params.SetBoolKey("doSamlRedirect",
-                      force_saml_redirect_for_testing_
-                          ? true
-                          : ShouldDoSamlRedirect(context.email));
+    params.Set("enterpriseEnrollmentDomain", force_saml_redirect_for_testing_
+                                                 ? kIdpTestingDomain
+                                                 : hosted_domain);
+    params.Set("doSamlRedirect", force_saml_redirect_for_testing_ ||
+                                     ShouldDoSamlRedirect(context.email));
   }
 
   const std::string app_locale = g_browser_process->GetApplicationLocale();
   DCHECK(!app_locale.empty());
-  params.SetStringKey("hl", app_locale);
-  params.SetStringKey("email", context.email);
-  params.SetStringKey("gaiaId", context.gaia_id);
-  params.SetBoolKey("extractSamlPasswordAttributes",
-                    login::ExtractSamlPasswordAttributesEnabled());
-  params.SetStringKey("clientVersion", version_info::GetVersionNumber());
-  params.SetBoolKey("readOnlyEmail", true);
+  params.Set("hl", app_locale);
+  params.Set("email", context.email);
+  params.Set("gaiaId", context.gaia_id);
+  params.Set("extractSamlPasswordAttributes",
+             login::ExtractSamlPasswordAttributesEnabled());
+  params.Set("clientVersion", version_info::GetVersionNumber());
+  params.Set("readOnlyEmail", true);
   PrefService* local_state = g_browser_process->local_state();
   if (local_state->IsManagedPreference(
           prefs::kUrlParameterToAutofillSAMLUsername)) {
-    params.SetStringKey("urlParameterToAutofillSAMLUsername",
-                        local_state->GetString(
-                            prefs::kUrlParameterToAutofillSAMLUsername));
+    params.Set(
+        "urlParameterToAutofillSAMLUsername",
+        local_state->GetString(prefs::kUrlParameterToAutofillSAMLUsername));
   }
 
   CallJavascript("loadAuthenticator", params);
@@ -229,15 +226,15 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
 void LockScreenReauthHandler::UpdateOrientationAndWidth() {
   gfx::Size display = display::Screen::GetScreen()->GetPrimaryDisplay().size();
   bool is_horizontal = display.width() >= display.height();
-  CallJavascript("setOrientation", base::Value(is_horizontal));
+  CallJavascript("setOrientation", is_horizontal);
 
   auto* password_sync_manager = GetInSessionPasswordSyncManager();
   int width = password_sync_manager->GetDialogWidth();
-  CallJavascript("setWidth", base::Value(width));
+  CallJavascript("setWidth", width);
 }
 
 void LockScreenReauthHandler::CallJavascript(const std::string& function,
-                                             const base::Value& params) {
+                                             base::ValueView params) {
   CallJavascriptFunction(std::string(kMainElement) + function, params);
 }
 
@@ -345,7 +342,7 @@ void LockScreenReauthHandler::ShowPasswordChangedScreen() {
 
 void LockScreenReauthHandler::ShowSamlConfirmPasswordScreen() {
   CallJavascript("showSamlConfirmPassword",
-                 base::Value(static_cast<int>(scraped_saml_passwords_.size())));
+                 static_cast<int>(scraped_saml_passwords_.size()));
 }
 
 void LockScreenReauthHandler::HandleOnPasswordTyped(

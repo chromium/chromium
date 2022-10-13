@@ -61,7 +61,7 @@ void ConfirmPasswordChangeHandler::HandleGetInitialState(
   state.Set("showSpinner", show_spinner_initially_);
 
   AllowJavascript();
-  ResolveJavascriptCallback(base::Value(callback_id), state);
+  ResolveJavascriptCallback(callback_id, state);
 }
 
 void ConfirmPasswordChangeHandler::HandleChangePassword(

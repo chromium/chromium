@@ -25,7 +25,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   void ShowNetworkConfig(const base::Value::List& args);
   void AddNetwork(const base::Value::List& args);
   void GetHostname(const base::Value::List& args);
-  void Respond(const std::string& callback_id, const base::Value& response);
+  void Respond(const std::string& callback_id, base::ValueView response);
 
   base::WeakPtrFactory<NetworkConfigMessageHandler> weak_ptr_factory_{this};
 };

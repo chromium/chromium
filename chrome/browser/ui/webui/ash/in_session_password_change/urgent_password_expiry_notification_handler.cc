@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
@@ -37,7 +38,7 @@ void UrgentPasswordExpiryNotificationHandler::HandleGetTitleText(
       base::Milliseconds(ms_until_expiry));
 
   AllowJavascript();
-  ResolveJavascriptCallback(base::Value(callback_id), base::Value(title));
+  ResolveJavascriptCallback(callback_id, base::UTF16ToUTF8(title));
 }
 
 void UrgentPasswordExpiryNotificationHandler::RegisterMessages() {

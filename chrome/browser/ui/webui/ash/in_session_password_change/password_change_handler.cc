@@ -30,16 +30,16 @@ void PasswordChangeHandler::HandleInitialize(const base::Value::List& value) {
       prefs::kSamlInSessionPasswordChangeEnabled));
 
   AllowJavascript();
-  base::Value params(base::Value::Type::DICTIONARY);
+  base::Value::Dict params;
   if (password_change_url_.empty()) {
     LOG(ERROR) << "Password change url is empty";
     return;
   }
-  params.SetKey("passwordChangeUrl", base::Value(password_change_url_));
+  params.Set("passwordChangeUrl", password_change_url_);
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
   if (user)
-    params.SetKey("userName", base::Value(user->GetDisplayEmail()));
+    params.Set("userName", user->GetDisplayEmail());
   CallJavascriptFunction("$(\'main-element\').loadAuthExtension", params);
 }
 

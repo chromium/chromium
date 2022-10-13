@@ -103,8 +103,7 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   void UpdateOrientationAndWidth();
 
-  void CallJavascript(const std::string& function,
-                      const base::Value& params);
+  void CallJavascript(const std::string& function, base::ValueView params);
 
   AuthenticatorState authenticator_state_ = AuthenticatorState::NOT_LOADED;
 
