@@ -447,9 +447,8 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
       suggestion.additional_query_params();
   match.search_terms_args->append_extra_query_params_from_command_line =
       append_extra_query_params_from_command_line;
-  // This is the destination URL sans assisted query stats.  This must be set
-  // so the AutocompleteController can properly de-dupe; the controller will
-  // eventually overwrite it before it reaches the user.
+  // Must be set for deduplication and navigation. AutocompleteController will
+  // ultimately overwrite this with the searchbox stats before navigation.
   match.destination_url = GURL(search_url.ReplaceSearchTerms(
       *match.search_terms_args, search_terms_data));
 
@@ -522,17 +521,17 @@ void BaseSearchProvider::AddMatchToMap(
   if (result.should_prefetch())
     match.RecordAdditionalInfo(kSuggestMetadataKey, metadata);
 
-  // Try to add |match| to |map|.  If a match for this suggestion is
-  // already in |map|, replace it if |match| is more relevant.
+  // Try to add `match` to `map`.
   // NOTE: Keep this ToLower() call in sync with url_database.cc.
   MatchKey match_key(
       std::make_pair(base::i18n::ToLower(result.suggestion()),
                      match.search_terms_args->additional_query_params));
   const std::pair<MatchMap::iterator, bool> i(
-       map->insert(std::make_pair(match_key, match)));
-
-  bool should_prefetch = result.should_prefetch();
+      map->insert(std::make_pair(match_key, match)));
   if (!i.second) {
+    auto& existing_match = i.first->second;
+    // If a duplicate match is already in the map, replace it with `match` if it
+    // is more relevant.
     // NOTE: We purposefully do a direct relevance comparison here instead of
     // using AutocompleteMatch::MoreRelevant(), so that we'll prefer "items
     // added first" rather than "items alphabetically first" when the scores
@@ -541,15 +540,15 @@ void BaseSearchProvider::AddMatchToMap(
     // system returns results sorted by recency, this means we'll pick the most
     // recent such result even if the precision of our relevance score is too
     // low to distinguish the two.
-    if (match.relevance > i.first->second.relevance) {
+    if (match.relevance > existing_match.relevance) {
       match.duplicate_matches.insert(match.duplicate_matches.end(),
-                                     i.first->second.duplicate_matches.begin(),
-                                     i.first->second.duplicate_matches.end());
-      i.first->second.duplicate_matches.clear();
-      match.duplicate_matches.push_back(i.first->second);
-      i.first->second = std::move(match);
+                                     existing_match.duplicate_matches.begin(),
+                                     existing_match.duplicate_matches.end());
+      existing_match.duplicate_matches.clear();
+      match.duplicate_matches.push_back(existing_match);
+      existing_match = std::move(match);
     } else {
-      if (match.keyword == i.first->second.keyword) {
+      if (match.keyword == existing_match.keyword) {
         // Old and new matches are from the same search provider. It is okay to
         // record one match's prefetch/prerender data onto a different match
         // (for the same query string) for the following reasons:
@@ -562,26 +561,27 @@ void BaseSearchProvider::AddMatchToMap(
         // it thinks is sufficiently relevant that the user is likely to choose
         // it. Surely setting the prefetch/prerender bit on a match of even
         // higher relevance won't violate this assumption.
-        should_prefetch |= ShouldPrefetch(i.first->second);
-        i.first->second.RecordAdditionalInfo(kShouldPrefetchKey,
-                                             should_prefetch ? kTrue : kFalse);
-        if (should_prefetch)
-          i.first->second.RecordAdditionalInfo(kSuggestMetadataKey, metadata);
-        bool should_prerender =
-            result.should_prerender() || ShouldPrerender(i.first->second);
-        i.first->second.RecordAdditionalInfo(kShouldPrerenderKey,
-                                             should_prerender ? kTrue : kFalse);
+        const bool should_prefetch =
+            result.should_prefetch() || ShouldPrefetch(existing_match);
+        existing_match.RecordAdditionalInfo(kShouldPrefetchKey,
+                                            should_prefetch ? kTrue : kFalse);
+        if (should_prefetch) {
+          existing_match.RecordAdditionalInfo(kSuggestMetadataKey, metadata);
+        }
+        const bool should_prerender =
+            result.should_prerender() || ShouldPrerender(existing_match);
+        existing_match.RecordAdditionalInfo(kShouldPrerenderKey,
+                                            should_prerender ? kTrue : kFalse);
       }
-      i.first->second.duplicate_matches.push_back(std::move(match));
+      existing_match.duplicate_matches.push_back(std::move(match));
     }
-    // Copy over answer data from lower-ranking item, if necessary.
-    // This depends on the lower-ranking item always being added last - see
+    // Copy over answer data from lower-ranking duplicate, if necessary.
+    // This depends on the lower-ranking duplicate always being added last - see
     // use of push_back above.
-    AutocompleteMatch& more_relevant_match = i.first->second;
-    const AutocompleteMatch& less_relevant_match =
-        more_relevant_match.duplicate_matches.back();
-    if (less_relevant_match.answer && !more_relevant_match.answer) {
-      more_relevant_match.answer = less_relevant_match.answer;
+    const auto& less_relevant_duplicate_match =
+        existing_match.duplicate_matches.back();
+    if (less_relevant_duplicate_match.answer && !existing_match.answer) {
+      existing_match.answer = less_relevant_duplicate_match.answer;
     }
   }
 }
