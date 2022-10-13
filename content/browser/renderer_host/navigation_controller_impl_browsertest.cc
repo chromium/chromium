@@ -17587,7 +17587,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
 }
 
 // Tests that if an entry is marked as skippable, it will not be reset if there
-// is a navigation to this entry again (crbug.com/112129) using history.back/
+// is a navigation to this entry again (crbug.com/1121293) using history.back/
 // forward.
 IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
                        DoNotResetSkipOnHistoryBackAPI) {
