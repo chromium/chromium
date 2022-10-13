@@ -45,7 +45,7 @@ void BindShortcutToStatement(const ShortcutsDatabase::Shortcut& shortcut,
   s->BindInt(9, base::checked_cast<int>(shortcut.match_core.transition));
   s->BindInt(10, base::checked_cast<int>(shortcut.match_core.type));
   s->BindString16(11, shortcut.match_core.keyword);
-  s->BindInt64(12, shortcut.last_access_time.ToInternalValue());
+  s->BindTime(12, shortcut.last_access_time);
   s->BindInt(13, shortcut.number_of_hits);
 }
 
@@ -270,7 +270,7 @@ void ShortcutsDatabase::LoadShortcuts(GuidToShortcutMap* shortcuts) {
                                 transition,               // transition
                                 type,                     // type
                                 s.ColumnString16(11)),    // keyword
-            base::Time::FromInternalValue(s.ColumnInt64(12)),
+            s.ColumnTime(12),
             // last_access_time
             s.ColumnInt(13))));  // number_of_hits
   }
