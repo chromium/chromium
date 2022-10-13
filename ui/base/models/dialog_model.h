@@ -283,10 +283,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
-    // Overrides default button. Can only be called once. The new default button
-    // must exist.
-    Builder& OverrideDefaultButton(DialogButton button);
-
     // Sets which field should be initially focused in the dialog model. Must be
     // called after that field has been added. Can only be called once.
     Builder& SetInitiallyFocusedField(ElementIdentifier id);
@@ -411,11 +407,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return dark_mode_banner_;
   }
 
-  const absl::optional<DialogButton>& override_default_button(
-      base::PassKey<DialogModelHost>) const {
-    return override_default_button_;
-  }
-
   ElementIdentifier initially_focused_field(
       base::PassKey<DialogModelHost>) const {
     return initially_focused_field_;
@@ -477,7 +468,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   ImageModel banner_;
   ImageModel dark_mode_banner_;
 
-  absl::optional<DialogButton> override_default_button_;
   std::vector<std::unique_ptr<DialogModelField>> fields_;
   ElementIdentifier initially_focused_field_;
   bool is_alert_dialog_ = false;
