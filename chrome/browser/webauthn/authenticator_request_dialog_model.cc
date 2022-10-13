@@ -1097,12 +1097,17 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms(
       !is_get_assertion && kShowCreatePlatformPasskeyStep &&
       base::FeatureList::IsEnabled(
           device::kWebAuthnNewDiscoverableCredentialsUi);
+
+  // Advance to the platform authenticator for:
+  // - getAssertion requests with a matching platform credential
+  // - makeCredential requests with attachment=platform
   if (base::Contains(transport_availability_.available_transports,
                      AuthenticatorTransport::kInternal) &&
       (transport_availability_.has_platform_authenticator_credential ==
            device::FidoRequestHandlerBase::RecognizedCredential::
                kHasRecognizedCredential ||
-       show_create_passkey_step) &&
+       (show_create_passkey_step &&
+        transport_availability_.available_transports.size() == 1)) &&
       !use_conditional_mediation_) {
     priority_transport = AuthenticatorTransport::kInternal;
   }
