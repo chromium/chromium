@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
+#import "components/crash/core/common/reporter_running_ios.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/browser/ui/main/scene_controller_testing.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/crash_report/crash_helper.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -202,10 +204,6 @@ void SetIntegerUserPref(ChromeBrowserState* browser_state,
   pref.SetValue(value);
 }
 
-void SetFirstLaunchStateTo(bool value) {
-  [[PreviousSessionInfo sharedInstance] setIsFirstSessionAfterUpgrade:value];
-}
-
 bool IsMetricsRecordingEnabled() {
   DCHECK(GetApplicationContext());
   DCHECK(GetApplicationContext()->GetMetricsService());
@@ -218,22 +216,12 @@ bool IsMetricsReportingEnabled() {
   return GetApplicationContext()->GetMetricsService()->reporting_active();
 }
 
-bool IsBreakpadEnabled() {
-  return [[BreakpadController sharedInstance] isEnabled];
+bool IsCrashpadEnabled() {
+  return crash_reporter::IsCrashpadRunning();
 }
 
-bool IsBreakpadReportingEnabled() {
-  return [[BreakpadController sharedInstance] isUploadingEnabled];
-}
-
-bool IsFirstLaunchAfterUpgrade() {
-  return [chrome_test_util::GetMainController() isFirstLaunchAfterUpgrade];
-}
-
-void WaitForBreakpadQueue() {
-  dispatch_queue_t queue = [[BreakpadController sharedInstance] queue];
-  dispatch_barrier_sync(queue, ^{
-                        });
+bool IsCrashpadReportingEnabled() {
+  return crash_helper::common::UserEnabledUploading();
 }
 
 void OpenChromeFromExternalApp(const GURL& url) {

@@ -49,8 +49,7 @@ NSString* const kCookieValue = @"value";
 
 enum MetricsServiceType {
   kMetrics,
-  kBreakpad,
-  kBreakpadFirstLaunch,
+  kCrashpad,
 };
 
 // Matcher for the Clear Browsing Data cell on the Privacy screen.
@@ -178,20 +177,11 @@ id<GREYMatcher> ClearBrowsingDataCell() {
       GREYAssertTrue([SettingsAppInterface isMetricsReportingEnabled],
                      @"Metrics reporting should be enabled.");
       break;
-    case kBreakpad:
-      GREYAssertTrue([SettingsAppInterface isBreakpadEnabled],
-                     @"Breakpad should be enabled.");
-      GREYAssertTrue([SettingsAppInterface isBreakpadReportingEnabled],
-                     @"Breakpad reporting should be enabled.");
-      break;
-    case kBreakpadFirstLaunch:
-      // For first launch after upgrade, or after install, uploading of crash
-      // reports is always disabled.  Check that the first launch flag is being
-      // honored.
-      GREYAssertTrue([SettingsAppInterface isBreakpadEnabled],
-                     @"Breakpad should be enabled.");
-      GREYAssertFalse([SettingsAppInterface isBreakpadReportingEnabled],
-                      @"Breakpad reporting should be disabled.");
+    case kCrashpad:
+      GREYAssertTrue([SettingsAppInterface isCrashpadEnabled],
+                     @"Crashpad should be enabled.");
+      GREYAssertTrue([SettingsAppInterface isCrashpadReportingEnabled],
+                     @"Crashpad reporting should be enabled.");
       break;
   }
 }
@@ -206,13 +196,10 @@ id<GREYMatcher> ClearBrowsingDataCell() {
                       @"Metrics reporting should be disabled.");
       break;
     }
-    case kBreakpad:
-    case kBreakpadFirstLaunch: {
-      // Check only whether or not breakpad is enabled.  Disabling
-      // breakpad does stop uploading, and does not change the flag
-      // used to check whether or not it's uploading.
-      GREYAssertFalse([SettingsAppInterface isBreakpadEnabled],
-                      @"Breakpad should be disabled.");
+    case kCrashpad: {
+      // Crashpad is always enabled.
+      GREYAssertTrue([SettingsAppInterface isCrashpadEnabled],
+                     @"Crashpad should be enabled.");
       break;
     }
   }
@@ -231,12 +218,11 @@ id<GREYMatcher> ClearBrowsingDataCell() {
                       @"Metrics reporting should be disabled.");
       break;
     }
-    case kBreakpad:
-    case kBreakpadFirstLaunch: {
-      GREYAssertTrue([SettingsAppInterface isBreakpadEnabled],
-                     @"Breakpad should be enabled.");
-      GREYAssertFalse([SettingsAppInterface isBreakpadReportingEnabled],
-                      @"Breakpad reporting should be disabled.");
+    case kCrashpad: {
+      GREYAssertTrue([SettingsAppInterface isCrashpadEnabled],
+                     @"Crashpad should be enabled.");
+      GREYAssertFalse([SettingsAppInterface isCrashpadReportingEnabled],
+                      @"Crashpad reporting should be disabled.");
       break;
     }
   }
@@ -319,30 +305,11 @@ id<GREYMatcher> ClearBrowsingDataCell() {
   [self assertsMetricsPrefsForService:kMetrics];
 }
 
-// Verifies that breakpad reporting works properly under possible settings of
+// Verifies that crashpad reporting works properly under possible settings of
 // the preference `kMetricsReportingEnabled`.
-// NOTE: breakpad only allows uploading for non-first-launch runs.
-- (void)testBreakpadReporting {
-  [self setTearDownHandler:^{
-    // Restore the first launch state to previous state.
-    [SettingsAppInterface resetFirstLaunchState];
-  }];
-
-  [SettingsAppInterface setFirstLunchState:NO];
-  [self assertsMetricsPrefsForService:kBreakpad];
-}
-
-// Verifies that breakpad reporting works properly under possible settings of
-// the preference `kMetricsReportingEnabled`.
-// NOTE: breakpad only allows uploading for non-first-launch runs.
-- (void)testBreakpadReportingFirstLaunch {
-  [self setTearDownHandler:^{
-    // Restore the first launch state to previous state.
-    [SettingsAppInterface resetFirstLaunchState];
-  }];
-
-  [SettingsAppInterface setFirstLunchState:YES];
-  [self assertsMetricsPrefsForService:kBreakpadFirstLaunch];
+// NOTE: crashpad only allows uploading for non-first-launch runs.
+- (void)testCrashpadReporting {
+  [self assertsMetricsPrefsForService:kCrashpad];
 }
 
 // Verifies that the Settings UI registers keyboard commands when presented, but

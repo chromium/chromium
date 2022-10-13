@@ -26,17 +26,11 @@
 // Allows turning on and off metrics reporting.
 + (void)setMetricsReportingEnabled:(BOOL)reportingEnabled;
 
-// YES if breakpad crash collection is enabled.
-+ (BOOL)isBreakpadEnabled;
+// YES if crashpad crash collection is enabled.
++ (BOOL)isCrashpadEnabled;
 
 // YES if collected crashes get uploaded.
-+ (BOOL)isBreakpadReportingEnabled;
-
-// Restores the first launch state to previous state.
-+ (void)resetFirstLaunchState;
-
-// Pass YES to simulate First Run experience.
-+ (void)setFirstLunchState:(BOOL)firstLaunch;
++ (BOOL)isCrashpadReportingEnabled;
 
 // Returns YES if keyboard commands were seen.
 + (BOOL)settingsRegisteredKeyboardCommands;

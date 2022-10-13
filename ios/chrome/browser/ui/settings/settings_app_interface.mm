@@ -70,26 +70,14 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
 + (void)setMetricsReportingEnabled:(BOOL)reportingEnabled {
   chrome_test_util::SetBooleanLocalStatePref(
       metrics::prefs::kMetricsReportingEnabled, reportingEnabled);
-  // Breakpad uses dispatch_async to update its state. Wait to get to a
-  // consistent state.
-  chrome_test_util::WaitForBreakpadQueue();
 }
 
-+ (BOOL)isBreakpadEnabled {
-  return chrome_test_util::IsBreakpadEnabled();
++ (BOOL)isCrashpadEnabled {
+  return chrome_test_util::IsCrashpadEnabled();
 }
 
-+ (BOOL)isBreakpadReportingEnabled {
-  return chrome_test_util::IsBreakpadReportingEnabled();
-}
-
-+ (void)resetFirstLaunchState {
-  chrome_test_util::SetFirstLaunchStateTo(
-      chrome_test_util::IsFirstLaunchAfterUpgrade());
-}
-
-+ (void)setFirstLunchState:(BOOL)firstLaunch {
-  chrome_test_util::SetFirstLaunchStateTo(firstLaunch);
++ (BOOL)isCrashpadReportingEnabled {
+  return chrome_test_util::IsCrashpadReportingEnabled();
 }
 
 + (BOOL)settingsRegisteredKeyboardCommands {

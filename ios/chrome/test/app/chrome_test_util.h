@@ -71,26 +71,17 @@ void SetIntegerUserPref(ChromeBrowserState* browser_state,
                         const char* pref_name,
                         int value);
 
-// Sets the state of first launch.
-void SetFirstLaunchStateTo(bool value);
-
 // Checks whether metrics recording is enabled or not.
 bool IsMetricsRecordingEnabled();
 
 // Checks whether metrics reporting is enabled or not.
 bool IsMetricsReportingEnabled();
 
-// Checks whether breakpad recording is enabled or not.
-bool IsBreakpadEnabled();
+// Checks whether crashpad recording is enabled or not.
+bool IsCrashpadEnabled();
 
-// Checks whether breakpad reporting is enabled or not.
-bool IsBreakpadReportingEnabled();
-
-// Checks whether this is the first launch after upgrade or not.
-bool IsFirstLaunchAfterUpgrade();
-
-// Waits for Breakpad to process the queued updates.
-void WaitForBreakpadQueue();
+// Checks whether crashpad reporting is enabled or not.
+bool IsCrashpadReportingEnabled();
 
 // Simulates launching Chrome from another application.
 void OpenChromeFromExternalApp(const GURL& url);
