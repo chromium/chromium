@@ -17,18 +17,24 @@
 namespace blink {
 
 PressureObserver::PressureObserver(V8PressureUpdateCallback* observer_callback,
-                                   PressureObserverOptions* options)
-    // TODO(crbug.com/1356529): sampleRate in PressureObserverOptions needs to
-    // be processed and passed to lower stacks for compute pressure
-    // implementation.
-    : observer_callback_(observer_callback), options_(options) {}
+                                   PressureObserverOptions* options,
+                                   ExceptionState& exception_state)
+    : observer_callback_(observer_callback),
+      sample_rate_(options->sampleRate()) {
+  if (sample_rate_ <= 0.0) {
+    exception_state.ThrowRangeError("sampleRate must be positive");
+    return;
+  }
+}
 
 PressureObserver::~PressureObserver() = default;
 
 // static
 PressureObserver* PressureObserver::Create(V8PressureUpdateCallback* callback,
-                                           PressureObserverOptions* options) {
-  return MakeGarbageCollected<PressureObserver>(callback, options);
+                                           PressureObserverOptions* options,
+                                           ExceptionState& exception_state) {
+  return MakeGarbageCollected<PressureObserver>(callback, options,
+                                                exception_state);
 }
 
 // static
@@ -88,7 +94,6 @@ void PressureObserver::disconnect() {
 
 void PressureObserver::Trace(blink::Visitor* visitor) const {
   visitor->Trace(manager_);
-  visitor->Trace(options_);
   visitor->Trace(observer_callback_);
   for (const auto& last_record : last_record_map_)
     visitor->Trace(last_record);
@@ -101,6 +106,9 @@ void PressureObserver::OnUpdate(ExecutionContext* execution_context,
                                 V8PressureState::Enum state,
                                 const Vector<V8PressureFactor>& factors,
                                 DOMHighResTimeStamp timestamp) {
+  if (!PassesRateTest(source, timestamp))
+    return;
+
   if (!HasChangeInData(source, state, factors))
     return;
 
@@ -149,6 +157,20 @@ HeapVector<Member<PressureRecord>> PressureObserver::takeRecords() {
   HeapVector<Member<PressureRecord>, kMaxQueuedRecords> records;
   records.swap(records_);
   return records;
+}
+
+// https://wicg.github.io/compute-pressure/#dfn-passes-rate-test
+bool PressureObserver::PassesRateTest(
+    V8PressureSource::Enum source,
+    const DOMHighResTimeStamp& timestamp) const {
+  const auto& last_record = last_record_map_[static_cast<size_t>(source)];
+
+  if (!last_record)
+    return true;
+
+  const double time_delta_milliseconds = timestamp - last_record->time();
+  const double interval_seconds = 1.0 / sample_rate_;
+  return (time_delta_milliseconds / 1000.0) >= interval_seconds;
 }
 
 // https://wicg.github.io/compute-pressure/#dfn-has-change-in-data

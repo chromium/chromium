@@ -57,7 +57,7 @@ class MockPressureService {
       return;
 
     if (this.pressureServiceReadingTimerId_ != null)
-      stopPlatformCollector();
+      this.stopPlatformCollector();
 
     // The following code for calculating the timestamp was taken from
     // https://source.chromium.org/chromium/chromium/src/+/main:third_party/

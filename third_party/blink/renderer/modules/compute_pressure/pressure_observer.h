@@ -36,11 +36,14 @@ class PressureObserver final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  PressureObserver(V8PressureUpdateCallback*, PressureObserverOptions*);
+  PressureObserver(V8PressureUpdateCallback*,
+                   PressureObserverOptions*,
+                   ExceptionState&);
   ~PressureObserver() override;
 
   static PressureObserver* Create(V8PressureUpdateCallback*,
-                                  PressureObserverOptions*);
+                                  PressureObserverOptions*,
+                                  ExceptionState&);
 
   // PressureObserver IDL implementation.
   void observe(ScriptState*, V8PressureSource, ExceptionState&);
@@ -63,6 +66,9 @@ class PressureObserver final : public ScriptWrappable {
                 DOMHighResTimeStamp);
 
  private:
+  // Verifies if the latest update was at least longer than the sample period.
+  bool PassesRateTest(V8PressureSource::Enum, const DOMHighResTimeStamp&) const;
+
   // Verifies if there is data change in between last update and new one.
   bool HasChangeInData(V8PressureSource::Enum,
                        V8PressureState::Enum,
@@ -77,8 +83,9 @@ class PressureObserver final : public ScriptWrappable {
   // The callback that receives pressure state updates.
   Member<V8PressureUpdateCallback> observer_callback_;
 
-  // Options for the observer.
-  Member<PressureObserverOptions> options_;
+  // Requested sample rate from the user.
+  // https://wicg.github.io/compute-pressure/#dfn-samplerate
+  double sample_rate_;
 
   // The last valid record received from the observer manager.
   // Stored to avoid sending updates whenever the new record is the same.

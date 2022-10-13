@@ -14,7 +14,8 @@ enum PressureSource {
     SecureContext
 ] interface PressureObserver {
   [
-    MeasureAs=PressureObserver_Constructor
+    MeasureAs=PressureObserver_Constructor,
+    RaisesException
   ] constructor(PressureUpdateCallback callback,
                 optional PressureObserverOptions options = {});
 

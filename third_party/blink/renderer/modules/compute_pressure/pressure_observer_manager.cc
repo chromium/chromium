@@ -148,10 +148,11 @@ void PressureObserverManager::OnUpdate(
     }
     // TODO(crbug.com/1342184): Consider other sources.
     // For now, "cpu" is the only source.
-    observer->OnUpdate(
-        GetExecutionContext(), V8PressureSource::Enum::kCpu,
-        PressureStateToV8PressureState(update->state), std::move(v8_factors),
-        static_cast<DOMHighResTimeStamp>(update->timestamp.ToDoubleT()));
+    observer->OnUpdate(GetExecutionContext(), V8PressureSource::Enum::kCpu,
+                       PressureStateToV8PressureState(update->state),
+                       std::move(v8_factors),
+                       static_cast<DOMHighResTimeStamp>(
+                           update->timestamp.ToJsTimeIgnoringNull()));
   }
 }
 
