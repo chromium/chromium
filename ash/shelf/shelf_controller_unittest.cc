@@ -24,6 +24,7 @@
 #include "ash/wm/window_util.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,33 +124,91 @@ TEST_F(ShelfControllerNotificationIndicatorTest, HasNotificationBasic) {
   EXPECT_FALSE(controller->model()->items()[index].has_notification);
 }
 
-class ShelfControllerPrefsTest : public AshTestBase {
+class ShelfControllerPrefsTest
+    : public AshTestBase,
+      public testing::WithParamInterface<
+          /*is_shelf_auto_hide_separation_enabled*/ bool> {
  public:
-  ShelfControllerPrefsTest() = default;
+  ShelfControllerPrefsTest()
+      : is_shelf_auto_hide_separation_enabled_(GetParam()) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kShelfAutoHideSeparation,
+        is_shelf_auto_hide_separation_enabled_);
+  }
 
   ShelfControllerPrefsTest(const ShelfControllerPrefsTest&) = delete;
   ShelfControllerPrefsTest& operator=(const ShelfControllerPrefsTest&) = delete;
 
   ~ShelfControllerPrefsTest() override = default;
+
+  void SetAutoHideBehaviorPrefForMode(PrefService* prefs,
+                                      int64_t display_id,
+                                      const std::string& value,
+                                      bool tablet_mode) {
+    SetPerDisplayShelfPref(prefs, display_id,
+                           tablet_mode ? prefs::kShelfAutoHideTabletModeBehavior
+                                       : prefs::kShelfAutoHideBehavior,
+                           value);
+    prefs->SetString(tablet_mode ? prefs::kShelfAutoHideTabletModeBehaviorLocal
+                                 : prefs::kShelfAutoHideBehaviorLocal,
+                     value);
+    prefs->SetString(tablet_mode ? prefs::kShelfAutoHideTabletModeBehavior
+                                 : prefs::kShelfAutoHideBehavior,
+                     value);
+  }
+
+  bool is_shelf_auto_hide_separation_enabled() {
+    return is_shelf_auto_hide_separation_enabled_;
+  }
+
+ private:
+  const bool is_shelf_auto_hide_separation_enabled_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(ShelfAutoHideSeparation,
+                         ShelfControllerPrefsTest,
+                         testing::Bool());
+
+// Ensure relevant shelf preferences have been registsered.
+TEST_P(ShelfControllerPrefsTest, PrefsAreRegistered) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  EXPECT_TRUE(prefs->FindPreference(prefs::kShelfAutoHideBehavior));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kShelfAutoHideBehaviorLocal));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kShelfAlignment));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kShelfAlignmentLocal));
+  EXPECT_TRUE(prefs->FindPreference(prefs::kShelfPreferences));
+  if (is_shelf_auto_hide_separation_enabled()) {
+    EXPECT_TRUE(prefs->FindPreference(prefs::kShelfAutoHideTabletModeBehavior));
+    EXPECT_TRUE(
+        prefs->FindPreference(prefs::kShelfAutoHideTabletModeBehaviorLocal));
+  }
+}
+
 // Ensure shelf settings are updated on preference changes.
-TEST_F(ShelfControllerPrefsTest, ShelfRespectsPrefs) {
+TEST_P(ShelfControllerPrefsTest, ShelfRespectsPrefs) {
   Shelf* shelf = GetPrimaryShelf();
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
-  EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
-
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
   prefs->SetString(prefs::kShelfAlignmentLocal, "Left");
-  prefs->SetString(prefs::kShelfAutoHideBehaviorLocal, "Always");
-
   EXPECT_EQ(ShelfAlignment::kLeft, shelf->alignment());
-  EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+
+  if (is_shelf_auto_hide_separation_enabled()) {
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+    EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+    prefs->SetString(prefs::kShelfAutoHideTabletModeBehaviorLocal, "Always");
+    EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+  } else {
+    EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+    prefs->SetString(prefs::kShelfAutoHideBehaviorLocal, "Always");
+    EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+  }
 }
 
 // Ensure shelf settings are updated on per-display preference changes.
-TEST_F(ShelfControllerPrefsTest, ShelfRespectsPerDisplayPrefs) {
+TEST_P(ShelfControllerPrefsTest, ShelfRespectsPerDisplayPrefs) {
   UpdateDisplay("1024x768,800x600");
   base::RunLoop().RunUntilIdle();
   const int64_t id1 = GetPrimaryDisplay().id();
@@ -177,7 +236,7 @@ TEST_F(ShelfControllerPrefsTest, ShelfRespectsPerDisplayPrefs) {
 
 // Ensures that pre-Unified Mode per-display shelf settings don't prevent us
 // from changing the shelf settings in unified mode.
-TEST_F(ShelfControllerPrefsTest, ShelfRespectsPerDisplayPrefsUnified) {
+TEST_P(ShelfControllerPrefsTest, ShelfRespectsPerDisplayPrefsUnified) {
   UpdateDisplay("1024x768,800x600");
 
   // Before enabling Unified Mode, set the shelf alignment for one of the two
@@ -215,7 +274,7 @@ TEST_F(ShelfControllerPrefsTest, ShelfRespectsPerDisplayPrefsUnified) {
 
 // Ensure shelf settings are correct after display swap at login screen, see
 // crbug.com/748291
-TEST_F(ShelfControllerPrefsTest,
+TEST_P(ShelfControllerPrefsTest,
        ShelfSettingsValidAfterDisplaySwapAtLoginScreen) {
   // Simulate adding an external display at the lock screen.
   GetSessionControllerClient()->RequestLockScreen();
@@ -293,7 +352,7 @@ TEST_F(ShelfControllerPrefsTest,
 
 // Test display swap while logged in, which was causing a crash (see
 // crbug.com/1022852)
-TEST_F(ShelfControllerPrefsTest,
+TEST_P(ShelfControllerPrefsTest,
        ShelfSettingsValidAfterDisplaySwapWhileLoggedIn) {
   // Simulate adding an external display at the lock screen.
   GetSessionControllerClient()->RequestLockScreen();
@@ -328,7 +387,9 @@ TEST_F(ShelfControllerPrefsTest,
             GetShelfForDisplay(external_display_id)->auto_hide_behavior());
 }
 
-TEST_F(ShelfControllerPrefsTest, ShelfSettingsInTabletMode) {
+// Tests shelf settings behavior when switching between clamshell mode and
+// tablet mode.
+TEST_P(ShelfControllerPrefsTest, ShelfSettingsBetweenClamshellAndTabletMode) {
   Shelf* shelf = GetPrimaryShelf();
   PrefService* prefs =
       Shell::Get()->session_controller()->GetLastActiveUserPrefService();
@@ -338,30 +399,136 @@ TEST_F(ShelfControllerPrefsTest, ShelfSettingsInTabletMode) {
   ASSERT_EQ(ShelfAlignment::kLeft, shelf->alignment());
   ASSERT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
 
-  // Verify after entering tablet mode, the shelf alignment is bottom and the
-  // auto hide behavior has not changed.
+  // Verify after entering tablet mode, the shelf alignment is bottom.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
-  EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+  // If shelf-auto-hide-separation is enabled then the auto hide behavior should
+  // be never (the default value) because this is the first time that tablet
+  // mode is entered. If shelf-auto-hide-separation is not enabled then the auto
+  // hide behvaior should be whatever value it was before entering tablet mode.
+  if (is_shelf_auto_hide_separation_enabled()) {
+    EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+  } else {
+    EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+  }
 
   // Verify that screen rotation does not change alignment or auto-hide.
   display_manager()->SetDisplayRotation(
       display::Screen::GetScreen()->GetPrimaryDisplay().id(),
       display::Display::ROTATE_90, display::Display::RotationSource::ACTIVE);
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
-  EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+  if (is_shelf_auto_hide_separation_enabled()) {
+    EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+  } else {
+    EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+  }
 
   // Verify after exiting tablet mode, the shelf alignment and auto hide
   // behavior get their stored pref values.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   EXPECT_EQ(ShelfAlignment::kLeft, shelf->alignment());
   EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+
+  // Change the clamshell-mode auto hide setting and then switch to tablet mode.
+  SetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplay().id(),
+                               ShelfAutoHideBehavior::kNever);
+  ASSERT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  // If shelf-auto-hide-separation is enabled then the auto hide behavior should
+  // be whatever it was previously in tablet mode (never, in this case);
+  // otherwise, it should follow the clamshell-mode behavior (still never, in
+  // this case).
+  EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+
+  // Change the tablet-mode auto hide setting and then switch to clamshell mode.
+  SetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplay().id(),
+                               ShelfAutoHideBehavior::kAlways);
+  ASSERT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  // If shelf-auto-hide-separation is enabled then the auto hide behavior should
+  // be whatever it was previously in clamshell mode (never, in this case);
+  // otherwise it should follow the tablet-mode behavior (always, in this case).
+  if (is_shelf_auto_hide_separation_enabled()) {
+    EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+  } else {
+    EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+  }
 }
 
-using ShelfControllerAppModeTest = NoSessionAshTestBase;
+using ShelfControllerPrefsWithSeparationTest = ShelfControllerPrefsTest;
+
+INSTANTIATE_TEST_SUITE_P(ShelfAutoHideSeparation,
+                         ShelfControllerPrefsWithSeparationTest,
+                         testing::Values(true));
+
+// Tests shelf auto hide behavior when changing tablet mode settings while in
+// clamshell mode, and vice versa. Note that this test only makes sense when
+// shelf-auto-hide-separation is enabled because there is no distinction between
+// "clamshell-mode auto hide pref" vs. "tablet-mode auto hide pref" when
+// shelf-auto-hide-separation is not enabled.
+TEST_P(ShelfControllerPrefsWithSeparationTest,
+       ShelfSettingsChangedInAnotherMode) {
+  Shelf* shelf = GetPrimaryShelf();
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+
+  // Ensure the auto hide behavior is "Always" in both clamshell and tablet
+  // mode. Then switch to tablet mode, and change the clamshell-mode auto hide
+  // behavior. This should not affect the tablet-mode auto hide behavior.
+  SetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplay().id(),
+                               ShelfAutoHideBehavior::kAlways);
+  ASSERT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  SetShelfAutoHideBehaviorPref(prefs, GetPrimaryDisplay().id(),
+                               ShelfAutoHideBehavior::kAlways);
+  ASSERT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+  const auto display_id = GetPrimaryDisplay().id();
+  SetAutoHideBehaviorPrefForMode(prefs, display_id, "Never",
+                                 /*tablet_mode*/ false);
+  EXPECT_EQ(ShelfAutoHideBehavior::kAlways, shelf->auto_hide_behavior());
+
+  // Ensure the auto hide behavior is "Never" in both clamshell and tablet
+  // mode. Then switch to clamshell mode, and change the tablet-mode auto hide
+  // behavior. This should not affect the clamshell-mode auto hide behavior.
+  SetShelfAutoHideBehaviorPref(prefs, display_id,
+                               ShelfAutoHideBehavior::kNever);
+  ASSERT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ASSERT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+  SetAutoHideBehaviorPrefForMode(prefs, display_id, "Always",
+                                 /*tablet_mode*/ true);
+  EXPECT_EQ(ShelfAutoHideBehavior::kNever, shelf->auto_hide_behavior());
+}
+
+class ShelfControllerAppModeTest
+    : public NoSessionAshTestBase,
+      public testing::WithParamInterface<
+          /*is_shelf_auto_hide_separation_enabled*/ bool> {
+ public:
+  ShelfControllerAppModeTest()
+      : is_shelf_auto_hide_separation_enabled_(GetParam()) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kShelfAutoHideSeparation,
+        is_shelf_auto_hide_separation_enabled_);
+  }
+
+  ShelfControllerAppModeTest(const ShelfControllerAppModeTest&) = delete;
+  ShelfControllerAppModeTest& operator=(const ShelfControllerAppModeTest&) =
+      delete;
+
+  ~ShelfControllerAppModeTest() override = default;
+
+ private:
+  const bool is_shelf_auto_hide_separation_enabled_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ShelfAutoHideSeparation,
+                         ShelfControllerAppModeTest,
+                         testing::Bool());
 
 // Tests that shelf auto hide behavior is always hidden in app mode.
-TEST_F(ShelfControllerAppModeTest, AutoHideBehavior) {
+TEST_P(ShelfControllerAppModeTest, AutoHideBehavior) {
   SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
 
   Shelf* shelf = GetPrimaryShelf();

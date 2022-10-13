@@ -21,6 +21,12 @@ ASH_PUBLIC_EXPORT extern const char kShelfAlignmentBottom[];
 ASH_PUBLIC_EXPORT extern const char kShelfAlignmentLeft[];
 ASH_PUBLIC_EXPORT extern const char kShelfAlignmentRight[];
 
+// Sets the shelf preference value for the display with the given |display_id|.
+ASH_PUBLIC_EXPORT void SetPerDisplayShelfPref(PrefService* prefs,
+                                              int64_t display_id,
+                                              const char* pref_key,
+                                              const std::string& value);
+
 // Get the shelf auto hide behavior preference for a particular display.
 ASH_PUBLIC_EXPORT ShelfAutoHideBehavior
 GetShelfAutoHideBehaviorPref(PrefService* prefs, int64_t display_id);

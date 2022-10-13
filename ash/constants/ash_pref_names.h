@@ -331,6 +331,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfAlignment[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfAlignmentLocal[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfAutoHideBehavior[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfAutoHideBehaviorLocal[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kShelfAutoHideTabletModeBehavior[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kShelfAutoHideTabletModeBehaviorLocal[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfLauncherNudge[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kShelfPreferences[];
 

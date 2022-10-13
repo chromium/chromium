@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -18,6 +19,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -134,6 +136,13 @@ void ShelfController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterStringPref(prefs::kShelfAutoHideBehaviorLocal,
                                std::string());
+  if (base::FeatureList::IsEnabled(features::kShelfAutoHideSeparation)) {
+    registry->RegisterStringPref(
+        prefs::kShelfAutoHideTabletModeBehavior, kShelfAutoHideBehaviorNever,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+    registry->RegisterStringPref(prefs::kShelfAutoHideTabletModeBehaviorLocal,
+                                 std::string());
+  }
   registry->RegisterStringPref(
       prefs::kShelfAlignment, kShelfAlignmentBottom,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
@@ -163,6 +172,11 @@ void ShelfController::OnActiveUserPrefServiceChanged(
                               base::BindRepeating(&SetShelfAlignmentFromPrefs));
   pref_change_registrar_->Add(prefs::kShelfAutoHideBehaviorLocal,
                               base::BindRepeating(&SetShelfAutoHideFromPrefs));
+  if (base::FeatureList::IsEnabled(features::kShelfAutoHideSeparation)) {
+    pref_change_registrar_->Add(
+        prefs::kShelfAutoHideTabletModeBehaviorLocal,
+        base::BindRepeating(&SetShelfAutoHideFromPrefs));
+  }
   pref_change_registrar_->Add(prefs::kShelfPreferences,
                               base::BindRepeating(&SetShelfBehaviorsFromPrefs));
 
@@ -194,8 +208,12 @@ void ShelfController::OnTabletModeStarted() {
   if (Shell::Get()->session_controller()->IsRunningInAppMode())
     return;
 
-  // Force the shelf to be visible and to be bottom aligned in tablet mode; the
-  // prefs are restored on exit.
+  if (base::FeatureList::IsEnabled(features::kShelfAutoHideSeparation)) {
+    SetShelfAutoHideFromPrefs();
+  }
+
+  // Force the shelf to be bottom aligned in tablet mode; the prefs are restored
+  // on exit.
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     if (Shelf* shelf = GetShelfForDisplay(display.id())) {
       // Only animate into tablet mode if the shelf alignment will not change.

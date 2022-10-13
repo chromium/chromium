@@ -722,6 +722,10 @@ const char kShelfAlignmentLocal[] = "shelf_alignment_local";
 // String value corresponding to ash::ShelfAutoHideBehavior (e.g. "Never").
 const char kShelfAutoHideBehavior[] = "auto_hide_behavior";
 const char kShelfAutoHideBehaviorLocal[] = "auto_hide_behavior_local";
+const char kShelfAutoHideTabletModeBehavior[] =
+    "auto_hide_tablet_mode_behavior";
+const char kShelfAutoHideTabletModeBehaviorLocal[] =
+    "auto_hide_tablet_mode_behavior_local";
 
 // Dictionary value that determines when the launcher navigation nudge should
 // show to the users.
