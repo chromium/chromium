@@ -1,4 +1,4 @@
-caption: Rollback to target version
+caption: Roll back OS to target version
 desc: |-
   Specifies whether the device should roll back to the version set by <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME">DeviceTargetVersionPrefix</ph> if it's already running a later version.
 
@@ -8,22 +8,18 @@ example_value: 1
 features:
   dynamic_refresh: true
 items:
-- caption: Do not roll back to target version if OS version is newer than target.
-    Updates are also disabled.
+- caption: Do not roll back OS to target version.
   name: RollbackDisabled
   value: 1
-- caption: Roll back and stay on target version if OS version is newer than target.
-    Do a powerwash during the process.
-  name: RollbackAndPowerwash
-  value: 2
 - caption: |-
-    Roll back and stay on target version if OS version is newer than target. Try to carry over device-level configuration (including network credentials) through the rollback process, if possible, but do the rollback with full powerwash even if restoring the data is not possible (because the target version doesn't support restoring data or because of a backward-incompatible change).
-              Supported on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 75 and higher. For older clients, this value means that rollback is disabled.
+    Roll back device to target version if current OS version is newer than target. The device is powerwashed but device-wide network configurations without certificates are preserved and it automatically re-enrolls.
+              Supported on rollback to <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 106 and higher. For older clients, the preservation of networks may not work and the device will not automatically re-enroll.
   name: RollbackAndRestoreIfPossible
   value: 3
 owners:
+- mpolzer@google.com
+- crisguerrero@chromium.com
 - file://components/policy/resources/OWNERS
-- anqing@chromium.org
 schema:
   enum:
   - 1

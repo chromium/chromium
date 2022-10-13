@@ -325,17 +325,15 @@ message AutoUpdateSettingsProto {
     // case, the device will still respect |target_version_prefix|, so it will
     // not update Chrome OS.
     ROLLBACK_DISABLED = 1;
-    // If |target_version_prefix| specifies an older version than the currently
-    // installed Chrome OS version, the device should roll back to a Chrome OS
-    // version starting with |target_version_prefix|. The device does a full
-    // powerwash during the rollback, including TPM reset.
+    // Deprecated. This option is not available or supported anymore.
     ROLLBACK_AND_POWERWASH = 2;
     // If |target_version_prefix| specifies an older version than the currently
-    // installed Chrome OS version, the device should roll back to a Chrome OS
+    // installed ChromeOS version, the device should roll back to a ChromeOS
     // version starting with |target_version_prefix|.
-    // If possible, the device tries to carry over device-level configuration
-    // including network credentials during the rollback process.
-    // If that is not possible, rolls back with a full powerwash.
+    // The device is powerwashed but some data is preserved and recovered: OOBE
+    // completion state, stats consent status, and device-wide network
+    // configurations without certificates. When rolling back to M>=106, the
+    // device re-enrolls automatically.
     ROLLBACK_AND_RESTORE_IF_POSSIBLE = 3;
   }
 
