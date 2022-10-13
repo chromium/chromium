@@ -16,12 +16,16 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+
+#if BUILDFLAG(PA_USE_BASE_TRACING)
+#include "base/trace_event/base_tracing_forward.h"
+#endif  // BUILDFLAG(PA_USE_BASE_TRACING)
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR) || \
     defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
@@ -1309,6 +1313,7 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
     std::swap(lhs.wrapped_ptr_, rhs.wrapped_ptr_);
   }
 
+#if BUILDFLAG(PA_USE_BASE_TRACING)
   // If T can be serialised into trace, its alias is also
   // serialisable.
   template <class U = T>
@@ -1316,6 +1321,7 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
       perfetto::TracedValue&& context) const {
     perfetto::WriteIntoTracedValue(std::move(context), get());
   }
+#endif  // BUILDFLAG(PA_USE_BASE_TRACING)
 
   ALWAYS_INLINE void ReportIfDangling() const noexcept {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)

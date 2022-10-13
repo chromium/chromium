@@ -9,6 +9,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
@@ -167,6 +168,7 @@ class TRIVIAL_ABI GSL_POINTER raw_ref {
     swap(lhs.inner_, rhs.inner_);
   }
 
+#if BUILDFLAG(PA_USE_BASE_TRACING)
   // If T can be serialised into trace, its alias is also
   // serialisable.
   template <class U = T>
@@ -175,6 +177,7 @@ class TRIVIAL_ABI GSL_POINTER raw_ref {
     CHECK(inner_.get());  // Catch use-after-move.
     inner_.WriteIntoTrace(std::move(context));
   }
+#endif  // BUILDFLAG(PA_USE_BASE_TRACING)
 
   template <class U>
   friend ALWAYS_INLINE bool operator==(const raw_ref& lhs,

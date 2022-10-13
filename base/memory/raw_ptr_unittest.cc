@@ -17,6 +17,7 @@
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/checked_math.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/tagging.h"
@@ -33,9 +34,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
+#if BUILDFLAG(ENABLE_BASE_TRACING) && BUILDFLAG(PA_USE_BASE_TRACING)
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING) && BUILDFLAG(PA_USE_BASE_TRACING)
 
 #if defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 #include "base/allocator/partition_allocator/partition_tag_types.h"
@@ -1302,7 +1303,7 @@ TEST_F(RawPtrTest, DerivedStructsComparison) {
             checked_derived2_ptr);
 }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
+#if BUILDFLAG(ENABLE_BASE_TRACING) && BUILDFLAG(PA_USE_BASE_TRACING)
 TEST_F(RawPtrTest, TracedValueSupport) {
   // Serialise nullptr.
   EXPECT_EQ(perfetto::TracedValueToString(raw_ptr<int>()), "0x0");
@@ -1325,7 +1326,7 @@ TEST_F(RawPtrTest, TracedValueSupport) {
               "result");
   }
 }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING) && BUILDFLAG(PA_USE_BASE_TRACING)
 
 class PmfTestBase {
  public:

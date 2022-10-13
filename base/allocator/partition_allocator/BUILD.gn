@@ -402,6 +402,9 @@ buildflag_header("partition_alloc_buildflags") {
     # *Scan is currently only used by Chromium.
     "STARSCAN=$build_with_chromium",
 
+    # We can only use `//base/tracing` when building in Chromium.
+    "PA_USE_BASE_TRACING=$build_with_chromium",
+
     "ENABLE_PKEYS=$enable_pkeys",
   ]
 }
