@@ -28,6 +28,10 @@ BASE_FEATURE(kCreateDiscoverFeedServiceEarly,
              "CreateDiscoverFeedServiceEarly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableGoodVisitsMetric,
+             "EnableGoodVisitsMetric",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable feed backround refresh. This is used because registering for
 // background refreshes must happen early in app initialization and FeatureList
@@ -56,6 +60,10 @@ bool IsWebChannelsEnabled() {
 
 bool IsDiscoverFeedServiceCreatedEarly() {
   return base::FeatureList::IsEnabled(kCreateDiscoverFeedServiceEarly);
+}
+
+bool IsGoodVisitsMetricEnabled() {
+  return base::FeatureList::IsEnabled(kEnableGoodVisitsMetric);
 }
 
 bool IsFeedBackgroundRefreshEnabled() {

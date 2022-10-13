@@ -54,6 +54,9 @@ bool IsDiscoverFeedServiceCreatedEarly();
 // buildflag is not defined.
 bool IsFeedBackgroundRefreshEnabled();
 
+// Whether Good Visits metric logging is enabled.
+bool IsGoodVisitsMetricEnabled();
+
 // Saves the current value for feature `kEnableFeedBackgroundRefresh`. This call
 // DCHECKs on the availability of `base::FeatureList`.
 void SaveFeedBackgroundRefreshEnabledForNextColdStart();

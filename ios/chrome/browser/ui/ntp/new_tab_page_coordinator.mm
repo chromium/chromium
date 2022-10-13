@@ -453,6 +453,7 @@ BASE_FEATURE(kEnableCheckForNewFollowContent,
         self.feedMetricsRecorder.feedControlDelegate = self;
         self.feedMetricsRecorder.followDelegate = self;
       }
+      [self.feedMetricsRecorder recordNTPBecameVisible];
     }
     if (!visible) {
       // Unfocus omnibox, to prevent it from lingering when it should be

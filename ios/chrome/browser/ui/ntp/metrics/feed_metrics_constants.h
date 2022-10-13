@@ -16,11 +16,23 @@ constexpr base::TimeDelta kUserSettingsMaxAge = base::Days(14);
 // scrolling.
 extern const int kMinScrollThreshold;
 
+// Time spent by the user in feed to consider it a
+// FeedEngagementType::kFeedGoodVisit.
+extern const int kGoodVisitTimeInFeedSeconds;
+
+// Minimum time spent in an article to be considered a non-short click. A
+// non-short click is any click on an article lasting more than the value
+// assigned to this constant. Calculated when back in the feed.
+extern const int kNonShortClickSeconds;
+
 // Time between two metrics recorded to consider it a new session.
 extern const int kMinutesBetweenSessions;
 
 // The max amount of cards in the Discover Feed.
 extern const int kMaxCardsInFeed;
+
+// Stores the time when the user visits an article on the feed.
+extern NSString* const kArticleClickTimestampKey;
 
 #pragma mark - Enums
 

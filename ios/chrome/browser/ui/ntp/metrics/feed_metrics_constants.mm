@@ -9,8 +9,12 @@
 #endif
 
 const int kMinScrollThreshold = 140;
+const int kGoodVisitTimeInFeedSeconds = 60;
+const int kNonShortClickSeconds = 10;
 const int kMinutesBetweenSessions = 5;
 const int kMaxCardsInFeed = 50;
+
+NSString* const kArticleClickTimestampKey = @"ShortClickInteractionTimestamp";
 
 #pragma mark - Histograms
 
