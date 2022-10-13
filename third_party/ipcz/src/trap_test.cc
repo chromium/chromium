@@ -40,12 +40,14 @@ TEST_F(TrapTest, RemoveOnClose) {
       .flags = IPCZ_TRAP_NEW_LOCAL_PARCEL,
   };
   EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
-              EXPECT_EQ(IPCZ_TRAP_REMOVED, e.condition_flags);
+              EXPECT_EQ(IPCZ_TRAP_REMOVED | IPCZ_TRAP_WITHIN_API_CALL,
+                        e.condition_flags);
               parcel_trap_removed = true;
             }));
   conditions.flags = IPCZ_TRAP_PEER_CLOSED;
   EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
-              EXPECT_EQ(IPCZ_TRAP_REMOVED, e.condition_flags);
+              EXPECT_EQ(IPCZ_TRAP_REMOVED | IPCZ_TRAP_WITHIN_API_CALL,
+                        e.condition_flags);
               closure_trap_removed = true;
             }));
 
@@ -67,7 +69,8 @@ TEST_F(TrapTest, PeerClosed) {
   };
   bool received_event = false;
   EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
-              EXPECT_EQ(IPCZ_TRAP_PEER_CLOSED, e.condition_flags);
+              EXPECT_EQ(IPCZ_TRAP_PEER_CLOSED | IPCZ_TRAP_WITHIN_API_CALL,
+                        e.condition_flags);
               received_event = true;
             }));
 
@@ -96,7 +99,9 @@ TEST_F(TrapTest, MinLocalParcels) {
   };
   bool received_event = false;
   EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
-              EXPECT_EQ(IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS, e.condition_flags);
+              EXPECT_EQ(
+                  IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS | IPCZ_TRAP_WITHIN_API_CALL,
+                  e.condition_flags);
               received_event = true;
             }));
 
@@ -118,7 +123,9 @@ TEST_F(TrapTest, MinLocalParcels) {
   received_event = false;
   conditions.min_local_parcels = 2;
   EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
-              EXPECT_EQ(IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS, e.condition_flags);
+              EXPECT_EQ(
+                  IPCZ_TRAP_ABOVE_MIN_LOCAL_PARCELS | IPCZ_TRAP_WITHIN_API_CALL,
+                  e.condition_flags);
               received_event = true;
             }));
 
@@ -150,7 +157,9 @@ TEST_F(TrapTest, MinLocalBytes) {
   };
   bool received_event = false;
   EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
-              EXPECT_EQ(IPCZ_TRAP_ABOVE_MIN_LOCAL_BYTES, e.condition_flags);
+              EXPECT_EQ(
+                  IPCZ_TRAP_ABOVE_MIN_LOCAL_BYTES | IPCZ_TRAP_WITHIN_API_CALL,
+                  e.condition_flags);
               received_event = true;
             }));
 
@@ -184,7 +193,8 @@ TEST_F(TrapTest, NewLocalParcel) {
   };
   bool received_event = false;
   EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
-              EXPECT_EQ(IPCZ_TRAP_NEW_LOCAL_PARCEL, e.condition_flags);
+              EXPECT_EQ(IPCZ_TRAP_NEW_LOCAL_PARCEL | IPCZ_TRAP_WITHIN_API_CALL,
+                        e.condition_flags);
               received_event = true;
             }));
 
@@ -194,7 +204,8 @@ TEST_F(TrapTest, NewLocalParcel) {
 
   received_event = false;
   EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
-              EXPECT_EQ(IPCZ_TRAP_NEW_LOCAL_PARCEL, e.condition_flags);
+              EXPECT_EQ(IPCZ_TRAP_NEW_LOCAL_PARCEL | IPCZ_TRAP_WITHIN_API_CALL,
+                        e.condition_flags);
               received_event = true;
             }));
 
@@ -214,7 +225,8 @@ TEST_F(TrapTest, DeadPortal) {
   };
   bool received_event = false;
   EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
-              EXPECT_EQ(IPCZ_TRAP_DEAD, e.condition_flags);
+              EXPECT_EQ(IPCZ_TRAP_DEAD | IPCZ_TRAP_WITHIN_API_CALL,
+                        e.condition_flags);
               received_event = true;
             }));
 
@@ -255,19 +267,22 @@ TEST_F(TrapTest, MultipleTraps) {
       .flags = IPCZ_TRAP_NEW_LOCAL_PARCEL,
   };
   EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
-              EXPECT_EQ(IPCZ_TRAP_NEW_LOCAL_PARCEL, e.condition_flags);
+              EXPECT_EQ(IPCZ_TRAP_NEW_LOCAL_PARCEL | IPCZ_TRAP_WITHIN_API_CALL,
+                        e.condition_flags);
               observed_parcel = true;
             }));
 
   conditions.flags = IPCZ_TRAP_PEER_CLOSED;
   EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
-              EXPECT_EQ(IPCZ_TRAP_PEER_CLOSED, e.condition_flags);
+              EXPECT_EQ(IPCZ_TRAP_PEER_CLOSED | IPCZ_TRAP_WITHIN_API_CALL,
+                        e.condition_flags);
               observed_closure = true;
             }));
 
   conditions.flags = IPCZ_TRAP_DEAD;
   EXPECT_EQ(IPCZ_RESULT_OK, Trap(b, conditions, [&](const IpczTrapEvent& e) {
-              EXPECT_EQ(IPCZ_TRAP_DEAD, e.condition_flags);
+              EXPECT_EQ(IPCZ_TRAP_DEAD | IPCZ_TRAP_WITHIN_API_CALL,
+                        e.condition_flags);
               observed_death = true;
             }));
 

@@ -142,7 +142,9 @@ bool Node::AddConnection(const NodeName& remote_node_name,
     auto [it, inserted] = connections_.insert({remote_node_name, connection});
     if (!inserted) {
       lock.Release();
-      connection.link->Deactivate();
+
+      const OperationContext context{OperationContext::kTransportNotification};
+      connection.link->Deactivate(context);
       return false;
     }
 
@@ -352,6 +354,12 @@ void Node::AcceptIntroduction(NodeLink& from_node_link,
   std::unique_ptr<PendingIntroduction> pending_introduction;
   {
     absl::MutexLock lock(&mutex_);
+    if (type_ == Type::kNormal && !broker_link_) {
+      // If we've lost our broker connection, we should ignore any further
+      // introductions that arrive.
+      return;
+    }
+
     auto [connection_it, inserted] =
         connections_.insert({name,
                              {
@@ -432,7 +440,8 @@ bool Node::AcceptRelayedMessage(msg::AcceptRelayedMessage& accept) {
   return true;
 }
 
-void Node::DropConnection(const NodeName& name) {
+void Node::DropConnection(const OperationContext& context,
+                          const NodeName& name) {
   Ref<NodeLink> link;
   std::vector<NodeName> pending_introductions;
   bool lost_broker = false;
@@ -463,7 +472,7 @@ void Node::DropConnection(const NodeName& name) {
     }
 
     // Accumulate the set of currently pending introductions. If any of them are
-    // awaiting a response from the dropped link, theie expectations will be
+    // awaiting a response from the dropped link, their expectations will be
     // updated accordingly by NotifyIntroductionFailed() below.
     pending_introductions.reserve(pending_introductions_.size());
     for (auto& [target, intro] : pending_introductions_) {
@@ -471,7 +480,7 @@ void Node::DropConnection(const NodeName& name) {
     }
   }
 
-  link->Deactivate();
+  link->Deactivate(context);
 
   if (lost_broker) {
     CancelAllIntroductions();
@@ -553,8 +562,9 @@ void Node::ShutDown() {
     other_brokers_.clear();
   }
 
+  const OperationContext context{OperationContext::kAPICall};
   for (const auto& entry : connections) {
-    entry.second.link->Deactivate();
+    entry.second.link->Deactivate(context);
   }
 
   CancelAllIntroductions();

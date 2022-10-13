@@ -14,6 +14,7 @@
 #include "ipcz/link_type.h"
 #include "ipcz/node_link.h"
 #include "ipcz/node_link_memory.h"
+#include "ipcz/operation_context.h"
 #include "ipcz/portal.h"
 #include "ipcz/remote_router_link.h"
 #include "ipcz/router.h"
@@ -612,26 +613,29 @@ bool NodeConnector::ActivateTransport() {
 
 void NodeConnector::EstablishWaitingPortals(Ref<NodeLink> to_link,
                                             size_t max_valid_portals) {
+  // All paths to this function come from a transport notification.
+  const OperationContext context{OperationContext::kTransportNotification};
+
   ABSL_ASSERT(to_link != nullptr || max_valid_portals == 0);
   const size_t num_valid_portals =
       std::min(max_valid_portals, waiting_portals_.size());
   for (size_t i = 0; i < num_valid_portals; ++i) {
     const Ref<Router> router = waiting_portals_[i]->router();
     Ref<RouterLink> link = to_link->AddRemoteRouterLink(
-        SublinkId(i), to_link->memory().GetInitialRouterLinkState(i),
+        context, SublinkId(i), to_link->memory().GetInitialRouterLinkState(i),
         LinkType::kCentral, to_link->link_side(), router);
     if (link) {
-      router->SetOutwardLink(std::move(link));
+      router->SetOutwardLink(context, std::move(link));
     } else {
-      router->AcceptRouteDisconnectedFrom(LinkType::kCentral);
+      router->AcceptRouteDisconnectedFrom(context, LinkType::kCentral);
     }
   }
 
   // Elicit immediate peer closure on any surplus portals that were established
   // on this side of the link.
   for (size_t i = num_valid_portals; i < waiting_portals_.size(); ++i) {
-    waiting_portals_[i]->router()->AcceptRouteClosureFrom(LinkType::kCentral,
-                                                          SequenceNumber(0));
+    waiting_portals_[i]->router()->AcceptRouteClosureFrom(
+        context, LinkType::kCentral, SequenceNumber(0));
   }
 }
 

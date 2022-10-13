@@ -10,6 +10,7 @@
 #include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
 #include "ipcz/node_link_memory.h"
+#include "ipcz/operation_context.h"
 #include "ipcz/remote_router_link.h"
 #include "ipcz/router.h"
 #include "ipcz/sublink_id.h"
@@ -61,15 +62,21 @@ TEST_F(NodeLinkTest, BasicTransmission) {
   Ref<Node> node1 = MakeRefCounted<Node>(Node::Type::kNormal, kDriver,
                                          IPCZ_INVALID_DRIVER_HANDLE);
 
+  // The choice of OperationContext is arbitrary and irrelevant for this test.
+  const OperationContext context{OperationContext::kTransportNotification};
   auto [link0, link1] = LinkNodes(node0, node1);
   auto router0 = MakeRefCounted<Router>();
   auto router1 = MakeRefCounted<Router>();
   FragmentRef<RouterLinkState> link_state =
       link0->memory().GetInitialRouterLinkState(0);
-  router0->SetOutwardLink(link0->AddRemoteRouterLink(
-      SublinkId(0), link_state, LinkType::kCentral, LinkSide::kA, router0));
-  router1->SetOutwardLink(link1->AddRemoteRouterLink(
-      SublinkId(0), link_state, LinkType::kCentral, LinkSide::kB, router1));
+  router0->SetOutwardLink(
+      context,
+      link0->AddRemoteRouterLink(context, SublinkId(0), link_state,
+                                 LinkType::kCentral, LinkSide::kA, router0));
+  router1->SetOutwardLink(
+      context,
+      link1->AddRemoteRouterLink(context, SublinkId(0), link_state,
+                                 LinkType::kCentral, LinkSide::kB, router1));
   link_state->status = RouterLinkState::kStable;
 
   EXPECT_FALSE(router1->IsPeerClosed());
@@ -77,8 +84,8 @@ TEST_F(NodeLinkTest, BasicTransmission) {
   EXPECT_TRUE(router1->IsPeerClosed());
   router1->CloseRoute();
 
-  link0->Deactivate();
-  link1->Deactivate();
+  link0->Deactivate(context);
+  link1->Deactivate(context);
 }
 
 }  // namespace

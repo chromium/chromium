@@ -10,6 +10,7 @@
 
 #include "ipcz/api_object.h"
 #include "ipcz/local_router_link.h"
+#include "ipcz/operation_context.h"
 #include "ipcz/router.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/log.h"
@@ -47,10 +48,11 @@ Portal::Pair Portal::CreatePair(Ref<Node> node) {
   DVLOG(5) << "Created new portal pair with routers " << routers.first.get()
            << " and " << routers.second.get();
 
+  const OperationContext context{OperationContext::kAPICall};
   auto links = LocalRouterLink::CreatePair(LinkType::kCentral, routers,
                                            LocalRouterLink::kStable);
-  routers.first->SetOutwardLink(std::move(links.first));
-  routers.second->SetOutwardLink(std::move(links.second));
+  routers.first->SetOutwardLink(context, std::move(links.first));
+  routers.second->SetOutwardLink(context, std::move(links.second));
   return {MakeRefCounted<Portal>(node, std::move(routers.first)),
           MakeRefCounted<Portal>(node, std::move(routers.second))};
 }

@@ -17,6 +17,7 @@
 #include "ipcz/node_messages.h"
 #include "ipcz/node_name.h"
 #include "ipcz/node_type.h"
+#include "ipcz/operation_context.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
@@ -156,7 +157,7 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   bool AcceptRelayedMessage(msg::AcceptRelayedMessage& accept);
 
   // Drops this node's connection to the named node, if one exists.
-  void DropConnection(const NodeName& name);
+  void DropConnection(const OperationContext& context, const NodeName& name);
 
   // Asynchronously waits for this Node to acquire a broker link and then
   // invokes `callback` with it. If this node already has a broker link then the

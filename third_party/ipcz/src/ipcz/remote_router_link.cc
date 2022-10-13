@@ -19,7 +19,8 @@
 
 namespace ipcz {
 
-RemoteRouterLink::RemoteRouterLink(Ref<NodeLink> node_link,
+RemoteRouterLink::RemoteRouterLink(const OperationContext& context,
+                                   Ref<NodeLink> node_link,
                                    SublinkId sublink,
                                    FragmentRef<RouterLinkState> link_state,
                                    LinkType type,
@@ -33,7 +34,7 @@ RemoteRouterLink::RemoteRouterLink(Ref<NodeLink> node_link,
   ABSL_ASSERT(type.is_central() == !link_state.is_null());
 
   if (type.is_central()) {
-    SetLinkState(std::move(link_state));
+    SetLinkState(context, std::move(link_state));
   }
 }
 
@@ -41,16 +42,18 @@ RemoteRouterLink::~RemoteRouterLink() = default;
 
 // static
 Ref<RemoteRouterLink> RemoteRouterLink::Create(
+    const OperationContext& context,
     Ref<NodeLink> node_link,
     SublinkId sublink,
     FragmentRef<RouterLinkState> link_state,
     LinkType type,
     LinkSide side) {
-  return AdoptRef(new RemoteRouterLink(std::move(node_link), sublink,
+  return AdoptRef(new RemoteRouterLink(context, std::move(node_link), sublink,
                                        std::move(link_state), type, side));
 }
 
-void RemoteRouterLink::SetLinkState(FragmentRef<RouterLinkState> state) {
+void RemoteRouterLink::SetLinkState(const OperationContext& context,
+                                    FragmentRef<RouterLinkState> state) {
   ABSL_ASSERT(type_.is_central());
   ABSL_ASSERT(!state.is_null());
 
@@ -60,9 +63,9 @@ void RemoteRouterLink::SetLinkState(FragmentRef<RouterLinkState> state) {
     FragmentDescriptor descriptor = state.fragment().descriptor();
     memory->WaitForBufferAsync(
         descriptor.buffer_id(),
-        [self = WrapRefCounted(this), memory, descriptor] {
-          self->SetLinkState(memory->AdoptFragmentRef<RouterLinkState>(
-              memory->GetFragment(descriptor)));
+        [self = WrapRefCounted(this), memory, descriptor, context] {
+          self->SetLinkState(context, memory->AdoptFragmentRef<RouterLinkState>(
+                                          memory->GetFragment(descriptor)));
         });
     return;
   }
@@ -95,7 +98,7 @@ void RemoteRouterLink::SetLinkState(FragmentRef<RouterLinkState> state) {
     MarkSideStable();
   }
   if (Ref<Router> router = node_link()->GetRouter(sublink_)) {
-    router->Flush(Router::kForceProxyBypassAttempt);
+    router->Flush(context, Router::kForceProxyBypassAttempt);
   }
 }
 
@@ -133,7 +136,8 @@ void RemoteRouterLink::AllocateParcelData(size_t num_bytes,
   parcel.AllocateData(num_bytes, allow_partial, &node_link()->memory());
 }
 
-void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
+void RemoteRouterLink::AcceptParcel(const OperationContext& context,
+                                    Parcel& parcel) {
   const absl::Span<Ref<APIObject>> objects = parcel.objects_view();
 
   msg::AcceptParcel accept;
@@ -233,7 +237,8 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
 
         Ref<Router> router = Portal::FromObject(&object)->router();
         ABSL_ASSERT(portal_index < num_portals);
-        router->SerializeNewRouter(*node_link(), descriptors[portal_index]);
+        router->SerializeNewRouter(context, *node_link(),
+                                   descriptors[portal_index]);
         routers_to_proxy[portal_index] = std::move(router);
         ++portal_index;
         break;
@@ -278,7 +283,8 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
   // any routers whose routes have just been extended to the destination.
   ABSL_ASSERT(routers_to_proxy.size() == descriptors.size());
   for (size_t i = 0; i < routers_to_proxy.size(); ++i) {
-    routers_to_proxy[i]->BeginProxyingToNewRouter(*node_link(), descriptors[i]);
+    routers_to_proxy[i]->BeginProxyingToNewRouter(context, *node_link(),
+                                                  descriptors[i]);
   }
 
   // Finally, a Parcel will normally close all attached objects when destroyed.
@@ -289,7 +295,8 @@ void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
   }
 }
 
-void RemoteRouterLink::AcceptRouteClosure(SequenceNumber sequence_length) {
+void RemoteRouterLink::AcceptRouteClosure(const OperationContext& context,
+                                          SequenceNumber sequence_length) {
   msg::RouteClosed route_closed;
   route_closed.params().sublink = sublink_;
   route_closed.params().sequence_length = sequence_length;
@@ -310,13 +317,14 @@ AtomicQueueState* RemoteRouterLink::GetLocalQueueState() {
   return nullptr;
 }
 
-void RemoteRouterLink::SnapshotPeerQueueState() {
+void RemoteRouterLink::SnapshotPeerQueueState(const OperationContext& context) {
   msg::SnapshotPeerQueueState snapshot;
   snapshot.params().sublink = sublink_;
   node_link()->Transmit(snapshot);
 }
 
-void RemoteRouterLink::AcceptRouteDisconnected() {
+void RemoteRouterLink::AcceptRouteDisconnected(
+    const OperationContext& context) {
   msg::RouteDisconnected route_disconnected;
   route_disconnected.params().sublink = sublink_;
   node_link()->Transmit(route_disconnected);
@@ -350,7 +358,8 @@ void RemoteRouterLink::Unlock() {
   }
 }
 
-bool RemoteRouterLink::FlushOtherSideIfWaiting() {
+bool RemoteRouterLink::FlushOtherSideIfWaiting(
+    const OperationContext& context) {
   RouterLinkState* state = GetLinkState();
   if (!state || !state->ResetWaitingBit(side_.opposite())) {
     return false;
@@ -378,7 +387,8 @@ void RemoteRouterLink::Deactivate() {
   node_link()->RemoveRemoteRouterLink(sublink_);
 }
 
-void RemoteRouterLink::BypassPeer(const NodeName& bypass_target_node,
+void RemoteRouterLink::BypassPeer(const OperationContext& context,
+                                  const NodeName& bypass_target_node,
                                   SublinkId bypass_target_sublink) {
   msg::BypassPeer bypass;
   bypass.params().sublink = sublink_;
@@ -388,7 +398,8 @@ void RemoteRouterLink::BypassPeer(const NodeName& bypass_target_node,
   node_link()->Transmit(bypass);
 }
 
-void RemoteRouterLink::StopProxying(SequenceNumber inbound_sequence_length,
+void RemoteRouterLink::StopProxying(const OperationContext& context,
+                                    SequenceNumber inbound_sequence_length,
                                     SequenceNumber outbound_sequence_length) {
   msg::StopProxying stop;
   stop.params().sublink = sublink_;
@@ -397,7 +408,8 @@ void RemoteRouterLink::StopProxying(SequenceNumber inbound_sequence_length,
   node_link()->Transmit(stop);
 }
 
-void RemoteRouterLink::ProxyWillStop(SequenceNumber inbound_sequence_length) {
+void RemoteRouterLink::ProxyWillStop(const OperationContext& context,
+                                     SequenceNumber inbound_sequence_length) {
   msg::ProxyWillStop will_stop;
   will_stop.params().sublink = sublink_;
   will_stop.params().inbound_sequence_length = inbound_sequence_length;
@@ -405,6 +417,7 @@ void RemoteRouterLink::ProxyWillStop(SequenceNumber inbound_sequence_length) {
 }
 
 void RemoteRouterLink::BypassPeerWithLink(
+    const OperationContext& context,
     SublinkId new_sublink,
     FragmentRef<RouterLinkState> new_link_state,
     SequenceNumber inbound_sequence_length) {
@@ -418,6 +431,7 @@ void RemoteRouterLink::BypassPeerWithLink(
 }
 
 void RemoteRouterLink::StopProxyingToLocalPeer(
+    const OperationContext& context,
     SequenceNumber outbound_sequence_length) {
   msg::StopProxyingToLocalPeer stop;
   stop.params().sublink = sublink_;

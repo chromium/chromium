@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include "ipcz/ipcz.h"
+#include "ipcz/operation_context.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 
 namespace ipcz {
@@ -85,13 +86,15 @@ class TrapSet {
   // If the state change is interesting to any trap in the set, an appropriate
   // event may be appended to `dispatcher` for imminent dispatch and the trap is
   // removed from the set before returning.
-  void UpdatePortalStatus(const IpczPortalStatus& status,
+  void UpdatePortalStatus(const OperationContext& context,
+                          const IpczPortalStatus& status,
                           UpdateReason reason,
                           TrapEventDispatcher& dispatcher);
 
   // Immediately removes all traps from the set. Every trap present appends an
   // IPCZ_TRAP_REMOVED event to `dispatcher` before removal.
-  void RemoveAll(TrapEventDispatcher& dispatcher);
+  void RemoveAll(const OperationContext& context,
+                 TrapEventDispatcher& dispatcher);
 
  private:
   struct Trap {

@@ -42,7 +42,8 @@ class RemoteRouterLink : public RouterLink {
   // of link it is -- which for remote links must be either kCentral,
   // kPeripheralInward, or kPeripheralOutward. If the link is kCentral, a
   // non-null `link_state` must be provided for the link's RouterLinkState.
-  static Ref<RemoteRouterLink> Create(Ref<NodeLink> node_link,
+  static Ref<RemoteRouterLink> Create(const OperationContext& context,
+                                      Ref<NodeLink> node_link,
                                       SublinkId sublink,
                                       FragmentRef<RouterLinkState> link_state,
                                       LinkType type,
@@ -60,33 +61,40 @@ class RemoteRouterLink : public RouterLink {
   void AllocateParcelData(size_t num_bytes,
                           bool allow_partial,
                           Parcel& parcel) override;
-  void AcceptParcel(Parcel& parcel) override;
-  void AcceptRouteClosure(SequenceNumber sequence_length) override;
-  void AcceptRouteDisconnected() override;
+  void AcceptParcel(const OperationContext& context, Parcel& parcel) override;
+  void AcceptRouteClosure(const OperationContext& context,
+                          SequenceNumber sequence_length) override;
+  void AcceptRouteDisconnected(const OperationContext& context) override;
   AtomicQueueState* GetPeerQueueState() override;
   AtomicQueueState* GetLocalQueueState() override;
-  void SnapshotPeerQueueState() override;
+  void SnapshotPeerQueueState(const OperationContext& context) override;
   void MarkSideStable() override;
   bool TryLockForBypass(const NodeName& bypass_request_source) override;
   bool TryLockForClosure() override;
   void Unlock() override;
-  bool FlushOtherSideIfWaiting() override;
+  bool FlushOtherSideIfWaiting(const OperationContext& context) override;
   bool CanNodeRequestBypass(const NodeName& bypass_request_source) override;
-  void BypassPeer(const NodeName& bypass_target_node,
+  void BypassPeer(const OperationContext& context,
+                  const NodeName& bypass_target_node,
                   SublinkId bypass_request_sublink) override;
-  void StopProxying(SequenceNumber inbound_sequence_length,
+  void StopProxying(const OperationContext& context,
+                    SequenceNumber inbound_sequence_length,
                     SequenceNumber outbound_sequence_length) override;
-  void ProxyWillStop(SequenceNumber inbound_sequence_length) override;
-  void BypassPeerWithLink(SublinkId new_sublink,
+  void ProxyWillStop(const OperationContext& context,
+                     SequenceNumber inbound_sequence_length) override;
+  void BypassPeerWithLink(const OperationContext& context,
+                          SublinkId new_sublink,
                           FragmentRef<RouterLinkState> new_link_state,
                           SequenceNumber inbound_sequence_length) override;
   void StopProxyingToLocalPeer(
+      const OperationContext& context,
       SequenceNumber outbound_sequence_length) override;
   void Deactivate() override;
   std::string Describe() const override;
 
  private:
-  RemoteRouterLink(Ref<NodeLink> node_link,
+  RemoteRouterLink(const OperationContext& context,
+                   Ref<NodeLink> node_link,
                    SublinkId sublink,
                    FragmentRef<RouterLinkState> link_state,
                    LinkType type,
@@ -96,7 +104,8 @@ class RemoteRouterLink : public RouterLink {
 
   // Sets this link's RouterLinkState. `state` must be pending or addressable
   // and this must be a central link.
-  void SetLinkState(FragmentRef<RouterLinkState> state);
+  void SetLinkState(const OperationContext& context,
+                    FragmentRef<RouterLinkState> state);
 
   const Ref<NodeLink> node_link_;
   const SublinkId sublink_;

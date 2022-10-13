@@ -103,6 +103,7 @@ class NodeLink : public msg::NodeMessageListener {
   // shared RouterLinkState structure for the new link. Only central links
   // require a RouterLinkState.
   Ref<RemoteRouterLink> AddRemoteRouterLink(
+      const OperationContext& context,
       SublinkId sublink,
       FragmentRef<RouterLinkState> link_state,
       LinkType type,
@@ -200,7 +201,7 @@ class NodeLink : public msg::NodeMessageListener {
   // Must only be called on an activated NodeLink, either one which was created
   // with CreateActive(), or one which was activated later by calling
   // Activate().
-  void Deactivate();
+  void Deactivate(const OperationContext& context);
 
   // Finalizes serialization of DriverObjects within `message` and transmits it
   // to the NodeLink's peer, either over the DriverTransport or through shared
@@ -257,6 +258,8 @@ class NodeLink : public msg::NodeMessageListener {
   bool OnRelayMessage(msg::RelayMessage& relay) override;
   bool OnAcceptRelayedMessage(msg::AcceptRelayedMessage& accept) override;
   void OnTransportError() override;
+
+  void HandleTransportError(const OperationContext& context);
 
   // Invoked when we receive a Parcel whose data fragment resides in a buffer
   // not yet known to the local node. This schedules the parcel for acceptance

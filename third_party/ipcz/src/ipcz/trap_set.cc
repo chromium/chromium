@@ -111,19 +111,23 @@ IpczResult TrapSet::Add(const IpczTrapConditions& conditions,
   return IPCZ_RESULT_OK;
 }
 
-void TrapSet::UpdatePortalStatus(const IpczPortalStatus& status,
+void TrapSet::UpdatePortalStatus(const OperationContext& context,
+                                 const IpczPortalStatus& status,
                                  UpdateReason reason,
                                  TrapEventDispatcher& dispatcher) {
   last_known_status_ = status;
   for (auto* it = traps_.begin(); it != traps_.end();) {
     const Trap& trap = *it;
-    const IpczTrapConditionFlags flags =
+    IpczTrapConditionFlags flags =
         GetSatisfiedConditionsForUpdate(trap.conditions, reason, status);
     if (!flags) {
       ++it;
       continue;
     }
 
+    if (context.is_api_call()) {
+      flags |= IPCZ_TRAP_WITHIN_API_CALL;
+    }
     dispatcher.DeferEvent(trap.handler, trap.context, flags, status);
     it = traps_.erase(it);
     if (NeedRemoteParcels(flags)) {
@@ -135,9 +139,14 @@ void TrapSet::UpdatePortalStatus(const IpczPortalStatus& status,
   }
 }
 
-void TrapSet::RemoveAll(TrapEventDispatcher& dispatcher) {
+void TrapSet::RemoveAll(const OperationContext& context,
+                        TrapEventDispatcher& dispatcher) {
+  IpczTrapConditionFlags flags = IPCZ_TRAP_REMOVED;
+  if (context.is_api_call()) {
+    flags |= IPCZ_TRAP_WITHIN_API_CALL;
+  }
   for (const Trap& trap : traps_) {
-    dispatcher.DeferEvent(trap.handler, trap.context, IPCZ_TRAP_REMOVED,
+    dispatcher.DeferEvent(trap.handler, trap.context, flags,
                           last_known_status_);
   }
   traps_.clear();

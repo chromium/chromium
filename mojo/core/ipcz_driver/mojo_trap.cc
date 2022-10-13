@@ -444,7 +444,9 @@ void MojoTrap::HandleEvent(const IpczTrapEvent& event) {
     TranslateIpczToMojoEvent(trigger->signals, trigger->trigger_context,
                              trigger->data_pipe.get(), event.condition_flags,
                              *event.status, &mojo_event);
-    mojo_event.flags |= MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL;
+    if (event.condition_flags & IPCZ_TRAP_WITHIN_API_CALL) {
+      mojo_event.flags |= MOJO_TRAP_EVENT_FLAG_WITHIN_API_CALL;
+    }
   }
 
   MaybeFlushMojoEvents();

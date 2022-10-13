@@ -229,6 +229,7 @@ ipcz_source_set("impl") {
     "ipcz/node_messages.h",
     "ipcz/node_name.h",
     "ipcz/node_type.h",
+    "ipcz/operation_context.h",
     "ipcz/parcel.h",
     "ipcz/parcel_queue.h",
     "ipcz/portal.h",

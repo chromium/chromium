@@ -10,6 +10,7 @@
 
 #include "ipcz/fragment_ref.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/operation_context.h"
 #include "ipcz/parcel_queue.h"
 #include "ipcz/route_edge.h"
 #include "ipcz/router_descriptor.h"
@@ -105,7 +106,8 @@ class Router : public RefCounted {
   // in active use by another Router, as `this` Router may already be in a
   // transitional state and must be able to block decay around `link` from
   // within this call.
-  void SetOutwardLink(Ref<RouterLink> link);
+  void SetOutwardLink(const OperationContext& context,
+                      const Ref<RouterLink> link);
 
   // Returns a best-effort estimation of the maximum parcel size (in bytes) that
   // can be sent outward from this router without the receiving portal exceeding
@@ -118,23 +120,27 @@ class Router : public RefCounted {
   size_t GetInboundCapacityInBytes(const IpczPutLimits& limits);
 
   // Accepts an inbound parcel from the outward edge of this router, either to
-  // queue it for retrieval or forward it further inward.
-  bool AcceptInboundParcel(Parcel& parcel);
+  // queue it for retrieval or forward it further inward. `source` indicates
+  // whether the parcel is arriving as a direct result of some local ipcz API
+  // call, or if it came from a remote node.
+  bool AcceptInboundParcel(const OperationContext& context, Parcel& parcel);
 
   // Accepts an outbound parcel here from some other Router. The parcel is
   // transmitted immediately or queued for later transmission over the Router's
   // outward link. Called only on proxying Routers.
-  bool AcceptOutboundParcel(Parcel& parcel);
+  bool AcceptOutboundParcel(const OperationContext& context, Parcel& parcel);
 
   // Accepts notification that the other end of the route has been closed and
   // that the closed end transmitted a total of `sequence_length` parcels before
-  // closing.
-  bool AcceptRouteClosureFrom(LinkType link_type,
+  // closing. `source` indicates whether the portal's peer was closed locally,
+  // or if we were notified of its closure from a remote node.
+  bool AcceptRouteClosureFrom(const OperationContext& context,
+                              LinkType link_type,
                               SequenceNumber sequence_length);
 
   // Queries the remote peer's queue state and performs any local state upates
-  // needed to reflect it.
-  void SnapshotPeerQueueState();
+  // needed to reflect it. `source` indicates why the snapshot is being taken.
+  void SnapshotPeerQueueState(const OperationContext& context);
 
   // Accepts notification from a link bound to this Router that some node along
   // the route (in the direction of that link) has been disconnected, e.g. due
@@ -143,7 +149,8 @@ class Router : public RefCounted {
   // deliver the complete sequence of parcels transmitted from that end of the
   // route. `link_type` specifies the type of link which is propagating the
   // notification to this rouer.
-  bool AcceptRouteDisconnectedFrom(LinkType link_type);
+  bool AcceptRouteDisconnectedFrom(const OperationContext& context,
+                                   LinkType link_type);
 
   // Retrieves the next available inbound parcel from this Router, if present.
   IpczResult GetNextInboundParcel(IpczGetFlags flags,
@@ -187,12 +194,15 @@ class Router : public RefCounted {
   // Serializes a description of a new Router which will be used to extend this
   // Router's route across `to_node_link` by introducing a new Router on the
   // remote node.
-  void SerializeNewRouter(NodeLink& to_node_link, RouterDescriptor& descriptor);
+  void SerializeNewRouter(const OperationContext& context,
+                          NodeLink& to_node_link,
+                          RouterDescriptor& descriptor);
 
   // Configures this Router to begin proxying incoming parcels toward (and
   // outgoing parcels from) the Router described by `descriptor`, living on the
   // remote node of `to_node_link`.
-  void BeginProxyingToNewRouter(NodeLink& to_node_link,
+  void BeginProxyingToNewRouter(const OperationContext& context,
+                                NodeLink& to_node_link,
                                 const RouterDescriptor& descriptor);
 
   // Notifies this router that it should reach out to its outward peer's own
@@ -221,7 +231,8 @@ class Router : public RefCounted {
   // invalid. Note that a return value of true does not necessarily imply that
   // bypass was or will be successful (e.g. it may silently fail due to lost
   // node connections).
-  bool BypassPeer(RemoteRouterLink& requestor,
+  bool BypassPeer(const OperationContext& context,
+                  RemoteRouterLink& requestor,
                   const NodeName& bypass_target_node,
                   SublinkId bypass_target_sublink);
 
@@ -245,6 +256,7 @@ class Router : public RefCounted {
   // RouterLinkState's `allowed_bypass_request_source` field. This method
   // authenticates the request accordingly.
   bool AcceptBypassLink(
+      const OperationContext& context,
       NodeLink& new_node_link,
       SublinkId new_sublink,
       FragmentRef<RouterLinkState> new_link_state,
@@ -257,7 +269,8 @@ class Router : public RefCounted {
   //
   // Returns true if and only if this router is a proxy with decaying inward and
   // outward links. Otherwise returns false, indicating an invalid request.
-  bool StopProxying(SequenceNumber inbound_sequence_length,
+  bool StopProxying(const OperationContext& context,
+                    SequenceNumber inbound_sequence_length,
                     SequenceNumber outbound_sequence_length);
 
   // Configures the final length of the inbound parcel sequence coming from the
@@ -268,7 +281,8 @@ class Router : public RefCounted {
   // Returns true if this router has a decaying outward link -- implying that
   // its outward peer is a proxy -- or the router has been disconnected.
   // Otherwise the request is invalid and this returns false.
-  bool NotifyProxyWillStop(SequenceNumber inbound_sequence_length);
+  bool NotifyProxyWillStop(const OperationContext& context,
+                           SequenceNumber inbound_sequence_length);
 
   // Configures the final sequence length of outbound parcels to expect on this
   // proxying Router's decaying inward link. Once this is set and the decaying
@@ -276,7 +290,8 @@ class Router : public RefCounted {
   //
   // Returns true if the request is valid, meaning that this Router is a proxy
   // whose outward peer is local to the same node. Otherwise this returns false.
-  bool StopProxyingToLocalPeer(SequenceNumber outbound_sequence_length);
+  bool StopProxyingToLocalPeer(const OperationContext& context,
+                               SequenceNumber outbound_sequence_length);
 
   // Notifies this Router that one of its links has been disconnected from a
   // remote node. The link is identified by a combination of a specific NodeLink
@@ -290,7 +305,8 @@ class Router : public RefCounted {
   // For a proxying router which is generally only kept alive by the links
   // which are bound to it, this call will typically be followed by imminent
   // destruction of this Router once the caller releases its own reference.
-  void NotifyLinkDisconnected(RemoteRouterLink& link);
+  void NotifyLinkDisconnected(const OperationContext& context,
+                              RemoteRouterLink& link);
 
   // Flushes any inbound or outbound parcels, as well as any route closure
   // notifications. RouterLinks which are no longer needed for the operation of
@@ -312,8 +328,11 @@ class Router : public RefCounted {
   // invoke Flush() may also elicit state changes that can unblock a bypass
   // operation. These operatoins may specify kForceProxyBypassAttempt in such
   // cases.
+  //
+  // `source` indicates why the flush is occurring.
   enum FlushBehavior { kDefault, kForceProxyBypassAttempt };
-  void Flush(FlushBehavior behavior = kDefault);
+  void Flush(const OperationContext& context,
+             FlushBehavior behavior = kDefault);
 
  private:
   ~Router() override;
@@ -342,7 +361,7 @@ class Router : public RefCounted {
   // last decaying link, or if Flush() was called with kForceProxyBypassAttempt,
   // indicating that some significant state has changed on the route which might
   // unblock our bypass.
-  bool MaybeStartSelfBypass();
+  bool MaybeStartSelfBypass(const OperationContext& context);
 
   // Starts bypass of this Router when its outward peer lives on the same node.
   // This must only be called once the central link is already locked. If
@@ -353,7 +372,8 @@ class Router : public RefCounted {
   // Returns true if and only if self-bypass has been initiated by reaching out
   // to this router's inward peer with with a BypassPeer() or
   // BypassPeerWithLink() request. Otherwise returns false.
-  bool StartSelfBypassToLocalPeer(Router& local_outward_peer,
+  bool StartSelfBypassToLocalPeer(const OperationContext& context,
+                                  Router& local_outward_peer,
                                   RemoteRouterLink& inward_link,
                                   FragmentRef<RouterLinkState> new_link_state);
 
@@ -362,7 +382,7 @@ class Router : public RefCounted {
   // other side. This method will attempt to lock this Router's outward link as
   // well as the outward link of this Router's bridge peer. If either fails,
   // both are left unlocked and this operation cannot yet proceed.
-  void MaybeStartBridgeBypass();
+  void MaybeStartBridgeBypass(const OperationContext& context);
 
   // Starts bypass of this Router, which must be on a bridge link and must have
   // a local outward peer link. The router on the other side of the bridge must
@@ -370,7 +390,8 @@ class Router : public RefCounted {
   // establish a new remote link to that peer to bypass the entire bridge. If
   // `link_state` is null, the operation will be deferred until a fragment can
   // be allocated.
-  void StartBridgeBypassFromLocalPeer(FragmentRef<RouterLinkState> link_state);
+  void StartBridgeBypassFromLocalPeer(const OperationContext& context,
+                                      FragmentRef<RouterLinkState> link_state);
 
   // Attempts to bypass the link identified by `requestor` in favor of a new
   // link that runs over `node_link`. If `new_link_state` is non-null, it will
@@ -378,7 +399,8 @@ class Router : public RefCounted {
   // will be allocated asynchronously before proceeding.
   //
   // Returns true if and only if this request was valid.
-  bool BypassPeerWithNewRemoteLink(RemoteRouterLink& requestor,
+  bool BypassPeerWithNewRemoteLink(const OperationContext& context,
+                                   RemoteRouterLink& requestor,
                                    NodeLink& node_link,
                                    SublinkId bypass_target_sublink,
                                    FragmentRef<RouterLinkState> new_link_state);
@@ -388,7 +410,8 @@ class Router : public RefCounted {
   // NodeLink as `requestor`.
   //
   // Returns true if and only if this request was valid.
-  bool BypassPeerWithNewLocalLink(RemoteRouterLink& requestor,
+  bool BypassPeerWithNewLocalLink(const OperationContext& context,
+                                  RemoteRouterLink& requestor,
                                   SublinkId bypass_target_sublink);
 
   absl::Mutex mutex_;
