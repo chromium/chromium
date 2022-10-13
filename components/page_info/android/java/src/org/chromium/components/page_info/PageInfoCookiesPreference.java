@@ -41,6 +41,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
     private CharSequence mHostName;
+    private FPSCookieInfo mFPSInfo;
 
     /**  Parameters to configure the cookie controls view. */
     public static class PageInfoCookiesViewParams {
@@ -119,8 +120,12 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
                 new AlertDialog.Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                         .setTitle(R.string.page_info_cookies_clear)
                         .setMessage(R.string.page_info_cookies_clear_confirmation)
-                        .setMessage(
-                                getString(R.string.page_info_cookies_clear_confirmation, mHostName))
+                        .setMessage(mFPSInfo != null
+                                        ? getContext().getString(
+                                                R.string.page_info_cookies_clear_fps_confirmation,
+                                                mHostName, mFPSInfo.getOwner())
+                                        : getString(R.string.page_info_cookies_clear_confirmation,
+                                                mHostName))
                         .setPositiveButton(R.string.page_info_cookies_clear_confirmation_button,
                                 (dialog, which) -> mOnClearCallback.run())
                         .setNegativeButton(
@@ -171,6 +176,7 @@ public class PageInfoCookiesPreference extends SiteSettingsPreferenceFragment {
      * @return a boolean indicating if the FPS info has been shown or not.
      */
     public boolean maybeShowFPSInfo(FPSCookieInfo fpsInfo, String currentOrigin) {
+        mFPSInfo = fpsInfo;
         if (fpsInfo == null) {
             return false;
         }

@@ -563,13 +563,16 @@
         Cookies and site data
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_CLEAR" desc="Text on the button to clear cookies for a site.">
-        Clear cookies?
+        Delete cookies?
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_CLEAR_CONFIRMATION" desc="Description of the confirmation dialog when the user clicked 'Clear cookies'.">
-        This choice will clear cookies for <ph name="WEBSITE">%1$s<ex>example.com</ex></ph>
+      <message name="IDS_PAGE_INFO_COOKIES_CLEAR_CONFIRMATION" desc="Description of the confirmation dialog when the user clicked 'Delete cookies'.">
+        This deletes cookies and other site data for <ph name="WEBSITE">%1$s<ex>example.com</ex></ph>
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_CLEAR_CONFIRMATION_BUTTON" desc="Button in the confirmation dialog when the user clicked 'Clear cookies'.">
-        Clear
+      <message name="IDS_PAGE_INFO_COOKIES_CLEAR_FPS_CONFIRMATION" desc="Description of the confirmation dialog when the user clicked 'Delete cookies'.">
+        This deletes cookies and other site data for <ph name="FPS_MEMBER">%1$s<ex>freep.com</ex></ph> and for sites in <ph name="FPS_OWNER">%2$s<ex>gannett.com</ex></ph>’s group of sites
+      </message>
+      <message name="IDS_PAGE_INFO_COOKIES_CLEAR_CONFIRMATION_BUTTON" desc="Button in the confirmation dialog when the user clicked 'Delete cookies'.">
+        Delete
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="Description in the Page Info UI explaining cookies.">
         Cookies and other site data are used to remember you, for example to sign you in or to personalize ads. To manage cookies for all sites, see <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
