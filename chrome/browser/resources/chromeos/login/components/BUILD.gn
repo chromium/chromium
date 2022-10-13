@@ -33,7 +33,7 @@ group("closure_compile") {
     ":oobe_apps_list.m",
     ":oobe_carousel.m",
     ":oobe_cr_lottie.m",
-    ":oobe_i18n_dropdown.m",
+    ":oobe_i18n_dropdown",
     ":oobe_icons.m",
     ":oobe_network_icons.m",
     ":oobe_select.m",
@@ -65,7 +65,6 @@ group("polymer3_elements") {
                   ":oobe_apps_list_module",
                   ":oobe_carousel_module",
                   ":oobe_cr_lottie_module",
-                  ":oobe_i18n_dropdown_module",
                   ":oobe_icons_module",
                   ":oobe_icons_module",
                   ":oobe_network_icons_module",
@@ -181,13 +180,13 @@ js_library("oobe_icons.m") {
   extra_deps = [ ":oobe_icons_module" ]
 }
 
-js_library("oobe_i18n_dropdown.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_i18n_dropdown.m.js" ]
+js_library("oobe_i18n_dropdown") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_i18n_dropdown.js" ]
   deps = [
     ":oobe_select.m",
     ":oobe_types.m",
   ]
-  extra_deps = [ ":oobe_i18n_dropdown_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("oobe_carousel.m") {
@@ -329,15 +328,6 @@ polymer_modulizer("oobe_icons") {
   html_type = "iron-iconset"
 }
 
-polymer_modulizer("oobe_i18n_dropdown") {
-  js_file = "oobe_i18n_dropdown.js"
-  html_file = "oobe_i18n_dropdown.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("oobe_carousel") {
   js_file = "oobe_carousel.js"
   html_file = "oobe_carousel.html"
@@ -400,6 +390,7 @@ html_to_js("web_components") {
     "gaia_input_form.js",
     "notification_card.js",
     "progress_list_item.js",
+    "oobe_i18n_dropdown.js",
     "security_token_pin.js",
   ]
 }

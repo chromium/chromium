@@ -5,6 +5,7 @@
 import '//resources/polymer/v3_0/paper-styles/color.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/oobe_icons.m.js';
+import '../../components/oobe_i18n_dropdown.js';
 import '../../components/buttons/oobe_back_button.m.js';
 import '../../components/buttons/oobe_text_button.m.js';
 import '../../components/common_styles/common_styles.m.js';

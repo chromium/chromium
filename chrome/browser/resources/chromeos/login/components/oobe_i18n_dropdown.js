@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/md_select.css.js';
+
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {setupSelect} from './oobe_select.m.js';
+
 
 /**
  * Languages/keyboard descriptor to display
@@ -14,12 +19,14 @@ var I18nMenuItem;
  * Polymer class definition for 'oobe-i18n-dropdown'.
  * @polymer
  */
-class OobeI18nDropdown extends Polymer.Element {
+class OobeI18nDropdown extends PolymerElement {
   static get is() {
     return 'oobe-i18n-dropdown';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
