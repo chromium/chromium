@@ -706,6 +706,12 @@
       status: "stable",
     },
     {
+        // http://crbug.com/1276900
+        name: "CSSInitialLetter",
+        depends_on: ["LayoutNG"],
+        status: "test",
+    },
+    {
       name: "CSSLastBaseline",
       status: "stable",
     },

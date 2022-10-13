@@ -189,6 +189,8 @@ class StyleBuilderConverter {
                             const CSSValue&);  // clamps to [0,1]
   static AtomicString ConvertNoneOrCustomIdent(StyleResolverState&,
                                                const CSSValue&);
+  static StyleInitialLetter ConvertInitialLetter(StyleResolverState&,
+                                                 const CSSValue&);
   static StyleOffsetRotation ConvertOffsetRotate(StyleResolverState&,
                                                  const CSSValue&);
   static LengthPoint ConvertPosition(StyleResolverState&, const CSSValue&);

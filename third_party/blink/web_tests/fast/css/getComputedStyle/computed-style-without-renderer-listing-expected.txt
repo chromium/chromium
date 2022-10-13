@@ -200,6 +200,7 @@ hyphenate-character: auto
 hyphens: manual
 image-orientation: from-image
 image-rendering: auto
+initial-letter: normal
 inline-size: auto
 inset-block-end: auto
 inset-block-start: auto

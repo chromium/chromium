@@ -84,6 +84,8 @@ blink_core_sources_style = [
   "style_inherited_variables.h",
   "style_initial_data.cc",
   "style_initial_data.h",
+  "style_initial_letter.cc",
+  "style_initial_letter.h",
   "style_intrinsic_length.h",
   "style_name.h",
   "style_name_or_keyword.h",

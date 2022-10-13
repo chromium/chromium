@@ -5617,6 +5617,51 @@ CSSValue* ConsumeOffsetRotate(CSSParserTokenRange& range,
   return list;
 }
 
+CSSValue* ConsumeInitialLetter(CSSParserTokenRange& range,
+                               const CSSParserContext& context) {
+  if (auto* normal = ConsumeIdent<CSSValueID::kNormal>(range))
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+
+  CSSValueList* const list = CSSValueList::CreateSpaceSeparated();
+  // ["drop" | "raise"] number[1,Inf]
+  if (auto* sink_type =
+          ConsumeIdent<CSSValueID::kDrop, CSSValueID::kRaise>(range)) {
+    if (auto* size = ConsumeNumber(
+            range, context, CSSPrimitiveValue::ValueRange::kNonNegative)) {
+      if (size->GetFloatValue() < 1)
+        return nullptr;
+      list->Append(*size);
+      list->Append(*sink_type);
+      return list;
+    }
+    return nullptr;
+  }
+
+  // number[1, Inf]
+  // number[1, Inf] ["drop" | "raise"]
+  // number[1, Inf] integer[1, Inf]
+  if (auto* size = ConsumeNumber(range, context,
+                                 CSSPrimitiveValue::ValueRange::kNonNegative)) {
+    if (size->GetFloatValue() < 1)
+      return nullptr;
+    list->Append(*size);
+    if (range.AtEnd())
+      return list;
+    if (auto* sink_type =
+            ConsumeIdent<CSSValueID::kDrop, CSSValueID::kRaise>(range)) {
+      list->Append(*sink_type);
+      return list;
+    }
+    if (auto* sink = ConsumeIntegerOrNumberCalc(
+            range, context, CSSPrimitiveValue::ValueRange::kPositiveInteger)) {
+      list->Append(*sink);
+      return list;
+    }
+  }
+
+  return nullptr;
+}
+
 bool ConsumeRadii(CSSValue* horizontal_radii[4],
                   CSSValue* vertical_radii[4],
                   CSSParserTokenRange& range,

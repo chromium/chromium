@@ -1,4 +1,4 @@
-This test documents all computed styles on an SVG rect element.
+This test documents all computed styles on a div element.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
@@ -77,7 +77,7 @@ background-position-y: 0%
 background-repeat: repeat
 background-size: auto
 baseline-shift: 0px
-block-size: 100px
+block-size: 0px
 border-block-end-color: rgb(0, 0, 0)
 border-block-end-style: none
 border-block-end-width: 0px
@@ -154,10 +154,10 @@ cx: 0px
 cy: 0px
 d: none
 direction: ltr
-display: inline
+display: block
 dominant-baseline: auto
 empty-cells: show
-fill: rgb(0, 128, 0)
+fill: rgb(0, 0, 0)
 fill-opacity: 1
 fill-rule: nonzero
 filter: none
@@ -195,13 +195,12 @@ grid-row-start: auto
 grid-template-areas: none
 grid-template-columns: none
 grid-template-rows: none
-height: 100px
+height: 0px
 hyphenate-character: auto
 hyphens: manual
 image-orientation: from-image
 image-rendering: auto
-initial-letter: normal
-inline-size: 100px
+inline-size: 769px
 inset-block-end: auto
 inset-block-start: auto
 inset-inline-end: auto
@@ -278,7 +277,7 @@ padding-right: 0px
 padding-top: 0px
 paint-order: normal
 perspective: none
-perspective-origin: 0px 0px
+perspective-origin: 384.5px 0px
 pointer-events: auto
 position: static
 position-fallback: none
@@ -346,7 +345,7 @@ toggle-visibility: normal
 top: auto
 touch-action: auto
 transform: none
-transform-origin: 0px 0px
+transform-origin: 384.5px 0px
 transform-style: flat
 transition-delay: 0s
 transition-duration: 0s
@@ -363,7 +362,7 @@ view-timeline-name: none
 visibility: visible
 white-space: normal
 widows: 2
-width: 100px
+width: 769px
 will-change: auto
 word-break: normal
 word-spacing: 0px

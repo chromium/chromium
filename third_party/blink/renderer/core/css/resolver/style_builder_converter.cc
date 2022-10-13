@@ -1407,6 +1407,39 @@ AtomicString StyleBuilderConverter::ConvertNoneOrCustomIdent(
   return To<CSSCustomIdentValue>(value).Value();
 }
 
+StyleInitialLetter StyleBuilderConverter::ConvertInitialLetter(
+    StyleResolverState&,
+    const CSSValue& value) {
+  if (auto* normal_value = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(normal_value->GetValueID(), CSSValueID::kNormal);
+    return StyleInitialLetter::Normal();
+  }
+
+  const auto& list = To<CSSValueList>(value);
+  DCHECK(list.length() == 1 || list.length() == 2);
+  const float size = To<CSSPrimitiveValue>(list.Item(0)).GetFloatValue();
+  DCHECK_GE(size, 1);
+  if (list.length() == 1)
+    return StyleInitialLetter(size);
+
+  const CSSValue& second = list.Item(1);
+  if (auto* sink_type = DynamicTo<CSSIdentifierValue>(second)) {
+    if (sink_type->GetValueID() == CSSValueID::kDrop)
+      return StyleInitialLetter::Drop(size);
+    if (sink_type->GetValueID() == CSSValueID::kRaise)
+      return StyleInitialLetter::Raise(size);
+    NOTREACHED() << "Unexpected sink type " << sink_type;
+    return StyleInitialLetter::Normal();
+  }
+
+  if (auto* sink = DynamicTo<CSSPrimitiveValue>(second)) {
+    DCHECK_GE(sink->GetIntValue(), 1);
+    return StyleInitialLetter(size, sink->GetIntValue());
+  }
+
+  return StyleInitialLetter::Normal();
+}
+
 StyleOffsetRotation StyleBuilderConverter::ConvertOffsetRotate(
     StyleResolverState&,
     const CSSValue& value) {

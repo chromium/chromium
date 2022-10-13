@@ -58,6 +58,7 @@ ALIGNMENT_ORDER = [
     'absl::optional<StyleOverflowClipMargin>',
     # Aligns like float
     'absl::optional<Length>',
+    'StyleInitialLetter',
     'StyleOffsetRotation',
     'TransformOrigin',
     'ScrollPadding',

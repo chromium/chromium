@@ -3679,6 +3679,34 @@ const CSSValue* ImageRendering::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.ImageRendering());
 }
 
+const CSSValue* InitialLetter::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  const StyleInitialLetter initial_letter = style.InitialLetter();
+  if (initial_letter.IsNormal())
+    return CSSIdentifierValue::Create(CSSValueID::kNormal);
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*CSSNumericLiteralValue::Create(
+      initial_letter.Size(), CSSPrimitiveValue::UnitType::kNumber));
+  if (initial_letter.IsIntegerSink()) {
+    list->Append(*CSSNumericLiteralValue::Create(
+        initial_letter.Sink(), CSSPrimitiveValue::UnitType::kInteger));
+  } else if (initial_letter.IsDrop()) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kDrop));
+  } else if (initial_letter.IsRaise()) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kRaise));
+  }
+  return list;
+}
+
+const CSSValue* InitialLetter::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext&) const {
+  return css_parsing_utils::ConsumeInitialLetter(range, context);
+}
+
 const CSSValue* InlineSize::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,

@@ -1551,6 +1551,10 @@
     "AAA",
     "AAA-large",
 
+    // initial-letter
+    "drop",
+    "raise",
+
     // basic-shape functions.
     "xywh",
 

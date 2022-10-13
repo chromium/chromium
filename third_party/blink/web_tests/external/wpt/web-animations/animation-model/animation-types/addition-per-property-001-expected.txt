@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 304 tests; 302 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 307 tests; 305 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS align-content (type: discrete) has testAddition function
 PASS align-content: "flex-end" onto "flex-start"
@@ -304,5 +304,8 @@ PASS hyphens: "manual" onto "none"
 PASS image-orientation (type: discrete) has testAddition function
 PASS image-orientation: "from-image" onto "none"
 PASS image-orientation: "none" onto "from-image"
+PASS initial-letter (type: discrete) has testAddition function
+PASS initial-letter: "3 4" onto "1 2"
+PASS initial-letter: "1 2" onto "3 4"
 Harness: the test ran to completion.
 

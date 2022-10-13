@@ -478,6 +478,7 @@ CSSValue* ConsumeScrollPadding(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeOffsetPath(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumePathOrNone(CSSParserTokenRange&);
 CSSValue* ConsumeOffsetRotate(CSSParserTokenRange&, const CSSParserContext&);
+CSSValue* ConsumeInitialLetter(CSSParserTokenRange&, const CSSParserContext&);
 
 CSSValue* ConsumeBasicShape(
     CSSParserTokenRange&,
