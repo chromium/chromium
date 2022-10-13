@@ -6,6 +6,7 @@
 
 #include <dlfcn.h>
 #include <fcntl.h>
+#include <netdb.h>
 #include <pthread.h>
 #include <signal.h>
 #include <stddef.h>
@@ -21,14 +22,80 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
 #include "base/posix/unix_domain_socket.h"
+#include "base/sanitizer_buildflags.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+
+#if BUILDFLAG(USING_SANITIZER)
+// Sanitizers may override certain libc functions with a weak symbol that points
+// the real symbol to an interceptor symbol. E.g. getaddrinfo ->
+// __interceptor_getaddrinfo. However our own libc overrides below prevent the
+// weak symbol from binding, which leads to errors (especially msan errors) when
+// the sanitizer interception code doesn't run. So we want to call the
+// sanitizer's __interceptor_* version of the symbol if it exists.
+//
+// So here, using a weak symbol we can detect whether a sanitizer has overridden
+// a libc symbol with its own __interceptor_* function. If it's been
+// intercepted, we can call the sanitizer's version instead of the normal
+// RTLD_NEXT version.
+//
+// INTERCEPTOR_DECL declares the weak symbol for the __interceptor_* version and
+// REAL(func) should return the address of the __interceptor_* version of |func|
+// if it exists, otherwise it returns dlsym(RTLD_NEXT, func).
+#define INTERCEPTOR_DECL(ret_type, func, ...) \
+  extern "C" ret_type __interceptor_##func(__VA_ARGS__) __attribute__((weak));
+
+#define REAL(func)                                              \
+  (__interceptor_##func)                                        \
+      ? reinterpret_cast<decltype(&func)>(__interceptor_##func) \
+      : reinterpret_cast<decltype(&func)>(dlsym(RTLD_NEXT, #func))
+
+#else  // BUILDFLAG(USING_SANITIZER)
+
+#define INTERCEPTOR_DECL(...)
+#define REAL(func) reinterpret_cast<decltype(&func)>(dlsym(RTLD_NEXT, #func))
+
+#endif  // BUILDFLAG(USING_SANITIZER)
+
+// When Chrome's interceptors have overridden a libc function but need to call
+// the actual libc version, the following macros take care of calling
+// dlsym(RTLD_NEXT, func), storing the result, handling failures, and disabling
+// CFI checks when calling the resulting pointer. See below for examples.
+#define DLSYM_FUNC_DECL(ret_type, func, ...)    \
+  INTERCEPTOR_DECL(ret_type, func, __VA_ARGS__) \
+                                                \
+  DISABLE_CFI_DLSYM                             \
+  ret_type call_real_##func(__VA_ARGS__)
+
+#define DLSYM_FUNC_BODY(func, dlsym_failed_return_val, ...) \
+  static decltype(&func) fn_ptr = REAL(func);               \
+                                                            \
+  if (!fn_ptr) {                                            \
+    LOG(ERROR) << "Cannot find " #func " with dlsym.";      \
+    return dlsym_failed_return_val;                         \
+  }                                                         \
+                                                            \
+  return fn_ptr(__VA_ARGS__);
+
+// Used to call a |func| that's been declared with DLSYM_FUNC_DECL.
+#define CALL_FUNC(func, ...) call_real_##func(__VA_ARGS__)
+
+// A wrapper that calls libc's getaddrinfo().
+DLSYM_FUNC_DECL(int,
+                getaddrinfo,
+                const char* node,
+                const char* service,
+                const struct addrinfo* hints,
+                struct addrinfo** res) {
+  DLSYM_FUNC_BODY(getaddrinfo, EAI_SYSTEM, node, service, hints, res)
+}
 
 namespace sandbox {
 
@@ -334,6 +401,30 @@ bool HandleInterceptedCall(int kind,
 void InitLibcLocaltimeFunctions() {
   CHECK_EQ(0, pthread_once(&g_libc_localtime_funcs_guard,
                            InitLibcLocaltimeFunctionsImpl));
+}
+
+namespace {
+std::atomic<bool> g_getaddrinfo_discouraged{false};
+}  // namespace
+
+extern "C" {
+__attribute__((visibility("default"), noinline)) int getaddrinfo(
+    const char* node,
+    const char* service,
+    const struct addrinfo* hints,
+    struct addrinfo** res) {
+  if (g_getaddrinfo_discouraged.load(std::memory_order_relaxed)) {
+    DLOG(FATAL) << "Called getaddrinfo() in a sandboxed process.";
+    base::debug::DumpWithoutCrashing();
+    // In non-debug builds, deliberately fall through to call the real version.
+  }
+
+  return CALL_FUNC(getaddrinfo, node, service, hints, res);
+}
+}
+
+void DiscourageGetaddrinfo() {
+  g_getaddrinfo_discouraged = true;
 }
 
 }  // namespace sandbox

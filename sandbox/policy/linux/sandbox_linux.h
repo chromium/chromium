@@ -12,11 +12,11 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/posix/global_descriptors.h"
+#include "base/sanitizer_buildflags.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 #include "sandbox/policy/export.h"
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
-#include "sandbox/policy/sanitizer_buildflags.h"
 
 #if BUILDFLAG(USING_SANITIZER)
 #include <sanitizer/common_interface_defs.h>

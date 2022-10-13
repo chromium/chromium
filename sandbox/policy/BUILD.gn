@@ -27,7 +27,6 @@ component("policy") {
   ]
   defines = [ "SANDBOX_POLICY_IMPL" ]
   deps = [
-    ":sanitizer_buildflags",
     "//base",
     "//build:chromeos_buildflags",
     "//components/services/screen_ai/buildflags",
@@ -170,11 +169,6 @@ component("policy") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.scenic",
     ]
   }
-}
-
-buildflag_header("sanitizer_buildflags") {
-  header = "sanitizer_buildflags.h"
-  flags = [ "USING_SANITIZER=$using_sanitizer" ]
 }
 
 buildflag_header("chromecast_sandbox_allowlist_buildflags") {
