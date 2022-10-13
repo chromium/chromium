@@ -1954,7 +1954,7 @@ void NavigationControllerImpl::CreateInitialEntry() {
   params->should_update_history = true;
   params->item_sequence_number = 0;
   params->document_sequence_number = 0;
-  bool is_in_fenced_frame_tree = rfh->frame_tree_node()->IsInFencedFrameTree();
+  bool is_in_fenced_frame_tree = rfh->IsNestedWithinFencedFrame();
   params->transition = is_in_fenced_frame_tree
                            ? ui::PAGE_TRANSITION_AUTO_SUBFRAME
                            : ui::PAGE_TRANSITION_LINK;
@@ -2130,8 +2130,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
 
   InsertOrReplaceEntry(std::move(new_entry), replace_entry,
                        !request->post_commit_error_page_html().empty(),
-                       rfh->frame_tree_node()->IsInFencedFrameTree(),
-                       commit_details);
+                       rfh->IsNestedWithinFencedFrame(), commit_details);
 }
 
 void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
@@ -2345,8 +2344,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
   // delete the |frame_entry| when the function exits if it doesn't get used.
 
   InsertOrReplaceEntry(std::move(new_entry), replace_entry, false,
-                       rfh->frame_tree_node()->IsInFencedFrameTree(),
-                       commit_details);
+                       rfh->IsNestedWithinFencedFrame(), commit_details);
 }
 
 bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(

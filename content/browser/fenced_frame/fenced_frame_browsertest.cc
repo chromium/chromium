@@ -1993,7 +1993,7 @@ class FencedFrameParameterizedBrowserTest
       net::Error expected_net_error_code = net::OK) {
     RenderFrameHostImpl* rfh =
         static_cast<RenderFrameHostImpl*>(adapter.render_frame_host());
-    EXPECT_TRUE(rfh->frame_tree_node()->IsInFencedFrameTree());
+    EXPECT_TRUE(rfh->IsNestedWithinFencedFrame());
     RenderFrameHostImpl* target_rfh = rfh->GetParentOrOuterDocument();
     ExecuteNavigationOrHistoryScriptInFencedFrameTree(
         target_rfh, rfh, navigate_script, expected_net_error_code);
@@ -2004,7 +2004,7 @@ class FencedFrameParameterizedBrowserTest
       const std::string& history_script) {
     RenderFrameHostImpl* rfh =
         static_cast<RenderFrameHostImpl*>(adapter.render_frame_host());
-    EXPECT_TRUE(rfh->frame_tree_node()->IsInFencedFrameTree());
+    EXPECT_TRUE(rfh->IsNestedWithinFencedFrame());
 
     ExecuteNavigationOrHistoryScriptInFencedFrameTree(rfh, rfh, history_script);
   }
