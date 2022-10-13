@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
@@ -28,7 +29,6 @@
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "extensions/common/user_script.h"
-#include "extensions/common/value_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -652,10 +652,11 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
        RemoveAllGrantedHostPermissions_GrantedOptionalPermissions) {
   InitializeEmptyExtensionService();
 
+  static constexpr char kOptionalPermissions[] = R"(["https://example.com/*"])";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test")
           .SetManifestKey("optional_permissions",
-                          ListBuilder().Append("https://example.com/*").Build())
+                          base::test::ParseJsonList(kOptionalPermissions))
           .Build();
 
   EXPECT_THAT(GetEffectivePatternsAsStrings(*extension), testing::IsEmpty());
@@ -775,14 +776,16 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
        GrantingHostPermissionsBeyondRequested) {
   InitializeEmptyExtensionService();
 
-  DictionaryBuilder content_script;
-  content_script
-      .Set("matches", ListBuilder().Append("https://google.com/maps").Build())
-      .Set("js", ListBuilder().Append("foo.js").Build());
+  static constexpr char kContentScripts[] = R"([
+    {
+      "matches": ["https://google.com/maps"],
+      "js": ["foo.js"]
+    }
+  ])";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("test")
           .SetManifestKey("content_scripts",
-                          ListBuilder().Append(content_script.Build()).Build())
+                          base::test::ParseJsonList(kContentScripts))
           .Build();
 
   // At installation, all permissions granted.
@@ -1056,10 +1059,11 @@ TEST_F(ScriptingPermissionsModifierUnitTest,
        RemoveAllURLsGrantedOptionalPermission) {
   InitializeEmptyExtensionService();
 
+  static constexpr char kOptionalPermissions[] = R"(["<all_urls>"])";
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("extension")
           .SetManifestKey("optional_permissions",
-                          ListBuilder().Append("<all_urls>").Build())
+                          base::test::ParseJsonList(kOptionalPermissions))
           .Build();
   InitializeExtensionPermissions(profile(), *extension);
 
