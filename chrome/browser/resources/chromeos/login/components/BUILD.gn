@@ -22,7 +22,7 @@ group("closure_compile") {
     ":display_manager_types.m",
     ":gaia_button",
     ":gaia_dialog.m",
-    ":gaia_header.m",
+    ":gaia_header",
     ":gaia_input_form.m",
     ":hd_iron_icon.m",
     ":keyboard_utils_for_injection",
@@ -58,7 +58,6 @@ group("polymer3_elements") {
 
                   # Local targets
                   ":gaia_dialog_module",
-                  ":gaia_header_module",
                   ":gaia_input_form_module",
                   ":hd_iron_icon_module",
                   ":network_select_login_module",
@@ -111,12 +110,12 @@ js_library("gaia_dialog.m") {
   extra_deps = [ ":gaia_dialog_module" ]
 }
 
-js_library("gaia_header.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_header.m.js" ]
+js_library("gaia_header") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_header.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":gaia_header_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("gaia_input_form.m") {
@@ -280,15 +279,6 @@ polymer_modulizer("gaia_dialog") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("gaia_header") {
-  js_file = "gaia_header.js"
-  html_file = "gaia_header.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("gaia_input_form") {
   js_file = "gaia_input_form.js"
   html_file = "gaia_input_form.html"
@@ -407,6 +397,7 @@ js_modulizer("modulize") {
 html_to_js("web_components") {
   js_files = [
     "gaia_button.js",
+    "gaia_header.js",
     "notification_card.js",
     "security_token_pin.js",
   ]

@@ -4,10 +4,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="./common_styles/common_styles.html">
-
 <!--
   Blue header for New Gaia UI, contains blue avatar logo and user email.
 
@@ -18,23 +14,20 @@ found in the LICENSE file.
   Attributes:
    'email' - displayed email.
 -->
-<dom-module id="gaia-header">
-  <template>
-    <style include="oobe-common-styles">
-      :host {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 0;
-      }
 
-      #email {
-        font-size: 20px;
-      }
-    </style>
-    <img src="chrome://theme/IDR_LOGO_AVATAR_CIRCLE_BLUE_COLOR" alt
-        class="self-start">
-    <div id="email"><span>[[email]]<span></div>
-  </template>
-  <script src="gaia_header.js"></script>
-</dom-module>
+<style include="oobe-common-styles">
+  :host {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 0;
+  }
+
+  #email {
+    font-size: 20px;
+  }
+</style>
+<img src="chrome://theme/IDR_LOGO_AVATAR_CIRCLE_BLUE_COLOR" alt
+    class="self-start">
+<div id="email"><span>[[email]]<span></div>
+

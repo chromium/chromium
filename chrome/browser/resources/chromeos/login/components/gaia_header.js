@@ -3,24 +3,33 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Polymer element wrapping gaia styled header for login/oobe.
+ * @fileoverview Blue header for New Gaia UI, contains blue avatar logo and user
+ * email.
+ *
+ * Example:
+ *   <gaia-header email="user@example.com">
+ *   </gaia-header>
+ *
+ * Attributes:
+ *  'email' - displayed email.
  */
 
-/* #js_imports_placeholder */
+import './common_styles/common_styles.m.js';
 
-class GaiaHeader extends Polymer.Element {
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+/** @polymer */
+class GaiaHeader extends PolymerElement {
   static get is() {
     return 'gaia-header';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {email: String};
-  }
-
-  constructor() {
-    super();
   }
 }
 
