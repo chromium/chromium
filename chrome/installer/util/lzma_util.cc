@@ -113,7 +113,7 @@ base::File SevenZipDelegateImpl::OnTempFileRequest() {
 }
 
 bool SevenZipDelegateImpl::OnDirectory(const seven_zip::EntryInfo& entry) {
-  if (!CreateDirectory(entry.file_path)) {
+  if (!CreateDirectory(location_.Append(entry.file_path))) {
     error_code_ = ::GetLastError();
     unpack_error_ = UNPACK_CREATE_FILE_ERROR;
     return false;
