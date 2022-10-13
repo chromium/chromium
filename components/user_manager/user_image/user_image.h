@@ -26,6 +26,8 @@ class USER_MANAGER_EXPORT UserImage {
     FORMAT_JPEG,
     FORMAT_PNG,
     FORMAT_UNKNOWN,
+    // Useful when the image is external and animated.
+    FORMAT_WEBP,
   };
 
   // Encodes the given bitmap to bytes representation in |image_format| for

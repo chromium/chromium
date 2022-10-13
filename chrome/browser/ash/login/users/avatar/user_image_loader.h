@@ -50,10 +50,20 @@ void StartWithData(
     int pixels_per_side,
     LoadedCallback loaded_cb);
 
-// Loads the default image fetched from `default_image_url` and calls
-// `loaded_cb` with the resulting UserImage (which may be empty in case of
-// error).
-void StartWithGURL(const GURL& default_image_url, LoadedCallback loaded_cb);
+// Loads user image from provided |data| bytes. If the image is animated, encode
+// with WebP encoder, otherwise encode with PNG encoder.
+void StartWithDataAnimated(base::StringPiece data, LoadedCallback loaded_cb);
+
+// Loads user image from |file_path|. If the image is animated, encode with WebP
+// encoder, otherwise encode with PNG encoder.
+// TODO(b/251083485): Add support for external image from file.
+void StartWithFilePathAnimated(const base::FilePath& file_path,
+                               LoadedCallback loaded_cb);
+
+// Loads the default image fetched from |default_image_url|. If the image is
+// animated, encode with WebP encoder, otherwise encode with PNG encoder.
+void StartWithGURLAnimated(const GURL& default_image_url,
+                           LoadedCallback loaded_cb);
 
 }  // namespace user_image_loader
 }  // namespace ash

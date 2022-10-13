@@ -104,6 +104,8 @@ const char* ChooseExtensionFromImageFormat(
       return ".jpg";
     case user_manager::UserImage::FORMAT_PNG:
       return ".png";
+    case user_manager::UserImage::FORMAT_WEBP:
+      return ".webp";
     default:
       NOTREACHED() << "Invalid format: " << image_format;
       return ".jpg";
@@ -288,16 +290,13 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
           !base::DirectoryExists(image_path_)) {
         // Will refactor to remove this redundant call after the feature flag
         // IsAvatarsCloudMigrationEnabled is no longer needed.
-        user_image_loader::StartWithFilePath(
-            parent_->background_task_runner_, image_path_,
-            ChooseCodecFromPath(image_path_),
-            0,  // Do not crop.
-            base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),
-                           false));
+        user_image_loader::StartWithFilePathAnimated(
+            image_path_, base::BindOnce(&Job::OnLoadImageDone,
+                                        weak_factory_.GetWeakPtr(), false));
       } else {
         // Fetch the default image from cloud before caching it.
         image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
-        user_image_loader::StartWithGURL(
+        user_image_loader::StartWithGURLAnimated(
             image_url_, base::BindOnce(&Job::OnLoadImageDone,
                                        weak_factory_.GetWeakPtr(), true));
       }
@@ -312,6 +311,7 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
       // images to cloud.
       UpdateUserAndSaveImage(std::move(user_image));
     }
+
   } else if (image_index_ == user_manager::User::USER_IMAGE_EXTERNAL ||
              image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
     // Load the user image from a file referenced by `image_path`. This happens
@@ -341,7 +341,7 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
   if (ash::features::IsAvatarsCloudMigrationEnabled()) {
     // Fetch the default image from cloud before caching it.
     image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
-    user_image_loader::StartWithGURL(
+    user_image_loader::StartWithGURLAnimated(
         image_url_, base::BindOnce(&Job::OnLoadImageDone,
                                    weak_factory_.GetWeakPtr(), true));
   } else {
