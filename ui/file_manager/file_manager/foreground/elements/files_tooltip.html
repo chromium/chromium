@@ -19,7 +19,8 @@ found in the LICENSE file.
     opacity: 100%;
   }
 
-  #label {
+  #label,
+  #link.link-label {
     align-items: center;
     border-radius: 2px;
     display: inline-flex;
@@ -38,12 +39,13 @@ found in the LICENSE file.
     padding: 12px 16px;
   }
 
-  #label.link-label {
+  :host(.link-tooltip) {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  #label.card-label {
+  #label.card-label,
+  #link.link-label {
     line-height: 18px;
     margin: 0;
     max-width: 192px;
@@ -51,8 +53,15 @@ found in the LICENSE file.
     white-space: normal;
   }
 
-  #label.card-label a {
+  #label.card-label a,
+  #link.link-label a {
     color: var(--cros-link-color);
   }
+
+  #link {
+    display: none;
+  }
+
 </style>
 <div id="label"></div>
+<a id="link" target="_blank" href="#">

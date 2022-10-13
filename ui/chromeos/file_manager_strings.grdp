@@ -1547,7 +1547,13 @@
     Review admin policy
   </message>
   <message name="IDS_FILE_BROWSER_DLP_MANAGED_ICON_TOOLTIP" desc="Tooltip of the data leak prevention managed icon.">
-    This file is confidential and subject to restrictions by administrator policy. <ph name="BEGIN_LINK_HELP">&lt;a target='_blank' href='$1'&gt;</ph>Learn more<ph name="END_LINK_HELP">&lt;/a&gt;</ph>
+    This file is confidential and subject to restrictions by administrator policy.
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_MANAGED_ICON_TOOLTIP_LINK" desc="Managed icon tooltip link label, learn more about data leak prevention policies.">
+    Learn more
+  </message>
+  <message name="IDS_FILE_BROWSER_DLP_MANAGED_ICON_TOOLTIP_DESC" desc="Managed icon tooltip a11y explanation text.">
+    Learn more about these restrictions
   </message>
   <message name="IDS_FILE_BROWSER_DLP_FILE_PICKER_BANNER" desc="Message informing the user that some files cannot be chosen for upload or opening due to DLP restrictions.">
     Administrator policy restricts access to some files.

@@ -121,6 +121,64 @@ export function testFocus(callback) {
       callback);
 }
 
+export function testFocusWithLink(callback) {
+  cherriesButton.dataset.tooltipLinkHref = 'https://cherries.com';
+  cherriesButton.dataset.tooltipLinkAriaLabel =
+      'Click here to get more cherries';
+  cherriesButton.dataset.tooltipLinkText = 'More cherries';
+
+  chocolateButton.focus();
+
+  return reportPromise(
+      waitForMutation(tooltip)
+          .then(() => {
+            const label = tooltip.shadowRoot.querySelector('#label');
+            assertEquals('Chocolate!', label.textContent.trim());
+            assertTrue(tooltip.hasAttribute('visible'));
+            assertEquals('6px', tooltip.style.left);
+            assertEquals('78px', tooltip.style.top);
+
+            cherriesButton.focus();
+            return waitForMutation(tooltip);
+          })
+          .then(() => {
+            // Check the label.
+            const label = tooltip.shadowRoot.querySelector('#label');
+            assertEquals('Cherries!', label.textContent.trim());
+            // Check the link: it should be visible now.
+            const link = tooltip.shadowRoot.querySelector('#link');
+            assertEquals(link.getAttribute('aria-hidden'), 'false');
+            assertEquals('More cherries', link.textContent.trim());
+            assertEquals(
+                'Click here to get more cherries',
+                link.getAttribute('aria-label'));
+            assertEquals('https://cherries.com', link.getAttribute('href'));
+
+            assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
+            assertTrue(tooltip.hasAttribute('visible'));
+
+            const expectedLeft = document.body.offsetWidth -
+                tooltip.offsetWidth - windowEdgePadding + 'px';
+            assertEquals(expectedLeft, tooltip.style.left);
+            assertEquals('78px', tooltip.style.top);
+
+            chocolateButton.focus();
+            return waitForMutation(tooltip);
+          })
+          .then(() => {
+            // Check the label.
+            const label = tooltip.shadowRoot.querySelector('#label');
+            assertEquals('Chocolate!', label.textContent.trim());
+            // Check the link: it should be hidden and cleared out.
+            const link = tooltip.shadowRoot.querySelector('#link');
+            assertEquals(link.getAttribute('aria-hidden'), 'true');
+            assertEquals('', link.textContent.trim());
+            assertFalse(link.hasAttribute('aria-label'));
+            assertEquals('#', link.getAttribute('href'));
+          }),
+      callback);
+}
+
 export function testFocusWithLabelChange(callback) {
   chocolateButton.focus();
 
@@ -229,7 +287,7 @@ export function testCardTooltipHover(callback) {
       callback);
 }
 
-export function testCardtooltipRTL(callback) {
+export function testCardTooltipRTL(callback) {
   document.documentElement.setAttribute('dir', 'rtl');
   document.body.setAttribute('dir', 'rtl');
 
@@ -260,6 +318,85 @@ export function testCardtooltipRTL(callback) {
             // revert back document direction to not impact other tests.
             document.documentElement.setAttribute('dir', 'ltr');
             document.body.setAttribute('dir', 'ltr');
+          }),
+      callback);
+}
+
+export function testCardTooltipWithLinkHover(callback) {
+  cheeseButton.dataset.tooltipLinkHref = 'https://cheese.com';
+  cheeseButton.dataset.tooltipLinkAriaLabel = 'Click here to get more cheese';
+  cheeseButton.dataset.tooltipLinkText = 'More cheese';
+  cheeseButton.dispatchEvent(new MouseEvent('mouseover'));
+
+  return reportPromise(
+      waitForMutation(tooltip)
+          .then(() => {
+            // Check the label.
+            const label = tooltip.shadowRoot.querySelector('#label');
+            assertEquals('Cheese!', label.textContent.trim());
+            // Check the link: it should be visible now.
+            const link = tooltip.shadowRoot.querySelector('#link');
+            assertEquals(link.getAttribute('aria-hidden'), 'false');
+            assertEquals('More cheese', link.textContent.trim());
+            assertEquals(
+                'Click here to get more cheese',
+                link.getAttribute('aria-label'));
+            assertEquals('https://cheese.com', link.getAttribute('href'));
+
+            assertTrue(tooltip.hasAttribute('visible'));
+            assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
+
+            assertTrue(tooltip.classList.contains('card-tooltip'));
+            assertEquals('card-label', label.className);
+
+            assertEquals('38px', tooltip.style.left);
+            assertEquals('162px', tooltip.style.top);
+
+            assertTrue(tooltip.classList.contains('link-tooltip'));
+
+            cheeseButton.dispatchEvent(new MouseEvent('mouseout'));
+            return waitForMutation(tooltip);
+          })
+          .then(() => {
+            assertFalse(!!tooltip.getAttribute('visible'));
+          }),
+      callback);
+}
+
+export function testTooltipWithIncompleteLinkHover(callback) {
+  cheeseButton.dataset.tooltipLinkHref = 'https://cheese.com';
+  cheeseButton.dispatchEvent(new MouseEvent('mouseover'));
+
+  return reportPromise(
+      waitForMutation(tooltip)
+          .then(() => {
+            // Check the label.
+            const label = tooltip.shadowRoot.querySelector('#label');
+            assertEquals('Cheese!', label.textContent.trim());
+            // Check the link: it should be hidden since not all required
+            // attributes are set.
+            const link = tooltip.shadowRoot.querySelector('#link');
+            assertEquals(link.getAttribute('aria-hidden'), 'true');
+            assertEquals('', link.textContent.trim());
+            assertFalse(link.hasAttribute('aria-label'));
+            assertEquals('#', link.getAttribute('href'));
+
+            assertTrue(tooltip.hasAttribute('visible'));
+            assertEquals(tooltip.getAttribute('aria-hidden'), 'false');
+
+            assertTrue(tooltip.classList.contains('card-tooltip'));
+            assertEquals('card-label', label.className);
+
+            assertEquals('38px', tooltip.style.left);
+            assertEquals('162px', tooltip.style.top);
+
+            assertFalse(tooltip.classList.contains('link-tooltip'));
+
+            cheeseButton.dispatchEvent(new MouseEvent('mouseout'));
+            return waitForMutation(tooltip);
+          })
+          .then(() => {
+            assertFalse(!!tooltip.getAttribute('visible'));
           }),
       callback);
 }

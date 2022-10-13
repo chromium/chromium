@@ -192,21 +192,28 @@ export const FilesTooltip = Polymer({
     this.visibleTooltipTarget_ = target;
 
     const useCardTooltip = target.hasAttribute('show-card-tooltip');
+    const useLinkTooltip = target.dataset['tooltipLinkHref'] &&
+        target.dataset['tooltipLinkAriaLabel'] &&
+        target.dataset['tooltipLinkText'];
 
     const windowEdgePadding = 6;
 
     const label = target.getAttribute('aria-label');
-    const showLinkTooltip = target.hasAttribute('show-link-tooltip');
     if (!label) {
       return;
     }
 
-    if (showLinkTooltip) {
-      // Use innerHTML since link tooltip contains a <a href> in the label.
-      this.$.label.innerHTML = label;
-      this.$.label.classList.add('link-label');
+    this.$.label.textContent = label;
+    if (useLinkTooltip) {
+      this.classList.add('link-tooltip');
+      this.$.link.setAttribute('href', target.dataset['tooltipLinkHref']);
+      this.$.link.setAttribute(
+          'aria-label', target.dataset['tooltipLinkAriaLabel']);
+      this.$.link.textContent = target.dataset['tooltipLinkText'];
+      this.$.link.setAttribute('aria-hidden', 'false');
+      this.$.link.classList.add('link-label');
     } else {
-      this.$.label.textContent = label;
+      this.cleanupLinkTooltip_();
     }
 
     const invert = 'invert-tooltip';
@@ -228,7 +235,7 @@ export const FilesTooltip = Polymer({
     let left;
 
     if (useCardTooltip) {
-      this.className = 'card-tooltip';
+      this.classList.add('card-tooltip');
       this.$.label.classList.add('card-label');
 
       // Push left to the body's left when tooltip is longer than viewport.
@@ -345,8 +352,9 @@ export const FilesTooltip = Polymer({
    * @private
    */
   onTransitionEnd_: function(event) {
-    // Clear card tooltip.
+    // Clear card and link tooltip.
     if (!this.hasAttribute('visible')) {
+      this.cleanupLinkTooltip_();
       this.cleanupCardTooltip_();
     }
   },
@@ -356,8 +364,21 @@ export const FilesTooltip = Polymer({
    * @private
    */
   cleanupCardTooltip_: function() {
-    this.className = '';
+    this.classList.remove('card-tooltip');
     this.$.label.className = '';
+  },
+
+  /**
+   * Clear link tooltip styles to prevent overwriting normal tooltip rules.
+   * @private
+   */
+  cleanupLinkTooltip_: function() {
+    this.$.link.setAttribute('href', '#');
+    this.$.link.removeAttribute('aria-label');
+    this.$.link.setAttribute('aria-hidden', 'true');
+    this.$.link.textContent = '';
+    this.$.link.classList.remove('link-label');
+    this.classList.remove('link-tooltip');
   },
 });
 
