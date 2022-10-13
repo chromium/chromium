@@ -624,10 +624,10 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
     const IdentityProvider& idp,
     IdpNetworkRequestManager::FetchStatus status,
     const std::set<GURL>& urls) {
-  constexpr char kDiscoveryFileStr[] = "discovery file";
+  constexpr char kWellKnownFileStr[] = "well-known file";
   switch (status.parse_status) {
     case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
-      MaybeAddResponseCodeToConsole(kDiscoveryFileStr, status.response_code);
+      MaybeAddResponseCodeToConsole(kWellKnownFileStr, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound,
           TokenStatus::kManifestListHttpNotFound,
@@ -635,7 +635,7 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
-      MaybeAddResponseCodeToConsole(kDiscoveryFileStr, status.response_code);
+      MaybeAddResponseCodeToConsole(kWellKnownFileStr, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse,
           TokenStatus::kManifestListNoResponse,
@@ -643,7 +643,7 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
-      MaybeAddResponseCodeToConsole(kDiscoveryFileStr, status.response_code);
+      MaybeAddResponseCodeToConsole(kWellKnownFileStr, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingManifestListInvalidResponse,
           TokenStatus::kManifestListInvalidResponse,
