@@ -92,9 +92,9 @@ class WebsitePreference extends ChromeImageViewPreference {
                 && mSiteSettingsDelegate.isFirstPartySetsDataAccessEnabled()
                 && mSite.getFPSCookieInfo() != null) {
             var fpsInfo = mSite.getFPSCookieInfo();
-            setSummary(getContext().getString(R.string.allsites_fps_summary,
-                    Integer.toString(fpsInfo.getMembersCount()), fpsInfo.getOwner(),
-                    mSite.getAddress().getDomainAndRegistry()));
+            setSummary(getContext().getResources().getQuantityString(
+                    R.plurals.allsites_fps_list_summary, fpsInfo.getMembersCount(),
+                    Integer.toString(fpsInfo.getMembersCount()), fpsInfo.getOwner()));
             return;
         }
 

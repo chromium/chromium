@@ -559,6 +559,9 @@
       <message name="IDS_PAGE_INFO_SITE_SETTINGS_BUTTON" desc="Text in the button that opens a website's Site Settings from the Page Info dialog.">
         Site settings
       </message>
+      <message name="IDS_PAGE_INFO_COOKIES_TITLE" desc="Page info Cookies subpage title.">
+        Cookies and site data
+      </message>
       <message name="IDS_PAGE_INFO_COOKIES_CLEAR" desc="Text on the button to clear cookies for a site.">
         Clear cookies?
       </message>

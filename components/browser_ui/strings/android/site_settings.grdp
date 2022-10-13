@@ -373,7 +373,7 @@
     Features on some sites may not work
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_THIRD_PARTY_FPS_ADDITION" desc="Additional text used to explain the block third-party cookies option in settings when First Party Sets are enables.">
-    Related sites may remember you across sites
+    Related sites can see your activity in the group
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_ADDITION" desc="Additional text used to explain the block cookies option in settings">
     Features on many sites may not work
@@ -388,7 +388,7 @@
    Block cookies for a specific site.
   </message>
   <message name="IDS_WEBSITE_SETTINGS_COOKIE_INFO" desc="Text describing cookie and third-party cookie settings.">
-    Cookies are files created by websites you visit. Sites use them to remember your preferences. Third-party cookies are created by other sites. These sites own some of the content, like ads or images, that you see on the webpage you visit.
+    A site you visit can embed content from other sites, for example images, ads, and text. Any of these sites can save cookies and other data to personalize your experience.
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_SUBPAGE_BULLET_ONE" desc="Description for the first bullet of cookie settings subpage.">
     Sites can use cookies to improve your browsing experience, for example, to keep you signed in or to remember items in your shopping cart
@@ -403,19 +403,26 @@
     Block third-party cookies:
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_FPS_TOGGLE_TITLE" desc="First Party Sets toggle title in the cookie site settings subpage.">
-    Allow related sites to remember you across sites
+    Allow related sites to see your activity in the group
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_FPS_TOGGLE_DESCRIPTION" desc="First Party Sets toggle description in the cookie site settings subpage.">
-    Related sites use cookies to help with things like keeping you signed in
+     A company can define a group of sites that can use cookies to share your activity in the group. This is off in Incognito.
   </message>
   <message name="IDS_ALLSITES_FPS_SUMMARY" desc="First Party Sets cookie info, shown as site summary in the all sites settings page.">
-    Cookies allowed for <ph name="FPS_MEMBERS_COUNT">%1$s<ex>9</ex></ph> sites in the <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph> group, including <ph name="FPS_MEMBER">%3$s<ex>freep.com</ex></ph>
+    {COUNT, plural,
+      =1 {<ph name="FPS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> site in <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}
+      other {<ph name="FPS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> sites in <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph>'s group of sites that can see your activity in the group}}
+  </message>
+  <message name="IDS_ALLSITES_FPS_LIST_SUMMARY" desc="First Party Sets cookie info, shown as site summary in the all sites list settings page.">
+    {COUNT, plural,
+      =1 {Cookies allowed for <ph name="FPS_MEMBERS_COUNT">%1$s<ex>1</ex></ph> <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph> site}
+      other {Cookies allowed for <ph name="FPS_MEMBERS_COUNT">%1$s<ex>9</ex></ph> <ph name="FPS_OWNER">%2$s<ex>gannette.com</ex></ph> sites}}
   </message>
   <message name="IDS_COOKIE_INFO_FPS_TITLE" desc="First Party Sets title in the cookies info page.">
       Related sites
    </message>
   <message name="IDS_COOKIE_INFO_FPS_SUMMARY" desc="First Party Sets summary in the cookies info page.">
-    This site is in <ph name="FPS_OWNER">%1$s<ex>google.com</ex></ph>'s group of sites that can see your activity in the group
+    This site is in a group that can see your activity. The group is defined by <ph name="FPS_OWNER">%1$s<ex>google.com</ex></ph>
   </message>
 
   <!-- Desktop Site -->

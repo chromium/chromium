@@ -64,9 +64,11 @@ public class WebsiteGroup implements WebsiteEntry {
         long totalUsage = 0;
         for (Website website : websites) {
             totalUsage += website.getTotalUsage();
-        }
-        if (websites.size() > 0) {
-            mFPSInfo = websites.get(0).getFPSCookieInfo();
+            // If there's more than 1 website with FPS info in the group it's fine to override it
+            // since websites are grouped by eTLD+1, and FPS info are at eTLD+1 level as well.
+            if (website.getFPSCookieInfo() != null) {
+                mFPSInfo = website.getFPSCookieInfo();
+            }
         }
         mTotalUsage = totalUsage;
 

@@ -107,9 +107,9 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
 
         if (shouldRelatedSitesPrefBeVisible) {
             var fpsInfo = mSiteGroup.getFPSInfo();
-            relatedSitesText.setTitle(getContext().getString(R.string.allsites_fps_summary,
-                    Integer.toString(fpsInfo.getMembersCount()), fpsInfo.getOwner(),
-                    mSiteGroup.getDomainAndRegistry()));
+            relatedSitesText.setTitle(getContext().getResources().getQuantityString(
+                    R.plurals.allsites_fps_summary, fpsInfo.getMembersCount(),
+                    Integer.toString(fpsInfo.getMembersCount()), fpsInfo.getOwner()));
             relatedSitesText.setManagedPreferenceDelegate(new ForwardingManagedPreferenceDelegate(
                     getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
                 @Override

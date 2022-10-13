@@ -118,9 +118,10 @@ public class WebsiteGroupTest {
         var fpsInfo = new FPSCookieInfo("google.com", 5);
         Website origin1 = new Website(WebsiteAddress.create("maps.google.com"), null);
         Website origin2 = new Website(WebsiteAddress.create("mail.google.com"), null);
+        Website origin3 = new Website(WebsiteAddress.create("docs.google.com"), null);
         origin2.setFPSCookieInfo(fpsInfo);
         WebsiteGroup group = new WebsiteGroup(origin2.getAddress().getDomainAndRegistry(),
-                new ArrayList<>(Arrays.asList(origin2, origin1)));
+                new ArrayList<>(Arrays.asList(origin1, origin2, origin3)));
 
         Assert.assertEquals(fpsInfo, group.getFPSInfo());
     }
