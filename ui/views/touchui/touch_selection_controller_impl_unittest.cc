@@ -25,7 +25,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/test/views_test_base.h"
@@ -96,10 +95,12 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
 
   void CreateTextfield() {
     textfield_ = new Textfield();
-    // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-    // able to submit accessibility checks, but this focusable View needs to
-    // add a name so that the screen reader knows what to announce.
-    textfield_->SetProperty(views::kSkipAccessibilityPaintChecks, true);
+
+    // Focusable views must have an accessible name in order to pass the
+    // accessibility paint checks. The name can be literal text, placeholder
+    // text or an associated label.
+    textfield_->SetPlaceholderText(u"Foo");
+
     textfield_widget_ = new Widget;
     Widget::InitParams params =
         CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
