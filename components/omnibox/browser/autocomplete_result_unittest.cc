@@ -672,66 +672,63 @@ TEST_F(AutocompleteResultTest, TransferOldMatchesSkipsSpecializedSuggestions) {
 
 // Tests that transferred matches do not include the specialized match types.
 TEST_F(AutocompleteResultTest, TransferOldMatchesSkipDoneProviders) {
-  {
-    SCOPED_TRACE("kAutocompleteStabilityDontCopyDoneProviders enabled.");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kAutocompleteStability,
-        {{OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.name,
-          "true"}});
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kAutocompleteStability,
+      {{OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.name,
+        "true"}});
 
-    TestData last[] = {
-        {0, 1, 500},  // Suggestion from done provider
-        {1, 2, 400},  // Suggestion for not-done provider
-    };
-    TestData current[] = {
-        {2, 3, 700},  // Suggestion from done provider
-        {3, 4, 600},  // Suggestion for not-done provider
-    };
-    TestData result[] = {
-        {2, 3, 700},
-        {3, 4, 600},
-        {1, 2, 400},
-    };
+  TestData last[] = {
+      {0, 1, 500},  // Suggestion from done provider
+      {1, 2, 400},  // Suggestion for not-done provider
+  };
+  TestData current[] = {
+      {2, 3, 700},  // Suggestion from done provider
+      {3, 4, 600},  // Suggestion for not-done provider
+  };
+  TestData result[] = {
+      {2, 3, 700},
+      {3, 4, 600},
+      {1, 2, 400},
+  };
 
-    GetProvider(1)->done_ = true;
-    GetProvider(3)->done_ = true;
+  GetProvider(1)->done_ = true;
+  GetProvider(3)->done_ = true;
 
-    ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(
-        last, std::size(last), current, std::size(current), result,
-        std::size(result)));
-  }
+  ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(last, std::size(last),
+                                                    current, std::size(current),
+                                                    result, std::size(result)));
+}
 
-  {
-    SCOPED_TRACE("kAutocompleteStabilityDontCopyDoneProviders disabled.");
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeatureWithParameters(
-        omnibox::kAutocompleteStability,
-        {{OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.name,
-          "false"}});
+TEST_F(AutocompleteResultTest,
+       TransferOldMatchesSkipDoneProviders_DontCopyDoneProviders) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kAutocompleteStability,
+      {{OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.name,
+        "false"}});
 
-    TestData last[] = {
-        {0, 1, 500},  // Suggestion from done provider
-        {1, 2, 400},  // Suggestion for not-done provider
-    };
-    TestData current[] = {
-        {2, 3, 700},  // Suggestion from done provider
-        {3, 4, 600},  // Suggestion for not-done provider
-    };
-    TestData result[] = {
-        {2, 3, 700},
-        {3, 4, 600},
-        {0, 1, 500},  // Suggestion from done provider
-        {1, 2, 400},
-    };
+  TestData last[] = {
+      {0, 1, 500},  // Suggestion from done provider
+      {1, 2, 400},  // Suggestion for not-done provider
+  };
+  TestData current[] = {
+      {2, 3, 700},  // Suggestion from done provider
+      {3, 4, 600},  // Suggestion for not-done provider
+  };
+  TestData result[] = {
+      {2, 3, 700},
+      {3, 4, 600},
+      {0, 1, 500},  // Suggestion from done provider
+      {1, 2, 400},
+  };
 
-    GetProvider(1)->done_ = true;
-    GetProvider(3)->done_ = true;
+  GetProvider(1)->done_ = true;
+  GetProvider(3)->done_ = true;
 
-    ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(
-        last, std::size(last), current, std::size(current), result,
-        std::size(result)));
-  }
+  ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(last, std::size(last),
+                                                    current, std::size(current),
+                                                    result, std::size(result)));
 }
 
 // Tests that matches with empty destination URLs aren't treated as duplicates

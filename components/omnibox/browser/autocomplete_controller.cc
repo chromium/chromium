@@ -959,13 +959,12 @@ void AutocompleteController::UpdateResult(
     // This conditional needs to match the conditional in Start that invokes
     // StartExpireTimer.
     result_.TransferOldMatches(input_, &old_matches_to_reuse);
-    if (OmniboxFieldTrial::kAutocompleteStabilityPreserveDefaultAfterTransfer
-            .Get()) {
-      result_.SortAndCull(input_, template_url_service_,
-                          preserve_default_match);
-    } else {
-      result_.SortAndCull(input_, template_url_service_);
-    }
+    static bool preserve_default_after_transfer =
+        OmniboxFieldTrial::kAutocompleteStabilityPreserveDefaultAfterTransfer
+            .Get();
+    result_.SortAndCull(
+        input_, template_url_service_,
+        preserve_default_after_transfer ? preserve_default_match : nullptr);
   }
 
 #if DCHECK_IS_ON()

@@ -173,7 +173,9 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
   // particularly noticeable when the user types the next char before the
   // copied matches are expired leading to outdated matches surviving multiple
   // input changes, e.g. 'gooooooooo[oogle.com]'.
-  if (OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.Get()) {
+  static bool dont_copy_done_providers =
+      OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.Get();
+  if (dont_copy_done_providers) {
     old_matches->matches_.erase(
         base::ranges::remove_if(*old_matches,
                                 [](const auto& old_match) {
