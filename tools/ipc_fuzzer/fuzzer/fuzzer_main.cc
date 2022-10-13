@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "ipc/ipc_message_macros.h"
 #include "tools/ipc_fuzzer/fuzzer/fuzzer.h"
@@ -184,8 +185,7 @@ int Mutate(base::CommandLine* cmd, Fuzzer* fuzzer) {
     IPC::Message* msg = message_vector[i].get();
     // If an explicit type set is specified, make sure we should be mutating
     // this message type on this run.
-    if (!type_set.empty() && type_set.end() == std::find(
-            type_set.begin(), type_set.end(), msg->type())) {
+    if (!type_set.empty() && !base::Contains(type_set, msg->type())) {
       continue;
     }
     std::unique_ptr<IPC::Message> new_message =
