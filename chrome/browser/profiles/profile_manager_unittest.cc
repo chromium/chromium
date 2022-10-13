@@ -53,7 +53,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -170,13 +169,9 @@ class ProfileManagerTest : public testing::Test {
     session_type_ = extensions::ScopedCurrentFeatureSessionType(
         extensions::GetCurrentFeatureSessionType());
 #endif
-
-    in_process_data_decoder_ =
-        std::make_unique<data_decoder::test::InProcessDataDecoder>();
   }
 
   void TearDown() override {
-    in_process_data_decoder_.reset();
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
     content::RunAllTasksUntilIdle();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -319,9 +314,6 @@ class ProfileManagerTest : public testing::Test {
   // still using the temp directories upon teardown.
   base::ScopedTempDir temp_dir_;
   ScopedTestingLocalState local_state_;
-
-  std::unique_ptr<data_decoder::test::InProcessDataDecoder>
-      in_process_data_decoder_;
 
   content::BrowserTaskEnvironment task_environment_;
 

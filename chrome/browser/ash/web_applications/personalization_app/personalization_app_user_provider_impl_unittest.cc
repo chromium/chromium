@@ -39,7 +39,6 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -183,9 +182,6 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
     user_provider_->BindInterface(
         user_provider_remote_.BindNewPipeAndPassReceiver());
-
-    in_process_data_decoder_ =
-        std::make_unique<data_decoder::test::InProcessDataDecoder>();
   }
 
   TestingProfile* profile() { return profile_; }
@@ -246,8 +242,6 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
   const base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
@@ -261,8 +255,6 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
       user_provider_remote_;
   std::unique_ptr<PersonalizationAppUserProviderImpl> user_provider_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<data_decoder::test::InProcessDataDecoder>
-      in_process_data_decoder_;
 };
 
 TEST_F(PersonalizationAppUserProviderImplTest, GetsUserInfo) {
@@ -291,7 +283,6 @@ TEST_F(PersonalizationAppUserProviderImplTest, ObservesUserAvatarImage) {
   // Select a default image.
   int image_index = ash::default_user_image::GetRandomDefaultImageIndex();
   user_image_manager()->SaveUserDefaultImageIndex(image_index);
-  RunUntilIdle();
 
   // Observer received the updated image information. Because it is a default
   // image, receives a default image with the right index.
@@ -306,7 +297,6 @@ TEST_F(PersonalizationAppUserProviderImplTest, SelectDefaultImage) {
   int image_index = ash::default_user_image::GetRandomDefaultImageIndex();
   user_provider_remote()->get()->SelectDefaultImage(image_index);
   user_provider_remote()->FlushForTesting();
-  RunUntilIdle();
 
   // Observer received the updated user image of type default with the right
   // index.
@@ -380,7 +370,6 @@ TEST_F(PersonalizationAppUserProviderImplTest,
 
   user_provider_remote()->get()->SelectDefaultImage(image_index);
   user_provider_remote()->FlushForTesting();
-  RunUntilIdle();
 
   // Bucket count is incremented after selecting this default image.
   histogram_tester().ExpectBucketCount(
@@ -390,7 +379,6 @@ TEST_F(PersonalizationAppUserProviderImplTest,
   // Select the same image again.
   user_provider_remote()->get()->SelectDefaultImage(image_index);
   user_provider_remote()->FlushForTesting();
-  RunUntilIdle();
 
   // Bucket count is not incremented.
   histogram_tester().ExpectBucketCount(
@@ -435,7 +423,6 @@ TEST_F(PersonalizationAppUserProviderImplTest,
   // Select a default image first to make sure profile is not selected.
   user_provider_remote()->get()->SelectDefaultImage(
       ash::default_user_image::GetRandomDefaultImageIndex());
-  RunUntilIdle();
   // Now select profile.
   user_provider_remote()->get()->SelectProfileImage();
   user_provider_remote()->FlushForTesting();
@@ -470,7 +457,6 @@ TEST_F(PersonalizationAppUserProviderImplTest,
   user_provider_remote()->get()->SelectDefaultImage(
       ash::default_user_image::GetRandomDefaultImageIndex());
   user_provider_remote()->FlushForTesting();
-  RunUntilIdle();
 
   histogram_tester().ExpectBucketCount(
       ash::UserImageManager::kUserImageChangedHistogramName,
@@ -513,7 +499,6 @@ TEST_F(PersonalizationAppUserProviderImplTest,
   user_image_manager()->SaveUserDefaultImageIndex(
       kDeprecatedImageWithSourceInfoIndex);
   SetUserImageObserver();
-  RunUntilIdle();
 
   absl::optional<default_user_image::DeprecatedSourceInfo>
       expected_source_info =
