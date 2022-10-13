@@ -2222,6 +2222,9 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE" desc="Accessibility label used for an unactivated cellular network in quick settings network list that opens the activation flow when clicked.">
         Click to activate <ph name="NETWORK_NAME">$1<ex>Verizon</ex></ph>
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_SUBTEXT" desc="Accessibility label used for a network in quick settings network list that has a subtext message (e.g. when offline signin is required).">
+        <ph name="NETWORK_NAME">$1<ex>CaptivePortalNetwork</ex></ph>, <ph name="SUBTEXT">$2<ex>Sign in to network</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECT_BUTTON_A11Y_LABEL" desc="Accessibility label used for a button to disconnect from a network in quick settings network list.">
         Disconnect from <ph name="NETWORK_NAME">$1<ex>Ethernet</ex></ph>
       </message>
@@ -2410,10 +2413,13 @@ Connect your device to power.
         Connected to <ph name="NAME">$1<ex>GoogleGuest</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED_TOOLTIP" desc="The tooltip text used when connected to a network.">
-        Connected to <ph name="NAME">$1<ex>GoogleGuest</ex></ph>, <ph name="STRENGTH">$2<ex>Weak signal.</ex></ph>
+        <ph name="DESC">$1<ex>Connected to GoogleGuest</ex></ph>, <ph name="STRENGTH">$2<ex>Weak signal.</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_ACTIVATING" desc="Message for the network tray tooltip and a11y name when activating a network.">
         Activating <ph name="NAME">$1<ex>YBH Cellular</ex></ph>
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_PORTAL" desc="Message for the network tray tooltip and a11y name when connected to a network in a captive portal state.">
+        Connected to <ph name="NAME">$1<ex>GoogleGuest</ex></ph>, <ph name="SUBTEXT">$2<ex>Sign in to network</ex></ph>
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_TOOLTIP" desc="The tooltip text for the button that toggles network enabled/disabled state.">

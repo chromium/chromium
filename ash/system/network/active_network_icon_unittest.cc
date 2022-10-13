@@ -190,9 +190,11 @@ TEST_F(ActiveNetworkIconTest, GetConnectionStatusStrings) {
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED,
                                        kCellularNetworkGuid16),
             name);
+  std::u16string connected_string = l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED, kCellularNetworkGuid16);
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
-          IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED_TOOLTIP, kCellularNetworkGuid16,
+          IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED_TOOLTIP, connected_string,
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NETWORK_SIGNAL_STRONG)),
       tooltip);
 }

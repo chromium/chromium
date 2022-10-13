@@ -4,8 +4,11 @@
 
 #include "ash/system/network/network_utils.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -52,6 +55,32 @@ void RecordNetworkTypeToggled(
   base::UmaHistogramBoolean(
       base::StrCat({"ChromeOS.SystemTray.Network.", network_name, ".Toggled"}),
       new_state);
+}
+
+absl::optional<std::u16string> GetPortalStateSubtext(
+    const chromeos::network_config::mojom::PortalState& portal_state) {
+  if (!ash::features::IsCaptivePortalUI2022Enabled()) {
+    return absl::nullopt;
+  }
+  using chromeos::network_config::mojom::PortalState;
+  switch (portal_state) {
+    case PortalState::kUnknown:
+      [[fallthrough]];
+    case PortalState::kOnline:
+      return absl::nullopt;
+    case PortalState::kPortalSuspected:
+      [[fallthrough]];
+    case PortalState::kNoInternet:
+      // Use 'no internet' for portal suspected and no internet states.
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CONNECTED_NO_INTERNET);
+    case PortalState::kPortal:
+      [[fallthrough]];
+    case PortalState::kProxyAuthRequired:
+      // Use 'signin to network' for portal and proxy auth required states.
+      return l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SIGNIN);
+  }
 }
 
 }  // namespace ash

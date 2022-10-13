@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -39,6 +40,11 @@ ASH_EXPORT void RecordDetailedViewSection(DetailedViewSection section);
 ASH_EXPORT void RecordNetworkTypeToggled(
     chromeos::network_config::mojom::NetworkType network_type,
     bool new_state);
+
+// Returns the subtext to display for a connected network in a portal state.
+// This is used in the network menu, the tooltip, and for a11y.
+ASH_EXPORT absl::optional<std::u16string> GetPortalStateSubtext(
+    const chromeos::network_config::mojom::PortalState& portal_state);
 
 }  // namespace ash
 

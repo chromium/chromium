@@ -10,6 +10,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_icon.h"
+#include "ash/system/network/network_utils.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
@@ -88,8 +89,14 @@ void ActiveNetworkIcon::GetConnectionStatusStrings(Type type,
       *tooltip = activating_string;
   } else if (network && chromeos::network_config::StateIsConnected(
                             network->connection_state)) {
-    std::u16string connected_string = l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED, network_name);
+    std::u16string connected_string;
+    if (auto portal_subtext = GetPortalStateSubtext(network->portal_state)) {
+      connected_string = l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_PORTAL, network_name, *portal_subtext);
+    } else {
+      connected_string = l10n_util::GetStringFUTF16(
+          IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED, network_name);
+    }
     std::u16string signal_strength_string;
     if (chromeos::network_config::NetworkTypeMatchesType(
             network->type, NetworkType::kWireless)) {
@@ -123,7 +130,7 @@ void ActiveNetworkIcon::GetConnectionStatusStrings(Type type,
                      ? connected_string
                      : l10n_util::GetStringFUTF16(
                            IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED_TOOLTIP,
-                           network_name, signal_strength_string);
+                           connected_string, signal_strength_string);
     }
   } else if (network &&
              network->connection_state == ConnectionStateType::kConnecting) {
