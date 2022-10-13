@@ -30,8 +30,6 @@ static_library("network_config") {
 }
 
 component("in_process_instance") {
-  output_name = "network_config_in_process_instance"
-
   sources = [
     "in_process_instance.cc",
     "in_process_instance.h",

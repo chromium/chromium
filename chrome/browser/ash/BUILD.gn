@@ -3540,7 +3540,6 @@ source_set("ash") {
     "//chromeos/ime:gencode",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/network_config:in_process_instance",
-    "//chromeos/services/network_health:in_process_instance",
     "//chromeos/strings",
     "//chromeos/ui/vector_icons",
     "//chromeos/utils",
