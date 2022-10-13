@@ -129,7 +129,7 @@ class ParsedDataPresenter : public UploadDataPresenter {
 
   std::unique_ptr<FormDataParser> parser_;
   bool success_;
-  std::unique_ptr<base::DictionaryValue> dictionary_;
+  absl::optional<base::Value::Dict> dictionary_;
 };
 
 }  // namespace extensions

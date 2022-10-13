@@ -21,12 +21,12 @@ namespace {
 
 // Takes |dictionary| of <string, list of strings> pairs, and gets the list
 // for |key|, creating it if necessary.
-base::Value* GetOrCreateList(base::DictionaryValue* dictionary,
-                             const std::string& key) {
-  base::Value* list = dictionary->FindKeyOfType(key, base::Value::Type::LIST);
+base::Value::List& GetOrCreateList(base::Value::Dict& dictionary,
+                                   const std::string& key) {
+  base::Value::List* list = dictionary.FindList(key);
   if (list)
-    return list;
-  return dictionary->SetKey(key, base::Value(base::Value::Type::LIST));
+    return *list;
+  return dictionary.Set(key, base::Value::List())->GetList();
 }
 
 }  // namespace
@@ -82,10 +82,12 @@ void RawDataPresenter::FeedNextFile(const std::string& filename) {
 ParsedDataPresenter::ParsedDataPresenter(
     const net::HttpRequestHeaders& request_headers)
     : parser_(FormDataParser::Create(request_headers)),
-      success_(parser_ != nullptr),
-      dictionary_(success_ ? new base::DictionaryValue() : nullptr) {}
+      success_(parser_ != nullptr) {
+  if (success_)
+    dictionary_.emplace();
+}
 
-ParsedDataPresenter::~ParsedDataPresenter() {}
+ParsedDataPresenter::~ParsedDataPresenter() = default;
 
 void ParsedDataPresenter::FeedBytes(base::StringPiece bytes) {
   if (!success_)
@@ -98,8 +100,9 @@ void ParsedDataPresenter::FeedBytes(base::StringPiece bytes) {
 
   FormDataParser::Result result;
   while (parser_->GetNextNameValue(&result)) {
-    base::Value* list = GetOrCreateList(dictionary_.get(), result.name());
-    list->Append(result.take_value());
+    base::Value::List& list =
+        GetOrCreateList(dictionary_.value(), result.name());
+    list.Append(result.take_value());
   }
 }
 
@@ -114,7 +117,7 @@ bool ParsedDataPresenter::Succeeded() {
 absl::optional<base::Value> ParsedDataPresenter::TakeResult() {
   if (!success_)
     return absl::nullopt;
-  return base::Value::FromUniquePtrValue(std::move(dictionary_));
+  return base::Value(std::move(dictionary_.value()));
 }
 
 // static
@@ -125,8 +128,10 @@ std::unique_ptr<ParsedDataPresenter> ParsedDataPresenter::CreateForTests() {
 
 ParsedDataPresenter::ParsedDataPresenter(const std::string& form_type)
     : parser_(FormDataParser::CreateFromContentTypeHeader(&form_type)),
-      success_(parser_.get() != nullptr),
-      dictionary_(success_ ? new base::DictionaryValue() : nullptr) {}
+      success_(parser_.get() != nullptr) {
+  if (success_)
+    dictionary_.emplace();
+}
 
 void ParsedDataPresenter::Abort() {
   success_ = false;
