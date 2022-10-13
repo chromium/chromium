@@ -4,22 +4,25 @@
 
 #include "content/browser/direct_sockets/resolve_host_and_open_socket.h"
 
-#include "base/memory/scoped_refptr.h"
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/time/time.h"
+#include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/public/browser/direct_sockets_delegate.h"
+#include "content/public/browser/render_frame_host.h"
+#include "net/base/address_list.h"
+#include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/http/http_response_headers.h"
 #include "net/net_buildflags.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-shared.h"
 
+namespace content {
 namespace {
 
 constexpr char kPermissionDeniedHistogramName[] =
@@ -36,44 +39,50 @@ bool ResemblesMulticastDNSName(const std::string& hostname) {
 }
 #endif  // !BUILDFLAG(ENABLE_MDNS)
 
-bool ContainNonPubliclyRoutableAddress(const net::AddressList& addresses) {
-  DCHECK(!addresses.empty());
-  for (auto ip : addresses) {
-    if (!ip.address().IsPubliclyRoutable())
-      return true;
-  }
-  return false;
+bool IsRawIPAddress(const std::string& address) {
+  net::IPAddress ip;
+  return ip.AssignFromIPLiteral(address);
 }
 
-absl::optional<net::IPEndPoint> GetLocalAddr(
-    const blink::mojom::DirectSocketOptions& options) {
-  absl::optional<net::IPEndPoint> local_addr = absl::nullopt;
-  if (!options.local_hostname) {
-    return {};
-  }
+bool ContainNonPubliclyRoutableAddress(const net::AddressList& addresses) {
+  DCHECK(!addresses.empty());
+  return !base::ranges::all_of(addresses, &net::IPAddress::IsPubliclyRoutable,
+                               &net::IPEndPoint::address);
+}
 
-  if (net::IPAddress local_address;
-      local_address.AssignFromIPLiteral(*options.local_hostname)) {
-    return net::IPEndPoint(local_address, options.local_port);
+RenderFrameHost* GetFrameHostFromService(
+    base::WeakPtr<DirectSocketsServiceImpl> service) {
+  if (!service) {
+    return nullptr;
   }
-
-  return {};
+  return service->GetFrameHost();
 }
 
 absl::optional<int> g_https_port_for_testing = {};
 
 }  // namespace
 
-namespace content {
-
-// ResolveHostAndOpenSocket implementation.
-
 ResolveHostAndOpenSocket::ResolveHostAndOpenSocket(
     base::WeakPtr<DirectSocketsServiceImpl> service,
-    blink::mojom::DirectSocketOptionsPtr options)
-    : service_(std::move(service)), options_(std::move(options)) {}
+    const std::string& host,
+    uint16_t port,
+    OpenSocketCallback callback)
+    : service_(service),
+      host_(host),
+      port_(port),
+      callback_(std::move(callback)) {}
 
 ResolveHostAndOpenSocket::~ResolveHostAndOpenSocket() = default;
+
+// static
+ResolveHostAndOpenSocket* ResolveHostAndOpenSocket::Create(
+    base::WeakPtr<DirectSocketsServiceImpl> service,
+    const std::string& host,
+    uint16_t port,
+    OpenSocketCallback callback) {
+  return new ResolveHostAndOpenSocket(std::move(service), host, port,
+                                      std::move(callback));
+}
 
 void ResolveHostAndOpenSocket::Start() {
   auto* network_context = service_->GetNetworkContext();
@@ -81,27 +90,23 @@ void ResolveHostAndOpenSocket::Start() {
   DCHECK(!receiver_.is_bound());
   DCHECK(!resolver_.is_bound());
 
-  if (net::IPAddress().AssignFromIPLiteral(options_->remote_hostname)) {
-    is_raw_address_ = true;
-  }
-
-  network_context->CreateHostResolver(absl::nullopt,
+  network_context->CreateHostResolver(/*config_overrides=*/absl::nullopt,
                                       resolver_.BindNewPipeAndPassReceiver());
 
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
 #if BUILDFLAG(ENABLE_MDNS)
-  if (ResemblesMulticastDNSName(options_->remote_hostname)) {
+  if (ResemblesMulticastDNSName(host_)) {
     parameters->source = net::HostResolverSource::MULTICAST_DNS;
     is_mdns_name_ = true;
   }
 #endif  // !BUILDFLAG(ENABLE_MDNS)
   // Intentionally using a HostPortPair because scheme isn't specified.
-  resolver_->ResolveHost(
-      network::mojom::HostResolverHost::NewHostPortPair(
-          net::HostPortPair(options_->remote_hostname, options_->remote_port)),
-      net::NetworkAnonymizationKey::CreateTransient(), std::move(parameters),
-      receiver_.BindNewPipeAndPassRemote());
+  resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                             net::HostPortPair{host_, port_}),
+                         net::NetworkAnonymizationKey::CreateTransient(),
+                         std::move(parameters),
+                         receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(base::BindOnce(
       &ResolveHostAndOpenSocket::OnComplete, base::Unretained(this),
       net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
@@ -132,12 +137,7 @@ void ResolveHostAndOpenSocket::OnComplete(
   DCHECK(receiver_.is_bound());
   receiver_.reset();
 
-  if (!service_) {
-    OpenSocket(net::ERR_UNEXPECTED, {});
-    return;
-  }
-
-  auto* frame = service_->GetFrameHost();
+  auto* frame = GetFrameHostFromService(service_);
   if (!frame) {
     OpenSocket(net::ERR_UNEXPECTED, {});
     return;
@@ -151,7 +151,7 @@ void ResolveHostAndOpenSocket::OnComplete(
 
   // Reject hostnames that resolve to non-public exception unless a raw IP
   // address or a *.local hostname is entered by the user.
-  if (!is_raw_address_ && !is_mdns_name_ && resolved_addresses &&
+  if (!IsRawIPAddress(host_) && !is_mdns_name_ && resolved_addresses &&
       ContainNonPubliclyRoutableAddress(*resolved_addresses)) {
     base::UmaHistogramEnumeration(
         kPermissionDeniedHistogramName,
@@ -161,16 +161,23 @@ void ResolveHostAndOpenSocket::OnComplete(
   }
 
   if (result == net::OK && resolved_addresses) {
-    if (options_->remote_port == GetHttpsPort()) {
+    if (port_ == GetHttpsPort()) {
       // Delegates to OpenSocket(...) after the check.
       // We cannot use the resolved address here since it causes problems
       // with SSL :(
-      PerformCORSCheck(options_->remote_hostname, *resolved_addresses);
+      PerformCORSCheck(host_, *resolved_addresses);
       return;
     }
   }
 
   OpenSocket(result, resolved_addresses);
+}
+
+void ResolveHostAndOpenSocket::OpenSocket(
+    int result,
+    const absl::optional<net::AddressList>& resolved_addresses) {
+  std::move(callback_).Run(result, resolved_addresses);
+  delete this;
 }
 
 void ResolveHostAndOpenSocket::PerformCORSCheck(
@@ -233,139 +240,6 @@ void ResolveHostAndOpenSocket::OnCORSCheckComplete(
   }
 
   OpenSocket(net::ERR_TIMED_OUT, {});
-}
-
-// ResolveHostAndOpenTCPSocket implementation.
-
-ResolveHostAndOpenTCPSocket::ResolveHostAndOpenTCPSocket(
-    base::WeakPtr<DirectSocketsServiceImpl> service,
-    blink::mojom::DirectSocketOptionsPtr options,
-    mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
-    mojo::PendingRemote<network::mojom::SocketObserver> observer,
-    OpenTcpSocketCallback callback)
-    : ResolveHostAndOpenSocket(std::move(service), std::move(options)),
-      receiver_(std::move(receiver)),
-      observer_(std::move(observer)),
-      callback_(std::move(callback)) {}
-
-ResolveHostAndOpenTCPSocket::~ResolveHostAndOpenTCPSocket() = default;
-
-void ResolveHostAndOpenTCPSocket::OpenSocket(
-    int result,
-    const absl::optional<net::AddressList>& resolved_addresses) {
-  network::mojom::NetworkContext* network_context = nullptr;
-  if (service_) {
-    network_context = service_->GetNetworkContext();
-  }
-  if (!network_context) {
-    delete this;
-    return;
-  }
-
-  if (result != net::OK) {
-    std::move(callback_).Run(result, absl::nullopt, absl::nullopt,
-                             mojo::ScopedDataPipeConsumerHandle(),
-                             mojo::ScopedDataPipeProducerHandle());
-    delete this;
-    return;
-  }
-
-  DCHECK(resolved_addresses && !resolved_addresses->empty());
-  const absl::optional<net::IPEndPoint> local_addr = GetLocalAddr(*options_);
-
-  network::mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options =
-      network::mojom::TCPConnectedSocketOptions::New();
-  if (options_->send_buffer_size > 0) {
-    tcp_connected_socket_options->send_buffer_size =
-        std::min(options_->send_buffer_size,
-                 DirectSocketsServiceImpl::GetMaxBufferSize());
-  }
-  if (options_->receive_buffer_size > 0) {
-    tcp_connected_socket_options->receive_buffer_size =
-        std::min(options_->receive_buffer_size,
-                 DirectSocketsServiceImpl::GetMaxBufferSize());
-  }
-  tcp_connected_socket_options->no_delay = options_->no_delay;
-  if (options_->keep_alive_options) {
-    // options_->keep_alive_options will be invalidated.
-    tcp_connected_socket_options->keep_alive_options =
-        std::move(options_->keep_alive_options);
-  }
-  // invalidate options_.
-  options_.reset();
-
-  network_context->CreateTCPConnectedSocket(
-      local_addr, *resolved_addresses, std::move(tcp_connected_socket_options),
-      DirectSocketsServiceImpl::MutableTrafficAnnotation(),
-      std::move(receiver_), std::move(observer_), std::move(callback_));
-  delete this;
-}
-
-// ResolveHostAndOpenUDPSocket implementation.
-
-ResolveHostAndOpenUDPSocket::ResolveHostAndOpenUDPSocket(
-    base::WeakPtr<DirectSocketsServiceImpl> service,
-    blink::mojom::DirectSocketOptionsPtr options,
-    mojo::PendingReceiver<blink::mojom::DirectUDPSocket> receiver,
-    mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
-    OpenUdpSocketCallback callback)
-    : ResolveHostAndOpenSocket(std::move(service), std::move(options)),
-      receiver_(std::move(receiver)),
-      listener_(std::move(listener)),
-      callback_(std::move(callback)) {}
-
-ResolveHostAndOpenUDPSocket::~ResolveHostAndOpenUDPSocket() = default;
-
-void ResolveHostAndOpenUDPSocket::OpenSocket(
-    int result,
-    const absl::optional<net::AddressList>& resolved_addresses) {
-  network::mojom::NetworkContext* network_context = nullptr;
-  if (service_) {
-    network_context = service_->GetNetworkContext();
-  }
-  if (!network_context) {
-    delete this;
-    return;
-  }
-
-  if (result != net::OK) {
-    std::move(callback_).Run(result, absl::nullopt, absl::nullopt);
-    delete this;
-    return;
-  }
-
-  DCHECK(resolved_addresses && !resolved_addresses->empty());
-
-  network::mojom::UDPSocketOptionsPtr udp_socket_options =
-      network::mojom::UDPSocketOptions::New();
-  if (options_->send_buffer_size > 0) {
-    udp_socket_options->send_buffer_size =
-        std::min(options_->send_buffer_size,
-                 DirectSocketsServiceImpl::GetMaxBufferSize());
-  }
-  if (options_->receive_buffer_size > 0) {
-    udp_socket_options->receive_buffer_size =
-        std::min(options_->receive_buffer_size,
-                 DirectSocketsServiceImpl::GetMaxBufferSize());
-  }
-
-  net::IPEndPoint peer_addr = resolved_addresses->front();
-  auto direct_udp_socket = std::make_unique<DirectUDPSocketImpl>(
-      network_context, std::move(listener_));
-  direct_udp_socket->Connect(
-      peer_addr, std::move(udp_socket_options),
-      base::BindOnce(&ResolveHostAndOpenUDPSocket::OnUdpConnectCompleted,
-                     base::Unretained(this), peer_addr));
-  service_->AddDirectUDPSocketReceiver(std::move(direct_udp_socket),
-                                       std::move(receiver_));
-}
-
-void ResolveHostAndOpenUDPSocket::OnUdpConnectCompleted(
-    net::IPEndPoint peer_addr,
-    int result,
-    const absl::optional<net::IPEndPoint>& local_addr) {
-  std::move(callback_).Run(result, local_addr, peer_addr);
-  delete this;
 }
 
 }  // namespace content
