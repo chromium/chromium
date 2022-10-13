@@ -33,6 +33,8 @@ class ASH_EXPORT AccessibilityHighlightLayer : public AccessibilityLayer {
 
   std::vector<gfx::Rect> rects_for_test() { return rects_; }
 
+  SkColor color_for_test() { return highlight_color_; }
+
  private:
   // ui::LayerDelegate overrides:
   void OnPaintLayer(const ui::PaintContext& context) override;

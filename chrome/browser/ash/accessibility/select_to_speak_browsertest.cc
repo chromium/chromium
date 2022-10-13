@@ -7,6 +7,7 @@
 
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_layer.h"
+#include "ash/accessibility/ui/accessibility_highlight_layer.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -32,11 +33,13 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/process_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/compositor/layer.h"
@@ -54,13 +57,19 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   SelectToSpeakTest& operator=(const SelectToSpeakTest&) = delete;
 
   void OnFocusRingChanged() {
-    if (loop_runner_) {
+    if (loop_runner_ && loop_runner_->running()) {
       loop_runner_->Quit();
     }
   }
 
+  void OnHighlightsAdded() {
+    if (highlights_runner_ && highlights_runner_->running()) {
+      highlights_runner_->Quit();
+    }
+  }
+
   void SetSelectToSpeakState() {
-    if (tray_loop_runner_) {
+    if (tray_loop_runner_ && tray_loop_runner_->running()) {
       tray_loop_runner_->Quit();
     }
   }
@@ -121,8 +130,21 @@ class SelectToSpeakTest : public InProcessBrowserTest {
     generator_->ReleaseKey(ui::VKEY_LWIN, 0 /* flags */);
   }
 
+  void PrepareToWaitForHighlightAdded() {
+    highlights_runner_ = std::make_unique<base::RunLoop>();
+    base::RepeatingCallback<void()> callback = base::BindRepeating(
+        &SelectToSpeakTest::OnHighlightsAdded, GetWeakPtr());
+    AccessibilityManager::Get()->SetHighlightsObserverForTest(callback);
+  }
+
+  void WaitForHighlightAdded() {
+    DCHECK(highlights_runner_);
+    highlights_runner_->Run();
+    highlights_runner_ = nullptr;
+  }
+
   void PrepareToWaitForSelectToSpeakStatusChanged() {
-    tray_loop_runner_ = new content::MessageLoopRunner();
+    tray_loop_runner_ = std::make_unique<base::RunLoop>();
   }
 
   // Blocks until the select-to-speak tray status is changed.
@@ -138,7 +160,7 @@ class SelectToSpeakTest : public InProcessBrowserTest {
   }
 
   void PrepareToWaitForFocusRingChanged() {
-    loop_runner_ = new content::MessageLoopRunner();
+    loop_runner_ = std::make_unique<base::RunLoop>();
   }
 
   // Blocks until the focus ring is changed.
@@ -169,8 +191,9 @@ class SelectToSpeakTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_refptr<content::MessageLoopRunner> loop_runner_;
-  scoped_refptr<content::MessageLoopRunner> tray_loop_runner_;
+  std::unique_ptr<base::RunLoop> loop_runner_;
+  std::unique_ptr<base::RunLoop> highlights_runner_;
+  std::unique_ptr<base::RunLoop> tray_loop_runner_;
   base::WeakPtrFactory<SelectToSpeakTest> weak_ptr_factory_{this};
 };
 
@@ -340,6 +363,28 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_SmoothlyReadsAcrossInlineUrl) {
   // spaces. Spaces are not pronounced, so extra spaces do not impact output.
   sm_.ExpectSpeechPattern("This is some text*with a node*in the middle*");
   sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SetsWordHighlights) {
+  AccessibilityFocusRingControllerImpl* controller =
+      Shell::Get()->accessibility_focus_ring_controller();
+  EXPECT_FALSE(controller->highlight_layer_for_testing());
+  PrepareToWaitForHighlightAdded();
+  ActivateSelectToSpeakInWindowBounds(
+      "data:text/html;charset=utf-8,<p>Highlight me");
+  sm_.ExpectSpeechPattern("*Highlight me*");
+  sm_.Replay();
+
+  // Some highlighting should have occurred. OK to do this after speech as
+  // Select to Speak refreshes the UI intermittently.
+  WaitForHighlightAdded();
+
+  // Check the highlight exists and the color is as expected.
+  AccessibilityHighlightLayer* highlight_layer =
+      controller->highlight_layer_for_testing();
+  EXPECT_TRUE(highlight_layer);
+  EXPECT_EQ(1u, highlight_layer->rects_for_test().size());
+  EXPECT_EQ(SkColorSetRGB(94, 155, 255), highlight_layer->color_for_test());
 }
 
 // Flaky on ChromeOS MSAN bots: https://crbug.com/1227368

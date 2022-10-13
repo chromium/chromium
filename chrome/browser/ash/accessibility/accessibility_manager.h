@@ -383,6 +383,8 @@ class AccessibilityManager
   static void SetBrailleControllerForTest(
       extensions::api::braille_display_private::BrailleController* controller);
   void SetFocusRingObserverForTest(base::RepeatingCallback<void()> observer);
+  // Runs when highlights are set or updated, but not when they are removed.
+  void SetHighlightsObserverForTest(base::RepeatingCallback<void()> observer);
   void SetSelectToSpeakStateObserverForTest(
       base::RepeatingCallback<void()> observer);
   void SetCaretBoundsObserverForTest(
@@ -611,6 +613,7 @@ class AccessibilityManager
   bool ignore_dictation_locale_pref_change_ = false;
 
   base::RepeatingCallback<void()> focus_ring_observer_for_test_;
+  base::RepeatingCallback<void()> highlights_observer_for_test_;
   base::RepeatingCallback<void()> select_to_speak_state_observer_for_test_;
   base::RepeatingCallback<void(const gfx::Rect&)>
       caret_bounds_observer_for_test_;

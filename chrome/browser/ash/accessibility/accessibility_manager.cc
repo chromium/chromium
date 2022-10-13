@@ -1999,6 +1999,8 @@ void AccessibilityManager::SetHighlights(
     SkColor color) {
   AccessibilityFocusRingController::Get()->SetHighlights(rects_in_screen,
                                                          color);
+  if (highlights_observer_for_test_ && rects_in_screen.size())
+    highlights_observer_for_test_.Run();
 }
 
 void AccessibilityManager::HideHighlights() {
@@ -2079,6 +2081,11 @@ void AccessibilityManager::SetBrailleControllerForTest(
 void AccessibilityManager::SetFocusRingObserverForTest(
     base::RepeatingCallback<void()> observer) {
   focus_ring_observer_for_test_ = observer;
+}
+
+void AccessibilityManager::SetHighlightsObserverForTest(
+    base::RepeatingCallback<void()> observer) {
+  highlights_observer_for_test_ = observer;
 }
 
 void AccessibilityManager::SetSelectToSpeakStateObserverForTest(
