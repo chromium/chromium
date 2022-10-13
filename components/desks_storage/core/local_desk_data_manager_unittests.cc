@@ -921,4 +921,24 @@ TEST_F(LocalDeskDataManagerTest, StressTestModifyingEntriesForThreadSafety) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(LocalDeskDataManagerTest, DeleteSameEntryAgain) {
+  data_manager_->AddOrUpdateEntry(std::move(sample_desk_template_one_),
+                                  base::BindOnce(&VerifyEntryAddedCorrectly));
+
+  data_manager_->DeleteEntry(
+      GetTestUuid(TestUuidId(1)),
+      base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
+        EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
+      }));
+
+  data_manager_->DeleteEntry(
+      GetTestUuid(TestUuidId(1)),
+      base::BindLambdaForTesting([&](DeskModel::DeleteEntryStatus status) {
+        EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
+      }));
+
+  VerifyAllEntries(0ul, "Delete one entry");
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace desks_storage

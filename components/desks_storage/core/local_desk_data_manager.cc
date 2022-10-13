@@ -308,6 +308,13 @@ void LocalDeskDataManager::DeleteEntry(const base::GUID& uuid,
   std::vector<std::unique_ptr<ash::DeskTemplate>> entry;
   auto& saved_desks = saved_desks_list_[desk_type];
   auto existing_it = saved_desks.find(uuid);
+
+  // The deletion is successful if the entry does not exist.
+  if (existing_it == saved_desks.end()) {
+    std::move(callback).Run(DeleteEntryStatus::kOk);
+    return;
+  }
+
   entry.push_back(std::move(existing_it->second));
   saved_desks_list_[desk_type].erase(existing_it);
 
