@@ -1839,49 +1839,6 @@
             ]
         }
     ],
-    "BackForwardCacheEnabledForNonPluginEmbed": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BackForwardCacheEnabledForNonPluginEmbed"
-                    ]
-                }
-            ]
-        }
-    ],
-    "BackForwardCacheExtendTimeToLive": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "time_to_live_seconds": "600"
-                    },
-                    "enable_features": [
-                        "BackForwardCacheTimeToLiveControl"
-                    ]
-                }
-            ]
-        }
-    ],
     "BackForwardCacheMemoryControls": [
         {
             "platforms": [
