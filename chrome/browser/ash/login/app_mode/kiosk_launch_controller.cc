@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
@@ -480,13 +481,22 @@ void KioskLaunchController::OnAppPrepared() {
 
   // Launch lacros-chrome if the corresponding feature flags are enabled.
   if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
-    // Start observing the installation status of extensions in Lacros.
-    force_installed_observation_for_lacros_.Observe(
-        GetForceInstalledTrackerAsh());
-    StartTimerToWaitForExtensions();
+    crosapi::ForceInstalledTrackerAsh* tracker_ash =
+        GetForceInstalledTrackerAsh();
+
+    if (tracker_ash && !tracker_ash->IsReady()) {
+      // Start observing the installation status of extensions in Lacros.
+      force_installed_observation_for_lacros_.Observe(
+          GetForceInstalledTrackerAsh());
+      StartTimerToWaitForExtensions();
+    } else {
+      FinishForcedExtensionsInstall(/*timeout=*/false);
+    }
 
     // Initialize and start Lacros for preparing force-installed extensions.
-    crosapi::BrowserManager::Get()->InitializeAndStartIfNeeded();
+    if (!crosapi::BrowserManager::Get()->IsRunningOrWillRun())
+      crosapi::BrowserManager::Get()->InitializeAndStartIfNeeded();
+
     return;
   }
 
