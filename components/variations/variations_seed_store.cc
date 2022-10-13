@@ -160,14 +160,14 @@ bool VariationsSeedStore::LoadSeed(VariationsSeed* seed,
   return true;
 }
 
-bool VariationsSeedStore::StoreSeedData(
-    const std::string& data,
-    const std::string& base64_seed_signature,
-    const std::string& country_code,
-    const base::Time& date_fetched,
+void VariationsSeedStore::StoreSeedData(
+    std::string data,
+    std::string base64_seed_signature,
+    std::string country_code,
+    base::Time date_fetched,
     bool is_delta_compressed,
     bool is_gzip_compressed,
-    VariationsSeed* parsed_seed) {
+    base::OnceCallback<void(bool, VariationsSeed)> done_callback) {
   UMA_HISTOGRAM_COUNTS_1000("Variations.StoreSeed.DataSize",
                             data.length() / 1024);
   InstanceManipulations im = {
@@ -180,8 +180,9 @@ bool VariationsSeedStore::StoreSeedData(
       ResolveInstanceManipulations(data, im, &seed_bytes);
   if (im_result != StoreSeedResult::kSuccess) {
     RecordStoreSeedResult(im_result);
-    return false;
-  };
+    std::move(done_callback).Run(false, VariationsSeed());
+    return;
+  }
 
   ValidatedSeed validated;
   StoreSeedResult validate_result = ValidateSeedBytes(
@@ -190,7 +191,8 @@ bool VariationsSeedStore::StoreSeedData(
     RecordStoreSeedResult(validate_result);
     if (im.delta_compressed)
       RecordStoreSeedResult(StoreSeedResult::kFailedDeltaStore);
-    return false;
+    std::move(done_callback).Run(false, VariationsSeed());
+    return;
   }
 
   StoreSeedResult result =
@@ -199,11 +201,10 @@ bool VariationsSeedStore::StoreSeedData(
   if (result != StoreSeedResult::kSuccess) {
     if (im.delta_compressed)
       RecordStoreSeedResult(StoreSeedResult::kFailedDeltaStore);
-    return false;
+    std::move(done_callback).Run(false, VariationsSeed());
+    return;
   }
-  if (parsed_seed)
-    parsed_seed->Swap(&validated.parsed);
-  return true;
+  std::move(done_callback).Run(true, std::move(validated.parsed));
 }
 
 bool VariationsSeedStore::LoadSafeSeed(VariationsSeed* seed,
@@ -387,14 +388,21 @@ void VariationsSeedStore::ImportInitialSeed(
   }
   base::Time date = base::Time::FromJavaTime(initial_seed->date);
 
-  if (!StoreSeedData(initial_seed->data, initial_seed->signature,
-                     initial_seed->country, date, false,
-                     initial_seed->is_gzip_compressed, nullptr)) {
-    RecordFirstRunSeedImportResult(FirstRunSeedImportResult::FAIL_STORE_FAILED);
-    LOG(WARNING) << "First run variations seed is invalid.";
-    return;
-  }
-  RecordFirstRunSeedImportResult(FirstRunSeedImportResult::SUCCESS);
+  auto done_callback =
+      base::BindOnce([](bool store_success, VariationsSeed seed) {
+        if (store_success) {
+          RecordFirstRunSeedImportResult(FirstRunSeedImportResult::SUCCESS);
+        } else {
+          RecordFirstRunSeedImportResult(
+              FirstRunSeedImportResult::FAIL_STORE_FAILED);
+          LOG(WARNING) << "First run variations seed is invalid.";
+        }
+      });
+  StoreSeedData(std::move(initial_seed->data),
+                std::move(initial_seed->signature),
+                std::move(initial_seed->country), date,
+                /*is_delta_compressed=*/false, initial_seed->is_gzip_compressed,
+                std::move(done_callback));
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

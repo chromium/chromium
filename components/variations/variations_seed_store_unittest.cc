@@ -57,10 +57,23 @@ class TestVariationsSeedStore : public VariationsSeedStore {
 
   ~TestVariationsSeedStore() override = default;
 
-  bool StoreSeedForTesting(const std::string& seed_data) {
-    return StoreSeedData(seed_data, std::string(), std::string(),
-                         base::Time::Now(), false, false, nullptr);
+  bool StoreSeedForTesting(const std::string& seed_data,
+                           const std::string& country = "") {
+    StoreSeedData(seed_data, std::string(), country, base::Time::Now(), false,
+                  false,
+                  base::BindOnce(&TestVariationsSeedStore::OnSeedStoreResult,
+                                 base::Unretained(this)));
+    // TODO(crbug.com/1324295): Block on background tasks once async.
+    return store_success_;
   }
+
+  void OnSeedStoreResult(bool store_success, VariationsSeed seed) {
+    store_success_ = store_success;
+    stored_seed_.Swap(&seed);
+  }
+
+  bool store_success_ = false;
+  VariationsSeed stored_seed_;
 };
 
 class SignatureVerifyingVariationsSeedStore : public VariationsSeedStore {
@@ -368,7 +381,7 @@ TEST(VariationsSeedStoreTest, StoreSeedData) {
 
   TestVariationsSeedStore seed_store(&prefs);
 
-  EXPECT_TRUE(seed_store.StoreSeedForTesting(serialized_seed));
+  ASSERT_TRUE(seed_store.StoreSeedForTesting(serialized_seed));
   // Make sure the pref was actually set.
   EXPECT_FALSE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
 
@@ -382,7 +395,7 @@ TEST(VariationsSeedStoreTest, StoreSeedData) {
 
   // Check if trying to store a bad seed leaves the pref unchanged.
   prefs.ClearPref(prefs::kVariationsCompressedSeed);
-  EXPECT_FALSE(seed_store.StoreSeedForTesting("should fail"));
+  ASSERT_FALSE(seed_store.StoreSeedForTesting("should fail"));
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsCompressedSeed));
 }
 
@@ -394,11 +407,8 @@ TEST(VariationsSeedStoreTest, StoreSeedData_ParsedSeed) {
   VariationsSeedStore::RegisterPrefs(prefs.registry());
   TestVariationsSeedStore seed_store(&prefs);
 
-  VariationsSeed parsed_seed;
-  EXPECT_TRUE(seed_store.StoreSeedData(serialized_seed, std::string(),
-                                       std::string(), base::Time::Now(), false,
-                                       false, &parsed_seed));
-  EXPECT_EQ(serialized_seed, SerializeSeed(parsed_seed));
+  ASSERT_TRUE(seed_store.StoreSeedForTesting(serialized_seed));
+  EXPECT_EQ(serialized_seed, SerializeSeed(seed_store.stored_seed_));
 }
 
 TEST(VariationsSeedStoreTest, StoreSeedData_CountryCode) {
@@ -408,15 +418,11 @@ TEST(VariationsSeedStoreTest, StoreSeedData_CountryCode) {
 
   // Test with a valid header value.
   std::string seed = SerializeSeed(CreateTestSeed());
-  EXPECT_TRUE(seed_store.StoreSeedData(seed, std::string(), "test_country",
-                                       base::Time::Now(), false, false,
-                                       nullptr));
+  ASSERT_TRUE(seed_store.StoreSeedForTesting(seed, "test_country"));
   EXPECT_EQ("test_country", prefs.GetString(prefs::kVariationsCountry));
 
   // Test with no country code specified - which should preserve the old value.
-  EXPECT_TRUE(seed_store.StoreSeedData(seed, std::string(), std::string(),
-                                       base::Time::Now(), false, false,
-                                       nullptr));
+  ASSERT_TRUE(seed_store.StoreSeedForTesting(seed));
   EXPECT_EQ("test_country", prefs.GetString(prefs::kVariationsCountry));
 }
 
@@ -430,11 +436,14 @@ TEST(VariationsSeedStoreTest, StoreSeedData_GzippedSeed) {
   VariationsSeedStore::RegisterPrefs(prefs.registry());
   TestVariationsSeedStore seed_store(&prefs);
 
-  VariationsSeed parsed_seed;
-  EXPECT_TRUE(seed_store.StoreSeedData(compressed_seed, std::string(),
-                                       std::string(), base::Time::Now(), false,
-                                       true, &parsed_seed));
-  EXPECT_EQ(serialized_seed, SerializeSeed(parsed_seed));
+  seed_store.StoreSeedData(
+      compressed_seed, std::string(), std::string(), base::Time::Now(), false,
+      true,
+      base::BindOnce(&TestVariationsSeedStore::OnSeedStoreResult,
+                     base::Unretained(&seed_store)));
+  // TODO(crbug.com/1324295): Block on background tasks once async.
+  ASSERT_TRUE(seed_store.store_success_);
+  EXPECT_EQ(serialized_seed, SerializeSeed(seed_store.stored_seed_));
 }
 
 TEST(VariationsSeedStoreTest, StoreSeedData_IdenticalToSafeSeed) {
@@ -447,7 +456,7 @@ TEST(VariationsSeedStoreTest, StoreSeedData_IdenticalToSafeSeed) {
   prefs.SetString(prefs::kVariationsSafeCompressedSeed, base64_seed);
 
   TestVariationsSeedStore seed_store(&prefs);
-  EXPECT_TRUE(seed_store.StoreSeedForTesting(serialized_seed));
+  ASSERT_TRUE(seed_store.StoreSeedForTesting(serialized_seed));
 
   // Verify that the pref has a sentinel value, rather than the full string.
   EXPECT_EQ(kIdenticalToSafeSeedSentinel,
@@ -896,10 +905,14 @@ TEST(VariationsSeedStoreTest, StoreSeedData_GzippedEmptySeed) {
   VariationsSeedStore::RegisterPrefs(prefs.registry());
   TestVariationsSeedStore seed_store(&prefs);
 
-  VariationsSeed parsed_seed;
-  EXPECT_FALSE(seed_store.StoreSeedData(compressed_seed, std::string(),
-                                        std::string(), base::Time::Now(), false,
-                                        true, &parsed_seed));
+  seed_store.store_success_ = true;
+  seed_store.StoreSeedData(
+      compressed_seed, std::string(), std::string(), base::Time::Now(), false,
+      true,
+      base::BindOnce(&TestVariationsSeedStore::OnSeedStoreResult,
+                     base::Unretained(&seed_store)));
+  // TODO(crbug.com/1324295): Block on background tasks once async.
+  EXPECT_FALSE(seed_store.store_success_);
 }
 
 TEST(VariationsSeedStoreTest, VerifySeedSignature) {
@@ -1148,7 +1161,7 @@ TEST(VariationsSeedStoreTest, GetLatestSerialNumber_UpdatedWithNewStoredSeed) {
 
   VariationsSeed new_seed = CreateTestSeed();
   new_seed.set_serial_number("456");
-  seed_store.StoreSeedForTesting(SerializeSeed(new_seed));
+  ASSERT_TRUE(seed_store.StoreSeedForTesting(SerializeSeed(new_seed)));
   EXPECT_EQ("456", seed_store.GetLatestSerialNumber());
 }
 

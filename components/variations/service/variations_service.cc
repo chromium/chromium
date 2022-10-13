@@ -640,12 +640,10 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
       std::move(resource_request), traffic_annotation);
   // Ensure our callback is called even with "304 Not Modified" responses.
   pending_seed_request_->SetAllowHttpErrorResults(true);
-  // base::Unretained is safe here since this class scopes the lifetime of
-  // |pending_seed_request_|.
   pending_seed_request_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       client_->GetURLLoaderFactory().get(),
       base::BindOnce(&VariationsService::OnSimpleLoaderComplete,
-                     base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()));
 
   const base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta time_since_last_fetch;
@@ -662,28 +660,42 @@ bool VariationsService::DoFetchFromURL(const GURL& url, bool is_http_retry) {
   return true;
 }
 
-bool VariationsService::StoreSeed(const std::string& seed_data,
-                                  const std::string& seed_signature,
-                                  const std::string& country_code,
+void VariationsService::StoreSeed(std::string seed_data,
+                                  std::string seed_signature,
+                                  std::string country_code,
                                   base::Time date_fetched,
                                   bool is_delta_compressed,
                                   bool is_gzip_compressed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::unique_ptr<VariationsSeed> seed(new VariationsSeed);
-  if (!field_trial_creator_.seed_store()->StoreSeedData(
-          seed_data, seed_signature, country_code, date_fetched,
-          is_delta_compressed, is_gzip_compressed, seed.get())) {
-    return false;
+  base::OnceCallback<void(bool, VariationsSeed)> done_callback =
+      base::BindOnce(&VariationsService::OnSeedStoreResult,
+                     weak_ptr_factory_.GetWeakPtr(), is_delta_compressed);
+  field_trial_creator_.seed_store()->StoreSeedData(
+      std::move(seed_data), std::move(seed_signature), std::move(country_code),
+      date_fetched, is_delta_compressed, is_gzip_compressed,
+      std::move(done_callback));
+}
+
+void VariationsService::OnSeedStoreResult(bool is_delta_compressed,
+                                          bool store_success,
+                                          VariationsSeed seed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!store_success && is_delta_compressed) {
+    delta_error_since_last_success_ = true;
+    // |request_scheduler_| will be null during unit tests.
+    if (request_scheduler_)
+      request_scheduler_->ScheduleFetchShortly();
   }
 
-  RecordSuccessfulFetch();
+  if (store_success) {
+    RecordSuccessfulFetch();
 
-  // Now, do simulation to determine if there are any kill-switches that were
-  // activated by this seed.
-  PerformSimulationWithVersion(std::move(seed),
-                               client_->GetVersionForSimulation());
-  return true;
+    // Now, do simulation to determine if there are any kill-switches that were
+    // activated by this seed.
+    PerformSimulationWithVersion(seed, client_->GetVersionForSimulation());
+  }
 }
 
 void VariationsService::InitResourceRequestedAllowedNotifier() {
@@ -839,18 +851,11 @@ void VariationsService::OnSimpleLoaderComplete(
     return;
   }
 
-  const std::string signature =
-      GetHeaderValue(headers.get(), "X-Seed-Signature");
-  const std::string country_code = GetHeaderValue(headers.get(), "X-Country");
-  const bool store_success =
-      StoreSeed(*response_body, signature, country_code, response_date,
-                is_delta_compressed, is_gzip_compressed);
-  if (!store_success && is_delta_compressed) {
-    delta_error_since_last_success_ = true;
-    // |request_scheduler_| will be null during unit tests.
-    if (request_scheduler_)
-      request_scheduler_->ScheduleFetchShortly();
-  }
+  std::string signature = GetHeaderValue(headers.get(), "X-Seed-Signature");
+  std::string country_code = GetHeaderValue(headers.get(), "X-Country");
+  StoreSeed(std::move(*response_body), std::move(signature),
+            std::move(country_code), response_date, is_delta_compressed,
+            is_gzip_compressed);
 }
 
 bool VariationsService::MaybeRetryOverHTTP() {
@@ -884,7 +889,7 @@ void VariationsService::OnResourceRequestsAllowed() {
 }
 
 void VariationsService::PerformSimulationWithVersion(
-    std::unique_ptr<VariationsSeed> seed,
+    const VariationsSeed& seed,
     const base::Version& version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -899,7 +904,7 @@ void VariationsService::PerformSimulationWithVersion(
   std::unique_ptr<ClientFilterableState> client_state =
       field_trial_creator_.GetClientFilterableStateForVersion(version);
   const VariationsSeedSimulator::Result result =
-      seed_simulator.SimulateSeedStudies(*seed, *client_state);
+      seed_simulator.SimulateSeedStudies(seed, *client_state);
 
   UMA_HISTOGRAM_COUNTS_100("Variations.SimulateSeed.NormalChanges",
                            result.normal_group_change_count);
@@ -939,7 +944,7 @@ bool VariationsService::SetUpFieldTrials(
     const std::string& command_line_variation_ids,
     const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
     std::unique_ptr<base::FeatureList> feature_list,
-    variations::PlatformFieldTrials* platform_field_trials) {
+    PlatformFieldTrials* platform_field_trials) {
   return field_trial_creator_.SetUpFieldTrials(
       variation_ids, command_line_variation_ids, extra_overrides,
       std::move(feature_list), state_manager_, platform_field_trials,

@@ -192,9 +192,9 @@ class TestVariationsService : public VariationsService {
     return VariationsService::DoFetchFromURL(url, is_http_retry);
   }
 
-  bool StoreSeed(const std::string& seed_data,
-                 const std::string& seed_signature,
-                 const std::string& country_code,
+  void StoreSeed(std::string seed_data,
+                 std::string seed_signature,
+                 std::string country_code,
                  base::Time date_fetched,
                  bool is_delta_compressed,
                  bool is_gzip_compressed) override {
@@ -204,7 +204,8 @@ class TestVariationsService : public VariationsService {
     delta_compressed_seed_ = is_delta_compressed;
     gzip_compressed_seed_ = is_gzip_compressed;
     RecordSuccessfulFetch();
-    return seed_stores_succeed_;
+    OnSeedStoreResult(is_delta_compressed, seed_stores_succeed_,
+                      VariationsSeed());
   }
 
   TestVariationsServiceClient* client() {

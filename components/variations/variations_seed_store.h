@@ -78,15 +78,18 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // The actual seed data will be base64 encoded for storage. If the string
   // is invalid, the existing prefs are untouched and false is returned.
   // Additionally, stores the |country_code| that was received with the seed in
-  // a separate pref. On success and if |parsed_seed| is not NULL, |parsed_seed|
-  // will be filled with the de-serialized decoded protobuf.
-  [[nodiscard]] bool StoreSeedData(const std::string& data,
-                                   const std::string& base64_seed_signature,
-                                   const std::string& country_code,
-                                   const base::Time& date_fetched,
-                                   bool is_delta_compressed,
-                                   bool is_gzip_compressed,
-                                   VariationsSeed* parsed_seed);
+  // a separate pref. |done_callback| will be called with the result of the
+  // operation, with a non-empty de-serialized, decoded protobuf VariationsSeed
+  // on success.
+  // Note: Strings are passed by value to support std::move() semantics.
+  void StoreSeedData(
+      std::string data,
+      std::string base64_seed_signature,
+      std::string country_code,
+      base::Time date_fetched,
+      bool is_delta_compressed,
+      bool is_gzip_compressed,
+      base::OnceCallback<void(bool, VariationsSeed)> done_callback);
 
   // Loads the safe variations seed data from local state into |seed| and
   // updates any relevant fields in |client_state|. Returns true iff the safe

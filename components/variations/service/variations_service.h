@@ -193,7 +193,7 @@ class VariationsService
       const std::vector<base::FeatureList::FeatureOverrideInfo>&
           extra_overrides,
       std::unique_ptr<base::FeatureList> feature_list,
-      variations::PlatformFieldTrials* platform_field_trials);
+      PlatformFieldTrials* platform_field_trials);
 
   // Overrides cached UI strings on the resource bundle once it is initialized.
   void OverrideCachedUIStrings();
@@ -227,12 +227,18 @@ class VariationsService
 
   // Stores the seed to prefs. Set as virtual and protected so that it can be
   // overridden by tests.
-  virtual bool StoreSeed(const std::string& seed_data,
-                         const std::string& seed_signature,
-                         const std::string& country_code,
+  // Note: Strings are passed by value to support std::move() semantics.
+  virtual void StoreSeed(std::string seed_data,
+                         std::string seed_signature,
+                         std::string country_code,
                          base::Time date_fetched,
                          bool is_delta_compressed,
                          bool is_gzip_compressed);
+
+  // Processes the result of StoreSeed().
+  void OnSeedStoreResult(bool is_delta_compressed,
+                         bool store_success,
+                         VariationsSeed seed);
 
   // Creates the VariationsService with the given |local_state| prefs service
   // and |state_manager|. Does not take ownership of |state_manager|. Caller
@@ -308,8 +314,7 @@ class VariationsService
   void FetchVariationsSeed();
 
   // Notify any observers of this service based on the simulation |result|.
-  void NotifyObservers(
-      const variations::VariationsSeedSimulator::Result& result);
+  void NotifyObservers(const VariationsSeedSimulator::Result& result);
 
   // Called by SimpleURLLoader when |pending_seed_request_| load completes.
   void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
@@ -324,9 +329,8 @@ class VariationsService
 
   // Performs a variations seed simulation with the given |seed| and |version|
   // and logs the simulation results as histograms.
-  void PerformSimulationWithVersion(
-      std::unique_ptr<variations::VariationsSeed> seed,
-      const base::Version& version);
+  void PerformSimulationWithVersion(const VariationsSeed& seed,
+                                    const base::Version& version);
 
   // Encrypts a string using the encrypted_messages component, input is passed
   // in as |plaintext|, outputs a serialized EncryptedMessage protobuf as
