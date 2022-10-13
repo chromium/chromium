@@ -195,15 +195,13 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     for (const auto& node :
          blocked_cookies_tree_model_->GetRoot()->children()) {
       auto entry = sites_map.find(node->GetDetailedInfo().origin.host());
+      // If there are multiple entries from the same tree, ignore the entry from
+      // the blocked tree. It might be caused by partitioned allowed cookies and
+      // regular blocked cookies or by cookies being set after creating an
+      // exception and not reloading the page.
       if (entry == sites_map.end()) {
         sites_map.emplace(node->GetDetailedInfo().origin.host(),
                           CreateSiteFromHostNode(node.get()));
-      } else {
-        // There is already an entry with the same origin. If that's the case,
-        // the entry should be from the allowed tree and it should be fully
-        // partitioned. The effective setting might be blocked if the site was
-        // blocked and the page wasn't reloaded.
-        DCHECK(entry->second.is_fully_partitioned);
       }
     }
 
