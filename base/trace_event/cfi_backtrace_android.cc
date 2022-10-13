@@ -153,8 +153,10 @@ CFIBacktraceAndroid::~CFIBacktraceAndroid() {}
 void CFIBacktraceAndroid::Initialize() {
   // This file name is defined by extract_unwind_tables.gni.
   static constexpr char kCfiFileName[] = "assets/unwind_cfi_32";
+  static constexpr char kSplitName[] = "stack_unwinder";
+
   MemoryMappedFile::Region cfi_region;
-  int fd = base::android::OpenApkAsset(kCfiFileName, &cfi_region);
+  int fd = base::android::OpenApkAsset(kCfiFileName, kSplitName, &cfi_region);
   if (fd < 0)
     return;
   cfi_mmap_ = std::make_unique<MemoryMappedFile>();

@@ -62,8 +62,10 @@ class ChromeUnwinderCreator {
  public:
   ChromeUnwinderCreator() {
     constexpr char kCfiFileName[] = "assets/unwind_cfi_32_v2";
+    constexpr char kSplitName[] = "stack_unwinder";
+
     base::MemoryMappedFile::Region cfi_region;
-    int fd = base::android::OpenApkAsset(kCfiFileName, &cfi_region);
+    int fd = base::android::OpenApkAsset(kCfiFileName, kSplitName, &cfi_region);
     DCHECK_GE(fd, 0);
     bool mapped_file_ok =
         chrome_cfi_file_.Initialize(base::File(fd), cfi_region);
@@ -90,9 +92,10 @@ class ChromeUnwinderCreator {
  public:
   ChromeUnwinderCreator() {
     constexpr char kCfiFileName[] = "assets/unwind_cfi_32";
+    constexpr char kSplitName[] = "stack_unwinder";
 
     base::MemoryMappedFile::Region cfi_region;
-    int fd = base::android::OpenApkAsset(kCfiFileName, &cfi_region);
+    int fd = base::android::OpenApkAsset(kCfiFileName, kSplitName, &cfi_region);
     DCHECK_GE(fd, 0);
     bool mapped_file_ok =
         chrome_cfi_file_.Initialize(base::File(fd), cfi_region);
@@ -161,22 +164,6 @@ std::vector<std::unique_ptr<base::Unwinder>> CreateLibunwindstackUnwinders(
   return unwinders;
 }
 
-// Checks whether unwinder assets -- such as call frame information needed for
-// unwinders to work -- are available in the current context. Unwinder assets
-// are only embedded into certain builds of Chrome.
-bool AreUnwinderAssetsAvailable(version_info::Channel channel) {
-#if defined(OFFICIAL_BUILD) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // CFI is currently only embedded into dev, canary, and beta builds of Chrome:
-  // https://crsrc.org/c/chrome/android/chrome_public_apk_tmpl.gni;l=30-36;drc=32cca7e9d8c49d42e393c75ffb404a0f8899704d
-  return channel == version_info::Channel::CANARY ||
-         channel == version_info::Channel::DEV ||
-         channel == version_info::Channel::BETA;
-#else
-  // Local/CQ builds.
-  return true;
-#endif
-}
-
 // Manages installation of the module prerequisite for unwinding. Android, in
 // particular, requires a dynamic feature module to provide the native unwinder.
 class ModuleUnwindPrerequisitesDelegate : public UnwindPrerequisitesDelegate {
@@ -243,9 +230,7 @@ bool AreUnwindPrerequisitesAvailable(
   if (prerequites_delegate == nullptr) {
     prerequites_delegate = &default_delegate;
   }
-  // We need both (1) unwinder assets and (2) unwinder module to be available.
-  return AreUnwinderAssetsAvailable(channel) &&
-         prerequites_delegate->AreAvailable(channel);
+  return prerequites_delegate->AreAvailable(channel);
 #else   // ANDROID_ARM32_UNWINDING_SUPPORTED
   return true;
 #endif  // ANDROID_ARM32_UNWINDING_SUPPORTED

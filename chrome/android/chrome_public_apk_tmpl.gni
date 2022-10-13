@@ -263,8 +263,11 @@ template("chrome_public_common_apk_or_module_tmpl") {
       deps += [ ":${target_name}__all_dfm_resources" ]
     }
 
-    # TODO(crbug.com/1362495): Add this only when !_is_bundle.
-    if (add_unwind_tables_in_chrome_32bit_apk) {
+    # Unwind tables are included in the stack_unwinder DFM on Android, so they
+    # aren't needed for bundle builds. However, we keep them for non-bundle
+    # builds, such as test and development apks (e.g. chrome_public_apk), to
+    # allow tests and developers to use them directly.
+    if (!_is_bundle && add_unwind_tables_in_chrome_32bit_apk) {
       _needs_32bit_lib =
           target_cpu == "arm" || ((_is_monochrome || _is_trichrome) &&
                                   target_cpu == "arm64" && !_is_64_bit_browser)
