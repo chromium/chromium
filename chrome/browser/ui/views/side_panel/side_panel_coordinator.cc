@@ -418,15 +418,16 @@ void SidePanelCoordinator::PopulateSidePanel(
   // the currently hosted SidePanelEntry.
   DCHECK(content_wrapper->children().size() <= 1);
 
+  content_wrapper->SetVisible(true);
   GetContentView()->SetVisible(true);
   if (current_entry_ && content_wrapper->children().size()) {
     auto current_entry_view =
         content_wrapper->RemoveChildViewT(content_wrapper->children().front());
     current_entry_->CacheView(std::move(current_entry_view));
   }
-  content_wrapper->AddChildView(content_view.has_value()
-                                    ? std::move(content_view.value())
-                                    : entry->GetContent());
+  auto* content = content_wrapper->AddChildView(
+      content_view.has_value() ? std::move(content_view.value())
+                               : entry->GetContent());
   if (auto* contextual_registry = GetActiveContextualRegistry())
     contextual_registry->ResetActiveEntry();
   auto* previous_entry = current_entry_.get();
@@ -435,7 +436,7 @@ void SidePanelCoordinator::PopulateSidePanel(
   if (previous_entry) {
     previous_entry->OnEntryHidden();
   } else {
-    header_combobox_->RequestFocus();
+    content->RequestFocus();
   }
   header_open_in_new_tab_button_->SetVisible(
       current_entry_->GetOpenInNewTabURL().is_valid());
