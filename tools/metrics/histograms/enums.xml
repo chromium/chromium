@@ -35760,6 +35760,7 @@ Called by update_extension_histograms.py.-->
   <int value="1722" label="AUTOTESTPRIVATE_MAKEFUSEBOXTEMPDIR"/>
   <int value="1723" label="AUTOTESTPRIVATE_REMOVEFUSEBOXTEMPDIR"/>
   <int value="1724" label="AUTOTESTPRIVATE_GETTHROUGHPUTTRACKERDATA"/>
+  <int value="1725" label="ENTERPRISE_REMOTEAPPS_SORTLAUNCHER"/>
 </enum>
 
 <enum name="ExtensionIconState">

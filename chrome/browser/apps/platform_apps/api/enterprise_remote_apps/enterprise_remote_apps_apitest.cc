@@ -59,6 +59,7 @@ constexpr char kExtensionId[] = "ceddkihciiemhnpnhbndbinppokgoidh";
 constexpr char kId1[] = "Id 1";
 constexpr char kId2[] = "Id 2";
 constexpr char kId3[] = "Id 3";
+constexpr char kId4[] = "Id 4";
 
 }  // namespace
 
@@ -95,6 +96,10 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
 
     SetUpDeviceLocalAccountPolicy();
     ash::SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();
+
+    user_manager::User* user =
+        user_manager::UserManager::Get()->GetActiveUser();
+    profile_ = ash::ProfileHelper::Get()->GetProfileByUser(user);
   }
 
   // TODO(b/239145899): Refactor to not use MGS setup any more.
@@ -112,9 +117,31 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
     RefreshDevicePolicy();
   }
 
+  std::string LoadExtension(base::FilePath extension_path,
+                            base::FilePath pem_path = base::FilePath()) {
+    extensions::ChromeTestExtensionLoader loader(profile_);
+    loader.set_location(extensions::mojom::ManifestLocation::kExternalPolicy);
+    loader.set_pack_extension(true);
+    if (!pem_path.empty())
+      loader.set_pem_path(pem_path);
+
+    // When |set_pack_extension_| is true, the |loader| first packs and then
+    // loads the extension. The packing step creates a _metadata folder which
+    // causes an install warning when loading.
+    loader.set_ignore_manifest_warnings(true);
+    return loader.LoadExtension(extension_path)->id();
+  }
+
   void LoadExtensionAndRunTest(const std::string& test_name) {
     config_.SetKey("customArg", base::Value(test_name));
     extensions::TestGetConfigFunction::set_test_config_state(&config_);
+
+    std::unique_ptr<ash::FakeIdGenerator> id_generator =
+        std::make_unique<ash::FakeIdGenerator>(
+            std::vector<std::string>{kId1, kId2, kId3, kId4});
+    ash::RemoteAppsManagerFactory::GetForProfile(profile_)
+        ->GetModelForTesting()
+        ->SetIdGeneratorForTesting(std::move(id_generator));
 
     base::FilePath test_dir_path;
     base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir_path);
@@ -122,26 +149,8 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
     base::FilePath pem_path =
         test_dir_path.AppendASCII(kExtensionPemRelativePath);
 
-    user_manager::User* user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-
-    std::unique_ptr<ash::FakeIdGenerator> id_generator =
-        std::make_unique<ash::FakeIdGenerator>(
-            std::vector<std::string>{kId1, kId2, kId3});
-    ash::RemoteAppsManagerFactory::GetForProfile(profile)
-        ->GetModelForTesting()
-        ->SetIdGeneratorForTesting(std::move(id_generator));
-
-    extensions::ChromeTestExtensionLoader loader(profile);
-    loader.set_location(extensions::mojom::ManifestLocation::kExternalPolicy);
-    loader.set_pack_extension(true);
-    loader.set_pem_path(pem_path);
-    // When |set_pack_extension_| is true, the |loader| first packs and then
-    // loads the extension. The packing step creates a _metadata folder which
-    // causes an install warning when loading.
-    loader.set_ignore_manifest_warnings(true);
-    ASSERT_TRUE(loader.LoadExtension(extension_path));
+    std::string extension_id = LoadExtension(extension_path, pem_path);
+    ASSERT_FALSE(extension_id.empty());
   }
 
   ash::AppListItem* GetAppListItem(const std::string& id) {
@@ -175,6 +184,7 @@ class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
   }
 
  private:
+  Profile* profile_;
   base::DictionaryValue config_;
   ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 };
@@ -285,6 +295,75 @@ IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, OnRemoteAppLaunched) {
       ash::ShelfID(kId1), ash::ShelfLaunchSource::LAUNCH_FROM_APP_LIST,
       /*event_flags=*/0, /*display_id=*/0);
   ASSERT_TRUE(catcher.GetNextResult());
+}
+
+// Adds remote and native items and tests that the final order, after calling
+// chrome.enterprise.remoteApps.sortLauncher(), is remote apps first, in
+// alphabetical, case insensitive order, followed by native apps in
+// alphabetical, case insensitive order.
+IN_PROC_BROWSER_TEST_P(RemoteAppsApitest, SortLauncher) {
+  if (GetParam() != kApiExtensionRelativePath)
+    GTEST_SKIP() << "The sortLauncher API method is not available in Mojo API";
+
+  base::FilePath test_dir_path;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir_path);
+  test_dir_path = test_dir_path.AppendASCII("extensions");
+
+  extensions::ResultCatcher catcher;
+  ExtensionTestMessageListener listener("Ready to sort",
+                                        ReplyBehavior::kWillReply);
+  listener.set_extension_id(kExtensionId);
+  LoadExtensionAndRunTest("AddRemoteItemsForSort");
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  std::string app1_id =
+      LoadExtension(test_dir_path.AppendASCII("app1"));  // Test App 1
+  ASSERT_FALSE(app1_id.empty());
+  std::string app2_id =
+      LoadExtension(test_dir_path.AppendASCII("app2"));  // Test App 2
+  ASSERT_FALSE(app2_id.empty());
+  std::string app4_id =
+      LoadExtension(test_dir_path.AppendASCII("app4"));  // Test App 4
+  ASSERT_FALSE(app4_id.empty());
+
+  // Apps and folders are not ordered. Native and remote apps are added to the
+  // front (last app added is now first).
+  // Current order: `Test App 4` (native), `Test App 2` (native), `Test App 1`
+  // (native), `Test App 6 Folder` (remote), `Test App 7` (remote), `test app 5`
+  // (remote).
+  int app1_index = GetAppListItemIndex(app1_id);  // Test App 1 (native)
+  int app2_index = GetAppListItemIndex(app2_id);  // Test App 2 (native)
+  int app4_index = GetAppListItemIndex(app4_id);  // Test App 4 (native)
+  int id1_index = GetAppListItemIndex(kId1);      // test app 5 (remote)
+  int id2_index = GetAppListItemIndex(kId2);      // Test App 7 (remote)
+  int id3_index = GetAppListItemIndex(kId3);      // Test App 6 Folder (remote)
+  EXPECT_LT(app4_index, app2_index);              // Test App 4 < Test App 2
+  EXPECT_LT(app2_index, app1_index);              // Test App 2 < Test App 1
+  EXPECT_LT(app1_index, id3_index);  // Test App 1 < Test App 6 Folder
+  EXPECT_LT(id3_index, id2_index);   // Test App 6 Folder < Test App 7
+  EXPECT_LT(id2_index, id1_index);   // Test App 7 < test app 5
+
+  // Call chrome.enterprise.remoteApps.sortLauncher().
+  listener.Reply("");
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  // Verifies that remote apps sorting moves all remote items (apps and folders)
+  // to the front, in alphabetical, case insensitive order, followed by native
+  // items also in alphabetical, case insensitive order.
+  // Sorted order: `test app 5` (remote), `Test App 6 Folder` (remote),
+  // `Test App 7` (remote), `App Test 1` (native), `Test App 2` (native),
+  // `Test App 4` (native).
+  app1_index = GetAppListItemIndex(app1_id);  // Test App 1 (native)
+  app2_index = GetAppListItemIndex(app2_id);  // Test App 2 (native)
+  app4_index = GetAppListItemIndex(app4_id);  // Test App 4 (native)
+  id1_index = GetAppListItemIndex(kId1);      // test app 5 (remote)
+  id2_index = GetAppListItemIndex(kId2);      // Test App 7 (remote)
+  id3_index = GetAppListItemIndex(kId3);      // Test App 6 Folder (remote)
+  EXPECT_LT(id1_index, id3_index);            // test app 5 < Test App 6 Folder
+  EXPECT_LT(id3_index, id2_index);            // Test App 6 Folder  < Test App 7
+  EXPECT_LT(id2_index, app1_index);           // Test App 7 < Test App 1
+  EXPECT_LT(app1_index, app2_index);          // Test App 1 < Test App 2
+  EXPECT_LT(app2_index, app4_index);          // Test App 2 < Test App 4
 }
 
 INSTANTIATE_TEST_SUITE_P(,

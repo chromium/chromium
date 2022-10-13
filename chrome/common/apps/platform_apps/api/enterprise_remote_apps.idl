@@ -34,6 +34,18 @@ namespace enterprise.remoteApps {
     DOMString? iconUrl;
   };
 
+  // Possible sort order positions for $(ref:sortLauncher).
+  enum RemoteAppsPosition {
+    // Before native apps, in alphabetical, case insensitive, order.
+    REMOTE_APPS_FIRST
+  };
+
+  // Options for $(ref:sortLauncher).
+  // |position|: Remote apps and folders sort order position.
+  dictionary SortLauncherOptions {
+    RemoteAppsPosition position;
+  };
+
   interface Functions {
     // Adds a Remote Apps folder to the launcher. Empty folders are not shown
     // in the launcher.
@@ -51,6 +63,12 @@ namespace enterprise.remoteApps {
     // Deletes a Remote App added by $(ref:addApp).
     static void deleteApp(
         DOMString appId,
+        optional VoidCallback callback);
+
+    // Sorts the Remote apps and folders according to the position specified in
+    // the SortLauncherOptions.
+    static void sortLauncher(
+        SortLauncherOptions options,
         optional VoidCallback callback);
   };
 

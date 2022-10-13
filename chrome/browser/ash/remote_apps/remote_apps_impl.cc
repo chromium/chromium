@@ -134,6 +134,12 @@ void RemoteAppsImpl::DeleteApp(const std::string& app_id,
   }
 }
 
+void RemoteAppsImpl::SortLauncherWithRemoteAppsFirst(
+    SortLauncherWithRemoteAppsFirstCallback callback) {
+  manager_->SortLauncherWithRemoteAppsFirst();
+  std::move(callback).Run(absl::nullopt);
+}
+
 void RemoteAppsImpl::OnAppLaunched(const std::string& source_id,
                                    const std::string& app_id) {
   // Dispatch events to broadcast observers.

@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+#include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
 #include "chrome/common/apps/platform_apps/api/enterprise_remote_apps.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/menu.h"
@@ -247,6 +248,11 @@ RemoteAppsError RemoteAppsManager::DeleteApp(const std::string& id) {
   remote_apps_->DeleteApp(id);
   app_id_to_source_id_map_.erase(id);
   return RemoteAppsError::kNone;
+}
+
+void RemoteAppsManager::SortLauncherWithRemoteAppsFirst() {
+  static_cast<ChromeAppListModelUpdater*>(model_updater_)
+      ->RequestAppListSort(AppListSortOrder::kAlphabeticalEphemeralAppFirst);
 }
 
 std::string RemoteAppsManager::AddFolder(const std::string& folder_name,

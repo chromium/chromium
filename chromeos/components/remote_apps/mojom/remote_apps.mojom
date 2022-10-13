@@ -26,6 +26,9 @@ union AddAppResult {
 
 // Interface for communication between an extension and the Remote Apps
 // Manager or |RemoteAppsProxyLacros|.
+//
+// Next MinVersion: 2
+// Next Method ID: 4
 [Stable]
 interface RemoteApps {
   // Adds a Remote Apps folder to the launcher. Empty folders are not shown in
@@ -73,6 +76,14 @@ interface RemoteApps {
   // Output parameters:
   // - |error|: A string describing the error if any.
   DeleteApp@2(string app_id) => (string? error);
+
+  // Sorts the Remote apps and folders at the front of the launcher, in
+  // alphabetical, case insensitive, order.
+  //
+  // Output parameters:
+  // - |error|: A string describing the error if any.
+  [MinVersion=1]
+  SortLauncherWithRemoteAppsFirst@3() => (string? error);
 };
 
 // Factory for creating an instance of |RemoteApps|.

@@ -124,6 +124,10 @@ class RemoteAppsManager
   // Deleting a non-existent app will result in an error.
   RemoteAppsError DeleteApp(const std::string& id);
 
+  // Sorts the launcher items with the custom kAlphabeticalEphemeralAppFirst
+  // sort order which moves the remote apps to the front of the launcher.
+  void SortLauncherWithRemoteAppsFirst();
+
   // Adds a folder with |folder_name|. Note that empty folders are not shown in
   // the launcher. Returns the ID for the added folder. If |add_to_front| is
   // true, the folder will be added to the front of the app item list.

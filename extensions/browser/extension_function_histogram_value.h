@@ -1785,6 +1785,7 @@ enum HistogramValue {
   AUTOTESTPRIVATE_MAKEFUSEBOXTEMPDIR = 1722,
   AUTOTESTPRIVATE_REMOVEFUSEBOXTEMPDIR = 1723,
   AUTOTESTPRIVATE_GETTHROUGHPUTTRACKERDATA = 1724,
+  ENTERPRISE_REMOTEAPPS_SORTLAUNCHER = 1725,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

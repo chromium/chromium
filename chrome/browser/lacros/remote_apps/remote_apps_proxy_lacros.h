@@ -76,6 +76,8 @@ class RemoteAppsProxyLacros
               AddAppCallback callback) override;
   void DeleteApp(const std::string& app_id,
                  DeleteAppCallback callback) override;
+  void SortLauncherWithRemoteAppsFirst(
+      SortLauncherWithRemoteAppsFirstCallback callback) override;
 
   // remote_apps::mojom::RemoteAppLaunchObserver:
   void OnRemoteAppLaunched(const std::string& app_id,

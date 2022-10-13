@@ -119,6 +119,17 @@ void RemoteAppsProxyLacros::DeleteApp(const std::string& app_id,
   ash_remote_apps_remote_->DeleteApp(app_id, std::move(callback));
 }
 
+void RemoteAppsProxyLacros::SortLauncherWithRemoteAppsFirst(
+    SortLauncherWithRemoteAppsFirstCallback callback) {
+  if (!ash_remote_apps_remote_.is_bound() ||
+      !ash_remote_apps_remote_.is_connected()) {
+    std::move(callback).Run(kErrorNoAshRemoteConnected);
+    return;
+  }
+
+  ash_remote_apps_remote_->SortLauncherWithRemoteAppsFirst(std::move(callback));
+}
+
 void RemoteAppsProxyLacros::OnRemoteAppLaunched(const std::string& app_id,
                                                 const std::string& source_id) {
   std::unique_ptr<extensions::Event> event = std::make_unique<

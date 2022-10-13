@@ -42,6 +42,8 @@ chromeos::remote_apps::mojom::RemoteApps* GetEnterpriseRemoteAppsApi(
 
 }  // namespace
 
+using enterprise_remote_apps::RemoteAppsPosition;
+
 EnterpriseRemoteAppsAddFolderFunction::EnterpriseRemoteAppsAddFolderFunction() =
     default;
 
@@ -156,6 +158,49 @@ ExtensionFunction::ResponseAction EnterpriseRemoteAppsDeleteAppFunction::Run() {
 }
 
 void EnterpriseRemoteAppsDeleteAppFunction::OnResult(
+    const absl::optional<std::string>& error) {
+  if (error) {
+    Respond(Error(*error));
+    return;
+  }
+
+  Respond(WithArguments());
+}
+
+EnterpriseRemoteAppsSortLauncherFunction::
+    EnterpriseRemoteAppsSortLauncherFunction() = default;
+
+EnterpriseRemoteAppsSortLauncherFunction::
+    ~EnterpriseRemoteAppsSortLauncherFunction() = default;
+
+ExtensionFunction::ResponseAction
+EnterpriseRemoteAppsSortLauncherFunction::Run() {
+  auto parameters =
+      api::enterprise_remote_apps::SortLauncher::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  chromeos::remote_apps::mojom::RemoteApps* remote_apps_api =
+      GetEnterpriseRemoteAppsApi(browser_context());
+  if (remote_apps_api == nullptr)
+    return RespondNow(Error("Remote apps not supported in this session"));
+
+  switch (parameters->options.position) {
+    case RemoteAppsPosition::REMOTE_APPS_POSITION_REMOTE_APPS_FIRST: {
+      auto callback = base::BindOnce(
+          &EnterpriseRemoteAppsSortLauncherFunction::OnResult, this);
+      remote_apps_api->SortLauncherWithRemoteAppsFirst(std::move(callback));
+      break;
+    }
+    default: {
+      return RespondNow(Error("Remote apps sort position not valid."));
+    }
+  }
+
+  // `did_respond()` needed here as the `SortLauncher()` can be sync or async.
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void EnterpriseRemoteAppsSortLauncherFunction::OnResult(
     const absl::optional<std::string>& error) {
   if (error) {
     Respond(Error(*error));
