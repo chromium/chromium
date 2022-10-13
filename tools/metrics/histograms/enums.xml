@@ -81237,11 +81237,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="Price tracking disabled"/>
 </enum>
 
-<enum name="PrinterEditDialogActions">
-  <int value="0" label="Dialog opened"/>
-  <int value="1" label="View PPD clicked"/>
-</enum>
-
 <enum name="PrinterProtocol">
   <int value="0" label="Unknown"/>
   <int value="1" label="Universal Serial Bus (usb)"/>

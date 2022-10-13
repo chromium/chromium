@@ -17,11 +17,10 @@ import './cups_add_printer_dialog.js';
 import './cups_printer_dialog_error.js';
 import './cups_printer_shared_css.js';
 
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {CrosNetworkConfigRemote, FilterType, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -29,23 +28,8 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {recordSettingChange} from '../metrics_recorder.js';
 
 import {getBaseName, getErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid} from './cups_printer_dialog_util.js';
-import {CupsPrinterInfo, CupsPrinterPpdInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, ManufacturersInfo, ModelsInfo, PrinterPpdMakeModel, PrinterSetupResult} from './cups_printers_browser_proxy.js';
+import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, ManufacturersInfo, ModelsInfo, PrinterPpdMakeModel, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 
-/**
- * The types of actions that can be performed with the edit dialog.  These
- * values are written to logs and used as metrics.  New enum values can be
- * added, but existing values must never be renumbered or deleted and reused.
- * See PrinterEditDialogActions enum in tools/metrics/hisograms/enums.xml.
- * @enum {number}
- * @const
- */
-const DIALOG_ACTIONS = {
-  DIALOG_OPENED: 0,
-  VIEW_PPD_CLICKED: 1,
-};
-
-/** Keyword used for recording metrics */
-const METRICS_KEYWORD = 'Printing.CUPS.EditDialog';
 
 /**
  * @constructor
@@ -215,10 +199,6 @@ class SettingsCupsEditPrinterDialogElement extends
   /** @override */
   connectedCallback() {
     super.connectedCallback();
-
-    chrome.metricsPrivate.recordEnumerationValue(
-        METRICS_KEYWORD, DIALOG_ACTIONS.DIALOG_OPENED,
-        Object.keys(DIALOG_ACTIONS).length);
 
     // Create a copy of activePrinter so that we can modify its fields.
     this.pendingPrinter_ = /** @type{CupsPrinterInfo} */
@@ -447,66 +427,6 @@ class SettingsCupsEditPrinterDialogElement extends
    */
   onGetEulaUrlCompleted_(eulaUrl) {
     this.eulaUrl_ = eulaUrl;
-  }
-
-  /**
-   * Handler for retrieveCupsPrinterPpd success.
-   * @param {!CupsPrinterPpdInfo} ppdInfo
-   * @private
-   */
-  onRetrieveCupsPrinterPpdSucceeded_(ppdInfo) {
-    let eulaHtml = '';
-    if (this.eulaUrl_) {
-      const linkText = this.i18n('printerEulaNotice');
-      eulaHtml = `<a href=${this.eulaUrl_} target="_blank">
-           ${linkText}</a>
-           <p>============================================================</p>`;
-    }
-
-    const htmlText = '<!DOCTYPE html><html><body><h1>' +
-        loadTimeData.getStringF('cupsPrintersPpdFor', ppdInfo.printerName) +
-        '</h1>' + eulaHtml + '<p><pre>' + ppdInfo.ppd + '</pre></p>';
-
-    const win = window.open('');
-    win.document.title = ppdInfo.printerName;
-    win.document.body.innerHTML = htmlText;
-  }
-
-  /**
-   * Handler for retrieveCupsPrinterPpd failure.
-   * @param {*} ppdInfo
-   * @private
-   */
-  onRetrieveCupsPrinterPpdFailed_(ppdInfo) {
-    const htmlText = '<!DOCTYPE html><html><body><h1>' +
-        loadTimeData.getStringF('cupsPrintersPpdFor', ppdInfo.printerName) +
-        '</h1><p>' + this.i18n('cupsPrintersViewPpdErrorMessage') + '</p>';
-
-    const win = window.open('');
-    win.document.title = ppdInfo.printerName;
-    win.document.body.innerHTML = htmlText;
-  }
-
-  /** @private */
-  onViewPpd_() {
-    chrome.metricsPrivate.recordEnumerationValue(
-        METRICS_KEYWORD, DIALOG_ACTIONS.VIEW_PPD_CLICKED,
-        Object.keys(DIALOG_ACTIONS).length);
-
-    // We always use the activePrinter (the printer when the dialog was first
-    // displayed) when viewing the PPD.  Once the user has modified the dialog,
-    // the view PPD button is no longer active.
-    this.browserProxy_
-        .retrieveCupsPrinterPpd(
-            this.activePrinter.printerId, this.activePrinter.printerName)
-        .then(
-            this.onRetrieveCupsPrinterPpdSucceeded_.bind(this),
-            this.onRetrieveCupsPrinterPpdFailed_.bind(this));
-  }
-
-  /** @private */
-  onLearnMoreTap_() {
-    window.open(this.i18n('printingCUPSPrintPpdLearnMoreUrl'));
   }
 
   /** @private */

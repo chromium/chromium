@@ -295,16 +295,6 @@ void FakeDebugDaemonClient::CupsRemovePrinter(
       FROM_HERE, base::BindOnce(std::move(callback), has_printer));
 }
 
-void FakeDebugDaemonClient::CupsRetrievePrinterPpd(
-    const std::string& name,
-    CupsRetrievePrinterPpdCallback callback,
-    base::OnceClosure error_callback) {
-  std::vector<uint8_t> fake_ppd{'F', 'a', 'k', 'e', ' ', 'P', 'P',
-                                'D', ' ', 'd', 'a', 't', 'a'};
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), fake_ppd));
-}
-
 void FakeDebugDaemonClient::StartPluginVmDispatcher(
     const std::string& /* owner_id */,
     const std::string& /* lang */,
