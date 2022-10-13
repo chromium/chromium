@@ -91,7 +91,8 @@
   }
 
   :host([in-side-panel_]) #title {
-      font-size: 13px;
+    font-size: .8125rem;  /* 13px */
+    line-height: calc(20/13);  /* 20px */
   }
 
   #url {
@@ -101,7 +102,8 @@
 
   :host([in-side-panel_]) #url {
     color: var(--side-panel-url-color);
-    font-size: 12px;
+    font-size: .75rem;  /* 12px */
+    line-height: calc(5/3);  /* 20px */
   }
 
   #debug-info {
