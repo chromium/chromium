@@ -14,4 +14,12 @@ import "ash/public/mojom/accelerator_info.mojom";
 interface AcceleratorConfigurationProvider {
   // Whether the source is mutable and shortcuts can be changed.
   IsMutable(ash.mojom.AcceleratorSource source) => (bool is_mutable);
+
+  // Get the accelerator mappings for all sources. This is formatted as
+  // AcceleratorSource -> map<AcceleratorActionId, Array<AcceleratorInfo>>.
+  // Note that an accelerator action can have multiple accelerators associated
+  // with it.
+  GetAccelerators() =>
+      (map<ash.mojom.AcceleratorSource,
+       map<uint32, array<ash.mojom.AcceleratorInfo>>> config);
 };

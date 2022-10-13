@@ -19,6 +19,11 @@ namespace shortcut_ui {
 class AcceleratorConfigurationProvider
     : shortcut_customization::mojom::AcceleratorConfigurationProvider {
  public:
+  using AcceleratorConfigurationMap =
+      base::flat_map<mojom::AcceleratorSource,
+                     base::flat_map<AcceleratorActionId,
+                                    std::vector<mojom::AcceleratorInfoPtr>>>;
+
   AcceleratorConfigurationProvider();
   AcceleratorConfigurationProvider(const AcceleratorConfigurationProvider&) =
       delete;
@@ -29,6 +34,7 @@ class AcceleratorConfigurationProvider
   // shortcut_customization::mojom::AcceleratorConfigurationProvider:
   void IsMutable(ash::mojom::AcceleratorSource source,
                  IsMutableCallback callback) override;
+  void GetAccelerators(GetAcceleratorsCallback callback) override;
 
   void BindInterface(
       mojo::PendingReceiver<
@@ -43,7 +49,6 @@ class AcceleratorConfigurationProvider
       const std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>&
           mapping);
 
-  // TODO(jimmyxgong): Remove this when Mojo is implemented.
   std::map<AcceleratorActionId, std::vector<AcceleratorInfo>>
       ash_accelerator_mapping_;
 

@@ -45,7 +45,7 @@ bool CompareAccelerators(const ash::AcceleratorData& expected_data,
 }
 
 void ExpectAllAcceleratorsEqual(
-    const base::span<const ash::AcceleratorData> expected,
+    const base::span<const ash::AcceleratorData>& expected,
     const std::vector<ash::AcceleratorInfo>& actual) {
   EXPECT_EQ(std::size(expected), actual.size());
 
@@ -59,6 +59,24 @@ void ExpectAllAcceleratorsEqual(
     }
     EXPECT_TRUE(found_match);
   }
+}
+
+void ExpectMojomAcceleratorsEqual(
+    ash::mojom::AcceleratorSource source,
+    const base::span<const ash::AcceleratorData>& expected,
+    ash::shortcut_ui::AcceleratorConfigurationProvider::
+        AcceleratorConfigurationMap actual_config) {
+  // Flatten the map into a vector of `AcceleratorInfo`'s and verify it against
+  // the expected data.
+  std::vector<AcceleratorInfo> actual_infos;
+  for (const auto& iter : actual_config[source]) {
+    for (const auto& mojo_info : iter.second) {
+      AcceleratorInfo accelerator(mojo_info->type, mojo_info->accelerator,
+                                  mojo_info->key_display, mojo_info->locked);
+      actual_infos.push_back(std::move(accelerator));
+    }
+  }
+  ExpectAllAcceleratorsEqual(expected, actual_infos);
 }
 
 }  // namespace
@@ -94,6 +112,13 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
       }
     }
     return accelerators;
+  }
+
+  void GetAshConfigAndExpectEquals(
+      const base::span<const ash::AcceleratorData>& expected) {
+    provider_->GetAccelerators(base::BindOnce(&ExpectMojomAcceleratorsEqual,
+                                              mojom::AcceleratorSource::kAsh,
+                                              expected));
   }
 
   std::unique_ptr<AcceleratorConfigurationProvider> provider_;
@@ -145,6 +170,23 @@ TEST_F(AcceleratorConfigurationProviderTest, AshAcceleratorsUpdated) {
   Shell::Get()->ash_accelerator_configuration()->Initialize(updated_test_data);
   base::RunLoop().RunUntilIdle();
   ExpectAllAcceleratorsEqual(updated_test_data, GetAshAccelerators());
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, GetAcceleratorConfigAsh) {
+  const AcceleratorData test_data[] = {
+      {/**trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/**trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+      {/**trigger_on_press=*/true, ui::VKEY_ESCAPE, ui::EF_COMMAND_DOWN,
+       SHOW_TASK_MANAGER},
+  };
+  Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+  ExpectAllAcceleratorsEqual(test_data, GetAshAccelerators());
+
+  GetAshConfigAndExpectEquals(test_data);
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace shortcut_ui
