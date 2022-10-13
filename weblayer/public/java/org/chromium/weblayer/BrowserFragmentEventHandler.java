@@ -68,11 +68,12 @@ final class BrowserFragmentEventHandler extends RemoteFragmentEventHandler {
     }
 
     void onCreate(Bundle savedInstanceState, @Nullable TabListCallback tabListCallback) {
-        super.onCreate(savedInstanceState);
         if (mBrowser != null) {
             // If mBrowser is non-null, it means mBrowser came from a ViewModel.
             return;
         }
+
+        super.onCreate(savedInstanceState);
         try {
             mBrowser = new Browser(mImpl.getBrowser(), tabListCallback);
         } catch (RemoteException e) {
