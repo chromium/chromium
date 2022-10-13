@@ -73,10 +73,12 @@
 
     <template is="dom-if" if="[[showArrowButton_(activeNetworkState,
                                   deviceState, networkStateList)]]">
-      <cr-icon-button class="subpage-arrow"
+      <cr-icon-button id="networkSummaryItemRowArrowIcon"
+          class="subpage-arrow"
           aria-labelledby="networkTitleText"
           aria-describedby="networkState networkIcon"
-          aria-roledescription="$i18n{subpageArrowRoleDescription}">
+          aria-roledescription="$i18n{subpageArrowRoleDescription}"
+          on-click="onShowDetailsArrowTap_">
       </cr-icon-button>
     </template>
   </div>

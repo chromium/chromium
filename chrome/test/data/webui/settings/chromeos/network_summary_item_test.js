@@ -316,6 +316,32 @@ suite('NetworkSummaryItem', function() {
         });
 
     test(
+        'kPortal shows signin text and opens network list on arrow click',
+        async function() {
+          const showNetworksFiredPromise =
+              eventToPromise('show-networks', netSummaryItem);
+
+          initWithPortalState(true /* flagEnabled */, PortalState.kPortal);
+          assertTrue(netSummaryItem.shadowRoot.querySelector('#networkState')
+                         .classList.contains('warning-message'));
+          assertFalse(netSummaryItem.shadowRoot.querySelector('#networkState')
+                          .classList.contains('network-state'));
+          assertEquals(
+              netSummaryItem.getNetworkStateText_(),
+              netSummaryItem.i18n('networkListItemSignIn'));
+          assertEquals(netSummaryItem.getTitleText_(), testName);
+
+          // Verify clicking network summary item arrow icon will show networks
+          const networkSummaryItemRowArrowIcon =
+              netSummaryItem.shadowRoot.querySelector(
+                  '#networkSummaryItemRowArrowIcon');
+          assertTrue(!!networkSummaryItemRowArrowIcon);
+          networkSummaryItemRowArrowIcon.click();
+          flush();
+          await showNetworksFiredPromise;
+        });
+
+    test(
         'kProxyAuthRequired shows signin text and opens portal signin on click',
         function() {
           initWithPortalState(

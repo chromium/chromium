@@ -576,6 +576,45 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
   }
 
   /**
+   * This handles clicking the subpage arrow. Clicking this icon can lead
+   * to showing the corresponding networks list or showing details about
+   * a network or doing nothing based on the device and networks states.
+   * TODO(b/253326370) Cleanup duplicate functionality between this
+   * function and `onShowDetailsTap_`.
+   * @param {!Event} event The enable button event.
+   * @private
+   */
+  onShowDetailsArrowTap_(event) {
+    if (this.shouldShowSubpage_(this.deviceState, this.networkStateList)) {
+      const showNetworksEvent = new CustomEvent('show-networks', {
+        bubbles: true,
+        composed: true,
+        detail: this.deviceState.type,
+      });
+      this.dispatchEvent(showNetworksEvent);
+    } else if (this.shouldShowDetails_(
+                   this.activeNetworkState, this.deviceState,
+                   this.networkStateList)) {
+      if (this.activeNetworkState.guid) {
+        const showDetailEvent = new CustomEvent('show-detail', {
+          bubbles: true,
+          composed: true,
+          detail: this.activeNetworkState,
+        });
+        this.dispatchEvent(showDetailEvent);
+      } else if (this.networkStateList.length > 0) {
+        const showDetailEvent = new CustomEvent('show-detail', {
+          bubbles: true,
+          composed: true,
+          detail: this.networkStateList[0],
+        });
+        this.dispatchEvent(showDetailEvent);
+      }
+    }
+    event.stopPropagation();
+  }
+
+  /**
    * @param {!OncMojo.NetworkStateProperties} activeNetworkState
    * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
    * @param {!Array<!OncMojo.NetworkStateProperties>} networkStateList
