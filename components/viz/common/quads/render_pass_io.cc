@@ -210,12 +210,10 @@ base::Value PointFToDict(const gfx::PointF& point) {
   return dict;
 }
 
-bool PointFFromDict(const base::Value& dict, gfx::PointF* point) {
+bool PointFFromDict(const base::Value::Dict& dict, gfx::PointF* point) {
   DCHECK(point);
-  if (!dict.is_dict())
-    return false;
-  absl::optional<double> x = dict.FindDoubleKey("x");
-  absl::optional<double> y = dict.FindDoubleKey("y");
+  absl::optional<double> x = dict.FindDouble("x");
+  absl::optional<double> y = dict.FindDouble("y");
   if (!x || !y) {
     return false;
   }
@@ -230,9 +228,13 @@ base::Value Vector2dFToDict(const gfx::Vector2dF& v) {
 
 bool Vector2dFFromDict(const base::Value& dict, gfx::Vector2dF* v) {
   DCHECK(v);
-  gfx::PointF point;
-  if (!PointFFromDict(dict, &point))
+  if (!dict.is_dict())
     return false;
+
+  gfx::PointF point;
+  if (!PointFFromDict(dict.GetDict(), &point))
+    return false;
+
   v->set_x(point.x());
   v->set_y(point.y());
   return true;
@@ -1418,7 +1420,7 @@ bool CompositorRenderPassDrawQuadFromDict(
   const base::Value::Dict* mask_texture_size =
       dict.FindDict("mask_texture_size");
   const base::Value* filters_scale = dict_value.FindDictKey("filters_scale");
-  const base::Value* filters_origin = dict_value.FindDictKey("filters_origin");
+  const base::Value::Dict* filters_origin = dict.FindDict("filters_origin");
   const base::Value::Dict* tex_coord_rect = dict.FindDict("tex_coord_rect");
   absl::optional<double> backdrop_filter_quality =
       dict.FindDouble("backdrop_filter_quality");
@@ -1512,29 +1514,29 @@ bool SurfaceDrawQuadFromDict(const base::Value& dict,
   return true;
 }
 
-bool TextureDrawQuadFromDict(const base::Value& dict,
+bool TextureDrawQuadFromDict(const base::Value& dict_value,
                              const DrawQuadCommon& common,
                              TextureDrawQuad* draw_quad) {
   DCHECK(draw_quad);
-  if (!dict.is_dict())
+  if (!dict_value.is_dict())
     return false;
   if (common.resources.count != 1u)
     return false;
 
+  const base::Value::Dict& dict = dict_value.GetDict();
   absl::optional<bool> premultiplied_alpha =
-      dict.FindBoolKey("premultiplied_alpha");
-  const base::Value* uv_top_left = dict.FindDictKey("uv_top_left");
-  const base::Value* uv_bottom_right = dict.FindDictKey("uv_bottom_right");
-  const base::Value* vertex_opacity = dict.FindListKey("vertex_opacity");
-  const base::Value* damage_rect = dict.FindDictKey("damage_rect");
-  absl::optional<bool> y_flipped = dict.FindBoolKey("y_flipped");
-  absl::optional<bool> nearest_neighbor = dict.FindBoolKey("nearest_neighbor");
-  absl::optional<bool> secure_output_only =
-      dict.FindBoolKey("secure_output_only");
+      dict.FindBool("premultiplied_alpha");
+  const base::Value::Dict* uv_top_left = dict.FindDict("uv_top_left");
+  const base::Value::Dict* uv_bottom_right = dict.FindDict("uv_bottom_right");
+  const base::Value* vertex_opacity = dict_value.FindListKey("vertex_opacity");
+  const base::Value* damage_rect = dict_value.FindDictKey("damage_rect");
+  absl::optional<bool> y_flipped = dict.FindBool("y_flipped");
+  absl::optional<bool> nearest_neighbor = dict.FindBool("nearest_neighbor");
+  absl::optional<bool> secure_output_only = dict.FindBool("secure_output_only");
   const std::string* protected_video_type =
-      dict.FindStringKey("protected_video_type");
+      dict.FindString("protected_video_type");
   const base::Value::Dict* resource_size_in_pixels =
-      dict.GetDict().FindDict("resource_size_in_pixels");
+      dict.FindDict("resource_size_in_pixels");
 
   if (!premultiplied_alpha || !uv_top_left || !uv_bottom_right ||
       !vertex_opacity || !y_flipped || !nearest_neighbor ||
@@ -1552,7 +1554,7 @@ bool TextureDrawQuadFromDict(const base::Value& dict,
   if (!PointFFromDict(*uv_top_left, &t_uv_top_left) ||
       !PointFFromDict(*uv_bottom_right, &t_uv_bottom_right) ||
       !SizeFromDict(*resource_size_in_pixels, &t_resource_size_in_pixels) ||
-      !ColorFromDict(dict, "background_color", &t_background_color)) {
+      !ColorFromDict(dict_value, "background_color", &t_background_color)) {
     return false;
   }
   float t_vertex_opacity[4];
@@ -1568,8 +1570,7 @@ bool TextureDrawQuadFromDict(const base::Value& dict,
       nearest_neighbor.value(), secure_output_only.value(),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index));
 
-  draw_quad->is_stream_video =
-      dict.FindBoolKey("is_stream_video").value_or(false);
+  draw_quad->is_stream_video = dict.FindBool("is_stream_video").value_or(false);
 
   gfx::Rect t_damage_rect;
   if (damage_rect && RectFromDict(*damage_rect, &t_damage_rect)) {
