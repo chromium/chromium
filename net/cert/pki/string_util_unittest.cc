@@ -98,6 +98,25 @@ TEST(StringUtilTest, StartsWithNoCase) {
                                                   "1mail.google.com"));
 }
 
+TEST(StringUtilTest, HexEncode) {
+  std::string hex(net::string_util::HexEncode(nullptr, 0));
+  EXPECT_EQ(hex.length(), 0U);
+  uint8_t bytes[] = {0x01, 0xff, 0x02, 0xfe, 0x03, 0x80, 0x81};
+  hex = net::string_util::HexEncode(bytes, sizeof(bytes));
+  EXPECT_EQ(hex, "01FF02FE038081");
+}
+
+TEST(StringUtilTest, NumberToDecimalString) {
+  std::string number(net::string_util::NumberToDecimalString(42));
+  EXPECT_EQ(number, "42");
+  number = net::string_util::NumberToDecimalString(-1);
+  EXPECT_EQ(number, "-1");
+  number = net::string_util::NumberToDecimalString(0);
+  EXPECT_EQ(number, "0");
+  number = net::string_util::NumberToDecimalString(0xFF);
+  EXPECT_EQ(number, "255");
+}
+
 }  // namespace
 
 }  // namespace net

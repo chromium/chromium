@@ -11,13 +11,13 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_number_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/cert/pki/cert_issuer_source.h"
 #include "net/cert/pki/certificate_policies.h"
 #include "net/cert/pki/common_cert_errors.h"
 #include "net/cert/pki/parse_certificate.h"
 #include "net/cert/pki/parse_name.h"  // For CertDebugString.
+#include "net/cert/pki/string_util.h"
 #include "net/cert/pki/trust_store.h"
 #include "net/cert/pki/verify_certificate_chain.h"
 #include "net/cert/pki/verify_name_match.h"
@@ -36,7 +36,7 @@ std::string FingerPrintParsedCertificate(const net::ParsedCertificate* cert) {
   uint8_t digest[SHA256_DIGEST_LENGTH];
   SHA256(cert->der_cert().AsSpan().data(), cert->der_cert().AsSpan().size(),
          digest);
-  return base::HexEncode(digest, sizeof(digest));
+  return net::string_util::HexEncode(digest, sizeof(digest));
 }
 
 // TODO(mattm): decide how much debug logging to keep.

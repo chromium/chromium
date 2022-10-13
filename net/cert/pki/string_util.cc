@@ -7,6 +7,8 @@
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
 #include <algorithm>
+#include <iomanip>
+#include <sstream>
 #include <string>
 
 namespace net::string_util {
@@ -70,6 +72,23 @@ bool EndsWith(std::string_view str, std::string_view suffix) {
 // TODO(bbe) get rid of this once we can c++20.
 bool StartsWith(std::string_view str, std::string_view prefix) {
   return prefix.size() <= str.size() && prefix == str.substr(0, prefix.size());
+}
+
+std::string HexEncode(const uint8_t* data, size_t length) {
+  std::ostringstream out;
+  for (size_t i = 0; i < length; i++) {
+    out << std::hex << std::setfill('0') << std::setw(2) << std::uppercase
+        << int{data[i]};
+  }
+  return out.str();
+}
+
+// TODO(bbe) get rid of this once extracted to boringssl. Everything else
+// in third_party uses std::to_string
+std::string NumberToDecimalString(int i) {
+  std::ostringstream out;
+  out << std::dec << i;
+  return out.str();
 }
 
 }  // namespace net::string_util

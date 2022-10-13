@@ -4,7 +4,7 @@
 
 #include "net/cert/pki/verify_name_match.h"
 
-#include "base/strings/string_number_conversions.h"
+#include "net/cert/pki/string_util.h"
 #include "net/cert/pki/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -328,7 +328,7 @@ TEST(VerifyNameMatchInvalidDataTest, FailOnInvalidPrintableStringChars) {
   size_t replace_location = der.find("0123456789");
   ASSERT_NE(std::string::npos, replace_location);
   for (int c = 0; c < 256; ++c) {
-    SCOPED_TRACE(base::NumberToString(c));
+    SCOPED_TRACE(c);
     if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
         (c >= '0' && c <= '9')) {
       continue;
@@ -368,7 +368,7 @@ TEST(VerifyNameMatchInvalidDataTest, FailOnInvalidIA5StringChars) {
   size_t replace_location = der.find("eXaMple");
   ASSERT_NE(std::string::npos, replace_location);
   for (int c = 0; c < 256; ++c) {
-    SCOPED_TRACE(base::NumberToString(c));
+    SCOPED_TRACE(c);
     der.replace(replace_location, 1, 1, c);
     bool expected_result = (c <= 127);
     EXPECT_EQ(expected_result, VerifyNameMatch(SequenceValueFromString(&der),

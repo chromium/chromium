@@ -4,7 +4,7 @@
 
 #include "net/cert/pki/parse_name.h"
 
-#include "base/strings/string_number_conversions.h"
+#include "net/cert/pki/string_util.h"
 #include "net/der/parse_values.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -101,7 +101,8 @@ bool X509NameAttribute::AsRFC2253String(std::string* out) const {
     type_string = OidToString(type);
     if (type_string.empty())
       return false;
-    value_string = "#" + base::HexEncode(value.UnsafeData(), value.Length());
+    value_string =
+        "#" + net::string_util::HexEncode(value.UnsafeData(), value.Length());
   }
 
   if (value_string.empty()) {
@@ -126,7 +127,9 @@ bool X509NameAttribute::AsRFC2253String(std::string* out) const {
         nonprintable = true;
         std::string h;
         h += c;
-        value_string += "\\" + base::HexEncode(h.data(), h.length());
+        value_string +=
+            "\\" + net::string_util::HexEncode(
+                       reinterpret_cast<const uint8_t*>(h.data()), h.length());
       } else {
         value_string += c;
       }
@@ -135,7 +138,8 @@ bool X509NameAttribute::AsRFC2253String(std::string* out) const {
     // If we have non-printable characters in a TeletexString, we hex encode
     // since we don't handle Teletex control codes.
     if (nonprintable && value_tag == der::kTeletexString)
-      value_string = "#" + base::HexEncode(value.UnsafeData(), value.Length());
+      value_string =
+          "#" + net::string_util::HexEncode(value.UnsafeData(), value.Length());
   }
 
   *out = type_string + "=" + value_string;

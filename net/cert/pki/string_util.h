@@ -44,6 +44,12 @@ NET_EXPORT_PRIVATE bool StartsWith(std::string_view str,
 // Compares |str1| and |suffix|. Returns true if |str1| ends with |suffix|.
 NET_EXPORT_PRIVATE bool EndsWith(std::string_view str, std::string_view suffix);
 
+// Returns a hexadecimal string encoding |data| of length |length|.
+NET_EXPORT_PRIVATE std::string HexEncode(const uint8_t* data, size_t length);
+
+// Returns a decimal string representation of |i|.
+NET_EXPORT_PRIVATE std::string NumberToDecimalString(int i);
+
 }  // namespace net::string_util
 
 #endif  // NET_CERT_PKI_STRING_UTIL_H_
