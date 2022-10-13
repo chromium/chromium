@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 
 #include <memory>
 
@@ -15,9 +15,9 @@
 #include "chrome/browser/ash/login/saml/password_expiry_notification.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_dialogs.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_handler.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/urgent_password_expiry_notification_handler.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_dialogs.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_handler.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/urgent_password_expiry_notification_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -38,7 +38,7 @@
 #include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -198,4 +198,4 @@ UrgentPasswordExpiryNotificationUI::UrgentPasswordExpiryNotificationUI(
 UrgentPasswordExpiryNotificationUI::~UrgentPasswordExpiryNotificationUI() =
     default;
 
-}  // namespace chromeos
+}  // namespace ash

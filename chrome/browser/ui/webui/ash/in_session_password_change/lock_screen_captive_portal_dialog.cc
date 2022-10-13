@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_captive_portal_dialog.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_captive_portal_dialog.h"
 
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 
-namespace chromeos {
+namespace ash {
 
 LockScreenCaptivePortalDialog::LockScreenCaptivePortalDialog()
     : BaseLockDialog(
@@ -94,4 +94,4 @@ void LockScreenCaptivePortalDialog::AdjustWidgetInitParams(
   params->type = views::Widget::InitParams::TYPE_WINDOW;
 }
 
-}  // namespace chromeos
+}  // namespace ash

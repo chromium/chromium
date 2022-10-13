@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_PASSWORD_CHANGE_DIALOGS_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_PASSWORD_CHANGE_DIALOGS_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_PASSWORD_CHANGE_DIALOGS_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_PASSWORD_CHANGE_DIALOGS_H_
 
 #include <string>
 
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 // A modal system dialog without any frame decorating it.
 class BasePasswordDialog : public SystemWebDialogDelegate {
@@ -93,14 +93,6 @@ class UrgentPasswordExpiryNotificationDialog : public BasePasswordDialog {
   ~UrgentPasswordExpiryNotificationDialog() override;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::ConfirmPasswordChangeDialog;
-using ::chromeos::PasswordChangeDialog;
-using ::chromeos::UrgentPasswordExpiryNotificationDialog;
 }  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_PASSWORD_CHANGE_DIALOGS_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_PASSWORD_CHANGE_DIALOGS_H_

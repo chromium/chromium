@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/confirm_password_change_handler.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/confirm_password_change_handler.h"
 
 #include <string>
 
@@ -15,7 +15,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -102,4 +102,4 @@ void ConfirmPasswordChangeHandler::RegisterMessages() {
                           weak_factory_.GetWeakPtr()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

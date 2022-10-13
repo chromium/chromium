@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/base_lock_dialog.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/base_lock_dialog.h"
 
 #include "chrome/common/webui_url_constants.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -43,4 +43,4 @@ ui::ModalType BaseLockDialog::GetDialogModalType() const {
   return ui::ModalType::MODAL_TYPE_SYSTEM;
 }
 
-}  // namespace chromeos
+}  // namespace ash

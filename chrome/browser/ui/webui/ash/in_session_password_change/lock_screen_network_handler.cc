@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_handler.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_handler.h"
 
 #include <memory>
 #include <string>
@@ -33,7 +33,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -46,7 +46,7 @@ constexpr char kGetHostname[] = "getHostname";
 InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
 
   return InSessionPasswordSyncManagerFactory::GetForProfile(profile);
 }
@@ -128,4 +128,4 @@ void NetworkConfigMessageHandler::Respond(const std::string& callback_id,
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
-}  // namespace chromeos
+}  // namespace ash

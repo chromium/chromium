@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_ui.h"
 
 #include <memory>
 #include <string>
@@ -16,7 +16,7 @@
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_handler.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_handler.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/common/url_constants.h"
@@ -36,7 +36,7 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 base::Value::Dict LockScreenNetworkUI::GetLocalizedStrings() {
@@ -87,10 +87,11 @@ LockScreenNetworkUI::LockScreenNetworkUI(content::WebUI* web_ui)
 LockScreenNetworkUI::~LockScreenNetworkUI() = default;
 
 void LockScreenNetworkUI::BindInterface(
-    mojo::PendingReceiver<network_config::mojom::CrosNetworkConfig> receiver) {
-  ash::GetNetworkConfigService(std::move(receiver));
+    mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
+        receiver) {
+  GetNetworkConfigService(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(LockScreenNetworkUI)
 
-}  // namespace chromeos
+}  // namespace ash

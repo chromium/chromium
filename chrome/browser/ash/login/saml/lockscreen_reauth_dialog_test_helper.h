@@ -9,16 +9,6 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-class LockScreenStartReauthDialog;
-class LockScreenStartReauthUI;
-class LockScreenReauthHandler;
-class LockScreenNetworkDialog;
-class LockScreenNetworkUI;
-class LockScreenCaptivePortalDialog;
-class NetworkConfigMessageHandler;
-}  // namespace chromeos
-
 namespace content {
 class WebContents;
 }
@@ -26,6 +16,13 @@ class WebContents;
 namespace ash {
 
 class InSessionPasswordSyncManager;
+class LockScreenStartReauthDialog;
+class LockScreenStartReauthUI;
+class LockScreenReauthHandler;
+class LockScreenNetworkDialog;
+class LockScreenNetworkUI;
+class LockScreenCaptivePortalDialog;
+class NetworkConfigMessageHandler;
 
 // Supports triggering the online re-authentication dialog on the Chrome OS lock
 // screen from browser tests and interacting with it.
@@ -149,21 +146,17 @@ class LockScreenReauthDialogTestHelper {
 
   // Main Dialog
   base::raw_ptr<InSessionPasswordSyncManager> password_sync_manager_ = nullptr;
-  base::raw_ptr<chromeos::LockScreenStartReauthDialog> reauth_dialog_ = nullptr;
-  base::raw_ptr<chromeos::LockScreenStartReauthUI> reauth_webui_controller_ =
-      nullptr;
-  base::raw_ptr<chromeos::LockScreenReauthHandler> main_handler_ = nullptr;
+  base::raw_ptr<LockScreenStartReauthDialog> reauth_dialog_ = nullptr;
+  base::raw_ptr<LockScreenStartReauthUI> reauth_webui_controller_ = nullptr;
+  base::raw_ptr<LockScreenReauthHandler> main_handler_ = nullptr;
 
   // Network dialog which is owned by the main dialog.
-  base::raw_ptr<chromeos::LockScreenNetworkDialog> network_dialog_ = nullptr;
-  base::raw_ptr<chromeos::LockScreenNetworkUI> network_webui_controller_ =
-      nullptr;
-  base::raw_ptr<chromeos::NetworkConfigMessageHandler> network_handler_ =
-      nullptr;
+  base::raw_ptr<LockScreenNetworkDialog> network_dialog_ = nullptr;
+  base::raw_ptr<LockScreenNetworkUI> network_webui_controller_ = nullptr;
+  base::raw_ptr<NetworkConfigMessageHandler> network_handler_ = nullptr;
 
   // Captive portal dialog which is owned by the main dialog.
-  base::raw_ptr<chromeos::LockScreenCaptivePortalDialog>
-      captive_portal_dialog_ = nullptr;
+  base::raw_ptr<LockScreenCaptivePortalDialog> captive_portal_dialog_ = nullptr;
 };
 
 }  // namespace ash

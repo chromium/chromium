@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_HANDLER_H_
 
 #include <memory>
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/check_passwords_against_cryptohome_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/online_login_helper.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "net/cookies/cookie_access_result.h"
 
-namespace chromeos {
+namespace ash {
+
+class InSessionPasswordSyncManager;
 
 class LockScreenReauthHandler : public content::WebUIMessageHandler {
  public:
@@ -122,7 +122,7 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
 
   std::unique_ptr<UserContext> user_context_;
 
-  std::unique_ptr<ash::CheckPasswordsAgainstCryptohomeHelper>
+  std::unique_ptr<CheckPasswordsAgainstCryptohomeHelper>
       check_passwords_against_cryptohome_helper_;
 
   std::unique_ptr<LoginClientCertUsageObserver>
@@ -136,12 +136,6 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   base::WeakPtrFactory<LockScreenReauthHandler> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::LockScreenReauthHandler;
-}
-
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_REAUTH_HANDLER_H_

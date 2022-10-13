@@ -260,15 +260,15 @@
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_ui.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_start_reauth_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/certificate_manager_dialog_ui.h"
 #include "chrome/browser/ui/webui/chromeos/cryptohome_ui.h"
 #include "chrome/browser/ui/webui/chromeos/drive_internals_ui.h"
 #include "chrome/browser/ui/webui/chromeos/human_presence_internals_ui.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_start_reauth_ui.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/launcher_internals/launcher_internals_ui.h"
@@ -942,14 +942,14 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
             ash::prefs::kSamlInSessionPasswordChangeEnabled)) {
       return nullptr;
     }
-    return &NewWebUI<chromeos::PasswordChangeUI>;
+    return &NewWebUI<ash::PasswordChangeUI>;
   }
   if (url.host_piece() == chrome::kChromeUIConfirmPasswordChangeHost) {
     if (!profile->GetPrefs()->GetBoolean(
             ash::prefs::kSamlInSessionPasswordChangeEnabled)) {
       return nullptr;
     }
-    return &NewWebUI<chromeos::ConfirmPasswordChangeUI>;
+    return &NewWebUI<ash::ConfirmPasswordChangeUI>;
   }
   if (url.host_piece() ==
       chrome::kChromeUIUrgentPasswordExpiryNotificationHost) {
@@ -957,19 +957,19 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
             ash::prefs::kSamlInSessionPasswordChangeEnabled)) {
       return nullptr;
     }
-    return &NewWebUI<chromeos::UrgentPasswordExpiryNotificationUI>;
+    return &NewWebUI<ash::UrgentPasswordExpiryNotificationUI>;
   }
   if (url.host_piece() == chrome::kChromeUILockScreenStartReauthHost) {
     if (!ash::ProfileHelper::IsLockScreenProfile(profile)) {
       return nullptr;
     }
-    return &NewWebUI<chromeos::LockScreenStartReauthUI>;
+    return &NewWebUI<ash::LockScreenStartReauthUI>;
   }
   if (url.host_piece() == chrome::kChromeUILockScreenNetworkHost) {
     if (!ash::ProfileHelper::IsLockScreenProfile(profile)) {
       return nullptr;
     }
-    return &NewWebUI<chromeos::LockScreenNetworkUI>;
+    return &NewWebUI<ash::LockScreenNetworkUI>;
   }
   if (url.host_piece() == ash::file_manager::kChromeUIFileManagerHost) {
     return &NewComponentUI<ash::file_manager::FileManagerUI,

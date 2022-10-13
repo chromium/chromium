@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_handler.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_handler.h"
 
 #include <memory>
 
@@ -37,7 +37,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 bool ShouldDoSamlRedirect(const std::string& email) {
@@ -58,7 +58,7 @@ bool ShouldDoSamlRedirect(const std::string& email) {
 Profile* GetActiveUserProfile() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   return profile;
 }
 
@@ -214,10 +214,10 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.SetBoolKey("readOnlyEmail", true);
   PrefService* local_state = g_browser_process->local_state();
   if (local_state->IsManagedPreference(
-          ash::prefs::kUrlParameterToAutofillSAMLUsername)) {
+          prefs::kUrlParameterToAutofillSAMLUsername)) {
     params.SetStringKey("urlParameterToAutofillSAMLUsername",
                         local_state->GetString(
-                            ash::prefs::kUrlParameterToAutofillSAMLUsername));
+                            prefs::kUrlParameterToAutofillSAMLUsername));
   }
 
   CallJavascript("loadAuthenticator", params);
@@ -317,8 +317,8 @@ void LockScreenReauthHandler::OnReauthDialogReadyForTesting() {
 
 void LockScreenReauthHandler::CheckCredentials(
     std::unique_ptr<UserContext> user_context) {
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByAccountId(
-      user_context->GetAccountId());
+  Profile* profile =
+      ProfileHelper::Get()->GetProfileByAccountId(user_context->GetAccountId());
   if (!profile) {
     LOG(ERROR) << "Invalid account id";
     return;
@@ -386,7 +386,7 @@ void LockScreenReauthHandler::SamlConfirmPassword(
 
   // TODO(https://crbug.com/1295294) Eliminate redundant cryptohome check.
   check_passwords_against_cryptohome_helper_ =
-      std::make_unique<ash::CheckPasswordsAgainstCryptohomeHelper>(
+      std::make_unique<CheckPasswordsAgainstCryptohomeHelper>(
           *user_context_.get(), scraped_saml_passwords_,
           base::BindOnce(
               &LockScreenReauthHandler::ShowSamlConfirmPasswordScreen,
@@ -455,4 +455,4 @@ bool LockScreenReauthHandler::IsAuthenticatorLoaded(
   return false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/password_change_dialogs.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_dialogs.h"
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/confirm_password_change_handler.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/confirm_password_change_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -18,7 +18,7 @@
 #include "ui/display/screen.h"
 #include "ui/strings/grit/ui_strings.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -193,4 +193,4 @@ UrgentPasswordExpiryNotificationDialog::
   g_notification_dialog = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

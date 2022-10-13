@@ -13,11 +13,11 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_captive_portal_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_ui.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_start_reauth_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_captive_portal_dialog.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_dialog.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_start_reauth_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test_utils.h"
@@ -327,7 +327,7 @@ void LockScreenReauthDialogTestHelper::WaitForNetworkDialogAndSetHandlers() {
   if (!network_dialog_ || !network_dialog_->GetWebUIForTest()) {
     ADD_FAILURE() << "Could not retrieve LockScreenNetworkDialog";
   }
-  network_webui_controller_ = static_cast<chromeos::LockScreenNetworkUI*>(
+  network_webui_controller_ = static_cast<LockScreenNetworkUI*>(
       network_dialog_->GetWebUIForTest()->GetController());
   if (!network_webui_controller_) {
     ADD_FAILURE() << "Could not retrieve LockScreenNetworkUI";

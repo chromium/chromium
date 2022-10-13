@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_HANDLER_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
  public:
-  explicit NetworkConfigMessageHandler();
+  NetworkConfigMessageHandler();
   ~NetworkConfigMessageHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -30,6 +30,6 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   base::WeakPtrFactory<NetworkConfigMessageHandler> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_HANDLER_H_

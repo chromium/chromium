@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_DIALOG_H_
 
 #include "base/callback_forward.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/base_lock_dialog.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/base_lock_dialog.h"
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class LockScreenNetworkDialog : public BaseLockDialog {
  public:
@@ -29,6 +29,6 @@ class LockScreenNetworkDialog : public BaseLockDialog {
   NetworkDialogCleanupCallback callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_DIALOG_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
 
 #include <memory>
 #include <string>
@@ -22,12 +22,12 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/base_lock_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/confirm_password_change_handler.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_captive_portal_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_handler.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_start_reauth_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/base_lock_dialog.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/confirm_password_change_handler.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_captive_portal_dialog.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_dialog.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_handler.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_start_reauth_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,7 +42,7 @@
 #include "ui/aura/window.h"
 #include "ui/strings/grit/ui_strings.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 LockScreenStartReauthDialog* g_dialog = nullptr;
@@ -50,7 +50,7 @@ LockScreenStartReauthDialog* g_dialog = nullptr;
 InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
 
   return InSessionPasswordSyncManagerFactory::GetForProfile(profile);
 }
@@ -237,7 +237,7 @@ void LockScreenStartReauthDialog::ShowLockScreenNetworkDialog() {
   DCHECK(profile_);
   is_network_dialog_visible_ = true;
   lock_screen_network_dialog_ =
-      std::make_unique<chromeos::LockScreenNetworkDialog>(base::BindOnce(
+      std::make_unique<LockScreenNetworkDialog>(base::BindOnce(
           &LockScreenStartReauthDialog::DeleteLockScreenNetworkDialog,
           base::Unretained(this)));
   lock_screen_network_dialog_->Show(profile_);
@@ -380,7 +380,7 @@ void LockScreenStartReauthDialog::TransferHttpAuthCaches() {
     // proxy credentials between different unlock attempts.
     webview_storage_partition->GetNetworkContext()
         ->SaveHttpAuthCacheProxyEntries(
-            base::BindOnce(&ash::TransferHttpAuthCacheToSystemNetworkContext,
+            base::BindOnce(&TransferHttpAuthCacheToSystemNetworkContext,
                            base::DoNothing()));
 
     const user_manager::User* user =
@@ -388,7 +388,7 @@ void LockScreenStartReauthDialog::TransferHttpAuthCaches() {
     Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
     // Transfer auth cache to the active user's profile so that there is no need
     // to enter them again after unlocking the device.
-    ash::ProfileAuthData::TransferHttpAuthCacheProxyEntries(
+    ProfileAuthData::TransferHttpAuthCacheProxyEntries(
         base::DoNothing(), webview_storage_partition,
         profile->GetDefaultStoragePartition());
   }
@@ -420,13 +420,13 @@ void LockScreenStartReauthDialog::Observe(
           FROM_HERE,
           base::BindOnce(&LockScreenStartReauthDialog::ReenableNetworkUpdates,
                          weak_factory_.GetWeakPtr()),
-          ash::kProxyAuthTimeout);
+          kProxyAuthTimeout);
 
       base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&LockScreenStartReauthDialog::TransferHttpAuthCaches,
                          weak_factory_.GetWeakPtr()),
-          ash::kAuthCacheTransferDelayMs);
+          kAuthCacheTransferDelayMs);
       g_dialog->Focus();
       break;
     }
@@ -453,4 +453,4 @@ void LockScreenStartReauthDialog::ReenableNetworkUpdates() {
   is_proxy_auth_in_progress_ = false;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -139,4 +139,16 @@ class OnlineLoginHelper : public network::mojom::CookieChangeListener {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::OnlineLoginHelper;
+namespace login {
+using ::chromeos::login::BuildUserContextForGaiaSignIn;
+using ::chromeos::login::ExtractSamlPasswordAttributesEnabled;
+using ::chromeos::login::GaiaContext;
+using ::chromeos::login::GetUsertypeFromServicesString;
+using ::chromeos::login::SetCookieForPartition;
+}  // namespace login
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ONLINE_LOGIN_HELPER_H_

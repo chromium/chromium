@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_start_reauth_ui.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_start_reauth_ui.h"
 
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_handler.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -20,7 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
+namespace ash {
 
 LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
     : ui::WebDialogUI(web_ui) {
@@ -120,4 +120,4 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
 
 LockScreenStartReauthUI::~LockScreenStartReauthUI() = default;
 
-}  // namespace chromeos
+}  // namespace ash
