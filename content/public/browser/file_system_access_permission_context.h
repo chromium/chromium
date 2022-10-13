@@ -13,7 +13,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-shared.h"
-#include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/origin.h"
 
 namespace content {
@@ -108,7 +107,7 @@ class FileSystemAccessPermissionContext {
       PathType path_type,
       const base::FilePath& path,
       HandleType handle_type,
-      ui::SelectFileDialog::Type dialog_type,
+      UserAction user_action,
       GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(SensitiveEntryResult)> callback) = 0;
 

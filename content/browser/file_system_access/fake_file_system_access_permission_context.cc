@@ -40,7 +40,7 @@ void FakeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     PathType path_type,
     const base::FilePath& path,
     HandleType handle_type,
-    ui::SelectFileDialog::Type dialog_type,
+    UserAction user_action,
     GlobalRenderFrameHostId frame_id,
     base::OnceCallback<void(SensitiveEntryResult)> callback) {
   std::move(callback).Run(SensitiveEntryResult::kAllowed);

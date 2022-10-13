@@ -122,12 +122,12 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
       PathType path_type,
       const base::FilePath& path,
       HandleType handle_type,
-      ui::SelectFileDialog::Type dialog_type) {
+      UserAction user_action) {
     base::test::TestFuture<
         ChromeFileSystemAccessPermissionContext::SensitiveEntryResult>
         future;
     permission_context_->ConfirmSensitiveEntryAccess(
-        kTestOrigin, path_type, path, handle_type, dialog_type,
+        kTestOrigin, path_type, path, handle_type, user_action,
         content::GlobalRenderFrameHostId(), future.GetCallback());
     return future.Get();
   }
@@ -219,23 +219,21 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 #endif
 
   // Path outside any special directories should be allowed.
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAllowed,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal, kTestPath, HandleType::kFile,
-          ui::SelectFileDialog::Type::SELECT_OPEN_FILE));
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAllowed,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal, kTestPath,
-          HandleType::kDirectory, ui::SelectFileDialog::Type::SELECT_FOLDER));
+  EXPECT_EQ(SensitiveDirectoryResult::kAllowed,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, kTestPath,
+                HandleType::kFile, UserAction::kOpen));
+  EXPECT_EQ(SensitiveDirectoryResult::kAllowed,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, kTestPath,
+                HandleType::kDirectory, UserAction::kOpen));
 
   // External (relative) paths should also be allowed.
   EXPECT_EQ(SensitiveDirectoryResult::kAllowed,
             ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kExternal,
                 base::FilePath(FILE_PATH_LITERAL("foo/bar")), HandleType::kFile,
-                ui::SelectFileDialog::Type::SELECT_OPEN_FILE));
+                UserAction::kOpen));
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -244,28 +242,26 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
 
   // Home directory itself should not be allowed.
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAbort,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal, home_dir,
-          HandleType::kDirectory, ui::SelectFileDialog::Type::SELECT_FOLDER));
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, home_dir,
+                HandleType::kDirectory, UserAction::kOpen));
   // Parent of home directory should also not be allowed.
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAbort,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal, temp_dir_.GetPath(),
-          HandleType::kDirectory, ui::SelectFileDialog::Type::SELECT_FOLDER));
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, temp_dir_.GetPath(),
+                HandleType::kDirectory, UserAction::kOpen));
   // Paths inside home directory should be allowed.
   EXPECT_EQ(
       SensitiveDirectoryResult::kAllowed,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal, home_dir.AppendASCII("foo"),
-          HandleType::kFile, ui::SelectFileDialog::Type::SELECT_OPEN_FILE));
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      home_dir.AppendASCII("foo"),
+                                      HandleType::kFile, UserAction::kOpen));
   EXPECT_EQ(
       SensitiveDirectoryResult::kAllowed,
       ConfirmSensitiveEntryAccessSync(
           permission_context(), PathType::kLocal, home_dir.AppendASCII("foo"),
-          HandleType::kDirectory, ui::SelectFileDialog::Type::SELECT_FOLDER));
+          HandleType::kDirectory, UserAction::kOpen));
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -274,28 +270,26 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::ScopedPathOverride app_override(base::DIR_EXE, app_dir, true, true);
 
   // App directory itself should not be allowed.
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAbort,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal, app_dir,
-          HandleType::kDirectory, ui::SelectFileDialog::Type::SELECT_FOLDER));
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, app_dir,
+                HandleType::kDirectory, UserAction::kOpen));
   // Parent of App directory should also not be allowed.
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAbort,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal, temp_dir_.GetPath(),
-          HandleType::kDirectory, ui::SelectFileDialog::Type::SELECT_FOLDER));
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, temp_dir_.GetPath(),
+                HandleType::kDirectory, UserAction::kOpen));
   // Paths inside App directory should also not be allowed.
   EXPECT_EQ(
       SensitiveDirectoryResult::kAbort,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal, app_dir.AppendASCII("foo"),
-          HandleType::kFile, ui::SelectFileDialog::Type::SELECT_OPEN_FILE));
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      app_dir.AppendASCII("foo"),
+                                      HandleType::kFile, UserAction::kOpen));
   EXPECT_EQ(
       SensitiveDirectoryResult::kAbort,
       ConfirmSensitiveEntryAccessSync(
           permission_context(), PathType::kLocal, app_dir.AppendASCII("foo"),
-          HandleType::kDirectory, ui::SelectFileDialog::Type::SELECT_FOLDER));
+          HandleType::kDirectory, UserAction::kOpen));
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -308,34 +302,31 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                                              download_dir, true, true);
 
   // User Data directory itself should not be allowed.
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAbort,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal, user_data_dir,
-          HandleType::kDirectory, ui::SelectFileDialog::Type::SELECT_FOLDER));
-  // Parent of User Data directory should also not be allowed.
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAbort,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal, temp_dir_.GetPath(),
-          HandleType::kDirectory, ui::SelectFileDialog::Type::SELECT_FOLDER));
-  // The nested Download directory itself should not be allowed.
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAbort,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal, download_dir,
-          HandleType::kDirectory, ui::SelectFileDialog::Type::SELECT_FOLDER));
-  // Paths inside the nested Download directory should be allowed.
-  EXPECT_EQ(SensitiveDirectoryResult::kAllowed,
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
             ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                download_dir.AppendASCII("foo"), HandleType::kFile,
-                ui::SelectFileDialog::Type::SELECT_OPEN_FILE));
+                permission_context(), PathType::kLocal, user_data_dir,
+                HandleType::kDirectory, UserAction::kOpen));
+  // Parent of User Data directory should also not be allowed.
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, temp_dir_.GetPath(),
+                HandleType::kDirectory, UserAction::kOpen));
+  // The nested Download directory itself should not be allowed.
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, download_dir,
+                HandleType::kDirectory, UserAction::kOpen));
+  // Paths inside the nested Download directory should be allowed.
+  EXPECT_EQ(
+      SensitiveDirectoryResult::kAllowed,
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      download_dir.AppendASCII("foo"),
+                                      HandleType::kFile, UserAction::kOpen));
   EXPECT_EQ(SensitiveDirectoryResult::kAllowed,
             ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal,
                 download_dir.AppendASCII("foo"), HandleType::kDirectory,
-                ui::SelectFileDialog::Type::SELECT_FOLDER));
+                UserAction::kOpen));
 
 #if BUILDFLAG(IS_WIN)
   // DIR_IE_INTERNET_CACHE is an example of a directory where nested directories
@@ -345,23 +336,22 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                                                    internet_cache, true, true);
 
   // The nested INetCache directory itself should not be allowed.
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAbort,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal, internet_cache,
-          HandleType::kDirectory, ui::SelectFileDialog::Type::SELECT_FOLDER));
-  // Files inside the nested INetCache directory should be allowed.
-  EXPECT_EQ(SensitiveDirectoryResult::kAllowed,
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
             ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                internet_cache.AppendASCII("foo"), HandleType::kFile,
-                ui::SelectFileDialog::Type::SELECT_OPEN_FILE));
+                permission_context(), PathType::kLocal, internet_cache,
+                HandleType::kDirectory, UserAction::kOpen));
+  // Files inside the nested INetCache directory should be allowed.
+  EXPECT_EQ(
+      SensitiveDirectoryResult::kAllowed,
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      internet_cache.AppendASCII("foo"),
+                                      HandleType::kFile, UserAction::kOpen));
   // But directories should be blocked.
   EXPECT_EQ(SensitiveDirectoryResult::kAbort,
             ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal,
                 internet_cache.AppendASCII("foo"), HandleType::kDirectory,
-                ui::SelectFileDialog::Type::SELECT_FOLDER));
+                UserAction::kOpen));
 #endif
 }
 
@@ -375,13 +365,13 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       SensitiveDirectoryResult::kAbort,
       ConfirmSensitiveEntryAccessSync(
           permission_context(), PathType::kLocal, home_dir.AppendASCII(".ssh"),
-          HandleType::kDirectory, ui::SelectFileDialog::Type::SELECT_FOLDER));
+          HandleType::kDirectory, UserAction::kOpen));
   // And anything inside ~/.ssh should also be blocked
-  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
-            ConfirmSensitiveEntryAccessSync(
-                permission_context(), PathType::kLocal,
-                home_dir.AppendASCII(".ssh/id_rsa"), HandleType::kFile,
-                ui::SelectFileDialog::Type::SELECT_OPEN_FILE));
+  EXPECT_EQ(
+      SensitiveDirectoryResult::kAbort,
+      ConfirmSensitiveEntryAccessSync(permission_context(), PathType::kLocal,
+                                      home_dir.AppendASCII(".ssh/id_rsa"),
+                                      HandleType::kFile, UserAction::kOpen));
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -390,25 +380,22 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 // paths (as opposed to PathService provided paths).
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // /dev should be blocked.
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAbort,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal,
-          base::FilePath(FILE_PATH_LITERAL("/dev")), HandleType::kDirectory,
-          ui::SelectFileDialog::Type::SELECT_FOLDER));
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                base::FilePath(FILE_PATH_LITERAL("/dev")),
+                HandleType::kDirectory, UserAction::kOpen));
   // As well as children of /dev.
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAbort,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal,
-          base::FilePath(FILE_PATH_LITERAL("/dev/foo")), HandleType::kDirectory,
-          ui::SelectFileDialog::Type::SELECT_FOLDER));
-  EXPECT_EQ(
-      SensitiveDirectoryResult::kAbort,
-      ConfirmSensitiveEntryAccessSync(
-          permission_context(), PathType::kLocal,
-          base::FilePath(FILE_PATH_LITERAL("/dev/foo")), HandleType::kFile,
-          ui::SelectFileDialog::Type::SELECT_OPEN_FILE));
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                base::FilePath(FILE_PATH_LITERAL("/dev/foo")),
+                HandleType::kDirectory, UserAction::kOpen));
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                base::FilePath(FILE_PATH_LITERAL("/dev/foo")),
+                HandleType::kFile, UserAction::kOpen));
 #endif
 }
 
@@ -419,25 +406,25 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
             ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal,
                 temp_dir_.GetPath().AppendASCII("test.txt"), HandleType::kFile,
-                ui::SelectFileDialog::SELECT_SAVEAS_FILE));
+                UserAction::kSave));
   // Saving files with a dangerous extension should show a prompt.
   EXPECT_EQ(SensitiveDirectoryResult::kAbort,
             ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal,
                 temp_dir_.GetPath().AppendASCII("test.swf"), HandleType::kFile,
-                ui::SelectFileDialog::SELECT_SAVEAS_FILE));
+                UserAction::kSave));
   // Opening files with a dangerous extension should be allowed.
   EXPECT_EQ(SensitiveDirectoryResult::kAllowed,
             ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal,
                 temp_dir_.GetPath().AppendASCII("test.swf"), HandleType::kFile,
-                ui::SelectFileDialog::SELECT_OPEN_FILE));
+                UserAction::kOpen));
   // Opening files with a dangerous compound extension should show a prompt.
   EXPECT_EQ(SensitiveDirectoryResult::kAbort,
             ConfirmSensitiveEntryAccessSync(
                 permission_context(), PathType::kLocal,
                 temp_dir_.GetPath().AppendASCII("test.txt.swf"),
-                HandleType::kFile, ui::SelectFileDialog::SELECT_SAVEAS_FILE));
+                HandleType::kFile, UserAction::kSave));
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,

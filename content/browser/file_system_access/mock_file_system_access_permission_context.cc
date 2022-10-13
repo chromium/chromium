@@ -16,11 +16,11 @@ void MockFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     PathType path_type,
     const base::FilePath& path,
     HandleType handle_type,
-    ui::SelectFileDialog::Type dialog_type,
+    UserAction user_action,
     GlobalRenderFrameHostId frame_id,
     base::OnceCallback<void(SensitiveEntryResult)> callback) {
   ConfirmSensitiveEntryAccess_(origin, path_type, path, handle_type,
-                               dialog_type, frame_id, callback);
+                               user_action, frame_id, callback);
 }
 
 void MockFileSystemAccessPermissionContext::PerformAfterWriteChecks(

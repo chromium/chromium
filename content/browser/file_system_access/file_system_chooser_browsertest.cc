@@ -509,12 +509,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveEntryAccess_(
-          origin, PathType::kLocal, test_dir,
-          FileSystemAccessPermissionContext::HandleType::kDirectory,
-          ui::SelectFileDialog::Type::SELECT_FOLDER, frame_id, testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveEntryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<6>(SensitiveEntryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
@@ -590,12 +590,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveEntryAccess_(
-          origin, PathType::kLocal, test_dir,
-          FileSystemAccessPermissionContext::HandleType::kDirectory,
-          ui::SelectFileDialog::Type::SELECT_FOLDER, frame_id, testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveEntryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<6>(SensitiveEntryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
@@ -678,12 +678,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveEntryAccess_(
-          origin, PathType::kLocal, test_dir,
-          FileSystemAccessPermissionContext::HandleType::kDirectory,
-          ui::SelectFileDialog::Type::SELECT_FOLDER, frame_id, testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveEntryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<6>(SensitiveEntryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
@@ -771,12 +771,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
       .WillOnce(testing::Return(std::u16string()));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveEntryAccess_(
-          origin, PathType::kLocal, test_file,
-          FileSystemAccessPermissionContext::HandleType::kFile,
-          ui::SelectFileDialog::Type::SELECT_SAVEAS_FILE, frame_id, testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveEntryAccess_(
+                  origin, PathType::kLocal, test_file,
+                  FileSystemAccessPermissionContext::HandleType::kFile,
+                  FileSystemAccessPermissionContext::UserAction::kSave,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<6>(SensitiveEntryResult::kAbort));
 
   ASSERT_TRUE(
@@ -837,12 +837,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_CALL(permission_context, GetPickerTitle(testing::_))
       .WillOnce(testing::Return(std::u16string()));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveEntryAccess_(
-          origin, PathType::kLocal, test_file,
-          FileSystemAccessPermissionContext::HandleType::kFile,
-          ui::SelectFileDialog::Type::SELECT_SAVEAS_FILE, frame_id, testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveEntryAccess_(
+                  origin, PathType::kLocal, test_file,
+                  FileSystemAccessPermissionContext::HandleType::kFile,
+                  FileSystemAccessPermissionContext::UserAction::kSave,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<6>(SensitiveEntryResult::kAbort));
 
   ASSERT_TRUE(
@@ -977,12 +977,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveEntryAccess_(
-          origin, PathType::kLocal, test_dir,
-          FileSystemAccessPermissionContext::HandleType::kDirectory,
-          ui::SelectFileDialog::Type::SELECT_FOLDER, frame_id, testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveEntryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<6>(SensitiveEntryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
@@ -1070,12 +1070,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveEntryAccess_(
-          origin, PathType::kLocal, test_dir,
-          FileSystemAccessPermissionContext::HandleType::kDirectory,
-          ui::SelectFileDialog::Type::SELECT_FOLDER, frame_id, testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveEntryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<6>(SensitiveEntryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
@@ -1157,12 +1157,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveEntryAccess_(
-          origin, PathType::kLocal, test_dir,
-          FileSystemAccessPermissionContext::HandleType::kDirectory,
-          ui::SelectFileDialog::Type::SELECT_FOLDER, frame_id, testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveEntryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<6>(SensitiveEntryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
@@ -1252,12 +1252,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveEntryAccess_(
-          origin, PathType::kLocal, test_dir,
-          FileSystemAccessPermissionContext::HandleType::kDirectory,
-          ui::SelectFileDialog::Type::SELECT_FOLDER, frame_id, testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveEntryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<6>(SensitiveEntryResult::kAllowed));
 
   EXPECT_CALL(permission_context,
@@ -1346,12 +1346,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
               SetLastPickedDirectory(origin, std::string(), test_dir,
                                      PathType::kLocal));
 
-  EXPECT_CALL(
-      permission_context,
-      ConfirmSensitiveEntryAccess_(
-          origin, PathType::kLocal, test_dir,
-          FileSystemAccessPermissionContext::HandleType::kDirectory,
-          ui::SelectFileDialog::Type::SELECT_FOLDER, frame_id, testing::_))
+  EXPECT_CALL(permission_context,
+              ConfirmSensitiveEntryAccess_(
+                  origin, PathType::kLocal, test_dir,
+                  FileSystemAccessPermissionContext::HandleType::kDirectory,
+                  FileSystemAccessPermissionContext::UserAction::kOpen,
+                  frame_id, testing::_))
       .WillOnce(RunOnceCallback<6>(SensitiveEntryResult::kAllowed));
 
   EXPECT_CALL(permission_context,

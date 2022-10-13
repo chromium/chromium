@@ -689,17 +689,12 @@ void FileSystemAccessManagerImpl::ResolveDataTransferTokenWithFileType(
       url.type() == storage::FileSystemType::kFileSystemTypeLocal
           ? PathType::kLocal
           : PathType::kExternal;
-  // TODO(https://crbug.com/1370433): Update ConfirmSensitiveEntryAccess() to
-  // take a UserAction and show a prompt specific to D&D accordingly. For now,
-  // run the same security checks and show the same prompt for D&D as for the
-  // file picker.
-  ui::SelectFileDialog::Type dialog_type =
-      file_type == HandleType::kFile
-          ? ui::SelectFileDialog::Type::SELECT_OPEN_FILE
-          : ui::SelectFileDialog::Type::SELECT_UPLOAD_FOLDER;
+  // TODO(https://crbug.com/1370433): Add a prompt specific to D&D. For now, run
+  // the same security checks and show the same prompt for D&D as for the file
+  // picker.
   permission_context_->ConfirmSensitiveEntryAccess(
       binding_context.storage_key.origin(), path_type, file_path, file_type,
-      dialog_type, binding_context.frame_id,
+      UserAction::kDragAndDrop, binding_context.frame_id,
       base::BindOnce(&FileSystemAccessManagerImpl::
                          DidVerifySensitiveDirectoryAccessForDataTransfer,
                      weak_factory_.GetWeakPtr(), binding_context, file_path,
@@ -1297,7 +1292,10 @@ void FileSystemAccessManagerImpl::DidChooseEntries(
       options.type() == ui::SelectFileDialog::SELECT_FOLDER;
   permission_context_->ConfirmSensitiveEntryAccess(
       binding_context.storage_key.origin(), first_entry.type, first_entry.path,
-      is_directory ? HandleType::kDirectory : HandleType::kFile, options.type(),
+      is_directory ? HandleType::kDirectory : HandleType::kFile,
+      options.type() == ui::SelectFileDialog::SELECT_SAVEAS_FILE
+          ? UserAction::kSave
+          : UserAction::kOpen,
       binding_context.frame_id,
       base::BindOnce(
           &FileSystemAccessManagerImpl::DidVerifySensitiveDirectoryAccess,

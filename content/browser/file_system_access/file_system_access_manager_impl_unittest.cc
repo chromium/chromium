@@ -253,7 +253,8 @@ class FileSystemAccessManagerImplTest : public testing::Test {
             kTestStorageKey.origin(),
             FileSystemAccessPermissionContext::PathType::kLocal, file_path,
             FileSystemAccessPermissionContext::HandleType::kFile,
-            ui::SelectFileDialog::Type::SELECT_OPEN_FILE, kFrameId, testing::_))
+            FileSystemAccessPermissionContext::UserAction::kDragAndDrop,
+            kFrameId, testing::_))
         .WillOnce(RunOnceCallback<6>(
             FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
 
@@ -310,8 +311,8 @@ class FileSystemAccessManagerImplTest : public testing::Test {
             kTestStorageKey.origin(),
             FileSystemAccessPermissionContext::PathType::kLocal, dir_path,
             FileSystemAccessPermissionContext::HandleType::kDirectory,
-            ui::SelectFileDialog::Type::SELECT_UPLOAD_FOLDER, kFrameId,
-            testing::_))
+            FileSystemAccessPermissionContext::UserAction::kDragAndDrop,
+            kFrameId, testing::_))
         .WillOnce(RunOnceCallback<6>(
             FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
 
@@ -1300,7 +1301,8 @@ TEST_F(FileSystemAccessManagerImplTest,
           kTestStorageKey.origin(),
           FileSystemAccessPermissionContext::PathType::kLocal, file_path,
           FileSystemAccessPermissionContext::HandleType::kFile,
-          ui::SelectFileDialog::Type::SELECT_OPEN_FILE, kFrameId, testing::_))
+          FileSystemAccessPermissionContext::UserAction::kDragAndDrop, kFrameId,
+          testing::_))
       .WillOnce(RunOnceCallback<6>(
           FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort));
 
@@ -1333,8 +1335,8 @@ TEST_F(FileSystemAccessManagerImplTest,
                   kTestStorageKey.origin(),
                   FileSystemAccessPermissionContext::PathType::kLocal, kDirPath,
                   FileSystemAccessPermissionContext::HandleType::kDirectory,
-                  ui::SelectFileDialog::Type::SELECT_UPLOAD_FOLDER, kFrameId,
-                  testing::_))
+                  FileSystemAccessPermissionContext::UserAction::kDragAndDrop,
+                  kFrameId, testing::_))
       .WillOnce(RunOnceCallback<6>(
           FileSystemAccessPermissionContext::SensitiveEntryResult::kAbort));
 
@@ -1421,7 +1423,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
           kTestStorageKey.origin(),
           FileSystemAccessPermissionContext::PathType::kLocal, test_file,
           FileSystemAccessPermissionContext::HandleType::kFile,
-          ui::SelectFileDialog::Type::SELECT_OPEN_FILE,
+          FileSystemAccessPermissionContext::UserAction::kOpen,
           web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
       .WillOnce(RunOnceCallback<6>(
           FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
@@ -1508,7 +1510,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
           kTestStorageKey.origin(),
           FileSystemAccessPermissionContext::PathType::kLocal, test_file,
           FileSystemAccessPermissionContext::HandleType::kFile,
-          ui::SelectFileDialog::Type::SELECT_SAVEAS_FILE,
+          FileSystemAccessPermissionContext::UserAction::kSave,
           web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
       .WillOnce(RunOnceCallback<6>(
           FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
@@ -1591,7 +1593,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
           kTestStorageKey.origin(),
           FileSystemAccessPermissionContext::PathType::kLocal, test_dir,
           FileSystemAccessPermissionContext::HandleType::kDirectory,
-          ui::SelectFileDialog::Type::SELECT_FOLDER,
+          FileSystemAccessPermissionContext::UserAction::kOpen,
           web_contents_->GetPrimaryMainFrame()->GetGlobalId(), testing::_))
       .WillOnce(RunOnceCallback<6>(
           FileSystemAccessPermissionContext::SensitiveEntryResult::kAllowed));
