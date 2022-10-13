@@ -474,10 +474,8 @@ void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(DBusResult<Void> ret) {
 
 void BluetoothDeviceFloss::TriggerConnectCallback(
     absl::optional<BluetoothDevice::ConnectErrorCode> error_code) {
-  if (--num_connecting_calls_ == 0)
+  if (num_connecting_calls_ > 0 && --num_connecting_calls_ == 0)
     adapter_->NotifyDeviceChanged(this);
-
-  DCHECK(num_connecting_calls_ >= 0);
 
   if (pending_callback_on_connect_profiles_) {
     std::move(*pending_callback_on_connect_profiles_).Run(error_code);

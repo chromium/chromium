@@ -828,7 +828,8 @@ void BluetoothAdapterFloss::RegisterAdvertisement(
     std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
     CreateAdvertisementCallback callback,
     AdvertisementErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  std::move(error_callback)
+      .Run(device::BluetoothAdvertisement::ERROR_UNSUPPORTED_PLATFORM);
 }
 
 void BluetoothAdapterFloss::SetAdvertisingInterval(
@@ -836,13 +837,15 @@ void BluetoothAdapterFloss::SetAdvertisingInterval(
     const base::TimeDelta& max,
     base::OnceClosure callback,
     AdvertisementErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  std::move(error_callback)
+      .Run(device::BluetoothAdvertisement::ERROR_UNSUPPORTED_PLATFORM);
 }
 
 void BluetoothAdapterFloss::ResetAdvertising(
     base::OnceClosure callback,
     AdvertisementErrorCallback error_callback) {
-  NOTIMPLEMENTED();
+  std::move(error_callback)
+      .Run(device::BluetoothAdvertisement::ERROR_UNSUPPORTED_PLATFORM);
 }
 
 void BluetoothAdapterFloss::ConnectDevice(

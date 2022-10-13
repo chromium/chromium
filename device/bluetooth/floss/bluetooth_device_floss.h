@@ -181,7 +181,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // This is used for determining if the device is paired.
   uint32_t connection_state_ = 0;
 
-  // Number of ongoing calls to Connect().
+  // Number of ongoing calls to Connect(). Incremented with a call to Connect()
+  // and decremented when either profiles are connected or pairing was
+  // cancelled.
   int num_connecting_calls_ = 0;
 
   // UI thread task runner and socket thread used to create sockets.
