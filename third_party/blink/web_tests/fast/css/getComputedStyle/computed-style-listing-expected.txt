@@ -197,6 +197,7 @@ grid-template-columns: none
 grid-template-rows: none
 height: 0px
 hyphenate-character: auto
+hyphenate-limit-chars: auto
 hyphens: manual
 image-orientation: from-image
 image-rendering: auto

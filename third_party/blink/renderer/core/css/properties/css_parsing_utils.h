@@ -455,6 +455,9 @@ bool ConsumeGridTemplateShorthand(bool important,
                                   const CSSValue*& template_columns,
                                   const CSSValue*& template_areas);
 
+CSSValue* ConsumeHyphenateLimitChars(CSSParserTokenRange&,
+                                     const CSSParserContext&);
+
 // The fragmentation spec says that page-break-(after|before|inside) are to be
 // treated as shorthands for their break-(after|before|inside) counterparts.
 // We'll do the same for the non-standard properties

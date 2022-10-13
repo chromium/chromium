@@ -79,6 +79,7 @@ ALIGNMENT_ORDER = [
     'StyleColor',
     'StyleAutoColor',
     'Color',
+    'StyleHyphenateLimitChars',
     'LayoutUnit',
     'LineClampValue',
     'OutlineValue',

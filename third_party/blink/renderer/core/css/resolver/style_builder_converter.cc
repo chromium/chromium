@@ -1205,6 +1205,35 @@ void StyleBuilderConverter::CreateImplicitNamedGridLinesFromGridArea(
   }
 }
 
+StyleHyphenateLimitChars StyleBuilderConverter::ConvertHyphenateLimitChars(
+    StyleResolverState&,
+    const CSSValue& value) {
+  if (const auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(ident->GetValueID(), CSSValueID::kAuto);
+    return StyleHyphenateLimitChars();
+  }
+  const auto& list = To<CSSValueList>(value);
+  DCHECK_GE(list.length(), 1u);
+  DCHECK_LE(list.length(), 3u);
+  Vector<unsigned, 3> values;
+  for (const Member<const CSSValue>& item : list) {
+    if (const auto* primitive = DynamicTo<CSSPrimitiveValue>(item.Get())) {
+      DCHECK(primitive->IsInteger());
+      DCHECK_GE(primitive->GetIntValue(), 1);
+      values.push_back(primitive->GetIntValue());
+      continue;
+    }
+    if (const auto* ident = DynamicTo<CSSIdentifierValue>(item.Get())) {
+      DCHECK_EQ(ident->GetValueID(), CSSValueID::kAuto);
+      values.push_back(0);
+      continue;
+    }
+    NOTREACHED();
+  }
+  values.Grow(3);
+  return StyleHyphenateLimitChars(values[0], values[1], values[2]);
+}
+
 LayoutUnit StyleBuilderConverter::ConvertBorderWidth(StyleResolverState& state,
                                                      const CSSValue& value) {
   double result = 0;

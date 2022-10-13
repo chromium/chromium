@@ -169,6 +169,9 @@ class StyleBuilderConverter {
                                             const CSSValue&);
   static GridTrackList ConvertGridTrackSizeList(StyleResolverState&,
                                                 const CSSValue&);
+  static StyleHyphenateLimitChars ConvertHyphenateLimitChars(
+      StyleResolverState&,
+      const CSSValue&);
   template <typename T>
   static T ConvertLineWidth(StyleResolverState&, const CSSValue&);
   static LayoutUnit ConvertBorderWidth(StyleResolverState&, const CSSValue&);

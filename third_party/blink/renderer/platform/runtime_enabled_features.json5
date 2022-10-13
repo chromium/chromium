@@ -699,6 +699,7 @@
     {
       // crbug.com/924069
       name: "CSSHyphenateLimitChars",
+      status: "test",
     },
     {
       name: "CSSIcUnit",

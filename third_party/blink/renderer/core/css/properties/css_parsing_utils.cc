@@ -5378,6 +5378,27 @@ bool ConsumeGridTemplateShorthand(bool important,
       template_areas);
 }
 
+CSSValue* ConsumeHyphenateLimitChars(CSSParserTokenRange& range,
+                                     const CSSParserContext& context) {
+  CSSValueList* const list = CSSValueList::CreateSpaceSeparated();
+  while (!range.AtEnd() && list->length() < 3) {
+    if (const CSSPrimitiveValue* value = ConsumeIntegerOrNumberCalc(
+            range, context, CSSPrimitiveValue::ValueRange::kPositiveInteger)) {
+      list->Append(*value);
+      continue;
+    }
+    if (const CSSIdentifierValue* ident =
+            ConsumeIdent<CSSValueID::kAuto>(range)) {
+      list->Append(*ident);
+      continue;
+    }
+    return nullptr;
+  }
+  if (list->length())
+    return list;
+  return nullptr;
+}
+
 bool ConsumeFromPageBreakBetween(CSSParserTokenRange& range,
                                  CSSValueID& value) {
   if (!ConsumeCSSValueId(range, value)) {
