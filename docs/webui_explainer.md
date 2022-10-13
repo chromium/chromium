@@ -961,6 +961,135 @@ computing stability metrics.
    error message includes the name of a network, each network name will be its
    own signature.
 
+## Common TypeScript build issue: Missing dependencies
+Similar to how builds can flakily fail when a C++ file adds an include without
+updating the DEPS file appropriately, builds can flakily (or consistently) fail
+if TypeScript code adds an import but doesn't update the dependencies for its
+`ts_library()` target to include the library that contains that import. This
+has caused confusion for both developers and sheriffs in the past.
+
+### Example Failure
+The following is an example build flake that occurred due to the file
+`personalization_app.ts` adding an import of `colors_css_updater.js`, but not
+updating its dependencies appropriately:
+
+```
+gen/ash/webui/personalization_app/resources/preprocessed/js/personalization_app.ts:38:39 - error TS2792: Cannot find module 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js'. Did you mean to set the 'moduleResolution' option to 'node', or to add aliases to the 'paths' option?
+
+38 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Found 1 error in gen/ash/webui/personalization_app/resources/preprocessed/js/personalization_app.ts:38
+```
+
+### For Chromium Sheriffs
+If you see a failure like the one in the example, there is a high chance that
+the regression range given by automated tools will not include the CL that is
+the root cause of the failure. There are 2 possible approaches to take to fix
+the build. One is described below at "fixing the error" - typically these are 1
+line fixes, but do require a few steps to identify the exact fix. An
+alternative workaround is as follows:
+1. Note that the file that failed ("1 error in") is `personalization_app.ts`.
+   Find this file in the repo: in this case, it was at
+   `ash/webui/personalization_app/resources/js/personalization_app.ts`.
+2. Find the failed import in the repo (line 38, as noted by the bot failure).
+3. Use "Blame" in Chromium code search to find out what CL added this import
+   line.
+4. Either contact the CL owner or try reverting the CL that made the addition.
+
+### Fixing the error
+The [fix](https://chromium-review.googlesource.com/c/chromium/src/+/3952957)
+for this example was just 1 line and was identified as follows:
+
+1. Observe from this failure that the module that can't be found is
+   `chrome://resources/cr_components/color_change_listener/colors_css_updater.js`.
+2. Find `colors_css_updater.ts` in the repository at
+   `ui/webui/resources/cr_components/color_change_listener/colors_css_updater.ts`.
+3. Find the BUILD.gn file that compiles this TS file. The BUILD.gn file will in
+   most cases be in the same folder as the TS file or one of its ancestors. In
+   this case, it was
+   `ui/webui/resources/cr_components/color_change_listener/BUILD.gn`.
+4. Observe the target name for the `ts_library()` target that compiled the file
+   is `"build_ts"`, so the full target path is
+   `//ui/webui/resources/cr_components/color_change_listener:build_ts`.
+5. Observe that the file where the import failed is `personalization_app.ts`,
+   which is `ash/webui/personalization_app/resourcesjs/personalization_app.ts` in
+   the repo.
+6. Find the `ts_library` target that compiles `personalization_app.ts` at
+   `ash/webui/personalization_app/resources/BUILD.gn`.
+7. Observe that this target doesn't have the
+   `//ui/webui/resources/cr_components/color_change_listener:build_ts` target
+   listed in `deps`. Add the missing dependency there.
+
+Note that if `colors_css_updater.js` was actually checked into the repo as a
+JavaScript file, steps 3, 4, and 7 would be slightly different as follows:
+
+3. Find the BUILD.gn file that either copies or generates a
+   `colors_css_updater.d.ts`. Generally, this will contain a
+   `ts_definitions()` target, where the JS file is either passed as an input,
+   or a target copying the checked in definitions file is a dependency.
+4. Observe the name of the target - usually `"generate_definitions"`.
+7. Look for this target in the `extra_deps` of the `ts_library()` target that
+   depends on it. Add it to `extra_deps` if it's missing.
+
+### For developers - Prevent missing dependency build errors
+When adding a new import (e.g. `import {FooSharedClass} from 'chrome://resources/foo/foo_shared.js';`) to a TypeScript file in your project:
+1. If the file in the repo is TypeScript (e.g.
+   `ui/webui/resources/foo/foo_shared.ts`), find which `ts_library()` target
+   compiles this file.
+2. If, for example, `ui/webui/resources/foo/BUILD.gn` contains:
+   `ts_library("library")`, which has `foo_shared.ts` listed in its `in_files`,
+   then add `//ui/webui/resources/foo:library` to your `ts_library()` target's
+   deps as follows:
+
+```
+ts_library("build_ts") {
+  root_dir = my_root_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/foo:library", # This line is new
+  ]
+  in_files = my_project_ts_files
+}
+```
+
+Alternatively:
+1. If the file in the repo is JavaScript (i.e.
+   `ui/webui/resources/foo/foo_shared.js`), look for which `ts_definitions()`
+   target generates the corresponding `.d.ts` file or depends on a target
+   copying a manually checked in `foo_shared.d.ts` file.
+2. If, for example, `ui/webui/resources/foo/BUILD.gn` contains
+   `ts_definitions("generate_definitions")`, which lists `foo_shared.js` in
+   `js_files` or alternatively depends on `:copy_definitions` which copies
+   `foo_shared.d.ts`, then add `//ui/webui/resources/foo:generate_definitions`
+   to your `ts_library()` target's `extra_deps` as follows:
+
+```
+ts_library("build_ts") {
+  root_dir = my_root_dir
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  deps = [ "//ui/webui/resources:library" ]
+
+  # This line is new
+  extra_deps = [ "//ui/webui/resources/foo:generate_definitions" ]
+
+  in_files = my_project_ts_files
+}
+```
+
+Note: If using the `build_webui()` wrapper rule, add the new dependency to
+`ts_deps` (for a TypeScript file) or `ts_extra_deps` (for a JavaScript file
+with definitions).
+
+Failure to follow these steps can lead to other developers hitting flaky build
+errors and/or having their unrelated CLs reverted by sheriffs who aren't always
+aware that the regression range given in automated tools may not contain the
+true culprit for TypeScript related build flakes.
+
 ## See also
 
 * WebUI's C++ code follows the [Chromium C++ styleguide](../styleguide/c++/c++.md).
