@@ -24,4 +24,7 @@ enum NodeDataStatus {
 struct NodeData {
   // The BackendNodeId of this element.
   int32 backend_node_id;
+
+  // Whether an override was used.
+  bool used_override;
 };

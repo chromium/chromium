@@ -17,7 +17,8 @@ struct NodeData {
   NodeData& operator=(NodeData&&);
   ~NodeData();
 
-  int32_t backend_node_id;
+  int32_t backend_node_id = -1;
+  bool used_override = false;
 };
 
 }  // namespace autofill_assistant
