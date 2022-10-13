@@ -18,8 +18,10 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/common/omnibox_features.h"
 
@@ -206,15 +208,21 @@ void InMemoryURLIndex::Shutdown() {
   shutdown_ = true;
   private_data_tracker_.TryCancelAll();
 
-#ifndef LEAK_SANITIZER
+#if !defined(LEAK_SANITIZER) && !BUILDFLAG(IS_ANDROID)
   // Intentionally create and then leak a scoped_refptr to private_data_. This
   // permanently raises the reference count so that the URLIndexPrivateData
   // destructor won't run during browser shutdown. This saves having to walk the
   // maps to free their memory, which saves time and avoids shutdown hangs,
-  // especially if some of the memory has been paged out.
-  base::NoDestructor<scoped_refptr<URLIndexPrivateData>> leak_reference(
-      private_data_);
-#endif
+  // especially if some of the memory has been paged out. Note that we only want
+  // to do this if the whole browser is shutting down. If it's just the Profile
+  // being destroyed, we don't want to leak the memory. Android doesn't have
+  // KeepAliveRegistry, and doesn't need this anyways, since it kills the
+  // process without shutdown whenever it needs to.
+  if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
+    base::NoDestructor<scoped_refptr<URLIndexPrivateData>> leak_reference(
+        private_data_);
+  }
+#endif  // !defined(LEAK_SANITIZER) && !BUILDFLAG(IS_ANDROID)
 }
 
 // Restoring from the History DB -----------------------------------------------

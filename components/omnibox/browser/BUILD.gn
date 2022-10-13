@@ -300,6 +300,10 @@ static_library("browser") {
     deps += [ ":vector_icons" ]
   }
 
+  if (!is_android) {
+    deps += [ "//components/keep_alive_registry" ]
+  }
+
   if (!is_ios) {
     sources += [
       "actions/history_clusters_action.cc",
