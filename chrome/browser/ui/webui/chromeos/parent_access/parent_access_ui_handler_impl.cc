@@ -92,7 +92,7 @@ void ParentAccessUIHandlerImpl::OnParentAccessDone(
       dialog_result->status = ParentAccessDialog::Result::Status::kApproved;
       dialog_result->parent_access_token = parent_access_token_->token();
       // Only keep the seconds, not the nanoseconds.
-      dialog_result->parent_access_token_expire_timestamp_ =
+      dialog_result->parent_access_token_expire_timestamp =
           base::Time::FromDoubleT(
               parent_access_token_->expire_time().seconds());
       break;

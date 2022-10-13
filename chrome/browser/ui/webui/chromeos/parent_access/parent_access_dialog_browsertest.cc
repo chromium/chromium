@@ -39,19 +39,18 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
   base::RunLoop run_loop;
 
   // Create the callback.
-  ParentAccessDialog::ParentAccessDialogCallback callback = base::BindOnce(
+  ParentAccessDialog::Callback callback = base::BindOnce(
       [](base::OnceClosure closure,
-         std::unique_ptr<
-             chromeos::ParentAccessDialog::ParentAccessDialog::Result> result)
-          -> void {
+         std::unique_ptr<ParentAccessDialog::Result> result) -> void {
         EXPECT_EQ(result->status,
-                  chromeos::ParentAccessDialog::Result::Status::kCancelled);
+                  ParentAccessDialog::Result::Status::kCancelled);
         std::move(closure).Run();
       },
       run_loop.QuitClosure());
 
   // Show the dialog.
-  ParentAccessDialog::ShowError error = ParentAccessDialog::Show(
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error = provider.Show(
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
@@ -59,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
       std::move(callback));
 
   // Verify it is showing.
-  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
   ASSERT_NE(ParentAccessDialog::GetInstance(), nullptr);
   parent_access_ui::mojom::ParentAccessParams* params =
       ParentAccessDialog::GetInstance()->GetParentAccessParamsForTest();
@@ -89,26 +88,23 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, ShowDialog) {
 IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetResultAndClose) {
   base::RunLoop run_loop;
 
-  auto expected_result = std::make_unique<
-      chromeos::ParentAccessDialog::ParentAccessDialog::Result>();
-  expected_result->status =
-      chromeos::ParentAccessDialog::Result::Status::kApproved;
+  auto expected_result = std::make_unique<ParentAccessDialog::Result>();
+  expected_result->status = ParentAccessDialog::Result::Status::kApproved;
   expected_result->parent_access_token = "TEST_TOKEN";
 
   // Create the callback.
-  ParentAccessDialog::ParentAccessDialogCallback callback = base::BindOnce(
+  ParentAccessDialog::Callback callback = base::BindOnce(
       [](base::OnceClosure closure,
-         const chromeos::ParentAccessDialog::Result* expected_result,
-         std::unique_ptr<
-             chromeos::ParentAccessDialog::ParentAccessDialog::Result> result)
-          -> void {
+         const ParentAccessDialog::Result* expected_result,
+         std::unique_ptr<ParentAccessDialog::Result> result) -> void {
         EXPECT_TRUE(DialogResultsEqual(*result, *expected_result));
         std::move(closure).Run();
       },
       run_loop.QuitClosure(), expected_result.get());
 
   // Show the dialog.
-  ParentAccessDialog::Show(
+  ParentAccessDialogProvider provider;
+  provider.Show(
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
@@ -128,18 +124,17 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest, SetResultAndClose) {
 IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest,
                        ErrorOnDialogAlreadyVisible) {
   // Show the dialog.
-  ParentAccessDialog::ShowError error = ParentAccessDialog::Show(
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error = provider.Show(
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
               parent_access_ui::mojom::WebApprovalsParams::New())),
       base::BindOnce(
-          [](std::unique_ptr<
-              chromeos::ParentAccessDialog::ParentAccessDialog::Result> result)
-              -> void {}));
+          [](std::unique_ptr<ParentAccessDialog::Result> result) -> void {}));
 
   // Verify it is showing.
-  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
   ASSERT_NE(ParentAccessDialog::GetInstance(), nullptr);
   parent_access_ui::mojom::ParentAccessParams* params =
       ParentAccessDialog::GetInstance()->GetParentAccessParamsForTest();
@@ -147,18 +142,17 @@ IN_PROC_BROWSER_TEST_F(ParentAccessDialogBrowserTest,
       params->flow_type,
       parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess);
 
-  error = ParentAccessDialog::Show(
+  error = provider.Show(
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
               parent_access_ui::mojom::WebApprovalsParams::New())),
       base::BindOnce(
-          [](std::unique_ptr<
-              chromeos::ParentAccessDialog::ParentAccessDialog::Result> result)
-              -> void {}));
+          [](std::unique_ptr<ParentAccessDialog::Result> result) -> void {}));
 
   // Verify an error was returned indicating it can't be shown again.
-  EXPECT_EQ(error, ParentAccessDialog::ShowError::kDialogAlreadyVisible);
+  EXPECT_EQ(error,
+            ParentAccessDialogProvider::ShowError::kDialogAlreadyVisible);
   EXPECT_NE(ParentAccessDialog::GetInstance(), nullptr);
 }
 
@@ -169,22 +163,21 @@ using ParentAccessDialogRegularUserBrowserTest =
 IN_PROC_BROWSER_TEST_F(ParentAccessDialogRegularUserBrowserTest,
                        ErrorForNonChildUser) {
   // Show the dialog.
-  ParentAccessDialog::ShowError error = ParentAccessDialog::Show(
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error = provider.Show(
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
               parent_access_ui::mojom::WebApprovalsParams::New())),
       base::BindOnce(
-          [](std::unique_ptr<
-              chromeos::ParentAccessDialog::ParentAccessDialog::Result> result)
-              -> void {}));
+          [](std::unique_ptr<ParentAccessDialog::Result> result) -> void {}));
 
   // Verify it is not showing.
-  EXPECT_EQ(error, ParentAccessDialog::ShowError::kNotAChildUser);
+  EXPECT_EQ(error, ParentAccessDialogProvider::ShowError::kNotAChildUser);
   EXPECT_EQ(ParentAccessDialog::GetInstance(), nullptr);
 }
 
 // TODO(b/241166361) Add test to ensure PAT is communicated back to caller via
-// the the ParentAccessDialogCallback.
+// the the ParentAccessDialog::Callback.
 
 }  // namespace chromeos

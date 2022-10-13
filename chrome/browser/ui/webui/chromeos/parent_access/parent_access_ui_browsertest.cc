@@ -24,7 +24,8 @@ using ParentAccessUIBrowserTest = ParentAccessChildUserBrowserTestBase;
 // Test cases for ParentAccessUI class
 IN_PROC_BROWSER_TEST_F(ParentAccessUIBrowserTest, URLParameters) {
   // Show the parent access dialog.
-  ParentAccessDialog::ShowError error = ParentAccessDialog::Show(
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error = provider.Show(
       parent_access_ui::mojom::ParentAccessParams::New(
           parent_access_ui::mojom::ParentAccessParams::FlowType::kWebsiteAccess,
           parent_access_ui::mojom::FlowTypeParams::NewWebApprovalsParams(
@@ -32,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIBrowserTest, URLParameters) {
       base::DoNothing());
 
   // Verify dialog is showing.
-  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
   EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
   GURL webview_url = GetParentAccessUI()->GetWebContentURLForTesting();

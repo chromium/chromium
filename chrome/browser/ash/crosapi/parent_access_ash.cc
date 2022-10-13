@@ -38,8 +38,10 @@ void ParentAccessAsh::GetWebsiteParentApproval(
               parent_access_ui::mojom::WebApprovalsParams::New(
                   url, child_display_name, favicon_bitmap)));
 
-  chromeos::ParentAccessDialog::ShowError show_dialog_result =
-      chromeos::ParentAccessDialog::Show(
+  chromeos::ParentAccessDialogProvider provider;
+
+  chromeos::ParentAccessDialogProvider::ShowError show_dialog_result =
+      provider.Show(
           std::move(params),
           base::BindOnce(
               [](std::unique_ptr<chromeos::ParentAccessDialog::Result> result)
@@ -54,17 +56,17 @@ void ParentAccessAsh::GetWebsiteParentApproval(
   // TODO(b/246671931) Other async results will be dealt with in the
   // ParentAccessDialogCallback when it is ready.
   switch (show_dialog_result) {
-    case chromeos::ParentAccessDialog::kDialogAlreadyVisible:
+    case chromeos::ParentAccessDialogProvider::ShowError::kDialogAlreadyVisible:
       result->status = crosapi::mojom::ParentAccessResult::Status::kError;
       result->error_type =
           crosapi::mojom::ParentAccessResult::ErrorType::kAlreadyVisible;
       break;
-    case chromeos::ParentAccessDialog::kNotAChildUser:
+    case chromeos::ParentAccessDialogProvider::ShowError::kNotAChildUser:
       result->status = crosapi::mojom::ParentAccessResult::Status::kError;
       result->error_type =
           crosapi::mojom::ParentAccessResult::ErrorType::kNotAChildUser;
       break;
-    case chromeos::ParentAccessDialog::kNone:
+    case chromeos::ParentAccessDialogProvider::ShowError::kNone:
       result->status = crosapi::mojom::ParentAccessResult::Status::kUnknown;
       break;
   }

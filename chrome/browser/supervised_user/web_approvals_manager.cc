@@ -87,14 +87,14 @@ void WebApprovalsManager::RequestLocalApproval(
               parent_access_ui::mojom::WebApprovalsParams::New(
                   url.GetWithEmptyPath(), child_display_name, favicon_bytes)));
 
-  chromeos::ParentAccessDialog::ShowError result =
-      chromeos::ParentAccessDialog::Show(
-          std::move(params),
-          base::BindOnce(
-              [](std::unique_ptr<
-                  chromeos::ParentAccessDialog::ParentAccessDialog::Result>
-                     result) -> void {}));
-  if (result != chromeos::ParentAccessDialog::ShowError::kNone) {
+  chromeos::ParentAccessDialogProvider provider;
+  chromeos::ParentAccessDialogProvider::ShowError result = provider.Show(
+      std::move(params),
+      base::BindOnce(
+          [](std::unique_ptr<chromeos::ParentAccessDialog::Result> result)
+              -> void {}));
+
+  if (result != chromeos::ParentAccessDialogProvider::ShowError::kNone) {
     LOG(ERROR) << "Error showing ParentAccessDialog: " << result;
     std::move(callback).Run(false);
     return;

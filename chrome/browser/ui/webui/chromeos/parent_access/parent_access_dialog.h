@@ -19,9 +19,6 @@ namespace chromeos {
 // a child session.
 class ParentAccessDialog : public SystemWebDialogDelegate {
  public:
-  // Error state returned by the Show() function.
-  enum ShowError { kNone, kDialogAlreadyVisible, kNotAChildUser };
-
   // The result of the parent access request, passed back to the caller.
   struct Result {
     // The status of the result.
@@ -37,17 +34,11 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
     std::string parent_access_token = "";
 
     // The UTC timestamp at which the token expires.
-    base::Time parent_access_token_expire_timestamp_;
+    base::Time parent_access_token_expire_timestamp;
   };
 
   // Callback for the result of the dialog.
-  using ParentAccessDialogCallback =
-      base::OnceCallback<void(std::unique_ptr<Result>)>;
-
-  // Shows the dialog; if the dialog is already displayed, this returns an
-  // error.
-  static ShowError Show(parent_access_ui::mojom::ParentAccessParamsPtr params,
-                        ParentAccessDialogCallback callback);
+  using Callback = base::OnceCallback<void(std::unique_ptr<Result>)>;
 
   static ParentAccessDialog* GetInstance();
 
@@ -70,18 +61,46 @@ class ParentAccessDialog : public SystemWebDialogDelegate {
 
   parent_access_ui::mojom::ParentAccessParams* GetParentAccessParamsForTest();
 
- protected:
   explicit ParentAccessDialog(
       parent_access_ui::mojom::ParentAccessParamsPtr params,
-      ParentAccessDialogCallback callback);
+      Callback callback);
+
+ protected:
   ~ParentAccessDialog() override;
 
  private:
   parent_access_ui::mojom::ParentAccessParamsPtr parent_access_params_;
-  ParentAccessDialogCallback callback_;
+  Callback callback_;
 
   // The Parent Access result.  Set by the ParentAccessUI
   std::unique_ptr<Result> result_;
+};
+
+// Interface that provides the ParentAccessDialog. The provider
+// should be used to show the dialog.  The default implementation
+// is can be overridden by tests to provide a fake implementation like this:
+//
+// class FakeParentAccessDialogProvider
+//    : public chromeos::ParentAccessDialogProvider {
+// public:
+//  ParentAccessDialogProvider::ShowError Show(
+//      parent_access_ui::mojom::ParentAccessParamsPtr params,
+//      chromeos::ParentAccessDialog::Callback callback) override {}
+class ParentAccessDialogProvider {
+ public:
+  // Error state returned by the Show() function.
+  enum ShowError { kNone, kDialogAlreadyVisible, kNotAChildUser };
+
+  ParentAccessDialogProvider() = default;
+  ParentAccessDialogProvider(const ParentAccessDialogProvider& other) = delete;
+  ParentAccessDialogProvider& operator=(
+      const ParentAccessDialogProvider& other) = delete;
+  virtual ~ParentAccessDialogProvider() = default;
+
+  // Shows the dialog. If the dialog is already displayed, this returns an
+  // error.  virtual so it can be overridden for tests to fake dialog behavior.
+  virtual ShowError Show(parent_access_ui::mojom::ParentAccessParamsPtr params,
+                         ParentAccessDialog::Callback callback);
 };
 
 }  // namespace chromeos

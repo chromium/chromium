@@ -39,11 +39,12 @@ using ParentAccessUIHandlerImplBrowserTest =
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        GetOAuthTokenSuccess) {
   // Show the parent access dialog.
-  ParentAccessDialog::ShowError error =
-      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error =
+      provider.Show(GetParamsForWebApprovals(), base::DoNothing());
 
   // Verify dialog is showing.
-  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
 
   EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
@@ -65,11 +66,12 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        GetOAuthTokenError) {
   // Show the parent access dialog.
-  ParentAccessDialog::ShowError error =
-      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error =
+      provider.Show(GetParamsForWebApprovals(), base::DoNothing());
 
   // Verify dialog is showing.
-  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
 
   EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
@@ -93,11 +95,12 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        GetOAuthTokenOnlyOneFetchAtATimeError) {
   // Show the parent access dialog.
-  ParentAccessDialog::ShowError error =
-      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error =
+      provider.Show(GetParamsForWebApprovals(), base::DoNothing());
 
   // Verify dialog is showing.
-  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
 
   EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
@@ -150,7 +153,9 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 
   // Show the parent access dialog.
   base::RunLoop show_dialog_run_loop;
-  ParentAccessDialog::ShowError error = ParentAccessDialog::Show(
+  // Show the parent access dialog.
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error = provider.Show(
       GetParamsForWebApprovals(),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
@@ -160,13 +165,13 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
             // timestamp.
             EXPECT_EQ("TEST_TOKEN", result->parent_access_token);
             EXPECT_EQ(base::Time::FromDoubleT(123456),
-                      result->parent_access_token_expire_timestamp_);
+                      result->parent_access_token_expire_timestamp);
             std::move(quit_closure).Run();
           },
           show_dialog_run_loop.QuitClosure()));
 
   // Verify dialog is showing.
-  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
 
   EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
@@ -223,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest, OnParentDeclined) {
   // Show the parent access dialog.
   base::RunLoop show_dialog_run_loop;
-  ParentAccessDialog::ShowError error = ParentAccessDialog::Show(
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error = provider.Show(
       GetParamsForWebApprovals(),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
@@ -237,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest, OnParentDeclined) {
           show_dialog_run_loop.QuitClosure()));
 
   // Verify dialog is showing.
-  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
 
   EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
@@ -269,11 +275,12 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest, OnParentDeclined) {
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        ConsentDeclinedParsed) {
   // Show the parent access dialog.
-  ParentAccessDialog::ShowError error =
-      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error =
+      provider.Show(GetParamsForWebApprovals(), base::DoNothing());
 
   // Verify dialog is showing.
-  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
 
   EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
@@ -309,11 +316,12 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        OnPageSizeChangedIgnored) {
   // Show the parent access dialog.
-  ParentAccessDialog::ShowError error =
-      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error =
+      provider.Show(GetParamsForWebApprovals(), base::DoNothing());
 
   // Verify dialog is showing.
-  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
 
   EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
@@ -349,11 +357,12 @@ IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
 IN_PROC_BROWSER_TEST_F(ParentAccessUIHandlerImplBrowserTest,
                        OnCommunicationEstablishedIgnored) {
   // Show the parent access dialog.
-  ParentAccessDialog::ShowError error =
-      ParentAccessDialog::Show(GetParamsForWebApprovals(), base::DoNothing());
+  ParentAccessDialogProvider provider;
+  ParentAccessDialogProvider::ShowError error =
+      provider.Show(GetParamsForWebApprovals(), base::DoNothing());
 
   // Verify dialog is showing.
-  ASSERT_EQ(error, ParentAccessDialog::ShowError::kNone);
+  ASSERT_EQ(error, ParentAccessDialogProvider::ShowError::kNone);
   EXPECT_TRUE(content::WaitForLoadStop(GetContents()));
 
   ParentAccessUIHandlerImpl* handler = static_cast<ParentAccessUIHandlerImpl*>(
