@@ -62,6 +62,7 @@ message GroupsInfo {
 // be removed or renumbered.
 enum GroupId {
   GROUP_INVALID = -1;
+
   // Reserved for Polaris zero-prefix suggestions.
   // Produced by ZeroSuggestProvider.
   GROUP_PREVIOUS_SEARCH_RELATED = 10000;
@@ -71,16 +72,24 @@ enum GroupId {
   GROUP_RELATED_QUERIES = 10004;
   GROUP_VISITED_DOC_RELATED = 10005;
   GROUP_POLARIS_RESERVED_MAX = 19999;
+
   // Mobile-specific auxiliary suggestions. These suggestions are placed on top
   // of any other content.
   GROUP_MOBILE_SEARCH_READY_OMNIBOX = 30000;
   GROUP_MOBILE_MOST_VISITED = 30001;
   GROUP_MOBILE_CLIPBOARD = 30002;
+
   // Reserved for personalized zero-prefix suggestions.
   // Produced by ZeroSuggestProvider and LocalHistoryZeroSuggestProvider.
   GROUP_PERSONALIZED_ZERO_SUGGEST = 40000;
-  // Produced by HistoryClusterProvider.
-  GROUP_HISTORY_CLUSTER = 50000;
+
+  // Cross platform suggestions with vanilla visual representation (i.e.
+  // vertical, primary column, and no header), but useful for sorting.
+  GROUP_STARTER_PACK = 50000;
+  GROUP_SEARCH = 50001;
+  GROUP_OTHER_NAVS = 50002;  // E.g., bookmarks, history, etc.
+  GROUP_DOCUMENT = 50003;    // E.g., Drive docs, slides, sheets, etc.
+  GROUP_HISTORY_CLUSTER = 50004;
 }
 
 // Suggestion group sections determine the order in which suggestion groups
@@ -123,4 +132,12 @@ enum GroupSection {
   SECTION_REMOTE_ZPS_8 = 11;
   SECTION_REMOTE_ZPS_9 = 12;
   SECTION_REMOTE_ZPS_10 = 13;
+
+  // Cross platform suggestions with vanilla visual representation (i.e.
+  // vertical, primary column, and no header), but useful for sorting.
+  SECTION_STARTER_PACK = 100;
+  SECTION_SEARCH = 101;
+  SECTION_OTHER_NAVS = 102;
+  SECTION_DOCUMENT = 103;
+  SECTION_HISTORY_CLUSTER = 104;
 }
