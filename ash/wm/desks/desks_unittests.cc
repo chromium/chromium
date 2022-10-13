@@ -3195,11 +3195,6 @@ TEST_P(TabletModeDesksTest, RestoringUnsnappableWindowsInSplitView) {
 }
 
 TEST_P(DesksTest, MiniViewsTouchGestures) {
-  // TODO(crbug.com/1361138): Figure out how to accommodate the context menu in
-  // CloseAll.
-  base::test::ScopedFeatureList desks_close_all_disabler;
-  desks_close_all_disabler.InitAndDisableFeature(features::kDesksCloseAll);
-
   auto* controller = DesksController::Get();
   NewDesk();
   NewDesk();
@@ -3216,16 +3211,36 @@ TEST_P(DesksTest, MiniViewsTouchGestures) {
   auto* desk_2_mini_view = desks_bar_view->mini_views()[1];
   auto* desk_3_mini_view = desks_bar_view->mini_views()[2];
 
-  // Long gesture tapping on one mini_view shows its desk action interface, and
-  // hides those of other mini_views.
+  // Long gesture tapping on one desk preview shows its desk action interface,
+  // and hides those of other mini views.
   auto* event_generator = GetEventGenerator();
-  LongGestureTap(desk_1_mini_view->GetBoundsInScreen().CenterPoint(),
-                 event_generator);
+  const gfx::Point desk_1_preview_center =
+      desk_1_mini_view->desk_preview()->GetBoundsInScreen().CenterPoint();
+  const gfx::Point desk_2_preview_center =
+      desk_2_mini_view->desk_preview()->GetBoundsInScreen().CenterPoint();
+
+  LongGestureTap(desk_1_preview_center, event_generator);
+
+  // If the `kDesksCloseAll` feature is enabled, the context menu appears on the
+  // first long press and after the user taps away the buttons will show. So in
+  // that case we need to tap away and wait for the context menu to disappear
+  // before checking whether the desk action interfaces are visible.
+  if (features::IsDesksCloseAllEnabled()) {
+    event_generator->GestureTapDownAndUp(desk_1_preview_center);
+    base::RunLoop().RunUntilIdle();
+  }
+
   EXPECT_TRUE(GetDeskActionVisibilityForMiniView(desk_1_mini_view));
   EXPECT_FALSE(GetDeskActionVisibilityForMiniView(desk_2_mini_view));
   EXPECT_FALSE(GetDeskActionVisibilityForMiniView(desk_3_mini_view));
-  LongGestureTap(desk_2_mini_view->GetBoundsInScreen().CenterPoint(),
-                 event_generator);
+
+  LongGestureTap(desk_2_preview_center, event_generator);
+
+  if (features::IsDesksCloseAllEnabled()) {
+    event_generator->GestureTapDownAndUp(desk_2_preview_center);
+    base::RunLoop().RunUntilIdle();
+  }
+
   EXPECT_FALSE(GetDeskActionVisibilityForMiniView(desk_1_mini_view));
   EXPECT_TRUE(GetDeskActionVisibilityForMiniView(desk_2_mini_view));
   EXPECT_FALSE(GetDeskActionVisibilityForMiniView(desk_3_mini_view));
@@ -5611,11 +5626,6 @@ TEST_P(DesksTest, ReorderDesksByMouse) {
 }
 
 TEST_P(DesksTest, ReorderDesksByGesture) {
-  // TODO(crbug.com/1361138): Figure out how to accommodate the context menu in
-  // CloseAll.
-  base::test::ScopedFeatureList desks_close_all_disabler;
-  desks_close_all_disabler.InitAndDisableFeature(features::kDesksCloseAll);
-
   auto* desks_controller = DesksController::Get();
 
   EnterOverview();
@@ -5656,6 +5666,16 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
 
   event_generator->ReleaseTouch();
 
+  // If the `kDesksCloseAll` feature is enabled, the context menu appears on a
+  // long press on the desk preview. In order to drag the desk again, we first
+  // need to get rid of the context menu by tapping and waiting for the menu to
+  // disappear.
+  if (features::IsDesksCloseAllEnabled()) {
+    event_generator->GestureTapDownAndUp(
+        mini_view_1->desk_preview()->GetBoundsInScreen().CenterPoint());
+    base::RunLoop().RunUntilIdle();
+  }
+
   // Reorder the second desk
   LongTapOnDeskPreview(mini_view_1, event_generator);
   EXPECT_TRUE(desks_bar_view->IsDraggingDesk());
@@ -5663,6 +5683,13 @@ TEST_P(DesksTest, ReorderDesksByGesture) {
   // Swap the positions of the second desk and the third desk.
   gfx::Point desk_center_2 =
       mini_view_2->GetPreviewBoundsInScreen().CenterPoint();
+
+  // If `kDesksCloseAll` is enabled, we need to drag the mouse a bit after
+  // long-tapping the desk preview to start the closing of the context menu
+  // before rearranging the desk.
+  if (features::IsDesksCloseAllEnabled())
+    event_generator->MoveTouchBy(10, 0);
+
   event_generator->MoveTouch(desk_center_2);
 
   // Now, the desks order should be [0, 2, 1]:
@@ -5768,11 +5795,6 @@ TEST_P(DesksTest, ReorderDesksByKeyboard) {
 
 // Test reordering desks in RTL mode.
 TEST_P(DesksTest, ReorderDesksInRTLMode) {
-  // TODO(crbug.com/1361138): Figure out how to accommodate the context menu in
-  // CloseAll.
-  base::test::ScopedFeatureList desks_close_all_disabler;
-  desks_close_all_disabler.InitAndDisableFeature(features::kDesksCloseAll);
-
   // Turn on RTL mode.
   const bool default_rtl = base::i18n::IsRTL();
   base::i18n::SetRTLForTesting(true);
@@ -5834,6 +5856,13 @@ TEST_P(DesksTest, ReorderDesksInRTLMode) {
 
   gfx::Point desk_center_0 =
       mini_view_0->GetPreviewBoundsInScreen().CenterPoint();
+
+  // If `kDesksCloseAll` is enabled, we need to drag the mouse a bit after
+  // long-tapping the desk preview to start the closing of the context menu
+  // before rearranging the desk.
+  if (features::IsDesksCloseAllEnabled())
+    event_generator->MoveTouchBy(-10, 0);
+
   event_generator->MoveTouch(desk_center_0);
 
   // Now, the desks order should be [1, 0, 2]:
