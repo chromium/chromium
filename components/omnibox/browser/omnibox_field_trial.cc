@@ -755,6 +755,10 @@ const base::FeatureParam<bool> kAutocompleteStabilityDontCopyDoneProviders(
     &omnibox::kAutocompleteStability,
     "AutocompleteStabilityDontCopyDoneProviders",
     false);
+const base::FeatureParam<bool> kPreventDefaultPreviousMatches(
+    &omnibox::kAutocompleteStability,
+    "AutocompleteStabilityPreventDefaultPreviousMatches",
+    false);
 const base::FeatureParam<bool> kAutocompleteStabilityAsyncProvidersFirst(
     &omnibox::kAutocompleteStability,
     "AutocompleteStabilityAsyncProvidersFirst",

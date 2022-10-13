@@ -1425,6 +1425,8 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
     relevance = duplicate_match.relevance;
   }
 
+  from_previous = from_previous && duplicate_match.from_previous;
+
   // Take the |action|, if any, so that it will be presented instead of buried.
   if (!action && duplicate_match.action &&
       AutocompleteMatch::IsActionCompatibleType(type)) {

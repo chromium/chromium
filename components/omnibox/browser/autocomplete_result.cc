@@ -246,10 +246,18 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
   // suggestions. Skipping those suggestions is fine, since
   // `SetAllowedToBeDefault()` here is only intended to make
   // `allowed_to_be_default` more conservative (true -> false, not vice versa).
+  static bool prevent_default_previous_matches =
+      OmniboxFieldTrial::kPreventDefaultPreviousMatches.Get();
   for (auto& m : matches_) {
-    if (input.prevent_inline_autocomplete() && m.from_previous &&
-        m.allowed_to_be_default_match) {
+    if (!m.from_previous)
+      continue;
+    if (input.prevent_inline_autocomplete() && m.allowed_to_be_default_match) {
       m.SetAllowedToBeDefault(input);
+    } else if (prevent_default_previous_matches) {
+      // Transferred matches may no longer match the new input. E.g., when the
+      // user types 'gi' (and presses enter), don't inline (and navigate to)
+      // 'gi[oogle.com]'.
+      m.allowed_to_be_default_match = false;
     }
   }
 }
@@ -308,9 +316,15 @@ void AutocompleteResult::SortAndCull(
       top_match =
           base::ranges::find_if(matches_, [&](const AutocompleteMatch& match) {
             // Find a match that is a duplicate AND has the same fill_into_edit.
+            // Don't preserve suggestions that are not default-able; e.g.,
+            // typing 'xy' shouldn't preserve default 'xz.com/xy'.
+            static bool prevent_default_previous_matches =
+                OmniboxFieldTrial::kPreventDefaultPreviousMatches.Get();
             return default_match_fields == GetMatchComparisonFields(match) &&
                    preserve_default_match->fill_into_edit ==
-                       match.fill_into_edit;
+                       match.fill_into_edit &&
+                   (!prevent_default_previous_matches ||
+                    match.allowed_to_be_default_match);
           });
     }
 
