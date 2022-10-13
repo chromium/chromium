@@ -53,25 +53,22 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
   };
 
   struct UI_TOUCH_SELECTION_EXPORT Config {
-    Config();
-    ~Config();
-
     // Maximum allowed time for handle tap detection. Defaults to 300 ms.
-    base::TimeDelta max_tap_duration;
+    base::TimeDelta max_tap_duration = base::Milliseconds(300);
 
     // Defaults to 8 DIPs.
-    float tap_slop;
+    float tap_slop = 8;
 
     // Controls whether adaptive orientation for selection handles is enabled.
     // Defaults to false.
-    bool enable_adaptive_handle_orientation;
+    bool enable_adaptive_handle_orientation = false;
 
     // Controls whether drag selection after a longpress is enabled.
     // Defaults to false.
-    bool enable_longpress_drag_selection;
+    bool enable_longpress_drag_selection = false;
 
     // Should we hide the active handle.
-    bool hide_active_handle;
+    bool hide_active_handle = false;
   };
 
   TouchSelectionController(TouchSelectionControllerClient* client,
