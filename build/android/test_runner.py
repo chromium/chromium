@@ -315,10 +315,6 @@ def AddDeviceOptions(parser):
       action='store_true',
       dest='upload_logcats_file',
       help='Whether to upload logcat file to logdog.')
-  parser.add_argument(
-      '--use-persistent-shell',
-      action='store_true',
-      help='Uses a persistent shell connection for the adb connection.')
 
   logcat_output_group = parser.add_mutually_exclusive_group()
   logcat_output_group.add_argument(
