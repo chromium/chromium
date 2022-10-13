@@ -24,9 +24,6 @@ Unlike `std::string`, Blink’s `String` object is a pointer to a
 reference counted character buffer. This design makes it easier to
 share the underlying character buffer between different consumers
 because multiple consumers can reference the same underlying buffer.
-The disadvantage of this design is that we need to be careful when
-mixing Strings with multithreading because the character buffer’s
-reference counting is not thread safe.
 
 
 ## Storage
@@ -210,7 +207,7 @@ the `String` you’re constructing, you probably should use
 ## Atomic Strings
 
 Some `StringImpl` objects are marked as _Atomic_, which means they’re
-stored in a thread-local `HashSet` called the `AtomicString` table.
+stored in a process-wide `HashSet` called the `AtomicString` table.
 Rather than interacting directly with these anointed `StringImpl`
 objects, we usually hold pointers to them via `AtomicString` objects
 (rather than `String` objects). Using `AtomicString` rather than
@@ -222,14 +219,13 @@ other `AtomicString`s.
 ### Construction
 
 Typically, constructing an `AtomicString` from a `String` object will
-involve a hash lookup in the `AtomicString` table for the current
-thread. If the string represented by the `String` object is not
-present in the `AtomicString` table, the `StringImpl` object from that
-`String` will be marked Atomic and added to the table. If the
-represented string is already present in the `AtomicString` table, the
-already-Atomic `StringImpl` object from the table will be used to
-construct the `AtomicString` rather than the `StringImpl` from the
-original String.
+involve a hash lookup in the `AtomicString` table. If the string
+represented by the `String` object is not present in the `AtomicString`
+table, the `StringImpl` object from that `String` will be marked Atomic
+and added to the table. If the represented string is already present in
+the `AtomicString` table, the already-Atomic `StringImpl` object from
+the table will be used to construct the `AtomicString` rather than the
+`StringImpl` from the original String.
 
 
 If you wish to construct an `AtomicString` from an array of `LChar`s
@@ -245,61 +241,26 @@ object as the `String` constructor would.
 If two `StringImpl` objects are atomic, you can compare them for
 equality by comparing their addresses rather than by comparing them
 character-by-character. The reason this works is that we maintain the
-invariant that no two Atomic `StringImpl` objects on a given thread
-represent the same string. Therefore, the two `StringImpl` objects
-represent the same string if, and only if, they are actually the same
-`StringImpl` object. We’ve overloaded `operator==` on `AtomicString`
-to let the compiler generate these optimized comparisons
-automatically.
+invariant that no two Atomic `StringImpl` objects represent the same
+string. Therefore, the two `StringImpl` objects represent the same
+string if, and only if, they are actually the same `StringImpl` object.
+We’ve overloaded `operator==` on `AtomicString` to let the compiler
+generate these optimized comparisons automatically.
 
 ### Deduplication
 
-Because there are no duplicate Atomic `StringImpl` objects on a given
-thread, `AtomicString`s are useful for coalescing duplicate strings
-into a single `StringImpl` object, saving memory. Unfortunately,
-`AtomicString`s are thread-specific and cannot be used to coalesce
-duplicate strings across threads.
-
-## Threading
-
-### Isolated copies
-
-String objects that you construct yourself are not thread-safe. The
-underlying `StringImpl` object can be shared only by `String` objects
-on the same thread because the `StringImpl`’s reference count isn’t
-incremented or decremented atomically.
-
-
-In some limited cases, you can safely send a `String` from one thread
-to another. In order for that to be safe, you need to make sure that
-the underlying `StringImpl` object has exactly one reference---the one
-you’re sending to another thread. If there is only one outstanding
-reference to the `StringImpl`, then there won’t be any reference count
-data races. The easiest way to get a `StringImpl` object with only one
-reference is to call `String::IsolatedCopy()`. You can check that a
-given `String` is safe to send to another thread by calling
-`String::IsSafeToSendToAnotherThread()`, typically in a `DCHECK`.
-
-
-If you look at the implementation of `IsSafeToSendToAnotherThread()`,
-you’ll notice that it always returns false if the `StringImpl` is
-Atomic, regardless of the reference count. That’s because Atomic
-`StringImpl` objects are not safe to send to another thread because
-they’re associated with an `AtomicString` table local to the current
-thread. If you do send an `AtomicString` to another thread and the
-`StringImpl` object is destructed on that thread, it will try to
-remove itself from that thread’s `AtomicString` table rather than from
-the original thread’s `AtomicString` table.
+Because there are no duplicate Atomic `StringImpl` objects,
+`AtomicString`s are useful for coalescing duplicate strings
+into a single `StringImpl` object, saving memory.
 
 ### Static Strings
 
 At startup, we create a number of _Static_ `StringImpl` objects that
-are safe to use from any thread. These `StringImpl` objects maintain
-the invariant that the least significant bit of their reference count
-is always one, which means their reference count never reaches zero
-and they are never deallocated. In addition to preventing their
-deallocation, we also pre-populate the hash value to ensure that
-Static `StringImpl` objects are otherwise immutable.
+maintain the invariant that the least significant bit of their
+reference count is always one, which means their reference count
+never reaches zero and they are never deallocated. In addition to
+preventing their deallocation, we also pre-populate the hash value
+to ensure that Static `StringImpl` objects are otherwise immutable.
 
 
 We first introduced these Static strings for the threaded HTML parser,
