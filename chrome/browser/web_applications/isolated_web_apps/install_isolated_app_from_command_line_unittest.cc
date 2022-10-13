@@ -18,8 +18,54 @@
 namespace web_app {
 namespace {
 
-using ::testing::Eq;
-using ::testing::Optional;
+void DescribeOptionalIsolationData(
+    ::testing::MatchResultListener* result_listener,
+    base::expected<absl::optional<IsolationData>, std::string> arg) {
+  if (arg.has_value()) {
+    if (arg.value().has_value())
+      *result_listener << arg.value()->AsDebugValue();
+    else
+      *result_listener << "nullopt";
+  } else {
+    *result_listener << "an error with message: \"" << arg.error() << '"';
+  }
+}
+
+MATCHER_P(HasErrorWithSubstr,
+          substr,
+          std::string(negation ? "not " : "") +
+              " an error with a message containing: \"" + substr + '"') {
+  if (arg.has_value() || arg.error().find(substr) == std::string::npos) {
+    DescribeOptionalIsolationData(result_listener, arg);
+    return false;
+  }
+  return true;
+}
+
+MATCHER(HasNoValue, negation ? "not absent" : "absent") {
+  if (!arg.has_value() || arg.value().has_value()) {
+    DescribeOptionalIsolationData(result_listener, arg);
+    return false;
+  }
+  return true;
+}
+
+MATCHER_P(IsDevModeProxy,
+          proxy_url,
+          std::string(negation ? "isn't " : "Dev Mode proxy with URL: \"") +
+              proxy_url + '"') {
+  if (!arg.has_value() || !arg.value().has_value()) {
+    DescribeOptionalIsolationData(result_listener, arg);
+    return false;
+  }
+  const IsolationData::DevModeProxy* proxy =
+      absl::get_if<IsolationData::DevModeProxy>(&arg.value().value().content);
+  if (proxy == nullptr || GURL(proxy->proxy_url) != GURL(proxy_url)) {
+    DescribeOptionalIsolationData(result_listener, arg);
+    return false;
+  }
+  return true;
+}
 
 base::CommandLine CreateDefaultCommandLine(base::StringPiece flag_value) {
   base::CommandLine command_line{base::CommandLine::NoProgram::NO_PROGRAM};
@@ -35,35 +81,35 @@ class InstallIsolatedAppFromCommandLineFlagTest : public ::testing::Test {
 
 TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
        InstallsAppFromCommandLineFlag) {
-  EXPECT_THAT(GetAppToInstallFromCommandLine(
+  EXPECT_THAT(GetIsolationDataFromCommandLine(
                   CreateDefaultCommandLine("http://example.com")),
-              Optional(Eq(GURL("http://example.com"))));
+              IsDevModeProxy("http://example.com"));
 }
 
 TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
        InstallsDifferentAppFromCommandLineFlag) {
-  EXPECT_THAT(GetAppToInstallFromCommandLine(
+  EXPECT_THAT(GetIsolationDataFromCommandLine(
                   CreateDefaultCommandLine("http://different-example.com")),
-              Optional(Eq(GURL("http://different-example.com"))));
+              IsDevModeProxy("http://different-example.com"));
 }
 
 TEST_F(InstallIsolatedAppFromCommandLineFlagTest, NoneForInvalidUrls) {
   EXPECT_THAT(
-      GetAppToInstallFromCommandLine(CreateDefaultCommandLine("badurl")),
-      Eq(absl::nullopt));
+      GetIsolationDataFromCommandLine(CreateDefaultCommandLine("badurl")),
+      HasErrorWithSubstr("Invalid URL"));
 }
 
 TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
        DoNotCallInstallationWhenFlagIsEmpty) {
-  EXPECT_THAT(GetAppToInstallFromCommandLine(CreateDefaultCommandLine("")),
-              Eq(absl::nullopt));
+  EXPECT_THAT(GetIsolationDataFromCommandLine(CreateDefaultCommandLine("")),
+              HasNoValue());
 }
 
 TEST_F(InstallIsolatedAppFromCommandLineFlagTest,
        DoNotCallInstallationWhenFlagIsNotPresent) {
   const base::CommandLine command_line{
       base::CommandLine::NoProgram::NO_PROGRAM};
-  EXPECT_THAT(GetAppToInstallFromCommandLine(command_line), Eq(absl::nullopt));
+  EXPECT_THAT(GetIsolationDataFromCommandLine(command_line), HasNoValue());
 }
 
 }  // namespace

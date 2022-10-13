@@ -15,9 +15,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/install_isolated_app_command.h"
+#include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
@@ -51,48 +53,19 @@ std::unique_ptr<content::WebContents> CreateWebContents(Profile& profile) {
   return web_contents;
 }
 
-void ScheduleInstallIsolatedApp(WebAppProvider& provider,
+void ScheduleInstallIsolatedApp(GURL url,
+                                IsolationData isolation_data,
+                                WebAppProvider& provider,
                                 Profile& profile,
-                                GURL url,
                                 base::OnceClosure callback) {
   DCHECK(url.is_valid());
   DCHECK(!callback.is_null());
 
   provider.command_manager().ScheduleCommand(
       std::make_unique<InstallIsolatedAppCommand>(
-          url,
-          IsolationData{IsolationData::DevModeProxy{.proxy_url = url.spec()}},
-          CreateWebContents(profile), std::make_unique<WebAppUrlLoader>(),
-          provider.install_finalizer(),
+          url, isolation_data, CreateWebContents(profile),
+          std::make_unique<WebAppUrlLoader>(), provider.install_finalizer(),
           base::BindOnce(&ReportInstallationResult).Then(std::move(callback))));
-}
-
-void InstallApplicationFromUrl(WebAppProvider& provider,
-                               Profile& profile,
-                               GURL url,
-                               base::OnceClosure callback) {
-  DCHECK(url.is_valid());
-  DCHECK(!callback.is_null());
-
-  provider.on_registry_ready().Post(
-      FROM_HERE, base::BindOnce(ScheduleInstallIsolatedApp, std::ref(provider),
-                                std::ref(profile), url, std::move(callback)));
-}
-
-base::RepeatingCallback<void(GURL url, base::OnceClosure callback)>
-CreateProductionInstallApplicationFromUrl(Profile& profile) {
-  WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile);
-
-  // Web applications are not available on some platform and
-  // |WebAppProvider::GetForWebApps| returns nullptr in such cases.
-  //
-  // See |WebAppProvider::GetForWebApps| documentation for details.
-  if (provider == nullptr) {
-    return base::DoNothing();
-  }
-
-  return base::BindRepeating(InstallApplicationFromUrl, std::ref(*provider),
-                             std::ref(profile));
 }
 
 base::OnceClosure& GetNextDoneCallbackInstance() {
@@ -107,44 +80,64 @@ void SetNextInstallationDoneCallbackForTesting(  // IN-TEST
   GetNextDoneCallbackInstance() = std::move(done_callback);
 }
 
-absl::optional<GURL> GetAppToInstallFromCommandLine(
-    const base::CommandLine& command_line) {
+base::expected<absl::optional<IsolationData>, std::string>
+GetIsolationDataFromCommandLine(const base::CommandLine& command_line) {
   std::string switch_value =
       command_line.GetSwitchValueASCII(switches::kInstallIsolatedWebAppFromUrl);
+
+  if (switch_value.empty()) {
+    return absl::nullopt;
+  }
 
   GURL url{switch_value};
 
   if (!url.is_valid()) {
-    return absl::nullopt;
+    return base::unexpected(base::StrCat(
+        {"Invalid URL provided to --", switches::kInstallIsolatedWebAppFromUrl,
+         " flag: '", url.possibly_invalid_spec(), "'"}));
   }
 
-  return url;
-}
-
-void MaybeInstallAppFromCommandLine(
-    const base::CommandLine& command_line,
-    base::RepeatingCallback<void(GURL url, base::OnceClosure callback)>
-        install_application_from_url,
-    base::OnceClosure done) {
-  DCHECK(!done.is_null());
-
-  absl::optional<GURL> app_to_install =
-      GetAppToInstallFromCommandLine(command_line);
-  if (!app_to_install.has_value()) {
-    std::move(done).Run();
-    return;
-  }
-
-  install_application_from_url.Run(*app_to_install, std::move(done));
+  return IsolationData{IsolationData::DevModeProxy{.proxy_url = url.spec()}};
 }
 
 void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
                                     Profile& profile) {
-  base::OnceClosure& done = GetNextDoneCallbackInstance();
+  base::OnceClosure& next_done_callback = GetNextDoneCallbackInstance();
+  base::OnceClosure done = next_done_callback.is_null()
+                               ? base::DoNothing()
+                               : std::move(next_done_callback);
 
-  MaybeInstallAppFromCommandLine(
-      command_line, CreateProductionInstallApplicationFromUrl(profile),
-      done.is_null() ? base::DoNothing() : std::move(done));
+  // Web applications are not available on some platforms and
+  // |WebAppProvider::GetForWebApps| returns nullptr in such cases.
+  //
+  // See |WebAppProvider::GetForWebApps| documentation for details.
+  WebAppProvider* provider = WebAppProvider::GetForWebApps(&profile);
+  if (provider == nullptr) {
+    std::move(done).Run();
+    return;
+  }
+
+  base::expected<absl::optional<IsolationData>, std::string> isolation_data =
+      GetIsolationDataFromCommandLine(command_line);
+  if (!isolation_data.has_value()) {
+    LOG(ERROR) << isolation_data.error();
+    std::move(done).Run();
+    return;
+  }
+  if (!isolation_data->has_value()) {
+    std::move(done).Run();
+    return;
+  }
+
+  // TODO(b/245352649): Replace with randomly generated isolated-app: URL.
+  GURL url(absl::get<IsolationData::DevModeProxy>(
+               isolation_data.value().value().content)
+               .proxy_url);
+
+  provider->on_registry_ready().Post(
+      FROM_HERE,
+      base::BindOnce(&ScheduleInstallIsolatedApp, url, **isolation_data,
+                     std::ref(*provider), std::ref(profile), std::move(done)));
 }
 
 }  // namespace web_app
