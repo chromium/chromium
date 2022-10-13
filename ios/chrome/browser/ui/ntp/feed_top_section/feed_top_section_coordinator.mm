@@ -71,6 +71,7 @@
 
 - (void)stop {
   _viewController = nil;
+  [self.feedTopSectionMediator shutdown];
   self.feedTopSectionMediator = nil;
   self.feedTopSectionViewController = nil;
 }
