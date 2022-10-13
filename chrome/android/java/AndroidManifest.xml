@@ -131,14 +131,13 @@ by a child template that "extends" this file.
     {% block extra_uses_permissions %}
     {% endblock %}
 
-    <!-- We may use GPS but it's not required -->
+    <!-- Features related to permissions we request. -->
+    <!-- android.permission.ACCESS_FINE_LOCATION -->
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <!-- android.permission.CAMERA -->
     <uses-feature android:name="android.hardware.camera" android:required="false" />
-
-    <!--
-      android.permission.RECORD_AUDIO makes this implied, however we don't
-      require a microphone.
-    -->
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <!-- android.permission.RECORD_AUDIO -->
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
     <!--
       The app is usable with keyboard/mouse. This feature is implicitly true for
