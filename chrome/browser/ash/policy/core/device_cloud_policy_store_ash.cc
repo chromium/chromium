@@ -31,6 +31,7 @@ namespace policy {
 namespace {
 
 const char kDMTokenCheckHistogram[] = "Enterprise.EnrolledPolicyHasDMToken";
+const char kPolicyCheckHistogram[] = "Enterprise.EnrolledDevicePolicyPresent";
 
 void RecordDeviceIdValidityMetric(
     const std::string& histogram_name,
@@ -286,18 +287,22 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
 
   const em::PolicyData* policy_data = device_settings_service_->policy_data();
   if (policy_data && policy_data->has_request_token()) {
-    UMA_HISTOGRAM_BOOLEAN(kDMTokenCheckHistogram, true);
-  } else {
-    UMA_HISTOGRAM_BOOLEAN(kDMTokenCheckHistogram, false);
-    LOG(ERROR) << "Device policy read on enrolled device yields "
-               << "no DM token! Status: " << service_status << ".";
-
-    // At the time LoginDisplayHostWebUI decides whether enrollment flow is to
-    // be started, policy hasn't been read yet.  To work around this, once the
-    // need for recovery is detected upon policy load, a flag is stored in prefs
-    // which is accessed by LoginDisplayHostWebUI early during (next) boot.
-    ash::StartupUtils::MarkEnrollmentRecoveryRequired();
+    base::UmaHistogramBoolean(kDMTokenCheckHistogram, true);
+    base::UmaHistogramBoolean(kPolicyCheckHistogram, true);
+    return;
   }
+
+  base::UmaHistogramBoolean(kDMTokenCheckHistogram, false);
+  base::UmaHistogramBoolean(kPolicyCheckHistogram, policy_data);
+
+  LOG(ERROR) << "Device policy read on enrolled device yields "
+             << "no DM token! Status: " << service_status << ".";
+
+  // At the time LoginDisplayHostWebUI decides whether enrollment flow is to
+  // be started, policy hasn't been read yet.  To work around this, once the
+  // need for recovery is detected upon policy load, a flag is stored in prefs
+  // which is accessed by LoginDisplayHostWebUI early during (next) boot.
+  ash::StartupUtils::MarkEnrollmentRecoveryRequired();
 }
 
 void DeviceCloudPolicyStoreAsh::UpdateFirstPoliciesLoaded() {

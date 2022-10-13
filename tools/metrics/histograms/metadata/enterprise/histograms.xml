@@ -1402,6 +1402,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.EnrolledDevicePolicyPresent" enum="Boolean"
+    expires_after="2023-04-01">
+  <owner>igorcov@chromium.org</owner>
+  <owner>vsavu@google.com</owner>
+  <summary>
+    Whether loading of device policy from file on an enterprise-enrolled
+    (checked against install_attributes.pb) Chrome OS device yields an
+    enterprise policy. Filled once during session startup, after first
+    successful device policy read.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.EnrolledPolicyHasDMToken" enum="Boolean"
     expires_after="never">
 <!-- expires-never: Used for monitoring the health of device policy. -->
