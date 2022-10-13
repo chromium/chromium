@@ -123,9 +123,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Checks for and copies encoded output on |encoder_thread_task_runner_|.
   void ProcessOutput();
 
-  // Drains pending output samples on |encoder_thread_task_runner_|.
-  void DrainPendingOutputs();
-
   // Tries to deliver the input frame to the encoder.
   bool TryToDeliverInputFrame(scoped_refptr<VideoFrame> frame,
                               bool force_keyframe);
@@ -158,7 +155,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   HRESULT PerformD3DScaling(ID3D11Texture2D* input_texture);
 
   const bool compatible_with_win7_;
-  const bool disable_dynamic_framerate_update_;
 
   // Bitstream buffers ready to be used to return encoded output as a FIFO.
   base::circular_deque<std::unique_ptr<BitstreamBufferRef>>
@@ -177,6 +173,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   gfx::Size input_visible_size_;
   size_t bitstream_buffer_size_;
   uint32_t frame_rate_;
+  // For recording configured frame rate as we don't dynamically change it.
+  // The default value here will be overridden during initialization.
+  uint32_t configured_frame_rate_ = 30;
   Bitrate bitrate_;
   bool low_latency_mode_;
   int num_temporal_layers_ = 1;
