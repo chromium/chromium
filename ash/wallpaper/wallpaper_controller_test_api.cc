@@ -3,7 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
+
+#include <memory>
+
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_color_calculator.h"
 #include "base/bind.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -55,6 +60,15 @@ void WallpaperControllerTestApi::EndWallpaperPreview(
     controller_->ConfirmPreviewWallpaper();
   else
     controller_->CancelPreviewWallpaper();
+}
+
+void WallpaperControllerTestApi::SetCalculatedColors(
+    const WallpaperCalculatedColors& calculated_colors) {
+  if (controller_->color_calculator_) {
+    controller_->color_calculator_->RemoveObserver(controller_);
+    controller_->color_calculator_.reset();
+  }
+  controller_->SetCalculatedColors(calculated_colors);
 }
 
 }  // namespace ash

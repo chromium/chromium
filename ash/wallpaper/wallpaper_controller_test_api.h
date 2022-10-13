@@ -6,7 +6,7 @@
 #define ASH_WALLPAPER_WALLPAPER_CONTROLLER_TEST_API_H_
 
 #include "ash/ash_export.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "ash/wallpaper/wallpaper_utils/wallpaper_calculated_colors.h"
 
 namespace ash {
 
@@ -29,6 +29,11 @@ class ASH_EXPORT WallpaperControllerTestApi {
   // |confirm_preview_wallpaper| indicates if the preview wallpaper should be
   // set as the actual user wallpaper.
   void EndWallpaperPreview(bool confirm_preview_wallpaper);
+
+  // Force a specific set of `calculated_colors` to be set to
+  // WallpaperController. Cancels any ongoing requests to calculate wallpaper
+  // colors.
+  void SetCalculatedColors(const WallpaperCalculatedColors& calculated_colors);
 
  private:
   WallpaperControllerImpl* controller_;

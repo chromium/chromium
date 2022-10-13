@@ -4,23 +4,72 @@
 
 #include "ash/style/color_util.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_analysis.h"
+#include "ui/gfx/color_utils.h"
 
 namespace ash {
+
+namespace {
 
 // Alpha value that is used to calculate themed color. Please see function
 // GetBackgroundThemedColor() about how the themed color is calculated.
 constexpr int kDarkBackgroundBlendAlpha = 127;   // 50%
 constexpr int kLightBackgroundBlendAlpha = 127;  // 50%
 
+// Alternate alpha values used when `kDarkLightModeKMeansColor` is active.
+constexpr int kDarkBackgroundBlendKMeansAlpha = 204;   // 80%
+constexpr int kLightBackgroundBlendKMeansAlpha = 230;  // 90%
+
 // The disabled color is always 38% opacity of the enabled color.
 constexpr float kDisabledColorOpacity = 0.38f;
 
 // Color of second tone is always 30% opacity of the color of first tone.
 constexpr float kSecondToneOpacity = 0.3f;
+
+// Get a color extracted from the user's wallpaper.
+// Returns `kInvalidWallpaperColor` on failure.
+// If `use_dark_color`, may attempt to extract a dark color from the wallpaper.
+SkColor GetUserWallpaperColor(bool use_dark_color) {
+  // May be null in unit tests.
+  if (!Shell::HasInstance())
+    return kInvalidWallpaperColor;
+
+  WallpaperControllerImpl* wallpaper_controller =
+      Shell::Get()->wallpaper_controller();
+
+  if (!wallpaper_controller)
+    return kInvalidWallpaperColor;
+
+  if (features::IsDarkLightModeKMeansColorEnabled()) {
+    // If feature is enabled, always use k mean color. Mixing with black/white
+    // will handle adapting it to dark or light mode.
+    return wallpaper_controller->GetKMeanColor();
+  }
+
+  color_utils::LumaRange luma_range = use_dark_color
+                                          ? color_utils::LumaRange::DARK
+                                          : color_utils::LumaRange::LIGHT;
+
+  return wallpaper_controller->GetProminentColor(color_utils::ColorProfile(
+      luma_range, color_utils::SaturationRange::MUTED));
+}
+
+int GetForegroundAlpha(bool use_dark_color) {
+  if (features::IsDarkLightModeKMeansColorEnabled()) {
+    return use_dark_color ? kDarkBackgroundBlendKMeansAlpha
+                          : kLightBackgroundBlendKMeansAlpha;
+  }
+  return use_dark_color ? kDarkBackgroundBlendAlpha
+                        : kLightBackgroundBlendAlpha;
+}
+
+}  // namespace
 
 // static
 ui::ColorProviderSource* ColorUtil::GetColorProviderSourceForWindow(
@@ -35,28 +84,21 @@ ui::ColorProviderSource* ColorUtil::GetColorProviderSourceForWindow(
 // static
 SkColor ColorUtil::GetBackgroundThemedColor(SkColor default_color,
                                             bool use_dark_color) {
-  // May be null in unit tests.
-  if (!Shell::HasInstance())
+  const SkColor wallpaper_color = GetUserWallpaperColor(use_dark_color);
+  if (wallpaper_color == kInvalidWallpaperColor) {
+    DVLOG(1) << "Failed to get wallpaper color";
     return default_color;
-  WallpaperControllerImpl* wallpaper_controller =
-      Shell::Get()->wallpaper_controller();
-  if (!wallpaper_controller)
-    return default_color;
+  }
 
-  color_utils::LumaRange luma_range = use_dark_color
-                                          ? color_utils::LumaRange::DARK
-                                          : color_utils::LumaRange::LIGHT;
-  SkColor muted_color =
-      wallpaper_controller->GetProminentColor(color_utils::ColorProfile(
-          luma_range, color_utils::SaturationRange::MUTED));
-  if (muted_color == kInvalidWallpaperColor)
-    return default_color;
+  const SkColor foreground_color =
+      use_dark_color ? SK_ColorBLACK : SK_ColorWHITE;
 
+  const int foreground_alpha = GetForegroundAlpha(use_dark_color);
+
+  // Put a slightly transparent screen of white/black on top of the user's
+  // wallpaper color.
   return color_utils::GetResultingPaintColor(
-      SkColorSetA(use_dark_color ? SK_ColorBLACK : SK_ColorWHITE,
-                  use_dark_color ? kDarkBackgroundBlendAlpha
-                                 : kLightBackgroundBlendAlpha),
-      muted_color);
+      SkColorSetA(foreground_color, foreground_alpha), wallpaper_color);
 }
 
 // static
