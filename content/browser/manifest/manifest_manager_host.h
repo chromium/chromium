@@ -52,7 +52,7 @@ class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
 
   blink::mojom::ManifestManager& GetManifestManager();
 
-  void DispatchPendingCallbacks();
+  std::vector<GetManifestCallback> ExtractPendingCallbacks();
   void OnConnectionError();
 
   void OnRequestManifestResponse(int request_id,
