@@ -6,6 +6,11 @@
 
 namespace switches {
 
+// Overrides the default validity period for Nearby Share certificates. Value
+// must be larger than 0.
+const char kNearbyShareCertificateValidityPeriodHours[] =
+    "nearby-share-certificate-validity-period-hours";
+
 // Overrides the default URL for Google APIs (https://www.googleapis.com) used
 // by Nearby Share
 const char kNearbyShareHTTPHost[] = "nearbysharing-http-host";

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/base64url.h"
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/rand_util.h"
@@ -14,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_switches.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/proto/timestamp.pb.h"
 #include "crypto/aead.h"
@@ -126,6 +128,31 @@ std::set<std::vector<uint8_t>> StringToSalts(const std::string& str) {
   return salts;
 }
 
+// Check for a command-line override the certificate validity period, otherwise
+// return the default |kNearbyShareCertificateValidityPeriod|.
+base::TimeDelta GetCertificateValidityPeriod() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(
+          switches::kNearbyShareCertificateValidityPeriodHours)) {
+    return kNearbyShareCertificateValidityPeriod;
+  }
+
+  std::string certificate_validity_period_hours_str =
+      command_line->GetSwitchValueASCII(
+          switches::kNearbyShareCertificateValidityPeriodHours);
+  int certificate_validity_period_hours = 0;
+  if (!base::StringToInt(certificate_validity_period_hours_str,
+                         &certificate_validity_period_hours) ||
+      certificate_validity_period_hours < 1) {
+    NS_LOG(ERROR)
+        << __func__
+        << ": Invalid value provided for certificate validity period override.";
+    return kNearbyShareCertificateValidityPeriod;
+  }
+
+  return base::Hours(certificate_validity_period_hours);
+}
+
 }  // namespace
 
 NearbySharePrivateCertificate::NearbySharePrivateCertificate(
@@ -134,7 +161,7 @@ NearbySharePrivateCertificate::NearbySharePrivateCertificate(
     nearbyshare::proto::EncryptedMetadata unencrypted_metadata)
     : visibility_(visibility),
       not_before_(not_before),
-      not_after_(not_before_ + kNearbyShareCertificateValidityPeriod),
+      not_after_(not_before_ + GetCertificateValidityPeriod()),
       key_pair_(crypto::ECPrivateKey::Create()),
       secret_key_(crypto::SymmetricKey::GenerateRandomKey(
           crypto::SymmetricKey::Algorithm::AES,
