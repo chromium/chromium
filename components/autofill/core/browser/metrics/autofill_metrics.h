@@ -1755,16 +1755,6 @@ class AutofillMetrics {
       ServerFieldType server_type,
       ServerFieldType heuristic_types);
 
-  // Logs whether a heuristic detection for an NUMERIC_QUANTITY collides with a
-  // server prediction.
-  static void LogNumericQuantityCollidesWithServerPrediction(bool collision);
-
-  // Logs if the filling of a field was accepted even though it had a
-  // NUMERIC_QUANTITY. This metric is only emitted if the feature to grant the
-  // heuristic precedence is disabled.
-  static void LogAcceptedFilledFieldWithNumericQuantityHeuristicPrediction(
-      bool accepted);
-
  private:
   static void Log(AutocompleteEvent event);
 };

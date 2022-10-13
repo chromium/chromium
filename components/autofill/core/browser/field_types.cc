@@ -141,7 +141,6 @@ bool IsFillableFieldType(ServerFieldType field_type) {
     case FIELD_WITH_DEFAULT_VALUE:
     case MERCHANT_EMAIL_SIGNUP:
     case PRICE:
-    case NUMERIC_QUANTITY:
     case SEARCH_TERM:
     case BIRTHDATE_DAY:
     case BIRTHDATE_MONTH:
@@ -294,8 +293,6 @@ base::StringPiece FieldTypeToStringPiece(ServerFieldType type) {
       return "SEARCH_TERM";
     case PRICE:
       return "PRICE";
-    case NUMERIC_QUANTITY:
-      return "NUMERIC_QUANTITY";
     case NOT_PASSWORD:
       return "NOT_PASSWORD";
     case SINGLE_USERNAME:

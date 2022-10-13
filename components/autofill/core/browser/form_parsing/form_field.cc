@@ -28,15 +28,14 @@
 #include "components/autofill/core/browser/form_parsing/iban_field.h"
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field.h"
 #include "components/autofill/core/browser/form_parsing/name_field.h"
-#include "components/autofill/core/browser/form_parsing/numeric_quantity_field.h"
 #include "components/autofill/core/browser/form_parsing/phone_field.h"
 #include "components/autofill/core/browser/form_parsing/price_field.h"
 #include "components/autofill/core/browser/form_parsing/search_field.h"
 #include "components/autofill/core/browser/form_parsing/standalone_cvc_field.h"
 #include "components/autofill/core/browser/form_parsing/travel_field.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -104,11 +103,6 @@ void FormField::ParseFormFields(
                         field_candidates, page_language, pattern_source,
                         log_manager);
   }
-
-  // Numeric quantity pass.
-  ParseFormFieldsPass(NumericQuantityField::Parse, processed_fields,
-                      field_candidates, page_language, pattern_source,
-                      log_manager);
 
   // Credit card pass.
   ParseFormFieldsPass(CreditCardField::Parse, processed_fields,

@@ -280,18 +280,6 @@ chromium-metrics-reviews@google.com.
   <token key="Group" variants="Autofill.Ablation.Group"/>
 </histogram>
 
-<histogram
-    name="Autofill.AcceptedFilledFieldWithNumericQuantityHeuristicPrediction"
-    enum="Boolean" expires_after="M112">
-  <owner>koerber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs if the filling of a field was accepted even though it had a
-    NUMERIC_QUANTITY prediction. This metric is only emitted if the feature to
-    grant the heuristic precedence is disabled. Emitted on submission time.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.Address.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2023-02-12">
   <owner>jsaul@google.com</owner>
@@ -2289,16 +2277,6 @@ chromium-metrics-reviews@google.com.
     fields in the form's description. Instances where this is recorded as False,
     denote cases where autofill failed to preview/fill an autofill suggestion.
     This can happen when a fields is filtered out of a formless form.
-  </summary>
-</histogram>
-
-<histogram name="Autofill.NumericQuantityCollidesWithServerPrediction"
-    enum="Boolean" expires_after="M112">
-  <owner>koerber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs that a field with a heuristic prediction for an NUMERIC_QUANTITY
-    collides with a server prediction. The metric is emitted on form submission.
   </summary>
 </histogram>
 

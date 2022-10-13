@@ -363,7 +363,6 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case AMBIGUOUS_TYPE:
         case SEARCH_TERM:
         case PRICE:
-        case NUMERIC_QUANTITY:
         case NOT_PASSWORD:
         case SINGLE_USERNAME:
         case NOT_USERNAME:
@@ -3240,22 +3239,6 @@ const std::string PaymentsRpcResultToMetricsSuffix(
   }
 
   return result_suffix;
-}
-
-// // static
-void AutofillMetrics::LogNumericQuantityCollidesWithServerPrediction(
-    bool collision) {
-  base::UmaHistogramBoolean(
-      "Autofill.NumericQuantityCollidesWithServerPrediction", collision);
-}
-
-// static
-void AutofillMetrics::
-    LogAcceptedFilledFieldWithNumericQuantityHeuristicPrediction(
-        bool accepted) {
-  base::UmaHistogramBoolean(
-      "Autofill.AcceptedFilledFieldWithNumericQuantityHeuristicPrediction",
-      accepted);
 }
 
 }  // namespace autofill

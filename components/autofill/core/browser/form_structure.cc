@@ -1007,33 +1007,6 @@ void FormStructure::LogQualityMetrics(
     const ServerFieldTypeSet& field_types = field->possible_types();
     DCHECK(!field_types.empty());
 
-    // For every field that has a heuristics prediction for a
-    // NUMERIC_QUANTITY, log if there was a colliding server
-    // prediction and if the NUMERIC_QUANTITY was a false-positive prediction.
-    // The latter is true when the field was correctly filled. This can
-    // only be recorded when the feature to grant precedence to
-    // NUMERIC_QUANTITY predictions is disabled.
-    if (observed_submission && field->heuristic_type() == NUMERIC_QUANTITY) {
-      bool field_has_non_empty_server_prediction =
-          field->server_type() != UNKNOWN_TYPE &&
-          field->server_type() != NO_SERVER_DATA;
-
-      // Log if there was a colliding server prediction.
-      AutofillMetrics::LogNumericQuantityCollidesWithServerPrediction(
-          field_has_non_empty_server_prediction);
-
-      // If there was a collision, log if the NUMERIC_QUANTITY was a false
-      // positive since the field was correctly filled.
-      if ((field->is_autofilled || field->previously_autofilled()) &&
-          field_has_non_empty_server_prediction &&
-          !base::FeatureList::IsEnabled(
-              features::kAutofillGivePrecedenceToNumericQuantitites)) {
-        AutofillMetrics::
-            LogAcceptedFilledFieldWithNumericQuantityHeuristicPrediction(
-                !field->previously_autofilled());
-      }
-    }
-
     if (field_types.count(EMPTY_TYPE) || field_types.count(UNKNOWN_TYPE)) {
       DCHECK_EQ(field_types.size(), 1u);
       continue;

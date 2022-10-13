@@ -116,7 +116,6 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
 
     case PRICE:
     case SEARCH_TERM:
-    case NUMERIC_QUANTITY:
       return FieldTypeGroup::kUnfillable;
 
     case UNKNOWN_TYPE:

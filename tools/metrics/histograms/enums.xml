@@ -9225,21 +9225,6 @@ others/histograms.xml -->
   <int value="762"
       label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE - Predictions different
              - Value agrees with both predictions"/>
-  <int value="769" label="NUMERIC_QUANTITY - Predictions equal - Value agrees"/>
-  <int value="770"
-      label="NUMERIC_QUANTITY - Predictions equal - Value disagrees"/>
-  <int value="771"
-      label="NUMERIC_QUANTITY - Predictions different - Value agrees with old
-             prediction"/>
-  <int value="772"
-      label="NUMERIC_QUANTITY - Predictions different - Value agrees with new
-             prediction"/>
-  <int value="773"
-      label="NUMERIC_QUANTITY - Predictions different - Value agrees with
-             neither prediction"/>
-  <int value="774"
-      label="NUMERIC_QUANTITY - Predictions different - Value agrees with
-             both predictions"/>
 </enum>
 
 <enum name="AutofillPredictionSource">
@@ -9520,7 +9505,6 @@ others/histograms.xml -->
   <int value="125" label="IBAN_VALUE"/>
   <int value="126" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE"/>
   <int value="127" label="RESERVED"/>
-  <int value="128" label="NUMERIC_QUANTITY"/>
 </enum>
 
 <enum name="AutofillServerPredictionAvailability">
