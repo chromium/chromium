@@ -21,7 +21,7 @@ using SystemExtensionId = std::array<uint8_t, 4>;
 enum class SystemExtensionType {
   kWindowManagement,
   kPeripheralPrototype,
-  kOemDiagnosticsAndControl,
+  kManagedDeviceHealthServices,
 };
 
 struct SystemExtension {

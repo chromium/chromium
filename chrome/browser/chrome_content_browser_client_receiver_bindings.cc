@@ -258,9 +258,9 @@ void RegisterSystemExtensionServiceWorkerBinders(
       map->Add<blink::mojom::CrosHID>(
           SystemExtensionServiceWorkerBinder(&ash::HIDImpl::Bind));
       return;
-    case ash::SystemExtensionType::kOemDiagnosticsAndControl:
-      // Don't register interfaces for the kOemDiagnosticsAndControl extension
-      // type for now.
+    case ash::SystemExtensionType::kManagedDeviceHealthServices:
+      // Don't register interfaces for the kManagedDeviceHealthServices
+      // extension type for now.
       return;
   }
 }

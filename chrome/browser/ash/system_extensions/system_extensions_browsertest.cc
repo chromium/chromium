@@ -64,11 +64,11 @@ base::FilePath GetBasicSystemExtensionDir() {
   return test_dir.Append("system_extensions").Append("basic_system_extension");
 }
 
-base::FilePath GetOemDiagnosticsAndControlExtensionDir() {
+base::FilePath GetManagedDeviceHealthServicesExtensionDir() {
   base::FilePath test_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_dir);
   return test_dir.Append("system_extensions")
-      .Append("oem_diagnostics_and_control_extension");
+      .Append("managed_device_health_services_extension");
 }
 
 // Wrapper around base::OneShotEvent that allows callers to signal with
@@ -334,18 +334,19 @@ class SystemExtensionsSwitchBrowserTest : public SystemExtensionsBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class SystemExtensionsBrowserTestWithOemFeaturePreTest
+class SystemExtensionsBrowserTestWithManagedDeviceHealthServicesPreTest
     : public SystemExtensionsBrowserTest {
  public:
-  SystemExtensionsBrowserTestWithOemFeaturePreTest() {
+  SystemExtensionsBrowserTestWithManagedDeviceHealthServicesPreTest() {
     // Only enable the feature flag if this is the pre-test.
     if (content::IsPreTest()) {
       feature_list_.InitAndEnableFeature(
-          features::kSystemExtensionsOemDiagnosticsAndControl);
+          features::kSystemExtensionsManagedDeviceHealthServices);
     }
   }
 
-  ~SystemExtensionsBrowserTestWithOemFeaturePreTest() override = default;
+  ~SystemExtensionsBrowserTestWithManagedDeviceHealthServicesPreTest()
+      override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -539,8 +540,9 @@ IN_PROC_BROWSER_TEST_F(SystemExtensionsSwitchBrowserTest, ExtensionInstalled) {
   TestInstalledTestExtensionWorks();
 }
 
-IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTestWithOemFeaturePreTest,
-                       PRE_SystemExtensionsOemDiagnosticsAndControl) {
+IN_PROC_BROWSER_TEST_F(
+    SystemExtensionsBrowserTestWithManagedDeviceHealthServicesPreTest,
+    PRE_SystemExtensionsManagedDeviceHealthServices) {
   auto& provider = SystemExtensionsProvider::Get(browser()->profile());
   auto& install_manager = provider.install_manager();
 
@@ -550,7 +552,7 @@ IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTestWithOemFeaturePreTest,
     // Install and wait for the service worker to be registered.
     base::RunLoop run_loop;
     install_manager.InstallUnpackedExtensionFromDir(
-        GetOemDiagnosticsAndControlExtensionDir(),
+        GetManagedDeviceHealthServicesExtensionDir(),
         base::BindLambdaForTesting(
             [&](InstallStatusOrSystemExtensionId result) { run_loop.Quit(); }));
     run_loop.Run();
@@ -558,8 +560,9 @@ IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTestWithOemFeaturePreTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(SystemExtensionsBrowserTestWithOemFeaturePreTest,
-                       SystemExtensionsOemDiagnosticsAndControl) {
+IN_PROC_BROWSER_TEST_F(
+    SystemExtensionsBrowserTestWithManagedDeviceHealthServicesPreTest,
+    SystemExtensionsManagedDeviceHealthServices) {
   auto& provider = SystemExtensionsProvider::Get(browser()->profile());
   auto& install_manager = provider.install_manager();
 

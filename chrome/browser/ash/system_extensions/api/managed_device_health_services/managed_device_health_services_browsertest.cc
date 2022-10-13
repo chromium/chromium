@@ -13,7 +13,8 @@ namespace ash {
 namespace {
 
 static constexpr const char kTestsDir[] =
-    "chrome/browser/ash/system_extensions/api/oem_diagnostics_control/test";
+    "chrome/browser/ash/system_extensions/api/managed_device_health_services/"
+    "test";
 
 static constexpr const char kManifestTemplate[] = R"(
 {
@@ -21,15 +22,15 @@ static constexpr const char kManifestTemplate[] = R"(
   "short_name": "Test",
   "service_worker_url": "/%s",
   "id": "01020304",
-  "type": "oem-diagnostics-control"
+  "type": "managed-device-health-services"
 })";
 
 }  // namespace
 
-class OemDiagnosticsAndControlBrowserTest
+class ManagedDeviceHealthServicesBrowserTest
     : public SystemExtensionsApiBrowserTest {
  public:
-  OemDiagnosticsAndControlBrowserTest()
+  ManagedDeviceHealthServicesBrowserTest()
       : SystemExtensionsApiBrowserTest({
             .tests_dir = kTestsDir,
             .manifest_template = kManifestTemplate,
@@ -37,14 +38,14 @@ class OemDiagnosticsAndControlBrowserTest
             .additional_gen_files = {},
         }) {
     features_list_.InitAndEnableFeature(
-        features::kSystemExtensionsOemDiagnosticsAndControl);
+        features::kSystemExtensionsManagedDeviceHealthServices);
   }
 
  private:
   base::test::ScopedFeatureList features_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OemDiagnosticsAndControlBrowserTest, SmokeTest) {
+IN_PROC_BROWSER_TEST_F(ManagedDeviceHealthServicesBrowserTest, SmokeTest) {
   RunTest("smoke_test.js");
 }
 

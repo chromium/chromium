@@ -9,7 +9,7 @@ assert(is_chromeos_ash)
 source_set("browser_tests") {
   testonly = true
 
-  sources = [ "oem_diagnostics_control_browsertest.cc" ]
+  sources = [ "managed_device_health_services_browsertest.cc" ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
@@ -20,7 +20,5 @@ source_set("browser_tests") {
     "//testing/gtest:gtest",
   ]
 
-  data = [
-    "//chrome/browser/ash/system_extensions/api/oem_diagnostics_control/test/",
-  ]
+  data = [ "//chrome/browser/ash/system_extensions/api/managed_device_health_services/test/" ]
 }

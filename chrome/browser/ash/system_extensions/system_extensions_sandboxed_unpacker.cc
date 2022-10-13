@@ -48,10 +48,11 @@ GURL GetBaseURL(const std::string& id, SystemExtensionType type) {
           "system-extension-peripheral-prototype-";
       host_prefix = kSystemExtensionPeripheralPrototypePrefix;
       break;
-    case SystemExtensionType::kOemDiagnosticsAndControl:
-      static constexpr char kSystemExtensionTelemetryPrefix[] =
-          "system-extension-oem-diagnostics-control";
-      host_prefix = kSystemExtensionTelemetryPrefix;
+    case SystemExtensionType::kManagedDeviceHealthServices:
+      static constexpr char
+          kSystemExtensionManagedDeviceHealthServicesPrefix[] =
+              "system-extension-managed-device-health-services-";
+      host_prefix = kSystemExtensionManagedDeviceHealthServicesPrefix;
       break;
   }
   const std::string host = base::StrCat({host_prefix, id});
@@ -71,10 +72,10 @@ SystemExtensionType* GetTypeFromString(base::StringPiece type_str) {
             "peripheral-prototype", SystemExtensionType::kPeripheralPrototype);
 
         if (base::FeatureList::IsEnabled(
-                features::kSystemExtensionsOemDiagnosticsAndControl)) {
+                features::kSystemExtensionsManagedDeviceHealthServices)) {
           str_to_type_list.emplace_back(
-              "oem-diagnostics-control",
-              SystemExtensionType::kOemDiagnosticsAndControl);
+              "managed-device-health-services",
+              SystemExtensionType::kManagedDeviceHealthServices);
         }
         return str_to_type_list;
       }());
