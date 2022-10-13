@@ -31,6 +31,7 @@ enum class Promo {
   PostRestoreSignInFullscreen =
       4,  // Post Restore Sign-In (fullscreen, FRE-like promo)
   PostRestoreSignInAlert = 5,  // Post Restore Sign-In (native iOS alert)
+  WhatsNew = 6,                // What's New Promo
 };
 
 typedef struct Impression {

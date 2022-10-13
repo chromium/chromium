@@ -212,6 +212,8 @@ source_set("scene") {
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/ui/whats_new:util",
+    "//ios/chrome/browser/ui/whats_new/promo",
     "//ios/chrome/browser/url",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/url_loading",

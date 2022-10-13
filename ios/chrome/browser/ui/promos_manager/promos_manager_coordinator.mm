@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_alert_provider.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_view_provider.h"
+#import "ios/chrome/browser/ui/whats_new/promo/whats_new_promo_display_handler.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
@@ -426,6 +428,12 @@
       post_restore_signin::features::PostRestoreSignInType::kAlert)
     _alertProviderPromos[promos_manager::Promo::PostRestoreSignInAlert] =
         [[PostRestoreSignInProvider alloc] init];
+
+  // WhatsNewPromoHandler promo below:
+  if (IsWhatsNewEnabled()) {
+    _displayHandlerPromos[promos_manager::Promo::WhatsNew] =
+        [[WhatsNewPromoDisplayHandler alloc] init];
+  }
 }
 
 - (base::small_map<std::map<promos_manager::Promo, NSArray<ImpressionLimit*>*>>)

@@ -35,6 +35,9 @@ absl::optional<Promo> PromoForName(std::string promo) {
   if (promo == "promos_manager::Promo::PostRestoreSignInAlert")
     return promos_manager::Promo::PostRestoreSignInAlert;
 
+  if (promo == "promos_manager::Promo::WhatsNew")
+    return promos_manager::Promo::WhatsNew;
+
   return absl::nullopt;
 }
 
@@ -52,6 +55,8 @@ std::string ShortNameForPromo(Promo promo) {
       return "PostRestoreSignInFullscreen";
     case promos_manager::Promo::PostRestoreSignInAlert:
       return "PostRestoreSignInAlert";
+    case promos_manager::Promo::WhatsNew:
+      return "WhatsNew";
   }
 }
 

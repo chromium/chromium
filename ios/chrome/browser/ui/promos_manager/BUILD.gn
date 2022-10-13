@@ -69,6 +69,8 @@ source_set("promos_manager") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/post_restore_signin",
     "//ios/chrome/browser/ui/post_restore_signin:features",
+    "//ios/chrome/browser/ui/whats_new:util",
+    "//ios/chrome/browser/ui/whats_new/promo",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style:promo_style",
     "//ui/base",

@@ -1566,6 +1566,10 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   }
 }
 
+- (void)showWhatsNewPromo {
+  [self showWhatsNew];
+}
+
 #pragma mark - PageInfoCommands
 
 - (void)showPageInfo {

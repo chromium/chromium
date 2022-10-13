@@ -23,6 +23,9 @@
 // Asks the presenter to display the signin UI configured by `command`.
 - (void)showSignin:(ShowSigninCommand*)command;
 
+// Display WhatsNew as a promo.
+- (void)showWhatsNewPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_PROMOS_MANAGER_COMMANDS_H_
