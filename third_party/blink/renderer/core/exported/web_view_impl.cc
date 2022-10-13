@@ -1997,6 +1997,7 @@ std::string WebViewImpl::GetNullFrameReasonForBug1139104() const {
 
 void WebViewImpl::DidAttachLocalMainFrame() {
   DCHECK(MainFrameImpl());
+  DCHECK(!remote_main_frame_host_remote_);
 
   LocalFrame* local_frame = MainFrameImpl()->GetFrame();
   local_frame->WasAttachedAsLocalMainFrame();
@@ -2045,6 +2046,7 @@ void WebViewImpl::DidAttachRemoteMainFrame(
   DCHECK(main_frame_host);
   DCHECK(main_frame);
   DCHECK(!MainFrameImpl());
+  DCHECK(!local_main_frame_host_remote_);
 
   RemoteFrame* remote_frame = DynamicTo<RemoteFrame>(GetPage()->MainFrame());
   remote_frame->WasAttachedAsRemoteMainFrame(std::move(main_frame));
