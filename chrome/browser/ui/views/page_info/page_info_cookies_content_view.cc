@@ -133,7 +133,7 @@ void PageInfoCookiesContentView::SetCookieInfo(
   // (only if fps are not blocked) if they don't yet exist. Those methods get
   // called each time site data is updated, so if they *do* already exist,
   // skip creating the buttons and just update the texts.
-  SetBlockingThirdPartyCookiesInfo(cookie_info, is_fps_allowed);
+  SetBlockingThirdPartyCookiesInfo(cookie_info);
 
   InitCookiesDialogButton();
   // Update the text displaying the number of allowed sites.
@@ -147,8 +147,7 @@ void PageInfoCookiesContentView::SetCookieInfo(
 }
 
 void PageInfoCookiesContentView::SetBlockingThirdPartyCookiesInfo(
-    const CookiesNewInfo& cookie_info,
-    bool is_fps_allowed) {
+    const CookiesNewInfo& cookie_info) {
   bool show_cookies_block_control = false;
   bool are_cookies_blocked = false;
   switch (cookie_info.status) {
@@ -173,10 +172,11 @@ void PageInfoCookiesContentView::SetBlockingThirdPartyCookiesInfo(
       UpdateBlockingThirdPartyCookiesToggle(are_cookies_blocked);
 
     if (are_cookies_blocked) {
+      // TODO(crbug.com/1349370): Use
+      // IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT_WHEN_FPS_BLOCKED when FPS are
+      // disabled and the site belongs to a set.
       const auto blocked_sites_count_message_id =
-          is_fps_allowed
-              ? IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT
-              : IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT_WHEN_FPS_BLOCKED;
+          IDS_PAGE_INFO_COOKIES_BLOCKED_SITES_COUNT;
       const std::u16string num_blocked_sites_text =
           l10n_util::GetPluralStringFUTF16(blocked_sites_count_message_id,
                                            cookie_info.blocked_sites_count);

@@ -41,8 +41,7 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   //  Checks if |blocking_third_party_cookies_row_| should be initiated and if
   //  so does it  and sets its info.
-  void SetBlockingThirdPartyCookiesInfo(const CookiesNewInfo& cookie_info,
-                                        bool is_fps_allowed);
+  void SetBlockingThirdPartyCookiesInfo(const CookiesNewInfo& cookie_info);
 
   // Updates toggles state according to info.
   void UpdateBlockingThirdPartyCookiesToggle(bool are_cookies_blocked);
