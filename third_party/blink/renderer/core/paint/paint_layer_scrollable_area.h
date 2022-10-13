@@ -522,7 +522,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   }
 
   void AddStickyLayer(PaintLayer*);
-  void RemoveStickyLayer(PaintLayer*);
   bool HasStickyLayer(PaintLayer* layer) const {
     return rare_data_ && rare_data_->sticky_layers_.Contains(layer);
   }

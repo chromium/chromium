@@ -929,7 +929,7 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
             .HasStickyConstrainedPosition()) {
       if (const auto* scroll_container =
               old_child->ContainingScrollContainerLayer()) {
-        scroll_container->GetScrollableArea()->RemoveStickyLayer(old_child);
+        scroll_container->GetScrollableArea()->InvalidateAllStickyConstraints();
       }
     }
   }

@@ -206,7 +206,7 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
       !StyleRef().HasStickyConstrainedPosition()) {
     if (const auto* scroll_container =
             Layer()->ContainingScrollContainerLayer()) {
-      scroll_container->GetScrollableArea()->RemoveStickyLayer(Layer());
+      scroll_container->GetScrollableArea()->InvalidateAllStickyConstraints();
     }
   }
 

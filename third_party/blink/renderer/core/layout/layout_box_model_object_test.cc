@@ -1524,4 +1524,54 @@ TEST_P(LayoutBoxModelObjectTest, ChangeStickyStatusKeepLayerUnderContain) {
   UpdateAllLifecyclePhasesForTest();
 }
 
+TEST_P(LayoutBoxModelObjectTest,
+       RemoveStickyStatusInNestedStickyElementsWithContain) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body, #container, #child {
+        contain: strict;
+        position: sticky;
+        bottom: 0;
+        height: 2000px;
+      }
+    </style>
+    <div id="container">
+      <div id="child"></div>
+    </div>
+  )HTML");
+
+  auto* body = GetDocument().body()->GetLayoutBox();
+  auto* container_element = GetDocument().getElementById("container");
+  auto* container = container_element->GetLayoutBoxModelObject();
+  auto* child = GetLayoutBoxModelObjectByElementId("child");
+
+  ASSERT_TRUE(body->StickyConstraints());
+  ASSERT_TRUE(container->StickyConstraints());
+  auto* child_constraints = child->StickyConstraints();
+  ASSERT_TRUE(child_constraints);
+  EXPECT_EQ(
+      container->Layer(),
+      child_constraints->nearest_sticky_layer_shifting_containing_block.Get());
+
+  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePosition(
+      gfx::PointF(0, 50));
+
+  container_element->setAttribute(html_names::kStyleAttr, "position: relative");
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+
+  ASSERT_TRUE(body->StickyConstraints());
+  ASSERT_FALSE(container->StickyConstraints());
+  child_constraints = child->StickyConstraints();
+  ASSERT_TRUE(child_constraints);
+  EXPECT_EQ(
+      body->Layer(),
+      child_constraints->nearest_sticky_layer_shifting_containing_block.Get());
+
+  // This should not crash.
+  GetLayoutView().GetScrollableArea()->ScrollToAbsolutePosition(
+      gfx::PointF(0, 0));
+  UpdateAllLifecyclePhasesForTest();
+}
+
 }  // namespace blink
