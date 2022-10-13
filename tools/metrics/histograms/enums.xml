@@ -3070,8 +3070,14 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="Showing the banner"/>
   <int value="3" label="preventDefault() not called"/>
   <int value="4" label="preventDefault() called"/>
-  <int value="5" label="prompt() called after preventDefault()"/>
-  <int value="6" label="prompt() not called after preventDefault()"/>
+  <int value="5" label="prompt() called after preventDefault() (deprecated)"/>
+  <int value="6"
+      label="prompt() not called after preventDefault() (deprecated)"/>
+  <int value="7" label="prompt() called early"/>
+  <int value="8" label="prompt() called after preventDefault()"/>
+  <int value="9" label="prompt() called without preventDefault()"/>
+  <int value="10" label="prompt() not called after preventDefault()"/>
+  <int value="11" label="prompt() not called without preventDefault()"/>
 </enum>
 
 <enum name="AppBannersDismissEvent">

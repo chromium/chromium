@@ -143,7 +143,8 @@ class AppBannerManagerTest : public AppBannerManager {
   void UpdateState(AppBannerManager::State state) override {
     AppBannerManager::UpdateState(state);
     if (state == AppBannerManager::State::PENDING_ENGAGEMENT ||
-        state == AppBannerManager::State::PENDING_PROMPT) {
+        state == AppBannerManager::State::PENDING_PROMPT_CANCELED ||
+        state == AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED) {
       if (on_done_)
         base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                       std::move(on_done_));
@@ -263,7 +264,8 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
     // Generally the manager will be in the complete state, however some test
     // cases navigate the page, causing the state to go back to INACTIVE.
     EXPECT_TRUE(manager->state() == State::COMPLETE ||
-                manager->state() == State::PENDING_PROMPT ||
+                manager->state() == State::PENDING_PROMPT_CANCELED ||
+                manager->state() == State::PENDING_PROMPT_NOT_CANCELED ||
                 manager->state() == State::PENDING_WORKER ||
                 manager->state() == State::INACTIVE);
 
@@ -360,7 +362,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
                           browser()->tab_strip_model()->GetActiveWebContents(),
                           "addManifestLinkTag()"));
                     }),
-                    false, AppBannerManager::State::PENDING_PROMPT);
+                    false,
+                    AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
   histograms.ExpectTotalCount(kInstallableStatusCodeHistogram, 0);
 }
 
@@ -372,7 +375,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
       browser(), manager.get(),
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
       absl::nullopt);
-  EXPECT_EQ(manager->state(), AppBannerManager::State::PENDING_PROMPT);
+  EXPECT_EQ(manager->state(),
+            AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
 
   // Dynamically remove the manifest.
   base::HistogramTester histograms;
@@ -398,7 +402,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
       browser(), manager.get(),
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
       absl::nullopt);
-  EXPECT_EQ(manager->state(), AppBannerManager::State::PENDING_PROMPT);
+  EXPECT_EQ(manager->state(),
+            AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
 
   // Dynamically change the manifest, which results in a
   // Stop(RENDERER_CANCELLED), and a restart of the pipeline.
@@ -419,14 +424,16 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
   }
   // The pipeline should either have completed, or it is scheduled in the
   // background. Wait for the next prompt request if so.
-  if (manager->state() != AppBannerManager::State::PENDING_PROMPT) {
+  if (manager->state() !=
+      AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED) {
     base::HistogramTester histograms;
     base::RunLoop run_loop;
     manager->PrepareDone(run_loop.QuitClosure());
     run_loop.Run();
     histograms.ExpectTotalCount(kInstallableStatusCodeHistogram, 0);
   }
-  EXPECT_EQ(manager->state(), AppBannerManager::State::PENDING_PROMPT);
+  EXPECT_EQ(manager->state(),
+            AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
 }
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, NoManifest) {
@@ -500,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerNotCreated) {
   // Navigate and expect the manager to end up waiting for prompt to be called.
   TriggerBannerFlowWithNavigation(browser(), manager.get(), test_url,
                                   false /* expected_will_show */,
-                                  State::PENDING_PROMPT);
+                                  State::PENDING_PROMPT_NOT_CANCELED);
 
   // Navigate and expect Stop() to be called.
   TriggerBannerFlowWithNavigation(browser(), manager.get(), GURL("about:blank"),
@@ -528,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerCancelled) {
   // called.
   TriggerBannerFlowWithNavigation(browser(), manager.get(), test_url,
                                   false /* expected_will_show */,
-                                  State::PENDING_PROMPT);
+                                  State::PENDING_PROMPT_CANCELED);
 
   // Navigate to about:blank and expect Stop() to be called.
   TriggerBannerFlowWithNavigation(browser(), manager.get(), GURL("about:blank"),
@@ -554,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
   // Navigate to page and get the pipeline started.
   TriggerBannerFlowWithNavigation(browser(), manager.get(), test_url,
                                   false /* expected_will_show */,
-                                  State::PENDING_PROMPT);
+                                  State::PENDING_PROMPT_NOT_CANCELED);
 
   // Now let the page call prompt with a gesture. The banner should be shown.
   TriggerBannerFlow(
@@ -594,7 +601,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
                      base::Unretained(service),
                      browser()->tab_strip_model()->GetActiveWebContents(),
                      ui::PageTransition::PAGE_TRANSITION_TYPED),
-      false /* expected_will_show */, State::PENDING_PROMPT);
+      false /* expected_will_show */, State::PENDING_PROMPT_NOT_CANCELED);
 
   // Trigger prompt() and expect the banner to be shown.
   TriggerBannerFlow(
@@ -621,7 +628,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerReprompt) {
   // Navigate to page and get the pipeline started.
   TriggerBannerFlowWithNavigation(browser(), manager.get(), test_url,
                                   false /* expected_will_show */,
-                                  State::PENDING_PROMPT);
+                                  State::PENDING_PROMPT_NOT_CANCELED);
 
   // Call prompt to show the banner.
   TriggerBannerFlow(
@@ -708,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest, WebAppBannerTerminated) {
   // called.
   TriggerBannerFlowWithNavigation(browser(), manager.get(), test_url,
                                   false /* expected_will_show */,
-                                  State::PENDING_PROMPT);
+                                  State::PENDING_PROMPT_NOT_CANCELED);
 
   // Navigate to about:blank and expect it to be terminated because the previous
   // URL is still pending.
@@ -823,9 +830,10 @@ IN_PROC_BROWSER_TEST_P(AppBannerManagerBrowserTestWithChromeBFCache,
   // Triggering flow to first URL with a pending prompt.
   TriggerBannerFlowWithNavigation(browser(), manager.get(), GetBannerURL(),
                                   /*expected_will_show=*/false,
-                                  State::PENDING_PROMPT);
+                                  State::PENDING_PROMPT_NOT_CANCELED);
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
-  EXPECT_EQ(manager->state(), AppBannerManager::State::PENDING_PROMPT);
+  EXPECT_EQ(manager->state(),
+            AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
   histograms.ExpectTotalCount(kInstallableStatusCodeHistogram, 0);
 
   // Navigating to 2nd installable URL while PENDING_PROMPT will trigger
@@ -939,7 +947,8 @@ IN_PROC_BROWSER_TEST_F(
   // still successfully get to the PENDING_PROMPT state of the pipeline, as it
   // should retry the call to GetData on the InstallableManager.
   RunBannerTest(browser(), manager.get(), test_url, MANIFEST_URL_CHANGED);
-  EXPECT_EQ(manager->state(), AppBannerManager::State::PENDING_PROMPT);
+  EXPECT_EQ(manager->state(),
+            AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
 
   {
     base::HistogramTester histograms;
@@ -1121,7 +1130,8 @@ IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest, ShowBanner) {
       browser(), manager.get(),
       embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
       absl::nullopt);
-  EXPECT_EQ(manager->state(), AppBannerManager::State::PENDING_PROMPT);
+  EXPECT_EQ(manager->state(),
+            AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
   EXPECT_EQ(manager->GetInstallableWebAppCheckResultForTesting(),
             AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
 }
@@ -1213,7 +1223,6 @@ IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest,
         manager->GetInstallableWebAppCheckResultForTesting(),
         AppBannerManager::InstallableWebAppCheckResult::kYes_ByUserRequest);
   }
-  EXPECT_EQ(manager->GetAppName(), u"Manifest test app");
 }
 
 INSTANTIATE_TEST_SUITE_P(

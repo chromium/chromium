@@ -97,7 +97,11 @@ class AppBannerManager : public content::WebContentsObserver,
 
     // The pipeline has finished running, but is waiting for the web page to
     // call prompt() on the event.
-    PENDING_PROMPT,
+    PENDING_PROMPT_NOT_CANCELED,
+
+    // The pipeline has finished running, web page called preventdefault(),
+    // pipeline is waiting for the web page to call prompt() on the event.
+    PENDING_PROMPT_CANCELED,
 
     // The pipeline has finished running for this page load and no more
     // processing is to be done.
