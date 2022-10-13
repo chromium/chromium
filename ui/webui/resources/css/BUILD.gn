@@ -26,7 +26,6 @@ preprocess_if_expr("preprocess_src") {
     "action_link.css",
     "butter_bar.css",
     "chrome_shared.css",
-    "i18n_process.css",
     "list.css",
     "menu_button.css",
     "menu.css",
