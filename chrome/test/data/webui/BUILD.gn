@@ -177,6 +177,7 @@ if (include_js_tests) {
 
     if (enable_dice_support) {
       sources += [
+        "intro/intro_browsertest.js",
         "welcome/a11y_tests.js",
         "welcome/welcome_browsertest.js",
       ]
@@ -635,6 +636,11 @@ generate_grd("build_grd") {
   if (is_chromeos_ash || is_win || is_mac) {
     deps += [ "inline_login:build_grdp" ]
     grdp_files += [ "$target_gen_dir/inline_login/resources.grdp" ]
+  }
+
+  if (enable_dice_support) {
+    deps += [ "intro:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/intro/resources.grdp" ]
   }
 
   manifest_files =

@@ -107,7 +107,7 @@
     min-width: 133px;
   }
 
-  #sign-in {
+  #acceptSignInButton {
     background-color: var(--cr-checked-color);
     color: white;
   }
@@ -141,8 +141,8 @@
     </div>
 
     <div id="button-container">
-      <cr-button on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
-      <cr-button id="sign-in" on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}
+      <cr-button id="declineSignInButton" on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
+      <cr-button id="acceptSignInButton" on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}
       </cr-button>
     </div>
   </div>

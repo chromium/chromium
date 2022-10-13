@@ -10,6 +10,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './icons.html.js';
 import './strings.m.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -19,6 +20,8 @@ import {getTemplate} from './dice_app.html.js';
 
 export interface IntroAppElement {
   $: {
+    acceptSignInButton: CrButtonElement,
+    declineSignInButton: CrButtonElement,
     viewManager: CrViewManagerElement,
   };
 }
