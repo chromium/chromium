@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/power_monitor/power_monitor_features.h"
+
 namespace base {
 
 bool PowerMonitorDeviceSource::IsOnBatteryPower() {
@@ -23,6 +25,10 @@ bool PowerMonitorDeviceSource::IsOnBatteryPower() {
 }
 
 void PowerMonitorDeviceSource::PlatformInit() {
+  if (FeatureList::IsEnabled(kRemoveIOSPowerEventNotifications)) {
+    return;
+  }
+
   NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
   id foreground =
       [nc addObserverForName:UIApplicationWillEnterForegroundNotification
