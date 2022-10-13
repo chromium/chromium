@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1057925581724305206">फुल HD (1080p)</translation>
 <translation id="1113173431709655881">कॅमेरा मोड</translation>
 <translation id="1153190633558910465">ग्रिड बंद करा</translation>
 <translation id="1175958423215084756">लिंक डिटेक्ट केली. <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="1627744224761163218">४ x ४</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">काहीही रेकॉर्ड केले गेले नाही</translation>
 <translation id="1838104802459806957">वर टिल्ट करा</translation>
 <translation id="1843105061469674856">अतिरिक्त पेज स्कॅन करा</translation>
@@ -93,6 +95,7 @@
 <translation id="4705093842003735294">पूर्ण रेझोल्यूशन</translation>
 <translation id="4890010094662541459">३ x ३</translation>
 <translation id="491895758387112773">मल्टिस्ट्रीम व्हिडिओ रेकॉर्डिंग</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">फोटोचा आस्पेक्ट रेशो</translation>
 <translation id="5057360777601936059">तुमचा कॅमेरा सध्या उपलब्ध नाही.
         कॅमेरा योग्य प्रकारे कनेक्ट केला आहे का ते तपासा.</translation>
@@ -101,6 +104,7 @@
 <translation id="5266635337630551423">दस्तऐवजाचा सर्वात वरील डावीकडील कोपरा</translation>
 <translation id="5317780077021120954">सेव्ह करा</translation>
 <translation id="5320594929574852403">डाव्या दिशेने हलत आहे</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">दस्तऐवजाच्या सर्व कडा फ्रेमच्या आत ठेवा. दस्तऐवज आणि बॅकग्राउंड हे दोन्ही वेगळ्या रंगांचे असल्यास, आणखी चांगल्या प्रकारे स्कॅन करता येते.</translation>
 <translation id="5662366948659129155">पेज <ph name="COUNT" /> स्कॅन करत आहे</translation>
 <translation id="5671277269877808209">चौरस</translation>
@@ -110,7 +114,6 @@
 <translation id="5775960006311140197">एक्सपोर्ट मोड</translation>
 <translation id="5860033963881614850">बंद</translation>
 <translation id="5869546221129391014">ग्रिड</translation>
-<translation id="5903928279335207406">पेज हटवा</translation>
 <translation id="5916664084637901428">सुरू</translation>
 <translation id="5975083100439434680">झूम कमी करा</translation>
 <translation id="5976160379964388480">इतर</translation>

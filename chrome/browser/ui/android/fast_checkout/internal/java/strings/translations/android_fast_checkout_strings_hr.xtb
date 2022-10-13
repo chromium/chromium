@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
-<translation id="1068168522143272502">Popis adresa i opcija plaćanja koje treba popuniti tijekom procesa naplate polovično je otvoren.</translation>
-<translation id="2148715923718146918">Odabrana stavka</translation>
+<translation id="1275718070701477396">Odabrano</translation>
 <translation id="248973266728004341">Dodajte novu kreditnu karticu</translation>
-<translation id="2501278716633472235">Natrag</translation>
-<translation id="312532069930005172">Otvorite postavke automatskog popunjavanja za profile</translation>
+<translation id="385051799172605136">Natrag</translation>
 <translation id="4401440167302712543">Automatski unesite podatke o dostavi i plaćanju tijekom naplate</translation>
 <translation id="4526274353008646337">Dodajte novu adresu</translation>
 <translation id="567079066552447069">Zatvoren je popis adresa i opcija plaćanja koje treba popuniti tijekom procesa naplate.</translation>
-<translation id="6350814703899626921">Promijenite odabranu kreditnu karticu.</translation>
-<translation id="731090949585674442">Promijenite odabrani profil za automatsko popunjavanje.</translation>
-<translation id="8264703973415044493">Popis adresa i opcija plaćanja koje treba popuniti tijekom procesa naplate otvoren je u punoj visini.</translation>
-<translation id="8315600272591552085">Popis adresa i opcija plaćanja koje treba popuniti tijekom procesa naplate.</translation>
+<translation id="5747552184818312860">Istječe</translation>
+<translation id="6476284679642588870">Upravljajte načinima plaćanja</translation>
+<translation id="7974390230414479278">Stavka izbornika</translation>
 <translation id="884264119367021077">Adresa za dostavu</translation>
 <translation id="8873105120914375071">Želite li brže završiti kupnju?</translation>
 <translation id="9032876013752408138">Automatski unesi moje podatke</translation>
-<translation id="9130271303738808219">Otvorite postavke kreditne kartice</translation>
 <translation id="984275831282074731">Načini plaćanja</translation>
 </translationbundle>

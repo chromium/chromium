@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
-<translation id="1068168522143272502">Elenco di indirizzi e opzioni di pagamento da compilare durante i flussi di pagamento aperti nella parte inferiore dello schermo.</translation>
-<translation id="2148715923718146918">Elemento selezionato</translation>
+<translation id="1275718070701477396">Selezionato</translation>
 <translation id="248973266728004341">Aggiungi nuova carta di credito</translation>
-<translation id="2501278716633472235">Indietro</translation>
-<translation id="312532069930005172">Apri le impostazioni di compilazione automatica dei profili</translation>
+<translation id="385051799172605136">Indietro</translation>
 <translation id="4401440167302712543">Compila automaticamente i dati di spedizione e pagamento al momento di pagare</translation>
 <translation id="4526274353008646337">Aggiungi nuovo indirizzo</translation>
 <translation id="567079066552447069">L'elenco di indirizzi e opzioni di pagamento da compilare durante i flussi di pagamento è chiuso.</translation>
-<translation id="6350814703899626921">Cambia la selezione della carta di credito.</translation>
-<translation id="731090949585674442">Cambia la selezione del profilo di Compilazione automatica.</translation>
-<translation id="8264703973415044493">Elenco di indirizzi e opzioni di pagamento da compilare durante i flussi di pagamento aperti a schermo intero.</translation>
-<translation id="8315600272591552085">Elenco di indirizzi e opzioni di pagamento da compilare durante i flussi di pagamento.</translation>
+<translation id="5747552184818312860">Scadenza</translation>
+<translation id="6476284679642588870">Gestisci metodi di pagamento</translation>
+<translation id="7974390230414479278">Voce di menu</translation>
 <translation id="884264119367021077">Indirizzo di spedizione</translation>
 <translation id="8873105120914375071">Vuoi pagare più velocemente?</translation>
 <translation id="9032876013752408138">Compila automaticamente le mie informazioni</translation>
-<translation id="9130271303738808219">Apri le impostazioni per la carta di credito</translation>
 <translation id="984275831282074731">Metodi di pagamento</translation>
 </translationbundle>

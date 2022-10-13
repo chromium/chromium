@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
-<translation id="1005794457625275818">Cookie файлдары <ph name="FPS_OWNER" /> тобындағы <ph name="FPS_MEMBERS_COUNT" /> сайт, соның ішінде <ph name="FPS_MEMBER" /> үшін рұқсат етілген.</translation>
 <translation id="1006017844123154345">Онлайн режимде ашу</translation>
 <translation id="1044891598689252897">Сайттар қалыпты күйде жұмыс істейді.</translation>
 <translation id="1124090076051167250">Негізгі экрандағы сайттар мен қолданбаларда сақталған <ph name="DATASIZE" /> деректер мен cookie файлдары өшіріледі.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" /> басқарады</translation>
 <translation id="2498359688066513246">Анықтама және пікір</translation>
 <translation id="2501278716633472235">Артқа қайту</translation>
+<translation id="2546283357679194313">Cookie файлдары және торап деректері</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie файлы бөгелді.}other{# cookie файлы бөгелді.}}</translation>
 <translation id="2570922361219980984">Бұл құрылғыда да орынды анықтау қызметі өшірулі. Оны <ph name="BEGIN_LINK" />Android параметрлері<ph name="END_LINK" /> арқылы қосыңыз.</translation>
 <translation id="257931822824936280">Жайылған – жию үшін басыңыз.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Жіберу</translation>
 <translation id="2677748264148917807">Шығу</translation>
 <translation id="2687403674020088961">Барлық cookie файлын бөгеу (ұсынылмайды)</translation>
-<translation id="2692299144678073135">Тиісті сайттарға түрлі сайттардағы деректеріңізді есте сақтауға рұқсат беру</translation>
 <translation id="2704606927547763573">Көшірілген</translation>
 <translation id="2713106313042589954">Камераны өшіру</translation>
 <translation id="2717722538473713889">электрондық пошта мекенжайлары</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Тақырып</translation>
 <translation id="4008040567710660924">Белгілі бір сайт үшін cookie файлдарына рұқсат беріңіз.</translation>
 <translation id="4046123991198612571">Келесі аудиотрек</translation>
-<translation id="4048876521107516222">Тиісті сайттарда сізді жүйеден шығармау сияқты әрекеттерді орындау үшін cookie файлдары пайдаланылады.</translation>
 <translation id="4149994727733219643">Веб-беттердің қарапайым көрінісі</translation>
 <translation id="4165986682804962316">Сайт параметрлері</translation>
 <translation id="4169549551965910670">USB құрылғысына жалғанды.</translation>
@@ -313,9 +311,7 @@
 <translation id="7791543448312431591">Қосу</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
 <translation id="7804248752222191302">Сайт камераны пайдаланып жатыр.</translation>
-<translation id="7816129586531226979">Тиісті сайттар түрлі сайттардағы деректеріңізді есте сақтауы мүмкін.</translation>
 <translation id="7817023149356982970">Сіз бұл сайтта аккаунттан шығарыласыз.</translation>
-<translation id="7828557259026017104">Cookie файлдары сайттарға кірген кезде жасалады. Сайттар оларды параметрлер есте сақталуы үшін пайдаланады. Үшінші тараптың cookie файлдары басқа сайттарда жасалады. Бұл сайттарда сіз кірген сайттың мазмұны (мысалы, жарнамалар немесе суреттер) болады.</translation>
 <translation id="7835852323729233924">Медиамазмұн ойнату</translation>
 <translation id="783819812427904514">Бейненің дыбысын қосу</translation>
 <translation id="7846076177841592234">Таңдаудан бас тарту</translation>

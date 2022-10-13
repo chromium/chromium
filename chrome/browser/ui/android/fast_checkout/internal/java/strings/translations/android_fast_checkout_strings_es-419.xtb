@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
-<translation id="1068168522143272502">La lista de direcciones y opciones de pago que se debe completar durante los flujos de confirmación de la compra está abierta a media altura.</translation>
-<translation id="2148715923718146918">Se seleccionó el elemento</translation>
+<translation id="1275718070701477396">Seleccionada</translation>
 <translation id="248973266728004341">Agregar una nueva tarjeta de crédito</translation>
-<translation id="2501278716633472235">Ir atrás</translation>
-<translation id="312532069930005172">Abrir la configuración de Autocompletar perfil</translation>
+<translation id="385051799172605136">Atrás</translation>
 <translation id="4401440167302712543">Autocompleta la información de envío y pago cuando pagues.</translation>
 <translation id="4526274353008646337">Agregar una nueva dirección</translation>
 <translation id="567079066552447069">La lista de direcciones y opciones de pago que se debe completar durante los flujos de confirmación de la compra está cerrada.</translation>
-<translation id="6350814703899626921">Cambiar la selección de tarjeta de crédito</translation>
-<translation id="731090949585674442">Cambiar la selección del perfil de Autocompletar</translation>
-<translation id="8264703973415044493">La lista de direcciones y opciones de pago que se debe completar durante los flujos de confirmación de la compra se abrió en su totalidad.</translation>
-<translation id="8315600272591552085">Lista de direcciones y opciones de pago que se debe completar durante los flujos de confirmación de la compra.</translation>
+<translation id="5747552184818312860">Caduca</translation>
+<translation id="6476284679642588870">Administrar las formas de pago</translation>
+<translation id="7974390230414479278">Elemento del menú</translation>
 <translation id="884264119367021077">Dirección de envío</translation>
 <translation id="8873105120914375071">¿Quieres pagar más rápido?</translation>
 <translation id="9032876013752408138">Autocompletar mi información</translation>
-<translation id="9130271303738808219">Abrir la configuración de la tarjeta de crédito</translation>
 <translation id="984275831282074731">Formas de pago</translation>
 </translationbundle>

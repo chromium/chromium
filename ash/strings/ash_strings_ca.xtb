@@ -340,6 +340,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2865888419503095837">Informació de la xarxa</translation>
 <translation id="2872961005593481000">Apaga</translation>
 <translation id="2878884018241093801">No hi ha cap element recent</translation>
+<translation id="2885950158625301909">Més informació</translation>
 <translation id="2891209721153296020">"Desselecciona"</translation>
 <translation id="2894949423239620203">És possible que el cable afecti el rendiment</translation>
 <translation id="2903844815300039659">Estàs connectat a <ph name="NAME" />, <ph name="STRENGTH" /></translation>
@@ -1051,6 +1052,7 @@ Instal·lació nova</translation>
 <translation id="6961121602502368900">Silencia el telèfon no està disponible al perfil de treball</translation>
 <translation id="6961840794482373852">La tecla de drecera Alt+fletxa amunt ha canviat. Per fer servir la tecla de retrocedir pàgina, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa amunt.</translation>
 <translation id="696267987219125751">L'enquadrament de la càmera està desactivat.</translation>
+<translation id="6964690557625666701">Tots els elements fixats estan ocults</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6972754398087986839">Comença</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1356,6 +1358,8 @@ Instal·lació nova</translation>
 <translation id="8734991477317290293">Pot ser que estigui provant de robar-te les combinacions de tecles</translation>
 <translation id="8735678380411481005">Color de la retroil·luminació del teclat</translation>
 <translation id="8735953464173050365">Mostra la configuració del teclat. S'ha seleccionat <ph name="KEYBOARD_NAME" />.</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Activa l'accés a la càmera per permetre que les aplicacions i les pàgines web que tinguin permís per accedir a la càmera utilitzin les càmeres connectades a aquest dispositiu.</translation>
 <translation id="8755498163081687682">Verifica la teva identitat: <ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
 <translation id="875593634123171288">Mostra la configuració de la VPN</translation>

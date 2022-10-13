@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
-<translation id="1068168522143272502">Հասցեների և վճարման եղանակների ցանկը, որը ցուցադրվում է գնումների ձևակերպման ժամանակ, բացված է կիսով չափ։</translation>
-<translation id="2148715923718146918">Ընտրված տարր</translation>
+<translation id="1275718070701477396">Ընտրված</translation>
 <translation id="248973266728004341">Ավելացնել նոր վարկային քարտ</translation>
-<translation id="2501278716633472235">Վերադառնալ</translation>
-<translation id="312532069930005172">Բացել պրոֆիլի ինքնալրացման կարգավորումները</translation>
+<translation id="385051799172605136">Հետ</translation>
 <translation id="4401440167302712543">Առաքման և վճարային տվյալների ինքնալրացում վճարման ժամանակ</translation>
 <translation id="4526274353008646337">Ավելացնել նոր հասցե</translation>
 <translation id="567079066552447069">Հասցեների և վճարման եղանակների ցանկը, որը ցուցադրվում է գնումների ձևակերպման ժամանակ, փակ է։</translation>
-<translation id="6350814703899626921">Ընտրել այլ վարկային քարտ։</translation>
-<translation id="731090949585674442">Ընտրել ինքնալրացման այլ պրոֆիլ։</translation>
-<translation id="8264703973415044493">Հասցեների և վճարման եղանակների ցանկը, որը ցուցադրվում է գնումների ձևակերպման ժամանակ, բացված է ամբողջությամբ։</translation>
-<translation id="8315600272591552085">Հասցեների և վճարման եղանակների ցանկը, որը ցուցադրվում է գնումների ձևակերպման ժամանակ։</translation>
+<translation id="5747552184818312860">Սպառվում է</translation>
+<translation id="6476284679642588870">Կառավարել վճարման եղանակները</translation>
+<translation id="7974390230414479278">Ընտրացանկի միավոր</translation>
 <translation id="884264119367021077">Առաքման հասցե</translation>
 <translation id="8873105120914375071">Ուզո՞ւմ եք ավելի արագ վճարել</translation>
 <translation id="9032876013752408138">Ինքնալրացնել իմ տվյալները</translation>
-<translation id="9130271303738808219">Բացել վարկային քարտի կարգավորումները</translation>
 <translation id="984275831282074731">Վճարման եղանակներ</translation>
 </translationbundle>

@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="125153950246128346">点按即可查看另一标签页</translation>
 <translation id="1302104331113804646">价格跟踪设置</translation>
-<translation id="1310482092992808703">组合标签页</translation>
 <translation id="1378979118429748177">在商品降价时收到通知</translation>
 <translation id="1403228085774130835">您可通过在 Chrome 主菜单中点击“最近打开的标签页”找到您已关闭的标签页</translation>
 <translation id="1455506303394048917">您在这些无痕式标签页中的活动记录将从这个设备上清除</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">评分</translation>
 <translation id="3291470810748040983">当某个已打开的标签页中有商品降价时，您会收到提醒</translation>
 <translation id="3328308545011660196">建议：有 <ph name="NUMBER_OF_TABS" /> 个标签页似乎彼此相关。为它们建组？</translation>
-<translation id="3499853001094440183">为标签页取消分组</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{收起 <ph name="TABS_COUNT_ONE" /> 个标签页。}other{收起包含 <ph name="TABS_COUNT_MANY" /> 个标签页的“<ph name="TITLE_OF_GROUP" />”标签页组。}}</translation>
 <translation id="3882834874697329510">如果想在某个已打开的标签页中有商品降价时收到提醒，请在“设置”中开启通知功能。</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">隐藏“全屏网格状视图”按钮</translation>
 <translation id="5076161749301278626">查看商店评价？</translation>
 <translation id="5082793167783849073">通过分组快速比较网页。为此，请先轻触并按住某个链接。</translation>
-<translation id="5453029940327926427">关闭标签页</translation>
 <translation id="5490235265819901748">已展开标签页组</translation>
 <translation id="5494920125229734069">全选</translation>
 <translation id="5533021382642990449">稍后再显示</translation>

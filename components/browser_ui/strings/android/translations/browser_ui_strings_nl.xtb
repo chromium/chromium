@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
-<translation id="1005794457625275818">Cookies toegestaan voor <ph name="FPS_MEMBERS_COUNT" /> sites in de groep van <ph name="FPS_OWNER" />, waaronder <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Online openen</translation>
 <translation id="1044891598689252897">Sites werken naar behoren</translation>
 <translation id="1124090076051167250">Hiermee wis je <ph name="DATASIZE" /> aan gegevens en cookies die zijn opgeslagen door sites of apps op je startscherm.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Beheerd door <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Hulp en feedback</translation>
 <translation id="2501278716633472235">Terug</translation>
+<translation id="2546283357679194313">Cookies en sitegegevens</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie geblokkeerd}other{# cookies geblokkeerd}}</translation>
 <translation id="2570922361219980984">Locatietoegang staat ook uit voor dit apparaat. Zet deze aan via de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Uitgevouwen; klik om samen te vouwen.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Verzenden</translation>
 <translation id="2677748264148917807">Verlaten</translation>
 <translation id="2687403674020088961">Alle cookies blokkeren (niet aanbevolen)</translation>
-<translation id="2692299144678073135">Toestaan dat gerelateerde sites je onthouden op verschillende sites</translation>
 <translation id="2704606927547763573">Gekopieerd</translation>
 <translation id="2713106313042589954">Camera uitzetten</translation>
 <translation id="2717722538473713889">E-mailadressen</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4008040567710660924">Cookies voor een specifieke site toestaan.</translation>
 <translation id="4046123991198612571">Volgend nummer</translation>
-<translation id="4048876521107516222">Gerelateerde sites gebruiken cookies bijvoorbeeld om je ingelogd te houden</translation>
 <translation id="4149994727733219643">Vereenvoudigde weergave voor webpagina's</translation>
 <translation id="4165986682804962316">Site-instellingen</translation>
 <translation id="4169549551965910670">Verbonden met een USB-apparaat</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Laatst bezocht: <ph name="NUM_DAYS" /> dagen geleden</translation>
 <translation id="6561560012278703671">Stillere berichten gebruiken (zorgt ervoor dat je niet wordt gestoord door meldingprompts)</translation>
 <translation id="6593061639179217415">Desktopsite</translation>
-<translation id="6608211702542341247">Deze site behoort tot de groep sites van <ph name="FPS_OWNER" /> die je activiteit in de groep kunnen bekijken</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beschermde content</translation>
 <translation id="662080504995468778">Blijven</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Toevoegen</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7804248752222191302">Een site gebruikt de camera</translation>
-<translation id="7816129586531226979">Gerelateerde sites kunnen je onthouden op verschillende sites</translation>
 <translation id="7817023149356982970">Je wordt uitgelogd van deze site.</translation>
-<translation id="7828557259026017104">Cookies zijn bestanden die worden gemaakt door websites die je bezoekt. Sites gebruiken ze om je voorkeuren te onthouden. Cookies van derden worden gemaakt door andere sites. Deze sites zijn eigenaar van een deel van de content (zoals advertenties of afbeeldingen) die je ziet op de webpagina die je bezoekt.</translation>
 <translation id="7835852323729233924">Media afspelen</translation>
 <translation id="783819812427904514">Dempen van video opheffen</translation>
 <translation id="7846076177841592234">Selectie opheffen</translation>

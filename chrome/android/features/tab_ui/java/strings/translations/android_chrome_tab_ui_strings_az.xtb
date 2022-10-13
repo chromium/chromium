@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Silin</translation>
 <translation id="125153950246128346">Başqa taba baxmaq üçün klikləyin</translation>
 <translation id="1302104331113804646">Qiymət izləmə ayarları</translation>
-<translation id="1310482092992808703">Tabları qruplaşdırın</translation>
 <translation id="1378979118429748177">Qiymət endirildikdə bildiriş alın</translation>
 <translation id="1403228085774130835">Qapalı tablarınızı Chrome əsas menyusunda Son tablarda tapa bilərsiniz</translation>
 <translation id="1455506303394048917">Bu Anonim tablardakı fəaliyyətiniz bu cihazdan silinəcək</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">reytinq</translation>
 <translation id="3291470810748040983">Qiymət endirildikdə açıq tabda bildiriş alacaqsınız</translation>
 <translation id="3328308545011660196">Təklif: <ph name="NUMBER_OF_TABS" /> tab əlaqəli görünür. Onlar qruplaşdırılsın?</translation>
-<translation id="3499853001094440183">Tabları ayırın</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabını yığcamlaşdırın.}other{<ph name="TABS_COUNT_MANY" /> tab olan <ph name="TITLE_OF_GROUP" /> tab qrupunu yığcamlaşdırın.}}</translation>
 <translation id="3882834874697329510">Qiymət endirildikdə açıq tabda bildiriş almaq üçün Ayarlarda bildirişləri aktiv edin.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Tam ekran cədvəlini gizlədin</translation>
 <translation id="5076161749301278626">Mağaza rəyləri göstərilsin?</translation>
 <translation id="5082793167783849073">Qruplaşdırmaqla səhifələri asanlıqla müqayisə edin. Başlamaq üçün linkə toxunub saxlayın.</translation>
-<translation id="5453029940327926427">Tabları qapadın</translation>
 <translation id="5490235265819901748">Tab qrupu genişləndirildi</translation>
 <translation id="5494920125229734069">Hamısını seçin</translation>
 <translation id="5533021382642990449">Sonra göstərin</translation>
@@ -83,6 +80,7 @@
 <translation id="753732157349120914">Tab Keçiricisi</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google'dan <ph name="REVIEWS_COUNT_ONE" /> rəy}other{Google'dan <ph name="REVIEWS_COUNT_MANY" /> rəy}}</translation>
 <translation id="7559245342362162951">Qrup tabını tam ekran cədvəlində göstərin</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı paylaşın}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı paylaşın}}</translation>
 <translation id="7792771145871471484">Təklifləri nəzərdən keçirin.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> seçilmiş tabı qruplaşdırın}other{<ph name="TABS_COUNT_MANY" /> seçilmiş tabı qruplaşdırın}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> reytinq, <ph name="REVIEWS_COUNT_ONE" /> rəy}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> reytinq, <ph name="REVIEWS_COUNT_MANY" /> rəy}}</translation>

@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
-<translation id="1068168522143272502">Lista de adrese și opțiuni de plată de completat în timpul fluxurilor de finalizare a achiziției, deschisă la jumătate din înălțime.</translation>
-<translation id="2148715923718146918">A fost selectat un element</translation>
+<translation id="1275718070701477396">Selectat</translation>
 <translation id="248973266728004341">Adaugă un card de credit nou</translation>
-<translation id="2501278716633472235">Înapoi</translation>
-<translation id="312532069930005172">Deschide setările pentru completarea automată ale profilului</translation>
+<translation id="385051799172605136">Înapoi</translation>
 <translation id="4401440167302712543">Completează automat informațiile despre expediere și plată pe măsură ce finalizezi achiziția</translation>
 <translation id="4526274353008646337">Adaugă o adresă nouă</translation>
 <translation id="567079066552447069">Lista de adrese și opțiuni de plată de completat în timpul fluxurilor de finalizare a achiziției este închisă.</translation>
-<translation id="6350814703899626921">Modifică opțiunea selectată pentru cardul de credit.</translation>
-<translation id="731090949585674442">Modifică opțiunea selectată pentru profilul de completare automată.</translation>
-<translation id="8264703973415044493">Lista cu adrese și opțiuni de plată de completat în timpul fluxurilor de finalizare a achiziției, deschisă la înălțimea completă.</translation>
-<translation id="8315600272591552085">Lista cu adrese și opțiuni de plată de completat în timpul fluxurilor de finalizare a achiziției.</translation>
+<translation id="5747552184818312860">Expiră</translation>
+<translation id="6476284679642588870">Gestionează metodele de plată</translation>
+<translation id="7974390230414479278">Element din meniu</translation>
 <translation id="884264119367021077">Adresa de expediere</translation>
 <translation id="8873105120914375071">Finalizezi achiziția mai rapid?</translation>
 <translation id="9032876013752408138">Completează automat informațiile mele</translation>
-<translation id="9130271303738808219">Deschide setările cardului de credit</translation>
 <translation id="984275831282074731">Metode de plată</translation>
 </translationbundle>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
-<translation id="1005794457625275818">Cookie-uri permise pentru <ph name="FPS_MEMBERS_COUNT" /> site-uri din grupul <ph name="FPS_OWNER" />, inclusiv <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Deschide online</translation>
 <translation id="1044891598689252897">Site-urile vor funcționa normal</translation>
 <translation id="1124090076051167250">Astfel, se vor șterge <ph name="DATASIZE" /> din datele și cookie-urile stocate de site-uri sau aplicații de pe ecranul de pornire.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Gestionate de <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Ajutor și feedback</translation>
 <translation id="2501278716633472235">Înapoi</translation>
+<translation id="2546283357679194313">Cookie-uri și date privind site-ul</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Un cookie blocat}few{# cookie-uri blocate}other{# de cookie-uri blocate}}</translation>
 <translation id="2570922361219980984">Accesul la locație este dezactivat și pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Afișare extinsă – dă clic pentru a restrânge.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Trimite</translation>
 <translation id="2677748264148917807">Ieși</translation>
 <translation id="2687403674020088961">Blochează toate cookie-urile (nu este recomandat)</translation>
-<translation id="2692299144678073135">Permite site-urilor conexe să te rețină pe toate site-urile</translation>
 <translation id="2704606927547763573">Copiat</translation>
 <translation id="2713106313042589954">Dezactivează camera foto</translation>
 <translation id="2717722538473713889">Adrese de e-mail</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Titlu</translation>
 <translation id="4008040567710660924">Permite cookie-uri pentru un anumit site.</translation>
 <translation id="4046123991198612571">Melodia următoare</translation>
-<translation id="4048876521107516222">Site-urile asociate folosesc cookie-uri, de exemplu, pentru a te menține conectat(ă)</translation>
 <translation id="4149994727733219643">Afișare simplificată pentru paginile web</translation>
 <translation id="4165986682804962316">Setări pentru site-uri</translation>
 <translation id="4169549551965910670">Conectat la un dispozitiv USB</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Accesat ultima dată acum <ph name="NUM_DAYS" /> zile</translation>
 <translation id="6561560012278703671">Folosește mesaje discrete (notificările nu te vor întrerupe)</translation>
 <translation id="6593061639179217415">Versiune site desktop</translation>
-<translation id="6608211702542341247">Acest site face parte din grupul de site-uri <ph name="FPS_OWNER" /> care îți pot vedea activitatea în grup</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Conținut protejat</translation>
 <translation id="662080504995468778">Rămâi pe pagină</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Adaugă</translation>
 <translation id="780301667611848630">Nu, mulțumesc</translation>
 <translation id="7804248752222191302">Un site folosește camera foto</translation>
-<translation id="7816129586531226979">Site-urile conexe pot să te rețină pe toate site-urile</translation>
 <translation id="7817023149356982970">Te vei deconecta de la acest site.</translation>
-<translation id="7828557259026017104">Cookie-urile sunt fișiere create de site-urile pe care le accesezi. Site-urile le folosesc pentru a-ți reține preferințele. Cookie-urile terță parte sunt create de alte site-uri. Aceste site-uri dețin o parte din conținut, cum ar fi anunțuri sau imagini, pe care le vezi pe pagina web pe care o accesezi.</translation>
 <translation id="7835852323729233924">Se redă conținutul media</translation>
 <translation id="783819812427904514">Activează sunetul videoclipului</translation>
 <translation id="7846076177841592234">Anulează selecția</translation>

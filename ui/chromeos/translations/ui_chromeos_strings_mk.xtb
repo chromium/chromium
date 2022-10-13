@@ -648,6 +648,7 @@
 <translation id="642282551015776456">Имево не може да се користи како име на датотека или на папка</translation>
 <translation id="6423031066725912715">виетнамски со тастатура TCVN</translation>
 <translation id="6430271654280079150">Имате уште 1 обид.</translation>
+<translation id="643243556292470964">Избришаните датотеки сега се преместени во корпата</translation>
 <translation id="6485131920355264772">Не успеа да вчита информации за простор</translation>
 <translation id="6495925982925244349">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, детали</translation>
 <translation id="649877868557234318">Се извлекува <ph name="FILE_NAME" /> во <ph name="FOLDER_NAME" /></translation>

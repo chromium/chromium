@@ -340,6 +340,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="2865888419503095837">Şəbəkə haqqında məlumat</translation>
 <translation id="2872961005593481000">Qapadın</translation>
 <translation id="2878884018241093801">Son elementlər yoxdur</translation>
+<translation id="2885950158625301909">Ətraflı məlumat</translation>
 <translation id="2891209721153296020">"Seçimi silin"</translation>
 <translation id="2894949423239620203">Kabel performansa təsir göstərə bilər</translation>
 <translation id="2903844815300039659"><ph name="NAME" /> şəbəkəsinə qoşuldunuz, <ph name="STRENGTH" /></translation>
@@ -1051,6 +1052,7 @@ Yeni quraşdırma</translation>
 <translation id="6961121602502368900">İş profilində telefonun səssiz edilməsi əlçatan deyil</translation>
 <translation id="6961840794482373852">Alt + Yuxarı Ox klaviatura qısayolu dəyişib. Səhifənin Yuxarısına Keç düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + Yuxarı Ox düyməsini basın.</translation>
 <translation id="696267987219125751">Kamera çərçivəsi deaktivdir.</translation>
+<translation id="6964690557625666701">Bütün əlavə edilmiş elementlər göstərilmir</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Başlayın</translation>
 <translation id="6979158407327259162">Google Disk</translation>
@@ -1359,6 +1361,8 @@ Yeni quraşdırma</translation>
 <translation id="8734991477317290293">Bu düymələrininızı oğurlamağa cəhd edə bilər</translation>
 <translation id="8735678380411481005">Klaviatura arxa işığı rəngi</translation>
 <translation id="8735953464173050365">Klaviatura ayarlarını göstərin. <ph name="KEYBOARD_NAME" /> seçilib</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Kamera icazəsi olan tətbiqlərə və veb səhifələrə bu cihaza qoşulmuş kameralardan istifadə etməyə icazə vermək üçün kameraya girişi aktiv edin.</translation>
 <translation id="8755498163081687682">Kimliyinizi doğrulayın: <ph name="ORIGIN_NAME" /> siz olduğunuzu təsdiqləmək istəyir</translation>
 <translation id="875593634123171288">VPN ayarlarını göstərin</translation>

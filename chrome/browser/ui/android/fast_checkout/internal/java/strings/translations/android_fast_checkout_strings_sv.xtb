@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
-<translation id="1068168522143272502">Listan över adresser och betalningsalternativ som ska fyllas i under betalningsflöden har öppnats över halva skärmen.</translation>
-<translation id="2148715923718146918">Valt objekt</translation>
+<translation id="1275718070701477396">Markerad</translation>
 <translation id="248973266728004341">Lägg till ett nytt kreditkort</translation>
-<translation id="2501278716633472235">Föregående</translation>
-<translation id="312532069930005172">Öppna profilinställningarna för Autofyll</translation>
+<translation id="385051799172605136">Föregående</translation>
 <translation id="4401440167302712543">Fyll i frakt- och betalningsuppgifter automatiskt i kassan</translation>
 <translation id="4526274353008646337">Lägg till ny adress</translation>
 <translation id="567079066552447069">Listan över adresser och betalningsalternativ som ska fyllas i under betalningsflöden har stängts.</translation>
-<translation id="6350814703899626921">Ändra kreditkortsval.</translation>
-<translation id="731090949585674442">Ändra val av Autofyll-profil.</translation>
-<translation id="8264703973415044493">Listan över adresser och betalningsalternativ som ska fyllas i under betalningsflöden har öppnats över hela skärmen.</translation>
-<translation id="8315600272591552085">Listan över adresser och betalningsalternativ som ska fyllas i under betalningsflöden.</translation>
+<translation id="5747552184818312860">Upphör att gälla</translation>
+<translation id="6476284679642588870">Hantera betalningsmetoder</translation>
+<translation id="7974390230414479278">Menyalternativ</translation>
 <translation id="884264119367021077">Leveransadress</translation>
 <translation id="8873105120914375071">Vill du betala snabbare?</translation>
 <translation id="9032876013752408138">Fyll i mina uppgifter automatiskt</translation>
-<translation id="9130271303738808219">Öppna kreditkortsinställningarna</translation>
 <translation id="984275831282074731">Betalningsmetoder</translation>
 </translationbundle>

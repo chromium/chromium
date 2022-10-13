@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">移除</translation>
 <translation id="125153950246128346">輕觸即可查看另一個分頁</translation>
 <translation id="1302104331113804646">價格追蹤設定</translation>
-<translation id="1310482092992808703">將分頁加入群組</translation>
 <translation id="1378979118429748177">在降價時收到通知</translation>
 <translation id="1403228085774130835">在 Chrome 主選單下方「最近開啟的分頁」中，可以查看關閉的分頁。</translation>
 <translation id="1455506303394048917">你在這些無痕分頁中的活動將從這部裝置上清除</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">評分</translation>
 <translation id="3291470810748040983">每當開啟的分頁中有降價商品，你就會收到通知</translation>
 <translation id="3328308545011660196">建議：似乎有 <ph name="NUMBER_OF_TABS" /> 個相關的分頁。要將這些分頁加入群組嗎？</translation>
-<translation id="3499853001094440183">將分頁移出群組</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{收合 <ph name="TABS_COUNT_ONE" /> 個分頁。}other{收合包含 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}}</translation>
 <translation id="3882834874697329510">如要在開啟的分頁有降價商品時收到通知，請在設定中啟用通知功能。</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">隱藏全螢幕格狀檢視</translation>
 <translation id="5076161749301278626">要查看商店評論嗎？</translation>
 <translation id="5082793167783849073">建立群組以快速比較多個頁面。如要開始建立，請輕觸並按住連結。</translation>
-<translation id="5453029940327926427">關閉分頁</translation>
 <translation id="5490235265819901748">已展開分頁群組</translation>
 <translation id="5494920125229734069">全選</translation>
 <translation id="5533021382642990449">之後繼續顯示</translation>

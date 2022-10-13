@@ -454,6 +454,7 @@
 <translation id="4900532980794411603">Parallels Desktop सँग सेयर गर्नुहोस्</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, जोड्नुहोस्</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्रीको स्तर <ph name="BATTERY_STATUS" />%, विवरणहरू</translation>
+<translation id="4929673617759421391">एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल पेस्ट गर्न पाइँदैन</translation>
 <translation id="4935975195727477204">गाजानिया फुल</translation>
 <translation id="4943368462779413526">फुटबल</translation>
 <translation id="4961158930123534723">Parallels Desktop सँग एउटा फोल्डर सेयर गरियो</translation>
@@ -510,6 +511,7 @@
 <translation id="5278111733643988471">तपाईं यो फाइल रिस्टोर गर्न चाहनुहुन्छ भने यो फाइल ड्र्याग गरेर ट्र्यासबाहिर रहेको नयाँ फोल्डरमा लैजानुहोस्। यो फाइलको मूल फोल्डर "<ph name="PARENT_FOLDER_NAME" />" मेटाइएको छ।</translation>
 <translation id="5286194356314741248">स्क्यान गर्दै</translation>
 <translation id="5288441970121584418">बर्गर</translation>
+<translation id="5293615890992542006">एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल सार्न पाइँदैन</translation>
 <translation id="5305688511332277257">कुनै स्थापित छैन</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5318819489018851358">Linux मार्फत सेयर गर्नुहोस्</translation>
@@ -644,6 +646,7 @@
 <translation id="642282551015776456">नामलाई फाइल वा फोल्डर नामको रूपमा प्रयोग गर्न सकिँदैन</translation>
 <translation id="6423031066725912715">भियतनामी TCVN किबोर्ड</translation>
 <translation id="6430271654280079150">तपाईं अझै १ पटक प्रयास गर्न सक्नुहुन्छ।</translation>
+<translation id="643243556292470964">मेटाइएका फाइलहरू अहिले ट्र्यासमा सारिएका छन्</translation>
 <translation id="6485131920355264772">स्पेज जानकारी पुनर्प्राप्त गर्न असफल भयो</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="SECURITY_STATUS" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> मा एक्स्ट्रयाक्ट गरिँदै छ</translation>
@@ -710,6 +713,7 @@
 <translation id="6993826899923627728">यी फाइलहरू ट्र्यासमा छन्</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> फोल्डरहरू चयन गरियो</translation>
 <translation id="7008426324576352165">अपलोड गर्ने कार्य पूरा गर्न तपाईंको सङ्गठनले भण्डारणमा थप ठाउँ खाली गर्नु पर्ने हुन्छ।</translation>
+<translation id="7009985720488544166">एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="COUNT" /> वटा फाइल सार्न पाइँदैन</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">स्थापना असफल भयो।</translation>
 <translation id="7031639531908619281">तुर्किस</translation>
@@ -968,6 +972,7 @@
 <translation id="9183302530794969518">Google कागजात</translation>
 <translation id="9189836632794948435">काजाख</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> वटा वस्तु एक्स्ट्रयाक्ट गरिए।</translation>
+<translation id="9210751050717126865">एड्मिनले तोक्नुभएको नीतिअनुसार <ph name="COUNT" /> वटा फाइल पेस्ट गर्न पाइँदैन</translation>
 <translation id="9213073329713032541">स्थापना गर्ने कार्य सफलतापूर्वक सुरु भयो।</translation>
 <translation id="9219103736887031265">फोटो</translation>
 <translation id="9219908252191632183">लुनर</translation>

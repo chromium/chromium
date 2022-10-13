@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
-<translation id="1005794457625275818">Cookies, der er tilladt for <ph name="FPS_MEMBERS_COUNT" /> websites i <ph name="FPS_OWNER" />-gruppen, bl.a. <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Åbn på nettet</translation>
 <translation id="1044891598689252897">Websites fungerer som normalt</translation>
 <translation id="1124090076051167250">Dette rydder <ph name="DATASIZE" /> data og cookies, som er gemt af websites eller apps på din startskærm.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Administreret af <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Hjælp og feedback</translation>
 <translation id="2501278716633472235">Gå tilbage</translation>
+<translation id="2546283357679194313">Cookies og websitedata</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie blev blokeret}one{# cookie blev blokeret}other{# cookies blev blokeret}}</translation>
 <translation id="2570922361219980984">Lokationsadgang er også deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Udvidet – klik for at skjule.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Send</translation>
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2687403674020088961">Bloker alle cookies (anbefales ikke)</translation>
-<translation id="2692299144678073135">Tillad, at relaterede websites husker dig på forskellige websites</translation>
 <translation id="2704606927547763573">Kopieret</translation>
 <translation id="2713106313042589954">Slå kamera fra</translation>
 <translation id="2717722538473713889">Mailadresser</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4008040567710660924">Tillad cookies for et bestemt website.</translation>
 <translation id="4046123991198612571">Næste nummer</translation>
-<translation id="4048876521107516222">Relaterede websites anvender cookies som en hjælp til f.eks. at sørge for, at du kan forblive logget ind</translation>
 <translation id="4149994727733219643">Enkel visning af websider</translation>
 <translation id="4165986682804962316">Websiteindstillinger</translation>
 <translation id="4169549551965910670">Forbundet til en USB-enhed</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Senest besøgt for <ph name="NUM_DAYS" /> dage siden</translation>
 <translation id="6561560012278703671">Få lydløse meddelelser (dette sørger for, at dine notifikationer ikke forstyrrer dig)</translation>
 <translation id="6593061639179217415">Standardwebsite</translation>
-<translation id="6608211702542341247">Dette website tilhører gruppen af websites for <ph name="FPS_OWNER" />, som kan se din aktivitet i gruppen</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskyttet indhold</translation>
 <translation id="662080504995468778">Bliv her</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Tilføj</translation>
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7804248752222191302">Et website anvender dit kamera</translation>
-<translation id="7816129586531226979">Relaterede websites kan huske dig på forskellige websites</translation>
 <translation id="7817023149356982970">Du bliver logget ud af dette website.</translation>
-<translation id="7828557259026017104">Cookies er filer, som oprettes af de websites, du besøger. Websites anvender dem til at huske dine præferencer. Tredjepartscookies oprettes af andre websites. Disse websites ejer noget af indholdet, f.eks. de annoncer eller billeder, der vises på den webside, du besøger.</translation>
 <translation id="7835852323729233924">Afspilning af medier</translation>
 <translation id="783819812427904514">Slå lyden i videoen til</translation>
 <translation id="7846076177841592234">Annuller valg</translation>

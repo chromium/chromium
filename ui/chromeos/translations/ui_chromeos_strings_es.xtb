@@ -456,6 +456,7 @@
 <translation id="4900532980794411603">Compartir con Parallels Desktop</translation>
 <translation id="4902546322522096650">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
 <translation id="4906580650526544301">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, batería del teléfono: <ph name="BATTERY_STATUS" /> %, detalles</translation>
+<translation id="4929673617759421391">La política del administrador ha bloqueado la opción de pegar este archivo</translation>
 <translation id="4935975195727477204">Gazania</translation>
 <translation id="4943368462779413526">Balón de fútbol</translation>
 <translation id="4961158930123534723">1 carpeta compartida con Parallels Desktop</translation>
@@ -513,6 +514,7 @@
 <translation id="5286194356314741248">Buscando</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5293615890992542006">La política del administrador ha bloqueado la opción de mover este archivo</translation>
 <translation id="5305688511332277257">No hay certificados instalados</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5318819489018851358">Compartir con Linux</translation>
@@ -713,6 +715,7 @@
 <translation id="6993826899923627728">Estos elementos están en la papelera</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> carpetas seleccionadas</translation>
 <translation id="7008426324576352165">Tu organización necesita más espacio de almacenamiento para completar la subida.</translation>
+<translation id="7009985720488544166">La política del administrador ha bloqueado la opción de mover <ph name="COUNT" /> archivos</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Error de instalación</translation>
 <translation id="7031639531908619281">Turco</translation>
@@ -972,6 +975,7 @@
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9189836632794948435">Kazajo</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementos extraídos.</translation>
+<translation id="9210751050717126865">La política del administrador ha bloqueado la opción de pegar <ph name="COUNT" /> archivos</translation>
 <translation id="9213073329713032541">Se ha iniciado la instalación correctamente.</translation>
 <translation id="9219103736887031265">Imágenes</translation>
 <translation id="9219908252191632183">Lunar</translation>

@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1076394037877376434"><ph name="PAGE_NUMBER" />. oldal törlése</translation>
 <translation id="1113173431709655881">Kamera mód</translation>
 <translation id="1153190633558910465">Rács ki</translation>
 <translation id="1175958423215084756">Link észlelve. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. oldal törölve</translation>
 <translation id="1258009455399840361">Forgatás 90 fokkal az óramutató járásával megegyezően</translation>
 <translation id="1276998909102132017">Galériaképek</translation>
 <translation id="1300209025925956156">Dokumentum beolvasása</translation>
@@ -110,7 +112,6 @@
 <translation id="5775960006311140197">Szakértői mód</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
 <translation id="5869546221129391014">Rács</translation>
-<translation id="5903928279335207406">Oldal törlése</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5975083100439434680">Kicsinyítés</translation>
 <translation id="5976160379964388480">Egyéb</translation>

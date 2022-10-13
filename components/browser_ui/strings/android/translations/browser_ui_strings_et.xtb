@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
-<translation id="1005794457625275818">Küpsised on lubatud <ph name="FPS_MEMBERS_COUNT" /> saidile rühmas <ph name="FPS_OWNER" />, sealhulgas saidile <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Ava veebis</translation>
 <translation id="1044891598689252897">Saidid töötavad tavapärasel moel</translation>
 <translation id="1124090076051167250">See kustutab <ph name="DATASIZE" /> andmeid ja küpsisefaile, mille saidid või rakendused on teie avakuvale salvestanud.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Haldab <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Abi ja tagasiside</translation>
 <translation id="2501278716633472235">Mine tagasi</translation>
+<translation id="2546283357679194313">Küpsised ja saidiandmed</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 küpsisefail on blokeeritud}other{# küpsisefaili on blokeeritud}}</translation>
 <translation id="2570922361219980984">Ka juurdepääs asukohale on selle seadme puhul välja lülitatud. Lülitage see sisse <ph name="BEGIN_LINK" />Androidi seadetes<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Laiendatud – ahendamiseks klõpsake.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Esita</translation>
 <translation id="2677748264148917807">Lahku</translation>
 <translation id="2687403674020088961">Blokeeri kõik küpsised (ei ole soovitatav)</translation>
-<translation id="2692299144678073135">Lubage seotud saitidel end saitidel meelde jätta</translation>
 <translation id="2704606927547763573">Kopeeritud</translation>
 <translation id="2713106313042589954">Lülita kaamera välja</translation>
 <translation id="2717722538473713889">E-posti aadressid</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Pealkiri</translation>
 <translation id="4008040567710660924">Lubage konkreetse saidi küpsisefailid.</translation>
 <translation id="4046123991198612571">Järgmine lugu</translation>
-<translation id="4048876521107516222">Seotud saidid kasutavad küpsisefaile, et aidata teid näiteks hoida sisselogituna</translation>
 <translation id="4149994727733219643">Veebilehtede lihtsustatud vaade</translation>
 <translation id="4165986682804962316">Saidi seaded</translation>
 <translation id="4169549551965910670">Ühendatud USB-seadmega</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Viimati külastati <ph name="NUM_DAYS" /> päeva tagasi</translation>
 <translation id="6561560012278703671">Kasuta vaiksemat sõnumsidet (märguandeviibad blokeeritakse)</translation>
 <translation id="6593061639179217415">Arvutisait</translation>
-<translation id="6608211702542341247">See sait kuulub teenuse <ph name="FPS_OWNER" /> saitide gruppi, mis näevad teie tegevusi grupis</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Kaitstud sisu</translation>
 <translation id="662080504995468778">Jää siia</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Lisa</translation>
 <translation id="780301667611848630">Ei, aitäh</translation>
 <translation id="7804248752222191302">Sait kasutab teie kaamerat</translation>
-<translation id="7816129586531226979">Seotud saidid võivad teid saitidel meelde jätta</translation>
 <translation id="7817023149356982970">Teid logitakse sellelt saidilt välja.</translation>
-<translation id="7828557259026017104">Küpsisefailid on failid, mille on loonud teie külastatud veebisaidid. Saidid kasutavad neid teie eelistuste meeldejätmiseks. Kolmanda osapoole küpsisefailid loovad teised saidid. Need saidid omavad külastatud veebisaidil kuvatud sisu, nt reklaame või pilte.</translation>
 <translation id="7835852323729233924">Meedia esitamine</translation>
 <translation id="783819812427904514">Video vaigistuse tühistamine</translation>
 <translation id="7846076177841592234">Tühista valik</translation>

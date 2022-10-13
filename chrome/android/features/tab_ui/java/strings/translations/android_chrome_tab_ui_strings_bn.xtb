@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">সরান</translation>
 <translation id="125153950246128346">অন্য ট্যাব দেখতে ট্যাপ করুন</translation>
 <translation id="1302104331113804646">দাম ট্র্যাক করার সেটিংস</translation>
-<translation id="1310482092992808703">ট্যাবগুলি গ্রুপ করুন</translation>
 <translation id="1378979118429748177">দাম কমলে তার বিজ্ঞপ্তি পান</translation>
 <translation id="1403228085774130835">Chrome-এর প্রধান মেনুর অধীনে 'সাম্প্রতিক' ট্যাবের মধ্যে আপনার বন্ধ করে দেওয়া ট্যাবগুলি দেখতে পারবেন</translation>
 <translation id="1455506303394048917">এইসব ছদ্মবেশী ট্যাবে আপনার করা অ্যাক্টিভিটি এই ডিভাইস থেকে মুছে ফেলা হবে</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">রেটিং</translation>
 <translation id="3291470810748040983">খুলে রাখা কোনও ট্যাবে জিনিসের দাম কমলে আপনি তার বিজ্ঞপ্তি পাবেন</translation>
 <translation id="3328308545011660196">সাজেশন: মনে হচ্ছে <ph name="NUMBER_OF_TABS" />টি ট্যাব সম্পর্কযুক্ত। সেগুলি গ্রুপ করতে চান?</translation>
-<translation id="3499853001094440183">ট্যাব আনগ্রুপ করুন</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব ছোট করুন।}one{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপকে ছোট করুন যার মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপকে ছোট করুন যার মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
 <translation id="3882834874697329510">কোনও খোলা ট্যাবে কম দাম থাকলে বিজ্ঞপ্তি পেতে, 'সেটিংস' থেকে বিজ্ঞপ্তি চালু করুন।</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">ফুলস্ক্রিন গ্রিড লুকান</translation>
 <translation id="5076161749301278626">স্টোরের রিভিউ দেখতে চান?</translation>
 <translation id="5082793167783849073">একটি গ্রুপ তৈরি করে দ্রুত পৃষ্ঠাগুলির তুলনা করুন। শুরু করতে, কোনও একটি লিঙ্ক স্পর্শ করে ধরে থাকুন।</translation>
-<translation id="5453029940327926427">ট্যাবগুলি বন্ধ করুন</translation>
 <translation id="5490235265819901748">ট্যাব গ্রুপ বড় করে দেখানো হয়েছে</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
 <translation id="5533021382642990449">পরে দেখুন</translation>

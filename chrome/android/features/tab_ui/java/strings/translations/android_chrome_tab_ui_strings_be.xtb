@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Выдаліць</translation>
 <translation id="125153950246128346">Націсніце, каб паглядзець іншую ўкладку</translation>
 <translation id="1302104331113804646">Налады адсочвання цэн</translation>
-<translation id="1310482092992808703">Згрупаваць укладкі</translation>
 <translation id="1378979118429748177">Атрымліваць апавяшчэнні пры зніжэнні цэн</translation>
 <translation id="1403228085774130835">Закрытыя ўкладкі можна знайсці ў раздзеле "Нядаўнія ўкладкі" ў галоўным меню браўзера Chrome</translation>
 <translation id="1455506303394048917">Звесткі пра вашы дзеянні на гэтых укладках у рэжыме інкогніта будуць выдалены з прылады</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">ацэнка</translation>
 <translation id="3291470810748040983">Вы атрымаеце абвестку, калі цана на прадукт на адкрытай укладцы знізіцца</translation>
 <translation id="3328308545011660196">Прапанова: здаецца, гэтыя ўкладкі (<ph name="NUMBER_OF_TABS" />) звязаныя паміж сабой. Згрупаваць іх?</translation>
-<translation id="3499853001094440183">Скасав. групаванне ўкладак</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Згарнуць <ph name="TABS_COUNT_ONE" /> укладку.}one{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкай.}few{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі.}many{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкамі.}other{Згарнуць групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="3882834874697329510">Каб атрымліваць абвесткі, калі цэны на прадукты на адкрытых укладках зніжаюцца, уключыце апавяшчэнні ў Наладах.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Схаваць поўнаэкранную сетку</translation>
 <translation id="5076161749301278626">Паказаць водгукі аб краме?</translation>
 <translation id="5082793167783849073">Каб хутка параўнаць старонкі, можна стварыць групу. Для гэтага дакраніцеся да спасылкі і ўтрымлівайце яе.</translation>
-<translation id="5453029940327926427">Закрыць укладкі</translation>
 <translation id="5490235265819901748">Група ўкладак разгорнута</translation>
 <translation id="5494920125229734069">Выбраць усё</translation>
 <translation id="5533021382642990449">Паказаць пазней</translation>

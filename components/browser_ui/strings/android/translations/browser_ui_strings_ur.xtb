@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
-<translation id="1005794457625275818"><ph name="FPS_MEMBER" /> سمیت <ph name="FPS_OWNER" /> گروپ میں <ph name="FPS_MEMBERS_COUNT" /> سائٹس کے لیے کوکیز کی اجازت ہے</translation>
 <translation id="1006017844123154345">آن لائن کھولیں</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
 <translation id="1124090076051167250">اس سے آپ کی ہوم اسکرین پر موجود سائٹس یا ایپس کے ذریعے اسٹور کردہ <ph name="DATASIZE" /> ڈیٹا اور کوکیز صاف ہو جائیں گی۔</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" /> کے زیر انتظام</translation>
 <translation id="2498359688066513246">مدد اور تاثرات</translation>
 <translation id="2501278716633472235">پیچھے جائیں</translation>
+<translation id="2546283357679194313">کوکیز اور سائٹ ڈیٹا</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 کوکی مسدود ہو گئی}other{# کوکیز مسدود ہو گئیں}}</translation>
 <translation id="2570922361219980984">‏مقام کی رسائی بھی اس آلہ کے لیے آف ہے۔ <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" />.میں اسے آن کریں۔</translation>
 <translation id="257931822824936280">پھیلایا ہوا - سکیڑنے کیلئے کلک کریں۔</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">جمع کرائیں</translation>
 <translation id="2677748264148917807">چھوڑیں</translation>
 <translation id="2687403674020088961">سبھی کوکیز مسدود کریں (تجویز نہیں کی جاتی ہے)</translation>
-<translation id="2692299144678073135">متعلقہ سائٹس کو اجازت دیں کہ وہ ایک سائٹ سے دوسری سائٹ پر سوئچ کرنے پر آپ کو یاد کریں</translation>
 <translation id="2704606927547763573">کاپی کیا</translation>
 <translation id="2713106313042589954">کیمرا آف کریں</translation>
 <translation id="2717722538473713889">ای میل پتے</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">عنوان</translation>
 <translation id="4008040567710660924">مخصوص سائٹ کے لیے کوکیز کی اجازت دیں۔</translation>
 <translation id="4046123991198612571">اگلا ٹریک</translation>
-<translation id="4048876521107516222">متعلقہ سائٹس آپ کو سائن ان رکھنے جیسی چیزوں کی مدد کرنے کے لیے کوکیز کا استعمال کرتی ہیں</translation>
 <translation id="4149994727733219643">ویب صفحات کیلئے سادہ منظر</translation>
 <translation id="4165986682804962316">سائٹ کی ترتیبات</translation>
 <translation id="4169549551965910670">‏USB آلہ سے منسلک ہے</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">سائٹ آخری بار <ph name="NUM_DAYS" /> دن پہلے ملاحظہ کی گئی</translation>
 <translation id="6561560012278703671">پر سکون پیغام رسانی کا استعمال کریں (اطلاع کی پرامپٹس کو آپ کو خلل ڈالنے سے مسدود کرتا ہے)</translation>
 <translation id="6593061639179217415">ڈیسک ٹاپ سائٹ</translation>
-<translation id="6608211702542341247">یہ سائٹ <ph name="FPS_OWNER" /> کے سائٹس کے گروپ میں ہے جو گروپ میں آپ کی سرگرمی کو دیکھ سکتا ہے</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">تحفظ یافتہ مواد</translation>
 <translation id="662080504995468778">رکیں</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">شامل کریں</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7804248752222191302">ایک سائٹ آپ کا کیمرا استعمال کر رہی ہے</translation>
-<translation id="7816129586531226979">متعلقہ سائٹس آپ کو مختلف سائٹس پر یاد رکھ سکتی ہیں</translation>
 <translation id="7817023149356982970">ایک آپ اس سائٹ سے سائن آؤٹ ہو جائیں گے۔</translation>
-<translation id="7828557259026017104">کوکیز ایسی فائلز ہوتی ہیں جنہیں آپ کی ملاحظہ کی جانے والی ویب سائٹس تخلیق کرتی ہیں۔ سائٹس آپ کی ترجیحات کو یاد رکھنے کیلئے ان کا استعمال کرتی ہیں۔ فریق ثالث کوکیز دیگر سائٹس کے ذریعے تخلیق کی جاتی ہیں۔ یہ سائٹس کچھ مواد کی مالک ہوتی ہیں، جیسے اشتہارات یا تصاویر جنہیں آپ ملاحظہ کی جانے والی ویب صفحہ پر دیکھتے ہیں۔</translation>
 <translation id="7835852323729233924">میڈیا کو چلایا جا رہا ہے</translation>
 <translation id="783819812427904514">ویڈیو کی آواز چلائیں</translation>
 <translation id="7846076177841592234">انتخاب منسوخ کریں</translation>

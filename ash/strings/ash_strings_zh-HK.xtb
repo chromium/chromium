@@ -159,13 +159,13 @@
 <translation id="1797271123677381264">忘記密碼</translation>
 <translation id="181103072419391116">訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
 <translation id="1812997170047690955">我嘅畫面上面有咩？</translation>
-<translation id="1823280932251546115">狀態匣，時間 <ph name="TIME" />，
+<translation id="1823280932251546115">狀態列，時間 <ph name="TIME" />，
         <ph name="BATTERY" />
         <ph name="CHANNEL" />
         <ph name="NETWORK" />，
         <ph name="PRIVACY" />，
         <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />，
+        <ph name="NOTIFICATION" />
         <ph name="IME" />
         <ph name="LOCALE" /></translation>
 <translation id="1823873187264960516">以太網：<ph name="ADDRESS" /></translation>
@@ -468,7 +468,8 @@
 <translation id="3600061223661453002">關閉</translation>
 <translation id="3604801046548457007">已建立桌面 <ph name="DESK_TITILE" /></translation>
 <translation id="3606978283550408104">已連接點字顯示器。</translation>
-<translation id="3609301425104788351"><ph name="MIC" />，<ph name="CAMERA" /></translation>
+<translation id="3609301425104788351"><ph name="MIC" />，
+        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">如果您啟用流動數據，藍牙亦會隨之開啟</translation>
 <translation id="3616883743181209306">已經將選單移去螢幕右上角。</translation>
 <translation id="3619536907358025872">螢幕截圖設定</translation>

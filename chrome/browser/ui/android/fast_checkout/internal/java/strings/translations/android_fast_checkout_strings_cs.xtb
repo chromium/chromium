@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
-<translation id="1068168522143272502">Seznam adres a platebních možností, které se mají vyplnit při placení, je otevřený na poloviční výšku.</translation>
-<translation id="2148715923718146918">Vybraná položka</translation>
+<translation id="1275718070701477396">Vybráno</translation>
 <translation id="248973266728004341">Přidat novou platební kartu</translation>
-<translation id="2501278716633472235">Zpět</translation>
-<translation id="312532069930005172">Otevřít nastavení profilu automatického vyplňování</translation>
+<translation id="385051799172605136">Zpět</translation>
 <translation id="4401440167302712543">Automatické vyplňování dopravních a platebních údajů při placení</translation>
 <translation id="4526274353008646337">Přidat novou adresu</translation>
 <translation id="567079066552447069">Seznam adres a platebních možností, které se mají vyplnit při placení, je zavřený.</translation>
-<translation id="6350814703899626921">Změnit výběr platební karty.</translation>
-<translation id="731090949585674442">Změnit výběr profilu automatického vyplňování.</translation>
-<translation id="8264703973415044493">Seznam adres a platebních možností, které se mají vyplnit při placení, je otevřený na celou výšku.</translation>
-<translation id="8315600272591552085">Seznam adres a platebních možností, které se mají vyplnit při placení.</translation>
+<translation id="5747552184818312860">Konec platnosti</translation>
+<translation id="6476284679642588870">Správa platebních metod</translation>
+<translation id="7974390230414479278">Položka nabídky</translation>
 <translation id="884264119367021077">Dodací adresa</translation>
 <translation id="8873105120914375071">Chcete dokončit nákup rychleji?</translation>
 <translation id="9032876013752408138">Automaticky vyplnit údaje</translation>
-<translation id="9130271303738808219">Otevřít nastavení platební karty</translation>
 <translation id="984275831282074731">Platební metody</translation>
 </translationbundle>

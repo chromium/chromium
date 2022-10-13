@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Ջնջել</translation>
 <translation id="125153950246128346">Հպեք՝ այլ ներդիրի անցնելու համար</translation>
 <translation id="1302104331113804646">Գների հետագծման կարգավորումներ</translation>
-<translation id="1310482092992808703">Խմբավորել ներդիրները</translation>
 <translation id="1378979118429748177">Տեղեկացեք, երբ գների իջեցում լինի</translation>
 <translation id="1403228085774130835">Դուք կարող եք գտնել ձեր փակված ներդիրները Chrome-ի հիմնական ընտրացանկի «Վերջերս բացված ներդիրներ» բաժնում</translation>
 <translation id="1455506303394048917">Այս ինկոգնիտո ներդիրներում ձեր կատարած գործողությունները կհեռացվեն սարքից</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">գնահատական</translation>
 <translation id="3291470810748040983">Դուք ծանուցում կստանաք, երբ բացված ներդիրում ավելի ցածր գին հայտնաբերվի</translation>
 <translation id="3328308545011660196">Հուշում․ <ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
-<translation id="3499853001094440183">Ապախմբավորել ներդիրները</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Ծալել <ph name="TABS_COUNT_ONE" /> ներդիր։}one{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}other{Ծալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}}</translation>
 <translation id="3882834874697329510">Միացրեք ծանուցումները կարգավորումներում, որպեսզի ծանուցում ստանաք, երբ բացված ներդիրում ավելի ցածր գին հայտնաբերվի։</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Թաքցնել լիաէկրան ցանցը</translation>
 <translation id="5076161749301278626">Ցուցադրե՞լ խանութի մասին կարծիքները</translation>
 <translation id="5082793167783849073">Արագ համեմատեք էջերը՝ խումբ կազմելով: Սկսելու համար հպեք և պահեք հղումը:</translation>
-<translation id="5453029940327926427">Փակել ներդիրներ</translation>
 <translation id="5490235265819901748">Ներդիրների խումբը ծավալվեց</translation>
 <translation id="5494920125229734069">Ընտրել բոլորը</translation>
 <translation id="5533021382642990449">Ցույց տալ ավելի ուշ</translation>

@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Elimină</translation>
 <translation id="125153950246128346">Atinge pentru a vedea altă filă</translation>
 <translation id="1302104331113804646">Setări pentru urmărirea prețurilor</translation>
-<translation id="1310482092992808703">Grupează file</translation>
 <translation id="1378979118429748177">Primește notificări când scad prețurile</translation>
 <translation id="1403228085774130835">Poți găsi filele închise în filele Recente din meniul principal Chrome</translation>
 <translation id="1455506303394048917">Activitatea ta în filele incognito va fi ștearsă de pe acest dispozitiv</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">evaluare</translation>
 <translation id="3291470810748040983">Vei primi o alertă atunci când scade prețul dintr-o filă deschisă.</translation>
 <translation id="3328308545011660196">Sugestie: <ph name="NUMBER_OF_TABS" /> file par similare. Vrei să le grupezi?</translation>
-<translation id="3499853001094440183">Anulează gruparea filelor</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Restrânge <ph name="TABS_COUNT_ONE" /> filă.}few{Restrânge grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file.}other{Restrânge grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="3882834874697329510">Pentru a primi o alertă atunci când scade prețul dintr-o filă deschisă, activează notificările în Setări.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Ascunde grila pe ecran complet</translation>
 <translation id="5076161749301278626">Vezi recenziile magazinului?</translation>
 <translation id="5082793167783849073">Compară rapid paginile făcând un grup. Pentru a începe, atinge lung un link.</translation>
-<translation id="5453029940327926427">Închide filele</translation>
 <translation id="5490235265819901748">Grup de file extins</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5533021382642990449">Afișează mai târziu</translation>

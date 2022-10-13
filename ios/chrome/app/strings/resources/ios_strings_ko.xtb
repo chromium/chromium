@@ -401,7 +401,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4223967053752765281">조직에서 로그인을 사용 중지했습니다. 북마크, 방문 기록, 비밀번호, 기타 설정은 이 기기에서 계속 확인할 수 있습니다. 변경할 경우 변경사항이 내 계정에 동기화되지는 않습니다.</translation>
 <translation id="4232900911558558076">새 메뉴 살펴보기</translation>
 <translation id="4233831822770018312">권한 수정</translation>
-<translation id="4236584471598725073">가격 추적 중</translation>
+<translation id="4236584471598725073">가격 추적</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />Default Browser App(기본 브라우저 앱)<ph name="END_BOLD" />을 탭합니다.</translation>
 <translation id="424315890655130736">암호 입력</translation>
 <translation id="4249955472157341256">최신순 정렬</translation>
@@ -663,6 +663,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="6231782223312638214">추천</translation>
 <translation id="6232329973559504466">시크릿 검색</translation>
 <translation id="6232736989810857397">이렇게 하면 Google 렌즈를 사용하여 간편하게 캘린더 일정을 만들 수 있습니다.</translation>
+<translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6254066287920239840">브라우저 대신 앱에서 링크 열기</translation>
 <translation id="6255097610484507482">신용카드 수정</translation>
 <translation id="6277426346321820595">보호되지 않음</translation>

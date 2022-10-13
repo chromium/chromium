@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Алып салуу</translation>
 <translation id="125153950246128346">Башка өтмөктү көрүү үчүн таптап коюңуз</translation>
 <translation id="1302104331113804646">Бааларга көз салуу жөндөөлөрү</translation>
-<translation id="1310482092992808703">Өтмөктөрдү топтоо</translation>
 <translation id="1378979118429748177">Баалар төмөндөгөндө билдирме алып турасыз</translation>
 <translation id="1403228085774130835">Жабылган өтмөктөрүңүздү Chome'дун негизги менюсундагы "Акыркы өтмөктөр" бөлүмүнөн таба аласыз</translation>
 <translation id="1455506303394048917">Ушул Жашыруун өтмөктөрдө издеген нерселериңиз бул түзмөктөн өчүрүлөт</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">рейтинг</translation>
 <translation id="3291470810748040983">Төмөндөгөн баа тууралуу эскертүүнү ачылган өтмөктө көрөсүз</translation>
 <translation id="3328308545011660196">Сунуш: <ph name="NUMBER_OF_TABS" /> өтмөк окшош окшойт. Алар топко бириктирилсинби?</translation>
-<translation id="3499853001094440183">Өтмөктөрдү топтон ажыратуу</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк жыйыштырылсын.}other{<ph name="TITLE_OF_GROUP" /> өтмөктөр тобундагы <ph name="TABS_COUNT_MANY" /> өтмөк жыйыштырылсын.}}</translation>
 <translation id="3882834874697329510">Төмөндөгөн баа тууралуу эскертүүнү ачылган өтмөктө көрүү үчүн Жөндөөлөрдөн билдирмелерди күйгүзүңүз.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Толук экран торчосун жашыруу</translation>
 <translation id="5076161749301278626">Дүкөн жөнүндө жазылган сын-пикирлерди көрөсүзбү?</translation>
 <translation id="5082793167783849073">Барактарды топко бириктирип, тез салыштырып чыгыңыз. Баштоо үчүн, шилтемени коё бербей басып туруңуз.</translation>
-<translation id="5453029940327926427">Өтмөктөрдү жабуу</translation>
 <translation id="5490235265819901748">Өтмөктөр тобу жайылып көрсөтүлдү</translation>
 <translation id="5494920125229734069">Баарын тандоо</translation>
 <translation id="5533021382642990449">Кийинчерээк көрсөтүү</translation>

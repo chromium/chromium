@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
-<translation id="1005794457625275818">Файли cookie дозволено в групі <ph name="FPS_OWNER" /> для стількох сайтів: <ph name="FPS_MEMBERS_COUNT" /> (зокрема для <ph name="FPS_MEMBER" />)</translation>
 <translation id="1006017844123154345">Відкрити в режимі онлайн</translation>
 <translation id="1044891598689252897">Сайти працюватимуть у звичному режимі</translation>
 <translation id="1124090076051167250">Буде видалено <ph name="DATASIZE" /> даних і файлів cookie сайтів або додатків на головному екрані.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Адміністратор сімейної групи: <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Довідка й відгуки</translation>
 <translation id="2501278716633472235">Назад</translation>
+<translation id="2546283357679194313">Файли cookie та дані із сайтів</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 файл cookie заблоковано}one{# файл cookie заблоковано}few{# файли cookie заблоковано}many{# файлів cookie заблоковано}other{# файлу cookie заблоковано}}</translation>
 <translation id="2570922361219980984">На цьому пристрої також вимкнено доступ до геоданих. Увімкніть його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Розгорнуто – натисніть, щоб згорнути.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Надіслати</translation>
 <translation id="2677748264148917807">Вийти</translation>
 <translation id="2687403674020088961">Блокувати всі файли cookie (не рекомендовано)</translation>
-<translation id="2692299144678073135">Дозволити пов’язаним сайтам запам’ятовувати ваші дані на інших сайтах</translation>
 <translation id="2704606927547763573">Скопійов.</translation>
 <translation id="2713106313042589954">Вимкнути камеру</translation>
 <translation id="2717722538473713889">Електронні адреси</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4008040567710660924">Дозволити файли cookie для конкретного сайту.</translation>
 <translation id="4046123991198612571">Наступна композиція</translation>
-<translation id="4048876521107516222">Пов’язані сайти використовують файли cookie для зручнішої роботи, зокрема щоб ви залишалися в обліковому записі</translation>
 <translation id="4149994727733219643">Спрощений перегляд веб-сторінок</translation>
 <translation id="4165986682804962316">Налаштування сайтів</translation>
 <translation id="4169549551965910670">Підключено до пристрою USB</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Останнє відвідування: <ph name="NUM_DAYS" /> дн. тому</translation>
 <translation id="6561560012278703671">Показувати лише значок повідомлення (блокувати сповіщення)</translation>
 <translation id="6593061639179217415">Версія для комп’ютера</translation>
-<translation id="6608211702542341247">Цей сайт належить до групи сайтів <ph name="FPS_OWNER" />, які можуть переглядати ваші дії в групі</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Захищений контент</translation>
 <translation id="662080504995468778">Залишитися</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Додати</translation>
 <translation id="780301667611848630">Ні, дякую</translation>
 <translation id="7804248752222191302">Сайт використовує камеру</translation>
-<translation id="7816129586531226979">Пов’язані сайти можуть запам’ятовувати ваші дані на інших сайтах</translation>
 <translation id="7817023149356982970">Ви вийдете з облікового запису на цьому сайті.</translation>
-<translation id="7828557259026017104">Файли cookie – це файли, створені веб-сайтами, які ви відвідали. Сайти використовують їх, щоб запам'ятовувати ваші налаштування. Сторонні файли cookie створюються іншими сайтами. Ці сайти показують власний контент, як-от оголошення чи зображення, на веб-сторінці, яку ви відвідуєте.</translation>
 <translation id="7835852323729233924">Відтворення медіафайлу</translation>
 <translation id="783819812427904514">Увімкнути звук у відео</translation>
 <translation id="7846076177841592234">Скасувати вибір</translation>

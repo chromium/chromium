@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
+<translation id="1057925581724305206">Tam HD (1080p)</translation>
 <translation id="1113173431709655881">Kamera rejimi</translation>
 <translation id="1153190633558910465">Tor deaktivdir</translation>
 <translation id="1175958423215084756">Keçid aşkarlanıb. <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Heç nə çəkilməyib</translation>
 <translation id="1838104802459806957">Yuxarı əyin</translation>
 <translation id="1843105061469674856">Əlavə səhifəni skan edin</translation>
@@ -91,6 +93,7 @@
 <translation id="4705093842003735294">Tam ayırdetmə dəqiqliyi</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">Çox-yayımlı video çəkilişi</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Fotonun tərəflər nisbəti</translation>
 <translation id="5057360777601936059">Kamera hazırda əlçatan deyil.
         Kameranın düzgün qoşulub-qoşulmadığını yoxlayın.</translation>
@@ -99,6 +102,7 @@
 <translation id="5266635337630551423">Sənədin yuxarı sol küncü</translation>
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5320594929574852403">Sol tərəfə daşınır</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Sənədin bütün kənarlarını çərçivənin daxilinə yerləşdirin. Sənəd və arxa fon fərqli rənglərdə olduqda skanlama daha keyfiyyətli olur.</translation>
 <translation id="5662366948659129155">Səhifə <ph name="COUNT" /> skanlanır</translation>
 <translation id="5671277269877808209">Kvadrat</translation>
@@ -108,7 +112,6 @@
 <translation id="5775960006311140197">Ekspert rejimi</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
 <translation id="5869546221129391014">Şəbəkə</translation>
-<translation id="5903928279335207406">Səhifəni silin</translation>
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5975083100439434680">Kiçildin</translation>
 <translation id="5976160379964388480">Digərləri</translation>

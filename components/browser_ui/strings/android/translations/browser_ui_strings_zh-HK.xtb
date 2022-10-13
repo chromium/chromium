@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
-<translation id="1005794457625275818">已允許 <ph name="FPS_OWNER" /> 群組中 <ph name="FPS_MEMBERS_COUNT" /> 個網站的 Cookie，包括 <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">在線上開啟</translation>
 <translation id="1044891598689252897">網站將正常運作</translation>
 <translation id="1124090076051167250">此操作會清除 <ph name="DATASIZE" /> 主畫面上各個網站或應用程式儲存的資料和 Cookie。</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">由 <ph name="APP_NAME" /> 管理</translation>
 <translation id="2498359688066513246">說明和意見反映</translation>
 <translation id="2501278716633472235">返回</translation>
+<translation id="2546283357679194313">Cookie 和網站數據</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{已封鎖 1 個 Cookie}other{已封鎖 # 個 Cookie}}</translation>
 <translation id="2570922361219980984">此裝置的位置資訊存取權亦已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟。</translation>
 <translation id="257931822824936280">已展開 - 點擊即可收合。</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">離開</translation>
 <translation id="2687403674020088961">封鎖所有 Cookie (不建議)</translation>
-<translation id="2692299144678073135">允許相關網站記住您在不同網站上的身分</translation>
 <translation id="2704606927547763573">已複製</translation>
 <translation id="2713106313042589954">關閉攝錄機</translation>
 <translation id="2717722538473713889">電郵地址</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">標題</translation>
 <translation id="4008040567710660924">允許特定網站存取 Cookie。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
-<translation id="4048876521107516222">相關網站會使用 Cookie 為您提供多項協助，例如保持登入狀態</translation>
 <translation id="4149994727733219643">使用簡化檢視模式查看網頁</translation>
 <translation id="4165986682804962316">網站設定</translation>
 <translation id="4169549551965910670">已連線至 USB 裝置</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">上次瀏覽日期：<ph name="NUM_DAYS" /> 天前</translation>
 <translation id="6561560012278703671">使用靜態訊息功能 (免受通知提示干擾)</translation>
 <translation id="6593061639179217415">桌面版網站</translation>
-<translation id="6608211702542341247">此網站屬於 <ph name="FPS_OWNER" /> 的網站群組，因此可查看您在群組中的活動</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">受保護內容</translation>
 <translation id="662080504995468778">不離開</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">新增</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7804248752222191302">有網站正在使用您的相機</translation>
-<translation id="7816129586531226979">相關網站可能會記住您在不同網站上的身分</translation>
 <translation id="7817023149356982970">您將會從這個網站登出。</translation>
-<translation id="7828557259026017104">Cookie 是您瀏覽的網站所建立的檔案，網站會使用這些檔案記住您的偏好設定，第三方 Cookie 則由其他網站建立。這些網站擁有您所瀏覽網頁的部分內容，例如廣告和圖片。</translation>
 <translation id="7835852323729233924">正在播放媒體</translation>
 <translation id="783819812427904514">將影片取消靜音</translation>
 <translation id="7846076177841592234">取消選取</translation>

@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="125153950246128346">Toca para ver outra pestana</translation>
 <translation id="1302104331113804646">Configuración do seguimento de prezos</translation>
-<translation id="1310482092992808703">Agrupar pestanas</translation>
 <translation id="1378979118429748177">Recibe notificacións cando baixen os prezos</translation>
 <translation id="1403228085774130835">Podes atopar as pestanas pechadas nas pestanas recentes, dispoñibles no menú principal de Chrome</translation>
 <translation id="1455506303394048917">A túa actividade nestas pestanas do modo de incógnito borrarase deste dispositivo</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">valoración</translation>
 <translation id="3291470810748040983">Recibirás unha alerta cando haxa un prezo máis baixo nunha das pestanas que tes abertas</translation>
 <translation id="3328308545011660196">Suxestión: Hai <ph name="NUMBER_OF_TABS" /> pestanas que parecen relacionadas. Queres agrupalas?</translation>
-<translation id="3499853001094440183">Desagrupar pestanas</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestana.}other{Contraer grupo de pestanas <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> pestanas.}}</translation>
 <translation id="3882834874697329510">Se queres recibir unha alerta cando haxa un prezo máis baixo nunha pestana aberta, activa as notificacións en Configuración.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Ocultar grade en pantalla completa</translation>
 <translation id="5076161749301278626">Queres ver recensións da tenda?</translation>
 <translation id="5082793167783849073">Crea un grupo para comparar rapidamente varias páxinas. Para comezar, mantén premida unha ligazón.</translation>
-<translation id="5453029940327926427">Pechar pestanas</translation>
 <translation id="5490235265819901748">Grupo de pestanas despregado</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5533021382642990449">Mostrar máis adiante</translation>

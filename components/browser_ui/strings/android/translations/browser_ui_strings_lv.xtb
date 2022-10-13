@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
-<translation id="1005794457625275818">Sīkfaili ir atļauti <ph name="FPS_MEMBERS_COUNT" /> vietnēm grupā <ph name="FPS_OWNER" />, tostarp vietnē <ph name="FPS_MEMBER" />.</translation>
 <translation id="1006017844123154345">Atvērt tiešsaistē</translation>
 <translation id="1044891598689252897">Vietnes darbosies normāli</translation>
 <translation id="1124090076051167250">Tiks notīrīti dati un sīkfaili (<ph name="DATASIZE" />), ko glabā vietnes vai lietotnes jūsu sākuma ekrānā.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Pārvalda <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Palīdzība un atsauksmes</translation>
 <translation id="2501278716633472235">Doties atpakaļ</translation>
+<translation id="2546283357679194313">Sīkfaili un vietņu dati</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Bloķēts 1 sīkfails.}zero{Bloķēti # sīkfaili.}one{Bloķēts # sīkfails.}other{Bloķēti # sīkfaili.}}</translation>
 <translation id="2570922361219980984">Arī piekļuve šīs ierīces atrašanās vietai ir izslēgta. Ieslēdziet to <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Izvērsts — noklikšķiniet, lai sakļautu.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Iesniegt</translation>
 <translation id="2677748264148917807">Iziet</translation>
 <translation id="2687403674020088961">Bloķēt visus sīkfailus (nav ieteicams)</translation>
-<translation id="2692299144678073135">Atļaut saistītām vietnēm saglabāt jūsu informāciju dažādās vietnēs</translation>
 <translation id="2704606927547763573">Nokopēts</translation>
 <translation id="2713106313042589954">Izslēgt kameru</translation>
 <translation id="2717722538473713889">E-pasta adreses</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4008040567710660924">Atļaut sīkfailus konkrētai vietnei.</translation>
 <translation id="4046123991198612571">Nākamais ieraksts</translation>
-<translation id="4048876521107516222">Saistītajās vietnēs tiek izmantoti sīkfaili, lai palīdzētu, piemēram, palikt pierakstītam kontā.</translation>
 <translation id="4149994727733219643">Vienkāršots tīmekļa lapu skatījums</translation>
 <translation id="4165986682804962316">Vietnes iestatījumi</translation>
 <translation id="4169549551965910670">Izveidots savienojums ar USB ierīci.</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Pēdējoreiz apmeklēta pirms <ph name="NUM_DAYS" /> dienām</translation>
 <translation id="6561560012278703671">Izmantot neuzkrītošāku ziņojumapmaiņu (bloķēt paziņojumu uzvednes, lai tās jūs netraucētu)</translation>
 <translation id="6593061639179217415">Vietne datoriem</translation>
-<translation id="6608211702542341247">Šī vietne ir iekļauta domēna <ph name="FPS_OWNER" /> vietņu grupā, kas var redzēt jūsu darbības grupā.</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Aizsargāts saturs</translation>
 <translation id="662080504995468778">Palikt</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Pievienot</translation>
 <translation id="780301667611848630">Nē, paldies</translation>
 <translation id="7804248752222191302">Kāda vietne izmanto jūsu kameru</translation>
-<translation id="7816129586531226979">Saistītās vietnes var saglabāt jūsu informāciju dažādās vietnēs.</translation>
 <translation id="7817023149356982970">Jūs tiksiet izrakstīts no šīs vietnes.</translation>
-<translation id="7828557259026017104">Sīkfaili ir faili, ko izveido jūsu apmeklētās vietnes. Vietnes izmanto šos sīkfailus, lai atcerētos jūsu preferences. Trešo pušu sīkfailus izveido citas vietnes. Jūsu apmeklētajā tīmekļa lapā var būt ietverts citu vietņu saturs, piemēram, reklāmas vai attēli.</translation>
 <translation id="7835852323729233924">Multivides atskaņošana</translation>
 <translation id="783819812427904514">Ieslēgt video skaņu</translation>
 <translation id="7846076177841592234">Atcelt atlasi</translation>

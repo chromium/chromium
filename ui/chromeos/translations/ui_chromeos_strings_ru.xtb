@@ -162,6 +162,7 @@
 <translation id="2389832672041313158">Бирманский</translation>
 <translation id="2392369802118427583">Активировать</translation>
 <translation id="240770291734945588">Свободно <ph name="SPACE_AVAILABLE" /></translation>
+<translation id="2417486498593892439">Регистрация в сети</translation>
 <translation id="2425665904502185219">Общий размер файлов</translation>
 <translation id="2428749644083375155">Копирование объектов (<ph name="NUMBER_OF_ITEMS" />) в папку "<ph name="FOLDER_NAME" />"…</translation>
 <translation id="2448312741937722512">Тип</translation>
@@ -326,6 +327,7 @@
 <translation id="3830674330436234648">Воспроизведение невозможно</translation>
 <translation id="383652340667548381">Сербский</translation>
 <translation id="385051799172605136">Назад</translation>
+<translation id="3851491607336266896">Подключено с ограничениями</translation>
 <translation id="3855472144336161447">Немецкая (Neo 2)</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3866249974567520381">Описание</translation>
@@ -454,6 +456,7 @@
 <translation id="4900532980794411603">Предоставить доступ Parallels Desktop</translation>
 <translation id="4902546322522096650">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подключение</translation>
 <translation id="4906580650526544301">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="PHONE_NAME" />", оператор – <ph name="PROVIDER_NAME" />, статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подробная информация</translation>
+<translation id="4929673617759421391">Администратор запретил вставлять этот файл.</translation>
 <translation id="4935975195727477204">Гацания</translation>
 <translation id="4943368462779413526">Футбол</translation>
 <translation id="4961158930123534723">Parallels Desktop предоставлен доступ к 1 папке.</translation>
@@ -511,6 +514,7 @@
 <translation id="5286194356314741248">Сканирование...</translation>
 <translation id="5288441970121584418">Бургер</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5293615890992542006">Администратор запретил перемещать этот файл.</translation>
 <translation id="5305688511332277257">Не установлено</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5318819489018851358">Предоставить доступ Linux</translation>
@@ -711,6 +715,7 @@
 <translation id="6993826899923627728">Эти объекты находятся в корзине</translation>
 <translation id="6998711733709403587">Выбрано папок: <ph name="SELCTED_FOLDERS_COUNT" /></translation>
 <translation id="7008426324576352165">Чтобы выполнить загрузку, увеличьте хранилище организации.</translation>
+<translation id="7009985720488544166">Администратор запретил перемещать файлы (<ph name="COUNT" />).</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Установка не выполнена.</translation>
 <translation id="7031639531908619281">Турецкий</translation>
@@ -939,6 +944,7 @@
 <translation id="8903931173357132290">Выпускник</translation>
 <translation id="8912078710089354287">Собака виляет хвостом</translation>
 <translation id="8919081441417203123">Датский</translation>
+<translation id="8949925099261528566">Подключено, без доступа к интернету</translation>
 <translation id="8965697826696209160">Недостаточно свободного места.</translation>
 <translation id="8997962250644902079">Китайский (традиционный), пиньинь</translation>
 <translation id="8998871447376656508">Не удалось завершить загрузку. На Google Диске недостаточно свободного места.</translation>
@@ -969,6 +975,7 @@
 <translation id="9183302530794969518">Google Документы</translation>
 <translation id="9189836632794948435">Казахский</translation>
 <translation id="9200427192836333033">Извлечено объектов: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="9210751050717126865">Администратор запретил вставлять файлы (<ph name="COUNT" />).</translation>
 <translation id="9213073329713032541">Установка началась.</translation>
 <translation id="9219103736887031265">Картинки</translation>
 <translation id="9219908252191632183">Луна</translation>

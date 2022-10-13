@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
-<translation id="1005794457625275818">Kolačići dopušteni za <ph name="FPS_MEMBERS_COUNT" /> web-lokacija u grupi <ph name="FPS_OWNER" />, uključujući <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Otvori online</translation>
 <translation id="1044891598689252897">Web-lokacije će normalno raditi</translation>
 <translation id="1124090076051167250">Izbrisat će se <ph name="DATASIZE" /> podataka i kolačića koje su spremile web-lokacije ili aplikacije na vašem početnom zaslonu.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Upravlja: <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Pomoć i povratne informacije</translation>
 <translation id="2501278716633472235">Natrag</translation>
+<translation id="2546283357679194313">Kolačići i podaci o web-lokacijama</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Blokiran je jedan kolačić}one{Blokiran je # kolačić}few{Blokirana su # kolačića}other{Blokirano je # kolačića}}</translation>
 <translation id="2570922361219980984">Pristup lokaciji isključen je i za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Prošireno – kliknite za sažimanje.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Pošalji</translation>
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="2687403674020088961">Blokiranje svih kolačića (ne preporučuje se)</translation>
-<translation id="2692299144678073135">Dopustite povezanim web-lokacijama da vas zapamte na više web-lokacija</translation>
 <translation id="2704606927547763573">Kopirano</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2717722538473713889">E-adrese</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4008040567710660924">Dopusti kolačiće za određenu web-lokaciju.</translation>
 <translation id="4046123991198612571">Sljedeća pjesma</translation>
-<translation id="4048876521107516222">Povezane web-lokacije upotrebljavaju kolačiće kako bi vam pomogle da npr. ostanete prijavljeni</translation>
 <translation id="4149994727733219643">Pojednostavljeni prikaz za web-stranice</translation>
 <translation id="4165986682804962316">Postavke web-lokacije</translation>
 <translation id="4169549551965910670">Povezano s USB uređajem</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Posljednji posjet bio je prije <ph name="NUM_DAYS" /> dana</translation>
 <translation id="6561560012278703671">Koristi tiše poruke (onemogućuje upitima za obavijesti da vas ometaju)</translation>
 <translation id="6593061639179217415">Klasični prikaz</translation>
-<translation id="6608211702542341247">Ova je web-lokacija u grupi web-lokacija <ph name="FPS_OWNER" /> koja može vidjeti vašu aktivnost u grupi</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Zaštićeni sadržaj</translation>
 <translation id="662080504995468778">Ostani</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Dodavanje</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804248752222191302">Web-lokacija upotrebljava vašu kameru</translation>
-<translation id="7816129586531226979">Povezane web-lokacije mogu vas zapamtiti na više web-lokacija</translation>
 <translation id="7817023149356982970">Odjavit ćete se s ove web-lokacije.</translation>
-<translation id="7828557259026017104">Kolačići su datoteke web-lokacija koje ste posjetili. Web-lokacije ih koriste kako bi zapamtile vaše postavke. Kolačiće trećih strana izrađuju ostale web-lokacije. Te web-lokacije posjeduju dio sadržaja prikazanog na web-stranici koju ste posjetili, primjerice oglase ili slike.</translation>
 <translation id="7835852323729233924">Reprodukcija medija</translation>
 <translation id="783819812427904514">Uključi kameru</translation>
 <translation id="7846076177841592234">Poništi odabir</translation>

@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
-<translation id="1068168522143272502">購入手続きの際に指定する必要がある住所とお支払い方法のリストが画面の下半分に表示されています。</translation>
-<translation id="2148715923718146918">選択されているアイテム</translation>
+<translation id="1275718070701477396">選択中</translation>
 <translation id="248973266728004341">新しいクレジット カードを追加</translation>
-<translation id="2501278716633472235">戻る</translation>
-<translation id="312532069930005172">自動入力プロファイルの設定を開く</translation>
+<translation id="385051799172605136">戻る</translation>
 <translation id="4401440167302712543">決済時に配送情報とお支払い情報を自動入力します</translation>
 <translation id="4526274353008646337">新しい住所を追加</translation>
 <translation id="567079066552447069">購入手続きの際に指定する必要がある住所とお支払い方法のリストが閉じています。</translation>
-<translation id="6350814703899626921">クレジット カードの選択を変更します。</translation>
-<translation id="731090949585674442">自動入力プロファイルの選択を変更します。</translation>
-<translation id="8264703973415044493">購入手続きの際に指定する必要がある住所とお支払い方法のリストが画面全体に表示されています。</translation>
-<translation id="8315600272591552085">購入手続きの際に指定する必要がある住所とお支払い方法のリスト。</translation>
+<translation id="5747552184818312860">有効期限</translation>
+<translation id="6476284679642588870">お支払い方法を管理</translation>
+<translation id="7974390230414479278">メニュー項目</translation>
 <translation id="884264119367021077">配送先住所</translation>
 <translation id="8873105120914375071">すばやく決済</translation>
 <translation id="9032876013752408138">情報を自動入力</translation>
-<translation id="9130271303738808219">クレジット カードの設定を開く</translation>
 <translation id="984275831282074731">お支払い方法</translation>
 </translationbundle>

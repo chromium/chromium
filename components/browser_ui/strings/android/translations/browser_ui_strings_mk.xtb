@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
-<translation id="1005794457625275818">Колачиња дозволени за <ph name="FPS_MEMBERS_COUNT" /> сајтови во групата <ph name="FPS_OWNER" />, вклучително <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Отвори онлајн</translation>
 <translation id="1044891598689252897">Сајтовите ќе работат нормално</translation>
 <translation id="1124090076051167250">Овa ќе ги избрише податоците и колачињата (<ph name="DATASIZE" />) складирани од сајтови или апликации на почетниот екран.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Управувани од <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Помош и повратни информации</translation>
 <translation id="2501278716633472235">Врати се</translation>
+<translation id="2546283357679194313">Колачиња и податоци од сајтот</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 колаче е блокирано}one{# колаче е блокирано}other{# колачиња се блокирани}}</translation>
 <translation id="2570922361219980984">Пристапот до локацијата е исклучен и за уредов. Вклучете го во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Проширено - кликни да се сокрие.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2677748264148917807">Напушти</translation>
 <translation id="2687403674020088961">Блокирај ги сите колачиња (не се препорачува)</translation>
-<translation id="2692299144678073135">Дозволете поврзаните сајтови да ве памтат на сајтовите</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2713106313042589954">Исклучи ја камерата</translation>
 <translation id="2717722538473713889">Адреси за е-пошта</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4008040567710660924">Дозволете колачиња за конкретен сајт.</translation>
 <translation id="4046123991198612571">Следна песна</translation>
-<translation id="4048876521107516222">Поврзани сајтови користат колачиња за да ви помогнат со нешта, како да ве задржат најавени</translation>
 <translation id="4149994727733219643">Поедноставен приказ за веб-страници</translation>
 <translation id="4165986682804962316">Поставки на локација</translation>
 <translation id="4169549551965910670">Поврзано со USB-уред</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Последно посетено пред <ph name="NUM_DAYS" /> дена</translation>
 <translation id="6561560012278703671">Користете потивки пораки (не дозволува известувањата да ве попречуваат)</translation>
 <translation id="6593061639179217415">Сајт за десктоп</translation>
-<translation id="6608211702542341247">Сајтов е во групата на сајтови на <ph name="FPS_OWNER" /> што може да ја видат вашата активност во групата</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Заштитена содржина</translation>
 <translation id="662080504995468778">Остани</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Додај</translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7804248752222191302">Сајтот ја користи камерата</translation>
-<translation id="7816129586531226979">Поврзаните сајтови може да ве памтат на сајтовите</translation>
 <translation id="7817023149356982970">Ќе ве одјавиме од сајтов.</translation>
-<translation id="7828557259026017104">Колачињата се датотеки создадени од веб-сајтовите што ги посетувате. Сајтовите ги користат за да ги запомнат вашите поставки. Колачињата од трети страни се создадени од други сајтови. Овие сајтови се сопственици на дел од содржините, како рекламите или сликите што ги гледате на веб-страницата што ја посетувате.</translation>
 <translation id="7835852323729233924">Пуштање аудиовизуелни содржини</translation>
 <translation id="783819812427904514">Вклучете звук на видео</translation>
 <translation id="7846076177841592234">Откажи избор</translation>

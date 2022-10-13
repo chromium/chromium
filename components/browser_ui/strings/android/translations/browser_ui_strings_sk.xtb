@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
-<translation id="1005794457625275818">Súbory cookie sú povolené pre niekoľko webov (<ph name="FPS_MEMBERS_COUNT" />) v skupine <ph name="FPS_OWNER" /> vrátane <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Otvoriť online</translation>
 <translation id="1044891598689252897">Weby budú fungovať normálne</translation>
 <translation id="1124090076051167250">Týmto vymažete <ph name="DATASIZE" /> dát a súbory cookie uložené webmi alebo aplikáciami na ploche.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Spravuje <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Pomocník a spätná väzba</translation>
 <translation id="2501278716633472235">Prejsť späť</translation>
+<translation id="2546283357679194313">Súbory cookie a dáta webov</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 zablokovaný súbor cookie}few{# zablokované súbory cookie}many{# cookies blocked}other{# zablokovaných súborov cookie}}</translation>
 <translation id="2570922361219980984">Prístup k polohe je vypnutý aj v tomto zariadení. Zapnite ho v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozbalená (zbalíte ju kliknutím)</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Odoslať</translation>
 <translation id="2677748264148917807">Odísť</translation>
 <translation id="2687403674020088961">Blokovať všetky súbory cookie (neodporúča sa)</translation>
-<translation id="2692299144678073135">Povoliť súvisiacim webom, aby si vás pamätali na rôznych weboch</translation>
 <translation id="2704606927547763573">Skopírované</translation>
 <translation id="2713106313042589954">Vypnúť kameru</translation>
 <translation id="2717722538473713889">E‑mailové adresy</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Názov</translation>
 <translation id="4008040567710660924">Povoliť súbory cookie na konkrétnom webe.</translation>
 <translation id="4046123991198612571">Ďalšia skladba</translation>
-<translation id="4048876521107516222">Súvisiace weby vám prostredníctvom súborov cookie pomáhajú uchovať si aktívne prihlásenie</translation>
 <translation id="4149994727733219643">Jednoduché zobrazenie webových stránok</translation>
 <translation id="4165986682804962316">Nastavenia webu</translation>
 <translation id="4169549551965910670">Pripojené k zariadeniu USB</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Naposledy navštívené pred <ph name="NUM_DAYS" /> dňami</translation>
 <translation id="6561560012278703671">Používať tichší režim (blokovať rušivé výzvy na odber upozornení)</translation>
 <translation id="6593061639179217415">Web pre počítače</translation>
-<translation id="6608211702542341247">Tento web je v skupine webov <ph name="FPS_OWNER" />, ktorým sa zobrazuje vaša aktivita v nej</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Chránený obsah</translation>
 <translation id="662080504995468778">Zostať</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Pridať</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
 <translation id="7804248752222191302">Váš fotoaparát používa nejaký web</translation>
-<translation id="7816129586531226979">Súvisiace weby si vás môžu zapamätať na rôznych weboch</translation>
 <translation id="7817023149356982970">Systém vás z tohto webu odhlási.</translation>
-<translation id="7828557259026017104">Súbory cookie vytvárajú weby, ktoré navštevujete. Weby si pomocou nich pamätajú vaše nastavenia. Súbory cookie tretích strán vytvárajú iné weby, ktorým patrí určitý obsah na navštívenej webovej stránke, napríklad reklamy či obrázky.</translation>
 <translation id="7835852323729233924">Prehrávanie médií</translation>
 <translation id="783819812427904514">Zapnúť zvuk videa</translation>
 <translation id="7846076177841592234">Zrušiť výber</translation>

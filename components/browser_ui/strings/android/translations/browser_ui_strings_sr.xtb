@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
-<translation id="1005794457625275818">Колачићи су дозвољени за сајтове (<ph name="FPS_MEMBERS_COUNT" />) у групи <ph name="FPS_OWNER" />, укључујући <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Отвори онлајн</translation>
 <translation id="1044891598689252897">Сајтови ће нормално радити</translation>
 <translation id="1124090076051167250">Овим бришете <ph name="DATASIZE" /> података и колачића које чувају сајтови или апликације на почетном екрану.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Управља <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Помоћ и повратне информације</translation>
 <translation id="2501278716633472235">Назад</translation>
+<translation id="2546283357679194313">Колачићи и подаци о сајтовима</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 колачић је блокиран}one{# колачић је блокиран}few{# колачића су блокирана}other{# колачића је блокирано}}</translation>
 <translation id="2570922361219980984">Приступ локацији је искључен и за овај уређај. Укључите га у <ph name="BEGIN_LINK" />Android подешавањима<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Проширено је – Кликните да бисте скупили.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Пошаљи</translation>
 <translation id="2677748264148917807">Затвори</translation>
 <translation id="2687403674020088961">Блокирај све колачиће (не препоручује се)</translation>
-<translation id="2692299144678073135">Дозволи да те сродни сајтови памте на различитим сајтовима</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2713106313042589954">Искључи камеру</translation>
 <translation id="2717722538473713889">Имејл адресе</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4008040567710660924">Омогућава колачиће за одређени сајт.</translation>
 <translation id="4046123991198612571">Следећа песма</translation>
-<translation id="4048876521107516222">Сродни сајтови користе колачиће да би вам, на пример, помогли да останете пријављени</translation>
 <translation id="4149994727733219643">Поједностављен приказ веб-страница</translation>
 <translation id="4165986682804962316">Подешавања сајта</translation>
 <translation id="4169549551965910670">Повезано са USB уређајем</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Последња посета: пре <ph name="NUM_DAYS" /> дана</translation>
 <translation id="6561560012278703671">Користите ненаметљиву размену порука (спречава упите са обавештењима да вас ометају)</translation>
 <translation id="6593061639179217415">Верзија сајта за рачунар</translation>
-<translation id="6608211702542341247">Овај сајт је у групи сајтова корисника <ph name="FPS_OWNER" /> који могу да виде ваше активности у групи</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Заштићени садржај</translation>
 <translation id="662080504995468778">Не затварај</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Додај</translation>
 <translation id="780301667611848630">Не, хвала</translation>
 <translation id="7804248752222191302">Сајт користи камеру</translation>
-<translation id="7816129586531226979">Сродни сајтови могу да вас памте на различитим сајтовима</translation>
 <translation id="7817023149356982970">Одјавићете се са овог сајта.</translation>
-<translation id="7828557259026017104">Колачићи су датотеке које праве веб-сајтови које посећујете. Сајтови их користе да би запамтили ваша подешавања. Колачиће треће стране праве други сајтови. Ти сајтови су власници делова садржаја који видите на посећеној веб-страници, попут огласа или слика.</translation>
 <translation id="7835852323729233924">Репродукција медија</translation>
 <translation id="783819812427904514">Укључите звук видеа</translation>
 <translation id="7846076177841592234">Откажи избор</translation>

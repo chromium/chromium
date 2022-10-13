@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Remover</translation>
 <translation id="125153950246128346">Toque para ver outra guia</translation>
 <translation id="1302104331113804646">Configurações de monitoramento de preço</translation>
-<translation id="1310482092992808703">Agrupar guias</translation>
 <translation id="1378979118429748177">Receber notificações de reduções no preço</translation>
 <translation id="1403228085774130835">É possível encontrar suas guias fechadas na opção "Guias recentes" no menu principal do Chrome</translation>
 <translation id="1455506303394048917">Sua atividade nessas guias anônimas será excluída deste dispositivo</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">nota</translation>
 <translation id="3291470810748040983">Você receberá um alerta quando houver um preço menor em uma guia aberta</translation>
 <translation id="3328308545011660196">Sugestão: <ph name="NUMBER_OF_TABS" /> guias parecem ser relacionadas. Agrupá-las?</translation>
-<translation id="3499853001094440183">Desagrupar guias</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Recolher <ph name="TABS_COUNT_ONE" /> guia.}one{Recolher <ph name="TITLE_OF_GROUP" /> grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Recolher <ph name="TITLE_OF_GROUP" /> grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
 <translation id="3882834874697329510">Para receber um alerta quando houver um preço menor em uma guia aberta, ative as notificações nas configurações.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Ocultar grade de tela cheia</translation>
 <translation id="5076161749301278626">Ver avaliações da loja?</translation>
 <translation id="5082793167783849073">Compare as páginas rapidamente criando um grupo. Para começar, toque em um link e mantenha-o pressionado.</translation>
-<translation id="5453029940327926427">Fechar guias</translation>
 <translation id="5490235265819901748">Grupo de guias expandido</translation>
 <translation id="5494920125229734069">Selecionar tudo</translation>
 <translation id="5533021382642990449">Mostrar mais tarde</translation>

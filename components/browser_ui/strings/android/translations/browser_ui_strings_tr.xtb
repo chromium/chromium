@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
-<translation id="1005794457625275818"><ph name="FPS_MEMBER" /> dahil olmak üzere <ph name="FPS_OWNER" /> grubundaki <ph name="FPS_MEMBERS_COUNT" /> site için çerezlere izin veriliyor</translation>
 <translation id="1006017844123154345">İnternet'te aç</translation>
 <translation id="1044891598689252897">Siteler normal şekilde çalışır</translation>
 <translation id="1124090076051167250">Bu işlem, Ana ekranınızdaki siteler veya uygulamalar tarafından depolanan <ph name="DATASIZE" /> boyutunda veriyi ve çerezi temizleyecek.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" /> tarafından yönetiliyor</translation>
 <translation id="2498359688066513246">Yardım ve geri bildirim</translation>
 <translation id="2501278716633472235">Geri dön</translation>
+<translation id="2546283357679194313">Çerezler ve site verileri</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 çerez engellendi}other{# çerez engellendi}}</translation>
 <translation id="2570922361219980984">Konum erişimi bu cihaz için de kapalı. Konum erişimini <ph name="BEGIN_LINK" />Android Ayarları<ph name="END_LINK" />'ndan açın.</translation>
 <translation id="257931822824936280">Genişletildi - Daraltmak için tıklayın.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Gönder</translation>
 <translation id="2677748264148917807">Çık</translation>
 <translation id="2687403674020088961">Tüm çerezleri engelle (önerilmez)</translation>
-<translation id="2692299144678073135">İlgili sitelerin sizi diğer sitelerde hatırlamasına izin verin</translation>
 <translation id="2704606927547763573">Kopyalandı</translation>
 <translation id="2713106313042589954">Kamerayı kapat</translation>
 <translation id="2717722538473713889">E-posta adresleri</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Başlık</translation>
 <translation id="4008040567710660924">Belirli bir site için çerezlere izin verin.</translation>
 <translation id="4046123991198612571">Sonraki parça</translation>
-<translation id="4048876521107516222">İlgili siteler, çerezleri kullanarak oturumunuzu açık tutma gibi işlemlerde yardımcı olur</translation>
 <translation id="4149994727733219643">Web sayfalarının basitleştirilmiş görünümü</translation>
 <translation id="4165986682804962316">Site ayarları</translation>
 <translation id="4169549551965910670">USB cihaza bağlandı</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">En son <ph name="NUM_DAYS" /> gün önce ziyaret edildi</translation>
 <translation id="6561560012278703671">Bildirim daha sessiz yapılsın (bildirim istemlerinin sizi rahatsız etmesini engeller)</translation>
 <translation id="6593061639179217415">Masaüstü sitesi</translation>
-<translation id="6608211702542341247">Bu site, <ph name="FPS_OWNER" /> site grubunda yer almaktadır ve gruptaki etkinliğinizi görebilir</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Korunan içerik</translation>
 <translation id="662080504995468778">Kal</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Ekle</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7804248752222191302">Bir site kameranızı kullanıyor</translation>
-<translation id="7816129586531226979">İlgili siteler sizi diğer sitelerde hatırlayabilir</translation>
 <translation id="7817023149356982970">Bu sitedeki oturumunuz kapatılacak.</translation>
-<translation id="7828557259026017104">Çerezler, ziyaret ettiğiniz web siteleri tarafından oluşturulan dosyalardır. Siteler tercihlerinizi hatırlamak için çerezleri kullanır. Üçüncü taraf çerezleri diğer siteler tarafından oluşturulur. Bu siteler, ziyaret ettiğiniz web sayfasında gördüğünüz reklam veya resim gibi içeriğin bir kısmına sahiptir.</translation>
 <translation id="7835852323729233924">Medya oynatılıyor/çalınıyor</translation>
 <translation id="783819812427904514">Videonun sesini aç</translation>
 <translation id="7846076177841592234">Seçimi iptal et</translation>

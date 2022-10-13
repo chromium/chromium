@@ -456,6 +456,7 @@
 <translation id="4900532980794411603">Parallels Desktop ilə paylaşın</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Qoşulun</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Telefonun Batareyası <ph name="BATTERY_STATUS" />%, Detallar</translation>
+<translation id="4929673617759421391">Bu faylın əlavə edilməsi administrator siyasəti əsasında bloklanıb</translation>
 <translation id="4935975195727477204">Gazania Flower</translation>
 <translation id="4943368462779413526">Futbol</translation>
 <translation id="4961158930123534723">1 qovluq Parallels Desktop ilə paylaşılır</translation>
@@ -512,6 +513,7 @@
 <translation id="5278111733643988471">Bu elementi bərpa etmək üçün zibil qutusunun xaricində yeni bir qovluğa sürüşdürün. Bu element üçün "<ph name="PARENT_FOLDER_NAME" />" orijinal qovluğu silinib.</translation>
 <translation id="5286194356314741248">Skan edilir</translation>
 <translation id="5288441970121584418">Burger</translation>
+<translation id="5293615890992542006">Bu faylın köçürülməsi administrator siyasəti əsasında bloklanıb</translation>
 <translation id="5305688511332277257">Heç biri quraşdırılmayıb</translation>
 <translation id="5317780077021120954">Yadda saxlayın</translation>
 <translation id="5318819489018851358">Linux ilə paylaşın</translation>
@@ -646,6 +648,7 @@
 <translation id="642282551015776456">Bu ad qovluq adının faylı kimi istifadə edilə bilməz</translation>
 <translation id="6423031066725912715">TCVN klaviaturası ilə Vyetnam dili</translation>
 <translation id="6430271654280079150">1 cəhdiniz qalıb.</translation>
+<translation id="643243556292470964">Silinmiş fayllar indi zibil qutusuna köçürülüb</translation>
 <translation id="6485131920355264772">Boşluq infosunu əldə etmək alınmadı</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Administratorunuz tərəfindən idarə olunur, Detallar</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> faylı <ph name="FOLDER_NAME" /> qovluğunda arxivdən çıxarılır</translation>
@@ -712,6 +715,7 @@
 <translation id="6993826899923627728">Bu elementlər zibil qutunuzdadır</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> qovluqlar seçildi</translation>
 <translation id="7008426324576352165">Yükləməni tamamlamaq üçün təşkilatınız daha çox yaddaş tələb edir.</translation>
+<translation id="7009985720488544166"><ph name="COUNT" /> faylın köçürülməsi administrator siyasəti əsasında bloklanıb</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Quraşdırma uğursuz oldu.</translation>
 <translation id="7031639531908619281">Türk</translation>
@@ -969,6 +973,7 @@
 <translation id="9183302530794969518">Google Sənəd</translation>
 <translation id="9189836632794948435">Qazax</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> element çıxarılıb.</translation>
+<translation id="9210751050717126865"><ph name="COUNT" /> faylın əlavə edilməsi administrator siyasəti əsasında bloklanıb</translation>
 <translation id="9213073329713032541">Quraşdırma uğurla başladı.</translation>
 <translation id="9219103736887031265">Şəkillər</translation>
 <translation id="9219908252191632183">Qəməri</translation>

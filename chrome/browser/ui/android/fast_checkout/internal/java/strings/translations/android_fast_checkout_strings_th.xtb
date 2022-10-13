@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
-<translation id="1068168522143272502">รายการที่อยู่และตัวเลือกการชำระเงินที่จะกรอกในระหว่างขั้นตอนการชำระเงินซึ่งเปิดแบบครึ่งหน้า</translation>
-<translation id="2148715923718146918">รายการที่เลือกไว้</translation>
+<translation id="1275718070701477396">เลือกแล้ว</translation>
 <translation id="248973266728004341">เพิ่มบัตรเครดิตใหม่</translation>
-<translation id="2501278716633472235">ย้อนกลับ</translation>
-<translation id="312532069930005172">เปิดการตั้งค่าโปรไฟล์การป้อนข้อความอัตโนมัติ</translation>
+<translation id="385051799172605136">กลับ</translation>
 <translation id="4401440167302712543">ป้อนข้อมูลการจัดส่งและการชำระเงินโดยอัตโนมัติขณะชำระเงิน</translation>
 <translation id="4526274353008646337">เพิ่มที่อยู่ใหม่</translation>
 <translation id="567079066552447069">ระบบจะปิดรายการที่อยู่และตัวเลือกการชำระเงินที่จะกรอกในระหว่างขั้นตอนการชำระเงิน</translation>
-<translation id="6350814703899626921">เปลี่ยนตัวเลือกบัตรเครดิต</translation>
-<translation id="731090949585674442">เปลี่ยนตัวเลือกโปรไฟล์การป้อนข้อความอัตโนมัติ</translation>
-<translation id="8264703973415044493">รายการที่อยู่และตัวเลือกการชำระเงินที่จะกรอกในระหว่างขั้นตอนการชำระเงินซึ่งเปิดแบบเต็มหน้า</translation>
-<translation id="8315600272591552085">รายการที่อยู่และตัวเลือกการชำระเงินที่จะกรอกในระหว่างขั้นตอนการชำระเงิน</translation>
+<translation id="5747552184818312860">หมดอายุ</translation>
+<translation id="6476284679642588870">จัดการวิธีการชำระเงิน</translation>
+<translation id="7974390230414479278">รายการเมนู</translation>
 <translation id="884264119367021077">ที่อยู่สำหรับจัดส่ง</translation>
 <translation id="8873105120914375071">หากต้องการชำระเงินได้เร็วขึ้น</translation>
 <translation id="9032876013752408138">ป้อนข้อมูลของฉันโดยอัตโนมัติ</translation>
-<translation id="9130271303738808219">เปิดการตั้งค่าบัตรเครดิต</translation>
 <translation id="984275831282074731">วิธีการชำระเงิน</translation>
 </translationbundle>

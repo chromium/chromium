@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Olib tashlash</translation>
 <translation id="125153950246128346">Boshqa varaqni ochish uchun bosing</translation>
 <translation id="1302104331113804646">Narx kuzatuvi sozlamalari</translation>
-<translation id="1310482092992808703">Varaqlarni guruhlash</translation>
 <translation id="1378979118429748177">Narxlar tushganda xabar olish</translation>
 <translation id="1403228085774130835">Yopilgan varaqlar Chrome asosiy menyusidagi Oxirgi varaqlar bandida chiqadi</translation>
 <translation id="1455506303394048917">Bu inkognito varaqlardagi xatti-harakatlaringiz ushbu qurilmadan tozalanadi</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">reyting</translation>
 <translation id="3291470810748040983">Ochiq varaqda narx tushganda xabar olasiz</translation>
 <translation id="3328308545011660196">Taklif: <ph name="NUMBER_OF_TABS" /> ta varaq aloqador. Ular guruhlansinmi?</translation>
-<translation id="3499853001094440183">Varaqlar guruhini yechish</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni yigʻish.}other{<ph name="TABS_COUNT_MANY" /> varaqli <ph name="TITLE_OF_GROUP" /> guruhini yigʻish.}}</translation>
 <translation id="3882834874697329510">Ochiq varaqda narx tushganda xabar olish uchun Sozlamalar orqali bildirishnomalarni yoqing.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Butun ekranga chiqarilgan jadval shaklini yopish</translation>
 <translation id="5076161749301278626">Doʻkon sharhlari ochilsinmi?</translation>
 <translation id="5082793167783849073">Sahifalarni guruhlab, tezkor solishtiring. Boshlash uchun havolani uzoq bosib turing.</translation>
-<translation id="5453029940327926427">Ichki oynalarni yopish</translation>
 <translation id="5490235265819901748">Varaqlar guruhi yoyildi</translation>
 <translation id="5494920125229734069">Hammasini tanlash</translation>
 <translation id="5533021382642990449">Keyinroq koʻrsatish</translation>
@@ -89,7 +86,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> baho, <ph name="REVIEWS_COUNT_ONE" /> ta sharh}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> baho, <ph name="REVIEWS_COUNT_MANY" /> ta sharh}}</translation>
 <translation id="7885132941432959125">Varaqni oʻngga siljitish</translation>
 <translation id="7966321538264951561">Bildirgilarni yopish</translation>
-<translation id="8018192911041116887">Varaqlarni ulashish</translation>
 <translation id="8029301326595421733">Bu doʻkon haqidagi axborot toʻliq hajmda ochildi</translation>
 <translation id="814503310257431685">Hammasi</translation>
 <translation id="8205266828577616993">Varaqni tepaga surish</translation>

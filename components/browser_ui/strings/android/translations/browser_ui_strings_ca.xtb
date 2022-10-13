@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
-<translation id="1005794457625275818">Galetes permeses per a <ph name="FPS_MEMBERS_COUNT" /> llocs web del grup <ph name="FPS_OWNER" />, com ara <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Obre en línia</translation>
 <translation id="1044891598689252897">Els llocs web funcionaran amb normalitat</translation>
 <translation id="1124090076051167250">Amb aquesta acció s'esborraran dades i galetes emmagatzemades pels llocs web o les aplicacions de la pantalla d'inici (<ph name="DATASIZE" />).</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Gestionades per <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Ajuda i suggeriments </translation>
 <translation id="2501278716633472235">Torna</translation>
+<translation id="2546283357679194313">Dades de llocs web i galetes</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 galeta bloquejada}other{# galetes bloquejades}}</translation>
 <translation id="2570922361219980984">L'accés a la ubicació també està desactivat en aquest dispositiu. Activa'l a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vista desplegada (feu clic per replegar-la)</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Envia</translation>
 <translation id="2677748264148917807">Surt</translation>
 <translation id="2687403674020088961">Bloqueja totes les galetes (opció no recomanada)</translation>
-<translation id="2692299144678073135">Permet que els llocs web relacionats et recordin en diversos llocs web</translation>
 <translation id="2704606927547763573">Copiada</translation>
 <translation id="2713106313042589954">Desactiva la càmera</translation>
 <translation id="2717722538473713889">Adreces electròniques</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Títol</translation>
 <translation id="4008040567710660924">Permet les galetes d'un lloc web concret.</translation>
 <translation id="4046123991198612571">Pista següent</translation>
-<translation id="4048876521107516222">Els llocs web relacionats utilitzen galetes per ajudar-te amb coses com ara mantenir la sessió iniciada</translation>
 <translation id="4149994727733219643">Visualització simplificada de pàgines web</translation>
 <translation id="4165986682804962316">Configuració del lloc web</translation>
 <translation id="4169549551965910670">Connectat a un dispositiu USB</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Darrera visita: fa <ph name="NUM_DAYS" /> dies</translation>
 <translation id="6561560012278703671">Utilitza missatges més discrets (bloqueja les sol·licituds de notificacions per evitar interrupcions)</translation>
 <translation id="6593061639179217415">Lloc web per a ordinador</translation>
-<translation id="6608211702542341247">Aquest lloc web forma part del grup de llocs web de <ph name="FPS_OWNER" /> que poden veure la teva activitat al grup</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contingut protegit</translation>
 <translation id="662080504995468778">No surtis</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Afegeix</translation>
 <translation id="780301667611848630">No, gràcies</translation>
 <translation id="7804248752222191302">Un lloc web està utilitzant la càmera</translation>
-<translation id="7816129586531226979">És possible que els llocs web relacionats et recordin en diversos llocs web</translation>
 <translation id="7817023149356982970">Se't tancarà la sessió d'aquest lloc web.</translation>
-<translation id="7828557259026017104">Les galetes són fitxers que creen els llocs web que visites. Els llocs web les fan servir per recordar les teves preferències. Les galetes de tercers són les que creen altres llocs web. Part del contingut d'aquests llocs, com ara els anuncis o les imatges, es mostra a la pàgina web que visites.</translation>
 <translation id="7835852323729233924">Reproduint contingut multimèdia</translation>
 <translation id="783819812427904514">Deixa de silenciar el vídeo</translation>
 <translation id="7846076177841592234">Cancel·la la selecció</translation>

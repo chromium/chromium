@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
+<translation id="1076394037877376434">Ezabatu <ph name="PAGE_NUMBER" />. orria</translation>
 <translation id="1113173431709655881">Kamera modua</translation>
 <translation id="1153190633558910465">Sareta desaktibatuta</translation>
 <translation id="1175958423215084756">Esteka bat hauteman da. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Ezabatu da <ph name="PAGE_NUMBER" />. orria</translation>
 <translation id="1258009455399840361">Biratu 90 gradu eskuinetara</translation>
 <translation id="1276998909102132017">Galeriako irudiak</translation>
 <translation id="1300209025925956156">Eskaneatu dokumentua</translation>
@@ -110,7 +112,6 @@
 <translation id="5775960006311140197">Adituen modua</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
 <translation id="5869546221129391014">Sareta</translation>
-<translation id="5903928279335207406">Ezabatu orria</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5975083100439434680">Txikitu</translation>
 <translation id="5976160379964388480">Gehiago</translation>

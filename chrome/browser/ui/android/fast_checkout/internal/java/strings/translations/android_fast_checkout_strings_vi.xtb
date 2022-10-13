@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
-<translation id="1068168522143272502">Danh sách địa chỉ và tuỳ chọn thanh toán sẽ được điền trong quy trình thanh toán mở ở nửa dưới của màn hình.</translation>
-<translation id="2148715923718146918">Mục đã chọn</translation>
+<translation id="1275718070701477396">Đã chọn</translation>
 <translation id="248973266728004341">Thêm thẻ tín dụng mới</translation>
-<translation id="2501278716633472235">Quay lại</translation>
-<translation id="312532069930005172">Mở phần cài đặt của tính năng Tự động điền hồ sơ</translation>
+<translation id="385051799172605136">Quay lại</translation>
 <translation id="4401440167302712543">Tự động điền thông tin vận chuyển và thông tin thanh toán khi bạn thanh toán</translation>
 <translation id="4526274353008646337">Thêm địa chỉ mới</translation>
 <translation id="567079066552447069">Danh sách địa chỉ và tuỳ chọn thanh toán sẽ được điền trong quy trình thanh toán đã bị đóng.</translation>
-<translation id="6350814703899626921">Thay đổi lựa chọn thẻ tín dụng.</translation>
-<translation id="731090949585674442">Thay đổi lựa chọn Hồ sơ tự động điền.</translation>
-<translation id="8264703973415044493">Danh sách địa chỉ và tuỳ chọn thanh toán sẽ được điền trong quy trình thanh toán mở trên toàn màn hình.</translation>
-<translation id="8315600272591552085">Danh sách địa chỉ và tuỳ chọn thanh toán sẽ được điền trong quy trình thanh toán.</translation>
+<translation id="5747552184818312860">Hết hạn</translation>
+<translation id="6476284679642588870">Quản lý phương thức thanh toán</translation>
+<translation id="7974390230414479278">Mục menu</translation>
 <translation id="884264119367021077">Ðịa chỉ giao hàng</translation>
 <translation id="8873105120914375071">Bạn có muốn thanh toán nhanh hơn?</translation>
 <translation id="9032876013752408138">Tự động điền thông tin của tôi</translation>
-<translation id="9130271303738808219">Mở phần cài đặt thẻ tín dụng</translation>
 <translation id="984275831282074731">Phương thức thanh toán</translation>
 </translationbundle>

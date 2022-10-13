@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
-<translation id="1005794457625275818"><ph name="FPS_MEMBER" /> का साथै <ph name="FPS_OWNER" /> का <ph name="FPS_MEMBERS_COUNT" /> वटा साइटलाई कुकी प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="1006017844123154345">अनलाइन खोल्नुहोस्</translation>
 <translation id="1044891598689252897">साइटहरू सामान्य रूपमा चल्ने छन्</translation>
 <translation id="1124090076051167250">यस कार्यले साइट वा एपहरूले तपाईंको होम स्क्रिनमा भण्डारण गरेका <ph name="DATASIZE" /> बराबरका डेटा र कुकीहरू मेटाउने छ।</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" /> ले व्यवस्थापन गरेको</translation>
 <translation id="2498359688066513246">मद्दत र प्रतिक्रिया</translation>
 <translation id="2501278716633472235">पछाडि जानुहोस्</translation>
+<translation id="2546283357679194313">कुकीहरू र साइट डाटा</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{१ कुकीमाथि रोक लगाइयो}other{# कुकीहरूमाथि रोक लगाइयो}}</translation>
 <translation id="2570922361219980984">यो डिभाइसको स्थानमाथिको पहुँच पनि निष्क्रिय छ। <ph name="BEGIN_LINK" />Android का सेटिङहरू<ph name="END_LINK" /> मा गई यसलाई अन गर्नुहोस्।</translation>
 <translation id="257931822824936280">विस्तृत गरिएको - संक्षिप्त पार्न क्लिक गर्नुहोस्</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">पेश गर्नुहोस्</translation>
 <translation id="2677748264148917807">छोड्नुहोस्</translation>
 <translation id="2687403674020088961">सबै कुकीहरूमाथि रोक लगाउनुहोस् (सिफारिस गरिँदैन)</translation>
-<translation id="2692299144678073135">सम्बन्धित साइटहरूलाई तपाईंले हेरेका साइटसम्बन्धी जानकारी याद राख्ने अनुमति दिनुहोस्</translation>
 <translation id="2704606927547763573">प्रतिलिपि गरियो</translation>
 <translation id="2713106313042589954">क्यामेरा अफ गर्नुहोस्</translation>
 <translation id="2717722538473713889">इमेल ठेगानाहरू</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4008040567710660924">कुनै खास साइटमा कुकीहरूलाई अनुमति दिनुहोस्।</translation>
 <translation id="4046123991198612571">अर्को ट्र्याक</translation>
-<translation id="4048876521107516222">सम्बन्धित साइटहरूले तपाईंलाई साइन इन अवस्थामा राखिराख्ने जस्ता कार्यहरू गर्न सघाउने प्रयोजनका लागि कुकीहरू प्रयोग गर्छन्</translation>
 <translation id="4149994727733219643">वेब पृष्ठहरूका लागि सरलीकृत दृश्य</translation>
 <translation id="4165986682804962316">साइट सेटिङहरू</translation>
 <translation id="4169549551965910670">USB डिभाइसमा कनेक्ट गर्नुहोस्</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">पछिल्लो पटक <ph name="NUM_DAYS" /> दिनअघि खोलिएको</translation>
 <translation id="6561560012278703671">सुटुक्क सन्देश पठाउने सुविधा प्रयोग गर्नुहोस् (यसले सूचनाका प्रम्प्टलाई आफूलाई बाधा पुर्‍याउनबाट रोक लगाउँछ)</translation>
 <translation id="6593061639179217415">डेस्कटप साइट</translation>
-<translation id="6608211702542341247">यो साइट <ph name="FPS_OWNER" /> को समूहअन्तर्गत पर्दछ र यसले सो समूहमा तपाईंका गतिविधि हेर्न सक्छ</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> जि.बि.</translation>
 <translation id="6612358246767739896">संरक्षित सामग्री</translation>
 <translation id="662080504995468778">यहीँ रहनुहोस्</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">थप्नुहोस्</translation>
 <translation id="780301667611848630">भयो, धन्यवाद</translation>
 <translation id="7804248752222191302">कुनै साइटले तपाईंको क्यामेरा प्रयोग गर्दै छ</translation>
-<translation id="7816129586531226979">सम्बन्धित साइटहरूले तपाईंले हेरेका साइटसम्बन्धी जानकारी याद राख्न सक्छन्</translation>
 <translation id="7817023149356982970">तपाईं यो साइटबाट साइन आउट हुनु हुने छ।</translation>
-<translation id="7828557259026017104">कुकीहरू भनेका तपाईं जाने वेबसाइटहरूले सिर्जना गर्ने फाइल हुन्। तपाईंका प्राथमिकताहरू याद राख्न वेबसाइटहरूले ती कुकीहरूको प्रयोग गर्छन्। अन्य वेबसाइटहरूले तेस्रो पक्षीय कुकीहरू सिर्जना गर्छन्। तपाईं जाने वेबपृष्ठमा तपाईंले देख्ने विज्ञापन वा फोटो जस्ता केही सामग्री यी वेबसाइटहरूको स्वामित्वमा हुन्छन्।</translation>
 <translation id="7835852323729233924">प्ले भइरहेको मिडिया</translation>
 <translation id="783819812427904514">भिडियो अनम्युट गर्नुहोस्</translation>
 <translation id="7846076177841592234">चयन रद्द गर्नुहोस्</translation>

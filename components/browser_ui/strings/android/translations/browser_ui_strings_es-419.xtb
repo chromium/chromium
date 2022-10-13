@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
-<translation id="1005794457625275818">Se permiten cookies para <ph name="FPS_MEMBERS_COUNT" /> sitios en el grupo <ph name="FPS_OWNER" />, incluido <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Abrir en línea</translation>
 <translation id="1044891598689252897">Los sitios funcionarán normalmente</translation>
 <translation id="1124090076051167250">Esta acción borrará <ph name="DATASIZE" /> de datos y cookies almacenados por los sitios o las apps que aparecen en la pantalla principal.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Administradas por <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Ayuda y comentarios</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
+<translation id="2546283357679194313">Datos de sitios y cookies</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie bloqueada}other{# cookies bloqueadas}}</translation>
 <translation id="2570922361219980984">El acceso a la ubicación también está desactivado en este dispositivo. Actívalo en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expandido; haz clic para contraer.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Abandonar</translation>
 <translation id="2687403674020088961">Bloquear todas las cookies (opción no recomendada)</translation>
-<translation id="2692299144678073135">Permitir que los sitios relacionados te recuerden en los sitios</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2713106313042589954">Desactivar la cámara</translation>
 <translation id="2717722538473713889">Direcciones de correo electrónico</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Título</translation>
 <translation id="4008040567710660924">Permite las cookies para un sitio específico.</translation>
 <translation id="4046123991198612571">Siguiente pista</translation>
-<translation id="4048876521107516222">Los sitios relacionados usan cookies para ayudarte con tareas como mantener el acceso a la cuenta</translation>
 <translation id="4149994727733219643">Vista simplificada para páginas web</translation>
 <translation id="4165986682804962316">Configuración de sitios</translation>
 <translation id="4169549551965910670">Se conectó a un dispositivo USB</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Última visita: hace <ph name="NUM_DAYS" /> días</translation>
 <translation id="6561560012278703671">Usar un tipo de aviso más discreto (bloquear las notificaciones emergentes para evitar interrupciones)</translation>
 <translation id="6593061639179217415">Sitio de escritorio</translation>
-<translation id="6608211702542341247">Este sitio está en el grupo de sitios de <ph name="FPS_OWNER" /> que pueden ver tu actividad en el grupo</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Contenido protegido</translation>
 <translation id="662080504995468778">Permanecer aquí</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Agregar</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7804248752222191302">Un sitio está utilizando la cámara</translation>
-<translation id="7816129586531226979">Es posible que los sitios relacionados te recuerden en los sitios</translation>
 <translation id="7817023149356982970">Saldrás de este sitio.</translation>
-<translation id="7828557259026017104">Las cookies son archivos que crean los sitios web que visitas para recordar tus preferencias. Las cookies de terceros son las que se generan desde otros sitios a los cuales pertenece parte del contenido que ves en la página web que visitas (como anuncios o imágenes).</translation>
 <translation id="7835852323729233924">Reproduciendo contenido multimedia</translation>
 <translation id="783819812427904514">Activar sonido del video</translation>
 <translation id="7846076177841592234">Cancelar la selección</translation>

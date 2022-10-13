@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">Delete page <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Camera mode</translation>
 <translation id="1153190633558910465">Grid off</translation>
 <translation id="1175958423215084756">Link detected. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Page <ph name="PAGE_NUMBER" /> deleted</translation>
 <translation id="1258009455399840361">Rotate 90 degrees clockwise</translation>
 <translation id="1276998909102132017">Gallery images</translation>
 <translation id="1300209025925956156">Scan your document</translation>
@@ -114,7 +116,6 @@
 <translation id="5775960006311140197">Expert mode</translation>
 <translation id="5860033963881614850">Off</translation>
 <translation id="5869546221129391014">Grid</translation>
-<translation id="5903928279335207406">Delete page</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5975083100439434680">Zoom out</translation>
 <translation id="5976160379964388480">Others</translation>

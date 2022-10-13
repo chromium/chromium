@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Odstrániť</translation>
 <translation id="125153950246128346">Klepnutím zobrazíte ďalšiu kartu</translation>
 <translation id="1302104331113804646">Nastavenia sledovania cien</translation>
-<translation id="1310482092992808703">Zoskupiť karty</translation>
 <translation id="1378979118429748177">Dostávajte upozornenia pri poklesoch cien</translation>
 <translation id="1403228085774130835">Zatvorené karty nájdete v hlavnej ponuke Chromu na kartách Nedávne</translation>
 <translation id="1455506303394048917">Vaša aktivita v týchto kartách inkognito bude vymazaná z tohto zariadenia</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">hodnotenie</translation>
 <translation id="3291470810748040983">Keď bude na otvorenej karte nižšia cena, dostanete upozornenie</translation>
 <translation id="3328308545011660196">Návrh: Zdá, sa že niekoľko (<ph name="NUMBER_OF_TABS" />) kariet spolu súvisí. Chcete ich zoskupiť?</translation>
-<translation id="3499853001094440183">Zrušiť zoskupenie kariet</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Zbaliť <ph name="TABS_COUNT_ONE" /> kartu}few{Zbaliť skupinu <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami}many{Collapse <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}other{Zbaliť skupinu <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami}}</translation>
 <translation id="3882834874697329510">Ak chcete dostať upozornenie, keď sa na otvorenej karte zníži cena, zapnite upozornenia v Nastaveniach.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Skryť mriežku na celú obrazovku</translation>
 <translation id="5076161749301278626">Chcete si zobraziť recenzie v obchode?</translation>
 <translation id="5082793167783849073">Ak chcete rýchlo porovnať stránky, vytvorte skupinu. Začnite pridržaním ľubovoľného odkazu.</translation>
-<translation id="5453029940327926427">Zavrieť karty</translation>
 <translation id="5490235265819901748">Skupina kariet bola rozbalená</translation>
 <translation id="5494920125229734069">Vybrať všetko</translation>
 <translation id="5533021382642990449">Zobraziť neskôr</translation>

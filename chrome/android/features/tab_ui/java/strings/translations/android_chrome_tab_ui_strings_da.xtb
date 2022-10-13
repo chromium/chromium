@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="125153950246128346">Tryk for at se en anden fane</translation>
 <translation id="1302104331113804646">Indstillinger for prisovervågning</translation>
-<translation id="1310482092992808703">Gruppér faner</translation>
 <translation id="1378979118429748177">Få besked om prisfald</translation>
 <translation id="1403228085774130835">Du kan finde dine lukkede faner på fanen Seneste i Chrome-hovedmenuen</translation>
 <translation id="1455506303394048917">Din aktivitet i disse inkognitofaner ryddes på denne enhed</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">bedømmelse</translation>
 <translation id="3291470810748040983">Du får en notifikation, når der er en lavere pris på en åben fane</translation>
 <translation id="3328308545011660196">Forslag: <ph name="NUMBER_OF_TABS" /> faner ser ud til at være relateret. Vil du gruppere dem?</translation>
-<translation id="3499853001094440183">Ophæv gruppering af faner</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}one{Skjul fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> fane.}other{Skjul fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="3882834874697329510">Slå notifikationer til i indstillingerne for at få en underretning, når der er en lavere pris på en åben fane.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Skjul fuldskærmsgitter</translation>
 <translation id="5076161749301278626">Vil du se butiksanmeldelser?</translation>
 <translation id="5082793167783849073">Sammenlign hurtigt sider ved at oprette en gruppe. Hold et link nede for at starte.</translation>
-<translation id="5453029940327926427">Luk faner</translation>
 <translation id="5490235265819901748">Fanegruppen blev udvidet</translation>
 <translation id="5494920125229734069">Vælg alle</translation>
 <translation id="5533021382642990449">Vis senere</translation>

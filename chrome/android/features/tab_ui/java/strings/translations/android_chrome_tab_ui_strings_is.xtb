@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Fjarlægja</translation>
 <translation id="125153950246128346">Ýttu til að sjá annan flipa</translation>
 <translation id="1302104331113804646">Stillingar verðvöktunar</translation>
-<translation id="1310482092992808703">Sameina flipa</translation>
 <translation id="1378979118429748177">Fá tilkynningu um verðlækkanir</translation>
 <translation id="1403228085774130835">Þú finnur flipa sem þú hefur lokað í „Nýlegir flipar“ á aðalvalmynd Chrome</translation>
 <translation id="1455506303394048917">Virknin þín í þessum huliðsflipum verður hreinsuð úr þessu tæki</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">einkunn</translation>
 <translation id="3291470810748040983">Þú færð tilkynningu þegar vara á opnum flipa lækkar í verði</translation>
 <translation id="3328308545011660196">Tillaga: <ph name="NUMBER_OF_TABS" /> flipar virðast vera tengdir. Viltu setja þá í hóp?</translation>
-<translation id="3499853001094440183">Taka flipa úr hópi</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Draga saman <ph name="TABS_COUNT_ONE" /> flipa.}one{Draga saman <ph name="TITLE_OF_GROUP" />-flipahóp með <ph name="TABS_COUNT_MANY" /> flipa.}other{Draga saman <ph name="TITLE_OF_GROUP" />-flipahóp með <ph name="TABS_COUNT_MANY" /> flipum.}}</translation>
 <translation id="3882834874697329510">Kveiktu á tilkynningum í stillingunum til að fá tilkynningu þegar lægra verð er í boði á opnum flipa.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Hætta að sýna á öllum skjánum</translation>
 <translation id="5076161749301278626">Skoða umsagnir um verslun?</translation>
 <translation id="5082793167783849073">Berðu síður saman á fljótlegan hátt með því að búa til hóp. Haltu fingri á tengli til að byrja.</translation>
-<translation id="5453029940327926427">Loka flipum</translation>
 <translation id="5490235265819901748">Flipahópur stækkaður</translation>
 <translation id="5494920125229734069">Velja allt</translation>
 <translation id="5533021382642990449">Sýna síðar</translation>

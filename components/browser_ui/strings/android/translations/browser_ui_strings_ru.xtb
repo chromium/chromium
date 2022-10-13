@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
-<translation id="1005794457625275818">Файлы cookie разрешено использовать сайтам (<ph name="FPS_MEMBERS_COUNT" />) группы <ph name="FPS_OWNER" />, включая <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Открыть в Интернете</translation>
 <translation id="1044891598689252897">Сайты будут работать в нормальном режиме</translation>
 <translation id="1124090076051167250">Будут удалены данные и файлы cookie, сохраненные сайтами или приложениями, добавленными на главный экран. Всего: <ph name="DATASIZE" />.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Под управлением приложения "<ph name="APP_NAME" />"</translation>
 <translation id="2498359688066513246">Справка/отзыв</translation>
 <translation id="2501278716633472235">Назад</translation>
+<translation id="2546283357679194313">Файлы сookie и данные сайтов</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Заблокирован 1 файл cookie}one{Заблокирован # файл cookie}few{Заблокировано # файла cookie}many{Заблокировано # файлов cookie}other{Заблокировано # файла cookie}}</translation>
 <translation id="2570922361219980984">Определение местоположения отключено и для самого устройства. Включите эту функцию в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Развернуто. Нажмите, чтобы свернуть.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2677748264148917807">Закрыть</translation>
 <translation id="2687403674020088961">Заблокировать все файлы cookie (не рекомендуется)</translation>
-<translation id="2692299144678073135">Разрешать связанным сайтам запоминать ваши данные на сайтах</translation>
 <translation id="2704606927547763573">Скопировано</translation>
 <translation id="2713106313042589954">Выключить камеру</translation>
 <translation id="2717722538473713889">Адреса электронной почты</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Название</translation>
 <translation id="4008040567710660924">Разрешить определенному сайту сохранять файлы cookie</translation>
 <translation id="4046123991198612571">Следующий трек</translation>
-<translation id="4048876521107516222">Связанные сайты используют файлы cookie, чтобы предоставлять пользователю дополнительные возможности, например запоминать, что выполнен вход в аккаунт</translation>
 <translation id="4149994727733219643">Упрощенный просмотр веб-страниц</translation>
 <translation id="4165986682804962316">Настройки сайтов</translation>
 <translation id="4169549551965910670">Выполнено подключение к USB-устройству</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Последнее посещение: <ph name="NUM_DAYS" /> дн. назад</translation>
 <translation id="6561560012278703671">Не прерывать мою работу при запросе разрешения на показ уведомлений</translation>
 <translation id="6593061639179217415">Версия для ПК</translation>
-<translation id="6608211702542341247">Эта страница входит в группу сайтов <ph name="FPS_OWNER" />. Ваши действия на них отслеживаются.</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Защищенный контент</translation>
 <translation id="662080504995468778">Остаться</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Добавить</translation>
 <translation id="780301667611848630">Спасибо, не надо</translation>
 <translation id="7804248752222191302">Сайт использует вашу камеру</translation>
-<translation id="7816129586531226979">Связанные сайты могут запоминать ваши данные</translation>
 <translation id="7817023149356982970">Вы выйдете из аккаунта на этом сайте.</translation>
-<translation id="7828557259026017104">Когда вы посещаете сайты, они создают файлы cookie для сохранения настроек и других пользовательских данных. Сторонние файлы cookie создаются другими сайтами, которые размещают свой контент (например, объявления или изображения) на просматриваемых вами веб-страницах.</translation>
 <translation id="7835852323729233924">Воспроизведение медиаконтента</translation>
 <translation id="783819812427904514">Включить звук для видео</translation>
 <translation id="7846076177841592234">Отменить выбор</translation>

@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
 <translation id="125153950246128346">နောက်တဘ်တစ်ခုကြည့်ရန် တို့ပါ</translation>
 <translation id="1302104331113804646">ဈေးနှုန်းစောင့်ကြည့်ခြင်း ဆက်တင်များ</translation>
-<translation id="1310482092992808703">တဘ်များကို အုပ်စုဖွဲ့ရန်</translation>
 <translation id="1378979118429748177">ဈေးကျသည့်အခါ အကြောင်းကြားချက်ရယူနိုင်သည်</translation>
 <translation id="1403228085774130835">Chrome ပင်မမီနူးရှိ ‘လတ်တလောတဘ်များ’ တွင် သင်ပိတ်ထားသောတဘ်များကို ရှာတွေ့နိုင်သည်</translation>
 <translation id="1455506303394048917">ဤရုပ်ဖျက်တဘ်များရှိ သင့်လုပ်ဆောင်ချက်ကို ဤစက်မှ ဖယ်ရှားပါမည်</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">အဆင့်သတ်မှတ်ခြင်း</translation>
 <translation id="3291470810748040983">ဖွင့်ထားသောတဘ်တွင် ဈေးကျသွားသည့်အခါ သတိပေးချက် ရရှိပါမည်</translation>
 <translation id="3328308545011660196">အကြံပြုချက်- တဘ် <ph name="NUMBER_OF_TABS" /> ခုက ဆက်စပ်ပုံပေါ်သည်။ ၎င်းတို့ကို အုပ်စုဖွဲ့မလား။</translation>
-<translation id="3499853001094440183">တဘ်အုပ်စုဖြုတ်ရန်</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> တဘ်ကို ခေါက်ပါ။}other{တဘ် <ph name="TABS_COUNT_MANY" /> ခုဖြင့် အုပ်စုဖွဲ့ထားသည့် <ph name="TITLE_OF_GROUP" /> တဘ်ကို ပြန်ခေါက်ပါ။}}</translation>
 <translation id="3882834874697329510">ဖွင့်ထားသောတဘ်တွင် ဈေးကျသွားသည့်အခါ သတိပေးချက်ရရှိရန် ‘ဆက်တင်များ’ တွင် အကြောင်းကြားချက်များကို ဖွင့်ပါ။</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">မျက်နှာပြင်ပြည့် ဇယားကွက်ကို ဝှက်ရန်</translation>
 <translation id="5076161749301278626">ဆိုင်အကြောင်း သုံးသပ်ချက်များ ကြည့်မလား။</translation>
 <translation id="5082793167783849073">အဖွဲ့ဖွဲ့ခြင်းဖြင့် စာမျက်နှာများကို အမြန်နှိုင်းယှဉ်ပါ။ စတင်ရန် လင့်ခ်ကို ထိပြီး ဖိထားပါ။</translation>
-<translation id="5453029940327926427">တဲဘ်များ ပိတ်ရန်</translation>
 <translation id="5490235265819901748">တဘ်အုပ်စုကို ချဲ့ထားသည်</translation>
 <translation id="5494920125229734069">အားလုံး ရွေးရန်</translation>
 <translation id="5533021382642990449">နောက်မှ ပြရန်</translation>

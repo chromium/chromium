@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Hapus</translation>
 <translation id="125153950246128346">Ketuk untuk melihat tab lainnya</translation>
 <translation id="1302104331113804646">Setelan pemantauan harga</translation>
-<translation id="1310482092992808703">Kelompokkan tab</translation>
 <translation id="1378979118429748177">Dapatkan notifikasi saat ada diskon</translation>
 <translation id="1403228085774130835">Anda dapat menemukan tab yang ditutup di Tab terbaru di bagian menu utama Chrome</translation>
 <translation id="1455506303394048917">Aktivitas Anda di tab Samaran ini akan dihapus dari perangkat ini</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">rating</translation>
 <translation id="3291470810748040983">Anda akan mendapatkan notifikasi saat terdapat harga lebih rendah di tab yang terbuka</translation>
 <translation id="3328308545011660196">Saran: <ph name="NUMBER_OF_TABS" /> tab sepertinya berkaitan. Masukkan ke grup?</translation>
-<translation id="3499853001094440183">Pisahkan tab</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Ciutkan <ph name="TABS_COUNT_ONE" /> tab.}other{Ciutkan grup tab <ph name="TITLE_OF_GROUP" /> yang berisi <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="3882834874697329510">Untuk mendapatkan notifikasi saat terdapat harga lebih rendah di tab yang terbuka, aktifkan notifikasi di Setelan.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Sembunyikan petak layar penuh</translation>
 <translation id="5076161749301278626">Lihat ulasan toko?</translation>
 <translation id="5082793167783849073">Bandingkan halaman secara cepat dengan membuat grup. Untuk memulai, sentuh lama link.</translation>
-<translation id="5453029940327926427">Tutup tab</translation>
 <translation id="5490235265819901748">Grup tab diperluas</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5533021382642990449">Tampilkan nanti</translation>

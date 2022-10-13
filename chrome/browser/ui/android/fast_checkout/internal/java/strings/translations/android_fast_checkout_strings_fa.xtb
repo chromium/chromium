@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
-<translation id="1068168522143272502">فهرست نشانی‌ها و گزینه‌های پرداخت که باید درطول روند تسویه‌حساب پر شود به‌صورت نیمه باز شده است.</translation>
-<translation id="2148715923718146918">مورد انتخاب‌شده</translation>
+<translation id="1275718070701477396">انتخاب شد</translation>
 <translation id="248973266728004341">افزودن کارت اعتباری جدید</translation>
-<translation id="2501278716633472235">بازگشت</translation>
-<translation id="312532069930005172">باز کردن تنظیمات «تکمیل خودکار نمایه»</translation>
+<translation id="385051799172605136">بازگشت</translation>
 <translation id="4401440167302712543">اطلاعات ارسال و پرداخت را هنگام تصفیه حساب به‌طور خودکار تکمیل کنید</translation>
 <translation id="4526274353008646337">افزودن نشانی جدید</translation>
 <translation id="567079066552447069">فهرست نشانی‌ها و گزینه‌های پرداخت که باید درطول روند تسویه‌حساب پر شود بسته شده است.</translation>
-<translation id="6350814703899626921">تغییر انتخاب کارت اعتباری.</translation>
-<translation id="731090949585674442">تغییر انتخاب نمایه «تکمیل خودکار».</translation>
-<translation id="8264703973415044493">فهرست نشانی‌ها و گزینه‌های پرداخت که باید درطول روند تسویه‌حساب پر شود به‌صورت کامل باز شده است.</translation>
-<translation id="8315600272591552085">فهرست نشانی‌ها و گزینه‌های پرداخت که باید درطول روند تسویه‌حساب پر شود.</translation>
+<translation id="5747552184818312860">تاریخ انقضا</translation>
+<translation id="6476284679642588870">مدیریت روش‌های پرداخت</translation>
+<translation id="7974390230414479278">مورد منو</translation>
 <translation id="884264119367021077">اطلاعات ارسال</translation>
 <translation id="8873105120914375071">می‌خواهید سریع‌تر تصفیه حساب کنید؟</translation>
 <translation id="9032876013752408138">تکمیل خودکار اطلاعات</translation>
-<translation id="9130271303738808219">باز کردن تنظیمات کارت اعتباری</translation>
 <translation id="984275831282074731">روش‌های پرداخت</translation>
 </translationbundle>

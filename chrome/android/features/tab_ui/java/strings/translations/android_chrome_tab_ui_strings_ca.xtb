@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Suprimeix</translation>
 <translation id="125153950246128346">Toca per veure una altra pestanya</translation>
 <translation id="1302104331113804646">Configuració del seguiment dels preus</translation>
-<translation id="1310482092992808703">Agrupa les pestanyes</translation>
 <translation id="1378979118429748177">Rep notificacions quan baixin els preus</translation>
 <translation id="1403228085774130835">Pots trobar les teves pestanyes tancades a Pestanyes recents, al menú principal de Chrome</translation>
 <translation id="1455506303394048917">La teva activitat en aquestes pestanyes d'incògnit s'esborrarà del dispositiu</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">puntuació</translation>
 <translation id="3291470810748040983">Rebràs una alerta quan hi hagi un preu més baix en una pestanya oberta</translation>
 <translation id="3328308545011660196">Suggeriment: sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
-<translation id="3499853001094440183">Desagrupa les pestanyes</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Replega <ph name="TABS_COUNT_ONE" /> pestanya.}other{Replega el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="3882834874697329510">Per rebre una alerta quan hi hagi un preu més baix en una pestanya oberta, activa les notificacions a Configuració.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Amaga la quadrícula en pantalla completa</translation>
 <translation id="5076161749301278626">Vols veure les ressenyes de la botiga?</translation>
 <translation id="5082793167783849073">Crea un grup per comparar pàgines ràpidament. Per començar, mantén premut un enllaç.</translation>
-<translation id="5453029940327926427">Tanca les pestanyes</translation>
 <translation id="5490235265819901748">El grup de pestanyes s'ha desplegat</translation>
 <translation id="5494920125229734069">Selecciona-ho tot</translation>
 <translation id="5533021382642990449">Mostra més tard</translation>

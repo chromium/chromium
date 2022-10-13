@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Премахване</translation>
 <translation id="125153950246128346">Докоснете, за да видите друг раздел</translation>
 <translation id="1302104331113804646">Настройки за проследяването на цените</translation>
-<translation id="1310482092992808703">Групиране на раздели</translation>
 <translation id="1378979118429748177">Получаване на известия при понижения на цени</translation>
 <translation id="1403228085774130835">Можете да намерите затворените си раздели в секцията „Скорошни раздели“ в главното меню на Chrome</translation>
 <translation id="1455506303394048917">Активността ви в съответните раздели в режим „инкогнито“ ще бъде изчистена от това устройство</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">оценка</translation>
 <translation id="3291470810748040983">Ще получите сигнал, когато цената в отворен раздел е по-ниска</translation>
 <translation id="3328308545011660196">Предложение: <ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
-<translation id="3499853001094440183">Разгрупиране на разделите</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Свиване на <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="3882834874697329510">За да получавате сигнал, когато цената в отворен раздел е по-ниска, включете известията от настройките.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Скриване на решетката на цял екран</translation>
 <translation id="5076161749301278626">Искате ли да видите отзивите за магазина?</translation>
 <translation id="5082793167783849073">Сравнявайте бързо страници, като създадете група. За да започнете, докоснете и задръжте дадена връзка.</translation>
-<translation id="5453029940327926427">Затваряне на разделите</translation>
 <translation id="5490235265819901748">Групата с раздели е разгъната</translation>
 <translation id="5494920125229734069">Избиране на всички</translation>
 <translation id="5533021382642990449">Показване по-късно</translation>

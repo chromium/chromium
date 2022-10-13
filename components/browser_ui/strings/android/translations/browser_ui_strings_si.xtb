@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
-<translation id="1005794457625275818"><ph name="FPS_MEMBER" /> ඇතුළුව, <ph name="FPS_OWNER" /> සමූහයේ අඩවි <ph name="FPS_MEMBERS_COUNT" />ක් සඳහා කුකීස් ඉඩ දී ඇත</translation>
 <translation id="1006017844123154345">සබැඳිව විවෘත කරන්න</translation>
 <translation id="1044891598689252897">වෙබ් අඩවි සාමාන්‍යයෙන් ක්‍රියා කරයි</translation>
 <translation id="1124090076051167250">මෙය වෙබ් අඩවි හෝ යෙදුම් මඟින් ඔබේ මුල් තිරය මත ගබඩා කර ඇති දත්ත සහ කුකී <ph name="DATASIZE" /> ක් ඉවත් කරයි.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" /> විසින් කළමනා කෙරේ</translation>
 <translation id="2498359688066513246">උදවු සහ ප්‍රතිපෝෂණය</translation>
 <translation id="2501278716633472235">ආපසු යන්න</translation>
+<translation id="2546283357679194313">කුකීස් සහ අඩවි දත්ත</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 කුකීයක් අවහිර කළා}one{කුකී # ක් අවහිර කළා}other{කුකී # ක් අවහිර කළා}}</translation>
 <translation id="2570922361219980984">මෙම උපාංගය සඳහා ස්ථාන ප්‍රවේශයත් ක්‍රියා විරහිතයි. <ph name="BEGIN_LINK" />Android සැකසීම්<ph name="END_LINK" /> තුළ එය ක්‍රියාත්මක කරන්න.</translation>
 <translation id="257931822824936280">පුඵල් කරන ලදි - හැකිලීමට ක්ලික් කරන්න</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">ඉදිරිපත් කරන්න</translation>
 <translation id="2677748264148917807">හැර යන්න</translation>
 <translation id="2687403674020088961">සියලුම කුකී අවහිර කරන්න (නිර්දේශ නොකෙරේ)</translation>
-<translation id="2692299144678073135">අඩවි හරහා ඔබව මතක තබා ගැනීමට අදාළ අඩවිවලට ඉඩ දෙන්න</translation>
 <translation id="2704606927547763573">පිටපත් කරන ලදි</translation>
 <translation id="2713106313042589954">කැමරාව ක්‍රියාවිරහිත කරන්න</translation>
 <translation id="2717722538473713889">ඉ-තැපැල් ලිපින</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">සිරස්තලය</translation>
 <translation id="4008040567710660924">නිශ්චිත අඩවියක් සඳහා කුකීවලට ඉඩ දෙන්න.</translation>
 <translation id="4046123991198612571">ඊළඟ ඛණ්ඩය</translation>
-<translation id="4048876521107516222">අදාළ අඩවි ඔබව පුරනය වී තබා ගැනීම වැනි දේවල් සඳහා උදවු කිරීමට කුකීස් භාවිතා කරයි</translation>
 <translation id="4149994727733219643">වෙබ් පිටු සඳහා සරල දසුනක්</translation>
 <translation id="4165986682804962316">අඩවි සැකසුම්</translation>
 <translation id="4169549551965910670">USB උපාංගයකට සම්බන්ධ කර ඇත</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">දින <ph name="NUM_DAYS" />කට පෙර අවසන් වරට පිවිසි</translation>
 <translation id="6561560012278703671">වඩා නිශ්ශබ්ද පණිවුඩකරණය භාවිත කරන්න (දැනුම්දීම් ප්‍රේරක ඔබට බාධා කිරීමෙන් අවහිර කරයි)</translation>
 <translation id="6593061639179217415">ඩෙක්ස්ටොප් අඩවිය</translation>
-<translation id="6608211702542341247">මෙම අඩවිය සමූහය තුළ ඔබේ ක්‍රියාකාරකම් දැකිය හැකි <ph name="FPS_OWNER" />ගේ අඩවි සමූහයේ ඇත</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">ආරක්ෂිත අන්තර්ගතය</translation>
 <translation id="662080504995468778">සිටින්න</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">එක් කරන්න</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7804248752222191302">වෙබ් අඩවියක් ඔබේ කැමරාව භාවිත කරයි</translation>
-<translation id="7816129586531226979">අදාළ අඩවි ඔබව අඩවි හරහා මතක තබා ගත හැක</translation>
 <translation id="7817023149356982970">ඔබ මෙම වෙබ් අඩවියන් වරනු ලැබේ.</translation>
-<translation id="7828557259026017104">කුකීස් යනු ඔබ පැමිණෙන වෙබ් අඩවිවලින් නිර්මාණ කෙරෙන ගොනු වේ. වෙබ් අඩවි ඔබේ මනාප මතක තබා ගැනීමට ඒවා භාවිත කරයි. තෙවන පාර්ශ්ව කුකී වෙනත් වෙබ් අඩවිවලින් නිර්මාණ කෙරේ. මෙම වෙබ් පිටුවලට ඔබ පැමිණෙන වෙබ් අඩවිය මත ඔබ දකින රූප හෝ දැන්වීම් වැනි සමහර අන්තර්ගත හිමි වේ.</translation>
 <translation id="7835852323729233924">මාධ්‍ය ධාවනය</translation>
 <translation id="783819812427904514">වීඩියෝව නිහඬ නොකරන්න</translation>
 <translation id="7846076177841592234">තේරීම අවලංගු කරන්න</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
-<translation id="1005794457625275818">Επιτρέπονται τα cookie για <ph name="FPS_MEMBERS_COUNT" /> ιστοτόπους στην ομάδα <ph name="FPS_OWNER" />, συμπεριλαμβανομένου του <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Άνοιγμα στο διαδίκτυο</translation>
 <translation id="1044891598689252897">Οι ιστότοποι θα λειτουργούν κανονικά</translation>
 <translation id="1124090076051167250">Αυτή η ενέργεια θα διαγράψει <ph name="DATASIZE" /> δεδομένων και cookie που έχουν αποθηκευτεί από ιστοτόπους ή εφαρμογές στην αρχική σας οθόνη.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Διαχειριζόμενες από την εφαρμογή <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Βοήθεια και σχόλια</translation>
 <translation id="2501278716633472235">Επιστροφή</translation>
+<translation id="2546283357679194313">Cookie και δεδομένα ιστότοπου</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Αποκλείστηκε ένα cookie}other{Αποκλείστηκαν # cookie}}</translation>
 <translation id="2570922361219980984">Η πρόσβαση στην Τοποθεσία είναι απενεργοποιημένη επίσης γι' αυτήν τη συσκευή. Ενεργοποιήστε τη στις <ph name="BEGIN_LINK" />Ρυθμίσεις Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Αναπτυγμένη - Κάντε κλικ για σύμπτυξη</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Υποβολή</translation>
 <translation id="2677748264148917807">Αποχώρηση</translation>
 <translation id="2687403674020088961">Αποκλεισμός όλων των cookie (δεν συνιστάται)</translation>
-<translation id="2692299144678073135">Να επιτρέπεται στους σχετικούς ιστοτόπους να σας θυμούνται μεταξύ ιστοτόπων</translation>
 <translation id="2704606927547763573">Αντιγράφ.</translation>
 <translation id="2713106313042589954">Απενεργοποίηση κάμερας</translation>
 <translation id="2717722538473713889">Διευθύνσεις ηλεκτρονικού ταχυδρομείου</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Τίτλος</translation>
 <translation id="4008040567710660924">Επιτρέπει τα cookie για έναν συγκεκριμένο ιστότοπο.</translation>
 <translation id="4046123991198612571">Επόμενο κομμάτι</translation>
-<translation id="4048876521107516222">Οι σχετικοί ιστότοποι χρησιμοποιούν cookie για να σας βοηθούν με διάφορους τρόπους, για παράδειγμα, για να παραμένετε συνδεδεμένοι.</translation>
 <translation id="4149994727733219643">Απλοποιημένη προβολή για ιστοσελίδες</translation>
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>
 <translation id="4169549551965910670">Συνδέθηκε σε συσκευή USB</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Τελευταία επίσκεψη πριν από <ph name="NUM_DAYS" /> ημέρες</translation>
 <translation id="6561560012278703671">Χρήση πιο διακριτικών μηνυμάτων (αποκλεισμός διακοπών από τα μηνύματα ειδοποιήσεων)</translation>
 <translation id="6593061639179217415">Για υπολογιστή</translation>
-<translation id="6608211702542341247">Αυτός ο ιστότοπος ανήκει στην ομάδα ιστοτόπων του <ph name="FPS_OWNER" /> με δυνατότητα προβολής της δραστηριότητάς σας στην ομάδα</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Προστατ. περιεχ.</translation>
 <translation id="662080504995468778">Παραμονή</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Προσθήκη</translation>
 <translation id="780301667611848630">Όχι, ευχαριστώ</translation>
 <translation id="7804248752222191302">Ένας ιστότοπος χρησιμοποιεί την κάμερά σας.</translation>
-<translation id="7816129586531226979">Οι σχετικοί ιστότοποι ενδέχεται να σας θυμούνται καθώς περιηγείστε μεταξύ ιστοτόπων</translation>
 <translation id="7817023149356982970">Θα αποσυνδεθείτε από αυτόν τον ιστότοπο.</translation>
-<translation id="7828557259026017104">Τα cookie είναι αρχεία που δημιουργούνται από ιστοτόπους που επισκέπτεστε. Οι ιστότοποι τα χρησιμοποιούν για να απομνημονεύουν τις προτιμήσεις σας. Τα cookie τρίτου μέρους δημιουργούνται από άλλους ιστοτόπους. Αυτοί οι ιστότοποι διαθέτουν κάποιο περιεχόμενο, όπως διαφημίσεις ή εικόνες, το οποίο μπορείτε να δείτε στην ιστοσελίδα που επισκέπτεστε.</translation>
 <translation id="7835852323729233924">Αναπαραγωγή πολυμέσων</translation>
 <translation id="783819812427904514">Κατάργηση σίγασης βίντεο</translation>
 <translation id="7846076177841592234">Ακύρωση επιλογής</translation>

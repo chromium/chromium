@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
-<translation id="1005794457625275818">Webkoekies toegelaat vir <ph name="FPS_MEMBERS_COUNT" /> werwe in die <ph name="FPS_OWNER" />-groep, insluitend <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Maak aanlyn oop</translation>
 <translation id="1044891598689252897">Werwe sal normaalweg werk</translation>
 <translation id="1124090076051167250">Dit sal <ph name="DATASIZE" /> se data en webkoekies uitvee wat deur werwe of deur programme op jou tuisskerm geberg is.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Bestuur deur <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Hulp en terugvoer</translation>
 <translation id="2501278716633472235">Gaan terug</translation>
+<translation id="2546283357679194313">Webkoekies en werfdata</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 webkoekie word geblokkeer}other{# webkoekies word geblokkeer}}</translation>
 <translation id="2570922361219980984">Liggingtoegang is ook af vir hierdie toestel. Skakel dit in <ph name="BEGIN_LINK" />Android-instellings<ph name="END_LINK" /> aan.</translation>
 <translation id="257931822824936280">Uitgevou – klik om in te vou.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2677748264148917807">Gaan uit</translation>
 <translation id="2687403674020088961">Blokkeer alle webkoekies (nie aanbeveel nie)</translation>
-<translation id="2692299144678073135">Laat verwante werwe toe om jou oor werwe heen te onthou</translation>
 <translation id="2704606927547763573">Gekopieer</translation>
 <translation id="2713106313042589954">Skakel kamera af</translation>
 <translation id="2717722538473713889">E-posadresse</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4008040567710660924">Laat webkoekies vir 'n spesifieke werf toe.</translation>
 <translation id="4046123991198612571">Volgende snit</translation>
-<translation id="4048876521107516222">Verwante werwe gebruik webkoekies om te help met dinge soos om jou aangemeld te hou</translation>
 <translation id="4149994727733219643">Vereenvoudigde aansig vir webbladsye</translation>
 <translation id="4165986682804962316">Werfinstellings</translation>
 <translation id="4169549551965910670">Aan ’n USB-toestel gekoppel</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Laas <ph name="NUM_DAYS" /> dae gelede besoek</translation>
 <translation id="6561560012278703671">Gebruik stiller boodskappe (keer dat kennisgewingporboodskappe jou onderbreek)</translation>
 <translation id="6593061639179217415">Werkskermwerf</translation>
-<translation id="6608211702542341247">Hierdie werf is in <ph name="FPS_OWNER" /> se groep werwe wat jou aktiwiteit in die groep kan sien</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskermde inhoud</translation>
 <translation id="662080504995468778">Bly</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Voeg by</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
 <translation id="7804248752222191302">'n Werf gebruik tans jou kamera</translation>
-<translation id="7816129586531226979">Verwante werwe sal jou dalk oor werwe heen onthou</translation>
 <translation id="7817023149356982970">Jy sal op hierdie werf afgemeld word.</translation>
-<translation id="7828557259026017104">Webkoekies is lêers wat geskep word deur webwerwe wat jy besoek. Werwe kan hulle gebruik om jou voorkeure te onthou. Derdepartywebkoekies word deur ander werwe geskep. Hierdie werwe besit van die inhoud, soos advertensies of prente, wat jy sien op die webbladsy wat jy besoek.</translation>
 <translation id="7835852323729233924">Speel tans media</translation>
 <translation id="783819812427904514">Ontdemp video</translation>
 <translation id="7846076177841592234">Kanselleer keuse</translation>

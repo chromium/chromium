@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
-<translation id="1005794457625275818"><ph name="FPS_OWNER" /> тобундагы <ph name="FPS_MEMBERS_COUNT" /> сайтка, анын ичинде <ph name="FPS_MEMBER" /> уруксат берилген cookie файлдары</translation>
 <translation id="1006017844123154345">Онлайнда ачуу</translation>
 <translation id="1044891598689252897">Сайттар кадимкидей иштейт</translation>
 <translation id="1124090076051167250">Ушуну менен сайттар жана колдонмолор Башкы экраныңызда сактаган маалымат менен cookie файлдар ээлеп турган <ph name="DATASIZE" /> орун бошотулат.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" /> тарабынан башкарылат</translation>
 <translation id="2498359688066513246">Жардам/пикир билдирүү</translation>
 <translation id="2501278716633472235">Артка кайтуу</translation>
+<translation id="2546283357679194313">Кукилер жана сайттын дайындары</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie файлы бөгөттөлдү}other{# cookie файлы бөгөттөлдү}}</translation>
 <translation id="2570922361219980984">Жайгашкан жерди аныктоо жөндөөсү бул түзмөктө өчүрүлгөн. Аны <ph name="BEGIN_LINK" />Android жөндөөлөрүнө<ph name="END_LINK" /> өтүп, күйгүзүңүз.</translation>
 <translation id="257931822824936280">Жайылып көрсөтүлгөн – жыйнап коюу үчүн чыкылдатыңыз.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Тапшыруу</translation>
 <translation id="2677748264148917807">Чыгуу</translation>
 <translation id="2687403674020088961">Бардык cookie файлдарды бөгөттөө (сунушталбайт)</translation>
-<translation id="2692299144678073135">Окшош сайттарга башка сайттарда сизди эстеп калууга уруксат берүү</translation>
 <translation id="2704606927547763573">Көчүрүлдү</translation>
 <translation id="2713106313042589954">Камераны өчүрүү</translation>
 <translation id="2717722538473713889">Электрондук почта даректери</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Аталышы</translation>
 <translation id="4008040567710660924">Белгилүү бир сайттын cookie файлдарына уруксат берүү.</translation>
 <translation id="4046123991198612571">Кийинки трек</translation>
-<translation id="4048876521107516222">Окшош сайттар сизге жардам берүү, мисалы, тутумдан чыгарбай туруу үчүн cookie файлдарын колдонот</translation>
 <translation id="4149994727733219643">Веб барактар үчүн жөнөкөйлөштүрүлгөн көрүнүш</translation>
 <translation id="4165986682804962316">Сайт жөндөөлөрү</translation>
 <translation id="4169549551965910670">USB түзмөгүнө туташты</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Акыркы жолу <ph name="NUM_DAYS" /> күн мурун кирген</translation>
 <translation id="6561560012278703671">Даректер тилкесинде көрсөтүлгөн билдирмелерди колдонуңуз (сизди алаксыткан билдирмелерди бөгөттөйт)</translation>
 <translation id="6593061639179217415">Компьютер версиясы</translation>
-<translation id="6608211702542341247">Бул сайт топто жасаган аракеттериңизди көрө турган сайттардын тобуна (<ph name="FPS_OWNER" />) кирет</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Гб</translation>
 <translation id="6612358246767739896">Корголгон мазмун</translation>
 <translation id="662080504995468778">Калуу</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Кошуу</translation>
 <translation id="780301667611848630">Жок, рахмат</translation>
 <translation id="7804248752222191302">Сайт камераңызды колдонуп жатат</translation>
-<translation id="7816129586531226979">Окшош сайттар башка сайттарда сизди эстеп калышы мүмкүн</translation>
 <translation id="7817023149356982970">Бул сайттан чыгасыз.</translation>
-<translation id="7828557259026017104">Cookie файлдары сиз баш баккан вебсайттар түзгөн файлдар. Сайттар аларды жеке параметрлериңизди эстеп калуу үчүн колдонушат. Үчүнчү тараптын cookie файлдарын башка сайттар түзөт. Ал сайттарга сиз баш баккан веб-баракчада көрсөтүлгөн жарнамалар жана сүрөттөр сыяктуу айрым мазмун таандык.</translation>
 <translation id="7835852323729233924">Медиа ойнотулууда</translation>
 <translation id="783819812427904514">Видеонун үнүн чыгаруу</translation>
 <translation id="7846076177841592234">Тандоону жокко чыгаруу</translation>

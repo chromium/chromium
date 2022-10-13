@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
-<translation id="1005794457625275818">Cookies permitidos para <ph name="FPS_MEMBERS_COUNT" /> sites no grupo <ph name="FPS_OWNER" />, incluindo <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Abrir online</translation>
 <translation id="1044891598689252897">Os sites funcionam normalmente.</translation>
 <translation id="1124090076051167250">Esta ação limpa <ph name="DATASIZE" /> de dados e cookies armazenados por sites ou apps no seu ecrã principal.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Gerido por <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Ajuda e comentários</translation>
 <translation id="2501278716633472235">Voltar</translation>
+<translation id="2546283357679194313">Cookies e dados de Web sites</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie bloqueado}other{# cookies bloqueados}}</translation>
 <translation id="2570922361219980984">O acesso à localização também está desativado para este dispositivo. Ative-o nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expandido. Clique para reduzir.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Sair</translation>
 <translation id="2687403674020088961">Bloquear todos os cookies (não recomendado).</translation>
-<translation id="2692299144678073135">Permitir que os sites relacionados se lembrem de si nos sites</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2713106313042589954">Desligar câmara</translation>
 <translation id="2717722538473713889">Moradas de email</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Título</translation>
 <translation id="4008040567710660924">Permita cookies para um site específico.</translation>
 <translation id="4046123991198612571">Faixa seguinte</translation>
-<translation id="4048876521107516222">Os sites relacionados usam cookies para ajudarem com ações como manter a sessão iniciada</translation>
 <translation id="4149994727733219643">Vista simplificada de páginas Web</translation>
 <translation id="4165986682804962316">Definições de sites</translation>
 <translation id="4169549551965910670">Ligado a um dispositivo USB</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Última visita há <ph name="NUM_DAYS" /> dias</translation>
 <translation id="6561560012278703671">Utilizar mensagens mais discretas (impede interrupções de pedidos de notificação)</translation>
 <translation id="6593061639179217415">Site para computador</translation>
-<translation id="6608211702542341247">Este site está no grupo de sites de <ph name="FPS_OWNER" /> que pode ver a sua atividade no grupo</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="662080504995468778">Ficar</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="780301667611848630">Não, obrigado</translation>
 <translation id="7804248752222191302">Um site está a utilizar a sua câmara.</translation>
-<translation id="7816129586531226979">Os sites relacionados podem lembrar-se de si nos sites</translation>
 <translation id="7817023149356982970">A sua sessão será terminada neste site.</translation>
-<translation id="7828557259026017104">Os cookies são ficheiros criados pelos Websites que visitou. Os sites utilizam os cookies para memorizar as suas preferências. Os cookies de terceiros são criados por outros sites. Estes sites possuem algum do conteúdo, tal como anúncios ou imagens, que vê na página Web que visita.</translation>
 <translation id="7835852323729233924">Multimédia em reprodução</translation>
 <translation id="783819812427904514">Reativar o som do vídeo</translation>
 <translation id="7846076177841592234">Cancelar seleção</translation>

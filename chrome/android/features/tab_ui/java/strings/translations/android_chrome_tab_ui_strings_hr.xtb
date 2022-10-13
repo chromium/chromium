@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="125153950246128346">Dodirnite za prikaz druge kartice</translation>
 <translation id="1302104331113804646">Postavke praćenja cijena</translation>
-<translation id="1310482092992808703">Grupiraj kartice</translation>
 <translation id="1378979118429748177">Primajte obavijesti kad cijene padnu</translation>
 <translation id="1403228085774130835">Zatvorene kartice nalaze se u kategoriji Nedavne kartice u glavnom izborniku Chromea.</translation>
 <translation id="1455506303394048917">Vaša aktivnost na tim anonimnim karticama izbrisat će se s ovog uređaja</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">ocjena</translation>
 <translation id="3291470810748040983">Kad niža cijena bude dostupna, primit ćete obavijest u otvorenoj kartici</translation>
 <translation id="3328308545011660196">Prijedlog: čini se da su neke kartice povezane (njih<ph name="NUMBER_OF_TABS" />). Želite li ih grupirati?</translation>
-<translation id="3499853001094440183">Poništi grupiranje kartica</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sažmi <ph name="TABS_COUNT_ONE" /> karticu.}one{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> karticu.}few{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> kartice.}other{Sažmi grupu kartica <ph name="TITLE_OF_GROUP" /> koja sadrži <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="3882834874697329510">Da biste primili obavijest u otvorenoj kartici kad niža cijena bude dostupna, uključite obavijesti u postavkama.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Sakrij rešetku na cijelom zaslonu</translation>
 <translation id="5076161749301278626">Pregled recenzija trgovine?</translation>
 <translation id="5082793167783849073">Izradom grupe možete brzo usporediti stranice. Da biste započeli, dodirnite i držite vezu.</translation>
-<translation id="5453029940327926427">Zatvori kartice</translation>
 <translation id="5490235265819901748">Grupa kartica je proširena</translation>
 <translation id="5494920125229734069">Odaberi sve</translation>
 <translation id="5533021382642990449">Prikaži kasnije</translation>

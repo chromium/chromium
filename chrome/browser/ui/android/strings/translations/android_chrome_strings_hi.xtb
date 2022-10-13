@@ -339,6 +339,7 @@
 <translation id="2861923151411510142">Chrome की कुछ सुविधाएं अब उपलब्ध नहीं होंगी</translation>
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2871733351037274014">पेजों को पहले से लोड करना</translation>
+<translation id="2876136027428473467"><ph name="CHILD_NAME" /> ने आपसे इस वेबसाइट का ऐक्सेस देने का अनुरोध किया है:</translation>
 <translation id="2886836735871983413">वेब को ब्राउज़ करने पर, यहां साइटों की एक सूची दिखेगी</translation>
 <translation id="2888126860611144412">Chrome के बारे में</translation>
 <translation id="2891154217021530873">पेज को लोड करना रोकें</translation>
@@ -354,6 +355,7 @@
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> मेमोरी</translation>
 <translation id="2932222164150889403">आपका कीबोर्ड नहीं बदलेगा</translation>
 <translation id="2936980480904111527">Chrome की सूचना की सुविधा से काम आसान हो जाते हैं</translation>
+<translation id="2940075786175545812">किसी वेबसाइट को अनुमति देने या न देने का विकल्प</translation>
 <translation id="2942036813789421260">झलक टैब बंद है</translation>
 <translation id="2946420957526726953">Chrome को अन्य डिवाइसों से कनेक्ट करने के लिए, अपडेट किया जा रहा है</translation>
 <translation id="2951071800649516099">बाद के लिए, अपनी रीडिंग लिस्ट में पेज जोड़ें</translation>
@@ -421,6 +423,7 @@
 <translation id="3259831549858767975">पेज पर सब कुछ छोटा करें</translation>
 <translation id="3264124641674805320">बाद में देखने के लिए, कॉन्टेंट को डाउनलोड करने का तरीका</translation>
 <translation id="3264259168916048410">किसी साइट पर साइन करने के लिए, आपका कंप्यूटर यह डिवाइस इस्तेमाल करना चाहता है</translation>
+<translation id="3265093782546847662"><ph name="DOMAIN" /> के सभी पेज</translation>
 <translation id="3265534588625245297">उन साइटों को मैनेज करें जिन्हें आप फ़ॉलो करते हैं</translation>
 <translation id="3269093882174072735">इमेज लोड करें</translation>
 <translation id="3280562213547448728">वॉइस सर्च</translation>
@@ -729,6 +732,7 @@
 <translation id="4985248278475639481">दिलचस्पी के मुताबिक विज्ञापन के बारे में जानकारी</translation>
 <translation id="4987271110129728827">वह पेज नहीं मिला. स्पेलिंग की जांच करें या वेब पर खोजें.</translation>
 <translation id="4988526792673242964">पेज</translation>
+<translation id="4991110219272367918">वेबसाइट को अनुमति देने या न देने का विकल्प बंद है</translation>
 <translation id="499724277181351974">यहां जाएं: <ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="5001388021414335527">इस साइट को यहां फ़ॉलो करें</translation>
 <translation id="500351648694011114">ज़्यादा आसानी से ब्राउज़ करें</translation>
@@ -1101,6 +1105,7 @@
 <translation id="6896758677409633944">कॉपी बनाएं</translation>
 <translation id="6900532703269623216">बेहतर सुरक्षा मोड</translation>
 <translation id="6903907808598579934">समन्वयन चालू करें</translation>
+<translation id="6908998565271542516">किसी वेबसाइट को अनुमति देने या न देने का विकल्प पूरी स्क्रीन में खुला है</translation>
 <translation id="6909589135458168665">पेजों को पहले से लोड करना</translation>
 <translation id="6942665639005891494">सेटिंग मेन्यू विकल्प का इस्तेमाल करके डिफ़ॉल्ट डाउनलोड स्थान किसी भी समय बदलें</translation>
 <translation id="694267552845942083">फ़िलहाल, आप अपनी सिंक सेटिंग पसंद के मुताबिक इस्तेमाल कर रहे हैं. सिंक की सुविधा चालू करने की प्रोसेस पूरी करने के लिए, स्क्रीन पर सबसे नीचे मौजूद 'पुष्टि करें' बटन पर टैप करें. ऊपर जाएं</translation>
@@ -1108,6 +1113,7 @@
 <translation id="6955535239952325894">यह सेटिंग, प्रबंधित किए गए ब्राउज़र पर काम नहीं करती है</translation>
 <translation id="6963766334940102469">बुकमार्क मिटाएं</translation>
 <translation id="696447261358045621">गुप्त मोड से बाहर निकलें</translation>
+<translation id="6971862865055170158">अनुमति न दें</translation>
 <translation id="6979737339423435258">हमेशा</translation>
 <translation id="6987047470128880212">इस डिवाइस पर गुप्त टैब का इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="6995899638241819463">डेटा का उल्लंघन होने पर अगर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>

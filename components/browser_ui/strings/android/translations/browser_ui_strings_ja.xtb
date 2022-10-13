@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
-<translation id="1005794457625275818"><ph name="FPS_OWNER" /> グループ（<ph name="FPS_MEMBER" /> を含む）の <ph name="FPS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています</translation>
 <translation id="1006017844123154345">オンライン版を開く</translation>
 <translation id="1044891598689252897">サイトは通常どおり動作します</translation>
 <translation id="1124090076051167250">サイトまたはホーム画面のアプリにより保存された <ph name="DATASIZE" /> のデータおよび Cookie が削除されます。</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" /> で管理</translation>
 <translation id="2498359688066513246">ヘルプとフィードバック</translation>
 <translation id="2501278716633472235">戻る</translation>
+<translation id="2546283357679194313">Cookie とサイトデータ</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 個の Cookie がブロックされました}other{# 個の Cookie がブロックされました}}</translation>
 <translation id="2570922361219980984">位置情報へのアクセスがデバイスでもオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="257931822824936280">展開されています - クリックすると折りたたまれます。</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">送信</translation>
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2687403674020088961">すべての Cookie をブロックする（推奨されません）</translation>
-<translation id="2692299144678073135">関連するサイトでユーザーを記憶することを許可する</translation>
 <translation id="2704606927547763573">コピーしました</translation>
 <translation id="2713106313042589954">カメラをオフにする</translation>
 <translation id="2717722538473713889">メールアドレス</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4008040567710660924">特定のサイトの Cookie を許可します。</translation>
 <translation id="4046123991198612571">次のトラック</translation>
-<translation id="4048876521107516222">関連するサイトで Cookie を使用してログイン状態の維持などを行います</translation>
 <translation id="4149994727733219643">ウェブページの簡易表示</translation>
 <translation id="4165986682804962316">サイトの設定</translation>
 <translation id="4169549551965910670">USB デバイスに接続されています</translation>
@@ -313,9 +311,7 @@
 <translation id="7791543448312431591">追加</translation>
 <translation id="780301667611848630">いいえ</translation>
 <translation id="7804248752222191302">サイトでカメラが使用されています</translation>
-<translation id="7816129586531226979">関連するサイト間でユーザーが記憶される可能性があります</translation>
 <translation id="7817023149356982970">このサイトからログアウトします。</translation>
-<translation id="7828557259026017104">Cookie は、アクセスしたサイトによって作成されるファイルです。サイトではこのファイルを使用して各ユーザーが行なった設定が記憶されます。2 つ目の「サードパーティの Cookie」は、他のサイト、つまり現在ウェブページに表示されているコンテンツの一部（広告、画像など）を所有しているサイトによって作成されます。</translation>
 <translation id="7835852323729233924">再生中のメディア</translation>
 <translation id="783819812427904514">動画のミュートを解除</translation>
 <translation id="7846076177841592234">選択解除</translation>

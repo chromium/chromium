@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Ukloni</translation>
 <translation id="125153950246128346">Dodirnite da biste videli neku drugu karticu</translation>
 <translation id="1302104331113804646">Podešavanja praćenja cene</translation>
-<translation id="1310482092992808703">Grupiši kartice</translation>
 <translation id="1378979118429748177">Dobijajte obaveštenja o sniženjima</translation>
 <translation id="1403228085774130835">Zatvorene kartice možete da pronađete u odeljku Nedavne kartice u glavnom meniju Chrome-a</translation>
 <translation id="1455506303394048917">Vaše aktivnosti na ovim karticama bez arhiviranja će biti obrisane sa ovog uređaja</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">ocena</translation>
 <translation id="3291470810748040983">Dobićete obaveštenje kada postoji niža cena na otvorenoj kartici</translation>
 <translation id="3328308545011660196">Predlog: Kartice (<ph name="NUMBER_OF_TABS" />) deluju povezano. Želite li da ih grupišete?</translation>
-<translation id="3499853001094440183">Opozovi grupisanje kartica</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" /> od <ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Skupite <ph name="TABS_COUNT_ONE" /> karticu.}one{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> karticom.}few{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartice.}other{Skupite grupu <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="3882834874697329510">Da biste dobili obaveštenje kada postoji niža cena na otvorenoj kartici, uključite obaveštenja u Podešavanjima.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Sakrijte prikaz mreže na celom ekranu</translation>
 <translation id="5076161749301278626">Želite da vidite recenzije prodavnica?</translation>
 <translation id="5082793167783849073">Napravite grupu da biste brzo upoređivali stranice. Za početak dodirnite i zadržite link.</translation>
-<translation id="5453029940327926427">Zatvori kartice</translation>
 <translation id="5490235265819901748">Grupa kartica je proširena</translation>
 <translation id="5494920125229734069">Izbor svih stavki</translation>
 <translation id="5533021382642990449">Prikaži kasnije</translation>

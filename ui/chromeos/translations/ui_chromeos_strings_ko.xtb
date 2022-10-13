@@ -647,6 +647,7 @@
 <translation id="642282551015776456">폴더 이름의 파일으로 사용할 수 없는 이름입니다.</translation>
 <translation id="6423031066725912715">베트남어(TCVN 키보드)</translation>
 <translation id="6430271654280079150">기회가 1번 남았습니다.</translation>
+<translation id="643243556292470964">삭제된 파일이 휴지통으로 이동됨</translation>
 <translation id="6485131920355264772">남은 용량을 알 수 없습니다.</translation>
 <translation id="6495925982925244349">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 세부정보</translation>
 <translation id="649877868557234318"><ph name="FOLDER_NAME" /> 폴더로 <ph name="FILE_NAME" /> 추출 중</translation>

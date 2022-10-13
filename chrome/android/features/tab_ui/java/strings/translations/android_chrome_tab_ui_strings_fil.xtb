@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="125153950246128346">I-tap para tumingin ng iba pang tab</translation>
 <translation id="1302104331113804646">Mga setting ng pagsubaybay sa presyo</translation>
-<translation id="1310482092992808703">Igrupo ang mga tab</translation>
 <translation id="1378979118429748177">Maabisuhan kapag bumaba ang mga presyo</translation>
 <translation id="1403228085774130835">Makikita mo ang iyong mga isinarang tab sa Mga kamakailang tab sa ilalim ng pangunahing menu ng Chrome</translation>
 <translation id="1455506303394048917">Maki-clear ang iyong aktibidad sa mga tab na Incognito na ito sa device na ito</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">rating</translation>
 <translation id="3291470810748040983">Makakatanggap ka ng alerto kapag may mas mababang presyo sa isang nakabukas na tab</translation>
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
-<translation id="3499853001094440183">Mag-ungroup ng mga tab</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{I-collapse ang <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="3882834874697329510">Para makakuha ng alerto sa isang bukas na tab kapag may mas mababang presyo, i-on ang mga notification sa Mga Setting.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Itago ang fullscreen grid</translation>
 <translation id="5076161749301278626">Tingnan ang mga review ng store?</translation>
 <translation id="5082793167783849073">Mabilis na paghambing-hambingin ang mga page sa pamamagitan ng paggawa ng pangkat. Para magsimula, pindutin nang matagal ang isang link.</translation>
-<translation id="5453029940327926427">Isara ang mga tab</translation>
 <translation id="5490235265819901748">Na-expand ang grupo ng tab</translation>
 <translation id="5494920125229734069">Piliin ang lahat</translation>
 <translation id="5533021382642990449">Ipakita sa ibang pagkakataon</translation>
@@ -89,7 +86,6 @@
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_ONE" /> review}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> review}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> rating, <ph name="REVIEWS_COUNT_MANY" /> na review}}</translation>
 <translation id="7885132941432959125">Ilipat ang tab sa kanan</translation>
 <translation id="7966321538264951561">I-dismiss ang mga suhestyon.</translation>
-<translation id="8018192911041116887">Magbahagi ng mga tab</translation>
 <translation id="8029301326595421733">Binuksan ang impormasyon tungkol sa store na ito nang buo ang taas</translation>
 <translation id="814503310257431685">Tingnan lahat</translation>
 <translation id="8205266828577616993">Ilipat ang tab sa itaas</translation>

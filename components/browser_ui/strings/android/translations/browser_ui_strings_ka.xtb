@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
-<translation id="1005794457625275818">ქუქი-ჩანაწერები დაშვებულია <ph name="FPS_MEMBERS_COUNT" /> საიტისთვის ჯგუფში „<ph name="FPS_OWNER" />“, რომელთა შორისაა <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">ონლაინ-ვერსიის გახსნა</translation>
 <translation id="1044891598689252897">საიტები ჩვეულებრივად იმუშავებს</translation>
 <translation id="1124090076051167250">ამ მოქმედებით გასუფთავდება საიტების ან აპების მიერ თქვენს მთავარ ეკრანზე შენახული მონაცემებისა და ქუქი-ჩანაწერების <ph name="DATASIZE" />.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">მართავს <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">დახმარება და უკუკავშირი</translation>
 <translation id="2501278716633472235">უკან დაბრუნება</translation>
+<translation id="2546283357679194313">ქუქი-ფაილები და საიტის მონაცემები</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 ქუქი-ჩანაწერი დაბლოკილია}other{# ქუქი-ჩანაწერი დაბლოკილია}}</translation>
 <translation id="2570922361219980984">მდებარეობაზე წვდომა გამორთულია ამ მოწყობილობისთვისაც. ჩართეთ ის <ph name="BEGIN_LINK" />Android-ის პარამეტრებიდან<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">გაშლილია — დააწკაპუნეთ ჩასაკეცად.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">გაგზავნა</translation>
 <translation id="2677748264148917807">დატოვება</translation>
 <translation id="2687403674020088961">ყველა ქუქი-ჩანაწერის დაბლოკვა (არარეკომენდებული)</translation>
-<translation id="2692299144678073135">დაკავშირებული საიტებისთვის საიტების ფარგლებში თქვენი დამახსოვრების დაშვება</translation>
 <translation id="2704606927547763573">დაკოპირდა</translation>
 <translation id="2713106313042589954">კამერის გამორთვა</translation>
 <translation id="2717722538473713889">ელფოსტის მისამართები</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">სათაური</translation>
 <translation id="4008040567710660924">ქუქი-ჩანაწერების დაშვება კონკრეტული საიტისთვის.</translation>
 <translation id="4046123991198612571">შემდეგი ჩანაწერი</translation>
-<translation id="4048876521107516222">დაკავშირებული საიტები იყენებს ქუქი-ჩანაწერებს, რომ დაგეხმაროთ, მაგალითად, სისტემაში შესულ მდგომარეობაში დარჩენაში</translation>
 <translation id="4149994727733219643">გამარტივებული ხედი ვებგვერდებისთვის</translation>
 <translation id="4165986682804962316">საიტის პარამეტრები</translation>
 <translation id="4169549551965910670">დაკავშირებულია USB მოწყობილობასთან</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">ბოლო ვიზიტი იყო <ph name="NUM_DAYS" /> დღის წინ</translation>
 <translation id="6561560012278703671">ჩუმი შეტყობინების გამოყენება (დაბლოკავს შეტყობინებებთან დაკავშირებულ ხელისშემშლელ მოთხოვნებს)</translation>
 <translation id="6593061639179217415">დესკტოპის საიტი</translation>
-<translation id="6608211702542341247">ეს საიტი არის <ph name="FPS_OWNER" />-ის იმ საიტების ჯგუფში, რომლებსაც შეუძლია თქვენი აქტივობის ნახვა ჯგუფში</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> გბაიტი</translation>
 <translation id="6612358246767739896">დაცული შიგთავსი</translation>
 <translation id="662080504995468778">დარჩენა</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">დამატება</translation>
 <translation id="780301667611848630">არა, მადლობთ</translation>
 <translation id="7804248752222191302">ეს საიტი იყენებს თქვენს კამერას</translation>
-<translation id="7816129586531226979">დაკავშირებულ საიტებს შეუძლია თქვენი დამახსოვრება საიტების ფარგლებში</translation>
 <translation id="7817023149356982970">თქვენ გამოხვალთ ამ საიტიდან.</translation>
-<translation id="7828557259026017104">ქუქი-ჩანაწერები თქვენ მიერ მონახულებული ვებსაიტების მიერ შექმნილი ფაილებია. მათი მეშვეობით საიტები თქვენ მიერ არჩეულ პარამეტრებს იმახსოვრებს. მესამე მხარის ქუქი-ჩანაწერები იქმნება სხვა საიტების მიერ. აღნიშნულ საიტებს ეკუთვნის თქვენ მიერ მონახულებულ ვებგვერდზე თქვენთვის ხილული გარკვეული კონტენტი (როგორიცაა რეკლამა ან სურათები).</translation>
 <translation id="7835852323729233924">გაშვებული მედია</translation>
 <translation id="783819812427904514">ვიდეოს დადუმების მოხსნა</translation>
 <translation id="7846076177841592234">შერჩევის გაუქმება</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
-<translation id="1005794457625275818">Informasjonskapsler er tillatt for <ph name="FPS_MEMBERS_COUNT" /> nettsteder i <ph name="FPS_OWNER" />-gruppen, inkludert <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Åpne på nettet</translation>
 <translation id="1044891598689252897">Nettsteder kommer til å fungere som normalt</translation>
 <translation id="1124090076051167250">Dette sletter <ph name="DATASIZE" /> med data og informasjonskapsler som er lagret av nettsteder eller apper på startskjermen.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Administreres av <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Hjelp og tilbakemelding</translation>
 <translation id="2501278716633472235">Gå tilbake</translation>
+<translation id="2546283357679194313">Informasjonskapsler og data fra nettsteder</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 informasjonskapsel er blokkert}other{# informasjonskapsler er blokkert}}</translation>
 <translation id="2570922361219980984">Posisjonstilgang er også slått av for denne enheten. Slå den på i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Utvidet – klikk for å minimere.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Send inn</translation>
 <translation id="2677748264148917807">Gå ut</translation>
 <translation id="2687403674020088961">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
-<translation id="2692299144678073135">La relaterte nettsteder huske deg på flere nettsteder</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2713106313042589954">Slå av kameraet</translation>
 <translation id="2717722538473713889">E-postadresser</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Tittel</translation>
 <translation id="4008040567710660924">Tillat informasjonskapsler for et spesifikt nettsted.</translation>
 <translation id="4046123991198612571">Neste spor</translation>
-<translation id="4048876521107516222">Relaterte nettsteder bruker informasjonskapsler til ting som å holde deg pålogget</translation>
 <translation id="4149994727733219643">Forenklet visning av nettsider</translation>
 <translation id="4165986682804962316">Nettstedsinnstillinger</translation>
 <translation id="4169549551965910670">Koblet til en USB-enhet</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Sist besøkt for <ph name="NUM_DAYS" /> dager siden</translation>
 <translation id="6561560012278703671">Bruk stillere meldinger (blokkerer varselmeldinger fra å forstyrre deg)</translation>
 <translation id="6593061639179217415">Side for datamaskiner</translation>
-<translation id="6608211702542341247">Dette nettstedet er i nettstedsgruppen til <ph name="FPS_OWNER" /> som kan se aktiviteten din i gruppen</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskyttet innhold</translation>
 <translation id="662080504995468778">Bli her</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Legg til</translation>
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7804248752222191302">Et nettsted bruker kameraet ditt</translation>
-<translation id="7816129586531226979">Relaterte nettsteder kan huske deg på flere nettsteder</translation>
 <translation id="7817023149356982970">Du blir logget av dette nettstedet.</translation>
-<translation id="7828557259026017104">Informasjonskapsler er filer som opprettes av nettsteder du besøker. Nettsteder bruker dem til å huske preferansene dine. Informasjonskapsler fra tredjeparter opprettes av andre nettsteder. Disse nettstedene eier noe av innholdet, for eksempel annonser eller bilder, som du ser på nettsiden du besøker.</translation>
 <translation id="7835852323729233924">Spiller av medier</translation>
 <translation id="783819812427904514">Slå på lyden i videoen</translation>
 <translation id="7846076177841592234">Opphev valget</translation>

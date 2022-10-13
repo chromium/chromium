@@ -456,6 +456,7 @@
 <translation id="4900532980794411603">‏هم‌رسانی با Parallels Desktop</translation>
 <translation id="4902546322522096650">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />, قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، اتصال</translation>
 <translation id="4906580650526544301">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، <ph name="PROVIDER_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، باتری تلفن <ph name="BATTERY_STATUS" />٪، جزئیات</translation>
+<translation id="4929673617759421391">خط‌مشی سرپرست جای‌گذاری این فایل را مسدود کرده است</translation>
 <translation id="4935975195727477204">گل میخک</translation>
 <translation id="4943368462779413526">فوتبال</translation>
 <translation id="4961158930123534723">‏۱ پوشه با Parallels Desktop هم‌رسانی شد</translation>
@@ -513,6 +514,7 @@
 <translation id="5286194356314741248">اسکن کردن</translation>
 <translation id="5288441970121584418">همبرگر</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5293615890992542006">خط‌مشی سرپرست انتقال این فایل را مسدود کرده است</translation>
 <translation id="5305688511332277257">چیزی نصب نشده است</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5318819489018851358">‏هم‌رسانی با Linux</translation>
@@ -647,6 +649,7 @@
 <translation id="642282551015776456">این نام ممکن است به‌عنوان نام فایلی از پوشه استفاده نشود</translation>
 <translation id="6423031066725912715">‏ویتنامی با صفحه‌کلید TCVN</translation>
 <translation id="6430271654280079150">۱ تلاش دیگر دارید.</translation>
+<translation id="643243556292470964">فایل‌های حذف‌شده اکنون به «حذف‌شده‌ها» منتقل شد</translation>
 <translation id="6485131920355264772">دریافت اطلاعات فضا انجام نشد</translation>
 <translation id="6495925982925244349">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، تحت‌مدیریت سرپرست، جزئیات</translation>
 <translation id="649877868557234318">درحال استخراج <ph name="FILE_NAME" /> در <ph name="FOLDER_NAME" /></translation>
@@ -713,6 +716,7 @@
 <translation id="6993826899923627728">این موارد در «حذف‌شده‌های» شما قرار دارند</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> پوشه‌ انتخاب شد</translation>
 <translation id="7008426324576352165">سازمانتان برای تکمیل بارگذاری به فضای ذخیره‌سازی بیشتری نیاز دارد.</translation>
+<translation id="7009985720488544166">خط‌مشی سرپرست انتقال <ph name="COUNT" /> فایل را مسدود کرده است</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">نصب انجام نشد.</translation>
 <translation id="7031639531908619281">ترکی</translation>
@@ -972,6 +976,7 @@
 <translation id="9183302530794969518">‏سندنگار Google</translation>
 <translation id="9189836632794948435">قزاقی</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> مورد استخراج شد.</translation>
+<translation id="9210751050717126865">خط‌مشی سرپرست جای‌گذاری <ph name="COUNT" /> فایل را مسدود کرده است</translation>
 <translation id="9213073329713032541">نصب باموفقیت شروع شد.</translation>
 <translation id="9219103736887031265">تصاویر</translation>
 <translation id="9219908252191632183">منظره سطح ماه</translation>

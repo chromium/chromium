@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Өшіру</translation>
 <translation id="125153950246128346">Басқа қойынды көру үшін түртіңіз.</translation>
 <translation id="1302104331113804646">Бағаны бақылау параметрлері</translation>
-<translation id="1310482092992808703">Қойындыларды топтау</translation>
 <translation id="1378979118429748177">Баға төмендеген кезде хабарландыру алыңыз.</translation>
 <translation id="1403228085774130835">Жабылған қойындыларды Chrome бас мәзіріндегі "Соңғы қойындылар" бөлімінен таба аласыз.</translation>
 <translation id="1455506303394048917">Инкогнито қойындыларындағы әрекеттеріңіз бұл құрылғыдан жойылады.</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">бағасы</translation>
 <translation id="3291470810748040983">Баға төмендеген кезде жаңа қойындыға хабарландыру келеді.</translation>
 <translation id="3328308545011660196">Ұсыныс: <ph name="NUMBER_OF_TABS" /> қойынды өзара қатысты сияқты. Олар топтастырылсын ба?</translation>
-<translation id="3499853001094440183">Қойындыларды топтан шығару</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысын жию.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар <ph name="TITLE_OF_GROUP" /> қойындылар тобын жию.}}</translation>
 <translation id="3882834874697329510">Ашық қойындыда төмен баға болған кезде, хабарландыру алу үшін "Параметрлер" бөлімінен хабарландыруларды қосыңыз.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Толық экрандық торды жасыру</translation>
 <translation id="5076161749301278626">Дүкен туралы пікірлерді көресіз бе?</translation>
 <translation id="5082793167783849073">Топ жасай отырып, беттерді жылдам салыстырыңыз. Бастау үшін сілтемені басып тұрыңыз.</translation>
-<translation id="5453029940327926427">Қойындыларды жабу</translation>
 <translation id="5490235265819901748">Қойындылар тобы жайылды</translation>
 <translation id="5494920125229734069">Барлығын таңдау</translation>
 <translation id="5533021382642990449">Кейінірек көрсету</translation>

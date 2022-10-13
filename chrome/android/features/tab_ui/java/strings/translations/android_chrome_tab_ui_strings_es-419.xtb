@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Quitar</translation>
 <translation id="125153950246128346">Presiona para ver otra pestaña</translation>
 <translation id="1302104331113804646">Configuración del seguimiento de precios</translation>
-<translation id="1310482092992808703">Agrupar pestañas</translation>
 <translation id="1378979118429748177">Recibe notificaciones cuando haya descuentos.</translation>
 <translation id="1403228085774130835">Puedes encontrar todas las pestañas cerradas en Pestañas recientes en el menú principal de Chrome</translation>
 <translation id="1455506303394048917">Tu actividad en las pestañas de incógnito se borrará del dispositivo</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">calificación</translation>
 <translation id="3291470810748040983">Recibirás una alerta cuando baje el precio de uno de los artículos de las pestañas abiertas.</translation>
 <translation id="3328308545011660196">Sugerencia: <ph name="NUMBER_OF_TABS" /> pestañas parecen estar relacionadas. ¿Deseas agruparlas?</translation>
-<translation id="3499853001094440183">Desagrupar pestañas</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Contraer <ph name="TABS_COUNT_ONE" /> pestaña}other{Contraer el grupo de pestañas <ph name="TITLE_OF_GROUP" />, el cual tiene <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="3882834874697329510">Para recibir una alerta cuando hay un precio más bajo en una pestaña abierta, activa las notificaciones en la Configuración.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Oculta la cuadrícula de pantalla completa</translation>
 <translation id="5076161749301278626">¿Quieres ver las opiniones de la tienda?</translation>
 <translation id="5082793167783849073">Forma un grupo para comparar las páginas rápidamente. Para comenzar, mantén presionado un vínculo.</translation>
-<translation id="5453029940327926427">Cerrar pestañas</translation>
 <translation id="5490235265819901748">Se expandió el grupo de pestañas</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>
 <translation id="5533021382642990449">Mostrar más tarde</translation>

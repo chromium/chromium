@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
-<translation id="1005794457625275818">Vidakuzi vimeruhusiwa katika tovuti <ph name="FPS_MEMBERS_COUNT" /> kwenye kikundi cha <ph name="FPS_OWNER" />, ikiwa ni pamoja na <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Fungua Mtandaoni</translation>
 <translation id="1044891598689252897">Tovuti zitafanya kazi kama kawaida</translation>
 <translation id="1124090076051167250">Hatua hii itafuta <ph name="DATASIZE" /> ya data na vidakuzi vilivyohifadhiwa na tovuti au programu kwenye Skrini ya kwanza.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Inasimamiwa na <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Usaidizi na maoni</translation>
 <translation id="2501278716633472235">Rudi nyuma</translation>
+<translation id="2546283357679194313">Data ya vidakuzi na tovuti</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Kidakuzi kimoja kimezuiwa}other{Vidakuzi # vimezuiwa}}</translation>
 <translation id="2570922361219980984">Kipengele cha mahali pia kimezimwa kwenye kifaa hiki. Kiwashe katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Imepanuliwa - bofya ili ukunje.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Wasilisha</translation>
 <translation id="2677748264148917807">Ondoka</translation>
 <translation id="2687403674020088961">Zuia vidakuzi vyote (haipendekezwi)</translation>
-<translation id="2692299144678073135">Ruhusu tovuti zinazohusiana kukumbuka taarifa zako kwenye tovuti mbalimbali</translation>
 <translation id="2704606927547763573">Imenakiliwa</translation>
 <translation id="2713106313042589954">Zima kamera</translation>
 <translation id="2717722538473713889">Anwani za barua pepe</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Kichwa</translation>
 <translation id="4008040567710660924">Ruhusu vidakuzi katika tovuti maalum.</translation>
 <translation id="4046123991198612571">Wimbo unaofuata</translation>
-<translation id="4048876521107516222">Tovuti zinazohusiana hutumia vidakuzi ili kukusaidia kufanya mambo mbalimbali kama vile kuhakikisha unasalia katika akaunti</translation>
 <translation id="4149994727733219643">Mwonekano uliorahisishwa kwa ajili ya kurasa za wavuti</translation>
 <translation id="4165986682804962316">Mipangilio ya tovuti</translation>
 <translation id="4169549551965910670">Imeunganishwa kwenye kifaa cha USB</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Ilitembelewa mara ya mwisho siku <ph name="NUM_DAYS" /> zilizopita</translation>
 <translation id="6561560012278703671">Tumia kipengele cha kutuma na kupokea ujumbe bila sauti (huzuia vidokezo vya arifa visikusumbue)</translation>
 <translation id="6593061639179217415">Tovuti ya kompyuta ya mezani</translation>
-<translation id="6608211702542341247">Tovuti hii ipo kwenye kundi la tovuti la <ph name="FPS_OWNER" /> ambalo linaweza kuona shughuli zako kwenye kundi hilo</translation>
 <translation id="6608650720463149374">GB <ph name="GIGABYTES" /></translation>
 <translation id="6612358246767739896">Maudhui yanayolindwa</translation>
 <translation id="662080504995468778">Usiondoke</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Ongeza</translation>
 <translation id="780301667611848630">Hapana</translation>
 <translation id="7804248752222191302">Tovuti inatumia kamera yako</translation>
-<translation id="7816129586531226979">Tovuti zinazohusiana zinaweza kukumbuka taarifa zako kwenye tovuti mbalimbali</translation>
 <translation id="7817023149356982970">Utaondolewa kwenye akaunti ya tovuti hii.</translation>
-<translation id="7828557259026017104">Vidakuzi ni faili zinazoundwa na tovuti unazotembelea. Tovuti huvitumia kukumbuka mapendeleo yako. Vidakuzi vya washirika wengine hutengenezwa na tovuti nyingine. Tovuti hizo humiliki baadhi ya maudhui kama vile matangazo au picha ambazo unaona kwenye kurasa za wavuti unazotembelea.</translation>
 <translation id="7835852323729233924">Kucheza maudhui</translation>
 <translation id="783819812427904514">Rejesha sauti ya video</translation>
 <translation id="7846076177841592234">Ghairi uchaguzi</translation>

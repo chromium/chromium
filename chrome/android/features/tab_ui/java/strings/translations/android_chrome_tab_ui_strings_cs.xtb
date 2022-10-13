@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Odebrat</translation>
 <translation id="125153950246128346">Další kartu zobrazíte klepnutím</translation>
 <translation id="1302104331113804646">Nastavení sledování cen</translation>
-<translation id="1310482092992808703">Seskupit karty</translation>
 <translation id="1378979118429748177">Dostávejte upozornění na pokles ceny</translation>
 <translation id="1403228085774130835">Své zavřené karty najdete v sekci Nedávno použité karty v hlavní nabídce prohlížeče Chrome</translation>
 <translation id="1455506303394048917">Vaše aktivita na těchto anonymních kartách bude z tohoto zařízení vymazána</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">hodnocení</translation>
 <translation id="3291470810748040983">Když bude na otevřené kartě nižší cena, dostanete upozornění</translation>
 <translation id="3328308545011660196">Návrh: Některé karty (<ph name="NUMBER_OF_TABS" />) spolu pravděpodobně souvisejí. Chcete je seskupit?</translation>
-<translation id="3499853001094440183">Zrušit seskupení karet</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sbalit <ph name="TABS_COUNT_ONE" /> kartu.}few{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> se <ph name="TABS_COUNT_MANY" /> kartami.}many{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karty.}other{Sbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
 <translation id="3882834874697329510">Pokud chcete dostat upozornění, když bude na otevřené kartě nižší cena, v Nastavení zapněte oznámení.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Skrýt celoobrazovkovou mřížku</translation>
 <translation id="5076161749301278626">Zobrazit recenze obchodu?</translation>
 <translation id="5082793167783849073">Rychle stránky porovnejte tím, že vytvoříte skupinu. Chcete-li začít, podržte odkaz.</translation>
-<translation id="5453029940327926427">Zavřít karty</translation>
 <translation id="5490235265819901748">Skupina byla rozbalena</translation>
 <translation id="5494920125229734069">Vybrat vše</translation>
 <translation id="5533021382642990449">Zobrazit později</translation>

@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
-<translation id="1068168522143272502">La llista d'adreces i opcions de pagament que cal emplenar durant els fluxos de tramitació de compra s'ha obert a mitja alçada.</translation>
-<translation id="2148715923718146918">Element seleccionat</translation>
+<translation id="1275718070701477396">Seleccionada</translation>
 <translation id="248973266728004341">Afegeix una targeta de crèdit nova</translation>
-<translation id="2501278716633472235">Torna</translation>
-<translation id="312532069930005172">Obre la configuració del perfil d'Emplenament automàtic</translation>
+<translation id="385051799172605136">Enrere</translation>
 <translation id="4401440167302712543">Emplena automàticament la informació d'enviament i de pagament quan facis el pagament</translation>
 <translation id="4526274353008646337">Afegeix una adreça nova</translation>
 <translation id="567079066552447069">La llista d'adreces i opcions de pagament que cal emplenar durant els fluxos de tramitació de compra està tancada.</translation>
-<translation id="6350814703899626921">Canvia la selecció de la targeta de crèdit.</translation>
-<translation id="731090949585674442">Canvia la selecció del perfil d'Emplenament automàtic.</translation>
-<translation id="8264703973415044493">La llista d'adreces i opcions de pagament que cal emplenar durant els fluxos de tramitació de compra s'ha obert a alçada completa.</translation>
-<translation id="8315600272591552085">Llista d'adreces i opcions de pagament que cal emplenar durant els fluxos de tramitació de compra.</translation>
+<translation id="5747552184818312860">Caduca el dia</translation>
+<translation id="6476284679642588870">Gestiona les formes de pagament</translation>
+<translation id="7974390230414479278">Element del menú</translation>
 <translation id="884264119367021077">Adreça d’enviament</translation>
 <translation id="8873105120914375071">Vols pagar més ràpidament?</translation>
 <translation id="9032876013752408138">Emplena automàticament la meva informació</translation>
-<translation id="9130271303738808219">Obre la configuració de la targeta de crèdit</translation>
 <translation id="984275831282074731">Formes de pagament</translation>
 </translationbundle>

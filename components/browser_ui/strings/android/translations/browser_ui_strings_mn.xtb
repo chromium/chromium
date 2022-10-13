@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
-<translation id="1005794457625275818"><ph name="FPS_MEMBER" />-г оруулаад <ph name="FPS_OWNER" /> бүлэг дэх <ph name="FPS_MEMBERS_COUNT" /> сайтад күүкийг зөвшөөрсөн</translation>
 <translation id="1006017844123154345">Онлайнаар нээх</translation>
 <translation id="1044891598689252897">Сайтууд хэвийн ажиллана</translation>
 <translation id="1124090076051167250">Энэ нь сайт эсвэл таны Үндсэн нүүрэн дээрх аппуудаас хадгалсан <ph name="DATASIZE" /> өгөгдөл болон күүкиг арилгана.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" />-с удирддаг</translation>
 <translation id="2498359688066513246">Тусламж болон санал хүсэлт</translation>
 <translation id="2501278716633472235">Буцаах</translation>
+<translation id="2546283357679194313">Cookies болон сайтын дата</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 күүкиг блоклосон}other{# күүкиг блоклосон}}</translation>
 <translation id="2570922361219980984">Энэ төхөөрөмжид байршлын хандалт мөн адил унтраалттай байна. Үүнийг <ph name="BEGIN_LINK" />Андройдын тохиргоо<ph name="END_LINK" /> хэсэгт асаана уу.</translation>
 <translation id="257931822824936280">Өргөжсөн, энд дарж задална уу.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Илгээх</translation>
 <translation id="2677748264148917807">Үлдээх</translation>
 <translation id="2687403674020088961">Бүх күүкиг блоклох (зөвлөдөггүй)</translation>
-<translation id="2692299144678073135">Холбоотой сайтуудад таныг сайтууд дээр санахыг зөвшөөрнө үү</translation>
 <translation id="2704606927547763573">Хуулсан</translation>
 <translation id="2713106313042589954">Камерыг унтраах</translation>
 <translation id="2717722538473713889">Имэйл хаяг</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Гарчиг</translation>
 <translation id="4008040567710660924">Күүкиг тодорхой сайтад зөвшөөрнө үү.</translation>
 <translation id="4046123991198612571">Дараагийн бичлэг</translation>
-<translation id="4048876521107516222">Холбоотой сайтууд күүкиг таныг нэвтэрсэн хэвээр байлгах зэрэг зүйлсэд туслахын тулд ашигладаг</translation>
 <translation id="4149994727733219643">Веб хуудасны хялбаршуулсан харагдац</translation>
 <translation id="4165986682804962316">Сайтын тохиргоо</translation>
 <translation id="4169549551965910670">USB төхөөрөмжтэй холбогдлоо</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Хамгийн сүүлд <ph name="NUM_DAYS" /> хоногийн өмнө зочилсон</translation>
 <translation id="6561560012278703671">Илүү чимээгүй мессежийг ашиглах (мэдэгдлийн сануулгад танд саад болохыг хориглодог)</translation>
 <translation id="6593061639179217415">Дэлгэцийн сайт</translation>
-<translation id="6608211702542341247">Энэ сайт нь таны бүлэг дэх үйл ажиллагааг харах боломжтой <ph name="FPS_OWNER" />-н сайтуудын бүлэгт байна</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Хамгаалагдсан агуулга</translation>
 <translation id="662080504995468778">Үлдэх</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Нэмэх</translation>
 <translation id="780301667611848630">Үгүй, баярлалаа</translation>
 <translation id="7804248752222191302">Сайт таны камерыг ашиглаж байна</translation>
-<translation id="7816129586531226979">Холбоотой сайтууд таныг сайтууд дээр санаж магадгүй</translation>
 <translation id="7817023149356982970">Та энэ сайтаас гарна.</translation>
-<translation id="7828557259026017104">Күүки нь таны зочилдог веб сайтуудын үүсгэдэг файл юм. Сайтууд нь таны сонголтыг санахын тулд түүнийг ашигладаг. Гуравдагч талын күүкиг бусад сайт үүсгэдэг. Эдгээр сайт нь таны зочилдог веб хуудсан дээрээ хардаг зар эсвэл зураг зэрэг контентын заримыг нь эзэмшдэг.</translation>
 <translation id="7835852323729233924">Медиаг тоглуулж байна</translation>
 <translation id="783819812427904514">Видеоны дууг нээх</translation>
 <translation id="7846076177841592234">Сонголтыг цуцлах</translation>

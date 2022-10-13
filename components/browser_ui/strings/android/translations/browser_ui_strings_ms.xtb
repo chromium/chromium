@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
-<translation id="1005794457625275818">Kuki dibenarkan untuk <ph name="FPS_MEMBERS_COUNT" /> laman dalam kumpulan <ph name="FPS_OWNER" />, termasuk <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Buka Dalam Talian</translation>
 <translation id="1044891598689252897">Tapak akan berfungsi seperti biasa</translation>
 <translation id="1124090076051167250">Tindakan ini akan mengosongkan <ph name="DATASIZE" /> data dan kuki yang disimpan oleh tapak atau apl pada Skrin utama anda.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Diurus oleh <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Bantuan &amp; maklum balas</translation>
 <translation id="2501278716633472235">Kembali</translation>
+<translation id="2546283357679194313">Kuki dan data tapak</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 kuki disekat}other{# kuki disekat}}</translation>
 <translation id="2570922361219980984">Akses lokasi turut dimatikan untuk peranti ini. Hidupkannya dalam <ph name="BEGIN_LINK" />Tetapan Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Dikembangkan - klik untuk meruntuhkan.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Serah</translation>
 <translation id="2677748264148917807">Tinggalkan</translation>
 <translation id="2687403674020088961">Sekat semua kuki (tidak disyorkan)</translation>
-<translation id="2692299144678073135">Benarkan laman berkaitan mengingati anda di seluruh laman</translation>
 <translation id="2704606927547763573">Disalin</translation>
 <translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2717722538473713889">Alamat e-mel</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Tajuk</translation>
 <translation id="4008040567710660924">Benarkan kuki untuk tapak tertentu.</translation>
 <translation id="4046123991198612571">Lagu seterusnya</translation>
-<translation id="4048876521107516222">Laman berkaitan menggunakan kuki untuk membantu melakukan perkara seperti memastikan anda kekal log masuk</translation>
 <translation id="4149994727733219643">Paparan ringkas bagi halaman web</translation>
 <translation id="4165986682804962316">Tetapan tapak</translation>
 <translation id="4169549551965910670">Disambungkan kepada peranti USB</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Terakhir dilawati <ph name="NUM_DAYS" /> hari yang lalu</translation>
 <translation id="6561560012278703671">Gunakan pemesejan yang lebih senyap (menyekat gesaan pemberitahuan daripada mengganggu anda)</translation>
 <translation id="6593061639179217415">Tapak desktop</translation>
-<translation id="6608211702542341247">Laman ini berada dalam kumpulan laman <ph name="FPS_OWNER" /> yang boleh melihat aktiviti anda dalam kumpulan</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Kandungan yang dilindungi</translation>
 <translation id="662080504995468778">Kekal di sini</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Tambah</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>
 <translation id="7804248752222191302">Suatu tapak sedang menggunakan kamera anda</translation>
-<translation id="7816129586531226979">Laman berkaitan mungkin mengingati anda merentas laman</translation>
 <translation id="7817023149356982970">Anda akan dilog keluar daripada tapak ini.</translation>
-<translation id="7828557259026017104">Kuki ialah fail yang dibuat oleh laman web yang anda lawati. Tapak menggunakan kuki untuk mengingat pilihan anda. Kuki pihak ketiga dibuat oleh tapak lain. Tapak ini memiliki sebahagian daripada kandungan, seperti iklan atau imej, yang anda lihat dalam halaman web yang anda lawati.</translation>
 <translation id="7835852323729233924">Memainkan media</translation>
 <translation id="783819812427904514">Nyahredam video</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>

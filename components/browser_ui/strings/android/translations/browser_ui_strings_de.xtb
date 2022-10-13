@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
-<translation id="1005794457625275818">Cookies sind für <ph name="FPS_MEMBERS_COUNT" /> Websites in der Gruppe „<ph name="FPS_OWNER" />“ erlaubt, darunter „<ph name="FPS_MEMBER" />“</translation>
 <translation id="1006017844123154345">Online öffnen</translation>
 <translation id="1044891598689252897">Websites funktionieren normal</translation>
 <translation id="1124090076051167250">Dadurch werden <ph name="DATASIZE" /> an von Websites oder Apps auf dem Startbildschirm gespeicherten Daten und Cookies gelöscht.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Über <ph name="APP_NAME" /> verwaltet</translation>
 <translation id="2498359688066513246">Hilfe &amp; Feedback</translation>
 <translation id="2501278716633472235">Zurück</translation>
+<translation id="2546283357679194313">Cookies und Websitedaten</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Ein Cookie blockiert}other{# Cookies blockiert}}</translation>
 <translation id="2570922361219980984">Der Standortzugriff ist für dieses Gerät ebenfalls deaktiviert. Du kannst ihn in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> aktivieren.</translation>
 <translation id="257931822824936280">Maximiert – zum Minimieren klicken</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Senden</translation>
 <translation id="2677748264148917807">Verlassen</translation>
 <translation id="2687403674020088961">Alle Cookies blockieren (nicht empfohlen)</translation>
-<translation id="2692299144678073135">Zulassen, dass sich ähnliche Websites websiteübergreifend an dich erinnern</translation>
 <translation id="2704606927547763573">Kopiert</translation>
 <translation id="2713106313042589954">Kamera ausschalten</translation>
 <translation id="2717722538473713889">E-Mail-Adressen</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4008040567710660924">Cookies für eine bestimmte Website werden zugelassen.</translation>
 <translation id="4046123991198612571">Nächster Titel</translation>
-<translation id="4048876521107516222">Ähnliche Websites nutzen Cookies, damit du beispielsweise angemeldet bleibst</translation>
 <translation id="4149994727733219643">Vereinfachte Ansicht für Webseiten</translation>
 <translation id="4165986682804962316">Website-Einstellungen</translation>
 <translation id="4169549551965910670">Mit einem USB-Gerät verbunden</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Vor <ph name="NUM_DAYS" /> Tagen zuletzt besucht</translation>
 <translation id="6561560012278703671">Unaufdringlichere Benachrichtigungen verwenden (störende Aufforderungen zum Annehmen von Benachrichtigungen werden blockiert)</translation>
 <translation id="6593061639179217415">Desktopwebsite</translation>
-<translation id="6608211702542341247">Diese Website gehört zur Gruppe von Websites von <ph name="FPS_OWNER" />, die deine Gruppenaktivitäten sehen können</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Geschützte Inhalte</translation>
 <translation id="662080504995468778">Bleiben</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="780301667611848630">Kein Interesse</translation>
 <translation id="7804248752222191302">Eine Website verwendet deine Kamera</translation>
-<translation id="7816129586531226979">Ähnliche Websites erinnern sich möglicherweise websiteübergreifend an dich</translation>
 <translation id="7817023149356982970">Du wirst von dieser Website abgemeldet.</translation>
-<translation id="7828557259026017104">Cookies sind Dateien, die von Websites erstellt werden, die du besuchst. Sie werden zum Speichern deiner Einstellungen verwendet. Drittanbieter-Cookies werden von anderen Websites erstellt. Diesen Websites gehören einige der Inhalte, wie z. B. Werbeanzeigen oder Bilder, die du auf der besuchten Webseite siehst.</translation>
 <translation id="7835852323729233924">Medien werden wiedergegeben</translation>
 <translation id="783819812427904514">Stummschaltung des Videos aufheben</translation>
 <translation id="7846076177841592234">Auswahl aufheben</translation>

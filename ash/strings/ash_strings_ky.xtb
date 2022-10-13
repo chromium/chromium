@@ -340,6 +340,7 @@
 <translation id="2865888419503095837">Тармак маалыматы</translation>
 <translation id="2872961005593481000">Жабуу</translation>
 <translation id="2878884018241093801">Акыркы терезелер жок</translation>
+<translation id="2885950158625301909">Кеңири маалымат</translation>
 <translation id="2891209721153296020">"Тандоодон чыгаруу"</translation>
 <translation id="2894949423239620203">Кабель майнаптуулукка кедергисин тийгизиши мүмкүн</translation>
 <translation id="2903844815300039659"><ph name="NAME" /> тармагына туташып турат, <ph name="STRENGTH" /></translation>
@@ -1051,6 +1052,7 @@
 <translation id="6961121602502368900">Жумуш профилинде телефондун үнүн басууга болбойт</translation>
 <translation id="6961840794482373852">Alt + өйдө жебе ыкчам баскычы өзгөртүлдү. Барактын өйдө жагына жылдыруу баскычын колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + өйдө жебени басыңыз.</translation>
 <translation id="696267987219125751">Камеранын алкагы өчүк.</translation>
+<translation id="6964690557625666701">Бардык кадалган нерселер көрүнбөй турат</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Баштоо</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1361,8 @@
 <translation id="8734991477317290293">Ал сырсөзүңүздү тергенде баскан баскычтарды билип алууга аракет кылышы мүмкүн</translation>
 <translation id="8735678380411481005">Баскычтоптун жарыгынын түсү</translation>
 <translation id="8735953464173050365">Баскычтоптун жөндөөлөрүн көрсөтүү. <ph name="KEYBOARD_NAME" /> тандалды</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Бул түзмөккө туташтырылган камераны(-ларды) колдонууга уруксат берилген колдонмолор жана веб-баракчалар үчүн камераны колдонуу параметрин иштетиңиз.</translation>
 <translation id="8755498163081687682">Өздүгүңүздү ырастаңыз: <ph name="ORIGIN_NAME" /> өздүгүңүздү ырастоону суранып жатат</translation>
 <translation id="875593634123171288">VPN жөндөөлөрүн көрсөтүү</translation>

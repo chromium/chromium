@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="125153950246128346">Trykk for å se en annen fane</translation>
 <translation id="1302104331113804646">Innstillinger for prissporing</translation>
-<translation id="1310482092992808703">Gruppér faner</translation>
 <translation id="1378979118429748177">Bli varslet når priser går ned</translation>
 <translation id="1403228085774130835">Du finner de lukkede fanene dine under Nylige faner på hovedmenyen i Chrome</translation>
 <translation id="1455506303394048917">Aktiviteten din på disse inkognitofanene blir fjernet fra enheten</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">vurdering</translation>
 <translation id="3291470810748040983">Du blir varslet når det finnes en lavere pris på en åpen fane</translation>
 <translation id="3328308545011660196">Forslag: <ph name="NUMBER_OF_TABS" /> faner ser ut til å være relaterte. Vil du gruppere dem?</translation>
-<translation id="3499853001094440183">Opphev fanegrupperingen</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}other{Skjul <ph name="TITLE_OF_GROUP" /> fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="3882834874697329510">For å bli varslet når det finnes en lavere pris på en åpen fane, slå på varsler i Innstillinger.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Skjul fullskjermrutenett</translation>
 <translation id="5076161749301278626">Vil du se butikkanmeldelser?</translation>
 <translation id="5082793167783849073">Sammenlign sider raskt ved å lage en gruppe. For å begynne, trykk og hold på en link.</translation>
-<translation id="5453029940327926427">Lukk faner</translation>
 <translation id="5490235265819901748">Fanegruppen er utvidet</translation>
 <translation id="5494920125229734069">Velg alle</translation>
 <translation id="5533021382642990449">Vis senere</translation>

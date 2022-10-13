@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="1057925581724305206">પૂર્ણ HD (1080p)</translation>
+<translation id="1076394037877376434">પેજ <ph name="PAGE_NUMBER" /> ડિલીટ કરો</translation>
 <translation id="1113173431709655881">કૅમેરા મોડ</translation>
 <translation id="1153190633558910465">ગ્રિડ બંધ કરો</translation>
 <translation id="1175958423215084756">લિંકની જાણકારી મળી. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">પેજ <ph name="PAGE_NUMBER" /> ડિલીટ કર્યું</translation>
 <translation id="1258009455399840361">ઘડિયાળની દિશામાં 90 ડિગ્રી ફેરવો</translation>
 <translation id="1276998909102132017">ગૅલરી છબીઓ</translation>
 <translation id="1300209025925956156">તમારા દસ્તાવેજને સ્કૅન કરો</translation>
@@ -114,7 +116,6 @@
 <translation id="5775960006311140197">નિષ્ણાત મોડ</translation>
 <translation id="5860033963881614850">બંધ</translation>
 <translation id="5869546221129391014">ગ્રિડ</translation>
-<translation id="5903928279335207406">પેજ ડિલીટ કરો</translation>
 <translation id="5916664084637901428">ચાલુ</translation>
 <translation id="5975083100439434680">ઝૂમ ઘટાડો</translation>
 <translation id="5976160379964388480">અન્ય લોકો</translation>

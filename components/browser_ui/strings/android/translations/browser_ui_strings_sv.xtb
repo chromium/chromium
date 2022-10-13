@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
-<translation id="1005794457625275818">Cookies tillåts för <ph name="FPS_MEMBERS_COUNT" />-webbplatser i gruppen <ph name="FPS_OWNER" />, inklusive <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Öppna onlineversionen</translation>
 <translation id="1044891598689252897">Webbplatser fungerar som de ska</translation>
 <translation id="1124090076051167250"><ph name="DATASIZE" /> data och cookies som har sparats av webbplatser eller appar på startskärmen rensas.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Hanteras av <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Hjälp och feedback</translation>
 <translation id="2501278716633472235">Föregående</translation>
+<translation id="2546283357679194313">Cookies och webbplatsdata</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie har blockerats}other{# cookies har blockerats}}</translation>
 <translation id="2570922361219980984">Platsåtkomst har inaktiverats på enheten också. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Vyn har expanderats. Komprimera den genom att klicka.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2687403674020088961">Blockera alla cookies (rekommenderas inte)</translation>
-<translation id="2692299144678073135">Tillåt att relaterade webbplatser kommer ihåg dig på alla webbplatser</translation>
 <translation id="2704606927547763573">Kopierat</translation>
 <translation id="2713106313042589954">Stäng av kameran</translation>
 <translation id="2717722538473713889">E-postadresser</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4008040567710660924">Tillåt cookies för en enskild webbplats.</translation>
 <translation id="4046123991198612571">Nästa spår</translation>
-<translation id="4048876521107516222">Relaterade webbplatser använder cookies för att till exempel hålla dig inloggad</translation>
 <translation id="4149994727733219643">Förenklad vy för webbsidor</translation>
 <translation id="4165986682804962316">Webbplatsinställningar</translation>
 <translation id="4169549551965910670">Ansluten till en USB-enhet</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Besöktes senast för <ph name="NUM_DAYS" /> dagar sedan</translation>
 <translation id="6561560012278703671">Få mer diskreta meddelanden (blockera störande aviseringar)</translation>
 <translation id="6593061639179217415">Datoranpassad webbplats</translation>
-<translation id="6608211702542341247">Den här webbplatsen finns i gruppen med webbplatser som tillhör <ph name="FPS_OWNER" />, som kan se din aktivitet i gruppen</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Skyddat innehåll</translation>
 <translation id="662080504995468778">Stanna kvar</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="780301667611848630">Nej tack</translation>
 <translation id="7804248752222191302">En webbplats använder kameran</translation>
-<translation id="7816129586531226979">Relaterade webbplatser kan komma ihåg dig på alla webbplatser</translation>
 <translation id="7817023149356982970">Du loggas ut från webbplatsen.</translation>
-<translation id="7828557259026017104">Cookies är filer som har skapats av webbplatser du besöker. De används för att spara inställningar på en webbplats. Cookies från tredje part skapas av andra webbplatser. Dessa webbplatser äger en del av innehållet som visas på webbplatsen du besöker, till exempel annonser eller bilder.</translation>
 <translation id="7835852323729233924">Spelar upp media</translation>
 <translation id="783819812427904514">Slå på ljudet för videon</translation>
 <translation id="7846076177841592234">Rensa val</translation>

@@ -1000,7 +1000,6 @@
 <translation id="1887442540531652736">Грешка при најавувањето</translation>
 <translation id="1887597546629269384">Повторно кажете „Hey Google“</translation>
 <translation id="189035593835762169">Одредби и услови</translation>
-<translation id="1890674179660343635">&lt;span&gt;ID: &lt;/span&gt;<ph name="EXTENSION_ID" /></translation>
 <translation id="1891362123137972260">Дискот е речиси полн. Ослободете простор на дискот.</translation>
 <translation id="189210018541388520">Отвори на цел екран</translation>
 <translation id="1892341345406963517">Здраво <ph name="PARENT_NAME" /></translation>
@@ -1387,6 +1386,7 @@
 <translation id="2251809247798634662">Нов прозорец „Инкогнито“</translation>
 <translation id="2252017960592955005">Заштита од прегледување (Бета)</translation>
 <translation id="225240747099314620">Овозможете идентификатори за заштитена содржина (може да биде потребно да се рестартира компјутерот)</translation>
+<translation id="2252617660166797081">Дознајте повеќе за автоматската промена на лозинка</translation>
 <translation id="2255077166240162850">Уредов беше заклучен за друг домен или режим.</translation>
 <translation id="2255317897038918278">Временско означување на Microsoft</translation>
 <translation id="2256115617011615191">Рестартирај сега</translation>
@@ -1520,6 +1520,7 @@
 <translation id="2348176352564285430">Апликација: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - Побарана е дозвола. Притиснете Ctrl + „Напред“ за да одговорите</translation>
 <translation id="234889437187286781">Грешка при вчитувањето податоци</translation>
+<translation id="2348939752188770364">Избришете ги податоците за персонализација…</translation>
 <translation id="2349610121459545414">Продолжи да дозволуваш сајтов да пристапува до локацијата</translation>
 <translation id="2349896577940037438">Ако сте ја вклучиле дополнителната поставка „Активност на интернет и апликации“, податоциве може да се зачувуваат во вашата сметка на Google. Може да ги гледате и бришете податоците, како и да ги менувате поставките за сметката на account.google.com.</translation>
 <translation id="2350133097354918058">Повторно вчитана</translation>
@@ -1939,6 +1940,7 @@
 <translation id="274029851662193272">Со спуштен раб</translation>
 <translation id="2740363334137520315">Се додава нов дел во „Пребарајте ги картичките“ за лесно наоѓање на картичките што репродуцираат аудио или видео. Пристапете преку копчето во горниот агол од прелистувачот.</translation>
 <translation id="2740531572673183784">Во ред</translation>
+<translation id="2740876196999178364">Криптографскиве клучеви се зачувани на уредов. Не се зачувани во вашата сметка на Google.</translation>
 <translation id="2741713322780029189">Отвори го терминалот за враќање</translation>
 <translation id="2741912629735277980">Прикажи UI на екранот за најавување</translation>
 <translation id="2742448780373473567">Инсталирањето на <ph name="DEVICE_OS" /> ќе ги презапише сите податоци на вашиот уред.</translation>
@@ -3691,6 +3693,7 @@
 <translation id="4409697491990005945">Маргини</translation>
 <translation id="4410545552906060960">Користете број (PIN) наместо лозинка за отклучување на уредот. Вашиот PIN може да го поставите и подоцна од „Поставки“.</translation>
 <translation id="4411578466613447185">Потпишувач на код</translation>
+<translation id="4411719918614785832">Криптографскиве клучеви се зачувани на Windows Hello на компјутеров. Не се зачувани во вашата сметка на Google.</translation>
 <translation id="4412698727486357573">Центар за помош</translation>
 <translation id="44141919652824029">Дали дозволувате <ph name="APP_NAME" /> да го преземе списокот со прикачените USB-уреди?</translation>
 <translation id="4414232939543644979">Нов &amp;инкогнито прозорец</translation>
@@ -3848,7 +3851,6 @@
 <translation id="4556194354084985730">Лесно најавувајте се на апликации и сајтови со зачуваните лозинки. Кога е исклучено, ќе бидете прашани пред најавувањето.</translation>
 <translation id="4558426062282641716">Потребна е дозвола за автоматско стартување</translation>
 <translation id="4559617833001311418">Сајтов пристапува до сензорите за движење или светлина.</translation>
-<translation id="4561098487691395071">Или одредете ја PPD-датотеката на печатачот</translation>
 <translation id="4561893854334016293">Нема неодамна променети дозволи</translation>
 <translation id="4562155214028662640">Додај отпечаток</translation>
 <translation id="4563210852471260509">Првичниот јазик на внесување е кинески</translation>
@@ -3981,6 +3983,7 @@
 <translation id="4677772697204437347">ГПУ-меморија</translation>
 <translation id="467823995058589466">Камерата е исклучена</translation>
 <translation id="4680105648806843642">Звукот е исклучен на страницава</translation>
+<translation id="4680112532510845139">Спуштете слика овде</translation>
 <translation id="4681453295291708042">Оневозможете „Споделување во близина“</translation>
 <translation id="4681512854288453141">Правило за извор</translation>
 <translation id="4681930562518940301">Отвори оригинална &amp;слика во нова картичка</translation>
@@ -4433,6 +4436,7 @@
 <translation id="5130675701626084557">Не можеше да се преземе профилот. Обидете се повторно подоцна или контактирајте со операторот за помош.</translation>
 <translation id="5131591206283983824">Влечење со допир на подлогата за допир</translation>
 <translation id="5135533361271311778">Не може да се создаде ставка на обележувач.</translation>
+<translation id="5135828720964881054">Автоматска промена на лозинка</translation>
 <translation id="5136343472380336530">Проверете дали двата уреди се отклучени, блиску еден до друг и дали имаат вклучено Bluetooth. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Избриши ја оваа ставка</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, пребарајте со <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
@@ -4732,7 +4736,6 @@
 <translation id="5427278936122846523">Секогаш преведувај</translation>
 <translation id="5427459444770871191">Ротирај &amp;надесно</translation>
 <translation id="542750953150239272">Ако продолжите, се согласувате дека уредов може и автоматски да презема и инсталира ажурирања и апликации од Google, од вашиот оператор и од производителот на уредот, веројатно со користење мобилен интернет. Некои од овие апликации може да нудат купувања во апликациите.</translation>
-<translation id="5427936139162668357">Прикажи PPD</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Достапно е ажурирање)</translation>
 <translation id="542948651837270806">Треба да се инсталира ажурирање за фирмверот на Trusted Platform Module. Видете <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Полна ширина</translation>
@@ -4947,6 +4950,7 @@
            и <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /></translation>
 <translation id="5620568081365989559">DevTools бара целосен пристап до <ph name="FOLDER_PATH" />. Погрижете се да не откривате чувствителни информации.</translation>
 <translation id="5620612546311710611">статистика на користење</translation>
+<translation id="562250930904332809">&amp;Оневозможете „Автоматски титлови“</translation>
 <translation id="5623282979409330487">Овој сајт пристапува до вашите сензори за движење.</translation>
 <translation id="5623842676595125836">Дневник</translation>
 <translation id="5624120631404540903">Управувај со лозинки</translation>
@@ -6770,7 +6774,6 @@
 <translation id="7377481913241237033">Поврзете со код</translation>
 <translation id="7378611153938412599">Слабите лозинки се лесни за погаѓање. Уверете се дека создавате силни лозинки. <ph name="BEGIN_LINK" />Погледнете повеќе совети за безбедност.<ph name="END_LINK" /></translation>
 <translation id="73786666777299047">Отворете ја Веб-продавницата на Chrome</translation>
-<translation id="737938816678769289">Лесно поврзувајте и поставувајте уреди со брзо спарување во близина</translation>
 <translation id="7380459290951585794">Проверете дали телефонот е во близина, отклучен и со вклучени Bluetooth и Wi-Fi</translation>
 <translation id="7380622428988553498">Името на уредот содржи неважечки знаци</translation>
 <translation id="7380768571499464492"><ph name="PRINTER_NAME" /> е ажуриран</translation>
@@ -8131,7 +8134,6 @@
 <translation id="8645354835496065562">Продолжи да дозволуваш пристап до сензори</translation>
 <translation id="8645920082661222035">Предвидува опасни настани и ве предупредува пред да се случат</translation>
 <translation id="8646209145740351125">Оневозможи синхронизација</translation>
-<translation id="8646340610303779673">Не може да се преземе PPD.</translation>
 <translation id="864637694230589560">Сајтовите обично испраќаат известувања за да ве информираат за ударни вести или пораки од разговорите</translation>
 <translation id="8647385344110255847">Со ваша дозвола, вашето дете може да ја користи Google Play за да инсталира апликации</translation>
 <translation id="8647834505253004544">Неважечка веб-адреса</translation>
@@ -8192,7 +8194,6 @@
 <translation id="869884720829132584">Мени со апликации</translation>
 <translation id="869891660844655955">Рок на важност</translation>
 <translation id="8699120352855309748">Не нуди превод за овие јазици</translation>
-<translation id="8699188901396699995">PPD за <ph name="PRINTER_NAME" /></translation>
 <translation id="8702825062053163569">Вашиот <ph name="DEVICE_TYPE" /> е заклучен.</translation>
 <translation id="8703346390800944767">Прескокни ја рекламата</translation>
 <translation id="8705331520020532516">Сериски број</translation>
@@ -8482,6 +8483,7 @@
 <translation id="8970887620466824814">Нешто тргна наопаку.</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Проверете кај мрежниот администратор за да се осигурите дека заштитниот ѕид не ги блокира преземањата од серверите на Google.</translation>
+<translation id="8973263196882835828">&amp;Овозможете „Автоматски титлови“</translation>
 <translation id="8973557916016709913">Отстрани ниво на зумирање</translation>
 <translation id="8973596347849323817">Уредот може да го приспособите да одговара на вашите потреби. Овие функции за пристапност може да ги смените подоцна во „Поставки“.</translation>
 <translation id="897414447285476047">Целната датотека не е целосна поради проблем со врската.</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
-<translation id="1005794457625275818">„Бисквитките“ са разрешени за <ph name="FPS_MEMBERS_COUNT" /> сайта в групата на <ph name="FPS_OWNER" />, включително <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Отваряне онлайн</translation>
 <translation id="1044891598689252897">Сайтовете ще работят нормално</translation>
 <translation id="1124090076051167250">Съхраняваните от сайтовете или приложенията на началния екран данни и „бисквитки“ в размер на <ph name="DATASIZE" /> ще бъдат изчистени.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Управляват се от <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Помощ и отзиви</translation>
 <translation id="2501278716633472235">Назад</translation>
+<translation id="2546283357679194313">„Бисквитки“ и данни за сайтове</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Блокирана е 1 „бисквитка“}other{Блокирани са # „бисквитки“}}</translation>
 <translation id="2570922361219980984">Достъпът до местоположението е изключен и за това устройство. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Разгънато – кликнете за свиване.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Изпращане</translation>
 <translation id="2677748264148917807">Излизане</translation>
 <translation id="2687403674020088961">Блокиране на всички „бисквитки“ (не се препоръчва)</translation>
-<translation id="2692299144678073135">Разрешаване на сродните сайтове да ви помнят, когато превключвате между тях</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2713106313042589954">Изключване на камерата</translation>
 <translation id="2717722538473713889">Имейл адреси</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Заглавие</translation>
 <translation id="4008040567710660924">Разрешаване на „бисквитките“ за конкретен сайт.</translation>
 <translation id="4046123991198612571">Следващ запис</translation>
-<translation id="4048876521107516222">Свързаните сайтове използват „бисквитки“, за да ви помагат с различни неща, като например да останете в профила си</translation>
 <translation id="4149994727733219643">Опростен изглед на уеб страниците</translation>
 <translation id="4165986682804962316">Настройки за сайта</translation>
 <translation id="4169549551965910670">Установена е връзка с USB устройство</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Последно посещение: преди <ph name="NUM_DAYS" /> дни</translation>
 <translation id="6561560012278703671">Използване на по-малко натрапчиви съобщения (подканите за известия се блокират, така че да не ви прекъсват)</translation>
 <translation id="6593061639179217415">Настолен сайт</translation>
-<translation id="6608211702542341247">Този сайт е в групата сайтове на <ph name="FPS_OWNER" />, които могат да виждат активността ви в нея</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Защитено съдържание</translation>
 <translation id="662080504995468778">Оставане</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
 <translation id="7804248752222191302">Сайт използва камерата ви</translation>
-<translation id="7816129586531226979">Сродните сайтове може да ви помнят, когато превключвате между тях</translation>
 <translation id="7817023149356982970">Ще излезете от профила си в този сайт.</translation>
-<translation id="7828557259026017104">Това са файлове, създавани от уебсайтовете, които посещавате. Сайтовете ги използват, за да запомнят предпочитанията ви. „Бисквитките“ на трети страни се създават от други сайтове. Тези сайтове притежават част от съдържанието, като например реклами или изображения, което виждате на посетената от вас уеб страница.</translation>
 <translation id="7835852323729233924">Възпроизвеждане на мултимедия</translation>
 <translation id="783819812427904514">С образ</translation>
 <translation id="7846076177841592234">Анулиране на избора</translation>

@@ -456,6 +456,7 @@
 <translation id="4900532980794411603">Del med Parallels Desktop</translation>
 <translation id="4902546322522096650">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – koble til</translation>
 <translation id="4906580650526544301">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – <ph name="PROVIDER_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – detaljer</translation>
+<translation id="4929673617759421391">Innliming av denne filen er blokkert på grunn av en administratorregel</translation>
 <translation id="4935975195727477204">Gazania-blomst</translation>
 <translation id="4943368462779413526">Fotball</translation>
 <translation id="4961158930123534723">1 mappe er delt med Parallels Desktop</translation>
@@ -513,6 +514,7 @@
 <translation id="5286194356314741248">Skanning</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5288481194217812690"><ph name="FILENAME" /></translation>
+<translation id="5293615890992542006">Flytting av denne filen er blokkert på grunn av en administratorregel</translation>
 <translation id="5305688511332277257">Ingen installert</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5318819489018851358">Del med Linux</translation>
@@ -647,6 +649,7 @@
 <translation id="642282551015776456">Dette navnet kan ikke brukes som fil- eller mappenavn</translation>
 <translation id="6423031066725912715">Vietnamesisk med TCVN-tastatur</translation>
 <translation id="6430271654280079150">Du har ett forsøk igjen.</translation>
+<translation id="643243556292470964">Slettede filer flyttes nå til papirkurven</translation>
 <translation id="6485131920355264772">Kunne ikke hente informasjon om lagringsplass</translation>
 <translation id="6495925982925244349">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – detaljer</translation>
 <translation id="649877868557234318">Pakker ut <ph name="FILE_NAME" /> i <ph name="FOLDER_NAME" /></translation>
@@ -713,6 +716,7 @@
 <translation id="6993826899923627728">Disse elementene ligger i papirkurven din</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> mapper er valgt</translation>
 <translation id="7008426324576352165">Organisasjonen din trenger mer lagringsplass for å fullføre opplastingen.</translation>
+<translation id="7009985720488544166">Flytting av <ph name="COUNT" /> filer er blokkert på grunn av en administratorregel</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Installeringen mislyktes.</translation>
 <translation id="7031639531908619281">Tyrkisk</translation>
@@ -972,6 +976,7 @@
 <translation id="9183302530794969518">Google Dokumenter</translation>
 <translation id="9189836632794948435">Kasakhisk</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" /> elementer er pakket ut.</translation>
+<translation id="9210751050717126865">Innliming av <ph name="COUNT" /> filer er blokkert på grunn av en administratorregel</translation>
 <translation id="9213073329713032541">Installeringen er startet.</translation>
 <translation id="9219103736887031265">Bilder</translation>
 <translation id="9219908252191632183">Månelandskap</translation>

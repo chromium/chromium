@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">削除</translation>
 <translation id="125153950246128346">タップすると他のタブが表示されます</translation>
 <translation id="1302104331113804646">価格トラッキングの設定</translation>
-<translation id="1310482092992808703">タブをグループ化</translation>
 <translation id="1378979118429748177">値下げがあった場合に通知されます</translation>
 <translation id="1403228085774130835">閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます</translation>
 <translation id="1455506303394048917">これらのシークレット タブでのアクティビティはこのデバイスから削除されます</translation>
@@ -50,7 +49,6 @@
 <translation id="5073204694187207510">全画面グリッドを非表示</translation>
 <translation id="5076161749301278626">店舗の審査を確認しますか？</translation>
 <translation id="5082793167783849073">グループを作成して簡単にページを比較できます。グループを作成するには、リンクを長押しします。</translation>
-<translation id="5453029940327926427">複数のタブを閉じる</translation>
 <translation id="5490235265819901748">タブグループを展開しました</translation>
 <translation id="5494920125229734069">すべて選択する</translation>
 <translation id="5533021382642990449">後で表示</translation>
@@ -66,6 +64,8 @@
 <translation id="6193448654517602979">タブを選択</translation>
 <translation id="6228793724645064692">（ストアの評価）</translation>
 <translation id="6333260925957816943">このショップに関する情報</translation>
+<translation id="639823877092900621">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブのグループ化を解除}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブのグループ化を解除}}</translation>
+<translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブ}other{<ph name="TABS_COUNT_MANY" /> 個のタブ}}</translation>
 <translation id="6510648526783655549">タブバーを閉じます</translation>
 <translation id="6549021453810473782">ストア情報を表示</translation>
 <translation id="6562820390860419811">タブを左に移動</translation>

@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
-<translation id="1005794457625275818"><ph name="FPS_OWNER" /> ग्रुप में <ph name="FPS_MEMBERS_COUNT" /> साइटों के लिए कुकी का इस्तेमाल किया जा सकता है. इसमें <ph name="FPS_MEMBER" /> भी शामिल है</translation>
 <translation id="1006017844123154345">ऑनलाइन खोलें</translation>
 <translation id="1044891598689252897">साइटें सामान्य रूप से काम करेंगी</translation>
 <translation id="1124090076051167250">इससे वे <ph name="DATASIZE" /> डेटा और कुकी मिट जाएंगे जिन्हें साइटों या ऐप्लिकेशन ने आपकी होम स्क्रीन पर सेव किया है.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678"><ph name="APP_NAME" /> मैनेज करता है</translation>
 <translation id="2498359688066513246">सहायता और फ़ीडबैक</translation>
 <translation id="2501278716633472235">वापस जाएं</translation>
+<translation id="2546283357679194313">कुकी और साइट डेटा</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 कुकी को ब्लॉक किया गया}one{# कुकी को ब्लॉक किया गया}other{# कुकी ब्लॉक किए गए}}</translation>
 <translation id="2570922361219980984">इस डिवाइस के लिए जगह की जानकारी का एक्सेस भी बंद है. उसे <ph name="BEGIN_LINK" />Android सेटिंग<ph name="END_LINK" /> में चालू करें.</translation>
 <translation id="257931822824936280">बड़ा किया गया - छोटा करने के लिए क्‍लिक करें.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">सबमिट करें</translation>
 <translation id="2677748264148917807">छोड़ें</translation>
 <translation id="2687403674020088961">सभी कुकी ब्लॉक करें (हम ऐसा करने का सुझाव नहीं देते)</translation>
-<translation id="2692299144678073135">मिलती-जुलती सभी साइटों को, आपकी विज़िट की जानकारी याद रखने की अनुमति दें</translation>
 <translation id="2704606927547763573">कॉपी किया गया</translation>
 <translation id="2713106313042589954">कैमरा बंद करें</translation>
 <translation id="2717722538473713889">ईमेल पते</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">शीर्षक</translation>
 <translation id="4008040567710660924">किसी खास साइट के लिए कुकी की मंज़ूरी दें.</translation>
 <translation id="4046123991198612571">अगला ट्रैक</translation>
-<translation id="4048876521107516222">Chrome से मिलती-जुलती साइटें कुकी का इस्तेमाल करती हैं. इससे आपको साइन इन रहने जैसी चीज़ों में मदद मिलती है</translation>
 <translation id="4149994727733219643">वेब पेजों के लिए सरल बनाया गया व्यू</translation>
 <translation id="4165986682804962316">साइट सेटिंग</translation>
 <translation id="4169549551965910670">यूएसबी डिवाइस से कनेक्ट है</translation>
@@ -313,9 +311,7 @@
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
 <translation id="7804248752222191302">कोई साइट आपका कैमरा इस्तेमाल कर रही है</translation>
-<translation id="7816129586531226979">मिलती-जुलती सभी साइटों पर, आपकी विज़िट की जानकारी याद रखी जा सकती है</translation>
 <translation id="7817023149356982970">आप इस साइट से साइन आउट हो जाएंगे.</translation>
-<translation id="7828557259026017104">आप जिन वेबसाइटों पर जाते हैं उनकी बनाई फ़ाइलें कुकी कहलाती हैं. आपकी प्राथमिकताओं को याद रखने के लिए, साइटें उनका इस्तेमाल करती हैं. अन्य साइटें, तीसरे पक्ष की कुकी बनाती हैं. इन साइटों पर विज्ञापन या इमेज जैसी कुछ सामग्री होती हैं. ये उस वेबपेज पर दिखती है जिस पर आप जाते हैं.</translation>
 <translation id="7835852323729233924">चलाया जा रहा मीडिया</translation>
 <translation id="783819812427904514">वीडियो अनम्यूट करें</translation>
 <translation id="7846076177841592234">चुना गया हटाएं</translation>

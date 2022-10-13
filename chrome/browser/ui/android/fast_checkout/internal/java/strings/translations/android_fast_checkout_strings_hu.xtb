@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
-<translation id="1068168522143272502">A fizetési folyamat során használandó címek és fizetési lehetőségek listája meg van nyitva félmagasságban.</translation>
-<translation id="2148715923718146918">Kiválasztott elem</translation>
+<translation id="1275718070701477396">Kijelölve</translation>
 <translation id="248973266728004341">Új bankkártya hozzáadása</translation>
-<translation id="2501278716633472235">Visszalépés</translation>
-<translation id="312532069930005172">Profil automatikus kitöltéssel kapcsolatos beállításainak megnyitása</translation>
+<translation id="385051799172605136">Vissza</translation>
 <translation id="4401440167302712543">Szállítási és fizetési adatok automatikus kitöltése fizetéskor</translation>
 <translation id="4526274353008646337">Új cím hozzáadása</translation>
 <translation id="567079066552447069">A fizetési folyamat során használandó címek és fizetési lehetőségek listája be van zárva.</translation>
-<translation id="6350814703899626921">Kiválasztott bankkártya módosítása.</translation>
-<translation id="731090949585674442">Profil automatikus kitöltéssel kapcsolatos beállításainak módosítása.</translation>
-<translation id="8264703973415044493">A fizetési folyamat során használandó címek és fizetési lehetőségek listája meg van nyitva teljes magasságban.</translation>
-<translation id="8315600272591552085">A fizetési folyamat során használandó címek és fizetési lehetőségek listája.</translation>
+<translation id="5747552184818312860">Lejár</translation>
+<translation id="6476284679642588870">Fizetési módok kezelése</translation>
+<translation id="7974390230414479278">Menüelem</translation>
 <translation id="884264119367021077">Szállítási cím</translation>
 <translation id="8873105120914375071">Gyorsabban szeretne fizetni?</translation>
 <translation id="9032876013752408138">Adatok automatikus kitöltése</translation>
-<translation id="9130271303738808219">Bankkártya-beállítások megnyitása</translation>
 <translation id="984275831282074731">Fizetési módok</translation>
 </translationbundle>

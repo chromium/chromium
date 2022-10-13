@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Сканирование документа</translation>
 <translation id="1309250603447638106">Идет скачивание обновлений для функции сканирования документов.</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Для настройки нажмите Поиск + Стрелка влево.</translation>
+<translation id="1417314334557041815">Изменить страницу <ph name="INDEX" /></translation>
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1467231725790366244">Отключено устройство <ph name="CAMERA" />.</translation>
 <translation id="1473110567575736769">Таймер на 3 сек.</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Ничего не записано.</translation>
 <translation id="1838104802459806957">Наклонить вверх</translation>
+<translation id="1843105061469674856">Сканировать ещё одну страницу</translation>
 <translation id="1851169887664797861">Доступны дополнительные настройки камеры</translation>
 <translation id="1851616744363735765">ПРИОСТАНОВЛЕНО</translation>
 <translation id="1862930711583847113">Не удалось экспортировать файл <ph name="FILE" />.</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Разрешение этой камеры нельзя изменить</translation>
 <translation id="4269820728363426813">Копировать адрес ссылки</translation>
 <translation id="4281620174117014503">Среднее разрешение</translation>
+<translation id="428234092390943511">Уменьшенное изображение страницы</translation>
 <translation id="4329152592498422850">Перейти к созданию квадратного фото</translation>
 <translation id="4340659173795395806">Создавайте многостраничные PDF</translation>
 <translation id="4383571725254449280">Распечатать журнал производительности</translation>
@@ -107,7 +110,6 @@
 <translation id="5775960006311140197">Режим эксперта</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
 <translation id="5869546221129391014">Сетка</translation>
-<translation id="5903928279335207406">Удалить страницу</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
 <translation id="5975083100439434680">Уменьшить</translation>
 <translation id="5976160379964388480">Другое</translation>

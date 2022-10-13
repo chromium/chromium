@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
+<translation id="1057925581724305206">ഫുൾ HD (1080p)</translation>
 <translation id="1113173431709655881">ക്യാമറാ മോഡ്</translation>
 <translation id="1153190633558910465">ഗ്രിഡ് ഓഫാക്കുക</translation>
 <translation id="1175958423215084756">ലിങ്ക് തിരിച്ചറിഞ്ഞു. <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">സാധാരണം</translation>
 <translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">ഒന്നും റെക്കോർഡ് ചെയ്‌തില്ല</translation>
 <translation id="1838104802459806957">മുകളിലേക്ക് ടിൽറ്റ് ചെയ്യുക</translation>
 <translation id="1843105061469674856">മറ്റൊരു പേജ് സ്കാൻ ചെയ്യുക</translation>
@@ -93,6 +95,7 @@
 <translation id="4705093842003735294">പൂർണ്ണ റെസല്യൂഷൻ</translation>
 <translation id="4890010094662541459">3 x 3</translation>
 <translation id="491895758387112773">മൾട്ടിസ്ട്രീം വീഡിയോ റെക്കോർഡിംഗ്</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">ഫോട്ടോയുടെ വീക്ഷണ അനുപാതം</translation>
 <translation id="5057360777601936059">നിങ്ങളുടെ ക്യാമറ നിലവിൽ ലഭ്യമല്ല.
         ക്യാമറ ശരിയായി കണക്‌റ്റ് ചെയ്‌തിട്ടുണ്ടോയെന്ന് പരിശോധിക്കുക.</translation>
@@ -101,6 +104,7 @@
 <translation id="5266635337630551423">ഡോക്യുമെന്റിന്റെ മുകൾ ഭാഗത്തെ ഇടത് മൂല</translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5320594929574852403">ഇടത് ദിശയിൽ നീങ്ങുന്നു</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">ഡോക്യുമെന്റിന്റെ എല്ലാ അരികുകളും ഫ്രെയിമിനകത്ത് വയ്ക്കുക. ഡോക്യുമെന്റും അതിന്റെ പശ്ചാത്തലവും വ്യത്യസ്ത നിറങ്ങളിലാണെങ്കിൽ സ്‌കാൻ ചെയ്യൽ മികച്ച രീതിയിൽ പ്രവർത്തിക്കുന്നു.</translation>
 <translation id="5662366948659129155"><ph name="COUNT" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു</translation>
 <translation id="5671277269877808209">ചതുരം</translation>
@@ -110,7 +114,6 @@
 <translation id="5775960006311140197">വിദഗ്‌ദ്ധ മോഡ്</translation>
 <translation id="5860033963881614850">ഓഫാക്കുക</translation>
 <translation id="5869546221129391014">ഗ്രിഡ്</translation>
-<translation id="5903928279335207406">പേജ് ഇല്ലാതാക്കുക</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
 <translation id="5975083100439434680">സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="5976160379964388480">മറ്റുള്ളവര്‍</translation>

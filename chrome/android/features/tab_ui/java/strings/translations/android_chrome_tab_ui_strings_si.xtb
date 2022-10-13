@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="125153950246128346">වෙනත් පටිත්තක් බැලීමට තට්ටු කරන්න</translation>
 <translation id="1302104331113804646">මිල හඹා යාමේ සැකසීම්</translation>
-<translation id="1310482092992808703">පටිති සමූහ කරන්න</translation>
 <translation id="1378979118429748177">මිල පහත වැටුණ විට දැනුම්දීම් ලබා ගන්න</translation>
 <translation id="1403228085774130835">Chrome ප්‍රධාන මෙනුව යටතේ ඇති මෑත ටැබ තුළ ඔබට ඔබගේ වසන ලද ටැබ සොයා ගත හැකිය</translation>
 <translation id="1455506303394048917">මෙම අප්‍රකට ටැබවල ඔබගේ ක්‍රියාකාරකම් මෙම උපාංගයෙන් ඉවත් කරනු ඇත</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">ඇගයීම</translation>
 <translation id="3291470810748040983">විවෘත ටැබයක අඩු මිලක් ඇති විට ඔබට ඇඟවීමක් ලැබෙනු ඇත</translation>
 <translation id="3328308545011660196">යෝජනාව: පටිති <ph name="NUMBER_OF_TABS" /> ක් අදාළ බව පෙනේ. ඒවා සමූහ කරන්නද?</translation>
-<translation id="3499853001094440183">පටිති සමූහගත නොකරන්න</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{ටැබ <ph name="TABS_COUNT_ONE" />ක් හකුළන්න.}one{<ph name="TITLE_OF_GROUP" /> ටැබ සමූහය ටැබ <ph name="TABS_COUNT_MANY" />ක් සමග හකුළන්න.}other{<ph name="TITLE_OF_GROUP" /> ටැබ සමූහය ටැබ <ph name="TABS_COUNT_MANY" />ක් සමග හකුළන්න.}}</translation>
 <translation id="3882834874697329510">විවෘත ටැබ් එකක අඩු මිලක් ඇති විට ඇඟවීමක් ලබා ගැනීමට, සැකසීම්වල දැනුම්දීම් ක්‍රියාත්මක කරන්න.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">පූර්ණ තිර ජාලකය සඟවන්න</translation>
 <translation id="5076161749301278626">වෙළඳසැල් සමාලෝචන බලන්නද?</translation>
 <translation id="5082793167783849073">කණ්ඩායමක් කිරීමෙන් ඉක්මනින් පිටු සංසන්දන කරන්න. පටන් ගැනීමට, සබැඳියක් ස්පර්ශ කර අල්ලා සිටින්න.</translation>
-<translation id="5453029940327926427">ටැබ් වසන්න</translation>
 <translation id="5490235265819901748">ටැබ සමූහය දිග හරින ලදි</translation>
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
 <translation id="5533021382642990449">පසුව පෙන්වන්න</translation>

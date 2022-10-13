@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
-<translation id="1005794457625275818">Cookies allowed for <ph name="FPS_MEMBERS_COUNT" /> sites in the <ph name="FPS_OWNER" /> group, including <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Open Online</translation>
 <translation id="1044891598689252897">Sites will work normally</translation>
 <translation id="1124090076051167250">This will clear <ph name="DATASIZE" /> of data and cookies stored by sites or by apps on your home screen.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Managed by <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Help &amp; feedback</translation>
 <translation id="2501278716633472235">Go back</translation>
+<translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 cookie blocked}other{# cookies blocked}}</translation>
 <translation id="2570922361219980984">Location access is also off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expanded – click to collapse.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Submit</translation>
 <translation id="2677748264148917807">Leave</translation>
 <translation id="2687403674020088961">Block all cookies (not recommended)</translation>
-<translation id="2692299144678073135">Allow related sites to remember you across sites</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2713106313042589954">Turn off camera</translation>
 <translation id="2717722538473713889">Email addresses</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Title</translation>
 <translation id="4008040567710660924">Allow cookies for a specific site.</translation>
 <translation id="4046123991198612571">Next track</translation>
-<translation id="4048876521107516222">Related sites use cookies to help with things like keeping you signed in</translation>
 <translation id="4149994727733219643">Simplified view for web pages</translation>
 <translation id="4165986682804962316">Site settings</translation>
 <translation id="4169549551965910670">Connected to a USB device</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Last visited <ph name="NUM_DAYS" /> days ago</translation>
 <translation id="6561560012278703671">Use quieter messaging (blocks notification prompts from interrupting you)</translation>
 <translation id="6593061639179217415">Desktop site</translation>
-<translation id="6608211702542341247">This site is in <ph name="FPS_OWNER" />'s group of sites that can see your activity in the group</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Protected content</translation>
 <translation id="662080504995468778">Stay</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Add</translation>
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7804248752222191302">A site is using your camera</translation>
-<translation id="7816129586531226979">Related sites may remember you across sites</translation>
 <translation id="7817023149356982970">You'll be signed out of this site.</translation>
-<translation id="7828557259026017104">Cookies are files created by websites that you visit. Sites use them to remember your preferences. Third-party cookies are created by other sites. These sites own some of the content, like ads or images, that you see on the web page that you visit.</translation>
 <translation id="7835852323729233924">Playing media</translation>
 <translation id="783819812427904514">Unmute video</translation>
 <translation id="7846076177841592234">Cancel selection</translation>

@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Poista</translation>
 <translation id="125153950246128346">Näytä toinen välilehti napauttamalla</translation>
 <translation id="1302104331113804646">Hintaseurannan asetukset</translation>
-<translation id="1310482092992808703">Ryhmittele välilehtiä</translation>
 <translation id="1378979118429748177">Saat ilmoituksia, kun hinnat laskevat</translation>
 <translation id="1403228085774130835">Löydät suljetut välilehdet Chromen päävalikon Hiljattain suljetut välilehdet ‑kohdasta</translation>
 <translation id="1455506303394048917">Toimintasi näillä incognito-välilehdillä tyhjennetään laitteelta</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">arvio</translation>
 <translation id="3291470810748040983">Saat ilmoituksen, kun avoimella välilehdellä oleva hinta laskee</translation>
 <translation id="3328308545011660196">Ehdotus: <ph name="NUMBER_OF_TABS" /> välilehteä vaikuttaa liittyvän toisiinsa. Lisätäänkö ne ryhmäksi?</translation>
-<translation id="3499853001094440183">Poista välilehtiryhmittely</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Tiivistä <ph name="TABS_COUNT_ONE" /> välilehti.}other{Tiivistä <ph name="TITLE_OF_GROUP" /> välilehtiryhmä, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="3882834874697329510">Jos haluat ilmoituksen, kun avoimella välilehdellä oleva hinta laskee, laita ilmoitukset päälle asetuksista.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Piilota koko näytön ruudukko</translation>
 <translation id="5076161749301278626">Näytetäänkö kaupan arvostelut?</translation>
 <translation id="5082793167783849073">Luo ryhmä vertaillaksesi sivuja nopeasti. Aloita koskettamalla linkkiä pitkään.</translation>
-<translation id="5453029940327926427">Sulje välilehdet</translation>
 <translation id="5490235265819901748">Välilehtiryhmä laajennettu</translation>
 <translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="5533021382642990449">Näytä myöhemmin</translation>

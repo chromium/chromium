@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">አስወግድ</translation>
 <translation id="125153950246128346">ሌላ ትር ለመመልከት መታ ያድርጉ</translation>
 <translation id="1302104331113804646">የዋጋ መከታተያ ቅንብሮች</translation>
-<translation id="1310482092992808703">ትሮችን ይሰብስቡ</translation>
 <translation id="1378979118429748177">ዋጋዎች ሲቀነሱ ማሳወቂያ ያግኙ</translation>
 <translation id="1403228085774130835">የተዘጉ ትሮችን በChrome ዋና ምናሌ ስር ባሉ በቅርብ ጊዜ ትሮች ውስጥ ማግኘት ይችላሉ</translation>
 <translation id="1455506303394048917">በእነዚህ ማንነት የማያሳውቁ ትሮች ውስጥ የሚኖርዎት እንቅስቃሴ ከዚህ መሣሪያ ላይ ይጸዳል።</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">የተሰጡ ደረጃዎች</translation>
 <translation id="3291470810748040983">በክፍት ትር ውስጥ ዝቅተኛ ዋጋ ሲኖር ማንቂያ ይደርስዎታል</translation>
 <translation id="3328308545011660196">የአስተያየት ጥቆማ፦ <ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ። ይቦደኑ?</translation>
-<translation id="3499853001094440183">ትሮችን ይነጥሉ</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትርን ሰብስብ።}one{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር ሰብስብ።}other{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን ከ<ph name="TABS_COUNT_MANY" /> ትሮች ጋር ሰብስብ።}}</translation>
 <translation id="3882834874697329510">በክፍት ትር ውስጥ ዝቅተኛ ዋጋ ሲኖር ማንቂያ ለማግኘት በቅንብሮች ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">የሙሉ ማያ ፍርግርግን ደብቅ</translation>
 <translation id="5076161749301278626">የመደብር ግምገማዎችን ይመለከታሉ?</translation>
 <translation id="5082793167783849073">ስብስብ በመፍጠር በፍጥነት ገጾችን ያነጻጽሩ። ለመጀመር አንድ አገናኝን ነክተው ይያዙ።</translation>
-<translation id="5453029940327926427">ትሮችን ይዝጉ</translation>
 <translation id="5490235265819901748">የትር ቡድን ተዘርግቷል</translation>
 <translation id="5494920125229734069">ሁሉንም ይመርጣል</translation>
 <translation id="5533021382642990449">በኋላ አሳይ</translation>

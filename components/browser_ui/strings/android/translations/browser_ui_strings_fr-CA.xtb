@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
-<translation id="1005794457625275818">Témoins autorisés pour <ph name="FPS_MEMBERS_COUNT" /> sites du groupe <ph name="FPS_OWNER" />, y compris <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Ouvrir en ligne</translation>
 <translation id="1044891598689252897">Les sites fonctionneront normalement</translation>
 <translation id="1124090076051167250">Cette action effacera <ph name="DATASIZE" /> de données et de témoins qu'ont stockés des sites ou des applications sur votre écran d'accueil.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Les notifications sont gérées par <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Aide et commentaires</translation>
 <translation id="2501278716633472235">Retour</translation>
+<translation id="2546283357679194313">Témoins et données de site</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 témoin bloqué}one{# témoin bloqué}other{# témoins bloqués}}</translation>
 <translation id="2570922361219980984">L'accès à la localisation est également désactivé pour cet appareil. Activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Développé : cliquer pour réduire</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Envoyer</translation>
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2687403674020088961">Bloquer tous les témoins (non recommandé)</translation>
-<translation id="2692299144678073135">Autoriser les sites associés à se souvenir de vous sur tous les sites</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2717722538473713889">Adresses de courriel</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4008040567710660924">Autoriser les témoins pour un site en particulier.</translation>
 <translation id="4046123991198612571">Chanson suivante</translation>
-<translation id="4048876521107516222">Les sites associés utilisent des témoins pour vous aider, par exemple, à vous garder connecté</translation>
 <translation id="4149994727733219643">Affichage simplifié pour les pages Web</translation>
 <translation id="4165986682804962316">Paramètres du site</translation>
 <translation id="4169549551965910670">Connecté à un appareil USB</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Dernière visite il y a <ph name="NUM_DAYS" /> jours</translation>
 <translation id="6561560012278703671">Activer l'affichage discret des messages (permet d'empêcher les notifications de vous interrompre)</translation>
 <translation id="6593061639179217415">Version ordinateur</translation>
-<translation id="6608211702542341247">Ce site fait partie du groupe de sites de <ph name="FPS_OWNER" /> qui peut voir votre activité dans le groupe</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Go</translation>
 <translation id="6612358246767739896">Contenu protégé</translation>
 <translation id="662080504995468778">Rester</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="780301667611848630">Non merci</translation>
 <translation id="7804248752222191302">Un site utilise votre appareil photo</translation>
-<translation id="7816129586531226979">Les sites connexes peuvent se souvenir de vous sur tous les sites</translation>
 <translation id="7817023149356982970">Vous serez déconnecté de ce site.</translation>
-<translation id="7828557259026017104">Les témoins sont des fichiers créés par les sites Web que vous visitez. Les sites les utilisent pour mémoriser vos préférences. Les témoins tiers sont ceux que créent d'autres sites. Ces sites possèdent certains types de contenu, comme des annonces et des images, que vous voyez sur les pages que vous visitez.</translation>
 <translation id="7835852323729233924">Élém. multim. en cours de lecture</translation>
 <translation id="783819812427904514">Réactiver le son de la vidéo</translation>
 <translation id="7846076177841592234">Annuler la sélection</translation>

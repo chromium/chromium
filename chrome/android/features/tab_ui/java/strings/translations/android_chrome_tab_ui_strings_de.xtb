@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Entfernen</translation>
 <translation id="125153950246128346">Tippen, um einen anderen Tab zu sehen</translation>
 <translation id="1302104331113804646">Einstellungen für die Preisbeobachtung</translation>
-<translation id="1310482092992808703">Tabs gruppieren</translation>
 <translation id="1378979118429748177">Benachrichtigt werden, wenn günstigere Preise verfügbar sind</translation>
 <translation id="1403228085774130835">Deine geschlossenen Tabs findest du im Chrome-Hauptmenü unter „Zuletzt geöffnete Tabs“</translation>
 <translation id="1455506303394048917">Deine Aktivitäten auf diesen Inkognitotabs werden von diesem Gerät gelöscht</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">Bewertung</translation>
 <translation id="3291470810748040983">Du erhältst eine Benachrichtigung, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist</translation>
 <translation id="3328308545011660196">Vorschlag: <ph name="NUMBER_OF_TABS" /> Tabs scheinen zusammenzugehören. Sollen sie gruppiert werden?</translation>
-<translation id="3499853001094440183">Tab-Gruppierung aufheben</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> Tab minimieren}other{Tabgruppe "<ph name="TITLE_OF_GROUP" />" mit <ph name="TABS_COUNT_MANY" /> Tabs minimieren}}</translation>
 <translation id="3882834874697329510">Falls du benachrichtigt werden möchtest, wenn auf einem offenen Tab ein günstigerer Preis verfügbar ist, aktiviere Benachrichtigungen in den Einstellungen.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Vollbildraster ausblenden</translation>
 <translation id="5076161749301278626">Möchtest du dir Händlerrezensionen ansehen?</translation>
 <translation id="5082793167783849073">Du kannst Seiten schnell miteinander vergleichen, indem du eine Gruppe erstellst. Berühre und halte einen Link, um den Vorgang zu starten.</translation>
-<translation id="5453029940327926427">Tabs schließen</translation>
 <translation id="5490235265819901748">Tabgruppe maximiert</translation>
 <translation id="5494920125229734069">Alle auswählen</translation>
 <translation id="5533021382642990449">Später anzeigen</translation>

@@ -647,6 +647,7 @@
 <translation id="642282551015776456">Este não é um nome válido para arquivos ou pastas.</translation>
 <translation id="6423031066725912715">Vietnamita com teclado TCVN</translation>
 <translation id="6430271654280079150">Você tem 1 tentativa restante.</translation>
+<translation id="643243556292470964">Os arquivos excluídos agora são movidos para a lixeira</translation>
 <translation id="6485131920355264772">Falha ao recuperar informações sobre espaço</translation>
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, gerenciada pelo seu administrador, detalhes</translation>
 <translation id="649877868557234318">Extraindo <ph name="FILE_NAME" /> para a pasta "<ph name="FOLDER_NAME" />"</translation>

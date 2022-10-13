@@ -1,21 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
-<translation id="1068168522143272502">Rhestr o gyfeiriadau ac opsiynau talu i'w llenwi yn ystod llif y ddesg dalu wedi agor ar hanner uchder.</translation>
-<translation id="2148715923718146918">Eitem a ddewisir</translation>
+<translation id="1275718070701477396">Wedi'i ddewis</translation>
 <translation id="248973266728004341">Ychwanegu cerdyn credyd newydd</translation>
-<translation id="2501278716633472235">Mynd yn ôl</translation>
-<translation id="312532069930005172">Agor gosodiadau proffil Awtolenwi</translation>
+<translation id="385051799172605136">Nôl</translation>
 <translation id="4401440167302712543">Awtolenwi gwybodaeth anfon a thalu wrth i chi dalu</translation>
 <translation id="4526274353008646337">Ychwanegu cyfeiriad newydd</translation>
 <translation id="567079066552447069">Mae'r rhestr o gyfeiriadau ac opsiynau talu i'w llenwi yn ystod llif y ddesg dalu ar gau.</translation>
-<translation id="6350814703899626921">Newid dewis cerdyn credyd.</translation>
-<translation id="731090949585674442">Newid dewis proffil Awtolenwi.</translation>
-<translation id="8264703973415044493">Rhestr o gyfeiriadau ac opsiynau talu i'w llenwi yn ystod llif y ddesg dalu wedi agor ar uchder llawn.</translation>
-<translation id="8315600272591552085">Rhestr o gyfeiriadau ac opsiynau talu i'w llenwi yn ystod llif y ddesg dalu.</translation>
+<translation id="5747552184818312860">Yn darfod</translation>
+<translation id="6476284679642588870">Rheoli dulliau talu</translation>
+<translation id="7974390230414479278">Eitem dewislen</translation>
 <translation id="884264119367021077">Cyfeiriad anfon</translation>
 <translation id="8873105120914375071">Talu'n gyflymach?</translation>
 <translation id="9032876013752408138">Awtolenwi fy ngwybodaeth</translation>
-<translation id="9130271303738808219">Agor y gosodiadau cerdyn credyd</translation>
 <translation id="984275831282074731">Dulliau talu</translation>
 </translationbundle>

@@ -5,7 +5,6 @@
 <translation id="1181037720776840403">Verwijderen</translation>
 <translation id="125153950246128346">Tik om nog een tabblad te bekijken</translation>
 <translation id="1302104331113804646">Instellingen voor prijstracking</translation>
-<translation id="1310482092992808703">Tabbladen groeperen</translation>
 <translation id="1378979118429748177">Melding krijgen als prijzen dalen</translation>
 <translation id="1403228085774130835">Je kunt je gesloten tabbladen vinden in Recente tabbladen in het hoofdmenu van Chrome</translation>
 <translation id="1455506303394048917">Je activiteit in deze incognitotabbladen wordt verwijderd van dit apparaat</translation>
@@ -33,7 +32,6 @@
 <translation id="3194464645767632461">beoordeling</translation>
 <translation id="3291470810748040983">Je krijgt een melding als er een lagere prijs is op een geopend tabblad</translation>
 <translation id="3328308545011660196">Suggestie: <ph name="NUMBER_OF_TABS" /> tabbladen lijken gerelateerd. Wil je deze groeperen?</translation>
-<translation id="3499853001094440183">Groepering van tabbladen opheffen</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tabblad samenvouwen.}other{De tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen samenvouwen.}}</translation>
 <translation id="3882834874697329510">Wil je een melding krijgen als er een lagere prijs is op een geopend tabblad, zet dan meldingen aan in Instellingen.</translation>
@@ -51,7 +49,6 @@
 <translation id="5073204694187207510">Raster op volledig scherm verbergen</translation>
 <translation id="5076161749301278626">Winkelreviews bekijken?</translation>
 <translation id="5082793167783849073">Vergelijk pagina's snel door een groep te maken. Tik op een link en houd deze vast om te beginnen.</translation>
-<translation id="5453029940327926427">Tabbladen sluiten</translation>
 <translation id="5490235265819901748">Tabbladgroep uitgevouwen</translation>
 <translation id="5494920125229734069">Alles selecteren</translation>
 <translation id="5533021382642990449">Later bekijken</translation>

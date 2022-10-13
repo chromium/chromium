@@ -456,6 +456,7 @@
 <translation id="4900532980794411603">Parallels Desktop ସହ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଫୋନ୍ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" />%, ବିବରଣୀ</translation>
+<translation id="4929673617759421391">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ ଏହି ଫାଇଲ ପେଷ୍ଟ କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="4935975195727477204">ଗାଜାନିଆ ଫୁଲ</translation>
 <translation id="4943368462779413526">ଫୁଟ୍‍ବଲ୍‌</translation>
 <translation id="4961158930123534723">Parallels Desktop ସହ 1ଟି ଫୋଲ୍ଡର ସେୟାର୍ କରାଯାଇଛି</translation>
@@ -507,6 +508,7 @@
 <translation id="5278111733643988471">ଏହି ଆଇଟମକୁ ରିଷ୍ଟୋର କରିବା ପାଇଁ, ଏହାକୁ ଟ୍ରାସର ବାହାରେ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ଡ୍ରାଗ କରନ୍ତୁ। ଏହି ଆଇଟମର ମୂଳ ଫୋଲ୍ଡର "<ph name="PARENT_FOLDER_NAME" />"କୁ ଡିଲିଟ କରିଦିଆଯାଇଛି।</translation>
 <translation id="5286194356314741248">ସ୍କାନ୍ ହେଉଛି</translation>
 <translation id="5288441970121584418">ବର୍ଗର୍</translation>
+<translation id="5293615890992542006">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ ଏହି ଫାଇଲ ମୁଭ କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="5305688511332277257">କିଛି ଇନ୍‍ଷ୍ଟଲ୍ କରାଯାଇନାହିଁ</translation>
 <translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
 <translation id="5318819489018851358">Linux ସହିତ ସେୟାର୍ କରନ୍ତୁ</translation>
@@ -641,6 +643,7 @@
 <translation id="642282551015776456">ଏହି ନାମ କୌଣସି ଫାଇଲ୍‍ କିମ୍ବା ଫୋଲ୍ଡର୍‌ର ନାମ ଭାବେ ବ୍ୟବହାର କରାଯାଇନପାରେ</translation>
 <translation id="6423031066725912715">TCVN କୀବୋର୍ଡ ସହ ଭିଏତନାମିଜ୍</translation>
 <translation id="6430271654280079150">ଆପଣଙ୍କ ପାଖରେ 1ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି।</translation>
+<translation id="643243556292470964">ଡିଲିଟ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ବର୍ତ୍ତମାନ ଟ୍ରାସକୁ ମୁଭ କରାଯାଇଛି</translation>
 <translation id="6485131920355264772">ଯାଗା ସମ୍ବନ୍ଧିତ ତଥ୍ୟ ପୁନରୁଦ୍ଧାର କରିବାରେ ବିଫଳ ହେଲା</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କର ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ବିବରଣୀ</translation>
 <translation id="649877868557234318"><ph name="FOLDER_NAME" />କୁ <ph name="FILE_NAME" /> ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଉଛି</translation>
@@ -707,6 +710,7 @@
 <translation id="6993826899923627728">ଏହି ଆଇଟମଗୁଡ଼ିକ ଆପଣଙ୍କ ଟ୍ରାସରେ ଅଛି</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" />ଫୋଲ୍ଡର୍‌ଗୁଡ଼ିକ ବଛାଯାଇଛି</translation>
 <translation id="7008426324576352165">ଅପଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ ଆପଣଙ୍କ ସଂସ୍ଥା ଅଧିକ ଷ୍ଟୋରେଜ ଆବଶ୍ୟକ କରେ।</translation>
+<translation id="7009985720488544166">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ <ph name="COUNT" />ଟି ଫାଇଲ ମୁଭ କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ଇନ୍‍ଷ୍ଟଲ୍ କରିହେଲା ନାହିଁ</translation>
 <translation id="7031639531908619281">ତୁର୍କିଶ୍</translation>
@@ -966,6 +970,7 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">କାଜାଖ୍</translation>
 <translation id="9200427192836333033"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମକୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରାଯାଇଛି।</translation>
+<translation id="9210751050717126865">ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ଅନୁଯାୟୀ <ph name="COUNT" />ଟି ଫାଇଲ ପେଷ୍ଟ କରିବାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="9213073329713032541">ସଫଳତାପୂର୍ବକ ଇନ୍‌ଷ୍ଟଲେସନ୍ ଆରମ୍ଭ ହେଲା।</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">ଲୁନାର୍</translation>

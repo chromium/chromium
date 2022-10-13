@@ -1,7 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
-<translation id="1005794457625275818">Выкарыстанне файлаў cookie дазволена для некалькіх сайтаў (<ph name="FPS_MEMBERS_COUNT" />) у групе <ph name="FPS_OWNER" />, у тым ліку для <ph name="FPS_MEMBER" /></translation>
 <translation id="1006017844123154345">Адкрыць у інтэрнэце</translation>
 <translation id="1044891598689252897">Сайты будуць працаваць нармальна</translation>
 <translation id="1124090076051167250">Будуць выдалены файлы cookie і даныя (<ph name="DATASIZE" />), захаваныя сайтамі або размешчанымі на галоўным экране праграмамі.</translation>
@@ -73,6 +72,7 @@
 <translation id="2490684707762498678">Пад кіраваннем праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="2498359688066513246">Даведка і водгукі</translation>
 <translation id="2501278716633472235">Назад</translation>
+<translation id="2546283357679194313">Файлы сookie і даныя сайтаў</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{1 файл cookie заблакіраваны}one{# файл cookie заблакіраваны}few{# файлы cookie заблакіраваны}many{# файлаў cookie заблакіраваны}other{# файла cookie заблакіраваны}}</translation>
 <translation id="2570922361219980984">Доступ да месцазнаходжання для гэтай прылады таксама выключаны. Уключыце яго ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Разгорнута. Націсніце, каб згарнуць.</translation>
@@ -82,7 +82,6 @@
 <translation id="2653659639078652383">Адправіць</translation>
 <translation id="2677748264148917807">Выйсці</translation>
 <translation id="2687403674020088961">Блакіраваць усе файлы cookie (не рэкамендуецца)</translation>
-<translation id="2692299144678073135">Дазволіць звязаным сайтам запамінаць вас пры пераходзе паміж імі</translation>
 <translation id="2704606927547763573">Скапіравана</translation>
 <translation id="2713106313042589954">Выключыць камеру</translation>
 <translation id="2717722538473713889">Адрасы электроннай пошты</translation>
@@ -144,7 +143,6 @@
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4008040567710660924">Дазвол выкарыстання файлаў cookie ад канкрэтнага сайта.</translation>
 <translation id="4046123991198612571">Наступны трэк</translation>
-<translation id="4048876521107516222">Звязаныя сайты выкарыстоўваюць файлы cookie, якія, напрыклад, дапамагаюць вам заставацца ў сістэме пасля ўваходу</translation>
 <translation id="4149994727733219643">Спрошчаны выгляд для вэб-старонак</translation>
 <translation id="4165986682804962316">Налады сайта</translation>
 <translation id="4169549551965910670">Выканана падключэнне да прылады USB</translation>
@@ -263,7 +261,6 @@
 <translation id="6554732001434021288">Апошняе наведванне: <ph name="NUM_DAYS" /> сут таму</translation>
 <translation id="6561560012278703671">Забараніць сайтам адцягваць вашу ўвагу запытамі дазволу на паказ апавяшчэнняў. Паказваць замест іх індыкатар блакіроўкі ў адрасным радку</translation>
 <translation id="6593061639179217415">Версія для ПК</translation>
-<translation id="6608211702542341247">Гэты сайт належыць да групы сайтаў у дамене <ph name="FPS_OWNER" /> з доступам да звестак пра вашы дзеянні ў групе</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> ГБ</translation>
 <translation id="6612358246767739896">Абароненае змесціва</translation>
 <translation id="662080504995468778">Застацца</translation>
@@ -314,9 +311,7 @@
 <translation id="7791543448312431591">Дадаць</translation>
 <translation id="780301667611848630">Не, дзякуй</translation>
 <translation id="7804248752222191302">Сайт выкарыстоўвае камеру</translation>
-<translation id="7816129586531226979">Звязаныя сайты могуць запамінаць вас, калі вы будзеце пераходзіць паміж імі</translation>
 <translation id="7817023149356982970">Будзе выкананы выхад з гэтага сайта.</translation>
-<translation id="7828557259026017104">Файлы cookie – гэта файлы, якія ствараюцца наведанымі вамі вэб-сайтамі, каб запамінаць вашы налады. Староннія файлы cookie ствараюцца іншымі сайтамі. Гэтым сайтам належыць пэўнае змесціва (напрыклад рэклама або відарысы), размешчанае на вэб-старонцы, якую вы наведваеце.</translation>
 <translation id="7835852323729233924">Прайграванне мультымедыя</translation>
 <translation id="783819812427904514">Уключыць гук відэа</translation>
 <translation id="7846076177841592234">Скасаваць выбар</translation>
