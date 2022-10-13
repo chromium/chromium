@@ -111,7 +111,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
   blockOptionLabel: string;
   blockOptionSubLabel: string;
   blockOptionIcon: string;
-  private pref_: chrome.settingsPrivate.PrefObject;
+  private pref_: chrome.settingsPrivate.PrefObject<number>;
 
   override ready() {
     super.ready();

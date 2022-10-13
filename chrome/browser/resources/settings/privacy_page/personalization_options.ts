@@ -119,7 +119,7 @@ export class SettingsPersonalizationOptionsElement extends
   syncStatus: SyncStatus;
 
   // <if expr="_google_chrome and not chromeos_ash">
-  private metricsReportingPref_: chrome.settingsPrivate.PrefObject;
+  private metricsReportingPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private showRestart_: boolean;
   // </if>
 
@@ -218,7 +218,7 @@ export class SettingsPersonalizationOptionsElement extends
 
   private setMetricsReportingPref_(metricsReporting: MetricsReporting) {
     const hadPreviousPref = this.metricsReportingPref_.value !== undefined;
-    const pref: chrome.settingsPrivate.PrefObject = {
+    const pref: chrome.settingsPrivate.PrefObject<boolean> = {
       key: '',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: metricsReporting.enabled,

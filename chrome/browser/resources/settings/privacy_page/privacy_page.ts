@@ -45,7 +45,7 @@ import {PrivacyPageBrowserProxy, PrivacyPageBrowserProxyImpl} from './privacy_pa
 
 interface BlockAutoplayStatus {
   enabled: boolean;
-  pref: chrome.settingsPrivate.PrefObject;
+  pref: chrome.settingsPrivate.PrefObject<boolean>;
 }
 
 export interface SettingsPrivacyPageElement {

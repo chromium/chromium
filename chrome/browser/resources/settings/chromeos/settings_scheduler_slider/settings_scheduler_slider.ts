@@ -45,11 +45,6 @@ type TrackEvent = CustomEvent<{
   ddy: number,
 }>;
 
-interface PrefObject extends chrome.settingsPrivate.PrefObject {
-  type: chrome.settingsPrivate.PrefType.NUMBER;
-  value: number;
-}
-
 const HOURS_PER_DAY = 24;
 const MIN_KNOBS_DISTANCE_MINUTES = 60;
 const OFFSET_MINUTES_6PM = 18 * 60;
@@ -151,8 +146,8 @@ class SettingsSchedulerSliderElement extends
     ];
   }
 
-  prefStartTime: PrefObject;
-  prefEndTime: PrefObject;
+  prefStartTime: chrome.settingsPrivate.PrefObject<number>;
+  prefEndTime: chrome.settingsPrivate.PrefObject<number>;
   private dragObject_: HTMLElement|null;
   private isReady_: boolean;
   private isRTL_: boolean;

@@ -134,7 +134,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
   }
 
   private secureDnsDescription_: string;
-  private secureDnsToggle_: chrome.settingsPrivate.PrefObject;
+  private secureDnsToggle_: chrome.settingsPrivate.PrefObject<boolean>;
   private showRadioGroup_: boolean;
   private secureDnsRadio_: SecureDnsMode;
   private resolverOptions_: ResolverOption[];
@@ -301,7 +301,7 @@ export class SettingsSecureDnsElement extends SettingsSecureDnsElementBase {
     }
     // If the underlying secure DNS mode pref has an enforced value, communicate
     // that via the toggle pref.
-    const pref: chrome.settingsPrivate.PrefObject = {
+    const pref: chrome.settingsPrivate.PrefObject<boolean> = {
       key: '',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: this.secureDnsToggle_.value,

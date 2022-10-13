@@ -62,7 +62,7 @@ export class HomeUrlInputElement extends HomeUrlInputElementBase {
     };
   }
 
-  pref: chrome.settingsPrivate.PrefObject|undefined;
+  pref: chrome.settingsPrivate.PrefObject<string>|undefined;
   disabled: boolean;
   canTab: boolean;
   invalid: boolean;

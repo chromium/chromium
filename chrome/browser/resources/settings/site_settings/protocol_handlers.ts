@@ -144,7 +144,7 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   toggleOffLabel: string;
   toggleOnLabel: string;
   ignoredProtocols: HandlerEntry[];
-  private handlersEnabledPref_: chrome.settingsPrivate.PrefObject;
+  private handlersEnabledPref_: chrome.settingsPrivate.PrefObject<boolean>;
 
   override ready() {
     super.ready();
