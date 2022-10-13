@@ -673,8 +673,7 @@ void AutofillManager::ParseFormsAsync(
       // determining the heuristics.
       form_structure->RetrieveFromCache(
           *cached_form_structure,
-          /*should_keep_cached_value=*/true,
-          /*only_server_and_autofill_state=*/true);
+          FormStructure::RetrieveFromCacheReason::kFormParsing);
       if (form_structure->value_from_dynamic_change_form())
         value_from_dynamic_change_form_ = true;
 
@@ -781,9 +780,9 @@ void AutofillManager::ParseFormAsync(
 
     // We need to keep the server data if available. We need to use them while
     // determining the heuristics.
-    form_structure->RetrieveFromCache(*cached_form_structure,
-                                      /*should_keep_cached_value=*/true,
-                                      /*only_server_and_autofill_state=*/true);
+    form_structure->RetrieveFromCache(
+        *cached_form_structure,
+        FormStructure::RetrieveFromCacheReason::kFormParsing);
     if (form_structure->value_from_dynamic_change_form())
       value_from_dynamic_change_form_ = true;
   }
@@ -859,9 +858,8 @@ FormStructure* AutofillManager::ParseForm(const FormData& form,
   if (cached_form) {
     // We need to keep the server data if available. We need to use them while
     // determining the heuristics.
-    form_structure->RetrieveFromCache(*cached_form,
-                                      /*should_keep_cached_value=*/true,
-                                      /*only_server_and_autofill_state=*/true);
+    form_structure->RetrieveFromCache(
+        *cached_form, FormStructure::RetrieveFromCacheReason::kFormParsing);
 
     NotifyObservers(&Observer::OnFormParsed);
     if (form_structure.get()->value_from_dynamic_change_form())

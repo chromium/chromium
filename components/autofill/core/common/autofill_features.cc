@@ -147,6 +147,16 @@ BASE_FEATURE(kAutofillCreateDataForTest,
              "AutofillCreateDataForTest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// FormStructure::RetrieveFromCache used to preserve an AutofillField's
+// is_autofilled from the cache of previously parsed forms. This makes little
+// sense because the renderer sends us the autofill state and has the most
+// recent information. Dropping the old behavior should not make any difference
+// but to be sure, this is gated by a finch experiment.
+// TODO(crbug.com/1373362) Cleanup when launched.
+BASE_FEATURE(kAutofillDontPreserveAutofillState,
+             "AutofillDontPreserveAutofillState",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, checking whether a form has disappeared after an Ajax response is
 // delayed because subsequent Ajax responses may restore the form. If disabled,
 // the check happens right after a successful Ajax response.

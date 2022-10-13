@@ -192,10 +192,58 @@ class FormStructure {
   // crowd-sourcing server. It is not applied for Password Manager votes.
   bool ShouldBeUploaded() const;
 
-  // Sets the field types to be those set for |cached_form|.
+  // This enum defines the behavior of RetrieveFromCache, which needs to adapt
+  // to the reason for retrieving data from the cache.
+  enum class RetrieveFromCacheReason {
+    // kFormParsing refers to the process of assigning field types to fields
+    // when the renderer notifies the browser about a new, modified or
+    // interacted with form.
+    //
+    // During form parsing, the browser receives a FormData object from the
+    // renderer that is converted to a FormStructure object. RetrieveFromCache
+    // is responsible for retaining information from the history of the fields
+    // in the form (e.g. information about previous fill operations):
+    //
+    // - The `is_autofilled` and similar members of a field are copied from the
+    //   cached form so that a field that was once labeled as autofilled remains
+    //   autofilled.
+    //
+    // - The `value` of a field is copied from the cache as it represents the
+    //   initial value of a field during page load time and must not be updated
+    //   if a form is parsed a second time.
+    //
+    // - Also server predictions are preserved (while heuristic predictions
+    //   are discarded because they will be generated during the parsing).
+    kFormParsing,
+
+    // kFormImport refers to the process of importing address profiles / credit
+    // cards from user-filled forms after a form submission.
+    //
+    // During form import, the browser receives a FormData object from the
+    // renderer that is converted to a FormStructure object. RetrieveFromCache
+    // is responsible for processing the FormData so that the FormStructure
+    // contains the right information that facilitate importing. Therefore,
+    // similar work happen as for kFormParsing, except:
+    //
+    // - During form import, we want to copy field type information from
+    //   previous parse operations as these tell which information to save.
+    //
+    // - The `value` of a FormStructure's field typically represents the
+    //   initially observed value of a field during page load. So during
+    //   kFormParsing the value is persisted. During import, however, we want to
+    //   store the last observed value. Furthermore, if the submitted value of a
+    //   field has never been changed, we ignore the previous value from import
+    //   (unless it's a state or country as websites can find meanigful default
+    //   values via GeoIP).
+    kFormImport,
+  };
+
+  // Assumes that `*this` is FormStructure which was freshly created from a
+  // FormData object that the renderer sent to the browser and copies relevant
+  // information from a `cached_form` to `*this`. Depending on the passed
+  // `reason`, a different subset of data can be copied.
   void RetrieveFromCache(const FormStructure& cached_form,
-                         const bool should_keep_cached_value,
-                         const bool only_server_and_autofill_state);
+                         RetrieveFromCacheReason reason);
 
   // Logs quality metrics for |this|, which should be a user-submitted form.
   // This method should only be called after the possible field types have been

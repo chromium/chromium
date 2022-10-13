@@ -802,10 +802,8 @@ bool FormStructure::ShouldBeUploaded() const {
          ShouldBeParsed();
 }
 
-void FormStructure::RetrieveFromCache(
-    const FormStructure& cached_form,
-    const bool should_keep_cached_value,
-    const bool only_server_and_autofill_state) {
+void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
+                                      RetrieveFromCacheReason reason) {
   // Build a table to lookup AutofillFields by their FieldGlobalId.
   std::map<FieldGlobalId, const AutofillField*> cached_fields_by_id;
   for (const std::unique_ptr<autofill::AutofillField>& field : cached_form)
@@ -851,49 +849,69 @@ void FormStructure::RetrieveFromCache(
     if (!cached_field)
       continue;
 
-    if (should_keep_cached_value) {
-      // During form parsing (as in "assigning field types to fields")
-      // |should_keep_cached_value| is true to preserve the |value|
-      // (which represents the initial value found at page load).
-      field->is_autofilled = cached_field->is_autofilled;
-      if (field->form_control_type != "select-one") {
-        field->value = cached_field->value;
-        value_from_dynamic_change_form_ = true;
-      }
-    } else {
-      // Here |should_keep_cached_value| is false, meaning that we are in the
-      // phase of importing a submitted form.
-      bool same_value_as_on_page_load = field->value == cached_field->value;
-      bool field_is_neither_state_nor_country =
-          field->server_type() != ADDRESS_HOME_COUNTRY &&
-          field->server_type() != ADDRESS_HOME_STATE;
-      if (field->form_control_type != "select-one" &&
-          same_value_as_on_page_load && field_is_neither_state_nor_country) {
+    switch (reason) {
+      case RetrieveFromCacheReason::kFormParsing:
+        // During form parsing (as in "assigning field types to fields")
+        // the `value` represents the initial value found at page load and needs
+        // to be preserved.
+        if (field->form_control_type != "select-one") {
+          field->value = cached_field->value;
+          value_from_dynamic_change_form_ = true;
+        }
+        break;
+      case RetrieveFromCacheReason::kFormImport:
         // From the perspective of learning user data, text fields containing
-        // default values are equivalent to empty fields.
+        // default values are equivalent to empty fields. So if the value of
+        // a submitted form corresponds to the initial value of the field, we
+        // clear that value.
         // Since a website can prefill country and state values based on
-        // GeoIp, we want to hold on to these values. All others are cleared.
-        field->value = std::u16string();
-      }
+        // GeoIP, we want to hold on to these values.
+        const bool same_value_as_on_page_load =
+            field->value == cached_field->value;
+        const bool field_is_neither_state_nor_country =
+            field->server_type() != ADDRESS_HOME_COUNTRY &&
+            field->server_type() != ADDRESS_HOME_STATE;
+        if (field->form_control_type != "select-one" &&
+            same_value_as_on_page_load && field_is_neither_state_nor_country) {
+          field->value = std::u16string();
+        }
+        break;
     }
 
     field->set_server_predictions(cached_field->server_predictions());
-    field->set_previously_autofilled(cached_field->previously_autofilled());
 
+    // TODO(crbug.com/1373362): The following is the statement which we want
+    // to have here once features::kAutofillDontPreserveAutofillState is
+    // launched:
+    // ---
+    // We don't preserve the `is_autofilled` state from the cache, because
+    // form parsing and form import both start in the renderer and the renderer
+    // shares it's most recent status of whether the fields are currently
+    // in autofilled state. Any modifications by JavaScript or the user
+    // may take a field out of the autofilled state and get propagated to the
+    // AutofillManager via OnTextFieldDidChangeImpl anyways.
+    // ---
+    // For now we gate this behavioral change by a feature flag to ensure that
+    // it does not cause a regression.
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillDontPreserveAutofillState)) {
+      // Preserve state whether the field was autofilled before.
+      if (reason == RetrieveFromCacheReason::kFormParsing)
+        field->is_autofilled = cached_field->is_autofilled;
+    }
+
+    field->set_previously_autofilled(cached_field->previously_autofilled());
     if (cached_field->value_not_autofilled_over_existing_value_hash()) {
       field->set_value_not_autofilled_over_existing_value_hash(
           *cached_field->value_not_autofilled_over_existing_value_hash());
     }
 
-    // Only retrieve an overall prediction from cache if a server prediction
-    // is set.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillRetrieveOverallPredictionsFromCache) &&
-        field->server_type() != NO_SERVER_DATA) {
-      field->SetTypeTo(cached_field->Type());
-    }
-
-    if (!only_server_and_autofill_state) {
+    // During form parsing, we don't care for heuristic field classifications
+    // and information derived from the autocomplete attribute as those are
+    // either regenerated or copied from the form that the renderer sent.
+    // During import, no parsing happens and we want to preserve the last field
+    // classification.
+    if (reason == RetrieveFromCacheReason::kFormImport) {
       // Transfer attributes of the cached AutofillField to the newly created
       // AutofillField.
       for (int i = 0; i <= static_cast<int>(PatternSource::kMaxValue); ++i) {
@@ -903,6 +921,19 @@ void FormStructure::RetrieveFromCache(
       field->SetHtmlType(cached_field->html_type(), cached_field->html_mode());
       field->section = cached_field->section;
       field->set_only_fill_when_focused(cached_field->only_fill_when_focused());
+
+      // Only retrieve an overall prediction from cache if a server prediction
+      // is set.
+      // The following is just gated behind a flag because it changes behavior.
+      // We are pretty convinced that this should be enabled by default.
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillRetrieveOverallPredictionsFromCache)) {
+        // During import the final field type is used to decide which
+        // information to store in an address profile or credit card. As
+        // rationalization is an important component of determinig the final
+        // field type, the output should be preserved.
+        field->SetTypeTo(cached_field->Type());
+      }
     }
   }
 
