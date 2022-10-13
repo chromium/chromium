@@ -6,7 +6,12 @@
 
 #include <drm_fourcc.h>
 
+#include <cctype>
+#include <string>
+
 #include "base/notreached.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_util.h"
 
 namespace ui {
 
@@ -98,6 +103,29 @@ bool IsValidBufferFormat(uint32_t current_format) {
     default:
       return false;
   }
+}
+
+std::string DrmBufferFormatToString(uint32_t format) {
+  constexpr char kInvalid[] = "INVALID";
+
+  // DRM_FORMAT strings are structured as four meaningful chars packed into
+  // a single int. If we didn't receive garbage, we should just return them (but
+  // as a null-terminated string).
+  char* format_chars = reinterpret_cast<char*>(&format);
+  auto is_valid = [](char c) { return c == ' ' || isalnum(c); };
+  if (!(is_valid(format_chars[0]) && is_valid(format_chars[1]) &&
+        is_valid(format_chars[2]) && is_valid(format_chars[3]))) {
+    return kInvalid;
+  }
+
+  // Trim, for example, 'R8  ' -> 'R8'
+  std::string str(format_chars, 4);
+  base::StringPiece trimmed =
+      base::TrimWhitespaceASCII(str, base::TrimPositions::TRIM_ALL);
+  if (trimmed.empty())
+    return kInvalid;
+
+  return std::string(trimmed);
 }
 
 }  // namespace ui
