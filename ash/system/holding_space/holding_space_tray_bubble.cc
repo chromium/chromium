@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 
+#include <map>
 #include <vector>
 
 #include "ash/bubble/bubble_utils.h"
@@ -26,6 +27,7 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
 #include "base/containers/adapters.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,6 +40,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/proposed_layout.h"
+#include "ui/views/view_observer.h"
 
 namespace ash {
 
@@ -195,6 +198,38 @@ class ChildBubbleContainerLayout {
   int max_height_ = 0;
 };
 
+// ScopedViewBoundsChangedObserver ---------------------------------------------
+
+// A class which observes a view until destruction, forwarding bounds changed
+// events to a constructor-provided callback.
+class ScopedViewBoundsChangedObserver : public views::ViewObserver {
+ public:
+  ScopedViewBoundsChangedObserver(
+      views::View* view,
+      base::RepeatingClosure on_view_bounds_changed_callback)
+      : on_view_bounds_changed_callback_(on_view_bounds_changed_callback) {
+    DCHECK(on_view_bounds_changed_callback);
+    observation_.Observe(view);
+  }
+
+  ScopedViewBoundsChangedObserver(const ScopedViewBoundsChangedObserver&) =
+      delete;
+  ScopedViewBoundsChangedObserver& operator=(
+      const ScopedViewBoundsChangedObserver&) = delete;
+  ~ScopedViewBoundsChangedObserver() override = default;
+
+ private:
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* view) override {
+    on_view_bounds_changed_callback_.Run();
+  }
+
+  void OnViewIsDeleting(views::View* view) override { observation_.Reset(); }
+
+  base::RepeatingClosure on_view_bounds_changed_callback_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
 }  // namespace
 
 // HoldingSpaceTrayBubble::ChildBubbleContainer --------------------------------
@@ -222,6 +257,42 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
     if (current_layout_.host_size.IsEmpty())
       current_layout_ = layout_manager_.CalculateProposedLayout();
     return current_layout_.host_size.height();
+  }
+
+  void ViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details) override {
+    views::View::ViewHierarchyChanged(details);
+
+    // When UI refresh is enabled we need to observe child bubbles for bounds
+    // changes to ensure that separators are repainted appropriately. This is
+    // not relevant when UI refresh is disabled.
+    if (!features::IsHoldingSpaceRefreshEnabled())
+      return;
+
+    // Only handle addition/removal of child bubbles.
+    if (details.parent != this)
+      return;
+
+    // When child bubbles are removed they no longer need to be observed. This
+    // should only happen during destruction of the holding space tray bubble,
+    // but we'll schedule a paint anyway just to be extra cautious.
+    if (!details.is_add) {
+      view_bounds_changed_observers_by_view_.erase(details.child);
+      SchedulePaint();
+      return;
+    }
+
+    // When child bubbles are added they need to be observed so that we can
+    // ensure bounds changes always result in repainting of separators. Unless
+    // we do so explicitly, separators would only otherwise be repainted when
+    // the bounds of `this` view also change. This is not the case when holding
+    // space has reached its maximum height.
+    view_bounds_changed_observers_by_view_.emplace(
+        std::piecewise_construct, /*view=*/std::forward_as_tuple(details.child),
+        std::forward_as_tuple(
+            /*view=*/details.child,
+            /*on_view_bounds_changed_callback=*/base::BindRepeating(
+                &ChildBubbleContainer::SchedulePaint, base::Unretained(this))));
   }
 
   void ChildPreferredSizeChanged(views::View* child) override {
@@ -338,6 +409,12 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
 
   std::unique_ptr<gfx::SlideAnimation> layout_animation_;
   absl::optional<ui::ThroughputTracker> layout_animation_throughput_tracker_;
+
+  // Mapping of view bounds changed observers to the views which they observe.
+  // This is used when UI refresh is enabled to ensure that separators are
+  // repainted when child bubble bounds change.
+  std::map<const views::View*, ScopedViewBoundsChangedObserver>
+      view_bounds_changed_observers_by_view_;
 };
 
 // HoldingSpaceTrayBubble ------------------------------------------------------
