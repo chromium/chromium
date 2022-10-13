@@ -14,7 +14,6 @@
 #include "components/exo/display.h"
 #include "components/exo/wayland/server_util.h"
 #include "ui/gfx/buffer_format_util.h"
-#include "ui/gfx/linux/drm_util_linux.h"
 
 namespace exo {
 namespace wayland {
@@ -156,10 +155,9 @@ wl_resource* create_buffer(wl_client* client,
   const auto* supported_format = base::ranges::find(
       kSupportedDmaBufFormats, format, &dmabuf_supported_format::dmabuf_format);
   if (supported_format == std::end(kSupportedDmaBufFormats)) {
-    auto format_string = ui::DrmBufferFormatToString(format);
-    wl_resource_post_error(
-        resource, ZWP_LINUX_BUFFER_PARAMS_V1_ERROR_INVALID_FORMAT,
-        "format %s (%d) not supported", format_string.c_str(), format);
+    wl_resource_post_error(resource,
+                           ZWP_LINUX_BUFFER_PARAMS_V1_ERROR_INVALID_FORMAT,
+                           "format not supported");
     return nullptr;
   }
 

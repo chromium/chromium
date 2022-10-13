@@ -6,7 +6,6 @@
 #define UI_GFX_LINUX_DRM_UTIL_LINUX_H_
 
 #include <cstdint>
-#include <string>
 
 #include "ui/gfx/buffer_types.h"
 
@@ -17,8 +16,6 @@ gfx::BufferFormat GetBufferFormatFromFourCCFormat(int format);
 
 // Returns true if the fourcc format is known.
 bool IsValidBufferFormat(uint32_t current_format);
-
-std::string DrmBufferFormatToString(uint32_t format);
 
 }  // namespace ui
 

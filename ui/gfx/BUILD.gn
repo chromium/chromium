@@ -895,15 +895,10 @@ test("gfx_unittests") {
 
   if (is_linux || is_chromeos) {
     sources += [
-      "linux/drm_util_linux_unittest.cc",
       "linux/fontconfig_util_unittest.cc",
       "linux/native_pixmap_dmabuf_unittest.cc",
     ]
-    deps += [
-      "//build/config/linux/libdrm",
-      "//third_party/fontconfig",
-      "//ui/gfx/linux:drm",
-    ]
+    deps += [ "//third_party/fontconfig" ]
   }
 
   if (is_fuchsia) {
