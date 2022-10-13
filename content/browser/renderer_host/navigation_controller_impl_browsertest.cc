@@ -17455,6 +17455,79 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
 }
 
+// Tests that when a navigation entry is not marked as skippable the first time
+// it redirects because of user activation, that entry will be marked skippable
+// if it does another redirect without user activation after the user has come
+// back to that document again. This implies that a single user activation does
+// not mean that the user can be infintely trapped.
+IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
+                       NoUserActivationAfterReturningSetsSkippable) {
+  GURL non_skippable_url(
+      embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
+
+  GURL initially_non_skippable_url(
+      embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), initially_non_skippable_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+
+  // Get a user activation and navigate to a new same-site document from the
+  // renderer with a user gesture.
+  GURL redirected_url(embedded_test_server()->GetURL("/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), redirected_url));
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  EXPECT_EQ(2, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
+
+  // Last entry should have not been marked as skippable.
+  EXPECT_FALSE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(
+      controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
+
+  // Navigate back to the earlier document's entry.
+  {
+    TestNavigationObserver back_load_observer(shell()->web_contents());
+    controller.GoBack();
+    back_load_observer.Wait();
+  }
+  EXPECT_EQ(initially_non_skippable_url,
+            controller.GetLastCommittedEntry()->GetURL());
+  EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+
+  // Navigate to a new same-site document from the renderer without a user
+  // gesture.
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url));
+
+  EXPECT_EQ(2, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
+
+  // Last entry should have been marked as skippable due to the lack of
+  // activation on this visit, despite not being marked skippable last time.
+  EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(
+      controller.GetLastCommittedEntry()->should_skip_on_back_forward_ui());
+
+  // Going back now should skip the entry at [1].
+  ASSERT_TRUE(controller.CanGoBack());
+  {
+    TestNavigationObserver back_load_observer(shell()->web_contents());
+    controller.GoBack();
+    back_load_observer.Wait();
+  }
+  EXPECT_EQ(non_skippable_url, controller.GetLastCommittedEntry()->GetURL());
+  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
+}
+
 // Tests that the navigation entry is marked as skippable on back button if it
 // does a renderer initiated navigation without ever getting a user activation.
 // Also tests this for an entry added using history.pushState.
