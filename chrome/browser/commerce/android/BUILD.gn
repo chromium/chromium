@@ -71,6 +71,4 @@ generate_jni("shopping_service_jni") {
   sources = [
     "java/src/org/chromium/chrome/browser/commerce/ShoppingServiceFactory.java",
   ]
-
-  deps = [ "//components/commerce/core:shopping_service" ]
 }
