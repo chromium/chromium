@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.ThemeTestUtils;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -195,6 +196,32 @@ public class StatusBarColorControllerTest {
         Assert.assertEquals(
                 "Wrong status bar color after the status indicator color is set to default.",
                 initialColor, statusBarColor.get().intValue());
+    }
+
+    /**
+     * Test that the theme color is cleared when the Omnibox gains focus.
+     */
+    @Test
+    @LargeTest
+    @Feature({"StatusBar"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
+    public void testBrandColorIgnoredWhenOmniboxIsFocused() throws Exception {
+        ChromeTabbedActivity activity = sActivityTestRule.getActivity();
+        final int expectedDefaultStandardColor =
+                defaultColorFallbackToBlack(ChromeColors.getDefaultThemeColor(activity, false));
+
+        String pageWithBrandColorUrl = sActivityTestRule.getTestServer().getURL(
+                "/chrome/test/data/android/theme_color_test.html");
+        sActivityTestRule.loadUrl(pageWithBrandColorUrl);
+        ThemeTestUtils.waitForThemeColor(activity, Color.RED);
+        waitForStatusBarColor(activity, Color.RED);
+
+        var omniboxUtils = new OmniboxTestUtils(activity);
+        omniboxUtils.requestFocus();
+        waitForStatusBarColor(activity, expectedDefaultStandardColor);
+        omniboxUtils.clearFocus();
+        waitForStatusBarColor(activity, Color.RED);
     }
 
     private int defaultColorFallbackToBlack(int color) {

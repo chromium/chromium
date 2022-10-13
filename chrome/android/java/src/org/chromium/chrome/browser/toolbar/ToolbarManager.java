@@ -699,16 +699,17 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             mLocationBar = locationBarCoordinator;
         }
 
-        if (mLocationBar.getOmniboxStub() != null) {
-            mLocationBar.getOmniboxStub().addUrlFocusChangeListener(this);
-        }
         Runnable clickDelegate = () -> setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
         View scrimTarget = mCompositorViewHolder;
         mLocationBarFocusHandler = new LocationBarFocusScrimHandler(scrimCoordinator,
                 new TabObscuringCallback(tabObscuringHandler), /* context= */ activity,
                 mLocationBarModel, clickDelegate, scrimTarget);
-        if (mLocationBar.getOmniboxStub() != null) {
-            mLocationBar.getOmniboxStub().addUrlFocusChangeListener(mLocationBarFocusHandler);
+
+        var omnibox = mLocationBar.getOmniboxStub();
+        if (omnibox != null) {
+            omnibox.addUrlFocusChangeListener(this);
+            omnibox.addUrlFocusChangeListener(mStatusBarColorController);
+            omnibox.addUrlFocusChangeListener(mLocationBarFocusHandler);
         }
 
         mProgressBarCoordinator = new LoadProgressCoordinator(
@@ -1474,6 +1475,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      */
     public void destroy() {
         mIsDestroyed = true;
+
+        var omnibox = mLocationBar.getOmniboxStub();
+        if (omnibox != null) {
+            omnibox.removeUrlFocusChangeListener(this);
+            omnibox.removeUrlFocusChangeListener(mStatusBarColorController);
+            omnibox.removeUrlFocusChangeListener(mLocationBarFocusHandler);
+        }
 
         VrModuleProvider.unregisterVrModeObserver(mVrModeObserver);
 
