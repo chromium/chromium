@@ -740,11 +740,6 @@ const char kChromeWhatsNewInMainMenuNewBadgeDescription[] =
     "menu.";
 #endif
 
-const char kDarkLightTestName[] = "Dark/light mode of system UI";
-const char kDarkLightTestDescription[] =
-    "Enables the dark/light mode of system UI, which includes shelf, launcher, "
-    "system tray etc.";
-
 extern const char kDeviceForceScheduledRebootName[] =
     "Enable DeviceScheduledReboot policy for all sessions.";
 extern const char kDeviceForceScheduledRebootDescription[] =

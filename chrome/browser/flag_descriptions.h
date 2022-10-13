@@ -402,9 +402,6 @@ extern const char kChromeWhatsNewInMainMenuNewBadgeName[];
 extern const char kChromeWhatsNewInMainMenuNewBadgeDescription[];
 #endif
 
-extern const char kDarkLightTestName[];
-extern const char kDarkLightTestDescription[];
-
 extern const char kDisableProcessReuse[];
 extern const char kDisableProcessReuseDescription[];
 
