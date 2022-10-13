@@ -46,7 +46,9 @@ class BrowserDataBackMigrator {
   enum class TaskStatus {
     kSucceeded = 0,
     kPreMigrationCleanUpDeleteTmpDirFailed = 1,
-    kMaxValue = kPreMigrationCleanUpDeleteTmpDirFailed,
+    kDeleteTmpDirDeleteFailed = 2,
+    kDeleteLacrosDirDeleteFailed = 3,
+    kMaxValue = kDeleteLacrosDirDeleteFailed,
   };
 
   struct TaskResult {
@@ -93,12 +95,19 @@ class BrowserDataBackMigrator {
       BackMigrationFinishedCallback finished_callback,
       TaskResult result);
 
-  // Deletes the Lacros profile directory and completes the backward migration.
+  // Deletes the Lacros profile directory.
   static TaskResult DeleteLacrosDir(const base::FilePath& ash_profile_dir);
 
   // Called as a reply to `DeleteLacrosDir()`.
   void OnDeleteLacrosDir(BackMigrationFinishedCallback finished_callback,
                          TaskResult result);
+
+  // Deletes the temporary directory and completes the backward migration.
+  static TaskResult DeleteTmpDir(const base::FilePath& ash_profile_dir);
+
+  // Called as a reply to `DeleteTmpDir()`.
+  void OnDeleteTmpDir(BackMigrationFinishedCallback finished_callback,
+                      TaskResult result);
 
   // Transforms `TaskResult` to `Result`, which is then returned to the caller.
   static Result ToResult(TaskResult result);

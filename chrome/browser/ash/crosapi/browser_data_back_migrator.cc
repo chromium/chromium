@@ -209,7 +209,15 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteLacrosDir(
     const base::FilePath& ash_profile_dir) {
   LOG(WARNING) << "Running DeleteLacrosDir()";
 
-  // TODO(b/244573664): Not yet implemented.
+  const base::FilePath lacros_profile_dir =
+      ash_profile_dir.Append(browser_data_migrator_util::kLacrosDir);
+
+  if (base::PathExists(lacros_profile_dir)) {
+    if (!base::DeletePathRecursively(lacros_profile_dir)) {
+      PLOG(ERROR) << "Deleting " << lacros_profile_dir.value() << " failed: ";
+      return {TaskStatus::kDeleteLacrosDirDeleteFailed, errno};
+    }
+  }
 
   return {TaskStatus::kSucceeded};
 }
@@ -219,6 +227,41 @@ void BrowserDataBackMigrator::OnDeleteLacrosDir(
     BrowserDataBackMigrator::TaskResult result) {
   if (result.status != TaskStatus::kSucceeded) {
     LOG(ERROR) << "DeleteLacrosDir() failed.";
+    std::move(finished_callback).Run(ToResult(result));
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&BrowserDataBackMigrator::DeleteTmpDir, ash_profile_dir_),
+      base::BindOnce(&BrowserDataBackMigrator::OnDeleteTmpDir,
+                     weak_factory_.GetWeakPtr(), std::move(finished_callback)));
+}
+
+// static
+BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::DeleteTmpDir(
+    const base::FilePath& ash_profile_dir) {
+  LOG(WARNING) << "Running DeleteTmpDir()";
+
+  const base::FilePath tmp_user_dir =
+      ash_profile_dir.Append(browser_data_back_migrator::kTmpDir);
+  if (base::PathExists(tmp_user_dir)) {
+    if (!base::DeletePathRecursively(tmp_user_dir)) {
+      PLOG(ERROR) << "Deleting " << tmp_user_dir.value() << " failed: ";
+      return {TaskStatus::kDeleteTmpDirDeleteFailed, errno};
+    }
+  }
+
+  return {TaskStatus::kSucceeded};
+}
+
+void BrowserDataBackMigrator::OnDeleteTmpDir(
+    BackMigrationFinishedCallback finished_callback,
+    BrowserDataBackMigrator::TaskResult result) {
+  if (result.status != TaskStatus::kSucceeded) {
+    LOG(ERROR) << "DeleteTmpDir() failed.";
     std::move(finished_callback).Run(ToResult(result));
     return;
   }
@@ -234,6 +277,8 @@ BrowserDataBackMigrator::Result BrowserDataBackMigrator::ToResult(
     case TaskStatus::kSucceeded:
       return Result::kSucceeded;
     case TaskStatus::kPreMigrationCleanUpDeleteTmpDirFailed:
+    case TaskStatus::kDeleteLacrosDirDeleteFailed:
+    case TaskStatus::kDeleteTmpDirDeleteFailed:
       return Result::kFailed;
   }
 }
