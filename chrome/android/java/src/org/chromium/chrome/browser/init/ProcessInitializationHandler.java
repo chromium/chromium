@@ -445,10 +445,10 @@ public class ProcessInitializationHandler {
                 ()
                         -> AssistantVoiceSearchService.reportStartupUserEligibility(
                                 ContextUtils.getApplicationContext()));
-        deferredStartupHandler.addDeferredTask(
-                () -> GlobalAppLocaleController.getInstance().recordOverrideLanguageMetrics());
-        deferredStartupHandler.addDeferredTask(
-                () -> GlobalAppLocaleController.getInstance().maybeSetupLocaleManager());
+        deferredStartupHandler.addDeferredTask(() -> {
+            GlobalAppLocaleController.getInstance().maybeSetupLocaleManager();
+            GlobalAppLocaleController.getInstance().recordOverrideLanguageMetrics();
+        });
         deferredStartupHandler.addDeferredTask(() -> {
             // OptimizationTypes which we give a guarantee will be registered when we pass the
             // onDeferredStartup() signal to OptimizationGuide.
