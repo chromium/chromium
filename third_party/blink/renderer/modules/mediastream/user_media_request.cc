@@ -407,12 +407,19 @@ UserMediaRequest* UserMediaRequest::Create(
 
   std::string display_surface_constraint;
 
-  if (media_type == UserMediaRequestType::kUserMedia && !video.IsNull()) {
-    if (video.Basic().pan.HasMandatory() || video.Basic().tilt.HasMandatory() ||
-        video.Basic().zoom.HasMandatory()) {
+  if (media_type == UserMediaRequestType::kUserMedia) {
+    if (audio.IsNull() && video.IsNull()) {
       error_state.ThrowTypeError(
-          "Mandatory pan-tilt-zoom constraints are not supported");
+          "At least one of audio and video must be requested");
       return nullptr;
+    } else if (!video.IsNull()) {
+      if (video.Basic().pan.HasMandatory() ||
+          video.Basic().tilt.HasMandatory() ||
+          video.Basic().zoom.HasMandatory()) {
+        error_state.ThrowTypeError(
+            "Mandatory pan-tilt-zoom constraints are not supported");
+        return nullptr;
+      }
     }
   } else if (media_type == UserMediaRequestType::kDisplayMedia ||
              media_type == UserMediaRequestType::kDisplayMediaSet) {
@@ -429,8 +436,6 @@ UserMediaRequest* UserMediaRequest::Create(
     //   newly created TypeError.
     // 3. Let requestedMediaTypes be the set of media types in constraints with
     // either a dictionary value or a value of true.
-    // 4. If requestedMediaTypes is the empty set, set requestedMediaTypes to a
-    // set containing "video".
     if (media_type == UserMediaRequestType::kDisplayMediaSet) {
       if (!audio.IsNull()) {
         error_state.ThrowTypeError("Audio requests are not supported");
@@ -441,44 +446,33 @@ UserMediaRequest* UserMediaRequest::Create(
       }
     }
 
+    if (video.IsNull()) {
+      error_state.ThrowTypeError("video must be requested");
+      return nullptr;
+    }
+
     if ((!audio.IsNull() && !audio.Advanced().empty()) ||
-        (!video.IsNull() && !video.Advanced().empty())) {
+        !video.Advanced().empty()) {
       error_state.ThrowTypeError("Advanced constraints are not supported");
       return nullptr;
     }
-    if ((!audio.IsNull() && audio.Basic().HasMin()) ||
-        (!video.IsNull() && video.Basic().HasMin())) {
+
+    if ((!audio.IsNull() && audio.Basic().HasMin()) || video.Basic().HasMin()) {
       error_state.ThrowTypeError("min constraints are not supported");
       return nullptr;
     }
+
     if ((!audio.IsNull() && audio.Basic().HasExact()) ||
-        (!video.IsNull() && video.Basic().HasExact())) {
+        video.Basic().HasExact()) {
       error_state.ThrowTypeError("exact constraints are not supported");
       return nullptr;
     }
-    if (!audio.IsNull() && video.IsNull()) {
-      error_state.ThrowTypeError("Audio only requests are not supported");
-      return nullptr;
-    }
-    if (audio.IsNull() && video.IsNull()) {
-      video = ParseOptions(
-          context,
-          MakeGarbageCollected<V8UnionBooleanOrMediaTrackConstraints>(true),
-          error_state);
-      if (error_state.HadException())
-        return nullptr;
-    }
+
     if (video.Basic().display_surface.HasIdeal() &&
         video.Basic().display_surface.Ideal().size() > 0) {
       display_surface_constraint =
           video.Basic().display_surface.Ideal()[0].Utf8();
     }
-  }
-
-  if (audio.IsNull() && video.IsNull()) {
-    error_state.ThrowTypeError(
-        "At least one of audio and video must be requested");
-    return nullptr;
   }
 
   if (!audio.IsNull())
