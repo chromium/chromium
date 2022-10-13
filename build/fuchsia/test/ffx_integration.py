@@ -90,6 +90,10 @@ class FfxEmulator(AbstractContextManager):
                  with_network: bool,
                  logs_dir: Optional[str] = None) -> None:
         if product_bundle:
+
+            # TODO(fxb/111222): Remove when SDK images' names align with ffx's.
+            if product_bundle == 'workstation_eng.qemu-x64-release':
+                product_bundle = 'workstation_eng.qemu-x64'
             self._product_bundle = product_bundle
         else:
             target_cpu = get_host_arch()

@@ -18,6 +18,10 @@ def register_emulator_args(parser: argparse.ArgumentParser,
     """Register emulator specific arguments."""
     femu_args = parser.add_argument_group('emulator',
                                           'emulator startup arguments.')
+    femu_args.add_argument('--custom-image',
+                           dest='product_bundle',
+                           help='Backwards compatible flag that specifies an '
+                           'image used for booting up the emulator.')
     if enable_graphics:
         femu_args.add_argument('--disable-graphics',
                                action='store_false',
