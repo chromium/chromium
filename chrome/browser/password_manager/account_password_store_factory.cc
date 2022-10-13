@@ -57,10 +57,13 @@ void SyncEnabledOrDisabled(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #else
-  // Update all form managers.
+  // Update all form managers. Incognito tabs originated from this profile
+  // can also fill passwords, so they should be included.
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile)
+    if (browser->profile()->GetOriginalProfile() !=
+        profile->GetOriginalProfile()) {
       continue;
+    }
     TabStripModel* tabs = browser->tab_strip_model();
     for (int index = 0; index < tabs->count(); index++) {
       content::WebContents* web_contents = tabs->GetWebContentsAt(index);
