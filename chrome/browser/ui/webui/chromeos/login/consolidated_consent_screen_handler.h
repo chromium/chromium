@@ -31,25 +31,6 @@ class ConsolidatedConsentScreenView
   inline constexpr static StaticOobeScreenId kScreenId{
       "consolidated-consent", "ConsolidatedConsentScreen"};
 
-  struct ScreenConfig {
-    ScreenConfig();
-    ~ScreenConfig();
-    ScreenConfig(const ScreenConfig&) = delete;
-    ScreenConfig& operator=(const ScreenConfig&) = delete;
-
-    bool is_arc_enabled = true;
-    bool is_demo = false;
-    bool is_tos_hidden = false;
-    bool is_child_account = false;
-    std::string country_code = "us";
-
-    // Default URLs with english locales.
-    // ScreenConfig created in ConsolidatedConsentScreen::ShowImpl() should
-    // include the localized versions.
-    std::string google_eula_url = kGoogleEulaDefaultUrl;
-    std::string cros_eula_url = kCrosEulaDefaultUrl;
-  };
-
   virtual ~ConsolidatedConsentScreenView() = default;
 
   // Shows the contents of the screen.

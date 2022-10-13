@@ -15,10 +15,6 @@
 
 namespace chromeos {
 
-ConsolidatedConsentScreenView::ScreenConfig::ScreenConfig() = default;
-
-ConsolidatedConsentScreenView::ScreenConfig::~ScreenConfig() = default;
-
 ConsolidatedConsentScreenHandler::ConsolidatedConsentScreenHandler()
     : BaseScreenHandler(kScreenId) {}
 
