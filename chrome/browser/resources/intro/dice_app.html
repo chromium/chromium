@@ -35,8 +35,15 @@
 
   h6 {
     font-size: 1.25em;
-    line-height: 22px;
+    line-height: 32px;
     margin: 0 0 4px;
+  }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--google-blue-600);
+    --iron-icon-height: 36px;
+    margin-bottom: 16px;
+    --iron-icon-width: 36px;
   }
 
   #central-view-container {
@@ -60,13 +67,13 @@
     background-color: blue;
   }
 
-  #cards {
+  #benefit-cards-container {
     display: flex;
     flex-direction: row;
     gap: 12px;
   }
 
-  .card {
+  .benefit-card {
     align-items: center;
     background: var(--google-grey-50);
     border-radius: 24px;
@@ -79,13 +86,7 @@
     width: 236px;
   }
 
-  .card-icon-placeholder {
-    height: 30px;
-    margin-bottom: 16px;
-    width: 24px;
-  }
-
-  #card-description {
+  #benefit-card-description {
     color: var(--cr-secondary-text-color);
     font-size: 1.08em;
     font-weight: 400;
@@ -128,22 +129,14 @@
       <div class="placeholder-color" id="chrome-logo-placeholder"></div>
       <h1>$i18n{pageTitle}</h1>
       <h3>$i18n{pageSubtitle}</h3>
-      <div id="cards">
-        <div class="card">
-          <div class="placeholder-color card-icon-placeholder"></div>
-          <h6>$i18n{devicesCardTitle}</h6>
-          <p id="card-description">$i18n{devicesCardDescription}</p>
-        </div>
-        <div class="card">
-          <div class="placeholder-color card-icon-placeholder"></div>
-          <h6>$i18n{securityCardTitle}</h6>
-          <p id="card-description">$i18n{securityCardDescription}</p>
-        </div>
-        <div class="card">
-          <div class="placeholder-color card-icon-placeholder"></div>
-          <h6>$i18n{backupCardTitle}</h6>
-          <p id="card-description">$i18n{backupCardDescription}</p>
-        </div>
+      <div id="benefit-cards-container">
+        <template is="dom-repeat" items="[[benefitCards_]]">
+          <div class="benefit-card">
+            <iron-icon icon="[[item.iconName]]"></iron-icon>
+            <h6>[[item.title]]</h6>
+            <p id="benefit-card-description">[[item.description]]</p>
+          </div>
+        </template>
       </div>
     </div>
 
