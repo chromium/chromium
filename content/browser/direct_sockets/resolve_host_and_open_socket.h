@@ -12,7 +12,6 @@
 #include "net/base/address_list.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 
 namespace content {
 
@@ -37,9 +36,6 @@ class CONTENT_EXPORT ResolveHostAndOpenSocket
 
   void Start();
 
-  static int GetHttpsPort();
-  static void SetHttpsPortForTesting(absl::optional<int> port);
-
  private:
   ResolveHostAndOpenSocket(base::WeakPtr<DirectSocketsServiceImpl>,
                            const std::string& host,
@@ -51,13 +47,6 @@ class CONTENT_EXPORT ResolveHostAndOpenSocket
                   const absl::optional<net::AddressList>& resolved_addresses,
                   const absl::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override;
-
-  void PerformCORSCheck(const std::string& address,
-                        net::AddressList resolved_addresses);
-
-  void OnCORSCheckComplete(std::unique_ptr<network::SimpleURLLoader> loader,
-                           net::AddressList resolved_addresses,
-                           scoped_refptr<net::HttpResponseHeaders>);
 
   void OpenSocket(int result,
                   const absl::optional<net::AddressList>& resolved_addresses);

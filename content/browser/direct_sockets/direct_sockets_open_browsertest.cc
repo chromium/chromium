@@ -10,20 +10,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram.h"
-#include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/browser/direct_sockets/direct_sockets_test_utils.h"
-#include "content/browser/direct_sockets/resolve_host_and_open_socket.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -36,15 +28,9 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
-#include "net/dns/host_resolver.h"
-#include "net/http/http_request_headers.h"
 #include "net/net_buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
@@ -571,130 +557,5 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsTwo) {
   EXPECT_EQ(1243, call.send_buffer_size);
   EXPECT_EQ(1234, call.receive_buffer_size);
 }
-
-class DirectSocketsOpenCorsBrowserTest
-    : public DirectSocketsOpenBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  DirectSocketsOpenCorsBrowserTest()
-      : https_server_(net::test_server::EmbeddedTestServer::TYPE_HTTPS) {}
-
-  void SetUp() override {
-    https_server()->RegisterDefaultHandler(base::BindRepeating(
-        &net::test_server::HandlePrefixedRequest, "/",
-        base::BindRepeating(
-            &DirectSocketsOpenCorsBrowserTest::HandleCORSRequest,
-            base::Unretained(this), GetParam())));
-    ASSERT_TRUE(https_server()->Start(4344));
-    DirectSocketsOpenBrowserTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-
-    command_line->AppendSwitchASCII(switches::kIsolatedAppOrigins,
-                                    GetTestOpenPageURL().spec());
-  }
-
- protected:
-  std::unique_ptr<net::test_server::HttpResponse> HandleCORSRequest(
-      bool cors_success,
-      const net::test_server::HttpRequest& request) {
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-
-    if (request.method == net::test_server::METHOD_OPTIONS) {
-      if (cors_success) {
-        response->AddCustomHeader(
-            network::cors::header_names::kAccessControlAllowOrigin, "*");
-
-        response->AddCustomHeader(
-            network::cors::header_names::kAccessControlAllowHeaders, "*");
-      }
-    } else {
-      response->AddCustomHeader(
-          network::cors::header_names::kAccessControlAllowOrigin, "*");
-      response->set_content("OK");
-    }
-
-    return response;
-  }
-
-  net::test_server::EmbeddedTestServer* https_server() {
-    return &https_server_;
-  }
-
- private:
-  net::test_server::EmbeddedTestServer https_server_;
-};
-
-IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenTcp) {
-  MockOpenNetworkContext mock_network_context(net::OK);
-  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
-  // HTTPS uses port 443. We cannot really start a server on port 443,
-  // therefore we mock the behavior.
-  ResolveHostAndOpenSocket::SetHttpsPortForTesting(https_server()->port());
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kCORS, 0);
-
-  const std::string script =
-      JsReplace("openTcp($1, $2)", kLocalhostAddress, https_server()->port());
-
-  bool cors_success = GetParam();
-
-  auto script_result = EvalJs(shell(), script).ExtractString();
-  if (cors_success) {
-    EXPECT_THAT(script_result, ::testing::HasSubstr("openTcp succeeded"));
-  } else {
-    EXPECT_THAT(
-        script_result,
-        ::testing::AllOf(::testing::HasSubstr("InvalidAccessError"),
-                         ::testing::HasSubstr("blocked by cross-origin")));
-  }
-
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kCORS, cors_success ? 0 : 1);
-}
-
-IN_PROC_BROWSER_TEST_P(DirectSocketsOpenCorsBrowserTest, OpenUdp) {
-  MockOpenNetworkContext mock_network_context(net::OK);
-  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
-
-  // HTTPS uses port 443. We cannot really start a server on port 443,
-  // therefore we mock the behavior.
-  ResolveHostAndOpenSocket::SetHttpsPortForTesting(https_server()->port());
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kCORS, 0);
-
-  const std::string script =
-      JsReplace("openUdp({ remoteAddress: $1, remotePort: $2 })",
-                kLocalhostAddress, https_server()->port());
-
-  bool cors_success = GetParam();
-
-  auto script_result = EvalJs(shell(), script).ExtractString();
-  if (cors_success) {
-    EXPECT_THAT(script_result, ::testing::HasSubstr("openUdp succeeded"));
-  } else {
-    EXPECT_THAT(
-        script_result,
-        ::testing::AllOf(::testing::HasSubstr("InvalidAccessError"),
-                         ::testing::HasSubstr("blocked by cross-origin")));
-  }
-
-  histogram_tester.ExpectBucketCount(
-      kPermissionDeniedHistogramName,
-      blink::mojom::DirectSocketFailureType::kCORS, cors_success ? 0 : 1);
-}
-
-INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
-                         DirectSocketsOpenCorsBrowserTest,
-                         testing::Bool());
 
 }  // namespace content
