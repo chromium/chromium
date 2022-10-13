@@ -29,7 +29,9 @@ public class NativeLibraryLoadedStatus {
         boolean nativeMethodsReady = isMainDex ? sProvider.areMainDexNativeMethodsReady()
                                                : sProvider.areNativeMethodsReady();
         if (!nativeMethodsReady) {
-            throw new JniException("Native method called before the native library was ready.");
+            throw new JniException(String.format(
+                    "Native method called before the native library was ready (isMainDex=%b).",
+                    isMainDex));
         }
     }
 

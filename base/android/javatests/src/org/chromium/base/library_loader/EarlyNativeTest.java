@@ -19,7 +19,9 @@ import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.MainDex;
 
@@ -31,19 +33,26 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @JNINamespace("base")
 @MainDex
+@Batch(Batch.UNIT_TESTS)
 public class EarlyNativeTest {
+    private boolean mWasInitialized;
     private CallbackHelper mLoadMainDexStarted;
     private CallbackHelper mEnsureMainDexInitializedFinished;
 
     @Before
     public void setUp() {
+        mWasInitialized = LibraryLoader.getInstance().isInitialized();
+        LibraryLoader.getInstance().resetForTesting();
         mLoadMainDexStarted = new CallbackHelper();
         mEnsureMainDexInitializedFinished = new CallbackHelper();
     }
 
     @After
     public void tearDown() {
-        NativeLibraryLoadedStatus.setProvider(null);
+        // Restore the simulated library state (due to the resetForTesting() call).
+        if (mWasInitialized) {
+            LibraryLoader.getInstance().ensureInitialized();
+        }
     }
 
     private class TestLibraryLoader extends LibraryLoader {
@@ -84,12 +93,17 @@ public class EarlyNativeTest {
 
         LibraryLoader.getInstance().ensureInitialized();
         Assert.assertTrue(LibraryLoader.getInstance().isInitialized());
+
+        // Test resetForTesting().
+        LibraryLoader.getInstance().resetForTesting();
+        Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
+        LibraryLoader.getInstance().ensureInitialized();
+        Assert.assertTrue(LibraryLoader.getInstance().isInitialized());
     }
 
     private void doTestFullInitializationDoesntBlockMainDexInitialization(final boolean initialize)
             throws Exception {
         final TestLibraryLoader loader = new TestLibraryLoader();
-        loader.enableJniChecks();
         loader.setLibraryProcessType(LibraryProcessType.PROCESS_BROWSER);
         final Thread t1 = new Thread(() -> {
             if (initialize) {
@@ -113,12 +127,14 @@ public class EarlyNativeTest {
 
     @Test
     @SmallTest
+    @RequiresRestart("Uses custom LibraryLoader")
     public void testFullInitializationDoesntBlockMainDexInitialization() throws Exception {
         doTestFullInitializationDoesntBlockMainDexInitialization(true);
     }
 
     @Test
     @SmallTest
+    @RequiresRestart("Uses custom LibraryLoader")
     public void testLoadDoesntBlockMainDexInitialization() throws Exception {
         doTestFullInitializationDoesntBlockMainDexInitialization(false);
     }
@@ -128,8 +144,6 @@ public class EarlyNativeTest {
     public void testNativeMethodsReadyAfterLibraryInitialized() {
         // Test is a no-op if DCHECK isn't on.
         if (!BuildConfig.ENABLE_ASSERTS) return;
-
-        LibraryLoader.getInstance().enableJniChecks();
 
         Assert.assertFalse(
                 NativeLibraryLoadedStatus.getProviderForTesting().areMainDexNativeMethodsReady());
@@ -154,8 +168,6 @@ public class EarlyNativeTest {
     public void testNativeMethodsNotReadyThrows() {
         // Test is a no-op if dcheck isn't on.
         if (!BuildConfig.ENABLE_ASSERTS) return;
-
-        LibraryLoader.getInstance().enableJniChecks();
 
         try {
             EarlyNativeTestJni.get().isCommandLineInitialized();
