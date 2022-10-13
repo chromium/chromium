@@ -12,6 +12,14 @@ imageset("incognito_badge") {
   ]
 }
 
+imageset("incognito_badge_ios14") {
+  sources = [
+    "incognito_badge_ios14.imageset/Contents.json",
+    "incognito_badge_ios14.imageset/incognito_badge_ios14@2x.png",
+    "incognito_badge_ios14.imageset/incognito_badge_ios14@3x.png",
+  ]
+}
+
 imageset("incognito_small_badge") {
   sources = [
     "incognito_small_badge.imageset/Contents.json",

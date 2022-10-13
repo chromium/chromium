@@ -155,8 +155,18 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
 - (BadgeButton*)incognitoBadgeButton {
   BadgeButton* button;
   if (UseSymbols()) {
-    UIImage* image = CustomSymbolTemplateWithPointSize(
-        kIncognitoCircleFillSymbol, kSymbolIncognitoPointSize);
+    UIImage* image;
+    if (@available(iOS 15, *)) {
+      image = CustomPaletteSymbol(
+          kIncognitoCircleFillSymbol, kSymbolIncognitoPointSize,
+          UIImageSymbolWeightMedium, UIImageSymbolScaleMedium, @[
+            [UIColor colorNamed:kGrey400Color],
+            [UIColor colorNamed:kGrey100Color]
+          ]);
+    } else {
+      image = [[UIImage imageNamed:@"incognito_badge_ios14"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+    }
     button = [self createButtonForType:kBadgeTypeIncognito image:image];
     button.fullScreenImage = CustomSymbolTemplateWithPointSize(
         kIncognitoSymbol, kSymbolIncognitoFullScreenPointSize);

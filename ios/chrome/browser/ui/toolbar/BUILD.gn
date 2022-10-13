@@ -77,6 +77,7 @@ source_set("toolbar") {
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
     "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/web",

@@ -935,10 +935,22 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
     if ([self shouldUseIncognitoNTPResourcesForURL:navigationItem
                                                        ->GetVirtualURL()]) {
       item.title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
-      item.favicon = UseSymbols()
-                         ? CustomSymbolWithPointSize(kIncognitoCircleFillSymbol,
-                                                     kSymbolActionPointSize)
-                         : [UIImage imageNamed:@"incognito_badge"];
+      UIImage* image;
+      if (UseSymbols()) {
+        if (@available(iOS 15, *)) {
+          image = CustomPaletteSymbol(
+              kIncognitoCircleFillSymbol, kSymbolActionPointSize,
+              UIImageSymbolWeightMedium, UIImageSymbolScaleMedium, @[
+                [UIColor colorNamed:kGrey400Color],
+                [UIColor colorNamed:kGrey100Color]
+              ]);
+        } else {
+          image = [UIImage imageNamed:@"incognito_badge_ios14"];
+        }
+      } else {
+        image = [UIImage imageNamed:@"incognito_badge"];
+      }
+      item.favicon = image;
     } else {
       item.title =
           base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());

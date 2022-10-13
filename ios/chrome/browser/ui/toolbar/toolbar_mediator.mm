@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/favicon/favicon_status.h"
@@ -340,10 +341,20 @@
     if ([self shouldUseIncognitoNTPResourcesForURL:navigationItem
                                                        ->GetVirtualURL()]) {
       title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
-      image = UseSymbols()
-                  ? CustomSymbolWithPointSize(kIncognitoCircleFillSymbol,
-                                              kSymbolImagePointSize)
-                  : [UIImage imageNamed:@"incognito_badge"];
+      if (UseSymbols()) {
+        if (@available(iOS 15, *)) {
+          image = CustomPaletteSymbol(
+              kIncognitoCircleFillSymbol, kSymbolImagePointSize,
+              UIImageSymbolWeightMedium, UIImageSymbolScaleMedium, @[
+                [UIColor colorNamed:kGrey400Color],
+                [UIColor colorNamed:kGrey100Color]
+              ]);
+        } else {
+          image = [UIImage imageNamed:@"incognito_badge_ios14"];
+        }
+      } else {
+        image = [UIImage imageNamed:@"incognito_badge"];
+      }
     } else {
       title = base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());
       const gfx::Image& gfxImage = navigationItem->GetFaviconStatus().image;

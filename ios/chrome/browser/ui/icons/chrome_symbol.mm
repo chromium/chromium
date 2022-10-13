@@ -47,7 +47,6 @@ UIImage* SymbolWithConfiguration(NSString* symbol_name,
 // Custom symbol names.
 NSString* const kArrowClockWiseSymbol = @"arrow_clockwise";
 NSString* const kIncognitoSymbol = @"incognito";
-NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
 NSString* const kSquareNumberSymbol = @"square_number";
 NSString* const kTranslateSymbol = @"translate";
 NSString* const kCameraSymbol = @"camera";
@@ -63,6 +62,11 @@ NSString* const kLanguageSymbol = @"language";
 NSString* const kPasswordSymbol = @"password";
 NSString* const kCameraLensSymbol = @"camera_lens";
 NSString* const kDownTrendSymbol = @"line_downtrend";
+NSString* const kIncognitoCircleFilliOS14Symbol =
+    @"incognito_circle_fill_ios14";
+
+// Custom symbol names which can be configured a "palette".
+NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
 
 // Default symbol names.
 NSString* const kCreditCardSymbol = @"creditcard";
@@ -146,6 +150,22 @@ UIImage* CustomMulticolorSymbol(NSString* symbol_name, CGFloat point_size) {
     return symbol;
   }
   return [symbol imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+}
+
+UIImage* CustomPaletteSymbol(NSString* symbol_name,
+                             CGFloat point_size,
+                             UIImageSymbolWeight weight,
+                             UIImageSymbolScale scale,
+                             NSArray<UIColor*>* colors) {
+  UIImageConfiguration* conf =
+      [UIImageSymbolConfiguration configurationWithPointSize:point_size
+                                                      weight:weight
+                                                       scale:scale];
+  conf = [conf
+      configurationByApplyingConfiguration:
+          [UIImageSymbolConfiguration configurationWithPaletteColors:colors]];
+
+  return CustomSymbolWithConfiguration(symbol_name, conf);
 }
 
 bool UseSymbols() {

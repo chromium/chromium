@@ -107,6 +107,7 @@ source_set("symbols") {
     "//ios/chrome/browser/ui/icons/resources:camera_lens",
     "//ios/chrome/browser/ui/icons/resources:incognito",
     "//ios/chrome/browser/ui/icons/resources:incognito_circle_fill",
+    "//ios/chrome/browser/ui/icons/resources:incognito_circle_fill_ios14",
     "//ios/chrome/browser/ui/icons/resources:language",
     "//ios/chrome/browser/ui/icons/resources:laptopcomputer_and_phone",
     "//ios/chrome/browser/ui/icons/resources:password",

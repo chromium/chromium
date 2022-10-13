@@ -10,7 +10,6 @@
 // Custom symbol names.
 extern NSString* const kArrowClockWiseSymbol;
 extern NSString* const kIncognitoSymbol;
-extern NSString* const kIncognitoCircleFillSymbol;
 extern NSString* const kSquareNumberSymbol;
 extern NSString* const kTranslateSymbol;
 extern NSString* const kCameraSymbol;
@@ -25,6 +24,10 @@ extern NSString* const kLanguageSymbol;
 extern NSString* const kPasswordSymbol;
 extern NSString* const kCameraLensSymbol;
 extern NSString* const kDownTrendSymbol;
+extern NSString* const kIncognitoCircleFilliOS14Symbol;
+
+// Custom symbol names which can be configured a "palette".
+extern NSString* const kIncognitoCircleFillSymbol;
 
 // Default symbol names.
 extern NSString* const kCreditCardSymbol;
@@ -94,6 +97,15 @@ UIImage* CustomSymbolTemplateWithPointSize(NSString* symbol_name,
 // Returns a custom symbol named `symbol_name`, configured with the default
 // configuration and the given `point_size`.
 UIImage* CustomMulticolorSymbol(NSString* symbol_name, CGFloat point_size);
+
+// Returns a custom symbol named `symbol_name` configured with `point_size`,
+// `weight`, `scale` and set the "Palette" configuration for `colors`.
+UIImage* CustomPaletteSymbol(NSString* symbol_name,
+                             CGFloat point_size,
+                             UIImageSymbolWeight weight,
+                             UIImageSymbolScale scale,
+                             NSArray<UIColor*>* colors)
+    API_AVAILABLE(ios(15.0));
 
 // Returns YES if the kUseSFSymbols flag is enabled.
 bool UseSymbols();

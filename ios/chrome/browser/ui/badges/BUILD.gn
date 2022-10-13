@@ -61,6 +61,7 @@ source_set("badges") {
     ":public",
     ":util",
     "resources:incognito_badge",
+    "resources:incognito_badge_ios14",
     "resources:incognito_small_badge",
     "resources:wrench_badge",
     "//base",
