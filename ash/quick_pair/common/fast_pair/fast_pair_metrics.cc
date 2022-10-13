@@ -17,6 +17,55 @@ const char kAcceptFailedString[] = "Failed to accept connection.";
 const char kInvalidUUIDString[] = "Invalid UUID";
 const char kSocketNotListeningString[] = "Socket is not listening.";
 
+// Top 10 Popular peripherals and first party devices. These device
+// model names should be kept in sync with the FastPairTrackedModelID
+// enum in src/tools/metrics/histograms/enums.xml.
+const char kPopularPeripheral_JBLLIVE300TWS_ModelId[] = "718FA4";
+const char kPopularPeripheral_JBLLIVE300TWS_Name[] = "JBLLIVE300TWS";
+const char kPopularPeripheral_JBLLIVE400BT_ModelId[] = "F0020B";
+const char kPopularPeripheral_JBLLIVE400BT_Name[] = "JBLLIVE400BT";
+const char kPopularPeripheral_JBLTUNE125TWS_ModelId[] = "FF1B63";
+const char kPopularPeripheral_JBLTUNE125TWS_Name[] = "JBLTUNE125TWS";
+const char kPopularPeripheral_JBLTUNE225TWS_ModelId[] = "5C0C84";
+const char kPopularPeripheral_JBLTUNE225TWS_Name[] = "JBLTUNE225TWS";
+const char kPopularPeripheral_OnePlusBudsZ_ModelId[] = "A41C91";
+const char kPopularPeripheral_OnePlusBudsZ_Name[] = "OnePlusBudsZ";
+const char kPopularPeripheral_PixelBuds_ModelId[] = "060000";
+const char kPopularPeripheral_PixelBuds_Name[] = "PixelBuds";
+const char kPopularPeripheral_PixelBudsASeries_ModelId[] = "718C17";
+const char kPopularPeripheral_PixelBudsASeries_Name[] = "PixelBudsASeries";
+const char kPopularPeripheral_PixelBudsPro_ModelId[] = "F2020E";
+const char kPopularPeripheral_PixelBudsPro_Name[] = "PixelBudsPro";
+const char kPopularPeripheral_RealmeBudsAir2_ModelId[] = "BA5D56";
+const char kPopularPeripheral_RealmeBudsAir2_Name[] = "RealmeBudsAir2";
+const char kPopularPeripheral_SonyWF1000XM3_ModelId[] = "38C95C";
+const char kPopularPeripheral_SonyWF1000XM3_Name[] = "SonyWF1000XM3";
+const char kPopularPeripheral_Other_Name[] = "Other";
+
+const std::string GetFastPairTrackedModelId(const std::string& model_id) {
+  if (model_id == kPopularPeripheral_JBLLIVE300TWS_ModelId)
+    return kPopularPeripheral_JBLLIVE300TWS_Name;
+  if (model_id == kPopularPeripheral_JBLLIVE400BT_ModelId)
+    return kPopularPeripheral_JBLLIVE400BT_Name;
+  if (model_id == kPopularPeripheral_JBLTUNE125TWS_ModelId)
+    return kPopularPeripheral_JBLTUNE125TWS_Name;
+  if (model_id == kPopularPeripheral_JBLTUNE225TWS_ModelId)
+    return kPopularPeripheral_JBLTUNE225TWS_Name;
+  if (model_id == kPopularPeripheral_OnePlusBudsZ_ModelId)
+    return kPopularPeripheral_OnePlusBudsZ_Name;
+  if (model_id == kPopularPeripheral_PixelBuds_ModelId)
+    return kPopularPeripheral_PixelBuds_Name;
+  if (model_id == kPopularPeripheral_PixelBudsASeries_ModelId)
+    return kPopularPeripheral_PixelBudsASeries_Name;
+  if (model_id == kPopularPeripheral_PixelBudsPro_ModelId)
+    return kPopularPeripheral_PixelBudsPro_Name;
+  if (model_id == kPopularPeripheral_RealmeBudsAir2_ModelId)
+    return kPopularPeripheral_RealmeBudsAir2_Name;
+  if (model_id == kPopularPeripheral_SonyWF1000XM3_ModelId)
+    return kPopularPeripheral_SonyWF1000XM3_Name;
+  return kPopularPeripheral_Other_Name;
+}
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum should be kept in sync
 // with the BluetoothConnectToServiceError enum in
@@ -203,6 +252,33 @@ const char kSavedDevicesTotalUxLoadTime[] =
 const char kSavedDevicesCount[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.DeviceCount";
 
+const std::string GetEngagementFlowInitialModelIdMetric(
+    const ash::quick_pair::Device& device) {
+  return std::string(kEngagementFlowInitialMetric) + "." +
+         GetFastPairTrackedModelId(device.metadata_id);
+}
+
+const std::string GetEngagementFlowSubsequentModelIdMetric(
+    const ash::quick_pair::Device& device) {
+  return std::string(kEngagementFlowSubsequentMetric) + "." +
+         GetFastPairTrackedModelId(device.metadata_id);
+}
+
+const std::string GetRetroactiveEngagementFlowModelIdMetric(
+    const ash::quick_pair::Device& device) {
+  return std::string(kRetroactiveEngagementFlowMetric) + "." +
+         GetFastPairTrackedModelId(device.metadata_id);
+}
+
+// The retroactive engagement flow doesn't record retroactive successes
+// properly due to b/240581398, so we use the account key write metric
+// to record metrics split by model ID.
+const std::string GetAccountKeyWriteResultRetroactiveModelIdMetric(
+    const ash::quick_pair::Device& device) {
+  return std::string(kFastPairAccountKeyWriteResultRetroactiveMetric) + "." +
+         GetFastPairTrackedModelId(device.metadata_id);
+}
+
 }  // namespace
 
 namespace ash {
@@ -214,11 +290,17 @@ void AttemptRecordingFastPairEngagementFlow(const Device& device,
     case Protocol::kFastPairInitial:
       base::UmaHistogramSparse(kEngagementFlowInitialMetric,
                                static_cast<int>(event));
+      // Also record engagement flow metrics split per tracked model ID.
+      base::UmaHistogramSparse(GetEngagementFlowInitialModelIdMetric(device),
+                               static_cast<int>(event));
       break;
     case Protocol::kFastPairRetroactive:
       break;
     case Protocol::kFastPairSubsequent:
       base::UmaHistogramSparse(kEngagementFlowSubsequentMetric,
+                               static_cast<int>(event));
+      // Also record engagement flow metrics split per tracked model ID.
+      base::UmaHistogramSparse(GetEngagementFlowSubsequentModelIdMetric(device),
                                static_cast<int>(event));
       break;
   }
@@ -252,6 +334,10 @@ void AttemptRecordingFastPairRetroactiveEngagementFlow(
     case Protocol::kFastPairRetroactive:
       base::UmaHistogramSparse(kRetroactiveEngagementFlowMetric,
                                static_cast<int>(event));
+      // Also record engagement flow metrics split per tracked model ID.
+      base::UmaHistogramSparse(
+          GetRetroactiveEngagementFlowModelIdMetric(device),
+          static_cast<int>(event));
       break;
   }
 }
@@ -335,6 +421,9 @@ void RecordAccountKeyResult(const Device& device, bool success) {
     case Protocol::kFastPairRetroactive:
       base::UmaHistogramBoolean(kFastPairAccountKeyWriteResultRetroactiveMetric,
                                 success);
+      // Also record engagement flow metrics split per tracked model ID.
+      base::UmaHistogramBoolean(
+          GetAccountKeyWriteResultRetroactiveModelIdMetric(device), success);
       break;
     case Protocol::kFastPairSubsequent:
       base::UmaHistogramBoolean(kFastPairAccountKeyWriteResultSubsequentMetric,

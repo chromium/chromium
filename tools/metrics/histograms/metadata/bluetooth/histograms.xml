@@ -194,6 +194,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result.{FastPairPairingProtocol}.{FastPairTrackedModelID}"
+    enum="BooleanSuccess" expires_after="2023-02-26">
+  <owner>dclasson@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records success or failure of writing an account key to a device, split per
+    protocol and per Model ID. Emitted on the OnPairFailure event and the
+    OnDevicePaired event in the Fast Pair flow.
+  </summary>
+  <token key="FastPairPairingProtocol">
+    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
+    <variant name="RetroactivePairingProtocol"
+        summary="retroactive pairing protocol"/>
+    <variant name="SubsequentPairingProtocol"
+        summary="subsequent pairing protocol"/>
+  </token>
+  <token key="FastPairTrackedModelID">
+    <variant name="JBLLIVE300TWS" summary="JBL LIVE 300 TWS"/>
+    <variant name="JBLLIVE400BT" summary="JBL LIVE 400 BT"/>
+    <variant name="JBLTUNE125TWS" summary="JBL TUNE 125 TWS"/>
+    <variant name="JBLTUNE225TWS" summary="JBL TUNE 225 TWS"/>
+    <variant name="OnePlusBudsZ" summary="OnePlus Buds Z"/>
+    <variant name="Other"
+        summary="A headset that isn't one of the tracked models."/>
+    <variant name="PixelBuds" summary="Pixel Buds V1"/>
+    <variant name="PixelBudsASeries" summary="Pixel buds A-series"/>
+    <variant name="PixelBudsPro" summary="Pixel buds pro"/>
+    <variant name="RealmeBudsAir2" summary="Realme Buds Air 2"/>
+    <variant name="SonyWF1000XM3" summary="Sony WF-1000 XM3"/>
+  </token>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.AccountKey.Write.TotalTime"
     units="ms" expires_after="2023-02-26">
   <owner>shanefitz@google.com</owner>
@@ -309,6 +343,39 @@ chromium-metrics-reviews@google.com.
     <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
     <variant name="SubsequentPairingProtocol"
         summary="subsequent pairing protocol"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.EngagementFunnel.Steps.{FastPairPairingProtocol}.{FastPairTrackedModelID}"
+    enum="FastPairEngagementFlowEvent" expires_after="2023-02-26">
+  <owner>dclasson@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records each step in the Fast Pair flow, split per protocol and per Model
+    ID. Emitted when the discovery UI is shown, the discovery UI is dismissed,
+    pairing progress begins, pairing fails, pairing succeeded, the error UI is
+    dismissed, and/or when the setting button on the error UI is pressed.
+  </summary>
+  <token key="FastPairPairingProtocol">
+    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
+    <variant name="SubsequentPairingProtocol"
+        summary="subsequent pairing protocol"/>
+  </token>
+  <token key="FastPairTrackedModelID">
+    <variant name="JBLLIVE300TWS" summary="JBL LIVE 300 TWS"/>
+    <variant name="JBLLIVE400BT" summary="JBL LIVE 400 BT"/>
+    <variant name="JBLTUNE125TWS" summary="JBL TUNE 125 TWS"/>
+    <variant name="JBLTUNE225TWS" summary="JBL TUNE 225 TWS"/>
+    <variant name="OnePlusBudsZ" summary="OnePlus Buds Z"/>
+    <variant name="Other"
+        summary="A headset that isn't one of the tracked models."/>
+    <variant name="PixelBuds" summary="Pixel Buds V1"/>
+    <variant name="PixelBudsASeries" summary="Pixel buds A-series"/>
+    <variant name="PixelBudsPro" summary="Pixel buds pro"/>
+    <variant name="RealmeBudsAir2" summary="realme Buds Air 2"/>
+    <variant name="SonyWF1000XM3" summary="Sony WF-1000 XM3"/>
   </token>
 </histogram>
 
@@ -850,6 +917,34 @@ chromium-metrics-reviews@google.com.
     associate account UI, and when the learn more button is pressed on the
     associate account UI.
   </summary>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.RetroactiveEngagementFunnel.Steps.{FastPairTrackedModelID}"
+    enum="FastPairRetroactiveEngagementFlowEvent" expires_after="2023-02-26">
+  <owner>dclasson@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records each step in the Retroactive Pair flow, split per Model ID. Emitted
+    when the associate account UI is shown, the associate account UI is
+    dismissed, the save to account button is pressed on the associate account
+    UI, and when the learn more button is pressed on the associate account UI.
+  </summary>
+  <token key="FastPairTrackedModelID">
+    <variant name="JBLLIVE300TWS" summary="JBL LIVE 300 TWS"/>
+    <variant name="JBLLIVE400BT" summary="JBL LIVE 400 BT"/>
+    <variant name="JBLTUNE125TWS" summary="JBL TUNE 125 TWS"/>
+    <variant name="JBLTUNE225TWS" summary="JBL TUNE 225 TWS"/>
+    <variant name="OnePlusBudsZ" summary="OnePlus Buds Z"/>
+    <variant name="Other"
+        summary="A headset that isn't one of the tracked models."/>
+    <variant name="PixelBuds" summary="Pixel Buds V1"/>
+    <variant name="PixelBudsASeries" summary="Pixel buds A-series"/>
+    <variant name="PixelBudsPro" summary="Pixel buds pro"/>
+    <variant name="RealmeBudsAir2" summary="Realme Buds Air 2"/>
+    <variant name="SonyWF1000XM3" summary="Sony WF-1000 XM3"/>
+  </token>
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.FastPair.RetroactivePairing.Result"

@@ -36862,6 +36862,20 @@ Called by update_extension_permission.py.-->
       label="Settings - remove confirmed on remove saved device dialog"/>
 </enum>
 
+<enum name="FastPairTrackedModelID">
+  <int value="0" label="Other"/>
+  <int value="1" label="JBLTUNE125TWS"/>
+  <int value="2" label="OnePlusBudsZ"/>
+  <int value="3" label="JBLTUNE225TWS"/>
+  <int value="4" label="SonyWF1000XM3"/>
+  <int value="5" label="RealmeBudsAir2"/>
+  <int value="6" label="JBLLIVE400BT"/>
+  <int value="7" label="JBLLIVE300TWS"/>
+  <int value="8" label="PixelBuds"/>
+  <int value="9" label="PixelBudsASeries"/>
+  <int value="10" label="PixelBudsPro"/>
+</enum>
+
 <enum name="FastPairVersion">
   <int value="0" label="v1"/>
   <int value="1" label="v2"/>
