@@ -383,6 +383,7 @@ public final class ProductionSupportedFlagList {
                             + " including synchronized decoding."),
             Flag.baseFeature(BlinkFeatures.THREADED_BODY_LOADER,
                     "If enabled, reads and decodes navigation body data off the main thread."),
+            Flag.baseFeature("PreconnectOnRedirect"),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

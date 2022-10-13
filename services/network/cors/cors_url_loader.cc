@@ -608,6 +608,14 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   timing_allow_failed_flag_ = !PassesTimingAllowOriginCheck(*response_head);
   last_response_url_ = redirect_info.new_url;
 
+  if (!url::Origin::Create(redirect_info.new_url)
+           .IsSameOriginWith(url::Origin::Create(request_.url)) &&
+      base::FeatureList::IsEnabled(features::kPreconnectOnRedirect) &&
+      context_->enable_preconnect()) {
+    context_->PreconnectSockets(1, redirect_info.new_url, true,
+                                isolation_info_.network_anonymization_key());
+  }
+
   if (request_.redirect_mode == mojom::RedirectMode::kManual) {
     CheckTainted(redirect_info);
     deferred_redirect_url_ = std::make_unique<GURL>(redirect_info.new_url);

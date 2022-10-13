@@ -323,4 +323,9 @@ BASE_FEATURE(kPreconnectInNetworkService,
              "PreconnectInNetworkService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Preconnect to a new origin right when a redirect starts.
+BASE_FEATURE(kPreconnectOnRedirect,
+             "PreconnectOnRedirect",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace network::features
