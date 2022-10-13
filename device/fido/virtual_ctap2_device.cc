@@ -1323,9 +1323,13 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   if (!config_.none_attestation) {
     std::unique_ptr<crypto::ECPrivateKey> attestation_private_key =
         crypto::ECPrivateKey::CreateFromPrivateKeyInfo(GetAttestationKey());
-    bool status =
-        Sign(attestation_private_key.get(), std::move(sign_buffer), &sig);
-    DCHECK(status);
+    if (mutable_state()->ctap2_invalid_signature) {
+      sig = {0x00};
+    } else {
+      bool status =
+          Sign(attestation_private_key.get(), std::move(sign_buffer), &sig);
+      DCHECK(status);
+    }
   }
 
   absl::optional<std::vector<uint8_t>> attestation_cert;
@@ -1708,8 +1712,12 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
                                                   request.client_data_hash);
     }
 
-    const std::vector<uint8_t> signature =
-        registration.second->private_key->Sign(signature_buffer);
+    std::vector<uint8_t> signature;
+    if (mutable_state()->ctap2_invalid_signature) {
+      signature = {0x00};
+    } else {
+      signature = registration.second->private_key->Sign(signature_buffer);
+    }
     AuthenticatorGetAssertionResponse assertion(std::move(authenticator_data),
                                                 signature);
 

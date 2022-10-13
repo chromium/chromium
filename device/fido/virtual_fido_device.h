@@ -178,6 +178,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     // to be invalid. (U2F only.)
     bool u2f_invalid_public_key = false;
 
+    // ctap2_invalid_signature causes a bogus signature to be returned if true.
+    bool ctap2_invalid_signature = false;
+
     // Number of PIN retries remaining.
     int pin_retries = kMaxPinRetries;
     // The number of failed PIN attempts since the token was "inserted".
