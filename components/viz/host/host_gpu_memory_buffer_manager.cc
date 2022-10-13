@@ -8,7 +8,9 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -29,14 +31,6 @@ namespace viz {
 
 namespace {
 
-void OnGpuMemoryBufferDestroyed(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    gpu::GpuMemoryBufferImpl::DestructionCallback callback,
-    const gpu::SyncToken& sync_token) {
-  task_runner->PostTask(FROM_HERE,
-                        base::BindOnce(std::move(callback), sync_token));
-}
-
 bool WillGetGmbConfigFromGpu() {
 #if defined(USE_OZONE)
   // Ozone/X11 cannot get buffer formats in the browser process and requires gpu
@@ -56,12 +50,7 @@ bool WillGetGmbConfigFromGpu() {
 HostGpuMemoryBufferManager::PendingBufferInfo::PendingBufferInfo() = default;
 HostGpuMemoryBufferManager::PendingBufferInfo::PendingBufferInfo(
     PendingBufferInfo&&) = default;
-HostGpuMemoryBufferManager::PendingBufferInfo::~PendingBufferInfo() {
-  // Another thread may be blocked on WaitableEvent that is signalled by
-  // `callback` so ensure it gets run.
-  if (callback)
-    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
-}
+HostGpuMemoryBufferManager::PendingBufferInfo::~PendingBufferInfo() = default;
 
 HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
     GpuServiceProvider gpu_service_provider,
@@ -74,6 +63,9 @@ HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
       pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
       task_runner_(std::move(task_runner)) {
   DCHECK(task_runner_->BelongsToCurrentThread());
+
+  weak_ptr_ = weak_factory_.GetWeakPtr();
+
   if (!WillGetGmbConfigFromGpu()) {
     native_configurations_ = gpu::GetNativeGpuMemoryBufferConfigurations(
         gpu_memory_buffer_support_.get());
@@ -85,8 +77,19 @@ HostGpuMemoryBufferManager::HostGpuMemoryBufferManager(
 
 HostGpuMemoryBufferManager::~HostGpuMemoryBufferManager() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(shutdown_event_.IsSignaled());
+
   base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
       this);
+}
+
+void HostGpuMemoryBufferManager::Shutdown() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  shutdown_event_.Signal();
+
+  // Invalidate weak pointers so that any in flight requests are dropped.
+  weak_factory_.InvalidateWeakPtrs();
 }
 
 void HostGpuMemoryBufferManager::DestroyGpuMemoryBuffer(
@@ -146,8 +149,6 @@ void HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer(
     base::OnceCallback<void(gfx::GpuMemoryBufferHandle)> callback,
     bool call_sync) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  if (!weak_ptr_)
-    weak_ptr_ = weak_factory_.GetWeakPtr();
   if (CreateBufferUsesGpuService(format, usage)) {
     if (auto* gpu_service = GetGpuService()) {
       PendingBufferInfo buffer_info;
@@ -221,12 +222,15 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gpu::SurfaceHandle surface_handle,
-    base::WaitableEvent* shutdown_event) {
+    base::WaitableEvent* cancel_event) {
+  if (shutdown_event_.IsSignaled()) {
+    // After Shutdown() runs this can abort early.
+    return nullptr;
+  }
+
   gfx::GpuMemoryBufferId id(next_gpu_memory_id_++);
   gfx::GpuMemoryBufferHandle handle;
-  base::WaitableEvent wait_event(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  base::WaitableEvent completion_event;
   bool call_sync = task_runner_->BelongsToCurrentThread();
 
   // A refcounted wrapper around a bool so that if the thread waiting on a
@@ -246,31 +250,38 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
         *handle = std::move(allocated_buffer_handle);
         wait_event->Signal();
       },
-      cancelled, &handle, &wait_event);
-  // We block with a WaitableEvent until the callback is run. So using
-  // base::Unretained() is safe here.
-  auto allocate_callback = base::BindOnce(
-      &HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer,
-      base::Unretained(this), id, client_id_, size, format, usage,
-      surface_handle, std::move(reply_callback), call_sync);
+      cancelled, &handle, &completion_event);
+
+  auto allocate_callback =
+      base::BindOnce(&HostGpuMemoryBufferManager::AllocateGpuMemoryBuffer,
+                     weak_ptr_, id, client_id_, size, format, usage,
+                     surface_handle, std::move(reply_callback), call_sync);
   if (call_sync) {
     std::move(allocate_callback).Run();
   } else {
     task_runner_->PostTask(FROM_HERE, std::move(allocate_callback));
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope
         allow_base_sync_primitives;
-    if (shutdown_event) {
-      // This class runs on the UI thread so TileManager::FinishTasksAndCleanUp
-      // could block on the worker thread where this task is running. That could
-      // in turn block on a task posted to the UI thread. We avoid this deadlock
-      // by having an event that TileManager can set to cancel this wait.
-      base::WaitableEvent* waitables[] = {&wait_event, shutdown_event};
-      size_t index =
-          base::WaitableEvent::WaitMany(waitables, std::size(waitables));
-      if (index == 1)
-        cancelled->data = true;
-    } else {
-      wait_event.Wait();
+
+    // There are up to three events waited on here:
+    // 1. `completion_event` is signaled when UI thread is done with the request
+    //    and the result is in `handle`.
+    // 2. `shutdown_event_` is signaled when HostGpuMemoryBufferManager is being
+    //    destroyed on browser shutdown. The UI thread blocks on thread pool
+    //    threads stopping during shutdown. A thread pool thread could block
+    //    here waiting on UI thread to complete the request. This avoids
+    //    deadlock by cancelling the pending requests.
+    // 3. `cancel_event` which is optionally provided by caller. For example,
+    //    TileManager::FinishTasksAndCleanUp() could block on the worker thread
+    //    where this task is running. That could in turn block on a task posted
+    //    to the UI thread. This avoids deadlock by having an event that
+    //    TileManager cancel this wait.
+    base::WaitableEvent* waitables[3] = {&completion_event, &shutdown_event_,
+                                         cancel_event};
+    size_t index =
+        base::WaitableEvent::WaitMany(waitables, cancel_event ? 3 : 2);
+    if (index > 0) {
+      cancelled->data = true;
     }
   }
 
@@ -281,8 +292,8 @@ HostGpuMemoryBufferManager::CreateGpuMemoryBuffer(
   // onto the |task_runner_| thread to do the real work.
   return gpu_memory_buffer_support_->CreateGpuMemoryBufferImplFromHandle(
       std::move(handle), size, format, usage,
-      base::BindOnce(
-          &OnGpuMemoryBufferDestroyed, task_runner_,
+      base::BindPostTask(
+          task_runner_,
           base::BindOnce(&HostGpuMemoryBufferManager::DestroyGpuMemoryBuffer,
                          weak_ptr_, id, client_id_)),
       this, pool_);

@@ -17,11 +17,9 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/viz/common/features.h"
 #include "components/viz/host/gpu_host_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
@@ -34,7 +32,6 @@
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
@@ -281,7 +278,10 @@ void BrowserGpuChannelHostFactory::CloseChannel() {
     gpu_channel_ = nullptr;
   }
 
-  gpu_memory_buffer_manager_.reset();
+  // This will unblock any other threads waiting on CreateGpuMemoryBuffer()
+  // requests. It runs before IO and thread pool threads are stopped to avoid
+  // shutdown hangs.
+  gpu_memory_buffer_manager_->Shutdown();
 }
 
 BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()

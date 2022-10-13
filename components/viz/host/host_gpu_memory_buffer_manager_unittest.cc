@@ -13,10 +13,13 @@
 #include "base/clang_profiling_buildflags.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/host/gpu_memory_buffer_support.h"
 #include "media/media_buildflags.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
@@ -268,7 +271,10 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
   HostGpuMemoryBufferManagerTest& operator=(
       const HostGpuMemoryBufferManagerTest&) = delete;
 
-  ~HostGpuMemoryBufferManagerTest() override = default;
+  ~HostGpuMemoryBufferManagerTest() override {
+    if (gpu_memory_buffer_manager_)
+      gpu_memory_buffer_manager_->Shutdown();
+  }
 
   void SetUp() override {
     gpu_service_ = std::make_unique<TestGpuService>();
@@ -334,7 +340,7 @@ class HostGpuMemoryBufferManagerTest : public ::testing::Test {
     return gpu_memory_buffer_manager_.get();
   }
 
- private:
+ protected:
   std::unique_ptr<TestGpuService> gpu_service_;
   std::unique_ptr<HostGpuMemoryBufferManager> gpu_memory_buffer_manager_;
 };
@@ -476,6 +482,49 @@ TEST_F(HostGpuMemoryBufferManagerTest, AllocationRequestFromDeadGpuService) {
   gpu_service()->SatisfyAllocationRequestAt(1);
   EXPECT_EQ(2, gpu_service()->GetAllocationRequestsCount());
   EXPECT_FALSE(allocated_handle.is_null());
+}
+
+// Test that any pending CreateGpuMemoryBuffer() requests are cancelled, so
+// blocked threads stop waiting, on shutdown.
+TEST_F(HostGpuMemoryBufferManagerTest, CancelRequestsForShutdown) {
+  base::Thread threads[2] = {base::Thread("Thread1"), base::Thread("Thread2")};
+
+  for (auto& thread : threads) {
+    ASSERT_TRUE(thread.Start());
+    base::WaitableEvent create_wait;
+
+    // Call CreateGpuMemoryBuffer() from each thread. This thread will be
+    // waiting inside CreateGpuMemoryBuffer() when `gpu_memory_buffer_manager_`
+    // is destroyed.
+    thread.task_runner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([this, &create_wait]() {
+          create_wait.Signal();
+          // This should block.
+          gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
+              gfx::Size(100, 100), gfx::BufferFormat::RGBA_8888,
+              gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle, nullptr);
+        }));
+    create_wait.Wait();
+  }
+
+  // This should shutdown HostGpuMemoryBufferManager and unblock the other
+  // threads.
+  gpu_memory_buffer_manager_->Shutdown();
+
+  // Stop the other threads to verify they aren't waiting.
+  for (auto& thread : threads)
+    thread.Stop();
+
+  // HostGpuMemoryBufferManager should be able to be safely destroyed after
+  //
+  gpu_memory_buffer_manager_.reset();
+
+  // Flush tasks posted back to main thread from CreateGpuMemoryBuffer() to make
+  // sure they are harmless.
+  base::RunLoop loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   loop.QuitClosure());
+  loop.Run();
 }
 
 }  // namespace viz
