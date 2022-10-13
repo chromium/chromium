@@ -721,11 +721,11 @@ export function getOptionMenuItems(option) {
       return [
         {
           value: JAPANESE_INPUT_MODE.KANA,
-          name: 'inputMethodOptionsJapaneseInputModeRomaji',
+          name: 'inputMethodOptionsJapaneseInputModeKana',
         },
         {
           value: JAPANESE_INPUT_MODE.ROMAJI,
-          name: 'inputMethodOptionsJapaneseInputModeKana',
+          name: 'inputMethodOptionsJapaneseInputModeRomaji',
         },
       ];
     case OptionType.JAPANESE_PUNCTUATION_STYLE:
