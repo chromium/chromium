@@ -4834,7 +4834,7 @@
 
       If this policy isn't set, all downloads where the file type is in <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME">AutoOpenFileTypes</ph> will automatically open.
 
-      A URL pattern has to be formatted according to https://www.chromium.org/administrators/url-blocklist-filter-format.''',
+      A URL pattern has to be formatted according to https://support.google.com/chrome/a?p=url_blocklist_filter_format.''',
     },
     {
       'name': 'AutoLaunchProtocolsFromOrigins',
@@ -5287,7 +5287,7 @@
       'tags': [],
       'desc': '''Setting the policy specifies for which origins to allow all the HTTP authentication schemes <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> supports regardless of the <ph name="AUTH_SCHEMES_POLICY_NAME">AuthSchemes</ph> policy.
 
-      Format the origin pattern according to this format (<ph name="URL_SCHEME_FORMAT_LINK">https://www.chromium.org/administrators/url-blocklist-filter-format</ph>). Up to 1,000 exceptions can be defined in <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME">AllHttpAuthSchemesAllowedForOrigins</ph>.
+      Format the origin pattern according to this format (<ph name="URL_SCHEME_FORMAT_LINK">https://support.google.com/chrome/a?p=url_blocklist_filter_format</ph>). Up to 1,000 exceptions can be defined in <ph name="ALL_HTTP_AUTH_ALLOWED_FOR_ORIGINS_POLICY_NAME">AllHttpAuthSchemesAllowedForOrigins</ph>.
       Wildcards are allowed for the whole origin or parts of the origin, either the scheme, host, port.''',
     },
     {
@@ -10446,7 +10446,7 @@
       'tags': ['filtering'],
       'desc': '''This policy is deprecated, please use the '<ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>' policy instead.
 
-      Setting the policy prevents webpages with prohibited URLs from loading. It provides a list of URL patterns that specify forbidden URLs. Leaving the policy unset means no URLs are prohibited in the browser. Format the URL pattern according to this format ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Up to 1,000 exceptions can be defined in <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph>.
+      Setting the policy prevents webpages with prohibited URLs from loading. It provides a list of URL patterns that specify forbidden URLs. Leaving the policy unset means no URLs are prohibited in the browser. Format the URL pattern according to this format ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Up to 1,000 exceptions can be defined in <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph>.
 
       From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 73, you can block javascript://* URLs. However, it affects only JavaScript entered in the address bar (or, for example, bookmarklets). In-page JavaScript URLs with dynamically loaded data aren't subject to this policy. For example, if you block example.com/abc, then example.com can still load example.com/abc using XMLHTTPRequest.
 
@@ -10478,7 +10478,7 @@
       'tags': [],
       'desc': '''This policy is deprecated, please use the '<ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph>' policy instead.
 
-      Setting the policy provides access to the listed URLs, as exceptions to the URL blocklist. See that policy's description for the format of entries of this list. For example, setting <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> to * will block all requests, and you can use this policy to allow access to a limited list of URLs. Use it to open exceptions to certain schemes, subdomains of other domains, ports, or specific paths, using the format specified at ( https://www.chromium.org/administrators/url-blocklist-filter-format ). The most specific filter determines if a URL is blocked or allowed. The allowlist takes precedence over blocklist. This policy is limited to 1,000 entries.
+      Setting the policy provides access to the listed URLs, as exceptions to the URL blocklist. See that policy's description for the format of entries of this list. For example, setting <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> to * will block all requests, and you can use this policy to allow access to a limited list of URLs. Use it to open exceptions to certain schemes, subdomains of other domains, ports, or specific paths, using the format specified at ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). The most specific filter determines if a URL is blocked or allowed. The allowlist takes precedence over blocklist. This policy is limited to 1,000 entries.
 
       This policy also allows enabling the automatic invocation by the browser of external application registered as protocol handlers for the listed protocols like "tel:" or "ssh:".
 
@@ -10511,7 +10511,7 @@
       'id': 736,
       'caption': '''Block access to a list of URLs''',
       'tags': ['filtering'],
-      'desc': '''Setting the policy prevents webpages with prohibited URLs from loading. It provides a list of URL patterns that specify forbidden URLs. Leaving the policy unset means no URLs are prohibited in the browser. Format the URL pattern according to this format ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Up to 1,000 exceptions can be defined in <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph>.
+      'desc': '''Setting the policy prevents webpages with prohibited URLs from loading. It provides a list of URL patterns that specify forbidden URLs. Leaving the policy unset means no URLs are prohibited in the browser. Format the URL pattern according to this format ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). Up to 1,000 exceptions can be defined in <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph>.
 
       From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 73, you can block javascript://* URLs. However, it affects only JavaScript entered in the address bar (or, for example, bookmarklets). In-page JavaScript URLs with dynamically loaded data aren't subject to this policy. For example, if you block example.com/abc, then example.com can still load example.com/abc using XMLHTTPRequest.
 
@@ -10544,7 +10544,7 @@
       'id': 737,
       'caption': '''Allow access to a list of URLs''',
       'tags': [],
-      'desc': '''Setting the policy provides access to the listed URLs, as exceptions to <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>. See that policy's description for the format of entries of this list. For example, setting <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> to * will block all requests, and you can use this policy to allow access to a limited list of URLs. Use it to open exceptions to certain schemes, subdomains of other domains, ports, or specific paths, using the format specified at ( https://www.chromium.org/administrators/url-blocklist-filter-format ). The most specific filter determines if a URL is blocked or allowed. The <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph> policy takes precedence over <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>. This policy is limited to 1,000 entries.
+      'desc': '''Setting the policy provides access to the listed URLs, as exceptions to <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>. See that policy's description for the format of entries of this list. For example, setting <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> to * will block all requests, and you can use this policy to allow access to a limited list of URLs. Use it to open exceptions to certain schemes, subdomains of other domains, ports, or specific paths, using the format specified at ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). The most specific filter determines if a URL is blocked or allowed. The <ph name="URL_ALLOWLIST_POLICY_NAME">URLAllowlist</ph> policy takes precedence over <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>. This policy is limited to 1,000 entries.
 
       This policy also allows enabling the automatic invocation by the browser of external application registered as protocol handlers for the listed protocols like "tel:" or "ssh:".
 
@@ -15056,7 +15056,7 @@
       'tags': [],
       'desc': '''Configure a list of URLs that are allowed to stay in full screen mode without showing a notification when the device returns from the lock screen.
 
-          Normally, full screen mode is turned off when returning from the lock screen in order to reduce the risk of phishing attacks. This policy allows to specify URLs that will be considered trusted sources which are permitted to continue full screen mode on unlock. It is set by specifying a list of URL patterns formatted according to this format ( https://www.chromium.org/administrators/url-blocklist-filter-format ). E.g., it is possible to always keep full screen mode on unlock and disable the notifications altogether by specifying the wildcard character <ph name="WILDCARD_VALUE">*</ph> matching all URLs.
+          Normally, full screen mode is turned off when returning from the lock screen in order to reduce the risk of phishing attacks. This policy allows to specify URLs that will be considered trusted sources which are permitted to continue full screen mode on unlock. It is set by specifying a list of URL patterns formatted according to this format ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). E.g., it is possible to always keep full screen mode on unlock and disable the notifications altogether by specifying the wildcard character <ph name="WILDCARD_VALUE">*</ph> matching all URLs.
 
           Setting this policy to an empty list or leaving it unset means no URLs are allowed to continue full screen mode without a notification.''',
     },
@@ -18835,7 +18835,7 @@
 
       Leaving the policy unset means that if certificates requiring disclosure through Certificate Transparency aren't disclosed, then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> doesn't trust those certificates.
 
-      A URL pattern follows this format ( https://www.chromium.org/administrators/url-blocklist-filter-format ). However, because the validity of certificates for a given hostname is independent of the scheme, port, or path, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> only considers the hostname portion of the URL. Wildcard hosts aren't supported.''',
+      A URL pattern follows this format ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ). However, because the validity of certificates for a given hostname is independent of the scheme, port, or path, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> only considers the hostname portion of the URL. Wildcard hosts aren't supported.''',
     },
     {
       'name': 'CertificateTransparencyEnforcementDisabledForCas',
@@ -27207,7 +27207,7 @@
 
       For ChromeOS, this policy is related to remote attestation where a certificate is automatically generated and uploaded to the Device Management Server.
 
-      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://www.chromium.org/administrators/url-blocklist-filter-format.''',
+      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://support.google.com/chrome/a?p=url_blocklist_filter_format.''',
     },
     {
       'name': 'DeviceLoginScreenContextAwareAccessSignalsAllowlist',
@@ -27237,7 +27237,7 @@
 
       This policy will only impact the attestation flow on the login and lock screen. To change the in-session attestation flow, please use the <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME">ContextAwareAccessSignalsAllowlist</ph> policy.
 
-      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://www.chromium.org/administrators/url-blocklist-filter-format.''',
+      For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://support.google.com/chrome/a?p=url_blocklist_filter_format.''',
     },
     {
       'name': 'DeviceQuickFixBuildToken',
@@ -31828,7 +31828,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       - PRIVACY_SCREEN restriction doesn't block the ability to turn on privacy screen, but enforces it when the restriction class is set to BLOCK.
       - Destinations cannot be empty in case one of the restrictions is CLIPBOARD or FILES, but they don't make any difference for the remaining restrictions.
       - DRIVE and USB destinations are ignored for CLIPBOARD restriction.
-      - Format the URL patterns according to this format ( https://www.chromium.org/administrators/url-blocklist-filter-format ).
+      - Format the URL patterns according to this format ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
 
       If the policy is left not set, no restrictions will be applied.''',
     },
@@ -35125,7 +35125,7 @@ This is the same behavior as <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTIN
 
       If there is no valid app installed to handle authentication url on the device, navigation will continue in <ph name="WEBVIEW_PRODUCT_NAME">Android WebView</ph>.
 
-      Authentication URL pattern has to be formatted according to https://www.chromium.org/administrators/url-blocklist-filter-format.
+      Authentication URL pattern has to be formatted according to https://support.google.com/chrome/a?p=url_blocklist_filter_format.
       '''
     },
     {
