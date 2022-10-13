@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 
 #import <Cocoa/Cocoa.h>
-#include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 
 #include "base/callback.h"
 #include "base/mac/scoped_nsobject.h"
