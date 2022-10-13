@@ -55,6 +55,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
     kFailBufferFormat,
     kFailNearFilter,
     kFailPriority,
+    kFailNotSharedImage,
   };
   using TrackingId = uint32_t;
   static constexpr TrackingId kDefaultTrackingId{0};

@@ -12,7 +12,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/ranges/algorithm.h"
@@ -29,7 +28,6 @@
 #include "ui/ozone/platform/drm/host/drm_display_host.h"
 #include "ui/ozone/platform/drm/host/drm_native_display_delegate.h"
 #include "ui/ozone/platform/drm/host/gpu_thread_adapter.h"
-#include "ui/ozone/public/ozone_switches.h"
 
 namespace ui {
 
@@ -199,15 +197,6 @@ DrmDisplayHostManager::DrmDisplayHostManager(
     }
     host_properties->supports_overlays =
         primary_drm_device_handle_->has_atomic_capabilities();
-    // TODO(b/192563524): The legacy video decoder wraps its frames with legacy
-    // mailboxes instead of SharedImages. The display compositor can composite
-    // these quads, but does not support promoting them to overlays. Thus, we
-    // disable overlays on platforms using the legacy video decoder.
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(
-            switches::kPlatformDisallowsChromeOSDirectVideoDecoder)) {
-      host_properties->supports_overlays = false;
-    }
     drm_devices_[primary_graphics_card_path_] =
         primary_graphics_card_path_sysfs;
   }

@@ -549,6 +549,10 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
           resource_provider_->IsBackedBySurfaceTexture(quad->resource_id());
     }
 #endif
+
+    // SkiaRenderer requires overlays to be backed by SharedImages.
+    if (!candidate.mailbox.IsSharedImage())
+      return CandidateStatus::kFailNotSharedImage;
   }
   return rtn;
 }
