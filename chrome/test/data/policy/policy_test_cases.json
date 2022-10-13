@@ -19627,7 +19627,7 @@
         "policies": {},
         "prefs": {
           "ash.calendar_integration_enabled": {
-            "value": false
+            "default_value": true
         }
       }
     },

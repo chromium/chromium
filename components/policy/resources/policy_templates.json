@@ -17221,7 +17221,6 @@
       ],
       'default': True,
       'example_value': True,
-      'default_for_enterprise_users': False,
       'id': 1015,
       'caption': '''Enable <ph name="GOOGLE_CALENDAR_NAME">Google Calendar</ph> Integration''',
       'tags': [],
@@ -17231,7 +17230,7 @@
 
           If this policy is disabled, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> device cannot retrieve <ph name="GOOGLE_CALENDAR_NAME">Google Calendar</ph> events to populate <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> calendar widget in system status bar for the logged in user.
 
-          If this policy is left unset, the <ph name="GOOGLE_CALENDAR_NAME">Google Calendar</ph> feature is disabled by default for enterprise users.''',
+          If this policy is left unset, the <ph name="GOOGLE_CALENDAR_NAME">Google Calendar</ph> feature is enabled by default for enterprise users.''',
     },
     {
       'name': 'DeviceLoginScreenDefaultScreenMagnifierType',
