@@ -200,8 +200,8 @@ void HistoryClustersServiceTaskGetMostRecentClusters::OnGotModelClusters(
 
 void HistoryClustersServiceTaskGetMostRecentClusters::
     ReturnMostRecentPersistedClusters(base::Time exclusive_max_time) {
+  get_most_recent_persisted_clusters_start_time_ = base::TimeTicks::Now();
   if (GetConfig().persist_clusters_in_history_db && !recluster_) {
-    get_most_recent_persisted_clusters_start_time_ = base::TimeTicks::Now();
     history_service_->GetMostRecentClusters(
         begin_time_, exclusive_max_time,
         GetConfig().max_persisted_clusters_to_fetch,
