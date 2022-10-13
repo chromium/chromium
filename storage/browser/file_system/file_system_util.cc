@@ -5,22 +5,16 @@
 #include "storage/browser/file_system/file_system_util.h"
 
 #include "storage/common/file_system/file_system_types.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace storage {
 
 blink::mojom::StorageType FileSystemTypeToQuotaStorageType(
     FileSystemType type) {
-  if (blink::features::IsPersistentQuotaIsTemporaryQuota() &&
-      (type == kFileSystemTypeTemporary || type == kFileSystemTypePersistent)) {
-    return blink::mojom::StorageType::kTemporary;
-  }
   switch (type) {
     case kFileSystemTypeTemporary:
-      return blink::mojom::StorageType::kTemporary;
     case kFileSystemTypePersistent:
-      return blink::mojom::StorageType::kPersistent;
+      return blink::mojom::StorageType::kTemporary;
     case kFileSystemTypeSyncable:
     case kFileSystemTypeSyncableForInternalSync:
       return blink::mojom::StorageType::kSyncable;

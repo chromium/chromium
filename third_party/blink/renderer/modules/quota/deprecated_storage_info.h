@@ -72,7 +72,6 @@ class DeprecatedStorageInfo final : public ScriptWrappable {
                                           ExecutionContext* execution_context);
 
   mutable Member<DeprecatedStorageQuota> temporary_storage_;
-  mutable Member<DeprecatedStorageQuota> persistent_storage_;
 };
 
 }  // namespace blink

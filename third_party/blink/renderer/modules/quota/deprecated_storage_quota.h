@@ -51,16 +51,11 @@ class DeprecatedStorageQuota final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum Type {
-    kTemporary,
-    kPersistent,
-  };
-
   static void EnqueueStorageErrorCallback(ScriptState*,
                                           V8StorageErrorCallback*,
                                           DOMExceptionCode);
 
-  DeprecatedStorageQuota(Type, ExecutionContext*);
+  explicit DeprecatedStorageQuota(ExecutionContext*);
 
   void queryUsageAndQuota(ScriptState*,
                           V8StorageUsageCallback*,
@@ -78,7 +73,6 @@ class DeprecatedStorageQuota final : public ScriptWrappable {
   // provider, and returns it,
   mojom::blink::QuotaManagerHost* GetQuotaHost(ExecutionContext*);
 
-  Type type_;
   HeapMojoRemote<mojom::blink::QuotaManagerHost> quota_host_;
 };
 

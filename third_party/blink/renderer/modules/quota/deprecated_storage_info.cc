@@ -94,32 +94,22 @@ void DeprecatedStorageInfo::requestQuota(
 DeprecatedStorageQuota* DeprecatedStorageInfo::GetStorageQuota(
     int storage_type,
     ExecutionContext* execution_context) {
-  switch (storage_type) {
-    case kTemporary:
-      if (!temporary_storage_) {
-        temporary_storage_ = MakeGarbageCollected<DeprecatedStorageQuota>(
-            DeprecatedStorageQuota::kTemporary, execution_context);
-      }
-      return temporary_storage_.Get();
-    case kPersistent:
-      // Show deprecation message and record usage for persistent storage type.
-      Deprecation::CountDeprecation(execution_context,
-                                    WebFeature::kPersistentQuotaType);
-      if (blink::features::IsPersistentQuotaIsTemporaryQuota())
-        return GetStorageQuota(kTemporary, execution_context);
-
-      if (!persistent_storage_) {
-        persistent_storage_ = MakeGarbageCollected<DeprecatedStorageQuota>(
-            DeprecatedStorageQuota::kPersistent, execution_context);
-      }
-      return persistent_storage_.Get();
+  if (storage_type == kPersistent) {
+    // Show deprecation message and record usage for persistent storage type.
+    Deprecation::CountDeprecation(execution_context,
+                                  WebFeature::kPersistentQuotaType);
   }
-  return nullptr;
+  // As of crbug.com/1233525 kPersistent quota type is deprecated.
+  // Ignore `storage_type` and always return `temporary_storage_`.
+  if (!temporary_storage_) {
+    temporary_storage_ =
+        MakeGarbageCollected<DeprecatedStorageQuota>(execution_context);
+  }
+  return temporary_storage_.Get();
 }
 
 void DeprecatedStorageInfo::Trace(Visitor* visitor) const {
   visitor->Trace(temporary_storage_);
-  visitor->Trace(persistent_storage_);
   ScriptWrappable::Trace(visitor);
 }
 

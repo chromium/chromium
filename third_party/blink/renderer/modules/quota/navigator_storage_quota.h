@@ -62,7 +62,6 @@ class NavigatorStorageQuota final
   static NavigatorStorageQuota& From(NavigatorBase&);
 
   mutable Member<DeprecatedStorageQuota> temporary_storage_;
-  mutable Member<DeprecatedStorageQuota> persistent_storage_;
   mutable Member<StorageManager> storage_manager_;
 };
 

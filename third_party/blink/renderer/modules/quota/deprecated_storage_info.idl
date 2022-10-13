@@ -27,6 +27,8 @@
     LegacyNoInterfaceObject,
     RuntimeEnabled=PrefixedStorageInfo
 ] interface DeprecatedStorageInfo {
+    // As of crbug.com/1233525, PERSISTENT quota type is deprecated and
+    // `storageType` parameter will be ignored.
     const unsigned short TEMPORARY = 0;
     const unsigned short PERSISTENT = 1;
 

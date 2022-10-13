@@ -35,8 +35,6 @@ static const FileSystemType kTemporaryAndPersistent[] = {
     kFileSystemTypeTemporary,
     kFileSystemTypePersistent,
 };
-static const FileSystemType kTemporary[] = {kFileSystemTypeTemporary};
-static const FileSystemType kPersistent[] = {kFileSystemTypePersistent};
 static const FileSystemType kSyncable[] = {kFileSystemTypeSyncable};
 
 template <typename T>
@@ -63,19 +61,13 @@ base::span<const FileSystemType> QuotaStorageTypeToFileSystemTypes(
     blink::mojom::StorageType storage_type) {
   using StorageType = blink::mojom::StorageType;
 
-  if (blink::features::IsPersistentQuotaIsTemporaryQuota()) {
-    DCHECK_NE(storage_type, StorageType::kPersistent);
-    if (storage_type == StorageType::kTemporary)
-      return kTemporaryAndPersistent;
-  }
   switch (storage_type) {
     case StorageType::kTemporary:
-      return kTemporary;
-    case StorageType::kPersistent:
-      return kPersistent;
+      return kTemporaryAndPersistent;
     case StorageType::kSyncable:
       return kSyncable;
     case StorageType::kDeprecatedQuotaNotManaged:
+    case StorageType::kPersistent:
     case StorageType::kUnknown:
       NOTREACHED();
       return {};
