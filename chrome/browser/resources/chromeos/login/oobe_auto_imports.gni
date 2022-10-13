@@ -113,6 +113,7 @@ oobe_migrated_imports = [
   "ash/webui/common/resources/network/network_select.html",
   "ash/webui/common/resources/network/onc_mojo.html",
   "chrome/browser/resources/chromeos/login/components/gaia_button.html",
+  "chrome/browser/resources/chromeos/login/components/hd_iron_icon.html",
   "chrome/browser/resources/chromeos/login/components/notification_card.html",
   "chrome/browser/resources/chromeos/login/components/oobe_i18n_dropdown.html",
   "chrome/browser/resources/chromeos/login/components/progress_list_item.html",

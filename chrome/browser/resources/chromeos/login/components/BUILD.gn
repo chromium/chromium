@@ -23,7 +23,7 @@ group("closure_compile") {
     ":gaia_dialog.m",
     ":gaia_header",
     ":gaia_input_form",
-    ":hd_iron_icon.m",
+    ":hd_iron_icon",
     ":keyboard_utils_for_injection",
     ":keyboard_utils_for_injection.m",
     ":long_touch_detector.m",
@@ -58,7 +58,6 @@ group("polymer3_elements") {
 
                   # Local targets
                   ":gaia_dialog_module",
-                  ":hd_iron_icon_module",
                   ":network_select_login_module",
                   ":oobe_a11y_option_module",
                   ":oobe_a11y_option_module",
@@ -124,12 +123,12 @@ js_library("gaia_input_form") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("hd_iron_icon.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/hd_iron_icon.m.js" ]
+js_library("hd_iron_icon") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/hd_iron_icon.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":hd_iron_icon_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("keyboard_utils_for_injection.m") {
@@ -286,15 +285,6 @@ polymer_modulizer("gaia_dialog") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("hd_iron_icon") {
-  js_file = "hd_iron_icon.js"
-  html_file = "hd_iron_icon.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("network_select_login") {
   js_file = "network_select_login.js"
   html_file = "network_select_login.html"
@@ -388,6 +378,7 @@ html_to_js("web_components") {
     "gaia_button.js",
     "gaia_header.js",
     "gaia_input_form.js",
+    "hd_iron_icon.js",
     "notification_card.js",
     "progress_list_item.js",
     "oobe_i18n_dropdown.js",
