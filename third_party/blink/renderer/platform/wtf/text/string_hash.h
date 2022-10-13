@@ -76,18 +76,6 @@ struct StringHash {
 struct AlreadyHashed : IntHash<unsigned> {
   STATIC_ONLY(AlreadyHashed);
   static unsigned GetHash(unsigned key) { return key; }
-
-  // To use a hash value as a key for a hash table, we need to eliminate the
-  // "deleted" value, which is negative one. That could be done by changing
-  // the string hash function to never generate negative one, but this works
-  // and is still relatively efficient.
-  static unsigned AvoidDeletedValue(unsigned hash) {
-    DCHECK(hash);
-    unsigned new_hash = hash | (!(hash + 1) << 31);
-    DCHECK(new_hash);
-    DCHECK_NE(new_hash, 0xFFFFFFFF);
-    return new_hash;
-  }
 };
 
 }  // namespace WTF

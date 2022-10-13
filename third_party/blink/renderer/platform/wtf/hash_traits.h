@@ -100,8 +100,6 @@ struct GenericHashTraitsBase<false, T> {
     static const bool value = !std::is_pod<T>::value;
   };
 
-  static constexpr bool kCanHaveDeletedValue = true;
-
   // The kCanTraceConcurrently value is used by Oilpan concurrent marking. Only
   // type for which HashTraits<T>::kCanTraceConcurrently is true can be traced
   // on a concurrent thread.
