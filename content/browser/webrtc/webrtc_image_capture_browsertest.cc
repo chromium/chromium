@@ -17,10 +17,6 @@
 #include "media/capture/video/fake_video_capture_device_factory.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
-
 namespace content {
 
 // Disable FocusDistance test which fails with Logitech cameras.
@@ -116,14 +112,6 @@ class WebRtcImageCaptureBrowserTestBase
   // Tries to run a |command| JS test, returning true if the test can be safely
   // skipped or it works as intended, or false otherwise.
   virtual bool RunImageCaptureTestCase(const std::string& command) {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(mcasas): fails on Lollipop devices: https://crbug.com/634811
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <
-        base::android::SDK_VERSION_MARSHMALLOW) {
-      return true;
-    }
-#endif
-
     GURL url(embedded_test_server()->GetURL(kImageCaptureHtmlFile));
     EXPECT_TRUE(NavigateToURL(shell(), url));
 
