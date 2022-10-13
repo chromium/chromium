@@ -75,11 +75,10 @@ bool RawDataPresenter::Succeeded() {
   return success_;
 }
 
-std::unique_ptr<base::Value> RawDataPresenter::Result() {
+absl::optional<base::Value> RawDataPresenter::TakeResult() {
   if (!success_)
-    return nullptr;
-
-  return std::move(list_);
+    return absl::nullopt;
+  return base::Value::FromUniquePtrValue(std::move(list_));
 }
 
 void RawDataPresenter::FeedNextBytes(const char* bytes, size_t size) {
@@ -126,11 +125,10 @@ bool ParsedDataPresenter::Succeeded() {
   return success_;
 }
 
-std::unique_ptr<base::Value> ParsedDataPresenter::Result() {
+absl::optional<base::Value> ParsedDataPresenter::TakeResult() {
   if (!success_)
-    return nullptr;
-
-  return std::move(dictionary_);
+    return absl::nullopt;
+  return base::Value::FromUniquePtrValue(std::move(dictionary_));
 }
 
 // static

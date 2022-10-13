@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class DictionaryValue;
@@ -60,7 +61,7 @@ class UploadDataPresenter {
   virtual void FeedBytes(base::StringPiece bytes) = 0;
   virtual void FeedFile(const base::FilePath& path) = 0;
   virtual bool Succeeded() = 0;
-  virtual std::unique_ptr<base::Value> Result() = 0;
+  virtual absl::optional<base::Value> TakeResult() = 0;
 
  protected:
   UploadDataPresenter() {}
@@ -82,7 +83,7 @@ class RawDataPresenter : public UploadDataPresenter {
   void FeedBytes(base::StringPiece bytes) override;
   void FeedFile(const base::FilePath& path) override;
   bool Succeeded() override;
-  std::unique_ptr<base::Value> Result() override;
+  absl::optional<base::Value> TakeResult() override;
 
  private:
   void FeedNextBytes(const char* bytes, size_t size);
@@ -115,7 +116,7 @@ class ParsedDataPresenter : public UploadDataPresenter {
   void FeedBytes(base::StringPiece bytes) override;
   void FeedFile(const base::FilePath& path) override;
   bool Succeeded() override;
-  std::unique_ptr<base::Value> Result() override;
+  absl::optional<base::Value> TakeResult() override;
 
   // Allows to create ParsedDataPresenter without request headers. Uses the
   // parser for "application/x-www-form-urlencoded" form encoding. Only use this

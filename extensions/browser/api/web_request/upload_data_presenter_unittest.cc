@@ -38,10 +38,8 @@ TEST(WebRequestUploadDataPresenterTest, ParsedData) {
   parsed_data_presenter->FeedBytes(
       base::StringPiece(element.bytes(), element.length()));
   EXPECT_TRUE(parsed_data_presenter->Succeeded());
-  std::unique_ptr<base::Value> result = parsed_data_presenter->Result();
-  ASSERT_TRUE(result.get() != nullptr);
-
-  EXPECT_EQ(*result, expected_form);
+  absl::optional<base::Value> result = parsed_data_presenter->TakeResult();
+  EXPECT_EQ(result, expected_form);
 }
 
 TEST(WebRequestUploadDataPresenterTest, RawData) {
@@ -71,9 +69,8 @@ TEST(WebRequestUploadDataPresenterTest, RawData) {
   raw_presenter.FeedNextFile(kFilename);
   raw_presenter.FeedNextBytes(block2, block2_size);
   EXPECT_TRUE(raw_presenter.Succeeded());
-  std::unique_ptr<base::Value> result = raw_presenter.Result();
-  ASSERT_TRUE(result);
-  EXPECT_EQ(expected_list, *result);
+  absl::optional<base::Value> result = raw_presenter.TakeResult();
+  EXPECT_EQ(expected_list, result);
 }
 
 }  // namespace extensions
