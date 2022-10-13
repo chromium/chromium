@@ -458,6 +458,8 @@ crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasDisplaySRGBAccelerate
 crbug.com/1372144 [ android android-sm-a135m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/1372141 [ android android-sm-a235m ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
+crbug.com/1373965 [ fuchsia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
