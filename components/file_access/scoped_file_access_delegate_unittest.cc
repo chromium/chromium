@@ -35,6 +35,9 @@ class ScopedFileAccessDelegateTest : public ::testing::Test {
         nullptr;
     file_access::ScopedFileAccessDelegateTestInstance::instance_counter = 0;
   }
+  void TearDown() override {
+    file_access::ScopedFileAccessDelegate::DeleteInstance();
+  }
 };
 
 TEST_F(ScopedFileAccessDelegateTest, GetEmptySingleton) {
