@@ -393,6 +393,8 @@ component("gl") {
       "ca_renderer_layer_params.h",
       "dual_gpu_state_mac.cc",
       "dual_gpu_state_mac.h",
+      "egl_surface_io_surface.cc",
+      "egl_surface_io_surface.h",
       "gl_context_cgl.cc",
       "gl_context_cgl.h",
       "gl_fence_apple.cc",
