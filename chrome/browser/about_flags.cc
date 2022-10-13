@@ -9742,6 +9742,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kEnable16Desks)},
 #endif
 
+    {"use-nat64-for-ipv4-literal",
+     flag_descriptions::kUseNAT64ForIPv4LiteralName,
+     flag_descriptions::kUseNAT64ForIPv4LiteralDescription, kOsAll,
+     FEATURE_VALUE_TYPE(net::features::kUseNAT64ForIPv4Literal)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -6810,6 +6810,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "use-nat64-for-ipv4-literal",
+    "owners": [ "horo", "net-dev" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "use-passthrough-command-decoder",
     "owners": [ "//third_party/angle/OWNERS" ],
     "expiry_milestone": 120

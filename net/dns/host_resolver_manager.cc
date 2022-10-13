@@ -84,6 +84,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_mdns_listener_impl.h"
 #include "net/dns/host_resolver_mdns_task.h"
+#include "net/dns/host_resolver_nat64_task.h"
 #include "net/dns/host_resolver_proc.h"
 #include "net/dns/host_resolver_system_task.h"
 #include "net/dns/httpssvc_metrics.h"
@@ -2056,6 +2057,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
       case TaskType::INSECURE_CACHE_LOOKUP:
         InsecureCacheLookup();
         break;
+      case TaskType::NAT64:
+        StartNat64Task();
+        break;
       case TaskType::SECURE_CACHE_LOOKUP:
       case TaskType::CACHE_LOOKUP:
       case TaskType::CONFIG_PRESET:
@@ -2464,6 +2468,23 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     CompleteRequestsWithError(rv);
   }
 
+  void StartNat64Task() {
+    DCHECK(!nat64_task_);
+    RequestImpl* req = requests_.head()->value();
+    nat64_task_ = std::make_unique<HostResolverNat64Task>(
+        std::string{GetHostname(key_.host)}, req->network_anonymization_key(),
+        req->source_net_log(), req->resolve_context(), req->host_cache(),
+        resolver_);
+    nat64_task_->Start(base::BindOnce(&Job::OnNat64TaskComplete,
+                                      weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnNat64TaskComplete() {
+    DCHECK(nat64_task_);
+    HostCache::Entry results = nat64_task_->GetResults();
+    CompleteRequestsWithoutCache(results, absl::nullopt /* stale_info */);
+  }
+
   void RecordJobHistograms(int error) {
     // Used in UMA_HISTOGRAM_ENUMERATION. Do not renumber entries or reuse
     // deprecated values.
@@ -2678,6 +2699,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
   // Resolves the host using MDnsClient.
   std::unique_ptr<HostResolverMdnsTask> mdns_task_;
+
+  // Perform NAT64 address synthesis to a given IPv4 literal.
+  std::unique_ptr<HostResolverNat64Task> nat64_task_;
 
   // All Requests waiting for the result of this Job. Some can be canceled.
   base::LinkedList<RequestImpl> requests_;
@@ -3031,7 +3055,8 @@ int HostResolverManager::Resolve(RequestImpl* request) {
   absl::optional<HostCache::EntryStaleness> stale_info;
   HostCache::Entry results = ResolveLocally(
       job_key, ip_address, parameters.cache_usage, parameters.secure_dns_policy,
-      request->source_net_log(), request->host_cache(), &tasks, &stale_info);
+      parameters.source, request->source_net_log(), request->host_cache(),
+      &tasks, &stale_info);
   if (results.error() != ERR_DNS_CACHE_MISS ||
       request->parameters().source == HostResolverSource::LOCAL_ONLY ||
       tasks.empty()) {
@@ -3055,6 +3080,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
     const IPAddress& ip_address,
     ResolveHostParameters::CacheUsage cache_usage,
     SecureDnsPolicy secure_dns_policy,
+    HostResolverSource source,
     const NetLogWithSource& source_net_log,
     HostCache* cache,
     std::deque<TaskType>* out_tasks,
@@ -3092,8 +3118,19 @@ HostCache::Entry HostResolverManager::ResolveLocally(
                             HostCache::Entry::SOURCE_UNKNOWN);
   }
 
-  if (ip_address.IsValid())
+  if (ip_address.IsValid()) {
+    // Use NAT64Task for IPv4 literal when the network is IPv6 only.
+    if (!default_family_due_to_no_ipv6 && ip_address.IsIPv4() &&
+        base::FeatureList::IsEnabled(features::kUseNAT64ForIPv4Literal) &&
+        !IsGloballyReachable(IPAddress(ip_address), source_net_log) &&
+        source != HostResolverSource::LOCAL_ONLY) {
+      out_tasks->push_front(TaskType::NAT64);
+      return HostCache::Entry(ERR_DNS_CACHE_MISS,
+                              HostCache::Entry::SOURCE_UNKNOWN);
+    }
+
     return ResolveAsIP(job_key.query_types, resolve_canonname, ip_address);
+  }
 
   // Special-case localhost names, as per the recommendations in
   // https://tools.ietf.org/html/draft-west-let-localhost-be-localhost.
@@ -3718,18 +3755,16 @@ bool HostResolverManager::IsGloballyReachable(const IPAddress& dest,
   rv = socket->GetLocalAddress(&endpoint);
   if (rv != OK)
     return false;
-  DCHECK_EQ(ADDRESS_FAMILY_IPV6, endpoint.GetFamily());
   const IPAddress& address = endpoint.address();
 
-  bool is_link_local =
-      (address.bytes()[0] == 0xFE) && ((address.bytes()[1] & 0xC0) == 0x80);
-  if (is_link_local)
+  if (address.IsLinkLocal())
     return false;
 
-  const uint8_t kTeredoPrefix[] = {0x20, 0x01, 0, 0};
-  if (IPAddressStartsWith(address, kTeredoPrefix))
-    return false;
-
+  if (address.IsIPv6()) {
+    const uint8_t kTeredoPrefix[] = {0x20, 0x01, 0, 0};
+    if (IPAddressStartsWith(address, kTeredoPrefix))
+      return false;
+  }
   return true;
 }
 

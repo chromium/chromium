@@ -56820,6 +56820,7 @@ from previous Chrome versions.
   <int value="-2040471724" label="CrOSComponent:disabled"/>
   <int value="-2040360427" label="DesktopScreenshots:disabled"/>
   <int value="-2040115518" label="load-media-router-component-extension"/>
+  <int value="-2039971160" label="UseNAT64ForIPv4Literal:enabled"/>
   <int value="-2039439354"
       label="OmniboxOnDeviceHeadProviderIncognito:disabled"/>
   <int value="-2039343702"
@@ -57306,6 +57307,7 @@ from previous Chrome versions.
   <int value="-1766129470" label="DataSaverLiteModeRebranding:disabled"/>
   <int value="-1765004425"
       label="CertificateTransparency2022PolicyAllCerts:disabled"/>
+  <int value="-1764447174" label="UseNAT64ForIPv4Literal:disabled"/>
   <int value="-1763899404" label="LayoutNGTable:enabled"/>
   <int value="-1761695937"
       label="NtpPhotosModuleCustomizedOptInArtWork:enabled"/>

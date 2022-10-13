@@ -478,18 +478,25 @@ class TestHostResolverManager : public HostResolverManager {
   TestHostResolverManager(const HostResolver::ManagerOptions& options,
                           SystemDnsConfigChangeNotifier* notifier,
                           NetLog* net_log,
-                          bool ipv6_reachable = true)
+                          bool ipv6_reachable = true,
+                          bool ipv4_reachable = true)
       : HostResolverManager(options, notifier, net_log),
-        ipv6_reachable_(ipv6_reachable) {}
+        ipv6_reachable_(ipv6_reachable),
+        ipv4_reachable_(ipv4_reachable) {}
 
   ~TestHostResolverManager() override = default;
 
  private:
   const bool ipv6_reachable_;
+  const bool ipv4_reachable_;
 
   bool IsGloballyReachable(const IPAddress& dest,
                            const NetLogWithSource& net_log) override {
-    return ipv6_reachable_;
+    if (dest.IsIPv6()) {
+      return ipv6_reachable_;
+    } else {
+      return ipv4_reachable_;
+    }
   }
 };
 
@@ -596,14 +603,16 @@ class HostResolverManagerTest : public TestWithTaskEnvironment {
   virtual void CreateResolverWithOptionsAndParams(
       HostResolver::ManagerOptions options,
       const HostResolverSystemTask::Params& params,
-      bool ipv6_reachable) {
+      bool ipv6_reachable,
+      bool ipv4_reachable = true) {
     // Use HostResolverManagerDnsTest if enabling DNS client.
     DCHECK(!options.insecure_dns_client_enabled);
 
     DestroyResolver();
 
     resolver_ = std::make_unique<TestHostResolverManager>(
-        options, nullptr /* notifier */, nullptr /* net_log */, ipv6_reachable);
+        options, nullptr /* notifier */, nullptr /* net_log */, ipv6_reachable,
+        ipv4_reachable);
     resolver_->set_host_resolver_system_params_for_test(params);
 
     resolver_->RegisterResolveContext(resolve_context_.get());
@@ -4262,7 +4271,8 @@ class HostResolverManagerDnsTest : public HostResolverManagerTest {
   void CreateResolverWithOptionsAndParams(
       HostResolver::ManagerOptions options,
       const HostResolverSystemTask::Params& params,
-      bool ipv6_reachable) override {
+      bool ipv6_reachable,
+      bool ipv4_reachable = true) override {
     DestroyResolver();
 
     resolver_ = std::make_unique<TestHostResolverManager>(
@@ -13371,6 +13381,150 @@ TEST_F(HostResolverManagerBootstrapTest, OnlyBootstrapTwice) {
   EXPECT_THAT(secure_result->second.GetEndpoints(),
               testing::Optional(testing::ElementsAre(
                   ExpectEndpointResult(AddressesMatch(kRemoteAddrs)))));
+}
+
+TEST_F(HostResolverManagerTest, IPv4AddressLiteralInIPv6OnlyNetwork) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUseNAT64ForIPv4Literal},
+      /*disabled_features=*/{});
+
+  HostResolver::ManagerOptions options = DefaultOptions();
+  CreateResolverWithOptionsAndParams(std::move(options), DefaultParams(proc_),
+                                     true /* ipv6_reachable */,
+                                     false /* ipv4_reachable */);
+  proc_->AddRule("ipv4only.arpa", ADDRESS_FAMILY_IPV6,
+                 "64:ff9b::c000:aa,64:ff9b::c000:ab,2001:db8:43::c000:aa,"
+                 "2001:db8:43::c000:ab");
+  proc_->SignalMultiple(1u);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("192.168.1.42", 80), NetworkAnonymizationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.top_level_result_error(), IsOk());
+  EXPECT_THAT(
+      response.request()->GetAddressResults()->endpoints(),
+      testing::ElementsAre(CreateExpected("64:ff9b::c0a8:12a", 80),
+                           CreateExpected("2001:db8:43::c0a8:12a", 80)));
+  EXPECT_THAT(
+      response.request()->GetEndpointResults(),
+      testing::Pointee(testing::ElementsAre(ExpectEndpointResult(
+          testing::ElementsAre(CreateExpected("64:ff9b::c0a8:12a", 80),
+                               CreateExpected("2001:db8:43::c0a8:12a", 80))))));
+  EXPECT_FALSE(response.request()->GetStaleInfo());
+
+  ASSERT_TRUE(!proc_->GetCaptureList().empty());
+  EXPECT_EQ("ipv4only.arpa", proc_->GetCaptureList()[0].hostname);
+
+  const std::pair<const HostCache::Key, HostCache::Entry>* cache_result =
+      GetCacheHit(HostCache::Key(
+          "ipv4only.arpa", DnsQueryType::AAAA, 0 /* host_resolver_flags */,
+          HostResolverSource::ANY, NetworkAnonymizationKey()));
+  EXPECT_TRUE(cache_result);
+}
+
+TEST_F(HostResolverManagerTest, IPv4AddressLiteralInIPv6OnlyNetworkPort443) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUseNAT64ForIPv4Literal},
+      /*disabled_features=*/{});
+
+  HostResolver::ManagerOptions options = DefaultOptions();
+  CreateResolverWithOptionsAndParams(std::move(options), DefaultParams(proc_),
+                                     true /* ipv6_reachable */,
+                                     false /* ipv4_reachable */);
+  proc_->AddRule("ipv4only.arpa", ADDRESS_FAMILY_IPV6,
+                 "64:ff9b::c000:aa,64:ff9b::c000:ab,2001:db8:43::c000:aa,"
+                 "2001:db8:43::c000:ab");
+  proc_->SignalMultiple(1u);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("192.168.1.42", 443), NetworkAnonymizationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.top_level_result_error(), IsOk());
+  EXPECT_THAT(
+      response.request()->GetAddressResults()->endpoints(),
+      testing::ElementsAre(CreateExpected("64:ff9b::c0a8:12a", 443),
+                           CreateExpected("2001:db8:43::c0a8:12a", 443)));
+  EXPECT_THAT(response.request()->GetEndpointResults(),
+              testing::Pointee(testing::ElementsAre(
+                  ExpectEndpointResult(testing::ElementsAre(
+                      CreateExpected("64:ff9b::c0a8:12a", 443),
+                      CreateExpected("2001:db8:43::c0a8:12a", 443))))));
+  EXPECT_FALSE(response.request()->GetStaleInfo());
+
+  ASSERT_TRUE(!proc_->GetCaptureList().empty());
+  EXPECT_EQ("ipv4only.arpa", proc_->GetCaptureList()[0].hostname);
+
+  const std::pair<const HostCache::Key, HostCache::Entry>* cache_result =
+      GetCacheHit(HostCache::Key(
+          "ipv4only.arpa", DnsQueryType::AAAA, 0 /* host_resolver_flags */,
+          HostResolverSource::ANY, NetworkAnonymizationKey()));
+  EXPECT_TRUE(cache_result);
+}
+
+TEST_F(HostResolverManagerTest, IPv4AddressLiteralInIPv6OnlyNetworkNoDns64) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUseNAT64ForIPv4Literal},
+      /*disabled_features=*/{});
+
+  HostResolver::ManagerOptions options = DefaultOptions();
+  CreateResolverWithOptionsAndParams(std::move(options), DefaultParams(proc_),
+                                     true /* ipv6_reachable */,
+                                     false /* ipv4_reachable */);
+  proc_->AddRule("ipv4only.arpa", ADDRESS_FAMILY_IPV6, std::string());
+  proc_->SignalMultiple(1u);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("192.168.1.42", 80), NetworkAnonymizationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.top_level_result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults()->endpoints(),
+              testing::ElementsAre(CreateExpected("192.168.1.42", 80)));
+  EXPECT_THAT(response.request()->GetEndpointResults(),
+              testing::Pointee(testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(CreateExpected("192.168.1.42", 80))))));
+  EXPECT_FALSE(response.request()->GetStaleInfo());
+}
+
+// Test when DNS returns bad IPv6 address of ipv4only.arpa., and the
+// IPv4 address of ipv4only.arpa is not contained in the IPv6 address.
+TEST_F(HostResolverManagerTest, IPv4AddressLiteralInIPv6OnlyNetworkBadAddress) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kUseNAT64ForIPv4Literal},
+      /*disabled_features=*/{});
+
+  HostResolver::ManagerOptions options = DefaultOptions();
+  CreateResolverWithOptionsAndParams(std::move(options), DefaultParams(proc_),
+                                     true /* ipv6_reachable */,
+                                     false /* ipv4_reachable */);
+  proc_->AddRule("ipv4only.arpa", ADDRESS_FAMILY_IPV6, "2001:db8::1");
+  proc_->SignalMultiple(1u);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("192.168.1.42", 80), NetworkAnonymizationKey(),
+      NetLogWithSource(), absl::nullopt, resolve_context_.get(),
+      resolve_context_->host_cache()));
+
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.top_level_result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults()->endpoints(),
+              testing::ElementsAre(CreateExpected("192.168.1.42", 80)));
+  EXPECT_THAT(response.request()->GetEndpointResults(),
+              testing::Pointee(testing::ElementsAre(ExpectEndpointResult(
+                  testing::ElementsAre(CreateExpected("192.168.1.42", 80))))));
+  EXPECT_FALSE(response.request()->GetStaleInfo());
 }
 
 }  // namespace net

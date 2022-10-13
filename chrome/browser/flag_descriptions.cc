@@ -3076,6 +3076,12 @@ const char kUnsafeFastJSCallsDescription[] =
 const char kUiPartialSwapName[] = "Partial swap";
 const char kUiPartialSwapDescription[] = "Sets partial swap behavior.";
 
+const char kUseNAT64ForIPv4LiteralName[] =
+    "Use NAT64 translation for IPv4 literals";
+const char kUseNAT64ForIPv4LiteralDescription[] =
+    "Enables IPv4 to IPv6 address translation for IPv4 literals when chrome is "
+    "on an IPv6 only network";
+
 const char kUsernameFirstFlowName[] = "Username first flow voting";
 const char kUsernameFirstFlowDescription[] =
     "Support of sending votes on username first flow i.e. login "

@@ -285,6 +285,7 @@ class NET_EXPORT HostResolverManager
     INSECURE_CACHE_LOOKUP,
     SECURE_CACHE_LOOKUP,
     CONFIG_PRESET,
+    NAT64,
   };
 
   // Returns true if the task is local, synchronous, and instantaneous.
@@ -314,7 +315,8 @@ class NET_EXPORT HostResolverManager
       const IPAddress& ip_address,
       ResolveHostParameters::CacheUsage cache_usage,
       SecureDnsPolicy secure_dns_policy,
-      const NetLogWithSource& request_net_log,
+      HostResolverSource source,
+      const NetLogWithSource& source_net_log,
       HostCache* cache,
       std::deque<TaskType>* out_tasks,
       absl::optional<HostCache::EntryStaleness>* out_stale_info);
