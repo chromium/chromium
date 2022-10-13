@@ -1,0 +1,8 @@
+monorail {
+  component: "Blink>StorageAccessAPI"
+}
+team_email: "chrome-first-party-sets@chromium.org"
+wpt {
+  notify: YES
+}
+
