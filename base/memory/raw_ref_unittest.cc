@@ -349,6 +349,16 @@ TEST(RawRefDeathTest, MoveConstructAfterMoveUpCast) {
       { [[maybe_unused]] auto r2 = raw_ref<BaseClass>(std::move(r)); });
 }
 
+TEST(RawRef, FromPtr) {
+  int i = 42;
+  auto ref = raw_ref<int>::from_ptr(&i);
+  EXPECT_EQ(&i, &*ref);
+}
+
+TEST(RawRefDeathTest, FromPtrWithNullptr) {
+  EXPECT_CHECK_DEATH({ raw_ref<int>::from_ptr(nullptr); });
+}
+
 TEST(RawRef, CopyAssignUpCast) {
   {
     auto s = SubClass();

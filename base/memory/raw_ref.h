@@ -122,6 +122,11 @@ class TRIVIAL_ABI GSL_POINTER raw_ref {
       p.inner_ = nullptr;
   }
 
+  static ALWAYS_INLINE raw_ref from_ptr(T* ptr) noexcept {
+    CHECK(ptr);
+    return raw_ref(*ptr);
+  }
+
   // Upcast assignment
   template <class U, class = std::enable_if_t<std::is_convertible_v<U&, T&>>>
   ALWAYS_INLINE raw_ref& operator=(const raw_ref<U, RawPtrType>& p) noexcept {
