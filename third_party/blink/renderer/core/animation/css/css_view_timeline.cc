@@ -20,9 +20,7 @@ CSSViewTimeline::CSSViewTimeline(Document* document, Options&& options)
     : ViewTimeline(document,
                    options.subject_,
                    options.direction_,
-                   options.inset_) {
-  SnapshotState();
-}
+                   options.inset_) {}
 
 bool CSSViewTimeline::Matches(const Options& options) const {
   return (subject() == options.subject_) &&

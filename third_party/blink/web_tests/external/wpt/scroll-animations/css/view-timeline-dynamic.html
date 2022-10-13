@@ -63,14 +63,17 @@
 
     // scrollTop=50 is 75% for div75.
     div75.classList.add('timeline');
+    await waitForNextFrame();
     assert_equals(getComputedStyle(target).zIndex, '75');
 
     // scrollTop=50 is 25% for div25.
     div25.classList.add('timeline');
+    await waitForNextFrame();
     assert_equals(getComputedStyle(target).zIndex, '25');
 
     // scrollTop=50 is before the timeline start for div_before.
     div_before.classList.add('timeline');
+    await waitForNextFrame();
     assert_equals(getComputedStyle(target).zIndex, '-1');
     // Scroll to 25% (for div_before) to verify that we're linked to that
     // timeline.
@@ -80,6 +83,7 @@
     // Now we should be back to div25's timeline, although with the new
     // scrollTop=150, it's actually at 75%.
     div_before.classList.remove('timeline');
+    await waitForNextFrame();
     assert_equals(getComputedStyle(target).zIndex, '75');
   }, 'Dynamically changing view-timeline-name');
 </script>
@@ -110,6 +114,7 @@
 
     assert_equals(getComputedStyle(target).zIndex, '25');
     timeline.style.viewTimelineAxis = 'horizontal';
+    await waitForNextFrame();
     assert_equals(getComputedStyle(target).zIndex, '10');
   }, 'Dynamically changing view-timeline-axis');
 </script>
@@ -139,6 +144,7 @@
 
     assert_equals(getComputedStyle(target).zIndex, '25');
     timeline.style.viewTimelineInset = '0px 50px';
+    await waitForNextFrame();
     assert_equals(getComputedStyle(target).zIndex, '0');
   }, 'Dynamically changing view-timeline-inset');
 </script>

@@ -32,6 +32,8 @@ promise_test(async t => {
   await waitForNextFrame();
 
   div.style.animation = 'anim 100s linear scroll(root)';
+  await waitForNextFrame();
+
   const anim = div.getAnimations()[0];
   await anim.ready;
   assert_percents_equal(anim.timeline.currentTime, 0,

@@ -42,6 +42,7 @@
     // Unknown timeline, time held at zero.
     assert_equals(getComputedStyle(element).backgroundColor, 'rgb(100, 100, 100)');
     scroller.style.scrollTimeline = 'timeline';
+    await waitForNextFrame();
     assert_equals(getComputedStyle(element).backgroundColor, 'rgb(150, 150, 150)');
   }, 'Timelines appearing on preceding siblings are visible to getComputedStyle');
 </script>

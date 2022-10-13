@@ -104,10 +104,12 @@ promise_test(async t => {
 
   // Let animation become 50% in the 1st iteration.
   target.style.animationIterationCount = '2';
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '50px');
 
   // Let animation become 0% in the 2nd iteration.
   target.style.animationIterationCount = '4';
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '0px');
 }, 'animation-iteration-count');
 
@@ -217,6 +219,7 @@ promise_test(async t => {
 
   await scrollTop(scroller, 20); // [0, 100].
   target.style.animationDelay = '-5s';
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '60px');
 }, 'animation-delay with a negative value');
 
@@ -234,6 +237,7 @@ promise_test(async t => {
   assert_equals(getComputedStyle(target).translate, 'none');
 
   target.style.animationFillMode = 'backwards';
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '0px');
 }, 'animation-fill-mode');
 

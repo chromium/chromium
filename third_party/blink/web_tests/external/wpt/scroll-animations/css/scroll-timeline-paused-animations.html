@@ -36,6 +36,8 @@ promise_test(async t => {
   t.add_cleanup(resetScrollPosition);
 
   div.style.animation = 'anim 100s linear paused scroll(root)';
+  await waitForNextFrame();
+
   const anim = div.getAnimations()[0];
   await anim.ready;
   assert_percents_equal(anim.currentTime, 0, 'timeline time reset');
@@ -55,6 +57,8 @@ promise_test(async t => {
   await waitForNextFrame();
 
   div.style.animation = 'anim 100s linear forwards scroll(root)';
+  await waitForNextFrame();
+
   const anim = div.getAnimations()[0];
   await anim.ready;
   assert_percents_equal(anim.currentTime, 0, 'timeline time reset');

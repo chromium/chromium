@@ -71,6 +71,7 @@
     // Verify that the computed style is as expected immediately after the
     // rule change took place.
     instantiate(async (element, expected) => {
+      await waitForNextFrame();
       assert_equals(getComputedStyle(element).width, expected);
     }, description + ' [immediate]');
 

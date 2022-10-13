@@ -257,6 +257,7 @@ promise_test(async t => {
   // Ensure that #main (an ancestor of the scroller) needs style recalc.
   main.style.background = 'lightgray';
   sibling.style.scrollTimelineName = 'timeline';
+  await waitForNextFrame();
   assert_equals(getComputedStyle(target).translate, '100px');
 
   main.remove();
@@ -301,6 +302,7 @@ promise_test(async t => {
 
   scroller.style.scrollTimelineName = 'timeline';
   target.style.animation = 'anim 10s linear timeline';
+  await waitForNextFrame();
 
   assert_equals(getComputedStyle(target).translate, '100px');
 
@@ -351,6 +353,7 @@ promise_test(async t => {
 
   scroller.style.scrollTimelineName = 'timeline';
   target.style.animation = 'anim 10s linear timeline';
+  await waitForNextFrame();
 
   assert_equals(getComputedStyle(target).translate, '100px');
 
