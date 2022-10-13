@@ -56,6 +56,7 @@
       "strip_debug_info": true,
       "symbol_level": 1,
       "system_webview_package_name": "com.google.android.apps.chrome",
+      "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
       "use_remoteexec": true
@@ -120,6 +121,7 @@
       "strip_debug_info": true,
       "symbol_level": 1,
       "system_webview_package_name": "com.google.android.apps.chrome",
+      "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
       "use_remoteexec": true
@@ -137,6 +139,7 @@
       "strip_debug_info": true,
       "symbol_level": 1,
       "system_webview_package_name": "com.google.android.apps.chrome",
+      "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
       "use_remoteexec": true
@@ -154,6 +157,7 @@
       "strip_debug_info": true,
       "symbol_level": 1,
       "system_webview_package_name": "com.google.android.apps.chrome",
+      "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
       "use_remoteexec": true

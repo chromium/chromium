@@ -1678,9 +1678,6 @@
     "type": "additional_compile_target",
   },
   "system_webview_shell_layout_test_apk": {
-    "args": [
-      "--replace-system-package=apks/SystemWebViewShell.apk",
-    ],
     "label": "//android_webview/tools/system_webview_shell:system_webview_shell_layout_test_apk",
     "type": "console_test_launcher",
   },
