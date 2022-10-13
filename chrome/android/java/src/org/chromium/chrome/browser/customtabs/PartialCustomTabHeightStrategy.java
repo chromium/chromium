@@ -512,8 +512,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                 mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
             }
         } else {
-            height = initialHeightInPortraitMode();
-            mStatus = HeightStatus.INITIAL_HEIGHT;
+            if (mStatus == HeightStatus.INITIAL_HEIGHT) {
+                height = initialHeightInPortraitMode();
+            } else if (mStatus == HeightStatus.TOP) {
+                height = mDisplayHeight - maxExpandedY;
+            }
+
             if (!mWindowAboveNavbar) {
                 mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
             }

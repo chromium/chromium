@@ -577,7 +577,7 @@ public class PartialCustomTabHeightStrategyTest {
     }
 
     @Test
-    public void rotateToLandescapeUnresizable() {
+    public void rotateToLandscapeUnresizable() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
         PartialCustomTabHandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
 
@@ -587,7 +587,7 @@ public class PartialCustomTabHeightStrategyTest {
     }
 
     @Test
-    public void rotateToLandescapeHideCustomNavbar() {
+    public void rotateToLandscapeHideCustomNavbar() {
         // Custom navigation bar is drawn only on 'Fixed Window'-type implementation.
         if (mWindowAboveNavbar) return;
 
@@ -598,6 +598,24 @@ public class PartialCustomTabHeightStrategyTest {
 
         assertEquals(0, strategy.getNavbarHeightForTesting());
         verify(mNavbar).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void rotateToLandscapeAndBackTestHeight() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
+        PartialCustomTabHandleStrategy handleStrategy = strategy.createHandleStrategyForTesting();
+        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        strategy.onConfigurationChanged(mConfiguration);
+        mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        strategy.onConfigurationChanged((mConfiguration));
+        assertTabIsAtInitialPos(mAttributeResults.get(0));
+
+        assertTabIsFullHeight(dragTab(handleStrategy, 1500, 1000, 500));
+        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        strategy.onConfigurationChanged(mConfiguration);
+        mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        strategy.onConfigurationChanged(mConfiguration);
+        assertTabIsFullHeight(mAttributeResults.get(mAttributeResults.size()-1));
     }
 
     @Test
