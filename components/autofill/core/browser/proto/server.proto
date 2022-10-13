@@ -391,8 +391,8 @@ message AutofillUploadContents {
   // Upload only when a password is saved.
   // Used to adjust the password generator's settings to site's requirements.
 
-  // Whether the password has any lowercase letter.
-  optional bool password_has_lowercase_letter = 25;
+  // Whether the password has any letter.
+  optional bool password_has_letter = 25;
 
   // Deprecated since M80: Whether the password has any uppercase letter.
   optional bool password_has_uppercase_letter = 26 [deprecated = true];

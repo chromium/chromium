@@ -173,11 +173,8 @@ bool IsAddingUsernameToExistingMatch(
 bool IsNumeric(int c) {
   return '0' <= c && c <= '9';
 }
-bool IsLowercaseLetter(int c) {
-  return 'a' <= c && c <= 'z';
-}
-bool IsUppercaseLetter(int c) {
-  return 'A' <= c && c <= 'Z';
+bool IsLetter(int c) {
+  return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z');
 }
 
 // Checks if a supplied character |c| is a special symbol.
@@ -776,23 +773,19 @@ void VotesUploader::GeneratePasswordAttributesVote(
 
   // Don't crowdsource password attributes for non-ascii passwords.
   for (const auto& e : password_value) {
-    if (!(IsUppercaseLetter(e) || IsLowercaseLetter(e) || IsNumeric(e) ||
-          IsSpecialSymbol(e))) {
+    if (!(IsLetter(e) || IsNumeric(e) || IsSpecialSymbol(e))) {
       return;
     }
   }
 
   // Select a character class attribute to upload. Upload special symbols more
   // often (8 in 9 cases) as most issues are due to missing or wrong special
-  // symbols. Don't upload info about uppercase and numeric characters as all
-  // sites that allow lowercase letters also uppercase letters, and all sites
-  // allow numeric symbols in passwords.
+  // symbols. Upload info about letters existence otherwise.
   autofill::PasswordAttribute character_class_attribute;
   bool (*predicate)(int c) = nullptr;
   if (base::RandGenerator(9) == 0) {
-    predicate = &IsLowercaseLetter;
-    character_class_attribute =
-        autofill::PasswordAttribute::kHasLowercaseLetter;
+    predicate = &IsLetter;
+    character_class_attribute = autofill::PasswordAttribute::kHasLetter;
   } else {
     predicate = &IsSpecialSymbol;
     character_class_attribute = autofill::PasswordAttribute::kHasSpecialSymbol;

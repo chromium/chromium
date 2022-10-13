@@ -404,8 +404,8 @@ std::string SavePasswordProgressLogger::GetStringFromID(
     case STRING_LEAK_DETECTION_QUOTA_LIMIT:
       return "Leak detection failed: quota limit";
     case SavePasswordProgressLogger::
-        STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LOWERCASE:
-      return "Uploading password requirements vote for using lowercase letters";
+        STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LETTER:
+      return "Uploading password requirements vote for using letters";
     case SavePasswordProgressLogger::
         STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_SPECIAL_SYMBOL:
       return "Uploading password requirements vote for using special symbols";

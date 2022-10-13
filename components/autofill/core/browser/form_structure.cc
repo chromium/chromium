@@ -150,9 +150,8 @@ void EncodePasswordAttributesVote(
     const int password_symbol_vote,
     AutofillUploadContents* upload) {
   switch (password_attributes_vote.first) {
-    case PasswordAttribute::kHasLowercaseLetter:
-      upload->set_password_has_lowercase_letter(
-          password_attributes_vote.second);
+    case PasswordAttribute::kHasLetter:
+      upload->set_password_has_letter(password_attributes_vote.second);
       break;
     case PasswordAttribute::kHasSpecialSymbol:
       upload->set_password_has_special_symbol(password_attributes_vote.second);

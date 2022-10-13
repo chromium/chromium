@@ -166,9 +166,9 @@ BrowserSavePasswordProgressLogger::FormStructurePasswordAttributesLogString(
   const bool attribute_value = std::get<1>(attribute_vote.value());
 
   switch (attribute) {
-    case PasswordAttribute::kHasLowercaseLetter:
+    case PasswordAttribute::kHasLetter:
       message += BinaryPasswordAttributeLogString(
-          STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LOWERCASE, attribute_value);
+          STRING_PASSWORD_REQUIREMENTS_VOTE_FOR_LETTER, attribute_value);
       break;
 
     case PasswordAttribute::kHasSpecialSymbol:

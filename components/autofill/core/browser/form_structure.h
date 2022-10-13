@@ -46,7 +46,7 @@ class LogManager;
 
 // Password attributes (whether a password has special symbols, numeric, etc.)
 enum class PasswordAttribute {
-  kHasLowercaseLetter,
+  kHasLetter,
   kHasSpecialSymbol,
   kPasswordAttributesCount
 };
