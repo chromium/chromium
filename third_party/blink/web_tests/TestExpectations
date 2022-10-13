@@ -7265,3 +7265,8 @@ crbug.com/1367495 [ Debug Linux ] virtual/threaded-no-composited-antialiasing/an
 crbug.com/1280883 [ Debug Mac12 ] virtual/compositor-threaded-percent-based-scrolling-dsf-2/virtual/percent-based-scrolling/max-percent-delta.html [ Failure Pass ]
 crbug.com/1280883 [ Debug Linux ] virtual/compositor-threaded-percent-based-scrolling-dsf-2/virtual/percent-based-scrolling/max-percent-delta.html [ Failure Pass ]
 crbug.com/1280883 [ Win ] virtual/compositor-threaded-percent-based-scrolling-dsf-2/virtual/percent-based-scrolling/max-percent-delta.html [ Failure Pass ]
+
+# Temporarily disable tests to investigate test_driver.click issue
+crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-audio+video.https.sub.html [ Failure ]
+crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-audio.https.sub.html [ Failure ]
+crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Failure ]
