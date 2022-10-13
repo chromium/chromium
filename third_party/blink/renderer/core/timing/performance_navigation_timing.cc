@@ -384,6 +384,8 @@ void PerformanceNavigationTiming::BuildJSONValue(
           ExecutionContext::From(builder.GetScriptState()))) {
     builder.Add("notRestoredReasons",
                 notRestoredReasons(builder.GetScriptState()));
+    ExecutionContext::From(builder.GetScriptState())
+        ->CountUse(WebFeature::kBackForwardCacheNotRestoredReasons);
   }
 }
 

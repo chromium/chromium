@@ -3689,6 +3689,7 @@ enum WebFeature {
   kInteractiveWidgetResizesVisual = 4368,
   kSerivceWorkerFallbackMainResource = 4369,
   kGetDisplayMediaWithoutUserActivation = 4370,
+  kBackForwardCacheNotRestoredReasons = 4371,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
