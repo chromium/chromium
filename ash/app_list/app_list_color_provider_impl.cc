@@ -18,7 +18,7 @@ namespace ash {
 namespace {
 // Opacity of the light/dark inkdrop.
 constexpr float kLightInkDropOpacity = 0.08f;
-constexpr float kDarkInkDropOpacity = 0.06f;
+constexpr float kDarkInkDropOpacity = 0.12f;
 
 // Helper to check if tablet mode is enabled.
 bool IsTabletModeEnabled() {
