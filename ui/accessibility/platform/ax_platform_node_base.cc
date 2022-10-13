@@ -1902,9 +1902,14 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
 
     // If the endpoint is after this node, then return the node's
     // hypertext length, otherwise 0 as the endpoint points before the node.
-    if (endpoint_offset >
-        static_cast<int>(*closest_ancestor->GetIndexInParent()))
+    absl::optional<size_t> index_in_parent =
+        closest_ancestor->GetIndexInParent();
+    DCHECK(index_in_parent)
+        << "No index in parent for ancestor: " << *closest_ancestor;
+    if (index_in_parent &&
+        endpoint_offset > static_cast<int>(*index_in_parent)) {
       return static_cast<int>(GetHypertext().size());
+    }
     return 0;
   }
 
