@@ -367,7 +367,7 @@ void MediaNotificationViewImpl::GetAccessibleNodeData(
           IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
 
   if (!accessible_name_.empty())
-    node_data->SetName(accessible_name_);
+    node_data->SetNameChecked(accessible_name_);
 }
 
 void MediaNotificationViewImpl::UpdateWithMediaSessionInfo(
