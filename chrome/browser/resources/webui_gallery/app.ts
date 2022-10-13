@@ -37,12 +37,12 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'Accessibility Live Regions',
               path: 'a11y',
-              src: 'cr_a11y_announcer_demo.html',
+              src: 'cr_a11y_announcer/index.html',
             },
             {
               name: 'Action Menus',
               path: 'action-menus',
-              src: 'cr_action_menu_demo.html',
+              src: 'cr_action_menu/index.html',
             },
             {
               name: 'Buttons',
@@ -52,7 +52,7 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'Cards and rows',
               path: 'cards',
-              src: 'card/card_demo.html',
+              src: 'card/index.html',
             },
             {
               name: 'Checkboxes',
@@ -62,17 +62,17 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'Dialogs',
               path: 'dialogs',
-              src: 'cr_dialog_demo.html',
+              src: 'cr_dialog/index.html',
             },
             {
               name: 'Icons',
               path: 'icons',
-              src: 'cr_icons/cr_icons_demo.html',
+              src: 'cr_icons/index.html',
             },
             {
               name: 'Inputs',
               path: 'inputs',
-              src: 'cr_input/cr_input_demo.html',
+              src: 'cr_input/index.html',
             },
             {
               name: 'Navigation menus',
@@ -97,32 +97,32 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'Scroll view',
               path: 'scroll-view',
-              src: 'scroll_view/scroll_view_demo.html',
+              src: 'scroll_view/index.html',
             },
             {
               name: 'Select menu',
               path: 'select-menu',
-              src: 'md_select/md_select_demo.html',
+              src: 'md_select/index.html',
             },
             {
               name: 'Sliders',
               path: 'sliders',
-              src: 'cr_slider/cr_slider_demo.html',
+              src: 'cr_slider/index.html',
             },
             {
               name: 'Tabs, non-Polymer',
               path: 'tabs1',
-              src: 'cr_tab_box/cr_tab_box_demo.html',
+              src: 'cr_tab_box/index.html',
             },
             {
               name: 'Tabs, Polymer',
               path: 'tabs2',
-              src: 'cr_tabs/cr_tabs_demo.html',
+              src: 'cr_tabs/index.html',
             },
             {
               name: 'Toast',
               path: 'toast',
-              src: 'cr_toast/cr_toast_demo.html',
+              src: 'cr_toast/index.html',
             },
             {
               name: 'Toggles',
@@ -132,12 +132,12 @@ export class WebuiGalleryAppElement extends PolymerElement {
             {
               name: 'Toolbar',
               path: 'toolbar',
-              src: 'cr_toolbar/cr_toolbar_demo.html',
+              src: 'cr_toolbar/index.html',
             },
             {
               name: 'Tree, non-Polymer',
               path: 'tree',
-              src: 'cr_tree/cr_tree_demo.html',
+              src: 'cr_tree/index.html',
             },
           ];
         },

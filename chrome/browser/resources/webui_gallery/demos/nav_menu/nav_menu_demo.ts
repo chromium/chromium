@@ -13,13 +13,13 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './nav_menu_demo.html.js';
 
-interface NavMenuDemoComponent {
+interface NavMenuDemoElement {
   $: {
     drawer: CrDrawerElement,
   };
 }
 
-class NavMenuDemoComponent extends PolymerElement {
+class NavMenuDemoElement extends PolymerElement {
   static get is() {
     return 'nav-menu-demo';
   }
@@ -68,4 +68,4 @@ class NavMenuDemoComponent extends PolymerElement {
   }
 }
 
-customElements.define(NavMenuDemoComponent.is, NavMenuDemoComponent);
+customElements.define(NavMenuDemoElement.is, NavMenuDemoElement);

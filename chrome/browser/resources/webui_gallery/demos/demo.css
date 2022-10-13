@@ -2,7 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-@import 'chrome://resources/css/text_defaults_md.css';
+@import '//resources/css/text_defaults_md.css';
 
 body {
   box-sizing: border-box;

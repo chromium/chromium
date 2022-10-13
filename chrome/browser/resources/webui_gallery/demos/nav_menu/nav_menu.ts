@@ -13,13 +13,13 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './nav_menu.html.js';
 
-interface NavMenuComponent {
+interface NavMenuElement {
   $: {
     selector: IronSelectorElement,
   };
 }
 
-class NavMenuComponent extends PolymerElement {
+class NavMenuElement extends PolymerElement {
   static get is() {
     return 'nav-menu';
   }
@@ -77,4 +77,4 @@ class NavMenuComponent extends PolymerElement {
   }
 }
 
-customElements.define(NavMenuComponent.is, NavMenuComponent);
+customElements.define(NavMenuElement.is, NavMenuElement);
