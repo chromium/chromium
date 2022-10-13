@@ -180,8 +180,6 @@
 // Starts the sign in process.
 - (void)startSignIn {
   DCHECK(self.mediator.selectedIdentity);
-
-  DCHECK(self.mediator.selectedIdentity);
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:self.mediator.selectedIdentity
@@ -231,8 +229,7 @@
 - (void)identityChooserCoordinator:(IdentityChooserCoordinator*)coordinator
                  didSelectIdentity:(id<SystemIdentity>)identity {
   CHECK_EQ(self.identityChooserCoordinator, coordinator);
-  self.mediator.selectedIdentity =
-      base::mac::ObjCCastStrict<ChromeIdentity>(identity);
+  self.mediator.selectedIdentity = identity;
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
