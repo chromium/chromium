@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -344,10 +345,10 @@ void TouchTransformController::UpdateTouchTransforms(
   }
 
   if (display_manager_->IsInMirrorMode()) {
-    std::size_t primary_display_id_index =
-        std::distance(display_id_list.begin(),
-                      std::find(display_id_list.begin(), display_id_list.end(),
-                                Screen::GetScreen()->GetPrimaryDisplay().id()));
+    std::size_t primary_display_id_index = std::distance(
+        display_id_list.begin(),
+        base::ranges::find(display_id_list,
+                           Screen::GetScreen()->GetPrimaryDisplay().id()));
 
     for (std::size_t index = 0; index < display_id_list.size(); index++) {
       // In extended but software mirroring mode, there is a WindowTreeHost

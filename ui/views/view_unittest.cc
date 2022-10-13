@@ -12,11 +12,11 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-
-#include "base/containers/contains.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -109,7 +109,7 @@ const ui::Layer* NextLayer(const ui::Layer* layer) {
   if (!parent)
     return nullptr;
   const std::vector<ui::Layer*> children = parent->children();
-  const auto i = std::find(children.cbegin(), children.cend(), layer) + 1;
+  const auto i = base::ranges::find(children, layer) + 1;
   return (i == children.cend()) ? parent : FirstLayer(*i);
 }
 

@@ -8,9 +8,9 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-
 #include "third_party/khronos/EGL/egl.h"
 #include "third_party/khronos/EGL/eglext.h"
 #include "ui/gl/egl_util.h"
@@ -103,8 +103,7 @@ namespace {
 bool ChangeContextAttributes(std::vector<EGLint>& context_attributes,
                              EGLint attribute,
                              EGLint value) {
-  auto iter = std::find(context_attributes.begin(), context_attributes.end(),
-                        attribute);
+  auto iter = base::ranges::find(context_attributes, attribute);
   if (iter != context_attributes.end()) {
     ++iter;
     if (iter != context_attributes.end()) {

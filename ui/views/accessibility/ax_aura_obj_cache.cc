@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -291,8 +292,7 @@ void AXAuraObjCache::OnRootWindowObjCreated(aura::Window* window) {
     GetFocusClient(window)->AddObserver(this);
 
   // Do not allow duplicate entries.
-  if (std::find(root_windows_.begin(), root_windows_.end(), window) ==
-      root_windows_.end()) {
+  if (!base::Contains(root_windows_, window)) {
     root_windows_.push_back(window);
   }
 }

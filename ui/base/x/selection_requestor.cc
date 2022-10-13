@@ -4,9 +4,8 @@
 
 #include "ui/base/x/selection_requestor.h"
 
-#include <algorithm>
-
 #include "base/memory/ref_counted_memory.h"
+#include "base/ranges/algorithm.h"
 #include "ui/base/x/selection_owner.h"
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_clipboard_helper.h"
@@ -62,7 +61,7 @@ bool SelectionRequestor::PerformBlockingConvertSelection(
     ConvertSelectionForCurrentRequest();
   BlockTillSelectionNotifyForRequest(&request);
 
-  auto request_it = std::find(requests_.begin(), requests_.end(), &request);
+  auto request_it = base::ranges::find(requests_, &request);
   CHECK(request_it != requests_.end());
   if (static_cast<int>(current_request_index_) >
       request_it - requests_.begin()) {

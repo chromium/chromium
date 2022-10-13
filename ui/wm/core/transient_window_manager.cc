@@ -4,13 +4,13 @@
 
 #include "ui/wm/core/transient_window_manager.h"
 
-#include <algorithm>
 #include <functional>
 
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/aura/window.h"
@@ -91,8 +91,7 @@ void TransientWindowManager::AddTransientChild(Window* child) {
 }
 
 void TransientWindowManager::RemoveTransientChild(Window* child) {
-  auto i =
-      std::find(transient_children_.begin(), transient_children_.end(), child);
+  auto i = base::ranges::find(transient_children_, child);
   DCHECK(i != transient_children_.end());
   transient_children_.erase(i);
   TransientWindowManager* child_manager = GetOrCreate(child);
@@ -238,8 +237,7 @@ void TransientWindowManager::OnWindowStackingChanged(Window* window) {
   // Do nothing if we initiated the stacking change.
   const TransientWindowManager* transient_manager = GetIfExists(window);
   if (transient_manager && transient_manager->stacking_target_) {
-    auto window_i = std::find(window->parent()->children().begin(),
-                              window->parent()->children().end(), window);
+    auto window_i = base::ranges::find(window->parent()->children(), window);
     DCHECK(window_i != window->parent()->children().end());
     if (window_i != window->parent()->children().begin() &&
         (*(window_i - 1) == transient_manager->stacking_target_))

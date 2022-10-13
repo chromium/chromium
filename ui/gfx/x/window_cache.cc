@@ -187,8 +187,8 @@ void WindowCache::OnEvent(const Event& event) {
       if (auto* siblings = GetChildren(info->parent)) {
         Window window = configure->window;
         Window above = configure->above_sibling;
-        auto src = std::find(siblings->begin(), siblings->end(), window);
-        auto dst = std::find(siblings->begin(), siblings->end(), above);
+        auto src = base::ranges::find(*siblings, window);
+        auto dst = base::ranges::find(*siblings, above);
         auto end = siblings->end();
         if (src != end && (dst != end || above == Window::None)) {
           dst = above == Window::None ? siblings->begin() : ++dst;

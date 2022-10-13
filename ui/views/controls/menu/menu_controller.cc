@@ -14,6 +14,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -3333,7 +3334,7 @@ void MenuController::SetNextHotTrackedView(
   const size_t num_menu_items = menu_items.size();
   if (num_menu_items <= 1)
     return;
-  const auto i = std::find(menu_items.cbegin(), menu_items.cend(), item);
+  const auto i = base::ranges::find(menu_items, item);
   DCHECK(i != menu_items.cend());
   auto index = static_cast<size_t>(std::distance(menu_items.cbegin(), i));
 

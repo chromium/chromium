@@ -6,7 +6,6 @@
 
 #include <math.h>
 
-#include <algorithm>
 #include <memory>
 
 #include "base/bind.h"
@@ -17,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -101,8 +101,7 @@ class HidingWindowAnimationObserverBase : public aura::WindowObserver {
     if (window_->parent()) {
       const aura::Window::Windows& transient_children =
           GetTransientChildren(window_);
-      auto iter = std::find(window_->parent()->children().begin(),
-                            window_->parent()->children().end(), window_);
+      auto iter = base::ranges::find(window_->parent()->children(), window_);
       DCHECK(iter != window_->parent()->children().end());
       aura::Window* topmost_transient_child = nullptr;
       for (++iter; iter != window_->parent()->children().end(); ++iter) {

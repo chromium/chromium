@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_list.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -205,8 +206,7 @@ TEST_F(MetadataTest, TestTypeCacheContainsTestClass) {
   UM::ClassMetaData* test_class_meta = MetadataTestClass::MetaData();
 
   const auto& cache_meta = cache->GetCachedTypes();
-  EXPECT_NE(std::find(cache_meta.begin(), cache_meta.end(), test_class_meta),
-            cache_meta.end());
+  EXPECT_TRUE(base::Contains(cache_meta, test_class_meta));
 }
 
 TEST_F(MetadataTest, TestMetaDataFile) {

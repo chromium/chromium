@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_constants.mojom.h"
@@ -926,7 +927,7 @@ AXPlatformNodeDelegateBase::GetTargetNodesForRelation(
   std::vector<ui::AXPlatformNode*> nodes;
   for (int32_t target_id : target_ids) {
     if (ui::AXPlatformNode* node = GetFromNodeID(target_id)) {
-      if (std::find(nodes.begin(), nodes.end(), node) == nodes.end())
+      if (!base::Contains(nodes, node))
         nodes.push_back(node);
     }
   }

@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <queue>
 
+#include "base/ranges/algorithm.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/env.h"
@@ -187,7 +187,7 @@ void WindowModalityController::OnWindowVisibilityChanged(aura::Window* window,
 }
 
 void WindowModalityController::OnWindowDestroyed(aura::Window* window) {
-  windows_.erase(std::find(windows_.begin(), windows_.end(), window));
+  windows_.erase(base::ranges::find(windows_, window));
   window->RemoveObserver(this);
 }
 

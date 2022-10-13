@@ -4,6 +4,7 @@
 
 #include <tuple>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -204,11 +205,8 @@ TEST_P(GetFallbackFontTest, GetFallbackFont) {
 
   // Ensure the fallback font is a part of the validation fallback fonts list.
   if (!test_option_.skip_fallback_fonts_validation) {
-    bool valid = std::find(test_case_.fallback_fonts.begin(),
-                           test_case_.fallback_fonts.end(),
-                           fallback_font.GetFontName()) !=
-                 test_case_.fallback_fonts.end();
-    if (!valid) {
+    if (!base::Contains(test_case_.fallback_fonts,
+                        fallback_font.GetFontName())) {
       ADD_FAILURE() << "GetFallbackFont failed for '" << script_name_
                     << "' invalid fallback font: "
                     << fallback_font.GetFontName()

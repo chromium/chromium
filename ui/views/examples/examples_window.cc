@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -86,8 +87,7 @@ ExampleVector GetExamplesToShow(ExampleVector examples) {
     // from the list.
     if (!valid_examples.empty()) {
       base::EraseIf(examples, [valid_examples](auto& example) {
-        return std::find(valid_examples.begin(), valid_examples.end(),
-                         example->example_title()) == valid_examples.end();
+        return !base::Contains(valid_examples, example->example_title());
       });
     }
   } else if (command_line->HasSwitch(kEnableExamples)) {

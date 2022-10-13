@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -18,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -1046,7 +1046,7 @@ void Window::RemoveChildImpl(Window* child, Window* new_parent) {
   if (child->OwnsLayer())
     layer()->Remove(child->layer());
   child->parent_ = nullptr;
-  auto i = std::find(children_.begin(), children_.end(), child);
+  auto i = base::ranges::find(children_, child);
   DCHECK(i != children_.end());
   children_.erase(i);
   child->OnParentChanged();
@@ -1079,9 +1079,9 @@ void Window::StackChildRelativeTo(Window* child,
     return;
 
   const size_t child_i =
-      std::find(children_.begin(), children_.end(), child) - children_.begin();
+      base::ranges::find(children_, child) - children_.begin();
   const size_t target_i =
-      std::find(children_.begin(), children_.end(), target) - children_.begin();
+      base::ranges::find(children_, target) - children_.begin();
 
   DCHECK_LT(child_i, children_.size()) << "Child was not in list of children!";
   DCHECK_LT(target_i, children_.size())

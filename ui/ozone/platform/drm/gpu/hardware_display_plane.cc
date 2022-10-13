@@ -6,10 +6,12 @@
 
 #include <drm_fourcc.h>
 #include <drm_mode.h>
+
 #include <string>
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -151,8 +153,7 @@ std::vector<uint64_t> HardwareDisplayPlane::ModifiersForFormat(
     uint32_t format) const {
   std::vector<uint64_t> modifiers;
 
-  auto it =
-      std::find(supported_formats_.begin(), supported_formats_.end(), format);
+  auto it = base::ranges::find(supported_formats_, format);
   if (it == supported_formats_.end())
     return modifiers;
 

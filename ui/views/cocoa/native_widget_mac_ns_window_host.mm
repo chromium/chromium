@@ -12,6 +12,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_controller.h"
@@ -701,8 +702,7 @@ void NativeWidgetMacNSWindowHost::SetParent(
     return;
 
   if (parent_) {
-    auto found =
-        std::find(parent_->children_.begin(), parent_->children_.end(), this);
+    auto found = base::ranges::find(parent_->children_, this);
     DCHECK(found != parent_->children_.end());
     parent_->children_.erase(found);
     parent_ = nullptr;
@@ -806,8 +806,7 @@ NativeWidgetMacNSWindowHost::AddEventMonitor(
                           NativeWidgetMacEventMonitor* monitor) {
     if (!weak_this)
       return;
-    auto found = std::find(weak_this->event_monitors_.begin(),
-                           weak_this->event_monitors_.end(), monitor);
+    auto found = base::ranges::find(weak_this->event_monitors_, monitor);
     CHECK(found != weak_this->event_monitors_.end());
     weak_this->event_monitors_.erase(found);
 

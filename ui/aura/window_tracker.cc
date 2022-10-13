@@ -5,6 +5,7 @@
 #include "ui/aura/window_tracker.h"
 
 #include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "ui/aura/window.h"
 
 namespace aura {
@@ -35,7 +36,7 @@ void WindowTracker::RemoveAll() {
 }
 
 void WindowTracker::Remove(Window* window) {
-  auto iter = std::find(windows_.begin(), windows_.end(), window);
+  auto iter = base::ranges::find(windows_, window);
   if (iter != windows_.end()) {
     window->RemoveObserver(this);
     windows_.erase(iter);
