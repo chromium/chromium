@@ -176,9 +176,9 @@ class MojoIpczTestDriver : public ipcz::test::TestDriver {
       parent_process = base::Process(LongToHandle(parent_handle_value));
     }
 #endif  // BUILDFLAG(IS_WIN)
+    const bool is_broker = parent_process.IsValid();
     return Transport::ReleaseAsHandle(Transport::Create(
-        {.source = parent_process.IsValid() ? Transport::kBroker
-                                            : Transport::kNonBroker,
+        {.source = is_broker ? Transport::kBroker : Transport::kNonBroker,
          .destination = Transport::kBroker},
         std::move(endpoint), std::move(parent_process)));
   }

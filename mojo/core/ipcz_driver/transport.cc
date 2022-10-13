@@ -631,8 +631,8 @@ bool Transport::CanTransmitHandles() const {
 #if BUILDFLAG(IS_WIN)
   // On Windows, we can transmit handles only if at least one endpoint is a
   // broker, or if we have a handle to the remote process.
-  return remote_process_.IsValid() || destination_type() == kBroker ||
-         source_type() == kBroker;
+  return destination_type() == kBroker ||
+         (remote_process_.IsValid() && source_type() == kBroker);
 #else
   return true;
 #endif
