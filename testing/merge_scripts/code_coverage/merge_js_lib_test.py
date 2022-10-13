@@ -534,6 +534,37 @@ class MergeJSLibTest(unittest.TestCase):
         finally:
             shutil.rmtree(scripts_dir)
 
+    def test_non_data_urls_are_ignored(self):
+        test_script_file = """{
+"text": "test\\ncontents",
+"url": "http://test_url",
+"sourceMapURL":"%s"
+}"""
+
+        scripts_dir = None
+        expected_files = []
+
+        try:
+            scripts_dir = tempfile.mkdtemp()
+            file_path = os.path.join(scripts_dir, 'external_map.js.json')
+            expected_files = [file_path]
+
+            # Write a script with an external URL as the sourcemap, this should
+            # exclude it from being written to disk.
+            with open(file_path, 'w') as f:
+                f.write(test_script_file % 'external.map')
+
+            merger.write_parsed_scripts(scripts_dir, source_dir='')
+            actual_files = []
+
+            for root, _, files in os.walk(scripts_dir):
+                for file_name in files:
+                    actual_files.append(os.path.join(root, file_name))
+
+            self.assertCountEqual(expected_files, actual_files)
+        finally:
+            shutil.rmtree(scripts_dir)
+
 
 if __name__ == '__main__':
     unittest.main()

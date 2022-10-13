@@ -320,7 +320,10 @@ def write_parsed_scripts(task_output_dir, source_dir=_SRC_PATH):
                          file_path)
             continue
 
-        if len(script_data['sourceMapURL']) == 0:
+        # TODO(crbug/1373753): For now we exclude any sourcemaps that are 0
+        # length and also that don't begin with a data URL designation.
+        if len(script_data['sourceMapURL']) == 0 or not script_data[
+                'sourceMapURL'].startswith(_SOURCEMAPPING_DATA_URL_PREFIX):
             continue
 
         decoded_sourcemap = base64.b64decode(
