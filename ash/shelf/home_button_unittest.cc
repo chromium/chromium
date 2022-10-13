@@ -296,31 +296,9 @@ TEST_P(HomeButtonTest, ClickToOpenAppList) {
   GetEventGenerator()->ClickLeftButton();
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(true);
-  // ProductivityLauncher does not have states like peeking.
-  if (!features::IsProductivityLauncherEnabled())
-    GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
   GetEventGenerator()->ClickLeftButton();
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
-  if (!features::IsProductivityLauncherEnabled()) {
-    GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
-
-    // Shift-click should open the app list in fullscreen.
-    GetEventGenerator()->set_flags(ui::EF_SHIFT_DOWN);
-    GetEventGenerator()->ClickLeftButton();
-    GetEventGenerator()->set_flags(0);
-    GetAppListTestHelper()->WaitUntilIdle();
-    GetAppListTestHelper()->CheckVisibility(true);
-    GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
-
-    // Another shift-click should close the app list.
-    GetEventGenerator()->set_flags(ui::EF_SHIFT_DOWN);
-    GetEventGenerator()->ClickLeftButton();
-    GetEventGenerator()->set_flags(0);
-    GetAppListTestHelper()->WaitUntilIdle();
-    GetAppListTestHelper()->CheckVisibility(false);
-    GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
-  }
 }
 
 TEST_P(HomeButtonTest, ClickToOpenAppListInTabletMode) {

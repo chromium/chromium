@@ -1596,22 +1596,6 @@ TEST_F(ShelfLayoutManagerTest, GestureDrag) {
   }
 }
 
-// Tests shelf gesture drags with ProductivityLauncher enabled. This test can be
-// deleted when ProductivityLauncher is on by default, because it is covered by
-// the "bottom" case above.
-TEST_F(ShelfLayoutManagerTest, GestureDragForProductivityLauncher) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kProductivityLauncher);
-
-  ui::GestureConfiguration::GetInstance()
-      ->set_max_touch_move_in_pixels_for_click(0);
-  ASSERT_EQ(GetPrimaryShelf()->alignment(), ShelfAlignment::kBottom);
-  gfx::Rect shelf_bounds = GetVisibleShelfWidgetBoundsInScreen();
-  gfx::Point bottom_center = shelf_bounds.bottom_center();
-  bottom_center.Offset(0, -1);  // Make sure the point is inside shelf.
-  RunGestureDragTests(bottom_center, shelf_bounds.top_center());
-}
-
 // Tests that the shelf does not "overscroll", that is, dragging the shelf in
 // does not bring it past its ideal bounds.
 TEST_F(ShelfLayoutManagerTest, ShelfDoesNotOverscrollDuringGestureDragIn) {
@@ -4282,11 +4266,8 @@ class QuickActionShowBubbleTest : public ShelfLayoutManagerTestBase,
   // ShelfLayoutManagerTestBase:
   void SetUp() override {
     ShelfLayoutManagerTestBase::SetUp();
-    scoped_features_.InitWithFeatures(
-        /*enabled_features=*/{features::kProductivityLauncher,
-                              app_list_features::
-                                  kQuickActionShowBubbleLauncher},
-        /*disabled_features=*/{});
+    scoped_features_.InitAndEnableFeature(
+        app_list_features::kQuickActionShowBubbleLauncher);
   }
 
  private:

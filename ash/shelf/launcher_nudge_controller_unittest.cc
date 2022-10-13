@@ -94,10 +94,7 @@ class TestNudgeAnimationObserver : public HomeButton::NudgeAnimationObserver {
 class LauncherNudgeControllerTest : public AshTestBase {
  public:
   LauncherNudgeControllerTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kShelfLauncherNudge, features::kProductivityLauncher}, {});
-  }
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   LauncherNudgeControllerTest(const LauncherNudgeControllerTest&) = delete;
   LauncherNudgeControllerTest& operator=(const LauncherNudgeControllerTest&) =
       delete;
@@ -148,9 +145,6 @@ class LauncherNudgeControllerTest : public AshTestBase {
   std::unique_ptr<TestNudgeAnimationObserver> observer_;
   ScrollableShelfView* scrollable_shelf_view_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_api_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(LauncherNudgeControllerTest, DisableNudgeForGuestSession) {
