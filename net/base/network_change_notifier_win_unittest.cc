@@ -4,16 +4,22 @@
 
 #include "net/base/network_change_notifier_win.h"
 
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_os_info_override_win.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/windows_version.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_factory.h"
+#include "net/test/test_connection_cost_observer.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/test/win/fake_network_cost_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,7 +37,6 @@ class TestNetworkChangeNotifierWin : public NetworkChangeNotifierWin {
   TestNetworkChangeNotifierWin() {
     last_computed_connection_type_ = NetworkChangeNotifier::CONNECTION_UNKNOWN;
     last_announced_offline_ = false;
-    last_computed_connection_cost_ = ConnectionCost::CONNECTION_COST_UNKNOWN;
     sequence_runner_for_registration_ = base::SequencedTaskRunnerHandle::Get();
   }
 
@@ -55,13 +60,18 @@ class TestNetworkChangeNotifierWin : public NetworkChangeNotifierWin {
 
   // From NetworkChangeNotifierWin.
   MOCK_METHOD0(WatchForAddressChangeInternal, bool());
+
+  // Allow tests to compare results with the default implementation that does
+  // not depend on the INetworkCostManager Windows OS API.  The default
+  // implementation is used as a fall back when INetworkCostManager fails.
+  ConnectionCost GetCurrentConnectionCostFromDefaultImplementation() {
+    return NetworkChangeNotifier::GetCurrentConnectionCost();
+  }
 };
 
 class TestIPAddressObserver : public NetworkChangeNotifier::IPAddressObserver {
  public:
-  TestIPAddressObserver() {
-    NetworkChangeNotifier::AddIPAddressObserver(this);
-  }
+  TestIPAddressObserver() { NetworkChangeNotifier::AddIPAddressObserver(this); }
 
   TestIPAddressObserver(const TestIPAddressObserver&) = delete;
   TestIPAddressObserver& operator=(const TestIPAddressObserver&) = delete;
@@ -182,7 +192,8 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
         .Times(1)
         .WillOnce(Invoke(&run_loop, &base::RunLoop::QuitWhenIdle));
     EXPECT_CALL(network_change_notifier_, WatchForAddressChangeInternal())
-        .Times(1).WillOnce(Return(true));
+        .Times(1)
+        .WillOnce(Return(true));
 
     run_loop.Run();
 
@@ -219,22 +230,18 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
     base::RunLoop().RunUntilIdle();
   }
 
-  bool HasNetworkCostManager() {
-    return network_change_notifier_.network_cost_manager_.Get() != nullptr;
-  }
-
-  bool HasNetworkCostManagerEventSink() {
-    return network_change_notifier_.network_cost_manager_event_sink_.Get() !=
-           nullptr;
-  }
-
-  NetworkChangeNotifier::ConnectionCost LastComputedConnectionCost() {
-    return network_change_notifier_.last_computed_connection_cost_;
-  }
-
   NetworkChangeNotifier::ConnectionCost GetCurrentConnectionCost() {
     return network_change_notifier_.GetCurrentConnectionCost();
   }
+
+  NetworkChangeNotifier::ConnectionCost
+  GetCurrentConnectionCostFromDefaultImplementation() {
+    return network_change_notifier_
+        .GetCurrentConnectionCostFromDefaultImplementation();
+  }
+
+ protected:
+  FakeNetworkCostManagerEnvironment fake_network_cost_manager_environment_;
 
  private:
   // Note that the order of declaration here is important.
@@ -287,58 +294,102 @@ TEST_F(NetworkChangeNotifierWinTest, NetChangeWinFailSignalTwice) {
   RetryAndSucceed();
 }
 
-class TestConnectionCostObserver
-    : public NetworkChangeNotifier::ConnectionCostObserver {
- public:
-  TestConnectionCostObserver() {}
-
-  TestConnectionCostObserver(const TestConnectionCostObserver&) = delete;
-  TestConnectionCostObserver& operator=(const TestConnectionCostObserver&) =
-      delete;
-
-  ~TestConnectionCostObserver() override {
-    NetworkChangeNotifier::RemoveConnectionCostObserver(this);
-  }
-
-  void OnConnectionCostChanged(NetworkChangeNotifier::ConnectionCost) override {
-  }
-
-  void Register() { NetworkChangeNotifier::AddConnectionCostObserver(this); }
-};
-
-TEST_F(NetworkChangeNotifierWinTest, NetworkCostManagerIntegration) {
-  // NetworkCostManager integration only exist on Win10+.
+TEST_F(NetworkChangeNotifierWinTest, GetCurrentCost) {
   if (base::win::GetVersion() < base::win::Version::WIN10)
     return;
 
-  // Upon creation, none of the NetworkCostManager integration should be
-  // initialized yet.
-  ASSERT_FALSE(HasNetworkCostManager());
-  ASSERT_FALSE(HasNetworkCostManagerEventSink());
-  ASSERT_EQ(NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_UNKNOWN,
-            LastComputedConnectionCost());
+  fake_network_cost_manager_environment_.SetCost(
+      NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_UNMETERED);
 
-  // Asking for the current connection cost should initialize the
-  // NetworkCostManager integration, but not the event sink.
-  // Note that the actual ConnectionCost value return is irrelevant beyond the
-  // fact that it shouldn't be UNKNOWN anymore if the integration is initialized
-  // properly.
-  NetworkChangeNotifier::ConnectionCost current_connection_cost =
-      GetCurrentConnectionCost();
-  EXPECT_NE(NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_UNKNOWN,
-            current_connection_cost);
-  EXPECT_EQ(current_connection_cost, LastComputedConnectionCost());
-  EXPECT_TRUE(HasNetworkCostManager());
-  EXPECT_FALSE(HasNetworkCostManagerEventSink());
+  // Wait for NetworkCostChangeNotifierWin to finish initializing.
+  RunUntilIdle();
 
-  // Adding a ConnectionCostObserver should initialize the event sink. If the
-  // subsequent registration for updates fails, the event sink will get
-  // destroyed.
-  TestConnectionCostObserver test_connection_cost_observer;
-  test_connection_cost_observer.Register();
-  // The actual registration happens on a callback, so need to run until idle.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(HasNetworkCostManagerEventSink());
+  EXPECT_EQ(GetCurrentConnectionCost(),
+            NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_UNMETERED);
+
+  fake_network_cost_manager_environment_.SetCost(
+      NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_METERED);
+
+  // Wait for NetworkCostChangeNotifierWin to handle the cost changed event.
+  RunUntilIdle();
+
+  EXPECT_EQ(GetCurrentConnectionCost(),
+            NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_METERED);
+}
+
+TEST_F(NetworkChangeNotifierWinTest, CostChangeObserver) {
+  if (base::win::GetVersion() < base::win::Version::WIN10)
+    return;
+
+  fake_network_cost_manager_environment_.SetCost(
+      NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_UNMETERED);
+
+  // Wait for NetworkCostChangeNotifierWin to finish initializing.
+  RunUntilIdle();
+
+  TestConnectionCostObserver cost_observer;
+  NetworkChangeNotifier::AddConnectionCostObserver(&cost_observer);
+
+  fake_network_cost_manager_environment_.SetCost(
+      NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_METERED);
+
+  cost_observer.WaitForConnectionCostChanged();
+
+  ASSERT_EQ(cost_observer.cost_changed_calls(), 1u);
+  EXPECT_EQ(cost_observer.last_cost_changed_input(),
+            NetworkChangeNotifier::ConnectionCost::CONNECTION_COST_METERED);
+
+  NetworkChangeNotifier::RemoveConnectionCostObserver(&cost_observer);
+}
+
+// Uses the fake implementation of INetworkCostManager to simulate GetCost()
+// returning an error HRESULT.
+class NetworkChangeNotifierWinCostErrorTest
+    : public NetworkChangeNotifierWinTest {
+  void SetUp() override {
+    if (base::win::GetVersion() < base::win::Version::WIN10) {
+      GTEST_SKIP();
+    }
+
+    fake_network_cost_manager_environment_.SimulateError(
+        NetworkCostManagerStatus::kErrorGetCostFailed);
+
+    NetworkChangeNotifierWinTest::SetUp();
+  }
+};
+
+TEST_F(NetworkChangeNotifierWinCostErrorTest, CostError) {
+  // Wait for NetworkCostChangeNotifierWin to finish initializing, which should
+  // fail with an error.
+  RunUntilIdle();
+
+  // NetworkChangeNotifierWin must use the default implementation when
+  // NetworkCostChangeNotifierWin returns an unknown cost.
+  EXPECT_EQ(GetCurrentConnectionCost(),
+            GetCurrentConnectionCostFromDefaultImplementation());
+}
+
+// Override the Windows OS version to simulate running on an OS that does not
+// support INetworkCostManager.
+class NetworkChangeNotifierWinCostUnsupportedOsTest
+    : public NetworkChangeNotifierWinTest {
+ public:
+  NetworkChangeNotifierWinCostUnsupportedOsTest()
+      : os_override_(base::test::ScopedOSInfoOverride::Type::kWin81Pro) {}
+
+ protected:
+  base::test::ScopedOSInfoOverride os_override_;
+};
+
+TEST_F(NetworkChangeNotifierWinCostUnsupportedOsTest, CostWithUnsupportedOS) {
+  // Wait for NetworkCostChangeNotifierWin to finish initializing, which should
+  // initialize with an unknown cost on an unsupported OS.
+  RunUntilIdle();
+
+  // NetworkChangeNotifierWin must use the default implementation when
+  // NetworkCostChangeNotifierWin returns an unknown cost.
+  EXPECT_EQ(GetCurrentConnectionCost(),
+            GetCurrentConnectionCostFromDefaultImplementation());
 }
 
 }  // namespace net

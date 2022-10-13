@@ -1257,6 +1257,8 @@ component("net") {
       "base/net_errors_win.cc",
       "base/network_change_notifier_win.cc",
       "base/network_change_notifier_win.h",
+      "base/network_cost_change_notifier_win.cc",
+      "base/network_cost_change_notifier_win.h",
       "base/network_interfaces_win.cc",
       "base/network_interfaces_win.h",
       "base/platform_mime_util_win.cc",
@@ -2172,6 +2174,8 @@ static_library("test_support") {
     "test/ssl_test_util.cc",
     "test/ssl_test_util.h",
     "test/test_certificate_data.h",
+    "test/test_connection_cost_observer.cc",
+    "test/test_connection_cost_observer.h",
     "test/test_data_directory.cc",
     "test/test_data_directory.h",
     "test/test_doh_server.cc",
@@ -2190,6 +2194,13 @@ static_library("test_support") {
     "url_request/url_request_test_util.cc",
     "url_request/url_request_test_util.h",
   ]
+
+  if (is_win) {
+    sources += [
+      "test/win/fake_network_cost_manager.cc",
+      "test/win/fake_network_cost_manager.h",
+    ]
+  }
 
   if (is_mac) {
     sources += [
@@ -4401,6 +4412,7 @@ test("net_unittests") {
   if (is_win) {
     sources += [
       "base/network_change_notifier_win_unittest.cc",
+      "base/network_cost_change_notifier_win_unittest.cc",
       "base/network_interfaces_win_unittest.cc",
       "cert/cert_verify_proc_win_unittest.cc",
       "http/http_auth_sspi_win_unittest.cc",
