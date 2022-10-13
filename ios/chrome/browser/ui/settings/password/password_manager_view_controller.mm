@@ -249,6 +249,9 @@ bool ShouldShowSettingsUI() {
   // Boolean containing whether `self` should be updated after dismissing
   // the Search Controller.
   BOOL _shouldUpdateAfterSearchControllerDismissed;
+  // Whether the table view is in search mode. That is, it only has the search
+  // bar potentially saved passwords and blocked sites.
+  BOOL _tableIsInSearchMode;
 }
 
 // Object handling passwords export operations.
@@ -508,7 +511,7 @@ bool ShouldShowSettingsUI() {
   if (ShouldShowSettingsUI()) {
     // Save passwords switch and manage account message. Only show this section
     // when the searchController is not active.
-    if (!self.navigationItem.searchController.active) {
+    if (!_tableIsInSearchMode) {
       [model addSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
 
       if (_browserState->GetPrefs()->IsManagedPreference(
@@ -606,6 +609,7 @@ bool ShouldShowSettingsUI() {
       forSectionWithIdentifier:[self sectionForManageAccountLinkHeader]];
 
   [self filterItems:self.searchTerm];
+  _tableIsInSearchMode = NO;
 }
 
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
@@ -1111,7 +1115,7 @@ bool ShouldShowSettingsUI() {
 
   // During searching Password Check section is hidden so cells should not be
   // reconfigured.
-  if (self.navigationItem.searchController.active) {
+  if (_tableIsInSearchMode) {
     _passwordCheckState = state;
     return;
   }
@@ -1205,7 +1209,7 @@ bool ShouldShowSettingsUI() {
 }
 
 - (void)updateOnDeviceEncryptionSessionAndUpdateTableView {
-  if (!self.navigationItem.searchController.active) {
+  if (!_tableIsInSearchMode) {
     [self
         updateOnDeviceEncryptionSessionWithUpdateTableView:YES
                                           withRowAnimation:
@@ -1227,6 +1231,7 @@ bool ShouldShowSettingsUI() {
   // Remove save passwords switch section, password check section and
   // on device encryption.
 
+  _tableIsInSearchMode = YES;
   [self
       performBatchTableViewUpdates:^{
         // Sections must be removed from bottom to top, otherwise it crashes
@@ -1373,6 +1378,7 @@ bool ShouldShowSettingsUI() {
         [self updateOnDeviceEncryptionSessionWithUpdateTableView:YES
                                                 withRowAnimation:
                                                     UITableViewRowAnimationTop];
+        _tableIsInSearchMode = NO;
       }
                completion:nil];
 }
@@ -1791,7 +1797,7 @@ bool ShouldShowSettingsUI() {
   [self presentViewController:exportConfirmation animated:YES completion:nil];
 }
 
-// Removes the given section if it exists and if isEmpty is true.
+// Removes the given section if it exists.
 - (void)clearSectionWithIdentifier:(NSInteger)sectionIdentifier
                   withRowAnimation:(UITableViewRowAnimation)animation {
   TableViewModel* model = self.tableViewModel;
