@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_COPY_OR_MOVE_HOOK_DELEGATE_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_COPY_OR_MOVE_HOOK_DELEGATE_H_
 
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -28,11 +27,6 @@ class DlpCopyOrMoveHookDelegate : public storage::CopyOrMoveHookDelegate {
  private:
   void OnSuccess(const storage::FileSystemURL& source_url,
                  const storage::FileSystemURL& destination_url);
-
-  void CopySourceInformation(storage::FileSystemURL source,
-                             storage::FileSystemURL destination);
-
-  virtual DlpRulesManager* GetRulesManager();
 };
 
 }  // namespace policy
