@@ -11,13 +11,14 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
-#include "net/base/url_util.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/widget_test.h"
@@ -78,6 +79,15 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
         ->action_hover_card_controller_->hover_card_;
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    ExtensionsToolbarUITest::SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
   void HoverMouseOverActionView(ToolbarActionView* action_view) {
     // We don't use ToolbarActionView::OnMouseEntered here to invoke the hover
     // card because that path is disabled in browser tests. If we enabled it,
@@ -119,6 +129,42 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
     GetExtensionsToolbarContainer()->GetWidget()->LayoutRootViewIfNecessary();
   }
 
+  // Make `extension_id` force-pinned, as if it was controlled by the
+  // ExtensionSettings policy.
+  void ForcePinExtension(const extensions::ExtensionId& extension_id) {
+    std::string policy_item_key =
+        base::StringPrintf("%s", extension_id.c_str());
+    base::Value::Dict policy_item_value;
+    policy_item_value.Set("toolbar_pin", "force_pinned");
+
+    policy::PolicyMap policy_map =
+        policy_provider_.policies()
+            .Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
+                                         /*component_id=*/std::string()))
+            .Clone();
+    policy::PolicyMap::Entry* const existing_entry =
+        policy_map.GetMutable(policy::key::kExtensionSettings);
+
+    if (existing_entry && existing_entry->value(base::Value::Type::DICT)) {
+      // Append to the existing policy.
+      existing_entry->value(base::Value::Type::DICT)
+          ->SetKey(policy_item_key, base::Value(std::move(policy_item_value)));
+    } else {
+      // Set the new policy value.
+      base::Value::Dict policy_value;
+      policy_value.Set(policy_item_key, std::move(policy_item_value));
+      policy_map.Set(policy::key::kExtensionSettings,
+                     policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                     policy::POLICY_SOURCE_CLOUD,
+                     base::Value(std::move(policy_value)),
+                     /*external_data_fetcher=*/nullptr);
+    }
+
+    policy_provider_.UpdateChromePolicy(policy_map);
+
+    GetExtensionsToolbarContainer()->GetWidget()->LayoutRootViewIfNecessary();
+  }
+
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     LoadExtensionAndPinIt("extensions/simple_with_popup");
@@ -135,6 +181,8 @@ class ToolbarActionHoverCardBubbleViewUITest : public ExtensionsToolbarUITest {
  private:
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
+
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest, InvokeUi) {
@@ -162,57 +210,102 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
                        WidgetUpdatedWhenHoveringBetweenActionViews) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Install and pin one extension with host permissions and one without.
-  auto extensionA = LoadExtensionAndPinIt("extensions/simple_with_popup");
-  auto extensionB =
-      InstallExtensionWithHostPermissions("All Urls Extension", "<all_urls>");
-  PinExtension(extensionB->id());
-  auto action_views = GetVisibleToolbarActionViews();
-  ASSERT_EQ(action_views.size(), 2u);
+  // Add two extensions with no host permissions, and two with them.
+  auto simple_extension_A = InstallExtension("Simple extension A");
+  auto simple_extension_B = InstallExtension("Simple extension B");
+  auto extension_with_permissions_A = InstallExtensionWithHostPermissions(
+      "Extension with host permissions A", "<all_urls>");
+  auto extension_with_permissions_B = InstallExtensionWithHostPermissions(
+      "Extension with host permissions B", "<all_urls>");
 
-  // Navigate to a url extension B requests.
+  // Pin extensions "A" and force pin extensions "B" in order to test all
+  // possible footer combinations.
+  PinExtension(simple_extension_A->id());
+  ForcePinExtension(simple_extension_B->id());
+  PinExtension(extension_with_permissions_A->id());
+  ForcePinExtension(extension_with_permissions_B->id());
+
+  auto action_views = GetVisibleToolbarActionViews();
+  ASSERT_EQ(action_views.size(), 4u);
+
+  // Navigate to a url that the extensions with host permissions request.
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
-  // Hover over extension A and verify card anchors to its action.
-  ToolbarActionView* actionA =
-      GetExtensionsToolbarContainer()->GetViewForId(extensionA->id());
-  HoverMouseOverActionView(actionA);
+  // Hover over the simple extension pinned by the user.
+  // Verify card anchors to its action, and it contains the extension's name and
+  // no footnote.
+  ToolbarActionView* simple_action_A =
+      GetExtensionsToolbarContainer()->GetViewForId(simple_extension_A->id());
+  HoverMouseOverActionView(simple_action_A);
   views::Widget* const widget = hover_card()->GetWidget();
   views::test::WidgetVisibleWaiter(widget).Wait();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
-  EXPECT_EQ(hover_card()->GetAnchorView(), actionA);
-  // Hover card should have the extension's name and no footnote since the
-  // extension doesn't have access.
+  EXPECT_EQ(hover_card()->GetAnchorView(), simple_action_A);
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
-            actionA->view_controller()->GetActionName());
-  EXPECT_EQ(hover_card()->GetFootnoteTitleTextForTesting(), u"");
-  EXPECT_EQ(hover_card()->GetFootnoteDescriptionTextForTesting(), u"");
+            simple_action_A->view_controller()->GetActionName());
+  EXPECT_FALSE(hover_card()->IsFooterVisible());
 
-  // Hover over extension A and verify card anchors to its action. Note that the
-  // widget is the same because it transitions from one action view to the
-  // other.
-  ToolbarActionView* actionB =
-      GetExtensionsToolbarContainer()->GetViewForId(extensionB->id());
-  HoverMouseOverActionView(actionB);
+  // Hover over the simple extension pinned by policy.
+  // Verify card anchors to its action using the same widget, because it
+  // transitions from one action view to the other, and it contains contains the
+  // extension's name and a footnote with only policy label.
+  ToolbarActionView* simple_action_B =
+      GetExtensionsToolbarContainer()->GetViewForId(simple_extension_B->id());
+  HoverMouseOverActionView(simple_action_B);
   views::test::WidgetVisibleWaiter(widget).Wait();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
-  EXPECT_EQ(hover_card()->GetAnchorView(), actionB);
-  // Hover card should have the extension's name and footnote since the
-  // extension has site access (by default).
+  EXPECT_EQ(hover_card()->GetAnchorView(), simple_action_B);
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
-            actionB->view_controller()->GetActionName());
-  EXPECT_EQ(
-      hover_card()->GetFootnoteTitleTextForTesting(),
-      l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_TITLE_HAS_ACCESS));
-  EXPECT_EQ(
-      hover_card()->GetFootnoteDescriptionTextForTesting(),
-      l10n_util::GetStringFUTF16(
-          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_EXTENSION_HAS_ACESSS,
-          base::UTF8ToUTF16(net::GetHostAndPort(url))));
+            simple_action_B->view_controller()->GetActionName());
+  EXPECT_TRUE(hover_card()->IsFooterVisible());
+  EXPECT_FALSE(hover_card()->IsFooterTitleLabelVisible());
+  EXPECT_FALSE(hover_card()->IsFooterDescriptionLabelVisible());
+  EXPECT_TRUE(hover_card()->IsFooterPolicyLabelVisible());
+  EXPECT_FALSE(hover_card()->IsFooterSeparatorVisible());
+
+  // Hover over the extension with host permissions pinned by the user.
+  // Verify card anchors to its action using the same widget, and it contains
+  // contains the extension's name and a footnote with only title and
+  // description labels.
+  ToolbarActionView* action_with_permissions_A =
+      GetExtensionsToolbarContainer()->GetViewForId(
+          extension_with_permissions_A->id());
+  HoverMouseOverActionView(action_with_permissions_A);
+  views::test::WidgetVisibleWaiter(widget).Wait();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(hover_card()->GetAnchorView(), action_with_permissions_A);
+  EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
+            action_with_permissions_A->view_controller()->GetActionName());
+  EXPECT_TRUE(hover_card()->IsFooterVisible());
+  EXPECT_TRUE(hover_card()->IsFooterTitleLabelVisible());
+  EXPECT_TRUE(hover_card()->IsFooterDescriptionLabelVisible());
+  EXPECT_FALSE(hover_card()->IsFooterPolicyLabelVisible());
+  EXPECT_FALSE(hover_card()->IsFooterSeparatorVisible());
+
+  // Hover over the extension with host permission pinned by policy.
+  // Verify card anchors to its action using the same widget, and it contains
+  // contains the extension's name and a footnote with both title and
+  // description labels, and policy label. Since all labels are visible,
+  // separator should also be visible to distinct between them.
+  ToolbarActionView* action_with_permissions_B =
+      GetExtensionsToolbarContainer()->GetViewForId(
+          extension_with_permissions_B->id());
+  HoverMouseOverActionView(action_with_permissions_B);
+  views::test::WidgetVisibleWaiter(widget).Wait();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(hover_card()->GetAnchorView(), action_with_permissions_B);
+  EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
+            action_with_permissions_B->view_controller()->GetActionName());
+  EXPECT_TRUE(hover_card()->IsFooterVisible());
+  EXPECT_TRUE(hover_card()->IsFooterTitleLabelVisible());
+  EXPECT_TRUE(hover_card()->IsFooterDescriptionLabelVisible());
+  EXPECT_TRUE(hover_card()->IsFooterPolicyLabelVisible());
+  EXPECT_TRUE(hover_card()->IsFooterSeparatorVisible());
 }
 
 // Verify hover card is not visible when mouse moves inside the extensions

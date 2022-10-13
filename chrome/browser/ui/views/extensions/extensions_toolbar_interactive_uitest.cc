@@ -6,6 +6,7 @@
 
 #include "base/containers/cxx20_erase.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -49,10 +50,24 @@ ExtensionsToolbarUITest::LoadTestExtension(const std::string& path,
 }
 
 scoped_refptr<const extensions::Extension>
+ExtensionsToolbarUITest::InstallExtension(const std::string& name) {
+  return InstallExtensionWithHostPermissions(name, std::string());
+}
+
+scoped_refptr<const extensions::Extension>
 ExtensionsToolbarUITest::InstallExtensionWithHostPermissions(
     const std::string& name,
     const std::string& host_permission,
     const std::string& content_script_run_location) {
+  std::string host_permissions_entry;
+  if (!host_permission.empty()) {
+    host_permissions_entry = base::StringPrintf(
+        R"(
+        "host_permissions": ["%s"],
+      )",
+        host_permission.c_str());
+  }
+
   extensions::TestExtensionDir extension_dir;
   std::string content_script_entry;
   if (!content_script_run_location.empty()) {
@@ -74,11 +89,12 @@ ExtensionsToolbarUITest::InstallExtensionWithHostPermissions(
       R"({
             "name": "%s",
             "manifest_version": 3,
-            "version": "0.1",
             %s
-            "host_permissions": ["%s"]
+            %s
+            "version": "0.1"
           })",
-      name.c_str(), content_script_entry.c_str(), host_permission.c_str()));
+      name.c_str(), content_script_entry.c_str(),
+      host_permissions_entry.c_str()));
   scoped_refptr<const extensions::Extension> extension =
       extensions::ChromeTestExtensionLoader(profile()).LoadExtension(
           extension_dir.UnpackedPath());

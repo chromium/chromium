@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
@@ -70,8 +71,9 @@ class ToolbarActionHoverCardController::EventSniffer
 // ToolbarActionHoverCardController
 
 ToolbarActionHoverCardController::ToolbarActionHoverCardController(
+    Profile* profile,
     ExtensionsToolbarContainer* extensions_container)
-    : extensions_container_(extensions_container) {}
+    : profile_(profile), extensions_container_(extensions_container) {}
 
 ToolbarActionHoverCardController::~ToolbarActionHoverCardController() = default;
 
@@ -212,7 +214,7 @@ void ToolbarActionHoverCardController::CreateHoverCard(
     ToolbarActionView* action_view) {
   DCHECK(action_view);
 
-  hover_card_ = new ToolbarActionHoverCardBubbleView(action_view);
+  hover_card_ = new ToolbarActionHoverCardBubbleView(action_view, profile_);
   hover_card_observation_.Observe(hover_card_.get());
   event_sniffer_ = std::make_unique<EventSniffer>(this);
 

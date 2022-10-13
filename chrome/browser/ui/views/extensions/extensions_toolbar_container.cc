@@ -129,7 +129,8 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
               : nullptr),
       display_mode_(display_mode),
       action_hover_card_controller_(
-          std::make_unique<ToolbarActionHoverCardController>(this)) {
+          std::make_unique<ToolbarActionHoverCardController>(browser->profile(),
+                                                             this)) {
   // The container shouldn't show unless / until we have extensions available.
   SetVisible(false);
 

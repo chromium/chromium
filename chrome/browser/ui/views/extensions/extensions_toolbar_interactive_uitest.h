@@ -55,6 +55,10 @@ class ExtensionsToolbarUITest : public DialogBrowserTest {
       const std::string& path,
       bool allow_incognito = false);
 
+  // Loads and returns a extension given a `name`.
+  scoped_refptr<const extensions::Extension> InstallExtension(
+      const std::string& name);
+
   // Loads and returns a extension given a `name`, `host_permission` and
   // optional `content_script_run_location`.
   scoped_refptr<const extensions::Extension>

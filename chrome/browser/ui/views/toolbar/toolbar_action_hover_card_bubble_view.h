@@ -18,7 +18,8 @@ class ToolbarActionHoverCardBubbleView
     : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(ToolbarActionHoverCardBubbleView);
-  explicit ToolbarActionHoverCardBubbleView(ToolbarActionView* action_view);
+  explicit ToolbarActionHoverCardBubbleView(ToolbarActionView* action_view,
+                                            Profile* profile);
   ToolbarActionHoverCardBubbleView(const ToolbarActionHoverCardBubbleView&) =
       delete;
   ToolbarActionHoverCardBubbleView& operator=(
@@ -34,8 +35,11 @@ class ToolbarActionHoverCardBubbleView
 
   // Accessors used by tests.
   std::u16string GetTitleTextForTesting() const;
-  std::u16string GetFootnoteTitleTextForTesting() const;
-  std::u16string GetFootnoteDescriptionTextForTesting() const;
+  bool IsFooterVisible() const;
+  bool IsFooterTitleLabelVisible() const;
+  bool IsFooterDescriptionLabelVisible() const;
+  bool IsFooterSeparatorVisible() const;
+  bool IsFooterPolicyLabelVisible() const;
 
  private:
   friend class ToolbarActionHoverCardBubbleViewUITest;
@@ -48,11 +52,11 @@ class ToolbarActionHoverCardBubbleView
   // views::BubbleDialogDelegateView:
   void OnThemeChanged() override;
 
+  // The associated ToolbarActionsModel. Not owned.
+  raw_ptr<ToolbarActionsModel> model_;
+
   raw_ptr<FadeLabel> title_label_ = nullptr;
   raw_ptr<FootnoteView> footnote_view_ = nullptr;
-
-  ToolbarActionViewController::HoverCardState state_ =
-      ToolbarActionViewController::HoverCardState::kExtensionDoesNotWantAccess;
 
   absl::optional<int> corner_radius_;
 };

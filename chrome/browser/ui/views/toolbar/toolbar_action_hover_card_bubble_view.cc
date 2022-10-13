@@ -20,8 +20,10 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 
@@ -43,8 +45,6 @@ constexpr int kVerticalMargin = 10;
 constexpr int kFootnoteVerticalMargin = 8;
 constexpr auto kTitleMargins =
     gfx::Insets::VH(kVerticalMargin, kHorizontalMargin);
-constexpr auto kFootnoteMargins =
-    gfx::Insets::VH(kFootnoteVerticalMargin, kHorizontalMargin);
 
 bool CustomShadowsSupported() {
 #if BUILDFLAG(IS_WIN)
@@ -227,51 +227,102 @@ class ToolbarActionHoverCardBubbleView::FadeLabel : public views::View {
 class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
  public:
   FootnoteView() {
-    SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical));
+    auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+    layout->SetOrientation(views::LayoutOrientation::kVertical);
+    // We only add vertical margin to the view, since horizontal margins are
+    // handled by each child.
+    layout->SetInteriorMargin(gfx::Insets::VH(kFootnoteVerticalMargin, 0));
+
     title_label_ =
         AddChildView(std::make_unique<FadeLabel>(CONTEXT_TAB_HOVER_CARD_TITLE));
     description_label_ = AddChildView(
         std::make_unique<FadeLabel>(views::style::CONTEXT_DIALOG_BODY_TEXT));
 
-    title_label_->SetBackgroundColorId(ui::kColorBubbleFooterBackground);
-    description_label_->SetBackgroundColorId(ui::kColorBubbleFooterBackground);
+    separator_ = AddChildView(std::make_unique<views::Separator>());
+    separator_->SetProperty(views::kMarginsKey,
+                            gfx::Insets::VH(kVerticalMargin, 0));
+
+    policy_label_ = AddChildView(
+        std::make_unique<FadeLabel>(views::style::CONTEXT_DIALOG_BODY_TEXT));
+    policy_label_->SetText(l10n_util::GetStringUTF16(
+        IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_TEXT));
+
+    // Separator doesn't need margin to span the dialog width.
+    auto style_label = [](FadeLabel* label) {
+      label->SetBackgroundColorId(ui::kColorBubbleFooterBackground);
+      label->SetBorder(
+          views::CreateEmptyBorder(gfx::Insets::VH(0, kHorizontalMargin)));
+    };
+    style_label(title_label_);
+    style_label(description_label_);
+    style_label(policy_label_);
   }
 
   ~FootnoteView() override = default;
 
-  void SetContent(ToolbarActionViewController::HoverCardState state,
-                  std::u16string host) {
-    DCHECK_NE(state, ToolbarActionViewController::HoverCardState::
-                         kExtensionDoesNotWantAccess);
-    title_label_->SetText(GetFootnoteTitle(state));
-    description_label_->SetText(GetFootnoteDescription(state, host));
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+
+    // Simulate the same look as the bubble footnote view.
+    const auto* color_provider = GetColorProvider();
+    SetBackground(views::CreateSolidBackground(
+        color_provider->GetColor(ui::kColorBubbleFooterBackground)));
+    SetBorder(views::CreateSolidSidedBorder(
+        gfx::Insets::TLBR(1, 0, 0, 0),
+        color_provider->GetColor(ui::kColorBubbleFooterBorder)));
+  }
+
+  void UpdateContent(ToolbarActionViewController::HoverCardState state,
+                     bool show_policy_label,
+                     std::u16string host) {
+    bool show_site_access_labels = state !=
+                                   ToolbarActionViewController::HoverCardState::
+                                       kExtensionDoesNotWantAccess;
+    bool footer_visible = show_site_access_labels || show_policy_label;
+    SetVisible(footer_visible);
+
+    if (!footer_visible)
+      return;
+
+    title_label_->SetVisible(show_site_access_labels);
+    description_label_->SetVisible(show_site_access_labels);
+    policy_label_->SetVisible(show_policy_label);
+    separator_->SetVisible(show_site_access_labels && show_policy_label);
+
+    if (show_site_access_labels) {
+      title_label_->SetText(GetFootnoteTitle(state));
+      description_label_->SetText(GetFootnoteDescription(state, host));
+    }
   }
 
   void SetFade(double percent) {
     title_label_->SetFade(percent);
     description_label_->SetFade(percent);
+    policy_label_->SetFade(percent);
   }
 
-  std::u16string GetTitleText() const { return title_label_->GetText(); }
-
-  std::u16string GetDescriptionText() const {
-    return description_label_->GetText();
-  }
+  bool IsTitleVisible() const { return title_label_->GetVisible(); }
+  bool IsDescriptionVisible() const { return description_label_->GetVisible(); }
+  bool IsPolicyVisible() const { return policy_label_->GetVisible(); }
+  bool IsSeparatorVisible() const { return separator_->GetVisible(); }
 
  private:
   raw_ptr<FadeLabel> title_label_;
   raw_ptr<FadeLabel> description_label_;
+  raw_ptr<FadeLabel> policy_label_;
+  raw_ptr<views::Separator> separator_;
 };
 
 // ToolbarActionHoverCardBubbleView:
 // ----------------------------------------------------------
 
 ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
-    ToolbarActionView* action_view)
+    ToolbarActionView* action_view,
+    Profile* profile)
     : BubbleDialogDelegateView(action_view,
                                views::BubbleBorder::TOP_LEFT,
-                               views::BubbleBorder::STANDARD_SHADOW) {
+                               views::BubbleBorder::STANDARD_SHADOW),
+      model_(ToolbarActionsModel::Get(profile)) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
@@ -304,10 +355,6 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   // same for multiple anchor points.
   set_highlight_button_when_shown(false);
 
-  // Set up content.
-  title_label_ =
-      AddChildView(std::make_unique<FadeLabel>(CONTEXT_TAB_HOVER_CARD_TITLE));
-
   // Set up layout.
   views::FlexLayout* const layout =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -316,12 +363,16 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   layout->SetCollapseMargins(true);
 
+  // Set up content.
+  title_label_ =
+      AddChildView(std::make_unique<FadeLabel>(CONTEXT_TAB_HOVER_CARD_TITLE));
   title_label_->SetProperty(views::kMarginsKey, kTitleMargins);
   title_label_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kScaleToMaximum)
           .WithOrder(2));
+  footnote_view_ = AddChildView(std::make_unique<FootnoteView>());
 
   if (CustomShadowsSupported()) {
     corner_radius_ = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
@@ -339,13 +390,6 @@ ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
   if (using_rounded_corners())
     GetBubbleFrameView()->SetCornerRadius(corner_radius_.value());
 
-  // Set up footer.
-  auto footnote_view = std::make_unique<FootnoteView>();
-  footnote_view_ = footnote_view.get();
-  footnote_view_->SetVisible(false);
-  GetBubbleFrameView()->SetFootnoteView(std::move(footnote_view));
-  GetBubbleFrameView()->SetFootnoteMargins(kFootnoteMargins);
-
   // Start in the fully "faded-in" position so that whatever text we initially
   // display is visible.
   SetTextFade(1.0);
@@ -355,21 +399,10 @@ void ToolbarActionHoverCardBubbleView::UpdateCardContent(
     const ToolbarActionViewController* action_controller,
     content::WebContents* web_contents) {
   title_label_->SetText(action_controller->GetActionName());
-
-  DCHECK(GetBubbleFrameView());
-  ToolbarActionViewController::HoverCardState state =
-      action_controller->GetHoverCardState(web_contents);
-  if (state_ == state)
-    return;
-
-  state_ = state;
-  if (state_ == ToolbarActionViewController::HoverCardState::
-                    kExtensionDoesNotWantAccess) {
-    footnote_view_->SetVisible(false);
-  } else {
-    footnote_view_->SetContent(state, GetCurrentHost(web_contents));
-    footnote_view_->SetVisible(true);
-  }
+  footnote_view_->UpdateContent(
+      action_controller->GetHoverCardState(web_contents),
+      model_->IsActionForcePinned(action_controller->GetId()),
+      GetCurrentHost(web_contents));
 }
 
 void ToolbarActionHoverCardBubbleView::SetTextFade(double percent) {
@@ -382,15 +415,24 @@ std::u16string ToolbarActionHoverCardBubbleView::GetTitleTextForTesting()
   return title_label_->GetText();
 }
 
-std::u16string
-ToolbarActionHoverCardBubbleView::GetFootnoteTitleTextForTesting() const {
-  return footnote_view_->GetVisible() ? footnote_view_->GetTitleText() : u"";
+bool ToolbarActionHoverCardBubbleView::IsFooterVisible() const {
+  return footnote_view_->GetVisible();
 }
 
-std::u16string
-ToolbarActionHoverCardBubbleView::GetFootnoteDescriptionTextForTesting() const {
-  return footnote_view_->GetVisible() ? footnote_view_->GetDescriptionText()
-                                      : u"";
+bool ToolbarActionHoverCardBubbleView::IsFooterTitleLabelVisible() const {
+  return footnote_view_->IsTitleVisible();
+}
+
+bool ToolbarActionHoverCardBubbleView::IsFooterDescriptionLabelVisible() const {
+  return footnote_view_->IsDescriptionVisible();
+}
+
+bool ToolbarActionHoverCardBubbleView::IsFooterSeparatorVisible() const {
+  return footnote_view_->IsSeparatorVisible();
+}
+
+bool ToolbarActionHoverCardBubbleView::IsFooterPolicyLabelVisible() const {
+  return footnote_view_->IsPolicyVisible();
 }
 
 void ToolbarActionHoverCardBubbleView::OnThemeChanged() {
