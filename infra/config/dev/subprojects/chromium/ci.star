@@ -50,9 +50,6 @@ defaults.service_account.set(
     "chromium-ci-builder-dev@chops-service-accounts.iam.gserviceaccount.com",
 )
 
-# TODO(crbug.com/1362440): remove this.
-defaults.omit_python2.set(False)
-
 def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
     resultdb_bigquery_exports = resultdb_bigquery_exports or []
     resultdb_bigquery_exports.extend([
