@@ -6,7 +6,33 @@
  * @fileoverview Oobe signin screen implementation.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/icons.html.js';
+import '//resources/js/action_link.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/notification_card.js';
+import '../../components/security_token_pin.js';
+import '../../components/gaia_dialog.m.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/buttons/oobe_back_button.m.js';
+import '../../components/buttons/oobe_next_button.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_loading_dialog.m.js';
+import '../../components/throbber_notice.m.js';
+
+import {assert} from '//resources/js/assert.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {AuthFlow, AuthMode, SUPPORTED_PARAMS} from '../../../../gaia_auth_host/authenticator.js';
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
+import {OobeTypes} from '../../components/oobe_types.m.js';
+import {Oobe} from '../../cr_ui.m.js';
+import {invokePolymerMethod} from '../../display_manager.m.js';
+
 
 // GAIA animation guard timer. Started when GAIA page is loaded (Authenticator
 // 'ready' event) and is intended to guard against edge cases when 'showView'
@@ -56,9 +82,8 @@ const POSSIBLE_FIRST_SIGNIN_STEPS = [DialogMode.GAIA, DialogMode.LOADING];
  * @implements {MultiStepBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
  */
-const GaiaSigninElementBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
-    Polymer.Element);
+const GaiaSigninElementBase = mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
  * @polymer
@@ -68,7 +93,9 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     return 'gaia-signin-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -423,8 +450,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     // button to let user go to GAIA page and keep original GAIA buttons
     // hidden.
     this.isSaml_ = doSamlRedirect;
-    this.authenticator_.load(
-        cr.login.Authenticator.AuthMode.DEFAULT, this.authenticatorParams_);
+    this.authenticator_.load(AuthMode.DEFAULT, this.authenticatorParams_);
   }
 
   /**
@@ -520,7 +546,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
       this.isClosable_ = data.hasUserPods;
     }
 
-    cr.ui.login.invokePolymerMethod(this.$.pinDialog, 'onBeforeShow');
+    invokePolymerMethod(this.$.pinDialog, 'onBeforeShow');
   }
 
   /** @private */
@@ -531,7 +557,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   /** @private */
   focusSigninFrame_() {
     const signinFrame = this.getSigninFrame_();
-    Polymer.RenderStatus.afterNextRender(this, () => signinFrame.focus());
+    afterNextRender(this, () => signinFrame.focus());
   }
 
   /** Event handler that is invoked after the screen is shown. */
@@ -568,7 +594,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     this.closePinDialog();
 
     const params = {};
-    cr.login.Authenticator.SUPPORTED_PARAMS.forEach(name => {
+    SUPPORTED_PARAMS.forEach(name => {
       if (data.hasOwnProperty(name)) {
         params[name] = data[name];
       }
@@ -593,8 +619,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @return {boolean}
    */
   isSamlAuthFlowForTesting() {
-    return this.isSaml_ &&
-        this.authFlow == cr.login.Authenticator.AuthFlow.SAML;
+    return this.isSaml_ && this.authFlow == AuthFlow.SAML;
   }
 
   /**
@@ -639,7 +664,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
    * @private
    */
   onAuthFlowChange_() {
-    this.isSaml_ = this.authFlow == cr.login.Authenticator.AuthFlow.SAML;
+    this.isSaml_ = this.authFlow == AuthFlow.SAML;
   }
 
   /**

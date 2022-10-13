@@ -16,7 +16,6 @@ group("polymer3_elements") {
     ":app_launch_splash_module",
     ":device_disabled_module",
     ":family_link_notice_module",
-    ":gaia_signin_module",
     ":guest_tos_module",
     ":hw_data_collection_module",
     ":multidevice_setup_module",
@@ -59,7 +58,7 @@ js_type_check("closure_compile_local") {
     ":error_message",
     ":family_link_notice.m",
     ":fingerprint_setup",
-    ":gaia_signin.m",
+    ":gaia_signin",
     ":gesture_navigation",
     ":guest_tos.m",
     ":hw_data_collection.m",
@@ -270,8 +269,8 @@ js_library("gesture_navigation") {
   extra_deps = [ ":web_components" ]
 }
 
-js_library("gaia_signin.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gaia_signin.m.js" ]
+js_library("gaia_signin") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gaia_signin.js" ]
   deps = [
     "../..:display_manager.m",
     "../../../../gaia_auth_host:authenticator",
@@ -286,7 +285,7 @@ js_library("gaia_signin.m") {
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":gaia_signin_module" ]
+  extra_deps = [ ":web_components" ]
 }
 
 js_library("guest_tos.m") {
@@ -697,15 +696,6 @@ polymer_modulizer("family_link_notice") {
   namespace_rewrites = oobe_namespace_rewrites
 }
 
-polymer_modulizer("gaia_signin") {
-  js_file = "gaia_signin.js"
-  html_file = "gaia_signin.html"
-  html_type = "dom-module"
-  auto_imports = oobe_auto_imports
-  migrated_imports = oobe_migrated_imports
-  namespace_rewrites = oobe_namespace_rewrites
-}
-
 polymer_modulizer("guest_tos") {
   js_file = "guest_tos.js"
   html_file = "guest_tos.html"
@@ -798,6 +788,7 @@ html_to_js("web_components") {
     "enable_kiosk.js",
     "error_message.js",
     "fingerprint_setup.js",
+    "gaia_signin.js",
     "gesture_navigation.js",
     "local_state_error.js",
     "managed_terms_of_service.js",

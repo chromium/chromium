@@ -4,105 +4,70 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="oobe-dialog-host-styles">
+  [transparent] {
+    opacity: 0;
+  }
 
+  [animated-transparency][transparent] {
+    transition: opacity 500ms ease-in;
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/load_time_data.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+  [animated-transparency]:not([transparent]) {
+    transition: opacity 500ms ease-out;
+  }
 
-<link rel="import" href="../../../../gaia_auth_host/authenticator.html">
-<link rel="import" href="../../cr_ui.html">
-<link rel="import" href="../../display_manager.html">
-<link rel="import" href="../../components/display_manager_types.html">
-<link rel="import" href="../../components/notification_card.html">
-<link rel="import" href="../../components/security_token_pin.html">
-<link rel="import" href="../../components/gaia_dialog.html">
-<link rel="import" href="../../components/oobe_icons.html">
-<link rel="import" href="../../components/oobe_types.html">
-<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="../../components/buttons/oobe_back_button.html">
-<link rel="import" href="../../components/buttons/oobe_next_button.html">
-<link rel="import" href="../../components/common_styles/common_styles.html">
-<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
-<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
-<link rel="import" href="../../components/throbber_notice.html">
-
-<dom-module id="gaia-signin-element">
-  <template>
-    <style include="oobe-dialog-host-styles">
-      [transparent] {
-        opacity: 0;
-      }
-
-      [animated-transparency][transparent] {
-        transition: opacity 500ms ease-in;
-      }
-
-      [animated-transparency]:not([transparent]) {
-        transition: opacity 500ms ease-out;
-      }
-
-      .icon20 {
-        height: 20px;
-        width: 20px;
-      }
-    </style>
-    <gaia-dialog id="signin-frame-dialog"
-        for-step="online-gaia"
-        is-saml-sso-visible="[[isSamlSsoVisible_]]"
-        is-default-sso-provider="[[isDefaultSsoProvider_]]"
-        is-closable="[[isClosable_]]"
-        video-enabled="{{videoEnabled_}}"
-        auth-domain="{{authDomain_}}"
-        auth-flow="{{authFlow}}"
-        navigation-enabled="{{navigationEnabled_}}"
-        navigation-hidden="[[navigationButtonsHidden_]]"
-        webview-name="signin-frame"
-        can-go-back="{{canGaiaGoBack_}}"
-        on-authcompleted="onAuthCompletedMessage_"
-        on-backcancel="onBackButtonCancel_"
-        on-closesaml="closeSaml_"
-        on-identifierentered="onIdentifierEnteredMessage_"
-        on-webviewerror="onLoadAbortMessage_"
-        on-ready="onAuthReady_"
-        on-showview="onShowView_"
-        on-startenrollment="onStartEnrollment_"
-        on-exit="onExitMessage_"
-        on-removeuserbyemail="onRemoveUserByEmailMessage_"
-        on-changesigninprovider="onSamlPageChangeAccount_">
-    </gaia-dialog>
-    <!-- TODO(dkuzmin): This alert is added here, because ChromeVox keep
-                        pronouncing it several times when role="alert" is added
-                        inside gaia-dialog. This problem should be resolved in
-                        https://crbug.com/1288829 -->
-    <div id="samlVideoAlert" role="alert" hidden="[[!videoEnabled_]]"
-        aria-label$="[[getSamlVideoAlertMessage_(locale,
-            videoEnabled_,
-            authDomain_)]]">
-    </div>
-    <security-token-pin id="pinDialog" parameters="[[pinDialogParameters_]]"
-        for-step="pin" on-cancel="onPinDialogCanceled_"
-        on-completed="onPinDialogCompleted_">
-    </security-token-pin>
-    <oobe-loading-dialog title-key="gaiaLoading"
-        id="step-loading" for-step="loading">
-      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
-    </oobe-loading-dialog>
-    <notification-card id="gaia-allowlist-error" class="fit"
-        for-step="allowlist-error"
-        on-buttonclick="onAllowlistErrorTryAgainClick_"
-        on-linkclick="onAllowlistErrorLinkClick_"
-        button-label="[[i18nDynamic(locale, 'tryAgainButton')]]"
-        link-label="[[i18nDynamic(locale, 'learnMoreButton')]]">
-      [[i18nDynamic(locale, allowlistError_)]]
-    </notification-card>
-  </template>
-  <script src="gaia_signin.js"></script>
-</dom-module>
+  .icon20 {
+    height: 20px;
+    width: 20px;
+  }
+</style>
+<gaia-dialog id="signin-frame-dialog"
+    for-step="online-gaia"
+    is-saml-sso-visible="[[isSamlSsoVisible_]]"
+    is-default-sso-provider="[[isDefaultSsoProvider_]]"
+    is-closable="[[isClosable_]]"
+    video-enabled="{{videoEnabled_}}"
+    auth-domain="{{authDomain_}}"
+    auth-flow="{{authFlow}}"
+    navigation-enabled="{{navigationEnabled_}}"
+    navigation-hidden="[[navigationButtonsHidden_]]"
+    webview-name="signin-frame"
+    can-go-back="{{canGaiaGoBack_}}"
+    on-authcompleted="onAuthCompletedMessage_"
+    on-backcancel="onBackButtonCancel_"
+    on-closesaml="closeSaml_"
+    on-identifierentered="onIdentifierEnteredMessage_"
+    on-webviewerror="onLoadAbortMessage_"
+    on-ready="onAuthReady_"
+    on-showview="onShowView_"
+    on-startenrollment="onStartEnrollment_"
+    on-exit="onExitMessage_"
+    on-removeuserbyemail="onRemoveUserByEmailMessage_"
+    on-changesigninprovider="onSamlPageChangeAccount_">
+</gaia-dialog>
+<!-- TODO(dkuzmin): This alert is added here, because ChromeVox keep
+                    pronouncing it several times when role="alert" is added
+                    inside gaia-dialog. This problem should be resolved in
+                    https://crbug.com/1288829 -->
+<div id="samlVideoAlert" role="alert" hidden="[[!videoEnabled_]]"
+    aria-label$="[[getSamlVideoAlertMessage_(locale,
+        videoEnabled_,
+        authDomain_)]]">
+</div>
+<security-token-pin id="pinDialog" parameters="[[pinDialogParameters_]]"
+    for-step="pin" on-cancel="onPinDialogCanceled_"
+    on-completed="onPinDialogCompleted_">
+</security-token-pin>
+<oobe-loading-dialog title-key="gaiaLoading"
+    id="step-loading" for-step="loading">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+</oobe-loading-dialog>
+<notification-card id="gaia-allowlist-error" class="fit"
+    for-step="allowlist-error"
+    on-buttonclick="onAllowlistErrorTryAgainClick_"
+    on-linkclick="onAllowlistErrorLinkClick_"
+    button-label="[[i18nDynamic(locale, 'tryAgainButton')]]"
+    link-label="[[i18nDynamic(locale, 'learnMoreButton')]]">
+  [[i18nDynamic(locale, allowlistError_)]]
+</notification-card>
