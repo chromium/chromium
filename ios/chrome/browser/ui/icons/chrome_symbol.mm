@@ -133,6 +133,21 @@ UIImage* CustomSymbolTemplateWithPointSize(NSString* symbol_name,
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
+UIImage* CustomMulticolorSymbol(NSString* symbol_name, CGFloat point_size) {
+  UIImageConfiguration* configuration =
+      DefaultSymbolConfigurationWithPointSize(point_size);
+  if (@available(iOS 15, *)) {
+    configuration = [configuration
+        configurationByApplyingConfiguration:
+            [UIImageSymbolConfiguration configurationPreferringMulticolor]];
+  }
+  UIImage* symbol = CustomSymbolWithConfiguration(symbol_name, configuration);
+  if (@available(iOS 15, *)) {
+    return symbol;
+  }
+  return [symbol imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
+}
+
 bool UseSymbols() {
   return base::FeatureList::IsEnabled(kUseSFSymbols);
 }

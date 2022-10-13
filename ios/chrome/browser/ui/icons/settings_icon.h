@@ -7,10 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/icons/buildflags.h"
+
 // Custom symbol names.
 extern NSString* const kPrivacySymbol;
 extern NSString* const kSyncDisabledSymbol;
 extern NSString* const kSafetyCheckSymbol;
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+extern NSString* const kGoogleIconSymbol;
+#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 
 // Default symbol names.
 extern NSString* const kSyncEnabledSymbol;
@@ -24,5 +29,8 @@ UIImage* DefaultSettingsRootSymbol(NSString* symbol_name);
 // Returns a custom symbol named `symbol_name` configured for the Settings
 // root screen.
 UIImage* CustomSettingsRootSymbol(NSString* symbol_name);
+// Returns a custom symbol named `symbol_name` configured for the Settings
+// root screen, with multicolor enabled.
+UIImage* CustomSettingsRootMulticolorSymbol(NSString* symbol_name);
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_SETTINGS_ICON_H_

@@ -91,6 +91,10 @@ UIImage* DefaultSymbolTemplateWithPointSize(NSString* symbol_name,
 UIImage* CustomSymbolTemplateWithPointSize(NSString* symbol_name,
                                            CGFloat point_size);
 
+// Returns a custom symbol named `symbol_name`, configured with the default
+// configuration and the given `point_size`.
+UIImage* CustomMulticolorSymbol(NSString* symbol_name, CGFloat point_size);
+
 // Returns YES if the kUseSFSymbols flag is enabled.
 bool UseSymbols();
 

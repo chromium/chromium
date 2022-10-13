@@ -62,6 +62,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/icons/buildflags.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/icons/settings_icon.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -190,6 +191,15 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     return kSyncEnabledWithError;
   }
   return kSyncEnabled;
+}
+
+// Returns the branded version of the Google Services symbol.
+UIImage* GetBrandedGoogleServicesSymbol() {
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+  return CustomSettingsRootMulticolorSymbol(kGoogleIconSymbol);
+#else
+  return DefaultSettingsRootSymbol(@"gearshape.2");
+#endif
 }
 
 }  // namespace
@@ -741,13 +751,12 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 - (TableViewItem*)googleServicesCellItem {
   if (UseSymbols()) {
-    // TODO(crbug.com/1315544): The icon should be updated.
     return [self detailItemWithType:SettingsItemTypeGoogleServices
                                text:l10n_util::GetNSString(
                                         IDS_IOS_GOOGLE_SERVICES_SETTINGS_TITLE)
                          detailText:nil
-                             symbol:nil
-              symbolBackgroundColor:UIColor.clearColor
+                             symbol:GetBrandedGoogleServicesSymbol()
+              symbolBackgroundColor:nil
             accessibilityIdentifier:kSettingsGoogleServicesCellId];
   }
   return [self detailItemWithType:SettingsItemTypeGoogleServices
@@ -1323,8 +1332,10 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   detailItem.accessibilityTraits |= UIAccessibilityTraitButton;
   detailItem.accessibilityIdentifier = accessibilityIdentifier;
   detailItem.iconImage = symbol;
-  detailItem.iconBackgroundColor = backgroundColor;
-  detailItem.iconTintColor = UIColor.whiteColor;
+  if (backgroundColor) {
+    detailItem.iconBackgroundColor = backgroundColor;
+    detailItem.iconTintColor = UIColor.whiteColor;
+  }
   detailItem.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
   return detailItem;
 }

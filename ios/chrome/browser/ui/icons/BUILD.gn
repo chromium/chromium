@@ -2,6 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+
+declare_args() {
+  # This defines targets to include branded icons.
+  ios_branded_icons = ":branded"
+}
+
+_use_branded_symbols = get_label_info(":branded", "label_no_toolchain") !=
+                       get_label_info(ios_branded_icons, "label_no_toolchain")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "IOS_USE_BRANDED_SYMBOLS=$_use_branded_symbols" ]
+}
+
 source_set("icons") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -67,6 +82,7 @@ source_set("settings_icons") {
     "settings_icon.mm",
   ]
   deps = [
+    ":buildflags",
     ":symbols",
     "//ios/chrome/browser/ui/icons/resources:arrow_triangle_slash_circlepath",
     "//ios/chrome/browser/ui/icons/resources:checkerboard_shield",
@@ -102,6 +118,7 @@ source_set("symbols") {
     "//ios/chrome/browser/ui/icons/resources:square_number",
     "//ios/chrome/browser/ui/icons/resources:translate",
     "//ui/base",
+    ios_branded_icons,
   ]
   frameworks = [
     "CoreGraphics.framework",
@@ -131,4 +148,8 @@ group("assets") {
     "//third_party/material_design_icons:ic_info",
     "//third_party/material_design_icons:ic_search",
   ]
+}
+
+group("branded") {
+  # Empty in the non-branded repo.
 }
