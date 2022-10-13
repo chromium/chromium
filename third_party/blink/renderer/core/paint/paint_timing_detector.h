@@ -123,6 +123,17 @@ class CORE_EXPORT PaintTimingDetector
  public:
   PaintTimingDetector(LocalFrameView*);
 
+  struct LargestContentfulPaintDetails {
+    base::TimeTicks largest_image_paint_time_;
+    uint64_t largest_image_paint_size_ = 0;
+    blink::LargestContentfulPaintType largest_contentful_paint_type_ =
+        blink::LargestContentfulPaintType::kNone;
+    double largest_contentful_paint_image_bpp_ = 0.0;
+    base::TimeTicks largest_text_paint_time_;
+    uint64_t largest_text_paint_size_ = 0;
+    base::TimeTicks largest_contentful_paint_time_;
+  };
+
   // Returns true if the image might ultimately be a candidate for largest
   // paint, otherwise false. When this method is called we do not know the
   // largest status for certain, because we need to wait for presentation.
@@ -182,21 +193,28 @@ class CORE_EXPORT PaintTimingDetector
 
   LargestContentfulPaintCalculator* GetLargestContentfulPaintCalculator();
 
-  base::TimeTicks LargestImagePaint() const {
-    return largest_image_paint_time_;
+  base::TimeTicks LargestImagePaintForMetrics() const {
+    return lcp_details_for_ukm_.largest_image_paint_time_;
   }
-  uint64_t LargestImagePaintSize() const { return largest_image_paint_size_; }
-  blink::LargestContentfulPaintType LargestContentfulPaintType() const {
-    return largest_contentful_paint_type_;
+  uint64_t LargestImagePaintSizeForMetrics() const {
+    return lcp_details_for_ukm_.largest_image_paint_size_;
   }
-  double LargestContentfulPaintImageBPP() const {
-    return largest_contentful_paint_image_bpp_;
+  blink::LargestContentfulPaintType LargestContentfulPaintTypeForMetrics()
+      const {
+    return lcp_details_for_ukm_.largest_contentful_paint_type_;
   }
-  base::TimeTicks LargestTextPaint() const { return largest_text_paint_time_; }
-  uint64_t LargestTextPaintSize() const { return largest_text_paint_size_; }
+  double LargestContentfulPaintImageBPPForMetrics() const {
+    return lcp_details_for_ukm_.largest_contentful_paint_image_bpp_;
+  }
+  base::TimeTicks LargestTextPaintForMetrics() const {
+    return lcp_details_for_ukm_.largest_text_paint_time_;
+  }
+  uint64_t LargestTextPaintSizeForMetrics() const {
+    return lcp_details_for_ukm_.largest_text_paint_size_;
+  }
 
-  base::TimeTicks LargestContentfulPaint() const {
-    return largest_contentful_paint_time_;
+  base::TimeTicks LargestContentfulPaintForMetrics() const {
+    return lcp_details_for_ukm_.largest_contentful_paint_time_;
   }
 
   base::TimeTicks FirstInputOrScrollNotifiedTimestamp() const {
@@ -240,14 +258,9 @@ class CORE_EXPORT PaintTimingDetector
 
   absl::optional<PaintTimingVisualizer> visualizer_;
 
-  base::TimeTicks largest_image_paint_time_;
-  uint64_t largest_image_paint_size_ = 0;
-  blink::LargestContentfulPaintType largest_contentful_paint_type_ =
-      blink::LargestContentfulPaintType::kNone;
-  double largest_contentful_paint_image_bpp_ = 0.0;
-  base::TimeTicks largest_text_paint_time_;
-  uint64_t largest_text_paint_size_ = 0;
-  base::TimeTicks largest_contentful_paint_time_;
+  LargestContentfulPaintDetails lcp_details_;
+  LargestContentfulPaintDetails lcp_details_for_ukm_;
+  bool record_lcp_to_ukm_ = true;
 };
 
 // Largest Text Paint and Text Element Timing aggregate text nodes by these

@@ -109,7 +109,7 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // The timings after the page is restored from back-forward cache.
   BackForwardCacheRestoreTimings BackForwardCacheRestore() const;
   // The time the first paint operation was performed.
-  uint64_t FirstPaintForUKM() const;
+  uint64_t FirstPaintForMetrics() const;
   // The time the first paint operation for image was performed.
   uint64_t FirstImagePaint() const;
   // The first 'contentful' paint as full-resolution monotonic time. This is
@@ -124,7 +124,7 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   uint64_t FirstContentfulPaintIgnoringSoftNavigations() const;
   // The first 'contentful' paint as full-resolution monotonic time. Intended to
   // be used for correlation with other events internal to blink.
-  base::TimeTicks FirstContentfulPaintAsMonotonicTimeForUKM() const;
+  base::TimeTicks FirstContentfulPaintAsMonotonicTimeForMetrics() const;
   // The time of the first 'meaningful' paint, A meaningful paint is a paint
   // where the page's primary content is visible.
   uint64_t FirstMeaningfulPaint() const;
@@ -138,19 +138,20 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
   // Largest Image Paint is the first paint after the largest image within
   // viewport being fully loaded. LargestImagePaint and LargestImagePaintSize
   // are the time and size of it.
-  uint64_t LargestImagePaint() const;
-  uint64_t LargestImagePaintSize() const;
-  blink::LargestContentfulPaintType LargestContentfulPaintType() const;
+  uint64_t LargestImagePaintForMetrics() const;
+  uint64_t LargestImagePaintSizeForMetrics() const;
+  blink::LargestContentfulPaintType LargestContentfulPaintTypeForMetrics()
+      const;
   // The time of the first paint of the largest text within viewport.
   // Largest Text Paint is the first paint after the largest text within
   // viewport being painted. LargestTextPaint and LargestTextPaintSize
   // are the time and size of it.
-  double LargestContentfulPaintImageBPP() const;
-  uint64_t LargestTextPaint() const;
-  uint64_t LargestTextPaintSize() const;
+  double LargestContentfulPaintImageBPPForMetrics() const;
+  uint64_t LargestTextPaintForMetrics() const;
+  uint64_t LargestTextPaintSizeForMetrics() const;
   // Largest Contentful Paint is the either the largest text paint time or the
   // largest image paint time, whichever has the larger size.
-  base::TimeTicks LargestContentfulPaintAsMonotonicTime() const;
+  base::TimeTicks LargestContentfulPaintAsMonotonicTimeForMetrics() const;
   // The time at which the frame is first eligible for painting due to not
   // being throttled. A zero value indicates throttling.
   uint64_t FirstEligibleToPaint() const;

@@ -172,7 +172,7 @@ double WebPerformance::LoadEventEnd() const {
 }
 
 double WebPerformance::FirstPaint() const {
-  return MillisecondsToSeconds(private_->timing()->FirstPaintForUKM());
+  return MillisecondsToSeconds(private_->timing()->FirstPaintForMetrics());
 }
 
 double WebPerformance::FirstImagePaint() const {
@@ -185,7 +185,7 @@ double WebPerformance::FirstContentfulPaint() const {
 }
 
 base::TimeTicks WebPerformance::FirstContentfulPaintAsMonotonicTime() const {
-  return private_->timing()->FirstContentfulPaintAsMonotonicTimeForUKM();
+  return private_->timing()->FirstContentfulPaintAsMonotonicTimeForMetrics();
 }
 
 base::TimeTicks
@@ -204,24 +204,27 @@ double WebPerformance::FirstMeaningfulPaintCandidate() const {
       private_->timing()->FirstMeaningfulPaintCandidate());
 }
 
-double WebPerformance::LargestImagePaint() const {
-  return MillisecondsToSeconds(private_->timing()->LargestImagePaint());
+double WebPerformance::LargestImagePaintForMetrics() const {
+  return MillisecondsToSeconds(
+      private_->timing()->LargestImagePaintForMetrics());
 }
 
-uint64_t WebPerformance::LargestImagePaintSize() const {
-  return private_->timing()->LargestImagePaintSize();
+uint64_t WebPerformance::LargestImagePaintSizeForMetrics() const {
+  return private_->timing()->LargestImagePaintSizeForMetrics();
 }
 
-double WebPerformance::LargestTextPaint() const {
-  return MillisecondsToSeconds(private_->timing()->LargestTextPaint());
+double WebPerformance::LargestTextPaintForMetrics() const {
+  return MillisecondsToSeconds(
+      private_->timing()->LargestTextPaintForMetrics());
 }
 
-uint64_t WebPerformance::LargestTextPaintSize() const {
-  return private_->timing()->LargestTextPaintSize();
+uint64_t WebPerformance::LargestTextPaintSizeForMetrics() const {
+  return private_->timing()->LargestTextPaintSizeForMetrics();
 }
 
-base::TimeTicks WebPerformance::LargestContentfulPaintAsMonotonicTime() const {
-  return private_->timing()->LargestContentfulPaintAsMonotonicTime();
+base::TimeTicks
+WebPerformance::LargestContentfulPaintAsMonotonicTimeForMetrics() const {
+  return private_->timing()->LargestContentfulPaintAsMonotonicTimeForMetrics();
 }
 
 double WebPerformance::ExperimentalLargestImagePaint() const {
@@ -232,13 +235,13 @@ uint64_t WebPerformance::ExperimentalLargestImagePaintSize() const {
   return 0u;
 }
 
-blink::LargestContentfulPaintType WebPerformance::LargestContentfulPaintType()
-    const {
-  return private_->timing()->LargestContentfulPaintType();
+blink::LargestContentfulPaintType
+WebPerformance::LargestContentfulPaintTypeForMetrics() const {
+  return private_->timing()->LargestContentfulPaintTypeForMetrics();
 }
 
-double WebPerformance::LargestContentfulPaintImageBPP() const {
-  return private_->timing()->LargestContentfulPaintImageBPP();
+double WebPerformance::LargestContentfulPaintImageBPPForMetrics() const {
+  return private_->timing()->LargestContentfulPaintImageBPPForMetrics();
 }
 
 double WebPerformance::ExperimentalLargestTextPaint() const {

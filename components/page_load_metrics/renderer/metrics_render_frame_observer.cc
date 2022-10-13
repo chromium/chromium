@@ -610,30 +610,31 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
     timing->paint_timing->first_meaningful_paint =
         ClampDelta(perf.FirstMeaningfulPaint(), start);
   }
-  if (perf.LargestImagePaintSize() > 0) {
+  if (perf.LargestImagePaintSizeForMetrics() > 0) {
     timing->paint_timing->largest_contentful_paint->largest_image_paint_size =
-        perf.LargestImagePaintSize();
+        perf.LargestImagePaintSizeForMetrics();
     // Note that size can be nonzero while the time is 0 since a time of 0 is
     // sent when the image is painting. We assign the time even when it is 0 so
     // that it's not ignored, but need to be careful when doing operations on
     // the value.
     timing->paint_timing->largest_contentful_paint->largest_image_paint =
-        perf.LargestImagePaint() == 0.0
+        perf.LargestImagePaintForMetrics() == 0.0
             ? base::TimeDelta()
-            : ClampDelta(perf.LargestImagePaint(), start);
+            : ClampDelta(perf.LargestImagePaintForMetrics(), start);
     timing->paint_timing->largest_contentful_paint->type =
-        LargestContentfulPaintTypeToUKMFlags(perf.LargestContentfulPaintType());
+        LargestContentfulPaintTypeToUKMFlags(
+            perf.LargestContentfulPaintTypeForMetrics());
     timing->paint_timing->largest_contentful_paint->image_bpp =
-        perf.LargestContentfulPaintImageBPP();
+        perf.LargestContentfulPaintImageBPPForMetrics();
   }
-  if (perf.LargestTextPaintSize() > 0) {
+  if (perf.LargestTextPaintSizeForMetrics() > 0) {
     // LargestTextPaint and LargestTextPaintSize should be available at the
     // same time. This is a renderer side DCHECK to ensure this.
-    DCHECK(perf.LargestTextPaint());
+    DCHECK(perf.LargestTextPaintForMetrics());
     timing->paint_timing->largest_contentful_paint->largest_text_paint =
-        ClampDelta(perf.LargestTextPaint(), start);
+        ClampDelta(perf.LargestTextPaintForMetrics(), start);
     timing->paint_timing->largest_contentful_paint->largest_text_paint_size =
-        perf.LargestTextPaintSize();
+        perf.LargestTextPaintSizeForMetrics();
   }
   if (perf.ExperimentalLargestImagePaintSize() > 0) {
     timing->paint_timing->experimental_largest_contentful_paint
@@ -648,7 +649,8 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
             ? base::TimeDelta()
             : ClampDelta(perf.ExperimentalLargestImagePaint(), start);
     timing->paint_timing->experimental_largest_contentful_paint->type =
-        LargestContentfulPaintTypeToUKMFlags(perf.LargestContentfulPaintType());
+        LargestContentfulPaintTypeToUKMFlags(
+            perf.LargestContentfulPaintTypeForMetrics());
   }
   if (perf.ExperimentalLargestTextPaintSize() > 0) {
     // ExperimentalLargestTextPaint and ExperimentalLargestTextPaintSize should

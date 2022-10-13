@@ -201,6 +201,7 @@ void PaintTimingDetector::OnInputOrScroll() {
   image_paint_timing_detector_->StopRecordEntries();
   image_paint_timing_detector_->StopRecordingLargestImagePaint();
   largest_contentful_paint_calculator_ = nullptr;
+  record_lcp_to_ukm_ = false;
 
   DCHECK_EQ(first_input_or_scroll_notified_timestamp_, base::TimeTicks());
   first_input_or_scroll_notified_timestamp_ = base::TimeTicks::Now();
@@ -268,13 +269,14 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
   if (!HasLargestImagePaintChanged(image_paint_time, image_paint_size))
     return false;
 
-  largest_contentful_paint_type_ = blink::LargestContentfulPaintType::kNone;
+  lcp_details_.largest_contentful_paint_type_ =
+      blink::LargestContentfulPaintType::kNone;
   if (image_record) {
     Node* image_node = DOMNodeIds::NodeForId(image_record->node_id);
     HTMLImageElement* element = DynamicTo<HTMLImageElement>(image_node);
     if (element && !image_node->IsInShadowTree() &&
         element->IsChangedShortlyAfterMouseover()) {
-      largest_contentful_paint_type_ |=
+      lcp_details_.largest_contentful_paint_type_ |=
           blink::LargestContentfulPaintType::kAfterMouseover;
     }
     // TODO(yoav): Once we'd enable the kLCPAnimatedImagesReporting flag by
@@ -283,18 +285,18 @@ bool PaintTimingDetector::NotifyIfChangedLargestImagePaint(
     if (image_record && image_record->media_timing) {
       if (!image_record->media_timing->GetFirstVideoFrameTime().is_null()) {
         // Set the video flag.
-        largest_contentful_paint_type_ |=
+        lcp_details_.largest_contentful_paint_type_ |=
             blink::LargestContentfulPaintType::kVideo;
       } else if (image_record->media_timing->IsPaintedFirstFrame()) {
         // Set the animated image flag.
-        largest_contentful_paint_type_ |=
+        lcp_details_.largest_contentful_paint_type_ |=
             blink::LargestContentfulPaintType::kAnimatedImage;
       }
     }
   }
-  largest_image_paint_time_ = image_paint_time;
-  largest_image_paint_size_ = image_paint_size;
-  largest_contentful_paint_image_bpp_ = image_bpp;
+  lcp_details_.largest_image_paint_time_ = image_paint_time;
+  lcp_details_.largest_image_paint_size_ = image_paint_size;
+  lcp_details_.largest_contentful_paint_image_bpp_ = image_bpp;
   UpdateLargestContentfulPaintTime();
   DidChangePerformanceTiming();
   return true;
@@ -305,10 +307,10 @@ bool PaintTimingDetector::NotifyIfChangedLargestTextPaint(
     uint64_t text_paint_size) {
   if (!HasLargestTextPaintChanged(text_paint_time, text_paint_size))
     return false;
-  if (largest_text_paint_size_ < text_paint_size) {
+  if (lcp_details_.largest_text_paint_size_ < text_paint_size) {
     DCHECK(!text_paint_time.is_null());
-    largest_text_paint_time_ = text_paint_time;
-    largest_text_paint_size_ = text_paint_size;
+    lcp_details_.largest_text_paint_time_ = text_paint_time;
+    lcp_details_.largest_text_paint_size_ = text_paint_size;
   }
   UpdateLargestContentfulPaintTime();
   DidChangePerformanceTiming();
@@ -316,29 +318,37 @@ bool PaintTimingDetector::NotifyIfChangedLargestTextPaint(
 }
 
 void PaintTimingDetector::UpdateLargestContentfulPaintTime() {
-  if (largest_text_paint_size_ > largest_image_paint_size_) {
-    largest_contentful_paint_time_ = largest_text_paint_time_;
-  } else if (largest_text_paint_size_ < largest_image_paint_size_) {
-    largest_contentful_paint_time_ = largest_image_paint_time_;
+  if (lcp_details_.largest_text_paint_size_ >
+      lcp_details_.largest_image_paint_size_) {
+    lcp_details_.largest_contentful_paint_time_ =
+        lcp_details_.largest_text_paint_time_;
+  } else if (lcp_details_.largest_text_paint_size_ <
+             lcp_details_.largest_image_paint_size_) {
+    lcp_details_.largest_contentful_paint_time_ =
+        lcp_details_.largest_image_paint_time_;
   } else {
     // Size is the same, take the shorter time.
-    largest_contentful_paint_time_ =
-        std::min(largest_text_paint_time_, largest_image_paint_time_);
+    lcp_details_.largest_contentful_paint_time_ =
+        std::min(lcp_details_.largest_text_paint_time_,
+                 lcp_details_.largest_image_paint_time_);
+  }
+  if (record_lcp_to_ukm_) {
+    lcp_details_for_ukm_ = lcp_details_;
   }
 }
 
 bool PaintTimingDetector::HasLargestImagePaintChanged(
     base::TimeTicks largest_image_paint_time,
     uint64_t largest_image_paint_size) const {
-  return largest_image_paint_time != largest_image_paint_time_ ||
-         largest_image_paint_size != largest_image_paint_size_;
+  return largest_image_paint_time != lcp_details_.largest_image_paint_time_ ||
+         largest_image_paint_size != lcp_details_.largest_image_paint_size_;
 }
 
 bool PaintTimingDetector::HasLargestTextPaintChanged(
     base::TimeTicks largest_text_paint_time,
     uint64_t largest_text_paint_size) const {
-  return largest_text_paint_time != largest_text_paint_time_ ||
-         largest_text_paint_size != largest_text_paint_size_;
+  return largest_text_paint_time != lcp_details_.largest_text_paint_time_ ||
+         largest_text_paint_size != lcp_details_.largest_text_paint_size_;
 }
 
 void PaintTimingDetector::DidChangePerformanceTiming() {

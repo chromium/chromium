@@ -89,7 +89,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // Returns the first time that anything was painted for the
   // current document after a hard navigation. This is not considering soft
   // navigations.
-  base::TimeTicks FirstPaintForUKM() const {
+  base::TimeTicks FirstPaintForMetrics() const {
     return first_paint_presentation_for_ukm_;
   }
 

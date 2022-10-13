@@ -112,15 +112,16 @@ class BLINK_EXPORT WebPerformance {
       const;
   double FirstMeaningfulPaint() const;
   double FirstMeaningfulPaintCandidate() const;
-  double LargestImagePaint() const;
-  uint64_t LargestImagePaintSize() const;
-  double LargestTextPaint() const;
-  uint64_t LargestTextPaintSize() const;
-  base::TimeTicks LargestContentfulPaintAsMonotonicTime() const;
+  double LargestImagePaintForMetrics() const;
+  uint64_t LargestImagePaintSizeForMetrics() const;
+  double LargestTextPaintForMetrics() const;
+  uint64_t LargestTextPaintSizeForMetrics() const;
+  base::TimeTicks LargestContentfulPaintAsMonotonicTimeForMetrics() const;
   double ExperimentalLargestImagePaint() const;
   uint64_t ExperimentalLargestImagePaintSize() const;
-  blink::LargestContentfulPaintType LargestContentfulPaintType() const;
-  double LargestContentfulPaintImageBPP() const;
+  blink::LargestContentfulPaintType LargestContentfulPaintTypeForMetrics()
+      const;
+  double LargestContentfulPaintImageBPPForMetrics() const;
   double ExperimentalLargestTextPaint() const;
   uint64_t ExperimentalLargestTextPaintSize() const;
   double FirstEligibleToPaint() const;

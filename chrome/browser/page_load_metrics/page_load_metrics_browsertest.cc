@@ -2855,7 +2855,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, InputEventsForClick) {
 
 class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
  public:
-  void TestSoftNavigation() {
+  void TestSoftNavigation(bool wait_for_second_lcp) {
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -2863,6 +2863,7 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
     auto waiter = CreatePageLoadMetricsTestWaiter("waiter");
     waiter->AddPageExpectation(TimingField::kLoadEvent);
     waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
+    waiter->AddPageExpectation(TimingField::kLargestContentfulPaint);
     GURL url = embedded_test_server()->GetURL(
         "/page_load_metrics/soft_navigation.html");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2873,10 +2874,48 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
     content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
 
     waiter->AddPageExpectation(TimingField::kSoftNavigationCountUpdated);
+
+    const std::string wait_for_lcp = R"(
+      (async () => {
+        await new Promise(
+          resolve => {
+            (new PerformanceObserver(()=>resolve())).observe(
+              {type: 'largest-contentful-paint'})});
+      })();
+    )";
+
+    const std::string get_last_lcp_start = R"(
+      (async () => {
+        const last_lcp_entry = await new Promise(
+          resolve => {
+            (new PerformanceObserver(
+              list => {
+                const entries = list.getEntries();
+                resolve(entries[entries.length - 1]);
+              })).observe({type: 'largest-contentful-paint', buffered: true})});
+        return last_lcp_entry.startTime;
+      })();
+    )";
+
+    // Get the web exposed LCP value before the click.
+    int lcp_start_before =
+        EvalJs(web_contents, get_last_lcp_start).ExtractDouble();
+
     content::SimulateMouseClickAt(
         browser()->tab_strip_model()->GetActiveWebContents(), 0,
         blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
 
+    // Wait for an LCP entry to fire.
+    if (wait_for_second_lcp) {
+      ASSERT_TRUE(EvalJs(web_contents, wait_for_lcp).error.empty());
+    }
+
+    // Get the web exposed LCP value after the click
+    int lcp_start_after =
+        EvalJs(web_contents, get_last_lcp_start).ExtractDouble();
+    ASSERT_GE(lcp_start_after, lcp_start_before);
+
+    // Wait for a soft navigation count update.
     waiter->Wait();
 
     // Force navigation to another page, which should force logging of
@@ -2884,8 +2923,18 @@ class SoftNavigationBrowserTest : public PageLoadMetricsBrowserTest {
     NavigateToUntrackedUrl();
 
     VerifyNavigationMetrics({url});
-    int64_t value = GetUKMPageLoadMetric(PageLoad::kSoftNavigationCountName);
-    ASSERT_EQ(value, 1);
+    int64_t soft_navigation_count =
+        GetUKMPageLoadMetric(PageLoad::kSoftNavigationCountName);
+    ASSERT_EQ(soft_navigation_count, 1);
+
+    auto lcp_value_bucket_start =
+        histogram_tester_
+            ->GetAllSamples(internal::kHistogramLargestContentfulPaint)[0]
+            .min;
+
+    // The histogram value represents the low end of the bucket, not the actual
+    // value. Therefore it is lower or equal to the web exposed value.
+    ASSERT_LE(lcp_value_bucket_start, lcp_start_before);
   }
 };
 
@@ -2904,12 +2953,12 @@ class SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag
 };
 
 IN_PROC_BROWSER_TEST_F(SoftNavigationBrowserTest, SoftNavigation) {
-  TestSoftNavigation();
+  TestSoftNavigation(/*wait_for_second_lcp=*/false);
 }
 IN_PROC_BROWSER_TEST_F(
     SoftNavigationBrowserTestWithSoftNavigationHeuristicsFlag,
     SoftNavigation) {
-  TestSoftNavigation();
+  TestSoftNavigation(/*wait_for_second_lcp=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, InputEventsForOmniboxMatch) {

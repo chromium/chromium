@@ -125,11 +125,11 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   base::TimeTicks LargestPaintTime() {
-    return GetPaintTimingDetector().largest_text_paint_time_;
+    return GetPaintTimingDetector().lcp_details_.largest_text_paint_time_;
   }
 
   uint64_t LargestPaintSize() {
-    return GetPaintTimingDetector().largest_text_paint_size_;
+    return GetPaintTimingDetector().lcp_details_.largest_text_paint_size_;
   }
 
   void SetBodyInnerHTML(const std::string& content) {

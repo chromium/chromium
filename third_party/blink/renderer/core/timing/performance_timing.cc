@@ -371,12 +371,12 @@ PerformanceTiming::BackForwardCacheRestore() const {
   return restore_timings;
 }
 
-uint64_t PerformanceTiming::FirstPaintForUKM() const {
+uint64_t PerformanceTiming::FirstPaintForMetrics() const {
   const PaintTiming* timing = GetPaintTiming();
   if (!timing)
     return 0;
 
-  return MonotonicTimeToIntegerMilliseconds(timing->FirstPaintForUKM());
+  return MonotonicTimeToIntegerMilliseconds(timing->FirstPaintForMetrics());
 }
 
 uint64_t PerformanceTiming::FirstImagePaint() const {
@@ -407,8 +407,8 @@ PerformanceTiming::FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
   return timing->FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
 }
 
-base::TimeTicks PerformanceTiming::FirstContentfulPaintAsMonotonicTimeForUKM()
-    const {
+base::TimeTicks
+PerformanceTiming::FirstContentfulPaintAsMonotonicTimeForMetrics() const {
   const PaintTiming* timing = GetPaintTiming();
   if (!timing)
     return base::TimeTicks();
@@ -433,65 +433,65 @@ uint64_t PerformanceTiming::FirstMeaningfulPaintCandidate() const {
       timing->FirstMeaningfulPaintCandidate());
 }
 
-uint64_t PerformanceTiming::LargestImagePaint() const {
+uint64_t PerformanceTiming::LargestImagePaintForMetrics() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
   if (!paint_timing_detector)
     return 0;
 
   return MonotonicTimeToIntegerMilliseconds(
-      paint_timing_detector->LargestImagePaint());
+      paint_timing_detector->LargestImagePaintForMetrics());
 }
 
-uint64_t PerformanceTiming::LargestImagePaintSize() const {
+uint64_t PerformanceTiming::LargestImagePaintSizeForMetrics() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
   if (!paint_timing_detector)
     return 0;
 
-  return paint_timing_detector->LargestImagePaintSize();
+  return paint_timing_detector->LargestImagePaintSizeForMetrics();
 }
 
 blink::LargestContentfulPaintType
-PerformanceTiming::LargestContentfulPaintType() const {
+PerformanceTiming::LargestContentfulPaintTypeForMetrics() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
   // TODO(iclelland) Add a test for this condition
   if (!paint_timing_detector) {
     return blink::LargestContentfulPaintType::kNone;
   }
-  return paint_timing_detector->LargestContentfulPaintType();
+  return paint_timing_detector->LargestContentfulPaintTypeForMetrics();
 }
 
-double PerformanceTiming::LargestContentfulPaintImageBPP() const {
+double PerformanceTiming::LargestContentfulPaintImageBPPForMetrics() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
   if (!paint_timing_detector) {
     return 0.0;
   }
-  return paint_timing_detector->LargestContentfulPaintImageBPP();
+  return paint_timing_detector->LargestContentfulPaintImageBPPForMetrics();
 }
 
-uint64_t PerformanceTiming::LargestTextPaint() const {
+uint64_t PerformanceTiming::LargestTextPaintForMetrics() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
   if (!paint_timing_detector)
     return 0;
 
   return MonotonicTimeToIntegerMilliseconds(
-      paint_timing_detector->LargestTextPaint());
+      paint_timing_detector->LargestTextPaintForMetrics());
 }
 
-uint64_t PerformanceTiming::LargestTextPaintSize() const {
+uint64_t PerformanceTiming::LargestTextPaintSizeForMetrics() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
   if (!paint_timing_detector)
     return 0;
 
-  return paint_timing_detector->LargestTextPaintSize();
+  return paint_timing_detector->LargestTextPaintSizeForMetrics();
 }
 
-base::TimeTicks PerformanceTiming::LargestContentfulPaintAsMonotonicTime()
-    const {
+base::TimeTicks
+PerformanceTiming::LargestContentfulPaintAsMonotonicTimeForMetrics() const {
   PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
   if (!paint_timing_detector)
     return base::TimeTicks();
 
-  return paint_timing_detector->LargestContentfulPaint();
+  return paint_timing_detector->LargestContentfulPaintForMetrics();
 }
 
 uint64_t PerformanceTiming::FirstEligibleToPaint() const {
