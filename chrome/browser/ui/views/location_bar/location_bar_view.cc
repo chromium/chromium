@@ -807,6 +807,11 @@ void LocationBarView::Update(WebContents* contents) {
 
   RefreshPageActionIconViews();
   location_icon_view_->Update(/*suppress_animations=*/contents);
+
+  if (is_initialized_ && chip_controller_) {
+    chip_controller_->OnWebContentsChanged();
+  }
+
   if (intent_chip_)
     intent_chip_->Update();
 

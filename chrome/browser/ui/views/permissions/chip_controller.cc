@@ -82,6 +82,17 @@ void ChipController::OnPermissionRequestManagerDestructed() {
   }
 }
 
+void ChipController::OnWebContentsChanged() {
+  if (active_chip_permission_request_manager_.has_value() &&
+      active_chip_permission_request_manager_.value()->IsRequestInProgress()) {
+    chip_->AnimateExpand(kExpandDuration);
+  } else {
+    // Because the web contents changed, we should no longer display any chip
+    // that was displayed for the previous web contents.
+    ResetChip();
+  }
+}
+
 void ChipController::OnNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsSameDocument()) {
