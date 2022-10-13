@@ -19,8 +19,8 @@ class StreamType {
  public:
   StreamType() = default;
   virtual ~StreamType() = default;
-  explicit StreamType(StreamKind k, std::string s = "")
-      : kind_(k), web_feed_id_(s) {}
+  explicit StreamType(StreamKind k, std::string s = std::string())
+      : kind_(k), web_feed_id_(std::move(s)) {}
   bool operator<(const StreamType& rhs) const {
     if (kind_ == rhs.kind_) {
       if (kind_ != StreamKind::kChannel)
