@@ -1483,11 +1483,7 @@ String XMLHttpRequest::getAllResponseHeaders() const {
        it != response_.HttpHeaderFields().end(); ++it) {
     // Hide any headers whose name is a forbidden response-header name.
     // This is required for all kinds of filtered responses.
-    //
-    // TODO: Consider removing canLoadLocalResources() call.
-    // crbug.com/567527
-    if (FetchUtils::IsForbiddenResponseHeaderName(it->key) &&
-        !GetExecutionContext()->GetSecurityOrigin()->CanLoadLocalResources()) {
+    if (FetchUtils::IsForbiddenResponseHeaderName(it->key)) {
       continue;
     }
 
@@ -1522,9 +1518,7 @@ const AtomicString& XMLHttpRequest::getResponseHeader(
   if (state_ < kHeadersReceived || error_)
     return g_null_atom;
 
-  // See comment in getAllResponseHeaders above.
-  if (FetchUtils::IsForbiddenResponseHeaderName(name) &&
-      !GetExecutionContext()->GetSecurityOrigin()->CanLoadLocalResources()) {
+  if (FetchUtils::IsForbiddenResponseHeaderName(name)) {
     LogConsoleError(GetExecutionContext(),
                     "Refused to get unsafe header \"" + name + "\"");
     return g_null_atom;
@@ -2062,6 +2056,10 @@ void XMLHttpRequest::Trace(Visitor* visitor) const {
   ThreadableLoaderClient::Trace(visitor);
   DocumentParserClient::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
+}
+
+bool XMLHttpRequest::HasRequestHeaderForTesting(AtomicString name) const {
+  return request_headers_.Contains(name);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const XMLHttpRequest* xhr) {

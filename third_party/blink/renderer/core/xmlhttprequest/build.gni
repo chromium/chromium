@@ -11,3 +11,5 @@ blink_core_sources_xmlhttprequest = [
   "xml_http_request_upload.cc",
   "xml_http_request_upload.h",
 ]
+
+blink_core_tests_xmlhttprequest = [ "xml_http_request_test.cc" ]
