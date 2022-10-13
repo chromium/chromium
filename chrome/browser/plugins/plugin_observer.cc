@@ -132,12 +132,11 @@ void PluginObserver::CouldNotLoadPlugin(const base::FilePath& plugin_path) {
 }
 
 void PluginObserver::OpenPDF(const GURL& url) {
-  // WebViews should never trigger PDF downloads.
-  if (extensions::WebViewGuest::FromWebContents(web_contents()))
-    return;
-
   content::RenderFrameHost* render_frame_host =
       plugin_host_receivers_.GetCurrentTargetFrame();
+  // WebViews should never trigger PDF downloads.
+  if (extensions::WebViewGuest::FromRenderFrameHost(render_frame_host))
+    return;
 
   content::Referrer referrer;
   if (!CanOpenPdfUrl(render_frame_host, url,
