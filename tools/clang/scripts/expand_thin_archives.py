@@ -14,8 +14,8 @@ from __future__ import unicode_literals
 import argparse
 import sys
 
-from goma_link import GomaLinkWindows
-from goma_ld import GomaLinkUnix
+from remote_link import RemoteLinkWindows
+from remote_ld import RemoteLinkUnix
 
 
 def main(argv):
@@ -43,9 +43,9 @@ def main(argv):
   linker_prefix = args.linker_prefix
 
   if linker_prefix == '-Wl,':
-    linker = GomaLinkUnix()
+    linker = RemoteLinkUnix()
   else:
-    linker = GomaLinkWindows()
+    linker = RemoteLinkWindows()
 
   rsp_expanded = list(linker.expand_args_rsps(cmdline))
   expanded_args = list(linker.expand_thin_archives(rsp_expanded))

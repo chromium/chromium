@@ -3,11 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Linker wrapper that performs distributed ThinLTO on Goma.
+# Linker wrapper that performs distributed ThinLTO on Goma or Reclient.
 #
 # Usage: Pass the original link command as parameters to this script.
 # E.g. original: lld-link -out:foo foo.obj
-# Becomes: goma_link.py lld-link -out:foo foo.obj
+# Becomes: remote_link.py lld-link -out:foo foo.obj
 
 import argparse
 import errno
@@ -33,9 +33,8 @@ def autoninja():
   Returns the name of the autoninja executable to invoke.
   """
   name = os.path.normpath(
-      os.path.join(
-          os.path.dirname(__file__), '..', '..', '..', 'third_party',
-          'depot_tools', 'autoninja'))
+      os.path.join(os.path.dirname(__file__), '..', '..', '..', 'third_party',
+                   'depot_tools', 'autoninja'))
   if os.name == 'nt':
     return name + '.bat'
   else:
@@ -171,9 +170,11 @@ def parse_args(args):
   ap.add_argument('--generate',
                   action='store_true',
                   help='generate ninja file, but do not invoke it.')
-  ap.add_argument('--gomacc', help='path to gomacc.')
+  ap.add_argument('--wrapper', help='path to remote exec wrapper.')
   ap.add_argument('--jobs', '-j', help='maximum number of concurrent jobs.')
-  ap.add_argument('--no-gomacc', action='store_true', help='do not use gomacc.')
+  ap.add_argument('--no-wrapper',
+                  action='store_true',
+                  help='do not use remote exec wrapper.')
   ap.add_argument('--allowlist',
                   action='store_true',
                   help='act as if the target is on the allow list.')
@@ -202,12 +203,12 @@ def report_run(cmd, *args, **kwargs):
   return subprocess.check_call(cmd, *args, **kwargs)
 
 
-class GomaLinkBase(object):
+class RemoteLinkBase(object):
   """
-  Base class used by GomaLinkUnix and GomaLinkWindows.
+  Base class used by RemoteLinkUnix and RemoteLinkWindows.
   """
   # Defaults.
-  gomacc = 'gomacc'
+  wrapper = 'gomacc'
   jobs = None
 
   # These constants should work across platforms.
@@ -535,15 +536,15 @@ class GomaLinkBase(object):
     params and with objs being a list of bitcode files for which to generate
     native code.
     """
-    if self.gomacc:
-      gomacc_prefix = ninjaenc(self.gomacc) + ' '
+    if self.wrapper:
+      wrapper_prefix = ninjaenc(self.wrapper) + ' '
     else:
-      gomacc_prefix = ''
+      wrapper_prefix = ''
     base = gen_dir + '/' + os.path.basename(params.output)
     ensure_dir(gen_dir)
     ensure_dir(os.path.dirname(ninjaname))
     codegen_cmd = ('%s%s -c %s -fthinlto-index=$index %s$bitcode -o $native' %
-                   (gomacc_prefix, ninjaenc(params.compiler),
+                   (wrapper_prefix, ninjaenc(params.compiler),
                     ninjajoin(params.codegen_params), self.XIR))
     if params.index_inputs:
       used_obj_file = base + '.objs'
@@ -615,10 +616,10 @@ class GomaLinkBase(object):
     args.output = self.output_path(argv[1:])
     if args.output is None:
       return self._no_codegen(args)
-    if args.gomacc:
-      self.gomacc = args.gomacc
-    if args.no_gomacc:
-      self.gomacc = None
+    if args.wrapper:
+      self.wrapper = args.wrapper
+    if args.no_wrapper:
+      self.wrapper = None
     if args.jobs:
       self.jobs = int(args.jobs)
 
@@ -661,7 +662,7 @@ class GomaLinkBase(object):
       return e.returncode
 
 
-class GomaLinkWindows(GomaLinkBase):
+class RemoteLinkWindows(RemoteLinkBase):
   # Target-platform-specific constants.
   WL = ''
   TLTO = '-thinlto'
@@ -707,4 +708,4 @@ class GomaLinkWindows(GomaLinkBase):
 
 
 if __name__ == '__main__':
-  sys.exit(GomaLinkWindows().main(sys.argv))
+  sys.exit(RemoteLinkWindows().main(sys.argv))

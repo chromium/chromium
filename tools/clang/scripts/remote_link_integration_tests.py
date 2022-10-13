@@ -3,20 +3,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Integration tests for goma_link.
+# Integration tests for remote_link.
 #
 # Usage:
 #
-# Ensure that gomacc, llvm-objdump, and llvm-dwarfdump are in your PATH.
+# Ensure that gomacc or rewrapper, llvm-objdump, and llvm-dwarfdump are in your
+# PATH.
 # Then run:
 #
-#   tools/clang/scripts/goma_link_integration_tests.py
+#   tools/clang/scripts/remote_link_integration_tests.py
 #
-# See also goma_link_unit_tests.py, which contains unit tests and
+# See also remote_link_unit_tests.py, which contains unit tests and
 # instructions for generating coverage information.
 
-import goma_ld
-import goma_link
+import remote_ld
+import remote_link
 
 from io import StringIO
 import os
@@ -26,7 +27,7 @@ import subprocess
 import unittest
 from unittest import mock
 
-from goma_link_test_utils import named_directory, working_directory
+from remote_link_test_utils import named_directory, working_directory
 
 # Path constants.
 CHROMIUM_DIR = os.path.abspath(
@@ -48,32 +49,32 @@ def _create_inputs(path):
     f.write('int bar() {\n  return 9;\n}\n')
 
 
-class GomaLinkUnixAllowMain(goma_ld.GomaLinkUnix):
+class RemoteLinkUnixAllowMain(remote_ld.RemoteLinkUnix):
   """
-  Same as goma_ld.GomaLinkUnix, but has "main" on the allow list.
+  Same as remote_ld.RemoteLinkUnix, but has "main" on the allow list.
   """
 
   def __init__(self, *args, **kwargs):
-    super(GomaLinkUnixAllowMain, self).__init__(*args, **kwargs)
+    super(RemoteLinkUnixAllowMain, self).__init__(*args, **kwargs)
     self.ALLOWLIST = {'main'}
 
 
-class GomaLinkWindowsAllowMain(goma_link.GomaLinkWindows):
+class RemoteLinkWindowsAllowMain(remote_link.RemoteLinkWindows):
   """
-  Same as goma_ld.GomaLinkWindows, but has "main" on the allow list.
+  Same as remote_ld.RemoteLinkWindows, but has "main" on the allow list.
   """
 
   def __init__(self, *args, **kwargs):
-    super(GomaLinkWindowsAllowMain, self).__init__(*args, **kwargs)
+    super(RemoteLinkWindowsAllowMain, self).__init__(*args, **kwargs)
     self.ALLOWLIST = {'main.exe'}
 
 
-class GomaLinkIntegrationTest(unittest.TestCase):
+class RemoteLinkIntegrationTest(unittest.TestCase):
   def clangcl(self):
-    return os.path.join(LLVM_BIN_DIR, 'clang-cl' + goma_link.exe_suffix())
+    return os.path.join(LLVM_BIN_DIR, 'clang-cl' + remote_link.exe_suffix())
 
   def lld_link(self):
-    return os.path.join(LLVM_BIN_DIR, 'lld-link' + goma_link.exe_suffix())
+    return os.path.join(LLVM_BIN_DIR, 'lld-link' + remote_link.exe_suffix())
 
   def test_distributed_lto_common_objs(self):
     with named_directory() as d, working_directory(d):
@@ -96,8 +97,8 @@ class GomaLinkIntegrationTest(unittest.TestCase):
       with open('my_goma.sh', 'w') as f:
         f.write('#! /bin/sh\n\ngomacc "$@"\n')
       os.chmod('my_goma.sh', 0o755)
-      rc = goma_link.GomaLinkWindows().main([
-          'goma_link.py', '--gomacc', './my_goma.sh', '--',
+      rc = remote_link.RemoteLinkWindows().main([
+          'remote_link.py', '--wrapper', './my_goma.sh', '--',
           self.lld_link(), '-nodefaultlib', '-entry:main', '-out:main.exe',
           '@main.rsp'
       ])
@@ -148,8 +149,8 @@ class GomaLinkIntegrationTest(unittest.TestCase):
           ['llvm-ar', 'crsT', 'obj/foobar.lib', 'obj/bar.obj', 'obj/foo.obj'])
       with open('main.rsp', 'w') as f:
         f.write('obj/main.obj\n' 'obj/foobar.lib\n')
-      rc = GomaLinkWindowsAllowMain().main([
-          'goma_link.py', '--gomacc', 'gomacc', '--',
+      rc = RemoteLinkWindowsAllowMain().main([
+          'remote_link.py', '--wrapper', 'gomacc', '--',
           self.lld_link(), '-nodefaultlib', '-entry:main', '-machine:X86',
           '-opt:lldlto=2', '-mllvm:-import-instr-limit=10', '-out:main.exe',
           '@main.rsp'
@@ -194,8 +195,8 @@ class GomaLinkIntegrationTest(unittest.TestCase):
       subprocess.check_call([
           self.clangcl(), '-c', '-O2', '-flto=thin', 'foo.cpp', '-Foobj/foo.obj'
       ])
-      rc = goma_link.GomaLinkWindows().main([
-          'goma_link.py', '--generate', '--allowlist', '--',
+      rc = remote_link.RemoteLinkWindows().main([
+          'remote_link.py', '--generate', '--allowlist', '--',
           self.lld_link(), '-nodefaultlib', '-entry:main', '-opt:lldlto=2',
           '-out:main.exe', 'obj/main.obj', 'obj/foo.obj'
       ])
@@ -219,9 +220,9 @@ class GomaLinkIntegrationTest(unittest.TestCase):
         self.assertIsNotNone(link_match)
 
 
-class GomaLdIntegrationTest(unittest.TestCase):
+class RemoteLdIntegrationTest(unittest.TestCase):
   def clangxx(self):
-    return os.path.join(LLVM_BIN_DIR, 'clang++' + goma_link.exe_suffix())
+    return os.path.join(LLVM_BIN_DIR, 'clang++' + remote_link.exe_suffix())
 
   def test_nonlto(self):
     with named_directory() as d, working_directory(d):
@@ -230,8 +231,8 @@ class GomaLdIntegrationTest(unittest.TestCase):
           [self.clangxx(), '-c', '-Os', 'main.cpp', '-o', 'main.o'])
       subprocess.check_call(
           [self.clangxx(), '-c', '-Os', 'foo.cpp', '-o', 'foo.o'])
-      rc = GomaLinkUnixAllowMain().main([
-          'goma_ld.py', '--gomacc', 'gomacc', '--',
+      rc = RemoteLinkUnixAllowMain().main([
+          'remote_ld.py', '--wrapper', 'gomacc', '--',
           self.clangxx(), '-fuse-ld=lld', 'main.o', 'foo.o', '-o', 'main'
       ])
       # Should succeed.
@@ -253,8 +254,8 @@ class GomaLdIntegrationTest(unittest.TestCase):
       ])
       subprocess.check_call(
           [self.clangxx(), '-c', '-Os', '-flto=thin', 'foo.cpp', '-o', 'foo.o'])
-      rc = goma_ld.GomaLinkUnix().main([
-          'goma_ld.py', '--gomacc', 'gomacc', '--',
+      rc = remote_ld.RemoteLinkUnix().main([
+          'remote_ld.py', '--wrapper', 'gomacc', '--',
           self.clangxx(), '-fuse-ld=lld', '-flto=thin', 'main.o', 'foo.o', '-o',
           'main'
       ])
@@ -277,8 +278,8 @@ class GomaLdIntegrationTest(unittest.TestCase):
       ])
       subprocess.check_call(
           [self.clangxx(), '-c', '-Os', '-flto=thin', 'foo.cpp', '-o', 'foo.o'])
-      rc = GomaLinkUnixAllowMain().main([
-          'goma_ld.py', '-j', '16', '--',
+      rc = RemoteLinkUnixAllowMain().main([
+          'remote_ld.py', '-j', '16', '--',
           self.clangxx(), '-fuse-ld=lld', '-flto=thin', 'main.o', 'foo.o', '-o',
           'main'
       ])
@@ -309,8 +310,8 @@ class GomaLdIntegrationTest(unittest.TestCase):
           [self.clangxx(), '-c', '-Os', '-flto=thin', 'bar.cpp', '-o', 'bar.o'])
       subprocess.check_call(
           ['llvm-ar', 'crsT', 'libfoobar.a', 'bar.o', 'foo.o'])
-      rc = GomaLinkUnixAllowMain().main([
-          'goma_ld.py',
+      rc = RemoteLinkUnixAllowMain().main([
+          'remote_ld.py',
           self.clangxx(), '-fuse-ld=lld', '-flto=thin', 'main.o', 'libfoobar.a',
           '-o', 'main'
       ])
@@ -347,8 +348,8 @@ class GomaLdIntegrationTest(unittest.TestCase):
       ])
       subprocess.check_call(
           ['llvm-ar', 'crsT', 'obj/libfoobar.a', 'obj/bar.o', 'obj/foo.o'])
-      rc = GomaLinkUnixAllowMain().main([
-          'goma_ld.py',
+      rc = RemoteLinkUnixAllowMain().main([
+          'remote_ld.py',
           self.clangxx(), '-fuse-ld=lld', '-flto=thin', 'obj/main.o',
           'obj/libfoobar.a', '-o', 'main'
       ])
@@ -381,8 +382,8 @@ class GomaLdIntegrationTest(unittest.TestCase):
       ])
       with open('main.rsp', 'w') as f:
         f.write('obj/main.o\n' 'obj/foo.o\n')
-      rc = GomaLinkUnixAllowMain().main([
-          'goma_ld.py',
+      rc = RemoteLinkUnixAllowMain().main([
+          'remote_ld.py',
           self.clangxx(), '-fuse-ld=lld', '-flto=thin', '-g', '-gsplit-dwarf',
           '-Wl,--lto-O2', '-o', 'main', '@main.rsp'
       ])
@@ -391,8 +392,8 @@ class GomaLdIntegrationTest(unittest.TestCase):
       # Check debug info present, refers to .dwo file, and does not
       # contain full debug info for foo.cpp.
       dbginfo = subprocess.check_output(
-          ['llvm-dwarfdump', '-debug-info', 'main']).decode(
-              'utf-8', 'backslashreplace')
+          ['llvm-dwarfdump', '-debug-info',
+           'main']).decode('utf-8', 'backslashreplace')
       self.assertRegexpMatches(dbginfo, '\\bDW_AT_GNU_dwo_name\\b.*\\.dwo"')
       self.assertNotRegexpMatches(dbginfo, '\\bDW_AT_name\\b.*foo\\.cpp"')
 
@@ -419,8 +420,8 @@ class GomaLdIntegrationTest(unittest.TestCase):
                 '-fwhole-program-vtables\n'
                 'obj/main.o\n'
                 'obj/libfoobar.a\n')
-      rc = GomaLinkUnixAllowMain().main([
-          'goma_ld.py',
+      rc = RemoteLinkUnixAllowMain().main([
+          'remote_ld.py',
           self.clangxx(), '-fuse-ld=lld', '-flto=thin', '-m32', '-Wl,-mllvm',
           '-Wl,-generate-type-units', '-Wl,--lto-O2', '-o', 'main',
           '-Wl,--start-group', '@main.rsp', '-Wl,--end-group'
@@ -460,8 +461,8 @@ class GomaLdIntegrationTest(unittest.TestCase):
       ])
       subprocess.check_call(
           [self.clangxx(), '-c', '-Os', '-flto=thin', 'foo.cpp', '-o', 'foo.o'])
-      rc = GomaLinkUnixAllowMain().main([
-          'goma_ld.py', '--no-gomacc', '-j', '16', '--',
+      rc = RemoteLinkUnixAllowMain().main([
+          'remote_ld.py', '--no-wrapper', '-j', '16', '--',
           self.clangxx(), '-fuse-ld=lld', '-flto=thin', 'main.o', 'foo.o', '-o',
           'main'
       ])
@@ -485,8 +486,8 @@ class GomaLdIntegrationTest(unittest.TestCase):
       with open('main.o', 'wb') as f:
         f.write(b'\7fELF')
       with mock.patch('sys.stderr', new_callable=StringIO) as stderr:
-        rc = GomaLinkUnixAllowMain().main([
-            'goma_ld.py', '--generate', '--',
+        rc = RemoteLinkUnixAllowMain().main([
+            'remote_ld.py', '--generate', '--',
             self.clangxx(), 'main.o', '-o', 'main'
         ])
         self.assertEqual(rc, 5)
@@ -497,8 +498,8 @@ class GomaLdIntegrationTest(unittest.TestCase):
       with open('main.o', 'wb') as f:
         f.write(b'BC\xc0\xde')
       with mock.patch('sys.stderr', new_callable=StringIO) as stderr:
-        rc = GomaLinkUnixAllowMain().main([
-            'goma_ld.py', '--generate', '--',
+        rc = RemoteLinkUnixAllowMain().main([
+            'remote_ld.py', '--generate', '--',
             self.clangxx(), 'main.o', '-o', 'main'
         ])
         self.assertEqual(rc, 0)
@@ -520,8 +521,8 @@ class GomaLdIntegrationTest(unittest.TestCase):
       ])
       subprocess.check_call(
           [self.clangxx(), '-c', '-Os', '-flto=thin', 'foo.cpp', '-o', 'foo.o'])
-      rc = goma_ld.GomaLinkUnix().main([
-          'goma_ld.py', '--generate', '--allowlist', '--',
+      rc = remote_ld.RemoteLinkUnix().main([
+          'remote_ld.py', '--generate', '--allowlist', '--',
           self.clangxx(), '-fuse-ld=lld', '-flto=thin', 'main.o', 'foo.o', '-o',
           'main'
       ])

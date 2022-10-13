@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Linker wrapper that performs distributed ThinLTO on Goma.
+# Linker wrapper that performs distributed ThinLTO on Goma or Reclient.
 #
 # Usage: Pass the original link command as parameters to this script.
 # E.g. original: clang++ -o foo foo.o
@@ -13,10 +13,10 @@ import os
 import re
 import sys
 
-import goma_link
+import remote_link
 
 
-class GomaLinkUnix(goma_link.GomaLinkBase):
+class RemoteLinkUnix(remote_link.RemoteLinkBase):
   # Target-platform-specific constants.
   WL = '-Wl,'
   TLTO = '-plugin-opt=thinlto'
@@ -46,7 +46,7 @@ class GomaLinkUnix(goma_link.GomaLinkBase):
       return None
     if not (args.allowlist or os.path.basename(args.output) in self.ALLOWLIST):
       return None
-    return super(GomaLinkUnix, self).analyze_args(args, *posargs, **kwargs)
+    return super(RemoteLinkUnix, self).analyze_args(args, *posargs, **kwargs)
 
   def process_output_param(self, args, i):
     """
@@ -60,4 +60,4 @@ class GomaLinkUnix(goma_link.GomaLinkBase):
 
 
 if __name__ == '__main__':
-  sys.exit(GomaLinkUnix().main(sys.argv))
+  sys.exit(RemoteLinkUnix().main(sys.argv))
