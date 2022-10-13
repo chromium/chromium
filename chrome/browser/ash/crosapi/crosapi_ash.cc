@@ -72,6 +72,7 @@
 #include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/networking_private_ash.h"
+#include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
@@ -228,6 +229,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       networking_private_ash_(std::make_unique<NetworkingPrivateAsh>()),
       network_settings_service_ash_(std::make_unique<NetworkSettingsServiceAsh>(
           g_browser_process->local_state())),
+      parent_access_ash_(std::make_unique<ParentAccessAsh>()),
       policy_service_ash_(std::make_unique<PolicyServiceAsh>()),
       prefs_ash_(
           std::make_unique<PrefsAsh>(g_browser_process->profile_manager(),
@@ -702,6 +704,11 @@ void CrosapiAsh::BindStableVideoDecoderFactory(
   if (r && base::FeatureList::IsEnabled(media::kUseOutOfProcessVideoDecoding))
     content::LaunchStableVideoDecoderFactory(std::move(r));
 #endif  // BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+}
+
+void CrosapiAsh::BindParentAccess(
+    mojo::PendingReceiver<mojom::ParentAccess> receiver) {
+  parent_access_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindPolicyService(

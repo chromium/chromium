@@ -64,6 +64,7 @@ import "chromeos/crosapi/mojom/networking_attributes.mojom";
 import "chromeos/crosapi/mojom/networking_private.mojom";
 import "chromeos/crosapi/mojom/power.mojom";
 import "chromeos/crosapi/mojom/network_settings_service.mojom";
+import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
 import "chromeos/crosapi/mojom/printing_metrics.mojom";
 import "chromeos/crosapi/mojom/probe_service.mojom";
@@ -127,8 +128,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 97
-// Next method id: 101
+// Next version: 98
+// Next method id: 102
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -426,6 +427,11 @@ interface Crosapi {
   // extension APIs to query details about the network.
   [MinVersion=39]
   BindNetworkingAttributes@44(pending_receiver<NetworkingAttributes> receiver);
+
+  // Binds the Parent Access UI to allow Lacros to request parent access
+  // from Ash when needed.
+  [MinVersion=97]
+  BindParentAccess@101(pending_receiver<ParentAccess> receiver);
 
   // Binds the Policy service to allow Lacros request policy data from Ash when
   // needed.

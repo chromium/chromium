@@ -82,6 +82,7 @@ class NativeThemeServiceAsh;
 class NetworkChangeAsh;
 class NetworkingAttributesAsh;
 class NetworkingPrivateAsh;
+class ParentAccessAsh;
 class PolicyServiceAsh;
 class PrefsAsh;
 class PrintingMetricsAsh;
@@ -243,6 +244,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::NetworkingAttributes> receiver) override;
   void BindNetworkingPrivate(
       mojo::PendingReceiver<mojom::NetworkingPrivate> receiver) override;
+  void BindParentAccess(
+      mojo::PendingReceiver<mojom::ParentAccess> receiver) override;
   void BindPolicyService(
       mojo::PendingReceiver<mojom::PolicyService> receiver) override;
   void BindPower(mojo::PendingReceiver<mojom::Power> receiver) override;
@@ -434,6 +437,8 @@ class CrosapiAsh : public mojom::Crosapi {
 
   LoginStateAsh* login_state_ash() { return login_state_ash_.get(); }
 
+  ParentAccessAsh* parent_access_ash() { return parent_access_ash_.get(); }
+
   SharesheetAsh* sharesheet_ash() { return sharesheet_ash_.get(); }
 
   StructuredMetricsServiceAsh* structured_metrics_service_ash() {
@@ -511,6 +516,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<NetworkingAttributesAsh> networking_attributes_ash_;
   std::unique_ptr<NetworkingPrivateAsh> networking_private_ash_;
   std::unique_ptr<NetworkSettingsServiceAsh> network_settings_service_ash_;
+  std::unique_ptr<ParentAccessAsh> parent_access_ash_;
   std::unique_ptr<PolicyServiceAsh> policy_service_ash_;
   std::unique_ptr<PrefsAsh> prefs_ash_;
   std::unique_ptr<PrintingMetricsAsh> printing_metrics_ash_;
