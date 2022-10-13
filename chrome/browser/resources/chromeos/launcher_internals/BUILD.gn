@@ -22,8 +22,10 @@ copy("copy_src") {
 }
 
 copy("copy_mojo") {
-  deps = [ "//chrome/browser/ui/webui/chromeos/launcher_internals:mojo_bindings_webui_js" ]
-  mojom_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/chromeos/launcher_internals/"
+  deps = [
+    "//chrome/browser/ui/webui/ash/launcher_internals:mojo_bindings_webui_js",
+  ]
+  mojom_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/launcher_internals/"
   sources = [ "$mojom_folder/launcher_internals.mojom-webui.js" ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }

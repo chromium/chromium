@@ -266,11 +266,11 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_network_ui.h"
+#include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals.mojom.h"
+#include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/launcher_internals/launcher_internals.mojom.h"
-#include "chrome/browser/ui/webui/chromeos/launcher_internals/launcher_internals_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_ui.h"
@@ -1235,8 +1235,8 @@ void PopulateChromeWebUIFrameBinders(
       ash::personalization_app::PersonalizationAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      launcher_internals::mojom::PageHandlerFactory,
-      chromeos::LauncherInternalsUI>(map);
+      launcher_internals::mojom::PageHandlerFactory, ash::LauncherInternalsUI>(
+      map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::bluetooth_config::mojom::CrosBluetoothConfig,

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/launcher_internals/launcher_internals_handler.h"
+#include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/common/types_util.h"
 
-namespace chromeos {
+namespace ash {
 
 LauncherInternalsHandler::LauncherInternalsHandler(
     app_list::SearchController* search_controller,
@@ -39,4 +39,4 @@ void LauncherInternalsHandler::OnResultsAdded(
   page_->UpdateResults(base::UTF16ToUTF8(query), std::move(internals_results));
 }
 
-}  // namespace chromeos
+}  // namespace ash

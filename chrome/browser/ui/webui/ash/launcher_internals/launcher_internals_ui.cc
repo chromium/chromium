@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/launcher_internals/launcher_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
 
 #include "base/containers/span.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -13,7 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-namespace chromeos {
+namespace ash {
 
 LauncherInternalsUI::LauncherInternalsUI(content::WebUI* web_ui)
     : MojoWebUIController(web_ui) {
@@ -51,4 +51,4 @@ void LauncherInternalsUI::CreatePageHandler(
 
 WEB_UI_CONTROLLER_TYPE_IMPL(LauncherInternalsUI)
 
-}  // namespace chromeos
+}  // namespace ash
