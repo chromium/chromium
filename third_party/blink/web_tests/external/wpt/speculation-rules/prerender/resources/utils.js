@@ -295,7 +295,7 @@ function test_prerender_defer(fn, label) {
  *
  * See
  * /html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js
- * for more details on the `RemoteContextWrapper` framework.
+ * for more details on the `RemoteContextWrapper` framework, and supported fields for extraConfig.
  *
  * The returned `RemoteContextWrapper` for the prerendered remote
  * context will have an extra `url` property, which is used by
@@ -304,9 +304,10 @@ function test_prerender_defer(fn, label) {
  * a prerendered page after creating it.)
  *
  * @param {RemoteContextWrapper} referrerRemoteContext
+ * @param {RemoteContextConfig|object} extraConfig
  * @returns {Promise<RemoteContextWrapper>}
  */
-async function addPrerenderRC(referrerRemoteContext) {
+async function addPrerenderRC(referrerRemoteContext, extraConfig) {
   let savedURL;
   const prerenderedRC = await referrerRemoteContext.helper.createContext({
     executorCreator(url) {
@@ -327,7 +328,7 @@ async function addPrerenderRC(referrerRemoteContext) {
         });
         document.head.append(script);
       }, [url]);
-    }
+    }, extraConfig
   });
 
   prerenderedRC.url = savedURL;
@@ -381,6 +382,13 @@ async function activatePrerenderRC(referrerRC, prerenderedRC, navigateFn) {
     "activated",
     "The prerendered page must be activated; instead a normal navigation happened."
   );
+}
+
+async function getActivationStart(prerenderedRC) {
+  return await prerenderedRC.executeScript(() => {
+    const entry = performance.getEntriesByType("navigation")[0];
+    return entry.activationStart;
+  });;
 }
 
 // Used by the opened window, to tell the main test runner to terminate a
