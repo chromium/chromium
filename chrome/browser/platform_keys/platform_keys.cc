@@ -417,7 +417,7 @@ GetPublicKeyAndAlgorithmOutput GetPublicKeyAndAlgorithm(
     return output;
   }
 
-  absl::optional<base::DictionaryValue> algorithm =
+  absl::optional<base::Value::Dict> algorithm =
       BuildWebCrypAlgorithmDictionary(key_info);
   DCHECK(algorithm.has_value());
   output.algorithm = std::move(algorithm.value());
@@ -465,16 +465,16 @@ net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
   return net::X509Certificate::kPublicKeyTypeUnknown;
 }
 
-absl::optional<base::DictionaryValue> BuildWebCrypAlgorithmDictionary(
+absl::optional<base::Value::Dict> BuildWebCrypAlgorithmDictionary(
     const PublicKeyInfo& key_info) {
   switch (key_info.key_type) {
     case net::X509Certificate::kPublicKeyTypeRSA: {
-      base::DictionaryValue result;
+      base::Value::Dict result;
       BuildWebCryptoRSAAlgorithmDictionary(key_info, &result);
       return result;
     }
     case net::X509Certificate::kPublicKeyTypeECDSA: {
-      base::DictionaryValue result;
+      base::Value::Dict result;
       BuildWebCryptoEcdsaAlgorithmDictionary(key_info, &result);
       return result;
     }
@@ -484,25 +484,25 @@ absl::optional<base::DictionaryValue> BuildWebCrypAlgorithmDictionary(
 }
 
 void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
-                                          base::DictionaryValue* algorithm) {
+                                          base::Value::Dict* algorithm) {
   CHECK_EQ(net::X509Certificate::kPublicKeyTypeRSA, key_info.key_type);
-  algorithm->SetStringKey("name", kWebCryptoRsassaPkcs1v15);
-  algorithm->SetKey("modulusLength",
-                    base::Value(static_cast<int>(key_info.key_size_bits)));
+  algorithm->Set("name", kWebCryptoRsassaPkcs1v15);
+  algorithm->Set("modulusLength", static_cast<int>(key_info.key_size_bits));
 
   // Equals 65537.
   static constexpr uint8_t kDefaultPublicExponent[] = {0x01, 0x00, 0x01};
-  algorithm->SetKey("publicExponent",
-                    base::Value(base::make_span(kDefaultPublicExponent)));
+  algorithm->Set("publicExponent",
+                 base::Value::BlobStorage(std::begin(kDefaultPublicExponent),
+                                          std::end(kDefaultPublicExponent)));
 }
 
 void BuildWebCryptoEcdsaAlgorithmDictionary(const PublicKeyInfo& key_info,
-                                            base::DictionaryValue* algorithm) {
+                                            base::Value::Dict* algorithm) {
   CHECK_EQ(net::X509Certificate::kPublicKeyTypeECDSA, key_info.key_type);
-  algorithm->SetStringKey("name", kWebCryptoEcdsa);
+  algorithm->Set("name", kWebCryptoEcdsa);
 
   // Only P-256 named curve is supported.
-  algorithm->SetStringKey("namedCurve", kWebCryptoNamedCurveP256);
+  algorithm->Set("namedCurve", kWebCryptoNamedCurveP256);
 }
 
 ClientCertificateRequest::ClientCertificateRequest() = default;

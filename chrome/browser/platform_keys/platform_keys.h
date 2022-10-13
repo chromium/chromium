@@ -103,7 +103,7 @@ struct GetPublicKeyAndAlgorithmOutput {
 
   Status status = Status::kSuccess;
   std::vector<uint8_t> public_key;  // Only set if status == kSuccess
-  base::DictionaryValue algorithm;  // Only set if status == kSuccess
+  base::Value::Dict algorithm;      // Only set if status == kSuccess
 };
 
 // This is a convenient wrapper around GetPublicKey which also builds a
@@ -145,7 +145,7 @@ net::X509Certificate::PublicKeyType GetKeyTypeForAlgorithm(
 // |key_info|. This supports both RSA and EC keys.
 // Returns absl::nullopt if the key is of an unsupported type (so not RSA or
 // EC).
-absl::optional<base::DictionaryValue> BuildWebCrypAlgorithmDictionary(
+absl::optional<base::Value::Dict> BuildWebCrypAlgorithmDictionary(
     const PublicKeyInfo& key_info);
 
 // Builds a partial WebCrypto Algorithm object from the parameters available in
@@ -153,14 +153,14 @@ absl::optional<base::DictionaryValue> BuildWebCrypAlgorithmDictionary(
 // sign/hash parameters and thus isn't complete. platform_keys::GetPublicKey()
 // enforced the public exponent 65537.
 void BuildWebCryptoRSAAlgorithmDictionary(const PublicKeyInfo& key_info,
-                                          base::DictionaryValue* algorithm);
+                                          base::Value::Dict* algorithm);
 
 // Builds a partial WebCrypto Algorithm object from the parameters available in
 // |key_info|, which must be the info of an EC key. For more information about
 // EcKeyAlgorithm dictionary, please refer to:
 // https://www.w3.org/TR/WebCryptoAPI/#EcKeyAlgorithm-dictionary
 void BuildWebCryptoEcdsaAlgorithmDictionary(const PublicKeyInfo& key_info,
-                                            base::DictionaryValue* algorithm);
+                                            base::Value::Dict* algorithm);
 
 // Obtains information about the public key in |certificate|.
 // If |certificate| contains an RSA key, sets |key_size_bits| to the modulus

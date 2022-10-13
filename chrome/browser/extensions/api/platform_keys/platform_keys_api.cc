@@ -267,15 +267,14 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
     result_match.certificate.assign(der_encoded_cert.begin(),
                                     der_encoded_cert.end());
 
-    absl::optional<base::DictionaryValue> algorithm =
+    absl::optional<base::Value::Dict> algorithm =
         BuildWebCrypAlgorithmDictionary(key_info);
     if (!algorithm) {
       LOG(ERROR) << "Skipping unsupported certificate with key type "
                  << key_info.key_type;
       continue;
     }
-    result_match.key_algorithm.additional_properties =
-        std::move(algorithm->GetDict());
+    result_match.key_algorithm.additional_properties = std::move(*algorithm);
 
     result_matches.push_back(std::move(result_match));
   }
@@ -323,14 +322,14 @@ void PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey(
   }
 
   api_pki::GetPublicKey::Results::Algorithm algorithm;
-  absl::optional<base::DictionaryValue> dict =
+  absl::optional<base::Value::Dict> dict =
       crosapi::keystore_service_util::DictionaryFromSigningAlgorithm(
           result->get_success_result()->algorithm_properties);
   if (!dict) {
     Respond(Error(kErrorInvalidSigningAlgorithm));
     return;
   }
-  algorithm.additional_properties = std::move(dict->GetDict());
+  algorithm.additional_properties = std::move(*dict);
   Respond(ArgumentList(api_pki::GetPublicKey::Results::Create(
       result->get_success_result()->public_key, std::move(algorithm))));
 }
@@ -374,10 +373,10 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
     return RespondNow(Error(StatusToString(check_result)));
 
   api_pki::GetPublicKeyBySpki::Results::Algorithm algorithm;
-  absl::optional<base::DictionaryValue> algorithm_dictionary =
+  absl::optional<base::Value::Dict> algorithm_dictionary =
       chromeos::platform_keys::BuildWebCrypAlgorithmDictionary(key_info);
   DCHECK(algorithm_dictionary);
-  algorithm.additional_properties = std::move(algorithm_dictionary->GetDict());
+  algorithm.additional_properties = std::move(*algorithm_dictionary);
 
   return RespondNow(ArgumentList(api_pki::GetPublicKeyBySpki::Results::Create(
       public_key_spki_der, algorithm)));

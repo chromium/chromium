@@ -17,49 +17,47 @@ const char kWebCryptoRsassaPkcs1v15[] = "RSASSA-PKCS1-v1_5";
 const char kWebCryptoNamedCurveP256[] = "P-256";
 
 // Converts a signing algorithm into a WebCrypto dictionary.
-absl::optional<base::DictionaryValue> DictionaryFromSigningAlgorithm(
+absl::optional<base::Value::Dict> DictionaryFromSigningAlgorithm(
     const crosapi::mojom::KeystoreSigningAlgorithmPtr& algorithm) {
-  base::DictionaryValue value;
+  base::Value::Dict value;
   switch (algorithm->which()) {
     case crosapi::mojom::KeystoreSigningAlgorithm::Tag::kPkcs115:
-      value.SetStringKey("name", kWebCryptoRsassaPkcs1v15);
+      value.Set("name", kWebCryptoRsassaPkcs1v15);
 
       if (!base::IsValueInRangeForNumericType<int>(
               algorithm->get_pkcs115()->modulus_length)) {
         return absl::nullopt;
       }
 
-      value.SetKey("modulusLength",
-                   base::Value(base::checked_cast<int>(
-                       algorithm->get_pkcs115()->modulus_length)));
+      value.Set("modulusLength",
+                static_cast<int>(algorithm->get_pkcs115()->modulus_length));
 
       if (!algorithm->get_pkcs115()->public_exponent) {
         return absl::nullopt;
       }
-      value.SetKey(
-          "publicExponent",
-          base::Value(algorithm->get_pkcs115()->public_exponent.value()));
-      break;
+      value.Set("publicExponent",
+                base::Value::BlobStorage(
+                    algorithm->get_pkcs115()->public_exponent.value()));
+      return value;
     case crosapi::mojom::KeystoreSigningAlgorithm::Tag::kEcdsa:
-      value.SetStringKey("name", kWebCryptoEcdsa);
-      value.SetStringKey("namedCurve", algorithm->get_ecdsa()->named_curve);
-      break;
+      value.Set("name", kWebCryptoEcdsa);
+      value.Set("namedCurve", algorithm->get_ecdsa()->named_curve);
+      return value;
     default:
       return absl::nullopt;
   }
-  return value;
 }
 
 absl::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr>
-SigningAlgorithmFromDictionary(const base::DictionaryValue& dictionary) {
-  const std::string* name = dictionary.FindStringKey("name");
+SigningAlgorithmFromDictionary(const base::Value::Dict& dictionary) {
+  const std::string* name = dictionary.FindString("name");
   if (!name)
     return absl::nullopt;
 
   if (*name == kWebCryptoRsassaPkcs1v15) {
-    absl::optional<int> modulus_length = dictionary.FindIntKey("modulusLength");
+    absl::optional<int> modulus_length = dictionary.FindInt("modulusLength");
     const std::vector<uint8_t>* public_exponent =
-        dictionary.FindBlobKey("publicExponent");
+        dictionary.FindBlob("publicExponent");
     if (!modulus_length || !public_exponent)
       return absl::nullopt;
     if (!base::IsValueInRangeForNumericType<uint32_t>(modulus_length.value()))
@@ -74,7 +72,7 @@ SigningAlgorithmFromDictionary(const base::DictionaryValue& dictionary) {
   }
 
   if (*name == kWebCryptoEcdsa) {
-    const std::string* named_curve = dictionary.FindStringKey("namedCurve");
+    const std::string* named_curve = dictionary.FindString("namedCurve");
     if (!named_curve)
       return absl::nullopt;
     crosapi::mojom::KeystoreECDSAParamsPtr params =
