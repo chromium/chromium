@@ -6,7 +6,6 @@
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
 
 namespace blink {
 

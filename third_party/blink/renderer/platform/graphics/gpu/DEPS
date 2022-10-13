@@ -14,7 +14,6 @@ include_rules = [
     "+gpu/config/gpu_driver_bug_workaround_type.h",
     "+gpu/config/gpu_feature_info.h",
     "+gpu/webgpu/callback.h",
-    "+third_party/blink/renderer/platform/bindings/microtask.h",
     "+ui/gfx/gpu_fence.h",
     "+ui/gl/gpu_preference.h",
 ]

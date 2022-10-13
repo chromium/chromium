@@ -397,8 +397,6 @@ component("platform") {
     "bindings/extensions_registry.h",
     "bindings/idl_member_installer.cc",
     "bindings/idl_member_installer.h",
-    "bindings/microtask.cc",
-    "bindings/microtask.h",
     "bindings/multi_worlds_v8_reference.cc",
     "bindings/multi_worlds_v8_reference.h",
     "bindings/name_client.h",
