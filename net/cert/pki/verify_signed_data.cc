@@ -4,7 +4,6 @@
 
 #include "net/cert/pki/verify_signed_data.h"
 
-#include "base/numerics/safe_math.h"
 #include "crypto/openssl_util.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/signature_algorithm.h"
