@@ -218,7 +218,7 @@ class RealTimeUrlLookupServiceTest : public PlatformTest {
   }
 
   void EnableRealTimeUrlLookupWithParameters(
-      const std::vector<base::test::ScopedFeatureList::FeatureAndParams>&
+      const std::vector<base::test::FeatureRefAndParams>&
           enabled_features_and_params,
       const std::vector<base::test::FeatureRef>& disabled_features) {
     EnableMbb();

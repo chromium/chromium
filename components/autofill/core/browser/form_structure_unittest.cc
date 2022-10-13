@@ -170,7 +170,7 @@ class FormStructureTest_ForPatternSource
  public:
   FormStructureTest_ForPatternSource() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {base::test::ScopedFeatureList::FeatureAndParams(
+        {base::test::FeatureRefAndParams(
             features::kAutofillParsingPatternProvider,
             {{"prediction_source", pattern_source_as_string()}})},
         {});

@@ -5158,7 +5158,7 @@ class DelegatedInkWithPredictionTest : public DelegatedInkTest {
   virtual void EnablePrediction() {
     base::FieldTrialParams params;
     params["predicted_points"] = ::features::kDraw1Point12Ms;
-    base::test::ScopedFeatureList::FeatureAndParams prediction_params = {
+    base::test::FeatureRefAndParams prediction_params = {
         features::kDrawPredictedInkPoint, params};
 
     feature_list_.Reset();

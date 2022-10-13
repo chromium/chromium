@@ -21,7 +21,7 @@ TEST(SafeBrowsingFeatures, ClientSideDetectionTagDefault) {
 
 TEST(SafeBrowsingFeatures, ClientSideDetectionTagAllUsers) {
   base::test::ScopedFeatureList feature_list;
-  base::test::ScopedFeatureList::FeatureAndParams all_users_feature(
+  base::test::FeatureRefAndParams all_users_feature(
       kClientSideDetectionModelTag, {{"reporter_omaha_tag", "all_users_tag"}});
   feature_list.InitWithFeaturesAndParameters({all_users_feature}, {});
   EXPECT_EQ(GetClientSideDetectionTag(), "all_users_tag");
@@ -35,8 +35,8 @@ TEST(SafeBrowsingFeatures, FileTypePoliciesTagDefault) {
 
 TEST(SafeBrowsingFeatures, FileTypePoliciesTagEnabled) {
   base::test::ScopedFeatureList feature_list;
-  base::test::ScopedFeatureList::FeatureAndParams feature_params(
-      kFileTypePoliciesTag, {{"policy_omaha_tag", "45"}});
+  base::test::FeatureRefAndParams feature_params(kFileTypePoliciesTag,
+                                                 {{"policy_omaha_tag", "45"}});
   feature_list.InitWithFeaturesAndParameters({feature_params}, {});
   EXPECT_EQ(GetFileTypePoliciesTag(), "45");
 }

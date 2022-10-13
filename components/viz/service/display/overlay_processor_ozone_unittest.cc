@@ -263,10 +263,9 @@ class TestOverlayProcessorOzone : public OverlayProcessorOzone {
 TEST(OverlayProcessorOzoneTest, ObserveHardwareCapabilites) {
   OverlayCandidateList candidates;
   // Enable 4 overlays
-  const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-      feature_and_params_list = {{features::kEnableOverlayPrioritization, {}},
-                                 {features::kUseMultipleOverlays,
-                                  {{features::kMaxOverlaysParam, "4"}}}};
+  const std::vector<base::test::FeatureRefAndParams> feature_and_params_list = {
+      {features::kEnableOverlayPrioritization, {}},
+      {features::kUseMultipleOverlays, {{features::kMaxOverlaysParam, "4"}}}};
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitWithFeaturesAndParameters(feature_and_params_list, {});
   // When overlay prioritization is explicitly disabled (Lacros) we should

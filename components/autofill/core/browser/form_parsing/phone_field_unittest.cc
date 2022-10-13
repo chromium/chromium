@@ -39,7 +39,7 @@ class PhoneFieldTest
     : public testing::TestWithParam<PatternProviderFeatureState> {
  public:
   PhoneFieldTest() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+    std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
     if (GetParam().enable) {
       enabled.emplace_back(

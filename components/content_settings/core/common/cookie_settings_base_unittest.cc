@@ -232,7 +232,7 @@ class CookieSettingsBaseStorageAccessAPITest
     : public testing::TestWithParam<std::tuple<bool, bool, bool>> {
  public:
   CookieSettingsBaseStorageAccessAPITest() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+    std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
     if (IsStorageAccessAPIEnabled()) {
       enabled.push_back({net::features::kStorageAccessAPI,

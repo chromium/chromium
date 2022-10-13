@@ -115,7 +115,7 @@ class AutofillShadowPredictionMetricsTest
  public:
   AutofillShadowPredictionMetricsTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {base::test::ScopedFeatureList::FeatureAndParams(
+        {base::test::FeatureRefAndParams(
             features::kAutofillParsingPatternProvider,
             {{"prediction_source", "default"}})},
         {});

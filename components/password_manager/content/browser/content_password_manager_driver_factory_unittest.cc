@@ -28,7 +28,7 @@ class ContentPasswordManagerDriverFactoryFencedFramesTest
       public ::testing::WithParamInterface<bool> {
  public:
   ContentPasswordManagerDriverFactoryFencedFramesTest() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+    std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
     enabled.push_back(
         {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}});

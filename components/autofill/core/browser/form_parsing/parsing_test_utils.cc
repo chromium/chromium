@@ -22,7 +22,7 @@ std::vector<PatternProviderFeatureState> PatternProviderFeatureState::All() {
 
 FormFieldTestBase::FormFieldTestBase(
     PatternProviderFeatureState pattern_provider_feature_state) {
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+  std::vector<base::test::FeatureRefAndParams> enabled;
   std::vector<base::test::FeatureRef> disabled;
   if (pattern_provider_feature_state.enable) {
     enabled.emplace_back(

@@ -33,8 +33,7 @@ TEST(FinchConfigsTest, AllUrlHeuristicsAreDisabledByDefault) {
 }
 
 TEST(FinchConfigsTest, UrlHeuristicsAreDistinct) {
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-      features_and_params;
+  std::vector<base::test::FeatureRefAndParams> features_and_params;
   for (size_t i = 0; i < kHeuristicFeatures.size(); ++i) {
     features_and_params.push_back(
         {*kHeuristicFeatures[i],

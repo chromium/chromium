@@ -738,10 +738,9 @@ class UseMultipleOverlaysTest : public OverlayTest<OverlayProcessorType> {
  public:
   UseMultipleOverlaysTest() {
     // To use more than one overlay, we need to enable some features.
-    const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        featureAndParamsList = {{features::kEnableOverlayPrioritization, {}},
-                                {features::kUseMultipleOverlays,
-                                 {{features::kMaxOverlaysParam, "4"}}}};
+    const std::vector<base::test::FeatureRefAndParams> featureAndParamsList = {
+        {features::kEnableOverlayPrioritization, {}},
+        {features::kUseMultipleOverlays, {{features::kMaxOverlaysParam, "4"}}}};
     scoped_features.InitWithFeaturesAndParameters(featureAndParamsList, {});
   }
 

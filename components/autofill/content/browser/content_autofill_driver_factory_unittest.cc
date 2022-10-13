@@ -364,7 +364,7 @@ class ContentAutofillDriverFactoryTest_FencedFrames
       public ::testing::WithParamInterface<bool> {
  public:
   ContentAutofillDriverFactoryTest_FencedFrames() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+    std::vector<base::test::FeatureRefAndParams> enabled;
     std::vector<base::test::FeatureRef> disabled;
     enabled.push_back(
         {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}});
