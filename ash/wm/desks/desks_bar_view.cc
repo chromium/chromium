@@ -834,6 +834,9 @@ void DesksBarView::OnDeskAdded(const Desk* desk) {
   const bool is_expanding_bar_view = zero_state_new_desk_button_->GetVisible();
   UpdateNewMiniViews(/*initializing_bar_view=*/false, is_expanding_bar_view);
   MaybeUpdateCombineDesksTooltips();
+
+  if (!DesksController::Get()->CanCreateDesks())
+    expanded_state_new_desk_button_->SetButtonState(/*enabled=*/false);
 }
 
 void DesksBarView::OnDeskRemoved(const Desk* desk) {
@@ -1009,8 +1012,6 @@ void DesksBarView::OnNewDeskButtonPressed(
   if (!controller->CanCreateDesks())
     return;
   controller->NewDesk(desks_creation_removal_source);
-  if (!controller->CanCreateDesks())
-    expanded_state_new_desk_button_->SetButtonState(/*enabled=*/false);
   NudgeDeskName(mini_views_.size() - 1);
 }
 

@@ -4408,6 +4408,50 @@ TEST_F(DeskSaveAndRecallTest, ExitOverviewDeskItemFocusCrash) {
   ASSERT_FALSE(InOverviewSession());
 }
 
+// Tests that adding desks to the max and then saving and recalling one of the
+// desks successfully disables the new desk button.
+TEST_F(DeskSaveAndRecallTest, NewDeskButtonDisabledWhenRecallingToMaxDesks) {
+  auto* controller = DesksController::Get();
+
+  while (controller->CanCreateDesks())
+    NewDesk();
+
+  // Activate the last desk and add a window in it that will be destroyed later.
+  ActivateDesk(controller->desks().back().get());
+  aura::WindowTracker tracker({CreateAppWindow().release()});
+  ToggleOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // We should have the max number of desks at this point and therefore the new
+  // desk button should be disabled.
+  auto* new_desk_button = GetPrimaryRootDesksBarView()
+                              ->expanded_state_new_desk_button()
+                              ->inner_button();
+  ASSERT_FALSE(controller->CanCreateDesks());
+  ASSERT_FALSE(new_desk_button->GetEnabled());
+
+  // After saving the last desk for later, the new desk button should be enabled
+  // again.
+  auto* root = Shell::GetPrimaryRootWindow();
+  ASSERT_TRUE(GetOverviewGridForRoot(root)->IsSaveDeskForLaterButtonVisible());
+  ClickOnView(GetSaveDeskForLaterButtonForRoot(root));
+  WaitForDesksTemplatesUI();
+  WaitForDesksTemplatesUI();
+  ASSERT_TRUE(controller->CanCreateDesks());
+  ASSERT_TRUE(new_desk_button->GetEnabled());
+
+  // Press return so that we can open the saved desk next.
+  SendKey(ui::VKEY_RETURN);
+
+  // Recall the desk. This should disable the new desk button again.
+  SavedDeskItemView* template_item =
+      GetItemViewFromTemplatesGrid(/*grid_item_index=*/0);
+  ASSERT_TRUE(template_item);
+  ClickOnView(template_item);
+  ASSERT_FALSE(controller->CanCreateDesks());
+  EXPECT_FALSE(new_desk_button->GetEnabled());
+}
+
 // Tests that we can not save an empty desk as a template. Regression test for
 // https://crbug.com/1351520.
 TEST_F(SavedDeskTest, NoEmptyDeskTemplate) {
