@@ -23,9 +23,9 @@ FAIL new RTCPeerConnection(config) - with 2 stun servers should succeed assert_e
 FAIL setConfiguration(config) - with 2 stun servers should succeed assert_equals: expected 1 but got 2
 PASS new RTCPeerConnection(config) - with turn server, username, credential should succeed
 PASS setConfiguration(config) - with turn server, username, credential should succeed
-FAIL new RTCPeerConnection(config) - with turns server and empty string username, credential should succeed Failed to construct 'RTCPeerConnection': ICE server parse failed
+FAIL new RTCPeerConnection(config) - with turns server and empty string username, credential should succeed Failed to construct 'RTCPeerConnection': ICE server parsing failed: TURN server with empty username or password
 FAIL setConfiguration(config) - with turns server and empty string username, credential should succeed Failed to execute 'setConfiguration' on 'RTCPeerConnection': Could not update the PeerConnection with the given configuration.
-FAIL new RTCPeerConnection(config) - with turn server and empty string username, credential should succeed Failed to construct 'RTCPeerConnection': ICE server parse failed
+FAIL new RTCPeerConnection(config) - with turn server and empty string username, credential should succeed Failed to construct 'RTCPeerConnection': ICE server parsing failed: TURN server with empty username or password
 FAIL setConfiguration(config) - with turn server and empty string username, credential should succeed Failed to execute 'setConfiguration' on 'RTCPeerConnection': Could not update the PeerConnection with the given configuration.
 FAIL new RTCPeerConnection(config) - with one turns server, one turn server, username, credential should succeed assert_equals: expected 1 but got 2
 FAIL setConfiguration(config) - with one turns server, one turn server, username, credential should succeed assert_equals: expected 1 but got 2

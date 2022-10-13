@@ -293,17 +293,12 @@ void RTCIceTransport::gather(RTCIceGatherOptions* options,
   }
   cricket::ServerAddresses stun_servers;
   std::vector<cricket::RelayServerConfig> turn_servers;
-  // TODO(bugs.webrtc.org/14539): re-enable after WebRTC roll.
-  /*
-  webrtc::RTCErrorType error_type = webrtc::ParseIceServers(
+  webrtc::RTCError error = webrtc::ParseIceServersOrError(
       ice_servers.ReleaseVector(), &stun_servers, &turn_servers);
-  if (error_type != webrtc::RTCErrorType::NONE) {
-    ThrowExceptionFromRTCError(
-        webrtc::RTCError(error_type, "Invalid ICE server URL(s)."),
-        exception_state);
+  if (!error.ok()) {
+    ThrowExceptionFromRTCError(error, exception_state);
     return;
   }
-  */
   gathering_state_ = cricket::kIceGatheringGathering;
   proxy_->StartGathering(ConvertIceParameters(local_parameters_).value(),
                          stun_servers, turn_servers,
