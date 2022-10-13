@@ -61,13 +61,12 @@ group("pytype_dependencies") {
   ]
 }
 
-# Could be changed to "testing_pytype" if type hinting is ever added to other
-# code in the directory.
-group("unexpected_passes_common_pytype") {
+group("testing_pytype") {
   data = [
     "//testing/run_pytype.py",
 
     "//testing/unexpected_passes_common/",
+    "//testing/flake_suppressor_common/",
     "//third_party/catapult/third_party/typ/",
   ]
 

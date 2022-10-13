@@ -1851,8 +1851,8 @@
     "label": "//ui/touch_selection:ui_touch_selection_unittests",
     "type": "windowed_test_launcher",
   },
-  "unexpected_passes_common_pytype": {
-    "label": "//testing:unexpected_passes_common_pytype",
+  "testing_pytype": {
+    "label": "//testing:testing_pytype",
     "script": "//testing/run_pytype.py",
     "type": "script",
   },

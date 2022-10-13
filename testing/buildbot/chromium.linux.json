@@ -4028,13 +4028,13 @@
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
       {
-        "isolate_name": "unexpected_passes_common_pytype",
+        "isolate_name": "testing_pytype",
         "isolate_profile_data": true,
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "unexpected_passes_common_pytype",
+        "name": "testing_pytype",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -4048,7 +4048,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://testing:unexpected_passes_common_pytype/"
+        "test_id_prefix": "ninja://testing:testing_pytype/"
       },
       {
         "args": [

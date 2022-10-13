@@ -22,6 +22,7 @@ EXTRA_PATHS.append(TESTING_DIR)
 
 FILES_AND_DIRECTORIES_TO_CHECK = [
     'unexpected_passes_common',
+    'flake_suppressor_common',
 ]
 FILES_AND_DIRECTORIES_TO_CHECK = [
     os.path.join(TESTING_DIR, f) for f in FILES_AND_DIRECTORIES_TO_CHECK
