@@ -885,8 +885,7 @@
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B",  // Secure Shell App (dev)
       "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",  // Secure Shell Ext (stable)
       "38C361D4A0726CE45D3572D65071B6BDB3092371"   // Secure Shell Ext (dev)
-    ],
-    "disallow_for_service_workers": true
+    ]
   },
   "topSites": {
     "channel": "stable",
