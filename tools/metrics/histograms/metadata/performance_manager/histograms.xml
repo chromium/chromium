@@ -15,7 +15,7 @@ each histogram.
 <histograms>
 
 <histogram name="PerformanceManager.UserTuning.EfficiencyMode"
-    enum="EfficiencyMode" expires_after="2022-11-05">
+    enum="EfficiencyMode" expires_after="2023-05-05">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
