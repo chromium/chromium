@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -272,10 +273,11 @@ void AudioEncoder::ProcessConfigure(Request* request) {
   }
 
   auto output_cb = ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-      &AudioEncoder::CallOutputCallback, WrapCrossThreadWeakPersistent(this),
+      &AudioEncoder::CallOutputCallback,
+      MakeUnwrappingCrossThreadWeakHandle(this),
       // We can't use |active_config_| from |this| because it can change by
       // the time the callback is executed.
-      WrapCrossThreadPersistent(active_config_.Get()), reset_count_));
+      MakeUnwrappingCrossThreadHandle(active_config_.Get()), reset_count_));
 
   auto done_callback = [](AudioEncoder* self, media::AudioCodec codec,
                           Request* req, media::EncoderStatus status) {
@@ -302,8 +304,9 @@ void AudioEncoder::ProcessConfigure(Request* request) {
   media_encoder_->Initialize(
       active_config_->options, std::move(output_cb),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
-          done_callback, WrapCrossThreadWeakPersistent(this),
-          active_config_->options.codec, WrapCrossThreadPersistent(request))));
+          done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
+          active_config_->options.codec,
+          MakeUnwrappingCrossThreadHandle(request))));
 }
 
 void AudioEncoder::ProcessEncode(Request* request) {
@@ -360,10 +363,11 @@ void AudioEncoder::ProcessEncode(Request* request) {
 
   --requested_encodes_;
   ScheduleDequeueEvent();
-  media_encoder_->Encode(std::move(audio_bus), timestamp,
-                         ConvertToBaseOnceCallback(CrossThreadBindOnce(
-                             done_callback, WrapCrossThreadWeakPersistent(this),
-                             WrapCrossThreadPersistent(request))));
+  media_encoder_->Encode(
+      std::move(audio_bus), timestamp,
+      ConvertToBaseOnceCallback(CrossThreadBindOnce(
+          done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
+          MakeUnwrappingCrossThreadHandle(request))));
 
   audio_data->close();
 }

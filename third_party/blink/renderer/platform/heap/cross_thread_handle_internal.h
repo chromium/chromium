@@ -91,6 +91,11 @@ class BasicUnwrappingCrossThreadHandle final
   explicit BasicUnwrappingCrossThreadHandle(
       const BasicCrossThreadHandle<T, WeaknessPolicy>& handle)
       : Base(handle) {}
+  explicit BasicUnwrappingCrossThreadHandle(
+      T* raw,
+      const CrossThreadHandleLocation& loc =
+          CROSS_THREAD_HANDLE_LOCATION_FROM_HERE)
+      : Base(raw, loc) {}
 
   ~BasicUnwrappingCrossThreadHandle() = default;
   BasicUnwrappingCrossThreadHandle(BasicUnwrappingCrossThreadHandle&&) =

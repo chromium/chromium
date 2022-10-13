@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
@@ -314,9 +314,9 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
     ScriptPromise promise = resolver->Promise();
     RetrieveGpuFactoriesWithKnownDecoderSupport(CrossThreadBindOnce(
-        &DecoderSupport_OnKnown, WrapCrossThreadPersistent(support),
+        &DecoderSupport_OnKnown, MakeUnwrappingCrossThreadHandle(support),
         std::make_unique<MediaConfigType>(*media_config),
-        WrapCrossThreadPersistent(resolver)));
+        MakeUnwrappingCrossThreadHandle(resolver)));
     return promise;
   }
 

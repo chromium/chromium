@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_util.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -147,7 +148,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
       mailbox_holder.mailbox, mailbox_holder.texture_target, origin, info,
       base::saturated_cast<GLuint>(rgba_stide), dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsReadCompleted,
-                    WrapCrossThreadPersistent(this), std::move(result_cb),
+                    MakeUnwrappingCrossThreadHandle(this), std::move(result_cb),
                     std::move(txt_frame), std::move(result)));
 }
 

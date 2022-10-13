@@ -69,6 +69,8 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -570,7 +572,7 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
             std::move(result),
             ConvertToBaseOnceCallback(CrossThreadBindOnce(
                 &VideoEncoder::CreateSoftwareVideoEncoder,
-                WrapCrossThreadWeakPersistent(this), config.codec)));
+                MakeUnwrappingCrossThreadWeakHandle(this), config.codec)));
       }
       [[fallthrough]];
     case HardwarePreference::kPreferSoftware:
@@ -602,10 +604,11 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
   }
 
   auto output_cb = ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-      &VideoEncoder::CallOutputCallback, WrapCrossThreadWeakPersistent(this),
+      &VideoEncoder::CallOutputCallback,
+      MakeUnwrappingCrossThreadWeakHandle(this),
       // We can't use |active_config_| from |this| because it can change by
       // the time the callback is executed.
-      WrapCrossThreadPersistent(active_config_.Get()), reset_count_));
+      MakeUnwrappingCrossThreadHandle(active_config_.Get()), reset_count_));
 
   auto done_callback = [](VideoEncoder* self, Request* req,
                           media::VideoCodec codec,
@@ -633,8 +636,8 @@ void VideoEncoder::ContinueConfigureWithGpuFactories(
   media_encoder_->Initialize(
       active_config_->profile, active_config_->options, std::move(output_cb),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
-          done_callback, WrapCrossThreadWeakPersistent(this),
-          WrapCrossThreadPersistent(request), active_config_->codec)));
+          done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
+          MakeUnwrappingCrossThreadHandle(request), active_config_->codec)));
 }
 
 bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,
@@ -777,8 +780,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
   request->StartTracingVideoEncode(keyframe, frame->timestamp());
 
   auto encode_done_callback = ConvertToBaseOnceCallback(CrossThreadBindOnce(
-      &VideoEncoder::OnEncodeDone, WrapCrossThreadWeakPersistent(this),
-      WrapCrossThreadPersistent(request)));
+      &VideoEncoder::OnEncodeDone, MakeUnwrappingCrossThreadWeakHandle(this),
+      MakeUnwrappingCrossThreadHandle(request)));
 
   // Currently underlying encoders can't handle frame backed by textures,
   // so let's readback pixel data to CPU memory.
@@ -791,13 +794,13 @@ void VideoEncoder::ProcessEncode(Request* request) {
       request->input->close();
     } else {
       callback_runner_->PostTask(
-          FROM_HERE,
-          ConvertToBaseOnceCallback(CrossThreadBindOnce(
-              &VideoEncoder::OnEncodeDone, WrapCrossThreadWeakPersistent(this),
-              WrapCrossThreadPersistent(request),
-              media::EncoderStatus(
-                  media::EncoderStatus::Codes::kEncoderFailedEncode,
-                  "Can't readback frame textures."))));
+          FROM_HERE, ConvertToBaseOnceCallback(CrossThreadBindOnce(
+                         &VideoEncoder::OnEncodeDone,
+                         MakeUnwrappingCrossThreadWeakHandle(this),
+                         MakeUnwrappingCrossThreadHandle(request),
+                         media::EncoderStatus(
+                             media::EncoderStatus::Codes::kEncoderFailedEncode,
+                             "Can't readback frame textures."))));
     }
     return;
   }
@@ -882,9 +885,10 @@ void VideoEncoder::ProcessConfigure(Request* request) {
     return;
   }
 
-  RetrieveGpuFactoriesWithKnownEncoderSupport(CrossThreadBindOnce(
-      &VideoEncoder::ContinueConfigureWithGpuFactories,
-      WrapCrossThreadWeakPersistent(this), WrapCrossThreadPersistent(request)));
+  RetrieveGpuFactoriesWithKnownEncoderSupport(
+      CrossThreadBindOnce(&VideoEncoder::ContinueConfigureWithGpuFactories,
+                          MakeUnwrappingCrossThreadWeakHandle(this),
+                          MakeUnwrappingCrossThreadHandle(request)));
 }
 
 void VideoEncoder::ProcessReconfigure(Request* request) {
@@ -938,24 +942,25 @@ void VideoEncoder::ProcessReconfigure(Request* request) {
     auto output_cb =
         ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
             &VideoEncoder::CallOutputCallback,
-            WrapCrossThreadWeakPersistent(self),
+            MakeUnwrappingCrossThreadWeakHandle(self),
             // We can't use |active_config_| from |this| because it can change
             // by the time the callback is executed.
-            WrapCrossThreadPersistent(self->active_config_.Get()),
+            MakeUnwrappingCrossThreadHandle(self->active_config_.Get()),
             self->reset_count_));
 
     self->first_output_after_configure_ = true;
     self->media_encoder_->ChangeOptions(
         self->active_config_->options, std::move(output_cb),
         ConvertToBaseOnceCallback(CrossThreadBindOnce(
-            reconf_callback, WrapCrossThreadWeakPersistent(self),
-            WrapCrossThreadPersistent(req))));
+            reconf_callback, MakeUnwrappingCrossThreadWeakHandle(self),
+            MakeUnwrappingCrossThreadHandle(req))));
   };
 
   blocking_request_in_progress_ = true;
-  media_encoder_->Flush(WTF::BindOnce(
-      flush_done_callback, WrapCrossThreadWeakPersistent(this),
-      WrapCrossThreadPersistent(request), std::move(reconf_done_callback)));
+  media_encoder_->Flush(WTF::BindOnce(flush_done_callback,
+                                      MakeUnwrappingCrossThreadWeakHandle(this),
+                                      MakeUnwrappingCrossThreadHandle(request),
+                                      std::move(reconf_done_callback)));
 }
 
 void VideoEncoder::CallOutputCallback(
@@ -1092,8 +1097,8 @@ static void isConfigSupportedWithSoftwareOnly(
       config->profile, config->options, base::DoNothing(),
       ConvertToBaseOnceCallback(
           CrossThreadBindOnce(done_callback, std::move(software_encoder),
-                              WrapCrossThreadPersistent(resolver),
-                              WrapCrossThreadPersistent(support))));
+                              MakeUnwrappingCrossThreadHandle(resolver),
+                              MakeUnwrappingCrossThreadHandle(support))));
 }
 
 static void isConfigSupportedWithHardwareOnly(
@@ -1166,10 +1171,11 @@ ScriptPromise VideoEncoder::isConfigSupported(ScriptState* script_state,
     promises.push_back(resolver->Promise());
     auto* support = VideoEncoderSupport::Create();
     support->setConfig(config_copy);
-    auto gpu_retrieved_callback = CrossThreadBindOnce(
-        isConfigSupportedWithHardwareOnly, WrapCrossThreadPersistent(resolver),
-        WrapCrossThreadPersistent(support),
-        WrapCrossThreadPersistent(parsed_config));
+    auto gpu_retrieved_callback =
+        CrossThreadBindOnce(isConfigSupportedWithHardwareOnly,
+                            MakeUnwrappingCrossThreadHandle(resolver),
+                            MakeUnwrappingCrossThreadHandle(support),
+                            MakeUnwrappingCrossThreadHandle(parsed_config));
     RetrieveGpuFactoriesWithKnownEncoderSupport(
         std::move(gpu_retrieved_callback));
   }

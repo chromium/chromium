@@ -42,7 +42,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -323,7 +323,8 @@ bool DecoderTemplate<Traits>::ProcessConfigureRequest(Request* request) {
   } else if (Traits::kNeedsGpuFactories) {
     RetrieveGpuFactoriesWithKnownDecoderSupport(CrossThreadBindOnce(
         &DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories,
-        WrapCrossThreadPersistent(this), WrapCrossThreadPersistent(request)));
+        MakeUnwrappingCrossThreadHandle(this),
+        MakeUnwrappingCrossThreadHandle(request)));
   } else {
     ContinueConfigureWithGpuFactories(request, nullptr);
   }

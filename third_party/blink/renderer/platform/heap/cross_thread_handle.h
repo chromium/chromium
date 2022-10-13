@@ -85,14 +85,23 @@ using UnwrappingCrossThreadHandle = internal::BasicUnwrappingCrossThreadHandle<
     T,
     internal::StrongCrossThreadHandleWeaknessPolicy>;
 
-// Utility function creating a `UnwrappingCrossThreadHandle`.
+// Utility function creating an `UnwrappingCrossThreadHandle`.
+template <typename T>
+UnwrappingCrossThreadHandle<T> MakeUnwrappingCrossThreadHandle(
+    T* value,
+    const CrossThreadHandleLocation& loc =
+        CROSS_THREAD_HANDLE_LOCATION_FROM_HERE) {
+  return UnwrappingCrossThreadHandle<T>(value, loc);
+}
+
+// Utility function creating an `UnwrappingCrossThreadHandle`.
 template <typename T>
 UnwrappingCrossThreadHandle<T> MakeUnwrappingCrossThreadHandle(
     const CrossThreadHandle<T>& handle) {
   return UnwrappingCrossThreadHandle<T>(handle);
 }
 
-// Utility function creating a `UnwrappingCrossThreadHandle`.
+// Utility function creating an `UnwrappingCrossThreadHandle`.
 template <typename T>
 UnwrappingCrossThreadHandle<T> MakeUnwrappingCrossThreadHandle(
     CrossThreadHandle<T>&& handle) {
@@ -108,14 +117,23 @@ using UnwrappingCrossThreadWeakHandle =
         T,
         internal::WeakCrossThreadHandleWeaknessPolicy>;
 
-// Utility function creating a `UnwrappingCrossThreadHandle`.
+// Utility function creating an `UnwrappingCrossThreadHandle`.
+template <typename T>
+UnwrappingCrossThreadWeakHandle<T> MakeUnwrappingCrossThreadWeakHandle(
+    T* value,
+    const CrossThreadHandleLocation& loc =
+        CROSS_THREAD_HANDLE_LOCATION_FROM_HERE) {
+  return UnwrappingCrossThreadWeakHandle<T>(value, loc);
+}
+
+// Utility function creating an `UnwrappingCrossThreadHandle`.
 template <typename T>
 UnwrappingCrossThreadWeakHandle<T> MakeUnwrappingCrossThreadWeakHandle(
     const CrossThreadWeakHandle<T>& handle) {
   return UnwrappingCrossThreadWeakHandle<T>(handle);
 }
 
-// Utility function creating a `UnwrappingCrossThreadHandle`.
+// Utility function creating an `UnwrappingCrossThreadHandle`.
 
 template <typename T>
 UnwrappingCrossThreadWeakHandle<T> MakeUnwrappingCrossThreadWeakHandle(

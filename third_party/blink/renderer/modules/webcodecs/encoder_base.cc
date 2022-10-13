@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -345,9 +346,9 @@ void EncoderBase<Traits>::ProcessFlush(Request* request) {
   request->StartTracing();
 
   blocking_request_in_progress_ = true;
-  media_encoder_->Flush(ConvertToBaseOnceCallback(
-      CrossThreadBindOnce(done_callback, WrapCrossThreadWeakPersistent(this),
-                          WrapCrossThreadPersistent(request))));
+  media_encoder_->Flush(ConvertToBaseOnceCallback(CrossThreadBindOnce(
+      done_callback, MakeUnwrappingCrossThreadWeakHandle(this),
+      MakeUnwrappingCrossThreadHandle(request))));
 }
 
 template <typename Traits>
