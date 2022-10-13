@@ -262,12 +262,12 @@ TEST_F(PowerMetricsReporterWithoutBatteryLevelProviderUnitTest,
   task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
 // Windows ARM64 does not support Constant Rate TSC so
-// PerformanceMonitor.AverageCPU7.Total is not recorded there.
+// PerformanceMonitor.AverageCPU8.Total is not recorded there.
 #if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
   const char* kScenarioSuffix = ".VideoCapture";
   const std::vector<const char*> suffixes({"", kScenarioSuffix});
   ExpectHistogramSamples(&histogram_tester_, suffixes,
-                         {{"PerformanceMonitor.AverageCPU7.Total", 500}});
+                         {{"PerformanceMonitor.AverageCPU8.Total", 500}});
 #endif
 }
 
@@ -284,12 +284,12 @@ TEST_F(PowerMetricsReporterUnitTest, LongIntervalHistograms) {
   task_environment_.FastForwardBy(kLongPowerMetricsIntervalDuration);
 
 // Windows ARM64 does not support Constant Rate TSC so
-// PerformanceMonitor.AverageCPU7.Total is not recorded there.
+// PerformanceMonitor.AverageCPU8.Total is not recorded there.
 #if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
   const char* kScenarioSuffix = ".VideoCapture";
   const std::vector<const char*> suffixes({"", kScenarioSuffix});
   ExpectHistogramSamples(&histogram_tester_, suffixes,
-                         {{"PerformanceMonitor.AverageCPU7.Total", 500}});
+                         {{"PerformanceMonitor.AverageCPU8.Total", 500}});
 #endif
 }
 

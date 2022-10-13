@@ -67,12 +67,12 @@ const char* GetMetricSuffixFromProcessType(MonitoredProcessType type) {
       return "RendererExtensionEventProcess";
     case MonitoredProcessType::kGpu:
       return "GPUProcess";
-    case MonitoredProcessType::kPPAPIPlugin:
-      return "PPAPIProcess";
     case MonitoredProcessType::kUtility:
       return "UtilityProcess";
     case MonitoredProcessType::kNetwork:
       return "NetworkProcess";
+    case MonitoredProcessType::kOther:
+      return "OtherProcess";
     default:
       NOTREACHED();
       return "";

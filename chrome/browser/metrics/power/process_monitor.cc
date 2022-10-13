@@ -141,6 +141,27 @@ MonitoredProcessType GetMonitoredProcessTypeForRenderProcess(
 #endif
 }
 
+MonitoredProcessType GetMonitoredProcessTypeForNonRendererChildProcess(
+    const content::ChildProcessData& data) {
+  switch (data.process_type) {
+    case content::PROCESS_TYPE_BROWSER:
+    case content::PROCESS_TYPE_RENDERER:
+      // Not a non-renderer child process.
+      NOTREACHED();
+      return kCount;
+    case content::PROCESS_TYPE_GPU:
+      return MonitoredProcessType::kGpu;
+    case content::PROCESS_TYPE_UTILITY: {
+      // Special case for the network process.
+      if (data.metrics_name == network::mojom::NetworkService::Name_)
+        return MonitoredProcessType::kNetwork;
+      return MonitoredProcessType::kUtility;
+    }
+    default:
+      return MonitoredProcessType::kOther;
+  }
+}
+
 // Adds the values from |rhs| to |lhs|.
 ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
                                     const ProcessMonitor::Metrics& rhs) {
@@ -160,6 +181,12 @@ ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
 }
 
 }  // namespace
+
+MonitoredProcessType
+GetMonitoredProcessTypeForNonRendererChildProcessForTesting(
+    const content::ChildProcessData& data) {
+  return GetMonitoredProcessTypeForNonRendererChildProcess(data);
+}
 
 ProcessInfo::ProcessInfo(MonitoredProcessType type,
                          std::unique_ptr<base::ProcessMetrics> process_metrics)
@@ -319,9 +346,7 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
 #endif
 
   MonitoredProcessType type =
-      data.metrics_name == network::mojom::NetworkService::Name_
-          ? MonitoredProcessType::kNetwork
-          : MonitoredProcessType::kUtility;
+      GetMonitoredProcessTypeForNonRendererChildProcess(data);
   bool inserted =
       browser_child_process_infos_
           .emplace(std::piecewise_construct, std::forward_as_tuple(data.id),

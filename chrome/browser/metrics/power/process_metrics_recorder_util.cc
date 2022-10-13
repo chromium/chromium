@@ -48,7 +48,7 @@ void RecordAverageCPUUsage(const char* histogram_suffix, double cpu_usage) {
 #endif
 
   base::UmaHistogramCustomCounts(
-      base::StrCat({"PerformanceMonitor.AverageCPU7.", histogram_suffix}),
+      base::StrCat({"PerformanceMonitor.AverageCPU8.", histogram_suffix}),
       cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin, kCPUUsageHistogramMax,
       kCPUUsageHistogramBucketCount);
 }

@@ -6657,6 +6657,7 @@ test("unit_tests") {
       "../browser/metrics/desktop_session_duration/touch_mode_stats_tracker_unittest.cc",
       "../browser/metrics/power/power_metrics_reporter_unittest.cc",
       "../browser/metrics/power/power_metrics_unittest.cc",
+      "../browser/metrics/power/process_monitor_unittest.cc",
       "../browser/metrics/power/usage_scenario_unittest.cc",
       "../browser/metrics/tab_stats/tab_stats_data_store_unittest.cc",
       "../browser/metrics/tab_stats/tab_stats_tracker_unittest.cc",
