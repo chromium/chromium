@@ -680,6 +680,7 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
 
   bool disconnected = false;
   auto router = MakeRefCounted<Router>();
+  Ref<RemoteRouterLink> new_outward_link;
   {
     absl::MutexLock lock(&router->mutex_);
     router->outbound_parcels_.ResetSequence(
@@ -701,28 +702,86 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
       }
     }
 
-    Ref<RemoteRouterLink> new_link = from_node_link.AddRemoteRouterLink(
-        context, descriptor.new_sublink, nullptr, LinkType::kPeripheralOutward,
-        LinkSide::kB, router);
-    if (new_link) {
-      router->outward_edge_.SetPrimaryLink(std::move(new_link));
+    if (descriptor.proxy_already_bypassed) {
+      // When split from a local peer, our remote counterpart (our remote peer's
+      // former local peer) will use this link to forward parcels it already
+      // received from our peer. This link decays like any other decaying link
+      // once its usefulness has expired.
+      //
+      // The sequence length toward this link is the current outbound sequence
+      // length, which is to say, we will not be sending any parcels that way.
+      // The sequence length from the link is whatever had already been sent
+      // to our counterpart back on the peer's node.
+      Ref<RemoteRouterLink> new_decaying_link =
+          from_node_link.AddRemoteRouterLink(
+              context, descriptor.new_decaying_sublink, nullptr,
+              LinkType::kPeripheralOutward, LinkSide::kB, router);
+      if (!new_decaying_link) {
+        return nullptr;
+      }
+      router->outward_edge_.SetPrimaryLink(std::move(new_decaying_link));
+      router->outward_edge_.BeginPrimaryLinkDecay();
+      router->outward_edge_.set_length_to_decaying_link(
+          router->outbound_parcels_.current_sequence_number());
+      router->outward_edge_.set_length_from_decaying_link(
+          descriptor.decaying_incoming_sequence_length > SequenceNumber(0)
+              ? descriptor.decaying_incoming_sequence_length
+              : descriptor.next_incoming_sequence_number);
+
+      new_outward_link = from_node_link.AddRemoteRouterLink(
+          context, descriptor.new_sublink,
+          from_node_link.memory().AdoptFragmentRef<RouterLinkState>(
+              from_node_link.memory().GetFragment(
+                  descriptor.new_link_state_fragment)),
+          LinkType::kCentral, LinkSide::kB, router);
+      if (!new_outward_link) {
+        return nullptr;
+      }
+      router->outward_edge_.SetPrimaryLink(new_outward_link);
 
       DVLOG(4) << "Route extended from "
                << from_node_link.remote_node_name().ToString() << " to "
                << from_node_link.local_node_name().ToString() << " via sublink "
-               << descriptor.new_sublink;
-    } else if (!descriptor.peer_closed) {
-      // The new portal is DOA, either because the associated NodeLink is dead,
-      // or the sublink ID was already in use. The latter implies a bug or bad
-      // behavior, but it should be harmless to ignore beyond this point.
-      disconnected = true;
+               << descriptor.new_sublink << " and decaying sublink "
+               << descriptor.new_decaying_sublink;
+    } else {
+      if (!descriptor.new_link_state_fragment.is_null()) {
+        // No RouterLinkState fragment should be provided for this new
+        // peripheral link.
+        return nullptr;
+      }
+      new_outward_link = from_node_link.AddRemoteRouterLink(
+          context, descriptor.new_sublink, nullptr,
+          LinkType::kPeripheralOutward, LinkSide::kB, router);
+      if (new_outward_link) {
+        router->outward_edge_.SetPrimaryLink(new_outward_link);
+
+        DVLOG(4) << "Route extended from "
+                 << from_node_link.remote_node_name().ToString() << " to "
+                 << from_node_link.local_node_name().ToString()
+                 << " via sublink " << descriptor.new_sublink;
+      } else if (!descriptor.peer_closed) {
+        // The new portal is DOA, either because the associated NodeLink is
+        // dead, or the sublink ID was already in use. The latter implies a bug
+        // or bad behavior, but it should be harmless to ignore beyond this
+        // point.
+        disconnected = true;
+      }
     }
   }
 
   if (disconnected) {
     DVLOG(4) << "Disconnected new Router immediately after deserialization";
     router->AcceptRouteDisconnectedFrom(context, LinkType::kPeripheralOutward);
+  } else if (descriptor.proxy_peer_node_name.is_valid()) {
+    // The source router rolled some peer bypass details into our descriptor to
+    // avoid some IPC overhead. We can begin bypassing the proxy now.
+    ABSL_ASSERT(new_outward_link);
+    router->BypassPeer(context, *new_outward_link,
+                       descriptor.proxy_peer_node_name,
+                       descriptor.proxy_peer_sublink);
   }
+
   router->Flush(context, kForceProxyBypassAttempt);
   return router;
 }
@@ -731,99 +790,260 @@ void Router::SerializeNewRouter(const OperationContext& context,
                                 NodeLink& to_node_link,
                                 RouterDescriptor& descriptor) {
   TrapEventDispatcher dispatcher;
-  const SublinkId new_sublink = to_node_link.memory().AllocateSublinkIds(1);
-  descriptor.new_sublink = new_sublink;
+  Ref<Router> local_peer;
+  bool initiate_proxy_bypass = false;
   {
     absl::MutexLock lock(&mutex_);
     traps_.RemoveAll(context, dispatcher);
-
-    descriptor.next_outgoing_sequence_number =
-        outbound_parcels_.GetCurrentSequenceLength();
-    descriptor.num_bytes_produced =
-        outbound_parcels_.total_consumed_element_size();
-    descriptor.next_incoming_sequence_number =
-        inbound_parcels_.current_sequence_number();
-    descriptor.num_bytes_consumed =
-        inbound_parcels_.total_consumed_element_size();
-
-    // Initialize an inward edge but with no link yet. This ensures that we
-    // don't look like a terminal router while waiting for a link to be set,
-    // which can only happen after `descriptor` is transmitted.
-    inward_edge_.emplace();
-
-    if (status_.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED) {
-      descriptor.peer_closed = true;
-      descriptor.closed_peer_sequence_length =
-          *inbound_parcels_.final_sequence_length();
-
-      // Ensure that the new edge decays its link as soon as it has one, since
-      // we know the link will not be used.
-      inward_edge_->BeginPrimaryLinkDecay();
-      inward_edge_->set_length_to_decaying_link(
-          *inbound_parcels_.final_sequence_length());
-      inward_edge_->set_length_from_decaying_link(
-          outbound_parcels_.current_sequence_number());
-    }
-
-    // Once `descriptor` is transmitted to the destination node and the new
-    // Router is created there, it may immediately begin transmitting messages
-    // back to this node regarding `new_sublink`. We establish a new
-    // RemoteRouterLink now and register it to `new_sublink` on `to_node_link`,
-    // so that any such incoming messages are routed to `this`.
-    //
-    // NOTE: We do not yet provide `this` itself with a reference to the new
-    // RemoteRouterLink, because it's not yet safe for us to send messages to
-    // the remote node regarding `new_sublink`. `descriptor` must be transmitted
-    // first.
-    Ref<RemoteRouterLink> new_link = to_node_link.AddRemoteRouterLink(
-        context, new_sublink, nullptr, LinkType::kPeripheralInward,
-        LinkSide::kA, WrapRefCounted(this));
-
-    DVLOG(4) << "Router " << this << " extending route with tentative new "
-             << new_link->Describe();
+    local_peer = outward_edge_.GetLocalPeer();
+    initiate_proxy_bypass = outward_edge_.primary_link() &&
+                            outward_edge_.primary_link()->TryLockForBypass(
+                                to_node_link.remote_node_name());
   }
+
+  if (local_peer && initiate_proxy_bypass &&
+      SerializeNewRouterWithLocalPeer(context, to_node_link, descriptor,
+                                      local_peer)) {
+    return;
+  }
+
+  SerializeNewRouterAndConfigureProxy(context, to_node_link, descriptor,
+                                      initiate_proxy_bypass);
+}
+
+bool Router::SerializeNewRouterWithLocalPeer(const OperationContext& context,
+                                             NodeLink& to_node_link,
+                                             RouterDescriptor& descriptor,
+                                             Ref<Router> local_peer) {
+  MultiMutexLock lock(&mutex_, &local_peer->mutex_);
+  if (local_peer->outward_edge_.GetLocalPeer() != this) {
+    // If the peer was closed, its link to us may already be invalidated.
+    return false;
+  }
+
+  FragmentRef<RouterLinkState> new_link_state =
+      to_node_link.memory().TryAllocateRouterLinkState();
+  if (!new_link_state.is_addressable()) {
+    // If we couldn't allocate a RouterLinkState for a new central link, then
+    // we can't replace the central link yet. Fall back to the proxying case.
+    return false;
+  }
+
+  const SequenceNumber proxy_inbound_sequence_length =
+      local_peer->outbound_parcels_.current_sequence_number();
+
+  // The local peer no longer needs its link to us. We'll give it a new
+  // outward link in BeginProxyingToNewRouter() after this descriptor is
+  // transmitted.
+  local_peer->outward_edge_.ReleasePrimaryLink();
+
+  // The primary new sublink to the destination node will act as the route's
+  // new central link between our local peer and the new remote router.
+  //
+  // An additional sublink is allocated to act as a decaying inward link from
+  // this router to the new one, so we can forward any inbound parcels that have
+  // already been queued here.
+  const SublinkId new_sublink = to_node_link.memory().AllocateSublinkIds(2);
+  const SublinkId decaying_sublink = SublinkId(new_sublink.value() + 1);
+
+  // Register the new routes on the NodeLink. Note that we don't provide them to
+  // any routers yet since we don't want the routers using them until this
+  // descriptor is transmitted to its destination node. The links will be
+  // adopted after transmission in BeginProxyingToNewRouter().
+  Ref<RouterLink> new_link = to_node_link.AddRemoteRouterLink(
+      context, new_sublink, new_link_state, LinkType::kCentral, LinkSide::kA,
+      local_peer);
+
+  to_node_link.AddRemoteRouterLink(context, decaying_sublink, nullptr,
+                                   LinkType::kPeripheralInward, LinkSide::kA,
+                                   WrapRefCounted(this));
+
+  descriptor.new_sublink = new_sublink;
+  descriptor.new_link_state_fragment = new_link_state.release().descriptor();
+  descriptor.new_decaying_sublink = decaying_sublink;
+  descriptor.proxy_already_bypassed = true;
+  descriptor.next_outgoing_sequence_number =
+      outbound_parcels_.GetCurrentSequenceLength();
+  descriptor.num_bytes_produced =
+      outbound_parcels_.total_consumed_element_size();
+  descriptor.next_incoming_sequence_number =
+      inbound_parcels_.current_sequence_number();
+  descriptor.num_bytes_consumed =
+      inbound_parcels_.total_consumed_element_size();
+  descriptor.decaying_incoming_sequence_length = proxy_inbound_sequence_length;
+
+  DVLOG(4) << "Splitting local pair to move router with outbound sequence "
+           << "length " << descriptor.next_outgoing_sequence_number
+           << " and current inbound sequence number "
+           << descriptor.next_incoming_sequence_number;
+
+  if (inbound_parcels_.final_sequence_length()) {
+    descriptor.peer_closed = true;
+    descriptor.closed_peer_sequence_length =
+        *inbound_parcels_.final_sequence_length();
+  }
+
+  // Initialize an inward edge that will immediately begin decaying once it has
+  // a link (established in BeginProxyingToNewRouter()).
+  inward_edge_.emplace();
+  inward_edge_->BeginPrimaryLinkDecay();
+  inward_edge_->set_length_to_decaying_link(proxy_inbound_sequence_length);
+  inward_edge_->set_length_from_decaying_link(
+      outbound_parcels_.GetCurrentSequenceLength());
+  return true;
+}
+
+void Router::SerializeNewRouterAndConfigureProxy(
+    const OperationContext& context,
+    NodeLink& to_node_link,
+    RouterDescriptor& descriptor,
+    bool initiate_proxy_bypass) {
+  const SublinkId new_sublink = to_node_link.memory().AllocateSublinkIds(1);
+
+  absl::MutexLock lock(&mutex_);
+  descriptor.new_sublink = new_sublink;
+  descriptor.new_link_state_fragment = FragmentDescriptor();
+  descriptor.proxy_already_bypassed = false;
+  descriptor.next_outgoing_sequence_number =
+      outbound_parcels_.GetCurrentSequenceLength();
+  descriptor.num_bytes_produced =
+      outbound_parcels_.total_consumed_element_size();
+  descriptor.next_incoming_sequence_number =
+      inbound_parcels_.current_sequence_number();
+  descriptor.num_bytes_consumed =
+      inbound_parcels_.total_consumed_element_size();
+
+  // Initialize an inward edge but with no link yet. This ensures that we
+  // don't look like a terminal router while waiting for a link to be set,
+  // which can only happen after `descriptor` is transmitted.
+  inward_edge_.emplace();
+
+  if (status_.flags & IPCZ_PORTAL_STATUS_PEER_CLOSED) {
+    descriptor.peer_closed = true;
+    descriptor.closed_peer_sequence_length =
+        *inbound_parcels_.final_sequence_length();
+
+    // Ensure that the new edge decays its link as soon as it has one, since
+    // we know the link will not be used.
+    inward_edge_->BeginPrimaryLinkDecay();
+    inward_edge_->set_length_to_decaying_link(
+        *inbound_parcels_.final_sequence_length());
+    inward_edge_->set_length_from_decaying_link(
+        outbound_parcels_.current_sequence_number());
+  } else if (initiate_proxy_bypass && outward_edge_.primary_link()) {
+    RemoteRouterLink* remote_link =
+        outward_edge_.primary_link()->AsRemoteRouterLink();
+    if (remote_link) {
+      descriptor.proxy_peer_node_name =
+          remote_link->node_link()->remote_node_name();
+      descriptor.proxy_peer_sublink = remote_link->sublink();
+      DVLOG(4) << "Will initiate proxy bypass immediately on deserialization "
+               << "with peer at " << descriptor.proxy_peer_node_name.ToString()
+               << " and peer route to proxy on sublink "
+               << descriptor.proxy_peer_sublink;
+
+      inward_edge_->BeginPrimaryLinkDecay();
+      outward_edge_.BeginPrimaryLinkDecay();
+    } else {
+      // The link was locked in anticipation of initiating a proxy bypass, but
+      // that's no longer going to happen.
+      outward_edge_.primary_link()->Unlock();
+    }
+  }
+
+  // Once `descriptor` is transmitted to the destination node and the new
+  // Router is created there, it may immediately begin transmitting messages
+  // back to this node regarding `new_sublink`. We establish a new
+  // RemoteRouterLink now and register it to `new_sublink` on `to_node_link`,
+  // so that any such incoming messages are routed to `this`.
+  //
+  // NOTE: We do not yet provide `this` itself with a reference to the new
+  // RemoteRouterLink, because it's not yet safe for us to send messages to
+  // the remote node regarding `new_sublink`. `descriptor` must be transmitted
+  // first.
+  Ref<RemoteRouterLink> new_link = to_node_link.AddRemoteRouterLink(
+      context, new_sublink, nullptr, LinkType::kPeripheralInward, LinkSide::kA,
+      WrapRefCounted(this));
+  DVLOG(4) << "Router " << this << " extending route with tentative new "
+           << new_link->Describe();
 }
 
 void Router::BeginProxyingToNewRouter(const OperationContext& context,
                                       NodeLink& to_node_link,
                                       const RouterDescriptor& descriptor) {
-  // Acquire a reference to the RemoteRouterLink created by an earlier call to
-  // SerializeNewRouter(). If the NodeLink has already been disconnected, this
+  Ref<RouterLink> peer_link;
+  Ref<Router> local_peer;
+
+  // Acquire references to RemoteRouterLink(s) created by an earlier call to
+  // SerializeNewRouter(). If the NodeLink has already been disconnected, these
   // may be null.
-  if (auto new_sublink = to_node_link.GetSublink(descriptor.new_sublink)) {
-    Ref<RemoteRouterLink> new_router_link = new_sublink->router_link;
-    {
-      absl::MutexLock lock(&mutex_);
-      ABSL_ASSERT(inward_edge_);
+  auto new_sublink = to_node_link.GetSublink(descriptor.new_sublink);
+  auto new_decaying_sublink =
+      to_node_link.GetSublink(descriptor.new_decaying_sublink);
+  if (!new_sublink) {
+    Flush(context, kForceProxyBypassAttempt);
+    return;
+  }
 
-      // If the new router has already been closed or disconnected, we will
-      // discard the new link to it.
-      if (!outbound_parcels_.final_sequence_length() && !is_disconnected_) {
-        DVLOG(4) << "Router " << this << " will proxy to new router over "
-                 << new_router_link->Describe();
+  Ref<RemoteRouterLink> new_primary_link = new_sublink->router_link;
+  Ref<RemoteRouterLink> new_decaying_link;
+  {
+    absl::MutexLock lock(&mutex_);
+    ABSL_ASSERT(inward_edge_);
 
-        inward_edge_->SetPrimaryLink(std::move(new_router_link));
+    if (descriptor.proxy_already_bypassed) {
+      peer_link = outward_edge_.ReleasePrimaryLink();
+      local_peer = peer_link ? peer_link->GetLocalPeer() : nullptr;
+      new_decaying_link =
+          new_decaying_sublink ? new_decaying_sublink->router_link : nullptr;
+    }
 
-        Ref<RouterLink> outward_link = outward_edge_.primary_link();
-        if (outward_link && outward_edge_.is_stable() &&
-            inward_edge_->is_stable()) {
-          outward_link->MarkSideStable();
-        }
+    if (local_peer && new_decaying_link && !is_disconnected_) {
+      // We've already bypassed this router. Use the new decaying link for our
+      // inward edge in case we need to forward parcels to the new router. The
+      // new primary link will be adopted by our peer further below.
+      inward_edge_->SetPrimaryLink(std::move(new_decaying_link));
+    } else if (!outbound_parcels_.final_sequence_length() &&
+               !new_decaying_link && !is_disconnected_) {
+      DVLOG(4) << "Router " << this << " will proxy to new router over "
+               << new_primary_link->Describe();
+      inward_edge_->SetPrimaryLink(std::move(new_primary_link));
+
+      Ref<RouterLink> outward_link = outward_edge_.primary_link();
+      if (outward_link && outward_edge_.is_stable() &&
+          inward_edge_->is_stable()) {
+        outward_link->MarkSideStable();
       }
     }
+  }
 
-    if (new_router_link) {
-      // The link was not adopted, so deactivate and discard it.
-      DVLOG(4) << "Dropping link to new router " << new_router_link->Describe();
-      new_router_link->AcceptRouteDisconnected(context);
-      new_router_link->Deactivate();
-      return;
-    }
+  if (local_peer && new_primary_link && !new_decaying_link) {
+    // If we have a `local_peer` and no decaying link, this means the decaying
+    // link was successfully adopted for our own inward edge; and the primary
+    // link is therefore meant to serve as our local peer's new outward link
+    // directly to the new remote router.
+    local_peer->SetOutwardLink(context, std::move(new_primary_link));
+  }
+
+  // New links were not adopted, implying that the new router has already been
+  // closed or disconnected.
+  if (new_primary_link) {
+    DVLOG(4) << "Dropping link to new router " << new_primary_link->Describe();
+    new_primary_link->AcceptRouteDisconnected(context);
+    new_primary_link->Deactivate();
+  }
+  if (new_decaying_link) {
+    DVLOG(4) << "Dropping link to new router " << new_decaying_link->Describe();
+    new_decaying_link->AcceptRouteDisconnected(context);
+    new_decaying_link->Deactivate();
   }
 
   // We may have inbound parcels queued which need to be forwarded to the new
   // Router, so give them a chance to be flushed out.
   Flush(context, kForceProxyBypassAttempt);
+  if (local_peer) {
+    local_peer->Flush(context, kForceProxyBypassAttempt);
+  }
 }
 
 bool Router::BypassPeer(const OperationContext& context,

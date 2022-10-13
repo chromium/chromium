@@ -31,10 +31,22 @@ struct IPCZ_ALIGN(8) RouterDescriptor {
   // end.
   SequenceNumber closed_peer_sequence_length;
 
-  // A new sublink and RouterLinkState fragment allocated by the sender on the
-  // NodeLink which sends this descriptor. The sublink is used as a peripheral
-  // link, inward to (and outward from) the new router.
+  // A new sublink allocated by the sender on the NodeLink which sends this
+  // descriptor. The sublink may be used as a peripheral link, inward to (and
+  // outward from) the new router, or it may be used the route's central link
+  // if and only if `proxy_already_bypassed` is true below. In the latter case,
+  // `new_link_state_fragment` must be valid and is used as the new central
+  // link's RouterLinkState.
   SublinkId new_sublink;
+  FragmentDescriptor new_link_state_fragment;
+
+  // When `proxy_already_bypassed` is true below, this is another new sublink
+  // allocated by the sender on the NodeLink which sends this descriptor. This
+  // sublink is used as peripheral link to the new router's outward -- peer back
+  // on the sending node -- as a way for that router to forward any inbound
+  // parcels that were still queued or in flight when this router was
+  // serialized.
+  SublinkId new_decaying_sublink;
 
   // The SequenceNumber of the next outbound parcel which can be produced by
   // this router.
@@ -46,6 +58,15 @@ struct IPCZ_ALIGN(8) RouterDescriptor {
   // The SequenceNumber of the next inbound parcel expected by this router.
   SequenceNumber next_incoming_sequence_number;
 
+  // The total length of the sequence of parcels expected on the decaying link
+  // established by `new_decaying_sublink`, if and only if
+  // `proxy_already_bypassed` is true. The decaying link is expected to receive
+  // only parcels between `next_incoming_sequence_number` (inclusive) and
+  // `decaying_incoming_sequence_length` (exclusive). If those fields are equal
+  // then the decaying link should be ignored and `new_decaying_sublink` may
+  // not be valid.
+  SequenceNumber decaying_incoming_sequence_length;
+
   // The total number of incoming bytes consumed from router's portal so far.
   uint64_t num_bytes_consumed;
 
@@ -56,6 +77,27 @@ struct IPCZ_ALIGN(8) RouterDescriptor {
   // parcels sent from that end, and `next_incoming_sequence_number` can be used
   // to determine whether there are any parcels left to receive.
   bool peer_closed : 1;
+
+  // Indicates that, as an optimization, the sender was able to circumvent the
+  // usual process of first establishing a peripheral link and then initiating
+  // proxy bypass. Instead the outward peer of this new router is already
+  // configured to route messages directly to the new router, and its former
+  // (and local) outward peer is configured to proxy any previously queued or
+  // in-flight messages to us over the decaying link described above.
+  bool proxy_already_bypassed : 1;
+
+  // Reserved padding out to the next 8-byte boundary.
+  uint8_t reserved0[7];
+
+  // These fields are set if and only if proxy bypass should be initiated
+  // immediately on deserialization of the new Router. The deserializing node
+  // must contact `proxy_peer_node_name` with the name of the node who sent this
+  // descriptor, along with `proxy_peer_sublink` (an existing sublink
+  // between those two nodes, identifying the link we want to bypass). These
+  // fields may be set as an optimization to avoid additional messaging overhead
+  // in the common case of transferring a yet-unused portal.
+  NodeName proxy_peer_node_name;
+  SublinkId proxy_peer_sublink;
 };
 
 }  // namespace ipcz

@@ -414,6 +414,27 @@ class Router : public RefCounted {
                                   RemoteRouterLink& requestor,
                                   SublinkId bypass_target_sublink);
 
+  // Optimized Router serialization case when the Router's peer is local to the
+  // same node and the existing (local) central link can be replaced with a new
+  // remote link, without establishing an intermediate proxy. Returns true on
+  // success, or false indicating that the caller must fall back onto the slower
+  // Router serialization path defined below.
+  bool SerializeNewRouterWithLocalPeer(const OperationContext& context,
+                                       NodeLink& to_node_link,
+                                       RouterDescriptor& descriptor,
+                                       Ref<Router> local_peer);
+
+  // Default Router serialization case when the serializing Router must stay
+  // behind as an intermediate proxy between its (remote) peer and the newly
+  // established Router that will result from this serialization. As an
+  // optimization, `initiate_proxy_bypass` may be true if the serializing router
+  // is on the central link and was able to lock that link for bypass prior to
+  // serialization.
+  void SerializeNewRouterAndConfigureProxy(const OperationContext& context,
+                                           NodeLink& to_node_link,
+                                           RouterDescriptor& descriptor,
+                                           bool initiate_proxy_bypass);
+
   absl::Mutex mutex_;
 
   // The current computed portal status to be reflected by a portal controlling
