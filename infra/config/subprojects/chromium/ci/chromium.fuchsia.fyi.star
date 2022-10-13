@@ -119,7 +119,6 @@ ci.builder(
             config = "staging_server",
         ),
         build_gs_bucket = "chromium-fyi-archive",
-        run_tests_serially = True,
     ),
 )
 
@@ -157,7 +156,6 @@ ci.builder(
             config = "staging_server",
         ),
         build_gs_bucket = "chromium-fyi-archive",
-        run_tests_serially = True,
     ),
 )
 
@@ -195,7 +193,6 @@ ci.builder(
             config = "staging_server",
         ),
         build_gs_bucket = "chromium-fyi-archive",
-        run_tests_serially = True,
     ),
 )
 

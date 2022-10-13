@@ -32,8 +32,7 @@
               },
               "legacy_test_results_config": {
                 "config": "staging_server"
-              },
-              "run_tests_serially": true
+              }
             }
           }
         ]
