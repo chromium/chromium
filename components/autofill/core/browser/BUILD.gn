@@ -254,6 +254,8 @@ static_library("browser") {
     "merchant_promo_code_manager.h",
     "metrics/autofill_metrics.cc",
     "metrics/autofill_metrics.h",
+    "metrics/autofill_metrics_utils.cc",
+    "metrics/autofill_metrics_utils.h",
     "metrics/form_events/address_form_event_logger.cc",
     "metrics/form_events/address_form_event_logger.h",
     "metrics/form_events/credit_card_form_event_logger.cc",

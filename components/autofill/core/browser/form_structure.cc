@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/shadow_prediction_metrics.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/browser/validation.h"
@@ -1006,10 +1007,10 @@ void FormStructure::LogQualityMetrics(
     const ServerFieldTypeSet& field_types = field->possible_types();
     DCHECK(!field_types.empty());
 
-    if (field_types.count(EMPTY_TYPE) || field_types.count(UNKNOWN_TYPE)) {
-      DCHECK_EQ(field_types.size(), 1u);
+    // Skip all remaining metrics if there wasn't a single possible field type
+    // detected.
+    if (!FieldHasMeaningfulFieldTypes(*field))
       continue;
-    }
 
     ++num_detected_field_types;
 
