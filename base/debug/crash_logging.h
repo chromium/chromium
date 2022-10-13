@@ -48,7 +48,7 @@ namespace debug {
 //
 //   static auto* const crash_key = base::debug::AllocateCrashKeyString(
 //       "name", base::debug::CrashKeySize::Size32);
-//   base::debug::SetCrashKeyString(crash_key);
+//   base::debug::SetCrashKeyString(crash_key, "value");
 //
 //   // Do other work before calling `base::debug::DumpWithoutCrashing()` later.
 //
