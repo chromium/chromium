@@ -64611,6 +64611,14 @@ from previous Chrome versions.
   <int value="2" label="Other failure"/>
 </enum>
 
+<enum name="ManagedModeBlockingCommand">
+  <int value="0" label="Preview"/>
+  <int value="1" label="Back"/>
+  <int value="2" label="New Tab Page"/>
+  <int value="3" label="Remote Access Request"/>
+  <int value="4" label="Local Access Request"/>
+</enum>
+
 <enum name="ManagedUserPasswordChange">
   <int value="0" label="OK_MANAGER">Changed in manager session</int>
   <int value="1" label="OK_MANGED">Changed in supervised user session</int>

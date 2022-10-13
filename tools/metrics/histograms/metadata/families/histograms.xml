@@ -498,6 +498,13 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ManagedMode.BlockingInterstitialCommand"
+    enum="ManagedModeBlockingCommand" expires_after="2023-03-26">
+  <owner>agawronska@google.com</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <summary>Which command was selected from the blocking interstitial.</summary>
+</histogram>
+
 <histogram name="ManagedUsers.BlockedIframeCount" units="iframes"
     expires_after="2023-03-26">
   <owner>yilkal@chromium.org</owner>

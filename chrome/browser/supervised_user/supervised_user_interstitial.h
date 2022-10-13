@@ -76,6 +76,8 @@ class SupervisedUserInterstitial {
 
   void OnInterstitialDone();
 
+  void OutputRequestPermissionSourceMetric();
+
   // Owns SupervisedUserNavigationObserver which owns us.
   raw_ptr<content::WebContents> web_contents_;
 
