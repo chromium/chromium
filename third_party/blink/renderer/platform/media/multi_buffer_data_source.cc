@@ -294,6 +294,10 @@ bool MultiBufferDataSource::HasAccessControl() const {
   return url_data_->has_access_control();
 }
 
+bool MultiBufferDataSource::PassedTimingAllowOriginCheck() {
+  return url_data_->passed_timing_allow_origin_check();
+}
+
 UrlData::CorsMode MultiBufferDataSource::cors_mode() const {
   return url_data_->cors_mode();
 }

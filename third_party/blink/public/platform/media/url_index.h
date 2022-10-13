@@ -82,6 +82,10 @@ class BLINK_PLATFORM_EXPORT UrlData : public base::RefCounted<UrlData> {
 
   bool has_access_control() const { return has_access_control_; }
 
+  bool passed_timing_allow_origin_check() const {
+    return passed_timing_allow_origin_check_;
+  }
+
   const std::string& mime_type() const { return mime_type_; }
 
   // Are HTTP range requests supported?
@@ -140,6 +144,7 @@ class BLINK_PLATFORM_EXPORT UrlData : public base::RefCounted<UrlData> {
   void set_etag(const std::string& etag);
   void set_is_cors_cross_origin(bool is_cors_cross_origin);
   void set_has_access_control();
+  void set_passed_timing_allow_origin_check(bool);
   void set_mime_type(std::string mime_type);
 
   // A redirect has occurred (or we've found a better UrlData for the same
@@ -196,6 +201,9 @@ class BLINK_PLATFORM_EXPORT UrlData : public base::RefCounted<UrlData> {
   // Cross-origin access mode.
   const CorsMode cors_mode_;
   bool has_access_control_;
+
+  // Timing-allow-origin
+  bool passed_timing_allow_origin_check_;
 
   // Mime type category (stashed for UMA / metrics).
   std::string mime_type_;

@@ -318,6 +318,9 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     destination_url_data->set_mime_type(response.MimeType().Utf8());
   }
 
+  destination_url_data->set_passed_timing_allow_origin_check(
+      response.TimingAllowPassed());
+
   if (destination_url_data != url_data_) {
     // At this point, we've encountered a redirect, or found a better url data
     // instance for the data that we're about to download.
