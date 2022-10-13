@@ -32,7 +32,7 @@ NGSvgTextLayoutAlgorithm::NGSvgTextLayoutAlgorithm(NGInlineNode node,
   DCHECK(node.IsSvgText());
 }
 
-void NGSvgTextLayoutAlgorithm::Layout(
+PhysicalSize NGSvgTextLayoutAlgorithm::Layout(
     const String& ifc_text_content,
     NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   TRACE_EVENT0("blink", "NGSvgTextLayoutAlgorithm::Layout");
@@ -44,12 +44,12 @@ void NGSvgTextLayoutAlgorithm::Layout(
 
   // 1. Setup
   if (!Setup(ifc_text_content.length()))
-    return;
+    return PhysicalSize();
 
   // 2. Set flags and assign initial positions
   SetFlags(ifc_text_content, items);
   if (addressable_count_ == 0)
-    return;
+    return PhysicalSize();
 
   // 3. Resolve character positioning
   // This was already done in PrepareLayout() step. See
@@ -80,7 +80,7 @@ void NGSvgTextLayoutAlgorithm::Layout(
   // 8. Position on path
   PositionOnPath(items);
 
-  WriteBackToFragmentItems(items);
+  return WriteBackToFragmentItems(items);
 }
 
 bool NGSvgTextLayoutAlgorithm::Setup(wtf_size_t approximate_count) {
@@ -741,7 +741,7 @@ void NGSvgTextLayoutAlgorithm::PositionOnPath(
   }
 }
 
-void NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
+PhysicalSize NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
     NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   gfx::RectF unscaled_visual_rect;
   for (const SvgPerCharacterInfo& info : result_) {
@@ -805,6 +805,8 @@ void NGSvgTextLayoutAlgorithm::WriteBackToFragmentItems(
   DCHECK_EQ(base::ranges::find(items.begin() + 1, items.end(),
                                NGFragmentItem::kLine, &NGFragmentItem::Type),
             items.end());
+  return {LayoutUnit(unscaled_visual_rect.right()),
+          LayoutUnit(unscaled_visual_rect.bottom())};
 }
 
 float NGSvgTextLayoutAlgorithm::ScalingFactorAt(

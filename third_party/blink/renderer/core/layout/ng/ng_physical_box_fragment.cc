@@ -383,7 +383,10 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
         const_cast<NGFragmentItems*>(ComputeItemsAddress());
     DCHECK_EQ(items_builder->GetWritingMode(), block_or_line_writing_mode);
     DCHECK_EQ(items_builder->Direction(), builder->Direction());
-    items_builder->ToFragmentItems(Size(), items);
+    absl::optional<PhysicalSize> new_size =
+        items_builder->ToFragmentItems(Size(), items);
+    if (new_size)
+      size_ = *new_size;
   }
 
   bit_field_.set<HasLayoutOverflowFlag>(has_layout_overflow);

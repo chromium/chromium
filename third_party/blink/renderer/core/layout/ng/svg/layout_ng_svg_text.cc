@@ -228,10 +228,6 @@ void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
   // If our bounds changed, notify the parents.
   if (UpdateTransformAfterLayout(bounds_changed) || bounds_changed)
     SetNeedsBoundariesUpdate();
-  if (bounds_changed) {
-    SetSize(LayoutSize(LayoutUnit(boundaries.right()),
-                       LayoutUnit(boundaries.bottom())));
-  }
 
   UpdateTransformAffectsVectorEffect();
 }

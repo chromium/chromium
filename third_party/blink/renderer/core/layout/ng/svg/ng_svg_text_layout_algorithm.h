@@ -20,8 +20,8 @@ class NGSvgTextLayoutAlgorithm {
 
   // Apply SVG specific text layout algorithm to |items|.
   // Text items in |items| will be converted to kSVGText type.
-  void Layout(const String& ifc_text_content,
-              NGFragmentItemsBuilder::ItemWithOffsetList& items);
+  PhysicalSize Layout(const String& ifc_text_content,
+                      NGFragmentItemsBuilder::ItemWithOffsetList& items);
 
  private:
   // Returns false if we should skip the following steps.
@@ -41,7 +41,7 @@ class NGSvgTextLayoutAlgorithm {
   void ApplyAnchoring(const NGFragmentItemsBuilder::ItemWithOffsetList& items);
   void PositionOnPath(const NGFragmentItemsBuilder::ItemWithOffsetList& items);
 
-  void WriteBackToFragmentItems(
+  PhysicalSize WriteBackToFragmentItems(
       NGFragmentItemsBuilder::ItemWithOffsetList& items);
 
   float ScalingFactorAt(const NGFragmentItemsBuilder::ItemWithOffsetList& items,

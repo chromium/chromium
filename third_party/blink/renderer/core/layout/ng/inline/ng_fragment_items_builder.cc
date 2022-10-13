@@ -419,15 +419,18 @@ void NGFragmentItemsBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
   }
 }
 
-void NGFragmentItemsBuilder::ToFragmentItems(const PhysicalSize& outer_size,
-                                             void* data) {
+absl::optional<PhysicalSize> NGFragmentItemsBuilder::ToFragmentItems(
+    const PhysicalSize& outer_size,
+    void* data) {
   DCHECK(text_content_);
   ConvertToPhysical(outer_size);
+  absl::optional<PhysicalSize> new_size;
   if (node_.IsSvgText()) {
-    NGSvgTextLayoutAlgorithm(node_, GetWritingMode())
-        .Layout(TextContent(false), items_);
+    new_size = NGSvgTextLayoutAlgorithm(node_, GetWritingMode())
+                   .Layout(TextContent(false), items_);
   }
   new (data) NGFragmentItems(this);
+  return new_size;
 }
 
 }  // namespace blink

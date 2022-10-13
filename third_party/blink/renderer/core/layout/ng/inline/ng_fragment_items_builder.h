@@ -145,7 +145,11 @@ class CORE_EXPORT NGFragmentItemsBuilder {
 
   // Build a |NGFragmentItems|. The builder cannot build twice because data set
   // to this builder may be cleared.
-  void ToFragmentItems(const PhysicalSize& outer_size, void* data);
+  //
+  // This function returns new size of the container if the container is an
+  // SVG <text>.
+  absl::optional<PhysicalSize> ToFragmentItems(const PhysicalSize& outer_size,
+                                               void* data);
 
  private:
   void MoveCurrentLogicalLineItemsToMap();

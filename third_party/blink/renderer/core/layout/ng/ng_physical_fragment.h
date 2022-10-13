@@ -701,7 +701,7 @@ class CORE_EXPORT NGPhysicalFragment
   OutOfFlowData* CloneOutOfFlowData() const;
 
   Member<LayoutObject> layout_object_;
-  const PhysicalSize size_;
+  PhysicalSize size_;
 
   unsigned has_floating_descendants_for_paint_ : 1;
   unsigned has_adjoining_object_descendants_ : 1;
