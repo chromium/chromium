@@ -1494,9 +1494,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.WinFileMoveError" enum="WinIFileOperationError"
-    expires_after="2020-07-31">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>qinmin@chromium.org</owner>
+    expires_after="2023-10-12">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>Records the OS error code when moving a file on windows.</summary>
 </histogram>
 
