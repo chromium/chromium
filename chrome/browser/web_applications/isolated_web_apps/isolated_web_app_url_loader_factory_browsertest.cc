@@ -318,6 +318,11 @@ INSTANTIATE_TEST_SUITE_P(
             "Bundle ID (got "
             "9erugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac): The "
             "signed web bundle ID must only contain lowercase ASCII characters "
-            "and digits between 2 and 7 (without any padding).")));
+            "and digits between 2 and 7 (without any padding)."),
+        std::make_pair(
+            GURL("isolated-app://"
+                 "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaac"),
+            "Failed to read response from Signed Web Bundle: Failed to parse "
+            "integrity block: FILE_ERROR_NOT_FOUND")));
 
 }  // namespace web_app

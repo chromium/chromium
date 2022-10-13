@@ -82,8 +82,7 @@ content::StoragePartitionConfig IsolatedWebAppUrlInfo::storage_partition_config(
 
 base::expected<web_package::SignedWebBundleId, std::string>
 IsolatedWebAppUrlInfo::ParseSignedWebBundleId() const {
-  auto web_bundle_id =
-      web_package::SignedWebBundleId::Create(url_.host_piece());
+  auto web_bundle_id = web_package::SignedWebBundleId::Create(origin().host());
   if (!web_bundle_id.has_value()) {
     return base::unexpected(
         base::StringPrintf("The host of isolated-app:// URLs must be a valid "
