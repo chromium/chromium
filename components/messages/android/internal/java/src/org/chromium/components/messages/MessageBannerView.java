@@ -265,6 +265,26 @@ public class MessageBannerView extends BoundedLinearLayout {
         setLayoutParams(params);
     }
 
+    /**
+     * Overriding onMeasure for set a proper height for primary button. By design, the primary
+     * button should fill all the remaining vertical space. If it includes very long text which
+     * makes its height larger than the main content (title + description), we should manually
+     * increase its height to prevent its text from being clipped.
+     */
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        mPrimaryButton.setMinHeight(0); // Reset min height for measuring.
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int containerHeight = getMeasuredHeight();
+        int btnWidth = mPrimaryButton.getMeasuredWidth();
+        var wSpec = MeasureSpec.makeMeasureSpec(btnWidth, MeasureSpec.EXACTLY);
+        var hSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        mPrimaryButton.measure(wSpec, hSpec);
+        int measuredHeight = mPrimaryButton.getMeasuredHeight();
+        mPrimaryButton.setMinHeight(Math.max(measuredHeight, containerHeight));
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
     private ListMenuButtonDelegate buildDelegateForSingleMenuItem() {
         final PropertyModel menuItemPropertyModel =
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
