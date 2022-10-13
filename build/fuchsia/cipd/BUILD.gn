@@ -338,7 +338,7 @@ _web_engine_debug_symbols_outdir = "${target_gen_dir}/${_web_engine_debug_symbol
 build_id_dir(_web_engine_build_ids_target) {
   testonly = true  # Some of the archives contain test packages.
   output_path = _web_engine_debug_symbols_outdir
-  deps = [ ":web_engine_archives_with_symbols" ]
+  deps = [ ":web_engine_archives_with_tests" ]
 }
 
 fuchsia_cipd_package(_web_engine_debug_symbols_archive_name) {
@@ -396,7 +396,7 @@ group("web_engine_production_archives") {
 }
 
 # Used by both the main group as well as :debug_symbols.
-group("web_engine_archives_with_symbols") {
+group("web_engine_archives_with_tests") {
   testonly = true  # tests and web_engine_shell are testonly.
   deps = [
     ":tests${_archive_suffix}",
@@ -405,16 +405,17 @@ group("web_engine_archives_with_symbols") {
   ]
 }
 
-# TODO(zijiehe): Revisit the naming in this file.
-# E.g. web_engine_archives_with_symbols and web_engine_debug_symbols look
-# similar and it's unclear if the previous one covers the later one from only
-# the name.
+# TODO(zijiehe): Rename to "cipd_yaml" when possible.
+# This target only creates yaml files and related archives for cipd rather
+# than executing the cipd instance to upload them.
+# Currently it's named as "cipd" to match the folder name which introduces
+# confusions.
 group("cipd") {
   testonly = true  # Some archives are testonly.
   deps = [
     ":chrome${_archive_suffix}",
     ":chrome_debug_symbols",
-    ":web_engine_archives_with_symbols",
+    ":web_engine_archives_with_tests",
 
     # Symbols are not uploaded for the following.
     ":chromedriver${_archive_suffix}",
