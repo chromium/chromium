@@ -181,6 +181,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Fingerprint.Unlock.PartialAttemptsBeforeSuccess"
+    units="attempts" expires_after="2023-10-11">
+  <owner>hcyang@google.com</owner>
+  <owner>tomhughes@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Counts the number of partial fingerprint attempts until successful result is
+    reported in biod. Partial attempts refers to the &quot;low coverage&quot;
+    error, which means that the sensor is only partially covered with a finger.
+    It often occurs when the user just dropped their finger onto the sensor. We
+    expect the user to adjust their finger position soon after that, so instead
+    of reporting an error biod silently allows up to 20 retries for this kind of
+    error. We want to observe in average how many partial attempts are needed
+    before successfully matching.
+
+    A count of 0 means that the fingerprint match attempt is successful without
+    any preceding partial matches. The maximum number of partial attempts is
+    governed by kMaxPartialAttempts, such that this value must be less than the
+    max.
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.Unlock.ReadPositiveMatchSecret.Success"
     enum="BooleanSuccess" expires_after="2023-04-05">
   <owner>hesling@chromium.org</owner>
