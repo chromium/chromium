@@ -19,11 +19,10 @@ layer at (0,0) size 800x600
           text run at (413,0) width 330: "The image should not be selected, and should not be"
           text run at (0,20) width 598: "included in the selection rect (you won't see the selection rect when you run this test manually)."
       LayoutBlockFlow {DIV} at (0,130) size 784x20
+        LayoutImage (floating) {IMG} at (708,0) size 76x103
         LayoutText {#text} at (0,0) size 178x19
           text run at (0,0) width 178: "This text should be selected."
 layer at (8,64) size 784x2 clip at (0,0) size 0x0
   LayoutBlockFlow {HR} at (0,56) size 784x2 [border: (1px inset #EEEEEE)]
-layer at (716,138) size 76x103
-  LayoutImage (floating) {IMG} at (708,0) size 76x103
 selection start: position 0 of child 1 {#text} of child 6 {DIV} of body
 selection end:   position 29 of child 1 {#text} of child 6 {DIV} of body
