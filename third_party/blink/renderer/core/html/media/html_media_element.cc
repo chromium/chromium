@@ -732,8 +732,8 @@ void HTMLMediaElement::ParseAttribute(
     }
   } else if (name == html_names::kLatencyhintAttr &&
              RuntimeEnabledFeatures::MediaLatencyHintEnabled()) {
-    if (GetWebMediaPlayer())
-      GetWebMediaPlayer()->SetLatencyHint(latencyHint());
+    if (web_media_player_)
+      web_media_player_->SetLatencyHint(latencyHint());
   } else {
     HTMLElement::ParseAttribute(params);
   }
@@ -1164,8 +1164,8 @@ void HTMLMediaElement::SelectMediaResource() {
     // to deal with this properly. https://crbug.com/789737
     load_state_ = kWaitingForSource;
     SetShouldDelayLoadEvent(false);
-    if (!GetWebMediaPlayer() || (ready_state_ < kHaveFutureData &&
-                                 ready_state_maximum_ < kHaveFutureData)) {
+    if (!web_media_player_ || (ready_state_ < kHaveFutureData &&
+                               ready_state_maximum_ < kHaveFutureData)) {
       SetNetworkState(kNetworkEmpty);
     } else {
       UseCounter::Count(GetDocument(),
@@ -1392,7 +1392,7 @@ void HTMLMediaElement::LoadResource(const WebMediaPlayerSource& source,
   bool can_load_resource =
       source.IsMediaStream() || CanLoadURL(url, content_type);
   if (attempt_load && can_load_resource) {
-    DCHECK(!GetWebMediaPlayer());
+    DCHECK(!web_media_player_);
 
     // Conditionally defer the load if effective preload is 'none'.
     // Skip this optional deferral for MediaStream sources or any blob URL,
@@ -1614,8 +1614,7 @@ WebMediaPlayer::LoadType HTMLMediaElement::GetLoadType() const {
 }
 
 bool HTMLMediaElement::PausedWhenVisible() const {
-  return paused_ && GetWebMediaPlayer() &&
-         !GetWebMediaPlayer()->PausedWhenHidden();
+  return paused_ && web_media_player_ && !web_media_player_->PausedWhenHidden();
 }
 
 void HTMLMediaElement::DidAudioOutputSinkChanged(
@@ -1647,11 +1646,11 @@ bool HTMLMediaElement::TextTracksAreReady() const {
 }
 
 void HTMLMediaElement::TextTrackReadyStateChanged(TextTrack* track) {
-  if (GetWebMediaPlayer() &&
+  if (web_media_player_ &&
       text_tracks_when_resource_selection_began_.Contains(track)) {
     if (track->GetReadinessState() != TextTrack::kLoading) {
       SetReadyState(
-          static_cast<ReadyState>(GetWebMediaPlayer()->GetReadyState()));
+          static_cast<ReadyState>(web_media_player_->GetReadyState()));
     }
   } else {
     // The track readiness state might have changed as a result of the user
@@ -1723,14 +1722,14 @@ bool HTMLMediaElement::IsSafeToLoadURL(const KURL& url,
 }
 
 bool HTMLMediaElement::IsMediaDataCorsSameOrigin() const {
-  if (!GetWebMediaPlayer())
+  if (!web_media_player_)
     return true;
 
-  const auto network_state = GetWebMediaPlayer()->GetNetworkState();
+  const auto network_state = web_media_player_->GetNetworkState();
   if (network_state == WebMediaPlayer::kNetworkStateNetworkError)
     return false;
 
-  return !GetWebMediaPlayer()->WouldTaintOrigin();
+  return !web_media_player_->WouldTaintOrigin();
 }
 
 void HTMLMediaElement::StartProgressEventTimer() {
@@ -1844,7 +1843,7 @@ void HTMLMediaElement::CancelPendingEventsAndCallbacks() {
 }
 
 void HTMLMediaElement::NetworkStateChanged() {
-  SetNetworkState(GetWebMediaPlayer()->GetNetworkState());
+  SetNetworkState(web_media_player_->GetNetworkState());
 }
 
 void HTMLMediaElement::MediaLoadingFailed(WebMediaPlayer::NetworkState error,
@@ -1966,7 +1965,7 @@ void HTMLMediaElement::ChangeNetworkStateFromLoadingToIdle() {
   if (!MediaShouldBeOpaque()) {
     // Schedule one last progress event so we guarantee that at least one is
     // fired for files that load very quickly.
-    if (GetWebMediaPlayer() && GetWebMediaPlayer()->DidLoadingProgress())
+    if (web_media_player_ && web_media_player_->DidLoadingProgress())
       ScheduleEvent(event_type_names::kProgress);
     ScheduleEvent(event_type_names::kSuspend);
     SetNetworkState(kNetworkIdle);
@@ -1978,7 +1977,7 @@ void HTMLMediaElement::ChangeNetworkStateFromLoadingToIdle() {
 }
 
 void HTMLMediaElement::ReadyStateChanged() {
-  SetReadyState(static_cast<ReadyState>(GetWebMediaPlayer()->GetReadyState()));
+  SetReadyState(static_cast<ReadyState>(web_media_player_->GetReadyState()));
 }
 
 void HTMLMediaElement::SetReadyState(ReadyState state) {
@@ -2218,7 +2217,7 @@ void HTMLMediaElement::ProgressEventTimerFired() {
 
   DCHECK(previous_progress_time_);
 
-  if (GetWebMediaPlayer() && GetWebMediaPlayer()->DidLoadingProgress()) {
+  if (web_media_player_ && web_media_player_->DidLoadingProgress()) {
     ScheduleEvent(event_type_names::kProgress);
     previous_progress_time_ = base::ElapsedTimer();
     sent_stalled_event_ = false;
@@ -2357,7 +2356,7 @@ void HTMLMediaElement::Seek(double time) {
   // we will ask the media engine to "seek" to the current movie time, which may
   // be a noop and not generate a timechanged callback. This means seeking_
   // will never be cleared and we will never fire a 'seeked' event.
-  double media_time = GetWebMediaPlayer()->MediaTimeForTimeValue(time);
+  double media_time = web_media_player_->MediaTimeForTimeValue(time);
   if (time != media_time) {
     DVLOG(3) << "seek(" << *this << ", " << time
              << ") - media timeline equivalent is " << media_time;
@@ -2387,8 +2386,8 @@ void HTMLMediaElement::Seek(double time) {
   ScheduleEvent(event_type_names::kSeeking);
 
   // 11 - Set the current playback position to the given new playback position.
-  GetWebMediaPlayer()->Seek(time);
-  GetWebMediaPlayer()->OnTimeUpdate();
+  web_media_player_->Seek(time);
+  web_media_player_->OnTimeUpdate();
 
   // 14-17 are handled, if necessary, when the engine signals a readystate
   // change or otherwise satisfies seek completion and signals a time change.
@@ -2419,11 +2418,11 @@ HTMLMediaElement::ReadyState HTMLMediaElement::getReadyState() const {
 }
 
 bool HTMLMediaElement::HasVideo() const {
-  return GetWebMediaPlayer() && GetWebMediaPlayer()->HasVideo();
+  return web_media_player_ && web_media_player_->HasVideo();
 }
 
 bool HTMLMediaElement::HasAudio() const {
-  return GetWebMediaPlayer() && GetWebMediaPlayer()->HasAudio();
+  return web_media_player_ && web_media_player_->HasAudio();
 }
 
 bool HTMLMediaElement::seeking() const {
@@ -2451,8 +2450,8 @@ double HTMLMediaElement::CurrentPlaybackPosition() const {
   if (ready_state_ == kHaveNothing)
     return 0;
 
-  if (GetWebMediaPlayer())
-    return GetWebMediaPlayer()->CurrentTime();
+  if (web_media_player_)
+    return web_media_player_->CurrentTime();
 
   if (ready_state_ >= kHaveMetadata) {
     DVLOG(3) << __func__ << " readyState = " << ready_state_
@@ -2855,8 +2854,8 @@ bool HTMLMediaElement::preservesPitch() const {
 void HTMLMediaElement::setPreservesPitch(bool preserves_pitch) {
   preserves_pitch_ = preserves_pitch;
 
-  if (GetWebMediaPlayer())
-    GetWebMediaPlayer()->SetPreservesPitch(preserves_pitch_);
+  if (web_media_player_)
+    web_media_player_->SetPreservesPitch(preserves_pitch_);
 }
 
 double HTMLMediaElement::latencyHint() const {
@@ -2875,13 +2874,13 @@ void HTMLMediaElement::setLatencyHint(double seconds) {
 }
 
 void HTMLMediaElement::FlingingStarted() {
-  if (GetWebMediaPlayer())
-    GetWebMediaPlayer()->FlingingStarted();
+  if (web_media_player_)
+    web_media_player_->FlingingStarted();
 }
 
 void HTMLMediaElement::FlingingStopped() {
-  if (GetWebMediaPlayer())
-    GetWebMediaPlayer()->FlingingStopped();
+  if (web_media_player_)
+    web_media_player_->FlingingStopped();
 }
 
 void HTMLMediaElement::CloseMediaSource() {
@@ -3003,8 +3002,8 @@ void HTMLMediaElement::setVolume(double vol, ExceptionState& exception_state) {
   if (EffectiveMediaVolume() && PotentiallyPlaying())
     was_always_muted_ = false;
 
-  if (GetWebMediaPlayer())
-    GetWebMediaPlayer()->SetVolume(EffectiveMediaVolume());
+  if (web_media_player_)
+    web_media_player_->SetVolume(EffectiveMediaVolume());
 
   autoplay_policy_->StopAutoplayMutedWhenVisible();
 }
@@ -3035,8 +3034,8 @@ void HTMLMediaElement::setMuted(bool muted) {
 
   // This is called at the end to make sure the WebMediaPlayer has the right
   // information.
-  if (GetWebMediaPlayer())
-    GetWebMediaPlayer()->SetVolume(EffectiveMediaVolume());
+  if (web_media_player_)
+    web_media_player_->SetVolume(EffectiveMediaVolume());
 
   autoplay_policy_->StopAutoplayMutedWhenVisible();
 }
@@ -3150,7 +3149,7 @@ void HTMLMediaElement::AudioTracksTimerFired(TimerBase*) {
       enabled_track_ids.push_back(track->id());
   }
 
-  GetWebMediaPlayer()->EnabledAudioTracksChanged(enabled_track_ids);
+  web_media_player_->EnabledAudioTracksChanged(enabled_track_ids);
 }
 
 WebMediaPlayer::TrackId HTMLMediaElement::AddAudioTrack(
@@ -3194,8 +3193,8 @@ void HTMLMediaElement::SelectedVideoTrackChanged(VideoTrack* track) {
     media_source_attachment_->OnTrackChanged(media_source_tracer_, track);
 
   WebMediaPlayer::TrackId id = track->id();
-  GetWebMediaPlayer()->SelectedVideoTrackChanged(track->selected() ? &id
-                                                                   : nullptr);
+  web_media_player_->SelectedVideoTrackChanged(track->selected() ? &id
+                                                                 : nullptr);
 }
 
 WebMediaPlayer::TrackId HTMLMediaElement::AddVideoTrack(
@@ -3634,7 +3633,7 @@ void HTMLMediaElement::TimeChanged() {
   // 4.8.12.9 steps 12-14. Needed if no ReadyState change is associated with the
   // seek.
   if (seeking_ && ready_state_ >= kHaveCurrentData &&
-      !GetWebMediaPlayer()->Seeking()) {
+      !web_media_player_->Seeking()) {
     FinishSeek();
   }
 
@@ -3755,10 +3754,10 @@ WebTimeRanges HTMLMediaElement::BufferedInternal() const {
   if (media_source_attachment_)
     return media_source_attachment_->BufferedInternal(media_source_tracer_);
 
-  if (!GetWebMediaPlayer())
+  if (!web_media_player_)
     return {};
 
-  return GetWebMediaPlayer()->Buffered();
+  return web_media_player_->Buffered();
 }
 
 TimeRanges* HTMLMediaElement::buffered() const {
@@ -3779,13 +3778,13 @@ TimeRanges* HTMLMediaElement::played() {
 }
 
 WebTimeRanges HTMLMediaElement::SeekableInternal() const {
-  if (!GetWebMediaPlayer())
+  if (!web_media_player_)
     return {};
 
   if (media_source_attachment_)
     return media_source_attachment_->SeekableInternal(media_source_tracer_);
 
-  return GetWebMediaPlayer()->Seekable();
+  return web_media_player_->Seekable();
 }
 
 TimeRanges* HTMLMediaElement::seekable() const {
@@ -3817,8 +3816,8 @@ bool HTMLMediaElement::EndedPlayback(LoopCondition loop_condition) const {
     return false;
 
   DCHECK_EQ(GetDirectionOfPlayback(), kForward);
-  if (auto* wmp = GetWebMediaPlayer()) {
-    return wmp->IsEnded() &&
+  if (web_media_player_) {
+    return web_media_player_->IsEnded() &&
            (loop_condition == LoopCondition::kIgnored || !Loop() ||
             dur <= std::numeric_limits<double>::epsilon());
   }
@@ -3837,7 +3836,7 @@ bool HTMLMediaElement::StoppedDueToErrors() const {
 }
 
 void HTMLMediaElement::UpdatePlayState(bool pause_speech /* = true */) {
-  bool is_playing = GetWebMediaPlayer() && !GetWebMediaPlayer()->Paused();
+  bool is_playing = web_media_player_ && !web_media_player_->Paused();
   bool should_be_playing = PotentiallyPlaying();
 
   DVLOG(3) << "updatePlayState(" << *this
@@ -3852,9 +3851,9 @@ void HTMLMediaElement::UpdatePlayState(bool pause_speech /* = true */) {
       // Set rate, muted before calling play in case they were set before the
       // media engine was setup.  The media engine should just stash the rate
       // and muted values since it isn't already playing.
-      GetWebMediaPlayer()->SetRate(playbackRate());
-      GetWebMediaPlayer()->SetVolume(EffectiveMediaVolume());
-      GetWebMediaPlayer()->Play();
+      web_media_player_->SetRate(playbackRate());
+      web_media_player_->SetVolume(EffectiveMediaVolume());
+      web_media_player_->Play();
       if (::features::IsTextBasedAudioDescriptionEnabled())
         SpeechSynthesis()->Resume();
 
@@ -3871,7 +3870,7 @@ void HTMLMediaElement::UpdatePlayState(bool pause_speech /* = true */) {
     playing_ = true;
   } else {  // Should not be playing right now
     if (is_playing) {
-      GetWebMediaPlayer()->Pause();
+      web_media_player_->Pause();
 
       if (pause_speech && ::features::IsTextBasedAudioDescriptionEnabled())
         SpeechSynthesis()->Pause();
@@ -3949,13 +3948,13 @@ void HTMLMediaElement::ContextLifecycleStateChanged(
   if (state == mojom::FrameLifecycleState::kFrozenAutoResumeMedia && playing_) {
     paused_by_context_paused_ = true;
     pause();
-    if (auto* web_player = GetWebMediaPlayer()) {
-      web_player->OnFrozen();
+    if (web_media_player_) {
+      web_media_player_->OnFrozen();
     }
   } else if (state == mojom::FrameLifecycleState::kFrozen && playing_) {
     pause();
-    if (auto* web_player = GetWebMediaPlayer()) {
-      web_player->OnFrozen();
+    if (web_media_player_) {
+      web_media_player_->OnFrozen();
     }
   } else if (state == mojom::FrameLifecycleState::kRunning &&
              paused_by_context_paused_) {
@@ -4020,11 +4019,11 @@ bool HTMLMediaElement::HasPendingActivityInternal() const {
   // We use the WebMediaPlayer's network state instead of |network_state_| since
   // it's value is unreliable prior to ready state kHaveMetadata.
   if (!media_source_attachment_) {
-    const auto* wmp = GetWebMediaPlayer();
-    if (!wmp) {
+    if (!web_media_player_) {
       if (network_state_ == kNetworkLoading)
         return true;
-    } else if (wmp->GetNetworkState() == WebMediaPlayer::kNetworkStateLoading) {
+    } else if (web_media_player_->GetNetworkState() ==
+               WebMediaPlayer::kNetworkStateLoading) {
       return true;
     }
   }
@@ -4216,15 +4215,15 @@ void HTMLMediaElement::MarkCaptionAndSubtitleTracksAsUnconfigured() {
 }
 
 uint64_t HTMLMediaElement::webkitAudioDecodedByteCount() const {
-  if (!GetWebMediaPlayer())
+  if (!web_media_player_)
     return 0;
-  return GetWebMediaPlayer()->AudioDecodedByteCount();
+  return web_media_player_->AudioDecodedByteCount();
 }
 
 uint64_t HTMLMediaElement::webkitVideoDecodedByteCount() const {
-  if (!GetWebMediaPlayer())
+  if (!web_media_player_)
     return 0;
-  return GetWebMediaPlayer()->VideoDecodedByteCount();
+  return web_media_player_->VideoDecodedByteCount();
 }
 
 bool HTMLMediaElement::IsURLAttribute(const Attribute& attribute) const {

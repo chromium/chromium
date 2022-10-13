@@ -334,6 +334,14 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
     Media()->SetNetworkState(state);
   }
 
+  bool MediaIsPlaying() const { return Media()->playing_; }
+
+  void ResetWebMediaPlayer() const { Media()->web_media_player_.reset(); }
+
+  void MediaContextLifecycleStateChanged(mojom::FrameLifecycleState state) {
+    Media()->ContextLifecycleStateChanged(state);
+  }
+
   bool MediaShouldBeOpaque() const { return Media()->MediaShouldBeOpaque(); }
 
   void SetError(MediaError* err) { Media()->MediaEngineError(err); }
@@ -1415,6 +1423,48 @@ TEST_P(HTMLMediaElementTest, PlayedWithUserActivationBeforeLoad) {
 
   EXPECT_CALL(*MockMediaPlayer(), SetWasPlayedWithUserActivation(_)).Times(0);
   Media()->Play();
+}
+
+TEST_P(HTMLMediaElementTest, CanFreezeWithoutMediaPlayerAttached) {
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  EXPECT_CALL(*MockMediaPlayer(), SetWasPlayedWithUserActivation(false));
+  Media()->Play();
+
+  ResetWebMediaPlayer();
+  EXPECT_FALSE(Media()->GetWebMediaPlayer());
+  EXPECT_TRUE(MediaIsPlaying());
+
+  // Freeze with auto resume.
+  MediaContextLifecycleStateChanged(
+      mojom::FrameLifecycleState::kFrozenAutoResumeMedia);
+
+  EXPECT_FALSE(MediaIsPlaying());
+}
+
+TEST_P(HTMLMediaElementTest, CanFreezeWithMediaPlayerAttached) {
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  EXPECT_CALL(*MockMediaPlayer(), SetWasPlayedWithUserActivation(false));
+  EXPECT_CALL(*MockMediaPlayer(), OnFrozen());
+  Media()->Play();
+
+  EXPECT_TRUE(Media()->GetWebMediaPlayer());
+  EXPECT_TRUE(MediaIsPlaying());
+
+  // Freeze with auto resume.
+  MediaContextLifecycleStateChanged(
+      mojom::FrameLifecycleState::kFrozenAutoResumeMedia);
+
+  EXPECT_FALSE(MediaIsPlaying());
 }
 
 }  // namespace blink
