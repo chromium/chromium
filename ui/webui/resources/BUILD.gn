@@ -144,6 +144,7 @@ preprocessed_folder = "$target_gen_dir/preprocessed"
 checked_in_dts_files = [
   "js/parse_html_subset.d.ts",
   "js/promise_resolver.d.ts",
+  "js/static_types.d.ts",
 ]
 
 # Copies checked-in .d.ts files to the preprocess folder so that they are
@@ -187,7 +188,6 @@ ts_library("library") {
                "js/focus_outline_manager.ts",
                "js/keyboard_shortcut_list.ts",
                "js/plural_string_proxy.ts",
-               "js/static_types.ts",
                "js/store_ts.ts",
                "js/test_loader.ts",
                "js/test_loader_util.ts",
