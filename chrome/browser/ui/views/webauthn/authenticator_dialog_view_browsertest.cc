@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_dialog.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_sheet_model.h"
+#include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -138,7 +139,7 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
           transport_availability;
       transport_availability.available_transports = {
           AuthenticatorTransport::kUsbHumanInterfaceDevice,
-          AuthenticatorTransport::kInternal, AuthenticatorTransport::kHybrid};
+          AuthenticatorTransport::kHybrid};
 
       std::array<uint8_t, device::kP256X962Length> public_key = {0};
       AuthenticatorRequestDialogModel::PairedPhone phone("Phone", 0,
@@ -159,6 +160,13 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
               dialog_model_.get());
 
       // The "manage devices" button should have been shown on this sheet.
+      EXPECT_EQ(
+          reinterpret_cast<AuthenticatorSheetModelBase*>(
+              test::AuthenticatorRequestDialogViewTestApi::GetSheet(dialog)
+                  ->model())
+              ->dialog_model()
+              ->current_step(),
+          AuthenticatorRequestDialogModel::Step::kMechanismSelection);
       EXPECT_TRUE(test::AuthenticatorRequestDialogViewTestApi::GetSheet(dialog)
                       ->model()
                       ->IsManageDevicesButtonVisible());
