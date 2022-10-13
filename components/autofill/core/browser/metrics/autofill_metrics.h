@@ -1542,7 +1542,18 @@ class AutofillMetrics {
       bool is_line1_missing);
 
   // Records if an autofilled field of a specific type was edited by the user.
+  // TODO(crbug.com/1368096): This metric is the successor of
+  // LogEditedAutofilledFieldAtSubmissionDeprecated which is defective. Remove
+  // comment once the old metric was removed.
   static void LogEditedAutofilledFieldAtSubmission(
+      FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      const FormStructure& form,
+      const AutofillField& field);
+
+  // Records if an autofilled field of a specific type was edited by the user.
+  // TODO(crbug.com/1368096): This metric is defective because it is falsely
+  // conditioned on having a detected field type. Remove after M112.
+  static void LogEditedAutofilledFieldAtSubmissionDeprecated(
       FormInteractionsUkmLogger* form_interactions_ukm_logger,
       const FormStructure& form,
       const AutofillField& field);

@@ -1004,6 +1004,22 @@ void FormStructure::LogQualityMetrics(
     if (!field->value.empty() && !field->is_autofilled)
       perfect_filling = false;
 
+    // Field filling statistics that are only emitted if the form was submitted
+    // but independent of the existence of a possible type.
+    if (observed_submission) {
+      // If the field was either autofilled and accepted or corrected, emit the
+      // FieldWiseCorrectness metric.
+      if (field->is_autofilled || field->previously_autofilled()) {
+        AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
+            form_interactions_ukm_logger, *this, *field);
+      }
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+    /// WARNING: Everything below this line is conditioned on having a possible
+    /// field type. This means the field must contain a value that can be found
+    /// in one of the stored Autofill profiles.
+    ///////////////////////////////////////////////////////////////////////////
     const ServerFieldTypeSet& field_types = field->possible_types();
     DCHECK(!field_types.empty());
 
@@ -1047,7 +1063,9 @@ void FormStructure::LogQualityMetrics(
     // subsequently edited by the user.
     if (observed_submission) {
       if (field->is_autofilled || field->previously_autofilled()) {
-        AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
+        // TODO(crbug.com/1368096): This metric is defective because it is
+        // confitioned on having a possible field type. Remove after M112.
+        AutofillMetrics::LogEditedAutofilledFieldAtSubmissionDeprecated(
             form_interactions_ukm_logger, *this, *field);
 
         // If the field was a |ADDRESS_HOME_STATE| field which was autofilled,

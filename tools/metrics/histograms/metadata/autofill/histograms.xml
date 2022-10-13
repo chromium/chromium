@@ -387,6 +387,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
+    enum="AutofilledFieldUserEditingStatus" expires_after="2023-01-09">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records at submission time for each autofilled field with autocomplete !=
+    off whether the user edited the autofilled field value or not.
+    {AutofillFormType}
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
     name="Autofill.Autocomplete.NotOff.EditedAutofilledFieldAtSubmission{AutofillFormType}"
     enum="AutofilledFieldUserEditingStatus" expires_after="2023-01-09">
   <owner>schwering@google.com</owner>
@@ -414,6 +429,21 @@ chromium-metrics-reviews@google.com.
     suggestion was reverted afterwards. {AutofillFormType}
   </summary>
   <token key="AutofillFormType" variants="AutofillFormType"/>
+</histogram>
+
+<histogram
+    name="Autofill.Autocomplete.Off.EditedAutofilledFieldAtSubmission2{AutofillFormType}"
+    enum="AutofilledFieldUserEditingStatus" expires_after="2023-01-09">
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records at submission time for each autofilled field with autocomplete = off
+    whether the user edited the autofilled field value or not.
+    {AutofillFormType}
+  </summary>
+  <token key="AutofillFormType" variants="AutofillFormType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
@@ -1154,6 +1184,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Total number of fields at submission time of a specific type that were
     autofilled and have or have not been editing by the user afterwards.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.EditedAutofilledFieldAtSubmission2.Aggregate"
+    enum="AutofilledFieldUserEditingStatus" expires_after="M112">
+  <owner>koerber@google.com</owner>
+  <owner>battre@google.com</owner>
+  <summary>
+    On submission time, this metric tracks for every field that was autofilled
+    if the filling was accepted or subsequently corrected. This metric is
+    aggregated over all field types.
   </summary>
 </histogram>
 
@@ -2161,6 +2202,17 @@ chromium-metrics-reviews@google.com.
     <variant name=".UseOfServerCard"
         summary="Trigger from submitted form with server card"/>
   </token>
+</histogram>
+
+<histogram name="Autofill.LogEditedAutofilledFieldAtSubmission2.ByFieldType"
+    enum="AutofilledFieldUserEditingStatusByFieldType" expires_after="M112">
+  <owner>koerber@google.com</owner>
+  <owner>battre@google.com</owner>
+  <summary>
+    On submission time, this metric tracks for every field that was autofilled
+    if the filling was accepted or subsequently corrected. This metrics resolves
+    the field type.
+  </summary>
 </histogram>
 
 <histogram name="Autofill.ManageCardsPrompt{AutofillManageCardsPrompt}"

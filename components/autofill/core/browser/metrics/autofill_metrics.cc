@@ -1409,7 +1409,7 @@ void AutofillMetrics::LogOverallPredictionQualityMetrics(
       true /*log_rationalization_metrics*/);
 }
 
-void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
+void AutofillMetrics::LogEditedAutofilledFieldAtSubmissionDeprecated(
     FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field) {
@@ -1440,6 +1440,47 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
     const std::string autocomplete_histogram = base::StrCat(
         {"Autofill.Autocomplete.", autocomplete_off ? "Off" : "NotOff",
          ".EditedAutofilledFieldAtSubmission.",
+         form_type == FormType::kAddressForm ? "Address" : "CreditCard"});
+    base::UmaHistogramEnumeration(autocomplete_histogram, editing_metric);
+  }
+
+  // If the field was edited, record the event to UKM.
+  // TODO(crbug.com/1368096): Recording of this metric is stopped and moved to
+  // the LogEditedAutofilledFieldAtSubmission method.
+}
+
+// static
+void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
+    FormInteractionsUkmLogger* form_interactions_ukm_logger,
+    const FormStructure& form,
+    const AutofillField& field) {
+  const std::string aggregate_histogram =
+      "Autofill.EditedAutofilledFieldAtSubmission2.Aggregate";
+  const std::string type_specific_histogram =
+      "Autofill.EditedAutofilledFieldAtSubmission2.ByFieldType";
+
+  AutofilledFieldUserEditingStatusMetric editing_metric =
+      field.previously_autofilled()
+          ? AutofilledFieldUserEditingStatusMetric::AUTOFILLED_FIELD_WAS_EDITED
+          : AutofilledFieldUserEditingStatusMetric::
+                AUTOFILLED_FIELD_WAS_NOT_EDITED;
+
+  // Record the aggregated UMA statistics.
+  base::UmaHistogramEnumeration(aggregate_histogram, editing_metric);
+
+  // Record the type specific UMA statistics.
+  base::UmaHistogramSparse(type_specific_histogram,
+                           GetFieldTypeUserEditStatusMetric(
+                               field.Type().GetStorableType(), editing_metric));
+
+  // Record the UMA statistics spliced by the autocomplete attribute value.
+  FormType form_type = FieldTypeGroupToFormType(field.Type().group());
+  if (form_type == FormType::kAddressForm ||
+      form_type == FormType::kCreditCardForm) {
+    bool autocomplete_off = field.autocomplete_attribute == "off";
+    const std::string autocomplete_histogram = base::StrCat(
+        {"Autofill.Autocomplete.", autocomplete_off ? "Off" : "NotOff",
+         ".EditedAutofilledFieldAtSubmission2.",
          form_type == FormType::kAddressForm ? "Address" : "CreditCard"});
     base::UmaHistogramEnumeration(autocomplete_histogram, editing_metric);
   }
