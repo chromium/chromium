@@ -1035,6 +1035,14 @@ video::-internal-media-controls-overflow-menu-list-item:focus {
   outline: none;
 }
 
+audio::-internal-media-controls-text-track-list-header:focus-visible,
+video::-internal-media-controls-text-track-list-header:focus-visible,
+audio::-internal-media-controls-playback-speed-list-header:focus-visible,
+video::-internal-media-controls-playback-speed-list-header:focus-visible,
+audio::-internal-media-controls-text-track-list-item:focus-visible,
+video::-internal-media-controls-text-track-list-item:focus-visible,
+audio::-internal-media-controls-playback-speed-list-item:focus-visible,
+video::-internal-media-controls-playback-speed-list-item:focus-visible,
 audio::-internal-media-controls-overflow-menu-list-item:focus-visible,
 video::-internal-media-controls-overflow-menu-list-item:focus-visible {
   border: 1px solid currentColor;
@@ -1642,10 +1650,6 @@ video::-webkit-media-controls.test-mode input[pseudo="-webkit-media-controls-ove
   video::-internal-media-controls-overflow-menu-list-item {
     border: 1px solid Window;
     margin: 2px;
-  }
-  audio::-internal-media-controls-overflow-menu-list-item:focus,
-  video::-internal-media-controls-overflow-menu-list-item:focus {
-    border: 1px solid Highlight;
   }
   label[pseudo="-internal-media-controls-overflow-menu-list-item"] div span.subtitle {
     color: WindowText;

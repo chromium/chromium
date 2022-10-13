@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<script src="../../../../media/media-file.js"></script>
+<script src="../../../../media/video-paint-test.js"></script>
+<script src="../../../../media/media-controls.js"></script>
+<script src="../../../../media/overflow-menu.js"></script>
+<meta name="color-scheme" content="light dark">
+
+<body style="padding-top: 200px; padding-left: 100px">
+    <video controls></video>
+    <script>
+        var video = document.querySelector("video");
+        enableTestMode(video);
+        video.onloadeddata = function () {
+            var overflowMenu = getOverflowMenuButton(video);
+            var coords = elementCoordinates(overflowMenu);
+            clickAtCoordinates(coords[0], coords[1]);
+
+            // Navigate to the Playback Speed sub-menu
+            eventSender.keyDown('ArrowUp');
+            eventSender.keyDown('Enter');
+        };
+        setVideoSrcAndWaitForFirstFrame("../../../../media/content/test.ogv");
+    </script>
+</body>
