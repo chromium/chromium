@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -20,7 +19,6 @@
 #include "device/fido/attestation_statement_formats.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -105,19 +103,13 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
     return;
   }
 
-  // New credentials are always discoverable. But older non-discoverable
-  // credentials may exist.
-  const bool resident_key =
-      base::FeatureList::IsEnabled(kWebAuthnNewDiscoverableCredentialsUi)
-          ? true
-          : request_.resident_key_required;
-
   // Generate the new key pair.
   absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
       credential_result = credential_store_->CreateCredential(
           request_.rp.id, request_.user,
-          resident_key ? TouchIdCredentialStore::kDiscoverable
-                       : TouchIdCredentialStore::kNonDiscoverable);
+          request_.resident_key_required
+              ? TouchIdCredentialStore::kDiscoverable
+              : TouchIdCredentialStore::kNonDiscoverable);
   if (!credential_result) {
     FIDO_LOG(ERROR) << "CreateCredential() failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
@@ -155,7 +147,7 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
           std::make_unique<PackedAttestationStatement>(
               CoseAlgorithmIdentifier::kEs256, std::move(*signature),
               /*x509_certificates=*/std::vector<std::vector<uint8_t>>())));
-  response.is_resident_key = resident_key;
+  response.is_resident_key = request_.resident_key_required;
   response.transports.emplace();
   response.transports->insert(FidoTransportProtocol::kInternal);
   std::move(callback_).Run(CtapDeviceResponseCode::kSuccess,

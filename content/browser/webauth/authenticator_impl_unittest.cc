@@ -8770,8 +8770,7 @@ TEST_F(TouchIdAuthenticatorImplTest, MakeCredential) {
   auto credentials = GetCredentials(kTestRelyingPartyId);
   EXPECT_EQ(credentials.size(), 1u);
   const CredentialMetadata& metadata = credentials.at(0).metadata;
-  // New credentials are always created discoverable.
-  EXPECT_TRUE(metadata.is_resident);
+  EXPECT_FALSE(metadata.is_resident);
   auto expected_user = GetTestPublicKeyCredentialUserEntity();
   EXPECT_EQ(metadata.ToPublicKeyCredentialUserEntity(), expected_user);
 }
@@ -8797,6 +8796,18 @@ TEST_F(TouchIdAuthenticatorImplTest, MakeCredential_Eviction) {
   NavigateAndCommit(GURL(kTestOrigin1));
   mojo::Remote<blink::mojom::Authenticator> authenticator =
       ConnectToAuthenticator();
+
+  // Non-resident credentials with the same user ID will overwrite each other.
+  touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(GetCredentials(kTestRelyingPartyId).size(), 1u);
+  const std::vector<uint8_t> credential_id =
+      GetCredentials(kTestRelyingPartyId).at(0).credential_id;
+  touch_id_test_environment_.SimulateTouchIdPromptSuccess();
+  EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(GetCredentials(kTestRelyingPartyId).size(), 1u);
+  EXPECT_NE(GetCredentials(kTestRelyingPartyId).at(0).credential_id,
+            credential_id);
 
   // A resident credential will overwrite the non-resident one.
   auto options = GetTestPublicKeyCredentialCreationOptions();
