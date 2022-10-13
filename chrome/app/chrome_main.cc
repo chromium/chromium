@@ -73,6 +73,7 @@ int ChromeMain(int argc, const char** argv);
 
 static void (*gRecordReplayAttach)(const char* dispatchAddress, const char* buildId);
 static void (*gRecordReplaySetApiKey)(const char* apiKey);
+static void (*gRecordReplayProfileExecution)(const char* path);
 static void (*gRecordReplayRecordCommandLineArguments)(int*, char***);
 static void (*gRecordReplaySaveRecording)(const char* dir);
 
@@ -142,6 +143,18 @@ static void* OpenDriverHandle() {
 
 extern "C" void V8SetRecordingOrReplaying(void* handle);
 
+static void MaybeStartProfiling() {
+  const char* directory = getenv("RECORD_REPLAY_PROFILE_DIRECTORY");
+  if (!directory) {
+    return;
+  }
+
+  char path[1000];
+  snprintf(path, sizeof(path), "%s/profile-%d.log", directory, rand());
+
+  gRecordReplayProfileExecution(path);
+}
+
 static void RecordReplayAttach(int* pargc, const char*** pargv) {
   // Figure out what type of process this is.
   const char* type = nullptr;
@@ -209,6 +222,7 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
 
   RecordReplayLoadSymbol(handle, "RecordReplayAttach", gRecordReplayAttach);
   RecordReplayLoadSymbol(handle, "RecordReplaySetApiKey", gRecordReplaySetApiKey);
+  RecordReplayLoadSymbol(handle, "RecordReplayProfileExecution", gRecordReplayProfileExecution);
   RecordReplayLoadSymbol(handle, "RecordReplaySaveRecording", gRecordReplaySaveRecording);
   RecordReplayLoadSymbol(handle, "RecordReplayRecordCommandLineArguments",
                          gRecordReplayRecordCommandLineArguments);
@@ -232,6 +246,8 @@ static void RecordReplayAttach(int* pargc, const char*** pargv) {
 #endif // !OS_LINUX
 
   V8SetRecordingOrReplaying(handle);
+
+  MaybeStartProfiling();
 }
 
 #if defined(OS_WIN)
