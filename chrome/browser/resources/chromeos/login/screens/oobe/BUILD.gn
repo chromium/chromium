@@ -79,7 +79,7 @@ js_library("demo_setup") {
     "../../components/buttons:oobe_back_button.m",
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
-    "../../components/progress_list_item:progress_list_item.m",
+    "../../components/progress_list_item:progress_list_item",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]

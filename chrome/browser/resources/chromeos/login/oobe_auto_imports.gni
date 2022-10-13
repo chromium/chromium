@@ -114,6 +114,7 @@ oobe_migrated_imports = [
   "ash/webui/common/resources/network/onc_mojo.html",
   "chrome/browser/resources/chromeos/login/components/gaia_button.html",
   "chrome/browser/resources/chromeos/login/components/notification_card.html",
+  "chrome/browser/resources/chromeos/login/components/progress_list_item/progress_list_item.html",
   "chrome/browser/resources/chromeos/login/components/security_token_pin.html",
   "chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.html",
   "ash/webui/common/resources/quick_unlock/lock_screen_constants.html",

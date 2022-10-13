@@ -55,7 +55,6 @@ group("polymer3_elements") {
                   "common_styles:polymer3_elements",
                   "dialogs:polymer3_elements",
                   "oobe_vars:polymer3_elements",
-                  "progress_list_item:polymer3_elements",
 
                   # Local targets
                   ":gaia_dialog_module",
