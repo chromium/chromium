@@ -395,20 +395,6 @@ bool AppListPresenterImpl::GetTargetVisibility() const {
   return is_target_visibility_show_;
 }
 
-void AppListPresenterImpl::ProcessScrollOffset(
-    const gfx::Point& location,
-    const gfx::Vector2d& scroll_offset_vector) {
-  if (view_)
-    view_->HandleScroll(location, scroll_offset_vector, ui::ET_SCROLL);
-}
-
-void AppListPresenterImpl::ProcessMouseWheelOffset(
-    const gfx::Point& location,
-    const gfx::Vector2d& scroll_offset_vector) {
-  if (view_)
-    view_->HandleScroll(location, scroll_offset_vector, ui::ET_MOUSEWHEEL);
-}
-
 void AppListPresenterImpl::UpdateScaleAndOpacityForHomeLauncher(
     float scale,
     float opacity,

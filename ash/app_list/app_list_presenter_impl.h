@@ -128,16 +128,6 @@ class ASH_EXPORT AppListPresenterImpl
   // transition is in progress.
   bool GetTargetVisibility() const;
 
-  // Passes data from a Scroll event from the shelf to the
-  // AppListView.
-  void ProcessScrollOffset(const gfx::Point& location,
-                           const gfx::Vector2d& scroll_offset_vector);
-
-  // Passes data from a MouseWheelEvent event from the shelf to the
-  // AppListView.
-  void ProcessMouseWheelOffset(const gfx::Point& location,
-                               const gfx::Vector2d& scroll_offset_vector);
-
   // Scales the home launcher view maintaining the view center point, and
   // updates its opacity. If |callback| is non-null, the update should be
   // animated, and the |callback| should be called with the animation settings.

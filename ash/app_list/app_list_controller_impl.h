@@ -44,10 +44,6 @@
 
 class PrefRegistrySimple;
 
-namespace ui {
-class MouseWheelEvent;
-}  // namespace ui
-
 namespace ash {
 
 class AppListBadgeController;
@@ -124,8 +120,6 @@ class ASH_EXPORT AppListControllerImpl
   void Show(int64_t display_id,
             absl::optional<AppListShowSource> show_source,
             base::TimeTicks event_time_stamp);
-  void ProcessMouseWheelEvent(const ui::MouseWheelEvent& event);
-  void ProcessScrollEvent(const ui::ScrollEvent& event);
   void UpdateAppListWithNewTemporarySortOrder(
       const absl::optional<AppListSortOrder>& new_order,
       bool animate,
@@ -195,7 +189,6 @@ class ASH_EXPORT AppListControllerImpl
   void OnStateTransitionAnimationCompleted(
       AppListViewState state,
       bool was_animation_interrupted) override;
-  int AdjustAppListViewScrollOffset(int offset, ui::EventType type) override;
   void LoadIcon(const std::string& app_id) override;
   bool HasValidProfile() const override;
   bool ShouldHideContinueSection() const override;

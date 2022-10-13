@@ -602,23 +602,19 @@ void Shelf::ProcessScrollEvent(ui::ScrollEvent* event) {
   if (!shelf_layout_manager_->is_active_session_state())
     return;
 
-  // Productivity launcher does not show or hide on scroll events by default.
   // Introduce the swipe up gesture behind a flag over certain conditions.
-  if (features::IsProductivityLauncherEnabled() &&
-      !shelf_layout_manager_->IsBubbleLauncherShowOnGestureScrollAvailable()) {
+  if (!shelf_layout_manager_->IsBubbleLauncherShowOnGestureScrollAvailable())
     return;
-  }
 
   auto* app_list_controller = Shell::Get()->app_list_controller();
   DCHECK(app_list_controller);
-  // If the App List is not visible, send Scroll events to the
-  // |shelf_layout_manager_| because these events are used to show the App
-  // List.
-  if (app_list_controller->IsVisible(shelf_layout_manager_->display_.id())) {
-    app_list_controller->ProcessScrollEvent(*event);
-  } else {
-    shelf_layout_manager_->ProcessScrollEventFromShelf(event);
-  }
+  // |shelf_layout_manager_| handles scroll events to toggle the App List. If
+  // the AppList is already showing, the event must not be handled since hiding
+  // the app list is not in scope for this action.
+  if (app_list_controller->IsVisible(shelf_layout_manager_->display_.id()))
+    return;
+
+  shelf_layout_manager_->ProcessScrollEventFromShelf(event);
   event->SetHandled();
 }
 
@@ -627,22 +623,19 @@ void Shelf::ProcessMouseWheelEvent(ui::MouseWheelEvent* event) {
       !IsHorizontalAlignment())
     return;
 
-  // Productivity launcher does not show or hide on scroll events by default.
   // Introduce the swipe up gesture behind a flag over certain conditions.
-  if (features::IsProductivityLauncherEnabled() &&
-      !shelf_layout_manager_->IsBubbleLauncherShowOnGestureScrollAvailable()) {
+  if (!shelf_layout_manager_->IsBubbleLauncherShowOnGestureScrollAvailable())
     return;
-  }
 
   auto* app_list_controller = Shell::Get()->app_list_controller();
   DCHECK(app_list_controller);
-  // If the App List is not visible, send MouseWheel events to the
-  // |shelf_layout_manager_| because these events are used to show the App List.
-  if (app_list_controller->IsVisible(shelf_layout_manager_->display_.id())) {
-    app_list_controller->ProcessMouseWheelEvent(*event);
-  } else {
-    shelf_layout_manager_->ProcessMouseWheelEventFromShelf(event);
-  }
+  // |shelf_layout_manager_| handles mousewheel events to toggle the App List.
+  // If the AppList is already showing, the event must not be handled since
+  // hiding the app list is not in scope for this action.
+  if (app_list_controller->IsVisible(shelf_layout_manager_->display_.id()))
+    return;
+
+  shelf_layout_manager_->ProcessMouseWheelEventFromShelf(event);
   event->SetHandled();
 }
 

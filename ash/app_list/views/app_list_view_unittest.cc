@@ -1407,32 +1407,6 @@ TEST_F(AppListViewPeekingTest, EmptySearchTextStaysAtFullscreenAllApps) {
   ASSERT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
 }
 
-TEST_F(AppListViewPeekingTest,
-       DownwardMouseWheelScrollDismissesPeekingLauncher) {
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-
-  EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
-
-  EXPECT_EQ(0, delegate_->dismiss_count());
-  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, -30),
-                      ui::ET_MOUSEWHEEL);
-  EXPECT_EQ(1, delegate_->dismiss_count());
-}
-
-TEST_F(AppListViewPeekingTest, DownwardGestureScrollDismissesPeekingLauncher) {
-  Initialize(false /*is_tablet_mode*/);
-  delegate_->GetTestModel()->PopulateApps(kInitialItems);
-  Show();
-
-  EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
-
-  EXPECT_EQ(0, delegate_->dismiss_count());
-  view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, -30), ui::ET_SCROLL);
-  EXPECT_EQ(1, delegate_->dismiss_count());
-}
-
 // Tests that typing when in fullscreen changes the state to fullscreen search.
 TEST_F(AppListViewPeekingTest, TypingFullscreenToFullscreenSearch) {
   Initialize(false /*is_tablet_mode*/);

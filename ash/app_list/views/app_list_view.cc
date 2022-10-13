@@ -938,56 +938,10 @@ void AppListView::OnWallpaperColorsChanged() {
   search_box_view_->OnWallpaperColorsChanged();
 }
 
-bool AppListView::ShouldScrollDismissAppList(const gfx::Point& location,
-                                             const gfx::Vector2d& offset,
-                                             ui::EventType type,
-                                             bool is_in_vertical_bounds) {
-  if (delegate_->IsInTabletMode())
-    return false;
-
-  if (GetAppsContainerView()->IsInFolderView() && is_in_vertical_bounds)
-    return false;
-
-  if (!is_side_shelf() && is_in_vertical_bounds)
-    return false;
-
-  if (is_side_shelf()) {
-    // This offset will be adjusted for scrolling preferences, as well as
-    // for shelf alignment. Positive values are toward the shelf.
-    int adjusted_offset =
-        delegate_->AdjustAppListViewScrollOffset(offset.x(), type);
-
-    // If the magnitude is big enough and the scroll is toward the shelf,
-    // dismiss the full screen AppList.
-    if (adjusted_offset > AppListView::kAppListMinScrollToSwitchStates &&
-        app_list_state_ == AppListViewState::kFullscreenAllApps) {
-      return true;
-    }
-  } else {
-    int adjusted_offset =
-        delegate_->AdjustAppListViewScrollOffset(offset.y(), type);
-
-    // If the event is a mousewheel event, the offset is always large
-    // enough, otherwise the offset must be larger than the scroll
-    // threshold to dismiss from full screen.
-    if ((type == ui::ET_MOUSEWHEEL ||
-         std::abs(adjusted_offset) >
-             AppListView::kAppListMinScrollToSwitchStates) &&
-        app_list_state_ == AppListViewState::kFullscreenAllApps &&
-        adjusted_offset < 0) {
-      return true;
-    }
-  }
-  return false;
-}
-
 bool AppListView::HandleScroll(const gfx::Point& location,
                                const gfx::Vector2d& offset,
                                ui::EventType type) {
-  // Ignore 0-offset events to prevent spurious dismissal, see crbug.com/806338
-  // The system generates 0-offset ET_SCROLL_FLING_CANCEL events during simple
-  // touchpad mouse moves. Those may be passed via mojo APIs and handled here.
-  if ((offset.y() == 0 && offset.x() == 0) || ShouldIgnoreScrollEvents())
+  if (ShouldIgnoreScrollEvents())
     return false;
 
   // Don't forward scroll information if a folder is open. The folder view will
@@ -1008,20 +962,9 @@ bool AppListView::HandleScroll(const gfx::Point& location,
       root_apps_grid_location.y() > apps_grid_view->GetLocalBounds().y() &&
       root_apps_grid_location.y() < apps_grid_view->GetLocalBounds().bottom();
 
-  // First see if we need to collapse the app list from this scroll when in a
-  // side shelf alignment. We do this first because if this happens anywhere on
-  // the app list or shelf, we're going to dismiss and not scroll.
-  if (ShouldScrollDismissAppList(location, offset, type,
-                                 is_in_vertical_bounds)) {
-    Dismiss();
-    return true;
-  }
-
-  // In fullscreen, forward events to `apps_grid_view`. For example, this allows
-  // scroll events to the right of the page switcher (not inside the apps grid)
-  // to switch pages.
-  if (app_list_state_ == AppListViewState::kFullscreenAllApps &&
-      is_in_vertical_bounds) {
+  // Forward events to `apps_grid_view`. This allows scroll events to the right
+  // of the page switcher (not inside the apps grid) to switch pages.
+  if (is_in_vertical_bounds) {
     apps_grid_view->HandleScrollFromParentView(offset, type);
   }
   return true;

@@ -115,7 +115,6 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   bool AppListTargetVisibility() const override;
   bool IsInTabletMode() override;
   AppListNotifier* GetNotifier() override;
-  int AdjustAppListViewScrollOffset(int offset, ui::EventType type) override;
   void LoadIcon(const std::string& app_id) override {}
   bool HasValidProfile() const override;
   bool ShouldHideContinueSection() const override;

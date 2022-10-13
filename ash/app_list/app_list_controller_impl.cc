@@ -231,11 +231,6 @@ bool IsSuggestedContentEnabled() {
   return prefs->GetBoolean(chromeos::prefs::kSuggestedContentEnabled);
 }
 
-int GetOffset(int offset, const char* pref_name) {
-  PrefService* prefs = GetLastActiveUserPrefService();
-  return prefs->GetBoolean(pref_name) ? -offset : offset;
-}
-
 // Gets the MRU window shown over the applist when in tablet mode.
 // Returns nullptr if no windows are shown over the applist.
 aura::Window* GetTopVisibleWindow() {
@@ -545,17 +540,6 @@ void AppListControllerImpl::Show(int64_t display_id,
   }
   fullscreen_presenter_->Show(AppListViewState::kFullscreenAllApps, display_id,
                               event_time_stamp, show_source);
-}
-
-void AppListControllerImpl::ProcessMouseWheelEvent(
-    const ui::MouseWheelEvent& event) {
-  fullscreen_presenter_->ProcessMouseWheelOffset(event.location(),
-                                                 event.offset());
-}
-
-void AppListControllerImpl::ProcessScrollEvent(const ui::ScrollEvent& event) {
-  gfx::Vector2d offset(event.x_offset(), event.y_offset());
-  fullscreen_presenter_->ProcessScrollOffset(event.location(), offset);
 }
 
 void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
@@ -1541,31 +1525,6 @@ void AppListControllerImpl::ScheduleCloseAssistant() {
     DCHECK(!close_assistant_ui_runner_);
     close_assistant_ui_runner_.ReplaceClosure(runner->Release());
   }
-}
-
-int AppListControllerImpl::AdjustAppListViewScrollOffset(int offset,
-                                                         ui::EventType type) {
-  Shelf* shelf = Shelf::ForWindow(
-      fullscreen_presenter_->GetView()->GetWidget()->GetNativeView());
-
-  // When Natural/Reverse Scrolling is turned on, the events we receive have had
-  // their offsets inverted to make that feature work. Certain behaviors, like
-  // scrolling on the shelf to expand the app list, only make sense in their
-  // original direction, so we undo that inversion.
-  int adjusted_offset =
-      (type == ui::ET_SCROLL || type == ui::ET_SCROLL_FLING_START)
-          ? GetOffset(offset, prefs::kNaturalScroll)
-          : GetOffset(offset, prefs::kMouseReverseScroll);
-
-  // If the shelf is side mounted, we set the offset in terms of being toward
-  // the shelf to simplify the logic later.
-  if (!shelf->IsHorizontalAlignment()) {
-    adjusted_offset = shelf->alignment() == ShelfAlignment::kLeft
-                          ? adjusted_offset
-                          : -adjusted_offset;
-  }
-
-  return adjusted_offset;
 }
 
 void AppListControllerImpl::LoadIcon(const std::string& app_id) {
