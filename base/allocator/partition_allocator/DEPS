@@ -5,6 +5,51 @@
 # PartitionAlloc is planned to be extracted into a standalone library, and
 # therefore dependencies need to be strictly controlled and minimized.
 
+# Only these hosts are allowed for dependencies in this DEPS file.
+# This is a subset of chromium/src/DEPS's allowed_hosts.
+allowed_hosts = [
+  'chromium.googlesource.com',
+]
+
+vars = {
+  'chromium_git': 'https://chromium.googlesource.com',
+}
+
+deps = {
+  'partition_allocator/buildtools/clang_format/script':
+      Var('chromium_git') + '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git',
+  'partition_allocator/buildtools/linux64': {
+    'packages': [
+      {
+        'package': 'gn/gn/linux-${{arch}}',
+        'version': 'latest',
+      }
+    ],
+    'dep_type': 'cipd',
+    'condition': 'host_os == "linux"',
+  },
+  'partition_allocator/buildtools/mac': {
+    'packages': [
+      {
+        'package': 'gn/gn/mac-${{arch}}',
+        'version': 'latest',
+      }
+    ],
+    'dep_type': 'cipd',
+    'condition': 'host_os == "mac"',
+  },
+  'partition_allocator/buildtools/win': {
+    'packages': [
+      {
+        'package': 'gn/gn/windows-amd64',
+        'version': 'latest',
+      }
+    ],
+    'dep_type': 'cipd',
+    'condition': 'host_os == "win"',
+  },
+}
+
 noparent = True
 
 include_rules = [
