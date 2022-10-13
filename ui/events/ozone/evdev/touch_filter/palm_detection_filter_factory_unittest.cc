@@ -105,8 +105,8 @@ TEST_F(PalmDetectionFilterFactoryTest, AllDisabled) {
 
 TEST_F(PalmDetectionFilterFactoryTest, HeuristicEnabledForEve) {
   scoped_feature_list_->InitWithFeaturesAndParameters(
-      {base::test::ScopedFeatureList::FeatureAndParams(
-          ui::kEnableHeuristicPalmDetectionFilter, {})},
+      {base::test::FeatureRefAndParams(ui::kEnableHeuristicPalmDetectionFilter,
+                                       {})},
       {ui::kEnableNeuralPalmDetectionFilter});
   std::unique_ptr<PalmDetectionFilter> palm_filter =
       CreatePalmDetectionFilter(eve_touchscreen_info_, &shared_palm_state_);
@@ -131,7 +131,7 @@ TEST_F(PalmDetectionFilterFactoryTest, HeuristicEnabledForEve) {
 
 TEST_F(PalmDetectionFilterFactoryTest, HeuristicTimesSet) {
   scoped_feature_list_->InitWithFeaturesAndParameters(
-      {base::test::ScopedFeatureList::FeatureAndParams(
+      {base::test::FeatureRefAndParams(
           ui::kEnableHeuristicPalmDetectionFilter,
           {{"heuristic_palm_cancel_threshold_seconds", "0.8"},
            {"heuristic_palm_hold_threshold_seconds", "15.327"}})},
@@ -178,10 +178,10 @@ TEST_F(PalmDetectionFilterFactoryTest, NeuralReportNeuralDetectSet) {
 
 TEST_F(PalmDetectionFilterFactoryTest, NeuralBeatsHeuristic) {
   scoped_feature_list_->InitWithFeaturesAndParameters(
-      {base::test::ScopedFeatureList::FeatureAndParams(
-           ui::kEnableHeuristicPalmDetectionFilter, {}),
-       base::test::ScopedFeatureList::FeatureAndParams(
-           ui::kEnableNeuralPalmDetectionFilter, {})},
+      {base::test::FeatureRefAndParams(ui::kEnableHeuristicPalmDetectionFilter,
+                                       {}),
+       base::test::FeatureRefAndParams(ui::kEnableNeuralPalmDetectionFilter,
+                                       {})},
       {});
   std::unique_ptr<PalmDetectionFilter> palm_filter = CreatePalmDetectionFilter(
       nocturne_touchscreen_info_, &shared_palm_state_);
@@ -205,7 +205,7 @@ TEST_F(PalmDetectionFilterFactoryDeathTest, BadParseRecovery) {
 
 TEST_F(PalmDetectionFilterFactoryDeathTest, BadNeuralParamParse) {
   scoped_feature_list_->InitWithFeaturesAndParameters(
-      {base::test::ScopedFeatureList::FeatureAndParams(
+      {base::test::FeatureRefAndParams(
           ui::kEnableNeuralPalmDetectionFilter,
           {
               {"neural_palm_radius_polynomial", "1.0,chicken"},

@@ -59,7 +59,7 @@ using ::base::Feature;
 using ::base::sequence_manager::FakeTask;
 using ::base::sequence_manager::FakeTaskTiming;
 using blink::WebInputEvent;
-using FeatureAndParams = ::base::test::ScopedFeatureList::FeatureAndParams;
+using FeatureAndParams = ::base::test::FeatureRefAndParams;
 using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::NiceMock;

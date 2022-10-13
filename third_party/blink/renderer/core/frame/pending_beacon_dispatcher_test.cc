@@ -328,9 +328,8 @@ TEST_F(PendingBeaconDispatcherBackgroundTimeoutBundledTest,
 class PendingBeaconDispatcherOnPagehideTest
     : public PendingBeaconDispatcherTestBase {
   void SetUp() override {
-    const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features = {{blink::features::kPendingBeaconAPI,
-                             {{"send_on_navigation", "true"}}}};
+    const std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {blink::features::kPendingBeaconAPI, {{"send_on_navigation", "true"}}}};
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
     PendingBeaconDispatcherTestBase::SetUp();
   }

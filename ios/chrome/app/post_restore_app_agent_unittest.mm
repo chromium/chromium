@@ -100,7 +100,7 @@ class PostRestoreAppAgentTest : public PlatformTest {
 
   void EnableFeatureVariationAlert() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {base::test::ScopedFeatureList::FeatureAndParams(
+        {base::test::FeatureRefAndParams(
             post_restore_signin::features::kIOSNewPostRestoreExperience,
             {{post_restore_signin::features::kIOSNewPostRestoreExperienceParam,
               "true"}})},
