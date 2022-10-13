@@ -11,13 +11,15 @@
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/find_in_page/find_notification_details.h"
-#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace content {
 class NavigationEntry;
-}
+class RenderFrameHost;
+}  // namespace content
 
 // Per-tab search engine manager. Handles dealing search engine processing
 // functionality.
@@ -27,13 +29,19 @@ class SearchEngineTabHelper
       public chrome::mojom::OpenSearchDescriptionDocumentHandler,
       public favicon::FaviconDriverObserver {
  public:
+  // Binds to the supplied receiver if `rfh` is the outermost frame in a
+  // WebContents. Each WebContents could have multiple outermost frames, e.g.
+  // the primary main frame, prerendering main frames, and main frames stored in
+  // the back-forward cache.
   static void BindOpenSearchDescriptionDocumentHandler(
-      mojo::PendingAssociatedReceiver<
-          chrome::mojom::OpenSearchDescriptionDocumentHandler> receiver,
-      content::RenderFrameHost* rfh);
+      content::RenderFrameHost* rfh,
+      mojo::PendingReceiver<chrome::mojom::OpenSearchDescriptionDocumentHandler>
+          receiver);
 
   SearchEngineTabHelper(const SearchEngineTabHelper&) = delete;
   SearchEngineTabHelper& operator=(const SearchEngineTabHelper&) = delete;
+  SearchEngineTabHelper(SearchEngineTabHelper&&) = delete;
+  SearchEngineTabHelper& operator=(SearchEngineTabHelper&&) = delete;
 
   ~SearchEngineTabHelper() override;
 
@@ -64,8 +72,7 @@ class SearchEngineTabHelper
   // If params has a searchable form, this tries to create a new keyword.
   void GenerateKeywordIfNecessary(content::NavigationHandle* handle);
 
-  content::RenderFrameHostReceiverSet<
-      chrome::mojom::OpenSearchDescriptionDocumentHandler>
+  mojo::ReceiverSet<chrome::mojom::OpenSearchDescriptionDocumentHandler>
       osdd_handler_receivers_;
 
   base::ScopedObservation<favicon::FaviconDriver,

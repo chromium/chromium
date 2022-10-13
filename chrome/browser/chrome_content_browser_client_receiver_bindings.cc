@@ -22,7 +22,6 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
-#include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill_assistant/content/browser/content_autofill_assistant_driver.h"
@@ -505,15 +504,6 @@ void ChromeContentBrowserClient::
                 std::move(receiver), render_frame_host);
           },
           &render_frame_host));
-  associated_registry.AddInterface<
-      chrome::mojom::OpenSearchDescriptionDocumentHandler>(base::BindRepeating(
-      [](content::RenderFrameHost* render_frame_host,
-         mojo::PendingAssociatedReceiver<
-             chrome::mojom::OpenSearchDescriptionDocumentHandler> receiver) {
-        SearchEngineTabHelper::BindOpenSearchDescriptionDocumentHandler(
-            std::move(receiver), render_frame_host);
-      },
-      &render_frame_host));
 #if BUILDFLAG(ENABLE_PLUGINS)
   associated_registry.AddInterface<
       chrome::mojom::PluginAuthHost>(base::BindRepeating(

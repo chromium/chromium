@@ -31,6 +31,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/translate/translate_frame_binder.h"
+#include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/draggable_region_host_impl.h"
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
@@ -725,6 +726,10 @@ void PopulateChromeFrameBinders(
 
   map->Add<payments::mojom::PaymentCredential>(
       base::BindRepeating(&payments::CreatePaymentCredential));
+
+  map->Add<chrome::mojom::OpenSearchDescriptionDocumentHandler>(
+      base::BindRepeating(
+          &SearchEngineTabHelper::BindOpenSearchDescriptionDocumentHandler));
 
 #if BUILDFLAG(IS_ANDROID)
   map->Add<blink::mojom::InstalledAppProvider>(base::BindRepeating(

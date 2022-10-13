@@ -246,15 +246,15 @@ void ChromeRenderFrameObserver::ReadyToCommitNavigation(
 void ChromeRenderFrameObserver::DidFinishLoad() {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
   // Don't do anything for subframes.
-  if (frame->Parent())
+  if (frame->Parent() || frame->IsInFencedFrameTree())
     return;
 
   GURL osdd_url = frame->GetDocument().OpenSearchDescriptionURL();
   if (!osdd_url.is_empty()) {
-    mojo::AssociatedRemote<chrome::mojom::OpenSearchDescriptionDocumentHandler>
+    mojo::Remote<chrome::mojom::OpenSearchDescriptionDocumentHandler>
         osdd_handler;
-    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
-        &osdd_handler);
+    render_frame()->GetBrowserInterfaceBroker()->GetInterface(
+        osdd_handler.BindNewPipeAndPassReceiver());
     osdd_handler->PageHasOpenSearchDescriptionDocument(
         frame->GetDocument().Url(), osdd_url);
   }

@@ -80498,7 +80498,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="-71187962" label="supervised_user.mojom.SupervisedUserCommands"/>
   <int value="191605727" label="content.mojom.PepperHost"/>
   <int value="1984681860"
-      label="chrome.mojom.OpenSearchDescriptionDocumentHandler"/>
+      label="chrome.mojom.OpenSearchDescriptionDocumentHandler (Obsolete)"/>
 </enum>
 
 <enum name="PrerenderCookieSendType">
