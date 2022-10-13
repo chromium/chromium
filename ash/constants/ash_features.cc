@@ -1644,7 +1644,7 @@ BASE_FEATURE(kQsRevamp, "QsRevamp", base::FEATURE_DISABLED_BY_DEFAULT);
 // secondary account.
 BASE_FEATURE(kProjectorViewerUseSecondaryAccount,
              "ProjectorViewerUseSecondaryAccount",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the quick dim prototype is enabled.
 BASE_FEATURE(kQuickDim, "QuickDim", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2892,8 +2892,6 @@ bool IsQsRevampEnabled() {
 }
 
 bool IsProjectorViewerUseSecondaryAccountEnabled() {
-  // TODO(b/250646696): enable this feature based on
-  // ProjectorBleedingEdgeExperience when it is ready to be tested.
   return base::FeatureList::IsEnabled(kProjectorViewerUseSecondaryAccount);
 }
 
