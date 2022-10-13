@@ -258,12 +258,15 @@ ci.builder(
             build_config = builder_config.build_config.RELEASE,
             target_arch = builder_config.target_arch.INTEL,
             target_bits = 64,
+            target_cros_boards = [
+                "amd64-generic",
+            ],
             target_platform = builder_config.target_platform.CHROMEOS,
             cros_boards_with_qemu_images = "amd64-generic-vm",
         ),
         gclient_config = builder_config.gclient_config(
             config = "chromium",
-            apply_configs = ["chromeos"],
+            apply_configs = ["chromeos", "checkout_lacros_sdk"],
         ),
     ),
     console_view_entry = consoles.console_view_entry(

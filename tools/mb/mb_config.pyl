@@ -2108,7 +2108,7 @@
     ],
 
     'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized_dchecks': [
-      'chromeos_amd64-generic-vm', 'use_fake_dbus_clients', 'dcheck_always_on',
+      'chromeos_amd64-generic-vm', 'use_fake_dbus_clients', 'dcheck_always_on', 'also_build_lacros_chrome_for_architecture_amd64'
     ],
 
     'chromeos_arm-generic_cfi_thin_lto_official': [
