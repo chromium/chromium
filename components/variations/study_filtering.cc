@@ -268,7 +268,8 @@ bool ShouldAddStudy(const ProcessedStudy& processed_study,
     }
 
     if (processed_study.ShouldStudyUseLowEntropy() &&
-        layers.IsLayerUsingDefaultEntropy(study.layer().layer_id())) {
+        layers.ActiveLayerMemberDependsOnHighEntropy(
+            study.layer().layer_id())) {
       DVLOG(1) << "Filtered out study " << study.name()
                << " due to requiring a low entropy source yet being a member "
                   "of a layer using the default entropy source.";

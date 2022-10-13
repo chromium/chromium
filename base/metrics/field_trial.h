@@ -102,6 +102,10 @@ class BASE_EXPORT FieldTrial : public RefCounted<FieldTrial> {
     // value given the same input |trial_name| and |randomization_seed| values.
     virtual double GetEntropyForTrial(StringPiece trial_name,
                                       uint32_t randomization_seed) const = 0;
+
+    // Returns a pseudorandom integer in [0, output_range).
+    // |salt| is a data parameter for the pseudorandom function.
+    uint32_t GetPseudorandomValue(uint32_t salt, uint32_t output_range) const;
   };
 
   // Separate type from FieldTrial::PickleState so that it can use StringPieces.

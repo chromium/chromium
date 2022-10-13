@@ -230,6 +230,18 @@ bool FieldTrial::enable_benchmarking_ = false;
 
 FieldTrial::EntropyProvider::~EntropyProvider() = default;
 
+uint32_t FieldTrial::EntropyProvider::GetPseudorandomValue(
+    uint32_t salt,
+    uint32_t output_range) const {
+  // Passing a different salt is sufficient to get a "different" result from
+  // GetEntropyForTrial (ignoring collisions).
+  double entropy_value = GetEntropyForTrial(/*trial_name=*/"", salt);
+
+  // Convert the [0,1) double to an [0, output_range) integer.
+  return static_cast<uint32_t>(GetGroupBoundaryValue(
+      static_cast<FieldTrial::Probability>(output_range), entropy_value));
+}
+
 FieldTrial::PickleState::PickleState() = default;
 
 FieldTrial::PickleState::PickleState(const PickleState& other) = default;

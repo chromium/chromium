@@ -10,47 +10,24 @@ namespace variations {
 
 namespace {
 
-// Returns a double in the [0, 1] range to be used to select a slot within
-// a layer with the given randomization seed value.
-double GetEntropyForLayer(
-    const base::FieldTrial::EntropyProvider& entropy_provider,
-    uint32_t randomization_seed) {
-  // GetEntropyForTrial will ignore the trial_name parameter in favor of the
-  // randomization_seed.
-  return entropy_provider.GetEntropyForTrial(/*trial_name=*/"",
-                                             randomization_seed);
-}
-
 // Iterates through the members of the given layer proto definition, and
-// returns the ID of the member which contains that slot (if any).
-absl::optional<uint32_t> FindActiveMemberBySlot(uint32_t chosen_slot,
-                                                const Layer& layer_proto) {
+// returns the member which contains that slot (if any).
+const Layer::LayerMember* FindActiveMemberBySlot(uint32_t chosen_slot,
+                                                 const Layer& layer_proto) {
   for (const Layer::LayerMember& member : layer_proto.members()) {
     if (!member.id())
       continue;
 
     for (const Layer::LayerMember::SlotRange& slot : member.slots()) {
       if (slot.start() <= chosen_slot && chosen_slot <= slot.end())
-        return member.id();
+        return &member;
     }
   }
 
-  return absl::nullopt;
+  return nullptr;
 }
 
 }  // namespace
-
-VariationsLayers::LayerInfo::LayerInfo(
-    absl::optional<uint32_t> active_member_id,
-    Layer::EntropyMode entropy_mode)
-    : active_member_id(active_member_id), entropy_mode(entropy_mode) {}
-
-VariationsLayers::LayerInfo::~LayerInfo() = default;
-
-VariationsLayers::LayerInfo::LayerInfo(const LayerInfo& other) {
-  active_member_id = other.active_member_id;
-  entropy_mode = other.entropy_mode;
-}
 
 VariationsLayers::VariationsLayers(const VariationsSeed& seed,
                                    const EntropyProviders& entropy_providers) {
@@ -71,27 +48,24 @@ void VariationsLayers::ConstructLayer(const EntropyProviders& entropy_providers,
     return;
   }
 
-  double entropy_value;
-  if (layer_proto.entropy_mode() == Layer::LOW) {
-    entropy_value =
-        GetEntropyForLayer(entropy_providers.low_entropy(), layer_proto.salt());
-  } else {
-    entropy_value = GetEntropyForLayer(entropy_providers.default_entropy(),
-                                       layer_proto.salt());
+  if (layer_proto.entropy_mode() != Layer::LOW &&
+      layer_proto.entropy_mode() != Layer::DEFAULT) {
+    return;
   }
 
-  const double kEpsilon = 1e-8;
-  // Add a tiny epsilon to get consistent values when converting the double
-  // to the integer slots; see comment in
-  // base::FieldTrialList::GetGroupBoundaryValue() for more details.
-  uint32_t chosen_slot = std::min(
-      static_cast<uint32_t>(layer_proto.num_slots() * entropy_value + kEpsilon),
-      layer_proto.num_slots() - 1);
+  const auto& entropy_provider = (layer_proto.entropy_mode() != Layer::LOW)
+                                     ? entropy_providers.default_entropy()
+                                     : entropy_providers.low_entropy();
 
+  uint32_t chosen_slot = entropy_provider.GetPseudorandomValue(
+      layer_proto.salt(), layer_proto.num_slots());
+
+  const auto* chosen_member = FindActiveMemberBySlot(chosen_slot, layer_proto);
+  if (!chosen_member)
+    return;
   active_member_for_layer_.emplace(
-      layer_proto.id(),
-      LayerInfo{FindActiveMemberBySlot(chosen_slot, layer_proto),
-                layer_proto.entropy_mode()});
+      layer_proto.id(), LayerInfo{.active_member_id = chosen_member->id(),
+                                  .entropy_mode = layer_proto.entropy_mode()});
 }
 
 bool VariationsLayers::IsLayerMemberActive(uint32_t layer_id,
@@ -101,10 +75,11 @@ bool VariationsLayers::IsLayerMemberActive(uint32_t layer_id,
     return false;
 
   return layer_iter->second.active_member_id &&
-         (member_id == layer_iter->second.active_member_id.value());
+         (member_id == layer_iter->second.active_member_id);
 }
 
-bool VariationsLayers::IsLayerUsingDefaultEntropy(uint32_t layer_id) const {
+bool VariationsLayers::ActiveLayerMemberDependsOnHighEntropy(
+    uint32_t layer_id) const {
   auto layer_iter = active_member_for_layer_.find(layer_id);
   if (layer_iter == active_member_for_layer_.end())
     return false;
