@@ -32,7 +32,6 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
@@ -315,11 +314,10 @@ class PropertyWaiter {
 
 std::unique_ptr<Textfield> CreateTextfield() {
   auto textfield = std::make_unique<Textfield>();
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks, but this focusable View needs to
-  // add a name so that the screen reader knows what to announce. Consider
-  // adding bogus placeholder text here.
-  textfield->SetProperty(views::kSkipAccessibilityPaintChecks, true);
+  // Focusable views must have an accessible name in order to pass the
+  // accessibility paint checks. The name can be literal text, placeholder
+  // text or an associated label.
+  textfield->SetAccessibleName(u"Foo");
   return textfield;
 }
 
