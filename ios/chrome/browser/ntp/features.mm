@@ -22,6 +22,9 @@ const base::Feature kEnableWebChannels{"EnableWebChannels",
 const base::Feature kEnableFeedBackgroundRefresh{
     "EnableFeedBackgroundRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kCreateDiscoverFeedServiceEarly{
+    "CreateDiscoverFeedServiceEarly", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable feed backround refresh. This is used because registering for
 // background refreshes must happen early in app initialization and FeatureList
@@ -46,6 +49,10 @@ const char kBackgroundRefreshMaxAgeInSeconds[] =
 
 bool IsWebChannelsEnabled() {
   return base::FeatureList::IsEnabled(kEnableWebChannels);
+}
+
+bool IsDiscoverFeedServiceCreatedEarly() {
+  return base::FeatureList::IsEnabled(kCreateDiscoverFeedServiceEarly);
 }
 
 bool IsFeedBackgroundRefreshEnabled() {

@@ -50,7 +50,7 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
     // execute saving a new value.
     SaveFeedBackgroundRefreshEnabledForNextColdStart();
   } else if (appState.initStage == InitStageNormalUI &&
-             IsWebChannelsEnabled()) {
+             IsWebChannelsEnabled() && IsDiscoverFeedServiceCreatedEarly()) {
     // Starting the DiscoverFeedService is required before users are able to
     // interact with any tab because following a web channel (part of the
     // Following Feed feature which depends on the DiscoverFeedService) is
