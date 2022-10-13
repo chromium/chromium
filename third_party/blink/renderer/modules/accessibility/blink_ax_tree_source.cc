@@ -221,30 +221,31 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
     tree_data->root_scroller_id = 0;
 
   if (ax_object_cache_->GetAXMode().has_mode(ui::AXMode::kHTMLMetadata)) {
-    HTMLHeadElement* head = ax_object_cache_->GetDocument().head();
-    for (Node* child = head->firstChild(); child;
-         child = child->nextSibling()) {
-      if (!child->IsElementNode())
-        continue;
-      Element* elem = To<Element>(child);
-      if (elem->IsHTMLWithTagName("SCRIPT")) {
-        if (elem->getAttribute("type") != "application/ld+json")
+    if (HTMLHeadElement* head = ax_object_cache_->GetDocument().head()) {
+      for (Node* child = head->firstChild(); child;
+           child = child->nextSibling()) {
+        if (!child->IsElementNode())
           continue;
-      } else if (!elem->IsHTMLWithTagName("LINK") &&
-                 !elem->IsHTMLWithTagName("TITLE") &&
-                 !elem->IsHTMLWithTagName("META")) {
-        continue;
+        Element* elem = To<Element>(child);
+        if (elem->IsHTMLWithTagName("SCRIPT")) {
+          if (elem->getAttribute("type") != "application/ld+json")
+            continue;
+        } else if (!elem->IsHTMLWithTagName("LINK") &&
+                   !elem->IsHTMLWithTagName("TITLE") &&
+                   !elem->IsHTMLWithTagName("META")) {
+          continue;
+        }
+        // TODO(chrishtr): replace the below with elem->outerHTML().
+        String tag = elem->tagName().LowerASCII();
+        String html = "<" + tag;
+        for (unsigned i = 0; i < elem->Attributes().size(); i++) {
+          html = html + String(" ") + elem->Attributes().at(i).LocalName() +
+                 String("=\"") + elem->Attributes().at(i).Value() + "\"";
+        }
+        html = html + String(">") + elem->innerHTML() + String("</") + tag +
+               String(">");
+        tree_data->metadata.push_back(html.Utf8());
       }
-      // TODO(chrishtr): replace the below with elem->outerHTML().
-      String tag = elem->tagName().LowerASCII();
-      String html = "<" + tag;
-      for (unsigned i = 0; i < elem->Attributes().size(); i++) {
-        html = html + String(" ") + elem->Attributes().at(i).LocalName() +
-               String("=\"") + elem->Attributes().at(i).Value() + "\"";
-      }
-      html = html + String(">") + elem->innerHTML() + String("</") + tag +
-             String(">");
-      tree_data->metadata.push_back(html.Utf8());
     }
   }
 
