@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,8 +43,7 @@ class TestFrameAdapter : public UniqueNameHelper::FrameAdapter {
 
   ~TestFrameAdapter() override {
     if (parent_) {
-      parent_->children_.erase(std::find(parent_->children_.begin(),
-                                         parent_->children_.end(), this));
+      parent_->children_.erase(base::ranges::find(parent_->children_, this));
     }
   }
 

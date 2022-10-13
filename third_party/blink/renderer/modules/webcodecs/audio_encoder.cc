@@ -7,6 +7,7 @@
 #include <cinttypes>
 #include <limits>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -102,8 +103,7 @@ bool VerifyParameterValues(const T& value,
                            ExceptionState* exception_state,
                            WTF::String error_message,
                            WTF::Vector<T> supported_values) {
-  if (std::find(supported_values.begin(), supported_values.end(), value) ==
-      supported_values.end()) {
+  if (!base::Contains(supported_values, value)) {
     if (exception_state) {
       WTF::StringBuilder error_builder;
       error_builder.Append(error_message);

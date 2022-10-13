@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
 
+#include "base/containers/contains.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -31,9 +32,7 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
   LoadPolicy GetLoadPolicy(const WebURL& resource_url,
                            mojom::blink::RequestContextType) override {
     String resource_path = KURL(resource_url).GetPath();
-    if (std::find(queried_subresource_paths_.begin(),
-                  queried_subresource_paths_.end(),
-                  resource_path) == queried_subresource_paths_.end()) {
+    if (!base::Contains(queried_subresource_paths_, resource_path)) {
       queried_subresource_paths_.push_back(resource_path);
     }
     String resource_string = resource_url.GetString();

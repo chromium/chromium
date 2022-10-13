@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -715,7 +716,7 @@ static void AddSinkInternal(Vector<WebMediaStreamSink*>* sinks,
 
 static void RemoveSinkInternal(Vector<WebMediaStreamSink*>* sinks,
                                WebMediaStreamSink* sink) {
-  auto** it = std::find(sinks->begin(), sinks->end(), sink);
+  auto** it = base::ranges::find(*sinks, sink);
   DCHECK(it != sinks->end());
   sinks->erase(it);
 }

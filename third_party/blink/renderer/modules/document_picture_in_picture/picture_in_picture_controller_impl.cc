@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -347,8 +348,7 @@ void PictureInPictureControllerImpl::AddToAutoPictureInPictureElementsList(
 void PictureInPictureControllerImpl::RemoveFromAutoPictureInPictureElementsList(
     HTMLVideoElement* element) {
   DCHECK(element);
-  auto it = std::find(auto_picture_in_picture_elements_.begin(),
-                      auto_picture_in_picture_elements_.end(), element);
+  auto it = base::ranges::find(auto_picture_in_picture_elements_, element);
   if (it != auto_picture_in_picture_elements_.end())
     auto_picture_in_picture_elements_.erase(it);
 }

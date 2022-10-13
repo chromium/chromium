@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "net/base/mime_util.h"
@@ -369,8 +370,7 @@ absl::optional<size_t> GetPossibleKeysIndex(
   DCHECK_EQ(variant_key.size(), sorted_variants.size());
   size_t index = 0;
   for (size_t i = 0; i < sorted_variants.size(); ++i) {
-    auto found = std::find(sorted_variants[i].begin(), sorted_variants[i].end(),
-                           variant_key[i]);
+    auto found = base::ranges::find(sorted_variants[i], variant_key[i]);
     if (found == sorted_variants[i].end())
       return absl::nullopt;
 
@@ -552,9 +552,7 @@ bool WebPackageRequestMatcher::MatchRequest(
     DCHECK_EQ(vk.size(), sorted_variants.size());
     size_t i = 0;
     for (; i < sorted_variants.size(); ++i) {
-      auto found = std::find(sorted_variants[i].begin(),
-                             sorted_variants[i].end(), vk[i]);
-      if (found == sorted_variants[i].end())
+      if (!base::Contains(sorted_variants[i], vk[i]))
         break;
     }
     if (i == sorted_variants.size())
@@ -636,8 +634,7 @@ absl::optional<size_t> WebPackageRequestMatcher::FindBestMatchingIndex(
         negotiation_algorithm->run(variant_axis.second, request_value);
     if (sorted_values.empty())
       return absl::nullopt;
-    auto it = std::find(variant_axis.second.begin(), variant_axis.second.end(),
-                        sorted_values.front());
+    auto it = base::ranges::find(variant_axis.second, sorted_values.front());
     if (it == variant_axis.second.end())
       return absl::nullopt;
     size_t best_value_index = it - variant_axis.second.begin();

@@ -30,9 +30,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 
-#include <algorithm>
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
@@ -186,8 +186,7 @@ inline static bool IsByteSwappedWiredData(const uint8_t* data, size_t length) {
     // support for SSV version 0 by then.
     static constexpr uint8_t version0Tags[] = {35, 64, 68, 73,  78,  82, 83,
                                                85, 91, 98, 102, 108, 123};
-    return std::find(std::begin(version0Tags), std::end(version0Tags),
-                     data[1]) != std::end(version0Tags);
+    return base::Contains(version0Tags, data[1]);
   }
 
   if (data[1] == kVersionTag) {

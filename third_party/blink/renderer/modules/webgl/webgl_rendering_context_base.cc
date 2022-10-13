@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/synchronization/lock.h"
@@ -3410,9 +3411,7 @@ static const GLenum kIdentifiableGLParams[] = {
 bool ShouldMeasureGLParam(GLenum pname) {
   return IdentifiabilityStudySettings::Get()->ShouldSampleType(
              blink::IdentifiableSurface::Type::kWebGLParameter) &&
-         std::find(std::begin(kIdentifiableGLParams),
-                   std::end(kIdentifiableGLParams),
-                   pname) != std::end(kIdentifiableGLParams);
+         base::Contains(kIdentifiableGLParams, pname);
 }
 
 }  // namespace

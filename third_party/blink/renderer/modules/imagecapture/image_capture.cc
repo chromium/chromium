@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -54,10 +55,6 @@ const char kNoServiceError[] = "ImageCapture service unavailable.";
 
 const char kInvalidStateTrackError[] =
     "The associated Track is in an invalid state";
-
-bool Contains(const Vector<bool>& vector, bool value) {
-  return std::find(vector.begin(), vector.end(), value) != vector.end();
-}
 
 bool TrackIsInactive(const MediaStreamTrack& track) {
   // Spec instructs to return an exception if the Track's readyState() is not
@@ -774,7 +771,7 @@ void ImageCapture::SetMediaTrackConstraints(
       constraints->backgroundBlur()->IsBoolean();
   if (settings->has_background_blur_mode) {
     const auto background_blur = constraints->backgroundBlur()->GetAsBoolean();
-    if (!Contains(capabilities_->backgroundBlur(), background_blur)) {
+    if (!base::Contains(capabilities_->backgroundBlur(), background_blur)) {
       resolver->Reject(MakeGarbageCollected<OverconstrainedError>(
           "backgroundBlur", "backgroundBlur setting value not supported"));
       return;

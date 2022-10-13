@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 
-#include <algorithm>
 #include <set>
 #include <string>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
@@ -97,7 +97,7 @@ std::vector<const webrtc::RTCStatsMemberInterface*> FilterMembers(
         const std::vector<webrtc::NonStandardGroupId>& ids =
             member->group_ids();
         for (const webrtc::NonStandardGroupId& id : exposed_group_ids) {
-          if (std::find(ids.begin(), ids.end(), id) != ids.end()) {
+          if (base::Contains(ids, id)) {
             return false;
           }
         }
