@@ -676,6 +676,7 @@ void TemplateURLService::SetIsActiveTemplateURL(TemplateURL* url,
   std::string histogram_name = kKeywordModeUsageByEngineTypeHistogramName;
   if (is_active) {
     data.is_active = TemplateURLData::ActiveStatus::kTrue;
+    data.safe_for_autoreplace = false;
     histogram_name.append(".Activated");
   } else {
     data.is_active = TemplateURLData::ActiveStatus::kFalse;
@@ -2317,6 +2318,7 @@ void TemplateURLService::MaybeSetIsActiveSearchEngines(
     if (turl->is_active() == TemplateURLData::ActiveStatus::kUnspecified &&
         (!turl->safe_for_autoreplace() || turl->usage_count() > 0)) {
       turl->data_.is_active = TemplateURLData::ActiveStatus::kTrue;
+      turl->data_.safe_for_autoreplace = false;
       if (web_data_service_)
         web_data_service_->UpdateKeyword(turl->data());
     }
