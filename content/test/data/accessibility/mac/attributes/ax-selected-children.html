@@ -1,0 +1,24 @@
+<!--
+@SCRIPT:
+  list.accessibilityAttributeValue(selectedChildren)
+  button.accessibilityAttributeValue(AXSelected)
+  div.accessibilityAttributeNames.has(AXSelectedChildren)
+  div.accessibilityAttributeValue(AXSelectedChildren)
+-->
+<!DOCTYPE html>
+<!-- The focused element should always be the first item in the list of selected
+      children, regardless of whether it's selected or not. -->
+<ul id="list" role="listbox" aria-multiselectable="true">
+  <li id="item1" role="option" aria-selected="true" tabindex="-1">Item 1</li>
+  <li id="item2" role="option" aria-selected="false" tabindex="-1" autofocus>Item 2</li>
+  <li id="item3" role="option" aria-selected="true" tabindex="-1">Item 3</li>
+</ul>
+
+<!--
+  This is a regression test for bug: 1276763
+  before the fix (3359801), when focus is on the button, the result was:
+  div.accessibilityAttributeValue(AXSelectedChildren)=[:3]
+-->
+<div id="div">
+  <button autofocus id="button"></button>
+</div>

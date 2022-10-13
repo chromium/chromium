@@ -1258,11 +1258,17 @@ bool content::IsNSRange(id value) {
       return ret;
     }
 
-    // If this container is multi-selectable and the focused child is selected,
-    // add the focused child in the list of selected children first, because
-    // this is how VoiceOver determines where to draw the focus ring around the
-    // active item.
-    if (focusedChild->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected))
+    // If this container is multi-selectable, the focused child should be
+    // the first item in the list of selected children regardless of whether
+    // it is selected or not, because this is how VoiceOver determines where to
+    // draw the focus ring around the active item.
+    //
+    // Not appending this item when focused but not selected would result in
+    // VoiceOver's focus ring jumping to the first selected item. It's unclear
+    // if this is by design or not, but VoiceOver folks confirmed offline that
+    // Safari always append the focused item, whether selected or not, to the
+    // list of selected items.
+    if (GetState(_owner, ax::mojom::State::kMultiselectable))
       [ret addObject:focusedChild->GetNativeViewAccessible()];
   }
 
