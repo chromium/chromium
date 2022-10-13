@@ -271,7 +271,7 @@ preprocess_if_expr("preprocess_gen_js_files") {
     "components/gaia_button.js",
     "components/gaia_header.js",
     "components/notification_card.js",
-    "components/progress_list_item/progress_list_item.js",
+    "components/progress_list_item.js",
     "components/security_token_pin.js",
     "screens/common/adb_sideloading.js",
     "screens/common/app_downloading.js",
@@ -330,7 +330,6 @@ group("polymer3_elements") {
 group("generate_web_components") {
   public_deps = [
     "components:web_components",
-    "components/progress_list_item:web_components",
     "screens/common:web_components",
     "screens/login:web_components",
     "screens/oobe:web_components",

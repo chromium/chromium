@@ -5,11 +5,11 @@
 import '//resources/cr_elements/icons.html.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../common_styles/common_styles.m.js';
+import './common_styles/common_styles.m.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../behaviors/oobe_i18n_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.m.js';
 
 
 /**

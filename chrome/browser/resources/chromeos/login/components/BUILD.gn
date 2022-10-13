@@ -16,7 +16,6 @@ group("closure_compile") {
     "common_styles:closure_compile",
     "dialogs:closure_compile",
     "oobe_vars:closure_compile",
-    "progress_list_item:closure_compile",
 
     # Local targets
     ":display_manager_types.m",
@@ -40,6 +39,7 @@ group("closure_compile") {
     ":oobe_select.m",
     ":oobe_slide.m",
     ":oobe_types.m",
+    ":progress_list_item",
     ":security_token_pin",
     ":test_util.m",
     ":throbber_notice.m",
@@ -237,6 +237,15 @@ js_library("oobe_types.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("progress_list_item") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/progress_list_item.js" ]
+  deps = [
+    "./behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
 js_library("security_token_pin") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/security_token_pin.js" ]
   deps = [
@@ -399,6 +408,7 @@ html_to_js("web_components") {
     "gaia_button.js",
     "gaia_header.js",
     "notification_card.js",
+    "progress_list_item.js",
     "security_token_pin.js",
   ]
 }

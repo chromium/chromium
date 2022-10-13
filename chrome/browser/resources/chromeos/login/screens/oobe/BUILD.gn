@@ -22,9 +22,9 @@ group("polymer3_elements") {
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + mojom_js_args + [
-    "js_module_root=" + rebase_path("//chrome/browser/resources/gaia_auth_host/", root_build_dir),
-    "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
-  ]
+        "js_module_root=" + rebase_path("//chrome/browser/resources/gaia_auth_host/", root_build_dir),
+        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host",
+      ]
   deps = [
     ":auto_enrollment_check",
     ":demo_preferences",
@@ -72,6 +72,7 @@ js_library("demo_preferences") {
 js_library("demo_setup") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/demo_setup.js" ]
   deps = [
+    "../../components:progress_list_item",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",
@@ -79,7 +80,6 @@ js_library("demo_setup") {
     "../../components/buttons:oobe_back_button.m",
     "../../components/buttons:oobe_text_button.m",
     "../../components/dialogs:oobe_adaptive_dialog.m",
-    "../../components/progress_list_item:progress_list_item",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":web_components" ]
