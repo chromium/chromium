@@ -21,6 +21,7 @@ namespace enterprise_connectors {
 struct AttestationResponse;
 class AttestationService;
 class DeviceTrustConnectorService;
+struct DeviceTrustResponse;
 class SignalsService;
 
 // Main service used to drive device trust connector scenarios. It is currently
@@ -28,7 +29,8 @@ class SignalsService;
 // Access during an attestation flow.
 class DeviceTrustService : public KeyedService {
  public:
-  using AttestationCallback = base::OnceCallback<void(const std::string&)>;
+  using DeviceTrustCallback =
+      base::OnceCallback<void(const DeviceTrustResponse&)>;
 
   // Callback used by the data_decoder to get the parsed json result.
   using ParseJsonChallengeCallback =
@@ -47,9 +49,12 @@ class DeviceTrustService : public KeyedService {
   // any task sequence.
   virtual bool IsEnabled() const;
 
-  // Starts flow that actually builds a response.
-  virtual void BuildChallengeResponse(const std::string& challenge,
-                                      AttestationCallback callback);
+  // Uses the challenge stored in `serialized_challenge` to generate a
+  // challenge-response containing device signals and a device identity
+  // signature to be used in an attestation flow. Returns the challenge response
+  // asynchronously via `callback`.
+  virtual void BuildChallengeResponse(const std::string& serialized_challenge,
+                                      DeviceTrustCallback callback);
 
   // Returns whether the Device Trust connector watches navigations to the given
   // `url` or not.
@@ -58,8 +63,8 @@ class DeviceTrustService : public KeyedService {
   // Collects device trust signals and returns them via `callback`.
   void GetSignals(base::OnceCallback<void(base::Value::Dict)> callback);
 
-  // Parses the `challenge` response and returns it via a `callback`.
-  void ParseJsonChallenge(const std::string& challenge,
+  // Parses the `serialized_challenge` and returns its value via `callback`.
+  void ParseJsonChallenge(const std::string& serialized_challenge,
                           ParseJsonChallengeCallback callback);
 
  protected:
@@ -67,13 +72,14 @@ class DeviceTrustService : public KeyedService {
   DeviceTrustService();
 
  private:
-  void OnChallengeParsed(AttestationCallback callback,
-                         const std::string& serialized_signed_challenge);
+  void OnChallengeParsed(DeviceTrustCallback callback,
+                         const std::string& challenge);
   void OnSignalsCollected(const std::string& challenge,
-                          AttestationCallback callback,
+                          DeviceTrustCallback callback,
                           base::Value::Dict signals);
-  void OnAttestationResponseReceived(AttestationCallback callback,
-                                     const AttestationResponse& response);
+  void OnAttestationResponseReceived(
+      DeviceTrustCallback callback,
+      const AttestationResponse& attestation_response);
 
   std::unique_ptr<AttestationService> attestation_service_;
   std::unique_ptr<SignalsService> signals_service_;

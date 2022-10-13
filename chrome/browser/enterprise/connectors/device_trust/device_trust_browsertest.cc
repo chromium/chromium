@@ -428,34 +428,39 @@ IN_PROC_BROWSER_TEST_P(DeviceTrustBrowserTest, AttestationFullFlow) {
       initial_attestation_request_->headers.find(kDeviceTrustHeader)->second,
       kDeviceTrustHeaderValue);
 
-  EXPECT_EQ(use_v2_header(), challenge_response_request_.has_value());
+  // Response header should always be set, even in error cases (i.e.
+  // use_v2_header is false).
+  EXPECT_TRUE(challenge_response_request_.has_value());
 
   ExpectFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted);
   ExpectFunnelStep(DTAttestationFunnelStep::kChallengeReceived);
-  ExpectFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
+
+  EXPECT_EQ(challenge_response_request_->GetURL().path(),
+            GetRedirectLocationUrl().path());
+  const std::string& challenge_response =
+      challenge_response_request_->headers.find(kVerifiedAccessResponseHeader)
+          ->second;
 
   if (use_v2_header()) {
-    EXPECT_EQ(challenge_response_request_->GetURL().path(),
-              GetRedirectLocationUrl().path());
-
     // TODO(crbug.com/1241857): Add challenge-response validation.
-    const std::string& challenge_response =
-        challenge_response_request_->headers
-            .find(kVerifiedAccessResponseHeader)
-            ->second;
     EXPECT_TRUE(!challenge_response.empty());
 
+    ExpectFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
     ExpectFunnelStep(DTAttestationFunnelStep::kChallengeResponseSent);
     histogram_tester_.ExpectUniqueSample(kResultHistogramName,
                                          DTAttestationResult::kSuccess, 1);
     histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 1);
     histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 0);
   } else {
+    static constexpr char kFailedToParseChallengeJsonResponse[] =
+        "{\"error\":\"failed_to_parse_challenge\"}";
+    EXPECT_EQ(challenge_response, kFailedToParseChallengeJsonResponse);
+    histogram_tester_.ExpectBucketCount(
+        kFunnelHistogramName, DTAttestationFunnelStep::kSignalsCollected, 0);
     histogram_tester_.ExpectBucketCount(
         kFunnelHistogramName, DTAttestationFunnelStep::kChallengeResponseSent,
         0);
-    histogram_tester_.ExpectUniqueSample(
-        kResultHistogramName, DTAttestationResult::kBadChallengeFormat, 1);
+    histogram_tester_.ExpectTotalCount(kResultHistogramName, 0);
     histogram_tester_.ExpectTotalCount(kLatencySuccessHistogramName, 0);
     histogram_tester_.ExpectTotalCount(kLatencyFailureHistogramName, 1);
   }

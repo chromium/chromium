@@ -10,11 +10,10 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/mock_attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
@@ -83,7 +82,6 @@ namespace enterprise_connectors {
 
 using test::MockAttestationService;
 using test::MockSignalsService;
-using AttestationCallback = DeviceTrustService::AttestationCallback;
 
 class DeviceTrustServiceTest
     : public testing::Test,
@@ -179,12 +177,16 @@ TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
         std::move(callback).Run({challenge, result_code});
       }));
 
-  base::RunLoop run_loop;
+  base::test::TestFuture<const DeviceTrustResponse&> future;
   device_trust_service->BuildChallengeResponse(
       kJsonChallenge,
-      /*callback=*/base::BindLambdaForTesting(
-          [&run_loop](const std::string& response) { run_loop.Quit(); }));
-  run_loop.Run();
+      /*callback=*/future.GetCallback());
+
+  const DeviceTrustResponse& dt_response = future.Get();
+  EXPECT_FALSE(dt_response.challenge_response.empty());
+  EXPECT_FALSE(dt_response.error);
+  ASSERT_TRUE(dt_response.attestation_result);
+  EXPECT_EQ(dt_response.attestation_result.value(), result_code);
 
   histogram_tester_.ExpectUniqueSample(kResultHistogramName, result_code, 1);
 }

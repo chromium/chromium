@@ -46,6 +46,12 @@ void OnJsonParsed(DeviceTrustService::ParseJsonChallengeCallback callback,
   return;
 }
 
+DeviceTrustResponse CreateFailedResponse(DeviceTrustError error) {
+  DeviceTrustResponse response;
+  response.error = error;
+  return response;
+}
+
 }  // namespace
 
 using CollectSignalsCallback = SignalsService::CollectSignalsCallback;
@@ -70,10 +76,11 @@ bool DeviceTrustService::IsEnabled() const {
   return connector_ && connector_->IsConnectorEnabled();
 }
 
-void DeviceTrustService::BuildChallengeResponse(const std::string& challenge,
-                                                AttestationCallback callback) {
+void DeviceTrustService::BuildChallengeResponse(
+    const std::string& serialized_challenge,
+    DeviceTrustCallback callback) {
   ParseJsonChallenge(
-      challenge,
+      serialized_challenge,
       base::BindOnce(&DeviceTrustService::OnChallengeParsed,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -83,41 +90,55 @@ bool DeviceTrustService::Watches(const GURL& url) const {
 }
 
 void DeviceTrustService::ParseJsonChallenge(
-    const std::string& challenge,
+    const std::string& serialized_challenge,
     ParseJsonChallengeCallback callback) {
-  data_decoder_.ParseJson(challenge,
+  data_decoder_.ParseJson(serialized_challenge,
                           base::BindOnce(&OnJsonParsed, std::move(callback)));
 }
 
-void DeviceTrustService::OnChallengeParsed(
-    AttestationCallback callback,
-    const std::string& serialized_signed_challenge) {
+void DeviceTrustService::OnChallengeParsed(DeviceTrustCallback callback,
+                                           const std::string& challenge) {
+  if (challenge.empty()) {
+    // Failed to parse the challenge, fail early.
+    std::move(callback).Run(
+        CreateFailedResponse(DeviceTrustError::kFailedToParseChallenge));
+    return;
+  }
+
   GetSignals(base::BindOnce(&DeviceTrustService::OnSignalsCollected,
-                            weak_factory_.GetWeakPtr(),
-                            serialized_signed_challenge, std::move(callback)));
+                            weak_factory_.GetWeakPtr(), challenge,
+                            std::move(callback)));
 }
 
 void DeviceTrustService::GetSignals(CollectSignalsCallback callback) {
   return signals_service_->CollectSignals(std::move(callback));
 }
 
-void DeviceTrustService::OnSignalsCollected(
-    const std::string& serialized_signed_challenge,
-    AttestationCallback callback,
-    base::Value::Dict signals) {
+void DeviceTrustService::OnSignalsCollected(const std::string& challenge,
+                                            DeviceTrustCallback callback,
+                                            base::Value::Dict signals) {
   LogAttestationFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
 
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      serialized_signed_challenge, std::move(signals),
+      challenge, std::move(signals),
       base::BindOnce(&DeviceTrustService::OnAttestationResponseReceived,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DeviceTrustService::OnAttestationResponseReceived(
-    AttestationCallback callback,
-    const AttestationResponse& response) {
-  LogAttestationResult(response.result_code);
-  std::move(callback).Run(response.challenge_response);
+    DeviceTrustCallback callback,
+    const AttestationResponse& attestation_response) {
+  LogAttestationResult(attestation_response.result_code);
+
+  DeviceTrustResponse dt_response{};
+  dt_response.challenge_response = attestation_response.challenge_response;
+  dt_response.attestation_result = attestation_response.result_code;
+
+  if (attestation_response.result_code != DTAttestationResult::kSuccess) {
+    dt_response.error = DeviceTrustError::kFailedToCreateResponse;
+  }
+
+  std::move(callback).Run(dt_response);
 }
 
 }  // namespace enterprise_connectors

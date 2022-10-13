@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace enterprise_connectors {
 
 // Various possible outcomes to the attestation step in the overarching Device
@@ -28,9 +30,35 @@ enum class DTAttestationResult {
   kMaxValue = kFailedToSerializeSignals,
 };
 
+// Enum representing all possible errors that may cause the generation of a
+// challenge response to fail as part of the device identity attestation flow.
+enum class DeviceTrustError {
+  kUnknown = 0,
+  kTimeout,
+  kFailedToParseChallenge,
+  kFailedToCreateResponse
+};
+
+// Used to convert an error `result` to a string. This function will return an
+// empty string if `result` represents `kSuccess`.
+const std::string AttestationResultToString(DTAttestationResult result);
+
+// Used to convert `error` to a string representation.
+const std::string DeviceTrustErrorToString(DeviceTrustError error);
+
+// Response payload for the inline flow's attestation step, where the challenge
+// response is created and signed.
 struct AttestationResponse {
   std::string challenge_response{};
   DTAttestationResult result_code{};
+};
+
+// Top-level response payload to a request for a challenge response as part of
+// a device identity attestation request.
+struct DeviceTrustResponse {
+  std::string challenge_response{};
+  absl::optional<DeviceTrustError> error = absl::nullopt;
+  absl::optional<DTAttestationResult> attestation_result = absl::nullopt;
 };
 
 }  // namespace enterprise_connectors

@@ -2107,10 +2107,11 @@ IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest,
 
   ASSERT_EQ(fake_saml_idp()->GetChallengeResponseCount(), 1);
 
+  // TODO(b:253427534): Handle VA V1 challenges cases for Device Trust.
   histogram_tester_.ExpectBucketCount(
       kDeviceTrustAttestationFunnelStep,
       enterprise_connectors::DTAttestationFunnelStep::kChallengeResponseSent,
-      1);
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(SAMLDeviceAttestationEnrolledTest, TimeoutError) {

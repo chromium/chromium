@@ -37,7 +37,7 @@ class DesktopAttestationService : public AttestationService {
 
   // AttestationService:
   void BuildChallengeResponseForVAChallenge(
-      const std::string& serialized_signed_challenge,
+      const std::string& challenge,
       base::Value::Dict signals,
       AttestationCallback callback) override;
 

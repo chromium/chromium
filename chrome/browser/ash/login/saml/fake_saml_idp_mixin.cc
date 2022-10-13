@@ -8,6 +8,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -172,6 +174,10 @@ bool FakeSamlIdpMixin::DeviceTrustHeaderRecieved() const {
 
 bool FakeSamlIdpMixin::IsLastChallengeResponseExists() const {
   return challenge_response_.has_value();
+}
+
+bool FakeSamlIdpMixin::IsLastChallengeResponseError() const {
+  return error_challenge_response_.has_value();
 }
 
 int FakeSamlIdpMixin::GetChallengeResponseCount() const {
@@ -342,8 +348,17 @@ FakeSamlIdpMixin::BuildResponseForLoginWithDeviceTrust(
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
   http_response->AddCustomHeader("Location", redirect_url.spec());
+
+  // Device Trust only supports V2 challenges, which are formatted as a JSON
+  // object with only one "challenge" property (containing the value from V1).
+  // TODO(b:253427534): Update code to handle V1 challenges.
+  base::Value::Dict challenge_value;
+  challenge_value.Set("challenge", GetTpmChallengeBase64());
+  std::string challenge_json_value;
+  EXPECT_TRUE(base::JSONWriter::Write(challenge_value, &challenge_json_value));
+
   http_response->AddCustomHeader(kSamlVerifiedAccessChallengeHeader,
-                                 GetTpmChallengeBase64());
+                                 challenge_json_value);
   return http_response;
 }
 
@@ -389,12 +404,33 @@ FakeSamlIdpMixin::BuildHTMLResponse(const std::string& html_template,
 
 void FakeSamlIdpMixin::SaveChallengeResponse(const std::string& response) {
   EXPECT_EQ(challenge_response_, absl::nullopt);
-  challenge_response_ = response;
+  auto parsed_value = base::JSONReader::Read(
+      response, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+
+  if (!parsed_value || !parsed_value->is_dict()) {
+    // Most likely given a V1, no need to try parsing the values out.
+    challenge_response_ = response;
+    return;
+  }
+
+  const std::string* challenge_response_string =
+      parsed_value->GetDict().FindString("challengeResponse");
+  const std::string* error_string = parsed_value->GetDict().FindString("error");
+
+  // Only one of those values should be set.
+  EXPECT_NE(!!challenge_response_string, !!error_string);
   challenge_response_count_++;
+
+  if (challenge_response_string) {
+    challenge_response_ = response;
+  } else {
+    error_challenge_response_ = response;
+  }
 }
 
 void FakeSamlIdpMixin::ClearChallengeResponse() {
   challenge_response_.reset();
+  error_challenge_response_.reset();
 }
 
 }  // namespace ash

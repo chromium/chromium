@@ -4,9 +4,12 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 
+#include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
@@ -24,23 +27,48 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+namespace enterprise_connectors {
+
+using DeviceTrustCallback = DeviceTrustService::DeviceTrustCallback;
+
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-enterprise_connectors::DTOrigin GetAttestationFlowOrigin(
-    content::BrowserContext* context) {
-  if (context->IsOffTheRecord() && ash::ProfileHelper::IsSigninProfile(
-                                       Profile::FromBrowserContext(context))) {
-    return enterprise_connectors::DTOrigin::kLoginScreen;
+constexpr char kErrorPropertyName[] = "error";
+constexpr char kSpecificErrorCodePropertyName[] = "code";
+
+const std::string CreateErrorJsonString(
+    const DeviceTrustResponse& dt_response) {
+  DCHECK(dt_response.error);
+  base::Value::Dict error_response;
+  error_response.Set(kErrorPropertyName,
+                     DeviceTrustErrorToString(dt_response.error.value()));
+
+  if (dt_response.attestation_result &&
+      dt_response.attestation_result.value() != DTAttestationResult::kSuccess) {
+    error_response.Set(
+        kSpecificErrorCodePropertyName,
+        AttestationResultToString(dt_response.attestation_result.value()));
   }
 
-  return enterprise_connectors::DTOrigin::kInSession;
+  std::string out_json;
+  if (!base::JSONWriter::Write(error_response, &out_json)) {
+    return "{\"error\":\"failed_to_serialize_error\"}";
+  }
+  return out_json;
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+DTOrigin GetAttestationFlowOrigin(content::BrowserContext* context) {
+  if (context->IsOffTheRecord() && ash::ProfileHelper::IsSigninProfile(
+                                       Profile::FromBrowserContext(context))) {
+    return DTOrigin::kLoginScreen;
+  }
+
+  return DTOrigin::kInSession;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
-
-namespace enterprise_connectors {
 
 // Const headers used in the handshake flow.
 constexpr char kDeviceTrustHeader[] = "X-Device-Trust";
@@ -133,7 +161,7 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
       // Create callback for `ReplyChallengeResponseAndResume` which will
       // be called after the challenge response is created. With this
       // we can defer the navigation to unblock the main thread.
-      AttestationCallback resume_navigation_callback = base::BindOnce(
+      DeviceTrustCallback resume_navigation_callback = base::BindOnce(
           &DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume,
           weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now());
 
@@ -149,7 +177,7 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
           base::BindOnce(
               [](base::WeakPtr<DeviceTrustNavigationThrottle> throttler,
                  const std::string& challenge,
-                 AttestationCallback resume_navigation_callback) {
+                 DeviceTrustCallback resume_navigation_callback) {
                 if (throttler) {
                   throttler->device_trust_service_->BuildChallengeResponse(
                       challenge, std::move(resume_navigation_callback));
@@ -165,14 +193,28 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
 
 void DeviceTrustNavigationThrottle::ReplyChallengeResponseAndResume(
     base::TimeTicks start_time,
-    const std::string& challenge_response) {
-  LogAttestationResponseLatency(start_time,
-                                /*success=*/!challenge_response.empty());
+    const DeviceTrustResponse& dt_response) {
+  // Make a copy to allow mutations.
+  auto copied_dt_response = dt_response;
 
-  if (!challenge_response.empty()) {
+  if (copied_dt_response.challenge_response.empty() &&
+      !copied_dt_response.error) {
+    // An empty `challenge_response` value must be treated as a failure. If
+    // `error` isn't set, then default-set it to unknown.
+    copied_dt_response.error = DeviceTrustError::kUnknown;
+  }
+
+  LogAttestationResponseLatency(start_time,
+                                /*success=*/!copied_dt_response.error);
+
+  if (copied_dt_response.error) {
+    navigation_handle()->SetRequestHeader(
+        kVerifiedAccessResponseHeader,
+        CreateErrorJsonString(copied_dt_response));
+  } else {
     LogAttestationFunnelStep(DTAttestationFunnelStep::kChallengeResponseSent);
-    navigation_handle()->SetRequestHeader(kVerifiedAccessResponseHeader,
-                                          challenge_response);
+    navigation_handle()->SetRequestHeader(
+        kVerifiedAccessResponseHeader, copied_dt_response.challenge_response);
   }
 
   Resume();

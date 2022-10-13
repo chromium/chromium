@@ -117,19 +117,19 @@ DesktopAttestationService::~DesktopAttestationService() = default;
 // - Encode encrypted data,
 // - Reply to callback.
 void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
-    const std::string& serialized_signed_challenge,
+    const std::string& challenge,
     base::Value::Dict signals,
     AttestationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   key_manager_->ExportPublicKeyAsync(
       base::BindOnce(&DesktopAttestationService::OnPublicKeyExported,
-                     weak_factory_.GetWeakPtr(), serialized_signed_challenge,
-                     std::move(signals), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), challenge, std::move(signals),
+                     std::move(callback)));
 }
 
 void DesktopAttestationService::OnPublicKeyExported(
-    const std::string& serialized_signed_challenge,
+    const std::string& challenge,
     base::Value::Dict signals,
     AttestationCallback callback,
     absl::optional<std::string> exported_key) {
@@ -143,8 +143,7 @@ void DesktopAttestationService::OnPublicKeyExported(
   }
 
   SignedData signed_data;
-  if (serialized_signed_challenge.empty() ||
-      !signed_data.ParseFromString(serialized_signed_challenge)) {
+  if (challenge.empty() || !signed_data.ParseFromString(challenge)) {
     // Challenge is not properly formatted, so mark the device as untrusted (no
     // challenge response).
     std::move(callback).Run(

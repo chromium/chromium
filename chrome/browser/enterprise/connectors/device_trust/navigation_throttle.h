@@ -14,6 +14,7 @@
 namespace enterprise_connectors {
 
 class DeviceTrustService;
+struct DeviceTrustResponse;
 
 // DeviceTrustNavigationThrottle provides a simple way to start a handshake
 // between Chrome and an origin based on a list of trusted URLs set in the
@@ -31,8 +32,6 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   // enabled.  Returns nullptr if no throttling should be done.
   static std::unique_ptr<DeviceTrustNavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* navigation_handle);
-
-  using AttestationCallback = base::OnceCallback<void(const std::string&)>;
 
   DeviceTrustNavigationThrottle(DeviceTrustService* device_trust_service,
                                 content::NavigationHandle* navigation_handle);
@@ -53,11 +52,13 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   // Not owned.
   const raw_ptr<DeviceTrustService> device_trust_service_;
 
-  // Set `challege_response` into the header
+  // Resumes the navigation by setting a value into the header
   // `X-Verified-Access-Challenge-Response` of the redirection request to the
-  // IdP and resume the navigation.
+  // IdP and resume the navigation. That value is determined by the properties
+  // of `dt_response` which, when in success cases, contains a valid response
+  // string. `start_time` is used to measure the latency of the end-to-end flow.
   void ReplyChallengeResponseAndResume(base::TimeTicks start_time,
-                                       const std::string& challenge_response);
+                                       const DeviceTrustResponse& dt_response);
 
   base::WeakPtrFactory<DeviceTrustNavigationThrottle> weak_ptr_factory_{this};
 };

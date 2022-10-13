@@ -19,7 +19,7 @@ class MockDeviceTrustService : public DeviceTrustService {
   MOCK_METHOD(bool, IsEnabled, (), (const, override));
   MOCK_METHOD(void,
               BuildChallengeResponse,
-              (const std::string&, AttestationCallback),
+              (const std::string&, DeviceTrustCallback),
               (override));
   MOCK_METHOD(bool, Watches, (const GURL&), (const, override));
 };
