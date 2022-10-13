@@ -2083,6 +2083,19 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram
+    name="Apps.Launcher.DragReorderAnimationSmoothness.{TabletOrClamshell}"
+    units="%" expires_after="M112">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Emitted when an app list drag reorder animation completes. Reports the
+    smoothness of this animation. 100% represents the ideally smooth 60 frames
+    per second.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Apps.Launcher.InstallAppFromLinkResult"
     enum="WebAppInstallResultCode" expires_after="2022-09-25">
   <owner>dmurph@chromium.org</owner>
@@ -2123,7 +2136,7 @@ chromium-metrics-reviews@google.com.
   <owner>andrewxu@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
-    Emitted when the app list reorder animation completes. Reports the
+    Emitted when the app list sort reorder animation completes. Reports the
     smoothness of this animation. 100% represents the ideally smooth 60 frames
     per second.
   </summary>
