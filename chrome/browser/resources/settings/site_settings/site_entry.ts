@@ -359,11 +359,11 @@ export class SiteEntryElement extends SiteEntryElementBase {
 
   /**
    * Evaluates whether the policy icon should be shown.
-   * @returns False when `fpsEnterprisePref_` is undefined, otherwise true.
+   * @returns True when `this.siteGroup.fpsEnterpriseManaged` is true,
+   * otherwise false.
    */
   private shouldShowPolicyPrefIndicator_(): boolean {
-    this.updatePolicyPref_();
-    return !!this.fpsEnterprisePref_;
+    return !!this.siteGroup.fpsEnterpriseManaged;
   }
 
   /**
@@ -375,7 +375,10 @@ export class SiteEntryElement extends SiteEntryElementBase {
           enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
           controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
         }) :
-        undefined;
+        Object.assign({
+          enforcement: undefined,
+          controlledBy: undefined,
+        });
   }
 
   /**
