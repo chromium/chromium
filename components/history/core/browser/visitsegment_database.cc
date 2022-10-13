@@ -171,7 +171,7 @@ bool VisitSegmentDatabase::IncreaseSegmentVisitCount(SegmentID segment_id,
   sql::Statement select(GetDB().GetCachedStatement(SQL_FROM_HERE,
       "SELECT id, visit_count FROM segment_usage "
       "WHERE time_slot = ? AND segment_id = ?"));
-  select.BindInt64(0, t.ToInternalValue());
+  select.BindTime(0, t);
   select.BindInt64(1, segment_id);
 
   if (!select.is_valid())
@@ -189,7 +189,7 @@ bool VisitSegmentDatabase::IncreaseSegmentVisitCount(SegmentID segment_id,
         "INSERT INTO segment_usage "
         "(segment_id, time_slot, visit_count) VALUES (?, ?, ?)"));
     insert.BindInt64(0, segment_id);
-    insert.BindInt64(1, t.ToInternalValue());
+    insert.BindTime(1, t);
     insert.BindInt64(2, static_cast<int64_t>(amount));
 
     return insert.Run();
@@ -223,8 +223,7 @@ VisitSegmentDatabase::QuerySegmentUsage(
       previous_segment_id = segment_id;
     }
 
-    base::Time timeslot =
-        base::Time::FromInternalValue(statement.ColumnInt64(1));
+    base::Time timeslot = statement.ColumnTime(1);
     int visit_count = statement.ColumnInt(2);
     int days_ago = (now - timeslot).InDays();
 
@@ -357,7 +356,7 @@ bool VisitSegmentDatabase::MergeSegments(SegmentID from_segment_id,
                                  "segment_usage WHERE segment_id = ?"));
   select.BindInt64(0, from_segment_id);
   while (select.Step()) {
-    base::Time ts = base::Time::FromInternalValue(select.ColumnInt64(0));
+    base::Time ts = select.ColumnTime(0);
     int64_t visit_count = select.ColumnInt64(1);
     IncreaseSegmentVisitCount(to_segment_id, ts, visit_count);
   }
