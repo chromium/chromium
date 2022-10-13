@@ -155,6 +155,13 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectToSpeakPrefsMigration);
 // Returns true if AccessibilitySelectToSpeakPrefsMigration enabled.
 AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakPrefsMigrationEnabled();
 
+// Enables AccessibilitySelectToSpeakHoverTextImprovements.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kAccessibilitySelectToSpeakHoverTextImprovements);
+
+// Returns true if AccessibilitySelectToSpeakHoverTextImprovements is enabled.
+AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakHoverTextImprovementsEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Enables Get Image Descriptions to augment existing images labels,

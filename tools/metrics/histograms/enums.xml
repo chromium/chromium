@@ -59316,6 +59316,8 @@ from previous Chrome versions.
   <int value="-589096918" label="ash-enable-fullscreen-app-list"/>
   <int value="-588669613"
       label="OmniboxClobberIsZeroSuggestEntrypoint:enabled"/>
+  <int value="-588163454"
+      label="AccessibilitySelectToSpeakHoverTextImprovements:enabled"/>
   <int value="-585508682" label="DownloadRange:enabled"/>
   <int value="-584866456" label="LacrosProfileMigrationForceOff:disabled"/>
   <int value="-583842972"
@@ -61479,6 +61481,8 @@ from previous Chrome versions.
   <int value="731779469" label="BlinkHeapUnifiedGarbageCollection:enabled"/>
   <int value="732703958" label="enable-gesture-tap-highlight"/>
   <int value="734900932" label="RecurrentInterstitialFeature:enabled"/>
+  <int value="735180038"
+      label="AccessibilitySelectToSpeakHoverTextImprovements:disabled"/>
   <int value="735393448" label="InsertKeyToggleMode:disabled"/>
   <int value="736911267" label="ExperimentalCrostiniUI:disabled"/>
   <int value="737195667" label="AutofillPageLanguageDetection:enabled"/>

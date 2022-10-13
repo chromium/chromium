@@ -207,6 +207,15 @@ bool IsAccessibilitySelectToSpeakPrefsMigrationEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilitySelectToSpeakPrefsMigration);
 }
+
+BASE_FEATURE(kAccessibilitySelectToSpeakHoverTextImprovements,
+             "AccessibilitySelectToSpeakHoverTextImprovements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAccessibilitySelectToSpeakHoverTextImprovementsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilitySelectToSpeakHoverTextImprovements);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 BASE_FEATURE(kAugmentExistingImageLabels,

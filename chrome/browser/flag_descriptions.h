@@ -608,6 +608,9 @@ extern const char kAccessibilitySelectToSpeakPageMigrationDescription[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationName[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationDescription[];
 
+extern const char kAccessibilitySelectToSpeakHoverTextImprovementsName[];
+extern const char kAccessibilitySelectToSpeakHoverTextImprovementsDescription[];
+
 extern const char kPostQuantumCECPQ2Name[];
 extern const char kPostQuantumCECPQ2Description[];
 

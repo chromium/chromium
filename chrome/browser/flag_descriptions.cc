@@ -1064,6 +1064,12 @@ const char kAccessibilitySelectToSpeakPageMigrationDescription[] =
     "This option enables Select-to-Speak page migration from extension options "
     "page to a Chrome OS settings page.";
 
+const char kAccessibilitySelectToSpeakHoverTextImprovementsName[] =
+    "Select-to-Speak Hover Text Improvements";
+const char kAccessibilitySelectToSpeakHoverTextImprovementsDescription[] =
+    "This option enables improvements in the text shown when hovering over the "
+    "Select-to-Speak feature icon in the system tray.";
+
 const char kPostQuantumCECPQ2Name[] = "TLS Post-Quantum Confidentiality";
 const char kPostQuantumCECPQ2Description[] =
     "This option enables a post-quantum (i.e. resistent to quantum computers) "
