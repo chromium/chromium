@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/chrome_paths.h"
 
 namespace ash {
@@ -40,7 +41,7 @@ void LacrosDataBackwardMigrationScreen::ShowImpl() {
       LOG(ERROR) << "Could not retrieve user_id_hash from switch "
                  << switches::kBrowserDataBackwardMigrationForUser
                  << ". Aborting migration.";
-      // TODO(b/245053119): Attempt restart.
+      chrome::AttemptRestart();
       return;
     }
 
@@ -48,7 +49,7 @@ void LacrosDataBackwardMigrationScreen::ShowImpl() {
     if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
       LOG(ERROR) << "Could not get the original user data dir path. Aborting "
                     "migration.";
-      // TODO(b/245053119): Attempt restart.
+      chrome::AttemptRestart();
       return;
     }
 
@@ -70,7 +71,7 @@ void LacrosDataBackwardMigrationScreen::OnMigrated(
     BrowserDataBackMigrator::Result result) {
   switch (result) {
     case BrowserDataBackMigrator::Result::kSucceeded:
-      // TODO
+      chrome::AttemptRestart();
       break;
     case BrowserDataBackMigrator::Result::kFailed:
       // TODO
