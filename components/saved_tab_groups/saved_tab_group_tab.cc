@@ -32,6 +32,27 @@ SavedTabGroupTab::SavedTabGroupTab(
 SavedTabGroupTab::SavedTabGroupTab(const SavedTabGroupTab& other) = default;
 SavedTabGroupTab::~SavedTabGroupTab() = default;
 
+bool SavedTabGroupTab::ShouldMergeTab(
+    sync_pb::SavedTabGroupSpecifics* sync_specific) {
+  bool sync_update_is_latest =
+      sync_specific->update_time_windows_epoch_micros() >=
+      update_time_windows_epoch_micros()
+          .ToDeltaSinceWindowsEpoch()
+          .InMicroseconds();
+  return sync_update_is_latest;
+}
+
+std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupTab::MergeTab(
+    std::unique_ptr<sync_pb::SavedTabGroupSpecifics> sync_specific) {
+  if (ShouldMergeTab(sync_specific.get())) {
+    SetURL(GURL(sync_specific->tab().url()));
+    SetUpdateTimeWindowsEpochMicros(base::Time::FromDeltaSinceWindowsEpoch(
+        base::Microseconds(sync_specific->update_time_windows_epoch_micros())));
+  }
+
+  return ToSpecifics();
+}
+
 // static
 SavedTabGroupTab SavedTabGroupTab::FromSpecifics(
     const sync_pb::SavedTabGroupSpecifics& specific) {
@@ -49,8 +70,8 @@ SavedTabGroupTab SavedTabGroupTab::FromSpecifics(
                           update_time);
 }
 
-std::unique_ptr<sync_pb::SavedTabGroupSpecifics>
-SavedTabGroupTab::ToSpecifics() {
+std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupTab::ToSpecifics()
+    const {
   std::unique_ptr<sync_pb::SavedTabGroupSpecifics> pb_specific =
       std::make_unique<sync_pb::SavedTabGroupSpecifics>();
   pb_specific->set_guid(guid().AsLowercaseString());

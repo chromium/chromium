@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_H_
 #define COMPONENTS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -28,7 +29,7 @@ class SavedTabGroup {
       const tab_groups::TabGroupColorId& color,
       const std::vector<SavedTabGroupTab>& urls,
       absl::optional<base::GUID> saved_guid = absl::nullopt,
-      absl::optional<tab_groups::TabGroupId> tab_group_id = absl::nullopt,
+      absl::optional<tab_groups::TabGroupId> local_group_id = absl::nullopt,
       absl::optional<base::Time> creation_time_windows_epoch_micros =
           absl::nullopt,
       absl::optional<base::Time> update_time_windows_epoch_micros =
@@ -38,8 +39,8 @@ class SavedTabGroup {
 
   // Metadata accessors.
   const base::GUID& saved_guid() const { return saved_guid_; }
-  const absl::optional<tab_groups::TabGroupId>& tab_group_id() const {
-    return tab_group_id_;
+  const absl::optional<tab_groups::TabGroupId>& local_group_id() const {
+    return local_group_id_;
   }
   const base::Time& creation_time_windows_epoch_micros() const {
     return creation_time_windows_epoch_micros_;
@@ -52,21 +53,46 @@ class SavedTabGroup {
   const std::vector<SavedTabGroupTab>& saved_tabs() const {
     return saved_tabs_;
   }
+  std::vector<SavedTabGroupTab>& saved_tabs() { return saved_tabs_; }
+  absl::optional<SavedTabGroupTab> GetTab(const base::GUID& tab_id);
+  // Returns the index for `tab_id` in `saved_tabs_` if it exists. Otherwise,
+  // returns absl::nullopt.
+  absl::optional<int> GetIndexOfTab(const base::GUID& tab_id) const;
+
+  // Returns true if the `tab_id` was found in `saved_tabs_`.
+  bool ContainsTab(const base::GUID& tab_id) const;
 
   // Metadata mutators.
-  SavedTabGroup& SetTitle(std::u16string title) {
-    title_ = title;
-    return *this;
-  }
-  SavedTabGroup& SetColor(tab_groups::TabGroupColorId color) {
-    color_ = color;
-    return *this;
-  }
+  SavedTabGroup& SetTitle(std::u16string title);
+  SavedTabGroup& SetColor(tab_groups::TabGroupColorId color);
   SavedTabGroup& SetLocalGroupId(
-      absl::optional<tab_groups::TabGroupId> tab_group_id) {
-    tab_group_id_ = tab_group_id;
-    return *this;
-  }
+      absl::optional<tab_groups::TabGroupId> tab_group_id);
+  SavedTabGroup& SetUpdateTimeWindowsEpochMicros(
+      base::Time update_time_windows_epoch_micros);
+
+  // Tab mutators.
+  // Adds `tab` to `saved_tabs_` at the specified `index` unless the added tab
+  // already exists. In this case we CHECK.
+  SavedTabGroup& AddTab(size_t index, SavedTabGroupTab tab);
+  // Removes the tab denoted by `tab_id` from `saved_tabs_`. This function will
+  // remove the last tab: crbug/1371959.
+  SavedTabGroup& RemoveTab(const base::GUID& tab_id);
+  // Replaces that tab denoted by `tab_id` with value of `tab` unless the
+  // replacement tab already exists. In this case we CHECK.
+  SavedTabGroup& ReplaceTabAt(const base::GUID& tab_id, SavedTabGroupTab tab);
+  // Moves the tab denoted by `tab_id` from its current index to the
+  // `new_index`.
+  SavedTabGroup& MoveTab(const base::GUID& tab_id, size_t new_index);
+
+  // Merges this groups data with a specific from sync and returns the newly
+  // merged specific. Side effect: Updates the values of this group.
+  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> MergeGroup(
+      std::unique_ptr<sync_pb::SavedTabGroupSpecifics> sync_specific);
+
+  // We should merge a group if one of the following is true:
+  // 1. The data from `sync_specific` has the most recent (larger) update time.
+  // 2. The `sync_specific` has the oldest (smallest) creation time.
+  bool ShouldMergeGroup(sync_pb::SavedTabGroupSpecifics* sync_specific);
 
   // Converts a `SavedTabGroupSpecifics` retrieved from sync into a
   // `SavedTabGroupTab`.
@@ -74,7 +100,7 @@ class SavedTabGroup {
       const sync_pb::SavedTabGroupSpecifics& specific);
 
   // Converts a `SavedTabGroupTab` into a `SavedTabGroupSpecifics` for sync.
-  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> ToSpecifics();
+  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> ToSpecifics() const;
 
   // Converts tab group color ids into the sync data type for saved tab group
   // colors.
@@ -92,7 +118,7 @@ class SavedTabGroup {
   // The ID of the tab group in the tab strip which is associated with the saved
   // tab group object. This can be null if the saved tab group is not in any tab
   // strip.
-  absl::optional<tab_groups::TabGroupId> tab_group_id_;
+  absl::optional<tab_groups::TabGroupId> local_group_id_;
 
   // The title of the saved tab group.
   std::u16string title_;

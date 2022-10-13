@@ -53,20 +53,39 @@ class SavedTabGroupTab {
   // Mutators.
   SavedTabGroupTab& SetSavedTabGroup(SavedTabGroup* saved_tab_group) {
     saved_tab_group_ = saved_tab_group;
+    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
   }
   SavedTabGroupTab& SetURL(GURL url) {
     url_ = url;
+    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
   }
   SavedTabGroupTab& SetTitle(std::u16string title) {
     title_ = title;
+    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
   }
   SavedTabGroupTab& SetFavicon(absl::optional<gfx::Image> favicon) {
     favicon_ = favicon;
+    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
   }
+  SavedTabGroupTab& SetUpdateTimeWindowsEpochMicros(
+      base::Time update_time_windows_epoch_micros) {
+    update_time_windows_epoch_micros_ = update_time_windows_epoch_micros;
+    return *this;
+  }
+
+  // Merges this tabs data with a specific from sync and returns the newly
+  // merged specific. Side effect: Updates the values in the tab.
+  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> MergeTab(
+      std::unique_ptr<sync_pb::SavedTabGroupSpecifics> sync_specific);
+
+  // We should merge a tab if one of the following is true:
+  // 1. The data from `sync_specific` has the most recent (larger) update time.
+  // 2. The `sync_specific` has the oldest (smallest) creation time.
+  bool ShouldMergeTab(sync_pb::SavedTabGroupSpecifics* sync_specific);
 
   // Converts a `SavedTabGroupSpecifics` retrieved from sync into a
   // `SavedTabGroupTab`.
@@ -74,7 +93,7 @@ class SavedTabGroupTab {
       const sync_pb::SavedTabGroupSpecifics& specific);
 
   // Converts this `SavedTabGroupTab` into a `SavedTabGroupSpecifics` for sync.
-  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> ToSpecifics();
+  std::unique_ptr<sync_pb::SavedTabGroupSpecifics> ToSpecifics() const;
 
  private:
   // The ID used to represent the tab in sync.

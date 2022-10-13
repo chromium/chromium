@@ -22,7 +22,7 @@ SavedTabGroupModel::SavedTabGroupModel(Profile* profile) : profile_(profile) {}
 
 int SavedTabGroupModel::GetIndexOf(tab_groups::TabGroupId tab_group_id) const {
   for (size_t i = 0; i < saved_tab_groups_.size(); i++)
-    if (saved_tab_groups_[i].tab_group_id() == tab_group_id)
+    if (saved_tab_groups_[i].local_group_id() == tab_group_id)
       return i;
 
   return -1;

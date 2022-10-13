@@ -160,3 +160,63 @@ TEST_F(SavedTabGroupConversionTest, SpecificToTabRetainsData) {
   pb_specific->clear_tab();
   pb_specific_2->clear_tab();
 }
+
+// Verifies that merging 2 group objects (1 Sync, 1 SavedTabGroup) merges the
+// most recently updated object correctly.
+TEST_F(SavedTabGroupConversionTest, MergedGroupHoldsCorrectData) {
+  // Create a group.
+  const base::Time old_time = base::Time::Now();
+  const std::u16string& title = u"Test title";
+  const tab_groups::TabGroupColorId& color = tab_groups::TabGroupColorId::kBlue;
+  absl::optional<base::GUID> saved_guid = base::GUID::GenerateRandomV4();
+  absl::optional<base::Time> creation_time_windows_epoch_micros = time_;
+  absl::optional<base::Time> update_time_windows_epoch_micros = time_;
+  SavedTabGroup group1(title, color, {}, saved_guid, absl::nullopt,
+                       creation_time_windows_epoch_micros,
+                       update_time_windows_epoch_micros);
+
+  // Create a new group with the same data and update it. Calling set functions
+  // should internally update update_time_windows_epoch_micros.
+  SavedTabGroup group2 = SavedTabGroup::FromSpecifics(*group1.ToSpecifics());
+  group2.SetColor(tab_groups::TabGroupColorId::kGreen);
+  group2.SetTitle(u"New Title");
+
+  // Expect that group2 is a valid group to merge with and that group1 hold the
+  // same data after the merge.
+  EXPECT_TRUE(group1.ShouldMergeGroup(group2.ToSpecifics().get()));
+  group1.MergeGroup(group2.ToSpecifics());
+  CompareGroups(group1, group2);
+
+  // Expect that group2 is not a valid group to merge. No merging should be
+  // done.
+  group1.SetColor(tab_groups::TabGroupColorId::kOrange);
+  group1.SetTitle(u"Another title");
+  group2.SetUpdateTimeWindowsEpochMicros(old_time);
+  EXPECT_FALSE(group1.ShouldMergeGroup(group2.ToSpecifics().get()));
+}
+
+// Verifies that merging 2 tab objects (1 Sync, 1 SavedTabGroupTab)
+TEST_F(SavedTabGroupConversionTest, MergedTabHoldsCorrectData) {
+  // Create a tab.
+  const base::Time old_time = base::Time::Now();
+  base::GUID saved_guid = base::GUID::GenerateRandomV4();
+  SavedTabGroupTab tab1(GURL("Test url"), saved_guid);
+
+  // Create a new group with the same data and update it. Calling set functions
+  // should internally update update_time_windows_epoch_micros.
+  SavedTabGroupTab tab2 = SavedTabGroupTab::FromSpecifics(*tab1.ToSpecifics());
+  tab2.SetURL(GURL("new url"));
+  tab2.SetTitle(u"New Title");
+
+  // Expect that tab2 is a valid group to merge with and that the tab1 holds the
+  // same data after the merge.
+  EXPECT_TRUE(tab1.ShouldMergeTab(tab2.ToSpecifics().get()));
+  tab1.MergeTab(tab2.ToSpecifics());
+  CompareTabs(tab1, tab2);
+
+  // Expect that tab2 is not a valid group to merge. No merging should be done.
+  tab1.SetTitle(u"A title");
+  tab1.SetURL(GURL("Another url"));
+  tab2.SetUpdateTimeWindowsEpochMicros(old_time);
+  EXPECT_FALSE(tab1.ShouldMergeTab(tab2.ToSpecifics().get()));
+}

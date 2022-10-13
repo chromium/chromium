@@ -47,9 +47,9 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
 
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
     EXPECT_NE(saved_tab_group, nullptr);
-    EXPECT_TRUE(saved_tab_group->tab_group_id().has_value());
+    EXPECT_TRUE(saved_tab_group->local_group_id().has_value());
     EXPECT_TRUE(model->group_model()->ContainsTabGroup(
-        saved_tab_group->tab_group_id().value()));
+        saved_tab_group->local_group_id().value()));
     EXPECT_NE(model->GetTabCount(), original_model_count);
   }
 
@@ -59,9 +59,9 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
     chrome::OpenSavedTabGroup(browser(), guid, 1);
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
     EXPECT_NE(saved_tab_group, nullptr);
-    EXPECT_TRUE(saved_tab_group->tab_group_id().has_value());
+    EXPECT_TRUE(saved_tab_group->local_group_id().has_value());
     EXPECT_TRUE(model->group_model()->ContainsTabGroup(
-        saved_tab_group->tab_group_id().value()));
+        saved_tab_group->local_group_id().value()));
     EXPECT_EQ(model->count(), original_model_count);
   }
 }
@@ -87,9 +87,9 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupBarBrowserTest,
     const SavedTabGroup* saved_tab_group = stg_model->Get(guid);
 
     EXPECT_NE(saved_tab_group, nullptr);
-    EXPECT_TRUE(saved_tab_group->tab_group_id().has_value());
+    EXPECT_TRUE(saved_tab_group->local_group_id().has_value());
     EXPECT_TRUE(model->group_model()->ContainsTabGroup(
-        saved_tab_group->tab_group_id().value()));
+        saved_tab_group->local_group_id().value()));
     stg_model->Remove(saved_tab_group->saved_guid());
   }
 

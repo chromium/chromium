@@ -357,7 +357,7 @@ TEST_F(SavedTabGroupModelObserverTest, AddElement) {
   ASSERT_GE(index, 0);
 
   SavedTabGroup received_group = retrieved_group_[index];
-  EXPECT_EQ(group_4.tab_group_id(), received_group.tab_group_id());
+  EXPECT_EQ(group_4.local_group_id(), received_group.local_group_id());
   EXPECT_EQ(group_4.title(), received_group.title());
   EXPECT_EQ(group_4.color(), received_group.color());
   CompareSavedTabGroupTabs(group_4.saved_tabs(), received_group.saved_tabs());
@@ -376,7 +376,7 @@ TEST_F(SavedTabGroupModelObserverTest, RemovedElement) {
   ASSERT_GE(index, 0);
 
   SavedTabGroup received_group = retrieved_group_[index];
-  EXPECT_EQ(group_4.tab_group_id(), received_group.tab_group_id());
+  EXPECT_EQ(group_4.local_group_id(), received_group.local_group_id());
   EXPECT_EQ(group_4.title(), received_group.title());
   EXPECT_EQ(group_4.color(), received_group.color());
   CompareSavedTabGroupTabs(group_4.saved_tabs(), received_group.saved_tabs());
@@ -408,7 +408,7 @@ TEST_F(SavedTabGroupModelObserverTest, UpdatedElement) {
   ASSERT_GE(index, 0);
 
   SavedTabGroup received_group = retrieved_group_[index];
-  EXPECT_EQ(group_4.tab_group_id(), received_group.tab_group_id());
+  EXPECT_EQ(group_4.local_group_id(), received_group.local_group_id());
   EXPECT_EQ(new_title, received_group.title());
   EXPECT_EQ(new_color, received_group.color());
   CompareSavedTabGroupTabs(group_4.saved_tabs(), received_group.saved_tabs());
@@ -429,7 +429,7 @@ TEST_F(SavedTabGroupModelObserverTest, OnGroupClosedInTabStrip) {
   // Expect the saved group that calls update is the one that was removed from
   // the tabstrip.
   saved_tab_group_model_->OnGroupClosedInTabStrip(
-      group_4.tab_group_id().value());
+      group_4.local_group_id().value());
   EXPECT_EQ(index, retrieved_index_);
 
   // Expect the removal of group_4 from the tabstrip makes GetIndexOf not return

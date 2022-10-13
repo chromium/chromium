@@ -141,13 +141,13 @@ gfx::Range TabGroup::ListTabs() const {
 }
 
 void TabGroup::SaveGroup() {
-  std::vector<SavedTabGroupTab> urls;
+  std::vector<SavedTabGroupTab> tabs;
   const gfx::Range tab_range = ListTabs();
   const base::GUID saved_group_guid = base::GUID::GenerateRandomV4();
   for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
     content::WebContents* web_contents = controller_->GetWebContentsAt(i);
     const GURL& url = web_contents->GetVisibleURL();
-    urls.emplace_back(
+    tabs.emplace_back(
         SavedTabGroupTab(url, saved_group_guid)
             .SetTitle(web_contents->GetTitle())
             .SetFavicon(favicon::TabFaviconFromWebContents(web_contents)));
@@ -155,8 +155,10 @@ void TabGroup::SaveGroup() {
 
   SavedTabGroupKeyedService* backend =
       SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
+  if (!backend || !backend->model())
+    return;
   SavedTabGroup saved_tab_group(visual_data_->title(), visual_data_->color(),
-                                urls, saved_group_guid, id_);
+                                tabs, saved_group_guid, id_);
   backend->model()->Add(saved_tab_group);
 }
 
@@ -165,5 +167,7 @@ void TabGroup::UnsaveGroup() {
 
   SavedTabGroupKeyedService* backend =
       SavedTabGroupServiceFactory::GetForProfile(controller_->GetProfile());
+  if (!backend || !backend->model())
+    return;
   backend->model()->Remove(id_);
 }
