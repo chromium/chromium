@@ -47,6 +47,11 @@ enum class ChromePreloadingPredictor {
   kOmniboxSearchPredictor =
       static_cast<int>(PreloadingPredictor::kPreloadingPredictorContentEnd) + 3,
 
+  // When the preloading URL is predicted from the default search suggest due to
+  // mouse being pressed down on a Omnibox Search suggestion.
+  kOmniboxMousePredictor =
+      static_cast<int>(PreloadingPredictor::kPreloadingPredictorContentEnd) + 4,
+
   // TODO(crbug.com/1309934): Integrate more Preloading predictors with
   // Preloading logging APIs.
 };

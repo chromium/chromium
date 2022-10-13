@@ -6,6 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/new_tab_page.js';
 
 import {$$, decodeString16, mojoString16, RealboxBrowserProxy, RealboxElement, RealboxIconElement, RealboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {NavigationPredictor} from 'chrome://new-tab-page/omnibox.mojom-webui.js';
 import {AutocompleteMatch} from 'chrome://new-tab-page/realbox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -2528,6 +2529,68 @@ suite('NewTabPageRealboxTest', () => {
       assertTrue(args.matchSelectionTimestamp['internalValue'] > 0);
     });
     assertEquals(1, testProxy.handler.getCallCount('executeAction'));
+  });
+
+  //============================================================================
+  // Test Forwarding Events
+  //============================================================================
+
+  test('arrow events are sent to handler', async () => {
+    realbox.$.input.value = 'he';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    const matches = [createSearchMatch()];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(realbox.$.input.value.trimLeft()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertTrue(areMatchesShowing());
+
+    const arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+    realbox.$.input.dispatchEvent(arrowDownEvent);
+
+    await testProxy.handler.whenCalled('onNavigationLikely').then((args) => {
+      assertEquals(0, args.line);
+      assertEquals(
+          NavigationPredictor.kUpOrDownArrowButton, args.navigationPredictor);
+    });
+  });
+
+  test('mouse down events are sent to handler', async () => {
+    realbox.$.input.value = 'he';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    const matches = [createSearchMatch()];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(realbox.$.input.value.trimLeft()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    await testProxy.callbackRouterRemote.$.flushForTesting();
+    assertTrue(areMatchesShowing());
+
+    const matchEls =
+        realbox.$.matches.shadowRoot!.querySelectorAll('ntp-realbox-match');
+
+    const mouseDown = new MouseEvent('mousedown', {
+      bubbles: true,
+      button: 0,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+    });
+    matchEls[0]!.$.contents.dispatchEvent(mouseDown);
+
+    await testProxy.handler.whenCalled('onNavigationLikely').then((args) => {
+      assertEquals(0, args.line);
+      assertEquals(NavigationPredictor.kMouseDown, args.navigationPredictor);
+    });
   });
 
   suite('Lens search', () => {

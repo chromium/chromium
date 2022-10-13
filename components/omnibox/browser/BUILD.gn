@@ -7,6 +7,7 @@ import("//build/config/ui.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -248,6 +249,7 @@ static_library("browser") {
   public_deps = [
     ":buildflags",
     ":location_bar",
+    ":omnibox",
     "//base",
     "//base:i18n",
     "//components/history/core/browser",
@@ -739,4 +741,9 @@ fuzzer_test("search_suggestion_parser_fuzzer") {
     "//third_party/metrics_proto:metrics_proto",
   ]
   seed_corpus = "fuzz_corpus_suggest"
+}
+
+mojom("omnibox") {
+  sources = [ "omnibox.mojom" ]
+  webui_module_path = "/"
 }

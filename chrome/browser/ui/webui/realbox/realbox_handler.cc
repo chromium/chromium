@@ -656,6 +656,17 @@ void RealboxHandler::OpenAutocompleteMatch(
                              disposition, match.transition, false));
 }
 
+void RealboxHandler::OnNavigationLikely(
+    uint8_t line,
+    omnibox::mojom::NavigationPredictor navigation_predictor) {
+  if (auto* search_prefetch_service =
+          SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+    AutocompleteMatch match(autocomplete_controller_->result().match_at(line));
+    search_prefetch_service->OnNavigationLikely(
+        line, match, navigation_predictor, web_contents_);
+  }
+}
+
 void RealboxHandler::OpenURL(const GURL& destination_url,
                              TemplateURLRef::PostContent* post_content,
                              WindowOpenDisposition disposition,

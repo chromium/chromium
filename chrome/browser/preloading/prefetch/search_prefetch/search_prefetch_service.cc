@@ -44,17 +44,20 @@
 #include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
+using omnibox::mojom::NavigationPredictor;
+
 namespace {
 
 // Recomputes the destination URL for |match| with the updated prefetch
 // information (does not modify |destination_url|). Passing true to
 // |attach_prefetch_information| if the URL request will be sent to network,
 // otherwise set to false if it is for client-internal use only.
-GURL GetPreloadURLFromMatch(const AutocompleteMatch& match,
-                            TemplateURLService* template_url_service,
-                            bool attach_prefetch_information) {
+GURL GetPreloadURLFromMatch(
+    const TemplateURLRef::SearchTermsArgs& search_terms_args_from_match,
+    TemplateURLService* template_url_service,
+    bool attach_prefetch_information) {
   // Copy the search term args, so we can modify them for just the prefetch.
-  auto search_terms_args = *(match.search_terms_args);
+  auto search_terms_args = search_terms_args_from_match;
   search_terms_args.is_prefetch = attach_prefetch_information;
   return GURL(template_url_service->GetDefaultSearchProvider()
                   ->url_ref()
@@ -192,13 +195,15 @@ void SearchPrefetchService::Shutdown() {
 bool SearchPrefetchService::MaybePrefetchURL(
     const GURL& url,
     content::WebContents* web_contents) {
-  return MaybePrefetchURL(url, /*navigation_prefetch=*/false, web_contents);
+  return MaybePrefetchURL(url, /*navigation_prefetch=*/false, web_contents,
+                          ChromePreloadingPredictor::kDefaultSearchEngine);
 }
 
 bool SearchPrefetchService::MaybePrefetchURL(
     const GURL& url,
     bool navigation_prefetch,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    ChromePreloadingPredictor predictor) {
   if (!SearchPrefetchServicePrefetchingIsEnabled())
     return false;
 
@@ -238,11 +243,9 @@ bool SearchPrefetchService::MaybePrefetchURL(
   // Create new PreloadingAttempt and pass all the values corresponding to
   // this DefaultSearchEngine or OmniboxSearchPredictor prefetch attempt when
   // |navigation_prefetch| is true.
-  content::PreloadingPredictor predictor = ToPreloadingPredictor(
-      navigation_prefetch ? ChromePreloadingPredictor::kOmniboxSearchPredictor
-                          : ChromePreloadingPredictor::kDefaultSearchEngine);
   attempt = preloading_data->AddPreloadingAttempt(
-      predictor, content::PreloadingType::kPrefetch, same_url_matcher);
+      ToPreloadingPredictor(predictor), content::PreloadingType::kPrefetch,
+      same_url_matcher);
 
   if (search_terms.size() == 0) {
     recorder.reason_ =
@@ -662,7 +665,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
 
     if (BaseSearchProvider::ShouldPrefetch(match)) {
       MaybePrefetchURL(
-          GetPreloadURLFromMatch(match, template_url_service,
+          GetPreloadURLFromMatch(*match.search_terms_args, template_url_service,
                                  /*attach_prefetch_information=*/true),
           web_contents);
     }
@@ -676,24 +679,37 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
   }
 }
 
-void SearchPrefetchService::MaybePrefetchLikelyMatch(
+void SearchPrefetchService::OnNavigationLikely(
     size_t index,
     const AutocompleteMatch& match,
+    NavigationPredictor navigation_predictor,
     content::WebContents* web_contents) {
   if (!IsSearchNavigationPrefetchEnabled())
     return;
+
+  auto is_type_allowed = [](NavigationPredictor navigation_predictor) {
+    switch (navigation_predictor) {
+      case NavigationPredictor::kMouseDown:
+        return IsSearchMouseDownPrefetchEnabled();
+      case NavigationPredictor::kUpOrDownArrowButton:
+        return IsUpOrDownArrowPrefetchEnabled();
+    }
+  };
+
+  if (!is_type_allowed(navigation_predictor)) {
+    return;
+  }
+
   if (!web_contents)
     return;
-  // Assume the user is going back to enter more for now.
-  if (index == 0)
+  if (!AllowTopNavigationPrefetch() && index == 0)
     return;
   // Only prefetch search types.
   if (!AutocompleteMatch::IsSearchType(match.type))
     return;
   // Check to make sure this is search related and that we can read the search
   // arguments. For Search history this may be null.
-  if (!match.search_terms_args)
-    return;
+
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   // The default search provider needs to opt into prefetching behavior.
@@ -705,13 +721,34 @@ void SearchPrefetchService::MaybePrefetchLikelyMatch(
     return;
   }
 
-  GURL preload_url =
-      GetPreloadURLFromMatch(match, template_url_service,
-                             /*attach_prefetch_information=*/true);
-
+  // Parse the search terms from the match URL to verify this is a valid search
+  // query.
   std::u16string search_terms;
   template_url_service->GetDefaultSearchProvider()->ExtractSearchTermsFromURL(
-      preload_url, template_url_service->search_terms_data(), &search_terms);
+      match.destination_url, template_url_service->search_terms_data(),
+      &search_terms);
+
+  if (search_terms.size() == 0)
+    return;
+
+  // Search history suggestions (those that are not also server suggestions)
+  // don't have search term args. If search history suggestions are enabled,
+  // generate search term args to get a prefetch URL.
+  TemplateURLRef::SearchTermsArgs* search_terms_args_for_prefetch;
+  std::unique_ptr<TemplateURLRef::SearchTermsArgs> search_terms_args;
+  if (!match.search_terms_args) {
+    if (!PrefetchSearchHistorySuggestions())
+      return;
+    search_terms_args =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(search_terms);
+    search_terms_args_for_prefetch = search_terms_args.get();
+  } else {
+    search_terms_args_for_prefetch = match.search_terms_args.get();
+  }
+
+  GURL preload_url = GetPreloadURLFromMatch(
+      *search_terms_args_for_prefetch, template_url_service,
+      /*attach_prefetch_information=*/true);
 
   content::PreloadingURLMatchCallback same_url_matcher =
       base::BindRepeating(&IsSearchDestinationMatch, search_terms,
@@ -719,13 +756,23 @@ void SearchPrefetchService::MaybePrefetchLikelyMatch(
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents);
 
+  auto navigation_likely_event_to_predictor =
+      [](NavigationPredictor navigation_predictor) {
+        switch (navigation_predictor) {
+          case NavigationPredictor::kMouseDown:
+            return ChromePreloadingPredictor::kOmniboxMousePredictor;
+          case NavigationPredictor::kUpOrDownArrowButton:
+            return ChromePreloadingPredictor::kOmniboxSearchPredictor;
+        }
+      };
+  auto predictor = navigation_likely_event_to_predictor(navigation_predictor);
+
   // Create PreloadingPrediction for this match. We set the confidence to 100 as
   // when the user changed the selected match, we always trigger prefetch.
-  preloading_data->AddPreloadingPrediction(
-      ToPreloadingPredictor(ChromePreloadingPredictor::kOmniboxSearchPredictor),
-      100, std::move(same_url_matcher));
+  preloading_data->AddPreloadingPrediction(ToPreloadingPredictor(predictor),
+                                           100, std::move(same_url_matcher));
   MaybePrefetchURL(preload_url,
-                   /*navigation_prefetch=*/true, web_contents);
+                   /*navigation_prefetch=*/true, web_contents, predictor);
 }
 
 void SearchPrefetchService::OnTemplateURLServiceChanged() {
@@ -912,8 +959,9 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
     TemplateURLService* template_url_service,
     std::u16string search_terms) {
   DCHECK(web_contents);
-  GURL prefetch_url = GetPreloadURLFromMatch(
-      match, template_url_service, /*attach_prefetch_information=*/true);
+  GURL prefetch_url =
+      GetPreloadURLFromMatch(*match.search_terms_args, template_url_service,
+                             /*attach_prefetch_information=*/true);
   MaybePrefetchURL(prefetch_url, web_contents);
   if (!BaseSearchProvider::ShouldPrerender(match))
     return;
@@ -946,8 +994,9 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
 
   // Prerender URL need not contain the prefetch information to help servers to
   // recognize prefetch traffic, because it should not send network requests.
-  GURL prerender_url = GetPreloadURLFromMatch(
-      match, template_url_service, /*attach_prefetch_information=*/false);
+  GURL prerender_url =
+      GetPreloadURLFromMatch(*match.search_terms_args, template_url_service,
+                             /*attach_prefetch_information=*/false);
   prefetch_request_iter->second->MaybeStartPrerenderSearchResult(
       *prerender_manager, prerender_url, *preloading_attempt);
 }

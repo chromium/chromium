@@ -74,3 +74,23 @@ bool IsSearchNavigationPrefetchEnabled() {
 bool SearchPrefetchSkipsCancel() {
   return base::FeatureList::IsEnabled(kSearchPrefetchSkipsCancel);
 }
+
+bool IsUpOrDownArrowPrefetchEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(kSearchNavigationPrefetch,
+                                                 "up_or_down_arrow", true);
+}
+
+bool IsSearchMouseDownPrefetchEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(kSearchNavigationPrefetch,
+                                                 "mouse_down", true);
+}
+
+bool AllowTopNavigationPrefetch() {
+  return base::GetFieldTrialParamByFeatureAsBool(kSearchNavigationPrefetch,
+                                                 "allow_top_selection", true);
+}
+
+bool PrefetchSearchHistorySuggestions() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kSearchNavigationPrefetch, "prefetch_search_history", true);
+}

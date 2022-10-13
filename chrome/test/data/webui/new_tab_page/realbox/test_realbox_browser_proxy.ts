@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {NavigationPredictor} from 'chrome://new-tab-page/omnibox.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerInterface, PageRemote} from 'chrome://new-tab-page/realbox.mojom-webui.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {TimeDelta, TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
@@ -21,6 +22,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'deleteAutocompleteMatch',
       'executeAction',
       'logCharTypedToRepaintLatency',
+      'onNavigationLikely',
       'openAutocompleteMatch',
       'queryAutocomplete',
       'stopAutocomplete',
@@ -69,6 +71,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       metaKey,
       shiftKey,
     });
+  }
+
+  onNavigationLikely(line: number, navigationPredictor: NavigationPredictor) {
+    this.methodCalled('onNavigationLikely', {line, navigationPredictor});
   }
 
   queryAutocomplete(input: String16, preventInlineAutocomplete: boolean) {

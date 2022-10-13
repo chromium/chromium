@@ -55,6 +55,8 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+using omnibox::mojom::NavigationPredictor;
+
 namespace {
 
 constexpr char kOmniboxSuggestPrefetchQuery[] = "porgs";
@@ -3392,24 +3394,18 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
     SearchPrefetchBaseBrowserTest::SetUpOnMainThread();
     // Initialize PreloadingAttempt for this test suite.
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    attempt_entry_builder_ =
-        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kOmniboxSearchPredictor));
-    prediction_entry_builder_ =
-        std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
-            ToPreloadingPredictor(
-                ChromePreloadingPredictor::kOmniboxSearchPredictor));
   }
 
-  const content::test::PreloadingAttemptUkmEntryBuilder&
-  attempt_entry_builder() {
-    return *attempt_entry_builder_;
+  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
+  attempt_entry_builder(ChromePreloadingPredictor predictor) {
+    return std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+        ToPreloadingPredictor(predictor));
   }
 
-  const content::test::PreloadingPredictionUkmEntryBuilder&
-  prediction_entry_builder() {
-    return *prediction_entry_builder_;
+  std::unique_ptr<content::test::PreloadingPredictionUkmEntryBuilder>
+  prediction_entry_builder(ChromePreloadingPredictor predictor) {
+    return std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
+        ToPreloadingPredictor(predictor));
   }
 
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
@@ -3419,57 +3415,113 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
-      attempt_entry_builder_;
-  std::unique_ptr<content::test::PreloadingPredictionUkmEntryBuilder>
-      prediction_entry_builder_;
 };
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
-                       NavigationPrefetchIsServed) {
+                       NavigationPrefetchIsServedMouseDown) {
   SetDSEWithURL(
       GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   std::string search_terms = "terms of service";
   std::string user_input = "terms";
-  AddNewSuggestionRule(user_input, {user_input, search_terms},
-                       /*prefetch_index=*/-1, /*prerender_index=*/-1);
 
-  // Trigger an omnibox suggest fetch that does not have a prefetch hint.
-  AutocompleteInput input(
-      base::ASCIIToUTF16(user_input), metrics::OmniboxEventProto::BLANK,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
-  AutocompleteController* autocomplete_controller =
-      omnibox->model()->autocomplete_controller();
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, false);
+  SearchPrefetchServiceFactory::GetForProfile(browser()->profile())
+      ->OnNavigationLikely(1, autocomplete_match,
+                           NavigationPredictor::kMouseDown, GetWebContents());
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
-
-  ui_test_utils::WaitForAutocompleteDone(browser());
-  EXPECT_TRUE(autocomplete_controller->done());
-
-  omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
-
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
           base::ASCIIToUTF16(search_terms));
   ASSERT_TRUE(prefetch_status.has_value());
-  EXPECT_EQ(SearchPrefetchStatus::kCanBeServed, prefetch_status.value());
+  EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
 
-  omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
+  auto [prefetch_url, search_url] =
+      GetSearchPrefetchAndNonPrefetch(search_terms);
+  // Navigate.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       base::ASCIIToUTF16(search_terms));
-  ASSERT_TRUE(prefetch_status.has_value());
-  EXPECT_EQ(SearchPrefetchStatus::kCanBeServedAndUserClicked,
-            prefetch_status.value());
+  EXPECT_FALSE(prefetch_status.has_value());
 
-  content::WaitForLoadStop(GetWebContents());
+  auto inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+
+  {
+    ukm::SourceId ukm_source_id =
+        GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    auto prediction_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Prediction::kEntryName,
+        content::test::kPreloadingPredictionUkmMetrics);
+
+    // Check that we store one PreloadingPrediction and PreloadingAttempt for
+    // kOmniboxMousePredictor.
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+    EXPECT_EQ(prediction_ukm_entries.size(), 1u);
+
+    // Check that PreloadingAttempt is successful and accurately triggered.
+    std::vector<UkmEntry> expected_prediction_entries = {
+        prediction_entry_builder(
+            ChromePreloadingPredictor::kOmniboxMousePredictor)
+            ->BuildEntry(ukm_source_id,
+                         /*confidence=*/100,
+                         /*accurate_prediction=*/true)};
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder(ChromePreloadingPredictor::kOmniboxMousePredictor)
+            ->BuildEntry(ukm_source_id, content::PreloadingType::kPrefetch,
+                         content::PreloadingEligibility::kEligible,
+                         content::PreloadingHoldbackStatus::kAllowed,
+                         content::PreloadingTriggeringOutcome::kSuccess,
+                         content::PreloadingFailureReason::kUnspecified,
+                         /*accurate=*/true)};
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+    EXPECT_THAT(prediction_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_prediction_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               prediction_ukm_entries, expected_attempt_entries);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
+                       NavigationPrefetchIsServedArrowDown) {
+  SetDSEWithURL(
+      GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  std::string search_terms = "terms of service";
+  std::string user_input = "terms";
+
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, false);
+  SearchPrefetchServiceFactory::GetForProfile(browser()->profile())
+      ->OnNavigationLikely(1, autocomplete_match,
+                           NavigationPredictor::kUpOrDownArrowButton,
+                           GetWebContents());
+
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  ASSERT_TRUE(prefetch_status.has_value());
+  EXPECT_EQ(SearchPrefetchStatus::kComplete, prefetch_status.value());
+
+  auto [prefetch_url, search_url] =
+      GetSearchPrefetchAndNonPrefetch(search_terms);
+  // Navigate.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       base::ASCIIToUTF16(search_terms));
@@ -3496,17 +3548,20 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 
     // Check that PreloadingAttempt is successful and accurately triggered.
     std::vector<UkmEntry> expected_prediction_entries = {
-        prediction_entry_builder().BuildEntry(ukm_source_id,
-                                              /*confidence=*/100,
-                                              /*accurate_prediction=*/true)};
+        prediction_entry_builder(
+            ChromePreloadingPredictor::kOmniboxSearchPredictor)
+            ->BuildEntry(ukm_source_id,
+                         /*confidence=*/100,
+                         /*accurate_prediction=*/true)};
     std::vector<UkmEntry> expected_attempt_entries = {
-        attempt_entry_builder().BuildEntry(
-            ukm_source_id, content::PreloadingType::kPrefetch,
-            content::PreloadingEligibility::kEligible,
-            content::PreloadingHoldbackStatus::kAllowed,
-            content::PreloadingTriggeringOutcome::kSuccess,
-            content::PreloadingFailureReason::kUnspecified,
-            /*accurate=*/true)};
+        attempt_entry_builder(
+            ChromePreloadingPredictor::kOmniboxSearchPredictor)
+            ->BuildEntry(ukm_source_id, content::PreloadingType::kPrefetch,
+                         content::PreloadingEligibility::kEligible,
+                         content::PreloadingHoldbackStatus::kAllowed,
+                         content::PreloadingTriggeringOutcome::kSuccess,
+                         content::PreloadingFailureReason::kUnspecified,
+                         /*accurate=*/true)};
     EXPECT_THAT(attempt_ukm_entries,
                 testing::UnorderedElementsAreArray(expected_attempt_entries))
         << content::test::ActualVsExpectedUkmEntriesToString(
@@ -3715,29 +3770,18 @@ IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchHoldbackBrowserTest,
       GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
   std::string search_terms = "terms of service";
   std::string user_input = "terms";
-  AddNewSuggestionRule(user_input, {user_input, search_terms},
-                       /*prefetch_index=*/-1, /*prerender_index=*/-1);
 
-  // Trigger an omnibox suggest fetch that does not have a prefetch hint.
-  AutocompleteInput input(
-      base::ASCIIToUTF16(user_input), metrics::OmniboxEventProto::BLANK,
-      ChromeAutocompleteSchemeClassifier(browser()->profile()));
-  LocationBar* location_bar = browser()->window()->GetLocationBar();
-  OmniboxView* omnibox = location_bar->GetOmniboxView();
-  AutocompleteController* autocomplete_controller =
-      omnibox->model()->autocomplete_controller();
+  AutocompleteMatch autocomplete_match =
+      CreateSearchSuggestionMatch(search_terms, search_terms, false);
+  SearchPrefetchServiceFactory::GetForProfile(browser()->profile())
+      ->OnNavigationLikely(1, autocomplete_match,
+                           NavigationPredictor::kUpOrDownArrowButton,
+                           GetWebContents());
 
-  // Prevent the stop timer from killing the hints fetch early.
-  autocomplete_controller->SetStartStopTimerDurationForTesting(
-      base::Seconds(10));
-  autocomplete_controller->Start(input);
-
-  ui_test_utils::WaitForAutocompleteDone(browser());
-  EXPECT_TRUE(autocomplete_controller->done());
-
-  omnibox->model()->SetPopupSelection(OmniboxPopupSelection(1));
-  omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
-  content::WaitForLoadStop(GetWebContents());
+  auto [prefetch_url, search_url] =
+      GetSearchPrefetchAndNonPrefetch(search_terms);
+  // Navigate.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
 
   {
     ukm::SourceId ukm_source_id =
@@ -3803,21 +3847,6 @@ class SearchNavigationPrefetchNoCancelBrowserTest
   const content::test::PreloadingAttemptUkmEntryBuilder&
   attempt_entry_builder() {
     return *attempt_entry_builder_;
-  }
-
-  AutocompleteMatch CreateSearchSuggestionMatch(
-      const std::string& original_query,
-      const std::string& search_terms,
-      bool prefetch_hint) {
-    AutocompleteMatch match;
-    match.search_terms_args = std::make_unique<TemplateURLRef::SearchTermsArgs>(
-        base::UTF8ToUTF16(search_terms));
-    match.search_terms_args->original_query = base::UTF8ToUTF16(original_query);
-    match.destination_url = GetSearchServerQueryURL(search_terms);
-    match.keyword = base::UTF8ToUTF16(original_query);
-    if (prefetch_hint)
-      match.RecordAdditionalInfo("should_prefetch", "true");
-    return match;
   }
 
  private:

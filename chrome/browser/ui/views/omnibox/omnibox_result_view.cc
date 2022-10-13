@@ -27,6 +27,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -422,8 +423,12 @@ void OmniboxResultView::ButtonPressed(OmniboxPopupSelection::LineState state,
 // OmniboxResultView, views::View overrides:
 
 bool OmniboxResultView::OnMousePressed(const ui::MouseEvent& event) {
-  if (event.IsOnlyLeftMouseButton())
+  if (event.IsOnlyLeftMouseButton()) {
     popup_contents_view_->SetSelectedIndex(model_index_);
+    // Inform the model that a new result is now selected via mouse press.
+    model_->OnNavigationLikely(model_index_,
+                               omnibox::mojom::NavigationPredictor::kMouseDown);
+  }
   return true;
 }
 

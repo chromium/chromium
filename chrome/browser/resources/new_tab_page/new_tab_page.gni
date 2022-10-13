@@ -67,6 +67,7 @@ mojo_js_files = [
   "photos.mojom-webui.js",
   "realbox.mojom-webui.js",
   "recipes.mojom-webui.js",
+  "omnibox.mojom-webui.js",
 ]
 
 if (!is_official_build) {

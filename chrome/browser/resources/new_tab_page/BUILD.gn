@@ -67,6 +67,7 @@ copy("copy_mojom") {
     "//chrome/browser/new_tab_page/modules/recipes:mojo_bindings_js__generator",
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js__generator",
     "//chrome/browser/ui/webui/realbox:mojo_bindings_js__generator",
+    "//components/omnibox/browser:omnibox_js__generator",
   ]
   sources = [
     "$root_gen_dir/mojom-webui/chrome/browser/cart/chrome_cart.mojom-webui.js",
@@ -76,6 +77,7 @@ copy("copy_mojom") {
     "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/recipes/recipes.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.js",
     "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/realbox/realbox.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/components/omnibox/browser/omnibox.mojom-webui.js",
   ]
 
   if (!is_official_build) {
@@ -116,6 +118,7 @@ grit("resources") {
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js",
     "//chrome/browser/ui/webui/realbox:mojo_bindings_js",
     "//chrome/common/search:mojo_bindings_js",
+    "//components/omnibox/browser:omnibox_js",
   ]
   if (!is_official_build) {
     deps += [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_js" ]

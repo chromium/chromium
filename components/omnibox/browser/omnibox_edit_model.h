@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_view.h"
@@ -511,6 +512,12 @@ class OmniboxEditModel {
 
   // Stores the image in a local data member and schedules a repaint.
   void SetPopupRichSuggestionBitmap(int result_index, const SkBitmap& bitmap);
+
+  // Called to indicate a navigation may occur based on
+  // |navigation_predictor| to the suggestion on |line|.
+  void OnNavigationLikely(
+      size_t line,
+      omnibox::mojom::NavigationPredictor navigation_predictor);
 
  protected:
   // Utility method to get current PrefService; protected instead of private

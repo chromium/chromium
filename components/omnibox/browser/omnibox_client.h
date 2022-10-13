@@ -9,6 +9,7 @@
 
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -76,11 +77,14 @@ class OmniboxClient {
   // Returns the session ID of the current page.
   virtual const SessionID& GetSessionID() const = 0;
 
-  // Called when the user changes the selected |index| in the result list.
-  // |match| is the suggestion corresponding to that index. Currently
-  // experimental and only called from select omnibox implementations.
-  virtual void OnSelectedMatchChanged(size_t index,
-                                      const AutocompleteMatch& match) {}
+  // Called when the user changes the selected |index| in the result list via
+  // mouse down or arrow key down. |match| is the suggestion corresponding to
+  // that index. |navigation_predictor| represents the event indicated
+  // navigation was likely.
+  virtual void OnNavigationLikely(
+      size_t index,
+      const AutocompleteMatch& match,
+      omnibox::mojom::NavigationPredictor navigation_predictor) {}
 
   virtual bookmarks::BookmarkModel* GetBookmarkModel();
   virtual OmniboxControllerEmitter* GetOmniboxControllerEmitter();

@@ -4,6 +4,7 @@
 
 module realbox.mojom;
 
+import "components/omnibox/browser/omnibox.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/skcolor.mojom";
@@ -139,6 +140,11 @@ interface PageHandler {
                         bool ctrl_key,
                         bool meta_key,
                         bool shift_key);
+  // Informs the browser that the user has changed the selected suggestion. The
+  // new suggestion is located at |line|. |navigation_predictor|
+  // indicates the event that indicated navigation was likely.
+  OnNavigationLikely(uint8 line,
+    omnibox.mojom.NavigationPredictor navigation_predictor);
   // Deletes the AutocompleteMatch in the current results by |line| number if
   // it is deletable.
   DeleteAutocompleteMatch(uint8 line);

@@ -38,6 +38,7 @@
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
@@ -76,6 +77,7 @@
 
 using bookmarks::BookmarkModel;
 using metrics::OmniboxEventProto;
+using omnibox::mojom::NavigationPredictor;
 
 // Helpers --------------------------------------------------------------------
 
@@ -1479,6 +1481,10 @@ void OmniboxEditModel::OnUpOrDownKeyPressed(int count) {
       RevertTemporaryTextAndPopup();
     } else {
       SetPopupSelection(next_selection);
+
+      // Inform the client that a new row is now selected via arrow key down.
+      OnNavigationLikely(next_selection.line,
+                         NavigationPredictor::kUpOrDownArrowButton);
     }
     return;
   }
@@ -1487,6 +1493,21 @@ void OmniboxEditModel::OnUpOrDownKeyPressed(int count) {
 
   // TODO(pkasting): Here, the popup could be working on a query but is not
   // open. In that case, we should force it to open immediately.
+}
+
+void OmniboxEditModel::OnNavigationLikely(
+    size_t line,
+    NavigationPredictor navigation_predictor) {
+  if (result().empty()) {
+    return;
+  }
+
+  if (line == OmniboxPopupSelection::kNoMatch) {
+    return;
+  }
+
+  client_->OnNavigationLikely(line, result().match_at(line),
+                              navigation_predictor);
 }
 
 bool OmniboxEditModel::MaybeStartQueryForPopup() {
@@ -1962,9 +1983,6 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   }
 
   const AutocompleteMatch& match = result().match_at(popup_selection_.line);
-
-  // Inform the client that a new row is now selected.
-  client_->OnSelectedMatchChanged(popup_selection_.line, match);
 
   DCHECK((popup_selection_.state != OmniboxPopupSelection::KEYWORD_MODE) ||
          match.associated_keyword.get());

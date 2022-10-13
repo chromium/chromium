@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -102,6 +103,13 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
   void set_delayed_response(bool delayed_response) {
     delayed_response_ = delayed_response;
   }
+
+  // Create a search suggestion match with a prefetch signal when
+  // |prefetch_hint| is true.
+  AutocompleteMatch CreateSearchSuggestionMatch(
+      const std::string& original_query,
+      const std::string& search_terms,
+      bool prefetch_hint);
 
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(

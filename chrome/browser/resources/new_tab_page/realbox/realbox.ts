@@ -11,6 +11,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {NavigationPredictor} from '../omnibox.mojom-webui.js';
 import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from '../realbox.mojom-webui.js';
 import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
 
@@ -551,8 +552,12 @@ export class RealboxElement extends PolymerElement {
 
     if (e.key === 'ArrowDown') {
       this.$.matches.selectNext();
+      this.pageHandler_.onNavigationLikely(
+          this.selectedMatchIndex_, NavigationPredictor.kUpOrDownArrowButton);
     } else if (e.key === 'ArrowUp') {
       this.$.matches.selectPrevious();
+      this.pageHandler_.onNavigationLikely(
+          this.selectedMatchIndex_, NavigationPredictor.kUpOrDownArrowButton);
     } else if (e.key === 'Escape' || e.key === 'PageUp') {
       this.$.matches.selectFirst();
     } else if (e.key === 'PageDown') {

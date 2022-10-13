@@ -12,12 +12,14 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {NavigationPredictor} from '../omnibox.mojom-webui.js';
 import {ACMatchClassification, AutocompleteMatch, PageHandlerInterface} from '../realbox.mojom-webui.js';
 import {decodeString16, mojoTimeTicks} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {RealboxIconElement} from './realbox_icon.js';
 import {getTemplate} from './realbox_match.html.js';
+
 
 // clang-format off
 /**
@@ -180,6 +182,7 @@ export class RealboxMatchElement extends PolymerElement {
 
     this.addEventListener('click', (event) => this.onMatchClick_(event));
     this.addEventListener('focusin', () => this.onMatchFocusin_());
+    this.addEventListener('mousedown', () => this.onMatchMouseDown_());
   }
 
   //============================================================================
@@ -232,6 +235,11 @@ export class RealboxMatchElement extends PolymerElement {
       composed: true,
       detail: this.matchIndex,
     }));
+  }
+
+  private onMatchMouseDown_() {
+    this.pageHandler_.onNavigationLikely(
+        this.matchIndex, NavigationPredictor.kMouseDown);
   }
 
   private onRemoveButtonClick_(e: MouseEvent) {

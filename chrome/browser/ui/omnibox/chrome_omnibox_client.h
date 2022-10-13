@@ -15,6 +15,7 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
 #include "chrome/common/search/instant_types.h"
 #include "components/omnibox/browser/favicon_cache.h"
+#include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_client.h"
 
 class ChromeOmniboxEditController;
@@ -85,8 +86,10 @@ class ChromeOmniboxClient : public OmniboxClient {
   void DiscardNonCommittedNavigations() override;
   void OpenUpdateChromeDialog() override;
   void FocusWebContents() override;
-  void OnSelectedMatchChanged(size_t index,
-                              const AutocompleteMatch& match) override;
+  void OnNavigationLikely(
+      size_t index,
+      const AutocompleteMatch& match,
+      omnibox::mojom::NavigationPredictor navigation_predictor) override;
 
   // Update shortcuts when a navigation succeeds.
   static void OnSuccessfulNavigation(Profile* profile,

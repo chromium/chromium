@@ -42,12 +42,27 @@ base::TimeDelta SearchPrefetchBlockHeadStart();
 
 BASE_DECLARE_FEATURE(kSearchNavigationPrefetch);
 
-// An experimental feature to measure if starting search prefetches at
-// navigation start provides benefit over the typical navigation flow.
+// An experimental feature to measure if starting search prefetches during
+// navigation events provides benefit over the typical navigation flow.
 bool IsSearchNavigationPrefetchEnabled();
 
 // An experimental feature that skips the cancellation logic in search prefetch
 // service.
 bool SearchPrefetchSkipsCancel();
+
+// A flavor of navigation prefetch that triggers when the user changes the
+// selected index in omnibox to a search suggestion via arrow buttons.
+bool IsUpOrDownArrowPrefetchEnabled();
+
+// A flavor of navigation prefetch that triggers when the user pushes the mouse
+// down on a Search suggestion.
+bool IsSearchMouseDownPrefetchEnabled();
+
+// Allows the top selection to be prefetched by navigation prefetch strategies.
+bool AllowTopNavigationPrefetch();
+
+// Allows search history suggestions to be prefetched by navigation prefetch
+// strategies.
+bool PrefetchSearchHistorySuggestions();
 
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_FIELD_TRIAL_SETTINGS_H_
