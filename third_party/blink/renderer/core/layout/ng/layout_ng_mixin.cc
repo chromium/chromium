@@ -443,13 +443,23 @@ const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
 
   // Even if we are a layout root, our baseline may have shifted. In this
   // (rare) case, mark our containing-block for layout.
-  // The baseline of SVG <text> doesn't affect other boxes.
-  if (is_layout_root && previous_result && !Base::IsNGSVGText()) {
+  if (is_layout_root && previous_result) {
     if (To<NGPhysicalBoxFragment>(previous_result->PhysicalFragment())
             .FirstBaseline() != physical_fragment.FirstBaseline()) {
       if (auto* containing_block = Base::ContainingBlock()) {
-        containing_block->SetNeedsLayout(
-            layout_invalidation_reason::kChildChanged, kMarkContainerChain);
+        // Baselines inside replaced elements don't affect other boxes.
+        bool is_in_replaced = false;
+        for (auto* parent = Base::Parent();
+             parent && parent != containing_block; parent = parent->Parent()) {
+          if (parent->IsLayoutReplaced()) {
+            is_in_replaced = true;
+            break;
+          }
+        }
+        if (!is_in_replaced) {
+          containing_block->SetNeedsLayout(
+              layout_invalidation_reason::kChildChanged, kMarkContainerChain);
+        }
       }
     }
   }
