@@ -44,7 +44,7 @@ class ConsolidatedConsentScreenView
 
   // Set the visibility of the usage opt-in. For non-demo scenarios, the screen
   // will stay in the `loading` step until this method is called.
-  virtual void SetUsageOptinOptinHidden(bool hidden) = 0;
+  virtual void SetUsageOptinHidden(bool hidden) = 0;
 };
 
 class ConsolidatedConsentScreenHandler : public ConsolidatedConsentScreenView,
@@ -67,7 +67,7 @@ class ConsolidatedConsentScreenHandler : public ConsolidatedConsentScreenView,
   void SetUsageMode(bool enabled, bool managed) override;
   void SetBackupMode(bool enabled, bool managed) override;
   void SetLocationMode(bool enabled, bool managed) override;
-  void SetUsageOptinOptinHidden(bool hidden) override;
+  void SetUsageOptinHidden(bool hidden) override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(

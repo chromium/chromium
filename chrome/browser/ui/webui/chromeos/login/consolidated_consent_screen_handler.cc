@@ -129,7 +129,7 @@ void ConsolidatedConsentScreenHandler::SetLocationMode(bool enabled,
   CallExternalAPI("setLocationMode", enabled, managed);
 }
 
-void ConsolidatedConsentScreenHandler::SetUsageOptinOptinHidden(bool hidden) {
+void ConsolidatedConsentScreenHandler::SetUsageOptinHidden(bool hidden) {
   CallExternalAPI("setUsageOptinHidden", hidden);
 }
 }  // namespace chromeos

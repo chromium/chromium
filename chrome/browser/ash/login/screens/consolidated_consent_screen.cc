@@ -261,7 +261,7 @@ void ConsolidatedConsentScreen::OnOwnershipStatusCheckDone(
   // If the user is not the owner and the owner disabled metrics, the user
   // is not allowed to update the usage opt-in.
   if (view_) {
-    view_->SetUsageOptinOptinHidden(
+    view_->SetUsageOptinHidden(
         !is_owner_.value_or(false) &&
         !ash::StatsReportingController::Get()->IsEnabled());
   }
