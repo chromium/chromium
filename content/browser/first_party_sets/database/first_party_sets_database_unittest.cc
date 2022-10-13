@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -16,6 +17,7 @@
 #include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "sql/database.h"
@@ -810,101 +812,21 @@ TEST_F(FirstPartySetsDatabaseTest, InsertBrowserContextCleared_PreExistingDB) {
   EXPECT_FALSE(s.Step());
 }
 
-TEST_F(FirstPartySetsDatabaseTest, FetchSitesToClear_NoPreExistingDB) {
+TEST_F(FirstPartySetsDatabaseTest, GetSitesToClearFilters_NoPreExistingDB) {
   OpenDatabase();
-  EXPECT_EQ(std::vector<net::SchemefulSite>(), db()->FetchSitesToClear("b"));
+  std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
+      res = db()->GetSitesToClearFilters("b");
+  EXPECT_THAT(res.first, std::vector<net::SchemefulSite>());
+  EXPECT_EQ(res.second, net::FirstPartySetsCacheFilter());
 }
 
-TEST_F(FirstPartySetsDatabaseTest, FetchSitesToClear_BrowserContextNotExist) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
-
-  std::string browser_context_id = "b";
-  // Verify data in the pre-existing DB.
-  {
-    sql::Database db;
-    EXPECT_TRUE(db.Open(db_path()));
-    EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
-    EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
-
-    // b hasn't been cleared before.
-    const char kSelectSql[] =
-        "SELECT browser_context_id FROM browser_contexts_cleared";
-    sql::Statement s(db.GetUniqueStatement(kSelectSql));
-    EXPECT_TRUE(s.Step());
-    EXPECT_EQ("b0", s.ColumnString(0));
-    EXPECT_FALSE(s.Step());
-  }
-
-  OpenDatabase();
-  EXPECT_EQ(std::vector<net::SchemefulSite>(),
-            db()->FetchSitesToClear(browser_context_id));
-}
-
-// b1 has sites to clear but hasn't been cleared before.
-TEST_F(FirstPartySetsDatabaseTest, FetchSitesToClear_BrowserContextNotCleared) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
-
-  const std::string browser_context_id = "b1";
-  // Verify data in the pre-existing DB.
-  {
-    sql::Database db;
-    EXPECT_TRUE(db.Open(db_path()));
-    EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
-    EXPECT_EQ(2u, CountBrowserContextSitesToClearEntries(&db));
-    EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
-
-    const char kSelectSql[] =
-        "SELECT 1 FROM browser_contexts_cleared "
-        "WHERE browser_context_id=?";
-    sql::Statement s(db.GetUniqueStatement(kSelectSql));
-    s.BindString(0, browser_context_id);
-    EXPECT_FALSE(s.Step());
-  }
-
-  OpenDatabase();
-  EXPECT_EQ(std::vector<net::SchemefulSite>(
-                {net::SchemefulSite(GURL("https://example.test"))}),
-            db()->FetchSitesToClear(browser_context_id));
-}
-
-TEST_F(FirstPartySetsDatabaseTest, FetchSitesToClear) {
+TEST_F(FirstPartySetsDatabaseTest, GetSitesToClearFilters) {
   ASSERT_TRUE(
       sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
 
   const std::string browser_context_id = "b0";
-  // Verify data in the pre-existing DB.
-  {
-    sql::Database db;
-    EXPECT_TRUE(db.Open(db_path()));
-    EXPECT_EQ(kTableCount, sql::test::CountSQLTables(&db));
-    EXPECT_EQ(2u, CountBrowserContextSitesToClearEntries(&db));
-    EXPECT_EQ(1u, CountBrowserContextsClearedEntries(&db));
+  const int64_t expected_run_count = 2;
 
-    const char kSelectSql[] =
-        "SELECT browser_context_id FROM browser_contexts_cleared";
-    sql::Statement s(db.GetUniqueStatement(kSelectSql));
-    EXPECT_TRUE(s.Step());
-    EXPECT_EQ(browser_context_id, s.ColumnString(0));
-    EXPECT_FALSE(s.Step());
-  }
-  // Insert new sites to be cleared.
-  std::vector<net::SchemefulSite> input = {
-      net::SchemefulSite(GURL("https://example1.test")),
-      net::SchemefulSite(GURL("https://example2.test")),
-  };
-
-  OpenDatabase();
-  EXPECT_TRUE(db()->InsertSitesToClear(browser_context_id, input));
-  EXPECT_EQ(input, db()->FetchSitesToClear(browser_context_id));
-}
-
-TEST_F(FirstPartySetsDatabaseTest, FetchAllSitesToClearFilter) {
-  ASSERT_TRUE(
-      sql::test::CreateDatabaseFromSQL(db_path(), GetSqlFilePath("v1.sql")));
-
-  const std::string browser_context_id = "b0";
   // Verify data in the pre-existing DB.
   {
     sql::Database db;
@@ -921,20 +843,23 @@ TEST_F(FirstPartySetsDatabaseTest, FetchAllSitesToClearFilter) {
     ASSERT_FALSE(s.Step());
   }
 
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite example1(GURL("https://example1.test"));
+  net::SchemefulSite example2(GURL("https://example2.test"));
+
+  std::vector<net::SchemefulSite> input = {example1, example2};
+
   // Insert new sites to be cleared.
   OpenDatabase();
-  EXPECT_TRUE(db()->InsertSitesToClear(
-      browser_context_id, {
-                              net::SchemefulSite(GURL("https://example1.test")),
-                              net::SchemefulSite(GURL("https://example2.test")),
-                          }));
+  EXPECT_TRUE(db()->InsertSitesToClear(browser_context_id, input));
 
-  base::flat_map<net::SchemefulSite, int64_t> result = {
-      {net::SchemefulSite(GURL("https://example.test")), 1},
-      {net::SchemefulSite(GURL("https://example1.test")), 2},
-      {net::SchemefulSite(GURL("https://example2.test")), 2}};
+  net::FirstPartySetsCacheFilter cache_filter(
+      {{example, 1}, {example1, 2}, {example2, 2}}, expected_run_count);
 
-  EXPECT_THAT(db()->FetchAllSitesToClearFilter(browser_context_id), result);
+  std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
+      res = db()->GetSitesToClearFilters(browser_context_id);
+  EXPECT_THAT(res.first, input);
+  EXPECT_EQ(res.second, cache_filter);
 }
 
 TEST_F(FirstPartySetsDatabaseTest, FetchPolicyModifications_NoPreExistingDB) {

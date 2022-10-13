@@ -13,11 +13,12 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "content/common/content_export.h"
-#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class FirstPartySetEntry;
+class FirstPartySetsCacheFilter;
+class FirstPartySetsContextConfig;
 class GlobalFirstPartySets;
 class SchemefulSite;
 }
@@ -94,6 +95,10 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   using ParseError = IssueWithMetadata<ParseErrorType>;
   using ParseWarning = IssueWithMetadata<ParseWarningType>;
   virtual ~FirstPartySetsHandler() = default;
+
+  // Overrides the singleton with caller-owned |test_instance|. Callers in tests
+  // are responsible for resetting this to null on cleanup.
+  static void SetInstanceForTesting(FirstPartySetsHandler* test_instance);
 
   // Returns the singleton instance.
   static FirstPartySetsHandler* GetInstance();
@@ -179,7 +184,8 @@ class CONTENT_EXPORT FirstPartySetsHandler {
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       const std::string& browser_context_id,
       net::FirstPartySetsContextConfig context_config,
-      base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) = 0;
+      base::OnceCallback<void(net::FirstPartySetsContextConfig,
+                              net::FirstPartySetsCacheFilter)> callback) = 0;
 };
 
 }  // namespace content

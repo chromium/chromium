@@ -4,9 +4,11 @@
 
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 
+#include "base/callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
+#include "chrome/browser/first_party_sets/mock_first_party_sets_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -27,6 +29,12 @@ MATCHER_P(CarryingConfig, config, "") {
   if (arg.is_null())
     return false;
   return ExplainMatchResult(testing::Eq(config), arg->config, result_listener);
+}
+
+MATCHER_P2(CarryingConfigAndCacheFilter, config, cache_filter, "") {
+  if (arg.is_null())
+    return false;
+  return arg->config == config && arg->cache_filter == cache_filter;
 }
 
 namespace first_party_sets {
@@ -76,9 +84,11 @@ TEST_F(DefaultFirstPartySetsPolicyServiceTest, DisabledByFeature) {
   service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
 
   net::FirstPartySetsContextConfig config;
+  net::FirstPartySetsCacheFilter cache_filter;
 
   // Ensure NotifyReady is called with the empty config.
-  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfig(std::ref(config))))
+  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfigAndCacheFilter(
+                                 std::ref(config), std::ref(cache_filter))))
       .Times(1);
 
   env().RunUntilIdle();
@@ -96,9 +106,11 @@ TEST_F(DefaultFirstPartySetsPolicyServiceTest, GuestProfiles) {
   service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
 
   net::FirstPartySetsContextConfig config;
+  net::FirstPartySetsCacheFilter cache_filter;
 
   // Ensure NotifyReady is called with the empty config.
-  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfig(std::ref(config))))
+  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfigAndCacheFilter(
+                                 std::ref(config), std::ref(cache_filter))))
       .Times(1);
 
   env().RunUntilIdle();
@@ -113,9 +125,11 @@ TEST_F(DefaultFirstPartySetsPolicyServiceTest, EnabledForLegitProfile) {
   service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
 
   net::FirstPartySetsContextConfig config;
+  net::FirstPartySetsCacheFilter cache_filter;
 
   // Ensure NotifyReady is called with the empty config.
-  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfig(std::ref(config))))
+  EXPECT_CALL(mock_delegate, NotifyReady(CarryingConfigAndCacheFilter(
+                                 std::ref(config), std::ref(cache_filter))))
       .Times(1);
 
   env().RunUntilIdle();
@@ -416,6 +430,61 @@ TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
   // NotifyReady isn't called since the config isn't ready to be sent.
   EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
   EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
+
+  env().RunUntilIdle();
+}
+
+class FirstPartySetsPolicyServiceWithMockHandlerTest
+    : public FirstPartySetsPolicyServiceTest {
+ public:
+  FirstPartySetsPolicyServiceWithMockHandlerTest() = default;
+
+  void SetUp() override {
+    FirstPartySetsPolicyServiceTest::SetUp();
+
+    content::FirstPartySetsHandler::GetInstance()->SetInstanceForTesting(
+        &first_party_sets_handler_);
+  }
+
+  void TearDown() override {
+    FirstPartySetsPolicyServiceTest::TearDown();
+    first_party_sets_handler_.ResetForTesting();
+    content::FirstPartySetsHandler::GetInstance()->SetInstanceForTesting(
+        nullptr);
+  }
+
+  void SetContextConfig(net::FirstPartySetsContextConfig config) {
+    first_party_sets_handler_.SetContextConfig(std::move(config));
+  }
+  void SetCacheFilter(net::FirstPartySetsCacheFilter cache_filter) {
+    first_party_sets_handler_.SetCacheFilter(std::move(cache_filter));
+  }
+
+ private:
+  MockFirstPartySetsHandler first_party_sets_handler_;
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(FirstPartySetsPolicyServiceWithMockHandlerTest,
+       NotifiesReadyWithConfigAndCacheFilter) {
+  net::SchemefulSite test_primary(GURL("https://a.test"));
+  net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
+                                     absl::nullopt);
+  net::FirstPartySetsContextConfig test_config({{test_primary, {test_entry}}});
+  net::FirstPartySetsCacheFilter test_cache_filter({{test_primary, 1}},
+                                                   /*browser_run_id=*/1);
+  SetContextConfig(test_config.Clone());
+  SetCacheFilter(test_cache_filter.Clone());
+  service()->InitForTesting(
+      [&](PrefService* prefs,
+          base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(test_config.Clone());
+      });
+
+  EXPECT_CALL(mock_delegate,
+              NotifyReady(CarryingConfigAndCacheFilter(
+                  std::ref(test_config), std::ref(test_cache_filter))))
+      .Times(1);
 
   env().RunUntilIdle();
 }

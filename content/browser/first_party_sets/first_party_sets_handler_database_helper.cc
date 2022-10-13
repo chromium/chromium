@@ -10,6 +10,7 @@
 #include "content/browser/first_party_sets/database/first_party_sets_database.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 
@@ -69,7 +70,7 @@ FirstPartySetsHandlerDatabaseHelper::ComputeSetsDiff(
   return result;
 }
 
-std::vector<net::SchemefulSite>
+std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
 FirstPartySetsHandlerDatabaseHelper::UpdateAndGetSitesToClearForContext(
     const std::string& browser_context_id,
     const net::GlobalFirstPartySets& current_sets,
@@ -86,7 +87,7 @@ FirstPartySetsHandlerDatabaseHelper::UpdateAndGetSitesToClearForContext(
              << browser_context_id;
     return {};
   }
-  return db_->FetchSitesToClear(browser_context_id);
+  return db_->GetSitesToClearFilters(browser_context_id);
 }
 
 void FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext(

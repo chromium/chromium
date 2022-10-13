@@ -11,6 +11,7 @@
 #include "base/version.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -455,14 +456,17 @@ TEST_F(FirstPartySetsHandlerDatabaseHelperTest,
                                  example, net::SiteType::kAssociated, 0)}},
       /*aliases=*/{});
 
-  std::vector<net::SchemefulSite> res =
-      db_helper_->UpdateAndGetSitesToClearForContext(
+  std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
+      res = db_helper_->UpdateAndGetSitesToClearForContext(
           browser_context_id, current_sets,
           /*current_config=*/net::FirstPartySetsContextConfig());
 
   // Expected diff: "https://foo.test", "https://member2.test" and
   // "https://member3.test" left FPSs.
-  EXPECT_THAT(res, UnorderedElementsAre(foo, member2, member3));
+  EXPECT_THAT(res.first, UnorderedElementsAre(foo, member2, member3));
+  EXPECT_EQ(res.second, net::FirstPartySetsCacheFilter(
+                            /*filter=*/{{foo, 1}, {member2, 1}, {member3, 1}},
+                            /*browser_run_id=*/1));
 }
 
 }  // namespace content

@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_HANDLER_IMPL_H_
 
 #include <string>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
@@ -24,6 +25,7 @@
 #include "content/browser/first_party_sets/local_set_declaration.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/first_party_sets_handler.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -121,7 +123,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       const std::string& browser_context_id,
       net::FirstPartySetsContextConfig context_config,
-      base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback)
+      base::OnceCallback<void(net::FirstPartySetsContextConfig,
+                              net::FirstPartySetsCacheFilter)> callback)
       override;
 
   // Sets whether FPS is enabled (for testing).
@@ -178,7 +181,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       const std::string& browser_context_id,
       net::FirstPartySetsContextConfig context_config,
-      base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback);
+      base::OnceCallback<void(net::FirstPartySetsContextConfig,
+                              net::FirstPartySetsCacheFilter)> callback);
 
   // Parses the policy and computes the config that represents the changes
   // needed to apply `policy` to `global_sets_`.
@@ -189,8 +193,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
       base::RepeatingCallback<BrowserContext*()> browser_context_getter,
       const std::string& browser_context_id,
       net::FirstPartySetsContextConfig context_config,
-      base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback,
-      std::vector<net::SchemefulSite> sites_to_clear) const;
+      base::OnceCallback<void(net::FirstPartySetsContextConfig,
+                              net::FirstPartySetsCacheFilter)> callback,
+      std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
+          sites_to_clear) const;
 
   // `failed_data_types` is a bitmask used to indicate data types from
   // BrowsingDataRemover::DataType enum that were failed to remove. 0 indicates
@@ -198,7 +204,9 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   void DidClearSiteDataOnChangedSetsForContext(
       const std::string& browser_context_id,
       net::FirstPartySetsContextConfig context_config,
-      base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback,
+      net::FirstPartySetsCacheFilter cache_filter,
+      base::OnceCallback<void(net::FirstPartySetsContextConfig,
+                              net::FirstPartySetsCacheFilter)> callback,
       uint64_t failed_data_types) const;
 
   // Whether Init has been called already or not.

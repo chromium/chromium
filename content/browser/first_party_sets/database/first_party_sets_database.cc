@@ -22,6 +22,7 @@
 #include "content/browser/first_party_sets/first_party_set_parser.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "sql/database.h"
@@ -416,13 +417,43 @@ net::GlobalFirstPartySets FirstPartySetsDatabase::GetGlobalSets(
   return global_sets;
 }
 
+std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
+FirstPartySetsDatabase::GetSitesToClearFilters(
+    const std::string& browser_context_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!browser_context_id.empty());
+  if (!LazyInit())
+    return {};
+
+  DCHECK_GT(run_count_, 0);
+
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin())
+    return {};
+
+  std::vector<net::SchemefulSite> sites_to_clear =
+      FetchSitesToClear(browser_context_id);
+
+  base::flat_map<net::SchemefulSite, int64_t> all_sites_to_clear =
+      FetchAllSitesToClearFilter(browser_context_id);
+
+  net::FirstPartySetsCacheFilter cache_filter =
+      all_sites_to_clear.empty()
+          ? net::FirstPartySetsCacheFilter()
+          : net::FirstPartySetsCacheFilter(std::move(all_sites_to_clear),
+                                           run_count_);
+
+  if (!transaction.Commit())
+    return {};
+
+  return std::make_pair(std::move(sites_to_clear), std::move(cache_filter));
+}
+
 std::vector<net::SchemefulSite> FirstPartySetsDatabase::FetchSitesToClear(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!browser_context_id.empty());
-
-  if (!LazyInit())
-    return {};
+  DCHECK_EQ(db_status_, InitStatus::kSuccess);
 
   // Gets the sites that were marked to clear but haven't been cleared yet for
   // the given `browser_context_id`. Use 0 as the default
@@ -461,10 +492,7 @@ base::flat_map<net::SchemefulSite, int64_t>
 FirstPartySetsDatabase::FetchAllSitesToClearFilter(
     const std::string& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!browser_context_id.empty());
-
-  if (!LazyInit())
-    return {};
+  DCHECK_EQ(db_status_, InitStatus::kSuccess);
 
   std::vector<std::pair<net::SchemefulSite, int64_t>> results;
   static constexpr char kSelectSql[] =

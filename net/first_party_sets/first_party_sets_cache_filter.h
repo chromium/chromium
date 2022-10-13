@@ -52,6 +52,8 @@ class NET_EXPORT FirstPartySetsCacheFilter {
 
   bool operator==(const FirstPartySetsCacheFilter& other) const;
 
+  FirstPartySetsCacheFilter Clone() const;
+
   MatchInfo GetMatchInfo(const SchemefulSite& site) const;
 
  private:

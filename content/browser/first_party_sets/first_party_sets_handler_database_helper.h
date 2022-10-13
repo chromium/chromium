@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -21,6 +22,7 @@ class Version;
 }  // namespace base
 
 namespace net {
+class FirstPartySetsCacheFilter;
 class FirstPartySetsContextConfig;
 class GlobalFirstPartySets;
 class SchemefulSite;
@@ -70,7 +72,8 @@ class CONTENT_EXPORT FirstPartySetsHandlerDatabaseHelper {
   // compute the list of sites to clear, stores the sites into DB, then reads
   // the final list of sites to be cleared from DB, which can include sites
   // stored during previous browser runs that did not have state cleared.
-  std::vector<net::SchemefulSite> UpdateAndGetSitesToClearForContext(
+  std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
+  UpdateAndGetSitesToClearForContext(
       const std::string& browser_context_id,
       const net::GlobalFirstPartySets& current_sets,
       const net::FirstPartySetsContextConfig& current_config);

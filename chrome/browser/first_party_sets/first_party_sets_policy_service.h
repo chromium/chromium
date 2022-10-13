@@ -11,7 +11,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
-#include "net/first_party_sets/first_party_sets_context_config.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 
 class PrefService;
@@ -21,6 +20,8 @@ class BrowserContext;
 }  // namespace content
 
 namespace net {
+class FirstPartySetsCacheFilter;
+class FirstPartySetsContextConfig;
 class SchemefulSite;
 }  // namespace net
 
@@ -112,7 +113,8 @@ class FirstPartySetsPolicyService : public KeyedService {
                 get_config);
 
   // Sets the `config_` member and provides it to all delegates via NotifyReady.
-  void OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig config);
+  void OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig config,
+                                net::FirstPartySetsCacheFilter cache_filter);
 
   // Triggers changes that occur once the FirstPartySetsContextConfig for the
   // profile that created this service is retrieved.
@@ -136,6 +138,10 @@ class FirstPartySetsPolicyService : public KeyedService {
   // the changes specified by this FirstPartySetsOverrides policy for the
   // profile that created this service.
   absl::optional<net::FirstPartySetsContextConfig> config_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The filter used to bypass cache access in the network for this profile.
+  absl::optional<net::FirstPartySetsCacheFilter> cache_filter_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Callback used by tests to wait for the ctor's initialization flow to

@@ -25,6 +25,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -264,7 +265,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           base::BindLambdaForTesting([&]() { return context(); }),
           browser_context_id, net::FirstPartySetsContextConfig(),
           base::BindLambdaForTesting(
-              [&](net::FirstPartySetsContextConfig) { run_loop.Quit(); }));
+              [&](net::FirstPartySetsContextConfig,
+                  net::FirstPartySetsCacheFilter) { run_loop.Quit(); }));
   run_loop.Run();
 
   EXPECT_THAT(
@@ -318,7 +320,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           base::BindLambdaForTesting([&]() { return context(); }),
           browser_context_id, net::FirstPartySetsContextConfig(),
           base::BindLambdaForTesting(
-              [&](net::FirstPartySetsContextConfig) { run_loop.Quit(); }));
+              [&](net::FirstPartySetsContextConfig,
+                  net::FirstPartySetsCacheFilter) { run_loop.Quit(); }));
   run_loop.Run();
 
   EXPECT_THAT(
@@ -375,7 +378,8 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           base::BindLambdaForTesting([&]() { return context(); }),
           browser_context_id, net::FirstPartySetsContextConfig(),
           base::BindLambdaForTesting(
-              [&](net::FirstPartySetsContextConfig) { run_loop.Quit(); }));
+              [&](net::FirstPartySetsContextConfig,
+                  net::FirstPartySetsCacheFilter) { run_loop.Quit(); }));
   run_loop.Run();
 
   EXPECT_EQ(GetPersistedGlobalSetsAndWait(browser_context_id), absl::nullopt);
@@ -398,7 +402,9 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
                                                  LocalSetDeclaration());
 
   const std::string browser_context_id = "profile";
-  base::test::TestFuture<net::FirstPartySetsContextConfig> future;
+  base::test::TestFuture<net::FirstPartySetsContextConfig,
+                         net::FirstPartySetsCacheFilter>
+      future;
   FirstPartySetsHandlerImpl::GetInstance()
       ->ClearSiteDataOnChangedSetsForContext(
           base::BindLambdaForTesting([&]() { return context(); }),

@@ -62,10 +62,22 @@ void RecordClearSiteDataOutcome(ClearSiteDataOutcomeType outcome) {
       "FirstPartySets.Initialization.ClearSiteDataOutcomeType", outcome);
 }
 
+// Global FirstPartySetsHandler instance for testing.
+FirstPartySetsHandler* g_test_instance = nullptr;
+
 }  // namespace
 
 // static
+void FirstPartySetsHandler::SetInstanceForTesting(
+    FirstPartySetsHandler* test_instance) {
+  g_test_instance = test_instance;
+}
+
+// static
 FirstPartySetsHandler* FirstPartySetsHandler::GetInstance() {
+  if (g_test_instance)
+    return g_test_instance;
+
   return FirstPartySetsHandlerImpl::GetInstance();
 }
 
@@ -309,11 +321,13 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContext(
     base::RepeatingCallback<BrowserContext*()> browser_context_getter,
     const std::string& browser_context_id,
     net::FirstPartySetsContextConfig context_config,
-    base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+    base::OnceCallback<void(net::FirstPartySetsContextConfig,
+                            net::FirstPartySetsCacheFilter)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!enabled_ || !features::kFirstPartySetsClearSiteDataOnChangedSets.Get()) {
-    std::move(callback).Run(std::move(context_config));
+    std::move(callback).Run(std::move(context_config),
+                            net::FirstPartySetsCacheFilter());
     return;
   }
 
@@ -335,7 +349,8 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
     base::RepeatingCallback<BrowserContext*()> browser_context_getter,
     const std::string& browser_context_id,
     net::FirstPartySetsContextConfig context_config,
-    base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+    base::OnceCallback<void(net::FirstPartySetsContextConfig,
+                            net::FirstPartySetsCacheFilter)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(global_sets_.has_value());
   DCHECK(!browser_context_id.empty());
@@ -345,7 +360,8 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
     VLOG(1) << "Invalid First-Party Sets database. Failed to clear site data "
                "for browser_context_id="
             << browser_context_id;
-    std::move(callback).Run(std::move(context_config));
+    std::move(callback).Run(std::move(context_config),
+                            net::FirstPartySetsCacheFilter());
     return;
   }
 
@@ -353,7 +369,8 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSetsForContextInternal(
   // to prevent the case that `context_config` gets used after it's moved. This
   // is because C++ does not have a defined evaluation order for function
   // parameters.
-  base::OnceCallback<void(std::vector<net::SchemefulSite>)>
+  base::OnceCallback<void(std::pair<std::vector<net::SchemefulSite>,
+                                    net::FirstPartySetsCacheFilter>)>
       on_get_sites_to_clear = base::BindOnce(
           &FirstPartySetsHandlerImpl::OnGetSitesToClear,
           // base::Unretained(this) is safe here because this
@@ -373,8 +390,10 @@ void FirstPartySetsHandlerImpl::OnGetSitesToClear(
     base::RepeatingCallback<BrowserContext*()> browser_context_getter,
     const std::string& browser_context_id,
     net::FirstPartySetsContextConfig context_config,
-    base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback,
-    std::vector<net::SchemefulSite> sites_to_clear) const {
+    base::OnceCallback<void(net::FirstPartySetsContextConfig,
+                            net::FirstPartySetsCacheFilter)> callback,
+    std::pair<std::vector<net::SchemefulSite>, net::FirstPartySetsCacheFilter>
+        sites_to_clear) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   BrowserContext* browser_context = browser_context_getter.Run();
@@ -383,24 +402,28 @@ void FirstPartySetsHandlerImpl::OnGetSitesToClear(
                 "browser_context_id="
              << browser_context_id;
 
-    std::move(callback).Run(std::move(context_config));
+    std::move(callback).Run(std::move(context_config),
+                            net::FirstPartySetsCacheFilter());
     return;
   }
 
   FirstPartySetsSiteDataRemover::RemoveSiteData(
-      *browser_context->GetBrowsingDataRemover(), std::move(sites_to_clear),
+      *browser_context->GetBrowsingDataRemover(),
+      std::move(sites_to_clear.first),
       base::BindOnce(
           &FirstPartySetsHandlerImpl::DidClearSiteDataOnChangedSetsForContext,
           // base::Unretained(this) is safe here because
           // this is a static singleton.
           base::Unretained(this), browser_context_id, std::move(context_config),
-          std::move(callback)));
+          std::move(sites_to_clear.second), std::move(callback)));
 }
 
 void FirstPartySetsHandlerImpl::DidClearSiteDataOnChangedSetsForContext(
     const std::string& browser_context_id,
     net::FirstPartySetsContextConfig context_config,
-    base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback,
+    net::FirstPartySetsCacheFilter cache_filter,
+    base::OnceCallback<void(net::FirstPartySetsContextConfig,
+                            net::FirstPartySetsCacheFilter)> callback,
     uint64_t failed_data_types) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!db_helper_.is_null());
@@ -418,7 +441,7 @@ void FirstPartySetsHandlerImpl::DidClearSiteDataOnChangedSetsForContext(
   db_helper_.AsyncCall(&FirstPartySetsHandlerDatabaseHelper::PersistSets)
       .WithArgs(browser_context_id, version_, global_sets_->Clone(),
                 context_config.Clone());
-  std::move(callback).Run(std::move(context_config));
+  std::move(callback).Run(std::move(context_config), std::move(cache_filter));
 }
 
 net::FirstPartySetsContextConfig

@@ -42,6 +42,10 @@ bool FirstPartySetsCacheFilter::operator==(
          std::tie(other.filter_, other.browser_run_id_);
 }
 
+FirstPartySetsCacheFilter FirstPartySetsCacheFilter::Clone() const {
+  return FirstPartySetsCacheFilter(filter_, browser_run_id_);
+}
+
 FirstPartySetsCacheFilter::MatchInfo FirstPartySetsCacheFilter::GetMatchInfo(
     const net::SchemefulSite& site) const {
   FirstPartySetsCacheFilter::MatchInfo res;
