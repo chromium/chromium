@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -24,7 +23,6 @@
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "content/public/browser/storage_partition_config.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -151,7 +149,10 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
   void RegisterWebApp(std::unique_ptr<WebApp> web_app,
                       bool create_storage_partition = true) {
     if (create_storage_partition) {
-      CreateStoragePartitionForUrl(web_app->scope());
+      auto url_info = IsolatedWebAppUrlInfo::Create(web_app->scope());
+      profile()->GetStoragePartition(
+          url_info->storage_partition_config(profile()),
+          /*can_create=*/true);
     }
 
     provider()->GetRegistrarMutable().registry().emplace(web_app->app_id(),
@@ -159,9 +160,9 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
   }
 
   void CreateFactory() {
+    int dummy_frame_tree_node_id = 42;
     factory_.Bind(IsolatedWebAppURLLoaderFactory::Create(
-        web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId(),
-        profile()));
+        dummy_frame_tree_node_id, profile()));
   }
 
   int CreateLoaderAndRun(std::unique_ptr<network::ResourceRequest> request) {
@@ -184,27 +185,6 @@ class IsolatedWebAppURLLoaderFactoryTest : public WebAppTest {
       EXPECT_THAT(completion_status_.decoded_body_length, Eq(body_length));
     }
     return loader->NetError();
-  }
-
-  void CreateStoragePartitionForUrl(const GURL& url) {
-    base::expected<IsolatedWebAppUrlInfo, std::string> url_info =
-        IsolatedWebAppUrlInfo::Create(url);
-    if (!url_info.has_value()) {
-      DCHECK(false) << "Can't  create url info for url " << url
-                    << ", error: " << url_info.error();
-    }
-
-    content::StoragePartition* current_storage_partition =
-        profile()->GetStoragePartition(
-            url_info->storage_partition_config(profile()),
-            /*can_create=*/false);
-
-    DCHECK(current_storage_partition == nullptr)
-        << "Partition already exists for url: " << url;
-
-    DCHECK(profile()->GetStoragePartition(
-               url_info->storage_partition_config(profile()),
-               /*can_create=*/true) != nullptr);
   }
 
   const ScopedUrlHandler& url_handler() {
@@ -324,7 +304,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, HeadRequestsSucceed) {
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
-       PostRequestsReturnMethodNotSupportedWhenAppIsInstalled) {
+       PostRequestsReturnMethodNotSupported) {
   RegisterWebApp(CreateIsolatedWebApp(kAppStartUrl,
                                       IsolationData{IsolationData::DevModeProxy{
                                           .proxy_url = kProxyUrl.spec()}}));
@@ -342,39 +322,12 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
               IsHttpStatusCode(net::HTTP_METHOD_NOT_ALLOWED));
 }
 
-TEST_F(
-    IsolatedWebAppURLLoaderFactoryTest,
-    PostRequestsReturnMethodNotSupportedWhenAppIsInstalledAndThereIsPendingInstall) {
-  RegisterWebApp(CreateIsolatedWebApp(
-      kAppStartUrl, IsolationData{IsolationData::DevModeProxy{
-                        .proxy_url = "http://installed-app-proxy-url.com"}}));
-
-  IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
-      .set_isolation_data(IsolationData{IsolationData::DevModeProxy{
-          .proxy_url = "http://pending-install-proxy-url.com"}});
-
-  CreateFactory();
-
-  auto request = std::make_unique<network::ResourceRequest>();
-  const char* kUnsupportedHttpMethod = net::HttpRequestHeaders::kPostMethod;
-  request->method = kUnsupportedHttpMethod;
-  request->url = kAppStartUrl;
-  int status = CreateLoaderAndRun(std::move(request));
-
-  EXPECT_THAT(status, IsNetError(net::OK));
-  ASSERT_THAT(ResponseInfo(), NotNull());
-  EXPECT_THAT(ResponseInfo()->headers->response_code(),
-              IsHttpStatusCode(net::HTTP_METHOD_NOT_ALLOWED));
-}
-
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
-       RequestWithUnsupportedHttpMethodFailWithErrFailedIfAppNotInstalled) {
+       PostRequestsFailWithErrFailedIfAppNotInstalled) {
   CreateFactory();
 
   auto request = std::make_unique<network::ResourceRequest>();
-
-  const char* kUnsupportedHttpMethod = net::HttpRequestHeaders::kPostMethod;
-  request->method = kUnsupportedHttpMethod;
+  request->method = net::HttpRequestHeaders::kPostMethod;
   request->url = kAppStartUrl;
   int status = CreateLoaderAndRun(std::move(request));
 
@@ -502,8 +455,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlKeepsOriginUrlPath) {
               Eq(GURL("http://example.com/foo/bar.html")));
 }
 
-TEST_F(IsolatedWebAppURLLoaderFactoryTest,
-       DoNotReturnGeneratedPageWhenNotInstallingApplication) {
+TEST_F(IsolatedWebAppURLLoaderFactoryTest, GeneratedInstallPageIsReturned) {
   RegisterWebApp(CreateIsolatedWebApp(kAppStartUrl,
                                       IsolationData{IsolationData::DevModeProxy{
                                           .proxy_url = "http://example.com"}}));
@@ -513,31 +465,6 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = GURL("isolated-app://" + kWebBundleId +
                       "/.well-known/_generated_install_page.html");
-
-  int status = CreateLoaderAndRun(std::move(request));
-
-  EXPECT_THAT(status, IsNetError(net::OK));
-  EXPECT_THAT(
-      url_handler().intercepted_url(),
-      Eq("http://example.com/.well-known/_generated_install_page.html"));
-}
-
-TEST_F(IsolatedWebAppURLLoaderFactoryTest,
-       ReturnGeneratedPageWhenInstallingApplication) {
-  IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
-      .set_isolation_data(IsolationData{IsolationData::DevModeProxy{
-          .proxy_url = "http://some-proxy-url.com"}});
-
-  RegisterWebApp(CreateIsolatedWebApp(kAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = "http://example.com"}}));
-
-  CreateFactory();
-
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = GURL("isolated-app://" + kWebBundleId +
-                      "/.well-known/_generated_install_page.html");
-
   int status = CreateLoaderAndRun(std::move(request));
 
   EXPECT_THAT(status, IsNetError(net::OK));
@@ -548,53 +475,7 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest,
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,
-       RequestsRedirectedToPendingInstallIsolationDataWhenAppIsInstalled) {
-  IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
-      .set_isolation_data(IsolationData{IsolationData::DevModeProxy{
-          .proxy_url = "http://some-proxy-url.com"}});
-
-  RegisterWebApp(CreateIsolatedWebApp(kAppStartUrl,
-                                      IsolationData{IsolationData::DevModeProxy{
-                                          .proxy_url = "http://example.com"}}));
-
-  CreateFactory();
-
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = GURL("isolated-app://" + kWebBundleId +
-                      "/some-resource-for-testing.html");
-
-  int status = CreateLoaderAndRun(std::move(request));
-
-  EXPECT_THAT(status, IsNetError(net::OK));
-  EXPECT_THAT(
-      url_handler().intercepted_url(),
-      Eq(GURL("http://some-proxy-url.com/some-resource-for-testing.html")));
-}
-
-TEST_F(IsolatedWebAppURLLoaderFactoryTest,
-       RequestsRedirectedToPendingInstallIsolationDataWhenAppIsNotInstalled) {
-  CreateStoragePartitionForUrl(GURL("isolated-app://" + kWebBundleId));
-
-  IsolatedWebAppPendingInstallInfo::FromWebContents(*web_contents())
-      .set_isolation_data(IsolationData{IsolationData::DevModeProxy{
-          .proxy_url = "http://some-proxy-url.com"}});
-
-  CreateFactory();
-
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = GURL("isolated-app://" + kWebBundleId +
-                      "/some-resource-for-testing.html");
-
-  int status = CreateLoaderAndRun(std::move(request));
-
-  EXPECT_THAT(status, IsNetError(net::OK));
-  EXPECT_THAT(
-      url_handler().intercepted_url(),
-      Eq(GURL("http://some-proxy-url.com/some-resource-for-testing.html")));
-}
-
-TEST_F(IsolatedWebAppURLLoaderFactoryTest,
-       GeneratedInstallPageIsNotReturnedForNonInstallingApp) {
+       GeneratedInstallPageIsNotReturnedForNonIwa) {
   RegisterWebApp(CreateWebApp(kAppStartUrl));
 
   CreateFactory();
