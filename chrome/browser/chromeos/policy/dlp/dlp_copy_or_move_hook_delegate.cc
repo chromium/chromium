@@ -14,28 +14,6 @@
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace policy {
-namespace {
-
-void CopySourceInformation(storage::FileSystemURL source,
-                           storage::FileSystemURL destination) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  DlpRulesManager* rules_manager;
-  rules_manager = DlpRulesManagerFactory::GetForPrimaryProfile();
-  if (!rules_manager) {
-    return;
-  }
-  DlpFilesController* controller = rules_manager->GetDlpFilesController();
-  if (!controller) {
-    return;
-  }
-  controller->CopySourceInformation(source, destination);
-#else
-  NOTREACHED();
-#endif
-}
-
-}  // namespace
 
 DlpCopyOrMoveHookDelegate::DlpCopyOrMoveHookDelegate(bool isComposite)
     : CopyOrMoveHookDelegate(isComposite) {}
@@ -61,7 +39,31 @@ void DlpCopyOrMoveHookDelegate::OnSuccess(
     const storage::FileSystemURL& destination_url) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&CopySourceInformation, source_url, destination_url));
+      base::BindOnce(&DlpCopyOrMoveHookDelegate::CopySourceInformation,
+                     base::Unretained(this), source_url, destination_url));
+}
+
+void DlpCopyOrMoveHookDelegate::CopySourceInformation(
+    storage::FileSystemURL source,
+    storage::FileSystemURL destination) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DlpRulesManager* rules_manager = GetRulesManager();
+  if (!rules_manager) {
+    return;
+  }
+  DlpFilesController* controller = rules_manager->GetDlpFilesController();
+  if (!controller) {
+    return;
+  }
+  controller->CopySourceInformation(source, destination);
+#else
+  NOTREACHED();
+#endif
+}
+
+DlpRulesManager* DlpCopyOrMoveHookDelegate::GetRulesManager() {
+  return DlpRulesManagerFactory::GetForPrimaryProfile();
 }
 
 }  // namespace policy
