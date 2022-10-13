@@ -476,7 +476,7 @@ class WebAppFrameToolbarBrowserTest_Borderless
     return app_id;
   }
 
-  void GrantWindowPlacementPermission() {
+  void GrantWindowManagementPermission() {
     auto* web_contents = helper()->browser_view()->GetActiveWebContents();
 
     std::string permission_auto_approve_script = R"(
@@ -516,14 +516,14 @@ class WebAppFrameToolbarBrowserTest_Borderless
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
-                       AppUsesBorderlessModeAndHasWindowPlacementPermission) {
+                       AppUsesBorderlessModeAndHasWindowManagementPermission) {
   InstallAndLaunchWebApp(/*uses_borderless=*/true);
-  GrantWindowPlacementPermission();
+  GrantWindowManagementPermission();
 
   ASSERT_TRUE(helper()->browser_view()->borderless_mode_enabled_for_testing());
   ASSERT_TRUE(helper()
                   ->browser_view()
-                  ->window_placement_permission_granted_for_testing());
+                  ->window_management_permission_granted_for_testing());
   ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
   ASSERT_FALSE(
       helper()->web_app_frame_toolbar()->GetAppMenuButton()->GetVisible());
@@ -550,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
   EXPECT_TRUE(EvalJs(web_contents, match_media_standalone).ExtractBool());
   ASSERT_EQ(blue, EvalJs(web_contents, get_background_color));
 
-  GrantWindowPlacementPermission();
+  GrantWindowManagementPermission();
   ASSERT_TRUE(helper()->browser_view()->IsBorderlessModeEnabled());
 
   // Validate that after granting the permission the display-mode matches with
@@ -561,12 +561,12 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
 
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_Borderless,
-    AppUsesBorderlessModeAndDoesNotHaveWindowPlacementPermission) {
+    AppUsesBorderlessModeAndDoesNotHaveWindowManagementPermission) {
   InstallAndLaunchWebApp(/*uses_borderless=*/true);
   ASSERT_TRUE(helper()->browser_view()->borderless_mode_enabled_for_testing());
   ASSERT_FALSE(helper()
                    ->browser_view()
-                   ->window_placement_permission_granted_for_testing());
+                   ->window_management_permission_granted_for_testing());
   ASSERT_FALSE(helper()->browser_view()->IsBorderlessModeEnabled());
 }
 
@@ -576,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_Borderless,
   ASSERT_FALSE(helper()->browser_view()->borderless_mode_enabled_for_testing());
   ASSERT_FALSE(helper()
                    ->browser_view()
-                   ->window_placement_permission_granted_for_testing());
+                   ->window_management_permission_granted_for_testing());
   ASSERT_FALSE(helper()->browser_view()->IsBorderlessModeEnabled());
   ASSERT_TRUE(
       helper()->web_app_frame_toolbar()->GetAppMenuButton()->GetVisible());

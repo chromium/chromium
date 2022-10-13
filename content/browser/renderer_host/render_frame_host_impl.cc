@@ -1140,8 +1140,8 @@ bool IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled() {
          !IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled();
 }
 
-// Returns true if `host` has the Window Placement permission granted.
-bool IsWindowPlacementGranted(RenderFrameHost* host) {
+// Returns true if `host` has the Window Management permission granted.
+bool IsWindowManagementGranted(RenderFrameHost* host) {
   content::PermissionController* permission_controller =
       host->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
@@ -6644,7 +6644,7 @@ void RenderFrameHostImpl::EnterFullscreen(
   // CanEnterFullscreenWithoutUserActivation is only ever true in tests, to
   // allow fullscreen when mocking screen orientation changes.
   if (!delegate_->HasSeenRecentScreenOrientationChange() &&
-      !WindowPlacementAllowsFullscreen() && !HasSeenRecentXrOverlaySetup() &&
+      !WindowManagementAllowsFullscreen() && !HasSeenRecentXrOverlaySetup() &&
       !GetContentClient()
            ->browser()
            ->CanEnterFullscreenWithoutUserActivation()) {
@@ -6683,7 +6683,7 @@ void RenderFrameHostImpl::EnterFullscreen(
           blink::features::kWindowPlacementFullscreenCompanionWindow) &&
       screen && screen->GetNumDisplays() > 1 &&
       screen->GetDisplayWithDisplayId(options->display_id, &display) &&
-      IsWindowPlacementGranted(this)) {
+      IsWindowManagementGranted(this)) {
     transient_allow_popup_.Activate();
   }
 
@@ -10191,8 +10191,8 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
     GrantFileAccessFromResourceRequestBody(*request->common_params().post_data);
 }
 
-bool RenderFrameHostImpl::WindowPlacementAllowsFullscreen() {
-  return IsWindowPlacementGranted(this) &&
+bool RenderFrameHostImpl::WindowManagementAllowsFullscreen() {
+  return IsWindowManagementGranted(this) &&
          delegate_->IsTransientAllowFullscreenActive();
 }
 

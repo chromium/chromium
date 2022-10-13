@@ -764,8 +764,8 @@ class TestScreenEnvironment {
 #endif  // BUILDFLAG(IS_MAC)
 };
 
-// Tests FullscreenController support of Multi-Screen Window Placement features.
-// Sites with the Window Placement permission can request fullscreen on a
+// Tests FullscreenController support of multi-screen features.
+// Sites with the Window Management permission can request fullscreen on a
 // specific screen, move fullscreen windows to different displays, and more.
 class MultiScreenFullscreenControllerInteractiveTest
     : public FullscreenControllerInteractiveTest {
@@ -1172,7 +1172,7 @@ IN_PROC_BROWSER_TEST_F(MultiScreenFullscreenControllerInteractiveTest,
   permissions::PermissionRequestManager* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(tab);
 
-  // Request the Window Placement permission and accept the prompt after user
+  // Request the Window Management permission and accept the prompt after user
   // activation expires; accepting should grant a new transient activation
   // signal that can be used to request fullscreen, without another gesture.
   ExecuteScriptAsync(tab, "getScreenDetails()");
@@ -1285,7 +1285,7 @@ IN_PROC_BROWSER_TEST_P(
   // Execute JS to request fullscreen and open a popup on separate screens.
   const std::string script = R"(
     (async () => {
-      // Note: WindowPlacementPermissionContext will send an activation signal.
+      // Note: WindowManagementPermissionContext will send an activation signal.
       window.screenDetails = await window.getScreenDetails();
 
       const fullscreen_change_promise = new Promise(resolve => {

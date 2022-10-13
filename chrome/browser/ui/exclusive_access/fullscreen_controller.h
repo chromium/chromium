@@ -119,12 +119,11 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   // Enter tab-initiated fullscreen mode. FullscreenController decides whether
   // to also fullscreen the browser window. See 'FullscreenWithinTab Note'.
-  // |requesting_frame| is the specific content frame requesting fullscreen.
-  // If the Window Placement experiment is enabled, fullscreen may be requested
-  // on a particular display. In that case, |display_id| is the display's id;
+  // `requesting_frame` is the specific content frame requesting fullscreen.
+  // Sites with the Window Management permission may request fullscreen on a
+  // particular display. In that case, `display_id` is the display's id;
   // otherwise, display::kInvalidDisplayId indicates no display is specified.
-  //
-  // |CanEnterFullscreenModeForTab()| must return true on entry.
+  // `CanEnterFullscreenModeForTab()` must return true on entry.
   void EnterFullscreenModeForTab(
       content::RenderFrameHost* requesting_frame,
       const int64_t display_id = display::kInvalidDisplayId);

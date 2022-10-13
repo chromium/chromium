@@ -28,7 +28,7 @@ class ScreenEnumerator {
   // |getScreenDetails| API.
   // https://w3c.github.io/window-placement/#api-window-getScreenDetails-method
   // TODO(crbug.com/1339802): Introduce matching IDs between screens returned
-  // by this function and by the window placement API to make sure the screen
+  // by this function and by the ScreenDetails API to make sure the screen
   // matching is not getting out of sync.
   virtual void EnumerateScreens(
       blink::mojom::MediaStreamType stream_type,

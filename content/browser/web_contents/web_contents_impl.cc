@@ -442,8 +442,8 @@ base::flat_set<WebContentsImpl*>* FullscreenContentsSet(
   return set_holder->set();
 }
 
-// Returns true if `host` has the Window Placement permission granted.
-bool IsWindowPlacementGranted(RenderFrameHost* host) {
+// Returns true if `host` has the Window Management permission granted.
+bool IsWindowManagementGranted(RenderFrameHost* host) {
   content::PermissionController* permission_controller =
       host->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
@@ -470,7 +470,7 @@ int64_t AdjustRequestedWindowBounds(gfx::Rect* bounds, RenderFrameHost* host) {
   // Check, but do not prompt, for permission to place windows on other screens.
   // Sites generally need permission to get such bounds in the first place.
   // Also clamp offscreen bounds to the window's current screen.
-  if (!bounds->Intersects(display.bounds()) || !IsWindowPlacementGranted(host))
+  if (!bounds->Intersects(display.bounds()) || !IsWindowManagementGranted(host))
     display = screen->GetDisplayNearestView(host->GetNativeView());
 
   bounds->AdjustToFit(display.work_area());
@@ -4199,7 +4199,7 @@ void WebContentsImpl::ShowCreatedWindow(
 
   // Drop fullscreen when opening a WebContents to prohibit deceptive behavior.
   // Only drop fullscreen on the specific destination display, if it is known.
-  // This supports sites using cross-screen window placement capabilities to
+  // This supports sites using cross-screen window management capabilities to
   // retain fullscreen and open a window on another screen.
   ForSecurityDropFullscreen(display_id).RunAndReset();
 
@@ -7411,7 +7411,7 @@ void WebContentsImpl::SetWindowRect(const gfx::Rect& new_bounds) {
 
   // Drop fullscreen when placing a WebContents to prohibit deceptive behavior.
   // Only drop fullscreen on the specific destination display, which is known.
-  // This supports sites using cross-screen window placement capabilities to
+  // This supports sites using cross-screen window management capabilities to
   // retain fullscreen and place a window on another screen.
   ForSecurityDropFullscreen(display_id).RunAndReset();
 

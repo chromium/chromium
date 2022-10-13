@@ -399,7 +399,7 @@ class BrowserView : public BrowserWindow,
       OnLinkOpeningFromGestureCallback callback);
 
   // Updates the variable keeping track of the borderless mode visibility, which
-  // together with the `window_placement_permission_granted_` controls whether
+  // together with the `window_management_permission_granted_` controls whether
   // the title bar is shown or not.
   void UpdateBorderlessModeEnabled();
 
@@ -422,8 +422,8 @@ class BrowserView : public BrowserWindow,
     return borderless_mode_enabled_;
   }
 
-  bool window_placement_permission_granted_for_testing() const {
-    return window_placement_permission_granted_;
+  bool window_management_permission_granted_for_testing() const {
+    return window_management_permission_granted_;
   }
 
   void set_isolated_web_app_true_for_testing() { is_isolated_web_app_ = true; }
@@ -958,14 +958,14 @@ class BrowserView : public BrowserWindow,
   // Updates the visibility of the Window Controls Overlay toggle button.
   void UpdateWindowControlsOverlayToggleVisible();
 
-  // Updates the variable keeping track of the window-placement permission,
+  // Updates the variable keeping track of the "window-placement" permission,
   // which together with borderless_mode_enabled_ controls whether the title bar
   // is shown or not.
-  void UpdateWindowPlacementPermission(blink::mojom::PermissionStatus status);
+  void UpdateWindowManagementPermission(blink::mojom::PermissionStatus status);
 
   // Sets the callback which is called when the status of the window-placement
   // permission changes.
-  void SetWindowPlacementPermissionSubscriptionForBorderlessMode(
+  void SetWindowManagementPermissionSubscriptionForBorderlessMode(
       content::WebContents* web_contents);
 
   // Updates whether the web app is an isolated web app.
@@ -1224,10 +1224,10 @@ class BrowserView : public BrowserWindow,
   bool window_controls_overlay_enabled_ = false;
   bool should_show_window_controls_overlay_toggle_ = false;
   bool borderless_mode_enabled_ = false;
-  bool window_placement_permission_granted_ = false;
+  bool window_management_permission_granted_ = false;
   bool is_isolated_web_app_ = false;
   absl::optional<content::PermissionController::SubscriptionId>
-      window_placement_subscription_id_;
+      window_management_subscription_id_;
 
   mutable base::WeakPtrFactory<BrowserView> weak_ptr_factory_{this};
 };

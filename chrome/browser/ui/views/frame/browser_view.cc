@@ -1647,7 +1647,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // This is only done once when the app is first opened so that there is only
   // one subscriber per web contents.
   if (AppUsesBorderlessMode() && !old_contents) {
-    SetWindowPlacementPermissionSubscriptionForBorderlessMode(new_contents);
+    SetWindowManagementPermissionSubscriptionForBorderlessMode(new_contents);
     UpdateIsIsolatedWebApp();
   }
 }
@@ -1659,13 +1659,13 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
     return;
 
   // This is to unsubscribe the window-placement permission subscriber.
-  if (window_placement_subscription_id_) {
+  if (window_management_subscription_id_) {
     contents->GetPrimaryMainFrame()
         ->GetBrowserContext()
         ->GetPermissionController()
         ->UnsubscribePermissionStatusChange(
-            window_placement_subscription_id_.value());
-    window_placement_subscription_id_.reset();
+            window_management_subscription_id_.value());
+    window_management_subscription_id_.reset();
   }
 
   // We need to reset the current tab contents to null before it gets
@@ -2191,13 +2191,13 @@ void BrowserView::UpdateBorderlessModeEnabled() {
                 blink::PermissionType::WINDOW_PLACEMENT, url)
             .status;
 
-    window_placement_permission_granted_ =
+    window_management_permission_granted_ =
         status == blink::mojom::PermissionStatus::GRANTED;
   } else {
     // Defaults to the value of borderless_mode_enabled if web contents are
     // null. These get overridden when the app is launched and its web contents
     // are ready.
-    window_placement_permission_granted_ = borderless_mode_enabled;
+    window_management_permission_granted_ = borderless_mode_enabled;
     is_isolated_web_app_ = borderless_mode_enabled;
   }
 
@@ -2210,16 +2210,16 @@ void BrowserView::UpdateBorderlessModeEnabled() {
   }
 }
 
-void BrowserView::UpdateWindowPlacementPermission(
+void BrowserView::UpdateWindowManagementPermission(
     blink::mojom::PermissionStatus status) {
-  window_placement_permission_granted_ =
+  window_management_permission_granted_ =
       status == blink::mojom::PermissionStatus::GRANTED;
 
   // The layout has to update to reflect the borderless mode view change.
   InvalidateLayout();
 }
 
-void BrowserView::SetWindowPlacementPermissionSubscriptionForBorderlessMode(
+void BrowserView::SetWindowManagementPermissionSubscriptionForBorderlessMode(
     content::WebContents* web_contents) {
   content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
   auto* controller = rfh->GetBrowserContext()->GetPermissionController();
@@ -2227,7 +2227,7 @@ void BrowserView::SetWindowPlacementPermissionSubscriptionForBorderlessMode(
   // Last committed URL is null when PWA is opened from chrome://apps.
   url::Origin url = url::Origin::Create(web_contents->GetVisibleURL());
 
-  UpdateWindowPlacementPermission(
+  UpdateWindowManagementPermission(
       controller
           ->GetPermissionResultForOriginWithoutContext(
               blink::PermissionType::WINDOW_PLACEMENT, url)
@@ -2235,10 +2235,10 @@ void BrowserView::SetWindowPlacementPermissionSubscriptionForBorderlessMode(
 
   // It is safe to bind base::Unretained(this) because WebContents is
   // owned by BrowserView.
-  window_placement_subscription_id_ =
+  window_management_subscription_id_ =
       controller->SubscribePermissionStatusChange(
           blink::PermissionType::WINDOW_PLACEMENT, rfh->GetProcess(), url,
-          base::BindRepeating(&BrowserView::UpdateWindowPlacementPermission,
+          base::BindRepeating(&BrowserView::UpdateWindowManagementPermission,
                               base::Unretained(this)));
 }
 
@@ -2260,7 +2260,7 @@ void BrowserView::ToggleWindowControlsOverlayEnabled() {
 }
 
 bool BrowserView::IsBorderlessModeEnabled() const {
-  return borderless_mode_enabled_ && window_placement_permission_granted_ &&
+  return borderless_mode_enabled_ && window_management_permission_granted_ &&
          is_isolated_web_app_;
 }
 

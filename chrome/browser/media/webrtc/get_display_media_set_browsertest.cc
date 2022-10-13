@@ -133,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(GetDisplayMediaSetBrowserTest,
                                     track_ids));
   // If no screen is attached to a device, the |DisplayManager| will add a
   // default device. This same behavior is used in other places in Chrome that
-  // handle multiple screens (e.g. in the window placement API) and
+  // handle multiple screens (e.g. in JS window.getScreenDetails() API) and
   // getDisplayMediaSet will follow the same convention.
   EXPECT_EQ(1u, track_ids.size());
   EXPECT_EQ(track_ids.size(), base::flat_set<std::string>(track_ids).size());

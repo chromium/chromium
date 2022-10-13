@@ -3048,8 +3048,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void UpdatePermissionsForNavigation(NavigationRequest* request);
 
   // Returns true if there is an active transient fullscreen allowance for the
-  // Window Placement feature (i.e. on screen configuration changes).
-  bool WindowPlacementAllowsFullscreen();
+  // Window Management feature (i.e. on screen configuration changes).
+  bool WindowManagementAllowsFullscreen();
 
   // Returns the latest NavigationRequest that has resulted in sending a Commit
   // IPC to the renderer process that hasn't yet been acked by the DidCommit IPC

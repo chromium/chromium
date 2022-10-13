@@ -20,7 +20,7 @@ namespace test {
 struct DisplayParams;
 
 // This interface creates system-level virtual displays to support the automated
-// integration testing of display information and window placement APIs in
+// integration testing of display information and window management APIs in
 // multi-screen device environments. It updates the displays that the normal mac
 // screen impl sees, but not `TestScreenMac`.
 class VirtualDisplayMacUtil : public display::DisplayObserver {
