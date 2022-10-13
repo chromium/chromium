@@ -373,7 +373,8 @@ ScriptPromise MediaDevices::getDisplayMedia(
           : DisplayCapturePolicyResult::kDisallowed);
 
   if (!capture_allowed_by_permissions_policy) {
-    exception_state.ThrowSecurityError(kFeaturePolicyBlocked);
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      kFeaturePolicyBlocked);
     return ScriptPromise();
   }
 
