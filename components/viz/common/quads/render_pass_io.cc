@@ -329,12 +329,8 @@ base::Value RRectFToDict(const gfx::RRectF& rect) {
   return dict;
 }
 
-bool RRectFFromDict(const base::Value& dict_value, gfx::RRectF* out) {
+bool RRectFFromDict(const base::Value::Dict& dict, gfx::RRectF* out) {
   DCHECK(out);
-  if (!dict_value.is_dict())
-    return false;
-
-  const base::Value::Dict& dict = dict_value.GetDict();
   const std::string* type = dict.FindString("type");
   if (!type)
     return false;
@@ -440,8 +436,8 @@ bool MaskFilterInfoFromDict(const base::Value& dict, gfx::MaskFilterInfo* out) {
   DCHECK(out);
   if (!dict.is_dict())
     return false;
-  const base::Value* rounded_corner_bounds =
-      dict.FindDictKey("rounded_corner_bounds");
+  const base::Value::Dict* rounded_corner_bounds =
+      dict.GetDict().FindDict("rounded_corner_bounds");
   if (!rounded_corner_bounds)
     return false;
   gfx::RRectF t_rounded_corner_bounds;
@@ -2133,8 +2129,8 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassBackdropFilterBounds)) {
-    const base::Value* backdrop_filter_bounds =
-        dict.FindDictKey("backdrop_filter_bounds");
+    const base::Value::Dict* backdrop_filter_bounds =
+        dict.GetDict().FindDict("backdrop_filter_bounds");
     if (backdrop_filter_bounds) {
       gfx::RRectF bounds;
       if (!RRectFFromDict(*backdrop_filter_bounds, &bounds))
