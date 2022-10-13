@@ -59,26 +59,6 @@ void AppListPage::AnimateYPosition(AppListViewState target_view_state,
   animator.Run(default_offset, layer());
 }
 
-gfx::Rect AppListPage::GetAboveContentsOffscreenBounds(
-    const gfx::Size& size) const {
-  gfx::Rect rect(size);
-  rect.set_y(-rect.height());
-  return rect;
-}
-
-gfx::Rect AppListPage::GetBelowContentsOffscreenBounds(
-    const gfx::Size& size) const {
-  DCHECK(contents_view_);
-  gfx::Rect rect(size);
-  rect.set_y(contents_view_->GetContentsBounds().height());
-  return rect;
-}
-
-gfx::Rect AppListPage::GetFullContentsBounds() const {
-  DCHECK(contents_view_);
-  return contents_view_->GetContentsBounds();
-}
-
 gfx::Rect AppListPage::GetDefaultContentsBounds() const {
   DCHECK(contents_view_);
   return contents_view_->GetContentsBounds();

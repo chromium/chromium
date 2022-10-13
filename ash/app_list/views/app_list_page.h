@@ -111,18 +111,6 @@ class ASH_EXPORT AppListPage : public views::View {
                                 const TransformAnimator& animator,
                                 float default_offset);
 
-  // Returns the area above the contents view, given the desired size of this
-  // page, in the contents view's coordinate space.
-  gfx::Rect GetAboveContentsOffscreenBounds(const gfx::Size& size) const;
-
-  // Returns the area below the contents view, given the desired size of this
-  // page, in the contents view's coordinate space.
-  gfx::Rect GetBelowContentsOffscreenBounds(const gfx::Size& size) const;
-
-  // Returns the entire bounds of the contents view, in the contents view's
-  // coordinate space.
-  gfx::Rect GetFullContentsBounds() const;
-
   // Returns the default bounds of pages inside the contents view, in the
   // contents view's coordinate space. This is the area of the contents view
   // below the search box.
