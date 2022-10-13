@@ -4,10 +4,6 @@
 
 #include "chrome/browser/ash/tether/tether_service.h"
 
-#include "ash/components/tether/gms_core_notifications_state_tracker_impl.h"
-#include "ash/components/tether/tether_component.h"
-#include "ash/components/tether/tether_component_impl.h"
-#include "ash/components/tether/tether_host_fetcher_impl.h"
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/bind.h"
@@ -23,6 +19,10 @@
 #include "chromeos/ash/components/network/device_state.h"
 #include "chromeos/ash/components/network/network_connect.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/tether/gms_core_notifications_state_tracker_impl.h"
+#include "chromeos/ash/components/tether/tether_component.h"
+#include "chromeos/ash/components/tether/tether_component_impl.h"
+#include "chromeos/ash/components/tether/tether_host_fetcher_impl.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"

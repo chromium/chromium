@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "ash/components/tether/gms_core_notifications_state_tracker.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "chromeos/ash/components/tether/gms_core_notifications_state_tracker.h"
 #include "ui/gfx/native_widget_types.h"
 
 class Profile;

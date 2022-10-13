@@ -1949,9 +1949,9 @@
       'filepath': 'apitest|unittest|browsertest|uitest|chrome/test/',
     },
     'tether': {
-      'filepath': 'ash/components/tether/'\
-                  '|chrome/browser/ash/tether/'\
+      'filepath': 'chrome/browser/ash/tether/'\
                   '|chrome/browser/ui/ash/network/tether'\
+                  '|chromeos/ash/components/tether/',
     },
     'text_to_speech': {
       'filepath': 'tts'

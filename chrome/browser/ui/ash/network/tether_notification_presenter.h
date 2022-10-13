@@ -8,12 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/tether/notification_presenter.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/tether/notification_presenter.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 class Profile;

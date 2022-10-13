@@ -1,6 +1,0 @@
-include_rules = [
-  "+chromeos/login/login_state",
-  "+components/proximity_auth/logging",
-  "+components/session_manager/core",
-  "+components/sync_preferences",
-]
