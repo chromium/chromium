@@ -9,6 +9,7 @@
 #include "base/ranges/algorithm.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model_field.h"
+#include "ui/base/ui_base_types.h"
 
 namespace ui {
 
@@ -75,6 +76,26 @@ DialogModel::Builder& DialogModel::Builder::AddExtraLink(
   DCHECK(!model_->extra_button_);
   DCHECK(!model_->extra_link_);
   model_->extra_link_.emplace(std::move(link));
+  return *this;
+}
+
+DialogModel::Builder& DialogModel::Builder::OverrideDefaultButton(
+    DialogButton button) {
+  // This can only be called once.
+  DCHECK(!model_->override_default_button_);
+  // Confirm the button exists.
+  switch (button) {
+    case DIALOG_BUTTON_NONE:
+      NOTREACHED();
+      break;
+    case DIALOG_BUTTON_OK:
+      DCHECK(model_->ok_button_);
+      break;
+    case DIALOG_BUTTON_CANCEL:
+      DCHECK(model_->cancel_button_);
+      break;
+  }
+  model_->override_default_button_ = button;
   return *this;
 }
 

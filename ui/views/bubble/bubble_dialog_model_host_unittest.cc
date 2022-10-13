@@ -8,11 +8,14 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/test/gtest_util.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views {
 
@@ -113,6 +116,46 @@ TEST_F(BubbleDialogModelHostTest, ElementIDsReportedCorrectly) {
   EXPECT_NE(nullptr, ui::ElementTracker::GetElementTracker()->GetUniqueElement(
                          kExtraButtonId, context));
   bubble_widget->CloseNow();
+}
+
+TEST_F(BubbleDialogModelHostTest, OverrideDefaultButton) {
+  auto host = std::make_unique<BubbleDialogModelHost>(
+      ui::DialogModel::Builder()
+          .AddCancelButton(base::OnceClosure())
+          .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
+          .Build(),
+      /*anchor_view=*/nullptr, BubbleBorder::Arrow::TOP_RIGHT);
+  EXPECT_EQ(host->GetDefaultDialogButton(),
+            ui::DialogButton::DIALOG_BUTTON_CANCEL);
+}
+
+TEST_F(BubbleDialogModelHostTest, OverrideDefaultButtonDeathTest) {
+  EXPECT_DCHECK_DEATH(std::make_unique<BubbleDialogModelHost>(
+      ui::DialogModel::Builder()
+          .AddCancelButton(base::OnceClosure())
+          .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_OK)
+          .Build(),
+      /*anchor_view=*/nullptr, BubbleBorder::Arrow::TOP_RIGHT))
+      << "Cannot override the default button with a button which does not "
+         "exist.";
+}
+
+TEST_F(BubbleDialogModelHostTest,
+       SetInitiallyFocusedViewOverridesDefaultButtonFocus) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFocusedField);
+
+  auto host = std::make_unique<BubbleDialogModelHost>(
+      ui::DialogModel::Builder()
+          .AddCancelButton(base::OnceClosure())
+          .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
+          .AddTextfield(kFocusedField, u"label", u"text")
+          .SetInitiallyFocusedField(kFocusedField)
+          .Build(),
+      /*anchor_view=*/nullptr, BubbleBorder::Arrow::TOP_RIGHT);
+  EXPECT_EQ(host->GetDefaultDialogButton(),
+            ui::DialogButton::DIALOG_BUTTON_CANCEL);
+  EXPECT_EQ(host->GetInitiallyFocusedView()->GetProperty(kElementIdentifierKey),
+            kFocusedField);
 }
 
 }  // namespace views
