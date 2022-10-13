@@ -4065,6 +4065,12 @@
   <message name="IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_LEARN_MORE_LINK" desc="Learn more about backup opt in">
     Learn more about backing up your apps
   </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_RECOVERY_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for setting up recovery.">
+    Enable data recovery service.
+  </message>
+  <message name="IDS_CONSOLIDATED_CONSENT_RECOVERY_OPT_IN" desc="Message in the consolidated consent screen to opt-in for setting up recovery.">
+    If you forget your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password, you can still restore your local data. You'll need to sign in to your Google Account or use account recovery.
+  </message>
   <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_TITLE" desc="Title for the message in the consolidated consent screen to opt-in for location services.">
     Use location for Android apps and services.
   </message>

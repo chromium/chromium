@@ -1020,6 +1020,8 @@ cr.define('cr.ui.login.debug', function() {
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
         {
@@ -1035,6 +1037,25 @@ cr.define('cr.ui.login.debug', function() {
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
+          },
+        },
+        {
+          id: 'regular-recovery',
+          trigger: (screen) => {
+            screen.setUsageOptinHidden(true);
+          },
+          data: {
+            isArcEnabled: true,
+            isDemo: false,
+            isChildAccount: false,
+            isTosHidden: false,
+            googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
+            crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
+            countryCode: 'us',
+            showRecoveryOption: true,
+            recoveryOptionDefault: true,
           },
         },
         {
@@ -1050,6 +1071,8 @@ cr.define('cr.ui.login.debug', function() {
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
         {
@@ -1065,6 +1088,8 @@ cr.define('cr.ui.login.debug', function() {
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
         {
@@ -1077,6 +1102,8 @@ cr.define('cr.ui.login.debug', function() {
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
         {
@@ -1092,6 +1119,8 @@ cr.define('cr.ui.login.debug', function() {
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
         {
@@ -1107,6 +1136,8 @@ cr.define('cr.ui.login.debug', function() {
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
         {
@@ -1124,6 +1155,8 @@ cr.define('cr.ui.login.debug', function() {
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
         {
@@ -1140,6 +1173,8 @@ cr.define('cr.ui.login.debug', function() {
             googleEulaUrl: 'https://policies.google.com/terms/embedded?hl=en',
             crosEulaUrl: 'https://www.google.com/intl/en/chrome/terms/',
             countryCode: 'us',
+            showRecoveryOption: false,
+            recoveryOptionDefault: false,
           },
         },
 

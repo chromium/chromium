@@ -231,6 +231,22 @@ found in the LICENSE file.
       </cr-toggle>
     </div>
 
+    <!-- Recovery toggle row -->
+    <div id="recovery" class="layout horizontal center oobe-optin-row"
+        hidden="[[!recoveryVisible_]]">
+      <div class="oobe-optin-content flex">
+        <span id="recoveryTitle" class="oobe-optin-title">
+          [[i18nDynamic(locale, 'consolidatedConsentRecoveryOptInTitle')]]
+        </span>
+        <span>
+          [[i18nDynamic(locale, 'consolidatedConsentRecoveryOptIn')]]
+        </span>
+      </div>
+      <cr-toggle id="recoveryOptIn" checked="{{recoveryChecked}}"
+          aria-describedby="recoveryTitle">
+      </cr-toggle>
+    </div>
+
     <!-- Location services toggle row -->
     <div id="location" class="layout horizontal center oobe-optin-row"
         hidden="[[isArcOptInsHidden_(isArcEnabled_, isDemo_)]]">

@@ -12,6 +12,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace chromeos {
 
@@ -51,6 +52,11 @@ void ConsolidatedConsentScreenHandler::DeclareLocalizedValues(
                IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_CHILD);
   builder->Add("consolidatedConsenttBackupOptInLearnMoreLink",
                IDS_CONSOLIDATED_CONSENT_BACKUP_OPT_IN_LEARN_MORE_LINK);
+  builder->Add("consolidatedConsentRecoveryOptInTitle",
+               IDS_CONSOLIDATED_CONSENT_RECOVERY_OPT_IN_TITLE);
+  builder->AddF("consolidatedConsentRecoveryOptIn",
+                IDS_CONSOLIDATED_CONSENT_RECOVERY_OPT_IN,
+                ui::GetChromeOSDeviceTypeResourceId());
   builder->Add("consolidatedConsentLocationOptInTitle",
                IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_TITLE);
   builder->Add("consolidatedConsentLocationOptIn",

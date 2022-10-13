@@ -166,6 +166,16 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
         type: Boolean,
         value: true,
       },
+
+      recoveryVisible_: {
+        type: Boolean,
+        value: false,
+      },
+
+      recoveryChecked: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -248,6 +258,9 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
     this.isChildAccount_ = data['isChildAccount'];
     this.isTosHidden_ = data['isTosHidden'];
     this.countryCode_ = data['countryCode'];
+
+    this.recoveryVisible_ = data['showRecoveryOption'];
+    this.recoveryChecked = data['recoveryOptionDefault'];
 
     if (this.isDemo_) {
       this.usageOptinHidden_ = false;
@@ -713,6 +726,7 @@ class ConsolidatedConsent extends ConsolidatedConsentScreenElementBase {
       this.backupChecked,
       this.locationChecked,
       this.arcTosContent_,
+      this.recoveryChecked,
     ]);
   }
 

@@ -83,6 +83,8 @@ const test::UIPath kBackupLearnMorePopUp = {kConsolidatedConsentId,
 const test::UIPath kBackupLearnMorePopUpClose = {
     kConsolidatedConsentId, "backupLearnMorePopUp", "closeButton"};
 
+const test::UIPath kRecovery = {kConsolidatedConsentId, "recovery"};
+
 const test::UIPath kLocation = {kConsolidatedConsentId, "location"};
 const test::UIPath kLocationToggle = {kConsolidatedConsentId, "locationOptIn"};
 const test::UIPath kLocationLearnMoreLink = {kConsolidatedConsentId,
@@ -270,6 +272,7 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenTest, OptinsVisiblity) {
   test::OobeJS().ExpectVisiblePath(kUsageStats);
   test::OobeJS().ExpectEnabledPath(kUsageStatsToggle);
   test::OobeJS().ExpectHiddenPath(kBackup);
+  test::OobeJS().ExpectHiddenPath(kRecovery);
   test::OobeJS().ExpectHiddenPath(kLocation);
   test::OobeJS().ExpectHiddenPath(kFooter);
 }
@@ -379,8 +382,9 @@ class ConsolidatedConsentScreenArcEnabledTest
   FakeArcTosMixin fake_arc_tos_{&mixin_host_, embedded_test_server()};
 };
 
-// For regular users with ARC enavled, all opt-ins are visible and the toggles
-// are enabled.
+// For regular users with ARC enabled, all ARC opt-ins are visible and the
+// toggles are enabled. Recovery service availability would depend on feature
+// flag.
 IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest,
                        OptinsVisiblity) {
   LoginAsRegularUser();
@@ -391,6 +395,7 @@ IN_PROC_BROWSER_TEST_F(ConsolidatedConsentScreenArcEnabledTest,
   test::OobeJS().ExpectEnabledPath(kUsageStatsToggle);
   test::OobeJS().ExpectVisiblePath(kBackup);
   test::OobeJS().ExpectEnabledPath(kBackupToggle);
+  test::OobeJS().ExpectHiddenPath(kRecovery);
   test::OobeJS().ExpectVisiblePath(kLocation);
   test::OobeJS().ExpectEnabledPath(kLocationToggle);
 

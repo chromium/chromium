@@ -70,7 +70,8 @@ class ConsolidatedConsentScreen
   void OnAccept(bool enable_stats_usage,
                 bool enable_backup_restore,
                 bool enable_location_services,
-                const std::string& tos_content);
+                const std::string& tos_content,
+                bool enable_recovery);
 
   // arc::ArcOptInPreferenceHandlerObserver:
   void OnMetricsModeChanged(bool enabled, bool managed) override;
