@@ -2966,7 +2966,8 @@ void ShelfLayoutManager::MaybeCancelWindowDrag() {
   if (!IsWindowDragInProgress())
     return;
 
-  DCHECK_EQ(drag_status_, kDragInProgress);
+  DCHECK(drag_status_ == kDragInProgress ||
+         drag_status_ == kDragCancelInProgress);
   shelf_widget_->GetDragHandle()->SetWindowDragFromShelfInProgress(false);
   window_drag_controller_->CancelDrag();
 }
