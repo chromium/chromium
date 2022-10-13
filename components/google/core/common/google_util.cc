@@ -294,6 +294,7 @@ bool IsGoogleAssociatedDomainUrl(const GURL& url) {
       ".googlevideo.com",
       ".gstatic.com",
       ".litepages.googlezip.net",
+      ".youtubekids.com",
       ".ytimg.com",
   };
   const std::string host = url.host();
