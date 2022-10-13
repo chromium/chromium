@@ -122,6 +122,14 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return last_network_settings_network_id_;
   }
 
+  int show_channel_info_additional_details_count() const {
+    return show_channel_info_additional_details_count_;
+  }
+
+  int show_channel_info_give_feedback_count() const {
+    return show_channel_info_give_feedback_count_;
+  }
+
   void set_user_feedback_enabled(bool user_feedback_enabled) {
     user_feedback_enabled_ = user_feedback_enabled;
   }
@@ -142,6 +150,8 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   std::string last_bluetooth_settings_device_id_;
   std::string last_network_settings_network_id_;
   std::string last_network_type_;
+  int show_channel_info_additional_details_count_ = 0;
+  int show_channel_info_give_feedback_count_ = 0;
   bool user_feedback_enabled_ = false;
 };
 

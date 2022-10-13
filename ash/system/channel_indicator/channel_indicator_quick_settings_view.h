@@ -23,9 +23,8 @@ class ASH_EXPORT ChannelIndicatorQuickSettingsView : public views::View {
       const ChannelIndicatorQuickSettingsView&) = delete;
   ~ChannelIndicatorQuickSettingsView() override = default;
 
-  // Introspection methods for unit tests.
-  bool IsVersionButtonVisibleForTesting();
-  bool IsSubmitFeedbackButtonVisibleForTesting();
+  views::View* version_button_for_test() { return version_button_; }
+  views::View* feedback_button_for_test() { return feedback_button_; }
 
  private:
   // Refs maintained for unit test introspection methods.

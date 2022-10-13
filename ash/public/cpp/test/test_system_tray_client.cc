@@ -122,9 +122,13 @@ void TestSystemTrayClient::ShowCalendarEvent(
   show_calendar_event_count_++;
 }
 
-void TestSystemTrayClient::ShowChannelInfoAdditionalDetails() {}
+void TestSystemTrayClient::ShowChannelInfoAdditionalDetails() {
+  ++show_channel_info_additional_details_count_;
+}
 
-void TestSystemTrayClient::ShowChannelInfoGiveFeedback() {}
+void TestSystemTrayClient::ShowChannelInfoGiveFeedback() {
+  ++show_channel_info_give_feedback_count_;
+}
 
 bool TestSystemTrayClient::IsUserFeedbackEnabled() {
   return user_feedback_enabled_;

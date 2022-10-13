@@ -10,10 +10,11 @@
 
 namespace ash {
 
-class PillButton;
+class ChannelIndicatorQuickSettingsView;
 
 // The header view shown at the top of the `QuickSettingsView`. Contains an
-// optional "Managed by" button and an optional release channel indicator.
+// optional "Managed by" button and an optional release channel indicator. Sets
+// itself invisible when its child views do not need to be shown.
 class ASH_EXPORT QuickSettingsHeader : public views::View {
  public:
   METADATA_HEADER(QuickSettingsHeader);
@@ -23,9 +24,16 @@ class ASH_EXPORT QuickSettingsHeader : public views::View {
   QuickSettingsHeader& operator=(const QuickSettingsHeader&) = delete;
   ~QuickSettingsHeader() override;
 
+  ChannelIndicatorQuickSettingsView* channel_view_for_test() {
+    return channel_view_;
+  }
+
  private:
-  // TODO(b/251724754): Remove this temporary placeholder.
-  PillButton* placeholder_ = nullptr;
+  // Updates visibility for this view. When it has no children it sets itself
+  // invisible so it does not consume any space.
+  void UpdateVisibility();
+
+  ChannelIndicatorQuickSettingsView* channel_view_ = nullptr;
 };
 
 }  // namespace ash

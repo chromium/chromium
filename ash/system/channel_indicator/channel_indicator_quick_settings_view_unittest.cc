@@ -4,18 +4,27 @@
 
 #include "ash/system/channel_indicator/channel_indicator_quick_settings_view.h"
 
+#include <tuple>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/version_info/channel.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
+// Parameterized by feature QsRevamp and whether user feedback is enabled.
 class ChannelIndicatorQuickSettingsViewTest
     : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  ChannelIndicatorQuickSettingsViewTest() = default;
+  ChannelIndicatorQuickSettingsViewTest() {
+    // Param 0 is whether QsRevamp is enabled.
+    feature_list_.InitWithFeatureState(features::kQsRevamp,
+                                       std::get<0>(GetParam()));
+  }
   ChannelIndicatorQuickSettingsViewTest(
       const ChannelIndicatorQuickSettingsViewTest&) = delete;
   ChannelIndicatorQuickSettingsViewTest& operator=(
@@ -26,43 +35,75 @@ class ChannelIndicatorQuickSettingsViewTest
   void SetUp() override {
     AshTestBase::SetUp();
 
-    // Param is whether user feedback is allowed.
+    // Param 1 is whether user feedback is allowed.
     system_tray_client_ = GetSystemTrayClient();
-    system_tray_client_->set_user_feedback_enabled(GetParam());
+    system_tray_client_->set_user_feedback_enabled(std::get<1>(GetParam()));
 
     // Instantiate view.
-    view_ = std::make_unique<ChannelIndicatorQuickSettingsView>(
+    auto view = std::make_unique<ChannelIndicatorQuickSettingsView>(
         version_info::Channel::BETA,
         system_tray_client_->IsUserFeedbackEnabled());
+    view_ = view.get();
+
+    // Place the view in a large views::Widget so the buttons are clickable.
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
+    widget_->SetContentsView(std::move(view));
+  }
+
+  void TearDown() override {
+    widget_.reset();
+    AshTestBase::TearDown();
   }
 
   bool IsFeedbackShown() {
     return system_tray_client_->IsUserFeedbackEnabled();
   }
 
-  ChannelIndicatorQuickSettingsView* view() { return view_.get(); }
+  ChannelIndicatorQuickSettingsView* view() { return view_; }
 
  private:
-  TestSystemTrayClient* system_tray_client_;
-  std::unique_ptr<ChannelIndicatorQuickSettingsView> view_;
+  base::test::ScopedFeatureList feature_list_;
+  TestSystemTrayClient* system_tray_client_ = nullptr;
+  std::unique_ptr<views::Widget> widget_;
+  ChannelIndicatorQuickSettingsView* view_ = nullptr;
 };
 
 // Run the `Visible` test below for each value of version_info::Channel.
 INSTANTIATE_TEST_SUITE_P(ChannelValues,
                          ChannelIndicatorQuickSettingsViewTest,
-                         ::testing::Bool());
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()));
 
 TEST_P(ChannelIndicatorQuickSettingsViewTest, Visible) {
   // View exists.
   EXPECT_TRUE(view());
 
   // Version button is always visible.
-  EXPECT_TRUE(view()->IsVersionButtonVisibleForTesting());
+  ASSERT_TRUE(view()->version_button_for_test());
+  EXPECT_TRUE(view()->version_button_for_test()->GetVisible());
 
   // Feedback button is visible if `SystemTrayClient` says the user preference
   // is set that allows user feedback.
-  EXPECT_EQ(view()->IsSubmitFeedbackButtonVisibleForTesting(),
-            IsFeedbackShown());
+  views::View* feedback_button = view()->feedback_button_for_test();
+  if (IsFeedbackShown()) {
+    ASSERT_TRUE(feedback_button);
+    EXPECT_TRUE(feedback_button->GetVisible());
+  } else {
+    ASSERT_FALSE(feedback_button);
+  }
+}
+
+TEST_P(ChannelIndicatorQuickSettingsViewTest, ClickOnButtons) {
+  TestSystemTrayClient* client = GetSystemTrayClient();
+
+  LeftClickOn(view()->version_button_for_test());
+  EXPECT_EQ(1, client->show_channel_info_additional_details_count());
+
+  if (IsFeedbackShown()) {
+    LeftClickOn(view()->feedback_button_for_test());
+    EXPECT_EQ(1, client->show_channel_info_give_feedback_count());
+  }
 }
 
 }  // namespace ash
