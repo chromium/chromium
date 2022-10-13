@@ -80,7 +80,7 @@ enum GroupId {
   GROUP_MOBILE_CLIPBOARD = 30002;
 
   // Reserved for personalized zero-prefix suggestions.
-  // Produced by ZeroSuggestProvider and LocalHistoryZeroSuggestProvider.
+  // Produced by LocalHistoryZeroSuggestProvider and maybe ZeroSuggestProvider.
   GROUP_PERSONALIZED_ZERO_SUGGEST = 40000;
 
   // Cross platform suggestions with vanilla visual representation (i.e.
@@ -118,20 +118,25 @@ enum GroupSection {
   // - Organic Repeatable Queries
   SECTION_MOBILE_MOST_VISITED = 3;
 
+  // Local history zero-prefix suggestions. Will be overwritten by the
+  // dynamically assigned section for GROUP_PERSONALIZED_ZERO_SUGGEST if found
+  // in the server response.
+  SECTION_LOCAL_HISTORY_ZPS = 4;
+
   // A contiguous range reserved for remote zero-prefix suggestions.
   // The sections are dynamically assigned to the groups found in the server
   // response based on the order in which they appear in the results.
   // Accommodates up to 10 distinct suggestion groups in the server response.
-  SECTION_REMOTE_ZPS_1 = 4;
-  SECTION_REMOTE_ZPS_2 = 5;
-  SECTION_REMOTE_ZPS_3 = 6;
-  SECTION_REMOTE_ZPS_4 = 7;
-  SECTION_REMOTE_ZPS_5 = 8;
-  SECTION_REMOTE_ZPS_6 = 9;
-  SECTION_REMOTE_ZPS_7 = 10;
-  SECTION_REMOTE_ZPS_8 = 11;
-  SECTION_REMOTE_ZPS_9 = 12;
-  SECTION_REMOTE_ZPS_10 = 13;
+  SECTION_REMOTE_ZPS_1 = 5;
+  SECTION_REMOTE_ZPS_2 = 6;
+  SECTION_REMOTE_ZPS_3 = 7;
+  SECTION_REMOTE_ZPS_4 = 8;
+  SECTION_REMOTE_ZPS_5 = 9;
+  SECTION_REMOTE_ZPS_6 = 10;
+  SECTION_REMOTE_ZPS_7 = 11;
+  SECTION_REMOTE_ZPS_8 = 12;
+  SECTION_REMOTE_ZPS_9 = 13;
+  SECTION_REMOTE_ZPS_10 = 14;
 
   // Cross platform suggestions with vanilla visual representation (i.e.
   // vertical, primary column, and no header), but useful for sorting.
