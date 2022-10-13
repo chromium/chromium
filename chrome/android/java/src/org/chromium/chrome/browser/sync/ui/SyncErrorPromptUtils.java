@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.sync.ui;
 
 import static org.chromium.base.ContextUtils.getApplicationContext;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SYNC_ERROR_PROMPT_SHOWN_AT_TIME;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.IntDef;
@@ -21,6 +23,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -28,7 +31,9 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -93,6 +98,10 @@ public class SyncErrorPromptUtils {
 
     public static String getPrimaryButtonText(Context context, @SyncError int error) {
         switch (error) {
+            case SyncError.AUTH_ERROR:
+                return ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
+                        ? context.getString(R.string.password_error_sign_in_button_title)
+                        : context.getString(R.string.open_settings_button);
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
             case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
@@ -133,18 +142,22 @@ public class SyncErrorPromptUtils {
         }
     }
 
-    public static void onUserAccepted(@SyncErrorPromptType int type) {
+    public static void onUserAccepted(@SyncErrorPromptType int type, Activity activity) {
         switch (type) {
             case SyncErrorPromptType.NOT_SHOWN:
                 assert false;
                 return;
             case SyncErrorPromptType.AUTH_ERROR:
+                if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)) {
+                    startUpdateCredentialsFlow(activity);
+                } else {
+                    openSyncSettings();
+                }
+                return;
             case SyncErrorPromptType.PASSPHRASE_REQUIRED:
             case SyncErrorPromptType.SYNC_SETUP_INCOMPLETE:
             case SyncErrorPromptType.CLIENT_OUT_OF_DATE:
-                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-                settingsLauncher.launchSettingsActivity(getApplicationContext(),
-                        ManageSyncSettings.class, ManageSyncSettings.createArguments(false));
+                openSyncSettings();
                 return;
 
             case SyncErrorPromptType.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
@@ -257,6 +270,22 @@ public class SyncErrorPromptUtils {
                                 -> Log.w(TAG,
                                         "Error creating trusted vault recoverability intent: ",
                                         exception));
+    }
+
+    private static void openSyncSettings() {
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(getApplicationContext(), ManageSyncSettings.class,
+                ManageSyncSettings.createArguments(false));
+    }
+
+    private static void startUpdateCredentialsFlow(Activity activity) {
+        Profile profile = Profile.getLastUsedRegularProfile();
+        final CoreAccountInfo primaryAccountInfo =
+                IdentityServicesProvider.get().getIdentityManager(profile).getPrimaryAccountInfo(
+                        ConsentLevel.SYNC);
+        assert primaryAccountInfo != null;
+        AccountManagerFacadeProvider.getInstance().updateCredentials(
+                CoreAccountInfo.getAndroidAccountFrom(primaryAccountInfo), activity, null);
     }
 
     private static CoreAccountInfo getSyncConsentedAccountInfo() {

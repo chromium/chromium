@@ -5916,9 +5916,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PASSWORD_ERROR_DESCRIPTION" desc="The description of the password manager error message.">
         Sign back in to Google Password Manager
       </message>
-      <message name="IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE" desc="The title of the sign in button in the password manager error message.">
-        Sign in
-      </message>
+      <if expr="is_android">
+        <message name="IDS_PASSWORD_ERROR_SIGN_IN_BUTTON_TITLE" desc="The title of the sign in button in the password manager error message." formatter_data="android_java">
+          Sign in
+        </message>
+      </if>
       <message name="IDS_SAVE_PASSWORD_DIFFERENT_DOMAINS_TITLE" desc="The title of the save password bubble when the submitted form origin isn't equal to the page origin.">
         Save password for <ph name="ORIGIN">$1<ex>example.com</ex></ph>?
       </message>

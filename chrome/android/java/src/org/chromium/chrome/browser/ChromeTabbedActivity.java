@@ -1943,8 +1943,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 if (!navigation.hasCommitted()) return;
 
                 try (TraceEvent e = TraceEvent.scoped("CheckSyncErrorOnDidFinishNavigation")) {
-                    SyncErrorMessage.maybeShowMessageUi(
-                            getWindowAndroid(), ChromeTabbedActivity.this);
+                    SyncErrorMessage.maybeShowMessageUi(getWindowAndroid());
                 }
                 try (TraceEvent te = TraceEvent.scoped("updateActiveWebContents")) {
                     SendTabToSelfAndroidBridge.updateActiveWebContents(tab.getWebContents());

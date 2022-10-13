@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.sync.ui;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.res.Resources;
 
 import androidx.annotation.VisibleForTesting;
@@ -40,6 +40,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserData {
     private final @SyncErrorPromptType int mType;
+    private final Activity mActivity;
     private final MessageDispatcher mMessageDispatcher;
     private final PropertyModel mModel;
     private static MessageDispatcher sMessageDispatcherForTesting;
@@ -57,9 +58,8 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
      * d) there is a valid {@link MessageDispatcher} in this window.
      *
      * @param windowAndroid The {@link WindowAndroid} to show and dismiss message UIs.
-     * @param context The {@link Context} to get string and drawable resources.
      */
-    public static void maybeShowMessageUi(WindowAndroid windowAndroid, Context context) {
+    public static void maybeShowMessageUi(WindowAndroid windowAndroid) {
         try (TraceEvent t = TraceEvent.scoped("SyncErrorMessage.maybeShowMessageUi")) {
             if (!SyncErrorPromptUtils.shouldShowPrompt(SyncErrorPromptUtils.getSyncErrorUiType(
                         SyncSettingsUtils.getSyncError()))) {
@@ -78,17 +78,18 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
                 // Show prompt UI next time when the previous message has disappeared.
                 return;
             }
-            SYNC_ERROR_MESSAGE_KEY.attachToHost(host, new SyncErrorMessage(dispatcher, context));
+            SYNC_ERROR_MESSAGE_KEY.attachToHost(
+                    host, new SyncErrorMessage(dispatcher, windowAndroid.getActivity().get()));
         }
     }
 
-    private SyncErrorMessage(MessageDispatcher dispatcher, Context context) {
+    private SyncErrorMessage(MessageDispatcher dispatcher, Activity activity) {
         @SyncError
         int error = SyncSettingsUtils.getSyncError();
-        String errorMessage = SyncErrorPromptUtils.getErrorMessage(context, error);
-        String title = SyncErrorPromptUtils.getTitle(context, error);
-        String primaryButtonText = SyncErrorPromptUtils.getPrimaryButtonText(context, error);
-        Resources resources = context.getResources();
+        String errorMessage = SyncErrorPromptUtils.getErrorMessage(activity, error);
+        String title = SyncErrorPromptUtils.getTitle(activity, error);
+        String primaryButtonText = SyncErrorPromptUtils.getPrimaryButtonText(activity, error);
+        Resources resources = activity.getResources();
         mModel = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
                          .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
                                  MessageIdentifier.SYNC_ERROR)
@@ -99,7 +100,7 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
                                  ApiCompatibilityUtils.getDrawable(
                                          resources, R.drawable.ic_sync_error_legacy_24dp))
                          .with(MessageBannerProperties.ICON_TINT_COLOR,
-                                 context.getColor(R.color.default_red))
+                                 activity.getColor(R.color.default_red))
                          .with(MessageBannerProperties.ON_PRIMARY_ACTION, this::onAccepted)
                          .with(MessageBannerProperties.ON_DISMISSED, this::onDismissed)
                          .build();
@@ -107,6 +108,7 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
                 sMessageDispatcherForTesting == null ? dispatcher : sMessageDispatcherForTesting;
         mMessageDispatcher.enqueueWindowScopedMessage(mModel, false);
         mType = SyncErrorPromptUtils.getSyncErrorUiType(error);
+        mActivity = activity;
         SyncService.get().addSyncStateChangedListener(this);
         SyncErrorPromptUtils.updateLastShownTime();
         recordHistogram(SyncErrorPromptAction.SHOWN);
@@ -123,7 +125,7 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
     }
 
     private @PrimaryActionClickBehavior int onAccepted() {
-        SyncErrorPromptUtils.onUserAccepted(mType);
+        SyncErrorPromptUtils.onUserAccepted(mType, mActivity);
         recordHistogram(SyncErrorPromptAction.BUTTON_CLICKED);
         return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
     }
