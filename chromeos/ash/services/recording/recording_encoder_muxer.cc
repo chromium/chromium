@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/services/recording/recording_encoder_muxer.h"
+#include "chromeos/ash/services/recording/recording_encoder_muxer.h"
 
-#include "ash/services/recording/public/mojom/recording_service.mojom.h"
-#include "ash/services/recording/recording_service_constants.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -13,6 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
+#include "chromeos/ash/services/recording/recording_service_constants.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"

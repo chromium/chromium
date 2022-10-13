@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/services/recording/recording_service.h"
+#include "chromeos/ash/services/recording/recording_service.h"
 
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
 
 #include "ash/constants/ash_features.h"
-#include "ash/services/recording/recording_encoder_muxer.h"
-#include "ash/services/recording/recording_service_constants.h"
-#include "ash/services/recording/video_capture_params.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -19,6 +16,9 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "chromeos/ash/services/recording/recording_encoder_muxer.h"
+#include "chromeos/ash/services/recording/recording_service_constants.h"
+#include "chromeos/ash/services/recording/video_capture_params.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/status.h"

@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SERVICES_RECORDING_RECORDING_SERVICE_H_
-#define ASH_SERVICES_RECORDING_RECORDING_SERVICE_H_
+#ifndef CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_SERVICE_H_
+#define CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_SERVICE_H_
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "ash/services/recording/public/mojom/recording_service.mojom.h"
-#include "ash/services/recording/recording_encoder_muxer.h"
-#include "ash/services/recording/video_capture_params.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -22,6 +19,9 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_checker.h"
+#include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
+#include "chromeos/ash/services/recording/recording_encoder_muxer.h"
+#include "chromeos/ash/services/recording/video_capture_params.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
@@ -264,4 +264,4 @@ class RecordingService : public mojom::RecordingService,
 };
 
 }  // namespace recording
-#endif  // ASH_SERVICES_RECORDING_RECORDING_SERVICE_H_
+#endif  // CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_SERVICE_H_

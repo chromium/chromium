@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SERVICES_RECORDING_RECORDING_SERVICE_CONSTANTS_H_
-#define ASH_SERVICES_RECORDING_RECORDING_SERVICE_CONSTANTS_H_
+#ifndef CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_SERVICE_CONSTANTS_H_
+#define CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_SERVICE_CONSTANTS_H_
 
 #include "base/time/time.h"
 #include "ui/gfx/color_space.h"
@@ -31,4 +31,4 @@ constexpr gfx::ColorSpace kColorSpace = gfx::ColorSpace::CreateREC709();
 
 }  // namespace recording
 
-#endif  // ASH_SERVICES_RECORDING_RECORDING_SERVICE_CONSTANTS_H_
+#endif  // CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_SERVICE_CONSTANTS_H_

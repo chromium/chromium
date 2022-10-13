@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/drive/file_errors.h"
 #include "components/prefs/pref_service.h"

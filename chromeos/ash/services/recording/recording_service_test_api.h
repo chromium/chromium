@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SERVICES_RECORDING_RECORDING_SERVICE_TEST_API_H_
-#define ASH_SERVICES_RECORDING_RECORDING_SERVICE_TEST_API_H_
+#ifndef CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_SERVICE_TEST_API_H_
+#define CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_SERVICE_TEST_API_H_
 
-#include "ash/services/recording/public/mojom/recording_service.mojom.h"
-#include "ash/services/recording/recording_service.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
+#include "chromeos/ash/services/recording/recording_service.h"
 #include "media/base/video_frame.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/image/image_skia.h"
@@ -66,4 +66,4 @@ class RecordingServiceTestApi {
 
 }  // namespace recording
 
-#endif  // ASH_SERVICES_RECORDING_RECORDING_SERVICE_TEST_API_H_
+#endif  // CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_SERVICE_TEST_API_H_

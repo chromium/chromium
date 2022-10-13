@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SERVICES_RECORDING_RECORDING_ENCODER_MUXER_H_
-#define ASH_SERVICES_RECORDING_RECORDING_ENCODER_MUXER_H_
+#ifndef CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_ENCODER_MUXER_H_
+#define CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_ENCODER_MUXER_H_
 
 #include <memory>
 
@@ -248,4 +248,4 @@ class RecordingEncoderMuxer {
 
 }  // namespace recording
 
-#endif  // ASH_SERVICES_RECORDING_RECORDING_ENCODER_MUXER_H_
+#endif  // CHROMEOS_ASH_SERVICES_RECORDING_RECORDING_ENCODER_MUXER_H_

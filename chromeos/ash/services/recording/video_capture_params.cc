@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/services/recording/video_capture_params.h"
+#include "chromeos/ash/services/recording/video_capture_params.h"
 
-#include "ash/services/recording/recording_service_constants.h"
 #include "base/check.h"
+#include "chromeos/ash/services/recording/recording_service_constants.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "media/base/video_types.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom.h"

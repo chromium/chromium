@@ -19,8 +19,8 @@ source_set("recording") {
 
   deps = [
     "//ash/constants",
-    "//ash/services/recording/public/mojom",
     "//base",
+    "//chromeos/ash/services/recording/public/mojom",
     "//media",
     "//services/audio/public/cpp",
   ]
@@ -35,9 +35,9 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//ash/services/recording",
-    "//ash/services/recording/public/mojom",
     "//base",
+    "//chromeos/ash/services/recording",
+    "//chromeos/ash/services/recording/public/mojom",
     "//media",
   ]
 }
