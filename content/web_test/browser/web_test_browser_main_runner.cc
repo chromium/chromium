@@ -40,6 +40,9 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/media_switches.h"
 #include "net/base/filename_util.h"
+#include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
+#include "net/base/url_util.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "ui/base/ui_base_switches.h"
@@ -51,9 +54,57 @@
 #include "content/public/test/ppapi_test_utils.h"
 #endif
 
+#if BUILDFLAG(IS_FUCHSIA)
+#include <sys/socket.h>
+#include <unistd.h>
+#endif
+
 namespace content {
 
 namespace {
+
+#if BUILDFLAG(IS_FUCHSIA)
+// Fuchsia doesn't support stdin stream for packaged apps, and stdout from
+// run-test-suite not only has extra emissions from the Fuchsia test
+// infrastructure, it also merges stderr and stdout together. Combined, these
+// mean that when running content_shell on Fuchsia it's not possible to use
+// stdin to pass list of tests or to reliably use stdout to emit results. To
+// workaround this issue for web tests we redirect stdin and stdout to a TCP
+// socket connected to the web test runner. The runner uses --stdio-redirect to
+// specify address and port for stdin and stdout redirection.
+constexpr char kStdioRedirectSwitch[] = "stdio-redirect";
+
+void ConnectStdioSocket(const std::string& host_and_port) {
+  std::string host;
+  int port;
+  net::IPAddress address;
+  if (!net::ParseHostAndPort(host_and_port, &host, &port) ||
+      !address.AssignFromIPLiteral(host)) {
+    LOG(FATAL) << "Invalid stdio address: " << host_and_port;
+  }
+
+  sockaddr_storage sockaddr_storage;
+  sockaddr* addr = reinterpret_cast<sockaddr*>(&sockaddr_storage);
+  socklen_t addr_len = sizeof(sockaddr_storage);
+  net::IPEndPoint endpoint(address, port);
+  bool converted = endpoint.ToSockAddr(addr, &addr_len);
+  CHECK(converted);
+
+  int fd = socket(addr->sa_family, SOCK_STREAM, 0);
+  PCHECK(fd >= 0);
+  int result = connect(fd, addr, addr_len);
+  PCHECK(result == 0) << "Failed to connect to " << host_and_port;
+
+  result = dup2(fd, STDIN_FILENO);
+  PCHECK(result == STDIN_FILENO) << "Failed to dup socket to stdin";
+
+  result = dup2(fd, STDOUT_FILENO);
+  PCHECK(result == STDOUT_FILENO) << "Failed to dup socket to stdout";
+
+  PCHECK(close(fd) == 0);
+}
+
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 bool RunOneTest(const content::TestInfo& test_info,
                 content::WebTestControlHost* web_test_control_host,
@@ -70,6 +121,12 @@ bool RunOneTest(const content::TestInfo& test_info,
 }
 
 void RunTests(content::BrowserMainRunner* main_runner) {
+#if BUILDFLAG(IS_FUCHSIA)
+  if (auto& cmd_line = *base::CommandLine::ForCurrentProcess();
+      cmd_line.HasSwitch(kStdioRedirectSwitch)) {
+    ConnectStdioSocket(cmd_line.GetSwitchValueASCII(kStdioRedirectSwitch));
+  }
+#endif  // BUILDFLAG(IS_FUCHSIA)
   TRACE_EVENT0("shell", "WebTestBrowserMainRunner::RunTests");
   content::WebTestControlHost test_controller;
   {

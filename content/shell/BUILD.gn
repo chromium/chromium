@@ -584,7 +584,7 @@ if (is_android) {
   if (is_fuchsia) {
     fuchsia_component("content_shell_component") {
       testonly = true
-      manifest = "fuchsia/content_shell.cmx"
+      manifest = "fuchsia/content_shell.cml"
       data_deps = [ ":content_shell" ]
       visibility = [ ":*" ]
     }

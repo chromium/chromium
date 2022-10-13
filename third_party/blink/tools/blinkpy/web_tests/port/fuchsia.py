@@ -71,6 +71,8 @@ def _import_fuchsia_runner():
     import qemu_target
     global symbolizer
     import symbolizer
+    global ffx_session
+    import ffx_session
     # pylint: enable=import-error
     # pylint: enable=invalid-name
     # pylint: disable=redefined-outer-name
@@ -126,6 +128,9 @@ class _TargetHost(object):
         try:
             self._pkg_repo = None
             self._target = target
+            self._ffx_session_context = ffx_session.FfxSession(
+                self._target._log_manager)
+            self._ffx_session = self._ffx_session_context.__enter__()
             self._target.Start()
             self._setup_target(build_path, build_ids_path, ports_to_forward,
                                results_directory)
@@ -171,7 +176,13 @@ class _TargetHost(object):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
 
+    def run_test_component(self, url, cmd_line):
+        return self._ffx_session.test_run(self._target.GetFfxTarget(), url,
+                                          cmd_line)
+
     def cleanup(self):
+        self._ffx_session = None
+        self._ffx_session_context.__exit__(None, None, None)
         try:
             if self._pkg_repo:
                 self._pkg_repo.__exit__(None, None, None)
@@ -328,10 +339,7 @@ class ChromiumFuchsiaDriver(driver.Driver):
             more_logging=self._port.get_option('driver_logging'))
 
     def _base_cmd_line(self):
-        cmd = [
-            'run',
-            'fuchsia-pkg://fuchsia.com/content_shell#meta/content_shell.cmx'
-        ]
+        cmd = []
         if self._port._target_device == 'qemu':
             cmd.append('--ozone-platform=headless')
         # Use Scenic on AEMU
@@ -373,23 +381,30 @@ class FuchsiaServerProcess(server_process.ServerProcess):
             raise ValueError('%s already running' % self._name)
         self._reset()
 
-        # Fuchsia doesn't support stdin stream for packaged applications, so the
-        # stdin stream for content_shell is routed through a separate TCP
-        # socket. The socket is reverse-forwarded from the device to the script
-        # over SSH.
+        # Fuchsia doesn't support stdin stream for packaged apps, and stdout
+        # from run-test-suite not only has extra emissions from the Fuchsia test
+        # infrastructure, it also merges stderr and stdout together. Combined,
+        # these mean that when running content_shell on Fuchsia it's not
+        # possible to use stdin to pass list of tests or to reliably use stdout
+        # to emit results. To workaround this issue for web tests we redirect
+        # stdin and stdout to a TCP socket connected to the web test runner. The
+        # runner uses --stdio-redirect to specify address and port for stdin and
+        # stdout redirection.
         listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         listen_socket.bind(('127.0.0.1', 0))
         listen_socket.listen(1)
-        stdin_port = int(listen_socket.getsockname()[1])
-        forwarded_stdin_port = \
-            self._port.get_target_host().setup_forwarded_port(stdin_port)
+        stdio_port = int(listen_socket.getsockname()[1])
+        forwarded_stdio_port = \
+            self._port.get_target_host().setup_forwarded_port(stdio_port)
 
-        command = ['%s=%s' % (k, v) for k, v in self._env.items()] + \
-            self._cmd + \
-            ['--no-sandbox', '--stdin-redirect=127.0.0.1:%d' %
-             (forwarded_stdin_port)]
+        command = self._cmd + \
+            ['--no-sandbox',
+             '--stdio-redirect=127.0.0.1:%d' % forwarded_stdio_port]
 
-        proc = self._port.get_target_host().run_command(command)
+        proc = self._port.get_target_host().run_test_component(
+            "fuchsia-pkg://fuchsia.com/content_shell#meta/content_shell.cm",
+            command)
+
         # Wait for incoming connection from content_shell.
         fd = listen_socket.fileno()
         read_fds, _, _ = select.select([fd], [], [], PROCESS_START_TIMEOUT)
@@ -402,16 +417,26 @@ class FuchsiaServerProcess(server_process.ServerProcess):
         # Python's interfaces for sockets and pipes are different. To masquerade
         # the socket as a pipe dup() the file descriptor and pass it to
         # os.fdopen().
-        stdin_socket, _ = listen_socket.accept()
-        fd = stdin_socket.fileno()  # pylint: disable=no-member
+        stdio_socket, _ = listen_socket.accept()
+        fd = stdio_socket.fileno()  # pylint: disable=no-member
         stdin_pipe = os.fdopen(os.dup(fd), "wb", 0)
-        stdin_socket.close()
+        stdout_pipe = os.fdopen(os.dup(fd), "rb", 0)
+        stdio_socket.close()
 
-        proc.stdin.close()
+        assert not proc.stdin
         proc.stdin = stdin_pipe
+
+        # stdout from `proc` is the merged stdout/stderr produced by
+        # run-test-suite, which contains only stderr since we run stdout through
+        # the socket above. Run this combined output through the symbolizer as
+        # if it were stderr.
+        merged_stdout_stderr = proc.stdout
+        proc.stdout = stdout_pipe
+
         # Run symbolizer to filter the stderr stream.
         self._symbolizer_proc = symbolizer.RunSymbolizer(
-            proc.stderr, subprocess.PIPE, [self._port.get_build_ids_path()])
+            merged_stdout_stderr, subprocess.PIPE,
+            [self._port.get_build_ids_path()])
         proc.stderr = self._symbolizer_proc.stdout
 
         self._set_proc(proc)

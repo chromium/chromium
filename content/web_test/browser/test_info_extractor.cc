@@ -16,55 +16,10 @@
 #include "build/build_config.h"
 #include "content/web_test/common/web_test_switches.h"
 #include "net/base/filename_util.h"
-#include "net/base/ip_address.h"
-#include "net/base/ip_endpoint.h"
-#include "net/base/url_util.h"
-
-#if BUILDFLAG(IS_FUCHSIA)
-#include <sys/socket.h>
-#include <unistd.h>
-#endif
 
 namespace content {
 
 namespace {
-
-#if BUILDFLAG(IS_FUCHSIA)
-// Fuchsia doesn't support stdin stream for packaged apps. This means that when
-// running content_shell on Fuchsia it's not possible to use stdin to pass list
-// of tests. To workaround this issue for web tests we redirect stdin stream
-// to a TCP socket connected to the web test runner. The runner uses
-// --stdin-redirect to specify address and port for stdin redirection.
-constexpr char kStdinRedirectSwitch[] = "stdin-redirect";
-
-void ConnectStdinSocket(const std::string& host_and_port) {
-  std::string host;
-  int port;
-  net::IPAddress address;
-  if (!net::ParseHostAndPort(host_and_port, &host, &port) ||
-      !address.AssignFromIPLiteral(host)) {
-    LOG(FATAL) << "Invalid stdin address: " << host_and_port;
-  }
-
-  sockaddr_storage sockaddr_storage;
-  sockaddr* addr = reinterpret_cast<sockaddr*>(&sockaddr_storage);
-  socklen_t addr_len = sizeof(sockaddr_storage);
-  net::IPEndPoint endpoint(address, port);
-  bool converted = endpoint.ToSockAddr(addr, &addr_len);
-  CHECK(converted);
-
-  int fd = socket(addr->sa_family, SOCK_STREAM, 0);
-  PCHECK(fd >= 0);
-  int result = connect(fd, addr, addr_len);
-  PCHECK(result == 0) << "Failed to connect to " << host_and_port;
-
-  result = dup2(fd, STDIN_FILENO);
-  PCHECK(result == STDIN_FILENO) << "Failed to dup socket to stdin";
-
-  PCHECK(close(fd) == 0);
-}
-
-#endif  // BUILDFLAG(IS_FUCHSIA)
 
 std::unique_ptr<TestInfo> GetTestInfoFromWebTestName(
     const std::string& test_name,
@@ -139,12 +94,7 @@ TestInfo::TestInfo(const GURL& url,
 TestInfo::~TestInfo() {}
 
 TestInfoExtractor::TestInfoExtractor(const base::CommandLine& cmd_line)
-    : cmdline_args_(cmd_line.GetArgs()), cmdline_position_(0) {
-#if BUILDFLAG(IS_FUCHSIA)
-  if (cmd_line.HasSwitch(kStdinRedirectSwitch))
-    ConnectStdinSocket(cmd_line.GetSwitchValueASCII(kStdinRedirectSwitch));
-#endif  // BUILDFLAG(IS_FUCHSIA)
-}
+    : cmdline_args_(cmd_line.GetArgs()), cmdline_position_(0) {}
 
 TestInfoExtractor::~TestInfoExtractor() {}
 
