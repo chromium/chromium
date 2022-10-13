@@ -560,7 +560,7 @@ String Color::SerializeAsCSSColor() const {
         result.Append("none ");
       } else {
         result.AppendNumber(param0_);
-        result.Append("% ");
+        result.Append(" ");
       }
 
       if (param1_is_none_)
