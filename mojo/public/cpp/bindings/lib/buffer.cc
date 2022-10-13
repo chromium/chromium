@@ -52,10 +52,6 @@ Buffer& Buffer::operator=(Buffer&& other) {
 }
 
 size_t Buffer::Allocate(size_t num_bytes) {
-  // Make sure that mojo buffers have the same size when replaying, as sending
-  // different messages can cause behavior to diverge in more complex ways later on.
-  recordreplay::Assert("Buffer::Allocate %lu", num_bytes);
-
   const size_t aligned_num_bytes = Align(num_bytes);
   const size_t new_cursor = cursor_ + aligned_num_bytes;
   if (new_cursor < cursor_ || (new_cursor > size_ && !message_.is_valid())) {

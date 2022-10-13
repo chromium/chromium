@@ -253,6 +253,9 @@ bool InterfaceEndpointClient::AcceptWithResponder(
 
 bool InterfaceEndpointClient::SendMessage(Message* message,
                                           bool is_control_message) {
+  // Make sure that IPC messages are the same size when replaying.
+  recordreplay::Assert("SendMessage %zu", message->data_num_bytes());
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!message->has_flag(Message::kFlagExpectsResponse));
   DCHECK(!handle_.pending_association());
@@ -288,6 +291,9 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
     Message* message,
     bool is_control_message,
     std::unique_ptr<MessageReceiver> responder) {
+  // Make sure that IPC messages are the same size when replaying.
+  recordreplay::Assert("SendMessageWithResponder %zu", message->data_num_bytes());
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(message->has_flag(Message::kFlagExpectsResponse));
   DCHECK(!handle_.pending_association());
