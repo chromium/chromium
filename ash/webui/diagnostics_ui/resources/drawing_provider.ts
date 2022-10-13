@@ -20,11 +20,26 @@ export const DESTINATION_OVER = 'destination-over';
  * touchpad tester to draw on screen.
  */
 interface DrawingProvider {
-  // For touchscreen tester to draw a trail on screen.
+  /**
+   * For touchscreen tester to draw a trail on screen. A trail is connected by
+   * multiple lines. This function essentially draws a line by connecting two
+   * points.
+   * @param x0 The x coordinate of the first point.
+   * @param y0 The y coordinate of the first point.
+   * @param x1 The x coordinate of the second point.
+   * @param y1 The y coordinate of the second point.
+   * @param pressure The pressure of the touch to indicate the opacity of the
+   *     trail.
+   */
   drawTrail(x0: number, y0: number, x1: number, y1: number, pressure: number):
       void;
 
-  // For touchscreen tester to draw a trial mark on screen.
+  /**
+   * For touchscreen tester to draw a trail starting or ending mark on screen.
+   * A mark is essentially a circle on screen.
+   * @param x The x coordinate of the circle center.
+   * @param y The y coordinate of the circle center.
+   */
   drawTrailMark(x: number, y: number): void;
 }
 
