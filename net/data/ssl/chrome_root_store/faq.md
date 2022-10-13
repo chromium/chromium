@@ -56,7 +56,7 @@ connections to websites.
 
 ## Where is Chrome Certificate Verifier source code?
 Source locations include
-[//net/cert](/net/cert),[//net/cert/internal](/net/cert/internal), and
+[//net/cert](/net/cert), [//net/cert/internal](/net/cert/internal), and
 [//net/cert/pki](/net/cert/pki).
 
 ## How do these new features impact me?

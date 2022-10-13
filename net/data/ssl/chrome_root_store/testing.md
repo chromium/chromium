@@ -19,7 +19,6 @@ the following flags: <br>`--enable-features=ChromeRootStoreUsed`
 
 2. Navigate to https://valid-ctrca.certificates.certum.pl/ (not trusted by
 macOS, but trusted by the Chrome Root Store)
-     - **Expected outcome with Chrome Root Store enabled:** Page does not load
-     (NET::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED)
+     - **Expected outcome with Chrome Root Store enabled:** Page loads
      - **Expected outcome with Chrome Root Store disabled:** Page does not load
      (NET::ERR_CERT_AUTHORITY_INVALID)
