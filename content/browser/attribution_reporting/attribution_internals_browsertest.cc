@@ -350,15 +350,21 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   auto reporter1 = url::Origin::Create(GURL("https://a.test"));
 
   static constexpr char wait_script[] = R"(
-    let table = document.querySelector('#logTable')
+    const table = document.querySelector('#logTable')
         .shadowRoot.querySelector('tbody');
+
+    const logType = 'FailedSourceRegistration';
+    const metadata = '<dl><dt>Failure Reason</dt><dd>invalid JSON</dd>' +
+                     '<dt>Report To</dt><dd>https://a.test</dd>' +
+                     '<dt>Attribution-Reporting-Register-Source Header</dt>'+
+                     '<dd>!</dd></dl>';
 
     let obs = new MutationObserver((_, obs) => {
       if (table.children.length === 1 &&
-          table.children[0].children.length >= 4 &&
-          table.children[0].children[1].innerText === 'invalid JSON' &&
-          table.children[0].children[2].innerText === 'https://a.test' &&
-          table.children[0].children[3].innerText === '!')  {
+          table.children[0].children.length >= 3 &&
+          table.children[0].children[1].innerText === logType &&
+          table.children[0].children[2].innerHTML === metadata
+      )  {
         obs.disconnect();
         document.title = $1;
       }
