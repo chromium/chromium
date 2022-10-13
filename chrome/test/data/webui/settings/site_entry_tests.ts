@@ -663,4 +663,20 @@ suite('SiteEntry_EnabledConsolidatedControls', function() {
             testElement.shadowRoot!.querySelector<HTMLElement>('#fpsPolicy');
         assertEquals(null, fpsPolicy);
       });
+
+  test('first party set more actions aria-label set correctly', function() {
+    // Set site group with first party set information.
+    const fooSiteGroup = JSON.parse(JSON.stringify(TEST_SINGLE_SITE_GROUP));
+    fooSiteGroup.fpsOwner = 'foo.com';
+    fooSiteGroup.fpsNumMembers = 1;
+    fooSiteGroup.fpsEnterpriseManaged = false;
+    testElement.siteGroup = fooSiteGroup;
+    flush();
+
+    // Assert aria-label is set correctly
+    const moreActionsButton =
+        testElement.shadowRoot!.querySelector<HTMLElement>(
+            '#fpsOverflowMenuButton');
+    assertEquals('More actions for foo.com', moreActionsButton!.ariaLabel);
+  });
 });

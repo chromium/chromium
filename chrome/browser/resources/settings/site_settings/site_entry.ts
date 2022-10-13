@@ -497,6 +497,10 @@ export class SiteEntryElement extends SiteEntryElementBase {
         'siteSettingsCookieRemoveSite', this.originRepresentation(origin));
   }
 
+  private getMoreActionsLabel_(): string {
+    return this.i18n(
+        'firstPartySetsMoreActionsTitle', this.siteGroup.etldPlus1);
+  }
   /**
    * Update the order and data display text for origins.
    */

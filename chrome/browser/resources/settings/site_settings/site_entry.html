@@ -104,7 +104,8 @@
                   id="fpsOverflowMenuButton"
                   title="$i18n{moreActions}"
                   on-click="showOverflowMenu_"
-                  focus-row-control focus-type="more-actions">
+                  focus-row-control focus-type="more-actions"
+                  aria-label$="[[getMoreActionsLabel_(siteGroup)]]">
               </cr-icon-button>
             </template>
             <template is="dom-if" if="[[!isFpsMember_(siteGroup.fpsOwner)]]">
