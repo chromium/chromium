@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "components/services/app_service/public/cpp/icon_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
@@ -31,8 +30,7 @@ class WebAppIconDiagnostic {
     bool has_empty_icon_bitmap = false;
     bool has_empty_icon_file = false;
     bool has_missing_icon_file = false;
-    bool has_app_service_missing_icon = false;
-    bool has_app_service_fallback_icon = false;
+    // TODO(https://crbug.com/1353659): Add more checks.
   };
 
   WebAppIconDiagnostic(Profile* profile, AppId app_id);
@@ -58,10 +56,6 @@ class WebAppIconDiagnostic {
       base::OnceClosure done_callback,
       WebAppIconManager::IconFilesCheck icon_files_check);
 
-  void LoadIconFromAppService(apps::LoadIconCallback callback);
-  void DiagnoseAppServiceIcon(base::OnceClosure done_callback,
-                              apps::IconValuePtr icon_value);
-
   const raw_ptr<Profile> profile_;
   const AppId app_id_;
 
@@ -69,8 +63,6 @@ class WebAppIconDiagnostic {
   const raw_ptr<const WebApp> app_;
 
   absl::optional<SquareSizePx> icon_size_;
-
-  std::unique_ptr<apps::IconLoader::Releaser> app_service_icon_loading_;
 
   absl::optional<Result> result_;
   base::OnceCallback<void(absl::optional<Result>)> result_callback_;

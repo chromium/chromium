@@ -277,10 +277,6 @@ struct StructTraits<crosapi::mojom::IconValueDataView, apps::IconValuePtr> {
     return r->is_placeholder_icon;
   }
 
-  static bool is_fallback_icon(const apps::IconValuePtr& r) {
-    return r->is_fallback_icon;
-  }
-
   static bool Read(crosapi::mojom::IconValueDataView, apps::IconValuePtr* out);
 };
 

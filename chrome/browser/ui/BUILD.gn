@@ -5542,7 +5542,6 @@ static_library("ui") {
       "//chrome/common/extensions/api",
       "//components/drive",
       "//components/guest_view/browser",
-      "//components/services/app_service/public/cpp:icon_loader",
       "//extensions/browser",
       "//extensions/browser/api/management",
       "//extensions/common:mojom",

@@ -299,8 +299,6 @@ struct IconValue {
   array<uint8>? compressed;
   // Whether this icon data is a placeholder icon.
   bool is_placeholder_icon;
-  // Whether this icon data is a fallback icon.
-  [MinVersion=1]bool is_fallback_icon;
 };
 
 // MenuItems are used to populate context menus.

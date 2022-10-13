@@ -101,10 +101,6 @@ struct COMPONENT_EXPORT(ICON_TYPES) IconValue {
   // `allow_placeholder_icon` set to true, which states whether the caller will
   // accept a placeholder if the real icon can not be provided at this time.
   bool is_placeholder_icon = false;
-
-  // Whether the icon failed to load and a fallback (e.g. grey box icon) has
-  // been returned instead.
-  bool is_fallback_icon = false;
 };
 
 using IconValuePtr = std::unique_ptr<IconValue>;
