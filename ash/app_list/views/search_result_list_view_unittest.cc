@@ -17,9 +17,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
 
@@ -118,6 +120,11 @@ class SearchResultListViewTest : public views::test::WidgetTest,
     return answer_card_view_->GetResultViewAt(index);
   }
 
+  views::FlexLayoutView* GetKeyboardShortcutContents(
+      SearchResultView* result_view) {
+    return result_view->get_keyboard_shortcut_container_for_test();
+  }
+
   std::vector<SearchResultView*> GetAssistantResultViews() const {
     std::vector<SearchResultView*> results;
     for (auto* view : unified_view_->search_result_views_) {
@@ -159,6 +166,41 @@ class SearchResultListViewTest : public views::test::WidgetTest,
         result->SetDetails(u"Detail");
       results->Add(std::move(result));
     }
+
+    // Adding results will schedule Update().
+    RunPendingMessages();
+  }
+
+  void SetUpKeyboardShortcutResult() {
+    SearchModel::SearchResults* results = GetResults();
+
+    std::unique_ptr<TestSearchResult> result =
+        std::make_unique<TestSearchResult>();
+    result->set_display_type(ash::SearchResultDisplayType::kList);
+    result->SetTitle(u"Copy and Paste");
+    result->set_best_match(true);
+
+    std::vector<SearchResult::TextItem> keyboard_shortcut_text_vector;
+    SearchResult::TextItem shortcut_text_item_1(
+        ash::SearchResultTextItemType::kIconifiedText);
+    shortcut_text_item_1.SetText(u"ctrl");
+    shortcut_text_item_1.SetTextTags({});
+    keyboard_shortcut_text_vector.push_back(shortcut_text_item_1);
+
+    SearchResult::TextItem shortcut_text_item_2(
+        ash::SearchResultTextItemType::kString);
+    shortcut_text_item_2.SetText(u" + ");
+    shortcut_text_item_2.SetTextTags({});
+    keyboard_shortcut_text_vector.push_back(shortcut_text_item_2);
+
+    SearchResult::TextItem shortcut_text_item_3(
+        ash::SearchResultTextItemType::kIconifiedText);
+    shortcut_text_item_3.SetText(u"a");
+    shortcut_text_item_3.SetTextTags({});
+    keyboard_shortcut_text_vector.push_back(shortcut_text_item_3);
+
+    result->SetKeyboardShortcutTextVector(keyboard_shortcut_text_vector);
+    results->Add(std::move(result));
 
     // Adding results will schedule Update().
     RunPendingMessages();
@@ -208,6 +250,8 @@ class SearchResultListViewTest : public views::test::WidgetTest,
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
+  AshColorProvider
+      ash_color_provider_;  // Needed by SearchResultInlineIconView.
   AppListTestViewDelegate view_delegate_;
   std::unique_ptr<SearchResultListView> unified_view_;
   std::unique_ptr<SearchResultListView> default_view_;
@@ -225,10 +269,23 @@ TEST_P(SearchResultListViewTest, SpokenFeedback) {
   // Result 0 has a detail text. Expect that the detail is appended to the
   // accessibility name.
   EXPECT_EQ(u"Result 0, Detail",
-            GetUnifiedResultViewAt(0)->ComputeAccessibleName());
+            GetDefaultResultViewAt(0)->ComputeAccessibleName());
 
   // Result 2 has no detail text.
-  EXPECT_EQ(u"Result 2", GetUnifiedResultViewAt(2)->ComputeAccessibleName());
+  EXPECT_EQ(u"Result 2", GetDefaultResultViewAt(2)->ComputeAccessibleName());
+}
+
+TEST_P(SearchResultListViewTest, KeyboardShortcutResult) {
+  if (!IsProductivityLauncherEnabled())
+    return;
+
+  default_view()->SetBounds(0, 0, kPreferredWidth, 400);
+  SetUpKeyboardShortcutResult();
+
+  EXPECT_EQ(u"Copy and Paste",
+            GetDefaultResultViewAt(0)->ComputeAccessibleName());
+  EXPECT_TRUE(
+      GetKeyboardShortcutContents(GetDefaultResultViewAt(0))->GetVisible());
 }
 
 TEST_P(SearchResultListViewTest, CorrectEnumLength) {

@@ -173,6 +173,10 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
     multi_line_title_height_ = height;
   }
 
+  views::FlexLayoutView* get_keyboard_shortcut_container_for_test() {
+    return keyboard_shortcut_container_;
+  }
+
   int PreferredHeight() const;
   int PrimaryTextHeight() const;
   int SecondaryTextHeight() const;
