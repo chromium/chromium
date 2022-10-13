@@ -5128,6 +5128,11 @@
     "expiry_milestone": 108
   },
   {
+    "name": "omnibox-remove-excessive-recycled-view-clear-calls",
+    "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "omnibox-remove-suggestion-header-capitalization",
     "owners": [ "rongtan", "ender", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 110

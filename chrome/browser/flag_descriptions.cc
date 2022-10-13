@@ -2051,6 +2051,11 @@ const char kOmniboxRemoveSuggestionHeaderCapitalizationName[] =
 const char kOmniboxRemoveSuggestionHeaderCapitalizationDescription[] =
     "Remove the capitalization of the omnibox suggestion search header.";
 
+const char kOmniboxRemoveExcessiveRecycledViewClearCallsName[] =
+    "Omnibox Remove Excessive Recycled View Clear Calls";
+const char kOmniboxRemoveExcessiveRecycledViewClearCallsDescription[] =
+    "Remove excessive clear calls on RecycledViewPool in omnibox.";
+
 const char kOmniboxRemoveSuggestionHeaderChevronName[] =
     "Omnibox Remove Suggestion Header Chevron";
 const char kOmniboxRemoveSuggestionHeaderChevronDescription[] =

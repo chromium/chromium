@@ -9,8 +9,10 @@ import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modelutil.ListObservable;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -41,13 +43,27 @@ class SuggestionListViewBinder {
             // Actual View showing the dropdown.
             View dropdownView = view.dropdown.getViewGroup();
             if (visible) {
-                view.container.setVisibility(View.VISIBLE);
-                if (dropdownView.getParent() == null) view.container.addView(dropdownView);
-                view.dropdown.show();
+                if (OmniboxFeatures.shouldRemoveExcessiveRecycledViewClearCalls()) {
+                    if (dropdownView.getParent() == null) {
+                        view.container.addView(dropdownView);
+                        // When showing the suggestions list for the first time, make sure to apply
+                        // appropriate visibility to freshly inflated container.
+                        // This is later handled by subsequent calls to updateContainerVisibility()
+                        // performed whenever the suggestion model list changes.
+                        updateContainerVisibility(model, view.container);
+                    }
+                } else {
+                    view.container.setVisibility(View.VISIBLE);
+                    if (dropdownView.getParent() == null) view.container.addView(dropdownView);
+                    view.dropdown.show();
+                }
             } else {
-                view.dropdown.hide();
                 UiUtils.removeViewFromParent(dropdownView);
-                view.container.setVisibility(View.INVISIBLE);
+
+                if (!OmniboxFeatures.shouldRemoveExcessiveRecycledViewClearCalls()) {
+                    view.dropdown.hide();
+                    view.container.setVisibility(View.INVISIBLE);
+                }
             }
         } else if (SuggestionListProperties.EMBEDDER.equals(propertyKey)) {
             view.dropdown.setEmbedder(model.get(SuggestionListProperties.EMBEDDER));
@@ -58,17 +74,43 @@ class SuggestionListViewBinder {
                 view.dropdown.emitWindowContentChanged();
             }
         } else if (SuggestionListProperties.SUGGESTION_MODELS.equals(propertyKey)) {
-            // This should only ever be bound once.
-            model.get(SuggestionListProperties.SUGGESTION_MODELS)
-                    .addObserver(new ListObservable.ListObserver<Void>() {
-                        @Override
-                        public void onItemRangeChanged(ListObservable<Void> source, int index,
-                                int count, @Nullable Void payload) {
-                            view.dropdown.resetSelection();
-                        }
-                    });
+            if (OmniboxFeatures.shouldRemoveExcessiveRecycledViewClearCalls()) {
+                ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
+                listItems.addObserver(new ListObservable.ListObserver<Void>() {
+                    @Override
+                    public void onItemRangeChanged(ListObservable<Void> source, int index,
+                            int count, @Nullable Void payload) {
+                        view.dropdown.resetSelection();
+                    }
+
+                    @Override
+                    public void onItemRangeInserted(ListObservable source, int index, int count) {
+                        updateContainerVisibility(model, view.container);
+                    }
+
+                    @Override
+                    public void onItemRangeRemoved(ListObservable source, int index, int count) {
+                        updateContainerVisibility(model, view.container);
+                    }
+                });
+            } else {
+                // This should only ever be bound once.
+                model.get(SuggestionListProperties.SUGGESTION_MODELS)
+                        .addObserver(new ListObservable.ListObserver<Void>() {
+                            @Override
+                            public void onItemRangeChanged(ListObservable<Void> source, int index,
+                                    int count, @Nullable Void payload) {
+                                view.dropdown.resetSelection();
+                            }
+                        });
+            }
         } else if (SuggestionListProperties.COLOR_SCHEME.equals(propertyKey)) {
             view.dropdown.refreshPopupBackground(model.get(SuggestionListProperties.COLOR_SCHEME));
         }
+    }
+
+    private static void updateContainerVisibility(PropertyModel model, ViewGroup container) {
+        ModelList listItems = model.get(SuggestionListProperties.SUGGESTION_MODELS);
+        container.setVisibility(listItems.size() == 0 ? View.GONE : View.VISIBLE);
     }
 }

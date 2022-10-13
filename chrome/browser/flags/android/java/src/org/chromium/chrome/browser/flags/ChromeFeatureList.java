@@ -448,6 +448,8 @@ public abstract class ChromeFeatureList {
             "OmniboxMostVisitedTilesDynamicSpacing";
     public static final String OMNIBOX_MOST_VISITED_TILES_TITLE_WRAP_AROUND =
             "OmniboxMostVisitedTilesTitleWrapAround";
+    public static final String OMNIBOX_REMOVE_EXCESSIVE_RECYCLED_VIEW_CLEAR_CALLS =
+            "OmniboxRemoveExcessiveRecycledViewClearCalls";
     public static final String OMNIBOX_REMOVE_SUGGESTION_HEADER_CHEVRON =
             "OmniboxRemoveSuggestionHeaderChevron";
     public static final String OMNIBOX_REMOVE_SUGGESTION_HEADER_CAPITALIZATION =
@@ -705,6 +707,8 @@ public abstract class ChromeFeatureList {
             new CachedFlag(OMAHA_MIN_SDK_VERSION_ANDROID, false);
     public static final CachedFlag sOmniboxModernizeVisualUpdate =
             new CachedFlag(OMNIBOX_MODERNIZE_VISUAL_UPDATE, false);
+    public static final CachedFlag sOmniboxRemoveExcessiveRecycledViewClearCalls =
+            new CachedFlag(OMNIBOX_REMOVE_EXCESSIVE_RECYCLED_VIEW_CLEAR_CALLS, false);
     public static final CachedFlag sOptimizationGuidePushNotifications =
             new CachedFlag(OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false);
     public static final CachedFlag sOSKResizesVisualViewportByDefault =

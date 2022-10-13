@@ -186,7 +186,12 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             setMaxRecycledViews(OmniboxSuggestionUiType.DEFAULT, 20);
             setMaxRecycledViews(OmniboxSuggestionUiType.EDIT_URL_SUGGESTION, 1);
             setMaxRecycledViews(OmniboxSuggestionUiType.ANSWER_SUGGESTION, 1);
-            setMaxRecycledViews(OmniboxSuggestionUiType.ENTITY_SUGGESTION, 5);
+            if (OmniboxFeatures.shouldRemoveExcessiveRecycledViewClearCalls()) {
+                setMaxRecycledViews(OmniboxSuggestionUiType.ENTITY_SUGGESTION, 8);
+            } else {
+                setMaxRecycledViews(OmniboxSuggestionUiType.ENTITY_SUGGESTION, 5);
+            }
+
             setMaxRecycledViews(OmniboxSuggestionUiType.TAIL_SUGGESTION, 15);
             setMaxRecycledViews(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION, 1);
             setMaxRecycledViews(OmniboxSuggestionUiType.HEADER, 4);
@@ -285,8 +290,12 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         return manager.findViewByPosition(index);
     }
 
+    // TODO(crbug.com/1373795): Remove this function after feature
+    // OmniboxRemoveExcessiveRecycledViewClearCalls is released to stable and ready to be removed.
     /** Show (and properly size) the suggestions list. */
     public void show() {
+        if (OmniboxFeatures.shouldRemoveExcessiveRecycledViewClearCalls()) return;
+
         if (getVisibility() == VISIBLE) return;
 
         setVisibility(VISIBLE);
@@ -297,8 +306,12 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         mLayoutScrollListener.resetKeyboardShowState();
     }
 
+    // TODO(crbug.com/1373795): Remove this function after feature
+    // OmniboxRemoveExcessiveRecycledViewClearCalls is released to stable and ready to be removed.
     /** Hide the suggestions list and release any cached resources. */
     public void hide() {
+        if (OmniboxFeatures.shouldRemoveExcessiveRecycledViewClearCalls()) return;
+
         if (getVisibility() != VISIBLE) return;
         setVisibility(GONE);
         getRecycledViewPool().clear();
@@ -338,6 +351,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         if (mAlignmentView != null) {
             adjustSidePadding();
             mAlignmentView.addOnLayoutChangeListener(mAlignmentViewLayoutListener);
+        }
+
+        if (OmniboxFeatures.shouldRemoveExcessiveRecycledViewClearCalls()) {
+            resetSelection();
         }
     }
 

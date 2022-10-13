@@ -22,6 +22,7 @@ import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -148,7 +149,9 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
 
                 // Start with visibility GONE to ensure that show() is called.
                 // http://crbug.com/517438
-                dropdown.getViewGroup().setVisibility(View.GONE);
+                if (!OmniboxFeatures.shouldRemoveExcessiveRecycledViewClearCalls()) {
+                    dropdown.getViewGroup().setVisibility(View.GONE);
+                }
                 dropdown.getViewGroup().setClipToPadding(false);
 
                 OmniboxSuggestionsDropdownAdapter adapter =

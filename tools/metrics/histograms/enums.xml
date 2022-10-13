@@ -56949,6 +56949,8 @@ from previous Chrome versions.
   <int value="-1970672551" label="CanvasContextLostInBackground:disabled"/>
   <int value="-1969636234" label="OmniboxRefinedFocusState:disabled"/>
   <int value="-1969625771" label="MessagesForAndroidOfferNotification:enabled"/>
+  <int value="-1968796101"
+      label="OmniboxRemoveExcessiveRecycledViewClearCalls:disabled"/>
   <int value="-1966445414" label="StylusBatteryStatus:disabled"/>
   <int value="-1965587041" label="omnibox-tab-switch-suggestions"/>
   <int value="-1964730371"
@@ -58926,6 +58928,8 @@ from previous Chrome versions.
   <int value="-816984237" label="OfflinePagesAsyncDownload:enabled"/>
   <int value="-816895294" label="DiscoverApp:disabled"/>
   <int value="-816404462" label="TabGroupsAutoCreate:disabled"/>
+  <int value="-815616832"
+      label="OmniboxRemoveExcessiveRecycledViewClearCalls:enabled"/>
   <int value="-815213125" label="SplitSettings:enabled"/>
   <int value="-814305011" label="BatchFetchRequests:disabled"/>
   <int value="-814097014" label="disable-session-crashed-bubble"/>

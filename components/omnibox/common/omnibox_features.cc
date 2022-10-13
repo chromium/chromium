@@ -87,6 +87,13 @@ BASE_FEATURE(kOmniboxDemoteByType,
              "OmniboxDemoteByType",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Remove Excessive Clear Calls on RecycledViewPool in Omnibox.
+// The feature improves efficiency of the RecycledViewPool by removing excessive
+// calls to RecycledViewPool#clear().
+BASE_FEATURE(kOmniboxRemoveExcessiveRecycledViewClearCalls,
+             "OmniboxRemoveExcessiveRecycledViewClearCalls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature to enable memoizing URLs when replacing search terms in
 // `AutocompleteMatch::GURLToStrippedGURL()`.
 BASE_FEATURE(kStrippedGurlOptimization,

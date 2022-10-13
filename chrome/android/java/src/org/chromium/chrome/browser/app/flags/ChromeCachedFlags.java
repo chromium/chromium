@@ -112,6 +112,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sInterestFeedV2);
                 add(ChromeFeatureList.sNewWindowAppMenu);
                 add(ChromeFeatureList.sOmniboxModernizeVisualUpdate);
+                add(ChromeFeatureList.sOmniboxRemoveExcessiveRecycledViewClearCalls);
                 add(ChromeFeatureList.sOptimizationGuidePushNotifications);
                 add(ChromeFeatureList.sOSKResizesVisualViewportByDefault);
                 add(ChromeFeatureList.sPaintPreviewDemo);

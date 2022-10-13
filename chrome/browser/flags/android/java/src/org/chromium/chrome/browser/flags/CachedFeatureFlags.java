@@ -84,6 +84,8 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.OMAHA_MIN_SDK_VERSION_ANDROID, false)
                     .put(ChromeFeatureList.OMNIBOX_ANDROID_AUXILIARY_SEARCH, false)
                     .put(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE, false)
+                    .put(ChromeFeatureList.OMNIBOX_REMOVE_EXCESSIVE_RECYCLED_VIEW_CLEAR_CALLS,
+                            false)
                     .put(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS, false)
                     .put(ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT, false)
                     .put(ChromeFeatureList.PAINT_PREVIEW_DEMO, false)

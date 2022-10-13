@@ -55,4 +55,11 @@ public class OmniboxFeatures {
     private static boolean enabledModernizeVisualUpdateOnTablet() {
         return ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.getValue();
     }
+
+    /**
+     * Returns whether excessive calls to RecycledViewPool#clear should be removed.
+     */
+    public static boolean shouldRemoveExcessiveRecycledViewClearCalls() {
+        return ChromeFeatureList.sOmniboxRemoveExcessiveRecycledViewClearCalls.isEnabled();
+    }
 }

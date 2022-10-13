@@ -23,6 +23,7 @@ BASE_DECLARE_FEATURE(kAndroidAuxiliarySearch);
 BASE_DECLARE_FEATURE(kAutocompleteStability);
 BASE_DECLARE_FEATURE(kDocumentProviderDedupingOptimization);
 BASE_DECLARE_FEATURE(kOmniboxDemoteByType);
+BASE_DECLARE_FEATURE(kOmniboxRemoveExcessiveRecycledViewClearCalls);
 BASE_DECLARE_FEATURE(kPreserveDefault);
 BASE_DECLARE_FEATURE(kStrippedGurlOptimization);
 BASE_DECLARE_FEATURE(kUpdateResultDebounce);

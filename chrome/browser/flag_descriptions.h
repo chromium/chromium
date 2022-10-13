@@ -1161,6 +1161,9 @@ extern const char kOmniboxOnDeviceHeadSuggestionsDescription[];
 extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[];
 extern const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[];
 
+extern const char kOmniboxRemoveExcessiveRecycledViewClearCallsName[];
+extern const char kOmniboxRemoveExcessiveRecycledViewClearCallsDescription[];
+
 extern const char kOmniboxRemoveSuggestionHeaderChevronName[];
 extern const char kOmniboxRemoveSuggestionHeaderChevronDescription[];
 
