@@ -508,8 +508,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that the position of the collection view is restored when navigating
 // back to the NTP.
-// TODO(crbug.com/1299362): Re-enable test after fixing flakiness.
-- (void)DISABLED_testPositionRestored {
+- (void)testPositionRestored {
   [self addMostVisitedTile];
 
   // Add suggestions to be able to scroll on iPad.
@@ -518,7 +517,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Scroll to have a position to restored.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeTop)];
 
   // Save the position before navigating.
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
@@ -526,8 +525,9 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
   // Navigate and come back.
   [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabel(
-                     base::SysUTF8ToNSString(kPageTitle))]
+                 grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(
+                                base::SysUTF8ToNSString(kPageTitle)),
+                            grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
   [ChromeEarlGrey goBack];
@@ -615,12 +615,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that tapping the fake omnibox focuses the real omnibox.
 - (void)testTapFakeOmnibox {
-  // TODO(crbug.com/753098): Re-enable this test on iPad once grey_typeText
-  // works.
-  if ([ChromeEarlGrey isRegularXRegularSizeClass]) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
-  }
-
   // TODO(crbug.com/1315304): Reenable.
   if ([ChromeEarlGrey isNewOmniboxPopupEnabled]) {
     EARL_GREY_TEST_DISABLED(@"Disabled for new popup");
@@ -819,9 +813,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       performAction:grey_tap()];
 }
 
-// TODO(crbug.com/1255548): Add tests for overscroll menu.
-// TODO(crbug.com/1353899): Test flaky.
-- (void)DISABLED_testMinimumHeight {
+- (void)testMinimumHeight {
   [ChromeEarlGreyAppInterface
       setBoolValue:NO
        forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
