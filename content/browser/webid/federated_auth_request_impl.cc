@@ -767,31 +767,7 @@ void FederatedAuthRequestImpl::OnManifestReady(
         /*should_delay_callback=*/true);
     return;
   }
-  if (IsEndpointUrlValid(idp_info.provider,
-                         idp_info.endpoints.client_metadata)) {
-    network_manager_->FetchClientMetadata(
-        idp_info.endpoints.client_metadata, idp_info.provider.client_id,
-        base::BindOnce(
-            &FederatedAuthRequestImpl::OnClientMetadataResponseReceived,
-            weak_ptr_factory_.GetWeakPtr(),
-            idp_info_[idp_info.provider.config_url]));
-  } else {
-    MaybeFetchAccounts(idp_info);
-  }
-}
 
-void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
-    const IdentityProviderInfo& idp_info,
-    IdpNetworkRequestManager::FetchStatus status,
-    IdpNetworkRequestManager::ClientMetadata data) {
-  // TODO(yigu): Clean up the client metadata related errors for metrics and
-  // console logs.
-  client_metadata_ = data;
-  MaybeFetchAccounts(idp_info);
-}
-
-void FederatedAuthRequestImpl::MaybeFetchAccounts(
-    const IdentityProviderInfo& idp_info) {
   // Make sure that we don't fetch accounts if the IDP sign-in bit is reset to
   // false during the API call. e.g. by the login/logout HEADER.
   if (ShouldFailIfNotSignedInWithIdp(idp_info.provider.config_url,
@@ -807,6 +783,89 @@ void FederatedAuthRequestImpl::MaybeFetchAccounts(
       base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      idp_info_[idp_info.provider.config_url]));
+}
+
+void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
+    const IdentityProviderInfo& idp_info,
+    const IdpNetworkRequestManager::AccountList& accounts,
+    IdpNetworkRequestManager::FetchStatus status,
+    IdpNetworkRequestManager::ClientMetadata client_metadata) {
+  MaybeShowAccountsDialog(idp_info, accounts, client_metadata);
+}
+
+void FederatedAuthRequestImpl::MaybeShowAccountsDialog(
+    const IdentityProviderInfo& idp_info,
+    const IdpNetworkRequestManager::AccountList& accounts,
+    const IdpNetworkRequestManager::ClientMetadata& client_metadata) {
+  // TODO(yigu): Clean up the client metadata related errors for metrics and
+  // console logs.
+
+  bool is_visible = (render_frame_host().IsActive() &&
+                     render_frame_host().GetVisibilityState() ==
+                         content::PageVisibilityState::kVisible);
+  fedcm_metrics_->RecordWebContentsVisibilityUponReadyToShowDialog(is_visible);
+  // Does not show the dialog if the user has left the page. e.g. they may
+  // open a new tab before browser is ready to show the dialog.
+  if (!is_visible) {
+    CompleteRequestWithError(FederatedAuthRequestResult::kErrorRpPageNotVisible,
+                             TokenStatus::kRpPageNotVisible,
+                             /*should_delay_callback=*/true);
+    return;
+  }
+
+  WebContents* rp_web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  DCHECK(render_frame_host().GetMainFrame()->IsInPrimaryMainFrame());
+
+  bool screen_reader_is_on = rp_web_contents->GetAccessibilityMode().has_mode(
+      ui::AXMode::kScreenReader);
+  // Auto signs in returning users if they have a single account and are
+  // signing in.
+  // TODO(yigu): Add additional controls for RP/IDP/User for this flow.
+  // https://crbug.com/1236678.
+  bool is_auto_sign_in = prefer_auto_sign_in_ && accounts.size() == 1 &&
+                         accounts[0].login_state == LoginState::kSignIn &&
+                         !screen_reader_is_on;
+  ClientIdData client_id_data{GURL(client_metadata.terms_of_service_url),
+                              GURL(client_metadata.privacy_policy_url)};
+
+  show_accounts_dialog_time_ = base::TimeTicks::Now();
+  fedcm_metrics_->RecordShowAccountsDialogTime(show_accounts_dialog_time_ -
+                                               start_time_);
+
+  std::string idp_for_display =
+      FormatUrlForDisplay(idp_info.provider.config_url);
+  IdentityProviderData idp_data(idp_for_display, accounts, *idp_info.metadata,
+                                client_id_data);
+  idp_data_.insert({idp_info.provider.config_url, idp_data});
+
+  pending_idps_.erase(idp_info.provider.config_url);
+  if (!pending_idps_.empty())
+    return;
+
+  std::string rp_url_for_display =
+      FormatUrlForDisplay(rp_web_contents->GetLastCommittedURL());
+
+  std::vector<IdentityProviderData> idp_data_for_display;
+  for (const auto& idp : idp_order_) {
+    if (idp_data_.count(idp))
+      idp_data_for_display.push_back(idp_data_.at(idp));
+  }
+
+  absl::optional<std::string> iframe_url_for_display = absl::nullopt;
+  if (IsFedCmIframeSupportEnabled() && show_iframe_requester_) {
+    iframe_url_for_display =
+        FormatUrlForDisplay(render_frame_host().GetLastCommittedURL());
+  }
+
+  request_dialog_controller_->ShowAccountsDialog(
+      rp_web_contents, rp_url_for_display, iframe_url_for_display,
+      idp_data_for_display,
+      is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
+      base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
@@ -880,84 +939,35 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
+      ComputeLoginStateAndReorderAccounts(idp_info.provider, accounts);
+
       const url::Origin idp_origin =
           url::Origin::Create(idp_info.provider.config_url);
       sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, true);
 
-      bool is_visible = (render_frame_host().IsActive() &&
-                         render_frame_host().GetVisibilityState() ==
-                             content::PageVisibilityState::kVisible);
-      fedcm_metrics_->RecordWebContentsVisibilityUponReadyToShowDialog(
-          is_visible);
-      // Does not show the dialog if the user has left the page. e.g. they may
-      // open a new tab before browser is ready to show the dialog.
-      if (!is_visible) {
-        CompleteRequestWithError(
-            FederatedAuthRequestResult::kErrorRpPageNotVisible,
-            TokenStatus::kRpPageNotVisible,
-            /*should_delay_callback=*/true);
-        return;
+      bool need_client_metadata = false;
+      for (const IdentityRequestAccount& account : accounts) {
+        // ComputeLoginStateAndReorderAccounts() should have populated
+        // IdentityRequestAccount::login_state.
+        DCHECK(account.login_state);
+        if (*account.login_state == LoginState::kSignUp) {
+          need_client_metadata = true;
+          break;
+        }
       }
 
-      WebContents* rp_web_contents =
-          WebContents::FromRenderFrameHost(&render_frame_host());
-      DCHECK(render_frame_host().GetMainFrame()->IsInPrimaryMainFrame());
-
-      ComputeLoginStateAndReorderAccounts(idp_info.provider, accounts);
-
-      bool screen_reader_is_on =
-          rp_web_contents->GetAccessibilityMode().has_mode(
-              ui::AXMode::kScreenReader);
-      // Auto signs in returning users if they have a single account and are
-      // signing in.
-      // TODO(yigu): Add additional controls for RP/IDP/User for this flow.
-      // https://crbug.com/1236678.
-      bool is_auto_sign_in = prefer_auto_sign_in_ && accounts.size() == 1 &&
-                             accounts[0].login_state == LoginState::kSignIn &&
-                             !screen_reader_is_on;
-      // TODO(cbiesinger): Check that the URLs are valid.
-      ClientIdData client_id_data{GURL(client_metadata_.terms_of_service_url),
-                                  GURL(client_metadata_.privacy_policy_url)};
-
-      show_accounts_dialog_time_ = base::TimeTicks::Now();
-      fedcm_metrics_->RecordShowAccountsDialogTime(show_accounts_dialog_time_ -
-                                                   start_time_);
-
-      std::string idp_for_display =
-          FormatUrlForDisplay(idp_info.provider.config_url);
-      IdentityProviderData idp_data(idp_for_display, accounts,
-                                    *idp_info.metadata, client_id_data);
-      idp_data_.insert({idp_info.provider.config_url, idp_data});
-
-      pending_idps_.erase(idp_info.provider.config_url);
-      if (!pending_idps_.empty())
-        return;
-
-      std::string rp_url_for_display =
-          FormatUrlForDisplay(rp_web_contents->GetLastCommittedURL());
-
-      std::vector<IdentityProviderData> idp_data_for_display;
-      for (const auto& idp : idp_order_) {
-        if (idp_data_.count(idp))
-          idp_data_for_display.push_back(idp_data_.at(idp));
+      if (need_client_metadata &&
+          IsEndpointUrlValid(idp_info.provider,
+                             idp_info.endpoints.client_metadata)) {
+        network_manager_->FetchClientMetadata(
+            idp_info.endpoints.client_metadata, idp_info.provider.client_id,
+            base::BindOnce(
+                &FederatedAuthRequestImpl::OnClientMetadataResponseReceived,
+                weak_ptr_factory_.GetWeakPtr(), idp_info, std::move(accounts)));
+      } else {
+        MaybeShowAccountsDialog(idp_info, accounts,
+                                IdpNetworkRequestManager::ClientMetadata());
       }
-
-      absl::optional<std::string> iframe_url_for_display = absl::nullopt;
-
-      if (IsFedCmIframeSupportEnabled() && show_iframe_requester_) {
-        iframe_url_for_display =
-            FormatUrlForDisplay(render_frame_host().GetLastCommittedURL());
-      }
-
-      request_dialog_controller_->ShowAccountsDialog(
-          rp_web_contents, rp_url_for_display, iframe_url_for_display,
-          idp_data_for_display,
-          is_auto_sign_in ? SignInMode::kAuto : SignInMode::kExplicit,
-          base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
-                         weak_ptr_factory_.GetWeakPtr()));
-      return;
     }
   }
 }

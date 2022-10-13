@@ -126,12 +126,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnManifestReady(const IdentityProviderInfo& idp_info);
   void OnClientMetadataResponseReceived(
       const IdentityProviderInfo& idp_info,
+      const IdpNetworkRequestManager::AccountList& accounts,
       IdpNetworkRequestManager::FetchStatus status,
-      IdpNetworkRequestManager::ClientMetadata data);
+      IdpNetworkRequestManager::ClientMetadata client_metadata);
+  void MaybeShowAccountsDialog(
+      const IdentityProviderInfo& idp_info,
+      const IdpNetworkRequestManager::AccountList& accounts,
+      const IdpNetworkRequestManager::ClientMetadata& client_metadata);
 
-  // Only send accounts fetch request if the user is signed in with the IDP or
-  // the IDP is used in FedCM for the first time.
-  void MaybeFetchAccounts(const IdentityProviderInfo& idp_info);
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
   // failure UI if applicable.
   void HandleAccountsFetchFailure(
@@ -237,7 +239,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   raw_ptr<FederatedIdentitySharingPermissionContextDelegate>
       sharing_permission_delegate_ = nullptr;
 
-  IdpNetworkRequestManager::ClientMetadata client_metadata_;
   // The account that was selected by the user. This is only applicable to the
   // mediation flow.
   std::string account_id_;
