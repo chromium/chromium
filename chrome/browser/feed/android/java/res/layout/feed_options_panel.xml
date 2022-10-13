@@ -15,14 +15,14 @@ found in the LICENSE file.
     android:paddingVertical="@dimen/feed_options_vertical_margins"
     android:layout_marginBottom="@dimen/feed_options_vertical_margins"
     android:orientation="vertical"
-    android:visibility="gone"
-    android:importantForAccessibility="no">
+    android:visibility="gone">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/TextAppearance.TextAccentMediumThick.Secondary"
         android:text="@string/sort_by"
-        android:paddingVertical="@dimen/feed_options_vertical_margins" />
+        android:paddingVertical="@dimen/feed_options_vertical_margins"
+        android:focusableInTouchMode="true"/>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
