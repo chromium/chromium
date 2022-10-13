@@ -238,6 +238,40 @@ public class VirtualKeyboardResizeTest {
     }
 
     /**
+     * The same as the previous test, but sets the VirtualKeyboardResizesLayoutByDefault policy
+     * rather than the pref directly.
+     */
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.OSK_RESIZES_VISUAL_VIEWPORT})
+    @CommandLineFlags.Add({"policy={\"VirtualKeyboardResizesLayoutByDefault\":true}"})
+    public void testVirtualKeyboardDefaultResizeModeWithPolicy() throws Throwable {
+        startMainActivityWithURL("/chrome/test/data/android/page_with_editable.html");
+
+        int initialHeight = getPageInnerHeight();
+        double initialVVHeight = getVisualViewportHeight();
+
+        DOMUtils.clickNode(getWebContents(), TEXTFIELD_DOM_ID);
+        assertWaitForKeyboardStatus(true);
+
+        double keyboardHeight = getKeyboardHeightDp();
+
+        // Use less than or equal since the keyboard may actually include accessories like the
+        // Autofill bar. +1px delta to account for device scale factor rounding.
+        assertWaitForPageHeight(lessThanOrEqualTo((int) (initialHeight - keyboardHeight + 1.0)));
+        assertWaitForVisualViewportHeight(
+                lessThanOrEqualTo(initialVVHeight - keyboardHeight + 1.0));
+
+        // Hide the OSK and ensure the state is correctly restored to the initial height.
+        hideKeyboard();
+        assertWaitForKeyboardStatus(false);
+
+        assertWaitForPageHeight(Matchers.is(initialHeight));
+        assertWaitForVisualViewportHeight(
+                Matchers.closeTo((double) initialVVHeight, /*error=*/1.0));
+    }
+
+    /**
      * Tests the OSKResizesVisualViewportByDefault flag changes Chrome's default behavior to the
      * virtual keyboard resizing only the visual viewport, but not the page's initial containing
      * block or layout viewport.

@@ -35656,7 +35656,7 @@ This policy has no effect if the option to keep existing browsing data is not av
       'owners': ['andruud@chromium.org', 'bokan@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': ['android'],
+      'supported_on': ['android:108-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
