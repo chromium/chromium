@@ -70,15 +70,6 @@ bool DeleteObsoletePolicies(const base::FilePath& cache_root,
 
 }  // namespace
 
-#if BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/1276162) - implement.
-DMStorage::DMStorage(const base::FilePath& policy_cache_root)
-    : policy_cache_root_(policy_cache_root),
-      policy_info_file_(policy_cache_root_.AppendASCII(kPolicyInfoFileName)) {
-  NOTIMPLEMENTED();
-}
-#endif  // BUILDFLAG(IS_LINUX)
-
 DMStorage::DMStorage(const base::FilePath& policy_cache_root,
                      std::unique_ptr<TokenServiceInterface> token_service)
     : policy_cache_root_(policy_cache_root),
@@ -214,13 +205,5 @@ DMStorage::GetOmahaPolicySettings() const {
 
   return omaha_settings;
 }
-
-#if BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/1276162) - implement.
-scoped_refptr<DMStorage> GetDefaultDMStorage() {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-#endif
 
 }  // namespace updater

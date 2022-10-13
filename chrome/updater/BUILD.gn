@@ -359,6 +359,7 @@ if (is_win || is_mac || is_linux) {
         "activity_impl_linux.cc",
         "app/server/linux/server.cc",
         "app/server/linux/server.h",
+        "device_management/dm_storage_linux.cc",
         "linux/linux_util.cc",
         "linux/linux_util.h",
         "linux/net/network.cc",
