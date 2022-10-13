@@ -29,7 +29,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
@@ -143,7 +143,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "Test is flaky, see crbug.com/1291110")
+    @DisabledTest(message = "Test is flaky, see crbug.com/1291110")
     public void testHasOAuth2RefreshTokenWhenAccountIsOnDevice() {
         mAccountManagerFacade.addAccount(ACCOUNT);
         ThreadUtils.runOnUiThreadBlocking(

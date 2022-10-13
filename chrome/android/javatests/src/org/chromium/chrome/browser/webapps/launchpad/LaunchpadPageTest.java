@@ -35,7 +35,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -138,7 +137,7 @@ public class LaunchpadPageTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1271233")
+    @DisabledTest(message = "https://crbug.com/1271233")
     public void testManagementMenuAppPermissions() {
         LaunchpadTestUtils.setPermissionDefaults(LaunchpadTestUtils.APP_URL_2);
         openLaunchpadPage();

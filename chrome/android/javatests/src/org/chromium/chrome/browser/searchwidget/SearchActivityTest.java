@@ -47,7 +47,6 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.FileProviderHelper;
@@ -474,7 +473,7 @@ public class SearchActivityTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "crbug.com/1133547")
+    @DisabledTest(message = "crbug.com/1133547")
     public void testRealPromoDialogInterruption() throws Exception {
         // Start the Activity.  It should pause when the promo dialog appears.
         mTestDelegate.shouldShowRealSearchDialog = true;

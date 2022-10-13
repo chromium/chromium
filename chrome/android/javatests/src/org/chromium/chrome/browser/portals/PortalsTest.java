@@ -36,7 +36,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -628,7 +627,7 @@ public class PortalsTest {
     @LargeTest
     @Feature({"Portals"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
-    @FlakyTest(message = "https://crbug.com/1184291")
+    @DisabledTest(message = "https://crbug.com/1184291")
     public void testMediaNotificationDisappearsAfterActivation() throws Exception {
         String mainUrl =
                 mTestServer.getURL("/chrome/test/data/android/portals/media-notification.html");

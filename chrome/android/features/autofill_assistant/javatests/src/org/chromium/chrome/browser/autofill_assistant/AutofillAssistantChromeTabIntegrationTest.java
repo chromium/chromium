@@ -42,7 +42,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
@@ -267,7 +266,7 @@ public class AutofillAssistantChromeTabIntegrationTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "https://crbug.com/1237330")
+    @DisabledTest(message = "https://crbug.com/1237330")
     public void switchingTabsRestoresBottomSheetState() {
         ArrayList<ActionProto> listA = new ArrayList<>();
         listA.add(ActionProto.newBuilder()

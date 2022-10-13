@@ -21,8 +21,8 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -114,7 +114,7 @@ public class ContentViewFocusTest {
      * @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
      */
     @Test
-    @FlakyTest(message = "http://crbug.com/172473")
+    @DisabledTest(message = "http://crbug.com/172473")
     public void testHideSelectionOnPhoneTabSwiping() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         // Setup
@@ -170,7 +170,7 @@ public class ContentViewFocusTest {
     @MediumTest
     @Feature({"TabContents"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @FlakyTest(message = "http://crbug.com/967128")
+    @DisabledTest(message = "http://crbug.com/967128")
     public void testHideSelectionOnPhoneTabSwitcher() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         // Setup

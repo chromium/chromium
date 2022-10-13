@@ -37,7 +37,6 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -232,7 +231,7 @@ public class WebXrVrTransitionTest {
     @MediumTest
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @Restriction(RESTRICTION_TYPE_SVR)
-    @FlakyTest(message = "crbug.com/1229236")
+    @DisabledTest(message = "crbug.com/1229236")
     public void testControlsVisibleAfterExitingVr_WebXr() throws InterruptedException {
         controlsVisibleAfterExitingVrImpl("generic_webxr_page", mWebXrVrTestFramework);
     }

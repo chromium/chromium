@@ -20,8 +20,8 @@ import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -70,7 +70,7 @@ public class AutoDownloadsTest implements CustomMainActivityStart {
     @Test
     @MediumTest
     @Feature({"AutoDownloads"})
-    @FlakyTest(message = "https://crbug.com/1108800")
+    @DisabledTest(message = "https://crbug.com/1108800")
     public void testAutoDownloadsDialog() throws Exception {
         try (CloseableOnMainThread ignored = CloseableOnMainThread.StrictMode.allowDiskWrites()) {
             ArrayList<DirectoryOption> dirOptions = new ArrayList<>();

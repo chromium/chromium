@@ -23,8 +23,8 @@ import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.WebContentsFactory;
@@ -230,7 +230,7 @@ public class InfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @FlakyTest(message = "https://crbug.com/1269025")
+    @DisabledTest(message = "https://crbug.com/1269025")
     public void testInfoBarForPopUp() throws TimeoutException, ExecutionException {
         sActivityTestRule.loadUrl(sTestServer.getURL(POPUP_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not added");

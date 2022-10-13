@@ -20,7 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -58,7 +58,7 @@ public class MediaSessionTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1315419")
+    @DisabledTest(message = "https://crbug.com/1315419")
     public void testPauseOnHeadsetUnplug() throws IllegalArgumentException, TimeoutException {
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PATH));
         Tab tab = mActivityTestRule.getActivity().getActivityTab();

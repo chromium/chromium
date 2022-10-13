@@ -54,7 +54,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -350,7 +349,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @ParameterAnnotations.UseMethodParameter(MVTParams.class)
-    @FlakyTest(message = "crbug.com/1036500")
+    @DisabledTest(message = "crbug.com/1036500")
     public void testRemoveMostVisitedItem(boolean isScrollableMVTEnabled)
             throws ExecutionException {
         Assert.assertNotNull(mMvTilesLayout);
