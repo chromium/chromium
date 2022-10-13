@@ -65,7 +65,7 @@ void IconizedLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     return Label::GetAccessibleNodeData(node_data);
 
   node_data->role = ax::mojom::Role::kStaticText;
-  node_data->SetName(custom_accessible_name_);
+  node_data->SetNameChecked(custom_accessible_name_);
 }
 
 TrayItemView::TrayItemView(Shelf* shelf)
