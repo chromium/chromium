@@ -23,6 +23,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
@@ -212,6 +213,8 @@ public class BookmarkManager
                     new CommerceSubscriptionsServiceFactory()
                             .getForLastUsedProfile()
                             .getSubscriptionsManager());
+            ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile())
+                    .scheduleSavedProductUpdate();
         }
 
         @SuppressWarnings("unchecked")

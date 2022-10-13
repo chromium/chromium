@@ -139,6 +139,13 @@ public class ShoppingService {
         ShoppingServiceJni.get().fetchPriceEmailPref(mNativeShoppingServiceAndroid, this);
     }
 
+    /** Schedules updates for all products that the user has saved in the bookmarks system. */
+    public void scheduleSavedProductUpdate() {
+        if (mNativeShoppingServiceAndroid == 0) return;
+
+        ShoppingServiceJni.get().scheduleSavedProductUpdate(mNativeShoppingServiceAndroid, this);
+    }
+
     @CalledByNative
     private void destroy() {
         mNativeShoppingServiceAndroid = 0;
@@ -185,5 +192,6 @@ public class ShoppingService {
         void getMerchantInfoForUrl(long nativeShoppingServiceAndroid, ShoppingService caller,
                 GURL url, MerchantInfoCallback callback);
         void fetchPriceEmailPref(long nativeShoppingServiceAndroid, ShoppingService caller);
+        void scheduleSavedProductUpdate(long nativeShoppingServiceAndroid, ShoppingService caller);
     }
 }

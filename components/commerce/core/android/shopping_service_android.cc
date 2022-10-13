@@ -127,4 +127,12 @@ void ShoppingServiceAndroid::FetchPriceEmailPref(
   shopping_service_->FetchPriceEmailPref();
 }
 
+void ShoppingServiceAndroid::ScheduleSavedProductUpdate(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  CHECK(shopping_service_);
+
+  shopping_service_->ScheduleSavedProductUpdate();
+}
+
 }  // namespace commerce

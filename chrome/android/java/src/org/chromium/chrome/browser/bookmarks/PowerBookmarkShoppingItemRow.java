@@ -32,7 +32,6 @@ import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ProductPrice;
 
-import java.util.Arrays;
 import java.util.Locale;
 
 /** A row view that shows shopping info in the bookmarks UI. */
@@ -88,23 +87,6 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
                 meta != null && meta.getShoppingSpecifics().getIsPriceTracked();
         initPriceTrackingUI(meta.getLeadImage().getUrl(), mIsPriceTrackingEnabled,
                 originalPrice.getAmountMicros(), originalPrice.getAmountMicros());
-        // Request an updated price then push updates to the UI.
-        mBookmarkModel.getUpdatedProductPrices(
-                Arrays.asList(bookmarkId), (id, url, updatedPrice) -> {
-                    if (!mBookmarkId.equals(id)
-                            || !originalPrice.getCurrencyCode().equals(
-                                    updatedPrice.getCurrencyCode())) {
-                        return;
-                    }
-
-                    if (updatedPrice.getAmountMicros() > originalPrice.getAmountMicros()) {
-                        PowerBookmarkUtils.updatePriceForBookmarkId(
-                                mBookmarkModel, bookmarkId, updatedPrice);
-                    }
-
-                    setPriceInfoChip(
-                            originalPrice.getAmountMicros(), updatedPrice.getAmountMicros());
-                });
         return bookmarkItem;
     }
 
