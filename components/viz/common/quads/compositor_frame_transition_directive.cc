@@ -17,11 +17,9 @@ CompositorFrameTransitionDirective::CompositorFrameTransitionDirective() =
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
     uint32_t sequence_id,
     Type type,
-    Effect effect,
     std::vector<SharedElement> shared_elements)
     : sequence_id_(sequence_id),
       type_(type),
-      effect_(effect),
       shared_elements_(std::move(shared_elements)) {}
 
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(

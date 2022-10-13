@@ -9,24 +9,8 @@ import "services/viz/public/mojom/compositing/shared_element_resource_id.mojom";
 
 enum CompositorFrameTransitionDirectiveType {
   kSave,
-  kAnimate,
   kAnimateRenderer,
   kRelease
-};
-
-enum CompositorFrameTransitionDirectiveEffect {
-  kNone,
-  kCoverDown,
-  kCoverLeft,
-  kCoverRight,
-  kCoverUp,
-  kExplode,
-  kFade,
-  kImplode,
-  kRevealDown,
-  kRevealLeft,
-  kRevealRight,
-  kRevealUp
 };
 
 // This struct identifes a shared element.
@@ -45,9 +29,6 @@ struct CompositorFrameTransitionDirective {
 
   // The type of this directive.
   CompositorFrameTransitionDirectiveType type;
-
-  // The effect for the transition.
-  CompositorFrameTransitionDirectiveEffect effect;
 
   // A collection of shared elements.
   array<CompositorFrameTransitionDirectiveSharedElement> shared_elements;

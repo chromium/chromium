@@ -25,8 +25,6 @@ EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveType,
   switch (type) {
     case viz::CompositorFrameTransitionDirective::Type::kSave:
       return viz::mojom::CompositorFrameTransitionDirectiveType::kSave;
-    case viz::CompositorFrameTransitionDirective::Type::kAnimate:
-      return viz::mojom::CompositorFrameTransitionDirectiveType::kAnimate;
     case viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer:
       return viz::mojom::CompositorFrameTransitionDirectiveType::
           kAnimateRenderer;
@@ -46,95 +44,11 @@ bool EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveType,
     case viz::mojom::CompositorFrameTransitionDirectiveType::kSave:
       *out = viz::CompositorFrameTransitionDirective::Type::kSave;
       return true;
-    case viz::mojom::CompositorFrameTransitionDirectiveType::kAnimate:
-      *out = viz::CompositorFrameTransitionDirective::Type::kAnimate;
-      return true;
     case viz::mojom::CompositorFrameTransitionDirectiveType::kAnimateRenderer:
       *out = viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer;
       return true;
     case viz::mojom::CompositorFrameTransitionDirectiveType::kRelease:
       *out = viz::CompositorFrameTransitionDirective::Type::kRelease;
-      return true;
-  }
-  return false;
-}
-
-// static
-viz::mojom::CompositorFrameTransitionDirectiveEffect
-EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveEffect,
-           viz::CompositorFrameTransitionDirective::Effect>::
-    ToMojom(viz::CompositorFrameTransitionDirective::Effect effect) {
-  switch (effect) {
-    case viz::CompositorFrameTransitionDirective::Effect::kNone:
-      return viz::mojom::CompositorFrameTransitionDirectiveEffect::kNone;
-    case viz::CompositorFrameTransitionDirective::Effect::kCoverDown:
-      return viz::mojom::CompositorFrameTransitionDirectiveEffect::kCoverDown;
-    case viz::CompositorFrameTransitionDirective::Effect::kCoverLeft:
-      return viz::mojom::CompositorFrameTransitionDirectiveEffect::kCoverLeft;
-    case viz::CompositorFrameTransitionDirective::Effect::kCoverRight:
-      return viz::mojom::CompositorFrameTransitionDirectiveEffect::kCoverRight;
-    case viz::CompositorFrameTransitionDirective::Effect::kCoverUp:
-      return viz::mojom::CompositorFrameTransitionDirectiveEffect::kCoverUp;
-    case viz::CompositorFrameTransitionDirective::Effect::kExplode:
-      return viz::mojom::CompositorFrameTransitionDirectiveEffect::kExplode;
-    case viz::CompositorFrameTransitionDirective::Effect::kFade:
-      return viz::mojom::CompositorFrameTransitionDirectiveEffect::kFade;
-    case viz::CompositorFrameTransitionDirective::Effect::kImplode:
-      return viz::mojom::CompositorFrameTransitionDirectiveEffect::kImplode;
-    case viz::CompositorFrameTransitionDirective::Effect::kRevealDown:
-      return viz::mojom::CompositorFrameTransitionDirectiveEffect::kRevealDown;
-    case viz::CompositorFrameTransitionDirective::Effect::kRevealLeft:
-      return viz::mojom::CompositorFrameTransitionDirectiveEffect::kRevealLeft;
-    case viz::CompositorFrameTransitionDirective::Effect::kRevealRight:
-      return viz::mojom::CompositorFrameTransitionDirectiveEffect::kRevealRight;
-    case viz::CompositorFrameTransitionDirective::Effect::kRevealUp:
-      return viz::mojom::CompositorFrameTransitionDirectiveEffect::kRevealUp;
-  }
-  NOTREACHED();
-  return viz::mojom::CompositorFrameTransitionDirectiveEffect::kNone;
-}
-
-// static
-bool EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveEffect,
-                viz::CompositorFrameTransitionDirective::Effect>::
-    FromMojom(viz::mojom::CompositorFrameTransitionDirectiveEffect input,
-              viz::CompositorFrameTransitionDirective::Effect* out) {
-  switch (input) {
-    case viz::mojom::CompositorFrameTransitionDirectiveEffect::kNone:
-      *out = viz::CompositorFrameTransitionDirective::Effect::kNone;
-      return true;
-    case viz::mojom::CompositorFrameTransitionDirectiveEffect::kCoverDown:
-      *out = viz::CompositorFrameTransitionDirective::Effect::kCoverDown;
-      return true;
-    case viz::mojom::CompositorFrameTransitionDirectiveEffect::kCoverLeft:
-      *out = viz::CompositorFrameTransitionDirective::Effect::kCoverLeft;
-      return true;
-    case viz::mojom::CompositorFrameTransitionDirectiveEffect::kCoverRight:
-      *out = viz::CompositorFrameTransitionDirective::Effect::kCoverRight;
-      return true;
-    case viz::mojom::CompositorFrameTransitionDirectiveEffect::kCoverUp:
-      *out = viz::CompositorFrameTransitionDirective::Effect::kCoverUp;
-      return true;
-    case viz::mojom::CompositorFrameTransitionDirectiveEffect::kExplode:
-      *out = viz::CompositorFrameTransitionDirective::Effect::kExplode;
-      return true;
-    case viz::mojom::CompositorFrameTransitionDirectiveEffect::kFade:
-      *out = viz::CompositorFrameTransitionDirective::Effect::kFade;
-      return true;
-    case viz::mojom::CompositorFrameTransitionDirectiveEffect::kImplode:
-      *out = viz::CompositorFrameTransitionDirective::Effect::kImplode;
-      return true;
-    case viz::mojom::CompositorFrameTransitionDirectiveEffect::kRevealDown:
-      *out = viz::CompositorFrameTransitionDirective::Effect::kRevealDown;
-      return true;
-    case viz::mojom::CompositorFrameTransitionDirectiveEffect::kRevealLeft:
-      *out = viz::CompositorFrameTransitionDirective::Effect::kRevealLeft;
-      return true;
-    case viz::mojom::CompositorFrameTransitionDirectiveEffect::kRevealRight:
-      *out = viz::CompositorFrameTransitionDirective::Effect::kRevealRight;
-      return true;
-    case viz::mojom::CompositorFrameTransitionDirectiveEffect::kRevealUp:
-      *out = viz::CompositorFrameTransitionDirective::Effect::kRevealUp;
       return true;
   }
   return false;
@@ -159,15 +73,13 @@ bool StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
   uint32_t sequence_id = data.sequence_id();
 
   viz::CompositorFrameTransitionDirective::Type type;
-  viz::CompositorFrameTransitionDirective::Effect effect;
   std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
       shared_elements;
-  if (!data.ReadType(&type) || !data.ReadEffect(&effect) ||
-      !data.ReadSharedElements(&shared_elements)) {
+  if (!data.ReadType(&type) || !data.ReadSharedElements(&shared_elements)) {
     return false;
   }
 
-  *out = viz::CompositorFrameTransitionDirective(sequence_id, type, effect,
+  *out = viz::CompositorFrameTransitionDirective(sequence_id, type,
                                                  std::move(shared_elements));
   return true;
 }

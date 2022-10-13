@@ -25,8 +25,6 @@ std::string TypeToString(viz::CompositorFrameTransitionDirective::Type type) {
   switch (type) {
     case viz::CompositorFrameTransitionDirective::Type::kSave:
       return "kSave";
-    case viz::CompositorFrameTransitionDirective::Type::kAnimate:
-      return "kAnimate";
     case viz::CompositorFrameTransitionDirective::Type::kAnimateRenderer:
       return "kAnimateRenderer";
     case viz::CompositorFrameTransitionDirective::Type::kRelease:
@@ -113,10 +111,8 @@ DocumentTransitionRequest::ConstructDirective(
   }
 
   // TODO(vmpstr): Clean up the directive parameters.
-  return viz::CompositorFrameTransitionDirective(
-      sequence_id_, type_,
-      viz::CompositorFrameTransitionDirective::Effect::kNone,
-      std::move(shared_elements));
+  return viz::CompositorFrameTransitionDirective(sequence_id_, type_,
+                                                 std::move(shared_elements));
 }
 
 std::string DocumentTransitionRequest::ToString() const {

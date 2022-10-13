@@ -29,34 +29,14 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   //   the renderer or Viz process. This directive must be followed by the
   //   Animate or AnimateRenderer directive.
   //
-  // - Animate means that this frame should be used as a (new) destination frame
-  //   of the animation, using the previously saved frame as the source.
-  //
   // - AnimateRenderer means that content in the current and subsequent frames
-  //   will use cached resources from the frame with the Save directive. This is
-  //   used when the content animation is driven by the renderer process.
+  //   will use cached resources from the frame with the Save directive.
   //   Ownership of the cached resources is passed to the renderer process. This
   //   directive must be followed by Release to delete the cached resources.
   //
   // - Release means that cached textures in the Viz process can be deleted.
   //   This is used in the mode where the renderer is driving this animation.
-  enum class Type { kSave, kAnimate, kAnimateRenderer, kRelease };
-
-  // The type of an effect that should be used in the animation.
-  enum class Effect {
-    kNone,
-    kCoverDown,
-    kCoverLeft,
-    kCoverRight,
-    kCoverUp,
-    kExplode,
-    kFade,
-    kImplode,
-    kRevealDown,
-    kRevealLeft,
-    kRevealRight,
-    kRevealUp
-  };
+  enum class Type { kSave, kAnimateRenderer, kRelease };
 
   struct VIZ_COMMON_EXPORT SharedElement {
     SharedElement();
@@ -85,7 +65,6 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   CompositorFrameTransitionDirective(
       uint32_t sequence_id,
       Type type,
-      Effect effect = Effect::kNone,
       std::vector<SharedElement> shared_elements = {});
 
   CompositorFrameTransitionDirective(const CompositorFrameTransitionDirective&);
@@ -102,9 +81,6 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   // The type of this directive.
   Type type() const { return type_; }
 
-  // The effect for the transition.
-  Effect effect() const { return effect_; }
-
   // Shared elements.
   const std::vector<SharedElement>& shared_elements() const {
     return shared_elements_;
@@ -114,8 +90,6 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   uint32_t sequence_id_ = 0;
 
   Type type_ = Type::kSave;
-
-  Effect effect_ = Effect::kNone;
 
   std::vector<SharedElement> shared_elements_;
 };

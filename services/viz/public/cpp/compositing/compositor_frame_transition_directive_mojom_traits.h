@@ -26,17 +26,6 @@ struct EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveType,
 };
 
 template <>
-struct EnumTraits<viz::mojom::CompositorFrameTransitionDirectiveEffect,
-                  viz::CompositorFrameTransitionDirective::Effect> {
-  static viz::mojom::CompositorFrameTransitionDirectiveEffect ToMojom(
-      viz::CompositorFrameTransitionDirective::Effect type);
-
-  static bool FromMojom(
-      viz::mojom::CompositorFrameTransitionDirectiveEffect input,
-      viz::CompositorFrameTransitionDirective::Effect* out);
-};
-
-template <>
 struct StructTraits<
     viz::mojom::CompositorFrameTransitionDirectiveSharedElementDataView,
     viz::CompositorFrameTransitionDirective::SharedElement> {
@@ -66,11 +55,6 @@ struct StructTraits<viz::mojom::CompositorFrameTransitionDirectiveDataView,
   static viz::CompositorFrameTransitionDirective::Type type(
       const viz::CompositorFrameTransitionDirective& directive) {
     return directive.type();
-  }
-
-  static viz::CompositorFrameTransitionDirective::Effect effect(
-      const viz::CompositorFrameTransitionDirective& directive) {
-    return directive.effect();
   }
 
   static std::vector<viz::CompositorFrameTransitionDirective::SharedElement>
