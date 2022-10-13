@@ -798,6 +798,8 @@ crbug.com/1080380 [ chromeos chromeos-board-kevin ] conformance/offscreencanvas/
 crbug.com/1080380 [ chromeos chromeos-board-kevin ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
 crbug.com/1108368 [ chromeos chromeos-board-kevin ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1357064 [ chromeos chromeos-board-kevin no-passthrough ] conformance/rendering/blending.html [ Failure ]
+crbug.com/1374285 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/default/default_001_to_001.html [ Failure ]
+crbug.com/1374285 [ chromeos chromeos-board-kevin no-passthrough ] conformance/ogles/GL/mix/mix_001_to_006.html [ Failure ]
 
 # Failing on chromeos-amd64-generic-rel.
 crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
