@@ -17,7 +17,10 @@ namespace permissions {
 // configuration.
 class PermissionRequestQueue {
  public:
-  using iterator = base::circular_deque<PermissionRequest*>::iterator;
+  using const_iterator =
+      base::circular_deque<PermissionRequest*>::const_iterator;
+  using const_reverse_iterator =
+      base::circular_deque<PermissionRequest*>::const_reverse_iterator;
 
   // Not copyable or movable
   PermissionRequestQueue(const PermissionRequestQueue&) = delete;
@@ -25,20 +28,28 @@ class PermissionRequestQueue {
   PermissionRequestQueue();
   ~PermissionRequestQueue();
 
-  bool IsEmpty();
-  size_t Count();
-  size_t Count(PermissionRequest* request);
-  void Push(permissions::PermissionRequest* request);
+  bool IsEmpty() const;
+  size_t Count() const;
+  size_t Count(PermissionRequest* request) const;
+
+  // Push a new request into queue. When |reorder_based_on_priority| is set, the
+  // request might be inserted to correct position based on its priority,
+  // instead of be pushed to the front of queue.
+  void Push(permissions::PermissionRequest* request,
+            bool reorder_based_on_priority = false);
   PermissionRequest* Pop();
-  PermissionRequest* Peek();
+  PermissionRequest* Peek() const;
 
   // Searches queued_requests_ and returns the first matching request, or
   // nullptr if there is no match.
-  PermissionRequest* FindDuplicate(PermissionRequest* request);
+  PermissionRequest* FindDuplicate(PermissionRequest* request) const;
+
+  // Used for iterating over the queued requests.
+  const_iterator begin() const;
+  const_iterator end() const;
 
  private:
-  iterator begin();
-  iterator end();
+  void PushInternal(permissions::PermissionRequest* request);
 
   base::circular_deque<PermissionRequest*> queued_requests_;
 };

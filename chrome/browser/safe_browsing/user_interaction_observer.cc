@@ -245,7 +245,7 @@ void SafeBrowsingUserInteractionObserver::OnPaste() {
   // DO NOT add code past this point. |this| is destroyed.
 }
 
-void SafeBrowsingUserInteractionObserver::OnBubbleAdded() {
+void SafeBrowsingUserInteractionObserver::OnPromptAdded() {
   // The page requested a permission that triggered a permission prompt. Deny
   // and show the interstitial.
   permissions::PermissionRequestManager* permission_request_manager =

@@ -99,7 +99,7 @@ class SafeBrowsingUserInteractionObserver
   void OnPaste() override;
 
   // permissions::PermissionRequestManager::Observer methods:
-  void OnBubbleAdded() override;
+  void OnPromptAdded() override;
 
   // Called by the JavaScript dialog manager when the current page is about to
   // show a JavaScript dialog (alert, confirm or prompt). Shows the

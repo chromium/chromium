@@ -88,7 +88,7 @@ void ChipController::OnNavigation(
     ResetPermissionPromptChip();
   }
 }
-void ChipController::OnBubbleRemoved() {
+void ChipController::OnPromptRemoved() {
   bool is_tab_hidden = active_chip_permission_request_manager_.value()
                            ->GetWebContents()
                            .GetVisibility() == content::Visibility::HIDDEN;
@@ -433,7 +433,7 @@ void ChipController::OpenPermissionPromptBubble() {
   // displayed.
   if (permission_prompt_model_ && IsBubbleShowing()) {
     GetBubbleWidget()->AddObserver(this);
-    permission_prompt_model_->GetDelegate().value()->SetBubbleShown();
+    permission_prompt_model_->GetDelegate().value()->SetPromptShown();
   }
 }
 

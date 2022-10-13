@@ -63,7 +63,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
     return absl::nullopt;
   }
   void SetDismissOnTabClose() override {}
-  void SetBubbleShown() override {}
+  void SetPromptShown() override {}
   void SetDecisionTime() override {}
   bool RecreateView() override { return false; }
 

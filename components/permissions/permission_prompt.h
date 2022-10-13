@@ -89,7 +89,7 @@ class PermissionPrompt {
 
     // Set whether the permission prompt bubble was shown for the current
     // request.
-    virtual void SetBubbleShown() = 0;
+    virtual void SetPromptShown() = 0;
 
     // Set when the user made any decision for the currentrequest.
     virtual void SetDecisionTime() = 0;

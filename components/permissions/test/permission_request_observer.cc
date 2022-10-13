@@ -17,7 +17,7 @@ void PermissionRequestObserver::Wait() {
   loop_.Run();
 }
 
-void PermissionRequestObserver::OnBubbleAdded() {
+void PermissionRequestObserver::OnPromptAdded() {
   request_shown_ = true;
   loop_.Quit();
 }

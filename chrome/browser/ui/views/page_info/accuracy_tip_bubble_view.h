@@ -58,7 +58,7 @@ class AccuracyTipBubbleView
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // permissions::PermissionRequestManager::Observer:
-  void OnBubbleAdded() override;
+  void OnPromptAdded() override;
 
  private:
   void OpenHelpCenter();

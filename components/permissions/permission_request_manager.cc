@@ -77,15 +77,6 @@ constexpr char kDisruptiveNotificationBehaviorEnforcementMessage[] =
 
 namespace {
 
-// When there are multiple permissions requests in
-// `pending_permission_requests_`, we try to prioritize them based on the
-// acceptance rates. Notifications and Geolocations have one of the lowest
-// acceptance, hence they have the lowest priority and will be shown the last.
-bool IsLowPriorityRequest(PermissionRequest* request) {
-  return request->request_type() == RequestType::kNotifications ||
-         request->request_type() == RequestType::kGeolocation;
-}
-
 // In case of multiple permission requests that use chip UI, a newly added
 // request will preempt the currently showing request, which is put back to the
 // queue, and will be shown later. To reduce user annoyance, if a quiet chip
@@ -274,62 +265,113 @@ void PermissionRequestManager::AddRequest(
         base::UserMetricsAction("PermissionBubbleIFrameRequestQueued"));
   }
 
-  CurrentRequestFate current_request_fate =
-      GetCurrentRequestFateInFaceOfNewRequest(request);
-
-  if (current_request_fate == CurrentRequestFate::Preempt) {
-    PreemptAndRequeueCurrentRequest();
-  }
-
   QueueRequest(source_frame, request);
 
-  if (current_request_fate == CurrentRequestFate::Finalize) {
-    // FinalizeCurrentRequests will call ScheduleDequeueRequest on its own.
-    FinalizeCurrentRequests(PermissionAction::IGNORED);
-  } else {
+  if (!IsRequestInProgress()) {
     ScheduleDequeueRequestIfNeeded();
+    return;
   }
+
+  ReprioritizeCurrentRequestIfNeeded();
 }
 
-PermissionRequestManager::CurrentRequestFate
-PermissionRequestManager::GetCurrentRequestFateInFaceOfNewRequest(
-    PermissionRequest* new_request) {
+bool PermissionRequestManager::ReprioritizeCurrentRequestIfNeeded() {
+  if (pending_permission_requests_.IsEmpty() || !IsRequestInProgress())
+    return true;
+
+  auto current_request_fate = CurrentRequestFate::kKeepCurrent;
+
   if (base::FeatureList::IsEnabled(features::kPermissionQuietChip)) {
     if (ShouldCurrentRequestUseQuietUI() &&
         !ShouldShowQuietRequestAgainIfPreempted(
             current_request_first_display_time_)) {
-      return CurrentRequestFate::Finalize;
-    }
-
-    if (base::FeatureList::IsEnabled(features::kPermissionChip)) {
-      // Preempt current request if it is a quiet UI request or it is not
-      // Notifications or Geolocation.
-      if (ShouldCurrentRequestUseQuietUI() ||
-          !IsLowPriorityRequest(new_request)) {
-        return CurrentRequestFate::Preempt;
-      }
-    } else {
+      current_request_fate = CurrentRequestFate::kFinalize;
+    } else if (base::FeatureList::IsEnabled(features::kPermissionChip)) {
+      // Preempt current request if it is a quiet UI request.
       if (ShouldCurrentRequestUseQuietUI()) {
-        return CurrentRequestFate::Preempt;
+        current_request_fate = CurrentRequestFate::kPreempt;
+      } else {
+        // Pop out all invalid requests in front of the queue.
+        while (!pending_permission_requests_.IsEmpty() &&
+               !ValidateRequest(pending_permission_requests_.Peek())) {
+          pending_permission_requests_.Pop();
+        }
+
+        // Here we also try to prioritise the requests. If there's a valid high
+        // priority request (high acceptance rate request) in the pending queue,
+        // preempt the current request. The valid high priority request, if
+        // there's any, is always the front of the queue.
+        if (!pending_permission_requests_.IsEmpty() &&
+            !PermissionUtil::IsLowPriorityPermissionRequest(
+                pending_permission_requests_.Peek())) {
+          current_request_fate = CurrentRequestFate::kPreempt;
+        }
       }
+    } else if (ShouldCurrentRequestUseQuietUI()) {
+      current_request_fate = CurrentRequestFate::kPreempt;
     }
   } else {
     if (base::FeatureList::IsEnabled(features::kPermissionChip)) {
-      return CurrentRequestFate::Preempt;
+      current_request_fate = CurrentRequestFate::kPreempt;
     } else if (ShouldCurrentRequestUseQuietUI()) {
       // If we're displaying a quiet permission request, ignore it in favor of a
       // new permission request.
-      return CurrentRequestFate::Finalize;
+      current_request_fate = CurrentRequestFate::kFinalize;
     }
   }
 
-  return CurrentRequestFate::KeepCurrent;
+  switch (current_request_fate) {
+    case CurrentRequestFate::kKeepCurrent:
+      return true;
+    case CurrentRequestFate::kPreempt: {
+      DCHECK(!pending_permission_requests_.IsEmpty());
+      auto* next_candidate = pending_permission_requests_.Peek();
+
+      // Consider a case of infinite loop here (eg: 2 low priority requests can
+      // preempt each other, causing a loop). We only preempt the current
+      // request if the next candidate has just been added to pending queue but
+      // not validated yet.
+      if (validated_requests_set_.find(next_candidate) !=
+          validated_requests_set_.end()) {
+        return true;
+      }
+
+      pending_permission_requests_.Pop();
+      PreemptAndRequeueCurrentRequest();
+      pending_permission_requests_.Push(next_candidate);
+      ScheduleDequeueRequestIfNeeded();
+      return false;
+    }
+    case CurrentRequestFate::kFinalize:
+      // FinalizeCurrentRequests will call ScheduleDequeueRequestIfNeeded on its
+      // own.
+      FinalizeCurrentRequests(PermissionAction::IGNORED);
+      return false;
+  }
+
+  return true;
+}
+
+bool PermissionRequestManager::ValidateRequest(PermissionRequest* request) {
+  const auto iter = request_sources_map_.find(request);
+  if (iter == request_sources_map_.end())
+    return false;
+
+  if (!iter->second.IsSourceFrameInactiveAndDisallowActivation())
+    return true;
+
+  request->Cancelled();
+  request->RequestFinished();
+  validated_requests_set_.erase(request);
+  request_sources_map_.erase(request);
+  return false;
 }
 
 void PermissionRequestManager::QueueRequest(
     content::RenderFrameHost* source_frame,
     PermissionRequest* request) {
-  pending_permission_requests_.Push(request);
+  pending_permission_requests_.Push(request,
+                                    true /*reorder_based_on_priority*/);
   request_sources_map_.emplace(
       request, PermissionRequestSource({source_frame->GetProcess()->GetID(),
                                         source_frame->GetRoutingID()}));
@@ -437,7 +479,7 @@ void PermissionRequestManager::OnVisibilityChanged(
       switch (view_->GetTabSwitchingBehavior()) {
         case PermissionPrompt::TabSwitchingBehavior::
             kDestroyPromptButKeepRequestPending:
-          DeleteBubble();
+          DeletePrompt();
           break;
         case PermissionPrompt::TabSwitchingBehavior::
             kDestroyPromptAndIgnoreRequest:
@@ -464,7 +506,7 @@ void PermissionRequestManager::OnVisibilityChanged(
     DCHECK_EQ(view_->GetTabSwitchingBehavior(),
               PermissionPrompt::TabSwitchingBehavior::kKeepPromptAlive);
   } else if (current_request_ui_to_use_.has_value()) {
-    ShowBubble();
+    ShowPrompt();
   }
 }
 
@@ -580,8 +622,8 @@ void PermissionRequestManager::SetDismissOnTabClose() {
   should_dismiss_current_request_ = true;
 }
 
-void PermissionRequestManager::SetBubbleShown() {
-  did_show_bubble_ = true;
+void PermissionRequestManager::SetPromptShown() {
+  did_show_prompt_ = true;
 }
 
 void PermissionRequestManager::SetDecisionTime() {
@@ -627,12 +669,6 @@ PermissionRequestManager::PermissionRequestManager(
           PermissionsClient::Get()->CreatePermissionUiSelectors(
               web_contents->GetBrowserContext())) {}
 
-void PermissionRequestManager::ScheduleShowBubble() {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&PermissionRequestManager::ShowBubble,
-                                weak_factory_.GetWeakPtr()));
-}
-
 void PermissionRequestManager::DequeueRequestIfNeeded() {
   // TODO(olesiamarukhno): Media requests block other media requests from
   // pre-empting them. For example, when a camera request is pending and mic
@@ -648,15 +684,12 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
 
   // Find first valid request.
   while (!pending_permission_requests_.IsEmpty()) {
-    PermissionRequest* next = pending_permission_requests_.Pop();
-    PermissionRequestSource& source = request_sources_map_.find(next)->second;
-    if (!source.IsSourceFrameInactiveAndDisallowActivation()) {
+    auto* next = pending_permission_requests_.Pop();
+    if (ValidateRequest(next)) {
+      validated_requests_set_.insert(next);
       requests_.push_back(next);
       break;
     }
-    next->Cancelled();
-    next->RequestFinished();
-    request_sources_map_.erase(request_sources_map_.find(next));
   }
 
   if (requests_.empty()) {
@@ -666,17 +699,23 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   // Find additional requests that can be grouped with the first one.
   for (; !pending_permission_requests_.IsEmpty();
        pending_permission_requests_.Pop()) {
-    PermissionRequest* front = pending_permission_requests_.Peek();
-    PermissionRequestSource& source = request_sources_map_.find(front)->second;
-    if (source.IsSourceFrameInactiveAndDisallowActivation()) {
-      front->Cancelled();
-      front->RequestFinished();
-      request_sources_map_.erase(request_sources_map_.find(front));
-    } else if (ShouldGroupRequests(requests_.front(), front)) {
-      requests_.push_back(front);
-    } else {
+    auto* front = pending_permission_requests_.Peek();
+    if (!ValidateRequest(front))
+      continue;
+
+    validated_requests_set_.insert(front);
+    if (!ShouldGroupRequests(requests_.front(), front))
       break;
-    }
+
+    requests_.push_back(front);
+  }
+
+  // Mark the remaining pending requests as validated, so only the "new and has
+  // not been validated" requests added to the queue could have effect to
+  // priority order
+  for (auto* request : pending_permission_requests_) {
+    if (ValidateRequest(request))
+      validated_requests_set_.insert(request);
   }
 
   if (!permission_ui_selectors_.empty()) {
@@ -704,7 +743,7 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   } else {
     current_request_ui_to_use_ =
         UiDecision(UiDecision::UseNormalUi(), UiDecision::ShowNoWarning());
-    ScheduleShowBubble();
+    ShowPrompt();
   }
 }
 
@@ -715,7 +754,7 @@ void PermissionRequestManager::ScheduleDequeueRequestIfNeeded() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void PermissionRequestManager::ShowBubble() {
+void PermissionRequestManager::ShowPrompt() {
   // There is a race condition where the request might have been removed
   // already so double-checking that there is a request in progress.
   //
@@ -727,6 +766,9 @@ void PermissionRequestManager::ShowBubble() {
   DCHECK(current_request_ui_to_use_);
 
   if (tab_is_hidden_)
+    return;
+
+  if (!ReprioritizeCurrentRequestIfNeeded())
     return;
 
   if (!RecreateView())
@@ -760,19 +802,19 @@ void PermissionRequestManager::ShowBubble() {
   }
   current_request_already_displayed_ = true;
   current_request_first_display_time_ = base::Time::Now();
-  NotifyBubbleAdded();
+  NotifyPromptAdded();
   // If in testing mode, automatically respond to the bubble that was shown.
   if (auto_response_for_test_ != NONE)
     DoAutoResponseForTesting();
 }
 
-void PermissionRequestManager::DeleteBubble() {
+void PermissionRequestManager::DeletePrompt() {
   DCHECK(view_);
   {
     base::AutoReset<bool> deleting(&ignore_callbacks_from_prompt_, true);
     view_.reset();
   }
-  NotifyBubbleRemoved();
+  NotifyPromptRemoved();
 }
 
 void PermissionRequestManager::ResetViewStateForCurrentRequest() {
@@ -788,12 +830,12 @@ void PermissionRequestManager::ResetViewStateForCurrentRequest() {
   was_decision_held_back_.reset();
   selector_decisions_.clear();
   should_dismiss_current_request_ = false;
-  did_show_bubble_ = false;
+  did_show_prompt_ = false;
   did_click_manage_ = false;
   did_click_learn_more_ = false;
 
   if (view_)
-    DeleteBubble();
+    DeletePrompt();
 }
 
 void PermissionRequestManager::FinalizeCurrentRequests(
@@ -818,7 +860,7 @@ void PermissionRequestManager::FinalizeCurrentRequests(
       requests_, web_contents(), permission_action, time_to_decision,
       DetermineCurrentRequestUIDisposition(),
       DetermineCurrentRequestUIDispositionReasonForUMA(),
-      prediction_grant_likelihood_, was_decision_held_back_, did_show_bubble_,
+      prediction_grant_likelihood_, was_decision_held_back_, did_show_prompt_,
       did_click_manage_, did_click_learn_more_);
 
   content::BrowserContext* browser_context =
@@ -866,7 +908,8 @@ void PermissionRequestManager::FinalizeCurrentRequests(
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
     RequestFinishedIncludingDuplicates(*requests_iter);
-    request_sources_map_.erase(request_sources_map_.find(*requests_iter));
+    validated_requests_set_.erase(*requests_iter);
+    request_sources_map_.erase(*requests_iter);
   }
   requests_.clear();
 
@@ -882,7 +925,8 @@ void PermissionRequestManager::CleanUpRequests() {
     auto* pending_request = pending_permission_requests_.Peek();
     CancelledIncludingDuplicates(pending_request);
     RequestFinishedIncludingDuplicates(pending_request);
-    request_sources_map_.erase(request_sources_map_.find(pending_request));
+    validated_requests_set_.erase(pending_request);
+    request_sources_map_.erase(pending_request);
   }
 
   if (IsRequestInProgress()) {
@@ -900,7 +944,7 @@ void PermissionRequestManager::CleanUpRequests() {
 }
 
 PermissionRequest* PermissionRequestManager::GetExistingRequest(
-    PermissionRequest* request) {
+    PermissionRequest* request) const {
   for (PermissionRequest* existing_request : requests_) {
     if (request->IsDuplicateOf(existing_request))
       return existing_request;
@@ -1004,14 +1048,14 @@ bool PermissionRequestManager::ShouldDropCurrentRequestIfCannotShowQuietly()
   return false;
 }
 
-void PermissionRequestManager::NotifyBubbleAdded() {
+void PermissionRequestManager::NotifyPromptAdded() {
   for (Observer& observer : observer_list_)
-    observer.OnBubbleAdded();
+    observer.OnPromptAdded();
 }
 
-void PermissionRequestManager::NotifyBubbleRemoved() {
+void PermissionRequestManager::NotifyPromptRemoved() {
   for (Observer& observer : observer_list_)
-    observer.OnBubbleRemoved();
+    observer.OnPromptRemoved();
 }
 
 void PermissionRequestManager::NotifyRequestDecided(
@@ -1075,7 +1119,7 @@ void PermissionRequestManager::OnPermissionUiSelectorDone(
   }
 
   if (current_request_ui_to_use_.has_value()) {
-    ScheduleShowBubble();
+    ShowPrompt();
   }
 }
 

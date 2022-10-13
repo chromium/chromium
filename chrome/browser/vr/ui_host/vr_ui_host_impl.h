@@ -83,8 +83,8 @@ class VRUiHostImpl : public content::VrUiHost,
   void StopUiRendering();
 
   // PermissionRequestManager::Observer
-  void OnBubbleAdded() override;
-  void OnBubbleRemoved() override;
+  void OnPromptAdded() override;
+  void OnPromptRemoved() override;
 
   // DesktopMediaPickerManager::DialogObserver
   // These are dialogs displayed in response to getDisplayMedia()

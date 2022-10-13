@@ -229,7 +229,7 @@ class TopControlsSlideTabObserver
   }
 
   // PermissionRequestManager::Observer:
-  void OnBubbleAdded() override {
+  void OnPromptAdded() override {
     UpdateBrowserControlsStateShown(/*animate=*/true);
   }
 

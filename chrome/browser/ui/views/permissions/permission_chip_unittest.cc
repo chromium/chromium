@@ -80,7 +80,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
     return quiet_ui_reason_;
   }
   void SetDismissOnTabClose() override {}
-  void SetBubbleShown() override {}
+  void SetPromptShown() override {}
   void SetDecisionTime() override {}
 
   base::WeakPtr<permissions::PermissionPrompt::Delegate> GetWeakPtr() override {

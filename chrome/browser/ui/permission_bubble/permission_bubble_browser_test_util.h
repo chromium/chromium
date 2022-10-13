@@ -58,7 +58,7 @@ class TestPermissionBubbleViewDelegate
   bool ShouldDropCurrentRequestIfCannotShowQuietly() const override;
   bool WasCurrentRequestAlreadyDisplayed() override;
   void SetDismissOnTabClose() override {}
-  void SetBubbleShown() override {}
+  void SetPromptShown() override {}
   void SetDecisionTime() override {}
   bool RecreateView() override;
 

@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/permissions/features.h"
+#include "components/permissions/permission_request.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/browser_context.h"
@@ -170,6 +171,12 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
 bool PermissionUtil::IsPermission(ContentSettingsType type) {
   PermissionType permission;
   return PermissionUtil::GetPermissionType(type, &permission);
+}
+
+bool PermissionUtil::IsLowPriorityPermissionRequest(
+    const PermissionRequest* request) {
+  return request->request_type() == RequestType::kNotifications ||
+         request->request_type() == RequestType::kGeolocation;
 }
 
 bool PermissionUtil::IsGuardContentSetting(ContentSettingsType type) {

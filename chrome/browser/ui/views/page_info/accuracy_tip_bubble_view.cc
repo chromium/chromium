@@ -211,7 +211,7 @@ void AccuracyTipBubbleView::OnWidgetDestroying(views::Widget* widget) {
   std::move(close_callback_).Run(action_taken_);
 }
 
-void AccuracyTipBubbleView::OnBubbleAdded() {
+void AccuracyTipBubbleView::OnPromptAdded() {
   // The page requested a permission that triggered a permission prompt.
   // Accuracy tips have lower priority and have to be closed.
   action_taken_ = AccuracyTipInteraction::kPermissionRequested;

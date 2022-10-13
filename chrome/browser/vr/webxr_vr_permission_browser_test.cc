@@ -27,7 +27,7 @@ class WebXrVrPermissionsBrowserTest
   uint32_t ShownCount() { return shown_count_; }
 
  private:
-  void OnBubbleAdded() override { shown_count_++; }
+  void OnPromptAdded() override { shown_count_++; }
 
   uint32_t shown_count_ = 0u;
 };

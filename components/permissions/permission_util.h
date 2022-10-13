@@ -11,7 +11,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_prompt.h"
-#include "components/permissions/permission_request.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace blink {
@@ -27,6 +26,7 @@ struct PermissionResult;
 class GURL;
 
 namespace permissions {
+class PermissionRequest;
 struct PermissionResult;
 
 // This enum backs a UMA histogram, so it must be treated as append-only.
@@ -68,6 +68,11 @@ class PermissionUtil {
   // to determine whether a specific ContentSettingsType is supported by the
   // PermissionManager.
   static bool IsPermission(ContentSettingsType type);
+
+  // Check whether the given permission request has low priority, based on the
+  // acceptance rates data (notifications and geolocations have the lowest
+  // acceptance data)
+  static bool IsLowPriorityPermissionRequest(const PermissionRequest* request);
 
   // Checks whether the given ContentSettingsType is a guard content setting,
   // meaning it does not support allow setting and toggles between "ask" and

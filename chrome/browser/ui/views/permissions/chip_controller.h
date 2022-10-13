@@ -46,7 +46,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // PermissionRequestManager::Observer:
   void OnPermissionRequestManagerDestructed() override;
 
-  void OnBubbleRemoved() override;
+  void OnPromptRemoved() override;
 
   // OnBubbleRemoved only triggers when a request chip (bubble) is removed, when
   // the user navigates while a confirmation chip is showing, the request is
