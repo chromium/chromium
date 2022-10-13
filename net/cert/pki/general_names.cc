@@ -5,7 +5,6 @@
 #include "net/cert/pki/general_names.h"
 
 #include "base/check_op.h"
-#include "base/strings/string_util.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/string_util.h"

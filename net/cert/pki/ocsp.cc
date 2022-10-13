@@ -5,13 +5,13 @@
 #include "net/cert/pki/ocsp.h"
 
 #include "base/containers/contains.h"
-#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/extended_key_usage.h"
 #include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/pki/revocation_util.h"
+#include "net/cert/pki/string_util.h"
 #include "net/cert/pki/verify_name_match.h"
 #include "net/cert/pki/verify_signed_data.h"
 #include "net/cert/x509_util.h"
@@ -474,7 +474,8 @@ bool GetSubjectPublicKeyBytes(const der::Input& spki_tlv, der::Input* spk_tlv) {
   // ExtractSubjectPublicKeyFromSPKI() includes the unused bit count. For this
   // application, the unused bit count must be zero, and is not included in the
   // result.
-  if (!base::StartsWith(spk_strpiece, "\0"))
+  if (!net::string_util::StartsWith(
+          std::string_view(spk_strpiece.data(), spk_strpiece.size()), "\0"))
     return false;
   spk_strpiece.remove_prefix(1);
   *spk_tlv = der::Input(spk_strpiece);
@@ -1024,9 +1025,9 @@ GURL CreateOCSPGetURL(const ParsedCertificate* cert,
   // However from the example in RFC 5019 section 5 it is clear that the intent
   // is to escape non-alphanumeric characters (the example conclusively escapes
   // '/' and '=', but doesn't clarify '+').
-  base::ReplaceSubstringsAfterOffset(&b64_encoded, 0, "+", "%2B");
-  base::ReplaceSubstringsAfterOffset(&b64_encoded, 0, "/", "%2F");
-  base::ReplaceSubstringsAfterOffset(&b64_encoded, 0, "=", "%3D");
+  b64_encoded = net::string_util::FindAndReplace(b64_encoded, "+", "%2B");
+  b64_encoded = net::string_util::FindAndReplace(b64_encoded, "/", "%2F");
+  b64_encoded = net::string_util::FindAndReplace(b64_encoded, "=", "%3D");
 
   // No attempt is made to collapse double slashes for URLs that end in slash,
   // since the spec doesn't do that.

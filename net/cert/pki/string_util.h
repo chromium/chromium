@@ -29,6 +29,12 @@ NET_EXPORT_PRIVATE bool StartsWithNoCase(std::string_view str,
 NET_EXPORT_PRIVATE bool EndsWithNoCase(std::string_view str,
                                        std::string_view suffix);
 
+// Finds and replaces all occurrences of |find| of non zero length with
+// |replace| in |str|, returning the result.
+NET_EXPORT_PRIVATE std::string FindAndReplace(std::string_view str,
+                                              std::string_view find,
+                                              std::string_view replace);
+
 // TODO(bbe) transition below to c++20
 // Compares |str1| and |prefix|. Returns true if |str1| starts with |prefix|.
 NET_EXPORT_PRIVATE bool StartsWith(std::string_view str,

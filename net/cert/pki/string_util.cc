@@ -7,6 +7,7 @@
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
 #include <algorithm>
+#include <string>
 
 namespace net::string_util {
 
@@ -37,6 +38,27 @@ bool EndsWithNoCase(std::string_view str, std::string_view suffix) {
 bool StartsWithNoCase(std::string_view str, std::string_view prefix) {
   return prefix.size() <= str.size() &&
          IsEqualNoCase(prefix, str.substr(0, prefix.size()));
+}
+
+std::string FindAndReplace(std::string_view str,
+                           std::string_view find,
+                           std::string_view replace) {
+  std::string ret;
+
+  if (find.empty()) {
+    return std::string(str);
+  }
+  while (!str.empty()) {
+    size_t index = str.find(find);
+    if (index == std::string_view::npos) {
+      ret.append(str);
+      break;
+    }
+    ret.append(str.substr(0, index));
+    ret.append(replace);
+    str = str.substr(index + find.size());
+  }
+  return ret;
 }
 
 // TODO(bbe) get rid of this once we can c++20.

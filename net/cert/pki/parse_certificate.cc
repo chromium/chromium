@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/strings/string_util.h"
 #include "net/cert/pki/cert_error_params.h"
 #include "net/cert/pki/cert_errors.h"
 #include "net/cert/pki/general_names.h"

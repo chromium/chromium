@@ -5,7 +5,7 @@
 #include "net/cert/pki/ocsp.h"
 
 #include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
+#include "net/cert/pki/string_util.h"
 #include "net/cert/pki/test_helpers.h"
 #include "net/der/encode_values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -223,9 +223,9 @@ TEST_P(CreateOCSPGetURLTest, Basic) {
   std::string b64 = url.spec().substr(GetParam().size() + 1);
 
   // Hex un-escape the data.
-  base::ReplaceSubstringsAfterOffset(&b64, 0, "%2B", "+");
-  base::ReplaceSubstringsAfterOffset(&b64, 0, "%2F", "/");
-  base::ReplaceSubstringsAfterOffset(&b64, 0, "%3D", "=");
+  b64 = net::string_util::FindAndReplace(b64, "%2B", "+");
+  b64 = net::string_util::FindAndReplace(b64, "%2F", "/");
+  b64 = net::string_util::FindAndReplace(b64, "%3D", "=");
 
   // Base64 decode the data.
   size_t len;

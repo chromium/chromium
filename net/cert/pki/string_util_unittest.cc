@@ -58,6 +58,22 @@ TEST(StringUtilTest, EndsWithNoCase) {
       net::string_util::EndsWithNoCase("mail.google.com", "1mail.google.com"));
 }
 
+TEST(StringUtilTest, FindAndReplace) {
+  std::string tester = "hoobla derp hoobla derp porkrind";
+  tester = net::string_util::FindAndReplace(tester, "blah", "woof");
+  EXPECT_EQ(tester, "hoobla derp hoobla derp porkrind");
+  tester = net::string_util::FindAndReplace(tester, "", "yeet");
+  EXPECT_EQ(tester, "hoobla derp hoobla derp porkrind");
+  tester = net::string_util::FindAndReplace(tester, "hoobla", "derp");
+  EXPECT_EQ(tester, "derp derp derp derp porkrind");
+  tester = net::string_util::FindAndReplace(tester, "derp", "a");
+  EXPECT_EQ(tester, "a a a a porkrind");
+  tester = net::string_util::FindAndReplace(tester, "a ", "");
+  EXPECT_EQ(tester, "porkrind");
+  tester = net::string_util::FindAndReplace(tester, "porkrind", "");
+  EXPECT_EQ(tester, "");
+}
+
 TEST(StringUtilTest, StartsWithNoCase) {
   EXPECT_TRUE(net::string_util::StartsWithNoCase("", ""));
   EXPECT_TRUE(net::string_util::StartsWithNoCase("mail.google.com", ""));
