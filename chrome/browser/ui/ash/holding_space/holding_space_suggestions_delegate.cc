@@ -61,7 +61,9 @@ void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemsAdded(
         return item->IsInitialized() &&
                ItemIsPinnedSuggestion(item, suggestions_by_type_);
       })) {
-    UpdateSuggestionsInModel();
+    // Update suggestions asynchronously to avoid updating suggestions along
+    // with other model updates.
+    MaybeScheduleUpdateSuggestionsInModel();
   }
 }
 
@@ -71,14 +73,19 @@ void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemsRemoved(
         return item->IsInitialized() &&
                ItemIsPinnedSuggestion(item, suggestions_by_type_);
       })) {
-    UpdateSuggestionsInModel();
+    // Update suggestions asynchronously to avoid updating suggestions along
+    // with other model updates.
+    MaybeScheduleUpdateSuggestionsInModel();
   }
 }
 
 void HoldingSpaceSuggestionsDelegate::OnHoldingSpaceItemInitialized(
     const HoldingSpaceItem* item) {
-  if (ItemIsPinnedSuggestion(item, suggestions_by_type_))
-    UpdateSuggestionsInModel();
+  if (ItemIsPinnedSuggestion(item, suggestions_by_type_)) {
+    // Update suggestions asynchronously to avoid updating suggestions along
+    // with other model updates.
+    MaybeScheduleUpdateSuggestionsInModel();
+  }
 }
 
 void HoldingSpaceSuggestionsDelegate::OnPersistenceRestored() {
@@ -111,6 +118,17 @@ void HoldingSpaceSuggestionsDelegate::MaybeFetchSuggestions(
           type,
           base::BindOnce(&HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched,
                          weak_factory_.GetWeakPtr(), type));
+}
+
+void HoldingSpaceSuggestionsDelegate::MaybeScheduleUpdateSuggestionsInModel() {
+  // Return early if the task of updating model suggestions has been scheduled.
+  if (suggestion_update_timer_.IsRunning())
+    return;
+
+  suggestion_update_timer_.Start(
+      FROM_HERE, /*delay=*/base::TimeDelta(),
+      base::BindOnce(&HoldingSpaceSuggestionsDelegate::UpdateSuggestionsInModel,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched(

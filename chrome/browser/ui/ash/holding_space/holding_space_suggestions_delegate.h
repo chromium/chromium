@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_keyed_service.h"
 #include "chrome/browser/ui/app_list/search/files/file_suggest_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
@@ -45,6 +46,9 @@ class HoldingSpaceSuggestionsDelegate
   // early if the fetch on the suggestions of `type` is already pending.
   void MaybeFetchSuggestions(app_list::FileSuggestionType type);
 
+  // Maybe schedules a task to update suggestions in the holding space model.
+  void MaybeScheduleUpdateSuggestionsInModel();
+
   // Called when fetching file suggestions finishes.
   void OnSuggestionsFetched(
       app_list::FileSuggestionType type,
@@ -68,6 +72,9 @@ class HoldingSpaceSuggestionsDelegate
   // Caches the most recently fetched suggestion data.
   std::map<app_list::FileSuggestionType, std::vector<app_list::FileSuggestData>>
       suggestions_by_type_;
+
+  // Used to schedule the task of updating suggestions in model.
+  base::OneShotTimer suggestion_update_timer_;
 
   base::WeakPtrFactory<HoldingSpaceSuggestionsDelegate> weak_factory_{this};
 };

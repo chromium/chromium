@@ -3331,6 +3331,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
       base::BindOnce(&CreateTestHoldingSpaceImage));
   const auto& pinned_item_id = pinned_item->id();
   model->AddItem(std::move(pinned_item));
+  task_environment()->RunUntilIdle();
 
   if (suggestion_feature_enabled)
     expected = {{HoldingSpaceItem::Type::kLocalSuggestion, file_path_2}};
@@ -3339,6 +3340,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
   // Unpin the suggested Drive file and verify that the suggestion is re-added
   // to the model if suggestions are enabled.
   model->RemoveItem(pinned_item_id);
+  task_environment()->RunUntilIdle();
 
   if (suggestion_feature_enabled) {
     expected = {{HoldingSpaceItem::Type::kLocalSuggestion, file_path_2},
@@ -3373,6 +3375,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
   // the suggestion is removed from the model if suggestions are enabled.
   model->InitializeOrRemoveItem(partially_initialized_pinned_item_ptr->id(),
                                 GetFileSystemUrl(GetProfile(), file_path_2));
+  task_environment()->RunUntilIdle();
 
   if (suggestion_feature_enabled)
     expected = {{HoldingSpaceItem::Type::kDriveSuggestion, file_path_1}};
