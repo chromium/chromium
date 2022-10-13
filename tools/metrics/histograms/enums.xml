@@ -54707,6 +54707,19 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="8026721" label="Zaza"/>
 </enum>
 
+<enum name="LanguagePackFeatureIds">
+<!-- This must be kept current with FeatureIdsEnum in
+chromeos/ash/components/language/language_packs/language_pack_manager.cc -->
+
+  <summary>
+    List of all the Features that are supported by Language Packs. A Feature is
+    a synonym for client.
+  </summary>
+  <int value="0" label="UNKNOWN"/>
+  <int value="1" label="HANDWRITING"/>
+  <int value="2" label="TTS"/>
+</enum>
+
 <enum name="LanguagePackLanguageCodes">
   <summary>
     Hash values of language codes that correspond to a Language Pack. The hash

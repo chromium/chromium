@@ -20,6 +20,17 @@
 namespace ash::language_packs {
 namespace {
 
+// Feature IDs.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// See enum LanguagePackFeatureIds in tools/metrics/histograms/enums.xml.
+enum class FeatureIdsEnum {
+  kUnknown = 0,
+  kHandwriting = 1,
+  kTts = 2,
+  kMaxValue = kTts,
+};
+
 // PackResult that is returned by an invalid feature ID is specified.
 PackResult CreateInvalidDlcPackResult() {
   return {
@@ -180,6 +191,18 @@ void OnGetDlcState(GetPackStateCallback callback,
   std::move(callback).Run(result);
 }
 
+// This function returns the enum value of a feature ID that matches the
+// corresponding value in the UMA Histogram enum.
+FeatureIdsEnum GetFeatureIdValueForUma(const std::string& feature_id) {
+  if (feature_id == kHandwritingFeatureId)
+    return FeatureIdsEnum::kHandwriting;
+  if (feature_id == kTtsFeatureId)
+    return FeatureIdsEnum::kTts;
+
+  // Default value of unknown.
+  return FeatureIdsEnum::kUnknown;
+}
+
 }  // namespace
 
 bool LanguagePackManager::IsPackAvailable(const std::string& feature_id,
@@ -221,6 +244,8 @@ void LanguagePackManager::GetPackState(const std::string& feature_id,
 
   base::UmaHistogramSparse("ChromeOS.LanguagePacks.GetPackState.LanguageCode",
                            static_cast<int32_t>(base::PersistentHash(locale)));
+  base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.GetPackState.FeatureId",
+                                GetFeatureIdValueForUma(feature_id));
 
   DlcserviceClient::Get()->GetDlcState(
       *dlc_id, base::BindOnce(&OnGetDlcState, std::move(callback)));
