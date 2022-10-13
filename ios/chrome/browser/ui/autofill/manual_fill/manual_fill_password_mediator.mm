@@ -238,6 +238,9 @@ BOOL AreCredentialsAtIndexesConnected(
         [[NSMutableArray alloc] init];
     __weak __typeof(self) weakSelf = self;
 
+    bool useUpdatedStrings = base::FeatureList::IsEnabled(
+        password_manager::features::kIOSPasswordUISplit);
+
     password_manager::PasswordManagerClient* passwordManagerClient =
         _webState ? PasswordTabHelper::FromWebState(_webState)
                         ->GetPasswordManagerClient()
@@ -247,7 +250,9 @@ BOOL AreCredentialsAtIndexesConnected(
         passwordManagerClient->IsSavingAndFillingEnabled(_URL) &&
         _activeFieldIsPassword) {
       NSString* suggestPasswordTitleString = l10n_util::GetNSString(
-          IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS);
+          useUpdatedStrings
+              ? IDS_IOS_MANUAL_FALLBACK_SUGGEST_STRONG_PASSWORD_WITH_DOTS
+              : IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS);
       auto suggestPasswordItem = [[ManualFillActionItem alloc]
           initWithTitle:suggestPasswordTitleString
                  action:^{
@@ -261,7 +266,9 @@ BOOL AreCredentialsAtIndexesConnected(
     }
 
     NSString* otherPasswordsTitleString = l10n_util::GetNSString(
-        IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS);
+        useUpdatedStrings
+            ? IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_WITH_DOTS
+            : IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS);
     auto otherPasswordsItem = [[ManualFillActionItem alloc]
         initWithTitle:otherPasswordsTitleString
                action:^{
@@ -276,10 +283,8 @@ BOOL AreCredentialsAtIndexesConnected(
     // TODO(crbug.com/1361357) Remove IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS
     // after kIOSPasswordUISplit is on by default.
     NSString* managePasswordsTitle = l10n_util::GetNSString(
-        base::FeatureList::IsEnabled(
-            password_manager::features::kIOSPasswordUISplit)
-            ? IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS
-            : IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS);
+        useUpdatedStrings ? IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS
+                          : IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS);
     auto managePasswordsItem = [[ManualFillActionItem alloc]
         initWithTitle:managePasswordsTitle
                action:^{

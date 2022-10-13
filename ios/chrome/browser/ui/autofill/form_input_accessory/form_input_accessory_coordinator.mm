@@ -21,6 +21,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
@@ -537,10 +538,17 @@ BubbleViewType BubbleTypeFromFeature() {
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
   std::u16string origin = base::ASCIIToUTF16(
       password_manager::GetShownOrigin(url::Origin::Create(URL)));
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_TITLE);
+
+  bool useUpdatedStrings = base::FeatureList::IsEnabled(
+      password_manager::features::kIOSPasswordUISplit);
+
+  NSString* title = l10n_util::GetNSString(
+      useUpdatedStrings ? IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_TITLE
+                        : IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_TITLE);
   NSString* message = l10n_util::GetNSStringF(
-      IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_DESCRIPTION, origin);
+      useUpdatedStrings ? IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_DIALOG_MESSAGE
+                        : IDS_IOS_CONFIRM_USING_OTHER_PASSWORD_DESCRIPTION,
+      origin);
 
   self.alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:self.baseViewController

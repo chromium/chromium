@@ -38,6 +38,7 @@ source_set("form_input_accessory") {
     "//components/feature_engagement/public",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/common:features",
     "//components/password_manager/ios",
     "//components/prefs",
     "//components/strings",
