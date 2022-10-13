@@ -63,7 +63,7 @@
 <translation id="2666092431469916601">शीर्ष</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> से शेयर किया</translation>
 <translation id="271033894570825754">नया</translation>
-<translation id="2824719307700604149">{YEARS,plural, =1{1 वर्ष पहले}one{# वर्ष पहले}other{# वर्ष पहले}}</translation>
+<translation id="2824719307700604149">{YEARS,plural, =1{1 साल पहले}one{# साल पहले}other{# साल पहले}}</translation>
 <translation id="2878511608894704031">सभी आइटम मिटाएं</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 दिन में}one{# दिन में}other{# दिन में}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> कॉलम को घटते क्रम में लगाया गया.</translation>
@@ -99,7 +99,7 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> कॉलम को बढ़ते क्रम में लगाया गया.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 न पढ़ी गई सूचना}one{# न पढ़ी गई सूचनाएं}other{# न पढ़ी गई सूचनाएं}}</translation>
-<translation id="4266252015790371705">{MONTHS,plural, =1{1 माह पहले}one{# माह पहले}other{# माह पहले}}</translation>
+<translation id="4266252015790371705">{MONTHS,plural, =1{1 महीने पहले}one{# महीने पहले}other{# महीने पहले}}</translation>
 <translation id="4289300219472526559">बोलना प्रारंभ करें</translation>
 <translation id="4289540628985791613">संक्षिप्त विवरण</translation>
 <translation id="4306392492252714209">क्लिपबोर्ड से हटाएं.</translation>
