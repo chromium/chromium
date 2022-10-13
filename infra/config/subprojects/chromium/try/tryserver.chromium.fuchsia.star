@@ -160,6 +160,8 @@ try_.builder(
         "ci/fuchsia-x64-cast-receiver-rel",
     ],
     experiments = {
+        # TODO(crbug.com/1374440): Re-enable merge script failure exposure.
+        "chromium_swarming.expose_merge_script_failures": 0,
         "enable_weetbix_queries": 100,
         "weetbix.retry_weak_exonerations": 100,
         "weetbix.enable_weetbix_exonerations": 100,
