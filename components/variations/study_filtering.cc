@@ -369,11 +369,13 @@ bool ShouldAddStudy(const ProcessedStudy& processed_study,
 
 }  // namespace internal
 
-void FilterAndValidateStudies(const VariationsSeed& seed,
-                              const ClientFilterableState& client_state,
-                              const VariationsLayers& layers,
-                              std::vector<ProcessedStudy>* filtered_studies) {
+std::vector<ProcessedStudy> FilterAndValidateStudies(
+    const VariationsSeed& seed,
+    const ClientFilterableState& client_state,
+    const VariationsLayers& layers) {
   DCHECK(client_state.version.IsValid());
+
+  std::vector<ProcessedStudy> filtered_studies;
 
   // Don't create two studies with the same name.
   std::set<std::string> created_studies;
@@ -388,10 +390,11 @@ void FilterAndValidateStudies(const VariationsSeed& seed,
       continue;
 
     if (!base::Contains(created_studies, processed_study.study()->name())) {
-      filtered_studies->push_back(processed_study);
+      filtered_studies.push_back(processed_study);
       created_studies.insert(processed_study.study()->name());
     }
   }
+  return filtered_studies;
 }
 
 }  // namespace variations

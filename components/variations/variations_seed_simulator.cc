@@ -112,9 +112,9 @@ VariationsSeedSimulator::~VariationsSeedSimulator() {
 VariationsSeedSimulator::Result VariationsSeedSimulator::SimulateSeedStudies(
     const VariationsSeed& seed,
     const ClientFilterableState& client_state) {
-  std::vector<ProcessedStudy> filtered_studies;
   VariationsLayers layers(seed, entropy_providers_);
-  FilterAndValidateStudies(seed, client_state, layers, &filtered_studies);
+  std::vector<ProcessedStudy> filtered_studies =
+      FilterAndValidateStudies(seed, client_state, layers);
 
   return ComputeDifferences(filtered_studies, layers);
 }

@@ -702,9 +702,8 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudies) {
   client_state.form_factor = Study::DESKTOP;
   client_state.platform = Study::PLATFORM_ANDROID;
 
-  std::vector<ProcessedStudy> processed_studies;
-  FilterAndValidateStudies(seed, client_state, VariationsLayers(),
-                           &processed_studies);
+  std::vector<ProcessedStudy> processed_studies =
+      FilterAndValidateStudies(seed, client_state, VariationsLayers());
 
   // Check that only the first kTrial1Name study was kept.
   ASSERT_EQ(2U, processed_studies.size());
@@ -773,9 +772,8 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithBadFilters) {
   client_state.os_version = base::Version("1.2.3");
 
   base::HistogramTester histogram_tester;
-  std::vector<ProcessedStudy> processed_studies;
-  FilterAndValidateStudies(seed, client_state, VariationsLayers(),
-                           &processed_studies);
+  std::vector<ProcessedStudy> processed_studies =
+      FilterAndValidateStudies(seed, client_state, VariationsLayers());
 
   ASSERT_EQ(0U, processed_studies.size());
   histogram_tester.ExpectTotalCount("Variations.InvalidStudyReason",
@@ -809,9 +807,8 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithBlankStudyName) {
   client_state.platform = Study::PLATFORM_ANDROID;
 
   base::HistogramTester histogram_tester;
-  std::vector<ProcessedStudy> processed_studies;
-  FilterAndValidateStudies(seed, client_state, VariationsLayers(),
-                           &processed_studies);
+  std::vector<ProcessedStudy> processed_studies =
+      FilterAndValidateStudies(seed, client_state, VariationsLayers());
 
   ASSERT_EQ(0U, processed_studies.size());
   histogram_tester.ExpectUniqueSample("Variations.InvalidStudyReason", 8, 1);
@@ -868,9 +865,8 @@ TEST(VariationsStudyFilteringTest, FilterAndValidateStudiesWithCountry) {
     client_state.session_consistency_country = kSessionCountry;
     client_state.permanent_consistency_country = kPermanentCountry;
 
-    std::vector<ProcessedStudy> processed_studies;
-    FilterAndValidateStudies(seed, client_state, VariationsLayers(),
-                             &processed_studies);
+    std::vector<ProcessedStudy> processed_studies =
+        FilterAndValidateStudies(seed, client_state, VariationsLayers());
 
     EXPECT_EQ(test.expect_study_kept, !processed_studies.empty());
   }

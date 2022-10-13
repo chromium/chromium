@@ -246,9 +246,9 @@ void VariationsSeedProcessor::CreateTrialsFromSeed(
     base::FeatureList* feature_list) {
   base::UmaHistogramCounts1000("Variations.AppliedSeed.StudyCount",
                                seed.study().size());
-  std::vector<ProcessedStudy> filtered_studies;
   VariationsLayers layers(seed, entropy_providers);
-  FilterAndValidateStudies(seed, client_state, layers, &filtered_studies);
+  std::vector<ProcessedStudy> filtered_studies =
+      FilterAndValidateStudies(seed, client_state, layers);
   SetSeedVersion(seed.version());
 
   for (const ProcessedStudy& study : filtered_studies) {
