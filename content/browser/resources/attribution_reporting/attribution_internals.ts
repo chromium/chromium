@@ -669,13 +669,13 @@ class Log {
         break;
       case SourceRegistrationError.kRootWrongType:
         this.failureReason =
-            'root JSON value has wrong type (should be a dictionary)';
+            'root JSON value has wrong type (must be a dictionary)';
         break;
       case SourceRegistrationError.kDestinationMissing:
         this.failureReason = 'destination missing';
         break;
       case SourceRegistrationError.kDestinationWrongType:
-        this.failureReason = 'destination has wrong type (should be a string)';
+        this.failureReason = 'destination has wrong type (must be a string)';
         break;
       case SourceRegistrationError.kDestinationUntrustworthy:
         this.failureReason = 'destination not potentially trustworthy';
@@ -684,11 +684,50 @@ class Log {
         this.failureReason =
             'destination differs from that of previous source in redirect chain';
         break;
-      case SourceRegistrationError.kFilterDataInvalid:
-        this.failureReason = 'filter_data invalid';
+      case SourceRegistrationError.kFilterDataWrongType:
+        this.failureReason =
+            'filter_data has wrong type (must be a dictionary)';
         break;
-      case SourceRegistrationError.kAggregationKeysInvalid:
-        this.failureReason = 'aggregation_keys invalid';
+      case SourceRegistrationError.kFilterDataTooManyKeys:
+        this.failureReason = 'filter_data has too many keys';
+        break;
+      case SourceRegistrationError.kFilterDataHasSourceTypeKey:
+        this.failureReason = 'filter_data must not have a source_type key';
+        break;
+      case SourceRegistrationError.kFilterDataKeyTooLong:
+        this.failureReason = 'filter_data key too long';
+        break;
+      case SourceRegistrationError.kFilterDataListWrongType:
+        this.failureReason =
+            'filter_data value has wrong type (must be a list)';
+        break;
+      case SourceRegistrationError.kFilterDataListTooLong:
+        this.failureReason = 'filter_data list too long';
+        break;
+      case SourceRegistrationError.kFilterDataValueWrongType:
+        this.failureReason =
+            'filter_data list value has wrong type (must be a string)';
+        break;
+      case SourceRegistrationError.kFilterDataValueTooLong:
+        this.failureReason = 'filter_data list value too long';
+        break;
+      case SourceRegistrationError.kAggregationKeysWrongType:
+        this.failureReason =
+            'aggregation_keys has wrong type (must be a dictionary)';
+        break;
+      case SourceRegistrationError.kAggregationKeysTooManyKeys:
+        this.failureReason = 'aggregation_keys has too many keys';
+        break;
+      case SourceRegistrationError.kAggregationKeysKeyTooLong:
+        this.failureReason = 'aggregation_keys key too long';
+        break;
+      case SourceRegistrationError.kAggregationKeysValueWrongType:
+        this.failureReason =
+            'aggregation_keys value has wrong type (must be a string)';
+        break;
+      case SourceRegistrationError.kAggregationKeysValueWrongFormat:
+        this.failureReason =
+            'aggregation_keys value must be a base-16 integer starting with 0x';
         break;
       default:
         this.failureReason = 'unknown error';

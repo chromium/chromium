@@ -737,7 +737,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kFilterDataInvalid)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kFilterDataWrongType)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "navigation",
@@ -751,7 +751,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kFilterDataInvalid)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kFilterDataListWrongType)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "navigation",
@@ -767,7 +767,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kFilterDataInvalid)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kFilterDataValueWrongType)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "navigation",
@@ -783,7 +783,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kAggregationKeysInvalid)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kAggregationKeysWrongType)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "event",
@@ -797,7 +797,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kAggregationKeysInvalid)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kAggregationKeysValueWrongFormat)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "event",
@@ -813,7 +813,7 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kAggregationKeysInvalid)",
+        R"(["sources"][0]["Attribution-Reporting-Register-Source"]: kAggregationKeysValueWrongFormat)",
         R"json({"sources": [{
           "timestamp": "1643235574000",
           "source_type": "event",

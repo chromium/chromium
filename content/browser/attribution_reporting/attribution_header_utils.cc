@@ -91,16 +91,16 @@ base::expected<StorableSource, SourceRegistrationError> ParseSourceRegistration(
 
   absl::optional<uint64_t> debug_key = ParseDebugKey(registration);
 
-  absl::optional<AttributionFilterData> filter_data =
+  base::expected<AttributionFilterData, SourceRegistrationError> filter_data =
       AttributionFilterData::FromSourceJSON(registration.Find("filter_data"));
-  if (!filter_data)
-    return base::unexpected(SourceRegistrationError::kFilterDataInvalid);
+  if (!filter_data.has_value())
+    return base::unexpected(filter_data.error());
 
-  absl::optional<AttributionAggregationKeys> aggregation_keys =
-      AttributionAggregationKeys::FromJSON(
+  base::expected<AttributionAggregationKeys, SourceRegistrationError>
+      aggregation_keys = AttributionAggregationKeys::FromJSON(
           registration.Find("aggregation_keys"));
-  if (!aggregation_keys)
-    return base::unexpected(SourceRegistrationError::kAggregationKeysInvalid);
+  if (!aggregation_keys.has_value())
+    return base::unexpected(aggregation_keys.error());
 
   return StorableSource(CommonSourceInfo(
       source_event_id, std::move(source_origin), std::move(destination),

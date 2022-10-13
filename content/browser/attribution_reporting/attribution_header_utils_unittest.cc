@@ -38,16 +38,21 @@ TEST(AttributionRegistrationParsingTest, ParseAggregationKeys) {
   const struct {
     const char* description;
     absl::optional<base::Value> json;
-    absl::optional<AttributionAggregationKeys> expected;
+    base::expected<AttributionAggregationKeys, SourceRegistrationError>
+        expected;
   } kTestCases[] = {
       {"Null", absl::nullopt, AttributionAggregationKeys()},
-      {"Not a dictionary", base::Value(base::Value::List()), absl::nullopt},
+      {"Not a dictionary", base::Value(base::Value::List()),
+       base::unexpected(SourceRegistrationError::kAggregationKeysWrongType)},
       {"key not a string", base::test::ParseJson(R"({"key":123})"),
-       absl::nullopt},
+       base::unexpected(
+           SourceRegistrationError::kAggregationKeysValueWrongType)},
       {"key doesn't start with 0x", base::test::ParseJson(R"({"key":"159"})"),
-       absl::nullopt},
+       base::unexpected(
+           SourceRegistrationError::kAggregationKeysValueWrongFormat)},
       {"Invalid key", base::test::ParseJson(R"({"key":"0xG59"})"),
-       absl::nullopt},
+       base::unexpected(
+           SourceRegistrationError::kAggregationKeysValueWrongFormat)},
       {"One valid key", base::test::ParseJson(R"({"key":"0x159"})"),
        *AttributionAggregationKeys::FromKeys(
            {{"key", absl::MakeUint128(/*high=*/0, /*low=*/345)}})},
@@ -59,7 +64,9 @@ TEST(AttributionRegistrationParsingTest, ParseAggregationKeys) {
            {"key2", absl::MakeUint128(/*high=*/5, /*low=*/345)},
        })},
       {"Second key invalid",
-       base::test::ParseJson(R"({"key1":"0x159","key2":""})"), absl::nullopt},
+       base::test::ParseJson(R"({"key1":"0x159","key2":""})"),
+       base::unexpected(
+           SourceRegistrationError::kAggregationKeysValueWrongFormat)},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -119,8 +126,8 @@ TEST(AttributionRegistrationParsingTest, ParseAggregationKeys_CheckSize) {
 
   for (const auto& test_case : kTestCases) {
     base::Value value(test_case.GetHeader());
-    EXPECT_EQ(AttributionAggregationKeys::FromJSON(&value),
-              test_case.Expected())
+    EXPECT_EQ(AttributionAggregationKeys::FromJSON(&value).has_value(),
+              test_case.Expected().has_value())
         << test_case.description;
   }
 }
@@ -163,7 +170,7 @@ TEST(AttributionRegistrationParsingTest, ParseFilterData) {
   struct {
     const char* description;
     absl::optional<base::Value> json;
-    absl::optional<AttributionFilterData> expected;
+    base::expected<AttributionFilterData, SourceRegistrationError> expected;
   } kTestCases[] = {
       {
           "Null",
@@ -193,42 +200,43 @@ TEST(AttributionRegistrationParsingTest, ParseFilterData) {
           base::test::ParseJson(R"json({
           "source_type": ["a"]
         })json"),
-          absl::nullopt,
+          base::unexpected(
+              SourceRegistrationError::kFilterDataHasSourceTypeKey),
       },
       {
           "not_dictionary",
           base::Value(base::Value::List()),
-          absl::nullopt,
+          base::unexpected(SourceRegistrationError::kFilterDataWrongType),
       },
       {
           "value_not_array",
           base::test::ParseJson(R"json({"a": true})json"),
-          absl::nullopt,
+          base::unexpected(SourceRegistrationError::kFilterDataListWrongType),
       },
       {
           "array_element_not_string",
           base::test::ParseJson(R"json({"a": [true]})json"),
-          absl::nullopt,
+          base::unexpected(SourceRegistrationError::kFilterDataValueWrongType),
       },
       {
           "too_many_keys",
           make_filter_data_with_keys(51),
-          absl::nullopt,
+          base::unexpected(SourceRegistrationError::kFilterDataTooManyKeys),
       },
       {
           "key_too_long",
           make_filter_data_with_key_length(26),
-          absl::nullopt,
+          base::unexpected(SourceRegistrationError::kFilterDataKeyTooLong),
       },
       {
           "too_many_values",
           make_filter_data_with_values(51),
-          absl::nullopt,
+          base::unexpected(SourceRegistrationError::kFilterDataListTooLong),
       },
       {
           "value_too_long",
           make_filter_data_with_value_length(26),
-          absl::nullopt,
+          base::unexpected(SourceRegistrationError::kFilterDataValueTooLong),
       },
   };
 
@@ -241,22 +249,22 @@ TEST(AttributionRegistrationParsingTest, ParseFilterData) {
 
   {
     base::Value json = make_filter_data_with_keys(50);
-    EXPECT_TRUE(AttributionFilterData::FromSourceJSON(&json));
+    EXPECT_TRUE(AttributionFilterData::FromSourceJSON(&json).has_value());
   }
 
   {
     base::Value json = make_filter_data_with_key_length(25);
-    EXPECT_TRUE(AttributionFilterData::FromSourceJSON(&json));
+    EXPECT_TRUE(AttributionFilterData::FromSourceJSON(&json).has_value());
   }
 
   {
     base::Value json = make_filter_data_with_values(50);
-    EXPECT_TRUE(AttributionFilterData::FromSourceJSON(&json));
+    EXPECT_TRUE(AttributionFilterData::FromSourceJSON(&json).has_value());
   }
 
   {
     base::Value json = make_filter_data_with_value_length(25);
-    EXPECT_TRUE(AttributionFilterData::FromSourceJSON(&json));
+    EXPECT_TRUE(AttributionFilterData::FromSourceJSON(&json).has_value());
   }
 }
 
@@ -432,7 +440,7 @@ TEST(AttributionRegistrationParsingTest, ParseSourceRegistration) {
       {
           "filter_data_wrong_type",
           R"json({"filter_data":5,"destination":"https://d.example"})json",
-          base::unexpected(SourceRegistrationError::kFilterDataInvalid),
+          base::unexpected(SourceRegistrationError::kFilterDataWrongType),
       },
       {
           "aggregation_keys_valid",
@@ -448,7 +456,7 @@ TEST(AttributionRegistrationParsingTest, ParseSourceRegistration) {
       {
           "aggregation_keys_wrong_type",
           R"json({"aggregation_keys":5,"destination":"https://d.example"})json",
-          base::unexpected(SourceRegistrationError::kAggregationKeysInvalid),
+          base::unexpected(SourceRegistrationError::kAggregationKeysWrongType),
       },
   };
 

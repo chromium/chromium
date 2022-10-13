@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/types/expected.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,8 +45,9 @@ class CONTENT_EXPORT AttributionFilterData {
   static absl::optional<AttributionFilterData> FromTriggerFilterValues(
       FilterValues&& filter_values);
 
-  static absl::optional<AttributionFilterData> FromSourceJSON(
-      base::Value* input_value);
+  static base::expected<AttributionFilterData,
+                        attribution_reporting::mojom::SourceRegistrationError>
+  FromSourceJSON(base::Value* input_value);
 
   // Returns filter data that matches only the given source type.
   static AttributionFilterData ForSourceType(AttributionSourceType source_type);

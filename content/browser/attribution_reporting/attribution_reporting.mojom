@@ -23,10 +23,24 @@ enum SourceType {
 enum SourceRegistrationError {
   kInvalidJson,
   kRootWrongType,
+
   kDestinationMissing,
   kDestinationWrongType,
   kDestinationUntrustworthy,
   kDestinationMismatched,
-  kFilterDataInvalid,
-  kAggregationKeysInvalid,
+
+  kFilterDataWrongType,
+  kFilterDataTooManyKeys,
+  kFilterDataHasSourceTypeKey,
+  kFilterDataKeyTooLong,
+  kFilterDataListWrongType,
+  kFilterDataListTooLong,
+  kFilterDataValueWrongType,
+  kFilterDataValueTooLong,
+
+  kAggregationKeysWrongType,
+  kAggregationKeysTooManyKeys,
+  kAggregationKeysKeyTooLong,
+  kAggregationKeysValueWrongType,
+  kAggregationKeysValueWrongFormat,
 };
