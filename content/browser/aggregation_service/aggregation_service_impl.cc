@@ -176,14 +176,17 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
   if (!report.has_value()) {
     std::move(done).Run();
 
-    scheduler_->NotifyInProgressRequestFailed(request_id);
-    NotifyReportHandled(
-        AggregationServiceStorage::RequestAndId{
-            .request = std::move(report_request),
-            .id = request_id,
-        },
-        /*report=*/absl::nullopt,
-        AggregationServiceObserver::ReportStatus::kFailedToAssemble);
+    bool will_retry = scheduler_->NotifyInProgressRequestFailed(
+        request_id, report_request.failed_send_attempts());
+    if (!will_retry) {
+      NotifyReportHandled(
+          AggregationServiceStorage::RequestAndId{
+              .request = std::move(report_request),
+              .id = request_id,
+          },
+          /*report=*/absl::nullopt,
+          AggregationServiceObserver::ReportStatus::kFailedToAssemble);
+    }
     NotifyRequestStorageModified();
     return;
   }
@@ -213,20 +216,25 @@ void AggregationServiceImpl::OnReportSendingComplete(
   std::move(done).Run();
 
   AggregationServiceObserver::ReportStatus observer_status;
+  bool will_retry;
   switch (status) {
     case AggregatableReportSender::RequestStatus::kOk:
       observer_status = AggregationServiceObserver::ReportStatus::kSent;
       scheduler_->NotifyInProgressRequestSucceeded(request_and_id.id);
+      will_retry = false;
       break;
     case AggregatableReportSender::RequestStatus::kNetworkError:
     case AggregatableReportSender::RequestStatus::kServerError:
       observer_status = AggregationServiceObserver::ReportStatus::kFailedToSend;
-      scheduler_->NotifyInProgressRequestFailed(request_and_id.id);
+      will_retry = scheduler_->NotifyInProgressRequestFailed(
+          request_and_id.id, request_and_id.request.failed_send_attempts());
       break;
   }
+  if (!will_retry) {
+    NotifyReportHandled(std::move(request_and_id), std::move(report),
+                        observer_status);
+  }
 
-  NotifyReportHandled(std::move(request_and_id), std::move(report),
-                      observer_status);
   NotifyRequestStorageModified();
 }
 

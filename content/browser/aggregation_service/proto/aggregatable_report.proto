@@ -58,4 +58,5 @@ message AggregatableReportRequest {
   AggregatableReportSharedInfo shared_info = 2;
   string reporting_path = 3;
   optional uint64 debug_key = 4;
+  int32 failed_send_attempts = 5;
 }

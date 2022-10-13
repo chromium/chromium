@@ -587,6 +587,40 @@ TEST(AggregatableReportTest, ReportingPathSet_SetInRequest) {
             example_request.shared_info().reporting_origin.GetURL());
 }
 
+TEST(AggregatableReportTest, RequestCreatedWithInvalidFailedAttempt_Failed) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregatableReportSharedInfo shared_info =
+      example_request.shared_info().Clone();
+
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(
+          example_request.payload_contents(), std::move(shared_info),
+          /*reporting_path=*/"", /*debug_key=*/absl::nullopt,
+          /*failed_send_attempts=*/-1);
+
+  EXPECT_FALSE(request.has_value());
+}
+
+TEST(AggregatableReportTest, FailedSendAttempts) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  // Requests are initialized with no failed attempts by default
+  EXPECT_EQ(example_request.failed_send_attempts(), 0);
+
+  AggregatableReportRequest example_request_with_failed_attempts =
+      aggregation_service::CreateExampleRequest(
+          /*aggregation_mode=*/mojom::AggregationServiceMode::kDefault,
+          /*failed_send_attempts=*/2);
+
+  // The failed attempts are correctly serialized & deserialized
+  std::vector<uint8_t> proto = example_request_with_failed_attempts.Serialize();
+  absl::optional<AggregatableReportRequest> parsed_request =
+      AggregatableReportRequest::Deserialize(proto);
+  EXPECT_EQ(parsed_request.value().failed_send_attempts(), 2);
+}
+
 TEST(AggregatableReportTest, ReportingPathEmpty_NotSetInRequest) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(
@@ -615,9 +649,10 @@ TEST(AggregatableReportTest, EmptyPayloads) {
   EXPECT_EQ(report_json_string, kExpectedJsonString);
 }
 
-TEST(AggregatableReportProtoMigrationTest, NoDebugKey_ParsesCorrectly) {
+TEST(AggregatableReportProtoMigrationTest,
+     NoDebugKeyOrFailedSendAttempts_ParsesCorrectly) {
   // An `AggregatableReport` serialized before the addition of the `debug_key`
-  // field.
+  // field and `failed_send_attempts` field.
   const char kHexEncodedOldProto[] =
       "0A071205107B18C803126208D0DA8693FDBECF17122431323334353637382D393061622D"
       "346364652D386631322D3334353637383930616263641A1368747470733A2F2F6578616D"
@@ -648,7 +683,8 @@ TEST(AggregatableReportProtoMigrationTest, NoDebugKey_ParsesCorrectly) {
               /*additional_fields=*/base::Value::Dict(),
               /*api_version=*/"example-version",
               /*api_identifier=*/"example-api"),
-          /*reporting_path=*/"example-path", /*debug_key=*/absl::nullopt)
+          /*reporting_path=*/"example-path", /*debug_key=*/absl::nullopt,
+          /*failed_send_attempts=*/0)
           .value();
 
   EXPECT_TRUE(aggregation_service::ReportRequestsEqual(

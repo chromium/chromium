@@ -146,9 +146,13 @@ class TestAggregatableReportScheduler : public AggregatableReportScheduler {
     completed_requests_status_[request_id] = true;
   }
 
-  void NotifyInProgressRequestFailed(
-      AggregationServiceStorage::RequestId request_id) override {
+  bool NotifyInProgressRequestFailed(
+      AggregationServiceStorage::RequestId request_id,
+      int previous_failed_attempts) override {
     completed_requests_status_[request_id] = false;
+    failed_attempts_[request_id] = previous_failed_attempts + 1;
+
+    return previous_failed_attempts < kMaxRetries;
   }
 
   void TriggerReportingTime(
@@ -174,6 +178,13 @@ class TestAggregatableReportScheduler : public AggregatableReportScheduler {
     return completed_requests_status_[request_id];
   }
 
+  int FailedAttempts(AggregationServiceStorage::RequestId request_id) {
+    if (!base::Contains(failed_attempts_, request_id)) {
+      return 0;
+    }
+    return failed_attempts_[request_id];
+  }
+
  private:
   base::RepeatingCallback<void(
       std::vector<AggregationServiceStorage::RequestAndId>)>
@@ -187,6 +198,10 @@ class TestAggregatableReportScheduler : public AggregatableReportScheduler {
   // successfully.
   base::flat_map<AggregationServiceStorage::RequestId, bool>
       completed_requests_status_;
+  // Each failed request's ID is the key, with value the number of times it
+  // failed to send. Only contains entries for requests with at least one
+  // failure.
+  base::flat_map<AggregationServiceStorage::RequestId, int> failed_attempts_;
 };
 
 class MockAggregationServiceObserver : public AggregationServiceObserver {
@@ -400,8 +415,9 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_Success) {
 }
 
 TEST_F(AggregationServiceImplTest, ScheduleReport_FailedAssembly) {
-  AggregatableReportRequest request =
-      aggregation_service::CreateExampleRequest();
+  AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
+      /*aggregation_mode=*/mojom::AggregationServiceMode::kDefault,
+      /*failed_send_attempts=*/AggregatableReportScheduler::kMaxRetries);
 
   ScheduleReport(std::move(request));
 
@@ -434,6 +450,7 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_FailedAssembly) {
 
   ASSERT_TRUE(scheduler()->WasRequestSuccessful(request_id).has_value());
   EXPECT_FALSE(scheduler()->WasRequestSuccessful(request_id).value());
+  EXPECT_EQ(scheduler()->FailedAttempts(request_id), 3);
 }
 
 TEST_F(AggregationServiceImplTest, ScheduleReport_FailedSending) {
@@ -451,10 +468,13 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_FailedSending) {
   AggregationServiceStorage::RequestId request_id(1);
 
   EXPECT_CALL(observer, OnRequestStorageModified);
+  // The report should not be considered handled when it is scheduled for a
+  // retry
   EXPECT_CALL(
       observer,
       OnReportHandled(RequestIdIs(request_id), _, _,
-                      AggregationServiceObserver::ReportStatus::kFailedToSend));
+                      AggregationServiceObserver::ReportStatus::kFailedToSend))
+      .Times(0);
 
   scheduler()->TriggerReportingTime(/*request_ids=*/{request_id});
 
@@ -474,6 +494,7 @@ TEST_F(AggregationServiceImplTest, ScheduleReport_FailedSending) {
 
   ASSERT_TRUE(scheduler()->WasRequestSuccessful(request_id).has_value());
   EXPECT_FALSE(scheduler()->WasRequestSuccessful(request_id).value());
+  EXPECT_EQ(scheduler()->FailedAttempts(request_id), 1);
 }
 
 TEST_F(AggregationServiceImplTest,

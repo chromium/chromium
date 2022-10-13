@@ -213,9 +213,8 @@ TEST_F(AggregatableReportSchedulerTest,
   }
 }
 
-// TODO(crbug.com/1340040): Update when retry handling is added.
 TEST_F(AggregatableReportSchedulerTest,
-       InProgressRequestFailed_DeletedFromStorage) {
+       FinalSendAttemptFailed_DeletedFromStorage) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
 
@@ -251,8 +250,10 @@ TEST_F(AggregatableReportSchedulerTest,
   }
 
   // Request IDs are incremented from 1.
-  scheduler_->NotifyInProgressRequestFailed(
-      AggregationServiceStorage::RequestId(1));
+  bool will_retry = scheduler_->NotifyInProgressRequestFailed(
+      AggregationServiceStorage::RequestId(1),
+      /*previous_failed_attempts=*/AggregatableReportScheduler::kMaxRetries);
+  EXPECT_FALSE(will_retry);
   {
     base::RunLoop run_loop;
 
@@ -268,6 +269,99 @@ TEST_F(AggregatableReportSchedulerTest,
 
     run_loop.Run();
   }
+}
+
+TEST_F(AggregatableReportSchedulerTest,
+       InProgressRequestFailed_UpdateStorageAndReschedule) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregatableReportSharedInfo expected_shared_info =
+      example_request.shared_info().Clone();
+  expected_shared_info.scheduled_report_time = kExampleTime;
+
+  auto request = AggregatableReportRequest::Create(
+      example_request.payload_contents(), std::move(expected_shared_info),
+      /*reporting_path=*/"", /*debug_key=*/absl::nullopt,
+      /*failed_send_attempts=*/0);
+  scheduler_->ScheduleRequest(std::move(request.value()));
+
+  base::TimeDelta fast_forward_required = kExampleTime - base::Time::Now();
+
+  int before_first_notification = 0;
+  int before_first_retry = 1;
+  int after_first_retry = 2;
+  int before_second_retry = 3;
+  int after_second_retry = 4;
+
+  Checkpoint checkpoint;
+  {
+    testing::InSequence seq;
+
+    EXPECT_CALL(mock_callback_, Run)
+        .Times(1);  // Called once for the initial request
+    EXPECT_CALL(checkpoint, Call(before_first_notification));
+
+    // First delay not expired yet
+    EXPECT_CALL(mock_callback_, Run).Times(0);
+    EXPECT_CALL(checkpoint, Call(before_first_retry));
+
+    // First retry done
+    EXPECT_CALL(mock_callback_, Run).Times(1);
+    EXPECT_CALL(checkpoint, Call(after_first_retry));
+
+    // Second delay not expired yet
+    EXPECT_CALL(mock_callback_, Run).Times(0);
+    EXPECT_CALL(checkpoint, Call(before_second_retry));
+
+    // Second retry done
+    EXPECT_CALL(mock_callback_, Run).Times(1);
+    EXPECT_CALL(checkpoint, Call(after_second_retry));
+  }
+
+  task_environment_.FastForwardBy(fast_forward_required);
+
+  checkpoint.Call(before_first_notification);
+
+  // Request is still in storage and its number of failed attempts has been
+  // incremented.
+  EXPECT_TRUE(scheduler_->NotifyInProgressRequestFailed(
+      AggregationServiceStorage::RequestId(1), /*previous_failed_attempts=*/0));
+  {
+    base::RunLoop run_loop;
+
+    storage_context_.GetStorage()
+        .AsyncCall(&AggregationServiceStorage::GetRequestsReportingOnOrBefore)
+        .WithArgs(base::Time::Max(), /*limit=*/absl::nullopt)
+        .Then(base::BindLambdaForTesting(
+            [&run_loop](std::vector<AggregationServiceStorage::RequestAndId>
+                            requests_and_ids) {
+              EXPECT_EQ(requests_and_ids.size(), 1u);
+              EXPECT_EQ(requests_and_ids[0].request.failed_send_attempts(), 1);
+              run_loop.Quit();
+            }));
+
+    run_loop.Run();
+  }
+
+  task_environment_.FastForwardBy(base::Minutes(5) - base::Microseconds(1));
+  checkpoint.Call(before_first_retry);
+
+  task_environment_.FastForwardBy(base::Microseconds(1));
+  checkpoint.Call(after_first_retry);
+
+  EXPECT_TRUE(scheduler_->NotifyInProgressRequestFailed(
+      AggregationServiceStorage::RequestId(1), 1));
+
+  task_environment_.FastForwardBy(base::Minutes(15) - base::Microseconds(1));
+  checkpoint.Call(before_second_retry);
+
+  task_environment_.FastForwardBy(base::Microseconds(1));
+  checkpoint.Call(after_second_retry);
+
+  // It should not retry anymore
+  EXPECT_FALSE(scheduler_->NotifyInProgressRequestFailed(
+      AggregationServiceStorage::RequestId(1), /*previous_failed_attempts=*/2));
 }
 
 TEST_F(AggregatableReportSchedulerTest,

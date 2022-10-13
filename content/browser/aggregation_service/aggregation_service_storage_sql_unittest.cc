@@ -46,6 +46,7 @@ using aggregation_service::RequestIdIs;
 using testing::ElementsAre;
 
 using RequestId = AggregationServiceStorage::RequestId;
+using RequestAndId = AggregationServiceStorage::RequestAndId;
 
 const char kExampleUrl[] =
     "https://helper.test/.well-known/aggregation-service/keys.json";
@@ -507,6 +508,43 @@ TEST_F(AggregationServiceStorageSqlTest, DeleteRequest_ExpectedResult) {
   storage_->DeleteRequest(RequestId(1));
   EXPECT_TRUE(
       storage_->GetRequestsReportingOnOrBefore(base::Time::Max()).empty());
+}
+
+TEST_F(AggregationServiceStorageSqlTest,
+       UpdateReportForSendFailure_ExpectedResult) {
+  OpenDatabase();
+
+  // Trying to update an non-existing report should not crash
+  storage_->UpdateReportForSendFailure(RequestId(1),
+                                       /*new_report_time=*/base::Time::Now());
+
+  AggregatableReportRequest request =
+      aggregation_service::CreateExampleRequest();
+
+  storage_->StoreRequest(aggregation_service::CloneReportRequest(request));
+
+  base::Time next_run_time = base::Time::Now() + base::Minutes(5);
+
+  storage_->UpdateReportForSendFailure(RequestId(1), next_run_time);
+
+  // Report time is updated as expected
+  std::vector<RequestAndId> requests_before_next_run_time =
+      storage_->GetRequestsReportingOnOrBefore(next_run_time -
+                                               base::Microseconds(1));
+  EXPECT_EQ(requests_before_next_run_time.size(), 0u);
+  std::vector<RequestAndId> requests_at_run_time =
+      storage_->GetRequestsReportingOnOrBefore(next_run_time);
+  ASSERT_EQ(requests_at_run_time.size(), 1u);
+
+  // Failed send attempts has been increased
+  EXPECT_EQ(requests_at_run_time[0].request.failed_send_attempts(), 1);
+
+  // Fail again to ensure the number of failed attempts is increased
+  storage_->UpdateReportForSendFailure(RequestId(1), next_run_time);
+  requests_at_run_time =
+      storage_->GetRequestsReportingOnOrBefore(next_run_time);
+  ASSERT_EQ(requests_at_run_time.size(), 1u);
+  EXPECT_EQ(requests_at_run_time[0].request.failed_send_attempts(), 2);
 }
 
 TEST_F(AggregationServiceStorageSqlTest,
