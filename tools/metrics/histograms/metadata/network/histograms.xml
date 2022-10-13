@@ -1230,6 +1230,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.NetworkPortalDetectorHasProxy" enum="Boolean"
+    expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-health@google.com</owner>
+  <summary>
+    Whether a proxy is configured when Chrome captive portal detection
+    completes. This will be used to help prioritize better captive portal
+    detection with a proxy configured.
+  </summary>
+</histogram>
+
 <histogram name="Network.NetworkPortalDetectorResult"
     enum="NetworkPortalStatus" expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>
@@ -1260,6 +1271,17 @@ chromium-metrics-reviews@google.com.
     detects a captive portal. NOTE: This metric used to be
     CaptivePortal.NetworkPortalDetectorType which was expired from 2021-09-27 to
     2022-09-18.
+  </summary>
+</histogram>
+
+<histogram name="Network.NetworkPortalNotificationState"
+    enum="CaptivePortalNetworkState" expires_after="2023-09-18">
+  <owner>stevenjb@chromium.org</owner>
+  <owner>cros-network-health@google.com</owner>
+  <summary>
+    Captive portal detection state when a notification is shown. Can be used
+    with Network.NetworkPortalSigninMode to compare notification to signin
+    ratio.
   </summary>
 </histogram>
 

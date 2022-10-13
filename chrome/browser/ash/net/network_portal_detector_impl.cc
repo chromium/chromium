@@ -427,6 +427,9 @@ void NetworkPortalDetectorImpl::DetectionCompleted(
     // Note: setting an unknown portal state will ignore the Chrome result and
     // fall back to the Shill result.
     SetNetworkPortalState(network, portal_state);
+
+    base::UmaHistogramBoolean("Network.NetworkPortalDetectorHasProxy",
+                              !network->proxy_config().is_none());
   }
 
   ResetCountersAndSendMetrics();

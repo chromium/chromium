@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/mobile/mobile_activator.h"
@@ -202,6 +203,9 @@ void NetworkPortalNotificationController::PortalStateChanged(
   }
   last_network_guid_ = network->guid();
   last_portal_state_ = portal_state;
+
+  base::UmaHistogramEnumeration("Network.NetworkPortalNotificationState",
+                                portal_state);
 
   std::unique_ptr<message_center::Notification> notification =
       CreateDefaultCaptivePortalNotification(network, portal_state);
