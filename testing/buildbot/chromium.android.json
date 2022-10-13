@@ -28669,7 +28669,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "shards": 4
         },
         "test": "chrome_public_unit_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_unit_test_apk/"

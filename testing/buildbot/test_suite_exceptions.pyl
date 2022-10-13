@@ -1233,6 +1233,16 @@
       },
     },
   },
+  # TODO(crbug/1239300): Remove when experiment is done.
+  'chrome_public_persistent_shell_unit_test_apk': {
+    'modifications': {
+      'android-nougat-x86-rel': {
+        'swarming': {
+          'shards': 4,
+        },
+      },
+    },
+  },
   'chrome_public_smoke_test': {
     'remove_from': [
       'android-code-coverage-native', # Does not generate profraw data.
