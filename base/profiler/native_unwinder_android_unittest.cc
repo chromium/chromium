@@ -15,12 +15,12 @@
 
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
-#include "base/base_profiler_test_support_jni_headers/TestSupport_jni.h"
 #include "base/bind.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier_signal.h"
 #include "base/profiler/stack_sampler.h"
+#include "base/profiler/stack_sampling_profiler_java_test_util.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/profiler/thread_delegate_posix.h"
 #include "base/test/bind.h"
@@ -322,25 +322,6 @@ TEST(NativeUnwinderAndroidTest, MAYBE_ResumeUnwinding) {
                                scenario.GetOuterFunctionAddressRange()});
 }
 
-struct JavaTestSupportParams {
-  OnceClosure wait_for_sample;
-  FunctionAddressRange range;
-};
-
-void JNI_TestSupport_InvokeCallbackFunction(JNIEnv* env, jlong context) {
-  const void* start_program_counter = GetProgramCounter();
-
-  JavaTestSupportParams* params =
-      reinterpret_cast<JavaTestSupportParams*>(context);
-  if (!params->wait_for_sample.is_null())
-    std::move(params->wait_for_sample).Run();
-
-  // Volatile to prevent a tail call to GetProgramCounter().
-  const void* volatile end_program_counter = GetProgramCounter();
-
-  params->range = {start_program_counter, end_program_counter};
-}
-
 // Checks that java frames can be unwound through.
 // Disabled, see: https://crbug.com/1076997
 TEST(NativeUnwinderAndroidTest, DISABLED_JavaFunction) {
@@ -350,13 +331,7 @@ TEST(NativeUnwinderAndroidTest, DISABLED_JavaFunction) {
   bool can_always_unwind =
       build_info->sdk_int() > base::android::SDK_VERSION_MARSHMALLOW;
 
-  UnwindScenario scenario(BindLambdaForTesting([](OnceClosure wait_for_sample) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    JavaTestSupportParams params{std::move(wait_for_sample), {}};
-    base::Java_TestSupport_callWithJavaFunction(
-        env, reinterpret_cast<uintptr_t>(&params));
-    return params.range;
-  }));
+  UnwindScenario scenario(base::BindRepeating(callWithJavaFunction));
 
   std::unique_ptr<unwindstack::Maps> maps = NativeUnwinderAndroid::CreateMaps();
   std::unique_ptr<unwindstack::Memory> memory =

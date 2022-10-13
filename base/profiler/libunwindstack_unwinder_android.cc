@@ -102,6 +102,24 @@ bool LibunwindstackUnwinderAndroid::CanUnwindFrom(
   return true;
 }
 
+unwindstack::JitDebug* LibunwindstackUnwinderAndroid::GetOrCreateJitDebug(
+    unwindstack::ArchEnum arch) {
+  if (!jit_debug_) {
+    jit_debug_ =
+        unwindstack::CreateJitDebug(arch, process_memory_, search_libs_);
+  }
+  return jit_debug_.get();
+}
+
+unwindstack::DexFiles* LibunwindstackUnwinderAndroid::GetOrCreateDexFiles(
+    unwindstack::ArchEnum arch) {
+  if (!dex_files_) {
+    dex_files_ =
+        unwindstack::CreateDexFiles(arch, process_memory_, search_libs_);
+  }
+  return dex_files_.get();
+}
+
 UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
     RegisterContext* thread_context,
     uintptr_t stack_top,
@@ -129,9 +147,10 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
     DCHECK(regs);
     unwindstack::Unwinder unwinder(kMaxFrames, memory_regions_map_.get(),
                                    regs.get(), process_memory_);
-    // TODO(kartarsingh): Add dex files and jit files to support java frames
-    // like traced_perf does here:
-    // https://cs.android.com/android/platform/superproject/+/master:external/perfetto/src/profiling/memory/unwinding.cc;l=169;drc=5860970a8606bb48059aa31ee506328286b9bf92
+
+    unwinder.SetJitDebug(GetOrCreateJitDebug(regs->Arch()));
+    unwinder.SetDexFiles(GetOrCreateDexFiles(regs->Arch()));
+
     unwinder.Unwind(/*initial_map_names_to_skip=*/nullptr,
                     /*map_suffixes_to_ignore=*/nullptr);
     ++samples_since_last_maps_parse_;
@@ -153,6 +172,8 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
                 "TryUnwind Reparsing Maps");
     samples_since_last_maps_parse_ = 0;
     memory_regions_map_->Parse();
+    jit_debug_.reset();
+    dex_files_.reset();
 
     // Our second attempt will override our first attempt when we check the
     // result later.

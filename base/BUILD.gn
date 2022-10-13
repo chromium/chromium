@@ -2952,7 +2952,14 @@ source_set("base_stack_sampling_profiler_test_util") {
     "//testing/gtest",
   ]
   if (is_android) {
-    deps += [ ":native_unwinder_android" ]
+    sources += [
+      "profiler/stack_sampling_profiler_java_test_util.cc",
+      "profiler/stack_sampling_profiler_java_test_util.h",
+    ]
+    deps += [
+      ":base_profiler_test_support_jni_headers",
+      ":native_unwinder_android",
+    ]
   }
 }
 

@@ -10,11 +10,13 @@
 #include <string.h>
 #include <vector>
 
+#include "base/android/build_info.h"
 #include "base/bind.h"
 #include "base/profiler/register_context.h"
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier_signal.h"
 #include "base/profiler/stack_sampler.h"
+#include "base/profiler/stack_sampling_profiler_java_test_util.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/profiler/thread_delegate_posix.h"
 #include "base/test/bind.h"
@@ -162,4 +164,50 @@ TEST(LibunwindstackUnwinderAndroidTest, DISABLED_OtherLibrary) {
                                scenario.GetSetupFunctionAddressRange(),
                                scenario.GetOuterFunctionAddressRange()});
 }
+
+// Checks that java frames can be unwound through and have function names.
+TEST(LibunwindstackUnwinderAndroidTest, JavaFunction) {
+  auto* build_info = base::android::BuildInfo::GetInstance();
+  // Due to varying availability of compiled/JITed java unwind tables, unwinding
+  // is only expected to reliably succeed on Android P+
+  // https://android.googlesource.com/platform/system/unwinding/+/refs/heads/master/libunwindstack/AndroidVersions.md#android-9-pie_api-level-28
+  // The libunwindstack doc mentions in Android 9 it got the support for
+  // unwinding through JIT'd frames.
+  // TODO(crbug/1370137): Figure out more accurate bound to where we will
+  // always succeed to unwind.
+  bool can_unwind = build_info->sdk_int() >= base::android::SDK_VERSION_P;
+  if (!can_unwind) {
+    GTEST_SKIP() << "Unwind info is not available on older version of Android";
+  }
+
+  UnwindScenario scenario(base::BindRepeating(callWithJavaFunction));
+
+  auto unwinder = std::make_unique<LibunwindstackUnwinderAndroid>();
+
+  ModuleCache module_cache;
+  unwinder->Initialize(&module_cache);
+  const std::vector<Frame> sample =
+      CaptureScenario(&scenario, &module_cache,
+                      BindLambdaForTesting([&](RegisterContext* thread_context,
+                                               uintptr_t stack_top,
+                                               std::vector<Frame>* sample) {
+                        ASSERT_TRUE(unwinder->CanUnwindFrom(sample->back()));
+                        UnwindResult result = unwinder->TryUnwind(
+                            thread_context, stack_top, sample);
+                        EXPECT_EQ(UnwindResult::kCompleted, result);
+                      }));
+
+  // Check that all the modules are valid.
+  for (const auto& frame : sample) {
+    EXPECT_NE(frame.module, nullptr);
+  }
+
+  // The stack should contain a full unwind.
+  ExpectStackContains(sample, {scenario.GetWaitForSampleAddressRange(),
+                               scenario.GetSetupFunctionAddressRange(),
+                               scenario.GetOuterFunctionAddressRange()});
+  ExpectStackContainsNames(sample, {"org.chromium.base.profiler.TestSupport."
+                                    "callWithJavaFunction"});
+}
+
 }  // namespace base
