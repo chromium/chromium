@@ -7620,9 +7620,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Energy Saver turned on
         </message>
       </if>
-      <message name="IDS_BATTERY_SAVER_MODE_PROMO_TEXT" desc="The text shown for the battery saver mode in-product promo bubble.">
-        This extends battery power by limiting background activity and visual effects like smooth scrolling
-      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_BATTERY_SAVER_MODE_PROMO_TEXT" desc="The text shown for the battery saver mode in-product promo bubble.">
+          This extends battery power by limiting background activity and visual effects like smooth scrolling.
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_BATTERY_SAVER_MODE_PROMO_TEXT" desc="The text shown for the battery saver mode in-product promo bubble.">
+          This extends battery power by limiting background activity and visual effects like smooth scrolling
+        </message>
+      </if>
       <message name="IDS_BATTERY_SAVER_MODE_PROMO_ACTION_TEXT" desc="The custom action button text for the battery saver mode in-product promo bubble.">
         Settings
       </message>
@@ -7632,9 +7639,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_HIGH_EFFICIENCY_INFO_MODE_PROMO_ACTION_TEXT" desc="The custom action button text for the high efficiency info mode in-product promo bubble.">
         Settings
       </message>
-      <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TEXT" desc="The text shown for the high efficiency mode in-product promo bubble">
-        Memory Saver frees up memory from inactive tabs so it can be used by active tabs and other apps
-      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TEXT" desc="The text shown for the high efficiency mode in-product promo bubble">
+          Memory Saver frees up memory from inactive tabs so it can be used by active tabs and other apps.
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_TEXT" desc="The text shown for the high efficiency mode in-product promo bubble">
+          Memory Saver frees up memory from inactive tabs so it can be used by active tabs and other apps
+        </message>
+      </if>
       <if expr="use_titlecase">
         <message name="IDS_HIGH_EFFICIENCY_MODE_PROMO_ACTION_TEXT" desc="In Title Case: The custom action button text for the high efficiency mode in-product promo bubble">
           Turn On
