@@ -28,30 +28,17 @@ GaiaAccessTokenFetcher::CreateExchangeRefreshTokenForAccessTokenInstance(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& refresh_token) {
   // Using `new` to access a non-public constructor.
-  return base::WrapUnique(new GaiaAccessTokenFetcher(
-      consumer, url_loader_factory, refresh_token, std::string()));
-}
-
-// static
-std::unique_ptr<GaiaAccessTokenFetcher>
-GaiaAccessTokenFetcher::CreateExchangeAuthCodeForRefeshTokenInstance(
-    OAuth2AccessTokenConsumer* consumer,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::string& auth_code) {
-  // Using `new` to access a non-public constructor.
-  return base::WrapUnique(new GaiaAccessTokenFetcher(
-      consumer, url_loader_factory, std::string(), auth_code));
+  return base::WrapUnique(
+      new GaiaAccessTokenFetcher(consumer, url_loader_factory, refresh_token));
 }
 
 GaiaAccessTokenFetcher::GaiaAccessTokenFetcher(
     OAuth2AccessTokenConsumer* consumer,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const std::string& refresh_token,
-    const std::string& auth_code)
+    const std::string& refresh_token)
     : OAuth2AccessTokenFetcherImpl(consumer,
                                    url_loader_factory,
-                                   refresh_token,
-                                   auth_code) {}
+                                   refresh_token) {}
 
 GaiaAccessTokenFetcher::~GaiaAccessTokenFetcher() = default;
 
