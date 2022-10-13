@@ -21,6 +21,13 @@
   <uses-permission android:name="android.permission.GET_ACCOUNTS" />
   <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
+  <!-- Features related to permissions we request. -->
+  <!-- android.permission.CAMERA -->
+  <uses-feature android:name="android.hardware.camera" android:required="false" />
+  <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+  <!-- android.permission.RECORD_AUDIO -->
+  <uses-feature android:name="android.hardware.microphone" android:required="false" />
+
   <application android:name="org.chromium.android_webview.shell.AwShellApplication"
       android:label="AwShellApplication"
       android:hardwareAccelerated="true">
