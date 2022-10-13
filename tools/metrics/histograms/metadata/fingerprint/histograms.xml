@@ -154,9 +154,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Fingerprint.Unlock.EnrolledFingerCount" units="count"
     expires_after="2023-04-05">
-  <owner>emaamari@google.com</owner>
-  <owner>jessejames@chromium.org</owner>
-  <owner>cros-lurs@google.com</owner>
+  <owner>tomhughes@chromium.org</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
   <summary>Counts the number of fingers enrolled by the user.</summary>
 </histogram>
 
@@ -258,7 +257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Fingerprint.UnlockEnabled" enum="BooleanEnabled"
-    expires_after="2023-02-12">
+    expires_after="2023-04-05">
   <owner>tomhughes@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
