@@ -19,6 +19,8 @@ export class FakePageHandler implements PageHandlerInterface {
   getApps() {
     return Promise.resolve(this.app_);
   }
+
+  uninstallApp(_appId: string) {}
 }
 
 export class TestAppHomeBrowserProxy implements BrowserProxy {

@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_UI_WEBUI_APP_HOME_APP_HOME_PAGE_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -21,6 +23,8 @@ class WebUI;
 
 namespace extensions {
 class Extension;
+class ExtensionService;
+class ExtensionUninstallDialog;
 }  // namespace extensions
 
 namespace web_app {
@@ -29,9 +33,11 @@ class WebAppProvider;
 
 namespace webapps {
 
-class AppHomePageHandler : public app_home::mojom::PageHandler,
-                           public web_app::WebAppInstallManagerObserver,
-                           public extensions::ExtensionRegistryObserver {
+class AppHomePageHandler
+    : public app_home::mojom::PageHandler,
+      public web_app::WebAppInstallManagerObserver,
+      public extensions::ExtensionRegistryObserver,
+      public extensions::ExtensionUninstallDialog::Delegate {
  public:
   AppHomePageHandler(
       content::WebUI*,
@@ -58,8 +64,24 @@ class AppHomePageHandler : public app_home::mojom::PageHandler,
 
   // app_home::mojom::PageHandler:
   void GetApps(GetAppsCallback callback) override;
+  void UninstallApp(const std::string& app_id) override;
 
  private:
+  Browser* GetCurrentBrowser();
+
+  // Returns the ExtensionUninstallDialog object for this class, creating it if
+  // needed.
+  extensions::ExtensionUninstallDialog* CreateExtensionUninstallDialog();
+
+  // Reset some instance flags we use to track the currently uninstalling app.
+  void CleanupAfterUninstall();
+
+  // ExtensionUninstallDialog::Delegate:
+  void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
+                                        const std::u16string& error) override;
+
+  void UninstallWebApp(const std::string& web_app_id);
+  void UninstallExtensionApp(const extensions::Extension* extension);
   void FillWebAppInfoList(std::vector<app_home::mojom::AppInfoPtr>* result);
   void FillExtensionInfoList(std::vector<app_home::mojom::AppInfoPtr>* result);
   app_home::mojom::AppInfoPtr CreateAppInfoPtrFromWebApp(
@@ -75,13 +97,22 @@ class AppHomePageHandler : public app_home::mojom::PageHandler,
 
   mojo::Remote<app_home::mojom::Page> page_;
 
-  // The apps are represented in the web apps model, which outlives us since
-  // it's owned by our containing profile.
+  // The apps are represented in the web apps model, which outlives this class
+  // since it's owned by |profile_|.
   const raw_ptr<web_app::WebAppProvider> web_app_provider_;
+
+  // The apps are represented in the extensions model, which
+  // outlives this class since it's owned by |profile_|.
+  const raw_ptr<extensions::ExtensionService> extension_service_;
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       install_manager_observation_{this};
+
+  std::unique_ptr<extensions::ExtensionUninstallDialog>
+      extension_uninstall_dialog_;
+
+  bool uninstall_dialog_prompting_ = false;
 
   // Used for passing callbacks.
   base::WeakPtrFactory<AppHomePageHandler> weak_ptr_factory_{this};
