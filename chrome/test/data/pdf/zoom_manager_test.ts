@@ -18,10 +18,10 @@ chrome.test.runTests(function() {
     addZoomListeners(target: EventTarget) {
       this.tracker_.add(
           target, 'set-zoom',
-          e => this.setZoom((e as CustomEvent<number>).detail));
+          (e: Event) => this.setZoom((e as CustomEvent<number>).detail));
       this.tracker_.add(
           target, 'update-zoom-from-browser',
-          e => this.updateZoomFromBrowserChange(
+          (e: Event) => this.updateZoomFromBrowserChange(
               (e as CustomEvent<number>).detail));
     }
 

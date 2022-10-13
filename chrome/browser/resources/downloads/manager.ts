@@ -145,7 +145,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
     ];
 
     this.eventTracker_.add(
-        document, 'keydown', e => this.onKeyDown_(e as KeyboardEvent));
+        document, 'keydown', (e: Event) => this.onKeyDown_(e as KeyboardEvent));
     this.eventTracker_.add(document, 'click', () => this.onClick_());
 
     this.loaded_.promise.then(() => {

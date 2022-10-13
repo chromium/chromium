@@ -126,15 +126,15 @@ export class BookmarksCommandManagerElement extends
     this.addShortcut_(Command.COPY, 'Ctrl|c', 'Meta|c');
     this.addShortcut_(Command.PASTE, 'Ctrl|v', 'Meta|v');
 
-    this.eventTracker_.add(document, 'open-command-menu', e =>
+    this.eventTracker_.add(document, 'open-command-menu', (e: Event) =>
                            this.onOpenCommandMenu_(
                                e as CustomEvent<OpenCommandMenuDetail>));
-    this.eventTracker_.add(document, 'keydown', e =>
+    this.eventTracker_.add(document, 'keydown', (e: Event) =>
                            this.onKeydown_(e as KeyboardEvent));
 
     const addDocumentListenerForCommand = (eventName: string,
                                            command: Command) => {
-      this.eventTracker_.add(document, eventName, e => {
+      this.eventTracker_.add(document, eventName, (e: Event) => {
         if ((e.composedPath()[0] as HTMLElement).tagName === 'INPUT') {
           return;
         }

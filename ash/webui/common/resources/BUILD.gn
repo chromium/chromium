@@ -107,6 +107,7 @@ non_web_component_files = [
   "cr_picture/webcam_utils.js",
   "cr_policy_indicator_behavior.js",
   "cr_scrollable_behavior.js",
+  "event_tracker.js",
   "focus_row_js.js",
   "focus_row_behavior.js",
   "focus_without_ink_js.js",
@@ -278,6 +279,7 @@ generate_definitions_js_files = [
   "cr_picture/icons.html.js",
   "cr_picture/png.js",
   "cr_picture/webcam_utils.js",
+  "event_tracker.js",
   "focus_row_js.js",
   "focus_without_ink_js.js",
   "keyboard_shortcut_list_js.js",
@@ -400,6 +402,7 @@ group("closure_compile") {
 js_type_check("closure_compile_local") {
   is_polymer3 = true
   deps = [
+    ":event_tracker",
     ":fake_method_resolver",
     ":fake_observables",
     ":focus_row_behavior",
@@ -432,6 +435,9 @@ js_library("cr_scrollable_behavior") {
   ]
 }
 
+js_library("event_tracker") {
+}
+
 js_library("fake_observables") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
 }
@@ -442,8 +448,8 @@ js_library("fake_method_resolver") {
 
 js_library("focus_row_js") {
   deps = [
+    ":event_tracker",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:event_tracker",
     "//ui/webui/resources/js:util",
   ]
 }

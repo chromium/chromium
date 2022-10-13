@@ -255,15 +255,17 @@ export class TabListElement extends CustomElement implements
     });
 
     this.eventTracker_.add(
-        document, 'contextmenu', e => this.onContextMenu_(e));
+        document, 'contextmenu', (e: Event) => this.onContextMenu_(e));
     this.eventTracker_.add(
-        document, 'pointerup', e => this.onPointerUp_(e as PointerEvent));
+        document, 'pointerup',
+        (e: Event) => this.onPointerUp_(e as PointerEvent));
     this.eventTracker_.add(
         document, 'visibilitychange', () => this.onDocumentVisibilityChange_());
     this.eventTracker_.add(window, 'blur', () => this.onWindowBlur_());
-    this.eventTracker_.add(this, 'scroll', e => this.onScroll_(e));
+    this.eventTracker_.add(this, 'scroll', (e: Event) => this.onScroll_(e));
     this.eventTracker_.add(
-        document, 'touchstart', e => this.onTouchStart_(e as TouchEvent));
+        document, 'touchstart',
+        (e: Event) => this.onTouchStart_(e as TouchEvent));
     // Touchmove events happen when a user has started a touch gesture sequence
     // and proceeded to move their touch pointer across the screen. Ensure that
     // we clear the `last_targeted_item_` in these cases to ensure the pressed

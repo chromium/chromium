@@ -44,6 +44,7 @@ preprocess_if_expr("preprocess_src_ts") {
     "color_utils.ts",
     "custom_element.ts",
     "drag_wrapper.ts",
+    "event_tracker.ts",
     "focus_grid.ts",
     "focus_outline_manager.ts",
     "focus_row.ts",
@@ -77,7 +78,6 @@ preprocess_if_expr("preprocess_src") {
     "cr.m.js",
     "cr/event_target.js",
     "cr/ui.js",
-    "event_tracker.js",
     "icon.js",
     "load_time_data.m.js",
     "load_time_data_deprecated.js",
@@ -146,7 +146,6 @@ js_type_check("js_resources_modules") {
   deps = [
     ":assert",
     ":cr.m",
-    ":event_tracker",
     ":icon",
     ":load_time_data.m",
     ":parse_html_subset",
@@ -164,9 +163,6 @@ js_library("cr.m") {
     ":promise_resolver",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("event_tracker") {
 }
 
 js_library("icon") {

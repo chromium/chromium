@@ -282,11 +282,15 @@ export class DNDManager {
     this.dropIndicator_ = new DropIndicator();
     this.autoExpander_ = new AutoExpander();
 
-    this.eventTracker_.add(document, 'dragstart', e => this.onDragStart_(e));
-    this.eventTracker_.add(document, 'dragenter', e => this.onDragEnter_(e));
-    this.eventTracker_.add(document, 'dragover', e => this.onDragOver_(e));
+    this.eventTracker_.add(document, 'dragstart',
+                           (e: Event) => this.onDragStart_(e));
+    this.eventTracker_.add(document, 'dragenter',
+                           (e: Event) => this.onDragEnter_(e));
+    this.eventTracker_.add(document, 'dragover',
+                           (e: Event) => this.onDragOver_(e));
     this.eventTracker_.add(document, 'dragleave', () => this.onDragLeave_());
-    this.eventTracker_.add(document, 'drop', e => this.onDrop_(e));
+    this.eventTracker_.add(document, 'drop',
+                           (e: Event) => this.onDrop_(e));
     this.eventTracker_.add(document, 'dragend', () => this.clearDragData_());
     this.eventTracker_.add(document, 'mousedown', () => this.onMouseDown_());
     this.eventTracker_.add(document, 'touchstart', () => this.onTouchStart_());

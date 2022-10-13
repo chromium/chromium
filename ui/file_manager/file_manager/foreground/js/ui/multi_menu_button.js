@@ -8,7 +8,7 @@ import {Menu} from './menu.js';
 import {HideType} from './menu_button.js';
 import {MenuItem} from './menu_item.js';
 import {AnchorType, positionPopupAroundElement} from './position_util.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {EventTracker} from 'chrome://resources/ash/common/event_tracker.js';
 
 import {util} from '../../../common/js/util.js';
 

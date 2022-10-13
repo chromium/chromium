@@ -261,7 +261,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
     super.connectedCallback();
 
     this.eventTracker_.add(
-        document, 'keydown', e => this.onKeyDown_(e as KeyboardEvent));
+        document, 'keydown', (e: Event) => this.onKeyDown_(e as KeyboardEvent));
     this.eventTracker_.add(
         document, 'visibilitychange', this.onVisibilityChange_.bind(this));
     this.addWebUIListener(

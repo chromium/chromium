@@ -194,9 +194,9 @@ js_library("context_menu_handler") {
     ":menu_button",
     ":menu_item",
     ":position_util",
+    "//ash/webui/common/resources:event_tracker",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:event_tracker",
     "//ui/webui/resources/js/cr:event_target",
     "//ui/webui/resources/js/cr:ui",
   ]
@@ -687,9 +687,9 @@ js_library("menu_button") {
     ":menu",
     ":menu_item",
     ":position_util",
+    "//ash/webui/common/resources:event_tracker",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:event_tracker",
     "//ui/webui/resources/js/cr:ui",
   ]
 }
@@ -717,8 +717,8 @@ js_library("multi_menu") {
   deps = [
     ":menu",
     ":menu_item",
+    "//ash/webui/common/resources:event_tracker",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:event_tracker",
     "//ui/webui/resources/js/cr:ui",
   ]
 }
@@ -730,9 +730,9 @@ js_library("multi_menu_button") {
     ":menu_item",
     ":multi_menu",
     ":position_util",
+    "//ash/webui/common/resources:event_tracker",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:event_tracker",
     "//ui/webui/resources/js/cr:ui",
   ]
 }

@@ -181,14 +181,16 @@ export class BookmarksDragManager {
 
   startObserving() {
     this.eventTracker_.add(
-        this.delegate_, 'dragstart', e => this.onDragStart_(e as DragEvent));
+        this.delegate_, 'dragstart',
+        (e: Event) => this.onDragStart_(e as DragEvent));
     this.eventTracker_.add(
-        this.delegate_, 'dragover', e => this.onDragOver_(e as DragEvent));
+        this.delegate_, 'dragover',
+        (e: Event) => this.onDragOver_(e as DragEvent));
     this.eventTracker_.add(
         this.delegate_, 'dragleave', () => this.onDragLeave_());
     this.eventTracker_.add(this.delegate_, 'dragend', () => this.cancelDrag_());
     this.eventTracker_.add(
-        this.delegate_, 'drop', e => this.onDrop_(e as DragEvent));
+        this.delegate_, 'drop', (e: Event) => this.onDrop_(e as DragEvent));
 
     if (loadTimeData.getBoolean('bookmarksDragAndDropEnabled')) {
       chrome.bookmarkManagerPrivate.onDragEnter.addListener(

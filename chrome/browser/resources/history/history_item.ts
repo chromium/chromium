@@ -128,7 +128,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
       // history items are items in a potentially long list.
       this.eventTracker_.add(
           this.$.checkbox, 'keydown',
-          e => this.onCheckboxKeydown_(e as KeyboardEvent));
+          (e: Event) => this.onCheckboxKeydown_(e as KeyboardEvent));
     });
   }
 

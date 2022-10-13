@@ -93,7 +93,8 @@ export class BookmarksListElement extends BookmarksListElementBase {
   override ready() {
     super.ready();
     this.addEventListener('click', () => this.deselectItems_());
-    this.addEventListener('contextmenu', e => this.onContextMenu_(e));
+    this.addEventListener('contextmenu',
+                          e => this.onContextMenu_(e as MouseEvent));
     this.addEventListener(
         'open-command-menu',
         e => this.onOpenCommandMenu_(e as CustomEvent<OpenCommandMenuDetail>));
@@ -118,7 +119,7 @@ export class BookmarksListElement extends BookmarksListElementBase {
 
     this.eventTracker_.add(
         document, 'highlight-items',
-        e => this.onHighlightItems_(e as CustomEvent<string[]>));
+        (e: Event) => this.onHighlightItems_(e as CustomEvent<string[]>));
     this.eventTracker_.add(
         document, 'import-began', () => this.onImportBegan_());
     this.eventTracker_.add(

@@ -87,7 +87,8 @@ export class WhatsNewAppElement extends PolymerElement {
     this.url_ = url.concat(`latest=${latest}`);
 
     this.eventTracker_.add(
-        window, 'message', event => this.handleMessage_(event as MessageEvent));
+        window, 'message',
+        (event: Event) => this.handleMessage_(event as MessageEvent));
   }
 
   private handleMessage_(event: MessageEvent) {
