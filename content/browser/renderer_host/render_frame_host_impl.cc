@@ -12024,7 +12024,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // main frames can be recorded.
     // TODO(crbug.com/1245014): For prerendering pages, record the source url
     // after activation.
-    if (frame_tree_node()->GetFrameType() == FrameType::kPrimaryMainFrame &&
+    if (navigation_request->IsInPrimaryMainFrame() &&
         document_ukm_source_id != ukm::kInvalidSourceId) {
       ukm_recorder->UpdateSourceURL(document_ukm_source_id, params->url);
     }
@@ -12053,9 +12053,10 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   }
 
   // TODO(https://crbug.com/1131832): Do not pass |params| to DidNavigate().
-  frame_tree_node()->navigator().DidNavigate(this, *params,
-                                             std::move(navigation_request),
-                                             is_same_document_navigation);
+  NavigationRequest* raw_navigation_request = navigation_request.get();
+  raw_navigation_request->frame_tree_node()->navigator().DidNavigate(
+      this, *params, std::move(navigation_request),
+      is_same_document_navigation);
 
   // Reset back the state to false after navigation commits.
   // TODO(https://crbug.com/1072817): Undo this plumbing after removing the
