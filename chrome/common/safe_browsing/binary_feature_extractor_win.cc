@@ -49,10 +49,13 @@ void BinaryFeatureExtractor::CheckSignature(
 
   DVLOG(2) << "Checking signature for " << file_path.value();
 
+  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_WIN_SHARE_DELETE);
+
   WINTRUST_FILE_INFO file_info = {0};
   file_info.cbStruct = sizeof(file_info);
   file_info.pcwszFilePath = file_path.value().c_str();
-  file_info.hFile = NULL;
+  file_info.hFile = file.GetPlatformFile();
   file_info.pgKnownSubject = NULL;
 
   WINTRUST_DATA wintrust_data = {0};
