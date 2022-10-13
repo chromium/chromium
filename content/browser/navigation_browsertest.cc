@@ -4506,7 +4506,8 @@ class NetworkIsolationSplitCacheAppendIframeOrigin
   NetworkIsolationSplitCacheAppendIframeOrigin() {
     feature_list_.InitWithFeatures(
         {net::features::kSplitCacheByNetworkIsolationKey},
-        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame});
+        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame,
+         net::features::kEnableDoubleKeyNetworkAnonymizationKey});
   }
 
  private:

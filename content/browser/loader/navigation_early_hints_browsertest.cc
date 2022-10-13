@@ -151,7 +151,8 @@ class NavigationEarlyHintsTest : public ContentBrowserTest {
     feature_list_.InitWithFeatures(
         {features::kEarlyHintsPreloadForNavigation,
          net::features::kSplitCacheByNetworkIsolationKey},
-        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame});
+        {net::features::kForceIsolationInfoFrameOriginToTopLevelFrame,
+         net::features::kEnableDoubleKeyNetworkAnonymizationKey});
   }
   ~NavigationEarlyHintsTest() override = default;
 

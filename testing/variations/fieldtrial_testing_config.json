@@ -8123,7 +8123,7 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled3_doublekey",
+                    "name": "enabled_doublekey",
                     "enable_features": [
                         "EnableDoubleKeyNetworkAnonymizationKey",
                         "ForceIsolationInfoFrameOriginToTopLevelFrame",
@@ -8137,7 +8137,7 @@
                     ]
                 },
                 {
-                    "name": "enabled3_triplekey",
+                    "name": "enabled_triplekey",
                     "enable_features": [
                         "PartitionConnectionsByNetworkIsolationKey",
                         "PartitionDomainReliabilityByNetworkIsolationKey",
@@ -8146,6 +8146,32 @@
                         "PartitionNelAndReportingByNetworkIsolationKey",
                         "PartitionSSLSessionsByNetworkIsolationKey",
                         "SplitHostCacheByNetworkIsolationKey"
+                    ]
+                },
+                {
+                    "name": "enabled_triple_double_key",
+                    "enable_features": [
+                        "EnableDoubleKeyNetworkAnonymizationKey",
+                        "PartitionConnectionsByNetworkIsolationKey",
+                        "PartitionDomainReliabilityByNetworkIsolationKey",
+                        "PartitionExpectCTStateByNetworkIsolationKey",
+                        "PartitionHttpServerPropertiesByNetworkIsolationKey",
+                        "PartitionNelAndReportingByNetworkIsolationKey",
+                        "PartitionSSLSessionsByNetworkIsolationKey",
+                        "SplitHostCacheByNetworkIsolationKey"
+                    ]
+                },
+                {
+                    "name": "enabled_triple_double_cross_site_key",
+                    "enable_features": [
+                        "PartitionConnectionsByNetworkIsolationKey",
+                        "PartitionDomainReliabilityByNetworkIsolationKey",
+                        "PartitionExpectCTStateByNetworkIsolationKey",
+                        "PartitionHttpServerPropertiesByNetworkIsolationKey",
+                        "PartitionNelAndReportingByNetworkIsolationKey",
+                        "PartitionSSLSessionsByNetworkIsolationKey",
+                        "SplitHostCacheByNetworkIsolationKey",
+                        "kEnableCrossSiteFlagNetworkAnonymizationKey"
                     ]
                 }
             ]
