@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.Carts.DiscountConsentStatusAtLoad.{ConsentState}"
-    enum="CartDiscountConsentVariation" expires_after="2022-08-21">
+    enum="CartDiscountConsentVariation" expires_after="2023-03-05">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
