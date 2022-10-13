@@ -1281,35 +1281,6 @@ void InspectorNetworkAgent::PrepareRequest(DocumentLoader* loader,
     }
     request.SetDevToolsAcceptedStreamTypes(std::move(accepted_stream_types));
   }
-
-  // Capture the record replay bookmark for the network request here,
-  // where the devtools stack id is taken.
-  if (PermitRecordReplayBrowserEvents()) {
-    // We must allow user agent scripts when taking a new bookmark.
-    ScriptForbiddenScope::AllowUserAgentScript allow_script;
-    std::string url_string = request.Url().GetString().Utf8().c_str();
-    uint64_t bookmark = recordreplay::NewBookmark();
-    request.SetRecordReplayBookmark(bookmark);
-    base::DictionaryValue dict;
-    String loader_id = IdentifiersFactory::LoaderId(loader);
-    uint64_t identifier = request.InspectorId();
-    String request_id = IdentifiersFactory::RequestId(loader, identifier);
-    dict.SetString("requestUrl", url_string);
-    dict.SetString("requestMethod", request.HttpMethod().Utf8());
-    dict.SetString("requestId", request_id.Utf8());
-
-    base::ListValue headers;
-    for (auto header : request.HttpHeaderFields()) {
-      base::DictionaryValue header_obj;
-      header_obj.SetString("name", header.key.Utf8());
-      header_obj.SetString("value", header.value.Utf8());
-      headers.Append(std::move(header_obj));
-    }
-    dict.SetKey("requestHeaders", std::move(headers));
-
-    recordreplay::OnNetworkRequest(request_id.Utf8().c_str(), "http", bookmark);
-    recordreplay::BrowserEvent("Network.PrepareRequest", dict);
-  }
 }
 
 void InspectorNetworkAgent::WillSendRequest(
@@ -1441,16 +1412,6 @@ void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
   }
 
   double timestamp = base::TimeTicks::Now().since_origin().InSecondsF();
-
-  if (PermitRecordReplayBrowserEvents()) {
-    base::DictionaryValue dict;
-    dict.SetString("request_id", request_id.Utf8());
-    dict.SetDouble("identifier", (double) identifier);
-    if (data) {
-      dict.SetString("data", base::StringPiece(data, data_length));
-    }
-    recordreplay::BrowserEvent("Network.DidReceiveData", dict);
-  }
 
   GetFrontend()->dataReceived(
       request_id, timestamp,
