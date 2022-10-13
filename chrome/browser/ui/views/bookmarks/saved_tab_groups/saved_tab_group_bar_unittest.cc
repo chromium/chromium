@@ -94,6 +94,9 @@ TEST_F(SavedTabGroupBarUnitTest, AddsButtonFromModelAdd) {
 
   saved_tab_group_model()->Add(kSavedTabGroup1);
   EXPECT_EQ(1u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_model()->AddedFromSync(kSavedTabGroup2);
+  EXPECT_EQ(2u, saved_tab_group_bar()->children().size());
 }
 
 TEST_F(SavedTabGroupBarUnitTest, BarsWithSameModelsHaveSameButtons) {
@@ -112,11 +115,17 @@ TEST_F(SavedTabGroupBarUnitTest, RemoveButtonFromModelRemove) {
   // Remove the group and expect no buttons.
   saved_tab_group_model()->Remove(kSavedTabGroup1.saved_guid());
   EXPECT_EQ(0u, saved_tab_group_bar()->children().size());
+
+  saved_tab_group_model()->AddedFromSync(kSavedTabGroup1);
+
+  // Remove the group and expect no buttons.
+  saved_tab_group_model()->RemovedFromSync(kSavedTabGroup1.saved_guid());
+  EXPECT_EQ(0u, saved_tab_group_bar()->children().size());
 }
 
 TEST_F(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
   saved_tab_group_model()->Add(kSavedTabGroup1);
-  saved_tab_group_model()->Add(kSavedTabGroup2);
+  saved_tab_group_model()->AddedFromSync(kSavedTabGroup2);
 
   tab_groups::TabGroupVisualData saved_tab_group_visual_data(kNewTitle,
                                                              kNewColor);
@@ -125,13 +134,21 @@ TEST_F(SavedTabGroupBarUnitTest, UpdatedVisualDataMakesChangeToSpecificView) {
   // second button to stay the same.
   saved_tab_group_model()->UpdateVisualData(kSavedTabGroup1.saved_guid(),
                                             &saved_tab_group_visual_data);
+  saved_tab_group_model()->UpdatedVisualDataFromSync(
+      kSavedTabGroup2.saved_guid(), &saved_tab_group_visual_data);
 
   SavedTabGroupButton* new_button_1 = views::AsViewClass<SavedTabGroupButton>(
       saved_tab_group_bar()->children()[0]);
+  SavedTabGroupButton* new_button_2 = views::AsViewClass<SavedTabGroupButton>(
+      saved_tab_group_bar()->children()[1]);
+
   ASSERT_TRUE(!!new_button_1);
+  ASSERT_TRUE(!!new_button_2);
 
   EXPECT_EQ(new_button_1->GetText(), kNewTitle);
   EXPECT_EQ(new_button_1->tab_group_color_id(), kNewColor);
+  EXPECT_EQ(new_button_2->GetText(), kNewTitle);
+  EXPECT_EQ(new_button_2->tab_group_color_id(), kNewColor);
 }
 
 TEST_F(SavedTabGroupBarUnitTest, MoveButtonFromModelMove) {

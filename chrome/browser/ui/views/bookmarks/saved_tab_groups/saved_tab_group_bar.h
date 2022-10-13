@@ -7,12 +7,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "content/public/browser/page.h"
 #include "ui/views/accessible_pane_view.h"
 
 class Browser;
+class SavedTabGroupButton;
 
 namespace content {
 class PageNavigator;
@@ -43,39 +45,59 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // SavedTabGroupModelObserver
-  void SavedTabGroupAdded(const SavedTabGroup& group, int index) override;
-  void SavedTabGroupRemoved(int index) override;
-  void SavedTabGroupUpdated(const SavedTabGroup& group, int index) override;
-  void SavedTabGroupMoved(const SavedTabGroup& group,
-                          int old_index,
-                          int new_index) override;
+  void SavedTabGroupAddedLocally(const base::GUID& guid) override;
+  void SavedTabGroupRemovedLocally(const SavedTabGroup* removed_group) override;
+  void SavedTabGroupUpdatedLocally(const base::GUID& guid) override;
+  void SavedTabGroupReorderedLocally() override;
+  void SavedTabGroupAddedFromSync(const base::GUID& guid) override;
+  void SavedTabGroupRemovedFromSync(
+      const SavedTabGroup* removed_group) override;
+  void SavedTabGroupUpdatedFromSync(const base::GUID& guid) override;
 
   // Calculates what the visible width would be when a restriction on width is
   // placed on the bar.
   int CalculatePreferredWidthRestrictedBy(int width_restriction);
 
  private:
+  // Adds the saved group denoted by `guid` as a button in the
+  // `SavedTabGroupBar` if the `guid` exists in `saved_tab_group_model_`.
+  void SavedTabGroupAdded(const base::GUID& guid);
+
+  // Removes the button denoted by `removed_group`'s guid from the
+  // `SavedTabGroupBar`.
+  void SavedTabGroupRemoved(const base::GUID& guid);
+
+  // Updates the button (color, name, tab list) denoted by `guid` in the
+  // `SavedTabGroupBar` if the `guid` exists in `saved_tab_group_model_`.
+  void SavedTabGroupUpdated(const base::GUID& guid);
+
   // Adds the button to the child views for a new tab group at a specific index.
   // Also adds a button ptr to the tab_group_buttons_ list.
   void AddTabGroupButton(const SavedTabGroup& group, int index);
 
+  // Adds all buttons currently stored in `saved_tab_group_model_`.
+  void AddAllButtons();
+
   // Removes the button from the child views at a specific index. Also removes
   // the button ptr from the tab_group_buttons_ list.
-  void RemoveTabGroupButton(int index);
+  void RemoveTabGroupButton(const base::GUID& guid);
 
   // Remove all buttons currently in the bar.
   void RemoveAllButtons();
 
-  // the callback that the button calls when clicked by a user.
+  // Find the button that matches `guid`.
+  views::View* GetButton(const base::GUID& guid);
+
+  // The callback that the button calls when clicked by a user.
   void OnTabGroupButtonPressed(const base::GUID& id, const ui::Event& event);
 
   // Provides a callback that returns the page navigator
   base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
 
-  // the model this tab group bar listens to.
+  // The model this tab group bar listens to.
   raw_ptr<SavedTabGroupModel> saved_tab_group_model_;
 
-  // the page navigator used to create tab groups
+  // The page navigator used to create tab groups
   raw_ptr<content::PageNavigator> page_navigator_ = nullptr;
 
   raw_ptr<Browser> browser_;

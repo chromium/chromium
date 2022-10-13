@@ -12,21 +12,27 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_button.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 SavedTabGroupModel* GetSavedTabGroupModelFromBrowser(Browser* browser) {
+  DCHECK(browser);
   SavedTabGroupKeyedService* keyed_service =
       SavedTabGroupServiceFactory::GetForProfile(browser->profile());
   return keyed_service ? keyed_service->model() : nullptr;
 }
 }  // namespace
 
+// TODO(crbug/1372008): Prevent `SavedTabGroupBar` from instantiating if the
+// corresponding feature flag is disabled.
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
                                    SavedTabGroupModel* saved_tab_group_model,
                                    bool animations_enabled = true)
@@ -39,14 +45,11 @@ SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
           GetLayoutConstant(TOOLBAR_ELEMENT_PADDING));
   SetLayoutManager(std::move(layout_manager));
 
-  if (saved_tab_group_model_) {
-    saved_tab_group_model_->AddObserver(this);
-    const std::vector<SavedTabGroup>& saved_tab_groups =
-        saved_tab_group_model_->saved_tab_groups();
-    for (size_t index = 0; index < saved_tab_groups.size(); index++) {
-      AddTabGroupButton(saved_tab_groups[index], index);
-    }
-  }
+  if (!saved_tab_group_model_)
+    return;
+
+  saved_tab_group_model_->AddObserver(this);
+  AddAllButtons();
 }
 
 SavedTabGroupBar::SavedTabGroupBar(Browser* browser,
@@ -69,29 +72,54 @@ void SavedTabGroupBar::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       l10n_util::GetStringUTF8(IDS_ACCNAME_SAVED_TAB_GROUPS));
 }
 
-void SavedTabGroupBar::SavedTabGroupAdded(const SavedTabGroup& group,
-                                          int index) {
-  AddTabGroupButton(group, index);
+void SavedTabGroupBar::SavedTabGroupAddedLocally(const base::GUID& guid) {
+  SavedTabGroupAdded(guid);
+}
+
+void SavedTabGroupBar::SavedTabGroupRemovedLocally(
+    const SavedTabGroup* removed_group) {
+  SavedTabGroupRemoved(removed_group->saved_guid());
+}
+
+void SavedTabGroupBar::SavedTabGroupUpdatedLocally(const base::GUID& guid) {
+  SavedTabGroupUpdated(guid);
+}
+
+void SavedTabGroupBar::SavedTabGroupReorderedLocally() {
+  for (views::View* child : children()) {
+    const absl::optional<int> model_index = saved_tab_group_model_->GetIndexOf(
+        views::AsViewClass<SavedTabGroupButton>(child)->guid());
+    ReorderChildView(child, model_index.value());
+  }
+
   PreferredSizeChanged();
 }
 
-void SavedTabGroupBar::SavedTabGroupRemoved(int index) {
-  RemoveTabGroupButton(index);
-  PreferredSizeChanged();
+void SavedTabGroupBar::SavedTabGroupAddedFromSync(const base::GUID& guid) {
+  SavedTabGroupAdded(guid);
 }
 
-void SavedTabGroupBar::SavedTabGroupUpdated(const SavedTabGroup& group,
-                                            int index) {
-  RemoveTabGroupButton(index);
-  AddTabGroupButton(group, index);
-  PreferredSizeChanged();
+void SavedTabGroupBar::SavedTabGroupRemovedFromSync(
+    const SavedTabGroup* removed_group) {
+  SavedTabGroupRemoved(removed_group->saved_guid());
 }
 
-void SavedTabGroupBar::SavedTabGroupMoved(const SavedTabGroup& group,
-                                          int old_index,
-                                          int new_index) {
-  ReorderChildView(children().at(old_index), new_index);
-  PreferredSizeChanged();
+void SavedTabGroupBar::SavedTabGroupUpdatedFromSync(const base::GUID& guid) {
+  SavedTabGroupUpdated(guid);
+}
+
+int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {
+  const int button_padding = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
+  int current_x = 0;
+  // iterate through the list of buttons in the child views
+  for (auto* button : children()) {
+    gfx::Size preferred_size = button->GetPreferredSize();
+    int next_x = current_x + preferred_size.width() + button_padding;
+    if (next_x > max_x)
+      return current_x;
+    current_x = next_x;
+  }
+  return current_x;
 }
 
 void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
@@ -113,16 +141,58 @@ void SavedTabGroupBar::AddTabGroupButton(const SavedTabGroup& group,
       index);
 }
 
-void SavedTabGroupBar::RemoveTabGroupButton(int index) {
-  // Check that the index is valid for buttons
-  DCHECK_LT(index, static_cast<int>(children().size()));
+void SavedTabGroupBar::SavedTabGroupAdded(const base::GUID& guid) {
+  absl::optional<int> index = saved_tab_group_model_->GetIndexOf(guid);
+  if (!index.has_value())
+    return;
+  AddTabGroupButton(*saved_tab_group_model_->Get(guid), index.value());
+  PreferredSizeChanged();
+}
 
-  RemoveChildViewT(children().at(index));
+void SavedTabGroupBar::SavedTabGroupRemoved(const base::GUID& guid) {
+  RemoveTabGroupButton(guid);
+  PreferredSizeChanged();
+}
+
+void SavedTabGroupBar::SavedTabGroupUpdated(const base::GUID& guid) {
+  absl::optional<int> index = saved_tab_group_model_->GetIndexOf(guid);
+  if (!index.has_value())
+    return;
+  const SavedTabGroup* group = saved_tab_group_model_->Get(guid);
+  RemoveTabGroupButton(guid);
+  AddTabGroupButton(*group, index.value());
+  PreferredSizeChanged();
+}
+
+void SavedTabGroupBar::AddAllButtons() {
+  const std::vector<SavedTabGroup>& saved_tab_groups =
+      saved_tab_group_model_->saved_tab_groups();
+
+  for (size_t index = 0; index < saved_tab_groups.size(); index++)
+    AddTabGroupButton(saved_tab_groups[index], index);
+}
+
+void SavedTabGroupBar::RemoveTabGroupButton(const base::GUID& guid) {
+  // Make sure we have a valid button before trying to remove it.
+  views::View* button = GetButton(guid);
+  DCHECK(button);
+
+  RemoveChildViewT(button);
 }
 
 void SavedTabGroupBar::RemoveAllButtons() {
   for (int index = children().size() - 1; index >= 0; index--)
     RemoveChildViewT(children().at(index));
+}
+
+views::View* SavedTabGroupBar::GetButton(const base::GUID& guid) {
+  for (views::View* child : children()) {
+    if (views::IsViewClass<SavedTabGroupButton>(child) &&
+        views::AsViewClass<SavedTabGroupButton>(child)->guid() == guid)
+      return child;
+  }
+
+  return nullptr;
 }
 
 void SavedTabGroupBar::OnTabGroupButtonPressed(const base::GUID& id,
@@ -139,18 +209,4 @@ void SavedTabGroupBar::OnTabGroupButtonPressed(const base::GUID& id,
     chrome::OpenSavedTabGroup(browser_, group->saved_guid(),
                               group->saved_tabs().size());
   }
-}
-
-int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_x) {
-  const int button_padding = GetLayoutConstant(TOOLBAR_ELEMENT_PADDING);
-  int current_x = 0;
-  // iterate through the list of buttons in the child views
-  for (auto* button : children()) {
-    gfx::Size preferred_size = button->GetPreferredSize();
-    int next_x = current_x + preferred_size.width() + button_padding;
-    if (next_x > max_x)
-      return current_x;
-    current_x = next_x;
-  }
-  return current_x;
 }
