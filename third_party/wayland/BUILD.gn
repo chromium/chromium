@@ -7,10 +7,10 @@ import("//third_party/wayland/features.gni")
 import("//third_party/wayland/wayland_protocol.gni")
 import("//tools/generate_stubs/rules.gni")
 
-# This should be open to both system and non - system libwayland as wayland_stubs
-# also uses this.
+# This should be open to both system and non - system libwayland as
+# wayland_stubs also uses this.
 wayland_protocol("wayland_protocol_c") {
-  if (use_system_libwayland_client && use_sysroot) {
+  if (use_system_libwayland && use_sysroot) {
     sources = [ "${sysroot}/usr/share/wayland/wayland.xml" ]
   } else {
     sources = [ "src/protocol/wayland.xml" ]
@@ -18,7 +18,7 @@ wayland_protocol("wayland_protocol_c") {
   generator_type = "protocol-marshalling"
 }
 
-if (!use_system_libwayland_client || !use_system_libwayland_server) {
+if (!use_system_libwayland) {
   config("wayland_config") {
     include_dirs = [
       "include",
@@ -57,11 +57,7 @@ if (!use_system_libwayland_client || !use_system_libwayland_server) {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
 
-    if (use_system_libwayland_client) {
-      configs += [ ":wayland_config" ]
-    } else {
-      public_configs = [ ":wayland_config" ]
-    }
+    public_configs = [ ":wayland_config" ]
   }
 
   static_library("wayland_private") {
@@ -79,20 +75,9 @@ if (!use_system_libwayland_client || !use_system_libwayland_server) {
       "//build/config/linux/libffi",
     ]
 
-    if (use_system_libwayland_client) {
-      configs += [ ":wayland_config" ]
-    } else {
-      public_configs = [ ":wayland_config" ]
-    }
+    public_configs = [ ":wayland_config" ]
   }
-} else {
-  # use_system_libwayland_client && use_system_libwayland_server
-  group("wayland_util") {
-    public_configs = [ ":wayland_client_config" ]
-  }
-}
 
-if (!use_system_libwayland_server) {
   static_library("wayland_server") {
     sources = [
       "src/src/event-loop.c",
@@ -116,23 +101,9 @@ if (!use_system_libwayland_server) {
       "//build/config/linux/libffi",
     ]
 
-    if (use_system_libwayland_client) {
-      configs += [ ":wayland_config" ]
-    } else {
-      public_configs = [ ":wayland_config" ]
-    }
-  }
-} else {
-  pkg_config("wayland_server_config") {
-    packages = [ "wayland-server" ]
+    public_configs = [ ":wayland_config" ]
   }
 
-  group("wayland_server") {
-    public_configs = [ ":wayland_server_config" ]
-  }
-}
-
-if (!use_system_libwayland_client) {
   static_library("wayland_client") {
     sources = [ "src/src/wayland-client.c" ]
 
@@ -190,35 +161,20 @@ if (!use_system_libwayland_client) {
       ":wayland_config",
     ]
   }
-}
-
-if (!use_system_wayland_scanner) {
-  config("wayland_scanner_config") {
-    cflags = [
-      "-Wno-int-conversion",
-      "-Wno-implicit-function-declaration",
-    ]
-
-    include_dirs = [ "include/" ]
+} else {
+  # use_system_libwayland
+  pkg_config("wayland_server_config") {
+    packages = [ "wayland-server" ]
   }
 
-  executable("wayland_scanner") {
-    sources = [ "src/src/scanner.c" ]
-
-    deps = [
-      ":wayland_util",
-      "//third_party/expat:expat",
-    ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      "//build/config/compiler:no_chromium_code",
-      ":wayland_scanner_config",
-    ]
+  group("wayland_server") {
+    public_configs = [ ":wayland_server_config" ]
   }
-}
 
-if (use_system_libwayland_client) {
+  group("wayland_util") {
+    public_configs = [ ":wayland_client_config" ]
+  }
+
   pkg_config("wayland_client_config") {
     packages = [ "wayland-client" ]
   }
@@ -272,5 +228,31 @@ if (use_system_libwayland_client) {
     # functions are wrappable.  wayland-protocol.c contains only data and
     # no code.
     deps = [ ":wayland_protocol_c" ]
+  }
+}
+
+if (!use_system_wayland_scanner) {
+  config("wayland_scanner_config") {
+    cflags = [
+      "-Wno-int-conversion",
+      "-Wno-implicit-function-declaration",
+    ]
+
+    include_dirs = [ "include/" ]
+  }
+
+  executable("wayland_scanner") {
+    sources = [ "src/src/scanner.c" ]
+
+    deps = [
+      ":wayland_util",
+      "//third_party/expat:expat",
+    ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [
+      "//build/config/compiler:no_chromium_code",
+      ":wayland_scanner_config",
+    ]
   }
 }

@@ -9,7 +9,7 @@ import("//third_party/wayland/wayland_protocol.gni")
 # is special: that is the wayland-protocols package which defines a set of
 # standardised protocols.  When using the system libwayland for the client, we
 # should use the manifest files provided in the sysroot.
-if (use_system_libwayland_client && use_sysroot) {
+if (use_system_libwayland && use_sysroot) {
   standard_protocol_prefix = "${sysroot}/usr/share/wayland-protocols"
 } else {
   standard_protocol_prefix = "src"

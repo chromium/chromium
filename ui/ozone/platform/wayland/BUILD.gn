@@ -345,7 +345,7 @@ source_set("wayland") {
     ]
   }
 
-  if (use_system_libwayland_client) {
+  if (use_system_libwayland) {
     defines += [ "USE_LIBWAYLAND_STUBS" ]
     deps += [ "//third_party/wayland:wayland_stubs" ]
   } else {

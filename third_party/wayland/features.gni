@@ -8,25 +8,15 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
 
 declare_args() {
-  # This variable is deprecated.  use_system_libwayland_client should be used
-  # instead.
+  # Controls whether the build should use the version of Wayland
+  # library shipped with the system or Chromium third_party.
   use_system_libwayland = false
-
-  # Controls whether the build should use the version of Wayland
-  # library shipped with the system or Chromium third_party (server library).
-  use_system_libwayland_server = false
-}
-
-declare_args() {
-  # Controls whether the build should use the version of Wayland
-  # library shipped with the system or Chromium third_party (client library).
-  use_system_libwayland_client = use_system_libwayland
 }
 
 declare_args() {
   # This may be set by Chromium packagers who do not wish to use the bundled
   # wayland scanner.
-  use_system_wayland_scanner = use_system_libwayland_client
+  use_system_wayland_scanner = use_system_libwayland
 }
 
 declare_args() {
@@ -41,7 +31,7 @@ declare_args() {
   }
 }
 
-if (use_system_libwayland_client) {
+if (use_system_libwayland) {
   # ChromeOS should always be built with the bundled libwayland.
   assert(!is_chromeos)
 }
