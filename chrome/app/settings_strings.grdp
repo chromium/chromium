@@ -1999,8 +1999,10 @@
   <message name="IDS_SETTINGS_SAFETY_CHECK_EXTENSIONS_BUTTON_ARIA_LABEL" desc="Accessibility text for the button that allows users to review their extensions settings.">
     Review extensions
   </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL" translateable="false" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the header of the module in site settings notification page.">
-    Review websites that sent a lot of notifications
+  <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the header of the module in the site settings notification page. The number represents the number of notification permissions to be reviewed.">
+    {NUM_SITES, plural,
+     =1 {Review 1 site that recently sent a lot of notifications}
+     other {Review {NUM_SITES} sites that recently sent a lot of notifications}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_SECONDARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the description of the module in site settings notification page.">
     These sites sent a lot of notifications recently. You can stop them from sending future notifications.
