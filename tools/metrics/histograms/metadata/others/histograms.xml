@@ -3429,6 +3429,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AggregatableReport.ExtraReportDelay" units="ms"
+    expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the &quot;extra&quot; non-scheduled time it took to send a
+    particular aggregatable attribution report. This is primarily due to a
+    report's scheduled report time taking place while the browser is closed or
+    there is network issue. Recorded when an aggregatable report is to be
+    assembled.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AggregatableReport.FilteredTriggerDataPercentage"
     units="%" expires_after="M117">
   <owner>linnan@chromium.org</owner>
@@ -3479,6 +3493,21 @@ chromium-metrics-reviews@google.com.
     Records the high level request status of an aggregatable report. Recorded
     once per aggregatable report. For aggregatable report that has been retried,
     only the last retry will be counted.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.SchedulerReportDelay"
+    units="ms" expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time difference from when the report was intended to be sent,
+    and the actual report time. This is different from
+    Conversions.AggregatableReport.ExtraReportDelay because it uses the send
+    attempt report time, rather than initial report time assigned by the API.
+    Accounts for any delays in Chrome scheduling the report. Recorded when an
+    aggregatabl report is to be assembled.
   </summary>
 </histogram>
 
@@ -4024,6 +4053,21 @@ chromium-metrics-reviews@google.com.
     Records the high level request status of a conversion report. Recorded for
     every conversion report sent. For conversion report that has been retried,
     every retry will be counted.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.SchedulerReportDelay" units="ms"
+    expires_after="M117">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the time difference from when the report was intended to be sent,
+    and the actual report time. This is different from
+    Conversions.ExtraReportDelay2 because it uses the send attempt report time,
+    rather than initial report time assigned by the API. Accounts for any delays
+    in Chrome scheduling the report. Recorded when an event-level report is to
+    be sent.
   </summary>
 </histogram>
 

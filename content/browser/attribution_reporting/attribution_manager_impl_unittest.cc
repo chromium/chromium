@@ -1457,9 +1457,12 @@ TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
 TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
   base::HistogramTester histograms;
 
-  attribution_manager_->HandleSource(
-      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
-  attribution_manager_->HandleTrigger(DefaultTrigger());
+  attribution_manager_->HandleSource(TestAggregatableSourceProvider()
+                                         .GetBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .Build());
+  attribution_manager_->HandleTrigger(
+      DefaultAggregatableTriggerBuilder().Build());
 
   // Prevent the report from being sent until after its original report time.
   SetConnectionTypeAndWaitForObserversToBeNotified(
@@ -1476,6 +1479,34 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
   histograms.ExpectUniqueTimeSample(
       "Conversions.ExtraReportDelay2",
       base::Days(3) + kDefaultOfflineReportDelay.min, 1);
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.AggregatableReport.ExtraReportDelay",
+      base::Days(3) + kDefaultOfflineReportDelay.min, 1);
+}
+
+TEST_F(AttributionManagerImplTest, SendReport_RecordsSchedulerReportDelay) {
+  base::HistogramTester histograms;
+
+  attribution_manager_->HandleSource(TestAggregatableSourceProvider()
+                                         .GetBuilder()
+                                         .SetExpiry(kImpressionExpiry)
+                                         .Build());
+  attribution_manager_->HandleTrigger(
+      DefaultAggregatableTriggerBuilder().Build());
+
+  EXPECT_THAT(StoredReports(), SizeIs(2));
+
+  // Deliberately avoid running tasks so that the scheduler is delayed.
+  task_environment_.AdvanceClock(kFirstReportingWindow + base::Seconds(1));
+
+  // Cause any scheduled tasks to run.
+  task_environment_.FastForwardBy(base::TimeDelta());
+
+  histograms.ExpectUniqueTimeSample("Conversions.SchedulerReportDelay",
+                                    base::Seconds(1), 1);
+  histograms.ExpectUniqueTimeSample(
+      "Conversions.AggregatableReport.SchedulerReportDelay", base::Seconds(1),
+      1);
 }
 
 TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {

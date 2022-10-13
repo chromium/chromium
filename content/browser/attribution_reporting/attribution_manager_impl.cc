@@ -209,6 +209,10 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
           report.report_time() - attribution_info.time;
       UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
                                 time_from_conversion_to_report_send.InHours());
+
+      UMA_HISTOGRAM_CUSTOM_TIMES("Conversions.SchedulerReportDelay",
+                                 now - report.report_time(), base::Seconds(1),
+                                 base::Days(1), 50);
       break;
     }
     case AttributionReport::Type::kAggregatableAttribution: {
@@ -218,6 +222,18 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
           "Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2",
           time_from_conversion_to_report_assembly, base::Minutes(1),
           base::Days(24), 50);
+
+      auto* data = absl::get_if<AttributionReport::AggregatableAttributionData>(
+          &report.data());
+      DCHECK(data);
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          "Conversions.AggregatableReport.ExtraReportDelay",
+          now - data->initial_report_time, base::Seconds(1), base::Days(24),
+          50);
+
+      UMA_HISTOGRAM_CUSTOM_TIMES(
+          "Conversions.AggregatableReport.SchedulerReportDelay",
+          now - report.report_time(), base::Seconds(1), base::Days(1), 50);
       break;
     }
   }
