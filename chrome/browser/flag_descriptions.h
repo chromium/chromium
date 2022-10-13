@@ -1742,12 +1742,6 @@ extern const char kUseSearchClickForRightClickDescription[];
 extern const char kVCBackgroundBlurName[];
 extern const char kVCBackgroundBlurDescription[];
 
-extern const char kVCBackgroundReplaceName[];
-extern const char kVCBackgroundReplaceDescription[];
-
-extern const char kVCPortraitRelightingName[];
-extern const char kVCPortraitRelightingDescription[];
-
 extern const char kV8VmFutureName[];
 extern const char kV8VmFutureDescription[];
 

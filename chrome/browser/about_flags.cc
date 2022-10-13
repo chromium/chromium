@@ -3138,37 +3138,70 @@ const FeatureEntry::FeatureVariation kQuickDimVariations[] = {
      std::size(kQuickDim10sQuickLock130sFeedback), nullptr},
 };
 
-const FeatureEntry::FeatureParam kVCBackgroundBlurLowest[] = {
-    {"blur_level", "lowest"},
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale15Sample4[] = {
+    {"blur_scale", "0.15"},
+    {"blur_samples", "4"},
 };
 
-const FeatureEntry::FeatureParam kVCBackgroundBlurLight[] = {
-    {"blur_level", "light"},
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale15Sample8[] = {
+    {"blur_scale", "0.15"},
+    {"blur_samples", "8"},
 };
 
-const FeatureEntry::FeatureParam kVCBackgroundBlurMedium[] = {
-    {"blur_level", "medium"},
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale15Sample16[] = {
+    {"blur_scale", "0.15"},
+    {"blur_samples", "16"},
 };
 
-const FeatureEntry::FeatureParam kVCBackgroundBlurHeavy[] = {
-    {"blur_level", "heavy"},
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale25Sample4[] = {
+    {"blur_scale", "0.25"},
+    {"blur_samples", "4"},
 };
 
-const FeatureEntry::FeatureParam kVCBackgroundBlurMaximum[] = {
-    {"blur_level", "maximum"},
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale25Sample8[] = {
+    {"blur_scale", "0.25"},
+    {"blur_samples", "8"},
+};
+
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale25Sample16[] = {
+    {"blur_scale", "0.25"},
+    {"blur_samples", "16"},
+};
+
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale35Sample4[] = {
+    {"blur_scale", "0.35"},
+    {"blur_samples", "4"},
+};
+
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale35Sample8[] = {
+    {"blur_scale", "0.35"},
+    {"blur_samples", "8"},
+};
+
+const FeatureEntry::FeatureParam kVCBackgroundBlurScale35Sample16[] = {
+    {"blur_scale", "0.35"},
+    {"blur_samples", "16"},
 };
 
 const FeatureEntry::FeatureVariation kVCBackgroundBlurVariations[] = {
-    {"Lowest Blur", kVCBackgroundBlurLowest, std::size(kVCBackgroundBlurLowest),
-     nullptr},
-    {"Light Blur", kVCBackgroundBlurLight, std::size(kVCBackgroundBlurLight),
-     nullptr},
-    {"Medium Blur", kVCBackgroundBlurMedium, std::size(kVCBackgroundBlurMedium),
-     nullptr},
-    {"Heavy Blur", kVCBackgroundBlurHeavy, std::size(kVCBackgroundBlurHeavy),
-     nullptr},
-    {"Maximum Blur", kVCBackgroundBlurMaximum,
-     std::size(kVCBackgroundBlurMaximum), nullptr},
+    {"Scale15Sample4", kVCBackgroundBlurScale15Sample4,
+     std::size(kVCBackgroundBlurScale15Sample4), nullptr},
+    {"Scale15Sample8", kVCBackgroundBlurScale15Sample8,
+     std::size(kVCBackgroundBlurScale15Sample8), nullptr},
+    {"Scale15Sample16", kVCBackgroundBlurScale15Sample16,
+     std::size(kVCBackgroundBlurScale15Sample16), nullptr},
+    {"Scale25Sample4", kVCBackgroundBlurScale25Sample4,
+     std::size(kVCBackgroundBlurScale25Sample4), nullptr},
+    {"Scale25Sample8", kVCBackgroundBlurScale25Sample8,
+     std::size(kVCBackgroundBlurScale25Sample8), nullptr},
+    {"Scale25Sample16", kVCBackgroundBlurScale25Sample16,
+     std::size(kVCBackgroundBlurScale25Sample16), nullptr},
+    {"Scale35Sample4", kVCBackgroundBlurScale35Sample4,
+     std::size(kVCBackgroundBlurScale35Sample4), nullptr},
+    {"Scale35Sample8", kVCBackgroundBlurScale35Sample8,
+     std::size(kVCBackgroundBlurScale35Sample8), nullptr},
+    {"Scale35Sample16", kVCBackgroundBlurScale35Sample16,
+     std::size(kVCBackgroundBlurScale35Sample16), nullptr},
 };
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -8957,14 +8990,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kVCBackgroundBlur,
                                     kVCBackgroundBlurVariations,
                                     "VCBackgroundBlur")},
-
-    {"vc-background-replace", flag_descriptions::kVCBackgroundReplaceName,
-     flag_descriptions::kVCBackgroundReplaceDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kVCBackgroundReplace)},
-
-    {"vc-portrait-relighting", flag_descriptions::kVCPortraitRelightingName,
-     flag_descriptions::kVCPortraitRelightingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kVCPortraitRelighting)},
 #endif
 
 #if BUILDFLAG(IS_WIN)

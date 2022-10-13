@@ -6876,23 +6876,13 @@
   },
   {
     "name": "vc-background-blur",
-    "owners": [ "shafron", "skyostil", "charleszhao", "jmpollock" ],
-    "expiry_milestone": 115
-  },
-  {
-    "name": "vc-background-replace",
-    "owners": [ "shafron", "skyostil", "charleszhao", "jmpollock" ],
+    "owners": [ "shafron", "skyostil", "charleszhao" ],
     "expiry_milestone": 115
   },
   {
     "name": "vc-controls-ui",
     "owners": [ "rtinkoff", "cros-status-area-eng@google.com" ],
     "expiry_milestone": 117
-  },
-  {
-    "name": "vc-portrait-relighting",
-    "owners": [ "shafron", "skyostil", "charleszhao", "jmpollock" ],
-    "expiry_milestone": 115
   },
   {
     "name": "verbose-logging-in-nacl",
