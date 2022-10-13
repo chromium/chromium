@@ -148,16 +148,14 @@ void BindURLToStatement(const TemplateURLData& data,
                 data.originating_url.is_valid()
                     ? database_utils::GurlToDatabaseUrl(data.originating_url)
                     : std::string());
-  s->BindInt64(starting_column + 6,
-               data.date_created.since_origin().InMicroseconds());
+  s->BindTime(starting_column + 6, data.date_created);
   s->BindInt(starting_column + 7, data.usage_count);
   s->BindString(starting_column + 8,
                 base::JoinString(data.input_encodings, ";"));
   s->BindString(starting_column + 9, data.suggestions_url);
   s->BindInt(starting_column + 10, data.prepopulate_id);
   s->BindBool(starting_column + 11, data.created_by_policy);
-  s->BindInt64(starting_column + 12,
-               data.last_modified.since_origin().InMicroseconds());
+  s->BindTime(starting_column + 12, data.last_modified);
   s->BindString(starting_column + 13, data.sync_guid);
   s->BindString(starting_column + 14, alternate_urls);
   s->BindString(starting_column + 15, data.image_url);
@@ -165,8 +163,7 @@ void BindURLToStatement(const TemplateURLData& data,
   s->BindString(starting_column + 17, data.suggestions_url_post_params);
   s->BindString(starting_column + 18, data.image_url_post_params);
   s->BindString(starting_column + 19, data.new_tab_url);
-  s->BindInt64(starting_column + 20,
-               data.last_visited.since_origin().InMicroseconds());
+  s->BindTime(starting_column + 20, data.last_visited);
   s->BindBool(starting_column + 21, data.created_from_play_api);
   s->BindInt(starting_column + 22, static_cast<int>(data.is_active));
   s->BindInt(starting_column + 23, data.starter_pack_id);
@@ -448,9 +445,8 @@ bool KeywordTable::MigrateToVersion77IncreaseTimePrecision() {
   sql::Statement s(db_->GetUniqueStatement(query.c_str()));
   std::vector<std::tuple<TemplateURLID, Time, Time, Time>> updates;
   while (s.Step()) {
-    updates.push_back(std::make_tuple(
-        s.ColumnInt64(0), Time::FromTimeT(s.ColumnInt64(1)),
-        Time::FromTimeT(s.ColumnInt64(2)), Time::FromTimeT(s.ColumnInt64(3))));
+    updates.emplace_back(std::make_tuple(s.ColumnInt64(0), s.ColumnTime(1),
+                                         s.ColumnTime(2), s.ColumnTime(3)));
   }
   if (!s.Succeeded())
     return false;
@@ -460,12 +456,9 @@ bool KeywordTable::MigrateToVersion77IncreaseTimePrecision() {
         SQL_FROM_HERE,
         "UPDATE keywords SET date_created = ?, last_modified = ?, last_visited "
         "= ? WHERE id = ? "));
-    update_statement.BindInt64(
-        0, std::get<1>(tuple).since_origin().InMicroseconds());
-    update_statement.BindInt64(
-        1, std::get<2>(tuple).since_origin().InMicroseconds());
-    update_statement.BindInt64(
-        2, std::get<3>(tuple).since_origin().InMicroseconds());
+    update_statement.BindTime(0, std::get<1>(tuple));
+    update_statement.BindTime(1, std::get<2>(tuple));
+    update_statement.BindTime(2, std::get<3>(tuple));
     update_statement.BindInt64(3, std::get<0>(tuple));
     if (!update_statement.Run()) {
       return false;
@@ -516,8 +509,8 @@ bool KeywordTable::GetKeywordDataFromStatement(sql::Statement& s,
   data->input_encodings = base::SplitString(
       s.ColumnString(9), ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   data->id = s.ColumnInt64(0);
-  data->date_created = base::Time() + base::Microseconds(s.ColumnInt64(7));
-  data->last_modified = base::Time() + base::Microseconds(s.ColumnInt64(13));
+  data->date_created = s.ColumnTime(7);
+  data->last_modified = s.ColumnTime(13);
   data->created_by_policy = s.ColumnBool(12);
   data->created_from_play_api = s.ColumnBool(22);
   data->usage_count = s.ColumnInt(8);
@@ -529,14 +522,14 @@ bool KeywordTable::GetKeywordDataFromStatement(sql::Statement& s,
   data->alternate_urls.clear();
   absl::optional<base::Value> value(base::JSONReader::Read(s.ColumnString(15)));
   if (value && value->is_list()) {
-    for (const base::Value& alternate_url : value->GetList()) {
+    for (const base::Value& alternate_url : value->GetListDeprecated()) {
       if (alternate_url.is_string()) {
         data->alternate_urls.push_back(alternate_url.GetString());
       }
     }
   }
 
-  data->last_visited = base::Time() + base::Microseconds(s.ColumnInt64(21));
+  data->last_visited = s.ColumnTime(21);
 
   return true;
 }
