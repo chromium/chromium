@@ -1126,12 +1126,52 @@ TEST_P(WidgetWithDestroyedNativeViewTest, IsVisibleOnAllWorkspaces) {
   widget()->IsVisibleOnAllWorkspaces();
 }
 
+TEST_P(WidgetWithDestroyedNativeViewTest, LayerTreeChanged) {
+  widget()->LayerTreeChanged();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, LayoutRootViewIfNecessary) {
+  widget()->LayoutRootViewIfNecessary();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, LockPaintAsActive) {
+  widget()->LockPaintAsActive();
+}
+
 TEST_P(WidgetWithDestroyedNativeViewTest, Maximize) {
   widget()->Maximize();
 }
 
 TEST_P(WidgetWithDestroyedNativeViewTest, Minimize) {
   widget()->Minimize();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, movement_disabled) {
+  widget()->movement_disabled();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, native_widget_private) {
+  widget()->native_widget_private();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, native_widget) {
+  widget()->native_widget();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, non_client_view) {
+  widget()->non_client_view();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, NotifyNativeViewHierarchyChanged) {
+  widget()->NotifyNativeViewHierarchyChanged();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, NotifyNativeViewHierarchyWillChange) {
+  widget()->NotifyNativeViewHierarchyWillChange();
+}
+
+TEST_P(WidgetWithDestroyedNativeViewTest, NotifyWillRemoveView) {
+  widget()->NotifyWillRemoveView(widget()->non_client_view());
 }
 
 TEST_P(WidgetWithDestroyedNativeViewTest, ReleaseCapture) {
