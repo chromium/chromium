@@ -4118,8 +4118,18 @@ class WebViewChannelTest : public WebViewTestBase,
 
 // This test verify that the set of rules registries of a webview will be
 // removed from RulesRegistryService after the webview is gone.
-IN_PROC_BROWSER_TEST_P(WebViewChannelTest,
-                       Shim_TestRulesRegistryIDAreRemovedAfterWebViewIsGone) {
+// TODO(crbug.com/1344573): The test has the same callstack caused by the race
+// with ScopedFeatureList as the issue describes.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Shim_TestRulesRegistryIDAreRemovedAfterWebViewIsGone \
+  DISABLED_Shim_TestRulesRegistryIDAreRemovedAfterWebViewIsGone
+#else
+#define MAYBE_Shim_TestRulesRegistryIDAreRemovedAfterWebViewIsGone \
+  Shim_TestRulesRegistryIDAreRemovedAfterWebViewIsGone
+#endif
+IN_PROC_BROWSER_TEST_P(
+    WebViewChannelTest,
+    MAYBE_Shim_TestRulesRegistryIDAreRemovedAfterWebViewIsGone) {
   ASSERT_EQ(extensions::GetCurrentChannel(), GetChannelParam());
   SCOPED_TRACE(base::StringPrintf(
       "Testing Channel %s",
