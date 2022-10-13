@@ -23,17 +23,38 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
             self.test_option,
             self.suffixes_option,
             self.port_name_option,
+            self.flag_specific_option,
             self.results_directory_option,
         ])
 
     def execute(self, options, args, tool):
         self._tool = tool
         port_name = options.port_name
+        flag_specific = options.flag_specific
         for suffix in options.suffixes.split(','):
-            self._copy_existing_baseline(port_name, options.test, suffix)
+            self._copy_existing_baseline(port_name, flag_specific,
+                                         options.test, suffix)
 
-    def _copy_existing_baseline(self, port_name, test_name, suffix):
+    def _log_skipped_test(self, port, test_name):
+        flag_specific = port.get_option('flag_specific')
+        if flag_specific:
+            _log.debug('%s is skipped on %s(%s).', test_name, port.name(),
+                       flag_specific)
+        else:
+            _log.debug('%s is skipped on %s.', test_name, port.name())
+
+    def _copy_existing_baseline(self, port_name, flag_specific, test_name,
+                                suffix):
         """Copies the baseline for the given builder to all "predecessor" directories."""
+
+        # copy existing non virtual baseline to virtual subtree
+        self._patch_virtual_subtree(port_name, flag_specific, test_name,
+                                    suffix)
+
+        if flag_specific:
+            # No test will fallback to a flag-specific baseline
+            return
+
         baseline_directory = self._tool.port_factory.get(
             port_name).baseline_version_dir()
         ports = [
@@ -41,17 +62,19 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
             _immediate_predecessors_in_fallback(baseline_directory)
         ]
 
+        # Copy baseline to any flag specific suite running on the port
+        for flag_specific_config in self._tool.builders.flag_specific_options_for_port_name(
+                port_name):
+            port = self._tool.port_factory.get(port_name)
+            port.set_option_default('flag_specific', flag_specific_config)
+            ports.append(port)
+
         old_baselines = []
         new_baselines = []
 
         # Need to gather all the baseline paths before modifying the filesystem since
         # the modifications can affect the results of port.expected_filename.
         for port in ports:
-            old_baseline = port.expected_filename(test_name, '.' + suffix)
-            if not self._tool.filesystem.exists(old_baseline):
-                _log.debug('No existing baseline for %s.', test_name)
-                continue
-
             new_baseline = self._tool.filesystem.join(
                 port.baseline_version_dir(),
                 self._file_name_for_expected_result(test_name, suffix))
@@ -63,11 +86,17 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
             full_expectations = TestExpectations(port)
             if ResultType.Skip in full_expectations.get_expectations(
                     test_name).results:
-                _log.debug('%s is skipped on %s.', test_name, port.name())
+                self._log_skipped_test(port, test_name)
                 continue
-            if (port.skipped_due_to_smoke_tests(test_name) or
-                    port.virtual_test_skipped_due_to_platform_config(test_name)):
-                _log.debug('%s is skipped on %s.', test_name, port.name())
+            if port.skips_test(test_name):
+                self._log_skipped_test(port, test_name)
+                continue
+
+            old_baseline = port.expected_filename(test_name, '.' + suffix)
+            if not self._tool.filesystem.exists(old_baseline):
+                _log.debug('No existing baseline(%s) for %s.', suffix,
+                           test_name)
+                # TODO: downloading all passing baseline for this test harness test
                 continue
 
             old_baselines.append(old_baseline)
@@ -76,6 +105,58 @@ class CopyExistingBaselines(AbstractRebaseliningCommand):
         for i in range(len(old_baselines)):
             old_baseline = old_baselines[i]
             new_baseline = new_baselines[i]
+
+            _log.debug('Copying baseline from %s to %s.', old_baseline,
+                       new_baseline)
+            self._tool.filesystem.maybe_make_directory(
+                self._tool.filesystem.dirname(new_baseline))
+            self._tool.filesystem.copyfile(old_baseline, new_baseline)
+
+    def _patch_virtual_subtree(self, port_name, flag_specific, test_name,
+                               suffix):
+        port = self._tool.port_factory.get(port_name)
+        if flag_specific:
+            port.set_option_default('flag_specific', flag_specific)
+        full_expectations = TestExpectations(port)
+
+        if port.lookup_virtual_test_base(test_name):
+            # Do nothing for virtual tests
+            return
+
+        old_baseline = port.expected_filename(test_name,
+                                              '.' + suffix,
+                                              return_default=False)
+
+        for vts in port.virtual_test_suites():
+            virtual_test_name = vts.full_prefix + test_name
+            if port.lookup_virtual_test_base(virtual_test_name) is None:
+                # Not a valid virtual test
+                continue
+
+            if ResultType.Skip in full_expectations.get_expectations(
+                    virtual_test_name).results:
+                self._log_skipped_test(port, virtual_test_name)
+                continue
+
+            if port.skips_test(test_name):
+                self._log_skipped_test(port, virtual_test_name)
+                continue
+
+            baseline_dir, filename = port.expected_baselines(
+                virtual_test_name, '.' + suffix)[0]
+            if baseline_dir is not None:
+                # This virtual test does not fall back to non virtual baseline
+                continue
+
+            if old_baseline is None:
+                _log.debug('No existing non virtual baseline(%s) for %s.',
+                           suffix, virtual_test_name)
+                # TODO: downloading all passing baseline for this virtual test harness test
+                continue
+
+            new_baseline = self._tool.filesystem.join(
+                port.baseline_version_dir(),
+                self._file_name_for_expected_result(virtual_test_name, suffix))
 
             _log.debug('Copying baseline from %s to %s.', old_baseline,
                        new_baseline)

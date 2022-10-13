@@ -722,11 +722,24 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             self.command_options(builders=['MOCK Try Linux Multiple Steps']),
             ['one/text-fail.html', 'one/does-not-exist.html'], self.tool)
         self.assertEqual(exit_code, 0)
-        self.assertEqual(self.tool.executive.calls[0], [[
-            'python', 'echo', 'copy-existing-baselines-internal', '--test',
-            'one/text-fail.html', '--suffixes', 'txt', '--port-name',
-            'test-linux-trusty'
-        ]])
+        self.assertEqual(sorted(self.tool.executive.calls[0]), [
+            [
+                'python', 'echo', 'copy-existing-baselines-internal', '--test',
+                'one/text-fail.html', '--suffixes', 'txt', '--port-name',
+                'test-linux-trusty'
+            ],
+            [
+                'python', 'echo', 'copy-existing-baselines-internal', '--test',
+                'one/text-fail.html', '--suffixes', 'txt', '--port-name',
+                'test-linux-trusty', '--flag-specific', 'disable-layout-ng'
+            ],
+            [
+                'python', 'echo', 'copy-existing-baselines-internal', '--test',
+                'one/text-fail.html', '--suffixes', 'txt', '--port-name',
+                'test-linux-trusty', '--flag-specific',
+                'disable-site-isolation-trials'
+            ],
+        ])
         self.assertEqual(sorted(self.tool.executive.calls[1]), [
             [
                 'python', 'echo', 'rebaseline-test-internal', '--test',

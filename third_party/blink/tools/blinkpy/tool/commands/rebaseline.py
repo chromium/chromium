@@ -412,10 +412,10 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         return args
 
     def _rebaseline_commands(self, test_baseline_set, options):
-        test_port_pairs_to_suffixes = collections.defaultdict(set)
         path_to_blink_tool = self._tool.path()
         cwd = self._tool.git().checkout_root
         rebaseline_commands = []
+        copy_baseline_commands = []
         lines_to_remove = {}
         fetch_urls = []
 
@@ -445,11 +445,9 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                     lines_to_remove[test].append(port_name)
                 continue
 
-            if suffixes:
-                test_port_pairs_to_suffixes[test, port_name].update(suffixes)
-
             flag_spec_option = self._tool.builders.flag_specific_option(
                 build.builder_name, step_name)
+
             args = self._rebaseline_args(test, suffixes, port_name,
                                          flag_spec_option, options.verbose)
             args.extend(['--builder', build.builder_name])
@@ -470,19 +468,14 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             ] + args
             rebaseline_commands.append((rebaseline_command, cwd))
 
-        copy_baseline_commands = []
-        for (test, port_name), suffixes in sorted(
-                test_port_pairs_to_suffixes.items()):
             copy_command = [
                 self._tool.executable,
                 path_to_blink_tool,
                 'copy-existing-baselines-internal',
             ]
             copy_command.extend(
-                self._rebaseline_args(test,
-                                      suffixes,
-                                      port_name,
-                                      verbose=options.verbose))
+                self._rebaseline_args(test, suffixes, port_name,
+                                      flag_spec_option, options.verbose))
             copy_baseline_commands.append((copy_command, cwd))
 
         return copy_baseline_commands, rebaseline_commands, lines_to_remove

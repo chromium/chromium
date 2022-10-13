@@ -113,8 +113,19 @@ class BaseTestCase(unittest.TestCase):
         self.test_expectations_path = self.mac_port.path_to_generic_test_expectations_file(
         )
 
-        # These files must exist for Port classes to function properly.
-        self._write('VirtualTestSuites', '[]')
+        self._write(
+            'VirtualTestSuites',
+            json.dumps([{
+                "prefix":
+                "prefix",
+                "platforms": ["Linux", "Mac"],
+                "bases": [
+                    "userscripts/first-test.html",
+                    'userscripts/second-test.html'
+                ],
+                "args": ["--enable-features=flag"]
+            }]))
+
         self._write(
             'FlagSpecificConfig',
             json.dumps([
@@ -134,6 +145,7 @@ class BaseTestCase(unittest.TestCase):
         # Create some dummy tests (note _setup_mock_build_data uses the same test names).
         self._write('userscripts/first-test.html', 'Dummy test contents')
         self._write('userscripts/second-test.html', 'Dummy test contents')
+        self._write('userscripts/third-test.html', 'Dummy test contents')
 
         # In AbstractParallelRebaselineCommand._rebaseline_commands, a default port
         # object is gotten using self.tool.port_factory.get(), which is used to get

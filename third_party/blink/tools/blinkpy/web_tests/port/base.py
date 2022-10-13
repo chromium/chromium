@@ -1352,13 +1352,11 @@ class Port(object):
         """Checks whether the given test is skipped for this port.
 
         Returns True if:
-          - the test is a manual test
           - the port runs smoke tests only and the test is not in the list
           - the test is marked as Skip in NeverFixTest
           - the test is a virtual test not intended to run on this platform.
         """
-        return (self.is_manual_test(test)
-                or self.skipped_due_to_smoke_tests(test)
+        return (self.skipped_due_to_smoke_tests(test)
                 or self.skipped_in_never_fix_tests(test)
                 or self.virtual_test_skipped_due_to_platform_config(test))
 
