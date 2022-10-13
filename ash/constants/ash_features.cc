@@ -363,7 +363,7 @@ BASE_FEATURE(kCameraAppDocScanDlc,
 // camera app.
 BASE_FEATURE(kCameraAppMultiPageDocScan,
              "CameraAppMultiPageDocScan",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the camera privacy switch toasts and notification should be
 // displayed.
