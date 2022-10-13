@@ -32,6 +32,11 @@ int FakeContentAnalysisSdkClient::Acknowledge(
   return ack_status_;
 }
 
+int FakeContentAnalysisSdkClient::CancelRequests(
+    const content_analysis::sdk::ContentAnalysisCancelRequests& cancel) {
+  return cancel_status_;
+}
+
 const content_analysis::sdk::ContentAnalysisRequest&
 FakeContentAnalysisSdkClient::GetRequest() {
   return request_;
@@ -43,6 +48,10 @@ void FakeContentAnalysisSdkClient::SetAckStatus(int status) {
 
 void FakeContentAnalysisSdkClient::SetSendStatus(int status) {
   send_status_ = status;
+}
+
+void FakeContentAnalysisSdkClient::SetCancelStatus(int status) {
+  cancel_status_ = status;
 }
 
 void FakeContentAnalysisSdkClient::SetSendResponse(

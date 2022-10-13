@@ -23,6 +23,8 @@ class FakeContentAnalysisSdkClient : public content_analysis::sdk::Client {
            content_analysis::sdk::ContentAnalysisResponse* response) override;
   int Acknowledge(const content_analysis::sdk::ContentAnalysisAcknowledgement&
                       ack) override;
+  int CancelRequests(const content_analysis::sdk::ContentAnalysisCancelRequests&
+                         cancel) override;
 
   // Get the latest request client receives.
   const content_analysis::sdk::ContentAnalysisRequest& GetRequest();
@@ -32,6 +34,9 @@ class FakeContentAnalysisSdkClient : public content_analysis::sdk::Client {
 
   // Configure analysis request sending status.
   void SetSendStatus(int status);
+
+  // Configure cancel requests status.
+  void SetCancelStatus(int status);
 
   // Configure agent response.
   void SetSendResponse(
@@ -43,6 +48,7 @@ class FakeContentAnalysisSdkClient : public content_analysis::sdk::Client {
   content_analysis::sdk::ContentAnalysisRequest request_;
   int send_status_ = 0;
   int ack_status_ = 0;
+  int cancel_status_ = 0;
 };
 
 }  // namespace enterprise_connectors
