@@ -51,6 +51,7 @@ class ThemeSelectionScreen : public BaseScreen {
 
  private:
   bool MaybeSkip(WizardContext& context) override;
+  bool ShouldBeSkipped(const WizardContext& context) const override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;

@@ -37,6 +37,11 @@ bool BaseScreen::MaybeSkip(WizardContext& context) {
   return false;
 }
 
+bool BaseScreen::ShouldBeSkipped(const WizardContext& context) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void BaseScreen::HandleUserActionDeprecated(const std::string& action) {
   base::Value::List args;
   args.Append(action);

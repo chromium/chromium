@@ -40,9 +40,16 @@ class BaseScreen {
   // Makes wizard screen invisible.
   void Hide();
 
-  // Returns whether the screen should be skipped i. e. should be exited due to
-  // specific unmet conditions. Returns true if skips the screen.
+  // Returns whether the screen should be skipped i.e. should be exited due to
+  // specific unmet conditions.
+  // If the screen should be skipped, the method runs the exit callback with the
+  // kNotApplicable exit code.
   [[nodiscard]] virtual bool MaybeSkip(WizardContext& context);
+
+  // Returns whether the screen should be skipped i.e. should be exited due to
+  // specific unmet conditions, without running the exit callback.
+  [[nodiscard]] virtual bool ShouldBeSkipped(
+      const WizardContext& context) const;
 
   // Forwards user action if screen is shown.
   void HandleUserAction(const base::Value::List& args);
