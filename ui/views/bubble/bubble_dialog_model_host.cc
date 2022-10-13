@@ -417,6 +417,9 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 
   SetButtons(button_mask);
 
+  if (model_->override_default_button(GetPassKey()))
+    SetDefaultButton(model_->override_default_button(GetPassKey()).value());
+
   SetTitle(model_->title(GetPassKey()));
 
   SetSubtitle(model_->subtitle(GetPassKey()));
