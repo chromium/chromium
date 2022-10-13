@@ -899,17 +899,20 @@ void InstallableManager::CheckAndFetchScreenshots(bool check_form_factor) {
   screenshots_downloading_ = 0;
 
   int num_of_screenshots = 0;
-
   for (const auto& url : manifest().screenshots) {
 #if BUILDFLAG(IS_ANDROID)
-    auto reject_form_factor =
-        blink::mojom::ManifestScreenshot::FormFactor::kWide;
-#else
-    auto reject_form_factor =
-        blink::mojom::ManifestScreenshot::FormFactor::kNarrow;
-#endif  // BUILDFLAG(IS_ANDROID)
-    if (check_form_factor && url->form_factor == reject_form_factor)
+    if (check_form_factor &&
+        url->form_factor ==
+            blink::mojom::ManifestScreenshot::FormFactor::kWide) {
       continue;
+    }
+#else
+    if (check_form_factor &&
+        url->form_factor !=
+            blink::mojom::ManifestScreenshot::FormFactor::kWide) {
+      continue;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
 
     if (++num_of_screenshots > kMaximumNumOfScreenshots)
       break;
@@ -938,15 +941,8 @@ void InstallableManager::CheckAndFetchScreenshots(bool check_form_factor) {
   }
 
   if (!screenshots_downloading_) {
-    // If there is no screenshot that matches all the criteria, populate again
-    // without checking form_factor to fallback to screenshots with mismatching
-    // form_factor instead of showing nothing.
-    if (screenshots_.size() == 0 && check_form_factor) {
-      CheckAndFetchScreenshots(/*check_form_factor=*/false);
-    } else {
-      is_screenshots_fetch_complete_ = true;
-      WorkOnTask();
-    }
+    is_screenshots_fetch_complete_ = true;
+    WorkOnTask();
   }
 }
 

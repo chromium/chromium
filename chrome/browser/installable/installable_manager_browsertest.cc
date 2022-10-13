@@ -1976,18 +1976,22 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   InstallableParams params = GetManifestParams();
   params.fetch_screenshots = true;
 
-  // Check if only screenshots with mismatched form_factor are available, they
-  // are still used.
+  size_t num_of_screenshots = 0;
 #if BUILDFLAG(IS_ANDROID)
   NavigateAndRunInstallableManager(
       browser(), tester.get(), params,
       GetURLOfPageWithServiceWorkerAndManifest(
-          "/banners/manifest_with_only_wide_screenshots.json"));
+          "/banners/manifest_with_narrow_screenshots.json"));
+  // Screenshots with unspecified form_factor is not filtered out.
+  num_of_screenshots = 2;
+  EXPECT_EQ(2u, tester->screenshots().size());
 #else
   NavigateAndRunInstallableManager(
       browser(), tester.get(), params,
       GetURLOfPageWithServiceWorkerAndManifest(
-          "/banners/manifest_with_only_narrow_screenshots.json"));
+          "/banners/manifest_with_wide_screenshots.json"));
+  // Screenshots with unspecified form_factor is filtered out.
+  num_of_screenshots = 1;
 #endif
   run_loop.Run();
 
@@ -1995,7 +1999,7 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   EXPECT_FALSE(tester->manifest_url().is_empty());
 
   EXPECT_FALSE(tester->valid_manifest());
-  EXPECT_EQ(1u, tester->screenshots().size());
+  EXPECT_EQ(num_of_screenshots, tester->screenshots().size());
   EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
 }
 

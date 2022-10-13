@@ -26,26 +26,31 @@
     {
       "src":"screenshot1.png",
       "sizes":"1024×1380",
+      "form_factor": "wide",
       "type":"image/png"
     },
     {
       "src":"screenshot1-copy.png",
       "sizes":"1024×1380",
+      "form_factor": "wide",
       "type":"image/png"
     },
     {
       "src":"half-screenshot1-size.png",
       "sizes":"512x690",
+      "form_factor": "wide",
       "type":"image/png"
     },
     {
       "src":"screenshot2.png",
       "sizes":"1614×728",
+      "form_factor": "wide",
       "type":"image/png"
     },
     {
       "src":"screenshot3.png",
       "sizes":"1208×1020",
+      "form_factor": "wide",
       "type":"image/png"
     }
   ],

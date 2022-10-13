@@ -1,12 +1,17 @@
 {
-  "name": "PWA with only narrow screenshots",
+  "name": "PWA with only wide screenshots",
   "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
   "screenshots": [
     {
-      "src": "screenshot1-portrait.jpeg",
+      "src": "screenshot1.jpeg",
       "type": "image/jpeg",
-      "sizes": "409x728",
-      "form_factor": "narrow"
+      "sizes": "728x409",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screenshot1-samesize.jpeg",
+      "type": "image/jpeg",
+      "sizes": "728x409"
     }
   ],
   "icons": [
