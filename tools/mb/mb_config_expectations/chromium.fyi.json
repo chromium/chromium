@@ -480,7 +480,7 @@
       "dcheck_always_on": false,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
+      "is_component_build": true,
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,

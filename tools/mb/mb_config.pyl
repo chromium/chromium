@@ -3165,7 +3165,7 @@
 
     'mac_arm64_gpu_tests_debug_bot_minimal_symbols_no_nacl_reclient': [
       'arm64', 'gpu_tests', 'static_bot_reclient', 'minimal_symbols', 'disable_nacl',
-      'dcheck_off', 'debug',
+      'dcheck_off', 'debug', 'shared'
     ],
 
     'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl': [
