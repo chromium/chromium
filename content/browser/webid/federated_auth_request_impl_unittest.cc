@@ -32,6 +32,7 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,6 +54,7 @@ using DismissReason = content::IdentityRequestDialogController::DismissReason;
 using FedCmEntry = ukm::builders::Blink_FedCm;
 using FedCmIdpEntry = ukm::builders::Blink_FedCmIdp;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
+using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using TokenStatus = content::FedCmRequestIdTokenStatus;
 using LoginState = content::IdentityRequestAccount::LoginState;
 using SignInMode = content::IdentityRequestAccount::SignInMode;
@@ -196,7 +198,9 @@ struct MockConfiguration {
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
-    FetchStatus::kSuccess, kPrivacyPolicyUrl, kTermsOfServiceUrl};
+    {ParseStatus::kSuccess, net::HTTP_OK},
+    kPrivacyPolicyUrl,
+    kTermsOfServiceUrl};
 
 static const IdentityProviderParameters kDefaultIdentityProvider{
     kProviderUrlFull, kClientId, kNonce};
@@ -208,14 +212,14 @@ static const RequestParameters kDefaultRequestParameters{
 static const MockIdpInfo kDefaultIdentityProviderInfo{
     {kManifestList},
     {
-        FetchStatus::kSuccess,
+        {ParseStatus::kSuccess, net::HTTP_OK},
         kAccountsEndpoint,
         kTokenEndpoint,
         kClientMetadataEndpoint,
         kRevocationEndpoint,
     },
     kDefaultClientMetadata,
-    FetchStatus::kSuccess,
+    {ParseStatus::kSuccess, net::HTTP_OK},
     kAccounts,
 };
 
@@ -226,34 +230,34 @@ constexpr char kProviderOneUrlFull[] = "https://idp1.example/fedcm.json";
 static const MockIdpInfo kProviderOneInfo{
     {{kProviderOneUrlFull}},
     {
-        FetchStatus::kSuccess,
+        {ParseStatus::kSuccess, net::HTTP_OK},
         "https://idp1.example/accounts",
         "https://idp1.example/token",
         "https://idp1.example/client_metadata",
         "https://idp1.example/revoke",
     },
     kDefaultClientMetadata,
-    FetchStatus::kSuccess,
+    {ParseStatus::kSuccess, net::HTTP_OK},
     kAccounts};
 
 constexpr char kProviderTwoUrlFull[] = "https://idp2.example/fedcm.json";
 static const MockIdpInfo kProviderTwoInfo{
     {{kProviderTwoUrlFull}},
     {
-        FetchStatus::kSuccess,
+        {ParseStatus::kSuccess, net::HTTP_OK},
         "https://idp2.example/accounts",
         "https://idp2.example/token",
         "https://idp2.example/client_metadata",
         "https://idp2.example/revoke",
     },
     kDefaultClientMetadata,
-    FetchStatus::kSuccess,
+    {ParseStatus::kSuccess, net::HTTP_OK},
     kMultipleAccounts};
 
 static const MockConfiguration kConfigurationValid{
     kToken,
     kSingleProviderInfo,
-    FetchStatus::kSuccess,
+    {ParseStatus::kSuccess, net::HTTP_OK},
     false /* delay_token_response */,
     false /* customized_dialog */,
     true /* wait_for_callback */};
@@ -447,9 +451,9 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     std::set<GURL> url_set(
         config_.idp_info[provider_key].manifest_list.provider_urls.begin(),
         config_.idp_info[provider_key].manifest_list.provider_urls.end());
+    FetchStatus success{ParseStatus::kSuccess, net::HTTP_OK};
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), FetchStatus::kSuccess, url_set));
+        FROM_HERE, base::BindOnce(std::move(callback), success, url_set));
   }
 
   void FetchManifest(const GURL& provider,
@@ -523,8 +527,9 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     fetched_endpoints_ |= FetchedEndpoint::TOKEN;
 
     std::string delivered_token =
-        config_.token_response == FetchStatus::kSuccess ? config_.token
-                                                        : std::string();
+        config_.token_response.parse_status == ParseStatus::kSuccess
+            ? config_.token
+            : std::string();
     base::OnceCallback bound_callback = base::BindOnce(
         std::move(callback), config_.token_response, delivered_token);
     if (config_.delay_token_response) {
@@ -856,7 +861,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                            const MockConfiguration& config) {
     bool is_all_accounts_response_successful{true};
     for (const auto& idp_info : config.idp_info) {
-      if (idp_info.second.accounts_response != FetchStatus::kSuccess) {
+      if (idp_info.second.accounts_response.parse_status !=
+          ParseStatus::kSuccess) {
         is_all_accounts_response_successful = false;
         break;
       }
@@ -1212,8 +1218,8 @@ TEST_F(FederatedAuthRequestImplTest, ProviderNotTrustworthy) {
 // Test that request fails if accounts endpoint cannot be reached.
 TEST_F(FederatedAuthRequestImplTest, AccountEndpointCannotBeReached) {
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].accounts_response =
-      FetchStatus::kNoResponseError;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kNoResponseError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
@@ -1226,8 +1232,8 @@ TEST_F(FederatedAuthRequestImplTest, AccountEndpointCannotBeReached) {
 // Test that request fails if account endpoint response cannot be parsed.
 TEST_F(FederatedAuthRequestImplTest, AccountsCannotBeParsed) {
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].accounts_response =
-      FetchStatus::kInvalidResponseError;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidResponseError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
@@ -1399,7 +1405,8 @@ TEST_F(FederatedAuthRequestImplTest,
       .Times(0);
 
   MockConfiguration configuration = kConfigurationValid;
-  configuration.token_response = FetchStatus::kInvalidResponseError;
+  configuration.token_response.parse_status =
+      ParseStatus::kInvalidResponseError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
@@ -2314,8 +2321,8 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_CALL(*mock_dialog_controller_, ShowFailureDialog(_, _, _, _, _))
       .Times(0);
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].accounts_response =
-      FetchStatus::kInvalidResponseError;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidResponseError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
@@ -2348,8 +2355,8 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestShowFailureUi) {
       .WillRepeatedly(Return(true));
 
   MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].accounts_response =
-      FetchStatus::kInvalidResponseError;
+  configuration.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      ParseStatus::kInvalidResponseError;
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
       /* selected_idp_config_url=*/absl::nullopt,
@@ -2417,7 +2424,7 @@ TEST_F(FederatedAuthRequestImplTest, AllSuccessfulMultiIdpRequest) {
   MockConfiguration configuration{kToken,
                                   {{kProviderOneUrlFull, kProviderOneInfo},
                                    {kProviderTwoUrlFull, kProviderTwoInfo}},
-                                  FetchStatus::kSuccess,
+                                  {ParseStatus::kSuccess, net::HTTP_OK},
                                   false /* delay_token_response */,
                                   false /* customized_dialog */,
                                   true /* wait_for_callback */};
@@ -2449,7 +2456,7 @@ TEST_F(FederatedAuthRequestImplTest, PartiallySuccessfulMultiIdpRequest) {
   MockConfiguration configuration{kToken,
                                   {{kProviderOneUrlFull, kProviderOneInfo},
                                    {kProviderTwoUrlFull, kProviderTwoInfo}},
-                                  FetchStatus::kSuccess,
+                                  {ParseStatus::kSuccess, net::HTTP_OK},
                                   false /* delay_token_response */,
                                   true /* customized_dialog */,
                                   true /* wait_for_callback */};

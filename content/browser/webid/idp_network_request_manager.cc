@@ -40,6 +40,7 @@ using AccountList = IdpNetworkRequestManager::AccountList;
 using ClientMetadata = IdpNetworkRequestManager::ClientMetadata;
 using Endpoints = IdpNetworkRequestManager::Endpoints;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
+using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 
 // TODO(kenrb): These need to be defined in the explainer or draft spec and
 // referenced here.
@@ -263,51 +264,55 @@ void ParseIdentityProviderMetadata(const base::Value& idp_metadata_value,
   }
 }
 
-FetchStatus GetResponseError(std::string* response_body, int response_code) {
+ParseStatus GetResponseError(std::string* response_body, int response_code) {
   if (response_code == net::HTTP_NOT_FOUND)
-    return FetchStatus::kHttpNotFoundError;
+    return ParseStatus::kHttpNotFoundError;
 
   if (!response_body)
-    return FetchStatus::kNoResponseError;
+    return ParseStatus::kNoResponseError;
 
-  return FetchStatus::kSuccess;
+  return ParseStatus::kSuccess;
 }
 
-FetchStatus GetParsingError(
+ParseStatus GetParsingError(
     const data_decoder::DataDecoder::ValueOrError& result) {
   if (!result.has_value())
-    return FetchStatus::kInvalidResponseError;
+    return ParseStatus::kInvalidResponseError;
 
   auto& response = *result;
   if (!response.is_dict())
-    return FetchStatus::kInvalidResponseError;
+    return ParseStatus::kInvalidResponseError;
 
-  return FetchStatus::kSuccess;
+  return ParseStatus::kSuccess;
 }
 
 void OnJsonParsed(
     IdpNetworkRequestManager::ParseJsonCallback parse_json_callback,
+    int response_code,
     data_decoder::DataDecoder::ValueOrError result) {
-  FetchStatus parsing_error = GetParsingError(result);
-  std::move(parse_json_callback).Run(parsing_error, std::move(result));
+  ParseStatus parse_status = GetParsingError(result);
+  std::move(parse_json_callback)
+      .Run({parse_status, response_code}, std::move(result));
 }
 
 void OnDownloadedJson(
     IdpNetworkRequestManager::ParseJsonCallback parse_json_callback,
     std::unique_ptr<std::string> response_body,
     int response_code) {
-  FetchStatus response_error =
+  ParseStatus parse_status =
       GetResponseError(response_body.get(), response_code);
 
-  if (response_error != FetchStatus::kSuccess) {
+  if (parse_status != ParseStatus::kSuccess) {
     std::move(parse_json_callback)
-        .Run(response_error, data_decoder::DataDecoder::ValueOrError());
+        .Run({parse_status, response_code},
+             data_decoder::DataDecoder::ValueOrError());
     return;
   }
 
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response_body,
-      base::BindOnce(&OnJsonParsed, std::move(parse_json_callback)));
+      base::BindOnce(&OnJsonParsed, std::move(parse_json_callback),
+                     response_code));
 }
 
 void OnManifestListParsed(
@@ -320,28 +325,31 @@ void OnManifestListParsed(
 
   std::set<GURL> urls;
 
-  if (fetch_status != FetchStatus::kSuccess) {
+  if (fetch_status.parse_status != ParseStatus::kSuccess) {
     std::move(callback).Run(fetch_status, urls);
     return;
   }
 
   const base::Value::Dict* dict = result->GetIfDict();
   if (!dict) {
-    std::move(callback).Run(FetchStatus::kInvalidResponseError, urls);
+    std::move(callback).Run(
+        {ParseStatus::kInvalidResponseError, fetch_status.response_code}, urls);
     return;
   }
 
   const base::Value::List* list = dict->FindList(kProviderUrlListKey);
   if (!list) {
-    std::move(callback).Run(FetchStatus::kInvalidResponseError, urls);
+    std::move(callback).Run(
+        {ParseStatus::kInvalidResponseError, fetch_status.response_code}, urls);
     return;
   }
 
   for (const auto& value : *list) {
     const std::string* url_str = value.GetIfString();
     if (!url_str) {
-      std::move(callback).Run(FetchStatus::kInvalidResponseError,
-                              std::set<GURL>());
+      std::move(callback).Run(
+          {ParseStatus::kInvalidResponseError, fetch_status.response_code},
+          std::set<GURL>());
       return;
     }
     GURL url(*url_str);
@@ -351,7 +359,8 @@ void OnManifestListParsed(
     urls.insert(url);
   }
 
-  std::move(callback).Run(FetchStatus::kSuccess, urls);
+  std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
+                          urls);
 }
 
 void OnManifestParsed(const GURL& provider,
@@ -360,7 +369,7 @@ void OnManifestParsed(const GURL& provider,
                       IdpNetworkRequestManager::FetchManifestCallback callback,
                       FetchStatus fetch_status,
                       data_decoder::DataDecoder::ValueOrError result) {
-  if (fetch_status != FetchStatus::kSuccess) {
+  if (fetch_status.parse_status != ParseStatus::kSuccess) {
     std::move(callback).Run(fetch_status, Endpoints(),
                             IdentityProviderMetadata());
     return;
@@ -391,15 +400,15 @@ void OnManifestParsed(const GURL& provider,
                                   idp_brand_icon_minimum_size, idp_metadata);
   }
 
-  std::move(callback).Run(FetchStatus::kSuccess, endpoints,
-                          std::move(idp_metadata));
+  std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
+                          endpoints, std::move(idp_metadata));
 }
 
 void OnClientMetadataParsed(
     IdpNetworkRequestManager::FetchClientMetadataCallback callback,
     FetchStatus fetch_status,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (fetch_status != FetchStatus::kSuccess) {
+  if (fetch_status.parse_status != ParseStatus::kSuccess) {
     std::move(callback).Run(fetch_status, ClientMetadata());
     return;
   }
@@ -417,7 +426,8 @@ void OnClientMetadataParsed(
   data.privacy_policy_url = ExtractUrl(kPrivacyPolicyKey);
   data.terms_of_service_url = ExtractUrl(kTermsOfServiceKey);
 
-  std::move(callback).Run(FetchStatus::kSuccess, data);
+  std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
+                          data);
 }
 
 void OnAccountsRequestParsed(
@@ -425,7 +435,7 @@ void OnAccountsRequestParsed(
     IdpNetworkRequestManager::AccountsRequestCallback callback,
     FetchStatus fetch_status,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (fetch_status != FetchStatus::kSuccess) {
+  if (fetch_status.parse_status != ParseStatus::kSuccess) {
     std::move(callback).Run(fetch_status, AccountList());
     return;
   }
@@ -437,18 +447,21 @@ void OnAccountsRequestParsed(
       accounts && ParseAccounts(accounts, account_list, client_id);
 
   if (!accounts_present) {
-    std::move(callback).Run(FetchStatus::kInvalidResponseError, AccountList());
+    std::move(callback).Run(
+        {ParseStatus::kInvalidResponseError, fetch_status.response_code},
+        AccountList());
     return;
   }
 
-  std::move(callback).Run(FetchStatus::kSuccess, std::move(account_list));
+  std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
+                          std::move(account_list));
 }
 
 void OnTokenRequestParsed(
     IdpNetworkRequestManager::TokenRequestCallback callback,
     FetchStatus fetch_status,
     data_decoder::DataDecoder::ValueOrError result) {
-  if (fetch_status != FetchStatus::kSuccess) {
+  if (fetch_status.parse_status != ParseStatus::kSuccess) {
     std::move(callback).Run(fetch_status, std::string());
     return;
   }
@@ -458,10 +471,13 @@ void OnTokenRequestParsed(
   bool token_present = token && token->is_string();
 
   if (!token_present) {
-    std::move(callback).Run(FetchStatus::kInvalidResponseError, std::string());
+    std::move(callback).Run(
+        {ParseStatus::kInvalidResponseError, fetch_status.response_code},
+        std::string());
     return;
   }
-  std::move(callback).Run(FetchStatus::kSuccess, token->GetString());
+  std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
+                          token->GetString());
 }
 
 void OnLogoutCompleted(IdpNetworkRequestManager::LogoutCallback callback,
@@ -542,10 +558,12 @@ void IdpNetworkRequestManager::FetchManifestList(
       IdpNetworkRequestManager::ComputeManifestListUrl(provider);
 
   if (!manifest_list_url) {
+    // Pass net::HTTP_OK as the |response_code| so we do not add a console error
+    // message about a fetch we didn't even attempt.
+    FetchStatus fetch_status = {ParseStatus::kHttpNotFoundError, net::HTTP_OK};
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&OnManifestListParsed, std::move(callback),
-                                  /*manifest_list_url=*/GURL(),
-                                  FetchStatus::kHttpNotFoundError,
+                                  /*manifest_list_url=*/GURL(), fetch_status,
                                   data_decoder::DataDecoder::ValueOrError()));
     return;
   }
@@ -732,9 +750,12 @@ void IdpNetworkRequestManager::OnDownloadedUrl(
     IdpNetworkRequestManager::DownloadCallback callback,
     std::unique_ptr<std::string> response_body) {
   auto* response_info = url_loader->ResponseInfo();
+  // Use the HTTP response code, if available. If it is not available, use the
+  // NetError(). Note that it is acceptable to put these in the same int because
+  // NetErrors are not positive, so they do not conflict with HTTP error codes.
   int response_code = response_info && response_info->headers
                           ? response_info->headers->response_code()
-                          : -1;
+                          : url_loader->NetError();
 
   url_loader.reset();
   std::move(callback).Run(std::move(response_body), response_code);

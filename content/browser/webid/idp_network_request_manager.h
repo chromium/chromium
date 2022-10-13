@@ -62,11 +62,18 @@ class RenderFrameHostImpl;
 // the user to interact with the IDP.
 class CONTENT_EXPORT IdpNetworkRequestManager {
  public:
-  enum class FetchStatus {
+  enum class ParseStatus {
     kSuccess,
     kHttpNotFoundError,
     kNoResponseError,
     kInvalidResponseError,
+  };
+  struct FetchStatus {
+    ParseStatus parse_status;
+    // The HTTP response code, if one was received, otherwise the net error. It
+    // is possible to distinguish which it is since HTTP response codes are
+    // positive and net errors are negative.
+    int response_code;
   };
 
   enum class LogoutResponse {
@@ -133,7 +140,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       base::OnceCallback<void(FetchStatus, ClientMetadata)>;
   using LogoutCallback = base::OnceCallback<void()>;
   using ParseJsonCallback =
-      base::OnceCallback<void(FetchStatus fetch_status,
+      base::OnceCallback<void(FetchStatus,
                               data_decoder::DataDecoder::ValueOrError)>;
   using RevokeCallback = base::OnceCallback<void(RevokeResponse)>;
   using TokenRequestCallback =

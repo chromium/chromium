@@ -190,6 +190,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // information and then we can remove the console error messages.
   void AddConsoleErrorMessage(blink::mojom::FederatedAuthRequestResult result);
 
+  void MaybeAddResponseCodeToConsole(const char* fetch_description,
+                                     int response_code);
+
   bool ShouldCompleteRequestImmediately();
 
   // Computes the login state of accounts. It uses the IDP-provided signal, if

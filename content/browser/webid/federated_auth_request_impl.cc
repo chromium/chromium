@@ -624,29 +624,33 @@ void FederatedAuthRequestImpl::OnManifestListFetched(
     const IdentityProvider& idp,
     IdpNetworkRequestManager::FetchStatus status,
     const std::set<GURL>& urls) {
-  switch (status) {
-    case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+  constexpr char kDiscoveryFileStr[] = "discovery file";
+  switch (status.parse_status) {
+    case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
+      MaybeAddResponseCodeToConsole(kDiscoveryFileStr, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingManifestListHttpNotFound,
           TokenStatus::kManifestListHttpNotFound,
           /*should_delay_callback=*/true);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+    case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
+      MaybeAddResponseCodeToConsole(kDiscoveryFileStr, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingManifestListNoResponse,
           TokenStatus::kManifestListNoResponse,
           /*should_delay_callback=*/true);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+    case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
+      MaybeAddResponseCodeToConsole(kDiscoveryFileStr, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingManifestListInvalidResponse,
           TokenStatus::kManifestListInvalidResponse,
           /*should_delay_callback=*/true);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kSuccess: {
+    case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       // Intentional fall-through.
     }
   }
@@ -694,29 +698,33 @@ void FederatedAuthRequestImpl::OnManifestFetched(
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::Endpoints endpoints,
     IdentityProviderMetadata idp_metadata) {
-  switch (status) {
-    case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+  constexpr char kConfigFileStr[] = "config file";
+  switch (status.parse_status) {
+    case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
+      MaybeAddResponseCodeToConsole(kConfigFileStr, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound,
           TokenStatus::kManifestHttpNotFound,
           /*should_delay_callback=*/true);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+    case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
+      MaybeAddResponseCodeToConsole(kConfigFileStr, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingManifestNoResponse,
           TokenStatus::kManifestNoResponse,
           /*should_delay_callback=*/true);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+    case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
+      MaybeAddResponseCodeToConsole(kConfigFileStr, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse,
           TokenStatus::kManifestInvalidResponse,
           /*should_delay_callback=*/true);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kSuccess: {
+    case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       // Intentional fall-through.
     }
   }
@@ -845,29 +853,33 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     const IdentityProviderInfo& idp_info,
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::AccountList accounts) {
-  switch (status) {
-    case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+  constexpr char kAccountsUrl[] = "accounts endpoint";
+  switch (status.parse_status) {
+    case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
+      MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
       HandleAccountsFetchFailure(
           idp_info.provider.config_url,
           FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound,
           TokenStatus::kAccountsHttpNotFound);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+    case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
+      MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
       HandleAccountsFetchFailure(
           idp_info.provider.config_url,
           FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse,
           TokenStatus::kAccountsNoResponse);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+    case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
+      MaybeAddResponseCodeToConsole(kAccountsUrl, status.response_code);
       HandleAccountsFetchFailure(
           idp_info.provider.config_url,
           FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse,
           TokenStatus::kAccountsInvalidResponse);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kSuccess: {
+    case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       const url::Origin idp_origin =
           url::Origin::Create(idp_info.provider.config_url);
       sharing_permission_delegate_->SetIdpSigninStatus(idp_origin, true);
@@ -1110,29 +1122,33 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
     IdpNetworkRequestManager::FetchStatus status,
     const std::string& token) {
   DCHECK(!start_time_.is_null());
-  switch (status) {
-    case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
+  constexpr char kIdAssertionUrl[] = "id assertion endpoint";
+  switch (status.parse_status) {
+    case IdpNetworkRequestManager::ParseStatus::kHttpNotFoundError: {
+      MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound,
           TokenStatus::kIdTokenHttpNotFound,
           /*should_delay_callback=*/true);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
+    case IdpNetworkRequestManager::ParseStatus::kNoResponseError: {
+      MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse,
           TokenStatus::kIdTokenNoResponse,
           /*should_delay_callback=*/true);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
+    case IdpNetworkRequestManager::ParseStatus::kInvalidResponseError: {
+      MaybeAddResponseCodeToConsole(kIdAssertionUrl, status.response_code);
       CompleteRequestWithError(
           FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
           TokenStatus::kIdTokenInvalidResponse,
           /*should_delay_callback=*/true);
       return;
     }
-    case IdpNetworkRequestManager::FetchStatus::kSuccess: {
+    case IdpNetworkRequestManager::ParseStatus::kSuccess: {
       // Grant sharing permission specific to *this account*.
       //
       // TODO(majidvp): But wait which account?
@@ -1304,6 +1320,30 @@ void FederatedAuthRequestImpl::AddConsoleErrorMessage(
   std::string message = GetConsoleErrorMessage(result);
   render_frame_host().AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError, message);
+}
+
+void FederatedAuthRequestImpl::MaybeAddResponseCodeToConsole(
+    const char* fetch_description,
+    int response_code) {
+  // Do not add error message for OK response status.
+  if (response_code >= 200 && response_code <= 299)
+    return;
+
+  std::ostringstream message;
+  if (response_code < 0) {
+    // In this case, the |response_code| represents a NET_ERROR, so we should
+    // use a helper function to ensure we use a meaningful message.
+    message << "The fetch of " << fetch_description
+            << " resulted in a network error: "
+            << net::ErrorToShortString(response_code);
+  } else {
+    // In this case, the |response_code| represents an HTTP error code, which is
+    // standard and hence the number by itself should be understood.
+    message << "When fetching the " << fetch_description << ", a "
+            << response_code << " HTTP response code was received.";
+  }
+  render_frame_host().AddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel::kError, message.str());
 }
 
 bool FederatedAuthRequestImpl::ShouldCompleteRequestImmediately() {
