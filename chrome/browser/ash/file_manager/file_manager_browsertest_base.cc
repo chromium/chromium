@@ -416,7 +416,8 @@ struct AddEntriesMessage {
     EntryCapabilities capabilities;   // Entry permissions.
     EntryFolderFeature folder_feature;  // Entry folder feature.
     bool pinned = false;                // Whether the file should be pinned.
-    std::string alternate_url;          // Entry's alternate URL on Drive.
+    bool available_offline = false;  // Whether the file is available_offline.
+    std::string alternate_url;       // Entry's alternate URL on Drive.
 
     TestEntryInfo& SetSharedOption(SharedOption option) {
       shared_option = option;
@@ -465,6 +466,11 @@ struct AddEntriesMessage {
       return *this;
     }
 
+    TestEntryInfo& SetAvailableOffline(bool is_available_offline) {
+      available_offline = is_available_offline;
+      return *this;
+    }
+
     TestEntryInfo& SetAlternateUrl(const std::string& new_alternate_url) {
       alternate_url = new_alternate_url;
       return *this;
@@ -497,6 +503,8 @@ struct AddEntriesMessage {
       converter->RegisterNestedField("folderFeature",
                                      &TestEntryInfo::folder_feature);
       converter->RegisterBoolField("pinned", &TestEntryInfo::pinned);
+      converter->RegisterBoolField("availableOffline",
+                                   &TestEntryInfo::available_offline);
       converter->RegisterStringField("alternateUrl",
                                      &TestEntryInfo::alternate_url);
     }
@@ -1275,6 +1283,7 @@ class DriveFsTestVolume : public TestVolume {
     }
     fake_drivefs_helper_->fake_drivefs().SetMetadata(
         relative_path, entry.mime_type, original_name.value(), entry.pinned,
+        entry.available_offline,
         entry.shared_option == AddEntriesMessage::SharedOption::SHARED ||
             entry.shared_option ==
                 AddEntriesMessage::SharedOption::SHARED_WITH_ME,
@@ -1293,6 +1302,19 @@ class DriveFsTestVolume : public TestVolume {
     fake_drivefs_helper_->fake_drivefs().DisplayConfirmDialog(
         std::move(reason), base::BindOnce(&DriveFsTestVolume::OnDialogResult,
                                           base::Unretained(this)));
+  }
+
+  void SetFileSyncStatus(const std::string* path,
+                         const drivefs::mojom::ItemEvent::State sync_status) {
+    drivefs::mojom::SyncingStatus syncing_status;
+    syncing_status.item_events.emplace_back(
+        absl::in_place, /* stable_id */ 1, /* group_id */ 1, *path, sync_status,
+        /* bytes_transferred */ 50, /* bytes_to_transfer */ 100,
+        drivefs::mojom::ItemEventReason::kTransfer);
+
+    auto& drivefs_delegate = fake_drivefs_helper_->fake_drivefs().delegate();
+    drivefs_delegate->OnSyncingStatusUpdate(syncing_status.Clone());
+    drivefs_delegate.FlushForTesting();
   }
 
   absl::optional<drivefs::mojom::DialogResult> last_dialog_result() {
@@ -1935,6 +1957,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     enabled_features.push_back(chromeos::features::kDriveFsMirroring);
   } else {
     disabled_features.push_back(chromeos::features::kDriveFsMirroring);
+  }
+
+  if (options.enable_inline_status_sync) {
+    enabled_features.push_back(chromeos::features::kFilesInlineSyncStatus);
+  } else {
+    disabled_features.push_back(chromeos::features::kFilesInlineSyncStatus);
   }
 
   if (options.enable_upload_office_to_cloud) {
@@ -3014,6 +3042,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "isInlineStatusSyncEnabled") {
+    *output = options.enable_inline_status_sync ? "true" : "false";
+    return;
+  }
+
   if (name == "switchLanguage") {
     const std::string* language = value.FindString("language");
     ASSERT_TRUE(language);
@@ -3129,6 +3162,22 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     drive_volume_->DisplayConfirmDialog(drivefs::mojom::DialogReason::New(
         drivefs::mojom::DialogReason::Type::kEnableDocsOffline,
         base::FilePath()));
+    return;
+  }
+
+  if (name == "setDriveFileSyncStatus") {
+    auto* sync_status = value.FindString("syncStatus");
+    auto* path = value.FindString("path");
+    ASSERT_TRUE(sync_status);
+    ASSERT_TRUE(path);
+    drive_volume_->SetFileSyncStatus(
+        path, *sync_status == "in_progress"
+                  ? drivefs::mojom::ItemEvent::State::kInProgress
+              : *sync_status == "queued"
+                  ? drivefs::mojom::ItemEvent::State::kQueued
+              : *sync_status == "completed"
+                  ? drivefs::mojom::ItemEvent::State::kCompleted
+                  : drivefs::mojom::ItemEvent::State::kFailed);
     return;
   }
 

@@ -94,6 +94,7 @@ struct FakeDriveFs::FileMetadata {
   bool pinned = false;
   bool hosted = false;
   bool shared = false;
+  bool available_offline = false;
   std::string original_name;
   mojom::Capabilities capabilities;
   mojom::FolderFeature folder_feature;
@@ -288,6 +289,7 @@ void FakeDriveFs::SetMetadata(const base::FilePath& path,
                               const std::string& mime_type,
                               const std::string& original_name,
                               bool pinned,
+                              bool available_offline,
                               bool shared,
                               const mojom::Capabilities& capabilities,
                               const mojom::FolderFeature& folder_feature,
@@ -302,6 +304,9 @@ void FakeDriveFs::SetMetadata(const base::FilePath& path,
   stored_metadata.doc_id = doc_id;
   if (pinned) {
     stored_metadata.pinned = true;
+  }
+  if (available_offline) {
+    stored_metadata.available_offline = true;
   }
   if (shared) {
     stored_metadata.shared = true;
@@ -348,7 +353,8 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
 
   const auto& stored_metadata = metadata_[path];
   metadata->pinned = stored_metadata.pinned;
-  metadata->available_offline = stored_metadata.pinned;
+  metadata->available_offline =
+      stored_metadata.pinned || stored_metadata.available_offline;
   metadata->shared = stored_metadata.shared;
 
   metadata->content_mime_type = stored_metadata.mime_type;

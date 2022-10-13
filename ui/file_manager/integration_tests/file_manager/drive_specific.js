@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {isSinglePartitionFormat, navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
+import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
 import {BASIC_DRIVE_ENTRY_SET, FILE_MANAGER_EXTENSIONS_ID, OFFLINE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
 
 /**
@@ -886,6 +886,51 @@ testcase.driveOfflineInfoBannerWithoutFlag = async () => {
 
   // Check: the Drive Offline info banner should not appear.
   await remoteCall.waitForElementLost(appId, driveOfflineInfoBannerHiddenQuery);
+};
+
+/**
+ * Tests that the inline file sync icons are displayed in Drive as files
+ * start syncing.
+ */
+testcase.driveInlineSyncStatus = async () => {
+  const toBeUploaded = new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'video.ogv',
+    thumbnailFileName: 'image.png',
+    targetPath: 'world.ogv',
+    mimeType: 'video/ogg',
+    lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
+    nameText: 'world.ogv',
+    sizeText: '59 KB',
+    typeText: 'OGG video',
+    availableOffline: true,
+  });
+
+  // Open Files app on Drive and copy over entry to be uploaded.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [toBeUploaded]);
+
+  // Fake syncing the file to Drive.
+  await sendTestMessage({
+    name: 'setDriveFileSyncStatus',
+    path: `/root/${toBeUploaded.targetPath}`,
+    syncStatus: 'in_progress',
+  });
+
+  const syncStatusQuery = '[data-sync-status=in_progress]';
+
+  // Verify the "sync in progress" icon is displayed.
+  await remoteCall.waitForElement(appId, syncStatusQuery);
+
+  // Fake completing the file sync.
+  await sendTestMessage({
+    name: 'setDriveFileSyncStatus',
+    path: `/root/${toBeUploaded.targetPath}`,
+    syncStatus: 'completed',
+  });
+
+  // Verify the "sync in progress" icon is no longer displayed.
+  await remoteCall.waitForElementLost(appId, syncStatusQuery);
 };
 
 /**

@@ -124,8 +124,8 @@ class ScreencastManagerTestWithDriveFs : public ScreencastManagerTest {
       EXPECT_TRUE(base::WriteFile(absolute_path, kTestFileContents));
 
     const base::FilePath& relative_path = GetTestFile(title, /*relative=*/true);
-    fake->SetMetadata(relative_path, content_type, title, false, shared_with_me,
-                      {}, {}, file_id, "");
+    fake->SetMetadata(relative_path, content_type, title, false, false,
+                      shared_with_me, {}, {}, file_id, "");
   }
 
   // Copies a file from //media/test/data with `original_name` to default test

@@ -133,6 +133,9 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
     // Whether test should run with the DriveFsMirroring flag.
     bool enable_mirrorsync = false;
 
+    // Whether test should run with the FilesInlineSyncStatus flag.
+    bool enable_inline_status_sync = false;
+
     // Whether test should enable the file transfer connector.
     bool enable_file_transfer_connector = false;
 

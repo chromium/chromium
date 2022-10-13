@@ -177,6 +177,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& EnableInlineStatusSync() {
+    options.enable_inline_status_sync = true;
+    return *this;
+  }
+
   TestCase& EnableFileTransferConnector() {
     options.enable_file_transfer_connector = true;
     return *this;
@@ -225,6 +230,9 @@ struct TestCase {
 
     if (options.enable_mirrorsync)
       full_name += "_MirrorSync";
+
+    if (options.enable_inline_status_sync)
+      full_name += "_InlineStatusSync";
 
     if (options.file_transfer_connector_report_only)
       full_name += "_ReportOnly";
@@ -1187,7 +1195,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("driveLinkOpenFileThroughTransitiveLink"),
         TestCase("driveWelcomeBanner"),
         TestCase("driveOfflineInfoBanner").EnableDriveDssPin(),
-        TestCase("driveOfflineInfoBannerWithoutFlag")
+        TestCase("driveOfflineInfoBannerWithoutFlag"),
+        TestCase("driveInlineSyncStatus").EnableInlineStatusSync()
         // TODO(b/189173190): Enable
         // TestCase("driveEnableDocsOfflineDialog"),
         // TODO(b/189173190): Enable

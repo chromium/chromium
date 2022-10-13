@@ -366,6 +366,8 @@ export let TestEntryFolderFeature;
  *
  * pinned: Drive pinned status of this file. Defaults to false.
  *
+ * availableOffline: Whether the file is available offline. Defaults to false.
+ *
  * alternateUrl: File's Drive alternate URL. Defaults to an empty string.
  *
  * @typedef {{
@@ -383,6 +385,7 @@ export let TestEntryFolderFeature;
  *    capabilities: (TestEntryCapabilities|undefined),
  *    folderFeature: (TestEntryFolderFeature|undefined),
  *    pinned: (boolean|undefined),
+ *    availableOffline: (boolean|undefined),
  *    alternateUrl: (string|undefined),
  * }}
  */
@@ -415,6 +418,7 @@ export class TestEntryInfo {
     this.capabilities = options.capabilities;
     this.folderFeature = options.folderFeature;
     this.pinned = !!options.pinned;
+    this.availableOffline = !!options.availableOffline;
     this.alternateUrl = options.alternateUrl || '';
     Object.freeze(this);
   }

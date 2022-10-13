@@ -91,7 +91,8 @@ void DriveIntegrationServiceBrowserTestBase::AddDriveFileWithRelativePath(
   GetFakeDriveFsForProfile(profile)->SetMetadata(
       relative_to_drive_fs_mount, "text/plain",
       relative_to_drive_fs_mount.BaseName().value(),
-      /*pinned=*/false, /*shared=*/false, /*capabilities=*/{},
+      /*pinned=*/false, /*available_offline=*/false, /*shared=*/false,
+      /*capabilities=*/{},
       /*folder_feature=*/{}, drive_file_id, /*alternate_url=*/"");
 
   // Update the relative/absolute paths to the generated file.

@@ -121,7 +121,7 @@ class DriveUploadHandlerTest
         observed_relative_drive_path(),
         "application/"
         "vnd.openxmlformats-officedocument.wordprocessingml.document",
-        test_file_name_, false, false, {}, {}, "abc123",
+        test_file_name_, false, false, false, {}, {}, "abc123",
         /*alternate_url=*/
         "https://docs.google.com/document/d/"
         "smalldocxid?rtpof=true&usp=drive_fs");
