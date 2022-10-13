@@ -151,12 +151,11 @@ OmniboxPedal* OmniboxPedalProvider::FindReadyPedalMatch(
 
 void OmniboxPedalProvider::Tokenize(OmniboxPedal::TokenSequence& out_tokens,
                                     const std::u16string& text) const {
-  // TODO(orinj): We may want to use FoldCase instead of ToLower here
-  //  once the JSON data is eliminated (for now it's still needed for tests).
-  //  See base/i18n/case_conversion.h for advice about unicode case handling.
-  //  FoldCase is equivalent to lower-casing for ASCII/English, but provides
-  //  more consistent (canonical) handling in other languages as well.
-  std::u16string reduced_text = base::i18n::ToLower(text);
+  // Note that FoldCase (not ToLower) is used here and elsewhere in this code.
+  // See base/i18n/case_conversion.h for advice about unicode case handling.
+  // FoldCase is equivalent to lower-casing for ASCII/English, but provides
+  // more consistent (canonical) handling in other languages as well.
+  std::u16string reduced_text = base::i18n::FoldCase(text);
   base::RemoveChars(reduced_text, kRemoveChars, &reduced_text);
   out_tokens.Clear();
   if (tokenize_characters_.empty()) {
@@ -257,10 +256,9 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   const std::string language_code = locale.substr(0, 2);
 
   // According to the pedals localization data, only a few languages
-  // were set to tokenize each character, so those are checked directly here
-  // to eliminate the need for JSON data. Note, zh-CN was set to tokenize
-  // each character but zh-TW was not so the full locale is checked for that
-  // exceptional case.
+  // were set to tokenize each character, so those are checked directly here.
+  // Note, zh-CN was set to tokenize each character but zh-TW was not so the
+  // full locale is checked for that exceptional case.
   if (language_code == "ja" || (language_code == "zh" && locale != "zh-TW")) {
     tokenize_characters_ = u"";
   } else {
