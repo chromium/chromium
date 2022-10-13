@@ -678,7 +678,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TrustedWebActivity.QualityEnforcementViolation"
     enum="TrustedWebActivityQualityEnforcementViolationType"
-    expires_after="M104">
+    expires_after="2023-06-30">
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
