@@ -42,9 +42,14 @@
   }
 </style>
 <div id="container">
-  <div id="themeLabel">
-    <h2>$i18n{themeLabel}</h2>
-  </div>
+  <template is="dom-if" if="[[!isJellyEnabled_]]">
+    <div id="themeLabel">
+      <h2>$i18n{themeLabel}</h2>
+    </div>
+  </template>
+  <template is="dom-if" if="[[isJellyEnabled_]]">
+    <theme-header></theme-header>
+  </template>
   <iron-a11y-keys id="keys" keys="left right" on-keys-pressed="onKeysPress_">
   </iron-a11y-keys>
   <iron-selector id="selector" selected="0"
