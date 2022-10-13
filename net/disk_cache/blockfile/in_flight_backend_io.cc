@@ -94,6 +94,7 @@ void BackendIO::OnDone(bool cancel) {
     if (cancel)
       out_entry_.ExtractAsDangling()->Close();
   }
+  ClearController();
 }
 
 bool BackendIO::IsEntryOperation() {

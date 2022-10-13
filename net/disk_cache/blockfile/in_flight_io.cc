@@ -32,6 +32,10 @@ void BackgroundIO::Cancel() {
   controller_ = nullptr;
 }
 
+void BackgroundIO::ClearController() {
+  controller_ = nullptr;
+}
+
 BackgroundIO::~BackgroundIO() = default;
 
 // ---------------------------------------------------------------------------
