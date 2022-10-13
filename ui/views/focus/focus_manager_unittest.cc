@@ -18,7 +18,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/test_accelerator_target.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/views/accessibility/accessibility_paint_checks.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/buildflags.h"
@@ -1146,12 +1146,18 @@ TEST_F(DesktopWidgetFocusManagerTest, AnchoredDialogInDesktopNativeWidgetAura) {
   child->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   bubble_widget->GetRootView()->AddChildView(child);
 
-  // TODO(crbug.com/1218186): Remove this, this is in place temporarily to be
-  // able to submit accessibility checks, but this focusable View needs to
-  // add a name so that the screen reader knows what to announce.
-  parent1->SetProperty(views::kSkipAccessibilityPaintChecks, true);
-  parent2->SetProperty(views::kSkipAccessibilityPaintChecks, true);
-  child->SetProperty(views::kSkipAccessibilityPaintChecks, true);
+  // In order to pass the accessibility paint checks, focusable views must have
+  // a valid role.
+  parent1->GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+  parent2->GetViewAccessibility().OverrideRole(ax::mojom::Role::kGroup);
+  child->GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
+
+  // In order to pass the accessibility paint checks, focusable views must have
+  // a non-empty accessible name, or have their name set to explicitly empty.
+  parent1->GetViewAccessibility().OverrideName(u"Parent 1");
+  parent2->GetViewAccessibility().OverrideName(
+      u"", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  child->GetViewAccessibility().OverrideName("uChild");
 
   widget->Activate();
   parent1->RequestFocus();
