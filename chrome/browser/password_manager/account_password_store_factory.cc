@@ -51,11 +51,13 @@ using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 using password_manager::UnsyncedCredentialsDeletionNotifier;
 
-#if !BUILDFLAG(IS_ANDROID)
-
 namespace {
 
-void UpdateAllFormManagersAndPasswordReuseManager(Profile* profile) {
+void SyncEnabledOrDisabled(Profile* profile) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  // Update all form managers.
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile)
       continue;
@@ -70,8 +72,10 @@ void UpdateAllFormManagersAndPasswordReuseManager(Profile* profile) {
       PasswordReuseManagerFactory::GetForProfile(profile);
   if (reuse_manager)
     reuse_manager->AccountStoreStateChanged();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class UnsyncedCredentialsDeletionNotifierImpl
     : public UnsyncedCredentialsDeletionNotifier {
  public:
@@ -112,18 +116,9 @@ base::WeakPtr<UnsyncedCredentialsDeletionNotifier>
 UnsyncedCredentialsDeletionNotifierImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
-
-}  // namespace
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void SyncEnabledOrDisabled(Profile* profile) {
-#if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
-#else
-  UpdateAllFormManagersAndPasswordReuseManager(profile);
-#endif  // BUILDFLAG(IS_ANDROID)
-}
+}  // namespace
 
 // static
 scoped_refptr<PasswordStoreInterface>
