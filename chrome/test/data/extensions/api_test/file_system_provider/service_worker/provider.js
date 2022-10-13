@@ -56,6 +56,14 @@ function splitPath(pathString) {
   return {dirPath: path.join('/'), fileName};
 }
 
+/**
+ * @param {string} text
+ * @returns {!ArrayBuffer}
+ */
+function textToBuffer(text) {
+  return new TextEncoder().encode(text).buffer;
+}
+
 class Entry {
   /**
    * @param {{
@@ -148,6 +156,22 @@ export class TestFileSystemProvider {
             TestFileSystemProvider.FILE_BIG, new Date(2014, 1, 25, 7, 36, 12),
             '');
         entry.metadata.size = 6 * 1024 * 1024 * 1024;
+        return entry;
+      })(),
+      // Read returns more data than asked for.
+      Entry.file(
+          TestFileSystemProvider.FILE_TOO_LARGE_CHUNK,
+          new Date(2014, 1, 25, 7, 36, 12), 'A'.repeat(1024 * 2)),
+      // Read handlers invokes both success and error callbacks.
+      Entry.file(
+          TestFileSystemProvider.FILE_INVALID_CALLBACK,
+          new Date(2014, 1, 25, 7, 36, 12), 'A'.repeat(1024 * 2)),
+      // File with negative size.
+      (() => {
+        const entry = Entry.file(
+            TestFileSystemProvider.FILE_NEGATIVE_SIZE,
+            new Date(2014, 1, 25, 7, 36, 12), 'A'.repeat(1024 * 2));
+        entry.metadata.size = -entry.metadata.size;
         return entry;
       })(),
     ]);
@@ -304,6 +328,19 @@ export class TestFileSystemProvider {
    */
   async waitForEvent(funcName) {
     return this.getEventQueue(funcName).pop();
+  }
+
+  /**
+   * Called by the test. Gets the count of events for an event name, to check
+   * that there's been no events without blocking. When using, ensure that "no
+   * event" condition is gated by some other condition you can wait for (e.g. a
+   * request failing and returning a result).
+   *
+   * @param {string} eventName
+   * @returns {number}
+   */
+  getEventCount(eventName) {
+    return this.getEventQueue(eventName).items.length;
   }
 
   /**
@@ -714,21 +751,39 @@ export class TestFileSystemProvider {
       return;
     }
 
+    const filePath = this.openedFiles[options.openRequestId];
+    const entry = this.findEntryByPath(filePath);
+    if (!entry) {
+      onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+      return;
+    }
+
     const sendFileInChunks = (file) => {
-      const array = new TextEncoder().encode(file.contents);
+      const buffer = textToBuffer(file.contents);
       const CHUNK_SIZE = 5;
-      for (let i = 0; i < array.length; i += CHUNK_SIZE) {
+      for (let i = 0; i < buffer.byteLength; i += CHUNK_SIZE) {
         onSuccess(
-            /*data=*/ array.slice(i, Math.min(array.length, i + CHUNK_SIZE))
-                .buffer,
-            /*hasMore=*/ i + CHUNK_SIZE < array.length);
+            /*data=*/ buffer.slice(
+                i, Math.min(buffer.byteLength, i + CHUNK_SIZE)),
+            /*hasMore=*/ i + CHUNK_SIZE < buffer.byteLength);
       }
     };
 
-    const filePath = this.openedFiles[options.openRequestId];
-    if (filePath === '/' + TestFileSystemProvider.FILE_READ_SUCCESS) {
-      const entry = this.findEntryByPath(filePath);
-      sendFileInChunks(entry);
+    if (filePath === '/' + TestFileSystemProvider.FILE_TOO_LARGE_CHUNK) {
+      // Invalid file: returns more data than the file size.
+      const buffer = textToBuffer('A'.repeat(entry.metadata.size * 4));
+      onSuccess(buffer, /*hasMore=*/ true);
+      onSuccess(buffer, /*hasMore=*/ true);
+      onSuccess(buffer, /*hasMore=*/ true);
+      onSuccess(buffer, /*hasMore=*/ false);
+      return;
+    }
+
+    if (filePath === '/' + TestFileSystemProvider.FILE_INVALID_CALLBACK) {
+      // Invalid file: invokes both success and error callbacks.
+      const buffer = textToBuffer('A'.repeat(options.length));
+      onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
+      onSuccess(buffer, /*hasMore=*/ false);
       return;
     }
 
@@ -749,7 +804,6 @@ export class TestFileSystemProvider {
 
     if (filePath === '/' + TestFileSystemProvider.FILE_STALL_READ) {
       // Block the read until it's unblocked.
-      const entry = this.findEntryByPath(filePath);
       this.stallRequest('onReadFileRequested', options)
           .then(() => sendFileInChunks(entry));
       return;
@@ -763,16 +817,15 @@ export class TestFileSystemProvider {
         return;
       }
       // The return value does not matter, so just return a string of "A"s.
+      // Encoded length is the same as string length for ASCII.
       onSuccess(
-          /*data=*/ new Uint8Array(options.length)
-              .fill('A'.charCodeAt(0))
-              .buffer,
+          /*data=*/ textToBuffer('A'.repeat(options.length)),
           /*hasMore=*/ false,
       );
       return;
     }
 
-    onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
+    sendFileInChunks(entry);
   }
 
   /**
@@ -852,16 +905,15 @@ export class TestFileSystemProvider {
     }
 
     // Create an array with enough space for new data.
-    const oldArray = new TextEncoder().encode(entry.contents || '');
-    const newLength =
-        Math.max(oldArray.length, options.offset + options.data.byteLength);
-    const newArray = new Uint8Array(new ArrayBuffer(newLength));
+    const prevContents = textToBuffer(entry.contents || '');
+    const newLength = Math.max(
+        prevContents.byteLength, options.offset + options.data.byteLength);
+    const newContents = new Uint8Array(new ArrayBuffer(newLength));
     // Write existing data and new data.
-    newArray.set(oldArray, 0);
-    newArray.set(new Uint8Array(options.data), options.offset);
+    newContents.set(new Uint8Array(prevContents), 0);
+    newContents.set(new Uint8Array(options.data), options.offset);
     // Save the new file as text.
-    const newContents = new TextDecoder().decode(newArray);
-    entry.contents = newContents;
+    entry.contents = new TextDecoder().decode(newContents);
     metadata.size = newContents.length;
     onSuccess();
   }
@@ -968,6 +1020,30 @@ TestFileSystemProvider.FILE_READ_SUCCESS = 'read-normal.txt';
  * @const
  */
 TestFileSystemProvider.FILE_BIG = 'read-big.txt';
+
+/**
+ * File read requests return more data than asked for.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_TOO_LARGE_CHUNK = 'read-too-large-chunks.txt';
+
+/**
+ * File read requests call both error and success callbacks.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_INVALID_CALLBACK = 'read-invalid-callback.txt';
+
+/**
+ * File with negative size in metadata.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_NEGATIVE_SIZE = 'negative-size.txt';
 
 /**
  * Initial contents of default testing files.

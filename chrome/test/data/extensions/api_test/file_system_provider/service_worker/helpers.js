@@ -225,6 +225,12 @@ export const remoteProvider = {
   continueRequest: async (requestId) =>
       callServiceWorker('continueRequest', requestId),
   /**
+   * @param {string} eventName
+   * @returns {!Promise<number>}
+   */
+  getEventCount: async (eventName) =>
+      callServiceWorker('getEventCount', eventName),
+  /**
    * @param {string} filePath
    * @returns {!Promise<string>}
    */

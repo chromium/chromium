@@ -26,6 +26,8 @@ js_library("service_worker") {
     "create_file/test.js",
     "delete_entry/sw.js",
     "delete_entry/test.js",
+    "evil/sw.js",
+    "evil/test.js",
     "get_all/sw.js",
     "get_all/test.js",
     "helpers.js",
