@@ -755,23 +755,6 @@ public final class TabImpl extends ITab.Stub {
     @Override
     public void executeScript(String script, boolean useSeparateIsolate, IObjectWrapper callback) {
         StrictModeWorkaround.apply();
-        Callback<String> nativeCallback = new Callback<String>() {
-            @Override
-            public void onResult(String result) {
-                ValueCallback<String> unwrappedCallback =
-                        (ValueCallback<String>) ObjectWrapper.unwrap(callback, ValueCallback.class);
-                if (unwrappedCallback != null) {
-                    unwrappedCallback.onReceiveValue(result);
-                }
-            }
-        };
-        TabImplJni.get().executeScript(mNativeTab, script, useSeparateIsolate, nativeCallback);
-    }
-
-    @Override
-    public void executeScriptIfAllowed(
-            String script, boolean useSeparateIsolate, IObjectWrapper callback) {
-        StrictModeWorkaround.apply();
 
         WebLayerOriginVerificationScheduler originVerifier =
                 WebLayerOriginVerificationScheduler.getInstance();
@@ -781,11 +764,24 @@ public final class TabImpl extends ITab.Stub {
             if (!url.equals(mWebContents.getVisibleUrl().getSpec())) {
                 return;
             }
-            if (verified) {
-                executeScript(script, useSeparateIsolate, callback);
-            } else {
+
+            ValueCallback<String> unwrappedCallback =
+                    (ValueCallback<String>) ObjectWrapper.unwrap(callback, ValueCallback.class);
+            assert unwrappedCallback != null;
+
+            if (!verified) {
                 // TODO(swestphal): Propagate exception to calling api.
+                unwrappedCallback.onReceiveValue(null);
+                return;
             }
+
+            Callback<String> nativeCallback = new Callback<String>() {
+                @Override
+                public void onResult(String result) {
+                    unwrappedCallback.onReceiveValue(result);
+                }
+            };
+            TabImplJni.get().executeScript(mNativeTab, script, useSeparateIsolate, nativeCallback);
         });
     }
 

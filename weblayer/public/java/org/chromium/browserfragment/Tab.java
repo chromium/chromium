@@ -85,7 +85,13 @@ public class Tab {
                 mTabProxy.executeScript(script, useSeparateIsolate, new IStringCallback.Stub() {
                     @Override
                     public void onResult(String result) {
-                        completer.set(result);
+                        if (result != null) {
+                            completer.set(result);
+                        } else {
+                            // TODO(rayankans): Improve exception reporting.
+                            completer.setException(
+                                    new IllegalStateException("Failed to execute script"));
+                        }
                     }
                 });
             } catch (RemoteException e) {

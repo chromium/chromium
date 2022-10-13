@@ -85,7 +85,4 @@ interface ITab {
 
   // Added in 93
   void setExternalIntentInIncognitoCallbackClient(IExternalIntentInIncognitoCallbackClient client) = 33;
-
-  // Added in 107
-  void executeScriptIfAllowed(in String script, boolean useSeparateIsolate, in IObjectWrapper callback) = 34;
 }

@@ -76,7 +76,7 @@ class TabProxy extends ITabProxy.Stub {
     @Override
     public void executeScript(String script, boolean useSeparateIsolate, IStringCallback callback) {
         mHandler.post(() -> {
-            getTab().executeScriptIfAllowed(script, useSeparateIsolate, (String result) -> {
+            getTab().executeScript(script, useSeparateIsolate, (String result) -> {
                 try {
                     callback.onResult(result);
                 } catch (RemoteException e) {

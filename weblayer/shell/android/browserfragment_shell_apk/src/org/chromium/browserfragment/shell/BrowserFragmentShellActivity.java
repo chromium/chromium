@@ -149,7 +149,19 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
                                 "Navigation: url:" + navigation.getUri()
                                         + ", HTTP-StatusCode: " + navigation.getStatusCode()
                                         + ", samePage: " + navigation.isSameDocument());
-                        tab.executeScript("console.log('injected JS after 1P validation')", true);
+                        ListenableFuture<String> scriptResultFuture =
+                                tab.executeScript("1+1", true);
+                        Futures.addCallback(scriptResultFuture, new FutureCallback<String>() {
+                            @Override
+                            public void onSuccess(String result) {
+                                Log.w(TAG, "executeScript result: " + result);
+                            }
+
+                            @Override
+                            public void onFailure(Throwable thrown) {
+                                Log.w(TAG, "executeScript failed: " + thrown);
+                            }
+                        }, mContext.getMainExecutor());
                     }
 
                     @Override

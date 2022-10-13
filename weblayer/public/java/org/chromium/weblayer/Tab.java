@@ -261,29 +261,6 @@ class Tab {
     }
 
     /**
-     * Executes the script if the target origin can verify itself via DAL as 1P website, and
-     * returns the result to the callback if provided.
-     *
-     * @param script The javascript to execute.
-     * @param useSeparateIsolate If true, runs the script in a separate v8 Isolate. This uses more
-     * memory, but separates the injected scrips from scripts in the page. This prevents any
-     * potentially malicious interaction between first-party scripts in the page, and injected
-     * scripts. Use with caution, only pass false for this argument if you know this isn't an issue
-     * or you need to interact with first-party scripts.
-     * @param callback Callback function that is called with the result of the executed script.
-     */
-    public void executeScriptIfAllowed(@NonNull String script, boolean useSeparateIsolate,
-            @Nullable ValueCallback<String> callback) {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        try {
-            mImpl.executeScriptIfAllowed(script, useSeparateIsolate, ObjectWrapper.wrap(callback));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
      * Runs the beforeunload handler for the main frame or any sub frame, if necessary; otherwise,
      * asynchronously closes the tab.
      *
