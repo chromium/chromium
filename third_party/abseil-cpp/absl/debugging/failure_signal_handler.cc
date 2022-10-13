@@ -138,7 +138,8 @@ static bool SetupAlternateStackOnce() {
   const size_t page_mask = static_cast<size_t>(sysconf(_SC_PAGESIZE)) - 1;
 #endif
   size_t stack_size =
-      (std::max<size_t>(SIGSTKSZ, 65536) + page_mask) & ~page_mask;
+      (std::max(static_cast<size_t>(SIGSTKSZ), size_t{65536}) + page_mask) &
+      ~page_mask;
 #if defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
     defined(ABSL_HAVE_MEMORY_SANITIZER) || defined(ABSL_HAVE_THREAD_SANITIZER)
   // Account for sanitizer instrumentation requiring additional stack space.

@@ -25,6 +25,7 @@ template("absl_source_set") {
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [
       "//build/config/compiler:no_chromium_code",
+      "//build/config/compiler:prevent_unsafe_narrowing",
       "//third_party/abseil-cpp:absl_default_cflags_cc",
       "//third_party/abseil-cpp:absl_define_config",
     ]

@@ -143,7 +143,6 @@ config("absl_default_cflags_cc") {
       "-Wnon-literal-null-conversion",
       "-Wnull-conversion",
       "-Wobjc-literal-conversion",
-      "-Wno-sign-conversion",
       "-Wstring-conversion",
     ]
     if (!is_nacl) {
@@ -158,7 +157,6 @@ config("absl_test_cflags_cc") {
     cflags_cc += [
       "-Wno-conversion-null",
       "-Wno-missing-declarations",
-      "-Wno-sign-compare",
       "-Wno-unused-function",
       "-Wno-unused-parameter",
       "-Wno-unused-private-field",
@@ -166,7 +164,6 @@ config("absl_test_cflags_cc") {
   }
   if (is_win) {
     cflags_cc += [
-      "/wd4018",  # signed/unsigned mismatch
       "/wd4101",  # unreferenced local variable
     ]
   }
