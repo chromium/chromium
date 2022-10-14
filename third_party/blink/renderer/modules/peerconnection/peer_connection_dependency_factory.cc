@@ -131,6 +131,14 @@ class ProxyAsyncResolverFactory final : public webrtc::AsyncResolverFactory {
   IpcPacketSocketFactory* ipc_psf_;
 };
 
+std::string WorkerThreadName() {
+  if (base::FeatureList::IsEnabled(
+          features::kWebRtcCombinedNetworkAndWorkerThread)) {
+    return "WebRTC_CombinedNetworkAndWorker";
+  }
+  return "WebRTC_Worker";
+}
+
 // Encapsulates process-wide static dependencies used by
 // `PeerConnectionDependencyFactory`, namely the threads used by WebRTC. This
 // avoids allocating multiple threads per factory instance, as they are
@@ -139,8 +147,12 @@ class PeerConnectionStaticDeps {
  public:
   PeerConnectionStaticDeps()
       : chrome_signaling_thread_("WebRTC_Signaling"),
-        chrome_worker_thread_("WebRTC_Worker"),
-        chrome_network_thread_("WebRTC_Network") {}
+        chrome_worker_thread_(WorkerThreadName()) {
+    if (!base::FeatureList::IsEnabled(
+            features::kWebRtcCombinedNetworkAndWorkerThread)) {
+      chrome_network_thread_.emplace("WebRTC_Network");
+    }
+  }
 
   void EnsureChromeThreadsStarted() {
     base::ThreadType thread_type = base::ThreadType::kDefault;
@@ -152,8 +164,8 @@ class PeerConnectionStaticDeps {
       chrome_signaling_thread_.StartWithOptions(
           base::Thread::Options(thread_type));
     }
-    if (!chrome_network_thread_.IsRunning()) {
-      chrome_network_thread_.StartWithOptions(
+    if (chrome_network_thread_ && !chrome_network_thread_->IsRunning()) {
+      chrome_network_thread_->StartWithOptions(
           base::Thread::Options(thread_type));
     }
 
@@ -184,16 +196,20 @@ class PeerConnectionStaticDeps {
 
   base::WaitableEvent& InitializeNetworkThread() {
     if (!network_thread_) {
-      PostCrossThreadTask(
-          *chrome_network_thread_.task_runner(), FROM_HERE,
-          CrossThreadBindOnce(
-              &PeerConnectionStaticDeps::InitializeOnThread,
-              CrossThreadUnretained(&network_thread_),
-              CrossThreadUnretained(&init_network_event),
-              ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                  PeerConnectionStaticDeps::LogTaskLatencyNetwork)),
-              ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                  PeerConnectionStaticDeps::LogTaskDurationNetwork))));
+      if (chrome_network_thread_) {
+        PostCrossThreadTask(
+            *chrome_network_thread_->task_runner(), FROM_HERE,
+            CrossThreadBindOnce(
+                &PeerConnectionStaticDeps::InitializeOnThread,
+                CrossThreadUnretained(&network_thread_),
+                CrossThreadUnretained(&init_network_event),
+                ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                    PeerConnectionStaticDeps::LogTaskLatencyNetwork)),
+                ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+                    PeerConnectionStaticDeps::LogTaskDurationNetwork))));
+      } else {
+        init_network_event.Signal();
+      }
     }
     return init_network_event;
   }
@@ -216,10 +232,15 @@ class PeerConnectionStaticDeps {
 
   rtc::Thread* GetSignalingThread() { return signaling_thread_; }
   rtc::Thread* GetWorkerThread() { return worker_thread_; }
-  rtc::Thread* GetNetworkThread() { return network_thread_; }
+  rtc::Thread* GetNetworkThread() {
+    return chrome_network_thread_ ? network_thread_ : worker_thread_;
+  }
   base::Thread& GetChromeSignalingThread() { return chrome_signaling_thread_; }
   base::Thread& GetChromeWorkerThread() { return chrome_worker_thread_; }
-  base::Thread& GetChromeNetworkThread() { return chrome_network_thread_; }
+  base::Thread& GetChromeNetworkThread() {
+    return chrome_network_thread_ ? *chrome_network_thread_
+                                  : chrome_worker_thread_;
+  }
 
  private:
   static void LogTaskLatencyWorker(base::TimeDelta sample) {
@@ -275,7 +296,7 @@ class PeerConnectionStaticDeps {
   rtc::Thread* network_thread_ = nullptr;
   base::Thread chrome_signaling_thread_;
   base::Thread chrome_worker_thread_;
-  base::Thread chrome_network_thread_;
+  absl::optional<base::Thread> chrome_network_thread_;
 
   // WaitableEvents for observing thread initialization.
   base::WaitableEvent init_signaling_event{
@@ -651,10 +672,12 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   }
 
   webrtc::PeerConnectionFactoryDependencies pcf_deps;
-  pcf_deps.worker_thread =
-      GetWorkerThread() ? GetWorkerThread() : GetSignalingThread();
+  pcf_deps.worker_thread = GetWorkerThread();
   pcf_deps.signaling_thread = GetSignalingThread();
   pcf_deps.network_thread = GetNetworkThread();
+  if (pcf_deps.worker_thread == pcf_deps.network_thread) {
+    LOG(INFO) << "Running WebRTC with a combined Network and Worker thread.";
+  }
   pcf_deps.task_queue_factory = CreateWebRtcTaskQueueFactory();
   if (base::FeatureList::IsEnabled(blink::features::kWebRtcMetronome))
     pcf_deps.metronome = metronome_source_->CreateWebRtcMetronome();

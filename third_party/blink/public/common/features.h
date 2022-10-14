@@ -873,6 +873,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kPostMessageDifferentPartitionSameOriginBlocked);
 
+// Combine WebRTC Network and Worker threads. More info at crbug.com/1373439.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcCombinedNetworkAndWorkerThread);
+
 }  // namespace features
 }  // namespace blink
 
