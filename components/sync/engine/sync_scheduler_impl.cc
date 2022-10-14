@@ -850,15 +850,6 @@ void SyncSchedulerImpl::OnReceivedCustomNudgeDelays(
   }
 }
 
-void SyncSchedulerImpl::OnReceivedClientInvalidationHintBufferSize(int size) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (size > 0)
-    nudge_tracker_.SetHintBufferSize(size);
-  else
-    NOTREACHED() << "Hint buffer size should be > 0.";
-}
-
 void SyncSchedulerImpl::OnSyncProtocolError(
     const SyncProtocolError& sync_protocol_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

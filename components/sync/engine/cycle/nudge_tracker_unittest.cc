@@ -22,7 +22,7 @@ namespace syncer {
 
 namespace {
 
-const size_t kHintBufferSize = 5;
+const size_t kHintBufferSize = 10;
 
 testing::AssertionResult ModelTypeSetEquals(ModelTypeSet a, ModelTypeSet b) {
   if (a == b) {
@@ -40,7 +40,6 @@ class NudgeTrackerTest : public ::testing::Test {
  public:
   NudgeTrackerTest() {
     // Override this limit so tests know when it is surpassed.
-    nudge_tracker_.SetHintBufferSize(kHintBufferSize);
     SetInvalidationsInSync();
   }
 

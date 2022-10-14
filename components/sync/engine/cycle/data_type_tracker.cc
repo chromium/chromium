@@ -192,7 +192,6 @@ DataTypeTracker::DataTypeTracker(ModelType type)
     : type_(type),
       local_nudge_count_(0),
       local_refresh_request_count_(0),
-      payload_buffer_size_(kDefaultMaxPayloadsPerType),
       initial_sync_required_(false),
       sync_required_to_resolve_conflict_(false),
       local_change_nudge_delay_(GetDefaultLocalChangeNudgeDelay(type)),
@@ -277,7 +276,7 @@ void DataTypeTracker::RecordRemoteInvalidation(
 
   // The incoming invalidation may have caused us to exceed our buffer size.
   // Trim some items from our list, if necessary.
-  while (pending_invalidations_.size() > payload_buffer_size_) {
+  while (pending_invalidations_.size() > kDefaultMaxPayloadsPerType) {
     last_dropped_invalidation_ =
         std::move(pending_invalidations_.front().pending_invalidation);
     last_dropped_invalidation_->Drop();
@@ -361,11 +360,6 @@ void DataTypeTracker::RecordInitialSyncDone() {
     return;
   }
   initial_sync_required_ = false;
-}
-
-// This limit will take effect on all future invalidations received.
-void DataTypeTracker::UpdatePayloadBufferSize(size_t new_size) {
-  payload_buffer_size_ = new_size;
 }
 
 bool DataTypeTracker::IsSyncRequired() const {

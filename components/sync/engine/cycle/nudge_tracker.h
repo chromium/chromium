@@ -139,9 +139,6 @@ class NudgeTracker {
   // Flips the flag if we're due for a retry.
   void SetSyncCycleStartTime(base::TimeTicks now);
 
-  // Adjusts the number of hints that can be stored locally.
-  void SetHintBufferSize(size_t size);
-
   // Schedules a retry GetUpdate request for some time in the future.
   //
   // This is a request sent to us as part of a server response requesting

@@ -121,10 +121,6 @@ class SyncerTest : public testing::Test,
       last_bookmarks_commit_delay_ = iter->second;
   }
 
-  void OnReceivedClientInvalidationHintBufferSize(int size) override {
-    last_client_invalidation_hint_buffer_size_ = size;
-  }
-
   void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override {}
   void OnReceivedMigrationRequest(ModelTypeSet types) override {}
   void OnReceivedQuotaParamsForExtensionTypes(
@@ -710,7 +706,6 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   bookmark_delay->set_datatype_id(
       GetSpecificsFieldNumberFromModelType(BOOKMARKS));
   bookmark_delay->set_delay_ms(950);
-  command->set_client_invalidation_hint_buffer_size(11);
   mock_server_->AddUpdateDirectory("1", "0", "in_root", 1, 1,
                                    foreign_cache_guid(), "-1");
   mock_server_->SetGUClientCommand(std::move(command));
@@ -719,7 +714,6 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   EXPECT_EQ(base::Seconds(8), last_poll_interval_received_);
   EXPECT_EQ(base::Seconds(3141), last_sessions_commit_delay_);
   EXPECT_EQ(base::Milliseconds(950), last_bookmarks_commit_delay_);
-  EXPECT_EQ(11, last_client_invalidation_hint_buffer_size_);
 
   command = std::make_unique<ClientCommand>();
   command->set_set_sync_poll_interval(180);
@@ -729,7 +723,6 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   bookmark_delay->set_datatype_id(
       GetSpecificsFieldNumberFromModelType(BOOKMARKS));
   bookmark_delay->set_delay_ms(1050);
-  command->set_client_invalidation_hint_buffer_size(9);
   mock_server_->AddUpdateDirectory("1", "0", "in_root", 1, 1,
                                    foreign_cache_guid(), "-1");
   mock_server_->SetGUClientCommand(std::move(command));
@@ -738,7 +731,6 @@ TEST_F(SyncerTest, TestClientCommandDuringUpdate) {
   EXPECT_EQ(base::Seconds(180), last_poll_interval_received_);
   EXPECT_EQ(base::Seconds(2718), last_sessions_commit_delay_);
   EXPECT_EQ(base::Milliseconds(1050), last_bookmarks_commit_delay_);
-  EXPECT_EQ(9, last_client_invalidation_hint_buffer_size_);
 }
 
 TEST_F(SyncerTest, TestClientCommandDuringCommit) {
@@ -753,7 +745,6 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   bookmark_delay->set_datatype_id(
       GetSpecificsFieldNumberFromModelType(BOOKMARKS));
   bookmark_delay->set_delay_ms(950);
-  command->set_client_invalidation_hint_buffer_size(11);
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
       ClientTagHash::FromHashed("tag1"), MakeBookmarkSpecificsToCommit(),
       "id1");
@@ -763,7 +754,6 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   EXPECT_EQ(base::Seconds(8), last_poll_interval_received_);
   EXPECT_EQ(base::Seconds(3141), last_sessions_commit_delay_);
   EXPECT_EQ(base::Milliseconds(950), last_bookmarks_commit_delay_);
-  EXPECT_EQ(11, last_client_invalidation_hint_buffer_size_);
 
   command = std::make_unique<ClientCommand>();
   command->set_set_sync_poll_interval(180);
@@ -773,7 +763,6 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   bookmark_delay->set_datatype_id(
       GetSpecificsFieldNumberFromModelType(BOOKMARKS));
   bookmark_delay->set_delay_ms(1050);
-  command->set_client_invalidation_hint_buffer_size(9);
   GetProcessor(BOOKMARKS)->AppendCommitRequest(
       ClientTagHash::FromHashed("tag2"), MakeBookmarkSpecificsToCommit(),
       "id2");
@@ -783,7 +772,6 @@ TEST_F(SyncerTest, TestClientCommandDuringCommit) {
   EXPECT_EQ(base::Seconds(180), last_poll_interval_received_);
   EXPECT_EQ(base::Seconds(2718), last_sessions_commit_delay_);
   EXPECT_EQ(base::Milliseconds(1050), last_bookmarks_commit_delay_);
-  EXPECT_EQ(9, last_client_invalidation_hint_buffer_size_);
 }
 
 TEST_F(SyncerTest, ShouldPopulateSingleClientFlag) {

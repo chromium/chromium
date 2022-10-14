@@ -69,10 +69,6 @@ class SyncCycle {
     virtual void OnSyncProtocolError(
         const SyncProtocolError& sync_protocol_error) = 0;
 
-    // Called when the server wants to change the number of hints the client
-    // will buffer locally.
-    virtual void OnReceivedClientInvalidationHintBufferSize(int size) = 0;
-
     // Called when server wants to schedule a retry GU.
     virtual void OnReceivedGuRetryDelay(const base::TimeDelta& delay) = 0;
 

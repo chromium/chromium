@@ -36,8 +36,8 @@ message ClientCommand {
   // Number of seconds to delay before the throttled client should retry.
   optional int32 throttle_delay_seconds = 5;
 
-  // Maximum number of local nudges to buffer per-type.
-  optional int32 client_invalidation_hint_buffer_size = 6;
+  // This has been deprecated since M109.
+  optional int32 client_invalidation_hint_buffer_size = 6 [deprecated = true];
 
   // Time to wait before issuing a retry GU.
   optional int32 gu_retry_delay_seconds = 7;

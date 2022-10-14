@@ -310,12 +310,6 @@ void NudgeTracker::SetSyncCycleStartTime(base::TimeTicks now) {
   }
 }
 
-void NudgeTracker::SetHintBufferSize(size_t size) {
-  for (const auto& [type, tracker] : type_trackers_) {
-    tracker->UpdatePayloadBufferSize(size);
-  }
-}
-
 void NudgeTracker::SetNextRetryTime(base::TimeTicks retry_time) {
   next_retry_time_ = retry_time;
 }

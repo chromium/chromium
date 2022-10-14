@@ -106,9 +106,6 @@ class DataTypeTracker {
   // when the initial configuration/download cycle has finished for this type.
   void RecordInitialSyncDone();
 
-  // Updates the size of the invalidations payload buffer.
-  void UpdatePayloadBufferSize(size_t new_size);
-
   // Returns true if there is a good reason to perform a sync cycle.  This does
   // not take into account whether or not now is a good time to perform a sync
   // cycle.  That's for the scheduler to decide.
@@ -221,8 +218,6 @@ class DataTypeTracker {
   //
   // This list takes ownership of its contents.
   std::vector<PendingInvalidation> pending_invalidations_;
-
-  size_t payload_buffer_size_;
 
   // Set to true if this type is ready for, but has not yet completed initial
   // sync.

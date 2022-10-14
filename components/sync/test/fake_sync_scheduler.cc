@@ -58,8 +58,6 @@ void FakeSyncScheduler::OnReceivedPollIntervalUpdate(
 void FakeSyncScheduler::OnReceivedCustomNudgeDelays(
     const std::map<ModelType, base::TimeDelta>& nudge_delays) {}
 
-void FakeSyncScheduler::OnReceivedClientInvalidationHintBufferSize(int size) {}
-
 void FakeSyncScheduler::OnSyncProtocolError(const SyncProtocolError& error) {}
 
 void FakeSyncScheduler::OnReceivedGuRetryDelay(const base::TimeDelta& delay) {}

@@ -426,11 +426,6 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
       cycle->delegate()->OnReceivedCustomNudgeDelays(delay_map);
     }
 
-    if (command.has_client_invalidation_hint_buffer_size()) {
-      cycle->delegate()->OnReceivedClientInvalidationHintBufferSize(
-          command.client_invalidation_hint_buffer_size());
-    }
-
     if (command.has_gu_retry_delay_seconds()) {
       cycle->delegate()->OnReceivedGuRetryDelay(
           base::Seconds(command.gu_retry_delay_seconds()));

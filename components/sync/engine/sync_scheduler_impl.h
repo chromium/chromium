@@ -72,7 +72,6 @@ class SyncSchedulerImpl : public SyncScheduler {
       const base::TimeDelta& new_interval) override;
   void OnReceivedCustomNudgeDelays(
       const std::map<ModelType, base::TimeDelta>& nudge_delays) override;
-  void OnReceivedClientInvalidationHintBufferSize(int size) override;
   void OnSyncProtocolError(
       const SyncProtocolError& sync_protocol_error) override;
   void OnReceivedGuRetryDelay(const base::TimeDelta& delay) override;
