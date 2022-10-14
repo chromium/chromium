@@ -278,7 +278,7 @@ void OutputPresenterFuchsia::ScheduleOverlayPlane(
   DCHECK(next_frame_->overlays.empty());
 
   DCHECK(overlay_plane_candidate.mailbox.IsSharedImage());
-  auto pixmap = access->GetNativePixmap();
+  auto pixmap = access ? access->GetNativePixmap() : nullptr;
 
   if (!pixmap) {
     DLOG(ERROR) << "Cannot access SysmemNativePixmap";
