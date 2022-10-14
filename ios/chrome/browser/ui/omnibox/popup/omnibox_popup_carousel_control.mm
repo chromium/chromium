@@ -39,7 +39,7 @@ const CGFloat kPreviewCornerRadius = 13.0f;
 UILabel* CarouselItemLabel() {
   UILabel* label = [[UILabel alloc] init];
   label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
   label.numberOfLines = kLabelNumLines;
   label.textAlignment = NSTextAlignmentCenter;
   label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
@@ -47,13 +47,13 @@ UILabel* CarouselItemLabel() {
   return label;
 }
 
-// UIView for the background of carousel item.
+// UIView for the squircle background of carousel item.
 UIView* CarouselItemBackgroundView() {
   UIImageView* imageView = [[UIImageView alloc] init];
   UIImage* backgroundImage = [[UIImage imageNamed:@"ntp_most_visited_tile"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   imageView.image = backgroundImage;
-  imageView.tintColor = [UIColor colorNamed:kGrey200Color];
+  imageView.tintColor = [UIColor colorNamed:kGrey100Color];
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
   [NSLayoutConstraint activateConstraints:@[
     [imageView.widthAnchor constraintEqualToConstant:kBackgroundViewSize],
