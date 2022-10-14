@@ -149,13 +149,6 @@ void GetActiveSuggestFieldTrialHashes(std::vector<uint32_t>* field_trial_hash);
 base::TimeDelta StopTimerFieldTrialDuration();
 
 // ---------------------------------------------------------
-// For the OmniboxLocalZeroSuggestAgeThreshold field trial.
-
-// Returns the age threshold since the last visit in order to consider a
-// normalized keyword search term as a zero-prefix suggestion.
-base::Time GetLocalHistoryZeroSuggestAgeThreshold();
-
-// ---------------------------------------------------------
 // For the ShortcutsScoringMaxRelevance experiment that's part of the
 // bundled omnibox field trial.
 
@@ -444,11 +437,6 @@ extern const char kHQPExperimentalScoringTopicalityThresholdParam[];
 extern const char kMaxNumHQPUrlsIndexedAtStartupOnLowEndDevicesParam[];
 extern const char kMaxNumHQPUrlsIndexedAtStartupOnNonLowEndDevicesParam[];
 
-// Parameter name determining the age threshold for local zero-prefix
-// suggestions. The value of this parameter should be parsable as an unsigned
-// integer, which will be used to specify the age threshold in days.
-extern const char kOmniboxLocalZeroSuggestAgeThresholdParam[];
-
 // Parameter names used by num suggestion experiments.
 extern const char kMaxZeroSuggestMatchesParam[];
 extern const char kOmniboxMaxURLMatchesParam[];
@@ -539,6 +527,13 @@ bool IsZeroSuggestPrefetchingEnabled();
 // Returns whether zero-suggest prefetching is enabled in the given context.
 bool IsZeroSuggestPrefetchingEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);
+
+// Determines the age threshold in days for local zero-prefix suggestions.
+extern const base::FeatureParam<int> kOmniboxLocalZeroSuggestAgeThresholdParam;
+
+// Returns the age threshold since the last visit in order to consider a
+// normalized keyword search term as a zero-prefix suggestion.
+base::Time GetLocalHistoryZeroSuggestAgeThreshold();
 
 // Whether duplicative visits should be ignored for local history zero-suggest.
 // A duplicative visit is a visit to the same search term in an interval smaller

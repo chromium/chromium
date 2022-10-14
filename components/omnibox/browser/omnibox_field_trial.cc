@@ -218,20 +218,6 @@ base::TimeDelta OmniboxFieldTrial::StopTimerFieldTrialDuration() {
   return base::Milliseconds(1500);
 }
 
-base::Time OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold() {
-  std::string param_value = base::GetFieldTrialParamValueByFeature(
-      omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
-      OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam);
-
-  // If the field trial param is not found or cannot be parsed to an unsigned
-  // integer, return the default value.
-  unsigned int param_value_as_int = 0;
-  if (!base::StringToUint(param_value, &param_value_as_int)) {
-    param_value_as_int = 60;
-  }
-  return (base::Time::Now() - base::Days(param_value_as_int));
-}
-
 bool OmniboxFieldTrial::ShortcutsScoringMaxRelevance(
     OmniboxEventProto::PageClassification current_page_classification,
     int* max_relevance) {
@@ -717,9 +703,6 @@ const char
     OmniboxFieldTrial::kMaxNumHQPUrlsIndexedAtStartupOnNonLowEndDevicesParam[] =
         "MaxNumHQPUrlsIndexedAtStartupOnNonLowEndDevices";
 
-const char OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam[] =
-    "OmniboxLocalZeroSuggestAgeThreshold";
-
 const char OmniboxFieldTrial::kMaxZeroSuggestMatchesParam[] =
     "MaxZeroSuggestMatches";
 const char OmniboxFieldTrial::kOmniboxMaxURLMatchesParam[] =
@@ -822,6 +805,21 @@ bool IsZeroSuggestPrefetchingEnabledInContext(
   }
 }
 
+// Determines the age threshold in days for local zero-prefix suggestions.
+const base::FeatureParam<int> kOmniboxLocalZeroSuggestAgeThresholdParam(
+    &omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
+    "OmniboxLocalZeroSuggestAgeThreshold",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    60);
+#else
+    90);
+#endif
+
+base::Time GetLocalHistoryZeroSuggestAgeThreshold() {
+  return (base::Time::Now() -
+          base::Days(kOmniboxLocalZeroSuggestAgeThresholdParam.Get()));
+}
+
 const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits(
     &omnibox::kLocalHistorySuggestRevamp,
     "ZeroSuggestIgnoreDuplicateVisits",
@@ -829,7 +827,11 @@ const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits(
 const base::FeatureParam<bool> kPrefixSuggestIgnoreDuplicateVisits(
     &omnibox::kLocalHistorySuggestRevamp,
     "PrefixSuggestIgnoreDuplicateVisits",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     false);
+#else
+    true);
+#endif
 
 // Short bookmarks.
 

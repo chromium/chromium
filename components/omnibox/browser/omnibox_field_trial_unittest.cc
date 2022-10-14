@@ -357,24 +357,24 @@ TEST_F(OmniboxFieldTrialTest, GetValueForRuleInContext) {
 TEST_F(OmniboxFieldTrialTest, LocalZeroSuggestAgeThreshold) {
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  // Verify the default value.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  const int expected_age_threshold_days = 60;
+#else
+  const int expected_age_threshold_days = 90;
+#endif
+  base::Time age_threshold =
+      OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
+  EXPECT_EQ(expected_age_threshold_days,
+            base::TimeDelta(base::Time::Now() - age_threshold).InDays());
+
   // The default value can be overridden.
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
-      {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "3"}});
-  base::Time age_threshold =
-      OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
-  EXPECT_EQ(3, base::TimeDelta(base::Time::Now() - age_threshold).InDays());
-
-  // If the age threshold is not parsable to an unsigned integer, the default
-  // value is used.
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
-      {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "j"}});
-  const int expected_age_threshold_days = 60;
+      {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam.name,
+        "3"}});
   age_threshold = OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold();
-  EXPECT_EQ(expected_age_threshold_days,
-            base::TimeDelta(base::Time::Now() - age_threshold).InDays());
+  EXPECT_EQ(3, base::TimeDelta(base::Time::Now() - age_threshold).InDays());
 }
 
 TEST_F(OmniboxFieldTrialTest, HUPNewScoringFieldTrial) {

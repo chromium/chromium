@@ -7305,20 +7305,15 @@
                     "params": {
                         "EntitySuggestionsReduceLatencyDecoderTimeout": "405",
                         "MaxZeroSuggestMatches": "10",
-                        "OmniboxLocalZeroSuggestAgeThreshold": "90",
                         "OmniboxMaxURLMatches": "7",
-                        "PrefixSuggestIgnoreDuplicateVisits": "true",
-                        "UIMaxAutocompleteMatches": "8",
-                        "ZeroSuggestIgnoreDuplicateVisits": "false"
+                        "UIMaxAutocompleteMatches": "8"
                     },
                     "enable_features": [
-                        "LocalHistorySuggestRevamp",
                         "OmniboxBlurWithEscape",
                         "OmniboxClosePopupWithEscape",
                         "OmniboxDocumentProviderAso",
                         "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxKeywordSearchButton",
-                        "OmniboxLocalZeroSuggestAgeThreshold",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxPreserveLongerShortcutsText",

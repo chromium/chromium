@@ -187,7 +187,7 @@ BASE_FEATURE(kFocusTriggersSRPZeroSuggest,
 // zero-prefix and prefix suggestions.
 BASE_FEATURE(kLocalHistorySuggestRevamp,
              "LocalHistorySuggestRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Enables local history zero-prefix suggestions in every context in which the
 // remote zero-prefix suggestions are enabled.
@@ -197,12 +197,12 @@ BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP,
 
 // Used to adjust the age threshold since the last visit in order to consider a
 // normalized keyword search term as a zero-prefix suggestion. If disabled, the
-// default value of 60 days for Desktop and 7 days for Android and iOS is used.
+// default value of 90 days for Desktop and 60 days for Android and iOS is used.
 // If enabled, the age threshold is determined by this feature's companion
 // parameter, OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam.
 BASE_FEATURE(kOmniboxLocalZeroSuggestAgeThreshold,
              "OmniboxLocalZeroSuggestAgeThreshold",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // Mainly used to enable sending INTERACTION_CLOBBER focus type for zero-prefix
 // requests with an empty input on Web/SRP on Mobile. Enabled by default on
