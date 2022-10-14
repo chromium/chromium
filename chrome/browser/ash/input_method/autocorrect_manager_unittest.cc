@@ -769,6 +769,31 @@ TEST_F(AutocorrectManagerTest,
 }
 
 TEST_F(AutocorrectManagerTest,
+       PressingTabKeyHighlightsUndoButtonWhenUndoWindowIsVisible) {
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
+                                    /*anchor_pos=*/4);
+  manager_.HandleAutocorrect(gfx::Range(0, 3), u"teh", u"the");
+
+  {
+    ::testing::InSequence seq;
+
+    AssistiveWindowProperties shown_properties =
+        CreateVisibleUndoWindowProperties(u"teh", u"the");
+
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetAssistiveWindowProperties(_, shown_properties, _));
+
+    ui::ime::AssistiveWindowButton button = CreateHighlightedUndoButton(u"teh");
+    EXPECT_CALL(mock_suggestion_handler_,
+                SetButtonHighlighted(_, button, true, _));
+  }
+
+  manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/1,
+                                    /*anchor_pos=*/1);
+  manager_.OnKeyEvent(CreateKeyEvent(ui::DomKey::NONE, ui::DomCode::TAB));
+}
+
+TEST_F(AutocorrectManagerTest,
        PressingEnterKeyHidesUndoWindowWhenButtonIsHighlighted) {
   manager_.OnSurroundingTextChanged(u"the ", /*cursor_pos=*/4,
                                     /*anchor_pos=*/4);

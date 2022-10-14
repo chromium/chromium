@@ -379,7 +379,8 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     return false;
   }
 
-  if (event.code() == ui::DomCode::ARROW_UP) {
+  if (event.code() == ui::DomCode::ARROW_UP ||
+      event.code() == ui::DomCode::TAB) {
     HighlightUndoButton();
     return true;
   }
