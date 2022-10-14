@@ -354,10 +354,10 @@ size_t NetworkListViewControllerImpl::CreateSeparatorIfMissingAndReorder(
 
   if (separator_view == &wifi_separator_view_) {
     separator->SetID(
-        static_cast<int>(NetworkListViewControllerViewChildId::kWifiSeperator));
+        static_cast<int>(NetworkListViewControllerViewChildId::kWifiSeparator));
   } else if (separator_view == &mobile_separator_view_) {
     separator->SetID(static_cast<int>(
-        NetworkListViewControllerViewChildId::kMobileSeperator));
+        NetworkListViewControllerViewChildId::kMobileSeparator));
   } else {
     NOTREACHED();
   }

@@ -212,7 +212,7 @@ KeyboardShortcutItemView::KeyboardShortcutItemView(
       base::i18n::IsRTL() ? gfx::ALIGN_LEFT : gfx::ALIGN_RIGHT);
   DCHECK_EQ(replacement_strings.size(), offsets.size());
   // TODO(wutao): make this reliable.
-  // If the replacement string is "+ ", it indicates to insert a seperator view.
+  // If the replacement string is "+ ", it indicates to insert a separator view.
   const std::u16string separator_string = u"+ ";
   for (size_t i = 0; i < offsets.size(); ++i) {
     views::StyledLabel::RangeStyleInfo style_info;

@@ -109,10 +109,10 @@ BatteryLabelView::BatteryLabelView(UnifiedSystemTrayController* controller,
       views::BoxLayout::Orientation::kHorizontal));
 
   percentage_ = AddChildView(std::make_unique<views::Label>());
-  auto seperator = std::make_unique<views::Label>();
-  seperator->SetText(
+  auto separator = std::make_unique<views::Label>();
+  separator->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_STATUS_SEPARATOR));
-  separator_view_ = AddChildView(std::move(seperator));
+  separator_view_ = AddChildView(std::move(separator));
   status_ = AddChildView(std::make_unique<views::Label>());
   Update();
 }

@@ -58,10 +58,10 @@ class ASH_EXPORT NetworkListViewControllerImpl
   enum class NetworkListViewControllerViewChildId {
     kConnectionWarning = 11,
     kConnectionWarningLabel = 12,
-    kMobileSeperator = 13,
+    kMobileSeparator = 13,
     kMobileStatusMessage = 14,
     kMobileSectionHeader = 15,
-    kWifiSeperator = 16,
+    kWifiSeparator = 16,
     kWifiSectionHeader = 17,
     kWifiStatusMessage = 18,
   };

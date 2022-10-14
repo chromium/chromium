@@ -58,7 +58,7 @@ class UnifiedMessageCenterBubble::Border : public ui::LayerDelegate {
 
     // Draw a solid rounded rect as the inner border.
     cc::PaintFlags flags;
-    flags.setColor(message_center_style::kSeperatorColor);
+    flags.setColor(message_center_style::kSeparatorColor);
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(canvas->image_scale());
     flags.setAntiAlias(true);

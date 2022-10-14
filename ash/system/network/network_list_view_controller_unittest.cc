@@ -240,7 +240,7 @@ class NetworkListViewControllerTest : public AshTestBase {
   views::Separator* GetMobileSeparator() {
     return FindViewById<views::Separator*>(
         NetworkListViewControllerImpl::NetworkListViewControllerViewChildId::
-            kMobileSeperator);
+            kMobileSeparator);
   }
 
   FakeNetworkListWifiHeaderView* GetWifiSubHeader() {
@@ -252,7 +252,7 @@ class NetworkListViewControllerTest : public AshTestBase {
   views::Separator* GetWifiSeparator() {
     return FindViewById<views::Separator*>(
         NetworkListViewControllerImpl::NetworkListViewControllerViewChildId::
-            kWifiSeperator);
+            kWifiSeparator);
   }
 
   TrayInfoLabel* GetMobileStatusMessage() {

@@ -137,7 +137,7 @@ class UnifiedMessageListView::MessageViewContainer
                     : views::CreateSolidSidedBorder(
                           gfx::Insets::TLBR(
                               0, 0, kUnifiedNotificationSeparatorThickness, 0),
-                          message_center_style::kSeperatorColor));
+                          message_center_style::kSeparatorColor));
     }
 
     const int message_center_notification_corner_radius =
