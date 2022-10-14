@@ -58,7 +58,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   bool IsConnectable() const override;
   bool IsConnecting() const override;
   UUIDSet GetUUIDs() const override;
-  absl::optional<int8_t> GetInquiryRSSI() const override;
   absl::optional<int8_t> GetInquiryTxPower() const override;
   bool ExpectingPinCode() const override;
   bool ExpectingPasskey() const override;
@@ -131,6 +130,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
  private:
   void OnGetRemoteType(DBusResult<FlossAdapterClient::BluetoothDeviceType> ret);
   void OnGetRemoteClass(DBusResult<uint32_t> ret);
+  void OnGetRemoteAppearance(DBusResult<uint16_t> ret);
   void OnGetRemoteUuids(DBusResult<UUIDList> ret);
   void OnConnectAllEnabledProfiles(DBusResult<Void> ret);
   void OnDisconnectAllEnabledProfiles(base::OnceClosure callback,
@@ -165,6 +165,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceFloss
   // Class of device.
   // TODO(b/204708206): Update with property framework when available
   uint32_t cod_ = 0;
+
+  // Appearance of device.
+  // TODO(b/204708206): Update with property framework when available
+  uint16_t appearance_ = 0;
 
   // Whether the device is bonded/paired.
   FlossAdapterClient::BondState bond_state_ =

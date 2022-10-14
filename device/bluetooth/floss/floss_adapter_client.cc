@@ -85,6 +85,13 @@ void FlossAdapterClient::GetRemoteClass(ResponseCallback<uint32_t> callback,
                               device);
 }
 
+void FlossAdapterClient::GetRemoteAppearance(
+    ResponseCallback<uint16_t> callback,
+    FlossDeviceId device) {
+  CallAdapterMethod<uint16_t>(std::move(callback),
+                              adapter::kGetRemoteAppearance, device);
+}
+
 void FlossAdapterClient::GetConnectionState(ResponseCallback<uint32_t> callback,
                                             const FlossDeviceId& device) {
   CallAdapterMethod<uint32_t>(std::move(callback), adapter::kGetConnectionState,

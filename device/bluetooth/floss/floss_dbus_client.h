@@ -51,6 +51,7 @@ extern DEVICE_BLUETOOTH_EXPORT const char kCancelBondProcess[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRemoveBond[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetRemoteType[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetRemoteClass[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetRemoteAppearance[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetConnectionState[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetRemoteUuids[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetBondState[];

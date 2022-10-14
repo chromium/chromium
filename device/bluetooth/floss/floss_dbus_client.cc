@@ -42,6 +42,7 @@ const char kCancelBondProcess[] = "CancelBondProcess";
 const char kRemoveBond[] = "RemoveBond";
 const char kGetRemoteType[] = "GetRemoteType";
 const char kGetRemoteClass[] = "GetRemoteClass";
+const char kGetRemoteAppearance[] = "GetRemoteAppearance";
 const char kGetConnectionState[] = "GetConnectionState";
 const char kGetRemoteUuids[] = "GetRemoteUuids";
 const char kGetBondState[] = "GetBondState";

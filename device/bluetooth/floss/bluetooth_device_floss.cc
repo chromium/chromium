@@ -102,9 +102,7 @@ uint16_t BluetoothDeviceFloss::GetDeviceID() const {
 }
 
 uint16_t BluetoothDeviceFloss::GetAppearance() const {
-  NOTIMPLEMENTED();
-
-  return 0;
+  return appearance_;
 }
 
 absl::optional<std::string> BluetoothDeviceFloss::GetName() const {
@@ -147,12 +145,6 @@ bool BluetoothDeviceFloss::IsConnecting() const {
 
 device::BluetoothDevice::UUIDSet BluetoothDeviceFloss::GetUUIDs() const {
   return device_uuids_.GetUUIDs();
-}
-
-absl::optional<int8_t> BluetoothDeviceFloss::GetInquiryRSSI() const {
-  NOTIMPLEMENTED();
-
-  return absl::nullopt;
 }
 
 absl::optional<int8_t> BluetoothDeviceFloss::GetInquiryTxPower() const {
@@ -449,6 +441,16 @@ void BluetoothDeviceFloss::OnGetRemoteClass(DBusResult<uint32_t> ret) {
   cod_ = *ret;
 }
 
+void BluetoothDeviceFloss::OnGetRemoteAppearance(DBusResult<uint16_t> ret) {
+  TriggerInitDevicePropertiesCallback();
+  if (!ret.has_value()) {
+    BLUETOOTH_LOG(ERROR) << "OnGetRemoteAppearance() failed: " << ret.error();
+    return;
+  }
+
+  appearance_ = *ret;
+}
+
 void BluetoothDeviceFloss::OnGetRemoteUuids(DBusResult<UUIDList> ret) {
   TriggerInitDevicePropertiesCallback();
   if (!ret.has_value()) {
@@ -525,7 +527,7 @@ void BluetoothDeviceFloss::InitializeDeviceProperties(
   // This must be incremented when adding more properties below
   // and followed up with a TriggerInitDevicePropertiesCallback()
   // in the callback.
-  num_pending_properties_ += 3;
+  num_pending_properties_ += 4;
   // TODO(b/204708206): Update with property framework when available
   FlossDBusManager::Get()->GetAdapterClient()->GetRemoteType(
       base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteType,
@@ -533,6 +535,10 @@ void BluetoothDeviceFloss::InitializeDeviceProperties(
       AsFlossDeviceId());
   FlossDBusManager::Get()->GetAdapterClient()->GetRemoteClass(
       base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteClass,
+                     weak_ptr_factory_.GetWeakPtr()),
+      AsFlossDeviceId());
+  FlossDBusManager::Get()->GetAdapterClient()->GetRemoteAppearance(
+      base::BindOnce(&BluetoothDeviceFloss::OnGetRemoteAppearance,
                      weak_ptr_factory_.GetWeakPtr()),
       AsFlossDeviceId());
   FlossDBusManager::Get()->GetAdapterClient()->GetRemoteUuids(

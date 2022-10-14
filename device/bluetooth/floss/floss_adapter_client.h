@@ -191,6 +191,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossAdapterClient : public FlossDBusClient {
   virtual void GetRemoteClass(ResponseCallback<uint32_t> callback,
                               FlossDeviceId device);
 
+  // Gets appearance of a device.
+  virtual void GetRemoteAppearance(ResponseCallback<uint16_t> callback,
+                                   FlossDeviceId device);
+
   // Get connection state of a device.
   // TODO(b/202334519): Change return type to enum instead of u32
   virtual void GetConnectionState(ResponseCallback<uint32_t> callback,

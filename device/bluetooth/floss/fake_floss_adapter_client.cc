@@ -129,6 +129,13 @@ void FakeFlossAdapterClient::GetRemoteClass(ResponseCallback<uint32_t> callback,
       FROM_HERE, base::BindOnce(std::move(callback), kHeadsetClassOfDevice));
 }
 
+void FakeFlossAdapterClient::GetRemoteAppearance(
+    ResponseCallback<uint16_t> callback,
+    FlossDeviceId device) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), 1));
+}
+
 void FakeFlossAdapterClient::GetConnectionState(
     ResponseCallback<uint32_t> callback,
     const FlossDeviceId& device) {

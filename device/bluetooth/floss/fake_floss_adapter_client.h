@@ -45,6 +45,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
                      FlossDeviceId device) override;
   void GetRemoteClass(ResponseCallback<uint32_t> callback,
                       FlossDeviceId device) override;
+  void GetRemoteAppearance(ResponseCallback<uint16_t> callback,
+                           FlossDeviceId device) override;
   void GetConnectionState(ResponseCallback<uint32_t> callback,
                           const FlossDeviceId& device) override;
   void GetRemoteUuids(
