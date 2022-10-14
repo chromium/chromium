@@ -1019,15 +1019,20 @@ def main():
         # results on
         # https://chromium-review.googlesource.com/c/chromium/src/+/3702739/4
         # Maybe it should work for builtins too?
-        ('armv7-unknown-linux-gnueabihf',
-         compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
-             'CMAKE_SYSROOT=%s' % sysroot_arm,
-         ]))
-    runtimes_triples_args.append(
-        ('aarch64-unknown-linux-gnu',
-         compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
-             'CMAKE_SYSROOT=%s' % sysroot_arm64,
-         ]))
+        (
+            'armv7-unknown-linux-gnueabihf',
+            compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
+                'CMAKE_SYSROOT=%s' % sysroot_arm,
+                # Can't run tests on x86 host.
+                'LLVM_INCLUDE_TESTS=OFF',
+            ]))
+    runtimes_triples_args.append((
+        'aarch64-unknown-linux-gnu',
+        compiler_rt_cmake_flags(sanitizers=True, profile=True) + [
+            'CMAKE_SYSROOT=%s' % sysroot_arm64,
+            # Can't run tests on x86 host.
+            'LLVM_INCLUDE_TESTS=OFF',
+        ]))
   elif sys.platform == 'win32':
     runtimes_triples_args.append(
         ('i386-pc-windows-msvc',
