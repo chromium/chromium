@@ -589,7 +589,7 @@ void OpenNewWindowForFirstRun(
     const std::vector<GURL>& first_run_urls,
     chrome::startup::IsProcessStartup process_startup,
     chrome::startup::IsFirstRun is_first_run,
-    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder,
+    std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder,
     bool proceed) {
   if (!proceed)
     return;
@@ -648,7 +648,7 @@ void StartupBrowserCreator::LaunchBrowser(
     const base::FilePath& cur_dir,
     chrome::startup::IsProcessStartup process_startup,
     chrome::startup::IsFirstRun is_first_run,
-    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
+    std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder) {
   DCHECK(profile);
 #if BUILDFLAG(IS_WIN)
   DCHECK(!command_line.HasSwitch(credential_provider::kGcpwSigninSwitch));
@@ -741,7 +741,7 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
       }
 #endif
       LaunchBrowser(command_line, profile_to_open, cur_dir, process_startup,
-                    is_first_run, std::make_unique<LaunchModeRecorder>());
+                    is_first_run, std::make_unique<OldLaunchModeRecorder>());
       return;
     }
 
@@ -1155,7 +1155,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
   // Delegate to the notification system; do not open a browser window here.
   if (command_line.HasSwitch(switches::kNotificationLaunchId)) {
     if (NotificationPlatformBridgeWin::HandleActivation(command_line)) {
-      LaunchModeRecorder().SetLaunchMode(LaunchMode::kWinPlatformNotification);
+      OldLaunchModeRecorder().SetLaunchMode(
+          OldLaunchMode::kWinPlatformNotification);
       return true;
     }
     return false;
@@ -1184,7 +1185,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     if (!StartGCPWSignin(command_line, incognito_profile))
       return false;
 
-    LaunchModeRecorder().SetLaunchMode(LaunchMode::kCredentialProviderSignIn);
+    OldLaunchModeRecorder().SetLaunchMode(
+        OldLaunchMode::kCredentialProviderSignIn);
     return true;
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -1305,7 +1307,7 @@ void StartupBrowserCreator::ProcessLastOpenedProfiles(
                                                  : command_line_without_urls,
                   profile, cur_dir, process_startup, is_first_run,
                   profile == last_used_profile
-                      ? std::make_unique<LaunchModeRecorder>()
+                      ? std::make_unique<OldLaunchModeRecorder>()
                       : nullptr);
     // We've launched at least one browser.
     process_startup = chrome::startup::IsProcessStartup::kNo;

@@ -18,7 +18,7 @@
 
 class Browser;
 class GURL;
-class LaunchModeRecorder;
+class OldLaunchModeRecorder;
 class PrefRegistrySimple;
 
 namespace base {
@@ -132,12 +132,13 @@ class StartupBrowserCreator {
   // |is_first_run| indicates that this is a new profile.
   // If |launch_mode_recorder| is non null, and a browser is launched, a launch
   // mode histogram will be recorded.
-  void LaunchBrowser(const base::CommandLine& command_line,
-                     Profile* profile,
-                     const base::FilePath& cur_dir,
-                     chrome::startup::IsProcessStartup process_startup,
-                     chrome::startup::IsFirstRun is_first_run,
-                     std::unique_ptr<LaunchModeRecorder> launch_mode_recorder);
+  void LaunchBrowser(
+      const base::CommandLine& command_line,
+      Profile* profile,
+      const base::FilePath& cur_dir,
+      chrome::startup::IsProcessStartup process_startup,
+      chrome::startup::IsFirstRun is_first_run,
+      std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder);
 
   // Launches browser for `last_opened_profiles` if it's not empty. Otherwise,
   // launches browser for `profile_info`.

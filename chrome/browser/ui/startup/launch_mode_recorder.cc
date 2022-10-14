@@ -31,11 +31,11 @@ namespace {
 
 // Returns a LaunchMode value if one can be determined with low overhead, or
 // kToBeDecided if a call to GetLaunchModeSlow is required.
-LaunchMode GetLaunchModeFast();
+OldLaunchMode GetLaunchModeFast();
 
 // Returns a LaunchMode value; may require a bit of extra work. This will be
 // called on a background thread outside of the critical startup path.
-LaunchMode GetLaunchModeSlow();
+OldLaunchMode GetLaunchModeSlow();
 
 #if BUILDFLAG(IS_WIN)
 // Returns the path to the shortcut from which Chrome was launched, or null if
@@ -48,16 +48,16 @@ absl::optional<const wchar_t*> GetShortcutPath() {
   return absl::optional<const wchar_t*>(si.lpTitle);
 }
 
-LaunchMode GetLaunchModeFast() {
+OldLaunchMode GetLaunchModeFast() {
   auto shortcut_path = GetShortcutPath();
   if (!shortcut_path)
-    return LaunchMode::kOther;
+    return OldLaunchMode::kOther;
   if (!shortcut_path.value())
-    return LaunchMode::kShortcutNoName;
-  return LaunchMode::kToBeDecided;
+    return OldLaunchMode::kShortcutNoName;
+  return OldLaunchMode::kToBeDecided;
 }
 
-LaunchMode GetLaunchModeSlow() {
+OldLaunchMode GetLaunchModeSlow() {
   auto shortcut_path = GetShortcutPath();
   DCHECK(shortcut_path);
   DCHECK(shortcut_path.value());
@@ -67,17 +67,17 @@ LaunchMode GetLaunchModeSlow() {
 
   // The windows quick launch path is not localized.
   if (shortcut.find(u"\\quick launch\\") != base::StringPiece16::npos)
-    return LaunchMode::kShortcutTaskbar;
+    return OldLaunchMode::kShortcutTaskbar;
 
   // Check the common shortcut locations.
   static constexpr struct {
     int path_key;
-    LaunchMode launch_mode;
+    OldLaunchMode launch_mode;
   } kPathKeysAndModes[] = {
-      {base::DIR_COMMON_START_MENU, LaunchMode::kShortcutStartMenu},
-      {base::DIR_START_MENU, LaunchMode::kShortcutStartMenu},
-      {base::DIR_COMMON_DESKTOP, LaunchMode::kShortcutDesktop},
-      {base::DIR_USER_DESKTOP, LaunchMode::kShortcutDesktop},
+      {base::DIR_COMMON_START_MENU, OldLaunchMode::kShortcutStartMenu},
+      {base::DIR_START_MENU, OldLaunchMode::kShortcutStartMenu},
+      {base::DIR_COMMON_DESKTOP, OldLaunchMode::kShortcutDesktop},
+      {base::DIR_USER_DESKTOP, OldLaunchMode::kShortcutDesktop},
   };
   base::FilePath candidate;
   for (const auto& item : kPathKeysAndModes) {
@@ -89,59 +89,59 @@ LaunchMode GetLaunchModeSlow() {
     }
   }
 
-  return LaunchMode::kShortcutUnknown;
+  return OldLaunchMode::kShortcutUnknown;
 }
 #elif BUILDFLAG(IS_MAC)  // BUILDFLAG(IS_WIN)
-LaunchMode GetLaunchModeFast() {
+OldLaunchMode GetLaunchModeFast() {
   DiskImageStatus dmg_launch_status =
       IsAppRunningFromReadOnlyDiskImage(nullptr);
   dock::ChromeInDockStatus dock_launch_status = dock::ChromeIsInTheDock();
 
   if (dock_launch_status == dock::ChromeInDockFailure &&
       dmg_launch_status == DiskImageStatusFailure)
-    return LaunchMode::kMacDockDMGStatusError;
+    return OldLaunchMode::kMacDockDMGStatusError;
 
   if (dock_launch_status == dock::ChromeInDockFailure)
-    return LaunchMode::kMacDockStatusError;
+    return OldLaunchMode::kMacDockStatusError;
 
   if (dmg_launch_status == DiskImageStatusFailure)
-    return LaunchMode::kMacDMGStatusError;
+    return OldLaunchMode::kMacDMGStatusError;
 
   bool dmg_launch = dmg_launch_status == DiskImageStatusTrue;
   bool dock_launch = dock_launch_status == dock::ChromeInDockTrue;
 
   if (dmg_launch && dock_launch)
-    return LaunchMode::kMacDockedDMGLaunch;
+    return OldLaunchMode::kMacDockedDMGLaunch;
 
   if (dmg_launch)
-    return LaunchMode::kMacUndockedDMGLaunch;
+    return OldLaunchMode::kMacUndockedDMGLaunch;
 
   if (dock_launch)
-    return LaunchMode::kMacDockedDiskLaunch;
+    return OldLaunchMode::kMacDockedDiskLaunch;
 
-  return LaunchMode::kMacUndockedDiskLaunch;
+  return OldLaunchMode::kMacUndockedDiskLaunch;
 }
 
-LaunchMode GetLaunchModeSlow() {
+OldLaunchMode GetLaunchModeSlow() {
   NOTREACHED();
-  return LaunchMode::kToBeDecided;
+  return OldLaunchMode::kToBeDecided;
 }
 #else                    // BUILDFLAG(IS_WIN)
 // TODO(cpu): Port to other platforms.
-LaunchMode GetLaunchModeFast() {
-  return LaunchMode::kOtherOS;
+OldLaunchMode GetLaunchModeFast() {
+  return OldLaunchMode::kOtherOS;
 }
 
-LaunchMode GetLaunchModeSlow() {
+OldLaunchMode GetLaunchModeSlow() {
   NOTREACHED();
-  return LaunchMode::kOtherOS;
+  return OldLaunchMode::kOtherOS;
 }
 #endif                   // BUILDFLAG(IS_WIN)
 
-void RecordLaunchMode(LaunchMode mode) {
+void RecordOldLaunchMode(OldLaunchMode mode) {
   base::UmaHistogramEnumeration("Launch.Modes", mode);
 #if BUILDFLAG(IS_WIN)
-  if (mode == LaunchMode::kShortcutTaskbar) {
+  if (mode == OldLaunchMode::kShortcutTaskbar) {
     absl::optional<bool> installer_pinned = GetInstallerPinnedChromeToTaskbar();
     if (installer_pinned.has_value()) {
       base::UmaHistogramBoolean("Windows.Launch.TaskbarInstallerPinned",
@@ -153,31 +153,31 @@ void RecordLaunchMode(LaunchMode mode) {
 
 // Log in a histogram the frequency of launching by the different methods. See
 // LaunchMode enum for the actual values of the buckets.
-void RecordLaunchModeHistogram(LaunchMode mode) {
-  if (mode == LaunchMode::kToBeDecided &&
-      (mode = GetLaunchModeFast()) == LaunchMode::kToBeDecided) {
+void RecordOldLaunchModeHistogram(OldLaunchMode mode) {
+  if (mode == OldLaunchMode::kToBeDecided &&
+      (mode = GetLaunchModeFast()) == OldLaunchMode::kToBeDecided) {
     // The mode couldn't be determined with a fast path. Perform a more
     // expensive evaluation out of the critical startup path.
     base::ThreadPool::PostTask(
         FROM_HERE,
         {base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-        base::BindOnce(&RecordLaunchMode, GetLaunchModeSlow()));
+        base::BindOnce(&RecordOldLaunchMode, GetLaunchModeSlow()));
   } else {
-    RecordLaunchMode(mode);
+    RecordOldLaunchMode(mode);
   }
 }
 
 }  // namespace
 
-LaunchModeRecorder::LaunchModeRecorder() = default;
+OldLaunchModeRecorder::OldLaunchModeRecorder() = default;
 
-LaunchModeRecorder::~LaunchModeRecorder() {
+OldLaunchModeRecorder::~OldLaunchModeRecorder() {
   if (mode_.has_value())
-    RecordLaunchModeHistogram(mode_.value());
+    RecordOldLaunchModeHistogram(mode_.value());
 }
 
-void LaunchModeRecorder::SetLaunchMode(LaunchMode mode) {
+void OldLaunchModeRecorder::SetLaunchMode(OldLaunchMode mode) {
   if (!mode_.has_value())
     mode_ = mode;
 }

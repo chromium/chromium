@@ -177,7 +177,7 @@ void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
 void StartupBrowserCreatorImpl::Launch(
     Profile* profile,
     chrome::startup::IsProcessStartup process_startup,
-    std::unique_ptr<LaunchModeRecorder> launch_mode_recorder) {
+    std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder) {
   DCHECK(profile);
   profile_ = profile;
 
@@ -188,12 +188,12 @@ void StartupBrowserCreatorImpl::Launch(
   if (launch_mode_recorder) {
     if (!command_line_.GetSwitchValueNative(switches::kTryChromeAgain)
              .empty()) {
-      launch_mode_recorder->SetLaunchMode(LaunchMode::kUserExperiment);
+      launch_mode_recorder->SetLaunchMode(OldLaunchMode::kUserExperiment);
     } else {
       launch_mode_recorder->SetLaunchMode(launch_result ==
                                                   LaunchResult::kWithGivenUrls
-                                              ? LaunchMode::kWithUrls
-                                              : LaunchMode::kToBeDecided);
+                                              ? OldLaunchMode::kWithUrls
+                                              : OldLaunchMode::kToBeDecided);
     }
   }
 

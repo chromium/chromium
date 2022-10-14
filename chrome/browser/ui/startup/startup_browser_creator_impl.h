@@ -17,7 +17,7 @@
 #include "url/gurl.h"
 
 class Browser;
-class LaunchModeRecorder;
+class OldLaunchModeRecorder;
 class Profile;
 class StartupBrowserCreator;
 class StartupTabProvider;
@@ -62,7 +62,7 @@ class StartupBrowserCreatorImpl {
   // launch another instance.
   void Launch(Profile* profile,
               chrome::startup::IsProcessStartup process_startup,
-              std::unique_ptr<LaunchModeRecorder> launch_mode_recorder);
+              std::unique_ptr<OldLaunchModeRecorder> launch_mode_recorder);
 
   // Convenience for OpenTabsInBrowser that converts |urls| into a set of
   // Tabs.

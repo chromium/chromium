@@ -567,7 +567,7 @@ bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
       browser_creator.LaunchBrowser(*command_line, profile(), base::FilePath(),
                                     chrome::startup::IsProcessStartup::kYes,
                                     chrome::startup::IsFirstRun::kNo,
-                                    std::make_unique<LaunchModeRecorder>());
+                                    std::make_unique<OldLaunchModeRecorder>());
       return true;
     } else {
       // If 'browser' is not null, show the crash bubble in the current browser

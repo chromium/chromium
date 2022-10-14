@@ -2391,7 +2391,7 @@ void UserSessionManager::LaunchBrowser(Profile* profile) {
   browser_creator.LaunchBrowser(
       *base::CommandLine::ForCurrentProcess(), profile, base::FilePath(),
       chrome::startup::IsProcessStartup::kYes, first_run,
-      std::make_unique<LaunchModeRecorder>());
+      std::make_unique<OldLaunchModeRecorder>());
 }
 
 // static

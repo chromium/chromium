@@ -12,7 +12,12 @@
 //   (a) existing enumerated constants should never be deleted or reordered,
 //   and (b) new constants should only be appended at the end of the
 //   enumeration.
-enum class LaunchMode {
+//
+// This is in the process of being deprecated. Please don't add new constants
+// to it; instead, wait for the new launch mode to be added. See
+// https://crbug.com/1366137.
+
+enum class OldLaunchMode {
   kToBeDecided = 0,  // Possibly direct launch or via a shortcut.
   // Launched as an installed web application in a standalone window through any
   // method outside of a platform shortcut or command-line launch..
@@ -50,18 +55,18 @@ enum class LaunchMode {
   kMaxValue = kAsWebAppInWindowOther,
 };
 
-class LaunchModeRecorder {
+class OldLaunchModeRecorder {
  public:
-  LaunchModeRecorder();
-  LaunchModeRecorder(const LaunchModeRecorder&) = delete;
-  LaunchModeRecorder& operator=(const LaunchModeRecorder&) = delete;
-  ~LaunchModeRecorder();
+  OldLaunchModeRecorder();
+  OldLaunchModeRecorder(const OldLaunchModeRecorder&) = delete;
+  OldLaunchModeRecorder& operator=(const OldLaunchModeRecorder&) = delete;
+  ~OldLaunchModeRecorder();
 
   // Only sets |mode_| if it has not already been set.
-  void SetLaunchMode(LaunchMode mode);
+  void SetLaunchMode(OldLaunchMode mode);
 
  private:
-  absl::optional<LaunchMode> mode_;
+  absl::optional<OldLaunchMode> mode_;
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_LAUNCH_MODE_RECORDER_H_
