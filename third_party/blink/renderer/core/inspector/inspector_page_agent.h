@@ -138,6 +138,9 @@ class CORE_EXPORT InspectorPageAgent final
   void getResourceContent(const String& frame_id,
                           const String& url,
                           std::unique_ptr<GetResourceContentCallback>) override;
+  protocol::Response getAdScriptId(
+      const String& frame_id,
+      Maybe<protocol::Page::AdScriptId>* ad_script_id) override;
   void searchInResource(const String& frame_id,
                         const String& url,
                         const String& query,
@@ -296,6 +299,8 @@ class CORE_EXPORT InspectorPageAgent final
       pending_isolated_worlds_;
   using FrameIsolatedWorlds = HashMap<String, scoped_refptr<DOMWrapperWorld>>;
   HeapHashMap<WeakMember<LocalFrame>, FrameIsolatedWorlds> isolated_worlds_;
+  HashMap<String, std::unique_ptr<blink::AdScriptIdentifier>>
+      ad_script_identifiers_;
   v8_inspector::V8InspectorSession* v8_session_;
   Client* client_;
   String pending_script_to_evaluate_on_load_once_;

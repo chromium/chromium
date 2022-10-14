@@ -7682,6 +7682,14 @@ domain Page
       # Recommendation for manifest's id attribute to match current id computed from start_url
       optional string recommendedId
 
+  experimental command getAdScriptId
+    parameters
+      FrameId frameId
+    returns
+      # Identifies the bottom-most script which caused the frame to be labelled
+      # as an ad. Only sent if frame is labelled as an ad and id is available.
+      optional AdScriptId adScriptId
+
   # Returns all browser cookies for the page and all of its subframes. Depending
   # on the backend support, will return detailed cookie information in the
   # `cookies` field.
@@ -8129,7 +8137,8 @@ domain Page
       optional Runtime.StackTrace stack
       # Identifies the bottom-most script which caused the frame to be labelled
       # as an ad. Only sent if frame is labelled as an ad and id is available.
-      experimental optional AdScriptId adScriptId
+      # Deprecated: use Page.getAdScriptId instead.
+      experimental deprecated optional AdScriptId adScriptId
 
   # Fired when frame no longer has a scheduled navigation.
   deprecated event frameClearedScheduledNavigation

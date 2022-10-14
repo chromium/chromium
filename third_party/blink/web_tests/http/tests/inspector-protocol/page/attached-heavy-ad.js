@@ -16,5 +16,8 @@
   `);
   const {params} = await secondFrameAttached;
   testRunner.log('has adScriptId: ' + !!params.adScriptId);
+
+  const { result } = await dp.Page.getAdScriptId({ frameId: params.frameId });
+  testRunner.log('has adScriptId via getAdScriptId: ' + !!result.adScriptId);
   testRunner.completeTest();
 })
