@@ -77,6 +77,7 @@ source_set("unit_tests") {
     "audio_device_selection_generated_unittest.cc",
     "audio_device_selection_test_base.cc",
     "audio_device_selection_test_base.h",
+    "audio_device_selection_unittest.cc",
     "audio_devices_pref_handler_impl_unittest.cc",
     "cras_audio_handler_unittest.cc",
     "cros_audio_config_impl_unittest.cc",
