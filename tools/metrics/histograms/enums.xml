@@ -100455,6 +100455,14 @@ Full version information for the fingerprint enum values:
   <int value="5" label="Rejected: Is a Google domain, but not https."/>
 </enum>
 
+<enum name="VariationsInvalidLayerReason">
+  <int value="0" label="Invalid ID"/>
+  <int value="1" label="No slots"/>
+  <int value="2" label="No members"/>
+  <int value="3" label="Invalid entropy mode"/>
+  <int value="4" label="Slots do not divide low entropy domain"/>
+</enum>
+
 <enum name="VariationsInvalidStudyReason">
   <int value="0" label="Invalid min_version"/>
   <int value="1" label="Invalid max_version"/>

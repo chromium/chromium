@@ -236,6 +236,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Variations.InvalidLayerReason"
+    enum="VariationsInvalidLayerReason" expires_after="2022-11-20">
+  <owner>holte@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the reason for rejecting an invalid layer. Recorded when processing
+    the variations seed at startup and when simulating a new seed.
+  </summary>
+</histogram>
+
 <histogram name="Variations.InvalidStudyReason"
     enum="VariationsInvalidStudyReason" expires_after="2022-11-20">
   <owner>jwd@chromium.org</owner>

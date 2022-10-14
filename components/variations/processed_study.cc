@@ -190,10 +190,15 @@ ProcessedStudy::SelectEntropyProviderForStudy(
       all_assignments_to_one_group_) {
     return base::FieldTrialList::GetEntropyProviderForSessionRandomization();
   }
-  if (ShouldStudyUseLowEntropy()) {
-    return entropy_providers.low_entropy();
+  if (entropy_providers.default_entropy_is_high_entropy() &&
+      !ShouldStudyUseLowEntropy()) {
+    // We can use the high entropy source to randomize this study, which will
+    // be uniform even if the study is conditioned on layer membership.
+    return entropy_providers.default_entropy();
   }
-  return entropy_providers.default_entropy();
+  if (study_->has_layer())
+    return layers.GetRemainderEntropy(study_->layer().layer_id());
+  return entropy_providers.low_entropy();
 }
 
 int ProcessedStudy::GetExperimentIndexByName(const std::string& name) const {

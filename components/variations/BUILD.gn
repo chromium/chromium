@@ -216,6 +216,7 @@ source_set("unit_tests") {
     "simulate_for_crosstalk_unittest.cc",
     "study_filtering_unittest.cc",
     "synthetic_trial_registry_unittest.cc",
+    "uniformity_unittest.cc",
     "variations_associated_data_unittest.cc",
     "variations_ids_provider_unittest.cc",
     "variations_murmur_hash_unittest.cc",

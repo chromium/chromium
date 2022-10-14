@@ -41,16 +41,28 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
   // not the client _has_ a high entropy source).
   bool ActiveLayerMemberDependsOnHighEntropy(uint32_t layer_id) const;
 
- private:
-  void ConstructLayer(const EntropyProviders& entropy_providers,
-                      const Layer& layer_proto);
+  // Gets an EntropyProvider for low entropy randomization of studies
+  // conditioned on the layer's active member.
+  const base::FieldTrial::EntropyProvider& GetRemainderEntropy(
+      uint32_t layer_id) const;
 
+ private:
   struct LayerInfo {
     // Which layer member is active in the layer.
     uint32_t active_member_id;
     // The type of entropy the layer was configured to use.
     Layer::EntropyMode entropy_mode;
+    // If this layer has an active member, this is the remaining entropy from
+    // that selection, which can be used for uniform randomization of studies
+    // conditioned on that layer member.
+    // See ComputeRemainderEntropy() for details.
+    NormalizedMurmurHashEntropyProvider remainder_entropy;
   };
+
+  void ConstructLayer(const EntropyProviders& entropy_providers,
+                      const Layer& layer_proto);
+
+  NormalizedMurmurHashEntropyProvider nil_entropy;
   std::map<uint32_t, LayerInfo> active_member_for_layer_;
 };
 
