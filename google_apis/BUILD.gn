@@ -55,11 +55,6 @@ if (use_official_google_api_keys == "") {
     #`use_official_google_api_keys` was explicitly set to true and will fail to
     # build if the file is missing.
     use_official_google_api_keys = true
-
-    # TODO(crbug.com/1294931): Remove this override when fixing the issue.
-    if (is_fuchsia) {
-      use_official_google_api_keys = false
-    }
   } else {
     # Check if the key file exists.
     check_internal_result =
