@@ -37,7 +37,7 @@ namespace base {
 #if BUILDFLAG(IS_WIN)
 typedef DWORD PlatformThreadId;
 #elif BUILDFLAG(IS_FUCHSIA)
-typedef zx_handle_t PlatformThreadId;
+typedef zx_koid_t PlatformThreadId;
 #elif BUILDFLAG(IS_APPLE)
 typedef mach_port_t PlatformThreadId;
 #elif BUILDFLAG(IS_POSIX)
