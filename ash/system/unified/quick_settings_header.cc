@@ -8,12 +8,15 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/channel_indicator/channel_indicator_quick_settings_view.h"
 #include "ash/system/channel_indicator/channel_indicator_utils.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/unified/buttons.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
@@ -28,7 +31,8 @@ constexpr int kBetweenChildSpacing = 8;
 
 }  // namespace
 
-QuickSettingsHeader::QuickSettingsHeader() {
+QuickSettingsHeader::QuickSettingsHeader(
+    UnifiedSystemTrayController* controller) {
   DCHECK(features::IsQsRevampEnabled());
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -36,6 +40,11 @@ QuickSettingsHeader::QuickSettingsHeader() {
       kBetweenChildSpacing));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
+
+  enterprise_managed_view_ =
+      AddChildView(std::make_unique<EnterpriseManagedView>(controller));
+
+  supervised_view_ = AddChildView(std::make_unique<SupervisedUserView>());
 
   // If the release track is not "stable" then show the channel indicator UI.
   auto channel = Shell::Get()->shell_delegate()->GetChannel();
@@ -55,10 +64,13 @@ QuickSettingsHeader::QuickSettingsHeader() {
 
 QuickSettingsHeader::~QuickSettingsHeader() = default;
 
+void QuickSettingsHeader::ChildVisibilityChanged(views::View* child) {
+  UpdateVisibility();
+}
+
 void QuickSettingsHeader::UpdateVisibility() {
-  // TODO(b/251724754): Update condition when enterprise management view is
-  // added.
-  bool should_show = !!channel_view_;
+  bool should_show = enterprise_managed_view_->GetVisible() ||
+                     supervised_view_->GetVisible() || !!channel_view_;
   SetVisible(should_show);
 }
 

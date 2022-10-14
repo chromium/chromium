@@ -27,6 +27,8 @@ namespace ash {
 // - Whether the release track UI feature is enabled, and
 // - Whether the release track is a value other than "stable"
 // The release track UI only shows if both conditions are met.
+//
+// NOTE: For QsRevamp, see similar tests in QuickSettingsHeaderTest.
 class UnifiedSystemInfoViewTest
     : public AshTestBase,
       public testing::WithParamInterface<std::tuple<bool, bool>> {

@@ -11,6 +11,9 @@
 namespace ash {
 
 class ChannelIndicatorQuickSettingsView;
+class EnterpriseManagedView;
+class SupervisedUserView;
+class UnifiedSystemTrayController;
 
 // The header view shown at the top of the `QuickSettingsView`. Contains an
 // optional "Managed by" button and an optional release channel indicator. Sets
@@ -19,10 +22,13 @@ class ASH_EXPORT QuickSettingsHeader : public views::View {
  public:
   METADATA_HEADER(QuickSettingsHeader);
 
-  QuickSettingsHeader();
+  explicit QuickSettingsHeader(UnifiedSystemTrayController* controller);
   QuickSettingsHeader(const QuickSettingsHeader&) = delete;
   QuickSettingsHeader& operator=(const QuickSettingsHeader&) = delete;
   ~QuickSettingsHeader() override;
+
+  // views::View:
+  void ChildVisibilityChanged(views::View* child) override;
 
   ChannelIndicatorQuickSettingsView* channel_view_for_test() {
     return channel_view_;
@@ -33,6 +39,9 @@ class ASH_EXPORT QuickSettingsHeader : public views::View {
   // invisible so it does not consume any space.
   void UpdateVisibility();
 
+  // Owned by views hierarchy.
+  EnterpriseManagedView* enterprise_managed_view_ = nullptr;
+  SupervisedUserView* supervised_view_ = nullptr;
   ChannelIndicatorQuickSettingsView* channel_view_ = nullptr;
 };
 

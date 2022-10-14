@@ -123,10 +123,13 @@ class ManagedStateView : public views::Button {
                    int label_id,
                    const gfx::VectorIcon& icon);
 
+  views::Label* label() { return label_; }
+
  private:
   // views::Button:
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   void OnThemeChanged() override;
+  void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // Owned by views hierarchy.
   views::Label* label_ = nullptr;

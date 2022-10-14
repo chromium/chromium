@@ -83139,6 +83139,11 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="CollapseButton"/>
   <int value="10" label="FeedBackButton"/>
   <int value="11" label="VersionButton"/>
+  <int value="12" label="PowerOffMenuButton"/>
+  <int value="13" label="PowerRestartMenuButton"/>
+  <int value="14" label="PowerSignoutMenuButton"/>
+  <int value="15" label="PowerLockMenuButton"/>
+  <int value="16" label="SupervisedButton"/>
 </enum>
 
 <enum name="QsFeatureCatalogName">

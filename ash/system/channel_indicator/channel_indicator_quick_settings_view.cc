@@ -233,7 +233,6 @@ class VersionButton : public views::LabelButton {
       SetMinSize(gfx::Size(0, kVersionButtonHeight));
     }
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-    views::InkDrop::Get(this)->SetBaseColor(GetInkDropBaseColor(channel_));
     InstallRoundedCornerHighlightPathGenerator(
         this, GetVersionButtonInkDropCorners(allow_user_feedback));
   }
@@ -261,6 +260,7 @@ class VersionButton : public views::LabelButton {
 
   void OnThemeChanged() override {
     views::LabelButton::OnThemeChanged();
+    views::InkDrop::Get(this)->SetBaseColor(GetInkDropBaseColor(channel_));
     SetBackgroundAndFont();
   }
 

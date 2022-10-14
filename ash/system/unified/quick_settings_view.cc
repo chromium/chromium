@@ -140,7 +140,7 @@ QuickSettingsView::QuickSettingsView(UnifiedSystemTrayController* controller)
       AddChildView(std::make_unique<SystemTrayContainer>());
 
   header_ = system_tray_container_->AddChildView(
-      std::make_unique<QuickSettingsHeader>());
+      std::make_unique<QuickSettingsHeader>(controller_));
   feature_tiles_container_ = system_tray_container_->AddChildView(
       std::make_unique<FeatureTilesContainerView>(controller_));
   page_indicator_view_ = system_tray_container_->AddChildView(

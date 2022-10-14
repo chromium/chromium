@@ -27,11 +27,13 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -39,6 +41,12 @@
 namespace ash {
 
 namespace {
+
+// Constants used with QsRevamp.
+constexpr int kManagedStateButtonHeight = 32;
+constexpr int kManagedStateHighlightRadius = 16;
+constexpr SkScalar kManagedStateCornerRadii[] = {16, 16, 16, 16,
+                                                 16, 16, 16, 16};
 
 // Helper function for getting ContentLayerColor.
 inline SkColor GetContentLayerColor(AshColorProvider::ContentLayerType type) {
@@ -225,21 +233,37 @@ ManagedStateView::ManagedStateView(PressedCallback callback,
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       kUnifiedSystemInfoSpacing));
 
-  label_ = AddChildView(std::make_unique<views::Label>());
+  if (features::IsQsRevampEnabled()) {
+    // Image goes first.
+    image_ = AddChildView(std::make_unique<views::ImageView>());
+    label_ = AddChildView(std::make_unique<views::Label>());
+    layout_manager->set_minimum_cross_axis_size(kManagedStateButtonHeight);
+    layout_manager->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+  } else {
+    // Label goes first.
+    label_ = AddChildView(std::make_unique<views::Label>());
+    image_ = AddChildView(std::make_unique<views::ImageView>());
+    // Shrink the label if needed so the icon fits.
+    layout_manager->SetFlexForView(label_, 1);
+  }
+
   label_->SetAutoColorReadabilityEnabled(false);
   label_->SetSubpixelRenderingEnabled(false);
   label_->SetText(l10n_util::GetStringUTF16(label_id));
 
-  image_ = AddChildView(std::make_unique<views::ImageView>());
   image_->SetPreferredSize(
       gfx::Size(kUnifiedSystemInfoHeight, kUnifiedSystemInfoHeight));
 
-  // Shrink the label if needed so the icon fits.
-  layout_manager->SetFlexForView(label_, 1);
-
   SetInstallFocusRingOnFocus(true);
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
-  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+  if (features::IsQsRevampEnabled()) {
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                  kManagedStateHighlightRadius);
+  } else {
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+  }
 }
 
 views::View* ManagedStateView::GetTooltipHandlerForPoint(
@@ -255,6 +279,27 @@ void ManagedStateView::OnThemeChanged() {
   image_->SetImage(gfx::CreateVectorIcon(
       icon_, GetContentLayerColor(
                  AshColorProvider::ContentLayerType::kIconColorSecondary)));
+  if (features::IsQsRevampEnabled()) {
+    const std::pair<SkColor, float> base_color_and_opacity =
+        AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
+    views::InkDrop::Get(this)->SetBaseColor(base_color_and_opacity.first);
+  }
+}
+
+void ManagedStateView::PaintButtonContents(gfx::Canvas* canvas) {
+  if (!features::IsQsRevampEnabled())
+    return;
+  // Draw a button outline similar to ChannelIndicatorQuickSettingsView's
+  // VersionButton outline.
+  cc::PaintFlags flags;
+  flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
+      ColorProvider::ContentLayerType::kSeparatorColor));
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setAntiAlias(true);
+  canvas->DrawPath(
+      SkPath().addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
+                            kManagedStateCornerRadii, SkPathDirection::kCW),
+      flags);
 }
 
 BEGIN_METADATA(ManagedStateView, views::Button)
@@ -328,6 +373,10 @@ void EnterpriseManagedView::Update() {
             : base::UTF8ToUTF16(enterprise_domain_manager);
     managed_string = l10n_util::GetStringFUTF16(IDS_ASH_SHORT_MANAGED_BY,
                                                 display_domain_manager);
+    if (features::IsQsRevampEnabled()) {
+      // When the managed string is short it is used as the button label.
+      label()->SetText(managed_string);
+    }
   }
   SetTooltipText(managed_string);
 }
@@ -341,6 +390,7 @@ SupervisedUserView::SupervisedUserView()
     : ManagedStateView(PressedCallback(),
                        IDS_ASH_STATUS_TRAY_SUPERVISED_LABEL,
                        GetSupervisedUserIcon()) {
+  SetID(VIEW_ID_QS_SUPERVISED_BUTTON);
   bool visible = Shell::Get()->session_controller()->IsUserChild();
   SetVisible(visible);
   if (visible)
@@ -350,6 +400,7 @@ SupervisedUserView::SupervisedUserView()
   // to show a similar ui to enterprise managed accounts. Disable button
   // state for now.
   SetState(ButtonState::STATE_DISABLED);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
 }
 
 BEGIN_METADATA(SupervisedUserView, ManagedStateView)
