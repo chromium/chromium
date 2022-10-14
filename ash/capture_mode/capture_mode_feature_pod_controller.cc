@@ -35,6 +35,7 @@ FeaturePodButton* CaptureModeFeaturePodController::CreateButton() {
   button_->SetLabelTooltip(label_text);
   button_->SetVisible(
       !Shell::Get()->session_controller()->IsUserSessionBlocked());
+  button_->DisableLabelButtonFocus();
   return button_;
 }
 
