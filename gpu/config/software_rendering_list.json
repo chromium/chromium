@@ -1689,6 +1689,22 @@
       "features": [
         "all"
       ]
+    },
+    {
+      "id": 178,
+      "description": "Intel IronLake only shows black in hardware decoded H264 [b/202962575, b/233244020]",
+      "os": {
+        "type": "chromeos"
+      },
+      "intel_gpu_generation": {
+        "op": "=",
+        "value": "5"
+      },
+      "driver_vendor": "Mesa",
+      "gl_vendor": "Intel.*",
+      "features": [
+        "accelerated_video_decode"
+      ]
     }
   ]
 }
