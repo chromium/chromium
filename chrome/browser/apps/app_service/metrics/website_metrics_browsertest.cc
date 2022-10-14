@@ -33,7 +33,9 @@ namespace apps {
 
 class TestWebsiteMetrics : public WebsiteMetrics {
  public:
-  explicit TestWebsiteMetrics(Profile* profile) : WebsiteMetrics(profile) {}
+  explicit TestWebsiteMetrics(Profile* profile)
+      : WebsiteMetrics(profile,
+                       /*user_type_by_device_type=*/0) {}
 
   void AwaitForInstallableWebAppCheck(const GURL& ukm_key) {
     if (on_checked_) {

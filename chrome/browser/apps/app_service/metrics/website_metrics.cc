@@ -150,11 +150,12 @@ base::Value WebsiteMetrics::UrlInfo::ConvertToValue() const {
   return usage_time_dict;
 }
 
-WebsiteMetrics::WebsiteMetrics(Profile* profile)
-    : profile_(profile), browser_tab_strip_tracker_(this, nullptr) {
+WebsiteMetrics::WebsiteMetrics(Profile* profile, int user_type_by_device_type)
+    : profile_(profile),
+      browser_tab_strip_tracker_(this, nullptr),
+      user_type_by_device_type_(user_type_by_device_type) {
   BrowserList::GetInstance()->AddObserver(this);
   browser_tab_strip_tracker_.Init();
-  user_type_by_device_type_ = GetUserTypeByDeviceTypeMetrics();
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfileWithoutCreating(profile);
   if (history_service) {

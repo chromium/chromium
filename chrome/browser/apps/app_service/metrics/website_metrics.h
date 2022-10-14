@@ -60,7 +60,7 @@ class WebsiteMetrics : public BrowserListObserver,
                        public wm::ActivationChangeObserver,
                        public history::HistoryServiceObserver {
  public:
-  explicit WebsiteMetrics(Profile* profile);
+  WebsiteMetrics(Profile* profile, int user_type_by_device_type);
 
   WebsiteMetrics(const WebsiteMetrics&) = delete;
   WebsiteMetrics& operator=(const WebsiteMetrics&) = delete;
