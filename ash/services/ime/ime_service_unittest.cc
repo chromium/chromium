@@ -158,6 +158,7 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
   void ReportKoreanAction(mojom::KoreanAction action) override {}
   void ReportKoreanSettings(mojom::KoreanSettingsPtr settings) override {}
+  void ReportSuggestionOpportunity(TextSuggestionMode mode) override {}
   void UpdateQuickSettings(
       mojom::InputMethodQuickSettingsPtr settings) override {}
 
@@ -210,6 +211,7 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
   void RecordUkm(mojom::UkmEntryPtr entry) override {}
   void ReportKoreanAction(mojom::KoreanAction action) override {}
   void ReportKoreanSettings(mojom::KoreanSettingsPtr settings) override {}
+  void ReportSuggestionOpportunity(TextSuggestionMode mode) override {}
   void UpdateQuickSettings(
       mojom::InputMethodQuickSettingsPtr settings) override {}
 

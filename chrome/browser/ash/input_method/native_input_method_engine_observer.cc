@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/input_method/diacritics_checker.h"
 #include "chrome/browser/ash/input_method/input_method_quick_settings_helpers.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
+#include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -419,6 +420,18 @@ ui::ImeTextSpan CompositionSpanToImeTextSpan(
                          span.style == mojom::CompositionSpanStyle::kNone
                              ? ui::ImeTextSpan::UnderlineStyle::kNone
                              : ui::ImeTextSpan::UnderlineStyle::kSolid);
+}
+
+MultiWordSuggestionType ToUmaSuggestionType(
+    const ime::TextSuggestionMode& mode) {
+  switch (mode) {
+    case ime::TextSuggestionMode::kCompletion:
+      return MultiWordSuggestionType::kCompletion;
+    case ime::TextSuggestionMode::kPrediction:
+      return MultiWordSuggestionType::kPrediction;
+    default:
+      return MultiWordSuggestionType::kUnknown;
+  }
 }
 
 void OnConnected(bool bound) {
@@ -1184,6 +1197,13 @@ void NativeInputMethodEngineObserver::ReportKoreanSettings(
                         settings->input_multiple_syllables);
   UMA_HISTOGRAM_ENUMERATION("InputMethod.PhysicalKeyboard.Korean.Layout",
                             settings->layout);
+}
+
+void NativeInputMethodEngineObserver::ReportSuggestionOpportunity(
+    ime::TextSuggestionMode mode) {
+  base::UmaHistogramEnumeration(
+      "InputMethod.Assistive.MultiWord.SuggestionOpportunity",
+      ToUmaSuggestionType(mode));
 }
 
 void NativeInputMethodEngineObserver::UpdateQuickSettings(

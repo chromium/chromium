@@ -407,11 +407,13 @@ chromium-metrics-reviews@google.com.
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
-    This histogram records when the current text context could possibly show a
-    suggestion. This does not necessarily mean a suggestion was shown, only that
-    the current text context fulfills all constraints needed to trigger an
-    attempt to generate and display suggestions. It is recorded exactly once per
-    surrounding text update.
+    DEPRECATED, please see
+    InputMethod.Assistive.MultiWord.SuggestionOpportunity. This histogram
+    records when the current text context could possibly show a suggestion. This
+    does not necessarily mean a suggestion was shown, only that the current text
+    context fulfills all constraints needed to trigger an attempt to generate
+    and display suggestions. It is recorded exactly once per surrounding text
+    update.
   </summary>
 </histogram>
 
@@ -457,6 +459,19 @@ chromium-metrics-reviews@google.com.
     This records the length of a multi word suggestion shown to a user in chars.
     The metric is recorded once when a suggestion visually appears in front of a
     user.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Assistive.MultiWord.SuggestionOpportunity"
+    enum="IMEAssistiveMultiWordSuggestionType" expires_after="2023-03-05">
+  <owner>curtismcmullan@google.com</owner>
+  <owner>essential-inputs-team@google.com</owner>
+  <summary>
+    This histogram records when the current text context could possibly show a
+    suggestion. This does not necessarily mean a suggestion was shown, only that
+    the current text context fulfills all constraints needed to trigger an
+    attempt to generate and display suggestions. It is recorded exactly once per
+    surrounding text update.
   </summary>
 </histogram>
 

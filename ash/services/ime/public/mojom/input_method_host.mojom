@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 8
+// Next MinVersion: 9
 
 module ash.ime.mojom;
 
@@ -238,7 +238,7 @@ enum KoreanAction {
 // Provides a way for the InputMethod, which lives in a Chrome utility process,
 // to communicate back to the browser process.
 //
-// Next ordinal: 14
+// Next ordinal: 15
 [Stable]
 interface InputMethodHost {
   // ========================================================
@@ -352,4 +352,8 @@ interface InputMethodHost {
   // - The layout setting is recorded in UMA as
   //   InputMethod.PhysicalKeyboard.Korean.Layout.
   [MinVersion=3] ReportKoreanSettings@11(KoreanSettings settings);
+
+  // Reports an opportunity identified in the current text to show a predictive
+  // text suggestions.
+  [MinVersion=8] ReportSuggestionOpportunity@14(SuggestionMode mode);
 };

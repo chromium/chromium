@@ -1496,6 +1496,7 @@ source_set("unit_tests") {
     "../ash/input_method/input_method_settings_unittest.cc",
     "../ash/input_method/longpress_diacritics_suggester_unittest.cc",
     "../ash/input_method/multi_word_suggester_unittest.cc",
+    "../ash/input_method/native_input_method_engine_observer_unittest.cc",
     "../ash/input_method/native_input_method_engine_unittest.cc",
     "../ash/input_method/personal_info_suggester_unittest.cc",
     "../ash/input_method/suggestions_collector_unittest.cc",

@@ -111,6 +111,7 @@ class NativeInputMethodEngineObserver : public InputMethodEngineObserver,
   void RecordUkm(ime::mojom::UkmEntryPtr entry) override;
   void ReportKoreanAction(ime::mojom::KoreanAction action) override;
   void ReportKoreanSettings(ime::mojom::KoreanSettingsPtr settings) override;
+  void ReportSuggestionOpportunity(ime::TextSuggestionMode mode) override;
   void UpdateQuickSettings(
       ime::mojom::InputMethodQuickSettingsPtr quick_settings) override;
 

@@ -164,6 +164,10 @@ struct MockInputMethodHost : public ime::mojom::InputMethodHost {
               (mojom::KoreanSettingsPtr settings),
               (override));
   MOCK_METHOD(void,
+              ReportSuggestionOpportunity,
+              (TextSuggestionMode mode),
+              (override));
+  MOCK_METHOD(void,
               UpdateQuickSettings,
               (mojom::InputMethodQuickSettingsPtr quick_settings),
               (override));
