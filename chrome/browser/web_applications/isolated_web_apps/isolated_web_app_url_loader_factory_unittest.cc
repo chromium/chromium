@@ -33,6 +33,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,18 +104,25 @@ class ScopedUrlHandler {
       : interceptor_(base::BindRepeating(&ScopedUrlHandler::Intercept,
                                          base::Unretained(this))) {}
 
-  absl::optional<GURL> intercepted_url() const { return intercepted_url_; }
+  absl::optional<network::ResourceRequest> request() const { return request_; }
+
+  absl::optional<GURL> intercepted_url() const {
+    if (request_.has_value()) {
+      return request_->url;
+    }
+    return absl::nullopt;
+  }
 
  private:
   bool Intercept(content::URLLoaderInterceptor::RequestParams* params) {
-    intercepted_url_ = params->url_request.url;
+    request_ = params->url_request;
     content::URLLoaderInterceptor::WriteResponse(
         "HTTP/1.1 200 OK\n", "test body", params->client.get());
     return true;
   }
 
   content::URLLoaderInterceptor interceptor_;
-  absl::optional<GURL> intercepted_url_;
+  absl::optional<network::ResourceRequest> request_;
 };
 
 }  // namespace
@@ -503,6 +511,24 @@ TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlKeepsOriginUrlPath) {
 
   EXPECT_THAT(url_handler().intercepted_url(),
               Eq(GURL("http://example.com/foo/bar.html")));
+}
+
+TEST_F(IsolatedWebAppURLLoaderFactoryTest, ProxyUrlRemovesOriginalRequestData) {
+  RegisterWebApp(CreateIsolatedWebApp(kAppStartUrl,
+                                      IsolationData{IsolationData::DevModeProxy{
+                                          .proxy_url = "http://example.com"}}));
+
+  CreateFactory();
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = GURL("isolated-app://" + kWebBundleId + "/foo/bar.html");
+  CreateLoaderAndRun(std::move(request));
+
+  ASSERT_THAT(url_handler().intercepted_url(),
+              Eq(GURL("http://example.com/foo/bar.html")));
+  EXPECT_THAT(url_handler().request()->credentials_mode,
+              Eq(network::mojom::CredentialsMode::kOmit));
+  EXPECT_THAT(url_handler().request()->request_initiator, Eq(absl::nullopt));
 }
 
 TEST_F(IsolatedWebAppURLLoaderFactoryTest,

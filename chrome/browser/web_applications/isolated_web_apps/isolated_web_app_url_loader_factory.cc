@@ -42,6 +42,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_completion_status.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -454,8 +455,11 @@ void IsolatedWebAppURLLoaderFactory::HandleDevModeProxy(
   GURL proxy_url = proxy_url_base.Resolve(resource_request.url.path());
 
   // Create a new ResourceRequest with the proxy URL.
-  network::ResourceRequest proxy_request(resource_request);
+  network::ResourceRequest proxy_request;
   proxy_request.url = proxy_url;
+  proxy_request.method = net::HttpRequestHeaders::kGetMethod;
+  // Don't send cookies or HTTP authentication to the proxy server.
+  proxy_request.credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   content::StoragePartition* storage_partition = profile_->GetStoragePartition(
       url_info.storage_partition_config(profile_), /*can_create=*/false);
