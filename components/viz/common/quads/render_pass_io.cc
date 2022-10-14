@@ -78,14 +78,12 @@ base::Value RectToDict(const gfx::Rect& rect) {
   return dict;
 }
 
-bool RectFromDict(const base::Value& dict, gfx::Rect* rect) {
+bool RectFromDict(const base::Value::Dict& dict, gfx::Rect* rect) {
   DCHECK(rect);
-  if (!dict.is_dict())
-    return false;
-  absl::optional<int> x = dict.FindIntKey("x");
-  absl::optional<int> y = dict.FindIntKey("y");
-  absl::optional<int> width = dict.FindIntKey("width");
-  absl::optional<int> height = dict.FindIntKey("height");
+  absl::optional<int> x = dict.FindInt("x");
+  absl::optional<int> y = dict.FindInt("y");
+  absl::optional<int> width = dict.FindInt("width");
+  absl::optional<int> height = dict.FindInt("height");
   if (!x || !y || !width || !height) {
     return false;
   }
@@ -498,7 +496,10 @@ bool ShapeRectsFromList(const base::Value& list,
   cc::FilterOperation::ShapeRects data;
   data.resize(size);
   for (size_t ii = 0; ii < size; ++ii) {
-    if (!RectFromDict(list.GetList()[ii], &data[ii]))
+    const base::Value& dict_value = list.GetList()[ii];
+    if (!dict_value.is_dict())
+      return false;
+    if (!RectFromDict(dict_value.GetDict(), &data[ii]))
       return false;
   }
   *shape = data;
@@ -1136,17 +1137,18 @@ struct DrawQuadCommon {
 };
 
 absl::optional<DrawQuadCommon> GetDrawQuadCommonFromDict(
-    const base::Value& dict,
+    const base::Value& dict_value,
     const SharedQuadStateList& shared_quad_state_list) {
-  if (!dict.is_dict())
+  if (!dict_value.is_dict())
     return absl::nullopt;
-  const std::string* material = dict.FindStringKey("material");
-  const base::Value* rect = dict.FindDictKey("rect");
-  const base::Value* visible_rect = dict.FindDictKey("visible_rect");
-  absl::optional<bool> needs_blending = dict.FindBoolKey("needs_blending");
+  const base::Value::Dict& dict = dict_value.GetDict();
+  const std::string* material = dict.FindString("material");
+  const base::Value::Dict* rect = dict.FindDict("rect");
+  const base::Value::Dict* visible_rect = dict.FindDict("visible_rect");
+  absl::optional<bool> needs_blending = dict.FindBool("needs_blending");
   absl::optional<int> shared_quad_state_index =
-      dict.FindIntKey("shared_quad_state_index");
-  const base::Value* resources = dict.FindListKey("resources");
+      dict.FindInt("shared_quad_state_index");
+  const base::Value* resources = dict_value.FindListKey("resources");
   if (!material || !rect || !visible_rect || !needs_blending ||
       !shared_quad_state_index || !resources) {
     return absl::nullopt;
@@ -1518,7 +1520,7 @@ bool TextureDrawQuadFromDict(const base::Value& dict_value,
   const base::Value::Dict* uv_top_left = dict.FindDict("uv_top_left");
   const base::Value::Dict* uv_bottom_right = dict.FindDict("uv_bottom_right");
   const base::Value* vertex_opacity = dict_value.FindListKey("vertex_opacity");
-  const base::Value* damage_rect = dict_value.FindDictKey("damage_rect");
+  const base::Value::Dict* damage_rect = dict.FindDict("damage_rect");
   absl::optional<bool> y_flipped = dict.FindBool("y_flipped");
   absl::optional<bool> nearest_neighbor = dict.FindBool("nearest_neighbor");
   absl::optional<bool> secure_output_only = dict.FindBool("secure_output_only");
@@ -1610,7 +1612,7 @@ bool YUVVideoDrawQuadFromDict(const base::Value& dict_value,
       dict.FindDict("uv_tex_coord_rect");
   const base::Value::Dict* ya_tex_size = dict.FindDict("ya_tex_size");
   const base::Value::Dict* uv_tex_size = dict.FindDict("uv_tex_size");
-  const base::Value* damage_rect = dict_value.FindDictKey("damage_rect");
+  const base::Value::Dict* damage_rect = dict.FindDict("damage_rect");
   absl::optional<double> resource_offset = dict.FindDouble("resource_offset");
   absl::optional<double> resource_multiplier =
       dict.FindDouble("resource_multiplier");
@@ -1815,28 +1817,30 @@ int StringToBlendMode(const std::string& str) {
 }
 #undef MAP_STRING_TO_BLEND_MODE
 
-bool SharedQuadStateFromDict(const base::Value& dict, SharedQuadState* sqs) {
+bool SharedQuadStateFromDict(const base::Value& dict_value,
+                             SharedQuadState* sqs) {
   DCHECK(sqs);
-  if (!dict.is_dict())
+  if (!dict_value.is_dict())
     return false;
+
+  const base::Value::Dict& dict = dict_value.GetDict();
   const base::Value* quad_to_target_transform =
-      dict.FindListKey("quad_to_target_transform");
-  const base::Value* quad_layer_rect = dict.FindDictKey("quad_layer_rect");
-  const base::Value* visible_quad_layer_rect =
-      dict.FindDictKey("visible_quad_layer_rect");
-  const base::Value* mask_filter_info = dict.FindDictKey("mask_filter_info");
-  const base::Value* clip_rect = dict.FindDictKey("clip_rect");
-  absl::optional<bool> is_clipped = dict.FindBoolKey("is_clipped");
+      dict_value.FindListKey("quad_to_target_transform");
+  const base::Value::Dict* quad_layer_rect = dict.FindDict("quad_layer_rect");
+  const base::Value::Dict* visible_quad_layer_rect =
+      dict.FindDict("visible_quad_layer_rect");
+  const base::Value* mask_filter_info =
+      dict_value.FindDictKey("mask_filter_info");
+  const base::Value::Dict* clip_rect = dict.FindDict("clip_rect");
+  absl::optional<bool> is_clipped = dict.FindBool("is_clipped");
   absl::optional<bool> are_contents_opaque =
-      dict.FindBoolKey("are_contents_opaque");
-  absl::optional<double> opacity = dict.FindDoubleKey("opacity");
-  const std::string* blend_mode = dict.FindStringKey("blend_mode");
-  absl::optional<int> sorting_context_id =
-      dict.FindIntKey("sorting_context_id");
+      dict.FindBool("are_contents_opaque");
+  absl::optional<double> opacity = dict.FindDouble("opacity");
+  const std::string* blend_mode = dict.FindString("blend_mode");
+  absl::optional<int> sorting_context_id = dict.FindInt("sorting_context_id");
   absl::optional<bool> is_fast_rounded_corner =
-      dict.FindBoolKey("is_fast_rounded_corner");
-  absl::optional<double> de_jelly_delta_y =
-      dict.FindDoubleKey("de_jelly_delta_y");
+      dict.FindBool("is_fast_rounded_corner");
+  absl::optional<double> de_jelly_delta_y = dict.FindDouble("de_jelly_delta_y");
 
   if (!quad_to_target_transform || !quad_layer_rect ||
       !visible_quad_layer_rect || !are_contents_opaque || !opacity ||
@@ -2061,13 +2065,14 @@ base::Value CompositorRenderPassToDict(
 }
 
 std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
-    const base::Value& dict) {
-  if (!dict.is_dict())
+    const base::Value& dict_value) {
+  if (!dict_value.is_dict())
     return nullptr;
+  const base::Value::Dict& dict = dict_value.GetDict();
   auto pass = CompositorRenderPass::Create();
 
   if (ProcessRenderPassField(kRenderPassID)) {
-    const std::string* id = dict.FindStringKey("id");
+    const std::string* id = dict.FindString("id");
     if (!id)
       return nullptr;
     uint64_t pass_id_as_int = 0;
@@ -2077,7 +2082,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassOutputRect)) {
-    const base::Value* output_rect = dict.FindDictKey("output_rect");
+    const base::Value::Dict* output_rect = dict.FindDict("output_rect");
     if (!output_rect)
       return nullptr;
     if (!RectFromDict(*output_rect, &(pass->output_rect)))
@@ -2085,7 +2090,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassDamageRect)) {
-    const base::Value* damage_rect = dict.FindDictKey("damage_rect");
+    const base::Value::Dict* damage_rect = dict.FindDict("damage_rect");
     if (!damage_rect)
       return nullptr;
     if (!RectFromDict(*damage_rect, &(pass->damage_rect)))
@@ -2094,7 +2099,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
 
   if (ProcessRenderPassField(kRenderPassTransformToRootTarget)) {
     const base::Value* transform_to_root_target =
-        dict.FindListKey("transform_to_root_target");
+        dict_value.FindListKey("transform_to_root_target");
     if (!transform_to_root_target)
       return nullptr;
     if (!TransformFromList(*transform_to_root_target,
@@ -2104,7 +2109,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassFilters)) {
-    const base::Value* filters = dict.FindListKey("filters");
+    const base::Value* filters = dict_value.FindListKey("filters");
     if (!filters)
       return nullptr;
     if (!FilterOperationsFromList(*filters, &(pass->filters)))
@@ -2112,7 +2117,8 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassBackdropFilters)) {
-    const base::Value* backdrop_filters = dict.FindListKey("backdrop_filters");
+    const base::Value* backdrop_filters =
+        dict_value.FindListKey("backdrop_filters");
     if (!backdrop_filters)
       return nullptr;
     if (!FilterOperationsFromList(*backdrop_filters,
@@ -2123,7 +2129,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
 
   if (ProcessRenderPassField(kRenderPassBackdropFilterBounds)) {
     const base::Value::Dict* backdrop_filter_bounds =
-        dict.GetDict().FindDict("backdrop_filter_bounds");
+        dict.FindDict("backdrop_filter_bounds");
     if (backdrop_filter_bounds) {
       gfx::RRectF bounds;
       if (!RRectFFromDict(*backdrop_filter_bounds, &bounds))
@@ -2133,7 +2139,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassColorSpace)) {
-    const base::Value* color_space = dict.FindDictKey("color_space");
+    const base::Value* color_space = dict_value.FindDictKey("color_space");
     if (!color_space)
       return nullptr;
 
@@ -2146,7 +2152,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
 
   if (ProcessRenderPassField(kRenderPassHasTransparentBackground)) {
     const absl::optional<bool> has_transparent_background =
-        dict.FindBoolKey("has_transparent_background");
+        dict.FindBool("has_transparent_background");
     if (!has_transparent_background)
       return nullptr;
     pass->has_transparent_background = has_transparent_background.value();
@@ -2154,7 +2160,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
 
   if (ProcessRenderPassField(kRenderPassCacheRenderPass)) {
     const absl::optional<bool> cache_render_pass =
-        dict.FindBoolKey("cache_render_pass");
+        dict.FindBool("cache_render_pass");
     if (!cache_render_pass)
       return nullptr;
     pass->cache_render_pass = cache_render_pass.value();
@@ -2162,14 +2168,14 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
 
   if (ProcessRenderPassField(kRenderPassHasPreQuadDamage)) {
     const absl::optional<bool> has_per_quad_damage =
-        dict.FindBoolKey("has_per_quad_damage");
+        dict.FindBool("has_per_quad_damage");
     if (has_per_quad_damage)
       pass->has_per_quad_damage = has_per_quad_damage.value();
   }
 
   if (ProcessRenderPassField(kRenderPassHasDamageFromContributingContent)) {
     const absl::optional<bool> has_damage_from_contributing_content =
-        dict.FindBoolKey("has_damage_from_contributing_content");
+        dict.FindBool("has_damage_from_contributing_content");
     if (!has_damage_from_contributing_content)
       return nullptr;
     pass->has_damage_from_contributing_content =
@@ -2178,7 +2184,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
 
   if (ProcessRenderPassField(kRenderPassGenerateMipmap)) {
     const absl::optional<bool> generate_mipmap =
-        dict.FindBoolKey("generate_mipmap");
+        dict.FindBool("generate_mipmap");
     if (!generate_mipmap)
       return nullptr;
     pass->generate_mipmap = generate_mipmap.value();
@@ -2191,7 +2197,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   // shared_quad_state_list has to be processed before quad_list.
   if (ProcessRenderPassField(kRenderPassSharedQuadStateList)) {
     const base::Value* shared_quad_state_list =
-        dict.FindListKey("shared_quad_state_list");
+        dict_value.FindListKey("shared_quad_state_list");
     if (!shared_quad_state_list)
       return nullptr;
     if (!SharedQuadStateListFromList(*shared_quad_state_list,
@@ -2201,7 +2207,7 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassQuadList)) {
-    const base::Value* quad_list = dict.FindListKey("quad_list");
+    const base::Value* quad_list = dict_value.FindListKey("quad_list");
     if (!quad_list)
       return nullptr;
     if (!QuadListFromList(*quad_list, &(pass->quad_list),
