@@ -25,22 +25,21 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route, Router} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {getTemplate} from './search_subpage.html.js';
 
 const SettingsSearchSubpageElementBase =
     mixinBehaviors(
-        [DeepLinkingBehavior, PrefsBehavior, RouteObserverBehavior],
-        I18nMixin(PolymerElement)) as {
+        [DeepLinkingBehavior, PrefsBehavior],
+        RouteObserverMixin(I18nMixin(PolymerElement))) as {
       new (): PolymerElement & DeepLinkingBehaviorInterface &
           I18nMixinInterface & PrefsBehaviorInterface &
-          RouteObserverBehaviorInterface,
+          RouteObserverMixinInterface,
     };
 
 class SettingsSearchSubpageElement extends SettingsSearchSubpageElementBase {

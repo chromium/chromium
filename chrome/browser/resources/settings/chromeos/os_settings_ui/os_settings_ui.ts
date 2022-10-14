@@ -22,23 +22,22 @@ import '../../settings_shared.css.js';
 import '../../prefs/prefs.js';
 import '../../settings_vars.css.js';
 
-import {CrContainerShadowBehavior} from 'chrome://resources/ash/common/cr_container_shadow_behavior.js';
+import {CrContainerShadowMixin, CrContainerShadowMixinInterface} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
-import {Debouncer, DomIf, microTask, mixinBehaviors, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, DomIf, microTask, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {SettingsPrefsElement} from '../../prefs/prefs.js';
-import {Route, Router} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
 import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.js';
 import {OsToolbarElement} from '../os_toolbar/os_toolbar.js';
 import {PrefToSettingMetricConverter} from '../pref_to_setting_metric_converter.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {getTemplate} from './os_settings_ui.html.js';
 
@@ -72,17 +71,16 @@ interface OsSettingsUiElement {
   };
 }
 
+// TODO(crbug/1315757) Remove need to typecast and intersect mixin interfaces
+// once RouteObserverMixin is converted to TS
 const OsSettingsUiElementBase =
-    mixinBehaviors(
-        [
-          CrContainerShadowBehavior,
-          // Calls currentRouteChanged() in attached(),so ensure other behaviors
-          // run their attached() first.
-          RouteObserverBehavior,
-        ],
-        FindShortcutMixin(PolymerElement)) as {
-      new (): PolymerElement & CrContainerShadowBehavior &
-          FindShortcutMixinInterface & RouteObserverBehaviorInterface,
+    // RouteObserverMixin calls currentRouteChanged() in
+    // connectedCallback(), so ensure other mixins/behaviors run their
+    // connectedCallback() first.
+    RouteObserverMixin(
+        FindShortcutMixin(CrContainerShadowMixin(PolymerElement))) as {
+      new (): PolymerElement & FindShortcutMixinInterface &
+          CrContainerShadowMixinInterface & RouteObserverMixinInterface,
     };
 
 class OsSettingsUiElement extends OsSettingsUiElementBase {

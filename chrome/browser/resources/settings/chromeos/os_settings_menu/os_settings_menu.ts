@@ -17,12 +17,11 @@ import '../os_icons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Route, Router} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 import {castExists} from '../assert_extras.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {getTemplate} from './os_settings_menu.html.js';
 
@@ -34,10 +33,11 @@ interface OsSettingsMenuElement {
   };
 }
 
-const OsSettingsMenuElementBase =
-    mixinBehaviors([RouteObserverBehavior], PolymerElement) as {
-      new (): PolymerElement & RouteObserverBehaviorInterface,
-    };
+// TODO(crbug/1315757) Remove need to typecast and intersect mixin interfaces
+// once RouteObserverMixin is converted to TS
+const OsSettingsMenuElementBase = RouteObserverMixin(PolymerElement) as {
+  new (): PolymerElement & RouteObserverMixinInterface,
+};
 
 class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   static get is() {
