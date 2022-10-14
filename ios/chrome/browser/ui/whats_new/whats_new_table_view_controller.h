@@ -6,9 +6,10 @@
 #define IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_TABLE_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
-#import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator_consumer.h"
-#import "ios/chrome/browser/ui/whats_new/whats_new_table_view_action_handler.h"
+
+@protocol WhatsNewTableViewDelegate;
+@protocol WhatsNewTableViewActionHandler;
 
 // View controller that displays What's New features and chrome tips in a table
 // view.
@@ -20,7 +21,10 @@
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // The delegate object that manages interactions with What's New table view.
-@property(nonatomic, weak) id<WhatsNewTableViewActionHandler> delegate;
+@property(nonatomic, weak) id<WhatsNewTableViewActionHandler> actionHandler;
+
+// The delegate object to the parent coordinator (`WhatsNewCoordinator`).
+@property(nonatomic, weak) id<WhatsNewTableViewDelegate> delegate;
 
 - (void)reloadData;
 

@@ -6,12 +6,15 @@
 
 #import "ios/chrome/browser/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_action_handler.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -57,6 +60,8 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 @property(nonatomic, copy) NSString* primaryActionString;
 @property(nonatomic, copy) NSArray<NSString*>* instructionSteps;
 @property(nonatomic, assign) BOOL hasPrimaryAction;
+@property(nonatomic, assign) WhatsNewType type;
+@property(nonatomic, assign) GURL learnMoreURL;
 
 // The navigation bar at the top of the view.
 @property(nonatomic, strong) UINavigationBar* navigationBar;
@@ -70,7 +75,9 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
                       subtitle:(NSString*)subtitle
             primaryActionTitle:(NSString*)primaryAction
               instructionSteps:(NSArray<NSString*>*)instructionSteps
-              hasPrimaryAction:(BOOL)hasPrimaryAction {
+              hasPrimaryAction:(BOOL)hasPrimaryAction
+                          type:(WhatsNewType)type
+                  learnMoreURL:(const GURL&)learnMoreURL {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _bannerImage = image;
@@ -79,6 +86,8 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
     _primaryActionString = primaryAction;
     _instructionSteps = instructionSteps;
     _hasPrimaryAction = hasPrimaryAction;
+    _type = type;
+    _learnMoreURL = learnMoreURL;
   }
   return self;
 }
@@ -222,6 +231,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
     self.navigationBar.translucent = NO;
     self.navigationBar = nil;
   }
+  self.actionHandler = nil;
   [super viewDidDisappear:animated];
 }
 
@@ -380,9 +390,13 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 #pragma mark - Private
 
 - (void)didTapPrimaryActionButton {
+  [self.actionHandler didTapActionButton:self.type];
+  [self.delegate dismissWhatsNewDetailView:self];
 }
 
 - (void)didTaplearnMoreActionButton {
+  [self.actionHandler didTapLearnMoreButton:_learnMoreURL];
+  [self.delegate dismissWhatsNewDetailView:self];
 }
 
 @end

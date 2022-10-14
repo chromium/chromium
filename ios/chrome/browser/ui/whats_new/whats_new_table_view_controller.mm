@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/ui/whats_new/cells/whats_new_table_view_item.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_detail_view_controller.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_table_view_action_handler.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_table_view_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -100,7 +102,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   self.tableView.sectionFooterHeight = kEstimatedsectionFooterHeight;
 }
 
-#pragma mark - UITableViewDelegate
+#pragma mark - UITableViewactionHandler
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -136,8 +138,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       [self.tableViewModel sectionIdentifierForSectionIndex:indexPath.section];
   switch (sectionID) {
     case SectionFeatureBannerIdentifier: {
-      [self.delegate recordWhatsNewInteraction:self.highlightedFeatureItem];
-      [self openWhatsNewDetailView:self.highlightedFeatureItem];
+      [self.actionHandler
+          recordWhatsNewInteraction:self.highlightedFeatureItem];
+      [self.delegate detailViewController:self
+          openDetailViewControllerForItem:self.highlightedFeatureItem];
       break;
     }
     case SectionFeaturesIdentifier: {
@@ -145,13 +149,15 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       if (self.isModuleTableView) {
         index--;
       }
-      [self.delegate recordWhatsNewInteraction:self.featureItems[index]];
-      [self openWhatsNewDetailView:self.featureItems[index]];
+      [self.actionHandler recordWhatsNewInteraction:self.featureItems[index]];
+      [self.delegate detailViewController:self
+          openDetailViewControllerForItem:self.featureItems[index]];
       break;
     }
     case SectionChromeTipIdenfitier: {
-      [self.delegate recordWhatsNewInteraction:self.chromeTipItem];
-      [self openWhatsNewDetailView:self.chromeTipItem];
+      [self.actionHandler recordWhatsNewInteraction:self.chromeTipItem];
+      [self.delegate detailViewController:self
+          openDetailViewControllerForItem:self.chromeTipItem];
       break;
     }
   }
@@ -293,18 +299,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       break;
   }
   return header;
-}
-
-- (void)openWhatsNewDetailView:(WhatsNewItem*)item {
-  WhatsNewDetailViewController* detailView =
-      [[WhatsNewDetailViewController alloc]
-              initWithParams:item.bannerImage
-                       title:item.title
-                    subtitle:item.subtitle
-          primaryActionTitle:item.primaryActionTitle
-            instructionSteps:item.instructionSteps
-            hasPrimaryAction:item.hasPrimaryAction];
-  [self.navigationController pushViewController:detailView animated:YES];
 }
 
 @end

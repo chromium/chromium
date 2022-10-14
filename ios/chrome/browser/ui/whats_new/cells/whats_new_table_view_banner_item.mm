@@ -20,7 +20,7 @@ const CGFloat kStackViewMargin = 16.0;
 // The size of the leading margin between content view and the text labels.
 const CGFloat kItemLeadingMargin = 16.0;
 // The height of the image.
-const CGFloat kImageViewHeight = 200.0;
+const CGFloat kImageViewHeight = 220.0;
 // The size of the space between each items in the stack view.
 const CGFloat kStackViewVerticalSpacings = 10.0;
 
