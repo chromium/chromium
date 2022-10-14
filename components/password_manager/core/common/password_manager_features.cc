@@ -110,7 +110,7 @@ BASE_FEATURE(kInferConfirmationPasswordField,
 // Manager.
 BASE_FEATURE(kIOSEnablePasswordManagerBrandingUpdate,
              "IOSEnablePasswordManagerBrandingUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 // Removes the list of passwords from the Settings UI and adds a separate

@@ -10,7 +10,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -301,13 +300,14 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestCompromisedPassword) {
   CheckEditCellText(@"test@egmail.com", 2, 0);
   CheckEditCellText(kMaskedPassword, 2, 1);
 
-  CheckTextCellTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD, 3, 0);
   if (base::FeatureList::IsEnabled(
           password_manager::features::
               kIOSEnablePasswordManagerBrandingUpdate)) {
     CheckDetailItemTextWithId(
-        IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED, 3, 1);
+        IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED, 3, 0);
+    CheckTextCellTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD, 3, 1);
   } else {
+    CheckTextCellTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD, 3, 0);
     CheckDetailItemTextWithId(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION,
                               3, 1);
   }
@@ -689,12 +689,12 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestSectionsInAdd) {
           password_manager::features::
               kIOSEnablePasswordManagerBrandingUpdate)) {
     CheckSectionFooter(
-        [NSString stringWithFormat:
-                      @"%@\n\n%@",
-                      l10n_util::GetNSString(
-                          IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED),
-                      l10n_util::GetNSString(
-                          IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING)],
+        [NSString
+            stringWithFormat:@"%@\n\n%@",
+                             l10n_util::GetNSString(
+                                 IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION),
+                             l10n_util::GetNSString(
+                                 IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING)],
         3);
   } else {
     CheckSectionFooter(
