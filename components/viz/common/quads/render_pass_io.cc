@@ -427,20 +427,18 @@ base::Value MaskFilterInfoToDict(const gfx::MaskFilterInfo& mask_filter_info) {
   return base::Value(std::move(dict));
 }
 
-bool MaskFilterInfoFromDict(const base::Value& dict, gfx::MaskFilterInfo* out) {
+bool MaskFilterInfoFromDict(const base::Value::Dict& dict,
+                            gfx::MaskFilterInfo* out) {
   DCHECK(out);
-  if (!dict.is_dict())
-    return false;
   const base::Value::Dict* rounded_corner_bounds =
-      dict.GetDict().FindDict("rounded_corner_bounds");
+      dict.FindDict("rounded_corner_bounds");
   if (!rounded_corner_bounds)
     return false;
   gfx::RRectF t_rounded_corner_bounds;
   if (!RRectFFromDict(*rounded_corner_bounds, &t_rounded_corner_bounds))
     return false;
 
-  const base::Value::Dict* gradient_mask =
-      dict.FindDictKey("gradient_mask")->GetIfDict();
+  const base::Value::Dict* gradient_mask = dict.FindDict("gradient_mask");
   if (!gradient_mask) {
     *out = gfx::MaskFilterInfo(t_rounded_corner_bounds);
     return true;
@@ -463,17 +461,16 @@ base::Value TransformToList(const gfx::Transform& transform) {
   return list;
 }
 
-bool TransformFromList(const base::Value& list, gfx::Transform* transform) {
+bool TransformFromList(const base::Value::List& list,
+                       gfx::Transform* transform) {
   DCHECK(transform);
-  if (!list.is_list())
-    return false;
-  if (list.GetList().size() != 16)
+  if (list.size() != 16)
     return false;
   float data[16];
   for (size_t ii = 0; ii < 16; ++ii) {
-    if (!list.GetList()[ii].is_double())
+    if (!list[ii].is_double())
       return false;
-    data[ii] = list.GetList()[ii].GetDouble();
+    data[ii] = list[ii].GetDouble();
   }
   *transform = gfx::Transform::ColMajorF(data);
   return true;
@@ -1815,20 +1812,15 @@ int StringToBlendMode(const std::string& str) {
 }
 #undef MAP_STRING_TO_BLEND_MODE
 
-bool SharedQuadStateFromDict(const base::Value& dict_value,
+bool SharedQuadStateFromDict(const base::Value::Dict& dict,
                              SharedQuadState* sqs) {
   DCHECK(sqs);
-  if (!dict_value.is_dict())
-    return false;
-
-  const base::Value::Dict& dict = dict_value.GetDict();
-  const base::Value* quad_to_target_transform =
-      dict_value.FindListKey("quad_to_target_transform");
+  const base::Value::List* quad_to_target_transform =
+      dict.FindList("quad_to_target_transform");
   const base::Value::Dict* quad_layer_rect = dict.FindDict("quad_layer_rect");
   const base::Value::Dict* visible_quad_layer_rect =
       dict.FindDict("visible_quad_layer_rect");
-  const base::Value* mask_filter_info =
-      dict_value.FindDictKey("mask_filter_info");
+  const base::Value::Dict* mask_filter_info = dict.FindDict("mask_filter_info");
   const base::Value::Dict* clip_rect = dict.FindDict("clip_rect");
   absl::optional<bool> is_clipped = dict.FindBool("is_clipped");
   absl::optional<bool> are_contents_opaque =
@@ -1907,7 +1899,7 @@ bool SharedQuadStateListFromList(const base::Value& list,
     if (!list.GetList()[ii].is_dict())
       return false;
     SharedQuadState* sqs = states.AllocateAndConstruct<SharedQuadState>();
-    if (!SharedQuadStateFromDict(list.GetList()[ii], sqs))
+    if (!SharedQuadStateFromDict(list.GetList()[ii].GetDict(), sqs))
       return false;
   }
   shared_quad_state_list->swap(states);
@@ -2096,8 +2088,8 @@ std::unique_ptr<CompositorRenderPass> CompositorRenderPassFromDict(
   }
 
   if (ProcessRenderPassField(kRenderPassTransformToRootTarget)) {
-    const base::Value* transform_to_root_target =
-        dict_value.FindListKey("transform_to_root_target");
+    const base::Value::List* transform_to_root_target =
+        dict.FindList("transform_to_root_target");
     if (!transform_to_root_target)
       return nullptr;
     if (!TransformFromList(*transform_to_root_target,
