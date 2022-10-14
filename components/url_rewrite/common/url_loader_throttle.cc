@@ -200,19 +200,12 @@ bool URLLoaderThrottle::makes_unsafe_redirect() {
 
 void URLLoaderThrottle::ApplyRule(network::ResourceRequest* request,
                                   const mojom::UrlRequestRulePtr& rule) {
-  if (!RuleFiltersMatchUrl(request->url, rule))
+  // Prevent applying rules on redirect navigations.
+  if (request->navigation_redirect_chain.size() > 1u)
     return;
 
-  // Prevent applying rules more than once when redirected.
-  for (const auto& url : request->navigation_redirect_chain) {
-    // Last element in redirect chain is the current navigation.
-    if (&url == &request->navigation_redirect_chain.back()) {
-      continue;
-    }
-    if (RuleFiltersMatchUrl(url, rule)) {
-      return;
-    }
-  }
+  if (!RuleFiltersMatchUrl(request->url, rule))
+    return;
 
   for (const auto& rewrite : rule->actions)
     ApplyRewrite(request, rewrite);

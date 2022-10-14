@@ -35,7 +35,6 @@ class URLLoaderThrottleTest : public testing::Test {
       std::vector<std::string> cors_exempt_headers) {
     return base::BindLambdaForTesting(
         [cors_exempt_headers](base::StringPiece header) {
-          LOG(INFO) << "HEADER: " << header;
           for (const auto& exempt_header : cors_exempt_headers) {
             if (base::EqualsCaseInsensitiveASCII(header, exempt_header)) {
               return true;
@@ -212,12 +211,11 @@ TEST_F(URLLoaderThrottleTest, RedirectsToSameHost) {
   EXPECT_EQ(request.url, GURL(kUrlWithQueryString));
 }
 
-// Tests URL replacement rules applies when redirecting from a different host.
+// Tests URL replacement rules do not apply when redirecting.
 TEST_F(URLLoaderThrottleTest, RedirectsFromDifferentHost) {
   constexpr char kAppendQueryString[] = "foo=1&bar=2";
   constexpr char kBaseUrl1[] = "http://a.com";
   constexpr char kBaseUrl2[] = "http://b.com";
-  constexpr char kUrl2WithQueryString[] = "http://b.com?foo=1&bar=2";
 
   mojom::UrlRequestRewriteAppendToQueryPtr append_query =
       mojom::UrlRequestRewriteAppendToQuery::New(kAppendQueryString);
@@ -246,7 +244,7 @@ TEST_F(URLLoaderThrottleTest, RedirectsFromDifferentHost) {
   request.url = GURL(kBaseUrl2);
   request.navigation_redirect_chain = {GURL(kBaseUrl1), GURL(kBaseUrl2)};
   throttle.WillStartRequest(&request, &defer);
-  EXPECT_EQ(request.url, GURL(kUrl2WithQueryString));
+  EXPECT_EQ(request.url, GURL(kBaseUrl2));
 }
 
 // Tests URL replacement rules do not apply more than once when redirecting to a
@@ -278,7 +276,6 @@ TEST_F(URLLoaderThrottleTest, RedirectsToDifferentHost) {
 
   network::ResourceRequest request;
   request.url = GURL(kBaseUrl1);
-  request.navigation_redirect_chain = {GURL(kBaseUrl1)};
   throttle.WillStartRequest(&request, &defer);
   EXPECT_EQ(request.url, GURL(kUrl1WithQueryString));
 
@@ -286,50 +283,6 @@ TEST_F(URLLoaderThrottleTest, RedirectsToDifferentHost) {
   request.navigation_redirect_chain = {GURL(kBaseUrl1), GURL(kBaseUrl2)};
   throttle.WillStartRequest(&request, &defer);
   EXPECT_EQ(request.url, GURL(kBaseUrl2));
-}
-
-// Tests URL replacement rules do not apply more than once when redirecting to a
-// different host then back to the same host.
-TEST_F(URLLoaderThrottleTest, RedirectsToDifferentHostThenBack) {
-  constexpr char kAppendQueryString[] = "foo=1&bar=2";
-  constexpr char kBaseUrl1[] = "http://a.com";
-  constexpr char kBaseUrl2[] = "http://b.com";
-  constexpr char kUrl1WithQueryString[] = "http://a.com?foo=1&bar=2";
-
-  mojom::UrlRequestRewriteAppendToQueryPtr append_query =
-      mojom::UrlRequestRewriteAppendToQuery::New(kAppendQueryString);
-  std::vector<mojom::UrlRequestActionPtr> actions;
-  actions.push_back(
-      mojom::UrlRequestAction::NewAppendToQuery(std::move(append_query)));
-
-  mojom::UrlRequestRulePtr rule = mojom::UrlRequestRule::New();
-  rule->hosts_filter = absl::optional<std::vector<std::string>>({"*.a.com"});
-  rule->actions = std::move(actions);
-
-  mojom::UrlRequestRewriteRulesPtr rules = mojom::UrlRequestRewriteRules::New();
-  rules->rules.push_back(std::move(rule));
-
-  URLLoaderThrottle throttle(
-      base::MakeRefCounted<UrlRequestRewriteRules>(std::move(rules)),
-      CreateCorsExemptHeadersCallback({}));
-  bool defer = false;
-
-  network::ResourceRequest request;
-  request.url = GURL(kBaseUrl1);
-  request.navigation_redirect_chain = {GURL(kBaseUrl1)};
-  throttle.WillStartRequest(&request, &defer);
-  EXPECT_EQ(request.url, GURL(kUrl1WithQueryString));
-
-  request.url = GURL(kBaseUrl2);
-  request.navigation_redirect_chain = {GURL(kBaseUrl1), GURL(kBaseUrl2)};
-  throttle.WillStartRequest(&request, &defer);
-  EXPECT_EQ(request.url, GURL(kBaseUrl2));
-
-  request.url = GURL(kBaseUrl1);
-  request.navigation_redirect_chain = {GURL(kBaseUrl1), GURL(kBaseUrl2),
-                                       GURL(kBaseUrl1)};
-  throttle.WillStartRequest(&request, &defer);
-  EXPECT_EQ(request.url, GURL(kBaseUrl1));
 }
 
 class TestThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
