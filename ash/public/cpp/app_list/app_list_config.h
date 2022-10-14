@@ -33,8 +33,6 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
 
   size_t max_search_results() const { return max_search_results_; }
 
-  size_t max_search_result_tiles() const { return max_search_result_tiles_; }
-
   size_t max_search_result_list_items() const {
     return max_search_result_list_items_;
   }
@@ -85,14 +83,6 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
     return suggestion_chip_icon_dimension_;
   }
 
-  ui::ResourceBundle::FontStyle search_result_title_font_style() const {
-    return search_result_title_font_style_;
-  }
-
-  gfx::FontList search_result_recommendation_title_font() const {
-    return search_result_recommendation_title_font_;
-  }
-
   int search_tile_height() const { return search_tile_height_; }
 
   // Returns the maximum number of items allowed in a page in the apps grid.
@@ -102,7 +92,7 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
   int GetPreferredIconDimension(SearchResultDisplayType display_type) const;
 
  private:
-  friend class base::NoDestructor<SharedAppListConfig>;
+  friend class SharedAppListConfig;
   SharedAppListConfig();
 
   // The icon dimension of tile views in apps grid view.
@@ -110,9 +100,6 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
 
   // Maximum number of results to show in the launcher Search UI.
   const size_t max_search_results_ = 6;
-
-  // Max number of search result tiles in the launcher suggestion window.
-  const size_t max_search_result_tiles_ = 6;
 
   // Max number of search result list items in the launcher suggestion window.
   const size_t max_search_result_list_items_ = 5;
@@ -142,14 +129,6 @@ class ASH_PUBLIC_EXPORT SharedAppListConfig {
 
   // The suggestion chip icon dimension.
   const int suggestion_chip_icon_dimension_ = 20;
-
-  // Font style for AppListSearchResultItemViews that are not suggested
-  // apps.
-  const ui::ResourceBundle::FontStyle search_result_title_font_style_;
-
-  // Font style for AppListSearchResultTileItemViews that are suggested
-  // apps.
-  const gfx::FontList search_result_recommendation_title_font_;
 
   // The height of tiles in search result.
   const int search_tile_height_ = 92;

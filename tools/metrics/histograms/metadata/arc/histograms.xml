@@ -1658,6 +1658,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.PlayStoreSearch.DefaultResultClickLatency" units="ms"
     expires_after="2021-12-31">
+  <obsolete>
+    Deprecated in M108. Tiled app results are no longer shown.
+  </obsolete>
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>

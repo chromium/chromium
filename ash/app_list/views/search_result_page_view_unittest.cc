@@ -15,7 +15,6 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
-#include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -56,8 +55,6 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
     ContentsView* contents_view =
         app_list_view_->app_list_main_view()->contents_view();
     view_ = contents_view->search_result_page_view();
-    tile_list_view_ = contents_view->search_result_page_view()
-                          ->GetSearchResultTileItemListViewForTest();
     list_view_ = contents_view->search_result_page_view()
                      ->GetSearchResultListViewForTest();
   }
@@ -69,9 +66,6 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
  protected:
   SearchResultPageView* view() const { return view_; }
 
-  SearchResultTileItemListView* tile_list_view() const {
-    return tile_list_view_;
-  }
   SearchResultListView* list_view() const { return list_view_; }
 
   SearchModel::SearchResults* GetResults() const {
@@ -82,8 +76,6 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
   TestAppListColorProvider color_provider_;  // Needed by AppListView.
   AppListView* app_list_view_ = nullptr;  // Owned by native widget.
   SearchResultPageView* view_ = nullptr;  // Owned by views hierarchy.
-  SearchResultTileItemListView* tile_list_view_ =
-      nullptr;                                 // Owned by views hierarchy.
   SearchResultListView* list_view_ = nullptr;  // Owned by views hierarchy.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -114,13 +106,11 @@ TEST_F(SearchResultPageViewTest, ResultsSorted) {
   // Adding results will schedule Update().
   RunPendingMessages();
 
-  ASSERT_GE(view()->result_container_views().size(), 3u);
+  ASSERT_GE(view()->result_container_views().size(), 2u);
   // Privacy container is hidden.
   EXPECT_FALSE(view()->result_container_views()[0]->GetVisible());
-  EXPECT_TRUE(tile_list_view()->GetVisible());
-  EXPECT_EQ(tile_list_view(), view()->result_container_views()[1]);
   EXPECT_TRUE(list_view()->GetVisible());
-  EXPECT_EQ(list_view(), view()->result_container_views()[2]);
+  EXPECT_EQ(list_view(), view()->result_container_views()[1]);
 
   // Change the relevance of the tile result to be lower than list results. The
   // tile container should still be displayed first.
@@ -131,9 +121,7 @@ TEST_F(SearchResultPageViewTest, ResultsSorted) {
 
   // Privacy container is hidden.
   EXPECT_FALSE(view()->result_container_views()[0]->GetVisible());
-  EXPECT_EQ(tile_list_view(), view()->result_container_views()[1]);
-  EXPECT_TRUE(tile_list_view()->GetVisible());
-  EXPECT_EQ(list_view(), view()->result_container_views()[2]);
+  EXPECT_EQ(list_view(), view()->result_container_views()[1]);
   EXPECT_TRUE(list_view()->GetVisible());
 }
 
@@ -150,7 +138,6 @@ TEST_F(SearchResultPageViewTest, EmptyResultListNotVisible) {
   // Adding results will schedule Update().
   RunPendingMessages();
 
-  EXPECT_TRUE(tile_list_view()->GetVisible());
   EXPECT_FALSE(list_view()->GetVisible());
 }
 
@@ -168,7 +155,6 @@ TEST_F(SearchResultPageViewTest, EmptyTileItemListResultsContainerHidden) {
   RunPendingMessages();
 
   EXPECT_TRUE(list_view()->GetVisible());
-  EXPECT_FALSE(tile_list_view()->GetVisible());
 }
 
 }  // namespace test

@@ -1499,6 +1499,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppListPlayStoreAppLaunchedIndex" units="indices"
     expires_after="2021-12-31">
+  <obsolete>
+    Deprecated in M108. Tiled app results are no longer shown.
+  </obsolete>
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
@@ -1515,10 +1518,14 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.AppListPlayStoreSearchAppsDisplayed" units="apss"
     expires_after="2021-12-31">
+  <obsolete>
+    Deprecated in M108. Tiled app results are no longer shown.
+  </obsolete>
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
-    The number of the play store apps displayed to user for a query.
+    Deprecated in Oct 2022. The number of the play store apps displayed to user
+    as tile items for a query.
   </summary>
 </histogram>
 

@@ -237,14 +237,11 @@ int ItemIconInFolderIconMarginForType(ash::AppListConfigType type) {
 }  // namespace
 
 SharedAppListConfig& SharedAppListConfig::instance() {
-  static base::NoDestructor<SharedAppListConfig> shared_config;
-  return *shared_config;
+  static SharedAppListConfig shared_config;
+  return shared_config;
 }
 
-SharedAppListConfig::SharedAppListConfig()
-    : search_result_title_font_style_(ui::ResourceBundle::BaseFont),
-      search_result_recommendation_title_font_(
-          ui::ResourceBundle::GetSharedInstance().GetFontListWithDelta(1)) {}
+SharedAppListConfig::SharedAppListConfig() = default;
 
 int SharedAppListConfig::GetMaxNumOfItemsPerPage() const {
   return 20;

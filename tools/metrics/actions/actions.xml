@@ -3619,6 +3619,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AppList_ShowPlayStoreQueryResults">
+  <obsolete>
+    Deprecated in M108. App List search no longer shows tile results.
+  </obsolete>
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <description>
@@ -3660,6 +3663,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="AppList_ZeroStateOpenInstalledApp">
+  <obsolete>Deprecated in M108. Launcher zero state has been removed.</obsolete>
   <owner>jennyz@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <description>User opens a suggested installed app in zero state.</description>

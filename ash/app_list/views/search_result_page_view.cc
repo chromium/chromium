@@ -18,7 +18,6 @@
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
-#include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -61,18 +60,8 @@ namespace {
 constexpr int kMinHeight = 440;
 constexpr int kWidth = 640;
 
-// The horizontal padding of the separator.
-constexpr int kSeparatorPadding = 12;
-constexpr int kSeparatorThickness = 1;
-
 // The height of the active search box in this page.
 constexpr int kActiveSearchBoxHeight = 56;
-
-// The spacing between search box bottom and separator line.
-// Add 1 pixel spacing so that the search bbox bottom will not paint over
-// the separator line drawn by SearchResultPageBackground in some scale factors
-// due to the round up.
-constexpr int kSearchBoxBottomSpacing = 1;
 
 // Minimum spacing between shelf and bottom of search box.
 constexpr int kSearchResultPageMinimumBottomMargin = 24;
@@ -133,63 +122,7 @@ class ZeroWidthVerticalScrollBar : public views::OverlayScrollBar {
   }
 };
 
-class SearchResultPageBackground : public views::Background {
- public:
-  SearchResultPageBackground() = default;
-  SearchResultPageBackground(const SearchResultPageBackground&) = delete;
-  SearchResultPageBackground& operator=(const SearchResultPageBackground&) =
-      delete;
-  ~SearchResultPageBackground() override = default;
-
- private:
-  // views::Background overrides:
-  void Paint(gfx::Canvas* canvas, views::View* view) const override {
-    canvas->DrawColor(get_color());
-    gfx::Rect bounds = view->GetContentsBounds();
-    if (bounds.height() <= kActiveSearchBoxHeight)
-      return;
-    // Draw a separator between SearchBoxView and SearchResultPageView.
-    bounds.set_y(kActiveSearchBoxHeight + kSearchBoxBottomSpacing);
-    bounds.set_height(kSeparatorThickness);
-    canvas->FillRect(bounds,
-                     view->GetColorProvider()->GetColor(
-                         AppListColorProvider::Get()->GetSeparatorColorId()));
-  }
-};
-
 }  // namespace
-
-class SearchResultPageView::HorizontalSeparator : public views::View {
- public:
-  explicit HorizontalSeparator(int preferred_width)
-      : preferred_width_(preferred_width) {
-    SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(0, kSeparatorPadding, 0, kSeparatorPadding)));
-  }
-
-  HorizontalSeparator(const HorizontalSeparator&) = delete;
-  HorizontalSeparator& operator=(const HorizontalSeparator&) = delete;
-
-  ~HorizontalSeparator() override = default;
-
-  // views::View overrides:
-  const char* GetClassName() const override { return "HorizontalSeparator"; }
-
-  gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(preferred_width_, kSeparatorThickness);
-  }
-
-  void OnPaint(gfx::Canvas* canvas) override {
-    gfx::Rect rect = GetContentsBounds();
-    canvas->FillRect(rect,
-                     GetColorProvider()->GetColor(
-                         AppListColorProvider::Get()->GetSeparatorColorId()));
-    View::OnPaint(canvas);
-  }
-
- private:
-  const int preferred_width_;
-};
 
 SearchResultPageView::SearchResultPageView() : contents_view_(new views::View) {
   SetPaintToLayer();
@@ -204,7 +137,7 @@ SearchResultPageView::SearchResultPageView() : contents_view_(new views::View) {
   // Hides this view behind the search box by using the same color and
   // background border corner radius. All child views' background should be
   // set transparent so that the rounded corner is not overwritten.
-  SetBackground(std::make_unique<SearchResultPageBackground>());
+  SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   if (features::IsProductivityLauncherEnabled()) {
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
@@ -216,16 +149,14 @@ SearchResultPageView::SearchResultPageView() : contents_view_(new views::View) {
   // App list bubble search page has its own scroller and result selection
   // controller so we do not need to construct new ones here.
   if (features::IsProductivityLauncherEnabled()) {
-    contents_view_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        kActiveSearchBoxHeight + kSearchBoxBottomSpacing + kSeparatorThickness,
-        0, 0, 0)));
+    contents_view_->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(kActiveSearchBoxHeight, 0, 0, 0)));
     AddChildView(contents_view_);
   } else {
     auto scroller = std::make_unique<views::ScrollView>();
     // Leaves a placeholder area for the search box and the separator below it.
-    scroller->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-        kActiveSearchBoxHeight + kSearchBoxBottomSpacing + kSeparatorThickness,
-        0, 0, 0)));
+    scroller->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(kActiveSearchBoxHeight, 0, 0, 0)));
     scroller->SetDrawOverflowIndicator(false);
     scroller->SetContents(base::WrapUnique(contents_view_));
     // Setting clip height is necessary to make ScrollView take into account its
@@ -274,11 +205,6 @@ void SearchResultPageView::InitializeContainers(
         std::make_unique<SearchResultPageDialogController>(this);
     privacy_container_view_ = AddSearchResultContainerView(
         std::make_unique<PrivacyContainerView>(view_delegate));
-    search_result_tile_item_list_view_ = AddSearchResultContainerView(
-        std::make_unique<SearchResultTileItemListView>(
-            search_box_view->search_box(), view_delegate));
-    result_lists_separator_ = contents_view_->AddChildView(
-        std::make_unique<HorizontalSeparator>(bounds().width()));
     // productivity_launcher_index is not set as the feature is not enabled.
     search_result_list_view_ =
         AddSearchResultContainerView(std::make_unique<SearchResultListView>(
@@ -327,8 +253,7 @@ gfx::Size SearchResultPageView::CalculatePreferredSize() const {
   int adjusted_height = std::min(
       std::max(kMinHeight,
                productivity_launcher_search_view_->TabletModePreferredHeight() +
-                   kActiveSearchBoxHeight + kSearchBoxBottomSpacing +
-                   kSeparatorThickness +
+                   kActiveSearchBoxHeight +
                    kExpandedSearchBoxCornerRadiusForProductivityLauncher),
       AppListPage::contents_view()->height());
   return gfx::Size(kWidth, adjusted_height);
@@ -424,10 +349,6 @@ void SearchResultPageView::UpdateResultContainersVisibility() {
           should_show_page_view || should_show_container_view;
     }
 
-    result_lists_separator_->SetVisible(
-        search_result_tile_item_list_view_->num_results() &&
-        search_result_list_view_->num_results() &&
-        ShouldShowSearchResultView());
     AppListPage::contents_view()
         ->GetSearchBoxView()
         ->OnResultContainerVisibilityChanged(should_show_page_view);
@@ -764,11 +685,6 @@ SkColor SearchResultPageView::GetBackgroundColorForState(
 
 PrivacyContainerView* SearchResultPageView::GetPrivacyContainerViewForTest() {
   return privacy_container_view_;
-}
-
-SearchResultTileItemListView*
-SearchResultPageView::GetSearchResultTileItemListViewForTest() {
-  return search_result_tile_item_list_view_;
 }
 
 SearchResultListView* SearchResultPageView::GetSearchResultListViewForTest() {

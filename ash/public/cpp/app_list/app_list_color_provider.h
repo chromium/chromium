@@ -65,7 +65,6 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetGridBackgroundCardInactiveColor(
       const views::Widget* app_list_widget) const = 0;
-  virtual ui::ColorId GetSeparatorColorId() const = 0;
   virtual SkColor GetFocusRingColor(
       const views::Widget* app_list_widget) const = 0;
   virtual SkColor GetInkDropBaseColor(

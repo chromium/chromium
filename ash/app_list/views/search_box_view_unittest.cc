@@ -23,7 +23,6 @@
 #include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
-#include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -604,19 +603,6 @@ TEST_P(SearchBoxViewTest,
   selection = GetResultSelectionController()->selected_result();
   EXPECT_EQ(u"testing", selection->result()->title());
 
-  // Tile containers are deprecated for productivity launcher.
-  if (!IsProductivityLauncherEnabled()) {
-    // Add a new result in a tile container - verify the selected result remains
-    // the same.
-    CreateSearchResultAt(0, ash::SearchResultDisplayType::kTile, 0.9,
-                         u"test tile", std::u16string());
-    // Finish results update.
-    base::RunLoop().RunUntilIdle();
-
-    selection = GetResultSelectionController()->selected_result();
-    EXPECT_EQ(u"testing", selection->result()->title());
-  }
-
   // Add a new result at the end, and verify the selection stays the same.
   CreateSearchResult(ash::SearchResultDisplayType::kList, 0.2,
                      u"testing almost", std::u16string());
@@ -627,35 +613,28 @@ TEST_P(SearchBoxViewTest,
 
   // Remove the result before the selected one, and verify the selection remains
   // the same.
-  results()->RemoveAt(IsProductivityLauncherEnabled() ? 0 : 1);
+  results()->RemoveAt(0);
   base::RunLoop().RunUntilIdle();
 
   selection = GetResultSelectionController()->selected_result();
   EXPECT_EQ(u"testing", selection->result()->title());
 
   // Result should be reset if the selected result is removed.
-  results()->RemoveAt(IsProductivityLauncherEnabled() ? 0 : 1);
+  results()->RemoveAt(0);
   base::RunLoop().RunUntilIdle();
 
   // Tile results are not created when testing productivity launcher.
   selection = GetResultSelectionController()->selected_result();
-  if (IsProductivityLauncherEnabled()) {
+
     EXPECT_EQ(u"testing almost", selection->result()->title());
 
     // New result can override the default selection.
     CreateSearchResultAt(0, ash::SearchResultDisplayType::kList, 1.0, u"test",
                          std::u16string());
-  } else {
-    EXPECT_EQ(u"test tile", selection->result()->title());
+    base::RunLoop().RunUntilIdle();
 
-    // New result can override the default selection.
-    CreateSearchResultAt(0, ash::SearchResultDisplayType::kTile, 1.0, u"test",
-                         std::u16string());
-  }
-  base::RunLoop().RunUntilIdle();
-
-  selection = GetResultSelectionController()->selected_result();
-  EXPECT_EQ(u"test", selection->result()->title());
+    selection = GetResultSelectionController()->selected_result();
+    EXPECT_EQ(u"test", selection->result()->title());
 }
 
 // Tests that the default selection is reset after resetting and reactivating
@@ -942,93 +921,39 @@ INSTANTIATE_TEST_SUITE_P(All, SearchBoxViewAutocompleteTest, testing::Bool());
 // titles.
 TEST_P(SearchBoxViewAutocompleteTest,
        SearchBoxAutocompletesTopListResultTitle) {
-  // Search result tile tests are not relevant for productivity launcher.
-  if (IsProductivityLauncherEnabled())
-    return;
-
   SimulateQuery(u"he");
 
-  // Add two SearchResults, one tile and one list result. Initialize their title
-  // field to a non-empty string.
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"hello list",
+  // Add two SearchResults. The higher ranked result should be selected by
+  // default and it's title should be autocompleted into the search box.
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 2.0, u"hello list",
                      std::u16string());
-  CreateSearchResult(ash::SearchResultDisplayType::kTile, 0.5, u"hello tile",
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, u"hello list2",
                      std::u16string());
   base::RunLoop().RunUntilIdle();
 
   ProcessAutocomplete();
-  EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
-  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
-}
-
-// Tests that autocomplete suggestions are consistent with top SearchResult tile
-// titles.
-TEST_P(SearchBoxViewAutocompleteTest,
-       SearchBoxAutocompletesTopTileResultTitle) {
-  // Search result tile tests are not relevant for productivity launcher.
-  if (IsProductivityLauncherEnabled())
-    return;
-
-  SimulateQuery(u"he");
-
-  // Add two SearchResults, one tile and one list result. Initialize their title
-  // field to a non-empty string.
-  CreateSearchResult(ash::SearchResultDisplayType::kTile, 1.0, u"hello tile",
-                     std::u16string());
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, u"hello list",
-                     std::u16string());
+  EXPECT_EQ(view()->search_box()->GetText(), u"hello list");
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo list");
   base::RunLoop().RunUntilIdle();
-
-  ProcessAutocomplete();
-  EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
-  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
 }
 
 // Tests that autocomplete suggestions are consistent with top SearchResult list
 // details.
 TEST_P(SearchBoxViewAutocompleteTest,
        SearchBoxAutocompletesTopListResultDetails) {
-  // Search result tile tests are not relevant for productivity launcher.
-  if (IsProductivityLauncherEnabled())
-    return;
-
   SimulateQuery(u"he");
 
-  // Add two SearchResults, one tile and one list result. The tile should
-  // display first, despite having a lower score. Initialize their details field
-  // to a non-empty string.
+  // Add two SearchResults. The higher ranked result should be selected by
+  // default and it's title should be autocompleted into the search box.
+  CreateSearchResult(ash::SearchResultDisplayType::kList, 2.0, std::u16string(),
+                     u"hello list");
   CreateSearchResult(ash::SearchResultDisplayType::kList, 1.0, std::u16string(),
-                     u"hello list");
-  CreateSearchResult(ash::SearchResultDisplayType::kTile, 0.5, std::u16string(),
-                     u"hello tile");
+                     u"hello list2");
   base::RunLoop().RunUntilIdle();
 
   ProcessAutocomplete();
-  EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
-  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
-}
-
-// Tests that autocomplete suggestions are consistent with top SearchResult tile
-// details.
-TEST_P(SearchBoxViewAutocompleteTest,
-       SearchBoxAutocompletesTopTileResultDetails) {
-  // Search result tile tests are not relevant for productivity launcher.
-  if (IsProductivityLauncherEnabled())
-    return;
-
-  SimulateQuery(u"he");
-
-  // Add two SearchResults, one tile and one list result. Initialize their
-  // details field to a non-empty string.
-  CreateSearchResult(ash::SearchResultDisplayType::kTile, 1.0, std::u16string(),
-                     u"hello tile");
-  CreateSearchResult(ash::SearchResultDisplayType::kList, 0.5, std::u16string(),
-                     u"hello list");
-  base::RunLoop().RunUntilIdle();
-
-  ProcessAutocomplete();
-  EXPECT_EQ(view()->search_box()->GetText(), u"hello tile");
-  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo tile");
+  EXPECT_EQ(view()->search_box()->GetText(), u"hello list");
+  EXPECT_EQ(view()->search_box()->GetSelectedText(), u"llo list");
 }
 
 // Tests that SearchBoxView's textfield text does not autocomplete if the top

@@ -33,8 +33,6 @@
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
-#include "ash/app_list/views/search_result_tile_item_list_view.h"
-#include "ash/app_list/views/search_result_tile_item_view.h"
 #include "ash/app_list/views/search_result_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -633,12 +631,6 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     view_->Show(AppListViewState::kFullscreenAllApps, /*is_side_shelf=*/false);
   }
 
-  SearchResultTileItemListView* GetSearchResultTileItemListView() {
-    return contents_view()
-        ->search_result_page_view()
-        ->GetSearchResultTileItemListViewForTest();
-  }
-
   SearchResultListView* GetSearchResultListView() {
     return contents_view()
         ->search_result_page_view()
@@ -658,28 +650,18 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   }
 
   // Add search results for test on focus movement.
-  void SetUpSearchResults(int tile_results_num, int list_results_num) {
-    std::vector<std::pair<SearchResult::DisplayType, int>> result_types;
-    result_types.emplace_back(SearchResultDisplayType::kTile, tile_results_num);
-    result_types.emplace_back(SearchResultDisplayType::kList, list_results_num);
-
+  void SetUpSearchResults(int list_results_num) {
     SearchModel::SearchResults* results = GetSearchModel()->results();
     results->DeleteAll();
-    double display_score = result_types.size();
-    for (const auto& data : result_types) {
-      // Set the display score of the results in each group in decreasing order
-      // (so the earlier groups have higher display score, and therefore appear
-      // first).
-      display_score -= 0.5;
-      for (int i = 0; i < data.second; ++i) {
-        std::unique_ptr<TestSearchResult> result =
-            std::make_unique<TestSearchResult>();
-        result->set_display_type(data.first);
-        result->set_display_score(display_score);
-        result->SetTitle(u"Test");
-        result->set_best_match(true);
-        results->Add(std::move(result));
-      }
+
+    for (int i = 0; i < list_results_num; ++i) {
+      std::unique_ptr<TestSearchResult> result =
+          std::make_unique<TestSearchResult>();
+      result->set_display_type(SearchResultDisplayType::kList);
+      result->set_display_score(1);
+      result->SetTitle(u"Test");
+      result->set_best_match(true);
+      results->Add(std::move(result));
     }
 
     // Adding results will schedule Update().
@@ -1104,9 +1086,8 @@ TEST_F(AppListViewFocusTest, CtrlASelectsAllTextInSearchbox) {
   search_box_view()->search_box()->InsertText(
       u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  constexpr int kTileResults = 3;
   constexpr int kListResults = 2;
-  SetUpSearchResults(kTileResults, kListResults);
+  SetUpSearchResults(kListResults);
 
   // Move focus to the first search result.
   SimulateKeyPress(ui::VKEY_TAB, false);
@@ -1153,7 +1134,7 @@ TEST_F(AppListViewFocusTest,
       u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   const int kListResults = 2;
-  SetUpSearchResults(0, kListResults);
+  SetUpSearchResults(kListResults);
   SearchResultListView* list_view = GetSearchResultListView();
 
   EXPECT_EQ(search_box_view()->search_box(), focused_view());
@@ -1161,28 +1142,15 @@ TEST_F(AppListViewFocusTest,
             contents_view()->search_result_page_view()->first_result_view());
   EXPECT_TRUE(list_view->GetResultViewAt(0)->selected());
 
-  // Populate both fake list results and tile results.
-  const int kTileResults = 3;
-  SetUpSearchResults(kTileResults, kListResults);
-  const std::vector<SearchResultTileItemView*>& tile_views =
-      GetSearchResultTileItemListView()->tile_views_for_test();
-  EXPECT_EQ(search_box_view()->search_box(), focused_view());
-  EXPECT_EQ(tile_views[0],
-            contents_view()->search_result_page_view()->first_result_view());
-  EXPECT_TRUE(tile_views[0]->selected());
-
   ResultSelectionController* selection_controller =
       contents_view()->search_result_page_view()->result_selection_controller();
 
-  // Ensures the |ResultSelectionController| selects the correct result
-  EXPECT_EQ(selection_controller->selected_result(), tile_views[0]);
-
-  // Ensure current highlighted result loses highlight on transition
-  SimulateKeyPress(ui::VKEY_TAB, false);
-  EXPECT_FALSE(tile_views[0]->selected());
+  // Ensures the |ResultSelectionController| selects the correct result.
+  EXPECT_EQ(selection_controller->selected_result(),
+            list_view->GetResultViewAt(0));
 
   // Clear up all search results.
-  SetUpSearchResults(0, 0);
+  SetUpSearchResults(0);
   EXPECT_EQ(search_box_view()->search_box(), focused_view());
   EXPECT_EQ(nullptr,
             contents_view()->search_result_page_view()->first_result_view());
@@ -1206,23 +1174,16 @@ TEST_F(AppListViewFocusTest, HittingEnterWhenFocusOnSearchBox) {
       u"test",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   const int kListResults = 2;
-  SetUpSearchResults(0, kListResults);
+  SetUpSearchResults(kListResults);
   SimulateKeyPress(ui::VKEY_RETURN, false);
   EXPECT_EQ(1, GetOpenFirstSearchResultCount());
   EXPECT_EQ(1, GetTotalOpenSearchResultCount());
 
-  // Populate both fake list results and tile results. Then hit Enter key.
-  const int kTileResults = 3;
-  SetUpSearchResults(kTileResults, kListResults);
-  SimulateKeyPress(ui::VKEY_RETURN, false);
-  EXPECT_EQ(2, GetOpenFirstSearchResultCount());
-  EXPECT_EQ(2, GetTotalOpenSearchResultCount());
-
   // Clear up all search results. Then hit Enter key.
-  SetUpSearchResults(0, 0);
+  SetUpSearchResults(0);
   SimulateKeyPress(ui::VKEY_RETURN, false);
-  EXPECT_EQ(2, GetOpenFirstSearchResultCount());
-  EXPECT_EQ(2, GetTotalOpenSearchResultCount());
+  EXPECT_EQ(1, GetOpenFirstSearchResultCount());
+  EXPECT_EQ(1, GetTotalOpenSearchResultCount());
 }
 
 // Tests that search box becomes focused when it is activated.

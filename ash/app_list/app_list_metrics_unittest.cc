@@ -26,7 +26,6 @@
 #include "ash/app_list/views/recent_apps_view.h"
 #include "ash/app_list/views/search_result_container_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
-#include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
@@ -114,45 +113,6 @@ class AppListMetricsTest : public AshTestBase {
     const views::ViewModel* view_model =
         GetPrimaryShelf()->GetShelfViewForTesting()->view_model_for_test();
     LeftClickOn(view_model->view_at(kBrowserAppIndexOnShelf));
-  }
-
-  void PopulateAndLaunchSearchBoxTileItem() {
-    // Populate 4 tile items.
-    for (size_t i = 0; i < 4; i++) {
-      auto search_result = std::make_unique<SearchResult>();
-      search_result->set_display_type(SearchResultDisplayType::kTile);
-
-      // Give each item a name so that the accessibility paint checks pass.
-      // (Focusable items should have accessible names.)
-      search_result->SetAccessibleName(
-          base::UTF8ToUTF16(base::StringPrintf("item %zu", i)));
-
-      search_model_->results()->Add(std::move(search_result));
-    }
-    GetAppListTestHelper()->WaitUntilIdle();
-
-    // Mark the privacy notices as dismissed so that the tile items will be the
-    // first search container.
-    ContentsView* contents_view = Shell::Get()
-                                      ->app_list_controller()
-                                      ->fullscreen_presenter()
-                                      ->GetView()
-                                      ->app_list_main_view()
-                                      ->contents_view();
-    Shell::Get()->app_list_controller()->MarkSuggestedContentInfoDismissed();
-    contents_view->search_result_page_view()
-        ->GetPrivacyContainerViewForTest()
-        ->Update();
-
-    SearchResultContainerView* search_result_container_view =
-        contents_view->search_result_page_view()
-            ->GetSearchResultTileItemListViewForTest();
-
-    // Request focus on the first tile item view.
-    search_result_container_view->GetFirstResultView()->RequestFocus();
-
-    // Press return to simulate an app launch from the tile item.
-    PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
   }
 
   void PopulateAndLaunchAppInGrid(int num = 4) {
@@ -251,33 +211,6 @@ TEST_P(AppListMetricsTabletTest, HomecherSearchLaunchFromShelf) {
       "Apps.AppListAppLaunchedV2.HomecherSearch",
       AppListLaunchedFrom::kLaunchedFromShelf,
       1 /* Number of times launched from shelf */);
-}
-
-// Test that the histogram records an app launch from the search box while the
-// homercher search state is showing.
-TEST_P(AppListMetricsTabletTest, HomecherSearchLaunchFromSearchBox) {
-  // ProductivityLauncher does not tile search results.
-  if (features::IsProductivityLauncherEnabled())
-    return;
-
-  base::HistogramTester histogram_tester;
-
-  // Enable tablet mode.
-  GetAppListTestHelper()->WaitUntilIdle();
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-
-  // Press a letter key, the AppListView should transition to kFullscreenSearch.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_H);
-  GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
-
-  // Populate search box with tile items and launch a tile item.
-  PopulateAndLaunchSearchBoxTileItem();
-
-  histogram_tester.ExpectBucketCount(
-      "Apps.AppListAppLaunchedV2.HomecherSearch",
-      AppListLaunchedFrom::kLaunchedFromSearchBox,
-      1 /* Number of times launched from search box */);
 }
 
 // Tests with feature ProductivityLauncher enabled.

@@ -55,7 +55,6 @@ class AppListColorProviderImpl : public AppListColorProvider {
       const views::Widget* app_list_widget) const override;
   SkColor GetGridBackgroundCardInactiveColor(
       const views::Widget* app_list_widget) const override;
-  ui::ColorId GetSeparatorColorId() const override;
   SkColor GetFocusRingColor(
       const views::Widget* app_list_widget) const override;
   SkColor GetInkDropBaseColor(

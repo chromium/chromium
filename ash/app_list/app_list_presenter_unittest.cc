@@ -37,7 +37,6 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/app_list/views/search_result_page_view.h"
-#include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
@@ -3353,12 +3352,6 @@ TEST_F(AppListPresenterNonBubbleTest, SearchClearedOnModelChange) {
   EXPECT_TRUE(search_box_view->is_search_box_active());
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
 
-  SearchResultContainerView* const tile_item_container =
-      search_result_page()->GetSearchResultTileItemListViewForTest();
-  ASSERT_EQ(1, tile_item_container->num_results());
-  EXPECT_EQ("test_tile",
-            tile_item_container->GetResultViewAt(0)->result()->id());
-
   SearchResultContainerView* item_list_container =
       search_result_page()->GetSearchResultListViewForTest();
   ASSERT_EQ(1, item_list_container->num_results());
@@ -3399,10 +3392,6 @@ TEST_F(AppListPresenterNonBubbleTest, SearchClearedOnModelChange) {
 
   EXPECT_TRUE(search_box_view->is_search_box_active());
   GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenSearch);
-
-  ASSERT_EQ(1, tile_item_container->num_results());
-  EXPECT_EQ("test_tile_override",
-            tile_item_container->GetResultViewAt(0)->result()->id());
 
   ASSERT_EQ(1, item_list_container->num_results());
   EXPECT_EQ("test_override",

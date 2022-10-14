@@ -245,13 +245,6 @@ SkColor AppListColorProviderImpl::GetGridBackgroundCardInactiveColor(
       kColorAshControlBackgroundColorInactive);
 }
 
-ui::ColorId AppListColorProviderImpl::GetSeparatorColorId() const {
-  if (ShouldUseDarkLightColors()) {
-    return ui::kColorAshAppListSeparatorLight;
-  }
-  return ui::kColorAshAppListSeparator;  // default_color
-}
-
 SkColor AppListColorProviderImpl::GetFocusRingColor(
     const views::Widget* app_list_widget) const {
   DCHECK(app_list_widget);

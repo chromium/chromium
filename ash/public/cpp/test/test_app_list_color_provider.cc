@@ -104,10 +104,6 @@ SkColor TestAppListColorProvider::GetGridBackgroundCardInactiveColor(
   return SkColorSetA(SK_ColorWHITE, 41 /* 16% */);
 }
 
-ui::ColorId TestAppListColorProvider::GetSeparatorColorId() const {
-  return ui::kColorAshSystemUIMenuSeparator;
-}
-
 SkColor TestAppListColorProvider::GetFocusRingColor(
     const views::Widget* app_list_widget) const {
   return gfx::kGoogleBlue600;

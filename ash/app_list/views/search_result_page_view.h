@@ -27,7 +27,6 @@ class PrivacyContainerView;
 class SearchBoxView;
 class SearchResultBaseView;
 class SearchResultListView;
-class SearchResultTileItemListView;
 class SearchResultPageAnchoredDialog;
 class SystemShadow;
 
@@ -126,16 +125,12 @@ class ASH_EXPORT SearchResultPageView
   void UpdateResultContainersVisibility();
 
   PrivacyContainerView* GetPrivacyContainerViewForTest();
-  SearchResultTileItemListView* GetSearchResultTileItemListViewForTest();
   SearchResultListView* GetSearchResultListViewForTest();
 
  private:
   // All possible states for the search results page. Used with productivity
   // launcher.
   enum class SearchResultsState { kClosed, kActive, kExpanded };
-
-  // Separator between SearchResultContainerView.
-  class HorizontalSeparator;
 
   // Passed to |result_selection_controller_| as a callback that gets called
   // when the currently selected result changes.
@@ -209,14 +204,9 @@ class ASH_EXPORT SearchResultPageView
   // Search result containers shown within search results page (and added to
   // `result_container_views_`).
   PrivacyContainerView* privacy_container_view_ = nullptr;
-  SearchResultTileItemListView* search_result_tile_item_list_view_ = nullptr;
   SearchResultListView* search_result_list_view_ = nullptr;
   // Search result container used for productivity launcher.
   ProductivityLauncherSearchView* productivity_launcher_search_view_ = nullptr;
-
-  // Separator view shown between search result tile item list and search
-  // results list.
-  HorizontalSeparator* result_lists_separator_ = nullptr;
 
   // View containing SearchCardView instances. Owned by view hierarchy.
   views::View* const contents_view_;

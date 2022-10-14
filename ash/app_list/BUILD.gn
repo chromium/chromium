@@ -155,10 +155,6 @@ source_set("app_list") {
     "views/search_result_page_dialog_controller.h",
     "views/search_result_page_view.cc",
     "views/search_result_page_view.h",
-    "views/search_result_tile_item_list_view.cc",
-    "views/search_result_tile_item_list_view.h",
-    "views/search_result_tile_item_view.cc",
-    "views/search_result_tile_item_view.h",
     "views/search_result_view.cc",
     "views/search_result_view.h",
     "views/suggested_content_info_view.cc",
@@ -311,7 +307,6 @@ source_set("unit_tests") {
     "views/search_box_view_unittest.cc",
     "views/search_result_list_view_unittest.cc",
     "views/search_result_page_view_unittest.cc",
-    "views/search_result_tile_item_list_view_unittest.cc",
     "views/search_result_view_unittest.cc",
   ]
 
