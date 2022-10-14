@@ -55,11 +55,13 @@ network::mojom::NetworkContext*& GetNetworkContextForTesting() {
 }
 
 bool IsFrameSufficientlyIsolated(content::RenderFrameHost* frame) {
-  return frame->GetWebExposedIsolationLevel() >=
-             content::RenderFrameHost::WebExposedIsolationLevel::
-                 kMaybeIsolatedApplication &&
-         frame->IsFeatureEnabled(
-             blink::mojom::PermissionsPolicyFeature::kDirectSockets);
+  if (frame->GetWebExposedIsolationLevel() >=
+      content::RenderFrameHost::WebExposedIsolationLevel::
+          kMaybeIsolatedApplication) {
+    return true;
+  }
+
+  return false;
 }
 
 network::mojom::TCPConnectedSocketOptionsPtr CreateTCPConnectedSocketOptions(
@@ -122,7 +124,14 @@ void DirectSocketsServiceImpl::CreateForFrame(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!render_frame_host->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kDirectSockets)) {
+    mojo::ReportBadMessage(
+        "Permissions policy blocks access to Direct Sockets.");
+  }
   if (!IsFrameSufficientlyIsolated(render_frame_host)) {
+    mojo::ReportBadMessage(
+        "Frame is not sufficiently isolated to use Direct Sockets.");
     return;
   }
   new DirectSocketsServiceImpl(render_frame_host, std::move(receiver));
@@ -137,16 +146,6 @@ void DirectSocketsServiceImpl::OpenTcpSocket(
     mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
     mojo::PendingRemote<network::mojom::SocketObserver> observer,
     OpenTcpSocketCallback callback) {
-  if (!IsFrameSufficientlyIsolated(&render_frame_host())) {
-    mojo::ReportBadMessage("Insufficient isolation to open socket");
-    return;
-  }
-
-  if (!GetNetworkContext()) {
-    mojo::ReportBadMessage("Invalid request to open socket");
-    return;
-  }
-
   const std::string remote_host = options->remote_hostname;
   const uint16_t remote_port = options->remote_port;
 
@@ -174,16 +173,6 @@ void DirectSocketsServiceImpl::OpenUdpSocket(
     mojo::PendingReceiver<blink::mojom::DirectUDPSocket> receiver,
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
     OpenUdpSocketCallback callback) {
-  if (!IsFrameSufficientlyIsolated(&render_frame_host())) {
-    mojo::ReportBadMessage("Insufficient isolation to open socket");
-    return;
-  }
-
-  if (!GetNetworkContext()) {
-    mojo::ReportBadMessage("Invalid request to open socket");
-    return;
-  }
-
   const std::string remote_host = options->remote_hostname;
   const uint16_t remote_port = options->remote_port;
 
