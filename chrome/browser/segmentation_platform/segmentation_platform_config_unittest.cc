@@ -17,27 +17,14 @@
 
 namespace segmentation_platform {
 
-using ::base::test::ScopedFeatureList;
-
 class SegmentationPlatformConfigTest : public testing::Test {
  public:
   SegmentationPlatformConfigTest() = default;
   ~SegmentationPlatformConfigTest() override = default;
 
-  void SetUp() override {
-    Test::SetUp();
-    scoped_feature_list_ = std::make_unique<ScopedFeatureList>();
-  }
-
-  void TearDown() override {
-    Test::TearDown();
-    scoped_feature_list_.reset();
-  }
-
   void EnableFeaturesWithParams(
-      const std::vector<ScopedFeatureList::FeatureAndParams>&
-          enabled_features) {
-    scoped_feature_list_->InitWithFeaturesAndParameters(enabled_features, {});
+      const std::vector<base::test::FeatureRefAndParams>& enabled_features) {
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
     // Activate each field trial so that these trials are considered as Active
     // groups. the FieldTrialList currently does not consider force enabled
     // trials as "active" by default.
@@ -51,7 +38,7 @@ class SegmentationPlatformConfigTest : public testing::Test {
   }
 
  protected:
-  std::unique_ptr<ScopedFeatureList> scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SegmentationPlatformConfigTest, GetSegmentationPlatformConfig) {
@@ -63,15 +50,14 @@ TEST_F(SegmentationPlatformConfigTest, GetSegmentationPlatformConfig) {
 }
 
 TEST_F(SegmentationPlatformConfigTest, EmptyFeatures) {
-  ScopedFeatureList scoped_feature_list_;
   std::vector<std::unique_ptr<Config>> configs;
   AppendConfigsFromExperiments(configs);
   EXPECT_TRUE(configs.empty());
 }
 
 TEST_F(SegmentationPlatformConfigTest, BadFormat) {
-  std::vector<ScopedFeatureList::FeatureAndParams> features;
-  features.push_back(ScopedFeatureList::FeatureAndParams(
+  std::vector<base::test::FeatureRefAndParams> features;
+  features.push_back(base::test::FeatureRefAndParams(
       features::kSegmentationPlatformLowEngagementFeature,
       {{"segmentation_platform_add_config_param", "bad_json"}}));
   EnableFeaturesWithParams(features);
@@ -119,14 +105,14 @@ TEST_F(SegmentationPlatformConfigTest, MultipleConfigs) {
       proto::SegmentId::
           OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS};
 
-  std::vector<ScopedFeatureList::FeatureAndParams> features;
-  features.push_back(ScopedFeatureList::FeatureAndParams(
+  std::vector<base::test::FeatureRefAndParams> features;
+  features.push_back(base::test::FeatureRefAndParams(
       features::kSegmentationPlatformLowEngagementFeature,
       {{"segmentation_platform_add_config_param", "bad_json"}}));
-  features.push_back(ScopedFeatureList::FeatureAndParams(
+  features.push_back(base::test::FeatureRefAndParams(
       features::kSegmentationPlatformFeedSegmentFeature,
       {{"segmentation_platform_add_config_param", kValidConfig1}}));
-  features.push_back(ScopedFeatureList::FeatureAndParams(
+  features.push_back(base::test::FeatureRefAndParams(
       features::kShoppingUserSegmentFeature,
       {{"segmentation_platform_add_config_param", kValidConfig2}}));
   EnableFeaturesWithParams(features);
