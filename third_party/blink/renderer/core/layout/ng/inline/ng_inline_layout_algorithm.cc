@@ -87,8 +87,8 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::HandleOpenTag(
     const NGInlineItemResult& item_result,
     NGLogicalLineItems* line_box,
     NGInlineLayoutStateStack* box_states) const {
-  NGInlineBoxState* box =
-      box_states->OnOpenTag(item, item_result, baseline_type_, line_box);
+  NGInlineBoxState* box = box_states->OnOpenTag(
+      ConstraintSpace(), item, item_result, baseline_type_, line_box);
   // Compute text metrics for all inline boxes since even empty inlines
   // influence the line height, except when quirks mode and the box is empty
   // for the purpose of empty block calculation.
@@ -577,8 +577,8 @@ NGInlineBoxState* NGInlineLayoutAlgorithm::PlaceAtomicInline(
   layout_object->SetIsTruncated(false);
 
   item_result->has_edge = true;
-  NGInlineBoxState* box =
-      box_states_->OnOpenTag(item, *item_result, baseline_type_, *line_box);
+  NGInlineBoxState* box = box_states_->OnOpenTag(
+      ConstraintSpace(), item, *item_result, baseline_type_, *line_box);
 
   if (LIKELY(!IsA<LayoutNGTextCombine>(layout_object))) {
     PlaceLayoutResult(item_result, line_box, box, box->margin_inline_start);

@@ -1856,6 +1856,7 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
       DCHECK(container_builder_->Node().IsPaginatedRoot());
       DCHECK_EQ(node.Style().GetPosition(), EPosition::kFixed);
       builder.SetShouldRepeat(repeat_mode != kRepeatedLast);
+      builder.SetIsInsideRepeatableContent(true);
       is_repeatable = true;
     } else {
       SetupSpaceBuilderForFragmentation(
