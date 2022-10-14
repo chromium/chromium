@@ -632,16 +632,7 @@ class TabListMediator {
                     // If a tab in tab group does not exist in model and needs to be selected from
                     // undo, identify the related TabIds and determine newIndex based on if any of
                     // the related ids are present in model.
-                    List<Integer> relatedTabIds = getRelatedTabsIds(tab.getId());
-                    if (!relatedTabIds.isEmpty()) {
-                        for (int i = 0; i < mModel.size(); i++) {
-                            int modelTabId = mModel.get(i).model.get(TAB_ID);
-                            if (relatedTabIds.contains(modelTabId)) {
-                                newIndex = i;
-                                break;
-                            }
-                        }
-                    }
+                    newIndex = getIndexForTabWithRelatedTabs(tab);
                 }
                 if (newIndex == TabModel.INVALID_TAB_INDEX) return;
                 mModel.get(newIndex).model.set(TabProperties.IS_SELECTED, true);
@@ -848,8 +839,26 @@ class TabListMediator {
                         Tab movedTab, int tabModelOldIndex, int tabModelNewIndex) {
                     if (!mVisible || tabModelNewIndex == tabModelOldIndex) return;
 
-                    int curPosition = mModel.indexFromId(movedTab.getId());
                     TabModel tabModel = mTabModelSelector.getCurrentModel();
+
+                    // For the tab switcher update the tab card correctly.
+                    if (mActionsOnAllRelatedTabs && mThumbnailProvider != null
+                            && !isShowingTabsInMRUOrder()) {
+                        int indexInModel = getIndexForTabWithRelatedTabs(movedTab);
+                        if (indexInModel == TabModel.INVALID_TAB_INDEX) return;
+
+                        TabModelFilter filter = mTabModelSelector.getTabModelFilterProvider()
+                                                        .getCurrentTabModelFilter();
+                        Tab lastShownTab = filter.getTabAt(filter.indexOf(movedTab));
+                        mModel.get(indexInModel)
+                                .model.set(TabProperties.THUMBNAIL_FETCHER,
+                                        new ThumbnailFetcher(mThumbnailProvider,
+                                                lastShownTab.getId(), true, false));
+                        return;
+                    }
+
+                    // For the grid dialog maintain order.
+                    int curPosition = mModel.indexFromId(movedTab.getId());
 
                     if (!isValidMovePosition(curPosition)) return;
 
@@ -858,6 +867,7 @@ class TabListMediator {
                                     : tabModelNewIndex + 1);
 
                     int newPosition = mModel.indexFromId(destinationTab.getId());
+
                     if (!isValidMovePosition(newPosition)) return;
                     mModel.move(curPosition, newPosition);
                 }
@@ -2152,5 +2162,22 @@ class TabListMediator {
                     ChromePreferenceKeys.PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                     System.currentTimeMillis());
         }
+    }
+
+    /**
+     * @param tab the {@link Tab} to find the group index of.
+     * @return the index for the tab group within {@link mModel}
+     */
+    private int getIndexForTabWithRelatedTabs(Tab tab) {
+        List<Integer> relatedTabIds = getRelatedTabsIds(tab.getId());
+        if (!relatedTabIds.isEmpty()) {
+            for (int i = 0; i < mModel.size(); i++) {
+                int modelTabId = mModel.get(i).model.get(TAB_ID);
+                if (relatedTabIds.contains(modelTabId)) {
+                    return i;
+                }
+            }
+        }
+        return TabModel.INVALID_TAB_INDEX;
     }
 }
