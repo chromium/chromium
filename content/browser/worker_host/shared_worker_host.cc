@@ -47,6 +47,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_worker_client_added.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
@@ -695,6 +697,13 @@ void SharedWorkerHost::AddClient(
         .SetClientSourceId(client_ukm_source_id)
         .SetWorkerType(static_cast<int64_t>(WorkerType::kSharedWorker))
         .Record(ukm_recorder);
+
+    if (blink::IdentifiabilityStudySettings::Get()->IsActive()) {
+      blink::IdentifiabilityStudyWorkerClientAdded(ukm_source_id_)
+          .SetClientSourceId(client_ukm_source_id)
+          .SetWorkerType(blink::IdentifiableSurface::WorkerType::kSharedWorker)
+          .Record(ukm_recorder);
+    }
   }
 
   worker_->Connect(info.connection_request_id, port.ReleaseHandle());

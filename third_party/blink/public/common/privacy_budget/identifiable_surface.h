@@ -271,8 +271,17 @@ class IdentifiableSurface {
     kDocumentCreated_IsCrossSiteFrame = 1,
     kDocumentCreated_IsMainFrame = 2,
     kDocumentCreated_NavigationSourceId = 3,
-    kMax = kDocumentCreated_NavigationSourceId
+    kWorkerClientAdded_ClientSourceId = 4,
+    kWorkerClientAdded_WorkerType = 5,
+    kMax = kWorkerClientAdded_WorkerType
   };
+
+  enum class WorkerType {
+    kSharedWorker = 0,
+    kServiceWorker = 1,
+    kMax = kServiceWorker,
+  };
+
   static_assert(
       static_cast<uint64_t>(ReservedSurfaceMetrics::kMax) <
           std::min(

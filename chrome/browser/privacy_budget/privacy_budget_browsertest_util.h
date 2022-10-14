@@ -43,9 +43,14 @@ class PrivacyBudgetBrowserTestBaseWithTestRecorder
   base::flat_set<uint64_t> GetReportedSurfaceKeys(
       std::vector<uint64_t> expected_keys);
 
+  // Returns how many times a surface key was reported.
+  int GetSurfaceKeyCount(uint64_t expected_key);
+
   ukm::TestUkmRecorder& recorder() { return *ukm_recorder_; }
 
   content::WebContents* web_contents();
+
+  const std::string& FilePathXYZ();
 
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;

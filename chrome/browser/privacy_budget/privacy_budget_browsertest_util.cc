@@ -43,9 +43,29 @@ PrivacyBudgetBrowserTestBaseWithTestRecorder::GetReportedSurfaceKeys(
   return reported_surface_keys;
 }
 
+int PrivacyBudgetBrowserTestBaseWithTestRecorder::GetSurfaceKeyCount(
+    uint64_t expected_key) {
+  std::vector<const ukm::mojom::UkmEntry*> entries =
+      ukm_recorder_->GetEntriesByName(
+          ukm::builders::Identifiability::kEntryName);
+
+  int count = 0;
+  for (const auto* entry : entries) {
+    for (const auto& metric : entry->metrics) {
+      if (expected_key == metric.first)
+        count++;
+    }
+  }
+  return count;
+}
+
 content::WebContents*
 PrivacyBudgetBrowserTestBaseWithTestRecorder::web_contents() {
   return chrome_test_utils::GetActiveWebContents(this);
+}
+
+const std::string& PrivacyBudgetBrowserTestBaseWithTestRecorder::FilePathXYZ() {
+  return GetParam();
 }
 
 PrivacyBudgetBrowserTestBaseWithUkmRecording::

@@ -22,6 +22,7 @@ source_set("privacy_budget") {
     "identifiability_study_document_created.h",
     "identifiability_study_settings.h",
     "identifiability_study_settings_provider.h",
+    "identifiability_study_worker_client_added.h",
     "identifiable_sample.h",
     "identifiable_surface.h",
     "identifiable_token.h",

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Privacy Budget: Test page used as iframe to add a client to service worker</title>
+<script src="test_utils.js"></script>
+<script language="javascript">
+  navigator.serviceWorker.register("two_clients_service_worker.js");
+
+  navigator.serviceWorker.addEventListener("message", (event) => {
+    sendValueToTest('Done');
+    navigator.serviceWorker.ready.then((registration) => {
+      // Unregister the worker to flush out the metrics.
+      registration.unregister();
+    });
+  });
+
+  navigator.serviceWorker.ready.then((registration) => {
+    registration.active.postMessage("Start");
+  });
+</script>

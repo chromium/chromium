@@ -164,7 +164,6 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
 
 IN_PROC_BROWSER_TEST_P(PrivacyBudgetBrowserTestWithTestRecorder,
                        RecordingFeaturesCalledInWorker) {
-  const auto file_path = GetParam();
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::DOMMessageQueue messages(web_contents());
@@ -185,7 +184,7 @@ IN_PROC_BROWSER_TEST_P(PrivacyBudgetBrowserTestWithTestRecorder,
                                    base::BindLambdaForTesting(quit_run_loop));
 
   ASSERT_TRUE(content::NavigateToURL(
-      web_contents(), embedded_test_server()->GetURL(file_path)));
+      web_contents(), embedded_test_server()->GetURL(FilePathXYZ())));
 
   // The document calls a bunch of instrumented functions and sends a message
   // back to the test. Receipt of the message indicates that the script
@@ -195,6 +194,11 @@ IN_PROC_BROWSER_TEST_P(PrivacyBudgetBrowserTestWithTestRecorder,
 
   // Wait for the metrics to come down the pipe.
   run_loop.Run();
+
+  // The previously registered callback will be invalid after the test class is
+  // destructed.
+  recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
+                                   {});
 
   // Test succeeds if there is no timeout. However, let's recheck the metrics
   // here, so that if there is a timeout we get an output of which metrics are
@@ -211,6 +215,140 @@ INSTANTIATE_TEST_SUITE_P(
                       "/privacy_budget/calls_shared_worker.html",
 #endif
                       "/privacy_budget/calls_service_worker.html"));
+
+namespace {
+
+using PrivacyBudgetBrowserTestForWorkersClientAdded =
+    PrivacyBudgetBrowserTestWithTestRecorder;
+}  // namespace
+
+IN_PROC_BROWSER_TEST_P(PrivacyBudgetBrowserTestForWorkersClientAdded,
+                       WorkersRecordWorkerClientAddedMetrics) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::DOMMessageQueue messages(web_contents());
+  base::RunLoop run_loop;
+
+  std::vector<uint64_t> expected_keys = {
+      blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableSurface::ReservedSurfaceMetrics::
+              kWorkerClientAdded_ClientSourceId)
+          .ToUkmMetricHash(),
+      blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableSurface::ReservedSurfaceMetrics::
+              kWorkerClientAdded_WorkerType)
+          .ToUkmMetricHash(),
+  };
+
+  // We wait for the expected metrics to be reported. Since some of the
+  // metrics are reported from the renderer process, this is the only reliable
+  // way to be sure we waited long enough.
+  auto quit_run_loop = [this, &expected_keys, &run_loop]() {
+    if (GetReportedSurfaceKeys(expected_keys).size() == expected_keys.size())
+      run_loop.Quit();
+  };
+
+  recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
+                                   base::BindLambdaForTesting(quit_run_loop));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL(FilePathXYZ() + ".html")));
+
+  // The document calls a bunch of instrumented functions and sends a message
+  // back to the test. Receipt of the message indicates that the script
+  // successfully completed.
+  std::string done;
+  ASSERT_TRUE(messages.WaitForMessage(&done));
+
+  // Wait for the metrics to come down the pipe.
+  run_loop.Run();
+
+  // The previously registered callback will be invalid after the test class is
+  // destructed.
+  recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
+                                   {});
+
+  // Test succeeds if there is no timeout. However, let's recheck the metrics
+  // here, so that if there is a timeout we get an output of which metrics are
+  // missing.
+  EXPECT_THAT(GetReportedSurfaceKeys(expected_keys),
+              UnorderedElementsAreArray(expected_keys));
+}
+
+IN_PROC_BROWSER_TEST_P(PrivacyBudgetBrowserTestForWorkersClientAdded,
+                       ReportWorkerClientAddedMetricForEveryRegisteredClient) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  content::DOMMessageQueue messages(web_contents());
+  base::RunLoop run_loop;
+
+  uint64_t expected_key =
+      blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableSurface::ReservedSurfaceMetrics::
+              kWorkerClientAdded_ClientSourceId)
+          .ToUkmMetricHash();
+
+  // We wait for the expected metrics to be reported. Since some of the
+  // metrics are reported from the renderer process, this is the only reliable
+  // way to be sure we waited long enough.
+  auto quit_run_loop = [this, &expected_key, &run_loop]() {
+    if (GetSurfaceKeyCount(expected_key) == 2)
+      run_loop.Quit();
+  };
+
+  recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
+                                   base::BindLambdaForTesting(quit_run_loop));
+
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents(), embedded_test_server()->GetURL(
+                          FilePathXYZ() + "_with_two_clients.html")));
+
+  // The document calls a bunch of instrumented functions and sends a message
+  // back to the test. Receipt of the message indicates that the script
+  // successfully completed.
+  std::string done;
+  ASSERT_TRUE(messages.WaitForMessage(&done));
+
+  // Wait for the metrics to come down the pipe.
+  run_loop.Run();
+
+  // The previously registered callback will be invalid after the test class is
+  // destructed.
+  recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
+                                   {});
+
+  // Test succeeds if there is no timeout.
+  // Both surfaces should come from the same source but have different client
+  // ids.
+  std::vector<const ukm::mojom::UkmEntry*> entries =
+      recorder().GetEntriesByName(ukm::builders::Identifiability::kEntryName);
+
+  base::flat_set<uint64_t> source_ids;
+  base::flat_set<uint64_t> client_source_ids;
+  for (const auto* entry : entries) {
+    for (const auto& metric : entry->metrics) {
+      if (metric.first == expected_key) {
+        source_ids.insert(entry->source_id);
+        client_source_ids.insert(metric.second);
+      }
+    }
+  }
+  EXPECT_EQ(source_ids.size(), 1u);
+  EXPECT_EQ(client_source_ids.size(), 2u);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PrivacyBudgetBrowserTestForWorkersClientAddedParameterized,
+    PrivacyBudgetBrowserTestForWorkersClientAdded,
+    ::testing::Values(
+// Shared workers are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
+        "/privacy_budget/calls_shared_worker",
+#endif
+        "/privacy_budget/calls_service_worker"));
 
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
                        EveryNavigationRecordsDocumentCreatedMetrics) {

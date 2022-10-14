@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Privacy Budget: Test page used as an iframe to add a client to a shared worker</title>
+<script src="test_utils.js"></script>
+<script language="javascript">
+  const myWorker = new SharedWorker('two_clients_shared_worker.js');
+  myWorker.port.onmessage = (e) => {
+    sendValueToTest('Done');
+  }
+  myWorker.port.postMessage('Start');
+</script>

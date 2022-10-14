@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Privacy Budget: Test page that registers two clients to the same Service Worker</title>
+<script src="test_utils.js"></script>
+<script>
+  navigator.serviceWorker.register("two_clients_service_worker.js");
+
+  navigator.serviceWorker.addEventListener("message", (event) => {
+    sendValueToTest('Done');
+    navigator.serviceWorker.ready.then((registration) => {
+      // Unregister the worker to flush out the metrics.
+      registration.unregister();
+    });
+  });
+
+  navigator.serviceWorker.ready.then((registration) => {
+    registration.active.postMessage("Start");
+  });
+</script>
+
+<body>
+  <iframe src="./iframe_service_worker.html" title="Second Client"></iframe>
+</body>

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Privacy Budget: Test page that registers two clients to the same shared worker</title>
+<script src="test_utils.js"></script>
+<script>
+  const myWorker = new SharedWorker('two_clients_shared_worker.js');
+  myWorker.port.onmessage = (e) => {
+    sendValueToTest('Done');
+  }
+  myWorker.port.postMessage('Start');
+</script>
+
+<body>
+  <iframe src="./iframe_shared_worker.html" title="Second Client"></iframe>
+</body>
