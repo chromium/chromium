@@ -24,7 +24,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
@@ -181,7 +180,7 @@ public class MediaRouterTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"MediaRouter"})
     @LargeTest
-    @FlakyTest(message = "https://crbug.com/1181337")
+    @DisabledTest(message = "https://crbug.com/1181337")
     public void testFailCreateRoute() throws Exception {
         getTestWebLayer().initializeMockMediaRouteProvider(/*closeRouteWithErrorOnSend=*/false,
                 /*disableIsSupportsSource=*/false, /*createRouteErrorMessage=*/"Unknown sink",

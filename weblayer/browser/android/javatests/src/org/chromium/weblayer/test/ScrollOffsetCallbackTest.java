@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.ScrollOffsetCallback;
 import org.chromium.weblayer.shell.InstrumentationActivity;
@@ -31,7 +31,7 @@ public class ScrollOffsetCallbackTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "crbug.com/1190427")
+    @DisabledTest(message = "crbug.com/1190427")
     public void testBasic() throws Throwable {
         final String url = mActivityTestRule.getTestDataURL("tall_page.html");
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl(url);
