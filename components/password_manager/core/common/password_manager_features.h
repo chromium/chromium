@@ -68,9 +68,6 @@ BASE_DECLARE_FEATURE(kRecoverFromNeverSaveAndroid);
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 #endif
-#if BUILDFLAG(IS_LINUX)
-BASE_DECLARE_FEATURE(kSyncUndecryptablePasswordsLinux);
-#endif
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kPasswordEditDialogWithDetails);
 BASE_DECLARE_FEATURE(kShowUPMErrorNotification);

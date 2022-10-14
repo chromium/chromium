@@ -185,11 +185,8 @@ bool IsCredentialPhished(const sync_pb::PasswordSpecificsData& specifics) {
 // merge.
 bool ShouldRecoverPasswordsDuringMerge() {
   // Delete the local undecryptable copy when this is MacOS only.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   return true;
-#elif BUILDFLAG(IS_LINUX)
-  return base::FeatureList::IsEnabled(
-      features::kSyncUndecryptablePasswordsLinux);
 #else
   return false;
 #endif

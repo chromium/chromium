@@ -230,14 +230,6 @@ BASE_FEATURE(kSkipUndecryptablePasswords,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_LINUX)
-// When enabled, all undecryptable passwords are deleted from the local database
-// during initial sync flow.
-BASE_FEATURE(kSyncUndecryptablePasswordsLinux,
-             "SyncUndecryptablePasswordsLinux",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPasswordEditDialogWithDetails,
              "PasswordEditDialogWithDetails",

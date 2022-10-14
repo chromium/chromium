@@ -6642,11 +6642,6 @@ const char kWebBluetoothConfirmPairingSupportDescription[] =
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_LINUX)
-const char kCleanUndecryptablePasswordsLinuxName[] =
-    "Cleanup local undecryptable passwords during initial sync flow";
-const char kCleanUndecryptablePasswordsLinuxDescription[] =
-    "Deletes the undecryptable passwords from the local database to enable "
-    "syncing all passwords during the initial sync.";
 const char kForcePasswordInitialSyncWhenDecryptionFailsName[] =
     "Force initial sync to clean local undecryptable passwords during startup";
 const char kForcePasswordInitialSyncWhenDecryptionFailsDescription[] =

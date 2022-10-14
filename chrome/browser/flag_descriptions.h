@@ -3802,9 +3802,6 @@ extern const char kOzonePlatformHintChoiceWayland[];
 extern const char kOzonePlatformHintName[];
 extern const char kOzonePlatformHintDescription[];
 
-extern const char kCleanUndecryptablePasswordsLinuxName[];
-extern const char kCleanUndecryptablePasswordsLinuxDescription[];
-
 extern const char kForcePasswordInitialSyncWhenDecryptionFailsName[];
 extern const char kForcePasswordInitialSyncWhenDecryptionFailsDescription[];
 #endif  // BUILDFLAG(IS_LINUX)

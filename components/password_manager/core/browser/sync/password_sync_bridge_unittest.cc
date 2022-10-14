@@ -896,7 +896,6 @@ TEST_F(PasswordSyncBridgeTest, ShouldRemoveSyncMetadataWhenReadAllLoginsFails) {
   feature_list.InitWithFeatures(
       {
           features::kForceInitialSyncWhenDecryptionFails,
-          features::kSyncUndecryptablePasswordsLinux,
       },
       {});
   ON_CALL(*mock_password_store_sync(), ReadAllCredentials)
@@ -1147,7 +1146,6 @@ TEST_F(PasswordSyncBridgeTest,
   feature_list.InitWithFeatures(
       {
           features::kForceInitialSyncWhenDecryptionFails,
-          features::kSyncUndecryptablePasswordsLinux,
       },
       {});
 
@@ -1278,11 +1276,6 @@ class PasswordSyncBridgeMergeTest
       public testing::WithParamInterface<FormRetrievalResult> {
  protected:
   void ShouldDeleteUndecryptableLoginsDuringMerge() {
-#if BUILDFLAG(IS_LINUX)
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(
-        features::kSyncUndecryptablePasswordsLinux);
-#endif
     ON_CALL(*mock_password_store_sync(), DeleteUndecryptableCredentials())
         .WillByDefault(Return(DatabaseCleanupResult::kSuccess));
 

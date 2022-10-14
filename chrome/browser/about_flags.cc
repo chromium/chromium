@@ -4745,12 +4745,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOzonePlatformHintDescription, kOsLinux,
      MULTI_VALUE_TYPE(kOzonePlatformHintRuntimeChoices)},
 
-    {"clean-undecryptable-passwords",
-     flag_descriptions::kCleanUndecryptablePasswordsLinuxName,
-     flag_descriptions::kCleanUndecryptablePasswordsLinuxDescription, kOsLinux,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kSyncUndecryptablePasswordsLinux)},
-
     {"force-password-initial-sync-when-decryption-fails",
      flag_descriptions::kForcePasswordInitialSyncWhenDecryptionFailsName,
      flag_descriptions::kForcePasswordInitialSyncWhenDecryptionFailsDescription,
