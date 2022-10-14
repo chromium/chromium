@@ -1211,9 +1211,12 @@ class XDesktop(Desktop):
     # the "-screen" option.
     if self.randr_add_sizes:
       for width, height in self.sizes:
+        # This sets dot-clock, vtotal and htotal such that the computed
+        # refresh-rate will have a realistic value:
+        # 60Hz = dot-clock / (vtotal * htotal).
         label = "%dx%d" % (width, height)
-        args = ["xrandr", "--newmode", label, "0", str(width), "0", "0", "0",
-                str(height), "0", "0", "0"]
+        args = ["xrandr", "--newmode", label, "60", str(width), "0", "0",
+                "1000", str(height), "0", "0", "1000"]
         subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL)
         output_name = "screen" if self.use_xvfb else "DUMMY0"
