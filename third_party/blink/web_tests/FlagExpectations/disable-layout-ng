@@ -432,6 +432,8 @@ crbug.com/614667 external/wpt/css/css-break/grid/grid-item-fragmentation-048.htm
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-oof-004.html [ Failure ]
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-oof-005.html [ Failure ]
 crbug.com/614667 external/wpt/css/css-break/grid/grid-item-oof-007.html [ Failure ]
+crbug.com/614667 external/wpt/css/css-break/grid/grid-item-oof-009.html [ Failure ]
+crbug.com/614667 external/wpt/css/css-break/grid/grid-item-oof-010.html [ Failure ]
 
 ### external/wpt/css/css-flexbox/
 crbug.com/591099 external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-align-self-001.html [ Failure ]

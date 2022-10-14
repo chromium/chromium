@@ -303,13 +303,12 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
   grid_items.RemoveSubgriddedItems();
 
   Vector<EBreakBetween> row_break_between;
+  LayoutUnit consumed_grid_block_size;
+  Vector<GridItemPlacementData> grid_items_placement_data;
+  Vector<LayoutUnit> row_offset_adjustments;
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     // Either retrieve all items offsets, or generate them using the
     // non-fragmented |PlaceGridItems| pass.
-    LayoutUnit consumed_grid_block_size;
-    Vector<GridItemPlacementData> grid_items_placement_data;
-    Vector<LayoutUnit> row_offset_adjustments;
-
     if (IsResumingLayout(BreakToken())) {
       const auto* grid_data =
           To<NGGridBreakTokenData>(BreakToken()->TokenData());
@@ -330,16 +329,6 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
         grid_items, row_break_between, &layout_data, &grid_items_placement_data,
         &row_offset_adjustments, &intrinsic_block_size,
         &consumed_grid_block_size);
-
-    // TODO(almaher): Set this after PlaceOutOfFlowItems() since we will be
-    // adjusting the OOFs in `oof_children` within PlaceOutOfFlowItems() in a
-    // future change.
-    container_builder_.SetBreakTokenData(
-        MakeGarbageCollected<NGGridBreakTokenData>(
-            container_builder_.GetBreakTokenData(), layout_data,
-            intrinsic_block_size, consumed_grid_block_size,
-            grid_items_placement_data, row_offset_adjustments,
-            row_break_between, oof_children));
   } else {
     PlaceGridItems(grid_items, layout_data, &row_break_between);
   }
@@ -404,6 +393,15 @@ const NGLayoutResult* NGGridLayoutAlgorithm::LayoutInternal() {
 
   if (!oof_children.empty())
     PlaceOutOfFlowItems(layout_data, block_size, oof_children);
+
+  if (ConstraintSpace().HasBlockFragmentation()) {
+    container_builder_.SetBreakTokenData(
+        MakeGarbageCollected<NGGridBreakTokenData>(
+            container_builder_.GetBreakTokenData(), layout_data,
+            intrinsic_block_size, consumed_grid_block_size,
+            grid_items_placement_data, row_offset_adjustments,
+            row_break_between, oof_children));
+  }
 
   // Copy grid layout data for use in computed style and devtools.
   container_builder_.TransferGridLayoutData(
@@ -3621,16 +3619,16 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     const NGGridLayoutData& layout_data,
     const LayoutUnit block_size,
-    const HeapVector<Member<LayoutBox>>& oof_children) {
+    HeapVector<Member<LayoutBox>>& oof_children) {
   DCHECK(!oof_children.empty());
 
-  // If fragmentation is present we place all the OOF candidates within the
-  // last fragment. The last fragment has the most up-to-date grid geometry
-  // information (e.g. any expanded rows, etc).
+  HeapVector<Member<LayoutBox>> oofs;
+  std::swap(oofs, oof_children);
+
+  bool should_process_block_end = true;
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
-    if (container_builder_.DidBreakSelf() ||
-        container_builder_.HasChildBreakInside())
-      return;
+    should_process_block_end = !container_builder_.DidBreakSelf() &&
+                               !container_builder_.HasChildBreakInside();
   }
 
   const auto& node = Node();
@@ -3644,13 +3642,22 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
   const auto default_containing_block_size =
       ShrinkLogicalSize(total_fragment_size, BorderScrollbarPadding());
 
-  for (LayoutBox* oof_child : oof_children) {
+  for (LayoutBox* oof_child : oofs) {
     NGBlockNode child(oof_child);
     DCHECK(child.IsOutOfFlowPositioned());
 
     absl::optional<LogicalRect> containing_block_rect;
     GridItemData out_of_flow_item(child, container_style);
 
+    // TODO(layout-dev): If the below ends up being removed (as a result of
+    // [1]), we could likely implement some of the same optimizations as OOFs in
+    // flex [2] (i.e. checking `should_process_block_end` and
+    // `should_process_block_center` earlier on). However, given that with
+    // grid-area, the static position can be in any fragment, these
+    // optimizations would overcomplicate the logic.
+    //
+    // [1] https://github.com/w3c/csswg-drafts/issues/7661
+    // [2] https://chromium-review.googlesource.com/c/chromium/src/+/3927797
     if (out_of_flow_item.IsGridContainingBlock()) {
       containing_block_rect = ComputeOutOfFlowItemContainingRect(
           placement_data, layout_data, container_style,
@@ -3675,8 +3682,18 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     // Make the child offset relative to our fragment.
     child_offset.block_offset -= previous_consumed_block_size;
 
-    container_builder_.AddOutOfFlowChildCandidate(
-        out_of_flow_item.node, child_offset, inline_edge, block_edge);
+    // We will attempt to add OOFs in the fragment in which their static
+    // position belongs. However, the last fragment has the most up-to-date grid
+    // geometry information (e.g. any expanded rows, etc), so for center aligned
+    // items or items with a grid-area that is not in the first or last
+    // fragment, we could end up with an incorrect static position.
+    if (should_process_block_end ||
+        child_offset.block_offset <= FragmentainerCapacity(ConstraintSpace())) {
+      container_builder_.AddOutOfFlowChildCandidate(
+          out_of_flow_item.node, child_offset, inline_edge, block_edge);
+    } else {
+      oof_children.emplace_back(oof_child);
+    }
   }
 }
 
