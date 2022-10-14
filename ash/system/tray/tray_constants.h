@@ -74,9 +74,6 @@ constexpr int kTraySeparatorWidth = 0;
 // The size of the icons appearing in the material design system tray.
 constexpr int kTrayIconSize = 16;
 
-// The padding on top of the time tray icon when vertically aligned.
-constexpr int kTrayTimeIconTopPadding = 2;
-
 // The padding around network tray icon in dip.
 constexpr int kTrayNetworkIconPadding = 2;
 constexpr int kUnifiedTrayNetworkIconPadding = 4;

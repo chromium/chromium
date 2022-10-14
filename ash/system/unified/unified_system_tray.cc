@@ -222,18 +222,14 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   notification_icons_controller_->AddNotificationTrayItems(tray_container());
   for (TrayItemView* tray_item : notification_icons_controller_->tray_items()) {
     tray_items_.push_back(tray_item);
-    AddObservedTrayItem(tray_item);
   }
 
   AddTrayItemToContainer(screen_capture_view_);
 
   tray_items_.push_back(
       notification_icons_controller_->notification_counter_view());
-  AddObservedTrayItem(
-      notification_icons_controller_->notification_counter_view());
 
   tray_items_.push_back(notification_icons_controller_->quiet_mode_view());
-  AddObservedTrayItem(notification_icons_controller_->quiet_mode_view());
 
   if (features::IsSnoopingProtectionEnabled())
     AddTrayItemToContainer(snooping_protection_view_);
@@ -267,12 +263,6 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     AddTrayItemToContainer(channel_indicator_view_);
   }
 
-  auto vertical_clock_padding = std::make_unique<views::View>();
-  vertical_clock_padding->SetPreferredSize(gfx::Size(
-      0, features::IsCalendarViewEnabled() ? 0 : kTrayTimeIconTopPadding));
-  vertical_clock_padding_ =
-      tray_container()->AddChildView(std::move(vertical_clock_padding));
-
   if (!features::IsCalendarViewEnabled()) {
     AddTrayItemToContainer(time_view_);
   }
@@ -284,12 +274,10 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
   set_use_bounce_in_animation(false);
 
   ShelfConfig::Get()->AddObserver(this);
-  Shell::Get()->AddShellObserver(this);
 }
 
 UnifiedSystemTray::~UnifiedSystemTray() {
   ShelfConfig::Get()->RemoveObserver(this);
-  Shell::Get()->RemoveShellObserver(this);
 
   DestroyBubbles();
 
@@ -306,38 +294,6 @@ void UnifiedSystemTray::AddObserver(Observer* observer) {
 void UnifiedSystemTray::RemoveObserver(Observer* observer) {
   if (observer)
     observers_.RemoveObserver(observer);
-}
-
-bool UnifiedSystemTray::MoreThanOneVisibleTrayItem() const {
-  bool one_visible_item = false;
-  for (TrayItemView* item : tray_items_) {
-    if (!item->GetVisible())
-      continue;
-    if (one_visible_item)
-      return true;
-    one_visible_item = true;
-  }
-  return false;
-}
-
-void UnifiedSystemTray::MaybeUpdateVerticalClockPadding() {
-  const bool padding_is_visible = vertical_clock_padding_->GetVisible();
-
-  if (shelf()->IsHorizontalAlignment()) {
-    if (padding_is_visible)
-      vertical_clock_padding_->SetVisible(false);
-    return;
-  }
-
-  // Padding is shown when an icon besides TimeView is visible.
-  const bool should_show_padding = MoreThanOneVisibleTrayItem();
-  if (padding_is_visible != should_show_padding)
-    vertical_clock_padding_->SetVisible(should_show_padding);
-}
-
-void UnifiedSystemTray::OnViewVisibilityChanged(views::View* observed_view,
-                                                views::View* starting_view) {
-  MaybeUpdateVerticalClockPadding();
 }
 
 bool UnifiedSystemTray::IsBubbleShown() const {
@@ -494,11 +450,6 @@ const char* UnifiedSystemTray::GetClassName() const {
 absl::optional<AcceleratorAction> UnifiedSystemTray::GetAcceleratorAction()
     const {
   return absl::make_optional(TOGGLE_SYSTEM_TRAY_BUBBLE);
-}
-
-void UnifiedSystemTray::OnShelfAlignmentChanged(aura::Window* root_window,
-                                                ShelfAlignment old_alignment) {
-  MaybeUpdateVerticalClockPadding();
 }
 
 void UnifiedSystemTray::OnShelfConfigUpdated() {
@@ -777,11 +728,6 @@ UnifiedSystemTray::GetNotificationGroupingController() {
 void UnifiedSystemTray::AddTrayItemToContainer(TrayItemView* tray_item) {
   tray_items_.push_back(tray_item);
   tray_container()->AddChildView(tray_item);
-  AddObservedTrayItem(tray_item);
-}
-
-void UnifiedSystemTray::AddObservedTrayItem(TrayItemView* tray_item) {
-  tray_items_observations_.AddObservation(tray_item);
 }
 
 void UnifiedSystemTray::DestroyBubbles() {

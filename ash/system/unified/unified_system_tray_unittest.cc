@@ -87,10 +87,6 @@ class UnifiedSystemTrayTest : public AshTestBase,
         ->slider_bubble_controller_->bubble_widget_;
   }
 
-  bool MoreThanOneVisibleTrayItem() const {
-    return GetPrimaryUnifiedSystemTray()->MoreThanOneVisibleTrayItem();
-  }
-
   UnifiedSliderBubbleController::SliderType GetSliderBubbleType() {
     return GetPrimaryUnifiedSystemTray()
         ->slider_bubble_controller_->slider_type_;
@@ -122,14 +118,6 @@ class UnifiedSystemTrayTest : public AshTestBase,
 
   ImeModeView* ime_mode_view() {
     return GetPrimaryUnifiedSystemTray()->ime_mode_view_;
-  }
-
-  std::list<TrayItemView*> tray_items() {
-    return GetPrimaryUnifiedSystemTray()->tray_items_;
-  }
-
-  views::View* vertical_clock_padding() {
-    return GetPrimaryUnifiedSystemTray()->vertical_clock_padding_;
   }
 
  private:
@@ -278,42 +266,6 @@ TEST_P(UnifiedSystemTrayTest, HorizontalImeAndTimeLabelAlignment) {
 
   EXPECT_EQ(time_bounds.y(), ime_bounds.y());
   EXPECT_EQ(time_bounds.height(), ime_bounds.height());
-}
-
-TEST_P(UnifiedSystemTrayTest, VerticalClockPadding) {
-  // Padding can only be visible if shelf is vertically aligned.
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
-
-  // Sets all tray items' visibility to false except TimeView.
-  for (TrayItemView* item : tray_items()) {
-    item->SetVisible(item == time_view());
-  }
-
-  // Only one visible tray item, padding should not be visible.
-  EXPECT_FALSE(vertical_clock_padding()->GetVisible());
-
-  // Sets another tray item visibility to true.
-  ime_mode_view()->SetVisible(true);
-
-  // Two visible tray items, padding should be visible.
-  EXPECT_TRUE(vertical_clock_padding()->GetVisible());
-}
-
-TEST_P(UnifiedSystemTrayTest, VerticalClockPaddingAfterAlignmentChange) {
-  auto* shelf = GetPrimaryShelf();
-
-  // Padding can only be visible if shelf is vertically aligned.
-  shelf->SetAlignment(ShelfAlignment::kLeft);
-
-  // Ensure two tray items are visible, padding should be visible.
-  time_view()->SetVisible(true);
-  ime_mode_view()->SetVisible(true);
-
-  EXPECT_TRUE(vertical_clock_padding()->GetVisible());
-
-  // Padding should not be visible when shelf is horizontal.
-  shelf->SetAlignment(ShelfAlignment::kBottom);
-  EXPECT_FALSE(vertical_clock_padding()->GetVisible());
 }
 
 TEST_P(UnifiedSystemTrayTest, FocusMessageCenter) {

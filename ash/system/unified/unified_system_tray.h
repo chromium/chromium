@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
-#include "ash/shell_observer.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/tray_background_view.h"
@@ -19,7 +18,6 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -64,7 +62,6 @@ class UnifiedMessageCenterBubble;
 class ASH_EXPORT UnifiedSystemTray
     : public TrayBackgroundView,
       public ShelfConfig::Observer,
-      public ShellObserver,
       public UnifiedSystemTrayController::Observer {
  public:
   class Observer : public base::CheckedObserver {
@@ -85,14 +82,6 @@ class ASH_EXPORT UnifiedSystemTray
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  // Adds a padding on top of the vertical clock if there are other visible
-  // icons in the tray, removes it if the clock is the only visible icon.
-  void MaybeUpdateVerticalClockPadding();
-
-  // views::ViewObserver:
-  void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view) override;
 
   // True if the bubble is shown. It does not include slider bubbles, and when
   // they're shown it still returns false.
@@ -200,10 +189,6 @@ class ASH_EXPORT UnifiedSystemTray
   const char* GetClassName() const override;
   absl::optional<AcceleratorAction> GetAcceleratorAction() const override;
 
-  // ShellObserver:
-  void OnShelfAlignmentChanged(aura::Window* root_window,
-                               ShelfAlignment old_alignment) override;
-
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
 
@@ -265,12 +250,6 @@ class ASH_EXPORT UnifiedSystemTray
   // The container takes the ownership of |tray_item|.
   void AddTrayItemToContainer(TrayItemView* tray_item);
 
-  // Returns true if there is two or more tray items that are visible.
-  bool MoreThanOneVisibleTrayItem() const;
-
-  // Add observed tray item views.
-  void AddObservedTrayItem(TrayItemView* tray_item);
-
   // Destroys the `bubble_` and the `message_center_bubble_`, also handles
   // removing bubble related observers.
   void DestroyBubbles();
@@ -311,13 +290,6 @@ class ASH_EXPORT UnifiedSystemTray
 
   // Contains all tray items views added to tray_container().
   std::list<TrayItemView*> tray_items_;
-
-  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
-      tray_items_observations_{this};
-
-  // Padding owned by the view hierarchy used to separate vertical
-  // clock from other tray icons.
-  views::View* vertical_clock_padding_ = nullptr;
 
   base::OneShotTimer timer_;
 
