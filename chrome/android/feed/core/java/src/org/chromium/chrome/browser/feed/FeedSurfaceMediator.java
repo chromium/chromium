@@ -103,6 +103,9 @@ public class FeedSurfaceMediator
             if (!mSettingUpStreams) {
                 logSwitchedFeeds(newStream);
                 bindStream(newStream, /*shouldScrollToTop=*/true);
+                if (newStream.getStreamKind() == StreamKind.FOLLOWING) {
+                    FeedFeatures.updateFollowingFeedSeen();
+                }
             }
         }
 
@@ -557,6 +560,7 @@ public class FeedSurfaceMediator
                         if (feedContents.size() > mHeaderCount + 1) {
                             followingHeaderModel.set(
                                     SectionHeaderProperties.ANIMATION_START_KEY, true);
+                            FeedFeatures.updateNewIndicatorTimestamp();
                             mainFeedStream.removeOnContentChangedListener(this);
                         }
                     }

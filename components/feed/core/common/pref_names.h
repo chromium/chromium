@@ -84,6 +84,10 @@ extern const char kLastSeenFeedType[];
 extern const char kFeedOnDeviceUserActionsCollector[];
 // The pref name for the keys of the info cards.
 extern const char kInfoCardStates[];
+// The pref name for whether the user has opened/seen web feed at least once.
+extern const char kHasSeenWebFeed[];
+// The pref name for when the user last saw badge animation for web feed.
+extern const char kLastBadgeAnimationTime[];
 
 }  // namespace prefs
 
