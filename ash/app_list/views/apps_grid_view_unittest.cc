@@ -62,6 +62,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -722,6 +723,25 @@ class AppsGridViewDragTest : public AppsGridViewTest,
 };
 
 INSTANTIATE_TEST_SUITE_P(All, AppsGridViewDragTest, testing::Bool());
+
+class AppsGridViewDragWithShelfPartyTest : public AppsGridViewDragTest {
+ public:
+  AppsGridViewDragWithShelfPartyTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kShelfParty);
+  }
+  AppsGridViewDragWithShelfPartyTest(
+      const AppsGridViewDragWithShelfPartyTest&) = delete;
+  AppsGridViewDragWithShelfPartyTest& operator=(
+      const AppsGridViewDragWithShelfPartyTest&) = delete;
+  ~AppsGridViewDragWithShelfPartyTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppsGridViewDragWithShelfPartyTest,
+                         testing::Bool());
 
 // Test suite for clamshell mode, parameterized by RTL.
 class AppsGridViewClamshellTest : public AppsGridViewTest,
@@ -3919,7 +3939,7 @@ TEST_P(AppsGridViewDragTest, RemoveDisplayWhileDraggingFolderItemOntoShelf) {
   EXPECT_TRUE(ShelfModel::Get()->items().empty());
 }
 
-TEST_P(AppsGridViewDragTest, DragAndPinItemToEmptyShelf) {
+TEST_P(AppsGridViewDragWithShelfPartyTest, DragAndPinItemToEmptyShelf) {
   model_->PopulateApps(2);
   UpdateLayout();
 

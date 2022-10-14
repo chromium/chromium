@@ -3597,7 +3597,9 @@ class ShelfPartyTest : public ShelfViewTest,
                            std::pair<ShelfAlignment, ShelfAutoHideBehavior>> {
  public:
   ShelfPartyTest()
-      : ShelfViewTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : ShelfViewTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    scoped_feature_list_.InitAndEnableFeature(features::kShelfParty);
+  }
   ShelfPartyTest(const ShelfPartyTest&) = delete;
   ShelfPartyTest& operator=(const ShelfPartyTest&) = delete;
   ~ShelfPartyTest() override = default;
@@ -3607,6 +3609,9 @@ class ShelfPartyTest : public ShelfViewTest,
     shelf_view_->shelf()->SetAlignment(GetParam().first);
     shelf_view_->shelf()->SetAutoHideBehavior(GetParam().second);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

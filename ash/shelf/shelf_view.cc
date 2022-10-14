@@ -2655,6 +2655,9 @@ gfx::Rect ShelfView::GetChildViewTargetMirroredBounds(
 }
 
 void ShelfView::HandleShelfParty() {
+  if (!base::FeatureList::IsEnabled(features::kShelfParty))
+    return;
+
   UpdateShelfItemViewsVisibility();
   PreferredSizeChanged();
   AnimateToIdealBounds();
