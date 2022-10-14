@@ -2837,6 +2837,7 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
                               const StyleRecalcContext& style_recalc_context) {
   DCHECK(GetDocument().documentElement());
   ScriptForbiddenScope forbid_script;
+  SkipStyleRecalcScope skip_scope(*this);
   CheckPseudoHasCacheScope check_pseudo_has_cache_scope(&GetDocument());
   Element& root_element = style_recalc_root_.RootElement();
   Element* parent = FlatTreeTraversal::ParentElement(root_element);
@@ -3460,6 +3461,19 @@ void StyleEngine::ReportUseOfLegacyLayoutWithContainerQueries() {
           "Using container queries or units with printing, or in combination "
           "with tables inside multicol will not work correctly."));
   GetDocument().AddConsoleMessage(console_message);
+}
+
+bool StyleEngine::AllowSkipStyleRecalcForScope() const {
+  if (InContainerQueryStyleRecalc())
+    return true;
+  if (LocalFrameView* view = GetDocument().View()) {
+    // Existing layout roots before starting style recalc may end up being
+    // inside skipped subtrees if we allowed skipping. If we start out with an
+    // empty list, any added ones will be a result of an element style recalc,
+    // which means the will not be inside a skipped subtree.
+    return !view->IsSubtreeLayout();
+  }
+  return true;
 }
 
 }  // namespace blink

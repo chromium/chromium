@@ -177,6 +177,20 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     base::AutoReset<bool> allow_marking_;
   };
 
+  // Set up the condition for allowing to skip style recalc before starting
+  // RecalcStyle().
+  class SkipStyleRecalcScope {
+    STACK_ALLOCATED();
+
+   public:
+    explicit SkipStyleRecalcScope(StyleEngine& engine)
+        : allow_skip_(&engine.allow_skip_style_recalc_,
+                      engine.AllowSkipStyleRecalcForScope()) {}
+
+   private:
+    base::AutoReset<bool> allow_skip_;
+  };
+
   explicit StyleEngine(Document&);
   ~StyleEngine() override;
 
@@ -340,6 +354,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateLayoutTreeRebuildRoot(ContainerNode* ancestor, Node* dirty_node);
 
   bool MarkReattachAllowed() const;
+
+  // Returns true if we can skip style recalc for a size container subtree and
+  // resume it during layout.
+  bool SkipStyleRecalcAllowed() const { return allow_skip_style_recalc_; }
 
   CSSFontSelector* GetFontSelector() { return font_selector_; }
 
@@ -747,6 +765,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       Element& changed_element,
       bool for_pseudo_change);
 
+  // Initialization value for SkipStyleRecalcScope.
+  bool AllowSkipStyleRecalcForScope() const;
+
   Member<Document> document_;
 
   // Tracks the number of currently loading top-level stylesheets. Sheets loaded
@@ -815,6 +836,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // Set to true if we allow marking for reattachment from layout tree rebuild.
   // AllowMarkStyleDirtyFromRecalcScope.
   bool allow_mark_for_reattach_from_rebuild_layout_tree_{false};
+
+  // Set to true if we are allowed to skip recalc for a size container subtree.
+  bool allow_skip_style_recalc_{false};
 
   // Set to true if we have detected an element which is a size query container
   // rendered in legacy layout.
