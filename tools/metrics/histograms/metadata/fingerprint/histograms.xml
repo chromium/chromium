@@ -156,7 +156,17 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-04-05">
   <owner>tomhughes@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
-  <summary>Counts the number of fingers enrolled by the user.</summary>
+  <summary>
+    Counts the number of fingers enrolled by the user.
+
+    This metric is reported in biod when the first user logs in. It is not
+    reported when a secondary user logs in, nor when all users log-off, nor when
+    the primary user uses fingerprint unlock. It may be reported again if
+    session_manage crashes.
+
+    This metric is emitted in SendStatsOnLogin() along with
+    Fingerprint.UnlockEnabled.
+  </summary>
 </histogram>
 
 <histogram name="Fingerprint.Unlock.Match.PositiveMatchSecretCorrect"
@@ -283,8 +293,17 @@ chromium-metrics-reviews@google.com.
   <owner>tomhughes@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
-    Track whether fingerprint is enabled to unlock the screen, when the user
-    logs in.
+    Indicates whether at least one finger is enrolled, which effectively permits
+    fingerprint unlock.
+
+    This metric is reported in biod when the first user logs in. It is not
+    reported when a secondary user logs in, nor when all users log-off, nor when
+    the primary user uses fingerprint unlock. It may be reported again if
+    session_manage crashes. It does not take into account if policy has
+    subsequently disabled fingerprint unlock.
+
+    This metric is emitted in SendStatsOnLogin() along with
+    Fingerprint.Unlock.EnrolledFingerCount.
   </summary>
 </histogram>
 
