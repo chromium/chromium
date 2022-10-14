@@ -15,11 +15,12 @@
 
     # TODO(169395837): Somehow gRPC symbols cannot be found on Android.
     # Keep using static linking for now.
-    # In windows and mac use static linking.
+    # In windows, mac and iOS use static linking.
     # Use static linking on Chrome OS as a workaround for the symbol lookup
     # error(crbug/1241330) due to a gRPC version mismatch between what Chrome
     # uses and what CrOS provides.
-    grpc_use_static_linking = is_android || is_win || is_chromeos || is_mac
+    grpc_use_static_linking =
+        is_android || is_win || is_chromeos || is_mac || is_ios
   }
 
   if (is_android) {
@@ -58,6 +59,10 @@
       "-Wno-shadow",
       "-Wno-unreachable-code-return",
       "-Wno-unreachable-code-break",
+
+      # TODO(crbug.com/1372394): Remove after integrating
+      # https://github.com/grpc/grpc/pull/31306
+      "-Wno-thread-safety-analysis",
     ]
 
     if (is_android) {

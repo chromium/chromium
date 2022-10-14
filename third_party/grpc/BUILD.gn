@@ -54,6 +54,10 @@ config("grpc_config") {
     "-Wno-shadow",
     "-Wno-unreachable-code-return",
     "-Wno-unreachable-code-break",
+
+    # TODO(crbug.com/1372394): Remove after integrating
+    # https://github.com/grpc/grpc/pull/31306
+    "-Wno-thread-safety-analysis",
   ]
 
   if (is_android) {
