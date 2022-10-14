@@ -5,6 +5,7 @@
 package org.chromium.browserfragment.shell;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -174,6 +175,15 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
                     }
 
                     @Override
+                    public void onNavigationRedirected(@NonNull Navigation navigation) {
+                        Log.i(TAG, "received NavigationEvent: 'onNavigationRedirected()'");
+                        Log.i(TAG,
+                                "Navigation: url:" + navigation.getUri()
+                                        + ", HTTP-StatusCode: " + navigation.getStatusCode()
+                                        + ", samePage: " + navigation.isSameDocument());
+                    }
+
+                    @Override
                     public void onLoadProgressChanged(double progress) {
                         Log.i(TAG,
                                 "received NavigationEvent: 'onLoadProgressChanged(" + progress
@@ -203,8 +213,7 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
         Futures.addCallback(activeTabFuture, new FutureCallback<Tab>() {
             @Override
             public void onSuccess(Tab activeTab) {
-                if (savedInstanceState == null) {
-                    // TODO(rayankans): Expose Tab URL to avoid relying on |savedInstanceState|.
+                if (activeTab.getDisplayUri().equals(Uri.EMPTY)) {
                     activeTab.getNavigationController().navigate("https://google.com");
 
                     activeTab.registerWebMessageCallback(new WebMessageCallback() {

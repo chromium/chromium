@@ -20,12 +20,14 @@ import org.chromium.browserfragment.interfaces.INavigationParams;
 class NavigationObserverDelegate extends INavigationObserverDelegate.Stub {
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
+    private Tab mTab;
     private ObserverList<NavigationObserver> mNavigationObservers =
             new ObserverList<NavigationObserver>();
 
-    public NavigationObserverDelegate() {
+    public NavigationObserverDelegate(Tab tab) {
         // Assert on UI thread as ObserverList can only be accessed from one thread.
         ThreadCheck.ensureOnUiThread();
+        mTab = tab;
     }
 
     /**
@@ -51,8 +53,19 @@ class NavigationObserverDelegate extends INavigationObserverDelegate.Stub {
     @Override
     public void notifyNavigationStarted(@NonNull INavigationParams navigation) {
         mHandler.post(() -> {
+            mTab.setDisplayUri(navigation.uri);
             for (NavigationObserver observer : mNavigationObservers) {
                 observer.onNavigationStarted(new Navigation(navigation));
+            }
+        });
+    }
+
+    @Override
+    public void notifyNavigationRedirected(@NonNull INavigationParams navigation) {
+        mHandler.post(() -> {
+            mTab.setDisplayUri(navigation.uri);
+            for (NavigationObserver observer : mNavigationObservers) {
+                observer.onNavigationRedirected(new Navigation(navigation));
             }
         });
     }

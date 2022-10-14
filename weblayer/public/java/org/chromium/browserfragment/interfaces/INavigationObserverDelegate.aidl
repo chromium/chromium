@@ -11,4 +11,5 @@ oneway interface INavigationObserverDelegate {
     void notifyNavigationCompleted(in INavigationParams navigation) = 2;
     void notifyNavigationFailed(in INavigationParams navigation) = 3;
     void notifyLoadProgressChanged(double progress) = 4;
+    void notifyNavigationRedirected(in INavigationParams navigation) = 5;
 }

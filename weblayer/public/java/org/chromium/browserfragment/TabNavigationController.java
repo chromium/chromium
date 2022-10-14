@@ -21,8 +21,7 @@ import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
 public class TabNavigationController {
     private ITabNavigationControllerProxy mTabNavigationControllerProxy;
 
-    private NavigationObserverDelegate mNavigationObserverDelegate =
-            new NavigationObserverDelegate();
+    private NavigationObserverDelegate mNavigationObserverDelegate;
 
     private final class RequestNavigationCallback extends IBooleanCallback.Stub {
         private CallbackToFutureAdapter.Completer<Boolean> mCompleter;
@@ -37,8 +36,9 @@ public class TabNavigationController {
         }
     };
 
-    TabNavigationController(ITabNavigationControllerProxy tabNavigationControllerProxy) {
+    TabNavigationController(ITabNavigationControllerProxy tabNavigationControllerProxy, Tab tab) {
         mTabNavigationControllerProxy = tabNavigationControllerProxy;
+        mNavigationObserverDelegate = new NavigationObserverDelegate(tab);
         try {
             mTabNavigationControllerProxy.setNavigationObserverDelegate(
                     mNavigationObserverDelegate);

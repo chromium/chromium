@@ -29,6 +29,13 @@ class BrowserFragmentNavigationDelegate extends NavigationCallback {
     }
 
     @Override
+    public void onNavigationRedirected(@NonNull Navigation navigation) {
+        maybeRunOnNavigationObserver(observer -> {
+            observer.notifyNavigationRedirected(BrowserFragmentNavigationParams.create(navigation));
+        });
+    }
+
+    @Override
     public void onNavigationCompleted(@NonNull Navigation navigation) {
         maybeRunOnNavigationObserver(observer -> {
             observer.notifyNavigationCompleted(BrowserFragmentNavigationParams.create(navigation));

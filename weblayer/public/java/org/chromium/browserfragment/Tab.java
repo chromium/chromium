@@ -4,6 +4,7 @@
 
 package org.chromium.browserfragment;
 
+import android.net.Uri;
 import android.os.RemoteException;
 
 import androidx.annotation.NonNull;
@@ -28,6 +29,7 @@ public class Tab {
     private TabNavigationController mTabNavigationController;
     private TabObserverDelegate mTabObserverDelegate = new TabObserverDelegate();
     private String mGuid;
+    private Uri mUri = Uri.EMPTY;
 
     Tab(@NonNull ITabParams tabParams) {
         assert tabParams.tabProxy != null;
@@ -36,12 +38,21 @@ public class Tab {
 
         mTabProxy = tabParams.tabProxy;
         mGuid = tabParams.tabGuid;
-        mTabNavigationController = new TabNavigationController(tabParams.navigationControllerProxy);
+        mTabNavigationController =
+                new TabNavigationController(tabParams.navigationControllerProxy, this);
 
         try {
             mTabProxy.setTabObserverDelegate(mTabObserverDelegate);
         } catch (RemoteException e) {
         }
+    }
+
+    public Uri getDisplayUri() {
+        return mUri;
+    }
+
+    void setDisplayUri(Uri uri) {
+        mUri = uri;
     }
 
     public String getGuid() {

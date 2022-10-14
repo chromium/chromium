@@ -59,6 +59,13 @@ public abstract class NavigationObserver {
     public void onNavigationStarted(@NonNull Navigation navigation) {}
 
     /**
+     * Called when a navigation encountered a server redirect.
+     *
+     * @param navigation the unique object for this navigation.
+     */
+    public void onNavigationRedirected(@NonNull Navigation navigation) {}
+
+    /**
      * The load state of the document has changed.
      *
      * @param progress The loading progress.
