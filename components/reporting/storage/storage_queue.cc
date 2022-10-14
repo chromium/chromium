@@ -980,7 +980,7 @@ class StorageQueue::ReadContext : public TaskRunnerContext<Status> {
     }
   }
 
-  void OnCompletion() override {
+  void OnCompletion(const Status& status) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(
         storage_queue_->storage_queue_sequence_checker_);
     // Unregister with storage_queue.

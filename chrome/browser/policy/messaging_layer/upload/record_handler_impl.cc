@@ -84,7 +84,8 @@ class RecordHandlerImpl::ReportUploader
   ~ReportUploader() override;
 
   void OnStart() override;
-  void OnCompletion() override;
+  void OnCompletion(
+      const DmServerUploadService::CompletionResponse& result) override;
 
   void StartUpload();
   void OnUploadComplete(StatusOr<base::Value::Dict> response);
@@ -200,7 +201,8 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
           std::move(request_result.value()), std::move(response_cb)));
 }
 
-void RecordHandlerImpl::ReportUploader::OnCompletion() {
+void RecordHandlerImpl::ReportUploader::OnCompletion(
+    const DmServerUploadService::CompletionResponse& result) {
   // In case |OnUploadComplete| was skipped for whatever reason.
   ScopedReservation release(std::move(scoped_reservation_));
 }

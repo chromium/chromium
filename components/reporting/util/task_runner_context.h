@@ -95,7 +95,7 @@ class TaskRunnerContext {
   // (can only be called by action scheduled to the sequenced task runner).
   void Response(ResponseType result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    OnCompletion();
+    OnCompletion(result);
 
     // Respond to the caller.
     DCHECK(!callback_.is_null()) << "Already responded";
@@ -138,7 +138,7 @@ class TaskRunnerContext {
 
   // Finalization action before responding and deleting the context.
   // May be overridden, if necessary.
-  virtual void OnCompletion() {}
+  virtual void OnCompletion(const ResponseType& result) {}
 
   // Wrapper for OnStart to mandate sequence checker.
   void OnStartWrap() {
