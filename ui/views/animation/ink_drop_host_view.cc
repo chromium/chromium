@@ -140,6 +140,10 @@ void InkDropHost::SetCreateMaskCallback(
 }
 
 SkColor InkDropHost::GetBaseColor() const {
+  if (ink_drop_base_color_id_.has_value())
+    return host_view_->GetColorProvider()->GetColor(
+        ink_drop_base_color_id_.value());
+
   if (ink_drop_base_color_callback_)
     return ink_drop_base_color_callback_.Run();
   DCHECK(ink_drop_base_color_);
@@ -148,6 +152,10 @@ SkColor InkDropHost::GetBaseColor() const {
 
 void InkDropHost::SetBaseColor(SkColor color) {
   ink_drop_base_color_ = color;
+}
+
+void InkDropHost::SetBaseColorId(ui::ColorId color_id) {
+  ink_drop_base_color_id_ = color_id;
 }
 
 void InkDropHost::SetBaseColorCallback(

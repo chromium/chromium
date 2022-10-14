@@ -65,14 +65,6 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
 
     auto* const ink_drop = views::InkDrop::Get(this);
     ink_drop->SetHighlightOpacity(kOmniboxOpacityHovered);
-    ink_drop->SetBaseColorCallback(base::BindRepeating(
-        [](OmniboxSuggestionRowButton* host) {
-          return host->GetColorProvider()->GetColor(
-              (host->theme_state_ == OmniboxPartState::SELECTED)
-                  ? kColorOmniboxResultsButtonInkDropSelected
-                  : kColorOmniboxResultsButtonInkDrop);
-        },
-        this));
     SetAnimationDuration(base::TimeDelta());
     ink_drop->GetInkDrop()->SetHoverHighlightFadeDuration(base::TimeDelta());
 
@@ -113,6 +105,10 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
                               icon_color));
     SetEnabledTextColors(color_provider->GetColor(
         selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));
+    views::InkDrop::Get(this)->SetBaseColorId(
+        selected ? kColorOmniboxResultsButtonInkDropSelected
+                 : kColorOmniboxResultsButtonInkDrop);
+
     views::FocusRing::Get(this)->SchedulePaint();
   }
 

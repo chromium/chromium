@@ -9,6 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop_event_handler.h"
@@ -102,7 +104,9 @@ class VIEWS_EXPORT InkDropHost {
   SkColor GetBaseColor() const;
 
   // Sets the base color for the ink drop.
+  // TODO(crbug.com/1341361): Replace SetBaseColor with SetBaseColorId.
   void SetBaseColor(SkColor color);
+  void SetBaseColorId(ui::ColorId color_id);
 
   // Callback version of GetBaseColor(). If possible, prefer using
   // SetBaseColor(). If a callback has been set by previous configuration
@@ -241,6 +245,7 @@ class VIEWS_EXPORT InkDropHost {
 
   // The color of the ripple and hover.
   absl::optional<SkColor> ink_drop_base_color_;
+  absl::optional<ui::ColorId> ink_drop_base_color_id_;
 
   // TODO(pbos): Audit call sites to make sure highlight opacity is either
   // always set or using the default value. Then make this a non-optional float.
