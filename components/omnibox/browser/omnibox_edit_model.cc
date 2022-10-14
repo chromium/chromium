@@ -1506,6 +1506,10 @@ void OmniboxEditModel::OnNavigationLikely(
     return;
   }
 
+  if (line >= result().size()) {
+    return;
+  }
+
   client_->OnNavigationLikely(line, result().match_at(line),
                               navigation_predictor);
 }
