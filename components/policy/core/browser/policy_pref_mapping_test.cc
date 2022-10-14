@@ -672,6 +672,10 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           }
           ASSERT_TRUE(expected_value);
 
+          // TODO(crbug/1372598) remove logs once root cause has been found
+          LOG(INFO) << "Test case name: " << test_case->name()
+                    << "\t index: " << i << "\t pref: " << pref_case->pref();
+
           if (check_recommended) {
             SCOPED_TRACE(::testing::Message() << "checking recommended policy");
 
@@ -700,6 +704,9 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
       }
     }
   }
+
+  // TODO(crbug/1372598) remove logs once root cause has been found
+  LOG(INFO) << "All tests done";
 }
 
 }  // namespace policy
