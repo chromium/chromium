@@ -6894,6 +6894,25 @@
             ]
         }
     ],
+    "MojoIpcz": [
+        {
+            "platforms": [
+                "android",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MojoIpcz"
+                    ]
+                }
+            ]
+        }
+    ],
     "MuteCompromisedPasswords": [
         {
             "platforms": [
