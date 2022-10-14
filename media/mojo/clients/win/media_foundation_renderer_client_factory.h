@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/renderer_factory.h"
 #include "media/base/win/dcomp_texture_wrapper.h"
@@ -36,7 +37,7 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
   ~MediaFoundationRendererClientFactory() override;
 
   std::unique_ptr<media::Renderer> CreateRenderer(
-      const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       media::AudioRendererSink* audio_renderer_sink,
       media::VideoRendererSink* video_renderer_sink,

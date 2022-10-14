@@ -363,7 +363,7 @@ void VideoEncoderShim::EncoderImpl::NotifyError(
 VideoEncoderShim::VideoEncoderShim(PepperVideoEncoderHost* host)
     : host_(host),
       media_task_runner_(
-          RenderThreadImpl::current()->GetMediaThreadTaskRunner()) {
+          RenderThreadImpl::current()->GetMediaSequencedTaskRunner()) {
   encoder_impl_ = std::make_unique<EncoderImpl>(weak_ptr_factory_.GetWeakPtr());
 }
 

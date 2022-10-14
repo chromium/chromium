@@ -22,10 +22,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}
-
 namespace media {
 
 class MediaResource;
@@ -45,7 +41,7 @@ class VideoRendererSink;
 // which can be called on any thread.
 class MojoRenderer : public Renderer, public mojom::RendererClient {
  public:
-  MojoRenderer(const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+  MojoRenderer(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                std::unique_ptr<VideoOverlayFactory> video_overlay_factory,
                VideoRendererSink* video_renderer_sink,
                mojo::PendingRemote<mojom::Renderer> remote_renderer);
@@ -112,7 +108,7 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
 
   // |task_runner| on which all methods are invoked, except for GetMediaTime(),
   // which can be called on any thread.
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Overlay factory used to create overlays for video frames rendered
   // by the remote renderer.

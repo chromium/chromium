@@ -20,7 +20,7 @@
 namespace media {
 
 MediaFoundationRendererClient::MediaFoundationRendererClient(
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     std::unique_ptr<MediaLog> media_log,
     std::unique_ptr<MojoRenderer> mojo_renderer,
     mojo::PendingRemote<RendererExtension> pending_renderer_extension,
@@ -55,7 +55,7 @@ void MediaFoundationRendererClient::Initialize(MediaResource* media_resource,
                                                RendererClient* client,
                                                PipelineStatusCallback init_cb) {
   DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!init_cb_);
 
   // Consume and bind the delayed PendingRemote and PendingReceiver now that
@@ -145,7 +145,7 @@ void MediaFoundationRendererClient::OnFrameAvailable(
     const base::UnguessableToken& frame_token,
     const gfx::Size& size,
     base::TimeDelta timestamp) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(has_video_);
 
   auto video_frame = video_frame_pool_.find(frame_token);
@@ -187,7 +187,7 @@ void MediaFoundationRendererClient::OnFrameAvailable(
 
 void MediaFoundationRendererClient::OnPaintComplete(
     const base::UnguessableToken& token) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   renderer_extension_->NotifyFrameReleased(token);
 }
 
@@ -221,7 +221,7 @@ void MediaFoundationRendererClient::Flush(base::OnceClosure flush_cb) {
 }
 
 void MediaFoundationRendererClient::StartPlayingFrom(base::TimeDelta time) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   SignalMediaPlayingStateChange(true);
   next_video_frame_.reset();
   mojo_renderer_->StartPlayingFrom(time);
@@ -306,7 +306,7 @@ void MediaFoundationRendererClient::OnVideoConfigChange(
 void MediaFoundationRendererClient::OnVideoNaturalSizeChange(
     const gfx::Size& size) {
   DVLOG_FUNC(1) << "size=" << size.ToString();
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(has_video_);
 
   natural_size_ = size;
@@ -378,7 +378,7 @@ base::TimeDelta MediaFoundationRendererClient::GetPreferredRenderInterval() {
 void MediaFoundationRendererClient::OnRemoteRendererInitialized(
     PipelineStatus status) {
   DVLOG_FUNC(1) << "status=" << status;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!init_cb_.is_null());
 
   if (status != PIPELINE_OK) {
@@ -413,7 +413,7 @@ void MediaFoundationRendererClient::OnRemoteRendererInitialized(
 
 void MediaFoundationRendererClient::OnOutputRectChange(gfx::Rect output_rect) {
   DVLOG_FUNC(1) << "output_rect=" << output_rect.ToString();
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(has_video_);
 
   renderer_extension_->SetOutputRect(
@@ -426,7 +426,7 @@ void MediaFoundationRendererClient::OnSetOutputRectDone(
     const gfx::Size& output_size,
     bool success) {
   DVLOG_FUNC(1) << "output_size=" << output_size.ToString();
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(has_video_);
 
   if (!success) {
@@ -483,7 +483,7 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
     const std::string& error) {
   DVLOG_FUNC(1);
   DCHECK(has_video_);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   // The error should've already been handled in MediaFoundationRenderer.
   if (!token) {
@@ -499,7 +499,7 @@ void MediaFoundationRendererClient::OnDCOMPSurfaceReceived(
 
 void MediaFoundationRendererClient::OnDCOMPSurfaceHandleSet(bool success) {
   DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(has_video_);
 
   if (!success) {
@@ -514,7 +514,7 @@ void MediaFoundationRendererClient::OnVideoFrameCreated(
     scoped_refptr<VideoFrame> video_frame,
     const gpu::Mailbox& mailbox) {
   DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(has_video_);
 
   video_frame->metadata().allow_overlay = true;
@@ -542,7 +542,7 @@ void MediaFoundationRendererClient::OnCdmAttached(bool success) {
 
 void MediaFoundationRendererClient::OnConnectionError() {
   DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   MEDIA_LOG(ERROR, media_log_) << "MediaFoundationRendererClient disconnected";
   MediaFoundationRenderer::ReportErrorReason(
       MediaFoundationRenderer::ErrorReason::kOnConnectionError);
@@ -570,7 +570,7 @@ void MediaFoundationRendererClient::SignalMediaPlayingStateChange(
 void MediaFoundationRendererClient::OnOverlayStateChanged(
     const gpu::Mailbox& mailbox,
     bool promoted) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   promoted_to_overlay_signal_ = promoted;
   MEDIA_LOG(INFO, media_log_)
       << "Overlay state signal, promoted = " << promoted;

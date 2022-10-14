@@ -23,7 +23,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -260,7 +260,7 @@ FFmpegDemuxerStream::FFmpegDemuxerStream(
     std::unique_ptr<VideoDecoderConfig> video_config,
     MediaLog* media_log)
     : demuxer_(demuxer),
-      task_runner_(base::ThreadTaskRunnerHandle::Get()),
+      task_runner_(base::SequencedTaskRunnerHandle::Get()),
       stream_(stream),
       start_time_(kNoTimestamp),
       audio_config_(audio_config.release()),

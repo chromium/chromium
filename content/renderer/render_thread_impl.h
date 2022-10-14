@@ -24,6 +24,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/observer_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -282,10 +283,9 @@ class CONTENT_EXPORT RenderThreadImpl
   // has been lost.
   gpu::GpuChannelHost* GetGpuChannel();
 
-  // Returns a SingleThreadTaskRunner instance corresponding to the message loop
-  // of the thread on which media operations should be run. Must be called
-  // on the renderer's main thread.
-  scoped_refptr<base::SingleThreadTaskRunner> GetMediaThreadTaskRunner();
+  // Returns the sequence on which media operations should be run. Must be
+  // called on the renderer's main thread.
+  scoped_refptr<base::SequencedTaskRunner> GetMediaSequencedTaskRunner();
 
   // Creates a ContextProvider if yet created, and returns it to be used for
   // video frame compositing. The ContextProvider given as an argument is

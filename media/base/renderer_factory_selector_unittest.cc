@@ -18,7 +18,7 @@ class RendererFactorySelectorTest : public testing::Test {
     explicit FakeFactory(RendererType type) : type_(type) {}
 
     std::unique_ptr<Renderer> CreateRenderer(
-        const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+        const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
         const scoped_refptr<base::TaskRunner>& worker_task_runner,
         AudioRendererSink* audio_renderer_sink,
         VideoRendererSink* video_renderer_sink,

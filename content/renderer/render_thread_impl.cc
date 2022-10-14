@@ -993,7 +993,7 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
     if (!gpu_factories_.back()->CheckContextProviderLostOnMainThread())
       return gpu_factories_.back().get();
 
-    GetMediaThreadTaskRunner()->PostTask(
+    GetMediaSequencedTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(&GpuVideoAcceleratorFactoriesImpl::DestroyContext,
                        base::Unretained(gpu_factories_.back().get())));
@@ -1078,7 +1078,7 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
 
   gpu_factories_.push_back(GpuVideoAcceleratorFactoriesImpl::Create(
       std::move(gpu_channel_host), base::ThreadTaskRunnerHandle::Get(),
-      GetMediaThreadTaskRunner(), std::move(media_context_provider),
+      GetMediaSequencedTaskRunner(), std::move(media_context_provider),
       enable_video_gpu_memory_buffers, enable_media_stream_gpu_memory_buffers,
       enable_video_decode_accelerator, enable_video_encode_accelerator,
       std::move(interface_factory), std::move(vea_provider)));
@@ -1193,7 +1193,7 @@ scoped_refptr<DCOMPTextureFactory> RenderThreadImpl::GetDCOMPTextureFactory() {
       return nullptr;
     }
     dcomp_texture_factory_ = DCOMPTextureFactory::Create(
-        std::move(channel), GetMediaThreadTaskRunner());
+        std::move(channel), GetMediaSequencedTaskRunner());
   }
   return dcomp_texture_factory_;
 }
@@ -1582,8 +1582,8 @@ void RenderThreadImpl::OnMemoryPressure(
   }
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-RenderThreadImpl::GetMediaThreadTaskRunner() {
+scoped_refptr<base::SequencedTaskRunner>
+RenderThreadImpl::GetMediaSequencedTaskRunner() {
   DCHECK(main_thread_runner()->BelongsToCurrentThread());
   if (!media_thread_) {
     media_thread_ = std::make_unique<base::Thread>("Media");

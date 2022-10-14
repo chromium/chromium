@@ -19,7 +19,7 @@ namespace remoting {
 RemotingRendererFactory::RemotingRendererFactory(
     mojo::PendingRemote<mojom::Remotee> remotee,
     std::unique_ptr<RendererFactory> renderer_factory,
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner)
+    const scoped_refptr<base::SequencedTaskRunner>& media_task_runner)
     : receiver_controller_(ReceiverController::GetInstance()),
       rpc_messenger_(receiver_controller_->rpc_messenger()),
       renderer_handle_(rpc_messenger_->GetUniqueHandle()),
@@ -49,7 +49,7 @@ RemotingRendererFactory::~RemotingRendererFactory() {
 }
 
 std::unique_ptr<Renderer> RemotingRendererFactory::CreateRenderer(
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
     const scoped_refptr<base::TaskRunner>& worker_task_runner,
     AudioRendererSink* audio_renderer_sink,
     VideoRendererSink* video_renderer_sink,

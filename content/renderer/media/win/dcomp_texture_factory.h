@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "cc/layers/video_frame_provider.h"
 #include "content/common/content_export.h"
@@ -39,7 +39,7 @@ class CONTENT_EXPORT DCOMPTextureFactory
  public:
   static scoped_refptr<DCOMPTextureFactory> Create(
       scoped_refptr<gpu::GpuChannelHost> channel,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner);
 
   // Create the DCOMPTextureHost object. This internally creates a
   // gpu::DCOMPTexture and returns its route_id. If this route_id is invalid
@@ -56,7 +56,7 @@ class CONTENT_EXPORT DCOMPTextureFactory
  protected:
   DCOMPTextureFactory(
       scoped_refptr<gpu::GpuChannelHost> channel,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner);
   DCOMPTextureFactory(const DCOMPTextureFactory&) = delete;
   DCOMPTextureFactory& operator=(const DCOMPTextureFactory&) = delete;
   virtual ~DCOMPTextureFactory();
@@ -65,7 +65,7 @@ class CONTENT_EXPORT DCOMPTextureFactory
   friend class base::RefCountedThreadSafe<DCOMPTextureFactory>;
 
   scoped_refptr<gpu::GpuChannelHost> channel_;
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 };
 

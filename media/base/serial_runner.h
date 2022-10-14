@@ -14,10 +14,6 @@
 #include "media/base/media_export.h"
 #include "media/base/pipeline_status.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}
-
 namespace media {
 
 // Runs a series of bound functions accepting Closures or
@@ -81,7 +77,7 @@ class MEDIA_EXPORT SerialRunner {
 
   void RunNextInSeries(PipelineStatus last_status);
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   Queue bound_fns_;
   PipelineStatusCallback done_cb_;
 

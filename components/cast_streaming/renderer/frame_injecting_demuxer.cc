@@ -264,7 +264,7 @@ class FrameInjectingVideoDemuxerStream final
 
 FrameInjectingDemuxer::FrameInjectingDemuxer(
     DemuxerConnector* demuxer_connector,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner)
     : media_task_runner_(std::move(media_task_runner)),
       original_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       demuxer_connector_(demuxer_connector),
@@ -287,7 +287,7 @@ void FrameInjectingDemuxer::OnStreamsInitialized(
     mojom::AudioStreamInitializationInfoPtr audio_stream_info,
     mojom::VideoStreamInitializationInfoPtr video_stream_info) {
   DVLOG(1) << __func__;
-  DCHECK(!media_task_runner_->BelongsToCurrentThread());
+  DCHECK(!media_task_runner_->RunsTasksInCurrentSequence());
 
   media_task_runner_->PostTask(
       FROM_HERE,
@@ -300,7 +300,7 @@ void FrameInjectingDemuxer::OnStreamsInitializedOnMediaThread(
     mojom::AudioStreamInitializationInfoPtr audio_stream_info,
     mojom::VideoStreamInitializationInfoPtr video_stream_info) {
   DVLOG(1) << __func__;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(initialized_cb_);
 
   if (!audio_stream_info && !video_stream_info) {
@@ -342,7 +342,7 @@ void FrameInjectingDemuxer::OnStreamInitializationComplete() {
 
 std::vector<media::DemuxerStream*> FrameInjectingDemuxer::GetAllStreams() {
   DVLOG(1) << __func__;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   std::vector<media::DemuxerStream*> streams;
   if (video_stream_)
@@ -360,7 +360,7 @@ void FrameInjectingDemuxer::Initialize(
     media::DemuxerHost* host,
     media::PipelineStatusCallback status_cb) {
   DVLOG(1) << __func__;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   host_ = host;
 
   // Live streams have infinite duration.
@@ -375,7 +375,7 @@ void FrameInjectingDemuxer::Initialize(
 
 void FrameInjectingDemuxer::AbortPendingReads() {
   DVLOG(2) << __func__;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if (audio_stream_)
     audio_stream_->AbortPendingRead();
@@ -397,7 +397,7 @@ void FrameInjectingDemuxer::Seek(base::TimeDelta time,
 
 void FrameInjectingDemuxer::Stop() {
   DVLOG(1) << __func__;
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if (audio_stream_)
     audio_stream_.reset();

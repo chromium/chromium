@@ -19,7 +19,7 @@ namespace media {
 DecryptingRenderer::DecryptingRenderer(
     std::unique_ptr<Renderer> renderer,
     MediaLog* media_log,
-    const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
+    const scoped_refptr<base::SequencedTaskRunner> media_task_runner)
     : renderer_(std::move(renderer)),
       media_log_(media_log),
       media_task_runner_(media_task_runner),
@@ -44,7 +44,7 @@ DecryptingRenderer::~DecryptingRenderer() {}
 void DecryptingRenderer::Initialize(MediaResource* media_resource,
                                     RendererClient* client,
                                     PipelineStatusCallback init_cb) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(media_resource);
   DCHECK(client);
 
@@ -75,7 +75,7 @@ void DecryptingRenderer::Initialize(MediaResource* media_resource,
 
 void DecryptingRenderer::SetCdm(CdmContext* cdm_context,
                                 CdmAttachedCB cdm_attached_cb) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if (cdm_context_) {
     DVLOG(1) << "Switching CDM not supported.";
@@ -155,7 +155,7 @@ void DecryptingRenderer::OnEnabledAudioTracksChanged(
 }
 
 void DecryptingRenderer::CreateAndInitializeDecryptingMediaResource() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(init_cb_);
 
   decrypting_media_resource_ = std::make_unique<DecryptingMediaResource>(
@@ -168,7 +168,7 @@ void DecryptingRenderer::CreateAndInitializeDecryptingMediaResource() {
 }
 
 void DecryptingRenderer::InitializeRenderer(bool success) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if (!success) {
     std::move(init_cb_).Run(PIPELINE_ERROR_INITIALIZATION_FAILED);
@@ -185,7 +185,7 @@ void DecryptingRenderer::InitializeRenderer(bool success) {
 }
 
 bool DecryptingRenderer::HasEncryptedStream() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   for (auto* stream : media_resource_->GetAllStreams()) {
     if ((stream->type() == DemuxerStream::AUDIO &&
@@ -204,7 +204,7 @@ bool DecryptingRenderer::HasDecryptingMediaResourceForTesting() const {
 }
 
 void DecryptingRenderer::OnWaiting(WaitingReason reason) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   client_->OnWaiting(reason);
 }
 

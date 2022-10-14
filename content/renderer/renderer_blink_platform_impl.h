@@ -14,6 +14,7 @@
 #include "base/containers/id_map.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
@@ -213,7 +214,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner,
       bool is_on_worker) override;
   media::GpuVideoAcceleratorFactories* GetGpuFactories() override;
-  scoped_refptr<base::SingleThreadTaskRunner> MediaThreadTaskRunner() override;
+  scoped_refptr<base::SequencedTaskRunner> MediaThreadTaskRunner() override;
   base::WeakPtr<media::DecoderFactory> GetMediaDecoderFactory() override;
   void SetRenderingColorSpace(const gfx::ColorSpace& color_space) override;
   gfx::ColorSpace GetRenderingColorSpace() const override;

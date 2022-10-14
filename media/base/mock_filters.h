@@ -534,14 +534,14 @@ class MockRendererFactory : public RendererFactory {
   ~MockRendererFactory() override;
 
   // Renderer implementation.
-  MOCK_METHOD6(CreateRenderer,
-               std::unique_ptr<Renderer>(
-                   const scoped_refptr<base::SingleThreadTaskRunner>&,
-                   const scoped_refptr<base::TaskRunner>&,
-                   AudioRendererSink*,
-                   VideoRendererSink*,
-                   RequestOverlayInfoCB,
-                   const gfx::ColorSpace&));
+  MOCK_METHOD6(
+      CreateRenderer,
+      std::unique_ptr<Renderer>(const scoped_refptr<base::SequencedTaskRunner>&,
+                                const scoped_refptr<base::TaskRunner>&,
+                                AudioRendererSink*,
+                                VideoRendererSink*,
+                                RequestOverlayInfoCB,
+                                const gfx::ColorSpace&));
 };
 
 class MockTimeSource : public TimeSource {

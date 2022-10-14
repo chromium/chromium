@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_webcodecs_video_frame.h"
 
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
@@ -39,7 +40,7 @@ const char kRequiredExtension[] = "";
 #endif
 
 void GetMediaTaskRunnerAndGpuFactoriesOnMainThread(
-    scoped_refptr<base::SingleThreadTaskRunner>* media_task_runner_out,
+    scoped_refptr<base::SequencedTaskRunner>* media_task_runner_out,
     media::GpuVideoAcceleratorFactories** gpu_factories_out,
     base::WaitableEvent* waitable_event) {
   DCHECK(IsMainThread());

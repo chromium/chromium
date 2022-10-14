@@ -78,7 +78,7 @@ void OnReleaseVideoFrame(
 // static
 std::unique_ptr<media::DCOMPTextureWrapper> DCOMPTextureWrapperImpl::Create(
     scoped_refptr<DCOMPTextureFactory> factory,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner) {
   DVLOG(1) << __func__;
   // auto* impl = new DCOMPTextureWrapperImpl(factory, media_task_runner);
   return base::WrapUnique(
@@ -87,14 +87,14 @@ std::unique_ptr<media::DCOMPTextureWrapper> DCOMPTextureWrapperImpl::Create(
 
 DCOMPTextureWrapperImpl::DCOMPTextureWrapperImpl(
     scoped_refptr<DCOMPTextureFactory> factory,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner)
     : factory_(factory), media_task_runner_(media_task_runner) {
   DVLOG_FUNC(1);
 }
 
 DCOMPTextureWrapperImpl::~DCOMPTextureWrapperImpl() {
   DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   // We do not need any additional cleanup logic here as the
   // OnReleaseVideoFrame() callback handles cleaning up the shared image.
@@ -104,7 +104,7 @@ bool DCOMPTextureWrapperImpl::Initialize(
     const gfx::Size& output_size,
     OutputRectChangeCB output_rect_change_cb) {
   DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   output_size_ = output_size;
 
@@ -118,7 +118,7 @@ bool DCOMPTextureWrapperImpl::Initialize(
 
 void DCOMPTextureWrapperImpl::UpdateTextureSize(const gfx::Size& new_size) {
   DVLOG_FUNC(2);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   // We would like to invoke SetTextureSize() which will let DCOMPTexture to
   // bind a mailbox to its SharedImage as early as possible. Let new_size of
@@ -134,7 +134,7 @@ void DCOMPTextureWrapperImpl::SetDCOMPSurfaceHandle(
     const base::UnguessableToken& token,
     SetDCOMPSurfaceHandleCB set_dcomp_surface_handle_cb) {
   DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   dcomp_texture_host_->SetDCOMPSurfaceHandle(
       token, std::move(set_dcomp_surface_handle_cb));
@@ -144,7 +144,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     const gfx::Size& natural_size,
     CreateVideoFrameCB create_video_frame_cb) {
   DVLOG_FUNC(2);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   natural_size_ = natural_size;
   if (mailbox_.IsZero()) {
@@ -190,7 +190,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     const gfx::Size& natural_size,
     gfx::GpuMemoryBufferHandle dx_handle,
     CreateDXVideoFrameCB create_video_frame_cb) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
 
   uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
@@ -234,14 +234,14 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
 void DCOMPTextureWrapperImpl::OnDXVideoFrameDestruction(
     const gpu::SyncToken& sync_token,
     const gpu::Mailbox& image_mailbox) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   gpu::SharedImageInterface* sii = factory_->SharedImageInterface();
   sii->DestroySharedImage(sync_token, image_mailbox);
 }
 
 void DCOMPTextureWrapperImpl::OnSharedImageMailboxBound(gpu::Mailbox mailbox) {
   DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   mailbox_ = std::move(mailbox);
 
@@ -253,7 +253,7 @@ void DCOMPTextureWrapperImpl::OnSharedImageMailboxBound(gpu::Mailbox mailbox) {
 
 void DCOMPTextureWrapperImpl::OnOutputRectChange(gfx::Rect output_rect) {
   DVLOG_FUNC(1);
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   output_rect_change_cb_.Run(output_rect);
 }

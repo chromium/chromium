@@ -38,6 +38,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -345,7 +346,7 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   // Returns the task runner of the media thread.
   // This method should only be called on the main thread, or it crashes.
-  virtual scoped_refptr<base::SingleThreadTaskRunner> MediaThreadTaskRunner() {
+  virtual scoped_refptr<base::SequencedTaskRunner> MediaThreadTaskRunner() {
     return nullptr;
   }
 

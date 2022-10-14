@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "components/cast_streaming/renderer/demuxer_connector.h"
@@ -21,10 +22,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/gurl.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-}
 
 namespace media {
 class Demuxer;
@@ -85,7 +82,7 @@ class ResourceProviderImpl : public ResourceProvider {
   ReceiverBinder<mojom::DemuxerConnector> GetDemuxerConnectorBinder() override;
   std::unique_ptr<media::Demuxer> MaybeGetDemuxerOverride(
       const GURL& url,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) override;
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner) override;
   mojo::PendingReceiver<media::mojom::Renderer> GetRendererCommandReceiver()
       override;
 

@@ -305,7 +305,7 @@ VideoDecoderShim::VideoDecoderShim(PepperVideoDecoderHost* host,
     : state_(UNINITIALIZED),
       host_(host),
       media_task_runner_(
-          RenderThreadImpl::current()->GetMediaThreadTaskRunner()),
+          RenderThreadImpl::current()->GetMediaSequencedTaskRunner()),
       context_provider_(
           RenderThreadImpl::current()->SharedMainThreadContextProvider()),
       texture_pool_size_(texture_pool_size),

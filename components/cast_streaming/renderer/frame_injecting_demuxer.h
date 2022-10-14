@@ -11,10 +11,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}
-
 namespace cast_streaming {
 
 class FrameInjectingAudioDemuxerStream;
@@ -32,7 +28,7 @@ class FrameInjectingDemuxer final : public media::Demuxer {
  public:
   FrameInjectingDemuxer(
       DemuxerConnector* demuxer_connector,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner);
   ~FrameInjectingDemuxer() override;
 
   FrameInjectingDemuxer(const FrameInjectingDemuxer&) = delete;
@@ -77,7 +73,7 @@ class FrameInjectingDemuxer final : public media::Demuxer {
   // OnStreamInitializationComplete().
   int pending_stream_initialization_callbacks_ = 0;
 
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> original_task_runner_;
   media::DemuxerHost* host_ = nullptr;
   std::unique_ptr<FrameInjectingAudioDemuxerStream> audio_stream_;

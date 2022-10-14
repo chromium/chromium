@@ -6,11 +6,11 @@
 #define MEDIA_VIDEO_GPU_MEMORY_BUFFER_VIDEO_FRAME_POOL_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "media/base/video_frame.h"
 
 namespace base {
-class SingleThreadTaskRunner;
 class TickClock;
 }
 
@@ -34,7 +34,7 @@ class MEDIA_EXPORT GpuMemoryBufferVideoFramePool {
  public:
   GpuMemoryBufferVideoFramePool();
   GpuMemoryBufferVideoFramePool(
-      const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       GpuVideoAcceleratorFactories* gpu_factories);
 

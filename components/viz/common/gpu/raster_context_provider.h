@@ -69,6 +69,7 @@ class VIZ_COMMON_EXPORT RasterContextProvider {
   // from the same thread unless the function has some explicitly specified
   // rules for access on a different thread. See SetupLockOnMainThread(), which
   // can be used to provide access from multiple threads.
+  // TODO(crbug.com/1144329): rename method to indicate sequence affinity.
   virtual gpu::ContextResult BindToCurrentThread() = 0;
 
   // Adds/removes an observer to be called when the context is lost. AddObserver

@@ -297,7 +297,7 @@ std::unique_ptr<::media::Demuxer>
 CastContentRendererClient::OverrideDemuxerForUrl(
     content::RenderFrame* render_frame,
     const GURL& url,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   if (render_frame->GetRenderFrameMediaPlaybackOptions()
           .is_remoting_renderer_enabled() &&
       url.SchemeIs(::media::remoting::kRemotingScheme)) {

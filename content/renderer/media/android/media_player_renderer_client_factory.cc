@@ -23,7 +23,7 @@ MediaPlayerRendererClientFactory::~MediaPlayerRendererClientFactory() {}
 
 std::unique_ptr<media::Renderer>
 MediaPlayerRendererClientFactory::CreateRenderer(
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
     const scoped_refptr<base::TaskRunner>& worker_task_runner,
     media::AudioRendererSink* audio_renderer_sink,
     media::VideoRendererSink* video_renderer_sink,

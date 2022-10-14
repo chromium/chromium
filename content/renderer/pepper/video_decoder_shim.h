@@ -14,13 +14,10 @@
 
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/video_decoder_config.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ppapi/c/pp_codecs.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-}
 
 namespace viz {
 class ContextProviderCommandBuffer;
@@ -81,7 +78,7 @@ class VideoDecoderShim : public media::VideoDecodeAccelerator {
   State state_;
 
   PepperVideoDecoderHost* host_;
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
 
   // The current decoded frame size.

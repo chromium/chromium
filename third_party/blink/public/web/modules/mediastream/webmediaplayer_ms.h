@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -82,7 +83,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
       scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       scoped_refptr<base::TaskRunner> worker_task_runner,
       media::GpuVideoAcceleratorFactories* gpu_factories,
       const WebString& sink_id,
@@ -305,7 +306,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   const scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
-  const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
   const scoped_refptr<base::TaskRunner> worker_task_runner_;
   media::GpuVideoAcceleratorFactories* gpu_factories_;

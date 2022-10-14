@@ -34,7 +34,7 @@ void ContextCacheController::ScopedToken::Release() {
 
 ContextCacheController::ContextCacheController(
     gpu::ContextSupport* context_support,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
     : context_support_(context_support), task_runner_(std::move(task_runner)) {
   // The |weak_factory_| can only be used from a single thread. We
   // create/destroy this class and run callbacks on a single thread, but we

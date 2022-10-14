@@ -15,6 +15,7 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -180,7 +181,7 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual std::unique_ptr<media::Demuxer> OverrideDemuxerForUrl(
       RenderFrame* render_frame,
       const GURL& url,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Allows the embedder to provide a WebSocketHandshakeThrottleProvider. If it
   // returns NULL then none will be used.

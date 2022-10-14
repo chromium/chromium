@@ -69,7 +69,7 @@ class PlaybackCommandForwardingRendererFactory : public media::RendererFactory {
   // Wraps |real_renderer_factory_->CreateRenderer()|'s results with a
   // PlaybackCommandForwardingRenderer instance.
   std::unique_ptr<media::Renderer> CreateRenderer(
-      const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       media::AudioRendererSink* audio_renderer_sink,
       media::VideoRendererSink* video_renderer_sink,

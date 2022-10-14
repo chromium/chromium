@@ -4,6 +4,7 @@ include_rules = [
     "+base/logging.h",
     "+base/memory/weak_ptr.h",
     "+base/task/single_thread_task_runner.h",
+    "+base/task/sequenced_task_runner.h",
     "+base/synchronization/lock.h",
     "+base/token.h",
     "+base/threading/thread_checker.h",

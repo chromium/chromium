@@ -47,7 +47,7 @@ class CourierRenderer final : public Renderer {
   // The whole class except for constructor and GetMediaTime() runs on
   // |media_task_runner|. The constructor and GetMediaTime() run on render main
   // thread.
-  CourierRenderer(scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+  CourierRenderer(scoped_refptr<base::SequencedTaskRunner> media_task_runner,
                   const base::WeakPtr<RendererController>& controller,
                   VideoRendererSink* video_renderer_sink);
 
@@ -61,7 +61,7 @@ class CourierRenderer final : public Renderer {
   // static in order to post task to media thread in order to avoid threading
   // race condition.
   static void OnDataPipeCreatedOnMainThread(
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       base::WeakPtr<CourierRenderer> self,
       openscreen::WeakPtr<openscreen::cast::RpcMessenger> rpc_messenger,
       mojo::PendingRemote<mojom::RemotingDataStreamSender> audio,
@@ -73,7 +73,7 @@ class CourierRenderer final : public Renderer {
   // static in order to post task to media thread in order to avoid threading
   // race condition.
   static void OnMessageReceivedOnMainThread(
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       base::WeakPtr<CourierRenderer> self,
       std::unique_ptr<openscreen::cast::RpcMessage> message);
 
@@ -170,7 +170,7 @@ class CourierRenderer final : public Renderer {
 
   State state_;
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
   // Current renderer playback time information.
   base::TimeDelta current_media_time_;

@@ -38,7 +38,7 @@ class MEDIA_EXPORT DecryptingRenderer : public Renderer {
   DecryptingRenderer(
       std::unique_ptr<Renderer> renderer,
       MediaLog* media_log,
-      const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
+      const scoped_refptr<base::SequencedTaskRunner> media_task_runner);
 
   DecryptingRenderer(const DecryptingRenderer&) = delete;
   DecryptingRenderer& operator=(const DecryptingRenderer&) = delete;
@@ -83,8 +83,7 @@ class MEDIA_EXPORT DecryptingRenderer : public Renderer {
 
   const std::unique_ptr<Renderer> renderer_;
   const raw_ptr<MediaLog> media_log_;
-  const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
-
+  const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   bool waiting_for_cdm_ = false;
   raw_ptr<CdmContext> cdm_context_ = nullptr;
   raw_ptr<RendererClient> client_;

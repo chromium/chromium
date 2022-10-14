@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -158,7 +159,7 @@ class WebMediaPlayerMS::FrameDeliverer {
       void(scoped_refptr<media::VideoFrame> frame, bool is_copy)>;
   FrameDeliverer(const base::WeakPtr<WebMediaPlayerMS>& player,
                  RepaintCB enqueue_frame_cb,
-                 scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+                 scoped_refptr<base::SequencedTaskRunner> media_task_runner,
                  scoped_refptr<base::TaskRunner> worker_task_runner,
                  media::GpuVideoAcceleratorFactories* gpu_factories)
       : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
@@ -325,7 +326,7 @@ class WebMediaPlayerMS::FrameDeliverer {
 
   // Pool of GpuMemoryBuffers and resources used to create hardware frames.
   std::unique_ptr<media::GpuMemoryBufferVideoFramePool> gpu_memory_buffer_pool_;
-  const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   const scoped_refptr<base::TaskRunner> worker_task_runner_;
 
   media::GpuVideoAcceleratorFactories* const gpu_factories_;
@@ -345,7 +346,7 @@ WebMediaPlayerMS::WebMediaPlayerMS(
     scoped_refptr<base::SingleThreadTaskRunner> main_render_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     scoped_refptr<base::TaskRunner> worker_task_runner,
     media::GpuVideoAcceleratorFactories* gpu_factories,
     const WebString& sink_id,

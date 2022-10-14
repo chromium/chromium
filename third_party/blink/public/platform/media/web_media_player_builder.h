@@ -22,6 +22,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 class TaskRunner;
 }  // namespace base
 
@@ -78,7 +79,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerBuilder {
       media::MediaPlayerLoggingID player_id,
       DeferLoadCB defer_load_cb,
       scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       scoped_refptr<base::TaskRunner> worker_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner>

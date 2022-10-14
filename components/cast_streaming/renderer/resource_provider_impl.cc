@@ -60,7 +60,7 @@ ResourceProviderImpl::GetDemuxerConnectorBinder() {
 
 std::unique_ptr<media::Demuxer> ResourceProviderImpl::MaybeGetDemuxerOverride(
     const GURL& url,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner) {
   // Do not create a FrameInjectingDemuxer if the Cast Streaming MessagePort
   // was not set in the browser process. This will manifest as an unbound
   // DemuxerConnector object in the renderer process.

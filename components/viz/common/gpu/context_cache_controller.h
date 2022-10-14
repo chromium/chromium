@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/viz_common_export.h"
 
@@ -48,9 +49,8 @@ class VIZ_COMMON_EXPORT ContextCacheController {
   using ScopedVisibility = ScopedToken;
   using ScopedBusy = ScopedToken;
 
-  ContextCacheController(
-      gpu::ContextSupport* context_support,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  ContextCacheController(gpu::ContextSupport* context_support,
+                         scoped_refptr<base::SequencedTaskRunner> task_runner);
   virtual ~ContextCacheController();
 
   void SetGrContext(GrDirectContext* gr_context);
@@ -88,7 +88,7 @@ class VIZ_COMMON_EXPORT ContextCacheController {
   void InvalidatePendingIdleCallbacks();
 
   raw_ptr<gpu::ContextSupport> context_support_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<GrDirectContext> gr_context_ = nullptr;
 
   std::unique_ptr<ScopedVisibility> held_visibility_;

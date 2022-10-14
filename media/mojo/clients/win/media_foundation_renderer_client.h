@@ -58,7 +58,7 @@ class MediaFoundationRendererClient
   using ClientExtension = media::mojom::MediaFoundationRendererClientExtension;
 
   MediaFoundationRendererClient(
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       std::unique_ptr<MediaLog> media_log,
       std::unique_ptr<MojoRenderer> mojo_renderer,
       mojo::PendingRemote<RendererExtension> pending_renderer_extension,
@@ -143,7 +143,7 @@ class MediaFoundationRendererClient
   // This class is constructed on the main thread. Hence we store
   // PendingRemotes so we can bind the Remotes on the media task
   // runner during/after Initialize().
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   std::unique_ptr<MediaLog> media_log_;
   std::unique_ptr<MojoRenderer> mojo_renderer_;
   mojo::PendingRemote<RendererExtension> pending_renderer_extension_;

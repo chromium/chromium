@@ -13,7 +13,7 @@ namespace content {
 MediaPlayerRendererClient::MediaPlayerRendererClient(
     mojo::PendingRemote<RendererExtention> renderer_extension_remote,
     mojo::PendingReceiver<ClientExtention> client_extension_receiver,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     std::unique_ptr<media::MojoRenderer> mojo_renderer,
     media::ScopedStreamTextureWrapper stream_texture_wrapper,
@@ -41,7 +41,7 @@ void MediaPlayerRendererClient::Initialize(
     media::MediaResource* media_resource,
     media::RendererClient* client,
     media::PipelineStatusCallback init_cb) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!init_cb_);
 
   // Consume and bind the delayed PendingRemote and PendingReceiver now that we
@@ -70,7 +70,7 @@ void MediaPlayerRendererClient::Initialize(
 void MediaPlayerRendererClient::OnStreamTextureWrapperInitialized(
     media::MediaResource* media_resource,
     bool success) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   if (!success) {
     std::move(init_cb_).Run(
         media::PipelineStatus::Codes::PIPELINE_ERROR_INITIALIZATION_FAILED);
@@ -95,7 +95,7 @@ void MediaPlayerRendererClient::OnScopedSurfaceRequested(
 
 void MediaPlayerRendererClient::OnRemoteRendererInitialized(
     media::PipelineStatus status) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!init_cb_.is_null());
 
   if (status == media::PIPELINE_OK) {
@@ -136,7 +136,7 @@ void MediaPlayerRendererClient::OnVideoSizeChange(const gfx::Size& size) {
 }
 
 void MediaPlayerRendererClient::OnDurationChange(base::TimeDelta duration) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   media_resource_->ForwardDurationChangeToDemuxerHost(duration);
 }

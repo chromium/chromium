@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/mojom/application_media_capabilities.mojom.h"
@@ -65,7 +66,7 @@ class CastContentRendererClient
   std::unique_ptr<::media::Demuxer> OverrideDemuxerForUrl(
       content::RenderFrame* render_frame,
       const GURL& url,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
+      scoped_refptr<base::SequencedTaskRunner> task_runner) override;
   bool IsIdleMediaSuspendEnabled() override;
   void SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() override;
   std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>

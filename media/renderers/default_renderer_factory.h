@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/media_player_logging_id.h"
@@ -61,7 +62,7 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
   ~DefaultRendererFactory() final;
 
   std::unique_ptr<Renderer> CreateRenderer(
-      const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       AudioRendererSink* audio_renderer_sink,
       VideoRendererSink* video_renderer_sink,
@@ -70,9 +71,9 @@ class MEDIA_EXPORT DefaultRendererFactory final : public RendererFactory {
 
  private:
   std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecoders(
-      const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner);
+      const scoped_refptr<base::SequencedTaskRunner>& media_task_runner);
   std::vector<std::unique_ptr<VideoDecoder>> CreateVideoDecoders(
-      const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
       RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space,
       GpuVideoAcceleratorFactories* gpu_factories);

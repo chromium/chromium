@@ -51,7 +51,7 @@ DefaultRendererFactory::~DefaultRendererFactory() = default;
 
 std::vector<std::unique_ptr<AudioDecoder>>
 DefaultRendererFactory::CreateAudioDecoders(
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner) {
+    const scoped_refptr<base::SequencedTaskRunner>& media_task_runner) {
   // Create our audio decoders and renderer.
   std::vector<std::unique_ptr<AudioDecoder>> audio_decoders;
 
@@ -62,7 +62,7 @@ DefaultRendererFactory::CreateAudioDecoders(
 
 std::vector<std::unique_ptr<VideoDecoder>>
 DefaultRendererFactory::CreateVideoDecoders(
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space,
     GpuVideoAcceleratorFactories* gpu_factories) {
@@ -77,7 +77,7 @@ DefaultRendererFactory::CreateVideoDecoders(
 }
 
 std::unique_ptr<Renderer> DefaultRendererFactory::CreateRenderer(
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
     const scoped_refptr<base::TaskRunner>& worker_task_runner,
     AudioRendererSink* audio_renderer_sink,
     VideoRendererSink* video_renderer_sink,

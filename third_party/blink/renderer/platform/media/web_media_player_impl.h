@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -125,7 +126,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
       media::MediaPlayerLoggingID player_id,
       WebMediaPlayerBuilder::DeferLoadCB defer_load_cb,
       scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       scoped_refptr<base::TaskRunner> worker_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner>
@@ -689,7 +690,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Task runner for posting tasks on Chrome's main thread. Also used
   // for DCHECKs so methods calls won't execute in the wrong thread.
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   const scoped_refptr<base::TaskRunner> worker_task_runner_;
 
   // This is the ID that is used within the internals of the media element

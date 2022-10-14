@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -83,7 +84,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
  public:
   // Constructs a pipeline that will execute media tasks on |media_task_runner|.
   // |create_renderer_cb|: to create renderers when starting and resuming.
-  PipelineImpl(scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+  PipelineImpl(scoped_refptr<base::SequencedTaskRunner> media_task_runner,
                scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
                CreateRendererCB create_renderer_cb,
                MediaLog* media_log);
@@ -181,7 +182,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void OnSuspendDone();
 
   // Parameters passed in the constructor.
-  const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   CreateRendererCB create_renderer_cb_;
   const raw_ptr<MediaLog> media_log_;
 

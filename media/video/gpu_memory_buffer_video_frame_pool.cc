@@ -28,6 +28,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -79,7 +80,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   // video frame's planes.
   // |gpu_factories| is an interface to GPU related operation and can be
   // null if a GL context is not available.
-  PoolImpl(const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+  PoolImpl(const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
            const scoped_refptr<base::TaskRunner>& worker_task_runner,
            GpuVideoAcceleratorFactories* const gpu_factories)
       : media_task_runner_(media_task_runner),
@@ -249,7 +250,7 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
       FrameResources* frame_resources);
 
   // Task runner associated to the GL context provided by |gpu_factories_|.
-  const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   // Task runner used to asynchronously copy planes.
   const scoped_refptr<base::TaskRunner> worker_task_runner_;
 
@@ -718,7 +719,7 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
 void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     scoped_refptr<VideoFrame> video_frame,
     FrameReadyCB frame_ready_cb) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   // Lazily initialize |output_format_| since VideoFrameOutputFormat() has to be
   // called on the media_thread while this object might be instantiated on any.
   const VideoPixelFormat pixel_format = video_frame->format();
@@ -855,7 +856,7 @@ bool GpuMemoryBufferVideoFramePool::PoolImpl::OnMemoryDump(
 }
 
 void GpuMemoryBufferVideoFramePool::PoolImpl::Abort() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   // Abort any pending copy requests. If one is already in flight, we can't do
   // anything about it.
   if (frame_copy_requests_.size() <= 1u)
@@ -890,7 +891,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDone(
 }
 
 void GpuMemoryBufferVideoFramePool::PoolImpl::StartCopy() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!frame_copy_requests_.empty());
 
   while (!frame_copy_requests_.empty()) {
@@ -1088,7 +1089,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::OnCopiesDoneOnMediaThread(
     bool copy_failed,
     scoped_refptr<VideoFrame> video_frame,
     FrameResources* frame_resources) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   if (copy_failed) {
     // Drop the resources if there was an error with them. If we're not in
     // shutdown we also need to remove the pool entry for them.
@@ -1135,7 +1136,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
         const gfx::ColorSpace& color_space,
         base::TimeDelta timestamp,
         bool allow_i420_overlay) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   gpu::SharedImageInterface* sii = gpu_factories_->SharedImageInterface();
   if (!sii) {
     frame_resources->MarkUnused(tick_clock_->NowTicks());
@@ -1275,7 +1276,7 @@ GpuMemoryBufferVideoFramePool::PoolImpl::~PoolImpl() {
 }
 
 void GpuMemoryBufferVideoFramePool::PoolImpl::Shutdown() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   // Clients don't care about copies once shutdown has started, so abort them.
   Abort();
 
@@ -1306,7 +1307,7 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResources(
     const gfx::Size& size,
     GpuVideoAcceleratorFactories::OutputFormat format,
     gfx::BufferUsage usage) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   auto it = resources_pool_.begin();
   while (it != resources_pool_.end()) {
@@ -1379,7 +1380,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::DeleteFrameResources(
 void GpuMemoryBufferVideoFramePool::PoolImpl::MailboxHoldersReleased(
     FrameResources* frame_resources,
     const gpu::SyncToken& release_sync_token) {
-  if (!media_task_runner_->BelongsToCurrentThread()) {
+  if (!media_task_runner_->RunsTasksInCurrentSequence()) {
     media_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&PoolImpl::MailboxHoldersReleased, this,
                                   frame_resources, release_sync_token));
@@ -1414,13 +1415,15 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::MailboxHoldersReleased(
 GpuMemoryBufferVideoFramePool::GpuMemoryBufferVideoFramePool() = default;
 
 GpuMemoryBufferVideoFramePool::GpuMemoryBufferVideoFramePool(
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
     const scoped_refptr<base::TaskRunner>& worker_task_runner,
     GpuVideoAcceleratorFactories* gpu_factories)
     : pool_impl_(
           new PoolImpl(media_task_runner, worker_task_runner, gpu_factories)) {
-  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      pool_impl_.get(), "GpuMemoryBufferVideoFramePool", media_task_runner);
+  base::trace_event::MemoryDumpManager::GetInstance()
+      ->RegisterDumpProviderWithSequencedTaskRunner(
+          pool_impl_.get(), "GpuMemoryBufferVideoFramePool", media_task_runner,
+          base::trace_event::MemoryDumpProvider::Options());
 }
 
 GpuMemoryBufferVideoFramePool::~GpuMemoryBufferVideoFramePool() {

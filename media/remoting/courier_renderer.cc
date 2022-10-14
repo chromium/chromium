@@ -79,7 +79,7 @@ void DeregisterFromRpcTask(
 }  // namespace
 
 CourierRenderer::CourierRenderer(
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     const base::WeakPtr<RendererController>& controller,
     VideoRendererSink* video_renderer_sink)
     : state_(STATE_UNINITIALIZED),
@@ -102,7 +102,7 @@ CourierRenderer::CourierRenderer(
 }
 
 CourierRenderer::~CourierRenderer() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   DeregisterFromRpcMessaging();
   if (video_renderer_sink_) {
@@ -114,7 +114,7 @@ CourierRenderer::~CourierRenderer() {
 void CourierRenderer::Initialize(MediaResource* media_resource,
                                  RendererClient* client,
                                  PipelineStatusCallback init_cb) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(media_resource);
   DCHECK(client);
 
@@ -155,7 +155,7 @@ void CourierRenderer::SetLatencyHint(
     absl::optional<base::TimeDelta> latency_hint) {}
 
 void CourierRenderer::Flush(base::OnceClosure flush_cb) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!flush_cb_);
 
   if (state_ != STATE_PLAYING) {
@@ -200,7 +200,7 @@ void CourierRenderer::Flush(base::OnceClosure flush_cb) {
 }
 
 void CourierRenderer::StartPlayingFrom(base::TimeDelta time) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if (state_ != STATE_PLAYING) {
     DCHECK_EQ(state_, STATE_ERROR);
@@ -222,7 +222,7 @@ void CourierRenderer::StartPlayingFrom(base::TimeDelta time) {
 }
 
 void CourierRenderer::SetPlaybackRate(double playback_rate) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if (state_ != STATE_FLUSHING && state_ != STATE_PLAYING) {
     DCHECK_EQ(state_, STATE_ERROR);
@@ -240,7 +240,7 @@ void CourierRenderer::SetPlaybackRate(double playback_rate) {
 }
 
 void CourierRenderer::SetVolume(float volume) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   volume_ = volume;
   if (state_ != STATE_FLUSHING && state_ != STATE_PLAYING)
@@ -267,7 +267,7 @@ base::TimeDelta CourierRenderer::GetMediaTime() {
 
 // static
 void CourierRenderer::OnDataPipeCreatedOnMainThread(
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     base::WeakPtr<CourierRenderer> self,
     openscreen::WeakPtr<RpcMessenger> rpc_messenger,
     mojo::PendingRemote<mojom::RemotingDataStreamSender> audio,
@@ -292,7 +292,7 @@ void CourierRenderer::OnDataPipeCreated(
     mojo::ScopedDataPipeProducerHandle video_handle,
     int audio_rpc_handle,
     int video_rpc_handle) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if (state_ == STATE_ERROR)
     return;  // Abort because something went wrong in the meantime.
@@ -360,7 +360,7 @@ void CourierRenderer::OnDataPipeCreated(
 
 // static
 void CourierRenderer::OnMessageReceivedOnMainThread(
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     base::WeakPtr<CourierRenderer> self,
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
   if (media_task_runner) {
@@ -374,7 +374,7 @@ void CourierRenderer::OnMessageReceivedOnMainThread(
 
 void CourierRenderer::OnReceivedRpc(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message);
   switch (message->proc()) {
     case openscreen::cast::RpcMessage::RPC_ACQUIRE_RENDERER_DONE:
@@ -421,7 +421,7 @@ void CourierRenderer::OnReceivedRpc(
 
 void CourierRenderer::SendRpcToRemote(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(main_task_runner_);
   main_task_runner_->PostTask(FROM_HERE,
                               base::BindOnce(&RpcMessenger::SendMessageToRemote,
@@ -430,7 +430,7 @@ void CourierRenderer::SendRpcToRemote(
 
 void CourierRenderer::AcquireRendererDone(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message);
 
   remote_renderer_handle_ = message->integer_value();
@@ -462,7 +462,7 @@ void CourierRenderer::AcquireRendererDone(
 
 void CourierRenderer::InitializeCallback(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message);
 
   const bool success = message->boolean_value();
@@ -485,7 +485,7 @@ void CourierRenderer::InitializeCallback(
 }
 
 void CourierRenderer::FlushUntilCallback() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if (state_ != STATE_FLUSHING || !flush_cb_) {
     OnFatalError(PEERS_OUT_OF_SYNC);
@@ -503,7 +503,7 @@ void CourierRenderer::FlushUntilCallback() {
 
 void CourierRenderer::OnTimeUpdate(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message);
   // Shutdown remoting session if receiving malformed RPC message.
   if (!message->has_rendererclient_ontimeupdate_rpc()) {
@@ -532,7 +532,7 @@ void CourierRenderer::OnTimeUpdate(
 
 void CourierRenderer::OnBufferingStateChange(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message);
   if (!message->has_rendererclient_onbufferingstatechange_rpc()) {
     OnFatalError(RPC_INVALID);
@@ -559,7 +559,7 @@ void CourierRenderer::OnBufferingStateChange(
 
 void CourierRenderer::OnAudioConfigChange(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message);
   // Shutdown remoting session if receiving malformed RPC message.
   if (!message->has_rendererclient_onaudioconfigchange_rpc()) {
@@ -581,7 +581,7 @@ void CourierRenderer::OnAudioConfigChange(
 
 void CourierRenderer::OnVideoConfigChange(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message);
   // Shutdown remoting session if receiving malformed RPC message.
   if (!message->has_rendererclient_onvideoconfigchange_rpc()) {
@@ -603,7 +603,7 @@ void CourierRenderer::OnVideoConfigChange(
 
 void CourierRenderer::OnVideoNaturalSizeChange(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message);
   // Shutdown remoting session if receiving malformed RPC message.
   if (!message->has_rendererclient_onvideonatualsizechange_rpc()) {
@@ -620,7 +620,7 @@ void CourierRenderer::OnVideoNaturalSizeChange(
 
 void CourierRenderer::OnVideoOpacityChange(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message);
   const bool opaque = message->boolean_value();
   client_->OnVideoOpacityChange(opaque);
@@ -628,7 +628,7 @@ void CourierRenderer::OnVideoOpacityChange(
 
 void CourierRenderer::OnStatisticsUpdate(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message);
   // Shutdown remoting session if receiving malformed RPC message.
   if (!message->has_rendererclient_onstatisticsupdate_rpc()) {
@@ -648,7 +648,7 @@ void CourierRenderer::OnStatisticsUpdate(
 }
 
 void CourierRenderer::OnFatalError(StopTrigger stop_trigger) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK_NE(UNKNOWN_STOP_TRIGGER, stop_trigger);
 
   // If this is the first error, notify the controller. It is expected the
@@ -674,7 +674,7 @@ void CourierRenderer::OnFatalError(StopTrigger stop_trigger) {
 }
 
 void CourierRenderer::OnMediaTimeUpdated() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   if (flush_cb_)
     return;  // Don't manage and check the queue when Flush() is on-going.
   if (receiver_is_blocked_on_local_demuxers_)
@@ -713,7 +713,7 @@ void CourierRenderer::OnMediaTimeUpdated() {
 
 void CourierRenderer::UpdateVideoStatsQueue(int video_frames_decoded,
                                             int video_frames_dropped) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   if (flush_cb_)
     return;  // Don't manage and check the queue when Flush() is on-going.
 
@@ -754,7 +754,7 @@ void CourierRenderer::UpdateVideoStatsQueue(int video_frames_decoded,
 }
 
 void CourierRenderer::ResetMeasurements() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   media_time_queue_.clear();
   video_stats_queue_.clear();
   sum_video_frames_dropped_ = 0;
@@ -770,7 +770,7 @@ void CourierRenderer::ResetMeasurements() {
 }
 
 void CourierRenderer::MeasureAndRecordDataRates() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   // Whenever media is first started or flushed/seeked, there is a "burst
   // bufferring" period as the remote device rapidly fills its buffer before
@@ -810,7 +810,7 @@ void CourierRenderer::MeasureAndRecordDataRates() {
 }
 
 bool CourierRenderer::IsWaitingForDataFromDemuxers() const {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   return ((video_demuxer_stream_adapter_ &&
            video_demuxer_stream_adapter_->is_processing_read_request() &&
            !video_demuxer_stream_adapter_->is_data_pending()) ||
@@ -820,7 +820,7 @@ bool CourierRenderer::IsWaitingForDataFromDemuxers() const {
 }
 
 void CourierRenderer::RegisterForRpcMessaging() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   auto receive_callback = BindToCurrentLoop(base::BindRepeating(
       &CourierRenderer::OnReceivedRpc, weak_factory_.GetWeakPtr()));
 
@@ -836,7 +836,7 @@ void CourierRenderer::RegisterForRpcMessaging() {
 }
 
 void CourierRenderer::DeregisterFromRpcMessaging() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   if (rpc_messenger_) {
     main_task_runner_->PostTask(
         FROM_HERE,

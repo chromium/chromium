@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "media/base/media_resource.h"
@@ -34,7 +35,7 @@ class CONTENT_EXPORT FlingingRendererClient
 
   FlingingRendererClient(
       ClientExtentionPendingReceiver client_extension_receiver,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       std::unique_ptr<media::MojoRenderer> mojo_renderer,
       media::RemotePlayStateChangeCB remote_play_state_change_cb);
 
@@ -52,7 +53,7 @@ class CONTENT_EXPORT FlingingRendererClient
   void OnRemotePlayStateChange(media::MediaStatus::State state) override;
 
  private:
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
   media::RendererClient* client_;
 

@@ -85,7 +85,7 @@ class RendererImpl::RendererClientInternal final : public RendererClient {
 };
 
 RendererImpl::RendererImpl(
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     std::unique_ptr<AudioRenderer> audio_renderer,
     std::unique_ptr<VideoRenderer> video_renderer)
     : state_(STATE_UNINITIALIZED),
@@ -114,7 +114,7 @@ RendererImpl::RendererImpl(
 
 RendererImpl::~RendererImpl() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // RendererImpl is being destroyed, so invalidate weak pointers right away to
   // avoid getting callbacks which might try to access fields that has been
@@ -136,7 +136,7 @@ void RendererImpl::Initialize(MediaResource* media_resource,
                               RendererClient* client,
                               PipelineStatusCallback init_cb) {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, STATE_UNINITIALIZED);
   DCHECK(init_cb);
   DCHECK(client);
@@ -161,7 +161,7 @@ void RendererImpl::Initialize(MediaResource* media_resource,
 void RendererImpl::SetCdm(CdmContext* cdm_context,
                           CdmAttachedCB cdm_attached_cb) {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(cdm_context);
   TRACE_EVENT0("media", "RendererImpl::SetCdm");
 
@@ -186,7 +186,7 @@ void RendererImpl::SetLatencyHint(
     absl::optional<base::TimeDelta> latency_hint) {
   DVLOG(1) << __func__;
   DCHECK(!latency_hint || (*latency_hint >= base::TimeDelta()));
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (video_renderer_)
     video_renderer_->SetLatencyHint(latency_hint);
@@ -197,7 +197,7 @@ void RendererImpl::SetLatencyHint(
 
 void RendererImpl::SetPreservesPitch(bool preserves_pitch) {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (audio_renderer_)
     audio_renderer_->SetPreservesPitch(preserves_pitch);
@@ -206,7 +206,7 @@ void RendererImpl::SetPreservesPitch(bool preserves_pitch) {
 void RendererImpl::SetWasPlayedWithUserActivation(
     bool was_played_with_user_activation) {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (audio_renderer_)
     audio_renderer_->SetWasPlayedWithUserActivation(
@@ -215,7 +215,7 @@ void RendererImpl::SetWasPlayedWithUserActivation(
 
 void RendererImpl::Flush(base::OnceClosure flush_cb) {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!flush_cb_);
   DCHECK(!(pending_audio_track_change_ || pending_video_track_change_));
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "RendererImpl::Flush",
@@ -242,7 +242,7 @@ void RendererImpl::Flush(base::OnceClosure flush_cb) {
 
 void RendererImpl::StartPlayingFrom(base::TimeDelta time) {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT1("media", "RendererImpl::StartPlayingFrom", "time_us",
                time.InMicroseconds());
 
@@ -266,7 +266,7 @@ void RendererImpl::StartPlayingFrom(base::TimeDelta time) {
 
 void RendererImpl::SetPlaybackRate(double playback_rate) {
   DVLOG(1) << __func__ << "(" << playback_rate << ")";
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT1("media", "RendererImpl::SetPlaybackRate", "rate", playback_rate);
 
   // Playback rate changes are only carried out while playing.
@@ -288,7 +288,7 @@ void RendererImpl::SetPlaybackRate(double playback_rate) {
 
 void RendererImpl::SetVolume(float volume) {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (audio_renderer_)
     audio_renderer_->SetVolume(volume);
@@ -310,7 +310,7 @@ base::TimeDelta RendererImpl::GetMediaTime() {
 
 void RendererImpl::DisableUnderflowForTesting() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, STATE_UNINITIALIZED);
 
   underflow_disabled_for_testing_ = true;
@@ -318,7 +318,7 @@ void RendererImpl::DisableUnderflowForTesting() {
 
 void RendererImpl::EnableClocklessVideoPlaybackForTesting() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, STATE_UNINITIALIZED);
   DCHECK(underflow_disabled_for_testing_)
       << "Underflow must be disabled for clockless video playback";
@@ -383,7 +383,7 @@ void RendererImpl::FinishFlush() {
 
 void RendererImpl::InitializeAudioRenderer() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, STATE_INITIALIZING);
   DCHECK(init_cb_);
 
@@ -413,7 +413,7 @@ void RendererImpl::InitializeAudioRenderer() {
 
 void RendererImpl::OnAudioRendererInitializeDone(PipelineStatus status) {
   DVLOG(1) << __func__ << ": " << status;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // OnError() may be fired at any time by the renderers, even if they thought
   // they initialized successfully (due to delayed output device setup).
@@ -434,7 +434,7 @@ void RendererImpl::OnAudioRendererInitializeDone(PipelineStatus status) {
 
 void RendererImpl::InitializeVideoRenderer() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, STATE_INITIALIZING);
   DCHECK(init_cb_);
 
@@ -464,7 +464,7 @@ void RendererImpl::InitializeVideoRenderer() {
 
 void RendererImpl::OnVideoRendererInitializeDone(PipelineStatus status) {
   DVLOG(1) << __func__ << ": " << status;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // OnError() may be fired at any time by the renderers, even if they thought
   // they initialized successfully (due to delayed output device setup).
@@ -498,7 +498,7 @@ void RendererImpl::OnVideoRendererInitializeDone(PipelineStatus status) {
 
 void RendererImpl::FlushInternal() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, STATE_FLUSHING);
   DCHECK(flush_cb_);
 
@@ -511,7 +511,7 @@ void RendererImpl::FlushInternal() {
 // TODO(tmathmeyer) Combine this functionality with track switching flushing.
 void RendererImpl::FlushAudioRenderer() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, STATE_FLUSHING);
   DCHECK(flush_cb_);
 
@@ -525,7 +525,7 @@ void RendererImpl::FlushAudioRenderer() {
 
 void RendererImpl::OnAudioRendererFlushDone() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (state_ == STATE_ERROR) {
     DCHECK(!flush_cb_);
@@ -547,7 +547,7 @@ void RendererImpl::OnAudioRendererFlushDone() {
 
 void RendererImpl::FlushVideoRenderer() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, STATE_FLUSHING);
   DCHECK(flush_cb_);
 
@@ -561,7 +561,7 @@ void RendererImpl::FlushVideoRenderer() {
 
 void RendererImpl::OnVideoRendererFlushDone() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (state_ == STATE_ERROR) {
     DCHECK(!flush_cb_);
@@ -583,7 +583,7 @@ void RendererImpl::ReinitializeAudioRenderer(
     base::TimeDelta time,
     base::OnceClosure reinitialize_completed_cb) {
   DVLOG(2) << __func__ << " stream=" << stream << " time=" << time.InSecondsF();
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_NE(stream, current_audio_stream_);
 
   current_audio_stream_ = stream;
@@ -614,7 +614,7 @@ void RendererImpl::ReinitializeVideoRenderer(
     base::TimeDelta time,
     base::OnceClosure reinitialize_completed_cb) {
   DVLOG(2) << __func__ << " stream=" << stream << " time=" << time.InSecondsF();
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_NE(stream, current_video_stream_);
 
   current_video_stream_ = stream;
@@ -648,7 +648,7 @@ void RendererImpl::RestartAudioRenderer(
     base::TimeDelta time,
     base::OnceClosure restart_completed_cb) {
   DVLOG(2) << __func__ << " stream=" << stream << " time=" << time.InSecondsF();
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(audio_renderer_);
   DCHECK_EQ(stream, current_audio_stream_);
   DCHECK(state_ == STATE_PLAYING || state_ == STATE_FLUSHED ||
@@ -675,7 +675,7 @@ void RendererImpl::RestartVideoRenderer(
     base::TimeDelta time,
     base::OnceClosure restart_completed_cb) {
   DVLOG(2) << __func__ << " stream=" << stream << " time=" << time.InSecondsF();
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(video_renderer_);
   DCHECK_EQ(stream, current_video_stream_);
   DCHECK(state_ == STATE_PLAYING || state_ == STATE_FLUSHED ||
@@ -695,7 +695,7 @@ void RendererImpl::RestartVideoRenderer(
 }
 
 void RendererImpl::OnStatisticsUpdate(const PipelineStatistics& stats) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   client_->OnStatisticsUpdate(stats);
 }
 
@@ -711,7 +711,7 @@ void RendererImpl::OnBufferingStateChange(DemuxerStream::Type type,
   DVLOG(1) << __func__ << " " << type_string << " "
            << BufferingStateToString(*buffering_state) << " -> "
            << BufferingStateToString(new_buffering_state, reason);
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT2("media", "RendererImpl::OnBufferingStateChange", "type",
                type_string, "state",
                BufferingStateToString(new_buffering_state, reason));
@@ -793,7 +793,7 @@ void RendererImpl::OnBufferingStateChange(DemuxerStream::Type type,
 }
 
 bool RendererImpl::WaitingForEnoughData() const {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (state_ != STATE_PLAYING)
     return false;
   if (audio_renderer_ && audio_buffering_state_ != BUFFERING_HAVE_ENOUGH)
@@ -805,7 +805,7 @@ bool RendererImpl::WaitingForEnoughData() const {
 
 void RendererImpl::PausePlayback() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("media", "RendererImpl::PausePlayback");
 
   switch (state_) {
@@ -843,7 +843,7 @@ void RendererImpl::PausePlayback() {
 
 void RendererImpl::StartPlayback() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, STATE_PLAYING);
   DCHECK(!WaitingForEnoughData());
   TRACE_EVENT0("media", "RendererImpl::StartPlayback");
@@ -862,7 +862,7 @@ void RendererImpl::StartPlayback() {
 void RendererImpl::OnRendererEnded(DemuxerStream::Type type) {
   const auto* type_string = DemuxerStream::GetTypeName(type);
   DVLOG(1) << __func__ << ": " << type_string;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK((type == DemuxerStream::AUDIO) || (type == DemuxerStream::VIDEO));
   TRACE_EVENT1("media", "RendererImpl::OnRendererEnded", "type", type_string);
 
@@ -883,7 +883,7 @@ void RendererImpl::OnRendererEnded(DemuxerStream::Type type) {
 }
 
 bool RendererImpl::PlaybackHasEnded() const {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (audio_renderer_ && !audio_ended_)
     return false;
@@ -896,7 +896,7 @@ bool RendererImpl::PlaybackHasEnded() const {
 
 void RendererImpl::RunEndedCallbackIfNeeded() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (!PlaybackHasEnded())
     return;
@@ -913,7 +913,7 @@ void RendererImpl::OnFallback(PipelineStatus fallback) {
 
 void RendererImpl::OnError(PipelineStatus error) {
   DVLOG(1) << __func__ << "(" << error << ")";
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(error != PIPELINE_OK) << "PIPELINE_OK isn't an error!";
   TRACE_EVENT1("media", "RendererImpl::OnError", "error",
                PipelineStatusToString(error));
@@ -940,32 +940,32 @@ void RendererImpl::OnError(PipelineStatus error) {
 }
 
 void RendererImpl::OnWaiting(WaitingReason reason) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   client_->OnWaiting(reason);
 }
 
 void RendererImpl::OnAudioConfigChange(const AudioDecoderConfig& config) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   client_->OnAudioConfigChange(config);
 }
 
 void RendererImpl::OnVideoConfigChange(const VideoDecoderConfig& config) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   client_->OnVideoConfigChange(config);
 }
 
 void RendererImpl::OnVideoNaturalSizeChange(const gfx::Size& size) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   client_->OnVideoNaturalSizeChange(size);
 }
 
 void RendererImpl::OnVideoOpacityChange(bool opaque) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   client_->OnVideoOpacityChange(opaque);
 }
 
 void RendererImpl::OnVideoFrameRateChange(absl::optional<int> fps) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   client_->OnVideoFrameRateChange(fps);
 }
 
@@ -983,7 +983,7 @@ void RendererImpl::CleanUpTrackChange(base::OnceClosure on_finished,
 void RendererImpl::OnSelectedVideoTracksChanged(
     const std::vector<DemuxerStream*>& enabled_tracks,
     base::OnceClosure change_completed_cb) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("media", "RendererImpl::OnSelectedVideoTracksChanged");
 
   DCHECK_LT(enabled_tracks.size(), 2u);
@@ -1016,7 +1016,7 @@ void RendererImpl::OnSelectedVideoTracksChanged(
 void RendererImpl::OnEnabledAudioTracksChanged(
     const std::vector<DemuxerStream*>& enabled_tracks,
     base::OnceClosure change_completed_cb) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("media", "RendererImpl::OnEnabledAudioTracksChanged");
 
   DCHECK_LT(enabled_tracks.size(), 2u);

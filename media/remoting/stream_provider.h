@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_decoder_config.h"
@@ -44,7 +45,7 @@ class StreamProvider final : public Demuxer {
  public:
   StreamProvider(
       ReceiverController* receiver_controller,
-      const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner);
+      const scoped_refptr<base::SequencedTaskRunner>& media_task_runner);
 
   // Demuxer implementation.
   std::vector<DemuxerStream*> GetAllStreams() override;
@@ -87,7 +88,7 @@ class StreamProvider final : public Demuxer {
         openscreen::cast::RpcMessenger* rpc_messenger,
         Type type,
         int32_t handle,
-        const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+        const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
         base::OnceCallback<void(MediaStream::UniquePtr)> callback);
 
     // In order to destroy members in the right thread, MediaStream has to use
@@ -98,7 +99,7 @@ class StreamProvider final : public Demuxer {
         openscreen::cast::RpcMessenger* rpc_messenger,
         Type type,
         int32_t remote_handle,
-        const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner);
+        const scoped_refptr<base::SequencedTaskRunner>& media_task_runner);
 
     // DemuxerStream implementation.
     void Read(ReadCB read_cb) override;
@@ -170,7 +171,7 @@ class StreamProvider final : public Demuxer {
     void OnError(const std::string& error);
 
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
     const raw_ptr<openscreen::cast::RpcMessenger> rpc_messenger_;
     const Type type_;
@@ -247,7 +248,7 @@ class StreamProvider final : public Demuxer {
   void CompleteInitialize();
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   const raw_ptr<ReceiverController> receiver_controller_;
   const raw_ptr<openscreen::cast::RpcMessenger> rpc_messenger_;
   MediaStream::UniquePtr audio_stream_;

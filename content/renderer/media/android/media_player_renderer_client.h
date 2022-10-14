@@ -46,7 +46,7 @@ class CONTENT_EXPORT MediaPlayerRendererClient
   MediaPlayerRendererClient(
       mojo::PendingRemote<RendererExtention> renderer_extension_remote,
       mojo::PendingReceiver<ClientExtention> client_extension_receiver,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       std::unique_ptr<media::MojoRenderer> mojo_renderer,
       media::ScopedStreamTextureWrapper stream_texture_wrapper,
@@ -92,8 +92,7 @@ class CONTENT_EXPORT MediaPlayerRendererClient
 
   media::VideoRendererSink* sink_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
-
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   // Used by |stream_texture_wrapper_| to signal OnFrameAvailable() and to send
   // VideoFrames to |sink_| on the right thread.
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;

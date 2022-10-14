@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/media_export.h"
 #include "media/base/media_resource.h"
 #include "media/base/overlay_info.h"
@@ -15,7 +16,6 @@
 #include "ui/gfx/color_space.h"
 
 namespace base {
-class SingleThreadTaskRunner;
 class TaskRunner;
 }
 
@@ -40,7 +40,7 @@ class MEDIA_EXPORT RendererFactory {
   // The created Renderer can use |audio_renderer_sink| to render audio and
   // |video_renderer_sink| to render video.
   virtual std::unique_ptr<Renderer> CreateRenderer(
-      const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       AudioRendererSink* audio_renderer_sink,
       VideoRendererSink* video_renderer_sink,

@@ -15,6 +15,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -332,7 +333,7 @@ MediaFactory::~MediaFactory() {
     // this time and subsequently a media thread. To fail, the media thread must
     // be dead/dying (which only happens at ~RenderThreadImpl), in which case
     // the process is about to die anyways.
-    RenderThreadImpl::current()->GetMediaThreadTaskRunner()->DeleteSoon(
+    RenderThreadImpl::current()->GetMediaSequencedTaskRunner()->DeleteSoon(
         FROM_HERE, std::move(decoder_factory_));
   }
 }
@@ -474,8 +475,8 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
                             media_log.get(), render_frame_)
           : nullptr;
 
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner =
-      render_thread->GetMediaThreadTaskRunner();
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner =
+      render_thread->GetMediaSequencedTaskRunner();
 
   if (!media_task_runner) {
     // If the media thread failed to start, we will receive a null task runner.
@@ -680,7 +681,7 @@ MediaFactory::CreateRendererFactorySelector(
     auto dcomp_texture_creation_cb =
         base::BindRepeating(&DCOMPTextureWrapperImpl::Create,
                             render_thread->GetDCOMPTextureFactory(),
-                            render_thread->GetMediaThreadTaskRunner());
+                            render_thread->GetMediaSequencedTaskRunner());
 
     mojo::Remote<media::mojom::MediaFoundationRendererNotifier>
         media_foundation_renderer_notifier;
@@ -726,7 +727,7 @@ MediaFactory::CreateRendererFactorySelector(
     auto remoting_renderer_factory =
         std::make_unique<media::remoting::RemotingRendererFactory>(
             std::move(remotee), std::move(default_factory_remoting),
-            render_thread->GetMediaThreadTaskRunner());
+            render_thread->GetMediaSequencedTaskRunner());
     auto is_remoting_media = base::BindRepeating(
         [](const GURL& url) -> bool {
           return url.SchemeIs(media::remoting::kRemotingScheme);
@@ -788,7 +789,7 @@ blink::WebMediaPlayer* MediaFactory::CreateWebMediaPlayerForMediaStream(
       render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia),
       render_thread->GetIOTaskRunner(),
       GetOrCreateVideoFrameCompositorTaskRunner(render_frame_),
-      render_thread->GetMediaThreadTaskRunner(),
+      render_thread->GetMediaSequencedTaskRunner(),
       std::move(compositor_worker_task_runner),
       render_thread->GetGpuFactories(), sink_id,
       base::BindOnce(&blink::WebSurfaceLayerBridge::Create,

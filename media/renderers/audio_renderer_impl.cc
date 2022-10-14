@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -43,7 +42,7 @@
 namespace media {
 
 AudioRendererImpl::AudioRendererImpl(
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     AudioRendererSink* sink,
     const CreateAudioDecodersCB& create_audio_decoders_cb,
     MediaLog* media_log,
@@ -79,11 +78,10 @@ AudioRendererImpl::AudioRendererImpl(
       speech_recognition_client_(speech_recognition_client) {
 #endif
   DCHECK(create_audio_decoders_cb_);
-
   // PowerObserver's must be added and removed from the same thread, but we
   // won't remove the observer until we're destructed on |task_runner_| so we
   // must post it here if we're on the wrong thread.
-  if (task_runner_->BelongsToCurrentThread()) {
+  if (task_runner_->RunsTasksInCurrentSequence()) {
     base::PowerMonitor::AddPowerSuspendObserver(this);
   } else {
     // Safe to post this without a WeakPtr because this class must be destructed
@@ -100,7 +98,7 @@ AudioRendererImpl::AudioRendererImpl(
 
 AudioRendererImpl::~AudioRendererImpl() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   base::PowerMonitor::RemovePowerSuspendObserver(this);
 
   // If Render() is in progress, this call will wait for Render() to finish.
@@ -115,7 +113,7 @@ AudioRendererImpl::~AudioRendererImpl() {
 
 void AudioRendererImpl::StartTicking() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock auto_lock(lock_);
 
@@ -133,7 +131,7 @@ void AudioRendererImpl::StartTicking() {
 
 void AudioRendererImpl::StartRendering_Locked() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, kPlaying);
   DCHECK(!sink_playing_);
   DCHECK_NE(playback_rate_, 0.0);
@@ -150,7 +148,7 @@ void AudioRendererImpl::StartRendering_Locked() {
 
 void AudioRendererImpl::StopTicking() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock auto_lock(lock_);
 
@@ -167,7 +165,7 @@ void AudioRendererImpl::StopTicking() {
 }
 
 void AudioRendererImpl::StopRendering_Locked() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_EQ(state_, kPlaying);
   DCHECK(sink_playing_);
   lock_.AssertAcquired();
@@ -185,7 +183,7 @@ void AudioRendererImpl::StopRendering_Locked() {
 
 void AudioRendererImpl::SetMediaTime(base::TimeDelta time) {
   DVLOG(1) << __func__ << "(" << time << ")";
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock auto_lock(lock_);
   DCHECK(!rendering_);
@@ -280,7 +278,7 @@ TimeSource* AudioRendererImpl::GetTimeSource() {
 
 void AudioRendererImpl::Flush(base::OnceClosure callback) {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "AudioRendererImpl::Flush",
                                     TRACE_ID_LOCAL(this));
 
@@ -307,7 +305,7 @@ void AudioRendererImpl::Flush(base::OnceClosure callback) {
 }
 
 void AudioRendererImpl::DoFlush_Locked() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   lock_.AssertAcquired();
 
   DCHECK(!pending_read_);
@@ -319,7 +317,7 @@ void AudioRendererImpl::DoFlush_Locked() {
 }
 
 void AudioRendererImpl::ResetDecoderDone() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   {
     base::AutoLock auto_lock(lock_);
 
@@ -342,7 +340,7 @@ void AudioRendererImpl::ResetDecoderDone() {
 
 void AudioRendererImpl::StartPlaying() {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock auto_lock(lock_);
   DCHECK(!sink_playing_);
@@ -359,7 +357,7 @@ void AudioRendererImpl::Initialize(DemuxerStream* stream,
                                    RendererClient* client,
                                    PipelineStatusCallback init_cb) {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(client);
   DCHECK(stream);
   DCHECK_EQ(stream->type(), DemuxerStream::AUDIO);
@@ -405,7 +403,7 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     CdmContext* cdm_context,
     OutputDeviceInfo output_device_info) {
   DVLOG(1) << __func__;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(client_);
   DCHECK(stream);
   DCHECK_EQ(stream->type(), DemuxerStream::AUDIO);
@@ -640,7 +638,7 @@ void AudioRendererImpl::OnDeviceInfoReceived(
 
 void AudioRendererImpl::OnAudioDecoderStreamInitialized(bool success) {
   DVLOG(1) << __func__ << ": " << success;
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock auto_lock(lock_);
 
   if (!success) {
@@ -729,22 +727,22 @@ void AudioRendererImpl::FinishFlush() {
 }
 
 void AudioRendererImpl::OnPlaybackError(PipelineStatus error) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   client_->OnError(error);
 }
 
 void AudioRendererImpl::OnPlaybackEnded() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   client_->OnEnded();
 }
 
 void AudioRendererImpl::OnStatisticsUpdate(const PipelineStatistics& stats) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   client_->OnStatisticsUpdate(stats);
 }
 
 void AudioRendererImpl::OnBufferingStateChange(BufferingState buffering_state) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // "Underflow" is only possible when playing. This avoids noise like blaming
   // the decoder for an "underflow" that is really just a seek.
@@ -763,12 +761,12 @@ void AudioRendererImpl::OnBufferingStateChange(BufferingState buffering_state) {
 }
 
 void AudioRendererImpl::OnWaiting(WaitingReason reason) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   client_->OnWaiting(reason);
 }
 
 void AudioRendererImpl::SetVolume(float volume) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // Only consider audio as unmuted if the volume is set to a non-zero value
   // when the state is kPlaying.
@@ -868,7 +866,7 @@ void AudioRendererImpl::SetPlayDelayCBForTesting(PlayDelayCBForTesting cb) {
 void AudioRendererImpl::DecodedAudioReady(
     AudioDecoderStream::ReadResult result) {
   DVLOG(2) << __func__ << "(" << static_cast<int>(result.code()) << ")";
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock auto_lock(lock_);
   DCHECK(state_ != kUninitialized);
@@ -1091,7 +1089,7 @@ void AudioRendererImpl::AttemptRead() {
 }
 
 void AudioRendererImpl::AttemptRead_Locked() {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   lock_.AssertAcquired();
 
   if (!CanRead_Locked())
@@ -1127,7 +1125,7 @@ bool AudioRendererImpl::CanRead_Locked() {
 
 void AudioRendererImpl::SetPlaybackRate(double playback_rate) {
   DVLOG(1) << __func__ << "(" << playback_rate << ")";
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_GE(playback_rate, 0);
   DCHECK(sink_);
 
@@ -1355,7 +1353,7 @@ void AudioRendererImpl::OnRenderError() {
 }
 
 void AudioRendererImpl::HandleAbortedReadOrDecodeError(PipelineStatus status) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   lock_.AssertAcquired();
 
   switch (state_) {
@@ -1394,7 +1392,7 @@ void AudioRendererImpl::ChangeState_Locked(State new_state) {
 }
 
 void AudioRendererImpl::OnConfigChange(const AudioDecoderConfig& config) {
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(expecting_config_changes_);
   buffer_converter_->ResetTimestampState();
 
@@ -1453,7 +1451,7 @@ void AudioRendererImpl::ConfigureChannelMask() {
 
 void AudioRendererImpl::EnableSpeechRecognition() {
 #if !BUILDFLAG(IS_ANDROID)
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   transcribe_audio_callback_ = base::BindRepeating(
       &AudioRendererImpl::TranscribeAudio, weak_factory_.GetWeakPtr());
 #endif
@@ -1462,7 +1460,7 @@ void AudioRendererImpl::EnableSpeechRecognition() {
 void AudioRendererImpl::TranscribeAudio(
     scoped_refptr<media::AudioBuffer> buffer) {
 #if !BUILDFLAG(IS_ANDROID)
-  DCHECK(task_runner_->BelongsToCurrentThread());
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   if (speech_recognition_client_)
     speech_recognition_client_->AddAudio(std::move(buffer));
 #endif

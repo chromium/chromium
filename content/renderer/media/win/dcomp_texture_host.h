@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "base/win/windows_types.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
@@ -42,7 +43,7 @@ class DCOMPTextureHost : public gpu::mojom::DCOMPTextureClient {
   DCOMPTextureHost(
       scoped_refptr<gpu::GpuChannelHost> channel,
       int32_t route_id,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       mojo::PendingAssociatedRemote<gpu::mojom::DCOMPTexture> texture,
       Listener* listener);
   DCOMPTextureHost(const DCOMPTextureHost&) = delete;

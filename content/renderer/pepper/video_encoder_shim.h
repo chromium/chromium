@@ -12,12 +12,9 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/bitrate.h"
 #include "media/video/video_encode_accelerator.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-}
 
 namespace gfx {
 class Size;
@@ -71,7 +68,7 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
   PepperVideoEncoderHost* host_;
 
   // Task doing the encoding.
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
   base::WeakPtrFactory<VideoEncoderShim> weak_ptr_factory_{this};
 };

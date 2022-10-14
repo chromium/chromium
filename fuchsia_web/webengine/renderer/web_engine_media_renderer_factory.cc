@@ -32,7 +32,7 @@ WebEngineMediaRendererFactory::~WebEngineMediaRendererFactory() = default;
 
 std::vector<std::unique_ptr<media::VideoDecoder>>
 WebEngineMediaRendererFactory::CreateVideoDecoders(
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
     media::RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space,
     media::GpuVideoAcceleratorFactories* gpu_factories) {
@@ -44,7 +44,7 @@ WebEngineMediaRendererFactory::CreateVideoDecoders(
 }
 
 std::unique_ptr<media::Renderer> WebEngineMediaRendererFactory::CreateRenderer(
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
     const scoped_refptr<base::TaskRunner>& worker_task_runner,
     media::AudioRendererSink* audio_renderer_sink,
     media::VideoRendererSink* video_renderer_sink,

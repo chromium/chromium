@@ -64,7 +64,7 @@ class WebGLWebCodecsVideoFrame final : public WebGLExtension {
 
   std::unique_ptr<media::GpuMemoryBufferVideoFramePool> gpu_memory_buffer_pool_;
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   scoped_refptr<media::VideoFrame> hardware_video_frame_;
 };
 

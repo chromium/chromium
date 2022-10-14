@@ -37,7 +37,7 @@ void StreamProvider::MediaStream::CreateOnMainThread(
     RpcMessenger* rpc_messenger,
     Type type,
     int32_t handle,
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
+    const scoped_refptr<base::SequencedTaskRunner>& media_task_runner,
     base::OnceCallback<void(MediaStream::UniquePtr)> callback) {
   MediaStream::UniquePtr stream(
       new MediaStream(rpc_messenger, type, handle, media_task_runner),
@@ -54,7 +54,7 @@ StreamProvider::MediaStream::MediaStream(
     RpcMessenger* rpc_messenger,
     Type type,
     int remote_handle,
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner)
+    const scoped_refptr<base::SequencedTaskRunner>& media_task_runner)
     : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       media_task_runner_(media_task_runner),
       rpc_messenger_(rpc_messenger),
@@ -81,7 +81,7 @@ StreamProvider::MediaStream::~MediaStream() {
 }
 
 void StreamProvider::MediaStream::Destroy() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   // Invalid weak pointers to prevent |this| from receiving RPC calls on the
   // media thread.
@@ -107,7 +107,7 @@ void StreamProvider::MediaStream::SendRpcMessageOnMainThread(
 
 void StreamProvider::MediaStream::Initialize(
     base::OnceClosure init_done_callback) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(init_done_callback);
 
   if (init_done_callback_) {
@@ -126,7 +126,7 @@ void StreamProvider::MediaStream::Initialize(
 
 void StreamProvider::MediaStream::InitializeDataPipe(
     mojo::ScopedDataPipeConsumerHandle data_pipe) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   decoder_buffer_reader_ =
       std::make_unique<MojoDecoderBufferReader>(std::move(data_pipe));
@@ -135,7 +135,7 @@ void StreamProvider::MediaStream::InitializeDataPipe(
 
 void StreamProvider::MediaStream::ReceiveFrame(uint32_t count,
                                                mojom::DecoderBufferPtr buffer) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(decoder_buffer_reader_);
 
   auto callback = BindToCurrentLoop(
@@ -145,7 +145,7 @@ void StreamProvider::MediaStream::ReceiveFrame(uint32_t count,
 }
 
 void StreamProvider::MediaStream::FlushUntil(uint32_t count) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if (count < current_frame_count_)
     return;
@@ -168,7 +168,7 @@ void StreamProvider::MediaStream::FlushUntil(uint32_t count) {
 
 void StreamProvider::MediaStream::OnReceivedRpc(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message->handle() == rpc_handle_);
 
   switch (message->proc()) {
@@ -185,7 +185,7 @@ void StreamProvider::MediaStream::OnReceivedRpc(
 
 void StreamProvider::MediaStream::OnInitializeCallback(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   const openscreen::cast::DemuxerStreamInitializeCallback callback_message =
       message->demuxerstream_initializecb_rpc();
   if (callback_message.type() != type_) {
@@ -231,7 +231,7 @@ void StreamProvider::MediaStream::OnInitializeCallback(
 }
 
 void StreamProvider::MediaStream::CompleteInitialize() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   // Initialization finished when received RPC_DS_INITIALIZE_CALLBACK and
   // |decoder_buffer_reader_| is created.
@@ -248,7 +248,7 @@ void StreamProvider::MediaStream::CompleteInitialize() {
 
 void StreamProvider::MediaStream::OnReadUntilCallback(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if (!read_until_sent_) {
     OnError("Unexpected ReadUntilCallback");
@@ -325,7 +325,7 @@ void StreamProvider::MediaStream::SendReadUntil() {
 }
 
 void StreamProvider::MediaStream::Read(ReadCB read_cb) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(read_complete_callback_.is_null());
   DCHECK(read_cb);
 
@@ -346,7 +346,7 @@ void StreamProvider::MediaStream::Read(ReadCB read_cb) {
 }
 
 void StreamProvider::MediaStream::CompleteRead(DemuxerStream::Status status) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   switch (status) {
     case DemuxerStream::kConfigChanged:
@@ -401,7 +401,7 @@ bool StreamProvider::MediaStream::SupportsConfigChanges() {
 void StreamProvider::MediaStream::AppendBuffer(
     uint32_t count,
     scoped_refptr<DecoderBuffer> buffer) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   // Drop flushed frame.
   if (count < current_frame_count_)
@@ -426,7 +426,7 @@ void StreamProvider::MediaStream::OnError(const std::string& error) {
 
 StreamProvider::StreamProvider(
     ReceiverController* receiver_controller,
-    const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner)
+    const scoped_refptr<base::SequencedTaskRunner>& media_task_runner)
     : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       media_task_runner_(media_task_runner),
       receiver_controller_(receiver_controller),
@@ -459,7 +459,7 @@ std::string StreamProvider::GetDisplayName() const {
 
 void StreamProvider::Initialize(DemuxerHost* host,
                                 PipelineStatusCallback status_cb) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   init_done_callback_ = std::move(status_cb);
   CompleteInitialize();
 }
@@ -514,7 +514,7 @@ void StreamProvider::OnSelectedVideoTrackChanged(
 }
 
 void StreamProvider::Destroy() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if (init_done_callback_)
     std::move(init_done_callback_).Run(PIPELINE_ERROR_ABORT);
@@ -544,7 +544,7 @@ void StreamProvider::OnReceivedRpc(
 
 void StreamProvider::OnAcquireDemuxer(
     std::unique_ptr<openscreen::cast::RpcMessage> message) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(message->has_acquire_demuxer_rpc());
 
   int32_t audio_demuxer_handle =
@@ -578,7 +578,7 @@ void StreamProvider::OnAcquireDemuxer(
 }
 
 void StreamProvider::OnAudioStreamCreated(MediaStream::UniquePtr stream) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   audio_stream_ = std::move(stream);
   audio_stream_->Initialize(base::BindOnce(
       &StreamProvider::OnAudioStreamInitialized, media_weak_this_));
@@ -586,7 +586,7 @@ void StreamProvider::OnAudioStreamCreated(MediaStream::UniquePtr stream) {
 }
 
 void StreamProvider::OnVideoStreamCreated(MediaStream::UniquePtr stream) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   video_stream_ = std::move(stream);
   video_stream_->Initialize(base::BindOnce(
       &StreamProvider::OnVideoStreamInitialized, media_weak_this_));
@@ -594,7 +594,7 @@ void StreamProvider::OnVideoStreamCreated(MediaStream::UniquePtr stream) {
 }
 
 void StreamProvider::InitializeDataPipe() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   if ((has_audio_ && !audio_stream_) || (has_video_ && !video_stream_))
     return;
@@ -617,7 +617,7 @@ void StreamProvider::OnVideoStreamInitialized() {
 }
 
 void StreamProvider::CompleteInitialize() {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
+  DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
 
   // Haven't receive RpcAcquireRenderer message
   if (!has_audio_ && !has_video_)

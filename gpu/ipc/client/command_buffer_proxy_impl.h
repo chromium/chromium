@@ -25,6 +25,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/client/gpu_control.h"
@@ -82,7 +83,7 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
       scoped_refptr<GpuChannelHost> channel,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
       int32_t stream_id,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::SharedMemoryMapper* transfer_buffer_mapper = nullptr);
 
   CommandBufferProxyImpl(const CommandBufferProxyImpl&) = delete;
@@ -289,7 +290,7 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   raw_ptr<base::HistogramBase> uma_histogram_ensure_work_visible_duration_ =
       nullptr;
 
-  scoped_refptr<base::SingleThreadTaskRunner> callback_thread_;
+  scoped_refptr<base::SequencedTaskRunner> callback_thread_;
 
   // Optional shared memory mapper to use when creating transfer buffers.
   // TODO(1321521) remove this member and instead let callers of

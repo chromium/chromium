@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -972,13 +973,13 @@ RendererBlinkPlatformImpl::GetGpuFactories() {
   return render_thread->GetGpuFactories();
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
+scoped_refptr<base::SequencedTaskRunner>
 RendererBlinkPlatformImpl::MediaThreadTaskRunner() {
   auto* render_thread = RenderThreadImpl::current();
   if (!render_thread)
     return nullptr;
 
-  return render_thread->GetMediaThreadTaskRunner();
+  return render_thread->GetMediaSequencedTaskRunner();
 }
 
 base::WeakPtr<media::DecoderFactory>

@@ -25,6 +25,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
@@ -400,7 +401,7 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
     media::MediaPlayerLoggingID player_id,
     WebMediaPlayerBuilder::DeferLoadCB defer_load_cb,
     scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     scoped_refptr<base::TaskRunner> worker_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner>

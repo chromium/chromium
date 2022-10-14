@@ -5,7 +5,7 @@
 #ifndef CONTENT_RENDERER_MEDIA_WIN_DCOMP_TEXTURE_WRAPPER_IMPL_H_
 #define CONTENT_RENDERER_MEDIA_WIN_DCOMP_TEXTURE_WRAPPER_IMPL_H_
 
-#include "base/task/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/renderer/media/win/dcomp_texture_factory.h"
@@ -38,7 +38,7 @@ class CONTENT_EXPORT DCOMPTextureWrapperImpl
  public:
   static std::unique_ptr<media::DCOMPTextureWrapper> Create(
       scoped_refptr<DCOMPTextureFactory> factory,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner);
 
   ~DCOMPTextureWrapperImpl() override;
 
@@ -61,7 +61,7 @@ class CONTENT_EXPORT DCOMPTextureWrapperImpl
  private:
   DCOMPTextureWrapperImpl(
       scoped_refptr<DCOMPTextureFactory> factory,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> media_task_runner);
   DCOMPTextureWrapperImpl(const DCOMPTextureWrapperImpl&) = delete;
   DCOMPTextureWrapperImpl& operator=(const DCOMPTextureWrapperImpl&) = delete;
 
@@ -73,7 +73,7 @@ class CONTENT_EXPORT DCOMPTextureWrapperImpl
                                  const gpu::Mailbox& image_mailbox);
 
   scoped_refptr<DCOMPTextureFactory> factory_;
-  scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
 
   gfx::Size natural_size_;  // Size of the video frames.
   gfx::Size output_size_;   // Size of the video output (on-screen size).

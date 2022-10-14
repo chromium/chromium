@@ -27,6 +27,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_decoder.h"
@@ -42,7 +43,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class SingleThreadTaskRunner;
 class TickClock;
 }  // namespace base
 
@@ -75,7 +75,7 @@ class MEDIA_EXPORT AudioRendererImpl
   //
   // |decoders| contains the AudioDecoders to use when initializing.
   AudioRendererImpl(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       AudioRendererSink* sink,
       const CreateAudioDecodersCB& create_audio_decoders_cb,
       MediaLog* media_log,
@@ -240,7 +240,7 @@ class MEDIA_EXPORT AudioRendererImpl
   void EnableSpeechRecognition();
   void TranscribeAudio(scoped_refptr<media::AudioBuffer> buffer);
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   std::unique_ptr<AudioBufferConverter> buffer_converter_;
 

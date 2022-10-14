@@ -74,7 +74,7 @@ bool ContentRendererClient::DeferMediaLoad(RenderFrame* render_frame,
 std::unique_ptr<media::Demuxer> ContentRendererClient::OverrideDemuxerForUrl(
     RenderFrame* render_frame,
     const GURL& url,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   return nullptr;
 }
 

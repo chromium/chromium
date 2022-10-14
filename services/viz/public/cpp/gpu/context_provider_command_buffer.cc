@@ -19,8 +19,10 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
@@ -84,11 +86,11 @@ ContextProviderCommandBuffer::ContextProviderCommandBuffer(
       buffer_mapper_(buffer_mapper) {
   DCHECK(main_thread_checker_.CalledOnValidThread());
   DCHECK(channel_);
-  context_thread_checker_.DetachFromThread();
+  context_sequence_checker_.DetachFromSequence();
 }
 
 ContextProviderCommandBuffer::~ContextProviderCommandBuffer() {
-  DCHECK(context_thread_checker_.CalledOnValidThread());
+  DCHECK(context_sequence_checker_.CalledOnValidSequence());
 
   if (bind_tried_ && bind_result_ == gpu::ContextResult::kSuccess) {
     // Clear the lock to avoid DCHECKs that the lock is being held during
@@ -125,8 +127,9 @@ void ContextProviderCommandBuffer::Release() const {
 }
 
 gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentThread() {
+  // TODO(crbug.com/1144329): rename method to indicate sequence affinity.
   // This is called on the thread the context will be used.
-  DCHECK(context_thread_checker_.CalledOnValidThread());
+  DCHECK(context_sequence_checker_.CalledOnValidSequence());
 
   if (bind_tried_)
     return bind_result_;
@@ -135,11 +138,9 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentThread() {
   // Any early-out should set this to a failure code and return it.
   bind_result_ = gpu::ContextResult::kSuccess;
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      default_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner = default_task_runner_;
   if (!task_runner)
-    task_runner = base::ThreadTaskRunnerHandle::Get();
-
+    task_runner = base::SequencedTaskRunnerHandle::Get();
   // This command buffer is a client-side proxy to the command buffer in the
   // GPU process.
   command_buffer_ = std::make_unique<gpu::CommandBufferProxyImpl>(
@@ -337,8 +338,10 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentThread() {
   shared_image_interface_ = channel_->CreateClientSharedImageInterface();
   DCHECK(shared_image_interface_);
 
-  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
-      this, "ContextProviderCommandBuffer", std::move(task_runner));
+  base::trace_event::MemoryDumpManager::GetInstance()
+      ->RegisterDumpProviderWithSequencedTaskRunner(
+          this, "ContextProviderCommandBuffer", std::move(task_runner),
+          base::trace_event::MemoryDumpProvider::Options());
   return bind_result_;
 }
 
@@ -531,10 +534,10 @@ bool ContextProviderCommandBuffer::OnMemoryDump(
   helper_->OnMemoryDump(args, pmd);
 
   if (gr_context_) {
-    context_thread_checker_.DetachFromThread();
+    context_sequence_checker_.DetachFromSequence();
     gpu::raster::DumpGrMemoryStatistics(gr_context_->get(), pmd,
                                         gles2_impl_->ShareGroupTracingGUID());
-    context_thread_checker_.DetachFromThread();
+    context_sequence_checker_.DetachFromSequence();
   }
   return true;
 }
