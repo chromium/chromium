@@ -57,39 +57,14 @@ export function getGSuiteAppRoot(node) {
  * @implements {SelectToSpeakUiListener}
  */
 export class SelectToSpeak {
+  /** Please keep fields in alphabetical order. */
   constructor() {
     /**
-     * The current state of the SelectToSpeak extension, from
-     * SelectToSpeakState.
-     * @private {!chrome.accessibilityPrivate.SelectToSpeakState}
+     * The start char index of the word to be spoken. The index is relative
+     * to the text content of the current node group.
+     * @private {number}
      */
-    this.state_ = SelectToSpeakState.INACTIVE;
-
-    /** @type {InputHandler} */
-    this.inputHandler_ = null;
-
-    /** @private {chrome.automation.AutomationNode} */
-    this.desktop_;
-
-    chrome.automation.getDesktop(desktop => {
-      this.desktop_ = desktop;
-
-      // After the user selects a region of the screen, we do a hit test at
-      // the center of that box using the automation API. The result of the
-      // hit test is a MOUSE_RELEASED accessibility event.
-      desktop.addEventListener(
-          EventType.MOUSE_RELEASED, evt => this.onAutomationHitTest_(evt),
-          true);
-    });
-
-    /**
-     * The node groups to be spoken. We process content into node groups and
-     * pass one node group at a time to the TTS engine. Note that we do not use
-     * node groups for user-selected text in Gsuite. See more details in
-     * readNodesBetweenPositions_.
-     * @private {!Array<!ParagraphUtils.NodeGroup>}
-     */
-    this.currentNodeGroups_ = [];
+    this.currentCharIndex_ = -1;
 
     /**
      * The index for the node group currently being spoken in
@@ -119,27 +94,38 @@ export class SelectToSpeak {
     this.currentNodeGroupItemIndex_ = -1;
 
     /**
+     * The node groups to be spoken. We process content into node groups and
+     * pass one node group at a time to the TTS engine. Note that we do not use
+     * node groups for user-selected text in Gsuite. See more details in
+     * readNodesBetweenPositions_.
+     * @private {!Array<!ParagraphUtils.NodeGroup>}
+     */
+    this.currentNodeGroups_ = [];
+
+    /**
      * The indexes within the current node group item representing the word
      * currently being spoken. Only updated if word highlighting is enabled.
      * @private {?{start: number, end: number}}
      */
     this.currentNodeWord_ = null;
 
-    /**
-     * The start char index of the word to be spoken. The index is relative
-     * to the text content of the current node group.
-     * @private {number}
-     */
-    this.currentCharIndex_ = -1;
+    /** @private {chrome.automation.AutomationNode} */
+    this.desktop_;
 
     /**
-     * Whether the current nodes support use of the navigation panel.
+     * Feature flag controlling STS language detection integration.
      * @private {boolean}
      */
-    this.supportsNavigationPanel_ = true;
+    this.enableLanguageDetectionIntegration_ = false;
 
-    /** @private {boolean} */
-    this.scrollToSpokenNode_ = false;
+    /**
+     * Feature flag controlling availability of enhanced network voices
+     * @private {boolean}
+     */
+    this.enhancedVoicesFlag_ = false;
+
+    /** @private {InputHandler} */
+    this.inputHandler_ = null;
 
     /**
      * The interval ID from a call to setInterval, which is set whenever
@@ -151,32 +137,64 @@ export class SelectToSpeak {
     /** @private {Audio} */
     this.null_selection_tone_ = new Audio('earcons/null_selection.ogg');
 
+    /**
+     * Function to be called when a state change request is received from the
+     * accessibilityPrivate API.
+     * @protected {?function()}
+     */
+    this.onStateChangeRequestedCallbackForTest_ = null;
+
     /** @private {PrefsManager} */
     this.prefsManager_ = new PrefsManager();
-    this.prefsManager_.initPreferences();
 
-    /** @private {!UiManager} */
-    this.uiManager_ = new UiManager(this.prefsManager_, this /* listener */);
+    /** @private {boolean} */
+    this.scrollToSpokenNode_ = false;
+
+    /** @private {number} Speech rate multiplier. */
+    this.speechRateMultiplier_ = 1.0;
+
+    /**
+     * The current state of the SelectToSpeak extension, from
+     * SelectToSpeakState.
+     * @private {!chrome.accessibilityPrivate.SelectToSpeakState}
+     */
+    this.state_ = SelectToSpeakState.INACTIVE;
+
+    /**
+     * Whether the current nodes support use of the navigation panel.
+     * @private {boolean}
+     */
+    this.supportsNavigationPanel_ = true;
+
+    /** @private {number} Default speech rate set in system settings. */
+    this.systemSpeechRate_ = 1.0;
 
     /** @private {!TtsManager} */
     this.ttsManager_ = new TtsManager();
 
+    /** @private {!UiManager} */
+    this.uiManager_ = new UiManager(this.prefsManager_, this /* listener */);
+
+    this.init_();
+  }
+
+  /** @private */
+  init_() {
+    chrome.automation.getDesktop(desktop => {
+      this.desktop_ = desktop;
+
+      // After the user selects a region of the screen, we do a hit test at
+      // the center of that box using the automation API. The result of the
+      // hit test is a MOUSE_RELEASED accessibility event.
+      desktop.addEventListener(
+          EventType.MOUSE_RELEASED, evt => this.onAutomationHitTest_(evt),
+          true);
+    });
+
+    this.prefsManager_.initPreferences();
+
     this.runContentScripts_();
     this.setUpEventListeners_();
-
-    /**
-     * Function to be called when a state change request is received from the
-     * accessibilityPrivate API.
-     * @type {?function()}
-     * @protected
-     */
-    this.onStateChangeRequestedCallbackForTest_ = null;
-
-    /**
-     * Feature flag controlling STS language detection integration.
-     * @type {boolean}
-     */
-    this.enableLanguageDetectionIntegration_ = false;
 
     // TODO(chrishall): do we want to (also?) expose this in preferences?
     chrome.commandLinePrivate.hasSwitch(
@@ -184,27 +202,17 @@ export class SelectToSpeak {
           this.enableLanguageDetectionIntegration_ = result;
         });
 
-    /**
-     * Feature flag controlling availability of enhanced network voices
-     * @type {boolean}
-     */
-    this.enhancedVoicesFlag_ = false;
     chrome.accessibilityPrivate.isFeatureEnabled(
         AccessibilityFeature.ENHANCED_NETWORK_VOICES, result => {
           this.enhancedVoicesFlag_ = result;
         });
 
-    /** @private {number} Default speech rate set in system settings. */
-    this.systemSpeechRate_ = 1.0;
     chrome.settingsPrivate.getPref(SPEECH_RATE_KEY, pref => {
       if (!pref) {
         return;
       }
       this.systemSpeechRate_ = /** @type {number} */ (pref.value);
     });
-
-    /** @private {number} Speech rate multiplier. */
-    this.speechRateMultiplier_ = 1.0;
   }
 
   /**

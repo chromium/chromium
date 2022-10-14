@@ -6,54 +6,13 @@
  * Manages getting and storing user preferences.
  */
 export class PrefsManager {
+  /** Please keep fields in alphabetical order. */
   constructor() {
-    /** @private {?string} */
-    this.voiceNameFromPrefs_ = null;
-
-    /** @private {?string} */
-    this.voiceNameFromLocale_ = null;
-
-    /** @private {?string} */
-    this.enhancedVoiceName_ = PrefsManager.DEFAULT_NETWORK_VOICE;
-
-    /** @private {Set<string>} */
-    this.validVoiceNames_ = new Set();
-
-    /** @private {Map<string, string>} */
-    this.extensionForVoice_ = new Map();
-
-    /** @private {number} */
-    this.speechRate_ = 1.0;
-
-    /** @private {number} */
-    this.speechPitch_ = 1.0;
-
-    /** @private {boolean} */
-    this.wordHighlight_ = true;
-
-    /** @const {string} */
-    this.color_ = '#da36e8';
-
-    /** @private {string} */
-    this.highlightColor_ = '#5e9bff';
-
-    /** @private {boolean} */
-    this.migrationInProgress_ = false;
-
     /** @private {boolean} */
     this.backgroundShadingEnabled_ = false;
 
-    /** @private {boolean} */
-    this.navigationControlsEnabled_ = true;
-
-    /**
-     * A pref indicating whether the user enables the network voices. The pref
-     * is synced to local storage as "enhancedNetworkVoices". Use
-     * this.enhancedNetworkVoicesEnabled() to refer whether to enable the
-     * network voices instead of using this pref directly.
-     * @private {boolean}
-     */
-    this.enhancedNetworkVoicesEnabled_ = false;
+    /** @const {string} */
+    this.color_ = '#da36e8';
 
     /**
      * Whether to allow enhanced network voices in Select-to-Speak. Unlike
@@ -66,8 +25,50 @@ export class PrefsManager {
      */
     this.enhancedNetworkVoicesAllowed_ = true;
 
+    /**
+     * A pref indicating whether the user enables the network voices. The pref
+     * is synced to local storage as "enhancedNetworkVoices". Use
+     * this.enhancedNetworkVoicesEnabled() to refer whether to enable the
+     * network voices instead of using this pref directly.
+     * @private {boolean}
+     */
+    this.enhancedNetworkVoicesEnabled_ = false;
+
+    /** @private {?string} */
+    this.enhancedVoiceName_ = PrefsManager.DEFAULT_NETWORK_VOICE;
+
     /** @private {boolean} */
     this.enhancedVoicesDialogShown_ = false;
+
+    /** @private {Map<string, string>} */
+    this.extensionForVoice_ = new Map();
+
+    /** @private {string} */
+    this.highlightColor_ = '#5e9bff';
+
+    /** @private {boolean} */
+    this.migrationInProgress_ = false;
+
+    /** @private {boolean} */
+    this.navigationControlsEnabled_ = true;
+
+    /** @private {number} */
+    this.speechPitch_ = 1.0;
+
+    /** @private {number} */
+    this.speechRate_ = 1.0;
+
+    /** @private {Set<string>} */
+    this.validVoiceNames_ = new Set();
+
+    /** @private {?string} */
+    this.voiceNameFromLocale_ = null;
+
+    /** @private {?string} */
+    this.voiceNameFromPrefs_ = null;
+
+    /** @private {boolean} */
+    this.wordHighlight_ = true;
   }
 
   /**

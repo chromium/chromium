@@ -86,18 +86,16 @@ export class SelectToSpeakUiListener {
  */
 export class UiManager {
   /**
+   * Please keep fields in alphabetical order.
    * @param {!PrefsManager} prefsManager
    * @param {!SelectToSpeakUiListener} listener
    */
   constructor(prefsManager, listener) {
-    /** @private {!PrefsManager} */
-    this.prefsManager_ = prefsManager;
+    /** @private {?chrome.automation.AutomationNode} */
+    this.desktop_ = null;
 
     /** @private {!SelectToSpeakUiListener} */
     this.listener_ = listener;
-
-    /** @private {?chrome.automation.AutomationNode} */
-    this.desktop_ = null;
 
     /**
      * Button in the floating panel, useful for restoring focus to the panel.
@@ -105,6 +103,14 @@ export class UiManager {
      */
     this.panelButton_ = null;
 
+    /** @private {!PrefsManager} */
+    this.prefsManager_ = prefsManager;
+
+    this.init_();
+  }
+
+  /** @private */
+  init_() {
     // Cache desktop and listen to focus changes.
     chrome.automation.getDesktop(desktop => {
       this.desktop_ = desktop;

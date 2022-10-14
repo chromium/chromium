@@ -7,24 +7,13 @@
  */
 
 export class TtsManager {
+  /** Please keep fields in alphabetical order. */
   constructor() {
-    /**
-     * The text currently being spoken.
-     * @private {string|null}
-     */
-    this.text_ = null;
-
     /**
      * The TTS options that the client passed in.
      * @private {!chrome.tts.TtsOptions}
      */
     this.clientTtsOptions_ = /** @type {!chrome.tts.TtsOptions} */ ({});
-
-    /**
-     * The fallback voice to use if TTS fails.
-     * @private {string|undefined}
-     */
-    this.fallbackVoice_ = undefined;
 
     /**
      * The current char index to the |this.text_| indicating the current spoken
@@ -35,10 +24,10 @@ export class TtsManager {
     this.currentCharIndex_ = 0;
 
     /**
-     * Whether TTS is speaking.
-     * @private {boolean}
+     * The fallback voice to use if TTS fails.
+     * @private {string|undefined}
      */
-    this.isSpeaking_ = false;
+    this.fallbackVoice_ = undefined;
 
     /**
      * Whether the last TTS request was made with a network voice.
@@ -46,10 +35,22 @@ export class TtsManager {
     this.isNetworkVoice_ = false;
 
     /**
+     * Whether TTS is speaking.
+     * @private {boolean}
+     */
+    this.isSpeaking_ = false;
+
+    /**
      * Function to be called when STS finishes a pausing request.
      * @private {?function()}
      */
     this.pauseCompleteCallback_ = null;
+
+    /**
+     * The text currently being spoken.
+     * @private {string|null}
+     */
+    this.text_ = null;
   }
 
   /**

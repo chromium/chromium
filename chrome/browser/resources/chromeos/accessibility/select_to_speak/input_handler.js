@@ -34,13 +34,13 @@ let SelectToSpeakCallbacks;
  * Class to handle user-input, from mouse, keyboard, and copy-paste events.
  */
 export class InputHandler {
-  /** @param {SelectToSpeakCallbacks} callbacks */
+  /**
+   * Please keep fields in alphabetical order.
+   * @param {!SelectToSpeakCallbacks} callbacks
+   */
   constructor(callbacks) {
-    /** @private {SelectToSpeakCallbacks} */
+    /** @private {!SelectToSpeakCallbacks} */
     this.callbacks_ = callbacks;
-
-    /** @private {boolean} */
-    this.trackingMouse_ = false;
 
     /** @private {boolean} */
     this.didTrackMouse_ = false;
@@ -57,11 +57,13 @@ export class InputHandler {
     /** @private {!Set<number>} */
     this.keysPressedTogether_ = new Set();
 
-    /** @private {{x: number, y: number}} */
-    this.mouseStart_ = {x: 0, y: 0};
-
-    /** @private {{x: number, y: number}} */
-    this.mouseEnd_ = {x: 0, y: 0};
+    /**
+     * The timestamp at which the last clipboard data clear was requested.
+     * Used to make sure we don't clear the clipboard on a user's request,
+     * but only after the clipboard was used to read selected text.
+     * @private {Date}
+     */
+    this.lastClearClipboardDataTime_ = new Date(0);
 
     /**
      * The timestamp at which clipboard data read was requested by the user
@@ -72,13 +74,14 @@ export class InputHandler {
      */
     this.lastReadClipboardDataTime_ = new Date(0);
 
-    /**
-     * The timestamp at which the last clipboard data clear was requested.
-     * Used to make sure we don't clear the clipboard on a user's request,
-     * but only after the clipboard was used to read selected text.
-     * @private {Date}
-     */
-    this.lastClearClipboardDataTime_ = new Date(0);
+    /** @private {{x: number, y: number}} */
+    this.mouseStart_ = {x: 0, y: 0};
+
+    /** @private {{x: number, y: number}} */
+    this.mouseEnd_ = {x: 0, y: 0};
+
+    /** @private {boolean} */
+    this.trackingMouse_ = false;
   }
 
   /** @private */
