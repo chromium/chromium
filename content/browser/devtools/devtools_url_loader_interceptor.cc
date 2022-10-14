@@ -259,6 +259,96 @@ struct ResponseMetadata {
   network::URLLoaderCompletionStatus status;
 };
 
+class HeadersOverride {
+ public:
+  static std::unique_ptr<HeadersOverride> SaveAndOverride(
+      network::ResourceRequest& request,
+      DevToolsURLLoaderInterceptor::Modifications::HeadersVector
+          modified_headers) {
+    std::unique_ptr<HeadersOverride> instance(new HeadersOverride(request));
+    DCHECK(request.headers.IsEmpty());
+
+    for (const auto& entry : modified_headers) {
+      if (base::EqualsCaseInsensitiveASCII(entry.first,
+                                           net::HttpRequestHeaders::kReferer)) {
+        request.referrer = GURL(entry.second);
+        request.referrer_policy = net::ReferrerPolicy::NEVER_CLEAR;
+      } else {
+        request.headers.SetHeader(entry.first, entry.second);
+      }
+    }
+    return instance;
+  }
+
+  static void Revert(std::unique_ptr<HeadersOverride> instance) {
+    instance->request_.headers = std::move(instance->original_headers_);
+    instance->request_.referrer = instance->original_referrer_;
+    instance->request_.referrer_policy = instance->original_referrer_policy_;
+  }
+
+  static void RevertForFollowRedirect(
+      std::unique_ptr<HeadersOverride> instance,
+      std::vector<std::string>& removed_headers,
+      net::HttpRequestHeaders& modified_headers) {
+    ComputeModifications(instance->request_.headers,
+                         instance->original_headers_, removed_headers,
+                         modified_headers);
+    Revert(std::move(instance));
+  }
+
+  // If the higher-level URLLoader performs any header modifications when
+  // calling `FollowRedirect()`, apply those to "original" headers, so these get
+  // applied during Revert.
+  void ApplyModifications(const std::vector<std::string>& removed_headers,
+                          const net::HttpRequestHeaders& modified_headers) {
+    for (const auto& entry : removed_headers)
+      original_headers_.RemoveHeader(entry);
+    original_headers_.MergeFrom(modified_headers);
+  }
+
+  void ModificationsForRedirect(std::vector<std::string>& removed_headers,
+                                net::HttpRequestHeaders& modified_headers) {
+    ComputeModifications(original_headers_, request_.headers, removed_headers,
+                         modified_headers);
+  }
+
+ private:
+  explicit HeadersOverride(network::ResourceRequest& request)
+      : request_(request),
+        original_headers_(std::move(request.headers)),
+        original_referrer_(request.referrer),
+        original_referrer_policy_(request.referrer_policy) {}
+
+  // Compute `remove_headers` and `modified_headers` that are needed
+  // to turn `a` into `b`.
+  static void ComputeModifications(const net::HttpRequestHeaders& a,
+                                   const net::HttpRequestHeaders& b,
+                                   std::vector<std::string>& removed_headers,
+                                   net::HttpRequestHeaders& modified_headers) {
+    DCHECK(removed_headers.empty());
+    DCHECK(modified_headers.IsEmpty());
+
+    std::map<std::string, std::string> old_headers;
+    for (const auto& entry : a.GetHeaderVector())
+      old_headers.insert({entry.key, entry.value});
+
+    for (const auto& entry : b.GetHeaderVector()) {
+      auto it = old_headers.find(entry.key);
+      if (it == old_headers.end() || it->second != entry.value)
+        modified_headers.SetHeader(entry.key, entry.value);
+      if (it != old_headers.end())
+        old_headers.erase(it);
+    }
+    for (const auto& entry : old_headers)
+      removed_headers.push_back(entry.first);
+  }
+
+  network::ResourceRequest& request_;
+  net::HttpRequestHeaders original_headers_;
+  GURL original_referrer_;
+  net::ReferrerPolicy original_referrer_policy_;
+};
+
 }  // namespace
 
 class InterceptionJob : public network::mojom::URLLoaderClient,
@@ -441,6 +531,9 @@ class InterceptionJob : public network::mojom::URLLoaderClient,
   // current request URL. Tracked for the purpose of computing the proper
   // SameSite cookies to return, which depends on the redirect chain.
   std::vector<GURL> url_chain_;
+  // In case headers are overridden, keep the original and restore them
+  // upon a redirect, so that overrides don't stick across redirects.
+  std::unique_ptr<HeadersOverride> headers_override_;
 };
 
 void DevToolsURLLoaderInterceptor::CreateJob(
@@ -951,17 +1044,21 @@ Response InterceptionJob::InnerContinueRequest(
 
   if (state_ == State::kFollowRedirect) {
     if (!modifications->modified_url.isJust()) {
-      // TODO(caseq): report error modifications other than headers are present.
+      // TODO(caseq): report error if other modifications are present.
       state_ = State::kRequestSent;
       std::vector<std::string> removed_headers;
       net::HttpRequestHeaders modified_headers;
-      if (modifications->modified_headers) {
-        for (const auto& entry : *modifications->modified_headers) {
-          if (entry.second.empty())
-            removed_headers.push_back(entry.first);
-          else
-            modified_headers.SetHeader(entry.first, entry.second);
+      if (!modifications->modified_headers) {
+        if (headers_override_) {
+          HeadersOverride::RevertForFollowRedirect(
+              std::move(headers_override_), removed_headers, modified_headers);
         }
+      } else {
+        headers_override_ = HeadersOverride::SaveAndOverride(
+            create_loader_params_->request,
+            std::move(*modifications->modified_headers));
+        headers_override_->ModificationsForRedirect(removed_headers,
+                                                    modified_headers);
       }
       loader_->FollowRedirect(removed_headers, modified_headers, {},
                               absl::nullopt);
@@ -1047,16 +1144,9 @@ void InterceptionJob::ApplyModificationsToRequest(
   }
 
   if (modifications->modified_headers) {
-    request->headers.Clear();
-    for (const auto& entry : *modifications->modified_headers) {
-      if (base::EqualsCaseInsensitiveASCII(entry.first,
-                                           net::HttpRequestHeaders::kReferer)) {
-        request->referrer = GURL(entry.second);
-        request->referrer_policy = net::ReferrerPolicy::NEVER_CLEAR;
-      } else {
-        request->headers.SetHeader(entry.first, entry.second);
-      }
-    }
+    DCHECK(!headers_override_);
+    headers_override_ = HeadersOverride::SaveAndOverride(
+        *request, std::move(*modifications->modified_headers));
   }
 }
 
@@ -1326,7 +1416,6 @@ std::unique_ptr<InterceptedRequestInfo> InterceptionJob::BuildRequestInfo(
     result->response_headers = head->headers;
   if (!redirected_request_id_.empty())
     result->redirected_request_id = redirected_request_id_;
-
   return result;
 }
 
@@ -1447,6 +1536,9 @@ void InterceptionJob::FollowRedirect(
 
   url_chain_.push_back(create_loader_params_->request.url);
 
+  if (headers_override_)
+    headers_override_->ApplyModifications(removed_headers, modified_headers);
+
   if (interceptor_) {
     redirected_request_id_ = current_id_;
     // Pretend that each redirect hop is a new request -- this is for
@@ -1458,7 +1550,19 @@ void InterceptionJob::FollowRedirect(
   }
   if (state_ == State::kRedirectReceived) {
     state_ = State::kRequestSent;
-    loader_->FollowRedirect(removed_headers, modified_headers,
+    if (!headers_override_) {
+      loader_->FollowRedirect(removed_headers, modified_headers,
+                              modified_cors_exempt_headers,
+                              absl::nullopt /* new_url */);
+      return;
+    }
+    // Re-compute removed and modified headers while taking original
+    // restored header values into account;
+    std::vector<std::string> removals;
+    net::HttpRequestHeaders modifications;
+    HeadersOverride::RevertForFollowRedirect(std::move(headers_override_),
+                                             removals, modifications);
+    loader_->FollowRedirect(removals, modifications,
                             modified_cors_exempt_headers,
                             absl::nullopt /* new_url */);
     return;

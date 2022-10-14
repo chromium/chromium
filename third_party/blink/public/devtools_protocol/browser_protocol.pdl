@@ -9945,7 +9945,9 @@ domain Fetch
       optional string method
       # If set, overrides the post data in the request.
       optional binary postData
-      # If set, overrides the request headers.
+      # If set, overrides the request headers. Note that the overrides do not
+      # extend to subsequent redirect hops, if a redirect happens. Another override
+      # may be applied to a different request produced by a redirect.
       optional array of HeaderEntry headers
       # If set, overrides response interception behavior for this request.
       experimental optional boolean interceptResponse

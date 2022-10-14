@@ -1,0 +1,6 @@
+Tests overridden headers don't stick if redirected request is not intercepted following a redirect
+HTTP_X_DEVTOOLS_TEST: <not set>
+HTTP_COOKIE: <not set>
+HTTP_REFERER: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+
+
