@@ -105,7 +105,7 @@ class MockQuotaManagerTest : public testing::Test {
                                      blink::mojom::StorageType type) {
     QuotaErrorOr<BucketInfo> result;
     base::RunLoop run_loop;
-    manager_->GetBucket(
+    manager_->GetBucketForTesting(
         storage_key, bucket_name, type,
         base::BindLambdaForTesting([&](QuotaErrorOr<BucketInfo> bucket) {
           result = std::move(bucket);

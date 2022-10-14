@@ -137,8 +137,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
 
   // Retrieves the BucketInfo of the bucket with `bucket_name` for
   // `storage_key` and returns it to the callback. Will return a QuotaError if a
-  // bucket does not exist or on operation failure.
-  virtual void GetBucket(
+  // bucket does not exist or on operation failure. Real code should use the ID
+  // to identify buckets, hence this is only used for testing.
+  virtual void GetBucketForTesting(
       const blink::StorageKey& storage_key,
       const std::string& bucket_name,
       blink::mojom::StorageType type,

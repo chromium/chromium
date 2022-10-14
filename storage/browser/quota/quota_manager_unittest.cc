@@ -241,8 +241,8 @@ class QuotaManagerImplTest : public testing::Test {
                                      const std::string& bucket_name,
                                      blink::mojom::StorageType storage_type) {
     base::test::TestFuture<QuotaErrorOr<BucketInfo>> future;
-    quota_manager_impl_->GetBucket(storage_key, bucket_name, storage_type,
-                                   future.GetCallback());
+    quota_manager_impl_->GetBucketForTesting(
+        storage_key, bucket_name, storage_type, future.GetCallback());
     return future.Take();
   }
 

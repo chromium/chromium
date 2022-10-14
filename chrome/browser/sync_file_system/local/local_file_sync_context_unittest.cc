@@ -431,7 +431,7 @@ TEST_F(LocalFileSyncContextTest, CreateDefaultSyncableBucket) {
   EXPECT_EQ(base::File::FILE_OK, file_system.OpenFileSystem());
 
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-  file_system.quota_manager()->proxy()->GetBucket(
+  file_system.quota_manager()->proxy()->GetBucketForTesting(
       blink::StorageKey::CreateFromStringForTesting(kOrigin1),
       storage::kDefaultBucketName, blink::mojom::StorageType::kSyncable,
       base::SequencedTaskRunnerHandle::Get(), future.GetCallback());

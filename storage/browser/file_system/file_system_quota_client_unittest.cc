@@ -221,7 +221,7 @@ class FileSystemQuotaClientTest : public testing::Test {
                           const std::string& name,
                           StorageType type) {
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    quota_manager_->GetBucket(
+    quota_manager_->GetBucketForTesting(
         blink::StorageKey::CreateFromStringForTesting(origin), name, type,
         future.GetCallback());
     auto bucket = future.Take();

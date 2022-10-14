@@ -130,7 +130,7 @@ TEST_F(BucketManagerHostTest, OpenBucket) {
   // Check that bucket is in QuotaDatabase.
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
       bucket_future;
-  quota_manager_->GetBucket(
+  quota_manager_->GetBucketForTesting(
       blink::StorageKey::CreateFromStringForTesting(kTestUrl), "inbox_bucket",
       blink::mojom::StorageType::kTemporary, bucket_future.GetCallback());
   auto result = bucket_future.Take();
@@ -203,7 +203,7 @@ TEST_F(BucketManagerHostTest, DeleteBucket) {
   // Check that bucket is not in QuotaDatabase.
   base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>>
       bucket_future;
-  quota_manager_->GetBucket(
+  quota_manager_->GetBucketForTesting(
       blink::StorageKey::CreateFromStringForTesting(kTestUrl), "inbox_bucket",
       blink::mojom::StorageType::kTemporary, bucket_future.GetCallback());
   auto result = bucket_future.Take();

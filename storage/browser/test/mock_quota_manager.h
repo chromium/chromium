@@ -74,10 +74,11 @@ class MockQuotaManager : public QuotaManager {
 
   // Overrides QuotaManager's implementation to fetch from an internal
   // container populated by calls to GetOrCreateBucket.
-  void GetBucket(const blink::StorageKey& storage_key,
-                 const std::string& bucket_name,
-                 blink::mojom::StorageType type,
-                 base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
+  void GetBucketForTesting(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType type,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>) override;
 
   void GetBucketsForStorageKey(
       const blink::StorageKey& storage_key,

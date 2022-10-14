@@ -213,10 +213,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // and returns it to the callback. Will return a QuotaError if the bucket does
   // not exist or on operation failure.
   // This method is declared as virtual to allow test code to override it.
-  virtual void GetBucket(const blink::StorageKey& storage_key,
-                         const std::string& bucket_name,
-                         blink::mojom::StorageType type,
-                         base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
+  virtual void GetBucketForTesting(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType type,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)>);
 
   // Retrieves the BucketInfo of the bucket with `bucket_id` and returns it to
   // the callback. Will return a QuotaError if the bucket does not exist or on

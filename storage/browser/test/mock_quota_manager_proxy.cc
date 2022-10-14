@@ -50,15 +50,15 @@ void MockQuotaManagerProxy::CreateBucketForTesting(
   }
 }
 
-void MockQuotaManagerProxy::GetBucket(
+void MockQuotaManagerProxy::GetBucketForTesting(
     const blink::StorageKey& storage_key,
     const std::string& bucket_name,
     blink::mojom::StorageType type,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   if (mock_quota_manager_) {
-    mock_quota_manager_->GetBucket(storage_key, bucket_name, type,
-                                   std::move(callback));
+    mock_quota_manager_->GetBucketForTesting(storage_key, bucket_name, type,
+                                             std::move(callback));
   }
 }
 

@@ -1128,7 +1128,7 @@ void QuotaManagerImpl::CreateBucketForTesting(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void QuotaManagerImpl::GetBucket(
+void QuotaManagerImpl::GetBucketForTesting(
     const StorageKey& storage_key,
     const std::string& bucket_name,
     blink::mojom::StorageType type,

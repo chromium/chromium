@@ -133,7 +133,7 @@ void MockQuotaManager::GetBucketById(
   std::move(callback).Run(std::move(bucket));
 }
 
-void MockQuotaManager::GetBucket(
+void MockQuotaManager::GetBucketForTesting(
     const blink::StorageKey& storage_key,
     const std::string& bucket_name,
     blink::mojom::StorageType type,

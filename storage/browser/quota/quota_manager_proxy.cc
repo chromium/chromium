@@ -221,7 +221,7 @@ void QuotaManagerProxy::CreateBucketForTesting(
       storage_key, bucket_name, storage_type, std::move(respond));
 }
 
-void QuotaManagerProxy::GetBucket(
+void QuotaManagerProxy::GetBucketForTesting(
     const StorageKey& storage_key,
     const std::string& bucket_name,
     blink::mojom::StorageType type,
@@ -233,9 +233,9 @@ void QuotaManagerProxy::GetBucket(
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&QuotaManagerProxy::GetBucket, this, storage_key,
-                       bucket_name, type, std::move(callback_task_runner),
-                       std::move(callback)));
+        base::BindOnce(&QuotaManagerProxy::GetBucketForTesting, this,
+                       storage_key, bucket_name, type,
+                       std::move(callback_task_runner), std::move(callback)));
     return;
   }
 
@@ -248,8 +248,8 @@ void QuotaManagerProxy::GetBucket(
     return;
   }
 
-  quota_manager_impl_->GetBucket(storage_key, bucket_name, type,
-                                 std::move(respond));
+  quota_manager_impl_->GetBucketForTesting(  // IN-TEST
+      storage_key, bucket_name, type, std::move(respond));
 }
 
 void QuotaManagerProxy::GetBucketsForStorageKey(
