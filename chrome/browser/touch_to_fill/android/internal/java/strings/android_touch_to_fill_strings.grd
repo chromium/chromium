@@ -232,6 +232,12 @@ found in the LICENSE file.
       <message name="IDS_TOUCH_TO_FILL_SHEET_WEBAUTHN_CREDENTIAL_CONTEXT" desc="Context string for second line of a Passkey on the Touch To Fill sheet, beneath the username.">
         Use your screen lock
       </message>
+      <message name="IDS_TOUCH_TO_FILL_PASSWORD_CREDENTIAL_ACCESSIBILITY_DESCRIPTION" desc="Content description for a password credential item on the sheet list. This is not visually displayed, but is audibly read by screen readers for accessibility purposes.">
+        Password for <ph name="USERNAME">%1$s<ex>John.Doe@example.com</ex></ph>.
+      </message>
+      <message name="IDS_TOUCH_TO_FILL_PASSKEY_CREDENTIAL_ACCESSIBILITY_DESCRIPTION" desc="Content description for a passkey credential item on the sheet list. This is not visually displayed, but is audibly read by screen readers for accessibility purposes.">
+        Passkey for <ph name="USERNAME">%1$s<ex>John.Doe@example.com</ex></ph>, use your screen lock.
+      </message>
     </messages>
   </release>
 </grit>

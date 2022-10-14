@@ -171,6 +171,11 @@ class TouchToFillViewBinder {
             TextView passwordText = view.findViewById(R.id.password);
             passwordText.setText(credential.getPassword());
             passwordText.setTransformationMethod(new PasswordTransformationMethod());
+
+            String contentDescription = view.getContext().getString(
+                    R.string.touch_to_fill_password_credential_accessibility_description,
+                    credential.getFormattedUsername());
+            view.setContentDescription(contentDescription);
         } else if (propertyKey == SHOW_SUBMIT_BUTTON) {
             // Whether Touch To Fill should auto-submit a form doesn't affect the credentials list.
         } else {
@@ -202,6 +207,10 @@ class TouchToFillViewBinder {
             usernameText.setText(credential.getUsername());
             TextView descriptionText = view.findViewById(R.id.webauthn_credential_context);
             descriptionText.setText(R.string.touch_to_fill_sheet_webauthn_credential_context);
+            String contentDescription = view.getContext().getString(
+                    R.string.touch_to_fill_passkey_credential_accessibility_description,
+                    credential.getUsername());
+            view.setContentDescription(contentDescription);
         } else if (propertyKey == SHOW_WEBAUTHN_SUBMIT_BUTTON) {
             // Ignore.
         } else {

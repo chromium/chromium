@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.touch_to_fill;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -26,6 +27,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MA
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
 
 import static java.util.Arrays.asList;
 
@@ -53,6 +55,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.HeaderProperties;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -81,6 +84,7 @@ public class TouchToFillViewTest {
             new Credential("", "***", "No Username", "m.example.xyz", true, false, 0);
     private static final Credential BOB =
             new Credential("Bob", "***", "Bob", "mobile.example.xyz", true, false, 0);
+    private static final WebAuthnCredential CAM = new WebAuthnCredential("Cam", "12345");
     private static final Credential NIK =
             new Credential("Nik", "***", "Nik", "group.xyz", false, true, 0);
 
@@ -435,6 +439,41 @@ public class TouchToFillViewTest {
         verify(mDismissHandler).onResult(BottomSheetController.StateChangeReason.NONE);
     }
 
+    @Test
+    @MediumTest
+    public void testPasswordCredentialAccessibilityDescription() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(SHEET_ITEMS).addAll(Collections.singletonList(buildCredentialItem(ANA)));
+            mModel.set(VISIBLE, true);
+        });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertNotNull(getCredentials().getChildAt(0));
+        assertEquals(getCredentials().getChildAt(0).getContentDescription(),
+                getActivity().getString(
+                        R.string.touch_to_fill_password_credential_accessibility_description,
+                        ANA.getFormattedUsername()));
+    }
+
+    @Test
+    @MediumTest
+    public void testPasskeyCredentialAccessibilityDescription() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel.get(SHEET_ITEMS)
+                    .addAll(Collections.singletonList(buildWebAuthnCredentialItem(CAM)));
+            mModel.set(VISIBLE, true);
+        });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertNotNull(getCredentials().getChildAt(0));
+        assertEquals(getCredentials().getChildAt(0).getContentDescription(),
+                getActivity().getString(
+                        R.string.touch_to_fill_passkey_credential_accessibility_description,
+                        CAM.getUsername()));
+    }
+
     private ChromeActivity getActivity() {
         return mActivityTestRule.getActivity();
     }
@@ -467,6 +506,14 @@ public class TouchToFillViewTest {
     private MVCListAdapter.ListItem buildCredentialItem(Credential credential) {
         return buildSheetItem(
                 TouchToFillProperties.ItemType.CREDENTIAL, credential, mCredentialCallback, false);
+    }
+
+    private MVCListAdapter.ListItem buildWebAuthnCredentialItem(WebAuthnCredential credential) {
+        return new MVCListAdapter.ListItem(TouchToFillProperties.ItemType.WEBAUTHN_CREDENTIAL,
+                new PropertyModel
+                        .Builder(TouchToFillProperties.WebAuthnCredentialProperties.ALL_KEYS)
+                        .with(WEBAUTHN_CREDENTIAL, credential)
+                        .build());
     }
 
     private MVCListAdapter.ListItem buildConfirmationButton(
