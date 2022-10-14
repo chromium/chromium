@@ -30,6 +30,8 @@ js_library("service_worker") {
     "evil/test.js",
     "get_all/sw.js",
     "get_all/test.js",
+    "get_metadata/sw.js",
+    "get_metadata/test.js",
     "helpers.js",
     "move_entry/sw.js",
     "move_entry/test.js",

@@ -66,6 +66,8 @@ function textToBuffer(text) {
 
 class Entry {
   /**
+   * @param {string} key name identifying the entry in a directory (separate
+   *    from name in the metadata to allow returning a different value there).
    * @param {{
    *  name: string,
    *  isDirectory: boolean,
@@ -75,12 +77,12 @@ class Entry {
    * @param {?string} contents
    * @param {Array<!Entry>} children
    */
-  constructor(metadata, contents, children) {
+  constructor(key, metadata, contents, children) {
+    this.key = key;
     this.metadata = metadata;
     this.contents = contents;
     /** @type {!Object<string, !Entry>} */
-    this.children =
-        Object.fromEntries((children || []).map(e => [e.metadata.name, e]));
+    this.children = Object.fromEntries((children || []).map(e => [e.key, e]));
   }
 
   /**
@@ -90,7 +92,7 @@ class Entry {
    */
   static file(name, modificationTime, contents) {
     return new Entry(
-        {
+        name, {
           name,
           isDirectory: false,
           size: contents.length,
@@ -106,8 +108,9 @@ class Entry {
    */
   static dir(name, modificationTime, children) {
     return new Entry(
-        {
+        name, {
           name,
+          size: 0,
           isDirectory: true,
           modificationTime,
         },
@@ -172,6 +175,28 @@ export class TestFileSystemProvider {
             TestFileSystemProvider.FILE_NEGATIVE_SIZE,
             new Date(2014, 1, 25, 7, 36, 12), 'A'.repeat(1024 * 2));
         entry.metadata.size = -entry.metadata.size;
+        return entry;
+      })(),
+      // File with invalid date for the modification time.
+      Entry.file(
+          TestFileSystemProvider.FILE_INVALID_DATE, new Date('Invalid date.'),
+          ''),
+      // File with only isDirectory flag as metadata.
+      (() => {
+        const entry = Entry.file(
+            TestFileSystemProvider.FILE_ONLY_TYPE,
+            new Date(2014, 1, 25, 7, 36, 12), '');
+        const {isDirectory} = entry.metadata;
+        entry.metadata = {isDirectory};
+        return entry;
+      })(),
+      // File with only size as metadata.
+      (() => {
+        const entry = Entry.file(
+            TestFileSystemProvider.FILE_ONLY_TYPE_AND_SIZE,
+            new Date(2014, 1, 25, 7, 36, 12), 'A'.repeat(1024 * 4));
+        const {isDirectory, size} = entry.metadata;
+        entry.metadata = {isDirectory, size};
         return entry;
       })(),
     ]);
@@ -294,7 +319,8 @@ export class TestFileSystemProvider {
       const {dirPath} = splitPath(path);
       // Restore Date objects after receiving data via postMessage.
       file.metadata.modificationTime = new Date(file.metadata.modificationTime);
-      const entry = new Entry(file.metadata, file.contents, null);
+      const entry =
+          new Entry(file.metadata.name, file.metadata, file.contents, null);
       this.findEntryByPath(dirPath).children[entry.metadata.name] = entry;
     }
   }
@@ -420,6 +446,9 @@ export class TestFileSystemProvider {
    * @returns {?Entry}
    */
   findEntryByPath(pathString) {
+    if (pathString === '/') {
+      return this.root;
+    }
     let path = pathString.split('/');
     if (path[0] != '') {
       // Must start with "/"
@@ -599,6 +628,7 @@ export class TestFileSystemProvider {
    *     callback with an error code.
    */
   onGetMetadataRequested(options, onSuccess, onError) {
+    this.recordEvent('onGetMetadataRequested', options);
     if (options.fileSystemId !== this.fileSystemId) {
       onError(chrome.fileSystemProvider.ProviderError.SECURITY);
       return;
@@ -1044,6 +1074,31 @@ TestFileSystemProvider.FILE_INVALID_CALLBACK = 'read-invalid-callback.txt';
  * @const
  */
 TestFileSystemProvider.FILE_NEGATIVE_SIZE = 'negative-size.txt';
+
+/**
+ * File with invalid modification time.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_INVALID_DATE = 'invalid-date.txt';
+
+/**
+ * File with only type for metadata fields.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_ONLY_TYPE = 'metadata-only-type.txt';
+
+/**
+ * File with only size for metadata fields.
+ *
+ * @type {string}
+ * @const
+ */
+TestFileSystemProvider.FILE_ONLY_TYPE_AND_SIZE =
+    'metadata-only-type-and-size.txt';
 
 /**
  * Initial contents of default testing files.
