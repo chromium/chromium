@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -37,26 +38,6 @@ enum class AppIdentityUpdate;
 enum class IconsDownloadedResult;
 
 struct IconDiff;
-
-// This enum is recorded by UMA, the numeric values must not change.
-enum ManifestUpdateResult {
-  kNoAppInScope = 0,
-  kThrottled = 1,
-  kWebContentsDestroyed = 2,
-  kAppUninstalling = 3,
-  kAppIsPlaceholder = 4,
-  kAppUpToDate = 5,
-  kAppNotEligible = 6,
-  kAppUpdateFailed = 7,
-  kAppUpdated = 8,
-  kAppIsSystemWebApp = 9,
-  kIconDownloadFailed = 10,
-  kIconReadFromDiskFailed = 11,
-  kAppIdMismatch = 12,
-  kAppAssociationsUpdateFailed = 13,
-  kAppAssociationsUpdated = 14,
-  kMaxValue = kAppAssociationsUpdated,
-};
 
 enum IconDiffResult : uint32_t {
   NO_CHANGE_DETECTED = 0,
@@ -184,16 +165,6 @@ class ManifestUpdateTask final
   void Start();
 
  private:
-  enum class Stage {
-    kPendingInstallableData,
-    kPendingIconDownload,
-    kPendingIconReadFromDisk,
-    kPendingAppIdentityCheck,
-    kPendingWindowsClosed,
-    kPendingMaybeReadExistingIcons,
-    kPendingInstallation,
-    kPendingAssociationsUpdate,
-  };
   // We perform this check for the following Stages:
   // kPendingInstallableData
   // kPendingIconDownload
@@ -237,7 +208,7 @@ class ManifestUpdateTask final
   OsIntegrationManager& os_integration_manager_;
   raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
 
-  Stage stage_;
+  ManifestUpdateStage stage_;
   absl::optional<WebAppInstallInfo> install_info_;
   absl::optional<WebAppIconDownloader> icon_downloader_;
 

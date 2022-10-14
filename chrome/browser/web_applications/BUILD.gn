@@ -99,6 +99,8 @@ source_set("web_applications") {
     "manifest_update_manager.h",
     "manifest_update_task.cc",
     "manifest_update_task.h",
+    "manifest_update_utils.cc",
+    "manifest_update_utils.h",
     "os_integration/os_integration_manager.cc",
     "os_integration/os_integration_manager.h",
     "os_integration/os_integration_sub_manager.h",

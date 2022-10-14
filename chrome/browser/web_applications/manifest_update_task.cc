@@ -125,16 +125,6 @@ void HaveIconContentsChanged(
 }
 
 // Some apps, such as pre-installed apps, have been vetted and are therefore
-// considered safe and permitted to update their names.
-bool AllowUnpromptedNameUpdate(const AppId& app_id,
-                               const WebAppRegistrar& registrar) {
-  const WebApp* web_app = registrar.GetAppById(app_id);
-  if (!web_app)
-    return false;
-  return CanWebAppUpdateIdentity(web_app);
-}
-
-// Some apps, such as pre-installed apps, have been vetted and are therefore
 // considered safe and permitted to update their icon. For others, the feature
 // flag needs to be on.
 bool AllowUnpromptedIconUpdate(const AppId& app_id,
@@ -144,30 +134,6 @@ bool AllowUnpromptedIconUpdate(const AppId& app_id,
     return false;
   return CanWebAppUpdateIdentity(web_app) ||
          base::FeatureList::IsEnabled(features::kWebAppManifestIconUpdating);
-}
-
-bool NeedsAppIdentityUpdateDialog(bool title_changing,
-                                  bool icons_changing,
-                                  const AppId& app_id,
-                                  const WebAppRegistrar& registrar) {
-  // Shortcut apps can trigger the update check (https://crbug.com/1366600) on
-  // subsequent runs of the app, if the user changed the title of the app when
-  // creating the shortcut. But we should never run the App Identity dialog for
-  // shortcut apps. Also, ideally we should just use IsShortcutApp here instead
-  // of checking the install source, but as per https://crbug.com/1368592 there
-  // is a bug with that where it returns the wrong thing for Shortcut apps that
-  // specify `scope`.
-  if (registrar.IsShortcutApp(app_id) ||
-      registrar.GetAppInstallSourceForMetrics(app_id) ==
-          webapps::WebappInstallSource::MENU_CREATE_SHORTCUT) {
-    return false;
-  }
-
-  if (title_changing && !AllowUnpromptedNameUpdate(app_id, registrar))
-    return true;
-  if (icons_changing && !AllowUnpromptedIconUpdate(app_id, registrar))
-    return true;
-  return false;
 }
 
 }  // namespace
@@ -281,7 +247,7 @@ void ManifestUpdateTask::Start() {
     DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
     return;
   }
-  stage_ = Stage::kPendingInstallableData;
+  stage_ = ManifestUpdateStage::kPendingInstallableData;
   webapps::InstallableParams params;
   params.valid_primary_icon = true;
   params.valid_manifest = true;
@@ -305,7 +271,7 @@ void ManifestUpdateTask::OnDidGetInstallableData(
     DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
     return;
   }
-  DCHECK_EQ(stage_, Stage::kPendingInstallableData);
+  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingInstallableData);
 
   if (!data.NoBlockingErrors()) {
     DestroySelf(ManifestUpdateResult::kAppNotEligible);
@@ -442,9 +408,9 @@ void ManifestUpdateTask::UpdateAfterWindowsClose() {
     DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
     return;
   }
-  DCHECK(stage_ == Stage::kPendingInstallableData ||
-         stage_ == Stage::kPendingAppIdentityCheck);
-  stage_ = Stage::kPendingWindowsClosed;
+  DCHECK(stage_ == ManifestUpdateStage::kPendingInstallableData ||
+         stage_ == ManifestUpdateStage::kPendingAppIdentityCheck);
+  stage_ = ManifestUpdateStage::kPendingWindowsClosed;
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents_.get()->GetBrowserContext());
@@ -475,8 +441,8 @@ void ManifestUpdateTask::LoadAndCheckIconContents() {
     DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
     return;
   }
-  DCHECK_EQ(stage_, Stage::kPendingInstallableData);
-  stage_ = Stage::kPendingIconDownload;
+  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingInstallableData);
+  stage_ = ManifestUpdateStage::kPendingIconDownload;
 
   DCHECK(install_info_.has_value());
   base::flat_set<GURL> icon_urls = GetValidIconUrlsToDownload(*install_info_);
@@ -500,7 +466,7 @@ void ManifestUpdateTask::OnIconsDownloaded(
     DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
     return;
   }
-  DCHECK_EQ(stage_, Stage::kPendingIconDownload);
+  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingIconDownload);
 
   // TODO(crbug.com/1238622): Report `result` and `icons_http_results` in
   // internals.
@@ -516,7 +482,7 @@ void ManifestUpdateTask::OnIconsDownloaded(
   RecordDownloadedIconsHttpResultsCodeClass(
       "WebApp.Icon.HttpStatusCodeClassOnUpdate", result, icons_http_results);
 
-  stage_ = Stage::kPendingIconReadFromDisk;
+  stage_ = ManifestUpdateStage::kPendingIconReadFromDisk;
   icon_manager_.ReadAllIcons(
       app_id_, base::BindOnce(&ManifestUpdateTask::OnAllIconsRead, AsWeakPtr(),
                               std::move(icons_map)));
@@ -531,7 +497,7 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
     DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
     return;
   }
-  DCHECK_EQ(stage_, Stage::kPendingIconReadFromDisk);
+  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingIconReadFromDisk);
 
   if (disk_icon_bitmaps.empty()) {
     DestroySelf(ManifestUpdateResult::kIconReadFromDiskFailed);
@@ -539,7 +505,7 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
   }
   DCHECK(install_info_.has_value());
 
-  stage_ = Stage::kPendingAppIdentityCheck;
+  stage_ = ManifestUpdateStage::kPendingAppIdentityCheck;
 
   // These calls populate the |install_info_| with all icon bitmap
   // data. If this data does not match what we already have on disk, then an
@@ -677,7 +643,7 @@ void ManifestUpdateTask::OnPostAppIdentityUpdateCheck(
     DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
     return;
   }
-  DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
+  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingAppIdentityCheck);
 
   app_identity_update_allowed_ =
       app_identity_update_allowed == AppIdentityUpdate::kAllowed;
@@ -716,7 +682,7 @@ void ManifestUpdateTask::OnAllShortcutsMenuIconsRead(
     DestroySelf(ManifestUpdateResult::kWebContentsDestroyed);
     return;
   }
-  DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
+  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingAppIdentityCheck);
 
   DCHECK(install_info_.has_value());
 
@@ -765,8 +731,8 @@ bool ManifestUpdateTask::IsUpdateNeededForWebAppOriginAssociations() const {
 }
 
 void ManifestUpdateTask::NoManifestUpdateRequired() {
-  DCHECK_EQ(stage_, Stage::kPendingAppIdentityCheck);
-  stage_ = Stage::kPendingAssociationsUpdate;
+  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingAppIdentityCheck);
+  stage_ = ManifestUpdateStage::kPendingAssociationsUpdate;
 
   if (!IsUpdateNeededForWebAppOriginAssociations()) {
     DestroySelf(ManifestUpdateResult::kAppUpToDate);
@@ -780,13 +746,13 @@ void ManifestUpdateTask::NoManifestUpdateRequired() {
 }
 
 void ManifestUpdateTask::OnWebAppOriginAssociationsUpdated(bool success) {
-  DCHECK_EQ(stage_, Stage::kPendingAssociationsUpdate);
+  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingAssociationsUpdate);
   success ? DestroySelf(ManifestUpdateResult::kAppAssociationsUpdated)
           : DestroySelf(ManifestUpdateResult::kAppAssociationsUpdateFailed);
 }
 
 void ManifestUpdateTask::OnAllAppWindowsClosed() {
-  DCHECK_EQ(stage_, Stage::kPendingWindowsClosed);
+  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingWindowsClosed);
 
   DCHECK(install_info_.has_value());
 
@@ -801,7 +767,7 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
   // Preserve the user's choice of form factor to open the app with.
   install_info_->user_display_mode = registrar_.GetAppUserDisplayMode(app_id_);
 
-  stage_ = Stage::kPendingInstallation;
+  stage_ = ManifestUpdateStage::kPendingInstallation;
 
   install_finalizer_.FinalizeUpdate(
       *install_info_,
@@ -811,7 +777,7 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
 void ManifestUpdateTask::OnInstallationComplete(const AppId& app_id,
                                                 webapps::InstallResultCode code,
                                                 OsHooksErrors os_hooks_errors) {
-  DCHECK_EQ(stage_, Stage::kPendingInstallation);
+  DCHECK_EQ(stage_, ManifestUpdateStage::kPendingInstallation);
 
   if (!IsSuccess(code)) {
     DestroySelf(ManifestUpdateResult::kAppUpdateFailed);
