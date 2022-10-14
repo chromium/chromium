@@ -270,7 +270,7 @@ bool ImageTransportSurfaceOverlayMac::OnMakeCurrent(gl::GLContext* context) {
 }
 
 bool ImageTransportSurfaceOverlayMac::ScheduleOverlayPlane(
-    gl::GLImage* image,
+    gl::OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
   if (overlay_plane_data.plane_transform != gfx::OVERLAY_TRANSFORM_NONE) {
@@ -607,7 +607,7 @@ bool ImageTransportSurfaceOverlayMacEGL::OnMakeCurrent(gl::GLContext* context) {
 }
 
 bool ImageTransportSurfaceOverlayMacEGL::ScheduleOverlayPlane(
-    gl::GLImage* image,
+    gl::OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
   if (overlay_plane_data.plane_transform != gfx::OVERLAY_TRANSFORM_NONE) {

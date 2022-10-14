@@ -50,7 +50,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public GLSurfaceEGL {
   gfx::Size GetSize() override;
   bool OnMakeCurrent(GLContext* context) override;
   bool ScheduleOverlayPlane(
-      GLImage* image,
+      OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
   bool IsSurfaceless() const override;

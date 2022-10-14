@@ -22,7 +22,6 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_priority_hint.h"
-#include "ui/gl/gl_image_egl.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/ozone/platform/wayland/gpu/gbm_surfaceless_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
@@ -49,14 +48,16 @@ namespace {
 
 constexpr uint32_t kAugmentedSurfaceNotSupportedVersion = 0;
 
-// Fake GLImage that just schedules overlay plane. It must become busy when
-// scheduled and be associated with the swap id to track correct order of swaps
-// and releases of the image.
-class FakeGLImageNativePixmap : public gl::GLImageEGL {
+// Holds a NativePixmap used for scheduling overlay planes. It must become busy
+// when scheduled and be associated with the swap id to track correct order of
+// swaps and releases of the image.
+// TODO(rjkroege): Consider putting extra state inside a test NativePixmap
+// implementation instead of a wrapper class.
+class OverlayImageHolder : public base::RefCounted<OverlayImageHolder> {
  public:
-  FakeGLImageNativePixmap(scoped_refptr<gfx::NativePixmap> pixmap,
-                          const gfx::Size& size)
-      : gl::GLImageEGL(size), pixmap_(pixmap) {}
+  OverlayImageHolder(scoped_refptr<gfx::NativePixmap> pixmap,
+                     const gfx::Size& size)
+      : pixmap_(pixmap) {}
 
   // Associates swap id with this image.
   void AssociateWithSwapId(uint32_t swap_id) {
@@ -76,18 +77,16 @@ class FakeGLImageNativePixmap : public gl::GLImageEGL {
   void SetDisplayed(bool displayed) { displayed_ = displayed; }
   bool displayed() const { return displayed_; }
 
-  // Overridden from GLImage:
-  scoped_refptr<gfx::NativePixmap> GetNativePixmap() override {
-    return pixmap_;
-  }
-
- protected:
-  ~FakeGLImageNativePixmap() override {}
+  scoped_refptr<gfx::NativePixmap> GetNativePixmap() { return pixmap_; }
 
  private:
+  friend class base::RefCounted<OverlayImageHolder>;
+
+  ~OverlayImageHolder() = default;
+
   scoped_refptr<gfx::NativePixmap> pixmap_;
 
-  // Indicated if the gl image is busy. If yes, it was scheduled as overlay
+  // Indicated if the overlay image is busy. If yes, it was scheduled as overlay
   // plane for further submission and can't be reused until it's freed.
   bool busy_ = false;
 
@@ -119,27 +118,27 @@ class CallbacksHelper {
   }
 
   // Finishes the submission by setting the swap id of completed buffer swap and
-  // sets the associated gl_image as displayed and non-busy, which indicates
-  // that 1) the image has been sent to be shown after being scheduled 2) the
-  // image is displayed. This sort of mimics a buffer queue, but in a simpliear
-  // way.
+  // sets the associated overlay_image as displayed and non-busy, which
+  // indicates that 1) the image has been sent to be shown after being scheduled
+  // 2) the image is displayed. This sort of mimics a buffer queue, but in a
+  // simpler way.
   void FinishSwapBuffersAsync(
       uint32_t local_swap_id,
-      std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images,
+      std::vector<scoped_refptr<OverlayImageHolder>> overlay_images,
       gfx::SwapCompletionResult result) {
     last_finish_swap_id_ = pending_local_swap_ids_.front();
     pending_local_swap_ids_.pop();
 
-    for (auto& gl_image : gl_images) {
-      EXPECT_EQ(gl_image->GetAssociateWithSwapId(), last_finish_swap_id_);
-      EXPECT_TRUE(gl_image->busy() && !gl_image->displayed());
-      gl_image->SetBusy(false);
-      gl_image->SetDisplayed(true);
+    for (auto& overlay_image : overlay_images) {
+      EXPECT_EQ(overlay_image->GetAssociateWithSwapId(), last_finish_swap_id_);
+      EXPECT_TRUE(overlay_image->busy() && !overlay_image->displayed());
+      overlay_image->SetBusy(false);
+      overlay_image->SetDisplayed(true);
     }
 
     for (auto& displayed_image : displayed_images_)
       displayed_image->SetDisplayed(false);
-    displayed_images_ = std::move(gl_images);
+    displayed_images_ = std::move(overlay_images);
   }
 
   void BufferPresented(uint64_t local_swap_id,
@@ -158,7 +157,7 @@ class CallbacksHelper {
   base::queue<uint64_t> pending_local_swap_ids_;
 
   // Keeps track of a displayed image.
-  std::vector<scoped_refptr<FakeGLImageNativePixmap>> displayed_images_;
+  std::vector<scoped_refptr<OverlayImageHolder>> displayed_images_;
 };
 
 }  // namespace
@@ -210,7 +209,7 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
   }
 
   void ScheduleOverlayPlane(gl::GLSurface* gl_surface,
-                            gl::GLImage* image,
+                            gl::OverlayImage image,
                             int z_order) {
     gl_surface->ScheduleOverlayPlane(
         image, nullptr,
@@ -248,12 +247,12 @@ TEST_P(WaylandSurfaceFactoryTest,
   EXPECT_CALL(*server_.zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(4);
 
   // Create buffers and FakeGlImageNativePixmap.
-  std::vector<scoped_refptr<FakeGLImageNativePixmap>> fake_gl_image;
+  std::vector<scoped_refptr<OverlayImageHolder>> fake_overlay_image;
   for (int i = 0; i < 4; ++i) {
     auto native_pixmap = surface_factory_->CreateNativePixmap(
         widget_, nullptr, window_->size_px(), gfx::BufferFormat::BGRA_8888,
         gfx::BufferUsage::SCANOUT);
-    fake_gl_image.push_back(base::MakeRefCounted<FakeGLImageNativePixmap>(
+    fake_overlay_image.push_back(base::MakeRefCounted<OverlayImageHolder>(
         native_pixmap, window_->size_px()));
   }
 
@@ -270,32 +269,34 @@ TEST_P(WaylandSurfaceFactoryTest,
     auto swap_id = cbs_helper.GetNextLocalSwapId();
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
-    fake_gl_image[0]->AssociateWithSwapId(swap_id);
+    fake_overlay_image[0]->AssociateWithSwapId(swap_id);
     // And set it to be busy...
-    fake_gl_image[0]->SetBusy(true);
+    fake_overlay_image[0]->SetBusy(true);
 
     // Prepare background.
-    ScheduleOverlayPlane(gl_surface.get(), fake_gl_image[0].get(),
+    ScheduleOverlayPlane(gl_surface.get(),
+                         fake_overlay_image[0]->GetNativePixmap(),
                          /*z_order=*/INT32_MIN);
 
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
-    fake_gl_image[1]->AssociateWithSwapId(swap_id);
+    fake_overlay_image[1]->AssociateWithSwapId(swap_id);
     // And set it to be busy...
-    fake_gl_image[1]->SetBusy(true);
+    fake_overlay_image[1]->SetBusy(true);
 
     // Prepare overlay plane.
-    ScheduleOverlayPlane(gl_surface.get(), fake_gl_image[1].get(),
+    ScheduleOverlayPlane(gl_surface.get(),
+                         fake_overlay_image[1]->GetNativePixmap(),
                          /*z_order=*/1);
 
-    std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
-    gl_images.push_back(fake_gl_image[0]);
-    gl_images.push_back(fake_gl_image[1]);
+    std::vector<scoped_refptr<OverlayImageHolder>> overlay_images;
+    overlay_images.push_back(fake_overlay_image[0]);
+    overlay_images.push_back(fake_overlay_image[1]);
 
     // And submit each image. They will be executed in FIFO manner.
     gl_surface->SwapBuffersAsync(
         base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
-                       base::Unretained(&cbs_helper), swap_id, gl_images),
+                       base::Unretained(&cbs_helper), swap_id, overlay_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id),
         gl::FrameData());
@@ -339,14 +340,14 @@ TEST_P(WaylandSurfaceFactoryTest,
 
   cbs_helper.ResetLastFinishedSwapId();
 
-  for (const auto& gl_image : fake_gl_image) {
+  for (const auto& overlay_image : fake_overlay_image) {
     // All the images except the first one, which was associated with swap
     // id=0u, must be busy and not displayed. The first one must be displayed.
-    if (gl_image->GetAssociateWithSwapId() == 0u) {
-      EXPECT_FALSE(gl_image->busy());
-      EXPECT_TRUE(gl_image->displayed());
+    if (overlay_image->GetAssociateWithSwapId() == 0u) {
+      EXPECT_FALSE(overlay_image->busy());
+      EXPECT_TRUE(overlay_image->displayed());
     } else {
-      EXPECT_FALSE(gl_image->displayed());
+      EXPECT_FALSE(overlay_image->displayed());
     }
   }
 
@@ -362,21 +363,22 @@ TEST_P(WaylandSurfaceFactoryTest,
     auto swap_id = cbs_helper.GetNextLocalSwapId();
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
-    fake_gl_image[2]->AssociateWithSwapId(swap_id);
+    fake_overlay_image[2]->AssociateWithSwapId(swap_id);
     // And set it to be busy...
-    fake_gl_image[2]->SetBusy(true);
+    fake_overlay_image[2]->SetBusy(true);
 
     // Prepare overlay plane.
-    ScheduleOverlayPlane(gl_surface.get(), fake_gl_image[2].get(),
+    ScheduleOverlayPlane(gl_surface.get(),
+                         fake_overlay_image[2]->GetNativePixmap(),
                          /*z_order=*/1);
 
-    std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
-    gl_images.push_back(fake_gl_image[2]);
+    std::vector<scoped_refptr<OverlayImageHolder>> overlay_images;
+    overlay_images.push_back(fake_overlay_image[2]);
 
     // And submit each image. They will be executed in FIFO manner.
     gl_surface->SwapBuffersAsync(
         base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
-                       base::Unretained(&cbs_helper), swap_id, gl_images),
+                       base::Unretained(&cbs_helper), swap_id, overlay_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id),
         gl::FrameData());
@@ -433,21 +435,22 @@ TEST_P(WaylandSurfaceFactoryTest,
     auto swap_id = cbs_helper.GetNextLocalSwapId();
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
-    fake_gl_image[3]->AssociateWithSwapId(swap_id);
+    fake_overlay_image[3]->AssociateWithSwapId(swap_id);
     // And set it to be busy...
-    fake_gl_image[3]->SetBusy(true);
+    fake_overlay_image[3]->SetBusy(true);
 
     // Prepare primary plane.
-    ScheduleOverlayPlane(gl_surface.get(), fake_gl_image[3].get(),
+    ScheduleOverlayPlane(gl_surface.get(),
+                         fake_overlay_image[3]->GetNativePixmap(),
                          /*z_order=*/0);
 
-    std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
-    gl_images.push_back(fake_gl_image[3]);
+    std::vector<scoped_refptr<OverlayImageHolder>> overlay_images;
+    overlay_images.push_back(fake_overlay_image[3]);
 
     // And submit each image. They will be executed in FIFO manner.
     gl_surface->SwapBuffersAsync(
         base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
-                       base::Unretained(&cbs_helper), swap_id, gl_images),
+                       base::Unretained(&cbs_helper), swap_id, overlay_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id),
         gl::FrameData());
@@ -511,12 +514,12 @@ TEST_P(WaylandSurfaceFactoryTest,
 
   cbs_helper.ResetLastFinishedSwapId();
 
-  for (const auto& gl_image : fake_gl_image) {
-    if (gl_image->GetAssociateWithSwapId() == 2u) {
-      EXPECT_TRUE(gl_image->displayed());
-      EXPECT_FALSE(gl_image->busy());
+  for (const auto& overlay_image : fake_overlay_image) {
+    if (overlay_image->GetAssociateWithSwapId() == 2u) {
+      EXPECT_TRUE(overlay_image->displayed());
+      EXPECT_FALSE(overlay_image->busy());
     } else {
-      EXPECT_FALSE(gl_image->displayed());
+      EXPECT_FALSE(overlay_image->displayed());
     }
   }
 }
@@ -541,12 +544,12 @@ TEST_P(WaylandSurfaceFactoryTest,
       ->SetNoGLFlushForTests();
 
   // Create buffers and FakeGlImageNativePixmap.
-  std::vector<scoped_refptr<FakeGLImageNativePixmap>> fake_gl_image;
+  std::vector<scoped_refptr<OverlayImageHolder>> fake_overlay_image;
   for (int i = 0; i < 5; ++i) {
     auto native_pixmap = surface_factory_->CreateNativePixmap(
         widget_, nullptr, window_->size_px(), gfx::BufferFormat::BGRA_8888,
         gfx::BufferUsage::SCANOUT);
-    fake_gl_image.push_back(base::MakeRefCounted<FakeGLImageNativePixmap>(
+    fake_overlay_image.push_back(base::MakeRefCounted<OverlayImageHolder>(
         native_pixmap, window_->size_px()));
   }
 
@@ -563,43 +566,46 @@ TEST_P(WaylandSurfaceFactoryTest,
     auto swap_id = cbs_helper.GetNextLocalSwapId();
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
-    fake_gl_image[0]->AssociateWithSwapId(swap_id);
+    fake_overlay_image[0]->AssociateWithSwapId(swap_id);
     // And set it to be busy...
-    fake_gl_image[0]->SetBusy(true);
+    fake_overlay_image[0]->SetBusy(true);
 
     // Prepare background.
-    ScheduleOverlayPlane(gl_surface.get(), fake_gl_image[0].get(),
+    ScheduleOverlayPlane(gl_surface.get(),
+                         fake_overlay_image[0]->GetNativePixmap(),
                          /*z_order=*/INT32_MIN);
 
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
-    fake_gl_image[1]->AssociateWithSwapId(swap_id);
+    fake_overlay_image[1]->AssociateWithSwapId(swap_id);
     // And set it to be busy...
-    fake_gl_image[1]->SetBusy(true);
+    fake_overlay_image[1]->SetBusy(true);
 
     // Prepare primary plane.
-    ScheduleOverlayPlane(gl_surface.get(), fake_gl_image[1].get(),
+    ScheduleOverlayPlane(gl_surface.get(),
+                         fake_overlay_image[1]->GetNativePixmap(),
                          /*z_order=*/0);
 
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
-    fake_gl_image[2]->AssociateWithSwapId(swap_id);
+    fake_overlay_image[2]->AssociateWithSwapId(swap_id);
     // And set it to be busy...
-    fake_gl_image[2]->SetBusy(true);
+    fake_overlay_image[2]->SetBusy(true);
 
     // Prepare underlay plane.
-    ScheduleOverlayPlane(gl_surface.get(), fake_gl_image[2].get(),
+    ScheduleOverlayPlane(gl_surface.get(),
+                         fake_overlay_image[2]->GetNativePixmap(),
                          /*z_order=*/-1);
 
-    std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
-    gl_images.push_back(fake_gl_image[0]);
-    gl_images.push_back(fake_gl_image[1]);
-    gl_images.push_back(fake_gl_image[2]);
+    std::vector<scoped_refptr<OverlayImageHolder>> overlay_images;
+    overlay_images.push_back(fake_overlay_image[0]);
+    overlay_images.push_back(fake_overlay_image[1]);
+    overlay_images.push_back(fake_overlay_image[2]);
 
     // And submit each image. They will be executed in FIFO manner.
     gl_surface->SwapBuffersAsync(
         base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
-                       base::Unretained(&cbs_helper), swap_id, gl_images),
+                       base::Unretained(&cbs_helper), swap_id, overlay_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id),
         gl::FrameData());
@@ -647,14 +653,14 @@ TEST_P(WaylandSurfaceFactoryTest,
 
   cbs_helper.ResetLastFinishedSwapId();
 
-  for (const auto& gl_image : fake_gl_image) {
+  for (const auto& overlay_image : fake_overlay_image) {
     // All the images except the first one, which was associated with swap
     // id=0u, must be busy and not displayed. The first one must be displayed.
-    if (gl_image->GetAssociateWithSwapId() == 0u) {
-      EXPECT_FALSE(gl_image->busy());
-      EXPECT_TRUE(gl_image->displayed());
+    if (overlay_image->GetAssociateWithSwapId() == 0u) {
+      EXPECT_FALSE(overlay_image->busy());
+      EXPECT_TRUE(overlay_image->displayed());
     } else {
-      EXPECT_FALSE(gl_image->displayed());
+      EXPECT_FALSE(overlay_image->displayed());
     }
   }
 
@@ -665,32 +671,34 @@ TEST_P(WaylandSurfaceFactoryTest,
     auto swap_id = cbs_helper.GetNextLocalSwapId();
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
-    fake_gl_image[3]->AssociateWithSwapId(swap_id);
+    fake_overlay_image[3]->AssociateWithSwapId(swap_id);
     // And set it to be busy...
-    fake_gl_image[3]->SetBusy(true);
+    fake_overlay_image[3]->SetBusy(true);
 
     // Prepare primary plane.
-    ScheduleOverlayPlane(gl_surface.get(), fake_gl_image[3].get(),
+    ScheduleOverlayPlane(gl_surface.get(),
+                         fake_overlay_image[3]->GetNativePixmap(),
                          /*z_order=*/0);
 
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
-    fake_gl_image[4]->AssociateWithSwapId(swap_id);
+    fake_overlay_image[4]->AssociateWithSwapId(swap_id);
     // And set it to be busy...
-    fake_gl_image[4]->SetBusy(true);
+    fake_overlay_image[4]->SetBusy(true);
 
     // Prepare overlay plane.
-    ScheduleOverlayPlane(gl_surface.get(), fake_gl_image[4].get(),
+    ScheduleOverlayPlane(gl_surface.get(),
+                         fake_overlay_image[4]->GetNativePixmap(),
                          /*z_order=*/1);
 
-    std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
-    gl_images.push_back(fake_gl_image[3]);
-    gl_images.push_back(fake_gl_image[4]);
+    std::vector<scoped_refptr<OverlayImageHolder>> overlay_images;
+    overlay_images.push_back(fake_overlay_image[3]);
+    overlay_images.push_back(fake_overlay_image[4]);
 
     // And submit each image. They will be executed in FIFO manner.
     gl_surface->SwapBuffersAsync(
         base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
-                       base::Unretained(&cbs_helper), swap_id, gl_images),
+                       base::Unretained(&cbs_helper), swap_id, overlay_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id),
         gl::FrameData());
@@ -776,12 +784,12 @@ TEST_P(WaylandSurfaceFactoryTest,
   // SwapCompletionCallback should run.
   EXPECT_EQ(cbs_helper.GetLastFinishedSwapId(), 1u);
 
-  for (const auto& gl_image : fake_gl_image) {
-    if (gl_image->GetAssociateWithSwapId() == 1u) {
-      EXPECT_TRUE(gl_image->displayed());
-      EXPECT_FALSE(gl_image->busy());
+  for (const auto& overlay_image : fake_overlay_image) {
+    if (overlay_image->GetAssociateWithSwapId() == 1u) {
+      EXPECT_TRUE(overlay_image->displayed());
+      EXPECT_FALSE(overlay_image->busy());
     } else {
-      EXPECT_FALSE(gl_image->displayed());
+      EXPECT_FALSE(overlay_image->displayed());
     }
   }
 }
@@ -935,11 +943,11 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
                      window_->size_px().height()));
 
   // Create buffer and FakeGlImageNativePixmap.
-  std::vector<scoped_refptr<FakeGLImageNativePixmap>> fake_gl_image;
+  std::vector<scoped_refptr<OverlayImageHolder>> fake_overlay_image;
   auto native_pixmap = surface_factory_->CreateNativePixmap(
       widget_, nullptr, test_buffer_size, gfx::BufferFormat::BGRA_8888,
       gfx::BufferUsage::SCANOUT);
-  fake_gl_image.push_back(base::MakeRefCounted<FakeGLImageNativePixmap>(
+  fake_overlay_image.push_back(base::MakeRefCounted<OverlayImageHolder>(
       native_pixmap, test_buffer_size));
 
   auto* root_surface = server_.GetObject<wl::MockSurface>(
@@ -954,26 +962,26 @@ TEST_P(WaylandSurfaceFactoryCompositorV3, SurfaceDamageTest) {
     auto swap_id = cbs_helper.GetNextLocalSwapId();
     // Associate the image with the next swap id so that we can easily track if
     // it became free to reuse.
-    fake_gl_image[0]->AssociateWithSwapId(swap_id);
+    fake_overlay_image[0]->AssociateWithSwapId(swap_id);
     // And set it to be busy...
-    fake_gl_image[0]->SetBusy(true);
+    fake_overlay_image[0]->SetBusy(true);
 
     // Prepare background.
     gl_surface->ScheduleOverlayPlane(
-        fake_gl_image[0].get(), nullptr,
+        fake_overlay_image[0]->GetNativePixmap(), nullptr,
         gfx::OverlayPlaneData(
             INT32_MIN, gfx::OverlayTransform::OVERLAY_TRANSFORM_ROTATE_270,
             gfx::RectF(window_->GetBoundsInPixels()), crop_uv, false,
             gfx::Rect(test_buffer_dmg), 1.0f, gfx::OverlayPriorityHint::kNone,
             gfx::RRectF(), gfx::ColorSpace::CreateSRGB(), absl::nullopt));
 
-    std::vector<scoped_refptr<FakeGLImageNativePixmap>> gl_images;
-    gl_images.push_back(fake_gl_image[0]);
+    std::vector<scoped_refptr<OverlayImageHolder>> overlay_images;
+    overlay_images.push_back(fake_overlay_image[0]);
 
     // And submit each image. They will be executed in FIFO manner.
     gl_surface->SwapBuffersAsync(
         base::BindOnce(&CallbacksHelper::FinishSwapBuffersAsync,
-                       base::Unretained(&cbs_helper), swap_id, gl_images),
+                       base::Unretained(&cbs_helper), swap_id, overlay_images),
         base::BindOnce(&CallbacksHelper::BufferPresented,
                        base::Unretained(&cbs_helper), swap_id),
         gl::FrameData());

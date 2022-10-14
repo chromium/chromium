@@ -1040,7 +1040,7 @@ void NativeViewGLSurfaceEGL::SetVSyncEnabled(bool enabled) {
 }
 
 bool NativeViewGLSurfaceEGL::ScheduleOverlayPlane(
-    GLImage* image,
+    OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
   NOTIMPLEMENTED();

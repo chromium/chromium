@@ -87,12 +87,16 @@ class SkiaOutputDeviceBufferQueue::OverlayData {
   }
 
   bool IsInUseByWindowServer() const {
+#if BUILDFLAG(IS_MAC)
     if (!scoped_read_access_)
       return false;
     auto* gl_image = scoped_read_access_->gl_image();
     if (!gl_image)
       return false;
     return gl_image->IsInUseByWindowServer();
+#else
+    return false;
+#endif
   }
 
   void Ref() { ++ref_; }
@@ -331,12 +335,11 @@ SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
     return nullptr;
   }
 
-  // Fuchsia does not provide a GLImage overlay.
-#if BUILDFLAG(IS_FUCHSIA)
+#if defined(IS_OZONE)
   const bool needs_gl_image = false;
 #else
   const bool needs_gl_image = true;
-#endif  // BUILDFLAG(IS_FUCHSIA)
+#endif  // defined(IS_OZONE)
 
   // TODO(penghuang): do not depend on GLImage.
   auto shared_image_access =

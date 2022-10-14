@@ -76,6 +76,11 @@ SurfacelessGlRenderer::BufferWrapper::~BufferWrapper() {
   }
 }
 
+scoped_refptr<gfx::NativePixmap> SurfacelessGlRenderer::BufferWrapper::image()
+    const {
+  return image_->GetNativePixmap();
+}
+
 bool SurfacelessGlRenderer::BufferWrapper::Initialize(
     gfx::AcceleratedWidget widget,
     const gfx::Size& size) {

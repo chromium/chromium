@@ -60,7 +60,7 @@ class PresenterImageGL : public OutputPresenter::Image {
   int GetPresentCount() const final;
   void OnContextLost() final;
 
-  gl::GLImage* GetGLImage(std::unique_ptr<gfx::GpuFence>* fence);
+  gl::OverlayImage GetOverlayImage(std::unique_ptr<gfx::GpuFence>* fence);
 
   const gfx::ColorSpace& color_space() {
     DCHECK(overlay_representation_);
@@ -102,13 +102,17 @@ void PresenterImageGL::OnContextLost() {
     overlay_representation_->OnContextLost();
 }
 
-gl::GLImage* PresenterImageGL::GetGLImage(
+gl::OverlayImage PresenterImageGL::GetOverlayImage(
     std::unique_ptr<gfx::GpuFence>* fence) {
   DCHECK(scoped_overlay_read_access_);
   if (fence) {
     *fence = TakeGpuFence(scoped_overlay_read_access_->TakeAcquireFence());
   }
+#if defined(USE_OZONE)
+  return scoped_overlay_read_access_->GetNativePixmap();
+#else
   return scoped_overlay_read_access_->gl_image();
+#endif
 }
 
 }  // namespace
@@ -319,7 +323,7 @@ void OutputPresenterGL::SchedulePrimaryPlane(
   std::unique_ptr<gfx::GpuFence> fence;
   auto* presenter_image = static_cast<PresenterImageGL*>(image);
   // If the submitted_image() is being scheduled, we don't new a new fence.
-  auto* gl_image = presenter_image->GetGLImage(
+  gl::OverlayImage overlay_image = presenter_image->GetOverlayImage(
       (is_submitted || !gl_surface_->SupportsPlaneGpuFences()) ? nullptr
                                                                : &fence);
 
@@ -330,7 +334,7 @@ void OutputPresenterGL::SchedulePrimaryPlane(
   // overlays, damage should be added to OutputSurfaceOverlayPlane and passed in
   // here.
   gl_surface_->ScheduleOverlayPlane(
-      gl_image, std::move(fence),
+      std::move(overlay_image), std::move(fence),
       gfx::OverlayPlaneData(
           kPlaneZOrder, plane.transform, plane.display_rect, plane.uv_rect,
           plane.enable_blending,
@@ -359,12 +363,17 @@ void OutputPresenterGL::ScheduleOverlayPlane(
     const OutputPresenter::OverlayPlaneCandidate& overlay_plane_candidate,
     ScopedOverlayAccess* access,
     std::unique_ptr<gfx::GpuFence> acquire_fence) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   // Note that |overlay_plane_candidate| has different types on different
   // platforms. On Android and Ozone it is an OverlayCandidate, on Windows it is
   // a DCLayerOverlay, and on macOS it is a CALayeroverlay.
-  auto* gl_image = access ? access->gl_image() : nullptr;
 #if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
+#if defined(USE_OZONE)
+  // TODO(crbug.com/1366808): Add ScopedOverlayAccess::GetOverlayImage() that
+  // works on all platforms.
+  gl::OverlayImage overlay_image = access ? access->GetNativePixmap() : nullptr;
+#else
+  auto* overlay_image = access ? access->gl_image() : nullptr;
+#endif
   // TODO(msisov): Once shared image factory allows creating a non backed
   // images and ScheduleOverlayPlane does not rely on GLImage, remove the if
   // condition that checks if this is a solid color overlay plane.
@@ -374,7 +383,7 @@ void OutputPresenterGL::ScheduleOverlayPlane(
   // may have a protocol that asks Wayland compositor to create a solid color
   // buffer for a client. OverlayProcessorDelegated decides if a solid color
   // overlay is an overlay candidate and should be scheduled.
-  if (gl_image || overlay_plane_candidate.is_solid_color) {
+  if (overlay_image || overlay_plane_candidate.is_solid_color) {
 #if DCHECK_IS_ON()
     if (overlay_plane_candidate.is_solid_color) {
       LOG_IF(FATAL, !overlay_plane_candidate.color.has_value())
@@ -400,7 +409,7 @@ void OutputPresenterGL::ScheduleOverlayPlane(
     }
 
     gl_surface_->ScheduleOverlayPlane(
-        gl_image, std::move(acquire_fence),
+        std::move(overlay_image), std::move(acquire_fence),
         gfx::OverlayPlaneData(
             overlay_plane_candidate.plane_z_order,
             absl::get<gfx::OverlayTransform>(overlay_plane_candidate.transform),
@@ -416,6 +425,7 @@ void OutputPresenterGL::ScheduleOverlayPlane(
             overlay_plane_candidate.clip_rect));
   }
 #elif BUILDFLAG(IS_APPLE)
+  auto* gl_image = access ? access->gl_image() : nullptr;
   gl_surface_->ScheduleCALayer(ui::CARendererLayerParams(
       overlay_plane_candidate.shared_state->is_clipped,
       gfx::ToEnclosingRect(overlay_plane_candidate.shared_state->clip_rect),
@@ -429,7 +439,6 @@ void OutputPresenterGL::ScheduleOverlayPlane(
       overlay_plane_candidate.filter, overlay_plane_candidate.hdr_metadata,
       overlay_plane_candidate.protected_video_type));
 #endif
-#endif  //  BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 }
 
 #if BUILDFLAG(IS_MAC)

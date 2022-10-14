@@ -24,6 +24,7 @@
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/overlay_plane_data.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -79,7 +80,9 @@ class SurfacelessSkiaGlRenderer::BufferWrapper {
   BufferWrapper();
   ~BufferWrapper();
 
-  gl::GLImage* image() const { return image_.get(); }
+  scoped_refptr<gfx::NativePixmap> image() const {
+    return image_->GetNativePixmap();
+  }
   SkSurface* sk_surface() const { return sk_surface_.get(); }
 
   bool Initialize(GrDirectContext* gr_context,

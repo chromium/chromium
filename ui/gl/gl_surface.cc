@@ -157,7 +157,7 @@ gfx::VSyncProvider* GLSurface::GetVSyncProvider() {
 void GLSurface::SetVSyncEnabled(bool enabled) {}
 
 bool GLSurface::ScheduleOverlayPlane(
-    GLImage* image,
+    OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
   NOTIMPLEMENTED();
@@ -479,7 +479,7 @@ void GLSurfaceAdapter::SetVSyncEnabled(bool enabled) {
 }
 
 bool GLSurfaceAdapter::ScheduleOverlayPlane(
-    GLImage* image,
+    OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
   return surface_->ScheduleOverlayPlane(image, std::move(gpu_fence),

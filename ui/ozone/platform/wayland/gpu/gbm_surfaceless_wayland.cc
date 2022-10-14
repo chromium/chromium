@@ -125,7 +125,7 @@ void GbmSurfacelessWayland::QueueWaylandOverlayConfig(
 }
 
 bool GbmSurfacelessWayland::ScheduleOverlayPlane(
-    gl::GLImage* image,
+    gl::OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
   auto* frame = unsubmitted_frames_.back().get();
@@ -162,9 +162,7 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
     if (gpu_fence)
       acquire_fences.push_back(std::move(*gpu_fence));
 
-    auto pixmap = image->GetNativePixmap();
-    DCHECK(pixmap);
-    frame->schedule_planes_succeeded = pixmap->ScheduleOverlayPlane(
+    frame->schedule_planes_succeeded = image->ScheduleOverlayPlane(
         widget_, overlay_plane_data, std::move(acquire_fences), {});
   }
   return frame->schedule_planes_succeeded;

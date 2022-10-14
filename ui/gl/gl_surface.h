@@ -30,6 +30,10 @@
 #include "ui/gl/gl_surface_format.h"
 #include "ui/gl/gpu_preference.h"
 
+#if defined(USE_OZONE)
+#include "ui/gfx/native_pixmap.h"
+#endif
+
 namespace gfx {
 namespace mojom {
 class DelegatedInkPointRenderer;
@@ -50,6 +54,13 @@ namespace gl {
 class GLContext;
 class GLImage;
 class EGLTimestampClient;
+
+// OverlayImage is a platform specific type for overlay plane image data.
+#if defined(USE_OZONE)
+using OverlayImage = scoped_refptr<gfx::NativePixmap>;
+#else
+using OverlayImage = GLImage*;
+#endif
 
 // Contains per frame data, and is passed along with SwapBuffer, PostSubbuffer,
 // CommitOverlayPlanes type methods.
@@ -255,7 +266,7 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
   // |overlay_plane_data| specifies overlay data such as opacity, z_order, size,
   // etc.
   virtual bool ScheduleOverlayPlane(
-      GLImage* image,
+      OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data);
 
@@ -424,7 +435,7 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   gfx::VSyncProvider* GetVSyncProvider() override;
   void SetVSyncEnabled(bool enabled) override;
   bool ScheduleOverlayPlane(
-      GLImage* image,
+      OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
   bool ScheduleDCLayer(

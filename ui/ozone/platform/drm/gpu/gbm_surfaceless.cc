@@ -70,11 +70,11 @@ gfx::SwapResult GbmSurfaceless::SwapBuffers(PresentationCallback callback,
 }
 
 bool GbmSurfaceless::ScheduleOverlayPlane(
-    gl::GLImage* image,
+    gl::OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
-  unsubmitted_frames_.back()->overlays.push_back(
-      gl::GLSurfaceOverlay(image, std::move(gpu_fence), overlay_plane_data));
+  unsubmitted_frames_.back()->overlays.emplace_back(
+      std::move(image), std::move(gpu_fence), overlay_plane_data);
   return true;
 }
 

@@ -43,7 +43,7 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
 
   // gl::GLSurface:
   bool ScheduleOverlayPlane(
-      gl::GLImage* image,
+      gl::OverlayImage image,
       std::unique_ptr<gfx::GpuFence> gpu_fence,
       const gfx::OverlayPlaneData& overlay_plane_data) override;
   bool IsOffscreen() override;

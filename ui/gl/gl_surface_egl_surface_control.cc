@@ -21,6 +21,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
+#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_utils.h"
 
 namespace gl {
@@ -318,7 +319,7 @@ bool GLSurfaceEGLSurfaceControl::OnMakeCurrent(GLContext* context) {
 }
 
 bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
-    GLImage* image,
+    OverlayImage image,
     std::unique_ptr<gfx::GpuFence> gpu_fence,
     const gfx::OverlayPlaneData& overlay_plane_data) {
   if (surface_lost_) {

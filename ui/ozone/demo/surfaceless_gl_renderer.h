@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/native_pixmap.h"
 #include "ui/ozone/demo/gl_renderer.h"
 
 namespace gl {
@@ -45,7 +46,7 @@ class SurfacelessGlRenderer : public RendererBase {
     BufferWrapper();
     ~BufferWrapper();
 
-    gl::GLImage* image() const { return image_.get(); }
+    scoped_refptr<gfx::NativePixmap> image() const;
 
     bool Initialize(gfx::AcceleratedWidget widget, const gfx::Size& size);
     void BindFramebuffer();
