@@ -254,6 +254,11 @@ const char kEnableCBDSignOutName[] = "Enable Clear Browsing Data Sign-out";
 const char kEnableCBDSignOutDescription[] =
     "Offer signed-in user to sign-out from Clear Browsing Data settings.";
 
+const char kEnableCheckVisibilityOnAttentionLogStartName[] =
+    "Enable Check Feed Visibility On Attention Log Start";
+const char kEnableCheckVisibilityOnAttentionLogStartDescription[] =
+    "Enable checking feed visibility on attention log start.";
+
 const char kEnableDiscoverFeedDiscoFeedEndpointName[] =
     "Enable discover feed discofeed";
 const char kEnableDiscoverFeedDiscoFeedEndpointDescription[] =
@@ -309,6 +314,12 @@ const char kPasswordsGroupingDescription[] =
 const char kEnableOpenInDownloadName[] = "Enable Open In download";
 const char kEnableOpenInDownloadDescription[] =
     "Enable new download for Open In menu (iOS 14.5+).";
+
+const char kEnableRefineDataSourceReloadReportingName[] =
+    "Enable Refine Data Source Reload Reporting";
+const char kEnableRefineDataSourceReloadReportingDescription[] =
+    "Enable refining data source reload reporting when having a very short "
+    "attention log";
 
 const char kEnableUnicornAccountSupportName[] =
     "Enable Unicorn account support";

@@ -1832,6 +1832,11 @@
     "expiry_milestone":120
   },
   {
+    "name": "enable-check-visibility-on-attention-log-start",
+    "owners": [ "sczs", "tinazwang" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-chrome-management-page-android",
     "owners": [ "ogastorga", "ftirelo" ],
     "expiry_milestone": 107
@@ -2904,6 +2909,11 @@
     // This flag is a utility for disabling Reader Mode in CCT without using
     // low-end devices.
     "expiry_milestone": -1
+  },
+  {
+    "name": "enable-refine-data-source-reload-reporting",
+    "owners": [ "sczs", "tinazwang" ],
+    "expiry_milestone": 120
   },
   {
     "name": "enable-region-search-on-pdf-viewer",
