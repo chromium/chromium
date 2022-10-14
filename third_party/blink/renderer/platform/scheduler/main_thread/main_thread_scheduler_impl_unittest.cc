@@ -59,7 +59,6 @@ using ::base::Feature;
 using ::base::sequence_manager::FakeTask;
 using ::base::sequence_manager::FakeTaskTiming;
 using blink::WebInputEvent;
-using FeatureAndParams = ::base::test::FeatureRefAndParams;
 using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::NiceMock;
@@ -402,7 +401,7 @@ class MainThreadSchedulerImplTest : public testing::Test {
   }
 
   explicit MainThreadSchedulerImplTest(
-      std::vector<FeatureAndParams> features_to_enable) {
+      std::vector<::base::test::FeatureRefAndParams> features_to_enable) {
     feature_list_.InitWithFeaturesAndParameters(features_to_enable, {});
   }
 

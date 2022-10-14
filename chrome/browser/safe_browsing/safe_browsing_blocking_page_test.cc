@@ -137,7 +137,6 @@ using content::NavigationController;
 using content::RenderFrameHost;
 using content::WebContents;
 using security_interstitials::BaseSafeBrowsingErrorUI;
-using FeatureAndParams = base::test::FeatureRefAndParams;
 
 namespace safe_browsing {
 
@@ -1934,15 +1933,17 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
       const SafeBrowsingBlockingPageDelayedWarningBrowserTest&) = delete;
 
   void SetUp() override {
-    std::vector<FeatureAndParams> enabled_features{
-        FeatureAndParams(blink::features::kPortals, {}),
-        FeatureAndParams(blink::features::kPortalsCrossOrigin, {}),
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        base::test::FeatureRefAndParams(blink::features::kPortals, {}),
+        base::test::FeatureRefAndParams(blink::features::kPortalsCrossOrigin,
+                                        {}),
     };
     if (warning_on_mouse_click_enabled()) {
-      enabled_features.push_back(
-          FeatureAndParams(kDelayedWarnings, {{"mouse", "true"}}));
+      enabled_features.push_back(base::test::FeatureRefAndParams(
+          kDelayedWarnings, {{"mouse", "true"}}));
     } else {
-      enabled_features.push_back(FeatureAndParams(kDelayedWarnings, {}));
+      enabled_features.push_back(
+          base::test::FeatureRefAndParams(kDelayedWarnings, {}));
     }
 
     std::vector<base::test::FeatureRef> disabled_features;
@@ -2054,7 +2055,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
  protected:
   // Subclasses can override to enable/disable features in SetUp().
   virtual void GetAdditionalFeatures(
-      std::vector<FeatureAndParams>* enabled_features,
+      std::vector<base::test::FeatureRefAndParams>* enabled_features,
       std::vector<base::test::FeatureRef>* disabled_features) {}
 
   // Initiates a download and waits for it to be completed or cancelled.

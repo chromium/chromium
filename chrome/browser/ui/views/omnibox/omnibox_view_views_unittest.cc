@@ -69,7 +69,6 @@
 #include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #endif
 
-using FeatureAndParams = base::test::FeatureRefAndParams;
 using gfx::Range;
 using metrics::OmniboxEventProto;
 
@@ -299,7 +298,7 @@ class TestingOmniboxEditController : public ChromeOmniboxEditController {
 class OmniboxViewViewsTestBase : public ChromeViewsTestBase {
  public:
   OmniboxViewViewsTestBase(
-      const std::vector<FeatureAndParams>& enabled_features,
+      const std::vector<base::test::FeatureRefAndParams>& enabled_features,
       const std::vector<base::test::FeatureRef>& disabled_features,
       bool is_rtl_ui_test = false) {
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -314,12 +313,12 @@ class OmniboxViewViewsTestBase : public ChromeViewsTestBase {
 class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
  public:
   OmniboxViewViewsTest(
-      const std::vector<FeatureAndParams>& enabled_features,
+      const std::vector<base::test::FeatureRefAndParams>& enabled_features,
       const std::vector<base::test::FeatureRef>& disabled_features,
       bool is_rtl_ui_test = false);
 
   OmniboxViewViewsTest()
-      : OmniboxViewViewsTest(std::vector<FeatureAndParams>(),
+      : OmniboxViewViewsTest(std::vector<base::test::FeatureRefAndParams>(),
                              std::vector<base::test::FeatureRef>()) {}
   OmniboxViewViewsTest(const OmniboxViewViewsTest&) = delete;
   OmniboxViewViewsTest& operator=(const OmniboxViewViewsTest&) = delete;
@@ -396,7 +395,7 @@ class OmniboxViewViewsTest : public OmniboxViewViewsTestBase {
 };
 
 OmniboxViewViewsTest::OmniboxViewViewsTest(
-    const std::vector<FeatureAndParams>& enabled_features,
+    const std::vector<base::test::FeatureRefAndParams>& enabled_features,
     const std::vector<base::test::FeatureRef>& disabled_features,
     bool is_rtl_ui_test)
     : OmniboxViewViewsTestBase(enabled_features,
