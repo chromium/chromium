@@ -1950,10 +1950,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Secondary.Signin.Result" enum="ArcProvisioningStatus"
-    expires_after="2022-11-21">
-  <owner>sinhak@google.com</owner>
+    expires_after="never">
+<!-- expires-never: Needed for long-term health monitoring of ARC provisioning. -->
+
+  <owner>mhasank@chromium.org</owner>
   <owner>jhorwich@google.com</owner>
   <owner>khmel@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     The result (success or the type of failure) of ARC Secondary Account signin/
     reauthorization.
