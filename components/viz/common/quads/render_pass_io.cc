@@ -242,21 +242,19 @@ base::Value FloatArrayToList(base::span<const float> data) {
   return list;
 }
 
-bool FloatArrayFromList(const base::Value& list,
+bool FloatArrayFromList(const base::Value::List& list,
                         size_t expected_count,
                         float* data) {
   DCHECK(data);
   DCHECK_LT(0u, expected_count);
-  if (!list.is_list())
-    return false;
-  size_t count = list.GetList().size();
+  size_t count = list.size();
   if (count != expected_count)
     return false;
   std::vector<double> double_data(count);
   for (size_t ii = 0; ii < count; ++ii) {
-    if (!list.GetList()[ii].is_double())
+    if (!list[ii].is_double())
       return false;
-    double_data[ii] = list.GetList()[ii].GetDouble();
+    double_data[ii] = list[ii].GetDouble();
   }
   for (size_t ii = 0; ii < count; ++ii)
     data[ii] = static_cast<float>(double_data[ii]);
@@ -604,7 +602,7 @@ bool FilterOperationFromDict(const base::Value& dict,
   const base::Value* drop_shadow_offset =
       dict.FindDictKey("drop_shadow_offset");
   const std::string* image_filter = dict.FindStringKey("image_filter");
-  const base::Value* matrix = dict.FindListKey("matrix");
+  const base::Value::List* matrix = dict.GetDict().FindList("matrix");
   absl::optional<int> zoom_inset = dict.FindIntKey("zoom_inset");
   const base::Value* shape = dict.FindListKey("shape");
   absl::optional<int> blur_tile_mode = dict.FindIntKey("blur_tile_mode");
@@ -868,7 +866,7 @@ base::Value Matrix3x3ToList(const skcms_Matrix3x3& mat) {
   return FloatArrayToList(data);
 }
 
-bool Matrix3x3FromList(const base::Value& list, skcms_Matrix3x3* mat) {
+bool Matrix3x3FromList(const base::Value::List& list, skcms_Matrix3x3* mat) {
   DCHECK(mat);
   return FloatArrayFromList(list, 9u, reinterpret_cast<float*>(mat->vals));
 }
@@ -885,7 +883,7 @@ base::Value TransferFunctionToList(const skcms_TransferFunction& fn) {
   return FloatArrayToList(data);
 }
 
-bool TransferFunctionFromList(const base::Value& list,
+bool TransferFunctionFromList(const base::Value::List& list,
                               skcms_TransferFunction* fn) {
   DCHECK(fn);
   float data[7];
@@ -945,8 +943,8 @@ bool ColorSpaceFromDict(const base::Value& dict, gfx::ColorSpace* color_space) {
   bool uses_custom_primary_matrix =
       primary_id == static_cast<uint8_t>(gfx::ColorSpace::PrimaryID::CUSTOM);
   if (uses_custom_primary_matrix) {
-    const base::Value* custom_primary_matrix =
-        dict.FindListKey("custom_primary_matrix");
+    const base::Value::List* custom_primary_matrix =
+        dict.GetDict().FindList("custom_primary_matrix");
     if (!custom_primary_matrix ||
         !Matrix3x3FromList(*custom_primary_matrix, &t_custom_primary_matrix)) {
       return false;
@@ -959,8 +957,8 @@ bool ColorSpaceFromDict(const base::Value& dict, gfx::ColorSpace* color_space) {
       transfer_id ==
           static_cast<uint8_t>(gfx::ColorSpace::TransferID::CUSTOM_HDR);
   if (uses_custom_transfer_params) {
-    const base::Value* custom_transfer_params =
-        dict.FindListKey("custom_transfer_params");
+    const base::Value::List* custom_transfer_params =
+        dict.GetDict().FindList("custom_transfer_params");
     if (!custom_transfer_params ||
         !TransferFunctionFromList(*custom_transfer_params,
                                   &t_custom_transfer_params)) {
@@ -1514,7 +1512,7 @@ bool TextureDrawQuadFromDict(const base::Value& dict_value,
       dict.FindBool("premultiplied_alpha");
   const base::Value::Dict* uv_top_left = dict.FindDict("uv_top_left");
   const base::Value::Dict* uv_bottom_right = dict.FindDict("uv_bottom_right");
-  const base::Value* vertex_opacity = dict_value.FindListKey("vertex_opacity");
+  const base::Value::List* vertex_opacity = dict.FindList("vertex_opacity");
   const base::Value::Dict* damage_rect = dict.FindDict("damage_rect");
   absl::optional<bool> y_flipped = dict.FindBool("y_flipped");
   absl::optional<bool> nearest_neighbor = dict.FindBool("nearest_neighbor");
