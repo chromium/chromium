@@ -291,8 +291,8 @@
 
     const matrix2D = document.getElementById("matrix-2d")
         .computedStyleMap().get('transform')[0];
-    assert_array_equals(matrix2D.toMatrix().toFloat64Array(),
-        [0, 1, 0, 0, -0.3, 1.5, 0, 0, 0, 0, 1, 0, 20, 10, 0, 1]);
+    assert_array_approx_equals(matrix2D.toMatrix().toFloat64Array(),
+        [0, 1, 0, 0, -0.3, 1.5, 0, 0, 0, 0, 1, 0, 20, 10, 0, 1], 1e-6);
   }, "2D CSSMatrixComponent to DOMMatrix");
 </script>
 <div id="matrix-3d" style="transform: matrix3d(0.5, 0.1, -0.1, 0,
