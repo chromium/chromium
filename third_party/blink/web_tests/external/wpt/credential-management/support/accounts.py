@@ -1,8 +1,13 @@
 def main(request, response):
-  if not b"sec-fetch-dest" in request.headers or request.headers[b"sec-fetch-dest"] != b"webidentity":
-    return (500, [], "Missing Sec-Fetch-Dest header")
-  if not b"cookie" in request.cookies or request.cookies[b"cookie"].value != b"1":
-    return (500, [], "Missing cookie")
+  if request.cookies.get(b"cookie") != b"1":
+    return (530, [], "Missing cookie")
+  if request.headers.get(b"Accept") != b"application/json":
+    return (531, [], "Wrong Accept")
+  if request.headers.get(b"Sec-Fetch-Dest") != b"webidentity":
+    return (532, [], "Wrong Sec-Fetch-Dest header")
+  if request.headers.get(b"Referer"):
+    return (533, [], "Should not have Referer")
+
   return """
 {
  "accounts": [{
