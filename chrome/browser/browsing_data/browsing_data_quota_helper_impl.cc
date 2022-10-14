@@ -44,14 +44,6 @@ void BrowsingDataQuotaHelperImpl::StartFetching(FetchResultCallback callback) {
                      this, std::move(callback)));
 }
 
-void BrowsingDataQuotaHelperImpl::RevokeHostQuota(const std::string& host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BrowsingDataQuotaHelperImpl::RevokeHostQuotaOnIOThread,
-                     this, host));
-}
-
 void BrowsingDataQuotaHelperImpl::DeleteHostData(const std::string& host,
                                                  StorageType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -73,9 +65,7 @@ void BrowsingDataQuotaHelperImpl::FetchQuotaInfoOnIOThread(
     FetchResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  const StorageType types[] = {StorageType::kTemporary,
-                               StorageType::kPersistent,
-                               StorageType::kSyncable};
+  const StorageType types[] = {StorageType::kTemporary, StorageType::kSyncable};
 
   // Query storage keys for each storage types. When complete, process the
   // collected quota info.
@@ -131,9 +121,6 @@ void BrowsingDataQuotaHelperImpl::GotStorageKeyUsage(
     case StorageType::kTemporary:
       (*quota_info)[storage_key.origin().host()].temporary_usage += usage;
       break;
-    case StorageType::kPersistent:
-      (*quota_info)[storage_key.origin().host()].persistent_usage += usage;
-      break;
     case StorageType::kSyncable:
       (*quota_info)[storage_key.origin().host()].syncable_usage += usage;
       break;
@@ -151,8 +138,7 @@ void BrowsingDataQuotaHelperImpl::OnGetHostsUsageComplete(
   for (auto& pair : *quota_info) {
     QuotaInfo& info = pair.second;
     // Skip unused entries
-    if (info.temporary_usage <= 0 && info.persistent_usage <= 0 &&
-        info.syncable_usage <= 0)
+    if (info.temporary_usage <= 0 && info.syncable_usage <= 0)
       continue;
 
     info.host = pair.first;
@@ -163,21 +149,9 @@ void BrowsingDataQuotaHelperImpl::OnGetHostsUsageComplete(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-void BrowsingDataQuotaHelperImpl::RevokeHostQuotaOnIOThread(
-    const std::string& host) {
-  quota_manager_->SetPersistentHostQuota(
-      host, 0,
-      base::BindOnce(&BrowsingDataQuotaHelperImpl::DidRevokeHostQuota,
-                     weak_factory_.GetWeakPtr()));
-}
-
 void BrowsingDataQuotaHelperImpl::DeleteHostDataOnIOThread(
     const std::string& host,
     blink::mojom::StorageType type) {
   quota_manager_->DeleteHostData(
       host, type, base::DoNothingAs<void(blink::mojom::QuotaStatusCode)>());
 }
-
-void BrowsingDataQuotaHelperImpl::DidRevokeHostQuota(
-    blink::mojom::QuotaStatusCode /*status*/,
-    int64_t /*quota*/) {}

@@ -103,7 +103,6 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
     quota_manager_->proxy()->RegisterClient(
         std::move(quota_client), storage::QuotaClientType::kFileSystem,
         {blink::mojom::StorageType::kTemporary,
-         blink::mojom::StorageType::kPersistent,
          blink::mojom::StorageType::kSyncable});
 
     std::map<storage::BucketLocator, int64_t> buckets_data;
@@ -119,32 +118,6 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
           bucket->ToBucketLocator(), data.usage));
     }
     mock_quota_client_ptr->AddBucketsData(buckets_data);
-  }
-
-  void SetPersistentHostQuota(const std::string& host, int64_t quota) {
-    quota_ = -1;
-    quota_manager_->SetPersistentHostQuota(
-        host, quota,
-        base::BindOnce(&BrowsingDataQuotaHelperTest::GotPersistentHostQuota,
-                       weak_factory_.GetWeakPtr()));
-  }
-
-  void GetPersistentHostQuota(const std::string& host) {
-    quota_ = -1;
-    quota_manager_->GetPersistentHostQuota(
-        host,
-        base::BindOnce(&BrowsingDataQuotaHelperTest::GotPersistentHostQuota,
-                       weak_factory_.GetWeakPtr()));
-  }
-
-  void GotPersistentHostQuota(blink::mojom::QuotaStatusCode status,
-                              int64_t quota) {
-    EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, status);
-    quota_ = quota;
-  }
-
-  void RevokeHostQuota(const std::string& host) {
-    helper_->RevokeHostQuota(host);
   }
 
   void DeleteHostData(const std::string& host, blink::mojom::StorageType type) {
@@ -183,7 +156,6 @@ TEST_F(BrowsingDataQuotaHelperTest, FetchData) {
   static const ClientDefaultBucketData kStorageKeys[] = {
       {"http://example.com/", StorageType::kTemporary, 1},
       {"https://example.com/", StorageType::kTemporary, 10},
-      {"http://example.com/", StorageType::kPersistent, 100},
       {"https://example.com/", StorageType::kSyncable, 1},
       {"http://example2.com/", StorageType::kTemporary, 1000},
   };
@@ -195,8 +167,8 @@ TEST_F(BrowsingDataQuotaHelperTest, FetchData) {
 
   std::set<QuotaInfo> expected, actual;
   actual.insert(quota_info().begin(), quota_info().end());
-  expected.insert(QuotaInfo("example.com", 11, 100, 1));
-  expected.insert(QuotaInfo("example2.com", 1000, 0, 0));
+  expected.insert(QuotaInfo("example.com", 11, 1));
+  expected.insert(QuotaInfo("example2.com", 1000, 0));
   EXPECT_TRUE(expected == actual);
 }
 
@@ -204,18 +176,13 @@ TEST_F(BrowsingDataQuotaHelperTest, IgnoreExtensionsAndDevTools) {
   static const ClientDefaultBucketData kStorageKeys[] = {
     {"http://example.com/", StorageType::kTemporary, 1},
     {"https://example.com/", StorageType::kTemporary, 10},
-    {"http://example.com/", StorageType::kPersistent, 100},
     {"https://example.com/", StorageType::kSyncable, 1},
     {"http://example2.com/", StorageType::kTemporary, 1000},
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     {"chrome-extension://abcdefghijklmnopqrstuvwxyz/", StorageType::kTemporary,
      10000},
-    {"chrome-extension://abcdefghijklmnopqrstuvwxyz/", StorageType::kPersistent,
-     100000},
 #endif
     {"devtools://abcdefghijklmnopqrstuvwxyz/", StorageType::kTemporary, 10000},
-    {"devtools://abcdefghijklmnopqrstuvwxyz/", StorageType::kPersistent,
-     100000},
   };
 
   RegisterClient(kStorageKeys);
@@ -225,42 +192,21 @@ TEST_F(BrowsingDataQuotaHelperTest, IgnoreExtensionsAndDevTools) {
 
   std::set<QuotaInfo> expected, actual;
   actual.insert(quota_info().begin(), quota_info().end());
-  expected.insert(QuotaInfo("example.com", 11, 100, 1));
-  expected.insert(QuotaInfo("example2.com", 1000, 0, 0));
+  expected.insert(QuotaInfo("example.com", 11, 1));
+  expected.insert(QuotaInfo("example2.com", 1000, 0));
   EXPECT_TRUE(expected == actual);
-}
-
-TEST_F(BrowsingDataQuotaHelperTest, RevokeHostQuota) {
-  const std::string kHost1("example1.com");
-  const std::string kHost2("example2.com");
-
-  SetPersistentHostQuota(kHost1, 1);
-  SetPersistentHostQuota(kHost2, 10);
-  content::RunAllTasksUntilIdle();
-
-  RevokeHostQuota(kHost1);
-  content::RunAllTasksUntilIdle();
-
-  GetPersistentHostQuota(kHost1);
-  content::RunAllTasksUntilIdle();
-  EXPECT_EQ(0, quota());
-
-  GetPersistentHostQuota(kHost2);
-  content::RunAllTasksUntilIdle();
-  EXPECT_EQ(10, quota());
 }
 
 TEST_F(BrowsingDataQuotaHelperTest, DeleteHostData) {
   static const ClientDefaultBucketData kStorageKeys[] = {
       {"http://example.com/", StorageType::kTemporary, 1},
       {"https://example.com/", StorageType::kTemporary, 10},
-      {"http://example.com/", StorageType::kPersistent, 100},
       {"https://example.com/", StorageType::kSyncable, 1},
       {"http://example2.com/", StorageType::kTemporary, 1000},
   };
   RegisterClient(kStorageKeys);
 
-  DeleteHostData("example.com", StorageType::kPersistent);
+  DeleteHostData("example.com", StorageType::kSyncable);
 
   StartFetching();
   content::RunAllTasksUntilIdle();
@@ -268,8 +214,8 @@ TEST_F(BrowsingDataQuotaHelperTest, DeleteHostData) {
 
   std::set<QuotaInfo> expected, actual;
   actual.insert(quota_info().begin(), quota_info().end());
-  expected.insert(QuotaInfo("example.com", 11, 0, 1));
-  expected.insert(QuotaInfo("example2.com", 1000, 0, 0));
+  expected.insert(QuotaInfo("example.com", 11, 0));
+  expected.insert(QuotaInfo("example2.com", 1000, 0));
   EXPECT_TRUE(expected == actual);
 
   DeleteHostData("example2.com", StorageType::kTemporary);
@@ -281,6 +227,6 @@ TEST_F(BrowsingDataQuotaHelperTest, DeleteHostData) {
   expected.clear();
   actual.clear();
   actual.insert(quota_info().begin(), quota_info().end());
-  expected.insert(QuotaInfo("example.com", 11, 0, 1));
+  expected.insert(QuotaInfo("example.com", 11, 0));
   EXPECT_TRUE(expected == actual);
 }

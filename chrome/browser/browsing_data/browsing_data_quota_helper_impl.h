@@ -33,7 +33,6 @@ class QuotaManager;
 class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
  public:
   void StartFetching(FetchResultCallback callback) override;
-  void RevokeHostQuota(const std::string& host) override;
   void DeleteHostData(const std::string& host,
                       blink::mojom::StorageType type) override;
 
@@ -69,9 +68,6 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
   // Called when all QuotaManager::GetHostUsage requests are complete.
   void OnGetHostsUsageComplete(FetchResultCallback callback,
                                QuotaInfoMap* quota_info);
-
-  void RevokeHostQuotaOnIOThread(const std::string& host);
-  void DidRevokeHostQuota(blink::mojom::QuotaStatusCode status, int64_t quota);
 
   void DeleteHostDataOnIOThread(const std::string& host,
                                 blink::mojom::StorageType type);

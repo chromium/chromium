@@ -57,7 +57,6 @@ const char kKeyTemporary[] = "temporary";
 
 const char kKeyTotalUsage[] = "totalUsage";
 const char kKeyTemporaryUsage[] = "temporaryUsage";
-const char kKeyPersistentUsage[] = "persistentUsage";
 
 const int64_t kNegligibleUsage = 1024;  // 1KiB
 
@@ -176,16 +175,12 @@ CookiesTreeModelUtil::GetCookieTreeNodeDictionary(const CookieTreeNode& node) {
 
       const BrowsingDataQuotaHelper::QuotaInfo& quota_info =
           *node.GetDetailedInfo().quota_info;
-      if (quota_info.temporary_usage + quota_info.persistent_usage <=
-          kNegligibleUsage)
+      if (quota_info.temporary_usage <= kNegligibleUsage)
         return absl::nullopt;
 
       dict.Set(kKeyOrigin, quota_info.host);
-      dict.Set(kKeyTotalUsage, ui::FormatBytes(quota_info.temporary_usage +
-                                               quota_info.persistent_usage));
+      dict.Set(kKeyTotalUsage, ui::FormatBytes(quota_info.temporary_usage));
       dict.Set(kKeyTemporaryUsage, ui::FormatBytes(quota_info.temporary_usage));
-      dict.Set(kKeyPersistentUsage,
-               ui::FormatBytes(quota_info.persistent_usage));
       break;
     }
     case CookieTreeNode::DetailedInfo::TYPE_SERVICE_WORKER: {

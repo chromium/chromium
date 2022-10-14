@@ -20,27 +20,19 @@ void MockBrowsingDataQuotaHelper::StartFetching(FetchResultCallback callback) {
   callback_ = std::move(callback);
 }
 
-void MockBrowsingDataQuotaHelper::RevokeHostQuota(const std::string& host) {
-}
-
 void MockBrowsingDataQuotaHelper::DeleteHostData(
     const std::string& host,
     blink::mojom::StorageType type) {}
 
 void MockBrowsingDataQuotaHelper::AddHost(const std::string& host,
                                           int64_t temporary_usage,
-                                          int64_t persistent_usage,
                                           int64_t syncable_usage) {
-  response_.push_back(QuotaInfo(
-      host,
-      temporary_usage,
-      persistent_usage,
-      syncable_usage));
+  response_.push_back(QuotaInfo(host, temporary_usage, syncable_usage));
 }
 
 void MockBrowsingDataQuotaHelper::AddQuotaSamples() {
-  AddHost("quotahost1", 1, 2, 1);
-  AddHost("quotahost2", 10, 20, 10);
+  AddHost("quotahost1", 1, 1);
+  AddHost("quotahost2", 10, 10);
 }
 
 void MockBrowsingDataQuotaHelper::Notify() {

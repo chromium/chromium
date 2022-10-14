@@ -15,11 +15,9 @@ BrowsingDataQuotaHelper::QuotaInfo::QuotaInfo(const std::string& host)
 
 BrowsingDataQuotaHelper::QuotaInfo::QuotaInfo(const std::string& host,
                                               int64_t temporary_usage,
-                                              int64_t persistent_usage,
                                               int64_t syncable_usage)
     : host(host),
       temporary_usage(temporary_usage),
-      persistent_usage(persistent_usage),
       syncable_usage(syncable_usage) {}
 
 BrowsingDataQuotaHelper::QuotaInfo::~QuotaInfo() {}
@@ -41,15 +39,12 @@ bool BrowsingDataQuotaHelper::QuotaInfo::operator <(
     return this->host < rhs.host;
   if (this->temporary_usage != rhs.temporary_usage)
     return this->temporary_usage < rhs.temporary_usage;
-  if (this->syncable_usage != rhs.syncable_usage)
-      return this->syncable_usage < rhs.syncable_usage;
-  return this->persistent_usage < rhs.persistent_usage;
+  return this->syncable_usage < rhs.syncable_usage;
 }
 
 bool BrowsingDataQuotaHelper::QuotaInfo::operator ==(
     const BrowsingDataQuotaHelper::QuotaInfo& rhs) const {
   return this->host == rhs.host &&
-      this->temporary_usage == rhs.temporary_usage &&
-      this->persistent_usage == rhs.persistent_usage &&
-      this->syncable_usage == rhs.syncable_usage;
+         this->temporary_usage == rhs.temporary_usage &&
+         this->syncable_usage == rhs.syncable_usage;
 }

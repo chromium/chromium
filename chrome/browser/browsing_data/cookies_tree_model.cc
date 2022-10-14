@@ -621,15 +621,10 @@ class CookieTreeQuotaNode : public CookieTreeNode {
         container->quota_helper_->DeleteHostData(
             quota_info_->host, blink::mojom::StorageType::kTemporary);
       }
-      if (quota_info_->persistent_usage > 0) {
-        container->quota_helper_->DeleteHostData(
-            quota_info_->host, blink::mojom::StorageType::kPersistent);
-      }
       if (quota_info_->syncable_usage > 0) {
         container->quota_helper_->DeleteHostData(
             quota_info_->host, blink::mojom::StorageType::kSyncable);
       }
-      container->quota_helper_->RevokeHostQuota(quota_info_->host);
       container->quota_info_list_.erase(quota_info_);
     }
   }
