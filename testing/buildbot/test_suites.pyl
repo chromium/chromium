@@ -461,19 +461,33 @@
 
     # TODO(crbug/1239300): Remove when persistent_shell experiment is over.
     'chrome_persistent_shell_tests': {
-       'chrome_public_persistent_shell_unit_test_apk': {
-         'args': [
-           '--use-persistent-shell',
-         ],
-         'ci_only': True,
-         'test': 'chrome_public_unit_test_apk',
-         'experiment_percentage': 100,
-         'swarming': {
-           'shards': 2,
-         },
-         'mixins': [
-           'skia_gold_test',
-         ],
+      'chrome_public_persistent_shell_test_apk': {
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'ci_only': True,
+        'test': 'chrome_public_test_apk',
+        'experiment_percentage': 100,
+        'swarming': {
+          'shards': 19,
+        },
+        'mixins': [
+          'skia_gold_test',
+        ],
+      },
+      'chrome_public_persistent_shell_unit_test_apk': {
+        'args': [
+          '--use-persistent-shell',
+        ],
+        'ci_only': True,
+        'test': 'chrome_public_unit_test_apk',
+        'experiment_percentage': 100,
+        'swarming': {
+          'shards': 2,
+        },
+        'mixins': [
+          'skia_gold_test',
+        ],
       }
     },
 

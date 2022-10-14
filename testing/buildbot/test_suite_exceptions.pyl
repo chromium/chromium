@@ -1234,6 +1234,16 @@
     },
   },
   # TODO(crbug/1239300): Remove when experiment is done.
+  'chrome_public_persistent_shell_test_apk': {
+    'modifications': {
+      'android-nougat-x86-rel': {
+        'swarming': {
+          'shards': 25,
+        },
+      },
+    },
+  },
+  # TODO(crbug/1239300): Remove when experiment is done.
   'chrome_public_persistent_shell_unit_test_apk': {
     'modifications': {
       'android-nougat-x86-rel': {
