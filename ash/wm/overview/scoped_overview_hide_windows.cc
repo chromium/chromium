@@ -70,6 +70,11 @@ void ScopedOverviewHideWindows::OnWindowVisibilityChanged(aura::Window* window,
   if (!visible)
     return;
 
+  // If it's not one of the registered windows, then it must be a child of the
+  // registered windows. Early return in this case.
+  if (!HasWindow(window))
+    return;
+
   // It's expected that windows hidden in overview, unless they are forcefully
   // hidden should not be shown while in overview.
   if (!force_hidden_)
