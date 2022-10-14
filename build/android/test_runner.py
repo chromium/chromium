@@ -1198,7 +1198,13 @@ def _LogRerunStatement(failed_tests, wrapper_arg_str):
                       'test filter file.')
     return
 
-  test_filter_file = os.path.join(os.path.relpath(constants.GetOutDirectory()),
+  output_directory = constants.GetOutDirectory()
+  if not os.path.exists(output_directory):
+    logging.error('Output directory not found. Unable to generate failing '
+                  'test filter file.')
+    return
+
+  test_filter_file = os.path.join(os.path.relpath(output_directory),
                                   _RERUN_FAILED_TESTS_FILE)
   arg_list = shlex.split(wrapper_arg_str) if wrapper_arg_str else sys.argv
   index = 0
