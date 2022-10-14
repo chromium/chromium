@@ -140,8 +140,10 @@ TEST_F(VideoPainterTest, VideoLayerAppearsInLayerTree) {
   EXPECT_EQ(gfx::Size(300, 150), layer->bounds());
 }
 
-class MockWebMediaPlayer : public EmptyWebMediaPlayer {
+class MockWebMediaPlayer : public StubWebMediaPlayer {
  public:
+  explicit MockWebMediaPlayer(WebMediaPlayerClient* client)
+      : StubWebMediaPlayer(client) {}
   MOCK_CONST_METHOD0(HasAvailableVideoFrame, bool());
   MOCK_METHOD3(Paint,
                void(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&));
@@ -151,14 +153,17 @@ class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
  public:
   WebMediaPlayer* CreateMediaPlayer(
       const WebMediaPlayerSource&,
-      WebMediaPlayerClient*,
+      WebMediaPlayerClient* client,
       blink::MediaInspectorContext*,
       WebMediaPlayerEncryptedMediaClient*,
       WebContentDecryptionModule*,
       const WebString& sink_id,
       const cc::LayerTreeSettings& settings,
       scoped_refptr<base::TaskRunner> compositor_worker_task_runner) override {
-    return new MockWebMediaPlayer();
+    MockWebMediaPlayer* player = new MockWebMediaPlayer(client);
+    EXPECT_CALL(*player, HasAvailableVideoFrame)
+        .WillRepeatedly(testing::Return(false));
+    return player;
   }
 };
 
@@ -282,6 +287,10 @@ TEST_P(VideoPaintPreviewTest, PosterFlagToggleFrameCapture) {
   ASSERT_TRUE(PlayVideo());
 
   // Capture using poster.
+  auto* element = To<HTMLMediaElement>(GetDocument().body()->firstChild());
+  MockWebMediaPlayer* player =
+      static_cast<MockWebMediaPlayer*>(element->GetWebMediaPlayer());
+  EXPECT_CALL(*player, Paint(testing::_, testing::_, testing::_)).Times(0);
   auto record = CapturePaintPreview(/*skip_accelerated_content=*/true);
 
   std::vector<std::pair<GURL, SkRect>> links;
@@ -294,6 +303,7 @@ TEST_P(VideoPaintPreviewTest, PosterFlagToggleFrameCapture) {
   EXPECT_EQ(1U, CountImagesOfType(record.get(), cc::ImageType::kGIF));
 
   // Capture using video frame.
+  EXPECT_CALL(*player, Paint(testing::_, testing::_, testing::_));
   record = CapturePaintPreview(/*skip_accelerated_content=*/false);
 
   links.clear();
