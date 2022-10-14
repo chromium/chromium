@@ -32,6 +32,7 @@
 #endif
 
 namespace base {
+class DictAdapterForMigration;
 class DictionaryValue;
 }
 
@@ -155,20 +156,22 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   Extension(const Extension&) = delete;
   Extension& operator=(const Extension&) = delete;
 
-  static scoped_refptr<Extension> Create(const base::FilePath& path,
-                                         mojom::ManifestLocation location,
-                                         const base::DictionaryValue& value,
-                                         int flags,
-                                         std::string* error);
+  static scoped_refptr<Extension> Create(
+      const base::FilePath& path,
+      mojom::ManifestLocation location,
+      const base::DictAdapterForMigration& value,
+      int flags,
+      std::string* error);
 
   // In a few special circumstances, we want to create an Extension and give it
   // an explicit id. Most consumers should just use the other Create() method.
-  static scoped_refptr<Extension> Create(const base::FilePath& path,
-                                         mojom::ManifestLocation location,
-                                         const base::DictionaryValue& value,
-                                         int flags,
-                                         const ExtensionId& explicit_id,
-                                         std::string* error);
+  static scoped_refptr<Extension> Create(
+      const base::FilePath& path,
+      mojom::ManifestLocation location,
+      const base::DictAdapterForMigration& value,
+      int flags,
+      const ExtensionId& explicit_id,
+      std::string* error);
 
   // Valid schemes for web extent URLPatterns.
   static const int kValidWebExtentSchemes;

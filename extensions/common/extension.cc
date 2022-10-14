@@ -141,12 +141,12 @@ bool IsManifestSupported(int manifest_version,
 
 // Computes the |extension_id| from the given parameters. On success, returns
 // true. On failure, populates |error| and returns false.
-bool ComputeExtensionID(const base::DictionaryValue& manifest,
+bool ComputeExtensionID(const base::DictAdapterForMigration& manifest,
                         const base::FilePath& path,
                         int creation_flags,
                         std::u16string* error,
                         ExtensionId* extension_id) {
-  if (const base::Value* public_key = manifest.FindKey(keys::kPublicKey)) {
+  if (const base::Value* public_key = manifest.Find(keys::kPublicKey)) {
     std::string public_key_bytes;
     if (!public_key->is_string() ||
         !Extension::ParsePEMKeyBytes(public_key->GetString(),
@@ -222,11 +222,12 @@ void Extension::set_silence_deprecated_manifest_version_warnings_for_testing(
 }
 
 // static
-scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
-                                           ManifestLocation location,
-                                           const base::DictionaryValue& value,
-                                           int flags,
-                                           std::string* utf8_error) {
+scoped_refptr<Extension> Extension::Create(
+    const base::FilePath& path,
+    ManifestLocation location,
+    const base::DictAdapterForMigration& value,
+    int flags,
+    std::string* utf8_error) {
   return Extension::Create(path,
                            location,
                            value,
@@ -237,12 +238,13 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
 
 // TODO(sungguk): Continue removing std::string errors and replacing
 // with std::u16string. See http://crbug.com/71980.
-scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
-                                           ManifestLocation location,
-                                           const base::DictionaryValue& value,
-                                           int flags,
-                                           const std::string& explicit_id,
-                                           std::string* utf8_error) {
+scoped_refptr<Extension> Extension::Create(
+    const base::FilePath& path,
+    ManifestLocation location,
+    const base::DictAdapterForMigration& value,
+    int flags,
+    const std::string& explicit_id,
+    std::string* utf8_error) {
   base::ElapsedTimer timer;
   DCHECK(utf8_error);
   std::u16string error;
@@ -262,18 +264,14 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
   }
 
   std::unique_ptr<extensions::Manifest> manifest;
+  auto value_clone = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(base::Value(value.Clone())));
   if (flags & FOR_LOGIN_SCREEN) {
     manifest = Manifest::CreateManifestForLoginScreen(
-        location,
-        base::DictionaryValue::From(
-            base::Value::ToUniquePtrValue(value.Clone())),
-        std::move(extension_id));
+        location, std::move(value_clone), std::move(extension_id));
   } else {
-    manifest = std::make_unique<Manifest>(
-        location,
-        base::DictionaryValue::From(
-            base::Value::ToUniquePtrValue(value.Clone())),
-        std::move(extension_id));
+    manifest = std::make_unique<Manifest>(location, std::move(value_clone),
+                                          std::move(extension_id));
   }
 
   std::vector<InstallWarning> install_warnings;

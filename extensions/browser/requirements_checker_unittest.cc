@@ -47,21 +47,18 @@ const char kFeatureCSS3d[] = "css3d";
 
 class RequirementsCheckerTest : public ExtensionsTest {
  public:
-  RequirementsCheckerTest() {
-    manifest_dict_ = std::make_unique<base::DictionaryValue>();
-  }
-
-  ~RequirementsCheckerTest() override {}
+  RequirementsCheckerTest() = default;
+  ~RequirementsCheckerTest() override = default;
 
   void CreateExtension() {
-    manifest_dict_->SetStringKey("name", "dummy name");
-    manifest_dict_->SetStringKey("version", "1");
-    manifest_dict_->SetIntKey("manifest_version", 2);
+    manifest_dict_.Set("name", "dummy name");
+    manifest_dict_.Set("version", "1");
+    manifest_dict_.Set("manifest_version", 2);
 
     std::string error;
     extension_ =
         Extension::Create(base::FilePath(), mojom::ManifestLocation::kUnpacked,
-                          *manifest_dict_, Extension::NO_FLAGS, &error);
+                          manifest_dict_, Extension::NO_FLAGS, &error);
     ASSERT_TRUE(extension_.get()) << error;
   }
 
@@ -74,15 +71,14 @@ class RequirementsCheckerTest : public ExtensionsTest {
   }
 
   void RequireWindowShape() {
-    manifest_dict_->SetBoolPath("requirements.window.shape", true);
+    manifest_dict_.SetByDottedPath("requirements.window.shape", true);
   }
 
   void RequireFeature(const char feature[]) {
-    if (!manifest_dict_->FindKey(kFeaturesKey))
-      manifest_dict_->Set(kFeaturesKey, std::make_unique<base::ListValue>());
-    base::ListValue* features_list = nullptr;
-    ASSERT_TRUE(manifest_dict_->GetList(kFeaturesKey, &features_list));
-    features_list->Append(feature);
+    base::Value* features_list = manifest_dict_.Find(kFeaturesKey);
+    if (!features_list)
+      features_list = manifest_dict_.Set(kFeaturesKey, base::Value::List());
+    features_list->GetList().Append(feature);
   }
 
   std::unique_ptr<RequirementsChecker> checker_;
@@ -90,7 +86,7 @@ class RequirementsCheckerTest : public ExtensionsTest {
 
  private:
   scoped_refptr<Extension> extension_;
-  std::unique_ptr<base::DictionaryValue> manifest_dict_;
+  base::Value::Dict manifest_dict_;
 };
 
 // Tests no requirements.
