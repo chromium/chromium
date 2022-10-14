@@ -7,6 +7,7 @@
 #include <aura-shell-client-protocol.h>
 
 #include "base/check.h"
+#include "base/logging.h"
 
 namespace ui {
 
@@ -15,12 +16,20 @@ WaylandZAuraOutput::WaylandZAuraOutput(zaura_output* aura_output)
   DCHECK(obj_);
 
   static constexpr zaura_output_listener kZAuraOutputListener = {
-      &OnScale, &OnConnection, &OnDeviceScaleFactor, &OnInsets,
-      &OnLogicalTransform};
+      &OnScale,  &OnConnection,       &OnDeviceScaleFactor,
+      &OnInsets, &OnLogicalTransform, &OnDisplayId};
   zaura_output_add_listener(obj_.get(), &kZAuraOutputListener, this);
 }
 
+WaylandZAuraOutput::WaylandZAuraOutput() : obj_(nullptr) {}
+
 WaylandZAuraOutput::~WaylandZAuraOutput() = default;
+
+bool WaylandZAuraOutput::IsReady() const {
+  return wl::get_version_of_object(obj_.get()) <
+             ZAURA_OUTPUT_DISPLAY_ID_SINCE_VERSION ||
+         display_id_.has_value();
+}
 
 void WaylandZAuraOutput::OnScale(void* data,
                                  struct zaura_output* zaura_output,
@@ -50,6 +59,16 @@ void WaylandZAuraOutput::OnLogicalTransform(void* data,
                                             int32_t transform) {
   if (auto* aura_output = static_cast<WaylandZAuraOutput*>(data))
     aura_output->logical_transform_ = transform;
+}
+
+void WaylandZAuraOutput::OnDisplayId(void* data,
+                                     struct zaura_output* zaura_output,
+                                     uint32_t display_id_hi,
+                                     uint32_t display_id_lo) {
+  if (auto* aura_output = static_cast<WaylandZAuraOutput*>(data)) {
+    aura_output->display_id_ = static_cast<int64_t>(display_id_hi) << 32 |
+                               static_cast<int64_t>(display_id_lo);
+  }
 }
 
 }  // namespace ui

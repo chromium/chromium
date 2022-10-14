@@ -126,6 +126,7 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
 WaylandScreen::~WaylandScreen() = default;
 
 void WaylandScreen::OnOutputAddedOrUpdated(WaylandOutput::Id output_id,
+                                           int64_t display_id,
                                            const gfx::Point& origin,
                                            const gfx::Size& logical_size,
                                            const gfx::Size& physical_size,
@@ -134,19 +135,31 @@ void WaylandScreen::OnOutputAddedOrUpdated(WaylandOutput::Id output_id,
                                            int32_t panel_transform,
                                            int32_t logical_transform,
                                            const std::string& label) {
-  AddOrUpdateDisplay(output_id, origin, logical_size, physical_size, insets,
-                     scale, panel_transform, logical_transform, label);
+  if (display_id == display::kInvalidDisplayId) {
+    DCHECK(display_id_map_.contains(output_id));
+    display_id = display_id_map_[output_id];
+  }
+
+  AddOrUpdateDisplay(output_id, display_id, origin, logical_size, physical_size,
+                     insets, scale, panel_transform, logical_transform, label);
 }
 
 void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
-  if (output_id == GetPrimaryDisplay().id()) {
+  DCHECK(display_id_map_.contains(output_id));
+  if (display_id_map_.find(output_id) == display_id_map_.end())
+    return;
+
+  int64_t display_id = display_id_map_[output_id];
+
+  if (display_id == GetPrimaryDisplay().id()) {
     // First, set a new primary display as required by the |display_list_|. It's
     // safe to set any of the displays to be a primary one. Once the output is
     // completely removed, Wayland updates geometry of other displays. And a
     // display, which became the one to be nearest to the origin will become a
     // primary one.
+    // TODO(oshima): The server should send this info.
     for (const auto& display : display_list_.displays()) {
-      if (display.id() != output_id) {
+      if (display.id() != display_id) {
         display_list_.AddOrUpdateDisplay(display,
                                          display::DisplayList::Type::PRIMARY);
         break;
@@ -155,16 +168,17 @@ void WaylandScreen::OnOutputRemoved(WaylandOutput::Id output_id) {
   }
   // TODO(https://crbug.com/1299403): Work around the symptoms of a common
   // crash. Unclear if this is the proper long term solution.
-  auto it = display_list_.FindDisplayById(output_id);
+  auto it = display_list_.FindDisplayById(display_id);
   DCHECK(it != display_list_.displays().end());
   if (it != display_list_.displays().end()) {
-    display_list_.RemoveDisplay(output_id);
+    display_list_.RemoveDisplay(display_id);
   } else {
     LOG(ERROR) << "output_id is not associated with a Display.";
   }
 }
 
 void WaylandScreen::AddOrUpdateDisplay(WaylandOutput::Id output_id,
+                                       int64_t display_id,
                                        const gfx::Point& origin,
                                        const gfx::Size& logical_size,
                                        const gfx::Size& physical_size,
@@ -173,7 +187,8 @@ void WaylandScreen::AddOrUpdateDisplay(WaylandOutput::Id output_id,
                                        int32_t panel_transform,
                                        int32_t logical_transform,
                                        const std::string& label) {
-  display::Display changed_display(output_id);
+  DCHECK_NE(display_id, display::kInvalidDisplayId);
+  display::Display changed_display(display_id);
 
   DCHECK_GE(panel_transform, WL_OUTPUT_TRANSFORM_NORMAL);
   DCHECK_LE(panel_transform, WL_OUTPUT_TRANSFORM_FLIPPED_270);
@@ -248,13 +263,29 @@ void WaylandScreen::AddOrUpdateDisplay(WaylandOutput::Id output_id,
   }
 
   changed_display.set_label(label);
+  if (display_id_map_.find(output_id) == display_id_map_.end()) {
+    display_id_map_.emplace(output_id, display_id);
+  } else {
+    // TODO(oshima): Change to DCHECK if stabilized.
+    CHECK_EQ(display_id_map_[output_id], display_id);
+  }
 
+  display_id_map_[output_id] = display_id;
   display_list_.AddOrUpdateDisplay(changed_display, type);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   gfx::SetFontRenderParamsDeviceScaleFactor(
       chromeos::GetRepresentativeDeviceScaleFactor(display_list_.displays()));
 #endif
+}
+
+uint32_t WaylandScreen::GetOutputIdForDisplayId(int64_t display_id) {
+  auto iter = std::find_if(
+      display_id_map_.begin(), display_id_map_.end(),
+      [display_id](auto pair) { return pair.second == display_id; });
+  if (iter != display_id_map_.end())
+    return iter->first;
+  return 0;
 }
 
 void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
@@ -301,9 +332,17 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
   if (!entered_output_id.has_value())
     return GetPrimaryDisplay();
 
+  if (display_id_map_.find(entered_output_id.value()) ==
+      display_id_map_.end()) {
+    NOTREACHED();
+    return GetPrimaryDisplay();
+  }
+
+  int64_t display_id = display_id_map_.find(entered_output_id.value())->second;
+
   DCHECK(!display_list_.displays().empty());
   for (const auto& display : display_list_.displays()) {
-    if (display.id() == entered_output_id.value())
+    if (display.id() == display_id)
       return display;
   }
 

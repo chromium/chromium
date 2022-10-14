@@ -60,6 +60,7 @@ class WaylandOutputManager : public WaylandOutput::Delegate {
  private:
   // WaylandOutput::Delegate:
   void OnOutputHandleMetrics(WaylandOutput::Id output_id,
+                             int64_t display_id,
                              const gfx::Point& origin,
                              const gfx::Size& logical_size,
                              const gfx::Size& physical_size,

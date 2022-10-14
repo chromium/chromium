@@ -7,6 +7,7 @@
 
 #include <cstdint>
 
+#include "base/gtest_prod_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
@@ -27,8 +28,17 @@ class WaylandZAuraOutput {
   absl::optional<int32_t> logical_transform() const {
     return logical_transform_;
   }
+  absl::optional<int64_t> display_id() const { return display_id_; }
+
+  // Tells If the zuara output receives its display id information when
+  // supported.
+  bool IsReady() const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WaylandZAuraOutputTest, DisplayIdConversions);
+  // For unit test use only.
+  WaylandZAuraOutput();
+
   // zaura_output_listeners
   static void OnScale(void* data,
                       struct zaura_output* zaura_output,
@@ -49,10 +59,15 @@ class WaylandZAuraOutput {
   static void OnLogicalTransform(void* data,
                                  struct zaura_output* zaura_output,
                                  int32_t transform);
+  static void OnDisplayId(void* data,
+                          struct zaura_output* zaura_output,
+                          uint32_t display_id_hi,
+                          uint32_t display_id_lo);
 
   wl::Object<zaura_output> obj_;
   gfx::Insets insets_;
-  absl::optional<int32_t> logical_transform_;
+  absl::optional<int32_t> logical_transform_ = absl::nullopt;
+  absl::optional<int64_t> display_id_ = absl::nullopt;
 };
 
 }  // namespace ui
