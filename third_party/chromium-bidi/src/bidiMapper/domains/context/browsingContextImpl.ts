@@ -19,13 +19,13 @@ import { Protocol } from 'devtools-protocol';
 import { BrowsingContext, Script } from '../protocol/bidiProtocolTypes';
 import { CdpClient } from '../../../cdp';
 import { IEventManager } from '../events/EventManager';
-import LoadEvent = BrowsingContext.LoadEvent;
 import { Deferred } from '../../utils/deferred';
 import { UnknownException } from '../protocol/error';
 import { LogManager } from '../log/logManager';
 import { IBidiServer } from '../../utils/bidiServer';
 import { Realm, RealmType } from '../script/realm';
 import { BrowsingContextStorage } from './browsingContextStorage';
+import LoadEvent = BrowsingContext.LoadEvent;
 
 export class BrowsingContextImpl {
   readonly #targetDefers = {
@@ -43,15 +43,16 @@ export class BrowsingContextImpl {
 
   readonly #contextId: string;
   readonly #parentId: string | null;
-  #url: string = 'about:blank';
-  #loaderId: string | null = null;
+  readonly #cdpBrowserContextId: string | null;
 
-  #cdpSessionId: string;
-  #cdpClient: CdpClient;
   readonly #bidiServer: IBidiServer;
-  #eventManager: IEventManager;
+  readonly #eventManager: IEventManager;
   readonly #children: Map<string, BrowsingContextImpl> = new Map();
 
+  #url: string = 'about:blank';
+  #loaderId: string | null = null;
+  #cdpSessionId: string;
+  #cdpClient: CdpClient;
   #maybeDefaultRealm: Realm | undefined;
 
   get #defaultRealm(): Realm {
@@ -69,11 +70,13 @@ export class BrowsingContextImpl {
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
     cdpSessionId: string,
+    cdpBrowserContextId: string | null,
     eventManager: IEventManager
   ) {
     this.#contextId = contextId;
     this.#parentId = parentId;
     this.#cdpClient = cdpClient;
+    this.#cdpBrowserContextId = cdpBrowserContextId;
     this.#eventManager = eventManager;
     this.#cdpSessionId = cdpSessionId;
     this.#bidiServer = bidiServer;
@@ -97,6 +100,7 @@ export class BrowsingContextImpl {
       cdpClient,
       bidiServer,
       cdpSessionId,
+      null,
       eventManager
     );
     context.#targetDefers.targetUnblocked.resolve();
@@ -113,6 +117,7 @@ export class BrowsingContextImpl {
     cdpClient: CdpClient,
     bidiServer: IBidiServer,
     cdpSessionId: string,
+    cdpBrowserContextId: string | null,
     eventManager: IEventManager
   ): Promise<void> {
     const context = new BrowsingContextImpl(
@@ -121,6 +126,7 @@ export class BrowsingContextImpl {
       cdpClient,
       bidiServer,
       cdpSessionId,
+      cdpBrowserContextId,
       eventManager
     );
 
@@ -132,6 +138,10 @@ export class BrowsingContextImpl {
       new BrowsingContext.ContextCreatedEvent(context.serializeToBidiValue()),
       context.contextId
     );
+  }
+
+  get cdpBrowserContextId(): string | null {
+    return this.#cdpBrowserContextId;
   }
 
   public convertFrameToTargetContext(

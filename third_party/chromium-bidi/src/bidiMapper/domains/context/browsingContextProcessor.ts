@@ -132,6 +132,7 @@ export class BrowsingContextProcessor {
         targetSessionCdpClient,
         this.#bidiServer,
         sessionId,
+        params.targetInfo.browserContextId ?? null,
         this.#eventManager
       );
     }
@@ -172,10 +173,24 @@ export class BrowsingContextProcessor {
     params: BrowsingContext.CreateParameters
   ): Promise<BrowsingContext.CreateResult> {
     const browserCdpClient = this.#cdpConnection.browserClient();
+    let referenceContext = undefined;
+    if (params.referenceContext !== undefined) {
+      referenceContext = BrowsingContextStorage.getKnownContext(
+        params.referenceContext
+      );
+      if (referenceContext.parentId !== null) {
+        throw new InvalidArgumentException(
+          `referenceContext should be a top-level context`
+        );
+      }
+    }
 
     const result = await browserCdpClient.Target.createTarget({
       url: 'about:blank',
       newWindow: params.type === 'window',
+      ...(referenceContext?.cdpBrowserContextId
+        ? { browserContextId: referenceContext.cdpBrowserContextId }
+        : {}),
     });
 
     // Wait for the new tab to be loaded to avoid race conditions in the

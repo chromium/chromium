@@ -722,6 +722,7 @@ export namespace BrowsingContext {
   // }
   const CreateParametersSchema = zod.object({
     type: zod.enum(['tab', 'window']),
+    referenceContext: CommonDataTypes.BrowsingContextSchema.optional(),
   });
   export type CreateParameters = zod.infer<typeof CreateParametersSchema>;
 
