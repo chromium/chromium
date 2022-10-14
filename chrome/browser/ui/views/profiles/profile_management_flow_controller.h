@@ -7,11 +7,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
+class Profile;
 class ProfileManagementStepController;
 class ProfilePickerWebContentsHost;
 
@@ -40,6 +40,9 @@ class ProfileManagementFlowController {
     // Lacros. Picking an account during the `kLacrosSelectAvailableAccount`
     // flow and the profile creation should be implemented as a standalone step.
     kAccountSelection,
+    // Moves the rest of the flow to a browser tab so that the user can complete
+    // the SAML sign in they started at the previous step.
+    kFinishSamlSignin,
 #endif
     // Renders all post-sign in screens: enterprise management consent, profile
     // switch, sync opt-in, etc.

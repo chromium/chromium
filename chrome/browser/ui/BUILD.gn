@@ -3544,8 +3544,6 @@ static_library("ui") {
       "startup/default_browser_prompt.h",
       "views/profiles/badged_profile_photo.cc",
       "views/profiles/badged_profile_photo.h",
-      "views/profiles/profile_creation_signed_in_flow_controller.cc",
-      "views/profiles/profile_creation_signed_in_flow_controller.h",
       "views/profiles/profile_customization_bubble_sync_controller.cc",
       "views/profiles/profile_customization_bubble_sync_controller.h",
       "views/profiles/profile_customization_bubble_view.cc",

@@ -4,9 +4,26 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 
+#include <string>
+
+#include "base/trace_event/trace_event.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/views/profiles/profile_creation_signed_in_flow_controller.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_customization_bubble_view.h"
+#include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/common/webui_url_constants.h"
 
@@ -15,6 +32,7 @@
 #endif
 
 namespace {
+
 // Returns the URL to load as initial content for the profile picker. If an
 // empty URL is returned, the profile picker should not be shown until
 // another explicit call with a non-empty URL given to the view
@@ -45,6 +63,191 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
       return GURL();
   }
 }
+
+// Shows the customization bubble if possible. The bubble won't be shown if the
+// color is enforced by policy or downloaded through Sync or the default theme
+// should be used. An IPH is shown after the bubble, or right away if the bubble
+// cannot be shown.
+void ShowCustomizationBubble(absl::optional<SkColor> new_profile_color,
+                             Browser* browser) {
+  DCHECK(browser);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view || !browser_view->toolbar_button_provider())
+    return;
+  views::View* anchor_view =
+      browser_view->toolbar_button_provider()->GetAvatarToolbarButton();
+  CHECK(anchor_view);
+
+  if (ProfileCustomizationBubbleSyncController::CanThemeSyncStart(
+          browser->profile())) {
+    // For sync users, their profile color has not been applied yet. Call a
+    // helper class that applies the color and shows the bubble only if there is
+    // no conflict with a synced theme / color.
+    ProfileCustomizationBubbleSyncController::
+        ApplyColorAndShowBubbleWhenNoValueSynced(
+            browser, anchor_view,
+            /*suggested_profile_color=*/new_profile_color.value());
+  } else {
+    // For non syncing users, simply show the bubble.
+    ProfileCustomizationBubbleView::CreateBubble(browser, anchor_view);
+  }
+}
+
+void MaybeShowProfileSwitchIPH(Browser* browser) {
+  DCHECK(browser);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view)
+    return;
+  browser_view->MaybeShowProfileSwitchIPH();
+}
+
+// Class triggering the signed-in section of the profile management flow, most
+// notably featuring the sync confirmation. In addition to what its base class
+// `ProfilePickerSignedInFlowController` is doing, this class:
+// - shows in product help and customization bubble at the end of the flow
+// - applies profile customizations (theme, profile name)
+// - finalizes the profile (deleting it if the flow is aborted, marks it
+//   non-ephemeral if the flow is completed)
+// `finish_flow_callback` is not called if the flow is canceled.
+class ProfileCreationSignedInFlowController
+    : public ProfilePickerSignedInFlowController {
+ public:
+  ProfileCreationSignedInFlowController(
+      ProfilePickerWebContentsHost* host,
+      Profile* profile,
+      std::unique_ptr<content::WebContents> contents,
+      absl::optional<SkColor> profile_color,
+      FinishFlowCallback finish_flow_callback)
+      : ProfilePickerSignedInFlowController(host,
+                                            profile,
+                                            std::move(contents),
+                                            profile_color),
+        finish_flow_callback_(std::move(finish_flow_callback)) {}
+
+  ProfileCreationSignedInFlowController(
+      const ProfilePickerSignedInFlowController&) = delete;
+  ProfileCreationSignedInFlowController& operator=(
+      const ProfilePickerSignedInFlowController&) = delete;
+
+  ~ProfileCreationSignedInFlowController() override {
+    // Record unfinished signed-in profile creation.
+    if (!is_finishing_) {
+      // Schedule the profile for deletion, it's not needed any more.
+      g_browser_process->profile_manager()->ScheduleEphemeralProfileForDeletion(
+          profile()->GetPath());
+
+      // TODO(crbug.com/1300109): Consider moving this recording into
+      // ProfilePickerTurnSyncOnDelegate and unify this code with Cancel().
+      ProfileMetrics::LogProfileAddSignInFlowOutcome(
+          ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedAfterSignIn);
+    }
+  }
+
+  // ProfilePickerSignedInFlowController:
+  void Init() override {
+    // Stop with the sign-in navigation and show a spinner instead. The spinner
+    // will be shown until TurnSyncOnHelper figures out whether it's a
+    // managed account and whether sync is disabled by policies (which in some
+    // cases involves fetching policies and can take a couple of seconds).
+    host()->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/true));
+
+    ProfilePickerSignedInFlowController::Init();
+
+    // Listen for extended account info getting fetched.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile());
+    profile_name_resolver_ =
+        std::make_unique<ProfileNameResolver>(identity_manager);
+  }
+
+  void Cancel() override {
+    if (is_finishing_)
+      return;
+
+    is_finishing_ = true;
+
+    // Schedule the profile for deletion, it's not needed any more.
+    g_browser_process->profile_manager()->ScheduleEphemeralProfileForDeletion(
+        profile()->GetPath());
+  }
+
+  void FinishAndOpenBrowser(PostHostClearedCallback callback) override {
+    // Do nothing if the sign-in flow is aborted or if this has already been
+    // called. Note that this can get called first time from a special case
+    // handling (such as the Settings link) and than second time when the
+    // TurnSyncOnHelper finishes.
+    if (is_finishing_)
+      return;
+    is_finishing_ = true;
+
+    if (callback->is_null()) {
+      // No custom callback is specified, we can schedule a profile-related
+      // experience to be shown in context of the opened fresh profile.
+      callback = CreateFreshProfileExperienceCallback();
+    }
+    DCHECK(callback.value());
+
+    if (profile_name_resolver_->resolved_profile_name().empty()) {
+      // Delay finishing the flow until we have obtained a profile name.
+      profile_name_resolver_->set_on_profile_name_resolved_callback(
+          base::BindOnce(
+              &ProfileCreationSignedInFlowController::FinishFlow,
+              // Unretained ok: `this` outlives `profile_name_resolver_`.
+              base::Unretained(this), std::move(callback)));
+    } else {
+      FinishFlow(std::move(callback));
+    }
+  }
+
+ private:
+  PostHostClearedCallback CreateFreshProfileExperienceCallback() {
+    // If there's no color to apply to the profile, skip the customization
+    // bubble and trigger an IPH, instead.
+    if (ThemeServiceFactory::GetForProfile(profile())->UsingPolicyTheme() ||
+        !GetProfileColor().has_value()) {
+      return PostHostClearedCallback(
+          base::BindOnce(&MaybeShowProfileSwitchIPH));
+    } else {
+      // If sync cannot start, we apply `GetProfileColor()` right away before
+      // opening a browser window to avoid flicker. Otherwise, it's applied
+      // later by code triggered from ShowCustomizationBubble().
+      if (!ProfileCustomizationBubbleSyncController::CanThemeSyncStart(
+              profile())) {
+        auto* theme_service = ThemeServiceFactory::GetForProfile(profile());
+        theme_service->BuildAutogeneratedThemeFromColor(
+            GetProfileColor().value());
+      }
+      return PostHostClearedCallback(
+          base::BindOnce(&ShowCustomizationBubble, GetProfileColor()));
+    }
+  }
+
+  void FinishFlow(PostHostClearedCallback callback) {
+    TRACE_EVENT1("browser", "ProfileCreationSignedInFlowController::FinishFlow",
+                 "profile_path", profile()->GetPath().AsUTF8Unsafe());
+    std::u16string name_for_signed_in_profile =
+        profile_name_resolver_->resolved_profile_name();
+    profile_name_resolver_.reset();
+    DCHECK(!name_for_signed_in_profile.empty());
+    DCHECK(callback.value());
+    DCHECK(finish_flow_callback_.value());
+
+    FinalizeNewProfileSetup(profile(), name_for_signed_in_profile);
+
+    ProfileMetrics::LogProfileAddNewUser(
+        ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
+
+    std::move(finish_flow_callback_.value()).Run(std::move(callback));
+  }
+
+  // Controls whether the flow still needs to finalize (which includes showing
+  // `profile` browser window at the end of the sign-in flow).
+  bool is_finishing_ = false;
+
+  std::unique_ptr<ProfileNameResolver> profile_name_resolver_;
+  FinishFlowCallback finish_flow_callback_;
+};
+
 }  // namespace
 
 ProfilePickerFlowController::ProfilePickerFlowController(
@@ -74,15 +277,14 @@ void ProfilePickerFlowController::SwitchToDiceSignIn(
         Step::kAccountSelection,
         ProfileManagementStepController::CreateForDiceSignIn(
             host(), std::make_unique<ProfilePickerDiceSignInProvider>(host()),
-            base::BindOnce(&ProfilePickerFlowController::SwitchToPostSignIn,
-                           // Binding as Unretained as `this` outlives the step
-                           // controllers.
-                           base::Unretained(this))));
+            base::BindOnce(
+                &ProfilePickerFlowController::SwitchToPostSignIn,
+                // Unretained ok: `this` outlives the step controllers.
+                base::Unretained(this))));
   }
   auto pop_closure = base::BindOnce(
       &ProfilePickerFlowController::SwitchToStep,
-      // Binding as Unretained as `this` outlives the step
-      // controllers.
+      // Unretained ok:`this` outlives the step controllers.
       base::Unretained(this), Step::kProfilePicker,
       /*reset_state=*/false, /*pop_step_callback=*/base::OnceClosure(),
       /*step_switch_finished_callback=*/base::OnceCallback<void(bool)>());
@@ -105,6 +307,7 @@ void ProfilePickerFlowController::SwitchToPostSignIn(
   DCHECK(signed_in_profile);
   DCHECK(!IsStepInitialized(Step::kPostSignInFlow));
 
+  Step step = Step::kPostSignInFlow;
   auto finish_flow_callback = FinishFlowCallback(
       base::BindOnce(&ProfilePickerFlowController::FinishFlowAndRunInBrowser,
                      // Unretained ok: the flow will be closed when we run
@@ -114,23 +317,28 @@ void ProfilePickerFlowController::SwitchToPostSignIn(
                      // and will be alive until this callback runs.
                      base::Unretained(signed_in_profile)));
 
-  // TODO(crbug.com/1360055): Split out the SAML flow directly from here instead
-  // of using `ProfileCreationSignedInFlowController` for it.
-  auto signed_in_flow = std::make_unique<ProfileCreationSignedInFlowController>(
-      host(), signed_in_profile, std::move(contents), profile_color_,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      is_saml,
-#else
-      false,
+  if (is_saml) {
+    step = Step::kFinishSamlSignin;
+    RegisterStep(step,
+                 ProfileManagementStepController::CreateForFinishSamlSignIn(
+                     host(), signed_in_profile, std::move(contents),
+                     profile_color_, std::move(finish_flow_callback)));
+  } else
 #endif
-      std::move(finish_flow_callback));
+  {
+    auto signed_in_flow =
+        std::make_unique<ProfileCreationSignedInFlowController>(
+            host(), signed_in_profile, std::move(contents), profile_color_,
+            std::move(finish_flow_callback));
 
-  weak_signed_in_flow_controller_ = signed_in_flow->GetWeakPtr();
-  RegisterStep(Step::kPostSignInFlow,
-               ProfileManagementStepController::CreateForPostSignInFlow(
-                   host(), std::move(signed_in_flow)));
+    weak_signed_in_flow_controller_ = signed_in_flow->GetWeakPtr();
+    RegisterStep(Step::kPostSignInFlow,
+                 ProfileManagementStepController::CreateForPostSignInFlow(
+                     host(), std::move(signed_in_flow)));
+  }
 
-  SwitchToStep(Step::kPostSignInFlow);
+  SwitchToStep(step);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // If we need to go back, we should go all the way to the beginning of the

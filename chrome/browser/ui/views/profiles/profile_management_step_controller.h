@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_STEP_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_STEP_CONTROLLER_H_
 
-#include "base/callback.h"
+#include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -35,6 +38,20 @@ class ProfileManagementStepController {
       ProfilePickerWebContentsHost* host,
       std::unique_ptr<ProfilePickerDiceSignInProvider> dice_sign_in_provider,
       ProfilePickerDiceSignInProvider::SignedInCallback signed_in_callback);
+
+  // Creates a step controller that will take over from the Dice sign-in step
+  // during a SAML sign-in flow, and transition the flow into a browser window
+  // where it can be completed.
+  // `contents` should be the one used to render the Dice sign-in page. The
+  // next steps of the flow will continue in that same `WebContents`.
+  // `finish_flow_callback` will be called by the controller to transfer the
+  // flow from the host, exit it and continue in a regular browser window.
+  static std::unique_ptr<ProfileManagementStepController>
+  CreateForFinishSamlSignIn(ProfilePickerWebContentsHost* host,
+                            Profile* profile,
+                            std::unique_ptr<content::WebContents> contents,
+                            absl::optional<SkColor> profile_color,
+                            FinishFlowCallback finish_flow_callback);
 #endif
 
   static std::unique_ptr<ProfileManagementStepController>
