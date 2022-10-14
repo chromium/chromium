@@ -3642,6 +3642,11 @@
     "expiry_milestone": 115
   },
   {
+    "name": "feed-header-stick-to-top",
+    "owners": [ "//chrome/android/feed/OWNERS", "chili@chromium.org" ],
+    "expiry_milestone": 115
+  },
+  {
     "name": "feed-interactive-refresh",
     "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
     "expiry_milestone": 99

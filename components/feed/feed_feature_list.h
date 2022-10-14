@@ -57,6 +57,9 @@ BASE_DECLARE_FEATURE(kXsurfaceMetricsReporting);
 // Whether to log reliability events.
 BASE_DECLARE_FEATURE(kReliabilityLogging);
 
+// Feature that enables sticky header when users scroll down.
+BASE_DECLARE_FEATURE(kFeedHeaderStickToTop);
+
 // Feature that enables refreshing feeds triggered by the users.
 BASE_DECLARE_FEATURE(kFeedInteractiveRefresh);
 

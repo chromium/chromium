@@ -3719,6 +3719,10 @@ const char kFeedBackToTopDescription[] =
     "Enables showing a callout to help users return to the top of the feeds "
     "quickly.";
 
+const char kFeedHeaderStickToTopName[] = "Feed header stick to top";
+const char kFeedHeaderStickToTopDescription[] =
+    "Stick feed header to top on scroll.";
+
 const char kFeedInteractiveRefreshName[] = "Refresh feeds";
 const char kFeedInteractiveRefreshDescription[] =
     "Enables refreshing feeds triggered by the users.";

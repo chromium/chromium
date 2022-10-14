@@ -56726,6 +56726,7 @@ from previous Chrome versions.
   <int value="-2112547309" label="ClickToCallReceiver:enabled"/>
   <int value="-2111273398" label="SendTabToSelfManageDevicesLink:enabled"/>
   <int value="-2111196530" label="EnableAssistantLauncherUI:disabled"/>
+  <int value="-2108866112" label="FeedHeaderStickToTop:enabled"/>
   <int value="-2108564200" label="AutofillUpstream:disabled"/>
   <int value="-2106960993" label="HarfBuzzPDFSubsetter:disabled"/>
   <int value="-2106763275" label="ArcRtVcpuQuadCore:enabled"/>
@@ -56944,6 +56945,7 @@ from previous Chrome versions.
   <int value="-1991935790" label="ShareCrowLaunchTab:enabled"/>
   <int value="-1990678808" label="SafetyCheckUnusedSitePermissions:disabled"/>
   <int value="-1990614981" label="StoragePressureUI:disabled"/>
+  <int value="-1990583427" label="FeedHeaderStickToTop:disabled"/>
   <int value="-1990238241" label="ChromeOSHWVBREncoding:enabled"/>
   <int value="-1989747818" label="TabStripKeyboardFocus:disabled"/>
   <int value="-1989624484" label="StartSurfaceRefactor:disabled"/>
