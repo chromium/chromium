@@ -26,11 +26,32 @@ function appendIframe(t, doc, src) {
 
 // Register an event listener that will resolve this promise when this
 // window receives a message posted to it.
-function futureMessage() {
+//
+// `options` has the following shape:
+//
+//  {
+//    // If specified, this function waits for the first message from the given
+//    // source only, ignoring other messages.
+//    source,
+//  }
+//
+function futureMessage(options) {
   return new Promise(resolve => {
-      window.addEventListener("message", e => resolve(e.data));
+    window.addEventListener("message", (e) => {
+      if (options?.source && options.source !== e.source) {
+        return;
+      }
+
+      resolve(e.data);
+    });
   });
 };
+
+async function postMessageAndAwaitReply(target, message) {
+  const reply = futureMessage({ source: target });
+  target.postMessage(message, "*");
+  return await reply;
+}
 
 const Server = {
   HTTP_LOCAL: {
@@ -313,6 +334,35 @@ async function xhrTest(t, { source, target, method, expected }) {
   assert_equals(loaded, expected.loaded, "response loaded");
   assert_equals(status, expected.status, "response status");
   assert_equals(body, expected.body, "response body");
+}
+
+const IframeTestResult = {
+  SUCCESS: "loaded",
+  FAILURE: "timeout",
+};
+
+async function iframeTest(t, { source, target, expected }) {
+  const targetUrl = preflightUrl(target);
+  targetUrl.searchParams.set("file", "iframed.html");
+
+  const sourceUrl =
+      resolveUrl("resources/iframer.html", sourceResolveOptions(source));
+  sourceUrl.searchParams.set("url", targetUrl);
+
+  const messagePromise = futureMessage();
+  const iframe = await appendIframe(t, document, sourceUrl);
+
+  // The grandchild frame posts a message iff it loads successfully.
+  // There exists no interoperable way to check whether an iframe failed to
+  // load, so we use a timeout. See: https://github.com/whatwg/html/issues/125
+  const result = await Promise.race([
+      messagePromise,
+      new Promise((resolve) => {
+        t.step_timeout(() => resolve("timeout"), 500 /* ms */);
+      }),
+  ]);
+
+  assert_equals(result, expected);
 }
 
 const WebsocketTestResult = {
