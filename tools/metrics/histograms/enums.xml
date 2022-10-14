@@ -103359,6 +103359,27 @@ others/histograms.xml -->
   <int value="3" label="Transferred WebContents"/>
 </enum>
 
+<enum name="WebFeedChangeReason">
+  <int value="0" label="Unspecified">Unknown change reason</int>
+  <int value="1" label="Web page menu">
+    The user tapped the Follow/Unfollow option from the three dot menu while on
+    a web page.
+  </int>
+  <int value="2" label="Web page accelerator">
+    The user tapped the Follow accelerator while visiting a site.
+  </int>
+  <int value="3" label="Management page">
+    The user tapped to Follow/Unfollow on the Follow Management page.
+  </int>
+  <int value="4" label="In feed recommendation">
+    The user tapped to Follow/Unfollow a recommendation embedded in feed
+    content.
+  </int>
+  <int value="5" label="Back of card unfollow">
+    The user tapped 'Unfollow' on the back of card menu.
+  </int>
+</enum>
+
 <enum name="WebFeedPageInformationRequestReason">
   <int value="0" label="User Requested Follow">
     The user requested to Follow the current web page.

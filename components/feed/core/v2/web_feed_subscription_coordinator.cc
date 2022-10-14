@@ -304,6 +304,7 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedComplete(
       index_.IsRecommended(result.followed_web_feed_id);
   callback_result.request_status = result.request_status;
   callback_result.subscription_count = index_.SubscriptionCount();
+  callback_result.change_reason = result.change_reason;
   feed_stream_->GetMetricsReporter().OnFollowAttempt(followed_with_id,
                                                      callback_result);
   std::move(callback).Run(std::move(callback_result));

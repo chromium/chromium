@@ -26,7 +26,7 @@ class SubscribeToWebFeedTask : public offline_pages::Task {
     WebFeedPageInformation page_info;
     std::string web_feed_id;
     feedwire::webfeed::WebFeedChangeReason change_reason = feedwire::webfeed::
-        WebFeedChangeReason ::WEB_FEED_CHANGE_REASON_UNSPECIFIED;
+        WebFeedChangeReason::WEB_FEED_CHANGE_REASON_UNSPECIFIED;
     // Whether the subscription request will be stored and retried if failed.
     bool durable = false;
   };
@@ -37,6 +37,9 @@ class SubscribeToWebFeedTask : public offline_pages::Task {
     // is its ID.
     std::string followed_web_feed_id;
     feedstore::WebFeedInfo web_feed_info;
+    // The change reason from the request.
+    feedwire::webfeed::WebFeedChangeReason change_reason = feedwire::webfeed::
+        WebFeedChangeReason::WEB_FEED_CHANGE_REASON_UNSPECIFIED;
   };
   SubscribeToWebFeedTask(FeedStream* stream,
                          const OperationToken& operation_token,

@@ -1473,6 +1473,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.WebFeed.NewFollow.ChangeReason"
+    enum="WebFeedChangeReason" expires_after="2023-04-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Change reason for the follow.
+
+    Reported upon successfully following a web feed. Reported as 'true' if the
+    web feed was recommended, even if the user did not see or interact with
+    recommendation UI.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended"
     enum="Boolean" expires_after="2023-03-01">
   <owner>harringtond@chromium.org</owner>
@@ -1480,9 +1493,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Whether the followed web feed was recommended by the server.
 
-    Reported upon successfully following a web feed. Reported as 'true' if the
-    web feed was recommended, even if the user did not see or interact with
-    recommendation UI.
+    Reported upon successfully following a web feed.
   </summary>
 </histogram>
 
