@@ -105,6 +105,7 @@ constexpr CGFloat kFullAvatarImageSize = 100;
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {
     _titleHorizontalMargin = kTitleHorizontalMargin;
+    _subtitleBottomMargin = kDefaultMargin;
   }
 
   return self;
@@ -252,7 +253,7 @@ constexpr CGFloat kFullAvatarImageSize = 100;
     [subtitleMarginLayoutGuide.topAnchor
         constraintEqualToAnchor:self.subtitleLabel.bottomAnchor],
     [subtitleMarginLayoutGuide.heightAnchor
-        constraintEqualToConstant:kDefaultMargin],
+        constraintEqualToConstant:_subtitleBottomMargin],
     [self.specificContentView.topAnchor
         constraintEqualToAnchor:subtitleMarginLayoutGuide.bottomAnchor],
     [self.specificContentView.leadingAnchor

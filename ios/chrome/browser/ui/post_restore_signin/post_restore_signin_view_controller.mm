@@ -94,6 +94,9 @@
         IDS_IOS_POST_RESTORE_SIGN_IN_FULLSCREEN_NOTE_IPHONE);
   }
 
+  // This view does not have a subtitle, so a bottom margin is not needed.
+  self.subtitleBottomMargin = 0;
+
   // Set up the identity control to be centered horizontally, and at the to of
   // the specificContentView.
   [self.specificContentView addSubview:self.identityControl];

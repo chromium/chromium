@@ -63,6 +63,11 @@
 // The subtitle below the title. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* subtitleText;
 
+// The margin between the subtitle and the specificContentView. In cases where
+// subtitle is blank, views may want to set this to zero to avoid adding extra
+// spacing.
+@property(nonatomic, assign) CGFloat subtitleBottomMargin;
+
 // The disclaimer that shows at the bottom of the view, above the action items.
 // The disclaimer does not move on scroll.
 @property(nonatomic, copy) NSString* disclaimerText;
