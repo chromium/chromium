@@ -24,6 +24,8 @@
 
 namespace policy {
 
+// TODO(crbug.com/1374567): Re-enable or delete this test.
+#if 0
 class PolicyTestUnthrottledNestedTimeout : public PolicyTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
@@ -69,5 +71,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUnthrottledNestedTimeout, DisablePolicy) {
   EXPECT_TRUE(message_queue.WaitForMessage(&message));
   EXPECT_EQ("true", message);
 }
+#endif
 
 }  // namespace policy
