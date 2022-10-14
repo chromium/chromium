@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let lazyLoadPromise = null;
+let lazyLoadPromise: Promise<CustomElementConstructor[]>|null = null;
 
-/** @return {!Promise<void>} Resolves when the lazy load module is imported. */
-export function ensureLazyLoaded() {
+/** @return Resolves when the lazy load module is imported. */
+export function ensureLazyLoaded(): Promise<CustomElementConstructor[]> {
   if (!lazyLoadPromise) {
     const script = document.createElement('script');
     script.type = 'module';
@@ -22,7 +22,7 @@ export function ensureLazyLoaded() {
     ];
 
     lazyLoadPromise = Promise.all(
-        lazyLoadPages.map(name => customElements.whenDefined(name)));
+        lazyLoadPages.map((name) => customElements.whenDefined(name)));
   }
   return lazyLoadPromise;
 }

@@ -132,7 +132,7 @@ non_web_component_files = [
   "chromeos/device_page/device_page_browser_proxy.js",
   "chromeos/device_page/drag_behavior.js",
   "chromeos/device_page/layout_behavior.js",
-  "chromeos/ensure_lazy_loaded.js",
+  "chromeos/ensure_lazy_loaded.ts",
   "chromeos/find_shortcut_behavior.js",
   "chromeos/global_scroll_target_behavior.js",
   "chromeos/google_assistant_page/google_assistant_browser_proxy.ts",
