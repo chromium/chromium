@@ -129,7 +129,7 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
   }
 }
 
-- (void)setprimaryIdentityAvatarAccessibilityLabel:
+- (void)setPrimaryIdentityAvatarAccessibilityLabel:
     (NSString*)primaryIdentityAvatarAccessibilityLabel {
   if (_primaryIdentityAvatarAccessibilityLabel !=
       primaryIdentityAvatarAccessibilityLabel) {

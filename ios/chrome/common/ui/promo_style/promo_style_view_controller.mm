@@ -531,7 +531,7 @@ constexpr CGFloat kFullAvatarImageSize = 100;
   }
 }
 
-- (void)setavatarAccessibilityLabel:(NSString*)avatarAccessibilityLabel {
+- (void)setAvatarAccessibilityLabel:(NSString*)avatarAccessibilityLabel {
   _avatarAccessibilityLabel = avatarAccessibilityLabel;
   if (self.hasAvatarImage) {
     self.avatarImageView.accessibilityLabel = avatarAccessibilityLabel;
