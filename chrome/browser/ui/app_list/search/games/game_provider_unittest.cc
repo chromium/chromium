@@ -26,7 +26,6 @@
 namespace app_list {
 namespace {
 
-using ::base::test::ScopedFeatureList;
 using ::testing::ElementsAre;
 using ::testing::UnorderedElementsAre;
 
@@ -71,7 +70,7 @@ class GameProviderTest : public testing::Test,
  public:
   GameProviderTest() {
     bool enabled_override = GetParam();
-    std::vector<ScopedFeatureList::FeatureAndParams> enabled_features = {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {ash::features::kProductivityLauncher, {}},
         {search_features::kLauncherGameSearch,
          {{"enabled_override", enabled_override ? "true" : "false"}}}};
@@ -113,7 +112,7 @@ class GameProviderTest : public testing::Test,
 
   GameProvider* provider() const { return provider_; }
 
-  ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   ::test::TestAppListControllerDelegate list_controller_;
   std::unique_ptr<TestSearchController> search_controller_;
