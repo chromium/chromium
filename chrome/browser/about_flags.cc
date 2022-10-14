@@ -9210,7 +9210,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIsolatedSandboxedIframesName,
      flag_descriptions::kIsolatedSandboxedIframesDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
-         features::kIsolateSandboxedIframes,
+         blink::features::kIsolateSandboxedIframes,
          kIsolateSandboxedIframesGroupingVariations,
          "IsolateSandboxedIframes" /* trial name */)},
 #endif

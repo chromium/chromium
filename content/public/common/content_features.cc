@@ -524,24 +524,6 @@ BASE_FEATURE(kIsolateOrigins,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
 
-// Allow process isolation of iframes with the 'sandbox' attribute set. Whether
-// or not such an iframe will be isolated may depend on options specified with
-// the attribute. Note: At present, only iframes with origin-restricted
-// sandboxes are isolated.
-BASE_FEATURE(kIsolateSandboxedIframes,
-             "IsolateSandboxedIframes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<IsolateSandboxedIframesGrouping>::Option
-    isolated_sandboxed_iframes_grouping_types[] = {
-        {IsolateSandboxedIframesGrouping::kPerSite, "per-site"},
-        {IsolateSandboxedIframesGrouping::kPerOrigin, "per-origin"},
-        {IsolateSandboxedIframesGrouping::kPerDocument, "per-document"}};
-const base::FeatureParam<IsolateSandboxedIframesGrouping>
-    kIsolateSandboxedIframesGroupingParam{
-        &kIsolateSandboxedIframes, "grouping",
-        IsolateSandboxedIframesGrouping::kPerSite,
-        &isolated_sandboxed_iframes_grouping_types};
-
 // Enables the TC39 Array grouping proposal.
 BASE_FEATURE(kJavaScriptArrayGrouping,
              "JavaScriptArrayGrouping",

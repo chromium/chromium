@@ -12,6 +12,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/test/render_document_feature.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -24,8 +25,8 @@ class SrcdocIsolatedSandboxedIframeTest
       public ::testing::WithParamInterface<bool> {
  public:
   SrcdocIsolatedSandboxedIframeTest() {
-    feature_list_.InitWithFeatureState(features::kIsolateSandboxedIframes,
-                                       GetParam());
+    feature_list_.InitWithFeatureState(
+        blink::features::kIsolateSandboxedIframes, GetParam());
   }
 
   void SetUpOnMainThread() override {
@@ -50,7 +51,8 @@ class SitePerProcessIsolatedSandboxedIframeTest
     : public SitePerProcessBrowserTest {
  public:
   SitePerProcessIsolatedSandboxedIframeTest() {
-    feature_list_.InitAndEnableFeature(features::kIsolateSandboxedIframes);
+    feature_list_.InitAndEnableFeature(
+        blink::features::kIsolateSandboxedIframes);
   }
 
  private:
@@ -61,7 +63,8 @@ class SitePerProcessNotIsolatedSandboxedIframeTest
     : public SitePerProcessBrowserTest {
  public:
   SitePerProcessNotIsolatedSandboxedIframeTest() {
-    feature_list_.InitAndDisableFeature(features::kIsolateSandboxedIframes);
+    feature_list_.InitAndDisableFeature(
+        blink::features::kIsolateSandboxedIframes);
   }
 
  private:
@@ -75,7 +78,8 @@ class SitePerProcessPerOriginIsolatedSandboxedIframeTest
  public:
   SitePerProcessPerOriginIsolatedSandboxedIframeTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kIsolateSandboxedIframes, {{"grouping", "per-origin"}}}},
+        {{blink::features::kIsolateSandboxedIframes,
+          {{"grouping", "per-origin"}}}},
         {/* disabled_features */});
   }
 
@@ -87,7 +91,8 @@ class SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest
     : public SitePerProcessIsolatedSandboxedIframeTest {
  public:
   SitePerProcessIsolatedSandboxWithoutStrictSiteIsolationBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kIsolateSandboxedIframes);
+    feature_list_.InitAndEnableFeature(
+        blink::features::kIsolateSandboxedIframes);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -150,7 +155,8 @@ class SitePerProcessPerDocumentIsolatedSandboxedIframeTest
  public:
   SitePerProcessPerDocumentIsolatedSandboxedIframeTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kIsolateSandboxedIframes, {{"grouping", "per-document"}}}},
+        {{blink::features::kIsolateSandboxedIframes,
+          {{"grouping", "per-document"}}}},
         {/* disabled_features */});
   }
 

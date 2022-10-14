@@ -868,6 +868,24 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // Combine WebRTC Network and Worker threads. More info at crbug.com/1373439.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcCombinedNetworkAndWorkerThread);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIsolateSandboxedIframes);
+enum class IsolateSandboxedIframesGrouping {
+  // In this grouping, all isolated sandboxed iframes whose URLs share the same
+  // site in a given BrowsingInstance will share a process.
+  kPerSite,
+  // In this grouping, all isolated sandboxed iframes from a given
+  // BrowsingInstance whose URLs share the same origin will be isolated in an
+  // origin-keyed process.
+  kPerOrigin,
+  // Unlike the other two modes, which group sandboxed frames per-site or
+  // per-origin, this one doesn't do any grouping at all and uses one process
+  // per document.
+  kPerDocument,
+};
+BLINK_COMMON_EXPORT extern const base::FeatureParam<
+    IsolateSandboxedIframesGrouping>
+    kIsolateSandboxedIframesGroupingParam;
+
 }  // namespace features
 }  // namespace blink
 

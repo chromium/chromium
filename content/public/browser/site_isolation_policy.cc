@@ -25,6 +25,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
 
 namespace content {
@@ -141,7 +142,8 @@ bool SiteIsolationPolicy::UseDedicatedProcessesForAllSites() {
 // static
 bool SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled() {
   return !IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation) &&
-         base::FeatureList::IsEnabled(features::kIsolateSandboxedIframes);
+         base::FeatureList::IsEnabled(
+             blink::features::kIsolateSandboxedIframes);
 }
 
 // static

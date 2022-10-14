@@ -3495,8 +3495,8 @@ UrlInfo NavigationRequest::GetUrlInfo() {
         // if two or more such documents share a site/origin. Using
         // navigation_id_ means that each new NavigationRequest (and thus each
         // document) will get a different value.
-        if (features::kIsolateSandboxedIframesGroupingParam.Get() ==
-            features::IsolateSandboxedIframesGrouping::kPerDocument) {
+        if (blink::features::kIsolateSandboxedIframesGroupingParam.Get() ==
+            blink::features::IsolateSandboxedIframesGrouping::kPerDocument) {
           url_info_init.WithUniqueSandboxId(navigation_id_);
         }
       }

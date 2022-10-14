@@ -20,6 +20,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 class TestMemoryDetails : public MetricsMemoryDetails {
@@ -75,13 +76,13 @@ class IsolatedSandboxedIframeBrowserTest : public InProcessBrowserTest {
     // BrowsingInstances.
     if (enable_isolate_sandboxed_iframes_) {
       feature_list_.InitWithFeatures(
-          /* enable_features */ {features::kIsolateSandboxedIframes,
+          /* enable_features */ {blink::features::kIsolateSandboxedIframes,
                                  features::kDisableProcessReuse},
           /* disable_features */ {features::kSpareRendererForSitePerProcess});
     } else {
       feature_list_.InitWithFeatures(
           /* enable_features */ {features::kDisableProcessReuse},
-          /* disable_features */ {features::kIsolateSandboxedIframes,
+          /* disable_features */ {blink::features::kIsolateSandboxedIframes,
                                   features::kSpareRendererForSitePerProcess});
     }
   }

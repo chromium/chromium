@@ -31,6 +31,7 @@
 #include "content/public/common/url_utils.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "url/origin.h"
 
@@ -1117,8 +1118,8 @@ bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
   // known to have the same value.
   if (SiteIsolationPolicy::IsStrictOriginIsolationEnabled() ||
       (real_src_url_info.is_sandboxed &&
-       features::kIsolateSandboxedIframesGroupingParam.Get() ==
-           features::IsolateSandboxedIframesGrouping::kPerOrigin)) {
+       blink::features::kIsolateSandboxedIframesGroupingParam.Get() ==
+           blink::features::IsolateSandboxedIframesGrouping::kPerOrigin)) {
     return src_origin == dest_origin;
   }
 
