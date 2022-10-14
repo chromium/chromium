@@ -5572,6 +5572,9 @@
           'rust_build_tests',
           'rust_autocxx_tests',
         ],
+        'mixins': [
+          'linux-bionic'
+        ],
         'test_suites': {
           'gtest_tests': 'rust_gtests',
           'isolated_scripts': 'rust_native_tests',
@@ -5585,6 +5588,9 @@
           'rust_build_tests',
           'rust_autocxx_tests',
         ],
+        'mixins': [
+          'linux-bionic'
+        ],
         'test_suites': {
           'gtest_tests': 'rust_gtests',
           'isolated_scripts': 'rust_native_tests',
@@ -5597,6 +5603,9 @@
           'mojo_rust_tests',
           'rust_build_tests',
           'rust_autocxx_tests',
+        ],
+        'mixins': [
+          'linux-bionic'
         ],
         'test_suites': {
           'gtest_tests': 'rust_gtests',
