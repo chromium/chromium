@@ -35,7 +35,9 @@ UIImage* CreateErrorUIImage(float scale) {
       16,       // height
       8,        // bitsPerComponent
       0,        // CG will calculate by default.
-      color_space, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host));
+      color_space,
+      kCGImageAlphaPremultipliedFirst |
+          static_cast<CGImageAlphaInfo>(kCGBitmapByteOrder32Host)));
   CGContextSetRGBFillColor(context, 1.0, 0.0, 0.0, 1.0);
   CGContextFillRect(context, CGRectMake(0.0, 0.0, 16, 16));
   base::ScopedCFTypeRef<CGImageRef> cg_image(

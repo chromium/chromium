@@ -24,13 +24,10 @@ UIImage* UIImageWithSizeAndScale(CGFloat width, CGFloat height, CGFloat scale) {
   base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
   base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
-      NULL,
-      target_size.width,
-      target_size.height,
-      8,
-      target_size.width * 4,
+      NULL, target_size.width, target_size.height, 8, target_size.width * 4,
       color_space,
-      kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host));
+      kCGImageAlphaPremultipliedFirst |
+          static_cast<CGImageAlphaInfo>(kCGBitmapByteOrder32Host)));
 
   CGRect target_rect = CGRectMake(0, 0,
                                   target_size.width, target_size.height);
