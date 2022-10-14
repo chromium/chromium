@@ -1522,6 +1522,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
     @Override
     public void draw(Canvas canvas) {
+        if (mDestroyChecker.isDestroyed()) return;
         // If capturing a texture of the toolbar, ensure the alpha is set prior to draw(...) being
         // called.  The alpha is being used prior to getting to draw(...), so updating the value
         // after this point was having no affect.
