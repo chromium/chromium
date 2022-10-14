@@ -139,6 +139,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import com.ark.browser.translate.TranslateAssistContent;
+import com.ark.browser.utils.ArkLogger;
+
 import org.chromium.chrome.browser.ui.BottomContainer;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -775,6 +777,8 @@ public abstract class ChromeActivity
                 getWindowAndroid(), getTabContentManager());
 
         // TODO(1107916): Move contextual search initialization to the RootUiCoordinator.
+        ContextualSearchFieldTrial.setEnabled(true);
+        ArkLogger.e(TAG, "initializeCompositor ContextualSearch isEnabled=" + ContextualSearchFieldTrial.isEnabled());
         if (ContextualSearchFieldTrial.isEnabled()) {
             mContextualSearchManagerSupplier.set(new ContextualSearchManager(this, this,
                     getActivityTabProvider(),

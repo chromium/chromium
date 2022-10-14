@@ -120,7 +120,7 @@ public class ArkTabImpl implements Tab, TabObscuringHandler.Observer {
      * The {@link TabViewManager} associated with this Tab that is responsible for managing custom
      * views.
      */
-    private ArkTabViewManagerImpl mTabViewManager;
+    private final ArkTabViewManagerImpl mTabViewManager;
 
     /** A list of Tab observers.  These are used to broadcast Tab events to listeners. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

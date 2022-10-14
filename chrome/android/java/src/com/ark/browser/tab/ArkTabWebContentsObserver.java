@@ -51,7 +51,7 @@ public class ArkTabWebContentsObserver extends TabWebContentsUserData {
     private static final String TAG = "TabWebContentsObs";
 
     private final ArkTabImpl mTab;
-    private final ObserverList<Callback<WebContents>> mInitObservers = new ObserverList<>();
+    private final ObserverList<Callback> mInitObservers = new ObserverList<>();
     private final Handler mHandler = new Handler();
     private WebContentsObserver mObserver;
     private GURL mLastUrl;
@@ -82,17 +82,21 @@ public class ArkTabWebContentsObserver extends TabWebContentsUserData {
      * occurs before the observer is added. Manually trigger it here.
      * @param observer Observer to add.
      */
-    public void addInitWebContentsObserver(Callback<WebContents> observer) {
+    public void addInitWebContentsObserver(Callback observer) {
         if (mInitObservers.addObserver(observer) && mTab.getWebContents() != null) {
-            observer.onResult(mTab.getWebContents());
+            observer.onResult(mTab, mTab.getWebContents());
         }
     }
 
     /**
      * Remove the InitWebContents observer from the list.
      */
-    public void removeInitWebContentsObserver(Callback<WebContents> observer) {
+    public void removeInitWebContentsObserver(Callback observer) {
         mInitObservers.removeObserver(observer);
+    }
+
+    public interface Callback {
+        void onResult(Tab tab, WebContents result);
     }
 
     @Override
@@ -112,7 +116,9 @@ public class ArkTabWebContentsObserver extends TabWebContentsUserData {
         WebContentsAccessibility.fromWebContents(webContents)
                 .setAllowImageDescriptions(!mTab.isCustomTab());
 
-        for (Callback<WebContents> callback : mInitObservers) callback.onResult(webContents);
+        for (Callback callback : mInitObservers) {
+            callback.onResult(mTab, webContents);
+        }
     }
 
     @Override

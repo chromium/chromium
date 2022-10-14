@@ -713,7 +713,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
     // Helper to get the android Window. Always null for application context. Need to null check
     // result returning value.
-    private Window getWindow() {
+    protected Window getWindow() {
         Activity activity = ContextUtils.activityFromContext(mContextRef.get());
         if (activity == null) return null;
         return activity.getWindow();

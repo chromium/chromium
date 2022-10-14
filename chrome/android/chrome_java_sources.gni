@@ -3,14 +3,15 @@
 # found in the LICENSE file.
 
 chrome_java_sources = [
+  "java/src/com/ark/browser/ArkBrowserActivity.java",
   "java/src/com/ark/browser/ArkCompositorViewHolder.java",
   "java/src/com/ark/browser/ArkLayoutManager.java",
+  "java/src/com/ark/browser/ArkNavigationHandler.java",
   "java/src/com/ark/browser/ArkStaticLayout.java",
   "java/src/com/ark/browser/ArkTabContextMenuItemDelegate.java",
   "java/src/com/ark/browser/ArkTabDelegateFactory.java",
   "java/src/com/ark/browser/ArkTabWebContentsDelegateAndroid.java",
   "java/src/com/ark/browser/ArkWindowAndroid.java",
-  "java/src/com/ark/browser/ArkBrowserActivity.java",
 
   "java/src/com/ark/browser/core/BadFlagsSnackbarManager.java",
   "java/src/com/ark/browser/core/BookmarkBridge.java",
@@ -71,10 +72,14 @@ chrome_java_sources = [
 
   "java/src/com/ark/browser/ui/dialog/DownloadManagerDialog.java",
   "java/src/com/ark/browser/ui/dialog/MainMenuDialog.java",
+  "java/src/com/ark/browser/ui/dialog/SmartSearchDialog.java",
+  "java/src/com/ark/browser/ui/dialog/SmartSearchPopupWindow.java",
+  "java/src/com/ark/browser/ui/dialog/TestWindow.java",
   "java/src/com/ark/browser/ui/dialog/UserAgentSelector.java",
   "java/src/com/ark/browser/ui/drawable/MaterialProgressDrawable.java",
   "java/src/com/ark/browser/ui/widget/DrawableTintTextView.java",
   "java/src/com/ark/browser/ui/widget/ShadowCircleImageView.java",
+  "java/src/com/ark/browser/ui/widget/SmartSearchPanel.java",
   "java/src/com/ark/browser/ui/widget/swiperefresh/SwipeRefreshLayout.java",
 
   "java/src/com/ark/browser/utils/ArkLogger.java",
@@ -111,7 +116,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/LauncherShortcutActivity.java",
   "java/src/org/chromium/chrome/browser/NearOomMonitor.java",
   "java/src/org/chromium/chrome/browser/ServiceTabLauncher.java",
-  "java/src/org/chromium/chrome/browser/SnackbarActivity.java",
   "java/src/org/chromium/chrome/browser/SwipeRefreshHandler.java",
   "java/src/org/chromium/chrome/browser/SynchronousInitializationActivity.java",
   "java/src/org/chromium/chrome/browser/TabUsageTracker.java",

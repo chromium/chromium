@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import com.ark.browser.utils.ArkLogger;
+
 import org.chromium.base.Log;
 
 /**
@@ -257,7 +259,8 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
         SurfaceState state = getStateForHolder(holder);
         assert state != null;
 
-        Log.e(TAG, "surfaceChanged format: %d", state.format);
+        ArkLogger.e(TAG, "surfaceChanged format: %d, width=%s, height=%s",
+                state.format, width, height);
 
         // If this is the surface that the client currently cares about, then notify the client.
         // Note that surfaceChanged is guaranteed to come only after surfaceCreated.  Also, if the

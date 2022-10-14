@@ -415,7 +415,7 @@ public class CompositorView
     public void surfaceChanged(Surface surface, int format, int width, int height) {
         if (mNativeCompositorView == 0) return;
 
-        Log.e(TAG, "surfaceChanged format=" + format);
+        Log.e(TAG, "surfaceChanged format=" + format + " width=" + width + " height=" + height);
         CompositorViewJni.get().surfaceChanged(mNativeCompositorView, CompositorView.this, format,
                 width, height, canUseSurfaceControl(), surface);
         mRenderHost.onSurfaceResized(width, height);
@@ -642,8 +642,11 @@ public class CompositorView
         CompositorViewJni.get().setSceneLayer(
                 mNativeCompositorView, CompositorView.this, sceneLayer);
 
+        Log.e(TAG, "finalizeLayers setSceneLayer");
+
         TabSwitchMetrics.flushActualTabSwitchLatencyMetric();
         CompositorViewJni.get().finalizeLayers(mNativeCompositorView, CompositorView.this);
+        Log.e(TAG, "finalizeLayers finalizeLayers");
         TraceEvent.end("CompositorView:finalizeLayers");
     }
 

@@ -1,30 +1,27 @@
 package com.ark.browser;
 
 import android.graphics.drawable.ColorDrawable;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
-import com.ark.browser.core.UserAgentManager;
+import com.ark.browser.core.utils.NavigationPredictorBridge;
+import com.ark.browser.tab.TabInfoObserver;
 import com.ark.browser.tab.TabListManager;
+import com.ark.browser.tab.TabManagerObserver;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
 import com.ark.browser.ui.dialog.MainMenuDialog;
+import com.ark.browser.ui.widget.SmartSearchPanel;
 import com.ark.browser.utils.ArkLogger;
+import com.ark.browser.utils.ThreadPool;
 
 import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
@@ -35,17 +32,10 @@ import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
-import com.ark.browser.core.utils.ContentUtils;
-
-import org.chromium.chrome.browser.download.DownloadItem;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.flags.ChromeSessionState;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import com.ark.browser.core.utils.NavigationPredictorBridge;
-
-import org.chromium.chrome.browser.profiles.OTRProfileID;
-import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -54,16 +44,12 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class ArkBrowserActivity extends AsyncInitializationActivity {
 
@@ -160,10 +146,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
     @Override
     public void onBackPressed() {
-        if (TabListManager.getInstance().getCurrentTabList().canGoBack()) {
-            TabListManager.getInstance().getCurrentTabList().goBack();
-            return;
-        }
         super.onBackPressed();
     }
 
@@ -239,6 +221,12 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         }
 
         mViewHolder.onStart();
+
+
+        ThreadPool.postOnUIThread(() -> {
+            LoadUrlParams params = new LoadUrlParams("www.baidu.com", PageTransition.LINK);
+            TabListManager.getInstance().openNewTab(params, TabLaunchType.FROM_CHROME_UI);
+        });
     }
 
     @Override
@@ -254,7 +242,7 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
 
     @Override
     protected ArkWindowAndroid createWindowAndroid() {
-        return new ArkWindowAndroid(this, true, null) {
+        return new ArkWindowAndroid(this) {
 
             @Override
             public TabDelegateFactory getTabDelegateFactory() {
@@ -264,6 +252,31 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
             @Override
             public ArkCompositorViewHolder getCompositorViewHolder() {
                 return mViewHolder;
+            }
+
+            @Override
+            public ArkNavigationHandler getNavigationHandler() {
+                return new ArkNavigationHandler() {
+                    @Override
+                    public boolean canGoForward() {
+                        return TabListManager.getInstance().getCurrentTabList().canGoForward();
+                    }
+
+                    @Override
+                    public boolean goForward() {
+                        return TabListManager.getInstance().getCurrentTabList().goForward();
+                    }
+
+                    @Override
+                    public boolean canGoBack() {
+                        return TabListManager.getInstance().getCurrentTabList().canGoBack();
+                    }
+
+                    @Override
+                    public boolean goBack() {
+                        return TabListManager.getInstance().getCurrentTabList().goBack();
+                    }
+                };
             }
 
         };
@@ -329,7 +342,6 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
                 ImageView btnMenu = findViewById(R.id.btn_menu);
                 btnMenu.setOnClickListener(v -> MainMenuDialog.show(ArkBrowserActivity.this));
 
-
                 TraceEvent.end("setContentView(R.layout.main)");
 
             }
@@ -357,6 +369,16 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
         ArkLogger.e(TAG, "setupCompositorContentPostNative");
         try (TraceEvent e = TraceEvent.scoped(
                 "BrowserActivity.setupCompositorContentPostNative")) {
+
+            TabListManager.getInstance().addObserver(() -> {
+                Tab tab = getActivityTab();
+                ArkLogger.d(TAG, "TabManagerObserver onChange tab=" + tab);
+                if (tab != null) {
+                    mViewHolder.getLayoutManager().initLayoutTabFromHost(tab.getId());
+                }
+                mViewHolder.setTab(tab);
+            });
+
             mViewHolder.setFocusable(false);
             mViewHolder.initCompositor(getWindowAndroid(), new ArkCompositorViewHolder.Callback() {
 
@@ -419,7 +441,10 @@ public class ArkBrowserActivity extends AsyncInitializationActivity {
                 }
 
                 @Override
-                public ITabGroup getTabList(@NonNull Tab current) {
+                public ITabGroup getTabList(Tab current) {
+                    if (current == null) {
+                        return TabListManager.getInstance().getCurrentTabList();
+                    }
                     return TabListManager.getInstance().getTabList(current.isIncognito());
                 }
 

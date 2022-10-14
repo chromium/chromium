@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.ark.browser.ui.widget.SmartSearchPanel
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_smart_search"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="invisible"
+    tools:visibility="visible"
+    >
+
+
+
+<!--    <View-->
+<!--        android:id="@+id/bottom_view"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        />-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#F9FAFC"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:paddingVertical="8dp"
+            android:paddingHorizontal="16dp"
+            android:background="#ffffff"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            >
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_logo_googleg_24dp"
+                android:background="#00000000"
+                />
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/smart_search_indicator"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_gravity="start|bottom"
+            android:max="100"
+            android:progress="100"
+            style="?android:attr/progressBarStyleHorizontal"
+            />
+
+        <LinearLayout
+            android:id="@+id/top_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:background="#F9FAFC"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textSize="18sp"
+                android:textColor="#333"/>
+
+
+            <com.ark.browser.ArkCompositorViewHolder
+                android:id="@+id/my_compositor_view_holder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.ark.browser.ui.widget.SmartSearchPanel>

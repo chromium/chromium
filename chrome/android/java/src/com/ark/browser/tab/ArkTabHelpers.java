@@ -49,7 +49,7 @@ public final class ArkTabHelpers {
      * when a new WebContents is set to the tab.
      * @param tab {@link Tab} to create helpers for.
      */
-    public static void initWebContentsHelpers(Tab tab) {
+    public static void initWebContentsHelpers(ArkTabImpl tab) {
         // The InfoBarContainer needs to be created after the ContentView has been natively
         // initialized. In the case where restoring a Tab or showing a prerendered one we already
         // have a valid infobar container, no need to recreate one.

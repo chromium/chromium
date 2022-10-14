@@ -248,7 +248,20 @@ public class ContextualSearchFieldTrial {
      */
     public static boolean isEnabled() {
         if (sEnabled == null) sEnabled = detectEnabled();
-        return sEnabled.booleanValue();
+        return sEnabled;
+    }
+
+    public static void setEnabled(boolean enabled) {
+        sEnabled = enabled;
+
+        if (enabled) {
+            CommandLine.getInstance().removeSwitch(ChromeSwitches.DISABLE_CONTEXTUAL_SEARCH);
+            CommandLine.getInstance().appendSwitch(ChromeSwitches.ENABLE_CONTEXTUAL_SEARCH);
+        } else {
+            CommandLine.getInstance().removeSwitch(ChromeSwitches.ENABLE_CONTEXTUAL_SEARCH);
+            CommandLine.getInstance().appendSwitch(ChromeSwitches.DISABLE_CONTEXTUAL_SEARCH);
+        }
+
     }
 
     static boolean getSwitch(@ContextualSearchSwitch int value) {

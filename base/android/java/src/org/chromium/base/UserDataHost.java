@@ -123,6 +123,7 @@ public final class UserDataHost {
      * The host stops managing them after this method is called.
      */
     public void destroy() {
+        Log.e("UserDataHost", "destroy");
         checkThreadAndState();
 
         // Nulls out |mUserDataMap| first in order to prevent concurrent modification that

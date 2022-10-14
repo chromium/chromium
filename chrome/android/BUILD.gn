@@ -192,6 +192,7 @@ android_resources("chrome_app_java_resources") {
     "//chrome/android/java/res_app/layout/activity_browser.xml",
     "//chrome/android/java/res_app/layout/item_download.xml",
     "//chrome/android/java/res_app/layout/layout_menu.xml",
+    "//chrome/android/java/res_app/layout/layout_smart_search.xml",
 
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_action_full_screen.png",
     "//chrome/android/java/res_app/drawable-xxhdpi/ic_action_keyboard.png",

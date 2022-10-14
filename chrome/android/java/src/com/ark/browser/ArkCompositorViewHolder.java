@@ -4,7 +4,9 @@
 
 package com.ark.browser;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -18,17 +20,24 @@ import android.util.AttributeSet;
 import android.util.Pair;
 import android.view.DragEvent;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.PopupWindow;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import com.ark.browser.tab.ArkTabWebContentsObserver;
 import com.ark.browser.tab.TabInfoObserver;
@@ -36,9 +45,12 @@ import com.ark.browser.tab.TabListManager;
 import com.ark.browser.tab.TabManagerObserver;
 import com.ark.browser.tab.core.IPage;
 import com.ark.browser.tab.core.ITabGroup;
+import com.ark.browser.ui.dialog.SmartSearchDialog;
+import com.ark.browser.ui.dialog.SmartSearchPopupWindow;
+import com.ark.browser.ui.widget.SmartSearchPanel;
 import com.ark.browser.utils.ArkLogger;
+import com.ark.browser.utils.ThreadPool;
 
-import org.chromium.base.Callback;
 import org.chromium.base.Consumer;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
@@ -47,21 +59,19 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.CompositorView;
 import org.chromium.chrome.browser.compositor.Invalidator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
+import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
@@ -69,15 +79,14 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab.TabWebContentsObserver;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.view.ContentView;
-import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeAdapter;
+import org.chromium.content_public.browser.SelectAroundCaretResult;
+import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -88,7 +97,11 @@ import org.chromium.ui.base.EventOffsetHandler;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+import org.chromium.ui.touch_selection.SelectionEventType;
+import org.chromium.url.GURL;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -131,6 +144,21 @@ public class ArkCompositorViewHolder extends FrameLayout
     protected Callback mCallback;
 
     private final TabObserver mTabObserver = new EmptyTabObserver() {
+
+        @Override
+        public void onUrlUpdated(Tab tab) {
+            if (mCallback != null) {
+                ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
+                onBackPressedCallback.setEnabled(tabGroup.canGoBack());
+            } else {
+                setEnabled(false);
+            }
+        }
+
+        @Override
+        public void onShown(Tab tab, @TabSelectionType int type) {
+            mLayoutManager.mStaticLayout.onShown(tab);
+        }
 
         @Override
         public void onContentChanged(Tab tab) {
@@ -267,6 +295,22 @@ public class ArkCompositorViewHolder extends FrameLayout
     private @Nullable
     MotionEvent mLastActiveTouchEvent;
 
+    private final OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(false) {
+        @Override
+        public void handleOnBackPressed() {
+            if (mCallback != null) {
+                ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
+                if (tabGroup.canGoBack()) {
+                    tabGroup.goBack();
+                    setEnabled(tabGroup.canGoBack());
+                    return;
+                }
+            }
+            setEnabled(false);
+            org.chromium.utils.ContextUtils.activityFromContext(getContext()).onBackPressed();
+        }
+    };
+
     /**
      * This view is created on demand to display debugging information.
      */
@@ -341,42 +385,6 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
     private void internalInit() {
-        TabListManager.getInstance().addObserver(new TabManagerObserver() {
-            @Override
-            public void onChange() {
-                Tab tab = getCurrentTab();
-                ArkLogger.d(TAG, "TabManagerObserver onChange tab=" + tab);
-                if (tab != null) {
-                    mLayoutManager.initLayoutTabFromHost(tab.getId());
-                }
-
-                setTab(tab);
-            }
-        });
-
-        TabListManager.getInstance().getTabList(false).addObserver(new TabInfoObserver() {
-            @Override
-            public void didSelectTab(IPage page, int type, int lastId) {
-                mLayoutManager.initLayoutTabFromHost(page.getId());
-            }
-
-            @Override
-            public void didCloseTab(int tabId, boolean incognito) {
-
-            }
-
-            @Override
-            public void didAddTab(IPage pageInfo, int type) {
-                Tab tab = pageInfo.getNativePage();
-                if (tab != null) {
-                    mTabContentManager.attachTab(tab);
-                    mLayoutManager.initLayoutTabFromHost(pageInfo.getId());
-                    tab.addObserver(mTabObserver);
-                }
-            }
-        });
-
-
         mEventOffsetHandler =
                 new EventOffsetHandler(new EventOffsetHandler.EventOffsetHandlerDelegate() {
                     // Cache objects that should not be created frequently.
@@ -465,6 +473,7 @@ public class ArkCompositorViewHolder extends FrameLayout
         } else {
             mCachePoint.set(getWidth(), getHeight());
         }
+        ArkLogger.e(TAG, "getViewportSize width=%s, height=%s, mCacheRect=%s, mCachePoint=%s", getWidth(), getHeight(), mCacheRect, mCachePoint);
         return mCachePoint;
     }
 
@@ -565,6 +574,7 @@ public class ArkCompositorViewHolder extends FrameLayout
      * Should be called for cleanup when the CompositorView instance is no longer used.
      */
     public void shutDown() {
+        onBackPressedCallback.setEnabled(false);
         setTab(null);
         if (mApplicationBottomInsetSupplier != null && mBottomInsetObserver != null) {
             mApplicationBottomInsetSupplier.removeObserver(mBottomInsetObserver);
@@ -752,19 +762,20 @@ public class ArkCompositorViewHolder extends FrameLayout
     }
 
     private Tab getCurrentTab() {
-        if (mLayoutManager == null) return null;
-
-        IPage currentPage = TabListManager.getInstance().getCurrentPage();
-        if (currentPage == null) {
-            return null;
-        }
-
-        Tab currentTab = currentPage.getNativePage();
-
-        // If the tab model selector doesn't know of a current tab, use the last visible one.
-        if (currentTab == null) currentTab = mTabVisible;
-
-        return currentTab;
+//        if (mLayoutManager == null) return null;
+//
+//        IPage currentPage = TabListManager.getInstance().getCurrentPage();
+//        if (currentPage == null) {
+//            return null;
+//        }
+//
+//        Tab currentTab = currentPage.getNativePage();
+//
+//        // If the tab model selector doesn't know of a current tab, use the last visible one.
+//        if (currentTab == null) currentTab = mTabVisible;
+//
+//        return currentTab;
+        return mTabVisible;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -1201,6 +1212,7 @@ public class ArkCompositorViewHolder extends FrameLayout
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         if (changed) onViewportChanged();
+        ArkLogger.e(TAG, "onLayout l=%s, t=%s, r=%s, b=%s", l, t, r, b);
         super.onLayout(changed, l, t, r, b);
     }
 
@@ -1282,13 +1294,19 @@ public class ArkCompositorViewHolder extends FrameLayout
         }
     }
 
+    public WindowAndroid getWindowAndroid() {
+        return mWindowAndroid;
+    }
+
     /**
      * This is called when the native library are ready.
      */
     public void initCompositor(WindowAndroid window, Callback callback) {
         mWindowAndroid = window;
         this.mCallback = callback;
-        Context activity = window.getActivity().get();
+        Activity activity = window.getActivity().get();
+        ((FragmentActivity) activity).getOnBackPressedDispatcher()
+                .addCallback((FragmentActivity) activity, onBackPressedCallback);
         mTabContentManager = new TabContentManager(activity);
         mTabContentManager.initWithNative();
 
@@ -1350,10 +1368,11 @@ public class ArkCompositorViewHolder extends FrameLayout
         }
     }
 
-    private final org.chromium.base.Callback<WebContents> mInitWebContentsObserver = (webContents) -> {
-        SelectionPopupController.fromWebContents(webContents)
-                .setActionModeCallback(new ChromeActionModeHandler.ActionModeCallback(
-                        mTabVisible, webContents,
+    private final ArkTabWebContentsObserver.Callback mInitWebContentsObserver = (tab, webContents) -> {
+        SelectionPopupController controller =
+                SelectionPopupController.fromWebContents(webContents);
+        controller.setActionModeCallback(new ChromeActionModeHandler.ActionModeCallback(
+                        tab, webContents,
                         new Consumer<Boolean>() {
                             @Override
                             public void accept(Boolean aBoolean) {
@@ -1367,9 +1386,102 @@ public class ArkCompositorViewHolder extends FrameLayout
                             }
                         })
                 );
+
+//        final SmartSearchPanel smartSearchDialog = tab.getWindowAndroid().getActivity().get()
+//                .findViewById(R.id.layout_smart_search);
+        Activity activity = tab.getWindowAndroid().getActivity().get();
+        WindowManager manager = activity.getWindowManager();
+        controller.setSelectionClient(new SelectionClient() {
+
+            private SmartSearchPopupWindow smartSearchDialog;
+
+//            private SmartSearchPanel smartSearchDialog;
+
+            @Override
+            public void onSelectionChanged(String selection) {
+                ArkLogger.e(TAG, "onSelectionChanged selection=" + selection);
+                if (TextUtils.isEmpty(selection)) {
+                    hide();
+                } else {
+                    show();
+                    if (smartSearchDialog != null) {
+                        smartSearchDialog.updateKeyword(selection);
+                    }
+                }
+            }
+
+            @Override
+            public void onSelectionEvent(@SelectionEventType int eventType, float posXPix, float posYPix) {
+                ArkLogger.e(TAG, "onSelectionEvent eventType=" + eventType);
+                if (SelectionEventType.SELECTION_HANDLES_SHOWN == eventType) {
+                    show();
+                } else if (SelectionEventType.SELECTION_HANDLES_CLEARED == eventType) {
+                    hide();
+                }
+            }
+
+            @Override
+            public void selectAroundCaretAck(@Nullable SelectAroundCaretResult result) {}
+
+            @Override
+            public boolean requestSelectionPopupUpdates(boolean shouldSuggest) {
+                return false;
+            }
+
+            @Override
+            public void cancelAllRequests() {}
+
+            private void show() {
+                ArkLogger.e(TAG, "smartSearchDialog show");
+                if (smartSearchDialog == null) {
+                    smartSearchDialog = new SmartSearchPopupWindow(tab.getContext());
+                    smartSearchDialog.setOnDismissListener(() -> {
+                        smartSearchDialog = null;
+                        controller.clearSelection();
+                    });
+                }
+                smartSearchDialog.show();
+
+//                if (smartSearchDialog.getVisibility() != VISIBLE) {
+//                    smartSearchDialog.show();
+//                }
+
+
+//                if (smartSearchDialog == null) {
+//                    smartSearchDialog = (SmartSearchPanel) LayoutInflater.from(activity).inflate(R.layout.layout_smart_search, null, false);
+//                    manager.addView(smartSearchDialog, new ViewGroup.LayoutParams(
+//                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+//                    smartSearchDialog.show();
+//                }
+
+            }
+
+            private void hide() {
+
+                if (smartSearchDialog == null) {
+                    return;
+                }
+                ArkLogger.e(TAG, "smartSearchDialog hide isShowing=" + smartSearchDialog.isShowing());
+                if (smartSearchDialog.isShowing()) {
+                    smartSearchDialog.dismiss();
+                    smartSearchDialog = null;
+                }
+
+//                if (smartSearchDialog.getVisibility() == VISIBLE) {
+////                    smartSearchDialog.hide();
+//                    smartSearchDialog.setVisibility(INVISIBLE);
+//                }
+
+//                if (smartSearchDialog != null) {
+//                    manager.removeView(smartSearchDialog);
+//                    smartSearchDialog = null;
+//                }
+            }
+
+        });
     };
 
-    private void setTab(Tab tab) {
+    public void setTab(Tab tab) {
 
         // The StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup() is only true when
         // the Start surface is showing in the startup and there isn't any Tab opened. Thus, no
@@ -1381,7 +1493,15 @@ public class ArkCompositorViewHolder extends FrameLayout
 
         View newView = tab != null ? tab.getView() : null;
         ArkLogger.d(TAG, "setTab tab=" + tab + " view=" + newView + " mContentOverlayVisiblity=" + mContentOverlayVisiblity);
-        if (mView == newView) return;
+        if (mView == newView) {
+            if (mCallback != null) {
+                ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
+                onBackPressedCallback.setEnabled(tabGroup.canGoBack());
+            } else {
+                setEnabled(false);
+            }
+            return;
+        }
 
         // TODO(dtrainor): Look into changing this only if the views differ, but still parse the
         // WebContents list even if they're the same.
@@ -1391,32 +1511,27 @@ public class ArkCompositorViewHolder extends FrameLayout
             // Reset the geometrychange event flag so it can fire on the current active tab.
             mHasKeyboardGeometryChangeFired = false;
             if (mTabVisible != null) {
+                if (mTabVisible.isInitialized()) {
+                    ArkTabWebContentsObserver.from(mTabVisible)
+                            .removeInitWebContentsObserver(mInitWebContentsObserver);
+                }
+                mTabVisible.hide(TabHidingType.CHANGED_TABS);
+                mTabContentManager.detachTab(mTabVisible);
                 mTabVisible.removeObserver(mTabObserver);
                 if (mCallback != null) {
                     mCallback.onPageDetached(mTabVisible);
                 }
             }
-            if (tab != null) {
-                tab.addObserver(mTabObserver);
-                mCompositorView.onTabChanged();
-            }
-            updateViewStateListener(tab != null ? tab.getContentView() : null);
-
-            if (mTabVisible != null && mTabVisible.isInitialized()) {
-                ArkTabWebContentsObserver.from(mTabVisible)
-                        .removeInitWebContentsObserver(mInitWebContentsObserver);
-            }
-            if (mTabVisible != null) {
-                mTabVisible.hide(TabHidingType.CHANGED_TABS);
-            }
 
             mTabVisible = tab;
+            updateViewStateListener(tab != null ? tab.getContentView() : null);
             if (mTabVisible != null) {
+                mTabVisible.addObserver(mTabObserver);
+                mTabContentManager.attachTab(mTabVisible);
+                mCompositorView.onTabChanged();
+                mLayoutManager.initLayoutTabFromHost(mTabVisible.getId());
                 ArkTabWebContentsObserver.from(mTabVisible).addInitWebContentsObserver(
                         mInitWebContentsObserver);
-                if (mCallback != null) {
-                    mCallback.onPageAttached(mTabVisible);
-                }
             }
         }
 
@@ -1428,6 +1543,9 @@ public class ArkCompositorViewHolder extends FrameLayout
             initializeTab(mTabVisible);
             mLayoutManager.onPageSelected(mTabVisible);
             mTabVisible.show(TabSelectionType.FROM_USER);
+            if (mCallback != null) {
+                mCallback.onPageAttached(mTabVisible);
+            }
         }
 
         if (mOnscreenContentProvider == null) {
@@ -1438,6 +1556,15 @@ public class ArkCompositorViewHolder extends FrameLayout
         }
 
 //        mLayoutManager.showLayout(LayoutType.BROWSING, false);
+
+
+        if (mCallback != null) {
+            ITabGroup tabGroup = mCallback.getTabList(mTabVisible);
+            onBackPressedCallback.setEnabled(tabGroup.canGoBack());
+        } else {
+            setEnabled(false);
+        }
+
     }
 
     private void updateViewStateListener(ContentView newContentView) {
@@ -1549,7 +1676,7 @@ public class ArkCompositorViewHolder extends FrameLayout
 
         public boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url);
 
-        public ITabGroup getTabList(@NonNull Tab current);
+        public ITabGroup getTabList(Tab current);
 
         void onPageAttached(@NonNull Tab page);
 

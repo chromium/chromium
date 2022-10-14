@@ -95,7 +95,7 @@ public class ArkStaticLayout extends Layout {
 
     private final CompositorAnimationHandler mAnimationHandler;
 
-    private boolean mIsActive;
+//    private boolean mIsActive;
 
     private static Integer sToolbarTextBoxBackgroundColorForTesting;
     private static Float sToolbarTextBoxAlphaForTesting;
@@ -155,52 +155,52 @@ public class ArkStaticLayout extends Layout {
         mMcp = CompositorModelChangeProcessor.create(
                 mModel, mSceneLayer, StaticTabSceneLayer::bind, mRequestSupplier);
 
-        TabObserver observer = new EmptyTabObserver() {
-            @Override
-            public void onPageLoadFinished(Tab tab, GURL url) {
-                if (mIsActive) unstallImmediately(tab.getId());
-            }
-            @Override
-            public void onShown(Tab tab, @TabSelectionType int type) {
-                if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) {
-                    setStaticTab(tab);
-                } else {
-                    updateStaticTab(tab);
-                }
-            }
-
-            @Override
-            public void onContentChanged(Tab tab) {
-                updateStaticTab(tab);
-            }
-
-            @Override
-            public void onBackgroundColorChanged(Tab tab, int color) {
-                updateStaticTab(tab);
-            }
-
-            @Override
-            public void onDidChangeThemeColor(Tab tab, int color) {
-                updateStaticTab(tab);
-            }
-        };
-
-        TabListManager.getInstance().getTabList(false).addObserver(new TabInfoObserver() {
-            @Override
-            public void didSelectTab(IPage page, int type, int lastId) {
-
-            }
-
-            @Override
-            public void didCloseTab(int tabId, boolean incognito) {
-
-            }
-
-            @Override
-            public void didAddTab(IPage pageInfo, int type) {
-                pageInfo.getNativePage().addObserver(observer);
-            }
-        });
+//        TabObserver observer = new EmptyTabObserver() {
+//            @Override
+//            public void onPageLoadFinished(Tab tab, GURL url) {
+//                if (mIsActive) unstallImmediately(tab.getId());
+//            }
+//            @Override
+//            public void onShown(Tab tab, @TabSelectionType int type) {
+//                if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) {
+//                    setStaticTab(tab);
+//                } else {
+//                    updateStaticTab(tab);
+//                }
+//            }
+//
+//            @Override
+//            public void onContentChanged(Tab tab) {
+//                updateStaticTab(tab);
+//            }
+//
+//            @Override
+//            public void onBackgroundColorChanged(Tab tab, int color) {
+//                updateStaticTab(tab);
+//            }
+//
+//            @Override
+//            public void onDidChangeThemeColor(Tab tab, int color) {
+//                updateStaticTab(tab);
+//            }
+//        };
+//
+//        TabListManager.getInstance().getTabList(false).addObserver(new TabInfoObserver() {
+//            @Override
+//            public void didSelectTab(IPage page, int type, int lastId) {
+//
+//            }
+//
+//            @Override
+//            public void didCloseTab(int tabId, boolean incognito) {
+//
+//            }
+//
+//            @Override
+//            public void didAddTab(IPage pageInfo, int type) {
+//                pageInfo.getNativePage().addObserver(observer);
+//            }
+//        });
     }
 
     @Override
@@ -214,11 +214,11 @@ public class ArkStaticLayout extends Layout {
         updateSnap(dt, mModel);
     }
 
-    @Override
-    public void doneHiding() {
-        super.doneHiding();
-        mIsActive = false;
-    }
+//    @Override
+//    public void doneHiding() {
+//        super.doneHiding();
+//        mIsActive = false;
+//    }
 
     @Override
     public void onTabSelected(long time, int id, int prevId, boolean incognito) {
@@ -286,7 +286,7 @@ public class ArkStaticLayout extends Layout {
         }
     }
 
-    private void updateStaticTab(Tab tab) {
+    public void updateStaticTab(Tab tab) {
         ArkLogger.e(TAG, "updateStaticTab tab=" + tab);
         if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
 
@@ -302,6 +302,14 @@ public class ArkStaticLayout extends Layout {
         boolean canUseLiveTexture =
                 tab.getWebContents() != null && !SadTab.isShowing(tab) && !isNativePage;
         mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, canUseLiveTexture);
+    }
+
+    public void onShown(Tab tab) {
+        if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) {
+            setStaticTab(tab);
+        } else {
+            updateStaticTab(tab);
+        }
     }
 
     private int getToolbarTextBoxBackgroundColor(Tab tab) {

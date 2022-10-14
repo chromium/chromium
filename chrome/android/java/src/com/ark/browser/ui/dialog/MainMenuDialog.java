@@ -14,9 +14,11 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.ark.browser.ArkBrowserActivity;
+import com.ark.browser.ui.widget.SmartSearchPanel;
 
 import org.chromium.chrome.R;
 
+import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.tab.Tab;
 
 public class MainMenuDialog {
@@ -46,6 +48,37 @@ public class MainMenuDialog {
         TextView downloadManagerButton = view.findViewById(R.id.btn_download_manager);
         downloadManagerButton.setOnClickListener(v -> {
             DownloadManagerDialog.show(activity);
+            dialog.dismiss();
+        });
+
+        TextView test = view.findViewById(R.id.btn_refresh2);
+        test.setOnClickListener(v -> {
+//            SmartSearchPanel smartSearchPanel = activity.findViewById(R.id.layout_smart_search);
+//            smartSearchPanel.updateKeyword("test");
+//            smartSearchPanel.show();
+
+
+            SmartSearchDialog smartSearchDialog = new SmartSearchDialog(activity);
+            smartSearchDialog.show();
+
+
+//            SmartSearchPanel smartSearchPanel = (SmartSearchPanel) LayoutInflater.from(activity).inflate(R.layout.layout_smart_search, null, false);
+//
+//            AlertDialog selector = new AlertDialog.Builder(activity)
+//                    .setTitle("Test")
+//                    .setView(smartSearchPanel)
+//                    .create();
+//
+//
+//            smartSearchPanel.attachWindow(selector.getWindow());
+//
+//            selector.show();
+//
+//
+//            smartSearchPanel.updateKeyword("test");
+//            smartSearchPanel.show();
+
+
             dialog.dismiss();
         });
 

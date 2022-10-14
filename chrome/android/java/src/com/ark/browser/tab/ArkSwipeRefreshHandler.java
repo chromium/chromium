@@ -58,7 +58,7 @@ public class ArkSwipeRefreshHandler
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     // The Tab where the swipe occurs.
-    private Tab mTab;
+    private final ArkTabImpl mTab;
 
     private EmptyTabObserver mTabObserver;
 
@@ -79,7 +79,7 @@ public class ArkSwipeRefreshHandler
 
     private boolean mNavigateForward;
 
-    public static ArkSwipeRefreshHandler from(Tab tab) {
+    public static ArkSwipeRefreshHandler from(ArkTabImpl tab) {
         ArkSwipeRefreshHandler handler = get(tab);
         if (handler == null) {
             handler =
@@ -98,7 +98,7 @@ public class ArkSwipeRefreshHandler
      *
      * @param tab The Tab where the swipe occurs.
      */
-    private ArkSwipeRefreshHandler(Tab tab) {
+    private ArkSwipeRefreshHandler(ArkTabImpl tab) {
         super(tab);
         mTab = tab;
         mTabObserver = new EmptyTabObserver() {
@@ -213,11 +213,11 @@ public class ArkSwipeRefreshHandler
 
             boolean handle;
             if (navigateForward) {
-//                TabListManager.getInstance().getCurrentTabList().goForward();
-                handle = TabListManager.getInstance().getCurrentTabList().canGoForward();
+//                handle = TabListManager.getInstance().getCurrentTabList().canGoForward();
+                handle = mTab.getWindowAndroid().getNavigationHandler().canGoForward();
             } else {
-//                TabListManager.getInstance().getCurrentTabList().goBack();
-                handle = TabListManager.getInstance().getCurrentTabList().canGoBack();
+//                handle = TabListManager.getInstance().getCurrentTabList().canGoBack();
+                handle = mTab.getWindowAndroid().getNavigationHandler().canGoBack();
             }
             if (handle) {
                 mNavigateForward = navigateForward;
@@ -254,9 +254,11 @@ public class ArkSwipeRefreshHandler
             // TODO release
             if (mSwipeRefreshLayout.canBackOrForward()) {
                 if (mNavigateForward) {
-                    TabListManager.getInstance().getCurrentTabList().goForward();
+                    mTab.getWindowAndroid().getNavigationHandler().goForward();
+//                    TabListManager.getInstance().getCurrentTabList().goForward();
                 } else {
-                    TabListManager.getInstance().getCurrentTabList().goBack();
+                    mTab.getWindowAndroid().getNavigationHandler().goBack();
+//                    TabListManager.getInstance().getCurrentTabList().goBack();
                 }
             }
             mSwipeRefreshLayout.release(allowRefresh);

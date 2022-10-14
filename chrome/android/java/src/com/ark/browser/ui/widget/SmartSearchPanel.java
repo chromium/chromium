@@ -1,0 +1,632 @@
+package com.ark.browser.ui.widget;
+
+import android.content.Context;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewConfiguration;
+import android.view.Window;
+import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.customview.widget.ViewDragHelper;
+
+import com.ark.browser.ArkCompositorViewHolder;
+import com.ark.browser.ArkNavigationHandler;
+import com.ark.browser.ArkWindowAndroid;
+import com.ark.browser.tab.EmptyTabInfoObserver;
+import com.ark.browser.tab.PageCacheManager;
+import com.ark.browser.tab.PageInfo;
+import com.ark.browser.tab.TabInfo;
+import com.ark.browser.tab.TabInfoObserver;
+import com.ark.browser.tab.core.IPage;
+import com.ark.browser.tab.core.ITab;
+import com.ark.browser.tab.core.ITabGroup;
+import com.ark.browser.tab.core.PageImpl;
+import com.ark.browser.tab.core.TabGroupImpl;
+import com.ark.browser.tab.core.TabImpl;
+import com.ark.browser.utils.ArkLogger;
+import com.google.android.material.tabs.TabLayout;
+
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.LoadUrlParams;
+
+import java.util.Arrays;
+
+public class SmartSearchPanel extends FrameLayout {
+
+    private static final String TAG = "SlidePanelLayout";
+
+    private static final int MIN_FLING_VELOCITY = 400; // dips per second
+
+    private final ViewDragHelper mDragHelper;
+
+    private final float mTouchSlop;
+
+    private View mDragView;
+
+    private final int mMarginTop;
+    private final int mBottomBarHeight;
+    private int mSlideRange;
+    private int mOffset;
+
+    private String keyword;
+
+    private final ArkWindowAndroid mNativeWindow;
+    private Window mWindow;
+
+    public SmartSearchPanel(@NonNull Context context) {
+        this(context, null);
+    }
+
+    public SmartSearchPanel(@NonNull Context context, @Nullable AttributeSet attrs) {
+        this(context, attrs, 0);
+    }
+
+    public SmartSearchPanel(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+
+        mNativeWindow = new ArkWindowAndroid(context) {
+
+            @Override
+            public TabDelegateFactory getTabDelegateFactory() {
+                return getCompositorViewHolder().getTabDelegateFactory();
+            }
+
+            @Override
+            public ArkCompositorViewHolder getCompositorViewHolder() {
+                return mViewHolder;
+            }
+
+            @Override
+            public ArkNavigationHandler getNavigationHandler() {
+                return new ArkNavigationHandler() {
+                    @Override
+                    public boolean canGoForward() {
+                        return mFloatTabList.canGoForward();
+                    }
+
+                    @Override
+                    public boolean goForward() {
+                        return mFloatTabList.goForward();
+                    }
+
+                    @Override
+                    public boolean canGoBack() {
+                        return mFloatTabList.canGoBack();
+                    }
+
+                    @Override
+                    public boolean goBack() {
+                        return mFloatTabList.goBack();
+                    }
+                };
+            }
+
+            @Override
+            protected Window getWindow() {
+                if (mWindow == null) {
+                    return super.getWindow();
+                }
+                return mWindow;
+            }
+        };
+
+
+        float density = context.getResources().getDisplayMetrics().density;
+        mMarginTop = (int) (density * 28);
+        mBottomBarHeight = (int) (density * 56);
+
+        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+
+        this.mDragHelper = ViewDragHelper.create(this, 0.5f, new ViewDragHelper.Callback() {
+            @Override
+            public boolean tryCaptureView(@NonNull View child, int pointerId) {
+                return child == mDragView;
+            }
+
+            @Override
+            public int clampViewPositionVertical(@NonNull View child, int top, int dy) {
+                if (top < mMarginTop) {
+                    top = mMarginTop;
+                } else if (top > mSlideRange + mMarginTop) {
+                    top = mSlideRange + mMarginTop;
+                }
+                return top;
+            }
+
+            @Override
+            public int clampViewPositionHorizontal(@NonNull View child, int left, int dx) {
+                return 0;
+            }
+
+            @Override
+            public void onViewPositionChanged(@NonNull View changedView, int left, int top, int dx, int dy) {
+                mOffset = mSlideRange - (top - mMarginTop);
+//                ArkLogger.e(TAG, "onViewPositionChanged top=" + top + " dy=" + dy + " getTop=" + mDragView.getTop());
+
+                if (mOffset > 0) {
+                    String url = TemplateUrlServiceFactory.get().getUrlForSearchQuery(keyword);
+                    loadUrl(posArray[mCurrentPosition], url);
+                }
+            }
+
+            @Override
+            public void onViewReleased(@NonNull View releasedChild, float xvel, float yvel) {
+//                ArkLogger.e(TAG, "onViewReleased yvel=" + yvel);
+                if (yvel > 0 || (yvel == 0 && mOffset < mSlideRange / 2)) {
+                    mDragHelper.settleCapturedViewAt(mDragView.getLeft(), mSlideRange + mMarginTop);
+                } else {
+                    mDragHelper.settleCapturedViewAt(mDragView.getLeft(), mMarginTop);
+                }
+                invalidate();
+            }
+
+            @Override
+            public void onViewDragStateChanged(int state) {
+            }
+        });
+        mDragHelper.setMinVelocity(MIN_FLING_VELOCITY * density);
+    }
+
+    public void attachWindow(Window window) {
+        this.mWindow = window;
+    }
+
+
+    private static final String[] TAB_TITLES = {"web搜索", "磁力搜索", "网盘搜索", "图片搜索", "自定义搜索"};
+    private int[] posArray;
+    private ArkCompositorViewHolder mViewHolder;
+    private TabLayout tabLayout;
+    private int mCurrentPosition = 0;
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        posArray = new int[TAB_TITLES.length];
+        Arrays.fill(posArray, -1);
+        mDragView = getChildAt(getChildCount() - 1);
+        tabLayout = mDragView.findViewById(R.id.smart_search_indicator);
+
+        for (String title : TAB_TITLES) {
+            TabLayout.Tab tab = tabLayout.newTab().setText(title);
+            tabLayout.addTab(tab);
+        }
+        tabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int index = tab.getPosition();
+                mCurrentPosition = tab.getPosition();
+                int pos = posArray[index];
+
+                String url;
+
+
+                if (index == 0) {
+//                    url = "http://xia.fobenshidao.cc/search.php?mod=forum&searchsubmit=yes&srchtxt=" + keyword;
+                    url = "https://www.baidu.com";
+                } else {
+                    url = TemplateUrlServiceFactory.get().getUrlForSearchQuery(keyword);
+                }
+
+                pos = loadUrl(pos, url);
+                posArray[index] = pos;
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+        mViewHolder = mDragView.findViewById(R.id.my_compositor_view_holder);
+        mViewHolder.setRootView(this);
+    }
+
+
+    private static class MyTabInfo extends TabInfo {
+
+        public static TabInfo create() {
+            return create(System.currentTimeMillis());
+        }
+
+        public static TabInfo create(long createTime) {
+            MyTabInfo manager = new MyTabInfo();
+            manager.createTime = createTime;
+            manager.tabInfoId = String.valueOf(manager.createTime);
+            return manager;
+        }
+
+        @Override
+        public void setIndex(int index) {
+            this.pageIndex = index;
+        }
+
+        @Override
+        public void save() {
+
+        }
+
+        @Override
+        public void update() {
+        }
+
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        ArkLogger.e(TAG, "onMeasure width=" + getWidth() + " height=" + getHeight());
+        if (getHeight() >= mMarginTop) {
+            mDragView.measure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(getHeight() - mMarginTop, MeasureSpec.EXACTLY));
+        }
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        ArkLogger.e(TAG, "onLayout l=%s, t=%s, r=%s, b=%s",
+                left, top, right, bottom);
+        super.onLayout(changed, left, top, right, bottom);
+        mSlideRange = getHeight() - mBottomBarHeight - mMarginTop;
+        ViewCompat.offsetTopAndBottom(mDragView, getHeight() - mBottomBarHeight - mOffset);
+    }
+
+
+    private boolean mSlideMode = false;
+
+    private int mMode = MODE_NONE;
+    private static final int MODE_NONE = -1;
+    private static final int MODE_SLIDE = 0;
+    private static final int MODE_OTHER = 0;
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        ArkLogger.e(TAG, "onInterceptTouchEvent action=" + MotionEvent.actionToString(ev.getAction()));
+        return false;
+    }
+
+    private float mDownX;
+    private float mDownY;
+    private boolean canSlide;
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        ArkLogger.e(TAG, "dispatchTouchEvent event=" + MotionEvent.actionToString(ev.getAction()));
+
+        float x = ev.getX();
+        float y = ev.getY();
+
+        int action = ev.getAction();
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                mDownX = x;
+                mDownY = y;
+                canSlide = mDragHelper.isViewUnder(mDragView, (int) x, (int) y);
+                if (!canSlide) {
+                    return super.dispatchTouchEvent(ev);
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                float dx = Math.abs(x - mDownX);
+                float dy = Math.abs(y - mDownY);
+                if (dx < mTouchSlop && dy < mTouchSlop) {
+                    break;
+                }
+                if (dy > dx) {
+
+                    if (canSlide) {
+//                        MotionEvent event = MotionEvent.obtain(ev);
+////                        event.setAction(MotionEvent.ACTION_CANCEL);
+//                        super.dispatchTouchEvent(event);
+//                        event.recycle();
+
+//                        super.dispatchTouchEvent(ev);
+
+                        mDragHelper.processTouchEvent(ev);
+
+                        ArkLogger.e(TAG, "dispatchTouchEvent move");
+                        return true;
+                    }
+                }
+                break;
+        }
+
+        ArkLogger.e(TAG, "dispatchTouchEvent action=" + MotionEvent.actionToString(action) + " isSlideViewUnder=" + canSlide);
+//        if (canSlide) {
+//            mDragHelper.processTouchEvent(ev);
+//            return true;
+//        }
+        mDragHelper.processTouchEvent(ev);
+        boolean result = super.dispatchTouchEvent(ev);
+        ArkLogger.e(TAG, "dispatchTouchEvent result=" + result);
+        return result;
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (!canSlide) {
+            return super.onTouchEvent(event);
+        }
+        ArkLogger.e(TAG, "onTouchEvent action=" + MotionEvent.actionToString(event.getAction()));
+
+//        if (mSlideMode || event.getAction() == MotionEvent.ACTION_DOWN) {
+//            mDragHelper.processTouchEvent(event);
+//        }
+
+
+        int action = event.getAction();
+
+        switch (action) {
+            case MotionEvent.ACTION_MOVE:
+                if (mMode != MODE_NONE) {
+//                    interceptTap = mMode == MODE_SLIDE;
+                } else if (canSlide) {
+                    float x = event.getX();
+                    float y = event.getY();
+                    float dx = Math.abs(x - mDownX);
+                    float dy = Math.abs(y - mDownY);
+                    if (dx < mTouchSlop && dy < mTouchSlop) {
+                        break;
+                    }
+                    if (dy > dx) {
+                        ArkLogger.e(TAG, "onTouchEvent move");
+                        mSlideMode = true;
+                        mMode = MODE_SLIDE;
+                    } else {
+                        mMode = MODE_OTHER;
+                    }
+                    break;
+                }
+        }
+        ArkLogger.e(TAG, "onTouchEvent mSlideMode=" + mSlideMode);
+        if (mSlideMode || event.getAction() == MotionEvent.ACTION_DOWN) {
+            mDragHelper.processTouchEvent(event);
+            return true;
+        } else {
+            mDragHelper.cancel();
+            return super.onTouchEvent(event);
+        }
+    }
+
+    @Override
+    public void computeScroll() {
+        if (mDragHelper.continueSettling(true)) {
+            ViewCompat.postInvalidateOnAnimation(this);
+        }
+    }
+
+    public void updateKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+    public int getOffset() {
+        return mOffset;
+    }
+
+    public void show() {
+        ArkLogger.e(TAG, "show height=" + getHeight());
+        mOffset = 0;
+        ViewCompat.offsetTopAndBottom(mDragView, getHeight() - mBottomBarHeight);
+        setVisibility(VISIBLE);
+        if (mViewHolder.getWindowAndroid() == null) {
+            mViewHolder.setFocusable(false);
+            mViewHolder.initCompositor(mNativeWindow, new ArkCompositorViewHolder.Callback() {
+                @Override
+                public boolean openNewPage(@NonNull Tab current, @TabLaunchType int type, String url) {
+                    if (mFloatTabList == null) {
+                        return false;
+                    }
+                    return mFloatTabList.openNewPage(current, type, url);
+                }
+
+                @Override
+                public ITabGroup getTabList(@NonNull Tab current) {
+                    return getFloatTabList();
+                }
+
+                @Override
+                public void onPageAttached(@NonNull Tab page) {
+
+                }
+
+                @Override
+                public void onPageDetached(@NonNull Tab page) {
+
+                }
+
+                @Override
+                public void onShutDown() {
+                    if (mFloatTabList != null) {
+                        mFloatTabList.destroy();
+                    }
+                }
+            });
+        }
+        mViewHolder.onStart();
+
+
+        mViewHolder.setTab(null);
+
+        Tab tab = getActivityTab();
+        if (tab != null) {
+            if (tab.isHidden()) {
+                tab.show(TabSelectionType.FROM_USER);
+            } else {
+                // The visible Tab's renderer process may have died after the activity was
+                // paused. Ensure that it's restored appropriately.
+                tab.loadIfNeeded();
+            }
+        }
+
+    }
+
+
+    public void hide() {
+        ArkLogger.e(TAG, "hide");
+        if (mOffset != 0) {
+            mOffset = 0;
+            ViewCompat.offsetTopAndBottom(mDragView, getHeight() - mBottomBarHeight);
+        }
+        Arrays.fill(posArray, -1);
+        mCurrentPosition = 0;
+        if (mFloatTabList != null) {
+            if (mFloatingTabInfoObserver != null) {
+                mFloatingTabInfoObserver.onDestroy();
+                mFloatingTabInfoObserver = null;
+            }
+            mFloatTabList.destroy();
+            mFloatTabList = null;
+        }
+
+        if (mViewHolder != null) {
+            mViewHolder.onStop();
+        }
+
+        setVisibility(INVISIBLE);
+
+        Tab tab = getActivityTab();
+        if (tab != null) {
+            tab.hide(TabHidingType.ACTIVITY_HIDDEN);
+        }
+    }
+
+    public Tab getActivityTab() {
+        if (mFloatTabList == null) {
+            return null;
+        }
+        IPage page = mFloatTabList.getCurrentPage();
+        if (page != null) {
+            return page.getNativePage();
+        }
+        return null;
+    }
+
+    private ITabGroup mFloatTabList;
+
+    private ITabGroup getFloatTabList() {
+        if (mFloatTabList == null) {
+
+            mFloatTabList = new TabGroupImpl(mNativeWindow, false) {
+
+                @Override
+                public void onIndexChanged(int index) {
+                    this.index = index;
+                }
+
+            };
+            mFloatingTabInfoObserver = new FloatingTabInfoObserver(mFloatTabList);
+
+            ArkLogger.e(TAG, "loadUrl mFloatTabList=" + mFloatTabList);
+
+        }
+        return mFloatTabList;
+    }
+
+    private int loadUrl(int index, String url) {
+        ArkLogger.e(TAG, "loadUrl url=" + url);
+
+        LoadUrlParams loadUrlParams = new LoadUrlParams(UrlFormatter.fixupUrl(url));
+        loadUrlParams.setTransitionType(TabLaunchType.FROM_CHROME_UI);
+
+        ArkLogger.e(TAG, "loadUrl mFloatTabList=" + mFloatTabList);
+        mFloatTabList = getFloatTabList();
+
+
+        ArkLogger.e(TAG, "loadUrl mFloatTabList=" + mFloatTabList);
+
+        if (mFloatTabList == null) {
+            return index;
+        }
+
+        TabInfo tabInfo = mFloatTabList.getTabInfoAt(index);
+        if (tabInfo == null) {
+            index = openNewTab(loadUrlParams);
+        }
+
+        mFloatTabList.selectTabAt(index);
+        return index;
+    }
+
+    private int openNewTab(LoadUrlParams loadUrlParams) {
+        ArkLogger.e(TAG, "openNewTab url=" + loadUrlParams.getUrl());
+        TabInfo newTabInfo = MyTabInfo.create();
+        ITab newTab = new TabImpl(newTabInfo);
+
+        Tab tab = PageCacheManager.getInstance().createLivePageByType(newTab.getPageSize(),
+                mFloatTabList.getWindowAndroid(), newTab, TabLaunchType.FROM_CHROME_UI);
+
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setPageId(tab.getId());
+        pageInfo.setUrl(tab.getUrl().toString());
+        pageInfo.setTitle(tab.getTitle());
+        pageInfo.setIncognito(tab.isIncognito());
+        IPage newPage = new PageImpl(pageInfo);
+        newTab.getPageGroup().addPage(newPage);
+        tab.loadUrl(loadUrlParams);
+
+
+        mFloatTabList.getTabInfoList().add(newTab);
+
+        for (TabInfoObserver obs : mFloatTabList.getObservers()) {
+            obs.didAddTab(newPage, TabSelectionType.FROM_USER);
+        }
+
+        newTab.selectPage(0);
+
+        return mFloatTabList.getCount() - 1;
+    }
+
+    private FloatingTabInfoObserver mFloatingTabInfoObserver;
+
+    private class FloatingTabInfoObserver extends EmptyTabInfoObserver {
+
+        private ITabGroup mTabGroup;
+
+        public FloatingTabInfoObserver(ITabGroup tabGroup) {
+            this.mTabGroup = tabGroup;
+            if (this.mTabGroup != null) {
+                this.mTabGroup.addObserver(this);
+            }
+        }
+
+        @Override
+        public void didAddTab(IPage page, int type) {
+            Tab tab = PageCacheManager.getInstance().findPage(page.getId());
+            mViewHolder.setTab(tab);
+        }
+
+        @Override
+        public void didSelectTab(IPage page, int type, int lastId) {
+            Tab tab = PageCacheManager.getInstance().findPage(page.getId());
+            mViewHolder.setTab(tab);
+        }
+
+        public void onDestroy() {
+            if (this.mTabGroup != null) {
+                this.mTabGroup.removeObserver(this);
+                this.mTabGroup = null;
+            }
+        }
+
+    }
+
+
+}
+

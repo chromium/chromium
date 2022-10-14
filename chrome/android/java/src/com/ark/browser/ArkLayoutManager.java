@@ -525,6 +525,8 @@ public class ArkLayoutManager implements ManagedLayoutManager, LayoutUpdateHost,
                         mContext, tab, Color.BLUE),
                 0.5f);
 
+        mStaticLayout.updateStaticTab(tab);
+
         mHost.requestRender();
     }
 
