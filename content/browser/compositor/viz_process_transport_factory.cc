@@ -498,7 +498,7 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     // Don't observer context loss on |worker_context_provider_wrapper_| here,
     // that is already observed by LayerTreeFrameSink. The lost context will
     // be caught when recreating LayerTreeFrameSink(s).
-    auto context_result = worker_context_provider->BindToCurrentThread();
+    auto context_result = worker_context_provider->BindToCurrentSequence();
     if (context_result != gpu::ContextResult::kSuccess)
       return context_result;
 
@@ -528,7 +528,7 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
         viz::command_buffer_metrics::ContextType::BROWSER_MAIN_THREAD);
     main_context_provider_->SetDefaultTaskRunner(resize_task_runner_);
 
-    auto context_result = main_context_provider_->BindToCurrentThread();
+    auto context_result = main_context_provider_->BindToCurrentSequence();
     if (context_result != gpu::ContextResult::kSuccess) {
       main_context_provider_.reset();
       return context_result;

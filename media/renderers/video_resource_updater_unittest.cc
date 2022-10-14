@@ -76,7 +76,7 @@ class VideoResourceUpdaterTest : public testing::Test {
     gl_ = gl.get();
 
     context_provider_ = viz::TestContextProvider::Create(std::move(gl));
-    context_provider_->BindToCurrentThread();
+    context_provider_->BindToCurrentSequence();
   }
 
   // testing::Test implementation.

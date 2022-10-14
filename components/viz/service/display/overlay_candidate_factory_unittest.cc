@@ -36,7 +36,7 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
     scoped_refptr<ContextProvider> child_context_provider =
         TestContextProvider::Create();
 
-    child_context_provider->BindToCurrentThread();
+    child_context_provider->BindToCurrentSequence();
 
     auto resource = TransferableResource::MakeGpu(
         gpu::Mailbox::GenerateForSharedImage(), GL_LINEAR, GL_TEXTURE_2D,

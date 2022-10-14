@@ -18,7 +18,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   scoped_refptr<viz::TestContextProvider> context_provider =
       viz::TestContextProvider::Create();
-  context_provider->BindToCurrentThread();
+  context_provider->BindToCurrentSequence();
 
   cc::TransferCacheEntryType entry_type =
       static_cast<cc::TransferCacheEntryType>(data[0]);

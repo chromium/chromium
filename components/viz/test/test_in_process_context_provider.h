@@ -58,7 +58,7 @@ class TestInProcessContextProvider
   // ContextProvider / RasterContextProvider implementation.
   void AddRef() const override;
   void Release() const override;
-  gpu::ContextResult BindToCurrentThread() override;
+  gpu::ContextResult BindToCurrentSequence() override;
   gpu::gles2::GLES2Interface* ContextGL() override;
   gpu::raster::RasterInterface* RasterInterface() override;
   gpu::ContextSupport* ContextSupport() override;

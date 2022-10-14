@@ -549,9 +549,9 @@ WebGLRenderingContextBase::CreateContextProviderInternal(
     context_provider = CreateContextProviderOnWorkerThread(context_attributes,
                                                            graphics_info, url);
   }
-  if (context_provider && !context_provider->BindToCurrentThread()) {
+  if (context_provider && !context_provider->BindToCurrentSequence()) {
     context_provider = nullptr;
-    graphics_info->error_message = String("bindToCurrentThread failed: " +
+    graphics_info->error_message = String("BindToCurrentSequence failed: " +
                                           String(graphics_info->error_message));
   }
   if (!context_provider || g_should_fail_context_creation_for_testing) {
@@ -8521,7 +8521,7 @@ void WebGLRenderingContextBase::MaybeRestoreContext(TimerBase*) {
         CreateContextProviderOnWorkerThread(attributes, &gl_info, url);
   }
   scoped_refptr<DrawingBuffer> buffer;
-  if (context_provider && context_provider->BindToCurrentThread()) {
+  if (context_provider && context_provider->BindToCurrentSequence()) {
     // Construct a new drawing buffer with the new GL context.
     buffer = CreateDrawingBuffer(std::move(context_provider), gl_info);
     // If DrawingBuffer::create() fails to allocate a fbo, |drawingBuffer| is

@@ -42,7 +42,7 @@ class WebGraphicsContext3DProviderImpl
   ~WebGraphicsContext3DProviderImpl() override;
 
   // WebGraphicsContext3DProvider implementation.
-  bool BindToCurrentThread() override;
+  bool BindToCurrentSequence() override;
   gpu::InterfaceBase* InterfaceBase() override;
   gpu::gles2::GLES2Interface* ContextGL() override;
   gpu::raster::RasterInterface* RasterInterface() override;

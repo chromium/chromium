@@ -29,7 +29,7 @@ class CC_EXPORT RenderFrameMetadataObserver {
 
   // Binds on the current thread. This should only be called from the compositor
   // thread.
-  virtual void BindToCurrentThread() = 0;
+  virtual void BindToCurrentSequence() = 0;
 
   // Notification of the RendarFrameMetadata for the frame being submitted to
   // the display compositor.

@@ -94,8 +94,9 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
             worker_ri_type, /*support_locking=*/true);
     // Bind worker context to main thread like it is in production. This is
     // needed to fully initialize the context. Compositor context is bound to
-    // the impl thread in LayerTreeFrameSink::BindToCurrentThread().
-    gpu::ContextResult result = worker_context_provider->BindToCurrentThread();
+    // the impl thread in LayerTreeFrameSink::BindToCurrentSequence().
+    gpu::ContextResult result =
+        worker_context_provider->BindToCurrentSequence();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   }
   static constexpr bool disable_display_vsync = false;

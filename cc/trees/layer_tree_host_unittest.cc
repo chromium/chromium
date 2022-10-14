@@ -8937,7 +8937,7 @@ class LayerTreeHostTestRequestForceSendMetadata
         : target_(target) {}
 
     // RenderFrameMetadataObserver implementation.
-    void BindToCurrentThread() override { target_->BindToCurrentThread(); }
+    void BindToCurrentSequence() override { target_->BindToCurrentSequence(); }
     void OnRenderFrameSubmission(
         const RenderFrameMetadata& render_frame_metadata,
         viz::CompositorFrameMetadata* compositor_frame_metadata,
@@ -8989,7 +8989,7 @@ class LayerTreeHostTestRequestForceSendMetadata
   void AfterTest() override { EXPECT_EQ(1, num_force_sends_); }
 
   // RenderFrameMetadataObserver implementation. Called on thread.
-  void BindToCurrentThread() override {}
+  void BindToCurrentSequence() override {}
   void OnRenderFrameSubmission(
       const RenderFrameMetadata& render_frame_metadata,
       viz::CompositorFrameMetadata* compositor_frame_metadata,
@@ -9172,7 +9172,7 @@ class LayerTreeHostTestDelegatedInkMetadataBase
         : target_(target) {}
 
     // RenderFrameMetadataObserver implementation.
-    void BindToCurrentThread() override { target_->BindToCurrentThread(); }
+    void BindToCurrentSequence() override { target_->BindToCurrentSequence(); }
     void OnRenderFrameSubmission(
         const RenderFrameMetadata& render_frame_metadata,
         viz::CompositorFrameMetadata* compositor_frame_metadata,
@@ -9246,7 +9246,7 @@ class LayerTreeHostTestDelegatedInkMetadataBase
   }
 
   // RenderFrameMetadataObserver implementation.
-  void BindToCurrentThread() override {}
+  void BindToCurrentSequence() override {}
   void OnRenderFrameSubmission(
       const RenderFrameMetadata& render_frame_metadata,
       viz::CompositorFrameMetadata* compositor_frame_metadata,

@@ -877,7 +877,7 @@ class LayerTreeHostCopyRequestTestDeleteSharedImage
   std::unique_ptr<viz::SkiaOutputSurface> CreateSkiaOutputSurfaceOnThread(
       viz::DisplayCompositorMemoryAndTaskController*) override {
     display_context_provider_ = viz::TestContextProvider::Create();
-    display_context_provider_->BindToCurrentThread();
+    display_context_provider_->BindToCurrentSequence();
     return viz::FakeSkiaOutputSurface::Create3d(display_context_provider_);
   }
 
@@ -1022,7 +1022,7 @@ class LayerTreeHostCopyRequestTestCountSharedImages
   std::unique_ptr<viz::SkiaOutputSurface> CreateSkiaOutputSurfaceOnThread(
       viz::DisplayCompositorMemoryAndTaskController*) override {
     display_context_provider_ = viz::TestContextProvider::Create();
-    display_context_provider_->BindToCurrentThread();
+    display_context_provider_->BindToCurrentSequence();
     return viz::FakeSkiaOutputSurface::Create3d(display_context_provider_);
   }
 

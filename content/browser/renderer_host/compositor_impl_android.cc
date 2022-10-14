@@ -709,7 +709,7 @@ void CompositorImpl::OnGpuChannelEstablished(
               display_color_spaces_.GetRasterColorSpace(),
               requires_alpha_channel_),
           viz::command_buffer_metrics::ContextType::BROWSER_COMPOSITOR);
-  auto result = context_provider->BindToCurrentThread();
+  auto result = context_provider->BindToCurrentSequence();
 
   if (result == gpu::ContextResult::kFatalFailure) {
     LOG(FATAL) << "Fatal failure in creating offscreen context";

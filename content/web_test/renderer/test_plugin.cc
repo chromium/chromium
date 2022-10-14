@@ -176,7 +176,7 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
   std::unique_ptr<blink::WebGraphicsContext3DProvider> context_provider =
       blink::Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
           attrs, url, &gl_info);
-  if (context_provider && !context_provider->BindToCurrentThread())
+  if (context_provider && !context_provider->BindToCurrentSequence())
     context_provider = nullptr;
   if (context_provider) {
     gl_ = context_provider ? context_provider->ContextGL() : nullptr;

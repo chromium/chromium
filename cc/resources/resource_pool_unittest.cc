@@ -32,7 +32,7 @@ class ResourcePoolTest : public testing::Test {
     context_support_ = context_support.get();
     context_provider_ =
         viz::TestContextProvider::Create(std::move(context_support));
-    context_provider_->BindToCurrentThread();
+    context_provider_->BindToCurrentSequence();
     resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
     test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
     resource_pool_ = std::make_unique<ResourcePool>(

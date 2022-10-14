@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(CompositorImplLowEndBrowserTest,
   auto* compositor = compositor_impl();
   auto context = GpuBrowsertestCreateContext(
       GpuBrowsertestEstablishGpuChannelSyncRunLoop());
-  context->BindToCurrentThread();
+  context->BindToCurrentSequence();
 
   // Run until we've swapped once. At this point we should have a valid frame.
   CompositorSwapRunLoop(compositor_impl()).RunUntilSwap();

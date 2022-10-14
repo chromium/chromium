@@ -66,10 +66,10 @@ class VIZ_COMMON_EXPORT ContextProvider {
   // from the same thread unless the function has some explicitly specified
   // rules for access on a different thread. See SetupLockOnMainThread(), which
   // can be used to provide access from multiple threads.
-  virtual gpu::ContextResult BindToCurrentThread() = 0;
+  virtual gpu::ContextResult BindToCurrentSequence() = 0;
 
   // Adds/removes an observer to be called when the context is lost. AddObserver
-  // should be called before BindToCurrentThread from the same thread that the
+  // should be called before BindToCurrentSequence from the same thread that the
   // context is bound to, or any time while the lock is acquired after checking
   // for context loss.
   // NOTE: Implementations must avoid post-tasking the to the observer directly

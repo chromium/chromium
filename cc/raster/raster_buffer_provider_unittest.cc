@@ -336,7 +336,7 @@ class RasterBufferProviderTest
     auto gl_owned = std::make_unique<viz::TestGLES2Interface>();
     gl_owned->set_support_sync_query(true);
     context_provider_ = viz::TestContextProvider::Create(std::move(gl_owned));
-    context_provider_->BindToCurrentThread();
+    context_provider_->BindToCurrentSequence();
 
     worker_context_provider_ = viz::TestContextProvider::CreateWorker();
     DCHECK(worker_context_provider_);

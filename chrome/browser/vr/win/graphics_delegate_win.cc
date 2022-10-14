@@ -53,7 +53,7 @@ bool GraphicsDelegateWin::InitializeOnMainThread() {
 
 void GraphicsDelegateWin::InitializeOnGLThread() {
   DCHECK(context_provider_);
-  if (context_provider_->BindToCurrentThread() ==
+  if (context_provider_->BindToCurrentSequence() ==
       gpu::ContextResult::kSuccess) {
     gl_ = context_provider_->ContextGL();
     sii_ = context_provider_->SharedImageInterface();

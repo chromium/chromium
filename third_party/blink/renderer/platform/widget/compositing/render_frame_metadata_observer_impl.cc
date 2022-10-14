@@ -28,7 +28,7 @@ RenderFrameMetadataObserverImpl::RenderFrameMetadataObserverImpl(
 
 RenderFrameMetadataObserverImpl::~RenderFrameMetadataObserverImpl() {}
 
-void RenderFrameMetadataObserverImpl::BindToCurrentThread() {
+void RenderFrameMetadataObserverImpl::BindToCurrentSequence() {
   DCHECK(receiver_.is_valid());
   render_frame_metadata_observer_receiver_.Bind(std::move(receiver_));
   render_frame_metadata_observer_client_.Bind(std::move(client_remote_));

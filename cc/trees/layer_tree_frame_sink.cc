@@ -76,7 +76,7 @@ bool LayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
 
   if (context_provider_) {
     context_provider_->AddObserver(this);
-    auto result = context_provider_->BindToCurrentThread();
+    auto result = context_provider_->BindToCurrentSequence();
     if (result != gpu::ContextResult::kSuccess) {
       context_provider_->RemoveObserver(this);
       context_provider_ = nullptr;

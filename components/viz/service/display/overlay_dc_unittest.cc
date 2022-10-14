@@ -54,7 +54,7 @@ class MockDCLayerOutputSurface : public FakeSkiaOutputSurface {
  public:
   static std::unique_ptr<MockDCLayerOutputSurface> Create() {
     auto provider = TestContextProvider::Create();
-    provider->BindToCurrentThread();
+    provider->BindToCurrentSequence();
     return std::make_unique<MockDCLayerOutputSurface>(std::move(provider));
   }
 
@@ -206,7 +206,7 @@ class DCLayerOverlayTest : public testing::Test {
                                        output_surface_.get());
 
     child_provider_ = TestContextProvider::Create();
-    child_provider_->BindToCurrentThread();
+    child_provider_->BindToCurrentSequence();
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
 
     overlay_processor_ =

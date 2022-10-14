@@ -11271,7 +11271,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PartialSwapReceivesDamageRect) {
   gl_owned->set_have_post_sub_buffer(true);
   scoped_refptr<viz::TestContextProvider> context_provider(
       viz::TestContextProvider::Create(std::move(gl_owned)));
-  context_provider->BindToCurrentThread();
+  context_provider->BindToCurrentSequence();
 
   std::unique_ptr<FakeLayerTreeFrameSink> layer_tree_frame_sink(
       FakeLayerTreeFrameSink::Create3d(context_provider));
@@ -16791,7 +16791,7 @@ class TestRenderFrameMetadataObserver : public RenderFrameMetadataObserver {
   TestRenderFrameMetadataObserver& operator=(
       const TestRenderFrameMetadataObserver&) = delete;
 
-  void BindToCurrentThread() override {}
+  void BindToCurrentSequence() override {}
   void OnRenderFrameSubmission(
       const RenderFrameMetadata& render_frame_metadata,
       viz::CompositorFrameMetadata* compositor_frame_metadata,

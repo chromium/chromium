@@ -55,7 +55,7 @@ void OnGpuChannelEstablished(
           automatic_flushes, support_locking, support_grcontext,
           gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
           viz::command_buffer_metrics::ContextType::UNKNOWN);
-  context_provider->BindToCurrentThread();
+  context_provider->BindToCurrentSequence();
 
   auto gpu_factories = std::make_unique<BrowserGpuVideoAcceleratorFactories>(
       std::move(context_provider));

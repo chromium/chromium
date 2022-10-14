@@ -129,7 +129,7 @@ class TestContextProvider
   static scoped_refptr<TestContextProvider> Create(
       std::string additional_extensions = std::string());
   // Creates a worker context provider that can be used on any thread. This is
-  // equivalent to: Create(); BindToCurrentThread().
+  // equivalent to: Create(); BindToCurrentSequence().
   static scoped_refptr<TestContextProvider> CreateWorker();
   static scoped_refptr<TestContextProvider> CreateWorker(
       std::unique_ptr<TestContextSupport> support);
@@ -156,7 +156,7 @@ class TestContextProvider
   // ContextProvider / RasterContextProvider implementation.
   void AddRef() const override;
   void Release() const override;
-  gpu::ContextResult BindToCurrentThread() override;
+  gpu::ContextResult BindToCurrentSequence() override;
   const gpu::Capabilities& ContextCapabilities() const override;
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override;
   gpu::gles2::GLES2Interface* ContextGL() override;

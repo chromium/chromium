@@ -114,7 +114,8 @@ class OopPixelTest : public testing::Test,
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
             viz::TestContextType::kGpuRaster, /*support_locking=*/true,
             &gr_shader_cache_, &activity_flags_);
-    gpu::ContextResult result = raster_context_provider_->BindToCurrentThread();
+    gpu::ContextResult result =
+        raster_context_provider_->BindToCurrentSequence();
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     const int raster_max_texture_size =
         raster_context_provider_->ContextCapabilities().max_texture_size;

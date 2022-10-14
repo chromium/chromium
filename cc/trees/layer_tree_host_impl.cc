@@ -4048,7 +4048,7 @@ void LayerTreeHostImpl::UpdateImageDecodingHints(
 void LayerTreeHostImpl::SetRenderFrameObserver(
     std::unique_ptr<RenderFrameMetadataObserver> observer) {
   render_frame_metadata_observer_ = std::move(observer);
-  render_frame_metadata_observer_->BindToCurrentThread();
+  render_frame_metadata_observer_->BindToCurrentSequence();
 }
 
 void LayerTreeHostImpl::WillScrollContent(ElementId element_id) {

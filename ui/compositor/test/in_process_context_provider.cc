@@ -77,7 +77,7 @@ void InProcessContextProvider::Release() const {
   base::RefCountedThreadSafe<InProcessContextProvider>::Release();
 }
 
-gpu::ContextResult InProcessContextProvider::BindToCurrentThread() {
+gpu::ContextResult InProcessContextProvider::BindToCurrentSequence() {
   // This is called on the thread the context will be used.
   DCHECK(context_thread_checker_.CalledOnValidThread());
 

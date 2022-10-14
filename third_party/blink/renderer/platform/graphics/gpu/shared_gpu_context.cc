@@ -140,7 +140,7 @@ void SharedGpuContext::CreateContextProviderIfNeeded(
             CrossThreadUnretained(&waitable_event)));
     waitable_event.Wait();
     if (context_provider_wrapper_ &&
-        !context_provider_wrapper_->ContextProvider()->BindToCurrentThread())
+        !context_provider_wrapper_->ContextProvider()->BindToCurrentSequence())
       context_provider_wrapper_ = nullptr;
   }
 }

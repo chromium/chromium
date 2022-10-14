@@ -92,7 +92,7 @@ class ContextProviderCommandBuffer
   // ContextProvider / RasterContextProvider implementation.
   void AddRef() const override;
   void Release() const override;
-  gpu::ContextResult BindToCurrentThread() override;
+  gpu::ContextResult BindToCurrentSequence() override;
   gpu::gles2::GLES2Interface* ContextGL() override;
   gpu::raster::RasterInterface* RasterInterface() override;
   gpu::ContextSupport* ContextSupport() override;
@@ -124,7 +124,7 @@ class ContextProviderCommandBuffer
   void OnLostContext();
 
  private:
-  void CheckValidThreadOrLockAcquired() const {
+  void CheckValidSequenceOrLockAcquired() const {
 #if DCHECK_IS_ON()
     if (support_locking_) {
       context_lock_.AssertAcquired();

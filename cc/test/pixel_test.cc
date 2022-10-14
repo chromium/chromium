@@ -279,7 +279,7 @@ void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
           viz::TestContextType::kGLES2, /*support_locking=*/false);
-  gpu::ContextResult result = child_context_provider_->BindToCurrentThread();
+  gpu::ContextResult result = child_context_provider_->BindToCurrentSequence();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
 }

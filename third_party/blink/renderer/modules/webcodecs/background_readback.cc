@@ -195,7 +195,7 @@ bool SyncReadbackThread::LazyInitialize() {
     return false;
   }
 
-  if (!context_provider_->BindToCurrentThread()) {
+  if (!context_provider_->BindToCurrentSequence()) {
     DLOG(ERROR) << "Can't bind context provider.";
     context_provider_ = nullptr;
     return false;

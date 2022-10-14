@@ -22,7 +22,7 @@ namespace blink {
 // cc::mojom::RenderFrameMetadataObserverClient, which is expected to be in the
 // browser process, of the metadata associated with the frame.
 //
-// BindToCurrentThread should be called from the Compositor thread so that the
+// BindToCurrentSequence should be called from the Compositor thread so that the
 // Mojo pipe is properly bound.
 //
 // Subsequent usage should only be from the Compositor thread.
@@ -38,7 +38,7 @@ class PLATFORM_EXPORT RenderFrameMetadataObserverImpl
   ~RenderFrameMetadataObserverImpl() override;
 
   // cc::RenderFrameMetadataObserver:
-  void BindToCurrentThread() override;
+  void BindToCurrentSequence() override;
   void OnRenderFrameSubmission(
       const cc::RenderFrameMetadata& render_frame_metadata,
       viz::CompositorFrameMetadata* compositor_frame_metadata,
@@ -78,7 +78,7 @@ class PLATFORM_EXPORT RenderFrameMetadataObserverImpl
   uint32_t last_frame_token_ = 0;
   absl::optional<cc::RenderFrameMetadata> last_render_frame_metadata_;
 
-  // These are destroyed when BindToCurrentThread() is called.
+  // These are destroyed when BindToCurrentSequence() is called.
   mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserver>
       receiver_;
   mojo::PendingRemote<cc::mojom::blink::RenderFrameMetadataObserverClient>

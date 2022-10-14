@@ -189,7 +189,7 @@ void MailboxToSurfaceBridgeImpl::OnContextAvailableOnUiThread(
 }
 
 void MailboxToSurfaceBridgeImpl::BindContextProviderToCurrentThread() {
-  auto result = context_provider_->BindToCurrentThread();
+  auto result = context_provider_->BindToCurrentSequence();
   if (result != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to init viz::ContextProvider";
     return;

@@ -231,7 +231,7 @@ class TestRasterContextProvider
   void Release() const override {
     base::RefCountedThreadSafe<TestRasterContextProvider>::Release();
   }
-  gpu::ContextResult BindToCurrentThread() override {
+  gpu::ContextResult BindToCurrentSequence() override {
     ADD_FAILURE();
     return gpu::ContextResult::kFatalFailure;
   }

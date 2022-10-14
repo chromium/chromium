@@ -1158,7 +1158,7 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
       automatic_flushes,
       viz::command_buffer_metrics::ContextType::RENDERER_MAIN_THREAD,
       kGpuStreamIdDefault, kGpuStreamPriorityDefault);
-  auto result = shared_main_thread_contexts_->BindToCurrentThread();
+  auto result = shared_main_thread_contexts_->BindToCurrentSequence();
   if (result != gpu::ContextResult::kSuccess)
     shared_main_thread_contexts_ = nullptr;
   return shared_main_thread_contexts_;
@@ -1640,7 +1640,7 @@ RenderThreadImpl::SharedCompositorWorkerContextProvider(
           viz::command_buffer_metrics::ContextType::RENDER_WORKER,
           kGpuStreamIdWorker, kGpuStreamPriorityWorker);
 
-  auto result = shared_worker_context_provider->BindToCurrentThread();
+  auto result = shared_worker_context_provider->BindToCurrentSequence();
   if (result != gpu::ContextResult::kSuccess)
     return nullptr;
 

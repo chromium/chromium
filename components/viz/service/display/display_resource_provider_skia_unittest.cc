@@ -78,7 +78,7 @@ class DisplayResourceProviderSkiaTest : public testing::Test {
  public:
   DisplayResourceProviderSkiaTest() {
     child_context_provider_ = TestContextProvider::Create();
-    child_context_provider_->BindToCurrentThread();
+    child_context_provider_->BindToCurrentSequence();
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
   }
 

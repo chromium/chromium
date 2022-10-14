@@ -97,7 +97,7 @@ class WebGraphicsContext3DProvider {
   virtual gpu::raster::RasterInterface* RasterInterface() = 0;
   virtual gpu::webgpu::WebGPUInterface* WebGPUInterface() = 0;
   virtual bool IsContextLost() = 0;  // Has the GPU driver lost this context?
-  virtual bool BindToCurrentThread() = 0;
+  virtual bool BindToCurrentSequence() = 0;
   virtual GrDirectContext* GetGrContext() = 0;
   virtual const gpu::Capabilities& GetCapabilities() const = 0;
   virtual const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const = 0;

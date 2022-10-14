@@ -126,8 +126,7 @@ void ContextProviderCommandBuffer::Release() const {
   base::RefCountedThreadSafe<ContextProviderCommandBuffer>::Release();
 }
 
-gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentThread() {
-  // TODO(crbug.com/1144329): rename method to indicate sequence affinity.
+gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   // This is called on the thread the context will be used.
   DCHECK(context_sequence_checker_.CalledOnValidSequence());
 
@@ -348,7 +347,7 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentThread() {
 gpu::gles2::GLES2Interface* ContextProviderCommandBuffer::ContextGL() {
   DCHECK(bind_tried_);
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
-  CheckValidThreadOrLockAcquired();
+  CheckValidSequenceOrLockAcquired();
 
   if (!attributes_.enable_gles2_interface)
     return nullptr;
@@ -361,7 +360,7 @@ gpu::gles2::GLES2Interface* ContextProviderCommandBuffer::ContextGL() {
 gpu::raster::RasterInterface* ContextProviderCommandBuffer::RasterInterface() {
   DCHECK(bind_tried_);
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
-  CheckValidThreadOrLockAcquired();
+  CheckValidSequenceOrLockAcquired();
 
   if (raster_interface_)
     return raster_interface_.get();
@@ -387,7 +386,7 @@ class GrDirectContext* ContextProviderCommandBuffer::GrContext() {
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
   if (!support_grcontext_ || !ContextSupport()->HasGrContextSupport())
     return nullptr;
-  CheckValidThreadOrLockAcquired();
+  CheckValidSequenceOrLockAcquired();
 
   if (gr_context_)
     return gr_context_->get();
@@ -445,7 +444,7 @@ ContextProviderCommandBuffer::SharedImageInterface() {
 }
 
 ContextCacheController* ContextProviderCommandBuffer::CacheController() {
-  CheckValidThreadOrLockAcquired();
+  CheckValidSequenceOrLockAcquired();
   return cache_controller_.get();
 }
 
@@ -465,7 +464,7 @@ const gpu::Capabilities& ContextProviderCommandBuffer::ContextCapabilities()
     const {
   DCHECK(bind_tried_);
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
-  CheckValidThreadOrLockAcquired();
+  CheckValidSequenceOrLockAcquired();
   // Skips past the trace_impl_ as it doesn't have capabilities.
   return impl_->capabilities();
 }
@@ -474,7 +473,7 @@ const gpu::GpuFeatureInfo& ContextProviderCommandBuffer::GetGpuFeatureInfo()
     const {
   DCHECK(bind_tried_);
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
-  CheckValidThreadOrLockAcquired();
+  CheckValidSequenceOrLockAcquired();
   if (!command_buffer_ || !command_buffer_->channel()) {
     static const base::NoDestructor<gpu::GpuFeatureInfo>
         default_gpu_feature_info;
@@ -484,7 +483,7 @@ const gpu::GpuFeatureInfo& ContextProviderCommandBuffer::GetGpuFeatureInfo()
 }
 
 void ContextProviderCommandBuffer::OnLostContext() {
-  CheckValidThreadOrLockAcquired();
+  CheckValidSequenceOrLockAcquired();
 
   // Observers may drop the last persistent references to `this`, but there may
   // be weak references in use further up the stack. This task is posted to
@@ -505,19 +504,19 @@ void ContextProviderCommandBuffer::OnLostContext() {
 }
 
 void ContextProviderCommandBuffer::AddObserver(ContextLostObserver* obs) {
-  CheckValidThreadOrLockAcquired();
+  CheckValidSequenceOrLockAcquired();
   observers_.AddObserver(obs);
 }
 
 void ContextProviderCommandBuffer::RemoveObserver(ContextLostObserver* obs) {
-  CheckValidThreadOrLockAcquired();
+  CheckValidSequenceOrLockAcquired();
   observers_.RemoveObserver(obs);
 }
 
 gpu::webgpu::WebGPUInterface* ContextProviderCommandBuffer::WebGPUInterface() {
   DCHECK(bind_tried_);
   DCHECK_EQ(bind_result_, gpu::ContextResult::kSuccess);
-  CheckValidThreadOrLockAcquired();
+  CheckValidSequenceOrLockAcquired();
 
   return webgpu_interface_.get();
 }

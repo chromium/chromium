@@ -410,7 +410,7 @@ class GpuImageDecodeCacheTest
         advertise_accelerated_decoding_);
     discardable_manager_.SetGLES2Interface(
         context_provider_->UnboundTestContextGL());
-    context_provider_->BindToCurrentThread();
+    context_provider_->BindToCurrentSequence();
     {
       viz::RasterContextProvider::ScopedRasterContextLock context_lock(
           context_provider_.get());

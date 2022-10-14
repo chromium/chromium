@@ -56,7 +56,7 @@ class InProcessContextProvider
   // viz::ContextProvider / viz::RasterContextProvider implementation.
   void AddRef() const override;
   void Release() const override;
-  gpu::ContextResult BindToCurrentThread() override;
+  gpu::ContextResult BindToCurrentSequence() override;
   const gpu::Capabilities& ContextCapabilities() const override;
   const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override;
   gpu::gles2::GLES2Interface* ContextGL() override;

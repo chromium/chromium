@@ -163,7 +163,7 @@ TEST(ContextCacheControllerTest, CheckSkiaResourcePurgeAPI) {
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   ContextCacheController cache_controller(&context_support, task_runner);
   auto context_provider = TestContextProvider::Create();
-  context_provider->BindToCurrentThread();
+  context_provider->BindToCurrentSequence();
   auto* gr_context = context_provider->GrContext();
   cache_controller.SetGrContext(gr_context);
 

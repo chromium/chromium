@@ -146,7 +146,7 @@ void GpuVideoAcceleratorFactoriesImpl::BindOnTaskRunner(
   interface_factory_.Bind(std::move(interface_factory_remote));
   vea_provider_.Bind(std::move(vea_provider_remote));
 
-  if (context_provider_->BindToCurrentThread() !=
+  if (context_provider_->BindToCurrentSequence() !=
       gpu::ContextResult::kSuccess) {
     OnDecoderSupportFailed();
     OnEncoderSupportFailed();

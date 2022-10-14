@@ -26,7 +26,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
  public:
   static std::unique_ptr<FakeSkiaOutputSurface> Create3d() {
     auto provider = TestContextProvider::Create();
-    provider->BindToCurrentThread();
+    provider->BindToCurrentSequence();
     return base::WrapUnique(new FakeSkiaOutputSurface(std::move(provider)));
   }
 

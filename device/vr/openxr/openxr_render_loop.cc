@@ -526,7 +526,7 @@ void OpenXrRenderLoop::OnContextLostCallback(
 // StartContextProvider uses BindOnce to passthrough the start_runtime_callback
 // given to it from it's caller. OnContextProviderCreated must run the
 // start_runtime_callback, passing true on successful call to
-// BindToCurrentThread and false if not.
+// BindToCurrentSequence and false if not.
 void OpenXrRenderLoop::OnContextProviderCreated(
     StartRuntimeCallback start_runtime_callback,
     scoped_refptr<viz::ContextProvider> context_provider) {
@@ -534,7 +534,7 @@ void OpenXrRenderLoop::OnContextProviderCreated(
   DCHECK_EQ(context_provider_, nullptr);
 
   const gpu::ContextResult context_result =
-      context_provider->BindToCurrentThread();
+      context_provider->BindToCurrentSequence();
   if (context_result != gpu::ContextResult::kSuccess) {
     std::move(start_runtime_callback).Run(false);
     return;

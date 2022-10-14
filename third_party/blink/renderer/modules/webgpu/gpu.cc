@@ -100,8 +100,8 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
   }
 
   // TODO(kainino): we will need a better way of accessing the GPU interface
-  // from multiple threads than BindToCurrentThread et al.
-  if (context_provider && !context_provider->BindToCurrentThread()) {
+  // from multiple threads than BindToCurrentSequence et al.
+  if (context_provider && !context_provider->BindToCurrentSequence()) {
     // TODO(crbug.com/973017): Collect GPU info and surface context creation
     // error.
     return nullptr;

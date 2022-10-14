@@ -905,7 +905,7 @@ void MailboxHoldersReleased(const gpu::SyncToken& sync_token) {}
 // unable to wrap a video frame texture (eg due to being abandoned).
 TEST_F(PaintCanvasVideoRendererTest, ContextLost) {
   auto context_provider = viz::TestContextProvider::Create();
-  context_provider->BindToCurrentThread();
+  context_provider->BindToCurrentSequence();
   context_provider->GrContext()->abandonContext();
 
   cc::SkiaPaintCanvas canvas(AllocBitmap(kWidth, kHeight));
@@ -1053,18 +1053,18 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
     enable_pixels_.emplace();
     media_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
         viz::TestContextType::kGpuRaster, /*support_locking=*/false);
-    gpu::ContextResult result = media_context_->BindToCurrentThread();
+    gpu::ContextResult result = media_context_->BindToCurrentSequence();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
 
     gles2_context_ = base::MakeRefCounted<viz::TestInProcessContextProvider>(
         viz::TestContextType::kGLES2, /*support_locking=*/false);
-    result = gles2_context_->BindToCurrentThread();
+    result = gles2_context_->BindToCurrentSequence();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
 
     destination_context_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
             viz::TestContextType::kGLES2, /*support_locking=*/false);
-    result = destination_context_->BindToCurrentThread();
+    result = destination_context_->BindToCurrentSequence();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
     cropped_frame_ = CreateCroppedFrame();
   }

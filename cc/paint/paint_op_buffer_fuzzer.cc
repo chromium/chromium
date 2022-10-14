@@ -75,7 +75,7 @@ void Raster(scoped_refptr<viz::TestContextProvider> context_provider,
 
   SkImageInfo image_info = SkImageInfo::MakeN32(
       kRasterDimension, kRasterDimension, kOpaque_SkAlphaType);
-  context_provider->BindToCurrentThread();
+  context_provider->BindToCurrentSequence();
   sk_sp<SkSurface> surface = SkSurface::MakeRenderTarget(
       context_provider->GrContext(), SkBudgeted::kYes, image_info);
   SkCanvas* canvas = surface->getCanvas();
@@ -148,14 +148,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   auto context_provider_no_support = viz::TestContextProvider::Create();
-  context_provider_no_support->BindToCurrentThread();
+  context_provider_no_support->BindToCurrentSequence();
   CHECK(!context_provider_no_support->GrContext()->supportsDistanceFieldText());
   Raster(context_provider_no_support, font_manager->strike_client(),
          &paint_cache, data, size);
 
   auto context_provider_with_support = viz::TestContextProvider::Create(
       std::string("GL_OES_standard_derivatives"));
-  context_provider_with_support->BindToCurrentThread();
+  context_provider_with_support->BindToCurrentSequence();
   CHECK(
       context_provider_with_support->GrContext()->supportsDistanceFieldText());
   Raster(context_provider_with_support, font_manager->strike_client(),

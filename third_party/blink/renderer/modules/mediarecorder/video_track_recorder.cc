@@ -448,7 +448,7 @@ void VideoTrackRecorderImpl::Encoder::RetrieveFrameOnEncodingTaskRunner(
         attributes, &info, KURL("chrome://VideoTrackRecorderImpl"));
 
     if (encoder_thread_context_ &&
-        !encoder_thread_context_->BindToCurrentThread()) {
+        !encoder_thread_context_->BindToCurrentSequence()) {
       encoder_thread_context_ = nullptr;
     }
   }

@@ -29,7 +29,7 @@ class ClientResourceProviderTest : public testing::TestWithParam<bool> {
   ClientResourceProviderTest()
       : use_gpu_(GetParam()),
         context_provider_(TestContextProvider::Create()),
-        bound_(context_provider_->BindToCurrentThread()) {
+        bound_(context_provider_->BindToCurrentSequence()) {
     DCHECK_EQ(bound_, gpu::ContextResult::kSuccess);
   }
 

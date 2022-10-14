@@ -67,7 +67,7 @@ class ContextTestBase : public content::ContentBrowserTest {
 
     provider_ =
         content::GpuBrowsertestCreateContext(std::move(gpu_channel_host));
-    auto result = provider_->BindToCurrentThread();
+    auto result = provider_->BindToCurrentSequence();
     CHECK_EQ(result, gpu::ContextResult::kSuccess);
     gl_ = provider_->ContextGL();
     context_support_ = provider_->ContextSupport();
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
   // retain the host after provider is destroyed.
   scoped_refptr<viz::ContextProviderCommandBuffer> provider =
       content::GpuBrowsertestCreateContext(GetGpuChannel());
-  ASSERT_EQ(provider->BindToCurrentThread(), gpu::ContextResult::kSuccess);
+  ASSERT_EQ(provider->BindToCurrentSequence(), gpu::ContextResult::kSuccess);
 
   sk_sp<GrDirectContext> gr_context = sk_ref_sp(provider->GrContext());
 
@@ -261,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
   scoped_refptr<viz::ContextProviderCommandBuffer> provider =
       content::GpuBrowsertestCreateContext(GetGpuChannel());
   ContextLostRunLoop run_loop(provider.get());
-  ASSERT_EQ(provider->BindToCurrentThread(), gpu::ContextResult::kSuccess);
+  ASSERT_EQ(provider->BindToCurrentSequence(), gpu::ContextResult::kSuccess);
   GpuProcessHost::CallOnIO(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
                            false /* force_create */,
                            base::BindOnce([](GpuProcessHost* host) {

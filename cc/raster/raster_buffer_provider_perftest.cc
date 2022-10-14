@@ -95,7 +95,7 @@ class PerfContextProvider
     base::RefCountedThreadSafe<PerfContextProvider>::Release();
   }
 
-  gpu::ContextResult BindToCurrentThread() override {
+  gpu::ContextResult BindToCurrentSequence() override {
     return gpu::ContextResult::kSuccess;
   }
   const gpu::Capabilities& ContextCapabilities() const override {

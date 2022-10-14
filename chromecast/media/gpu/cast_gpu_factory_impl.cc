@@ -291,7 +291,7 @@ void CastGpuFactoryImpl::SetupContext() {
       viz::command_buffer_metrics::ContextType::MEDIA);
   DCHECK(context_provider_);
 
-  if (context_provider_->BindToCurrentThread() !=
+  if (context_provider_->BindToCurrentSequence() !=
       gpu::ContextResult::kSuccess) {
     LOG(ERROR) << "Failed to bind ContextProvider to current thread";
     context_provider_ = nullptr;

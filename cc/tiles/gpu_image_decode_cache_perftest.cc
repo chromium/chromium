@@ -51,7 +51,7 @@ class GpuImageDecodeCachePerfTest
                 /*support_locking=*/false)) {}
 
   void SetUp() override {
-    gpu::ContextResult result = context_provider_->BindToCurrentThread();
+    gpu::ContextResult result = context_provider_->BindToCurrentSequence();
     ASSERT_EQ(result, gpu::ContextResult::kSuccess);
     cache_ = std::make_unique<GpuImageDecodeCache>(
         context_provider_.get(), UseTransferCache(), kRGBA_8888_SkColorType,

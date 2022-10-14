@@ -182,7 +182,7 @@ class DisplayTest : public testing::Test {
 
   void SetUpGpuDisplay(const RendererSettings& settings) {
     scoped_refptr<TestContextProvider> provider = TestContextProvider::Create();
-    provider->BindToCurrentThread();
+    provider->BindToCurrentSequence();
     std::unique_ptr<FakeSkiaOutputSurface> skia_output_surface =
         FakeSkiaOutputSurface::Create3d(std::move(provider));
     skia_output_surface_ = skia_output_surface.get();
@@ -5045,7 +5045,7 @@ class DelegatedInkDisplayTest
  public:
   void SetUpGpuDisplaySkiaWithPlatformInk(const RendererSettings& settings) {
     scoped_refptr<TestContextProvider> provider = TestContextProvider::Create();
-    provider->BindToCurrentThread();
+    provider->BindToCurrentSequence();
     std::unique_ptr<FakeSkiaOutputSurface> skia_output_surface =
         FakeSkiaOutputSurface::Create3d(std::move(provider));
     // Set the delegated ink capability on the output surface to true so that

@@ -211,7 +211,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
   if (!shared_worker_context_provider_ || shared_worker_context_provider_lost) {
     shared_worker_context_provider_ = InProcessContextProvider::CreateOffscreen(
         &gpu_memory_buffer_manager_, &image_factory_, /*is_worker=*/true);
-    auto result = shared_worker_context_provider_->BindToCurrentThread();
+    auto result = shared_worker_context_provider_->BindToCurrentSequence();
     if (result != gpu::ContextResult::kSuccess)
       shared_worker_context_provider_ = nullptr;
   }
@@ -283,7 +283,7 @@ InProcessContextFactory::SharedMainThreadContextProvider() {
 
   shared_main_thread_contexts_ = InProcessContextProvider::CreateOffscreen(
       &gpu_memory_buffer_manager_, &image_factory_, /*is_worker=*/false);
-  auto result = shared_main_thread_contexts_->BindToCurrentThread();
+  auto result = shared_main_thread_contexts_->BindToCurrentSequence();
   if (result != gpu::ContextResult::kSuccess)
     shared_main_thread_contexts_.reset();
 

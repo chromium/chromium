@@ -1423,7 +1423,7 @@ TEST_F(ScaledScrollbarLayerTestResourceCreation, ScaledResourceUpload) {
   // Keep the max texture size reasonable so we don't OOM on low end devices
   // (crbug.com/642333).
   context->UnboundTestContextGL()->set_max_texture_size(512);
-  context->BindToCurrentThread();
+  context->BindToCurrentSequence();
   int max_texture_size = 0;
   context->ContextGL()->GetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
   EXPECT_EQ(512, max_texture_size);

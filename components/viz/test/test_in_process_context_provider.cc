@@ -85,7 +85,7 @@ void TestInProcessContextProvider::Release() const {
   base::RefCountedThreadSafe<TestInProcessContextProvider>::Release();
 }
 
-gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
+gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
   auto* holder = TestGpuServiceHolder::GetInstance();
 
   if (type_ == TestContextType::kGLES2) {

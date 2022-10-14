@@ -86,7 +86,7 @@ class RenderFrameMetadataObserverImplTest : public testing::Test {
         std::move(observer_remote));
     observer_impl_ = std::make_unique<RenderFrameMetadataObserverImpl>(
         std::move(receiver), std::move(client_remote));
-    observer_impl_->BindToCurrentThread();
+    observer_impl_->BindToCurrentSequence();
   }
 
   void TearDown() override {

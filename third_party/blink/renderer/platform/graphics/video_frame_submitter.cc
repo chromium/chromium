@@ -508,7 +508,7 @@ bool VideoFrameSubmitter::MaybeAcceptContextProvider(
   }
 
   context_provider_ = std::move(context_provider);
-  if (context_provider_->BindToCurrentThread() !=
+  if (context_provider_->BindToCurrentSequence() !=
       gpu::ContextResult::kSuccess) {
     return false;
   }

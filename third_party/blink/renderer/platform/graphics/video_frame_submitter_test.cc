@@ -162,7 +162,7 @@ class VideoFrameSubmitterTest : public testing::Test {
         begin_frame_source_(new viz::FakeExternalBeginFrameSource(0.f, false)),
         video_frame_provider_(new StrictMock<MockVideoFrameProvider>()),
         context_provider_(viz::TestContextProvider::Create()) {
-    context_provider_->BindToCurrentThread();
+    context_provider_->BindToCurrentSequence();
     MakeSubmitter();
     task_environment_.RunUntilIdle();
   }
