@@ -1038,7 +1038,7 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
   // Ensure that the indices are nonempty, sorted, and unique.
   DCHECK_GT(indices.size(), 0u);
   DCHECK(base::ranges::is_sorted(indices));
-  DCHECK(base::ranges::adjacent_find(indices) == indices.end());
+  DCHECK(std::adjacent_find(indices.begin(), indices.end()) == indices.end());
 
   // The odds of |new_group| colliding with an existing group are astronomically
   // low. If there is a collision, a DCHECK will fail in |AddToNewGroupImpl()|,
@@ -1058,7 +1058,7 @@ void TabStripModel::AddToExistingGroup(const std::vector<int>& indices,
 
   // Ensure that the indices are sorted and unique.
   DCHECK(base::ranges::is_sorted(indices));
-  DCHECK(base::ranges::adjacent_find(indices) == indices.end());
+  DCHECK(std::adjacent_find(indices.begin(), indices.end()) == indices.end());
   CHECK(ContainsIndex(*(indices.begin())));
   CHECK(ContainsIndex(*(indices.rbegin())));
 

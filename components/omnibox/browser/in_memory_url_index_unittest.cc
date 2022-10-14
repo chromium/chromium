@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <fstream>
 #include <memory>
 #include <numeric>
@@ -20,7 +21,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -723,8 +723,9 @@ TEST_F(InMemoryURLIndexTest, TrimHistoryIds) {
 
   // Each next group should fill almost everything, while the previous group
   // should occupy what's left.
-  auto* error_position = base::ranges::adjacent_find(
-      item_groups, [&](const ItemGroup& previous, const ItemGroup& current) {
+  auto* error_position = std::adjacent_find(
+      std::begin(item_groups), std::end(item_groups),
+      [&](const ItemGroup& previous, const ItemGroup& current) {
         auto ids = GetHistoryIdsUpTo(current.max_id);
         EXPECT_TRUE(GetPrivateData()->TrimHistoryIdsPool(&ids));
 

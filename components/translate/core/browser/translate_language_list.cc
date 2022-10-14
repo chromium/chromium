@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/bind.h"
@@ -13,7 +14,6 @@
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -185,7 +185,8 @@ TranslateLanguageList::TranslateLanguageList()
   DCHECK(
       std::is_sorted(supported_languages_.begin(), supported_languages_.end()));
   DCHECK(supported_languages_.end() ==
-         base::ranges::adjacent_find(supported_languages_));
+         std::adjacent_find(supported_languages_.begin(),
+                            supported_languages_.end()));
 
   if (update_is_disabled)
     return;
@@ -361,7 +362,8 @@ bool TranslateLanguageList::SetSupportedLanguages(
   DCHECK(
       std::is_sorted(supported_languages_.begin(), supported_languages_.end()));
   DCHECK(supported_languages_.end() ==
-         base::ranges::adjacent_find(supported_languages_));
+         std::adjacent_find(supported_languages_.begin(),
+                            supported_languages_.end()));
 
   NotifyEvent(__LINE__, base::JoinString(supported_languages_, ", "));
   return true;

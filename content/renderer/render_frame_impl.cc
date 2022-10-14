@@ -4,6 +4,7 @@
 
 #include "content/renderer/render_frame_impl.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
@@ -33,7 +34,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/process/process.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -726,7 +726,8 @@ class MHTMLPartsGenerationDelegate
     DCHECK(std::is_sorted(params_.digests_of_uris_to_skip.begin(),
                           params_.digests_of_uris_to_skip.end()));
     // URLs are not duplicated.
-    DCHECK(base::ranges::adjacent_find(params_.digests_of_uris_to_skip) ==
+    DCHECK(std::adjacent_find(params_.digests_of_uris_to_skip.begin(),
+                              params_.digests_of_uris_to_skip.end()) ==
            params_.digests_of_uris_to_skip.end());
   }
 
