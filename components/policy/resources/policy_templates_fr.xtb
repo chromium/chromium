@@ -6185,7 +6185,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Cette règle est habituellement désactivée pour protéger les utilisateurs contre l'hameçonnage.</translation>
 <translation id="7403217961820363141">Afficher les parcours sur la page de l'historique de Chrome.</translation>
 <translation id="7406039009275722824">Si vous désactivez <ph name="CHROME_SYNC_NAME" />, la sauvegarde et la restauration Android ne fonctionneront pas correctement.</translation>
-<translation id="7407441173422042771">Cette règle permet de contrôler la prédiction réseau dans <ph name="PRODUCT_NAME" />. Elle contrôle la prélecture des DNS, ainsi que la préconnexion et le préchargement TCP et SSL des pages Web.
+<translation id="7407441173422042771">Cette règle permet de contrôler la prédiction réseau dans <ph name="PRODUCT_NAME" />. Elle contrôle la prélecture des DNS, ainsi que la préconnexion et le prérendu TCP et SSL des pages Web.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, la prédiction réseau est activée. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="7408815947231046196">Autoriser la sauvegarde des données de <ph name="PRODUCT_NAME" /></translation>
@@ -6704,7 +6704,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
 
       Active la prédiction réseau dans <ph name="PRODUCT_NAME" /> et empêche les utilisateurs de modifier ce paramètre.
 
-      Ceci permet de contrôler la prélecture des DNS, ainsi que la préconnexion et le préchargement TCP et SSL des pages Web. Le nom de cette règle évoque la prélecture des DNS pour des raisons historiques.
+      Ceci permet de contrôler la prélecture des DNS, ainsi que la préconnexion et le prérendu TCP et SSL des pages Web. Le nom de cette règle évoque la prélecture des DNS pour des raisons historiques.
 
       Si vous activez ou désactivez ce paramètre, les utilisateurs ne peuvent pas le modifier ni l'ignorer dans <ph name="PRODUCT_NAME" />.
 

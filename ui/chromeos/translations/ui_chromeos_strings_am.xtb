@@ -221,7 +221,7 @@
 <translation id="299638574917407533">ፈረንሳይኛ (ካናዳ)</translation>
 <translation id="3003189754374775221">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="NETWORK_PROVIDER_NAME" />፣ ሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ተገናኝ</translation>
 <translation id="3003633581067744647">ወደ የድንክዬ እይታ ቀይር</translation>
-<translation id="3016566519832145558">ማስጠንቀቂያ፦ እነዚህ ፋይሎች ጊዜያዊ የሆኑና የአንጻፊ ቦታ ነጻ ለማስለቀቅ በራስ-ሰር ሊሰረዙ የሚችሉ ናቸው።</translation>
+<translation id="3016566519832145558">ማስጠንቀቂያ፦ እነዚህ ፋይሎች ጊዜያዊ የሆኑና የአንጻፊ ቦታ ነፃ ለማስለቀቅ በራስ-ሰር ሊሰረዙ የሚችሉ ናቸው።</translation>
 <translation id="3029114385395636667">ሰነዶችን፣ ሉሆችን እና ስላይዶችን ከመስመር ውጭ እንዲገኙ ለማድረግ ከመስመር ውጭ Google ሰነዶችን ያንቁ።</translation>
 <translation id="303198083543495566">ጂኦግራፊ</translation>
 <translation id="3047197340186497470">ቻይንኛ ዳዪ</translation>
@@ -280,7 +280,7 @@
 <translation id="3495810061346586977">ይህ ፋይል ምስጢራዊ እና ለአስተዳዳሪ መመሪያ ገደቦች ተገዢ ነው። <ph name="BEGIN_LINK_HELP" />የበለጠ ለመረዳት<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ዝርዝሮች</translation>
 <translation id="3522708245912499433">ፖርቱጋሊኛ</translation>
-<translation id="3524311639100184459">ማስጠንቀቂያ፦ እነዚህ ፋይሎች ጊዜያዊ የሆኑና የአንጻፊ ቦታ ነጻ ለማስለቀቅ በራስ-ሰር ሊሰረዙ የሚችሉ ናቸው።  <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
+<translation id="3524311639100184459">ማስጠንቀቂያ፦ እነዚህ ፋይሎች ጊዜያዊ የሆኑና የአንጻፊ ቦታ ነፃ ለማስለቀቅ በራስ-ሰር ሊሰረዙ የሚችሉ ናቸው።  <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">አቃፊ</translation>
 <translation id="3548125359243647069">የተሳሳተ ፒን ከልክ በላይ ብዙ ጊዜ ገብቷል።</translation>
 <translation id="3549797760399244642">ወደ drive.google.com ይሂዱ...</translation>
@@ -777,7 +777,7 @@
 <translation id="7765158879357617694">ውሰድ</translation>
 <translation id="7774365994322694683">ወፍ</translation>
 <translation id="7781829728241885113">ትናንት</translation>
-<translation id="7788080748068240085">«<ph name="FILE_NAME" />»ን ከመስመር ውጭ ለማስቀመጥ ተጨማሪ የሆነ <ph name="TOTAL_FILE_SIZE" /> የማከማቻ ቦታ ነጻ ማስለቀቅ አለብዎት፦<ph name="MARKUP_1" />
+<translation id="7788080748068240085">«<ph name="FILE_NAME" />»ን ከመስመር ውጭ ለማስቀመጥ ተጨማሪ የሆነ <ph name="TOTAL_FILE_SIZE" /> የማከማቻ ቦታ ነፃ ማስለቀቅ አለብዎት፦<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />ከአሁን በኋላ ከመስመር ውጭ ለመድረስ የማያስፈልጉዎትን ፋይሎች ይንቀሱ<ph name="MARKUP_3" />
         <ph name="MARKUP_4" />ፋይሎችን ከወረዱ ማስቀመጫ አቃፊዎ ይሰርዙ<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">ለመሣሪያው ቅርጸት ይስሩለት</translation>
