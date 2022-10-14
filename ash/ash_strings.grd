@@ -2,6 +2,15 @@
 
 <!--
 This file contains the strings for ash.
+
+Style notes:
+* Most strings are "Sentence case" with the first word capitalized and other
+  words not capitalized
+* Specific features may be capitalized (e.g. "Bluetooth", "Nearby Share") even
+  if they appear in the middle of a string
+* Most strings do not end in a period (e.g. "Show settings")
+* Multi-phrase strings that contain a period in the middle also have a period
+  at the end (e.g. "Show Bluetooth settings. Bluetooth is on.")
 -->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
@@ -427,10 +436,10 @@ This file contains the strings for ash.
         <ph name="SECONDS">$1<ex>40</ex></ph> sec
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_SETTINGS_TOOLTIP" desc="Tooltip text for the status tray button that shows settings for the Nearby Share feature.">
-        Show Nearby Share settings.
+        Show Nearby Share settings
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NEARBY_SHARE_TOGGLE_TOOLTIP" desc="Tooltip text used for the Nearby Share status tray button, which toggles Nearby Share high visibility mode on/off.">
-        Toggle Nearby Share high visibility.
+        Toggle Nearby Share high visibility
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_BUTTON_LABEL" desc="The shorter label used for the button in the status tray to toggle the Night Light feature (which controls the color temperature of the screen) on or off. [CHAR_LIMIT=14]">
         Night Light
@@ -472,7 +481,7 @@ This file contains the strings for ash.
         Cast
       </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_TOOLTIP" desc="The tooltip text used for Cast button in system tray bubble.">
-        Show cast devices.
+        Show cast devices
       </message>
       <message name="IDS_ASH_STATUS_TRAY_CAST_NOTIFICATION_TITLE" desc="The notification title to tell the user we are casting to a cast device.">
         Casting to <ph name="RECEIVER_NAME">$1<ex>Living Room</ex></ph>
@@ -487,7 +496,7 @@ This file contains the strings for ash.
         Dark theme
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_TOGGLE_TOOLTIP" desc="The tooltip text used for the button in the status tray to toggle the Dark theme feature on or off.">
-        Toggle Dark theme. <ph name="STATE_TEXT">$1<ex>Dark theme is on.</ex></ph>
+        Toggle Dark theme. <ph name="STATE_TEXT">$1<ex>Dark theme is on</ex></ph>.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DARK_THEME_ENABLED_STATE_TOOLTIP" desc="The tooltip text indicating the Dark theme feature is on.">
         Dark theme is on
@@ -578,10 +587,10 @@ This file contains the strings for ash.
         Bluetooth
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP" desc="The tooltip text in the button that toggles Blueooth enabled/disabled.">
-        Toggle Bluetooth. <ph name="STATE_TEXT">$1<ex>Connected to 2 devices</ex></ph>
+        Toggle Bluetooth. <ph name="STATE_TEXT">$1<ex>Connected to 2 devices</ex></ph>.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS_TOOLTIP" desc="The tooltip text in the button that shows Blueooth settings.">
-        Show Bluetooth settings. <ph name="STATE_TEXT">$1<ex>Connected to 2 devices</ex></ph>
+        Show Bluetooth settings. <ph name="STATE_TEXT">$1<ex>Connected to 2 devices</ex></ph>.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_BLUETOOTH_ENABLED_TOOLTIP" desc="The tooltip text to notify that bluetooth is enabled.">
         Bluetooth is on
@@ -949,7 +958,7 @@ This file contains the strings for ash.
         Show keyboard settings
       </message>
       <message name="IDS_ASH_STATUS_TRAY_IME_TOOLTIP_WITH_NAME" desc="The tooltip text used for IME button in system tray bubble.">
-        Show keyboard settings. <ph name="KEYBOARD_NAME">$1<ex>US keyboard</ex></ph> is selected
+        Show keyboard settings. <ph name="KEYBOARD_NAME">$1<ex>US keyboard</ex></ph> is selected.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_IME" desc="The label used as the header in the IME popup. [CHAR_LIMIT=18]">
         Input methods
@@ -2423,10 +2432,10 @@ Connect your device to power.
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_TOGGLE_TOOLTIP" desc="The tooltip text for the button that toggles network enabled/disabled state.">
-        Toggle network connection. <ph name="STATE_TEXT">$1<ex>Connected to public wifi</ex></ph>
+        Toggle network connection. <ph name="STATE_TEXT">$1<ex>Connected to public wifi</ex></ph>.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_SETTINGS_TOOLTIP" desc="The tooltip text for the button that shows network list.">
-        Show network list. <ph name="STATE_TEXT">$1<ex>Connected to public wifi</ex></ph>
+        Show network list. <ph name="STATE_TEXT">$1<ex>Connected to public wifi</ex></ph>.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_PROGRESS_ACCESSIBLE_NAME" desc="The accessible name for the progress bar shown in the network settings.">
         Scanning
