@@ -469,7 +469,7 @@ function captureEvent(name, details, callback) {
   }
 
   if (callback) {
-    window.setTimeout(callback, 0, retval);
+    setTimeout(callback, 0, retval);
   } else {
     return retval;
   }

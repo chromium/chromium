@@ -780,12 +780,29 @@ enum class ProfileMode {
   kIncognito,
 };
 
+struct ARTestParams {
+  ARTestParams(ProfileMode profile_mode, ContextType context_type)
+      : profile_mode(profile_mode), context_type(context_type) {}
+
+  ProfileMode profile_mode;
+  ContextType context_type;
+};
+
 class ExtensionWebRequestApiAuthRequiredTest
     : public ExtensionWebRequestApiTest,
-      public testing::WithParamInterface<ProfileMode> {
+      public testing::WithParamInterface<ARTestParams> {
+ public:
+  ExtensionWebRequestApiAuthRequiredTest()
+      : ExtensionWebRequestApiTest(GetParam().context_type) {}
+  ~ExtensionWebRequestApiAuthRequiredTest() override = default;
+  ExtensionWebRequestApiAuthRequiredTest(
+      const ExtensionWebRequestApiAuthRequiredTest&) = delete;
+  ExtensionWebRequestApiAuthRequiredTest& operator=(
+      ExtensionWebRequestApiAuthRequiredTest&) = delete;
+
  protected:
   static bool GetEnableIncognito() {
-    return GetParam() == ProfileMode::kIncognito;
+    return GetParam().profile_mode == ProfileMode::kIncognito;
   }
 
   static std::string FormatCustomArg(const char* test_name) {
@@ -879,12 +896,27 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTest,
       << message_;
 }
 
-INSTANTIATE_TEST_SUITE_P(UserProfile,
-                         ExtensionWebRequestApiAuthRequiredTest,
-                         ::testing::Values(ProfileMode::kUserProfile));
-INSTANTIATE_TEST_SUITE_P(Incognito,
-                         ExtensionWebRequestApiAuthRequiredTest,
-                         ::testing::Values(ProfileMode::kIncognito));
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackground,
+    ExtensionWebRequestApiAuthRequiredTest,
+    ::testing::Values(ARTestParams(ProfileMode::kUserProfile,
+                                   ContextType::kPersistentBackground)));
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackgroundIncognito,
+    ExtensionWebRequestApiAuthRequiredTest,
+    ::testing::Values(ARTestParams(ProfileMode::kIncognito,
+                                   ContextType::kPersistentBackground)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker,
+    ExtensionWebRequestApiAuthRequiredTest,
+    ::testing::Values(ARTestParams(ProfileMode::kUserProfile,
+                                   ContextType::kServiceWorker)));
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorkerIncognito,
+    ExtensionWebRequestApiAuthRequiredTest,
+    ::testing::Values(ARTestParams(ProfileMode::kIncognito,
+                                   ContextType::kServiceWorker)));
 
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestBlocking) {
