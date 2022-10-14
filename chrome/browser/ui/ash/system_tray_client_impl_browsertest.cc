@@ -14,6 +14,7 @@
 #include "ash/system/model/system_tray_model.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
@@ -52,6 +53,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "url/gurl.h"
@@ -59,7 +61,7 @@
 using ::ash::ProfileHelper;
 using user_manager::UserManager;
 
-using SystemTrayClientEnterpriseTest = policy::DevicePolicyCrosBrowserTest;
+namespace {
 
 const char kManager[] = "admin@example.com";
 const char16_t kManager16[] = u"admin@example.com";
@@ -68,7 +70,25 @@ const char kNewGaiaID[] = "11111";
 const char kManagedUser[] = "user@example.com";
 const char kManagedGaiaID[] = "33333";
 
-IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseTest, TrayEnterprise) {
+}  // namespace
+
+// Parameterized by feature QsRevamp.
+class SystemTrayClientEnterpriseTest
+    : public policy::DevicePolicyCrosBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SystemTrayClientEnterpriseTest() {
+    feature_list_.InitWithFeatureState(ash::features::kQsRevamp, GetParam());
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(QsRevamp,
+                         SystemTrayClientEnterpriseTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SystemTrayClientEnterpriseTest, TrayEnterprise) {
   auto test_api = ash::SystemTrayTestApi::Create();
 
   // Managed devices show an item in the menu.
@@ -304,19 +324,19 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientClockUnknownPrefTest, SwitchToDefault) {
   EXPECT_TRUE(tray_test_api->Is24HourClock());
 }
 
-class SystemTrayClientEnterpriseAccountTest : public ash::LoginManagerTest {
+// Parameterized by feature QsRevamp.
+class SystemTrayClientEnterpriseAccountTest
+    : public ash::LoginManagerTest,
+      public testing::WithParamInterface<bool> {
  protected:
-  SystemTrayClientEnterpriseAccountTest() : LoginManagerTest() {
+  SystemTrayClientEnterpriseAccountTest() {
+    feature_list_.InitWithFeatureState(ash::features::kQsRevamp, GetParam());
     std::unique_ptr<ash::ScopedUserPolicyUpdate> scoped_user_policy_update =
         user_policy_mixin_.RequestPolicyUpdate();
     scoped_user_policy_update->policy_data()->set_managed_by(kManager);
   }
-  SystemTrayClientEnterpriseAccountTest(
-      const SystemTrayClientEnterpriseAccountTest&) = delete;
-  SystemTrayClientEnterpriseAccountTest& operator=(
-      const SystemTrayClientEnterpriseAccountTest&) = delete;
-  ~SystemTrayClientEnterpriseAccountTest() override = default;
 
+  base::test::ScopedFeatureList feature_list_;
   const ash::LoginManagerMixin::TestUserInfo unmanaged_user_{
       AccountId::FromUserEmailGaiaId(kNewUser, kNewGaiaID)};
   const ash::LoginManagerMixin::TestUserInfo managed_user_{
@@ -327,7 +347,11 @@ class SystemTrayClientEnterpriseAccountTest : public ash::LoginManagerTest {
                                       {managed_user_, unmanaged_user_}};
 };
 
-IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseAccountTest,
+INSTANTIATE_TEST_SUITE_P(QsRevamp,
+                         SystemTrayClientEnterpriseAccountTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SystemTrayClientEnterpriseAccountTest,
                        TrayEnterpriseManagedAccount) {
   auto test_api = ash::SystemTrayTestApi::Create();
 
@@ -361,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseAccountTest,
             test_api->GetBubbleViewTooltip(ash::VIEW_ID_QS_MANAGED_BUTTON));
 }
 
-IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseAccountTest,
+IN_PROC_BROWSER_TEST_P(SystemTrayClientEnterpriseAccountTest,
                        TrayEnterpriseUnmanagedAccount) {
   auto test_api = ash::SystemTrayTestApi::Create();
 
@@ -381,19 +405,18 @@ class SystemTrayClientEnterpriseSessionRestoreTest
   SystemTrayClientEnterpriseSessionRestoreTest() {
     login_mixin_.set_session_restore_enabled();
   }
-  SystemTrayClientEnterpriseSessionRestoreTest(
-      const SystemTrayClientEnterpriseSessionRestoreTest&) = delete;
-  SystemTrayClientEnterpriseSessionRestoreTest& operator=(
-      const SystemTrayClientEnterpriseSessionRestoreTest&) = delete;
-  ~SystemTrayClientEnterpriseSessionRestoreTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseSessionRestoreTest,
+INSTANTIATE_TEST_SUITE_P(QsRevamp,
+                         SystemTrayClientEnterpriseSessionRestoreTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SystemTrayClientEnterpriseSessionRestoreTest,
                        PRE_SessionRestore) {
   LoginUser(managed_user_.account_id);
 }
 
-IN_PROC_BROWSER_TEST_F(SystemTrayClientEnterpriseSessionRestoreTest,
+IN_PROC_BROWSER_TEST_P(SystemTrayClientEnterpriseSessionRestoreTest,
                        SessionRestore) {
   auto test_api = ash::SystemTrayTestApi::Create();
 
