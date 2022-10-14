@@ -954,6 +954,12 @@ class DictationCommandsTest : public DictationTest {
   DictationCommandsTest(const DictationCommandsTest&) = delete;
   DictationCommandsTest& operator=(const DictationCommandsTest&) = delete;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DictationTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kExperimentalAccessibilityDictationMoreCommands);
+  }
+
   void SetUpOnMainThread() override {
     DictationTest::SetUpOnMainThread();
     ToggleDictationWithKeystroke();
@@ -972,6 +978,9 @@ class DictationCommandsTest : public DictationTest {
         ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &text);
     return base::UTF16ToUTF8(text);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1152,6 +1161,22 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevWordMiddleOfWord) {
   SendFinalResultAndWaitForTextAreaValue("delete the previous word",
                                          "This is a t.");
 }
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteAllTextSimple) {
+  SendFinalResultAndWaitForTextAreaValue("Hello, world.", "Hello, world.");
+  SendFinalResultAndWaitForTextAreaValue("delete all", "");
+}
+
+IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeleteAllTextMultiLineString) {
+  std::string text = " Hello, world. \n Hello, world. \n Hello, world. \n";
+  SendFinalResultAndWaitForTextAreaValue(text, text);
+  SendFinalResultAndWaitForTextAreaValue("delete all", "");
+}
+
+// TODO(crbug.com/1362842) Add a test where
+// you disable the MoreCommands Feature Flag
+// and ensure that you can't run the Dictation
+// Commands under that feature flag
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsTest, DeletePrevSentSimple) {
   SendFinalResultAndWaitForTextAreaValue("Hello, world.", "Hello, world.");

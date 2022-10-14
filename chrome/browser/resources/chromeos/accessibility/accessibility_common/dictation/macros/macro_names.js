@@ -100,5 +100,8 @@ export const MacroName = {
   // Move the cursor to the previous sentence.
   NAV_PREV_SENT: 26,
 
+  // Deletes all text in the input box.
+  DELETE_ALL_TEXT: 27,
+
   // Any new actions should match with Voice Access's semantic tags.
 };

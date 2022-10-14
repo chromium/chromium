@@ -237,9 +237,17 @@ class SimpleMacroFactory {
         messageId: 'dictation_command_nav_prev_sent',
         build: NavPrevSentMacro,
       },
+      [MacroName.DELETE_ALL_TEXT]: {
+        messageId: 'dictation_command_delete_all_text',
+        build: RepeatableKeyPress.DeleteAllText,
+      },
     };
   }
 }
+// TODO(crbug.com/1362842) Do not release any Macros
+// hidden under the DictationMoreCommands Flag
+// using the simple_parse_strategy, rather
+// move them over to the pumpkin_parse_strategy
 
 /** A parsing strategy that utilizes SimpleMacroFactory. */
 export class SimpleParseStrategy extends ParseStrategy {
@@ -252,6 +260,13 @@ export class SimpleParseStrategy extends ParseStrategy {
      * @private {!Map<MacroName, !SimpleMacroFactory>}
      */
     this.macroFactoryMap_ = new Map();
+
+    /** @private {boolean} */
+    this.isMoreCommandsFeatureEnabled_ = false;
+
+    /** @private {!Array<!MacroName>}*/
+    this.moreCommandsSet_ = [MacroName.DELETE_ALL_TEXT];
+
     this.initialize_();
   }
 
@@ -267,6 +282,13 @@ export class SimpleParseStrategy extends ParseStrategy {
       this.macroFactoryMap_.set(
           name, new SimpleMacroFactory(name, this.getInputController()));
     }
+
+    const moreCommandsFeature = chrome.accessibilityPrivate.AccessibilityFeature
+                                    .DICTATION_MORE_COMMANDS;
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        moreCommandsFeature, enabled => {
+          this.isMoreCommandsFeatureEnabled_ = enabled;
+        });
   }
 
   /** @override */
@@ -280,12 +302,30 @@ export class SimpleParseStrategy extends ParseStrategy {
     this.initialize_();
   }
 
+  /**
+   * @param {Macro} macro
+   * @return {boolean}
+   * @private
+   */
+  shouldAddMacro_(macro) {
+    if (!macro) {
+      return false;
+    }
+
+    const isNewCommand = this.moreCommandsSet_.includes(macro.getMacroName());
+    if (!isNewCommand) {
+      return true;
+    }
+
+    return this.isMoreCommandsFeatureEnabled_;
+  }
+
   /** @override */
   async parse(text) {
     const macros = [];
     for (const [name, factory] of this.macroFactoryMap_) {
       const macro = factory.createMacro(text);
-      if (macro) {
+      if (this.shouldAddMacro_(macro)) {
         macros.push(macro);
       }
     }

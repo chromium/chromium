@@ -247,3 +247,16 @@ export class NavPrevWordMacro extends RepeatableKeyPressMacro {
         LocaleInfo.isRTLLocale() ? KeyCode.RIGHT : KeyCode.LEFT, {ctrl: true});
   }
 }
+
+/** Macro to delete all text in input field. */
+export class DeleteAllText extends RepeatableKeyPressMacro {
+  constructor() {
+    super(MacroName.DELETE_ALL_TEXT, 1);
+  }
+
+  /** @override */
+  doKeyPress() {
+    EventGenerator.sendKeyPress(KeyCode.A, {ctrl: true});
+    EventGenerator.sendKeyPress(KeyCode.BACK);
+  }
+}

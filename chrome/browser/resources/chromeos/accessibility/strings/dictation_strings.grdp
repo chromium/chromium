@@ -78,4 +78,7 @@
   <message name="DICTATION_COMMAND_NAV_PREV_SENT" desc="A spoken command to move the cursor to the previous sentence." is_accessibility_with_no_ui="true">
     move to the previous sentence
   </message>
+  <message name="DICTATION_COMMAND_DELETE_ALL_TEXT" desc="A spoken command to delete all text in the input field." is_accessibility_with_no_ui="true">
+    delete all
+  </message>
 </grit-part>
