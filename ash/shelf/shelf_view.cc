@@ -1213,6 +1213,8 @@ void ShelfView::EndDrag(bool cancel,
   drag_icon_bounds_in_screen_ = gfx::Rect();
   drag_and_drop_shelf_id_ = ShelfID();
   is_active_drag_and_drop_host_ = false;
+
+  HandleShelfParty();
 }
 
 void ShelfView::SwapButtons(views::View* button_to_swap, bool with_next) {
@@ -2672,6 +2674,8 @@ void ShelfView::HandleShelfParty() {
     }
     DCHECK(IsItemPinned(item));
     DCHECK(!IsItemVisible(item));
+    if (item.image.isNull() || item.id == drag_and_drop_shelf_id_)
+      continue;
     // Add the item if it is not already partying.
     const auto insertion_results = party_.try_emplace(item.id);
     if (insertion_results.second) {
