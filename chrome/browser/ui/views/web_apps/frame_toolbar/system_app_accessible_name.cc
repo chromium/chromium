@@ -28,7 +28,7 @@ SystemAppAccessibleName::~SystemAppAccessibleName() = default;
 
 void SystemAppAccessibleName::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kApplication;
-  node_data->SetName(app_name_);
+  node_data->SetNameChecked(app_name_);
 }
 
 BEGIN_METADATA(SystemAppAccessibleName, views::View)
