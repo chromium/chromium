@@ -82,10 +82,6 @@
         {
           "builder": "android-pie-arm64-dbg",
           "group": "tryserver.chromium.android"
-        },
-        {
-          "builder": "android_arm64_dbg_recipe",
-          "group": "tryserver.chromium.android"
         }
       ]
     }
@@ -100,6 +96,6 @@
   "builder_group": "chromium.android",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "android"
+    "chrome_browser_release"
   ]
 }

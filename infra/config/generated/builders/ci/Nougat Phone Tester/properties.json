@@ -80,10 +80,6 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "android_arm64_dbg_recipe",
-          "group": "tryserver.chromium.android"
-        },
-        {
           "builder": "try-nougat-phone-tester",
           "group": "tryserver.chromium.android"
         }
@@ -100,6 +96,6 @@
   "builder_group": "chromium.android",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "android"
+    "chrome_browser_release"
   ]
 }
