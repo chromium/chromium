@@ -610,8 +610,13 @@ void ContentsView::UpdateYPositionAndOpacity() {
           ConvertRectToWidgetWithoutTransform(search_box_bounds));
   search_box->GetWidget()->SetBounds(search_rect);
 
-  const float search_box_opacity =
-      target_view_state() != AppListViewState::kClosed ? 1.0f : 0.0f;
+  float search_box_opacity;
+  if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
+    search_box_opacity = 1.0f;
+  } else {
+    search_box_opacity =
+        target_view_state() != AppListViewState::kClosed ? 1.0f : 0.0f;
+  }
   search_box->layer()->SetOpacity(search_box_opacity);
 
   for (AppListPage* page : app_list_pages_) {
@@ -629,6 +634,12 @@ void ContentsView::AnimateToViewState(AppListViewState target_view_state,
       GetStateForPageIndex(pagination_model_.has_transition()
                                ? pagination_model_.transition().target_page
                                : pagination_model_.selected_page());
+
+  if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
+    last_target_view_state_ = target_view_state;
+    target_page_for_last_view_state_update_ = target_page;
+    return;
+  }
 
   // Animates layer's opacity.
   // |duration| - The default transition duration. The actual transition gets
@@ -785,7 +796,9 @@ int ContentsView::GetSearchBoxTopForViewState(
     AppListViewState view_state) const {
   switch (view_state) {
     case AppListViewState::kClosed:
-      return 0;
+      if (!app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled())
+        return 0;
+      [[fallthrough]];
     case AppListViewState::kFullscreenAllApps:
     case AppListViewState::kFullscreenSearch:
       return apps_container_view_

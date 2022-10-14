@@ -63,6 +63,10 @@ ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kCompactBubbleLauncher);
 // Enables Play Store search in the launcher.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kLauncherPlayStoreSearch);
 
+// Enables new tablet <-> clamshell mode transition animation (scale + opacity
+// instead of slide up/down).
+ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kAnimateScaleOnTabletModeTransition);
+
 ASH_PUBLIC_EXPORT bool IsAppRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsZeroStateAppsRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsZeroStateMixedTypesRankerEnabled();
@@ -79,6 +83,7 @@ ASH_PUBLIC_EXPORT bool IsDynamicSearchUpdateAnimationEnabled();
 ASH_PUBLIC_EXPORT base::TimeDelta DynamicSearchUpdateAnimationDuration();
 ASH_PUBLIC_EXPORT bool IsCompactBubbleLauncherEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherPlayStoreSearchEnabled();
+ASH_PUBLIC_EXPORT bool IsAnimateScaleOnTabletModeTransitionEnabled();
 
 ASH_PUBLIC_EXPORT std::string AppSearchResultRankerPredictorName();
 ASH_PUBLIC_EXPORT std::string CategoricalSearchType();

@@ -50,6 +50,9 @@ BASE_FEATURE(kCompactBubbleLauncher,
 BASE_FEATURE(kLauncherPlayStoreSearch,
              "LauncherPlayStoreSearch",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAnimateScaleOnTabletModeTransition,
+             "AnimateScaleOnTabletModeTransition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppRankerEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppRanker);
@@ -127,6 +130,10 @@ bool IsCompactBubbleLauncherEnabled() {
 bool IsLauncherPlayStoreSearchEnabled() {
   return ash::features::IsProductivityLauncherEnabled() &&
          base::FeatureList::IsEnabled(kLauncherPlayStoreSearch);
+}
+
+bool IsAnimateScaleOnTabletModeTransitionEnabled() {
+  return base::FeatureList::IsEnabled(kAnimateScaleOnTabletModeTransition);
 }
 
 }  // namespace app_list_features

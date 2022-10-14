@@ -43,6 +43,7 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -88,6 +89,9 @@
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -4400,6 +4404,90 @@ TEST_P(AppListPresenterTest, SearchBoxTextfieldGestureTap) {
 
   // Cursor position should have changed after the gesture tap.
   EXPECT_LT(textfield->GetCursorPosition(), initial_cursor_position);
+}
+
+// Temporary class to test `kAnimateScaleOnTabletModeTransition` related
+// animations.
+class AppListPresenterWithScaleAnimationOnTabletModeTransitionTest
+    : public AppListPresenterTest {
+ public:
+  AppListPresenterWithScaleAnimationOnTabletModeTransitionTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        app_list_features::kAnimateScaleOnTabletModeTransition);
+  }
+
+ protected:
+  void EnsureAppListViewIsCached() {
+    ASSERT_FALSE(GetAppListTestHelper()->GetAppListView());
+
+    EnableTabletMode(true);
+    GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+    GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
+
+    EnableTabletMode(false);
+    GetAppListTestHelper()->WaitUntilIdle();
+    GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
+
+    // Entering and exiting from tablet mode should keep `AppListView` cached.
+    ASSERT_TRUE(GetAppListTestHelper()->GetAppListView());
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
+       UpdatesScaleAndOpacity) {
+  // Enter tablet mode.
+  EnableTabletMode(true);
+  GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
+  GetAppListTestHelper()->CheckState(AppListViewState::kFullscreenAllApps);
+
+  auto* const window =
+      GetAppListTestHelper()->GetAppListView()->GetWidget()->GetNativeWindow();
+  auto* const layer = window->layer();
+  const auto center_point = gfx::Rect(layer->size()).CenterPoint();
+  const auto no_transform = gfx::GetScaleTransform(center_point, 1.0f);
+  const auto scaled_down_transform =
+      gfx::GetScaleTransform(center_point, 0.92f);
+
+  // The layer is fully visible and without applied transform.
+  EXPECT_EQ(layer->opacity(), 1.0f);
+  EXPECT_EQ(layer->transform(), no_transform);
+  EXPECT_TRUE(window->IsVisible());
+
+  // Exit tablet mode.
+  EnableTabletMode(false);
+  GetAppListTestHelper()->WaitUntilIdle();
+  GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
+
+  // The layer is fully transparent, scaled down and the window is hidden.
+  EXPECT_EQ(layer->opacity(), 0.00f);
+  EXPECT_EQ(layer->transform(), scaled_down_transform);
+  EXPECT_FALSE(window->IsVisible());
+}
+
+TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
+       ExitingFromOverviewInClamshellModeShouldNotAffectFullscreenLauncher) {
+  EnsureAppListViewIsCached();
+
+  auto* const layer = GetAppListTestHelper()
+                          ->GetAppListView()
+                          ->GetWidget()
+                          ->GetNativeWindow()
+                          ->layer();
+  const auto expected_opacity = layer->opacity();
+  const auto expected_transform = layer->transform();
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+
+  EnterOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  ExitOverview();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+
+  // Layer's opacity and transform should stay the same.
+  EXPECT_EQ(layer->opacity(), expected_opacity);
+  EXPECT_EQ(layer->transform(), expected_transform);
 }
 
 }  // namespace ash

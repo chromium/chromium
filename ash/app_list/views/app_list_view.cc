@@ -21,6 +21,7 @@
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/shell.h"
@@ -499,9 +500,6 @@ void AppListView::InitChildWidget() {
 void AppListView::Show(AppListViewState preferred_state, bool is_side_shelf) {
   if (!time_shown_.has_value())
     time_shown_ = base::Time::Now();
-  // The opacity of the AppListView may have been manipulated by overview mode,
-  // so reset it before it is shown.
-  GetWidget()->GetLayer()->SetOpacity(1.0f);
   is_side_shelf_ = is_side_shelf;
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
@@ -730,10 +728,20 @@ void AppListView::SetChildViewsForStateTransition(
         AppListState::kStateApps, !is_side_shelf_);
   }
 
-  if (target_state == AppListViewState::kClosed && is_side_shelf_) {
-    // Reset the search box to be shown again. This is done after the animation
-    // is complete normally, but there is no animation when |is_side_shelf_|.
-    search_box_view_->ClearSearchAndDeactivateSearchBox();
+  if (target_state == AppListViewState::kClosed) {
+    if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled()) {
+      if (app_list_state_ == AppListViewState::kFullscreenSearch)
+        search_box_view_->ClearSearchAndDeactivateSearchBox();
+
+      auto* contents_view = app_list_main_view_->contents_view();
+      if (contents_view->IsShowingEmbeddedAssistantUI())
+        contents_view->ShowEmbeddedAssistantUI(false);
+    } else if (is_side_shelf_) {
+      // Reset the search box to be shown again. This is done after the
+      // animation is complete normally, but there is no animation when
+      // |is_side_shelf_|.
+      search_box_view_->ClearSearchAndDeactivateSearchBox();
+    }
   }
 }
 
@@ -1086,7 +1094,9 @@ void AppListView::StartAnimationForState(AppListViewState target_state) {
   base::TimeDelta animation_duration =
       GetStateTransitionAnimationDuration(target_state);
 
-  ApplyBoundsAnimation(target_state, animation_duration);
+  if (!app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled())
+    ApplyBoundsAnimation(target_state, animation_duration);
+
   app_list_main_view_->contents_view()->OnAppListViewTargetStateChanged(
       target_state);
   app_list_main_view_->contents_view()->AnimateToViewState(target_state,
@@ -1413,6 +1423,8 @@ int AppListView::GetPreferredWidgetYForState(AppListViewState state) const {
     case AppListViewState::kFullscreenSearch:
       return fullscreen_height;
     case AppListViewState::kClosed:
+      if (app_list_features::IsAnimateScaleOnTabletModeTransitionEnabled())
+        return fullscreen_height;
       // Align the widget y with shelf y to avoid flicker in show animation. In
       // side shelf mode, the widget y is the top of work area because the
       // widget does not animate.
