@@ -5704,6 +5704,20 @@
       'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
     ],
 
+    'gpu_dawn_android_isolated_scripts': [
+      # Same as gpu_dawn_isolated_scripts, but with some suites removed:
+      # * telemetry_gpu_unittests since those aren't built for Android
+      # * SwiftShader-related tests since SwiftShader is not used on Android.
+      'gpu_dawn_perf_smoke_isolated_scripts',
+      'gpu_dawn_webgpu_blink_web_tests',
+    ],
+
+    'gpu_dawn_android_telemetry_tests': [
+      # Same as gpu_dawn_telemetry_tests, but without SwiftShader tests since
+      # SwiftShader is not used on Android.
+      'gpu_dawn_webgpu_cts',
+    ],
+
     'gpu_dawn_asan_isolated_scripts': [
       'gpu_dawn_common_isolated_scripts',
       'gpu_dawn_perf_smoke_isolated_scripts',
