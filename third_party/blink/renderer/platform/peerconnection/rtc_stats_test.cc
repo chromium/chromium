@@ -16,46 +16,10 @@
 
 namespace blink {
 
-TEST(RTCStatsTest, OnlyIncludeAllowlistedStats_GetStats) {
-  const char* not_allowlisted_id = "NotAllowlistedId";
-  const char* allowlisted_id = "AllowlistedId";
-
-  rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
-      webrtc::RTCStatsReport::Create(42);
-  webrtc_report->AddStats(
-      std::make_unique<webrtc::RTCTestStats>(not_allowlisted_id, 42));
-  webrtc_report->AddStats(
-      std::make_unique<webrtc::RTCPeerConnectionStats>(allowlisted_id, 42));
-
-  RTCStatsReportPlatform report(webrtc_report.get(), {});
-  EXPECT_FALSE(report.GetStats(not_allowlisted_id));
-  EXPECT_TRUE(report.GetStats(allowlisted_id));
-}
-
-TEST(RTCStatsTest, OnlyIncludeAllowlistedStats_Iteration) {
-  const char* not_allowlisted_id = "NotAllowlistedId";
-  const char* allowlisted_id = "AllowlistedId";
-
-  rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
-      webrtc::RTCStatsReport::Create(42);
-  webrtc_report->AddStats(
-      std::make_unique<webrtc::RTCTestStats>(not_allowlisted_id, 42));
-  webrtc_report->AddStats(
-      std::make_unique<webrtc::RTCPeerConnectionStats>(allowlisted_id, 42));
-
-  RTCStatsReportPlatform report(webrtc_report.get(), {});
-  // Only allowlisted stats are counted.
-  EXPECT_EQ(report.Size(), 1u);
-
-  std::unique_ptr<RTCStats> stats = report.Next();
-  EXPECT_TRUE(stats);
-  EXPECT_EQ(stats->Id(), allowlisted_id);
-  EXPECT_FALSE(report.Next());
-}
+namespace {
 
 // Stats object with both a standard and non-standard member, used for the test
 // below.
-namespace {
 class TestStats : public webrtc::RTCStats {
  public:
   WEBRTC_RTCSTATS_DECL();
@@ -78,14 +42,52 @@ TestStats::TestStats(const std::string& id, int64_t timestamp_us)
       standardized("standardized"),
       non_standardized("non_standardized",
                        {webrtc::NonStandardGroupId::kGroupIdForTesting}) {}
+
 }  // namespace
+
+TEST(RTCStatsTest, ReportSizeAndGetter) {
+  const char* kFirstId = "FirstId";
+  const char* kSecondId = "SecondId";
+
+  rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
+      webrtc::RTCStatsReport::Create(42);
+  webrtc_report->AddStats(std::make_unique<webrtc::RTCTestStats>(kFirstId, 42));
+  webrtc_report->AddStats(
+      std::make_unique<webrtc::RTCTestStats>(kSecondId, 42));
+
+  RTCStatsReportPlatform report(webrtc_report.get(), {});
+  EXPECT_EQ(report.Size(), 2u);
+  EXPECT_TRUE(report.GetStats(kFirstId));
+  EXPECT_TRUE(report.GetStats(kSecondId));
+}
+
+TEST(RTCStatsTest, Iterator) {
+  const char* kFirstId = "FirstId";
+  const char* kSecondId = "SecondId";
+
+  rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
+      webrtc::RTCStatsReport::Create(42);
+  webrtc_report->AddStats(std::make_unique<webrtc::RTCTestStats>(kFirstId, 42));
+  webrtc_report->AddStats(
+      std::make_unique<webrtc::RTCTestStats>(kSecondId, 42));
+
+  RTCStatsReportPlatform report(webrtc_report.get(), {});
+  EXPECT_EQ(report.Size(), 2u);
+
+  std::unique_ptr<RTCStats> stats = report.Next();
+  EXPECT_TRUE(stats);
+  EXPECT_EQ(stats->Id(), kFirstId);
+  stats = report.Next();
+  EXPECT_TRUE(stats);
+  EXPECT_EQ(stats->Id(), kSecondId);
+  EXPECT_FALSE(report.Next());
+}
 
 // Similar to how only allowlisted stats objects should be surfaced, only
 // standardized members of the allowlisted objects should be surfaced.
 TEST(RTCStatsTest, OnlyIncludeStandarizedMembers) {
   rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
       webrtc::RTCStatsReport::Create(42);
-  AllowStatsForTesting(TestStats::kType);
   webrtc_report->AddStats(std::make_unique<TestStats>("id", 0));
 
   // TestStats has two members, but the non-standard member should be filtered
@@ -100,7 +102,6 @@ TEST(RTCStatsTest, OnlyIncludeStandarizedMembers) {
 TEST(RTCStatsTest, IncludeAllMembers) {
   rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
       webrtc::RTCStatsReport::Create(7);
-  AllowStatsForTesting(TestStats::kType);
   webrtc_report->AddStats(std::make_unique<TestStats>("id", 0));
 
   // Include both standard and non-standard member.
@@ -121,7 +122,6 @@ TEST(RTCStatsTest, IncludeAllMembersFeatureFlag) {
 
   rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
       webrtc::RTCStatsReport::Create(7);
-  AllowStatsForTesting(TestStats::kType);
   webrtc_report->AddStats(std::make_unique<TestStats>("id", 0));
 
   // Include both standard and non-standard member.
@@ -138,7 +138,6 @@ TEST(RTCStatsTest, IncludeAllMembersFeatureFlag) {
 TEST(RTCStatsTest, CopyHandle) {
   rtc::scoped_refptr<webrtc::RTCStatsReport> webrtc_report =
       webrtc::RTCStatsReport::Create(17);
-  AllowStatsForTesting(TestStats::kType);
   webrtc_report->AddStats(std::make_unique<TestStats>("id", 0));
 
   // Check that filtering options are preserved during copy.

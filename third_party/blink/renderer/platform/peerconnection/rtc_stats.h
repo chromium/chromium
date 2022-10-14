@@ -158,8 +158,6 @@ class PLATFORM_EXPORT RTCStatsCollectorCallbackImpl
   Vector<webrtc::NonStandardGroupId> exposed_group_ids_;
 };
 
-PLATFORM_EXPORT void AllowStatsForTesting(const char* type);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_STATS_H_

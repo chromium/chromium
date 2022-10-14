@@ -26,54 +26,6 @@ namespace blink {
 
 namespace {
 
-class RTCStatsAllowlist {
- public:
-  RTCStatsAllowlist() {
-    allowlisted_stats_types_.insert(webrtc::RTCCertificateStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCCodecStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCDataChannelStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCIceCandidatePairStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCIceCandidateStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCLocalIceCandidateStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCRemoteIceCandidateStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCMediaStreamStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCMediaStreamTrackStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCPeerConnectionStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCRTPStreamStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCInboundRTPStreamStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCOutboundRTPStreamStats::kType);
-    allowlisted_stats_types_.insert(
-        webrtc::RTCRemoteInboundRtpStreamStats::kType);
-    allowlisted_stats_types_.insert(
-        webrtc::RTCRemoteOutboundRtpStreamStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCMediaSourceStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCAudioSourceStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCVideoSourceStats::kType);
-    allowlisted_stats_types_.insert(webrtc::RTCTransportStats::kType);
-  }
-
-  bool IsAllowlisted(const webrtc::RTCStats& stats) {
-    return allowlisted_stats_types_.find(stats.type()) !=
-           allowlisted_stats_types_.end();
-  }
-
-  void AllowStatsForTesting(const char* type) {
-    allowlisted_stats_types_.insert(type);
-  }
-
- private:
-  std::set<std::string> allowlisted_stats_types_;
-};
-
-RTCStatsAllowlist* GetStatsAllowlist() {
-  static RTCStatsAllowlist* list = new RTCStatsAllowlist();
-  return list;
-}
-
-bool IsAllowlistedStats(const webrtc::RTCStats& stats) {
-  return GetStatsAllowlist()->IsAllowlisted(stats);
-}
-
 // Filters stats that should be surfaced to JS. Stats are surfaced if they're
 // standardized or if there is an active origin trial that enables a stat by
 // including one of its group IDs in |exposed_group_ids|.
@@ -106,17 +58,6 @@ std::vector<const webrtc::RTCStatsMemberInterface*> FilterMembers(
   return stats_members;
 }
 
-size_t CountAllowlistedStats(
-    const scoped_refptr<const webrtc::RTCStatsReport>& stats_report) {
-  size_t size = 0;
-  for (const auto& stats : *stats_report) {
-    if (IsAllowlistedStats(stats)) {
-      ++size;
-    }
-  }
-  return size;
-}
-
 template <typename T>
 Vector<T> ToWTFVector(const std::vector<T>& vector) {
   Vector<T> wtf_vector(base::checked_cast<WTF::wtf_size_t>(vector.size()));
@@ -133,7 +74,7 @@ RTCStatsReportPlatform::RTCStatsReportPlatform(
       it_(stats_report_->begin()),
       end_(stats_report_->end()),
       exposed_group_ids_(exposed_group_ids),
-      size_(CountAllowlistedStats(stats_report)) {
+      size_(stats_report_->size()) {
   DCHECK(stats_report_);
 }
 
@@ -148,19 +89,16 @@ std::unique_ptr<RTCStatsReportPlatform> RTCStatsReportPlatform::CopyHandle()
 std::unique_ptr<RTCStats> RTCStatsReportPlatform::GetStats(
     const String& id) const {
   const webrtc::RTCStats* stats = stats_report_->Get(id.Utf8());
-  if (!stats || !IsAllowlistedStats(*stats))
+  if (!stats)
     return std::unique_ptr<RTCStats>();
   return std::make_unique<RTCStats>(stats_report_, stats, exposed_group_ids_);
 }
 
 std::unique_ptr<RTCStats> RTCStatsReportPlatform::Next() {
-  while (it_ != end_) {
+  if (it_ != end_) {
     const webrtc::RTCStats& next = *it_;
     ++it_;
-    if (IsAllowlistedStats(next)) {
-      return std::make_unique<RTCStats>(stats_report_, &next,
-                                        exposed_group_ids_);
-    }
+    return std::make_unique<RTCStats>(stats_report_, &next, exposed_group_ids_);
   }
   return std::unique_ptr<RTCStats>();
 }
@@ -380,10 +318,6 @@ void RTCStatsCollectorCallbackImpl::OnStatsDeliveredOnMainThread(
   // Make sure the callback is destroyed in the main thread as well.
   std::move(callback_).Run(std::make_unique<RTCStatsReportPlatform>(
       base::WrapRefCounted(report.get()), exposed_group_ids_));
-}
-
-void AllowStatsForTesting(const char* type) {
-  GetStatsAllowlist()->AllowStatsForTesting(type);
 }
 
 }  // namespace blink
