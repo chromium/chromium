@@ -20555,6 +20555,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarReorderTab.TabAddedToGroup">
+  <owner>clank-app-team@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <description>
+    User long-pressed on a tab, dragged and dropped it within a tab group in the
+    tablet tab strip. Android Only.
+  </description>
+</action>
+
+<action name="MobileToolbarReorderTab.TabRemovedFromGroup">
+  <owner>clank-app-team@google.com</owner>
+  <owner>skavuluru@google.com</owner>
+  <description>
+    User long-pressed on a tab with in a group, dragged and dropped it outside
+    of the group in the tablet tab strip. Android Only.
+  </description>
+</action>
+
 <action name="MobileToolbarSearchButtonTapped">
   <obsolete>Deprecate as of 3/2020</obsolete>
   <owner>stkhapugin@chromium.org</owner>

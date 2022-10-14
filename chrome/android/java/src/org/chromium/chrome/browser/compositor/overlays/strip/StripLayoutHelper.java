@@ -1970,8 +1970,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
-     * This method determines the new index for the interacting tab, based on whether or not it has
-     * met the conditions to be moved out of its tab group.
+     * This method checks whether or not interacting tab has met the conditions to be moved out of 
+     * its tab group. It moves tab out of group if so and returns the new index for the interacting 
+     * tab.
      *
      * @param offset The distance the interacting tab has been dragged from its ideal x-position.
      * @param curIndex The index of the interacting tab.
@@ -1986,7 +1987,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
 
             setTabGroupDimmed(mTabGroupModelFilter.getRootId(getTabById(tabId)), true);
             mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
-
+            RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
             return curIndex;
         }
 
@@ -1994,8 +1995,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     }
 
     /**
-     * This method determines the new index for the interacting tab, based on whether or not it has
-     * met the conditions to be merged into a neighboring tab group.
+     * This method checks whether or not interacting tab has met the conditions to be merged into a 
+     * neighbouring tab group. It merges tab to group if so and returns the new index for the 
+     * interacting tab.
      *
      * @param offset The distance the interacting tab has been dragged from its ideal x-position.
      * @param curIndex The index of the interacting tab.
@@ -2037,6 +2039,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
                 1 + (int) Math.floor((Math.abs(offset) - minFlipOffset) / effectiveWidth);
 
         mTabGroupModelFilter.mergeTabsToGroup(mInteractingTab.getId(), destinationTabId, true);
+        RecordUserAction.record("MobileToolbarReorderTab.TabAddedToGroup");
 
         return towardEnd ? curIndex + 1 + numTabsToSkip : curIndex - numTabsToSkip;
     }
