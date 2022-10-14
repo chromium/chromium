@@ -138,12 +138,14 @@ class ToValueVisitor {
   void VisitBytes(const P& parent_proto,
                   const char* field_name,
                   const std::string& field) {
-    value_->Set(field_name, BytesToValue(field));
+    value_->GetDict().Set(
+        field_name,
+        base::Base64Encode(base::as_bytes(base::make_span(field))));
   }
 
   template <class P, class E>
   void VisitEnum(const P& parent_proto, const char* field_name, E field) {
-    value_->Set(field_name, EnumToValue(field));
+    value_->GetDict().Set(field_name, ProtoEnumToString(field));
   }
 
   template <class P, class F>
@@ -155,7 +157,7 @@ class ToValueVisitor {
       for (const auto& field : repeated_field) {
         list.Append(base::Value::FromUniquePtrValue(ToValue(field)));
       }
-      value_->Set(field_name, std::make_unique<base::Value>(std::move(list)));
+      value_->GetDict().Set(field_name, std::move(list));
     }
   }
 
@@ -168,7 +170,7 @@ class ToValueVisitor {
       for (const auto& field : repeated_field) {
         list.Append(base::Value::FromUniquePtrValue(ToValue(field)));
       }
-      value_->Set(field_name, std::make_unique<base::Value>(std::move(list)));
+      value_->GetDict().Set(field_name, std::move(list));
     }
   }
 
@@ -260,17 +262,6 @@ class ToValueVisitor {
     return value;
   }
 
-  static std::unique_ptr<base::Value> BytesToValue(const std::string& bytes) {
-    std::string bytes_base64;
-    base::Base64Encode(bytes, &bytes_base64);
-    return std::make_unique<base::Value>(bytes_base64);
-  }
-
-  template <class E>
-  static std::unique_ptr<base::Value> EnumToValue(E value) {
-    return std::make_unique<base::Value>(ProtoEnumToString(value));
-  }
-
   std::unique_ptr<base::Value> ToValue(const std::string& value) const {
     return std::make_unique<base::Value>(value);
   }
@@ -301,7 +292,8 @@ class ToValueVisitor {
   // Needs to be here to see all ToValue() overloads above.
   template <class P, class F>
   void VisitImpl(P&, const char* field_name, const F& field) {
-    value_->Set(field_name, ToValue(field));
+    value_->GetDict().Set(field_name,
+                          base::Value::FromUniquePtrValue(ToValue(field)));
   }
 
   const ProtoValueConversionOptions options_;
