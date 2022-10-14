@@ -30,7 +30,6 @@
       [screens addObject:@(kSignIn)];
       [screens addObject:@(kTangibleSync)];
       break;
-    case NewMobileIdentityConsistencyFRE::kUMADialog:
     case NewMobileIdentityConsistencyFRE::kOld:
       [screens addObject:@(kWelcomeAndConsent)];
       [screens addObject:@(kSignInAndSync)];

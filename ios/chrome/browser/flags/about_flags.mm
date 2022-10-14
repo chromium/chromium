@@ -480,9 +480,6 @@ const FeatureEntry::FeatureVariation kTrendingQueriesModuleVariations[] = {
      std::size(kTrendingQueriesEnableFeedDisabled), nullptr},
 };
 
-const FeatureEntry::FeatureParam kNewMICEFREWithUMADialog[] = {
-    {kNewMobileIdentityConsistencyFREParam,
-     kNewMobileIdentityConsistencyFREParamUMADialog}};
 const FeatureEntry::FeatureParam kNewMICEFREWithTangibleSyncA[] = {
     {kNewMobileIdentityConsistencyFREParam,
      kNewMobileIdentityConsistencyFREParamTangibleSyncA}};
@@ -497,8 +494,6 @@ const FeatureEntry::FeatureParam kNewMICEFREWithTwoSteps[] = {
      kNewMobileIdentityConsistencyFREParamTwoSteps}};
 const FeatureEntry::FeatureVariation
     kNewMobileIdentityConsistencyFREVariations[] = {
-        {"New FRE with UMA dialog", kNewMICEFREWithUMADialog,
-         std::size(kNewMICEFREWithUMADialog), nullptr},
         {"new FRE with tangible sync A", kNewMICEFREWithTangibleSyncA,
          std::size(kNewMICEFREWithTangibleSyncA), nullptr},
         {"new FRE with tangible sync B", kNewMICEFREWithTangibleSyncB,

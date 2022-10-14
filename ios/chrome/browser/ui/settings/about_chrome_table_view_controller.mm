@@ -16,7 +16,6 @@
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/snackbar_commands.h"
-#import "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/settings/cells/version_item.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
@@ -150,18 +149,7 @@ const CGFloat kDefaultHeight = 70;
       [self openURL:GURL(kChromeUICreditsURL)];
       break;
     case ItemTypeLinksTerms:
-      switch (fre_field_trial::GetNewMobileIdentityConsistencyFRE()) {
-        case NewMobileIdentityConsistencyFRE::kTwoSteps:
-        case NewMobileIdentityConsistencyFRE::kTangibleSyncA:
-        case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
-        case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
-        case NewMobileIdentityConsistencyFRE::kUMADialog:
-          [self openURL:GetUnifiedTermsOfServiceURL(false)];
-          break;
-        case NewMobileIdentityConsistencyFRE::kOld:
-          [self openURL:GURL(kChromeUITermsURL)];
-          break;
-      }
+      [self openURL:GetUnifiedTermsOfServiceURL(false)];
       break;
     case ItemTypeLinksPrivacy:
       [self openURL:GURL(l10n_util::GetStringUTF8(IDS_IOS_PRIVACY_POLICY_URL))];

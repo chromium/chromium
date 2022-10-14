@@ -67,8 +67,7 @@
     case NewMobileIdentityConsistencyFRE::kTwoSteps:
     case NewMobileIdentityConsistencyFRE::kTangibleSyncA:
     case NewMobileIdentityConsistencyFRE::kTangibleSyncB:
-    case NewMobileIdentityConsistencyFRE::kTangibleSyncC:
-    case NewMobileIdentityConsistencyFRE::kUMADialog: {
+    case NewMobileIdentityConsistencyFRE::kTangibleSyncC: {
       TOSURL =
           net::NSURLWithGURL(GetUnifiedTermsOfServiceURL(/*embbeded=*/true));
       break;

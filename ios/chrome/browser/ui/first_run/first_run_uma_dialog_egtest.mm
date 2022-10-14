@@ -95,19 +95,6 @@ GREYElementInteraction* ElementInteractionWithGreyMatcher(
   AppLaunchConfiguration config;
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kSignInAtStartup);
-  // Enable UMA dialog MICe FRe.
-  config.additional_args.push_back(
-      "--enable-features=" +
-      std::string(signin::kNewMobileIdentityConsistencyFRE.name) + "<" +
-      std::string(signin::kNewMobileIdentityConsistencyFRE.name));
-  config.additional_args.push_back(
-      "--force-fieldtrials=" +
-      std::string(signin::kNewMobileIdentityConsistencyFRE.name) + "/Test");
-  config.additional_args.push_back(
-      "--force-fieldtrial-params=" +
-      std::string(signin::kNewMobileIdentityConsistencyFRE.name) +
-      ".Test:" + std::string(kNewMobileIdentityConsistencyFREParam) + "/" +
-      kNewMobileIdentityConsistencyFREParamUMADialog);
   // Disable default browser promo.
   config.features_disabled.push_back(kEnableFREDefaultBrowserPromoScreen);
   // Show the First Run UI at startup.

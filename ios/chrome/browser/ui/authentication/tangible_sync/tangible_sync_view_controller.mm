@@ -59,7 +59,6 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
       subtitleStringID = IDS_IOS_TANGIBLE_SYNC_SUBTITLE_SYNC;
       break;
     case NewMobileIdentityConsistencyFRE::kTwoSteps:
-    case NewMobileIdentityConsistencyFRE::kUMADialog:
     case NewMobileIdentityConsistencyFRE::kOld:
       NOTREACHED();
       break;

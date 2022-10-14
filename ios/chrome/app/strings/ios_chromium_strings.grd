@@ -326,9 +326,6 @@ Things to consider:
       <message name="IDS_IOS_FIRST_RUN_UMA_DIALOG_TITLE" desc="In Title Case: Title of the dialog where users can change their Chrome metrics sharing settings, like usage data. The title communicates that allowing Chrome to see this data can improve Chrome; this happens because we can better invent/improve features based on usage. This appears when they open the Chrome app for the first time on their phone. [iOS only]">
         Make Chromium Better
         </message>
-      <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRICS_CONSENT" desc="The label next to the metrics reporting consent checkbox of the welcome screen presented to the user on First Run [iOS only]">
-        Help improve Chromium by sending usage statistics and crash reports to Google
-      </message>
       <message name="IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_ENTERPRISE" desc="The title of the welcome screen presented to the user on First Run when the browser is managed [iOS only]">
         Get More Done with Chromium
       </message>

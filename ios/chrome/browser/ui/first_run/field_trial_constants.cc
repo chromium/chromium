@@ -18,7 +18,6 @@ const char kFREDefaultBrowserPromoShortDelayParam[] =
 
 // Parameters for new Mobile Identity Consistency FRE.
 const char kNewMobileIdentityConsistencyFREParam[] = "variant_new_mice_fre";
-const char kNewMobileIdentityConsistencyFREParamUMADialog[] = "umadialog";
 const char kNewMobileIdentityConsistencyFREParamTangibleSyncA[] =
     "tangiblesyncA";
 const char kNewMobileIdentityConsistencyFREParamTangibleSyncB[] =
