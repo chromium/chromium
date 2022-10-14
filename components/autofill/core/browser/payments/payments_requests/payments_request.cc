@@ -15,6 +15,18 @@ namespace autofill::payments {
 
 PaymentsRequest::~PaymentsRequest() = default;
 
+bool PaymentsRequest::IsRetryableFailure(const std::string& error_code) {
+  // Returns true if the `error_code` denotes this is a retryable failure. This
+  // should be overridden in subclasses that have additional cases where the
+  // PaymentsRpcResult should be kTryAgainFailure if certain conditions are
+  // true. If this function is overridden in subclasses, the super class'
+  // implementation should still be called in addition to the subclass'
+  // implementation. An example of this is in the virtual card CVC
+  // authentication flow, we want to set result to kTryAgainFailure if a flow
+  // status is present in the response.
+  return base::EqualsCaseInsensitiveASCII(error_code, "internal");
+}
+
 base::Value::Dict PaymentsRequest::BuildRiskDictionary(
     const std::string& encoded_risk_data) {
   base::Value::Dict risk_data;

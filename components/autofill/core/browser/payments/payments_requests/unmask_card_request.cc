@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
@@ -397,6 +398,36 @@ bool UnmaskCardRequest::IsResponseComplete() {
 void UnmaskCardRequest::RespondToDelegate(
     AutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, response_details_);
+}
+
+bool UnmaskCardRequest::IsRetryableFailure(const std::string& error_code) {
+  // If the response error code indicates we are in the retryable failure case,
+  // return true.
+  if (PaymentsRequest::IsRetryableFailure(error_code))
+    return true;
+
+  // The additional case where this can be a retryable failure is only for
+  // virtual cards, so if we are not in the virtual card unmasking case at this
+  // point, return false.
+  if (request_details_.card.record_type() != CreditCard::VIRTUAL_CARD)
+    return false;
+
+  // If a challenge option was not selected, we are not in the virtual card
+  // unmasking case, so return false.
+  if (!request_details_.selected_challenge_option)
+    return false;
+
+  // The additional retryable failure functionality currently only applies to
+  // virtual card CVC auth, so if we did not select a CVC challenge option,
+  // return false.
+  if (request_details_.selected_challenge_option->type !=
+      CardUnmaskChallengeOptionType::kCvc) {
+    return false;
+  }
+
+  // If we are in the VCN CVC auth case and there is a flow status present
+  // return true, otherwise return false.
+  return !response_details_.flow_status.empty();
 }
 
 bool UnmaskCardRequest::IsAllCardInformationValidIncludingDcvv() {

@@ -443,7 +443,7 @@ void PaymentsClient::OnSimpleLoaderCompleteInternal(int response_code,
                      error_api_error_reason, "virtual_card_permanent_error")) {
         result =
             AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure;
-      } else if (base::EqualsCaseInsensitiveASCII(error_code, "internal")) {
+      } else if (request_->IsRetryableFailure(error_code)) {
         result = AutofillClient::PaymentsRpcResult::kTryAgainFailure;
       } else if (!error_code.empty() || !request_->IsResponseComplete()) {
         result = AutofillClient::PaymentsRpcResult::kPermanentFailure;

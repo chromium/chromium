@@ -40,6 +40,11 @@ class PaymentsRequest {
   // request this is.
   virtual void RespondToDelegate(AutofillClient::PaymentsRpcResult result) = 0;
 
+  // Returns true if the response indicates that we received an error that is
+  // retryable, false otherwise. If this returns true, the PaymentsRpcResult for
+  // the request will be kTryAgainFailure.
+  virtual bool IsRetryableFailure(const std::string& error_code);
+
  protected:
   // Shared helper function to build the risk data sent in the request.
   base::Value::Dict BuildRiskDictionary(const std::string& encoded_risk_data);

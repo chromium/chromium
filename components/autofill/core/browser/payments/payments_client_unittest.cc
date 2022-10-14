@@ -798,6 +798,19 @@ TEST_F(PaymentsClientTest, VirtualCardRiskBasedYellowPathResponse_CvcFlagOn) {
   EXPECT_EQ(CvcPosition::kBackOfCard, challenge_option_3.cvc_position);
 }
 
+TEST_F(PaymentsClientTest, VirtualCardCvcRetrieval_FlowStatusPresent) {
+  StartUnmasking(
+      CardUnmaskOptions().with_virtual_card_risk_based().with_cvc("123"));
+  IssueOAuthToken();
+  ReturnResponse(
+      net::HTTP_OK,
+      "{\"flow_status\": \"FLOW_STATUS_INCORRECT_ACCOUNT_SECURITY_CODE\"}");
+
+  // Ensure that it is treated as a try again failure when a flow status is
+  // returned.
+  EXPECT_EQ(AutofillClient::PaymentsRpcResult::kTryAgainFailure, result_);
+}
+
 TEST_F(PaymentsClientTest,
        VirtualCardRiskBasedYellowPathResponseWithUnknownType) {
   StartUnmasking(CardUnmaskOptions().with_virtual_card_risk_based());

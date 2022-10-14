@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -104,6 +105,49 @@ TEST_P(VirtualCardUnmaskCardRequestTest, GetRequestContent) {
     EXPECT_TRUE(IsIncludedInRequestContent("challenge_id"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_length"));
     EXPECT_TRUE(IsIncludedInRequestContent("cvc_position"));
+  }
+}
+
+TEST_P(VirtualCardUnmaskCardRequestTest, IsRetryableFailure) {
+  if (GetParam() == autofill::CardUnmaskChallengeOptionType::kCvc) {
+    // Test that `IsRetryableFailure()` returns true if the error code denotes
+    // that it is a retryable failure.
+    EXPECT_TRUE(GetRequest()->IsRetryableFailure("internal"));
+
+    // Test that `IsRetryableFailure()` returns true if a flow status is
+    // present.
+    absl::optional<base::Value> response = base::JSONReader::Read(
+        "{\"flow_status\": \"FLOW_STATUS_INCORRECT_ACCOUNT_SECURITY_CODE\"}");
+    ASSERT_TRUE(response);
+    GetRequest()->ParseResponse(*response);
+    EXPECT_TRUE(GetRequest()->IsRetryableFailure(""));
+
+    // The next several tests ensure that `IsRetryableFailure()` returns false
+    // if no flow status is present.
+    response = base::JSONReader::Read(
+        "{\"error\": {\"code\": \"ANYTHING_ELSE\", "
+        "\"api_error_reason\": \"virtual_card_temporary_error\"}, "
+        "\"decline_details\": {\"user_message_title\": "
+        "\"\", \"user_message_description\": "
+        "\"\"}}");
+    ASSERT_TRUE(response);
+    GetRequest()->ParseResponse(*response);
+    EXPECT_FALSE(GetRequest()->IsRetryableFailure(""));
+
+    response = base::JSONReader::Read(
+        "{\"error\": {\"code\": \"ANYTHING_ELSE\", "
+        "\"api_error_reason\": \"virtual_card_permanent_error\"}, "
+        "\"decline_details\": {\"user_message_title\": "
+        "\"\", \"user_message_description\": "
+        "\"\"}}");
+    ASSERT_TRUE(response);
+    GetRequest()->ParseResponse(*response);
+    EXPECT_FALSE(GetRequest()->IsRetryableFailure(""));
+
+    response = base::JSONReader::Read("{ \"pan\": \"1234\" }");
+    ASSERT_TRUE(response);
+    GetRequest()->ParseResponse(*response);
+    EXPECT_FALSE(GetRequest()->IsRetryableFailure(""));
   }
 }
 

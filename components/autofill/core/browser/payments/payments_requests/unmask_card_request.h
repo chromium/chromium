@@ -30,6 +30,7 @@ class UnmaskCardRequest : public PaymentsRequest {
   void ParseResponse(const base::Value& response) override;
   bool IsResponseComplete() override;
   void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
+  bool IsRetryableFailure(const std::string& error_code) override;
 
  private:
   // Returns whether the response contains all the information of the virtual
