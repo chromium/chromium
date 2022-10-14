@@ -44,11 +44,11 @@
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
+#include "third_party/blink/renderer/platform/image-decoders/exif_reader.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/geometry/size_f.h"
 
 extern "C" {
 #include <stdio.h>  // jpeglib.h needs stdio FILE.
@@ -85,7 +85,6 @@ namespace {
 
 constexpr int kExifMarker = JPEG_APP0 + 1;
 constexpr unsigned kExifAPP1SignatureSize = 6;
-constexpr unsigned kExifHeaderSize = 8;
 
 // JPEG only supports a denominator of 8.
 const unsigned g_scale_denominator = 8;
@@ -215,68 +214,6 @@ void term_source(j_decompress_ptr jd);
 void error_exit(j_common_ptr cinfo);
 void emit_message(j_common_ptr cinfo, int msg_level);
 
-static unsigned ReadUint16(const uint8_t* data, bool is_big_endian) {
-  if (is_big_endian)
-    return (data[0] << 8) | data[1];
-  return (data[1] << 8) | data[0];
-}
-
-static unsigned ReadUint32(const uint8_t* data, bool is_big_endian) {
-  if (is_big_endian)
-    return (data[0] << 24) | (data[1] << 16) | (data[2] << 8) | data[3];
-  return (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
-}
-
-static float ReadUnsignedRational(const uint8_t* data, bool is_big_endian) {
-  unsigned nom = ReadUint32(data, is_big_endian);
-  unsigned denom = ReadUint32(data + 4, is_big_endian);
-  if (!denom)
-    return 0;
-  return float(nom) / float(denom);
-}
-
-static bool IsExifData(jpeg_saved_marker_ptr marker) {
-  // For EXIF data, the APP1 block is followed by 'E', 'x', 'i', 'f', '\0',
-  // then a fill byte, and then a TIFF file that contains the metadata.
-  if (marker->marker != kExifMarker)
-    return false;
-  if (marker->data_length < kExifAPP1SignatureSize)
-    return false;
-  const uint8_t kExifAPP1Signature[5] = {'E', 'x', 'i', 'f', '\0'};
-  if (memcmp(marker->data, kExifAPP1Signature, sizeof(kExifAPP1Signature)) != 0)
-    return false;
-  return true;
-}
-
-static bool ReadExifHeader(base::span<const uint8_t> data,
-                           bool& is_big_endian) {
-  // A TIFF file starts with 'I', 'I' (Intel / little endian byte order) or
-  // 'M', 'M' (Motorola / big endian byte order), followed by (uint16_t)42,
-  // followed by an uint32_t with the offset to the initial (0th) IFD tag
-  // block, relative to the TIFF file start.
-  //
-  // Header in summary:
-  // <byte-order tag> (2 bytes), <magic> (2 bytes), <0th IFD offset> (4 bytes)
-  if (data.size() < kExifHeaderSize)
-    return false;
-  const uint8_t byte_order = data[0];
-  if (byte_order != data[1])
-    return false;
-  if (byte_order != 'I' && byte_order != 'M')
-    return false;
-  is_big_endian = byte_order == 'M';
-  if (ReadUint16(data.data() + 2, is_big_endian) != 42)
-    return false;
-  return true;
-}
-
-struct DecodedImageMetaData {
-  ImageOrientation orientation;
-  gfx::SizeF resolution;
-  gfx::Size size;
-  unsigned resolution_unit { 0 };
-};
-
 static gfx::Size ExtractDensityCorrectedSize(
     const DecodedImageMetaData& metadata,
     const gfx::Size& physical_size) {
@@ -301,137 +238,16 @@ static gfx::Size ExtractDensityCorrectedSize(
   return physical_size;
 }
 
-static void ReadExifDirectory(const uint8_t* dir_start,
-                              const uint8_t* data_start,
-                              const uint8_t* data_end,
-                              bool is_big_endian,
-                              DecodedImageMetaData& metadata,
-                              bool is_root = true) {
-  const unsigned kUnsignedShortType = 3;
-  const unsigned kUnsignedLongType = 4;
-  const unsigned kUnsignedRationalType = 5;
-
-  enum ExifTags {
-    kOrientationTag = 0x112,
-    kResolutionXTag = 0x11a,
-    kResolutionYTag = 0x11b,
-    kResolutionUnitTag = 0x128,
-    kPixelXDimensionTag = 0xa002,
-    kPixelYDimensionTag = 0xa003,
-    kExifOffsetTag = 0x8769
-  };
-
-  if (data_end - dir_start < 2)
-    return;
-
-  const unsigned max_offset =
-      base::checked_cast<unsigned>(data_end - data_start);
-  unsigned tag_count = ReadUint16(dir_start, is_big_endian);
-  const uint8_t* ifd =
-      dir_start + 2;  // Skip over the uint16 that was just read.
-
-  // A TIFF image file directory (IFD) consists of a uint16_t describing the
-  // number of IFD entries, followed by that many entries. Every IFD entry is 2
-  // bytes of tag, 2 bytes of contents datatype, 4 bytes of number-of-elements,
-  // and 4 bytes of either offset to the tag data, or if the data is small
-  // enough, the inlined data itself.
-  const int kIfdEntrySize = 12;
-  for (unsigned i = 0; i < tag_count && data_end - ifd >= kIfdEntrySize;
-        ++i, ifd += kIfdEntrySize) {
-    unsigned tag = ReadUint16(ifd, is_big_endian);
-    unsigned type = ReadUint16(ifd + 2, is_big_endian);
-    unsigned count = ReadUint32(ifd + 4, is_big_endian);
-    const uint8_t* value_ptr = ifd + 8;
-
-    // EXIF stores the value with an offset if it's bigger than 4 bytes, e.g. for rational values.
-    if (type == kUnsignedRationalType) {
-      unsigned offset = ReadUint32(value_ptr, is_big_endian);
-      if (offset > max_offset)
-        continue;
-      value_ptr = data_start + offset;
-      // Make sure offset points to a valid location.
-      if (value_ptr > data_end - 16)
-        continue;
-    }
-
-    switch (tag) {
-      case ExifTags::kOrientationTag:
-        if (type == kUnsignedShortType && count == 1)
-          metadata.orientation = ImageOrientation::FromEXIFValue(ReadUint16(value_ptr, is_big_endian));
-        break;
-
-      case ExifTags::kResolutionUnitTag:
-        if (type == kUnsignedShortType && count == 1)
-          metadata.resolution_unit = ReadUint16(value_ptr, is_big_endian);
-        break;
-
-      case ExifTags::kResolutionXTag:
-        if (type == kUnsignedRationalType && count == 1) {
-          metadata.resolution.set_width(
-              ReadUnsignedRational(value_ptr, is_big_endian));
-        }
-        break;
-
-      case ExifTags::kResolutionYTag:
-        if (type == kUnsignedRationalType && count == 1) {
-          metadata.resolution.set_height(
-              ReadUnsignedRational(value_ptr, is_big_endian));
-        }
-        break;
-
-      case ExifTags::kPixelXDimensionTag:
-        if (count != 1)
-          break;
-        switch (type) {
-          case kUnsignedShortType:
-            metadata.size.set_width(ReadUint16(value_ptr, is_big_endian));
-            break;
-          case kUnsignedLongType:
-            metadata.size.set_width(ReadUint32(value_ptr, is_big_endian));
-            break;
-        }
-        break;
-
-      case ExifTags::kPixelYDimensionTag:
-        if (count != 1)
-          break;
-        switch (type) {
-          case kUnsignedShortType:
-            metadata.size.set_height(ReadUint16(value_ptr, is_big_endian));
-            break;
-          case kUnsignedLongType:
-            metadata.size.set_height(ReadUint32(value_ptr, is_big_endian));
-            break;
-        }
-        break;
-
-      case ExifTags::kExifOffsetTag:
-        if (type == kUnsignedLongType && count == 1 && is_root) {
-          unsigned offset = ReadUint32(value_ptr, is_big_endian);
-          if (offset > max_offset)
-            break;
-          const uint8_t* subdir = data_start + offset;
-          ReadExifDirectory(subdir, data_start, data_end, is_big_endian,
-                            metadata, false);
-        }
-        break;
-    }
-  }
-}
-
-static bool ReadExif(base::span<const uint8_t> data,
-                     DecodedImageMetaData& metadata) {
-  bool is_big_endian;
-  if (!ReadExifHeader(data, is_big_endian))
+static bool IsExifData(jpeg_saved_marker_ptr marker) {
+  // For EXIF data, the APP1 block is followed by 'E', 'x', 'i', 'f', '\0',
+  // then a fill byte, and then a TIFF file that contains the metadata.
+  if (marker->marker != kExifMarker)
     return false;
-  const unsigned ifd_offset = ReadUint32(data.data() + 4, is_big_endian);
-  if (ifd_offset < kExifHeaderSize || ifd_offset >= data.size())
+  if (marker->data_length < kExifAPP1SignatureSize)
     return false;
-
-  const uint8_t* data_end = data.data() + data.size();
-  const uint8_t* data_start = data.data();
-  const uint8_t* ifd0 = data_start + ifd_offset;
-  ReadExifDirectory(ifd0, data_start, data_end, is_big_endian, metadata);
+  const uint8_t kExifAPP1Signature[5] = {'E', 'x', 'i', 'f', '\0'};
+  if (memcmp(marker->data, kExifAPP1Signature, sizeof(kExifAPP1Signature)) != 0)
+    return false;
   return true;
 }
 

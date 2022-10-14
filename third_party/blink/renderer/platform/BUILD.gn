@@ -1129,6 +1129,8 @@ component("platform") {
     "image-decoders/bmp/bmp_image_decoder.h",
     "image-decoders/bmp/bmp_image_reader.cc",
     "image-decoders/bmp/bmp_image_reader.h",
+    "image-decoders/exif_reader.cc",
+    "image-decoders/exif_reader.h",
     "image-decoders/fast_shared_buffer_reader.cc",
     "image-decoders/fast_shared_buffer_reader.h",
     "image-decoders/gif/gif_image_decoder.cc",
