@@ -205,8 +205,8 @@ declare_args() {
   # Enables the use of library CDMs that implements the interface defined at
   # media/cdm/api/content_decryption_module.h. If true, the actually library CDM
   # will be hosted in the mojo CDM service running in the CDM (utility) process.
-  # Used for all desktop platforms except Fuchsia (crbug.com/1265618).
-  enable_library_cdms = toolkit_views && !is_fuchsia && !is_castos
+  # Used for all desktop platforms.
+  enable_library_cdms = toolkit_views && !is_castos
 }
 
 declare_args() {
