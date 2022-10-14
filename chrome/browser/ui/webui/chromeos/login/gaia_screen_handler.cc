@@ -660,6 +660,8 @@ void GaiaScreenHandler::RegisterMessages() {
   AddCallback("onFatalError", &GaiaScreenHandler::HandleOnFatalError);
   AddCallback("removeUserByEmail", &GaiaScreenHandler::HandleUserRemoved);
   AddCallback("passwordEntered", &GaiaScreenHandler::HandlePasswordEntered);
+  AddCallback("showLoadingTimeoutError",
+              &GaiaScreenHandler::HandleShowLoadingTimeoutError);
 
   BaseScreenHandler::RegisterMessages();
 }
@@ -1012,6 +1014,10 @@ void GaiaScreenHandler::HandleUserRemoved(const std::string& email) {
 void GaiaScreenHandler::HandlePasswordEntered() {
   base::UmaHistogramEnumeration("OOBE.GaiaScreen.LoginRequests",
                                 login_request_variant_);
+}
+
+void GaiaScreenHandler::HandleShowLoadingTimeoutError() {
+  UpdateState(NetworkError::ERROR_REASON_LOADING_TIMEOUT);
 }
 
 void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,

@@ -72,16 +72,10 @@ class SigninScreenHandler
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
 
-  // WebUIMessageHandler implementation:
-  void RegisterMessages() override;
-
   // content::NotificationObserver implementation:
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
-
-  // WebUI message handlers.
-  void HandleShowLoadingTimeoutError();
 
   // Returns true if current visible screen is the Gaia sign-in page.
   bool IsGaiaVisible();

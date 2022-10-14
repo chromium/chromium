@@ -96,11 +96,6 @@ SigninScreenHandler::~SigninScreenHandler() {
 void SigninScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
 
-void SigninScreenHandler::RegisterMessages() {
-  AddCallback("showLoadingTimeoutError",
-              &SigninScreenHandler::HandleShowLoadingTimeoutError);
-}
-
 void SigninScreenHandler::Show() {
   CHECK(ash::ExistingUserController::current_controller());
   histogram_helper_->OnScreenShow();
@@ -326,10 +321,6 @@ void SigninScreenHandler::ReenableNetworkStateUpdatesAfterProxyAuth() {
 void SigninScreenHandler::OnErrorScreenHide() {
   histogram_helper_->OnErrorHide();
   ShowScreenDeprecated(GaiaView::kScreenId);
-}
-
-void SigninScreenHandler::HandleShowLoadingTimeoutError() {
-  UpdateState(NetworkError::ERROR_REASON_LOADING_TIMEOUT);
 }
 
 bool SigninScreenHandler::IsGaiaVisible() {

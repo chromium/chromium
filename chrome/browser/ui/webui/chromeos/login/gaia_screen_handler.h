@@ -241,6 +241,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // Called when password is entered for authentication during login.
   void HandlePasswordEntered();
 
+  void HandleShowLoadingTimeoutError();
+
   // Really handles the complete login message.
   void DoCompleteLogin(const std::string& gaia_id,
                        const std::string& typed_email,
