@@ -16,11 +16,9 @@ const RoleType = chrome.automation.RoleType;
 const SelectToSpeakPanelAction =
     chrome.accessibilityPrivate.SelectToSpeakPanelAction;
 
-// This must be the same as in
-// ash/system/accessibility/select_to_speak/select_to_speak_tray.cc:
-// ash::kSelectToSpeakTrayClassName.
-export const SELECT_TO_SPEAK_TRAY_CLASS_NAME =
-    'tray/TrayBackgroundView/SelectToSpeakTray';
+// This must match the name of view class that implements the SelectToSpeakTray:
+// ash/system/accessibility/select_to_speak/select_to_speak_tray.h
+export const SELECT_TO_SPEAK_TRAY_CLASS_NAME = 'SelectToSpeakTray';
 
 // This must match the name of view class that implements the menu view:
 // ash/system/accessibility/select_to_speak/select_to_speak_menu_view.h
