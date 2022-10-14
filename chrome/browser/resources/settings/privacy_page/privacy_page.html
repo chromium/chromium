@@ -502,7 +502,8 @@
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
           <div id="notificationRadioGroup" class="radio-group">
-            <template is="dom-if" if="[[!showNotificationPermissionsReview_]]">
+            <template is="dom-if"
+                if="[[!safetyCheckNotificationPermissionsEnabled_]]">
               <div class="secondary">
                 $i18n{siteSettingsNotificationsDescription}
               </div>

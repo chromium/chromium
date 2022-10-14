@@ -13,6 +13,7 @@ import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.j
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -54,9 +55,10 @@ export class SettingsReviewNotificationPermissionsElement extends
   static get properties() {
     return {
       /* List of domains that sends a lot of notifications. */
-      notificationPermissionReviewList_: {
+      sites_: {
         type: Array,
-        value: null,
+        value: [],
+        observer: 'onSitesChanged_',
       },
 
       /* If the list of notification permissions is expanded or collapsed. */
@@ -80,21 +82,25 @@ export class SettingsReviewNotificationPermissionsElement extends
        */
       shouldShowCompletionInfo_: {
         type: Boolean,
-        computed: 'computeShouldShowCompletionInfo_' +
-            '(notificationPermissionReviewList_.*)',
+        computed: 'computeShouldShowCompletionInfo_(sites_.*)',
       },
+
+      /* The string for the primary header label. */
+      headerString_: String,
     };
   }
 
-  private notificationPermissionReviewList_: NotificationPermission[]|null;
+  private sites_: NotificationPermission[];
   private notificationPermissionReviewListExpanded_: boolean;
   private shouldShowCompletionInfo_: boolean;
   private browserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
   private lastOrigin_: string;
   private lastUserAction_: Actions|null;
+  private headerString_: string;
+  private sitesLoaded_: boolean = false;
 
-  override connectedCallback() {
+  override async connectedCallback() {
     super.connectedCallback();
     // Register for review notification permission list updates.
     this.addWebUIListener(
@@ -102,7 +108,8 @@ export class SettingsReviewNotificationPermissionsElement extends
         (sites: NotificationPermission[]) =>
             this.onReviewNotificationPermissionListChanged_(sites));
 
-    this.populateList_();
+    this.sites_ = await this.browserProxy_.getNotificationPermissionReview();
+    this.sitesLoaded_ = true;
   }
 
   /**
@@ -159,7 +166,7 @@ export class SettingsReviewNotificationPermissionsElement extends
   /* Repopulate the list when notification permission list is updated. */
   private onReviewNotificationPermissionListChanged_(
       sites: NotificationPermission[]) {
-    this.notificationPermissionReviewList_ = sites;
+    this.sites_ = sites;
   }
 
   private onShowTooltip_(e: Event) {
@@ -261,9 +268,11 @@ export class SettingsReviewNotificationPermissionsElement extends
    * Retrieve the list of domains that send lots of notification and implicitly
    * trigger the update of the display list.
    */
-  private async populateList_() {
-    this.notificationPermissionReviewList_ =
-        await this.browserProxy_.getNotificationPermissionReview();
+  private async onSitesChanged_() {
+    this.headerString_ =
+        await PluralStringProxyImpl.getInstance().getPluralString(
+            'safetyCheckNotificationPermissionReviewPrimaryLabel',
+            this.sites_!.length);
   }
 
   private getMoreActionsAriaLabelText_(): string {
@@ -277,8 +286,7 @@ export class SettingsReviewNotificationPermissionsElement extends
 
   /** Show info that review is completed when there are no permissions left. */
   private computeShouldShowCompletionInfo_(): boolean {
-    return !!this.notificationPermissionReviewList_ &&
-        this.notificationPermissionReviewList_.length === 0;
+    return this.sitesLoaded_ && this.sites_.length === 0;
   }
 }
 

@@ -65,7 +65,7 @@
     <iron-icon role="img" icon="settings:notifications-none"></iron-icon>
     <cr-expand-button id="expandButton" class="header-group-wrapper" no-hover
         expanded="{{notificationPermissionReviewListExpanded_}}">
-      <h2>$i18n{safetyCheckNotificationPermissionReviewPrimaryLabel}</h2>
+      <h2>[[headerString_]]</h2>
       <div class="secondary">
         $i18n{safetyCheckNotificationPermissionReviewSecondaryLabel}
       </div>
@@ -74,7 +74,7 @@
   <iron-collapse class="notification-permissions-list"
       opened="[[notificationPermissionReviewListExpanded_]]">
     <template id="notificationPermissionReviewList" is="dom-repeat"
-        items="[[notificationPermissionReviewList_]]">
+        items="[[sites_]]">
       <div class$="cr-row [[getClassForIndex_(index)]]">
         <site-favicon url="[[item.origin]]"></site-favicon>
         <div id="displayName_[[index]]" class="display-name cr-padded-text">

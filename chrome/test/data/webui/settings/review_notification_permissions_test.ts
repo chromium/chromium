@@ -4,12 +4,12 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {SettingsReviewNotificationPermissionsElement, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrActionMenuElement} from 'chrome://settings/settings.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
@@ -23,19 +23,19 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
   let testElement: SettingsReviewNotificationPermissionsElement;
 
-  const origin_1 = 'www.example1.com';
-  const detail_1 = 'About 4 notifications a day';
-  const origin_2 = 'www.example2.com';
-  const detail_2 = 'About 1 notification a day';
+  const origin1 = 'www.example1.com';
+  const detail1 = 'About 4 notifications a day';
+  const origin2 = 'www.example2.com';
+  const detail2 = 'About 1 notification a day';
 
-  const mock_data = [
+  const mockData = [
     {
-      origin: origin_1,
-      notificationInfoString: detail_1,
+      origin: origin1,
+      notificationInfoString: detail1,
     },
     {
-      origin: origin_2,
-      notificationInfoString: detail_2,
+      origin: origin2,
+      notificationInfoString: detail2,
     },
   ];
 
@@ -69,7 +69,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
   setup(function() {
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    browserProxy.setNotificationPermissionReview(mock_data);
+    browserProxy.setNotificationPermissionReview(mockData);
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
 
     document.body.innerHTML =
@@ -110,16 +110,16 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
 
     // Check that the text describing the changed permissions is correct.
     assertEquals(
-        origin_1,
+        origin1,
         entries[0]!.querySelector('.site-representation')!.textContent!.trim());
     assertEquals(
-        detail_1,
+        detail1,
         entries[0]!.querySelector('.second-line')!.textContent!.trim());
     assertEquals(
-        origin_2,
+        origin2,
         entries[1]!.querySelector('.site-representation')!.textContent!.trim());
     assertEquals(
-        detail_2,
+        detail2,
         entries[1]!.querySelector('.second-line')!.textContent!.trim());
   });
 
@@ -298,7 +298,7 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     // The element returns to showing the list of permissions when new items are
     // added while the completion state is visible.
     webUIListenerCallback(
-        'notification-permission-review-list-changed', mock_data);
+        'notification-permission-review-list-changed', mockData);
     await flushTasks();
     assertTrue(isChildVisible(testElement, '#review-header'));
     assertTrue(isChildVisible(testElement, '.notification-permissions-list'));
@@ -333,5 +333,40 @@ suite('CrSettingsReviewNotificationPermissionsTest', function() {
     // Button and list are expanded.
     assertTrue(expandButton.expanded);
     assertTrue(notificationPermissionList.opened);
+  });
+
+  /**
+   * Tests whether header string updated based on the notification permission
+   * list size for plural and singular case.
+   */
+  test('Header String', async function() {
+    await browserProxy.whenCalled('getNotificationPermissionReview');
+    await flushTasks();
+
+    // Check header string for plural case.
+    let entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    assertEquals(2, entries.length);
+
+    const headerElement =
+        testElement.shadowRoot!.querySelector('#expandButton h2');
+    assertTrue(headerElement !== null);
+    assertEquals(
+        'Review 2 sites that recently sent a lot of notifications',
+        headerElement.textContent!.trim());
+
+    // Check header string for singular case.
+    await webUIListenerCallback(
+        'notification-permission-review-list-changed', [{
+          origin: origin1,
+          notificationInfoString: detail1,
+        }]);
+    await flushTasks();
+
+    entries = testElement.shadowRoot!.querySelectorAll('.cr-row');
+    assertEquals(1, entries.length);
+
+    assertEquals(
+        'Review 1 site that recently sent a lot of notifications',
+        headerElement.textContent!.trim());
   });
 });
