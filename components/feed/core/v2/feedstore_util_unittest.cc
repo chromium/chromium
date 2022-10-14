@@ -88,6 +88,7 @@ TEST(feedstore_util_test, StreamTypeFromKey) {
 
   EXPECT_TRUE(StreamTypeFromKey(StreamKey(following)).IsWebFeed());
   EXPECT_TRUE(StreamTypeFromKey(StreamKey(for_you)).IsForYou());
+  EXPECT_EQ(StreamTypeFromKey("z"), StreamType());
 }
 
 }  // namespace

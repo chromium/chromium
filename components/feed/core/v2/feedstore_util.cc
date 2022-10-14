@@ -24,17 +24,22 @@ std::string StreamKey(const StreamType& stream_type) {
   DCHECK(stream_type.IsChannelFeed());
   std::string encoding;
   base::Base64Encode(stream_type.GetWebFeedId(), &encoding);
-  return encoding;
+  return std::string(kChannelStreamKeyPrefix) + encoding;
 }
 
-StreamType StreamTypeFromKey(std::string key) {
+StreamType StreamTypeFromKey(base::StringPiece key) {
   if (key == kForYouStreamKey)
     return StreamType(feed::StreamKind::kForYou);
   if (key == kFollowStreamKey)
     return StreamType(feed::StreamKind::kFollowing);
-  std::string channel_key;
-  if (base::Base64Decode(key, &channel_key))
-    return StreamType(feed::StreamKind::kChannel, channel_key);
+  if (base::StartsWith(key, kChannelStreamKeyPrefix,
+                       base::CompareCase::SENSITIVE)) {
+    std::string channel_key;
+    if (base::Base64Decode(key.substr(kChannelStreamKeyPrefix.size()),
+                           &channel_key)) {
+      return StreamType(feed::StreamKind::kChannel, channel_key);
+    }
+  }
   return {};
 }
 

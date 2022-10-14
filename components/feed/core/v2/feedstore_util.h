@@ -22,9 +22,10 @@ class Metadata;
 
 const char kForYouStreamKey[] = "i";
 const char kFollowStreamKey[] = "w";
+constexpr base::StringPiece kChannelStreamKeyPrefix = "c";
 
 std::string StreamKey(const feed::StreamType& stream_type);
-feed::StreamType StreamTypeFromKey(std::string key);
+feed::StreamType StreamTypeFromKey(base::StringPiece key);
 
 ///////////////////////////////////////////////////
 // Functions that operate on feedstore proto types.
