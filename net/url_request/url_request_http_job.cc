@@ -572,6 +572,12 @@ void URLRequestHttpJob::StartTransactionInternal() {
       }
     }
 
+    if (rv == OK && request_info_.method == "CONNECT") {
+      // CONNECT has different kinds of targets than other methods (RFC 9110,
+      // section 9.3.6), which are incompatible with URLRequest.
+      rv = ERR_METHOD_NOT_SUPPORTED;
+    }
+
     if (rv == OK) {
       transaction_->SetConnectedCallback(base::BindRepeating(
           &URLRequestHttpJob::NotifyConnectedCallback, base::Unretained(this)));

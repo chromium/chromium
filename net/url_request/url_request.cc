@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -499,9 +500,9 @@ void URLRequest::set_initiator(const absl::optional<url::Origin>& initiator) {
   initiator_ = initiator;
 }
 
-void URLRequest::set_method(const std::string& method) {
+void URLRequest::set_method(base::StringPiece method) {
   DCHECK(!is_pending_);
-  method_ = method;
+  method_ = std::string(method);
 }
 
 #if BUILDFLAG(ENABLE_REPORTING)

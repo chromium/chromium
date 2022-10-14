@@ -3988,7 +3988,7 @@ class URLRequestTestHTTP : public URLRequestTest {
       std::unique_ptr<URLRequest> r(default_context().CreateRequest(
           test_server_.GetURL("/echo"), DEFAULT_PRIORITY, &d,
           TRAFFIC_ANNOTATION_FOR_TESTS));
-      r->set_method(method.c_str());
+      r->set_method(method);
 
       r->set_upload(CreateSimpleUploadData(uploadBytes.get()));
 
@@ -8451,9 +8451,6 @@ TEST_F(URLRequestTestHTTP, Redirect303Tests) {
   HTTPRedirectMethodTest(url, "PUT", "GET", true);
   HTTPRedirectMethodTest(url, "HEAD", "HEAD", false);
 
-  HTTPRedirectOriginHeaderTest(url, "CONNECT", "GET", std::string());
-  HTTPRedirectOriginHeaderTest(https_redirect_url, "CONNECT", "GET",
-                               std::string());
   HTTPRedirectOriginHeaderTest(url, "DELETE", "GET", std::string());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "DELETE", "GET",
                                std::string());
@@ -13007,6 +13004,18 @@ TEST_F(URLRequestTestHTTP, AuthChallengeInfo) {
   EXPECT_EQ("testrealm", r->auth_challenge_info()->realm);
   EXPECT_EQ("Basic realm=\"testrealm\"", r->auth_challenge_info()->challenge);
   EXPECT_EQ("/auth-basic", r->auth_challenge_info()->path);
+}
+
+TEST_F(URLRequestTestHTTP, ConnectNoSupported) {
+  ASSERT_TRUE(http_test_server()->Start());
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> r(default_context().CreateRequest(
+      http_test_server()->GetURL("/"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  r->set_method("CONNECT");
+  r->Start();
+  delegate.RunUntilComplete();
+  EXPECT_EQ(ERR_METHOD_NOT_SUPPORTED, delegate.request_status());
 }
 
 class URLRequestDnsAliasTest : public TestWithTaskEnvironment {
