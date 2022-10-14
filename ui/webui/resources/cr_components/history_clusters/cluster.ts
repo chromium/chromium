@@ -18,7 +18,7 @@ import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './cluster.html.js';
-import {Cluster, ClusterAction, PageCallbackRouter, URLVisit, VisitAction} from './history_clusters.mojom-webui.js';
+import {Cluster, ClusterAction, PageCallbackRouter, SearchQuery, URLVisit, VisitAction} from './history_clusters.mojom-webui.js';
 import {MetricsProxyImpl} from './metrics_proxy.js';
 import {insertHighlightedTextWithMatchesIntoElement} from './utils.js';
 
@@ -94,6 +94,14 @@ class HistoryClusterElement extends HistoryClusterElementBase {
       hiddenVisits_: {
         type: Object,
         computed: `computeHiddenVisits_(cluster.visits.*)`,
+      },
+
+      /**
+       * The visible related searches.
+       */
+      relatedSearches_: {
+        type: Object,
+        computed: `computeRelatedSearches_(cluster.relatedSearches.*)`,
       },
 
       /**
@@ -313,6 +321,13 @@ class HistoryClusterElement extends HistoryClusterElementBase {
     insertHighlightedTextWithMatchesIntoElement(
         this.$.label, this.cluster.label!, this.cluster.labelMatchPositions);
     return this.cluster.label!;
+  }
+
+  private computeRelatedSearches_(): SearchQuery[] {
+    return this.cluster.relatedSearches.filter(
+        (query: SearchQuery, index: number) => {
+          return query && !(this.inSidePanel_ && index > 2);
+        });
   }
 
   private computeVisibleVisits_(): URLVisit[] {

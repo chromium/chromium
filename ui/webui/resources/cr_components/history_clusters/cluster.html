@@ -83,6 +83,11 @@
     padding: 8px var(--cluster-padding-horizontal) var(--cluster-padding-vertical);
   }
 
+  :host([in-side-panel_]) #related-searches {
+    margin-top: -8px;
+    padding: 0 16px var(--cluster-padding-vertical);
+  }
+
   search-query {
     margin-top: var(--search-query-margin);
   }
@@ -155,7 +160,7 @@
   <div id="related-searches" hidden="[[!cluster.relatedSearches.length]]"
       role="list" aria-label$="[[i18n('relatedSearchesHeader')]]"
       on-related-search-clicked="onRelatedSearchClicked_">
-    <template is="dom-repeat" items="[[cluster.relatedSearches]]">
+    <template is="dom-repeat" items="[[relatedSearches_]]">
       <search-query search-query="[[item]]" index="[[index]]" role="listitem">
       </search-query>
     </template>
