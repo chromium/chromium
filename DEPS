@@ -4134,10 +4134,11 @@ hooks = [
   },
   {
     # Should run after the clang hook. Used on mac, as well as for orderfile
-    # generation on Android.
+    # generation and size tooling on Android. Used by
+    # dump-static-initializers.py on linux.
     'name': 'objdump',
     'pattern': '.',
-    'condition': 'checkout_mac or checkout_android and host_os != "mac"',
+    'condition': 'checkout_linux or checkout_mac or checkout_android and host_os != "mac"',
     'action': ['python3', 'src/tools/clang/scripts/update.py',
                '--package=objdump'],
   },

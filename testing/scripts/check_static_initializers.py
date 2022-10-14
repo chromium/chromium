@@ -23,8 +23,8 @@ _LINUX_SI_FILE_ALLOWLIST = {
     'chrome': [
         'InstrProfilingRuntime.cpp',  # Only in coverage builds, not production.
         'atomicops_internals_x86.cc',  # TODO(crbug.com/973551): Remove.
-        'iostream.cpp:',  # TODO(crbug.com/973554): Remove.
-        '000100',   # libc++ uses init_priority 100 for iostreams.
+        'crtstuff.c',  # Added by libgcc due to USE_EH_FRAME_REGISTRY.
+        'iostream.cpp',  # TODO(crbug.com/973554): Remove.
         'spinlock.cc',  # TODO(crbug.com/973556): Remove.
     ],
     'nacl_helper_bootstrap': [],
@@ -168,32 +168,24 @@ def main_linux(src_dir, is_chromeos):
 
     dump_static_initializers = os.path.join(src_dir, 'tools', 'linux',
                                             'dump-static-initializers.py')
-    stdout = run_process([dump_static_initializers, '-d', binary_name])
-    # The output has the following format:
-    # First lines: '# <file_name> <si_name>'
-    # Last line: '# Found <num> static initializers in <num> files.'
-    #
-    # For example:
-    # # spinlock.cc GetSystemCPUsCount()
-    # # spinlock.cc adaptive_spin_count
-    # # Found 2 static initializers in 1 files.
+    stdout = run_process([dump_static_initializers, '--json', binary_name])
+    entries = json.loads(stdout)['entries']
 
-    files_with_si = set()
-    for line in stdout.splitlines()[:-1]:
-      parts = line.split(' ', 2)
-      assert len(parts) == 3 and parts[0] == '#'
-
-      files_with_si.add(parts[1])
-
-    for f in files_with_si:
-      if f not in allowlist[binary_name]:
+    for e in entries:
+      # Also remove line number suffix.
+      basename = os.path.basename(e['filename']).split(':')[0]
+      if basename not in allowlist[binary_name]:
         ret = 1
         print(('Error: file "%s" is not expected to have static initializers in'
-              ' binary "%s"') % (f, binary_name))
+               ' binary "%s", but found "%s"') % (e['filename'], binary_name,
+                                                  e['symbol_name']))
 
     print('\n# Static initializers in %s:' % binary_name)
-    print(stdout)
+    for e in entries:
+      print('# 0x%x %s %s' % (e['address'], e['filename'], e['symbol_name']))
+      print(e['disassembly'])
 
+    print('Found %d files containing static initializers.' % len(entries))
   return ret
 
 

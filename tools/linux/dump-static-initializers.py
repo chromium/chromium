@@ -3,291 +3,232 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""Dump functions called by static intializers in a Linux Release binary.
+"""Dumps the names, addresses, and disassmebly of static initializers.
 
 Usage example:
   tools/linux/dump-static-intializers.py out/Release/chrome
 
-A brief overview of static initialization:
-1) the compiler writes out, per object file, a function that contains
-   the static intializers for that file.
-2) the compiler also writes out a pointer to that function in a special
-   section.
-3) at link time, the linker concatenates the function pointer sections
-   into a single list of all initializers.
-4) at run time, on startup the binary runs all function pointers.
-
-The functions in (1) all have mangled names of the form
-  _GLOBAL__I_foobar.cc or __cxx_global_var_initN
-using objdump, we can disassemble those functions and dump all symbols that
-they reference.
+For an explanation of static initializers, see: //docs/static_initializers.md.
 """
 
-# Needed so pylint does not complain about print('', end='').
-from __future__ import print_function
-
-import optparse
+import argparse
+import json
 import os
-import re
+import pathlib
 import subprocess
 import sys
 
-# A map of symbol => informative text about it.
-NOTES = {
-  '__cxa_atexit@plt': 'registers a dtor to run at exit',
-  'std::__ioinit': '#includes <iostream>, use <ostream> instead',
-}
+_TOOLCHAIN_PREFIX = str(
+    pathlib.Path(__file__).parents[2] / 'third_party' / 'llvm-build' /
+    'Release+Asserts' / 'bin' / 'llvm-')
 
-# Determine whether this is a git checkout (as opposed to e.g. svn).
-IS_GIT_WORKSPACE = (subprocess.Popen(
-    ['git', 'rev-parse'], stderr=subprocess.PIPE).wait() == 0)
+# It is too slow to dump disassembly for a lot of symbols.
+_MAX_DISASSEMBLY_SYMBOLS = 10
 
 
-class Demangler:
-  """A wrapper around c++filt to provide a function to demangle symbols."""
-
-  def __init__(self, toolchain):
-    # llvm toolchain uses cxx rather than c++.
-    path = toolchain + 'cxxfilt'
-    if not os.path.exists(path):
-      path = toolchain + 'c++filt'
-    if not os.path.exists(path):
-      # Android currently has an issue where the llvm toolchain in the ndk does
-      # not contain c++filt. Hopefully fixed in next NDK update...
-      path = 'c++filt'
-    self.cppfilt = subprocess.Popen([path],
-                                    stdin=subprocess.PIPE,
-                                    stdout=subprocess.PIPE,
-                                    universal_newlines=True)
-
-  def Demangle(self, sym):
-    """Given mangled symbol |sym|, return its demangled form."""
-    self.cppfilt.stdin.write(sym + '\n')
-    self.cppfilt.stdin.flush()
-    return self.cppfilt.stdout.readline().strip()
+def _ParseNm(binary, addresses):
+  # Example output:
+  # 000000000de66bd0 0000000000000026 t _GLOBAL__sub_I_add.cc
+  output = subprocess.check_output(
+      [_TOOLCHAIN_PREFIX + 'nm', '--print-size', binary], encoding='utf8')
+  addresses = set(addresses)
+  ret = {}
+  for line in output.splitlines():
+    parts = line.split()
+    if len(parts) != 4:
+      continue
+    address = int(parts[0], 16)
+    if address in addresses:
+      ret[address] = int(parts[1], 16)
+  return ret
 
 
-# Matches for example: "cert_logger.pb.cc", capturing "cert_logger".
-protobuf_filename_re = re.compile(r'(.*)\.pb\.cc$')
-def QualifyFilenameAsProto(filename):
-  """Attempt to qualify a bare |filename| with a src-relative path, assuming it
-  is a protoc-generated file.  If a single match is found, it is returned.
-  Otherwise the original filename is returned."""
-  if not IS_GIT_WORKSPACE:
-    return filename
-  match = protobuf_filename_re.match(filename)
-  if not match:
-    return filename
-  basename = match.groups(0)
-  cmd = ['git', 'ls-files', '--', '*/%s.proto' % basename]
-  gitlsfiles = subprocess.Popen(cmd,
-                                stdout=subprocess.PIPE,
-                                universal_newlines=True)
-  candidate = filename
-  for line in gitlsfiles.stdout:
-    if candidate != filename:
-      return filename # Multiple hits, can't help.
-    candidate = line.strip()
-  return candidate
+def _Disassemble(binary, start, end):
+  cmd = [
+      _TOOLCHAIN_PREFIX + 'objdump',
+      binary,
+      '--disassemble',
+      '--source',
+      '--demangle',
+      '--start-address=0x%x' % start,
+      '--stop-address=0x%x' % end,
+  ]
+  stdout = subprocess.check_output(cmd, encoding='utf8')
+  all_lines = stdout.splitlines(keepends=True)
+  source_lines = [l for l in all_lines if l.startswith(';')]
+  ret = []
+  if source_lines:
+    ret = ['Showing source lines that appear in the symbol (via objdump).\n']
+  else:
+    ret = [
+        'Symbol missing source lines. Showing raw disassembly (via objdump).\n'
+    ]
+  lines = source_lines or all_lines
+  if len(lines) > 10:
+    ret += ['This might be verbose due to inlined functions.\n']
+  ret += lines
+  return ''.join(ret)
 
 
-# Regex matching the substring of a symbol's demangled text representation most
-# likely to appear in a source file.
-# Example: "v8::internal::Builtins::InitBuiltinFunctionTable()" becomes
-# "InitBuiltinFunctionTable", since the first (optional & non-capturing) group
-# picks up any ::-qualification and the last fragment picks up a suffix that
-# starts with an opener.
-symbol_code_name_re = re.compile(r'^(?:[^(<[]*::)?([^:(<[]*).*?$')
-def QualifyFilename(filename, symbol):
-  """Given a bare filename and a symbol that occurs in it, attempt to qualify
-  it with a src-relative path.  If more than one file matches, return the
-  original filename."""
-  if not IS_GIT_WORKSPACE:
-    return filename
-  match = symbol_code_name_re.match(symbol)
-  if not match:
-    return filename
-  symbol = match.group(1)
-  cmd = ['git', 'grep', '-l', symbol, '--', '*/' + filename]
-  gitgrep = subprocess.Popen(cmd,
-                             stdout=subprocess.PIPE,
-                             universal_newlines=True)
-  candidate = filename
-  for line in gitgrep.stdout:
-    if candidate != filename:  # More than one candidate; return bare filename.
-      return filename
-    candidate = line.strip()
-  return candidate
+def _DumpInitArray(binary):
+  cmd = [_TOOLCHAIN_PREFIX + 'readobj', '--hex-dump=.init_array', binary]
+  output = subprocess.check_output(cmd, encoding='utf8')
+  # Example output:
+  # File: lib.unstripped/libmonochrome_64.so
+  # Format: elf64-littleaarch64
+  # Arch: aarch64
+  # AddressSize: 64bit
+  # LoadName: libmonochrome_64.so
+  # Hex dump of section '.init_array':
+  # 0x091f6198 14f80204 00000000 c0cf3003 00000000 ..........0.....
+  # 0x091f61a8 68c70104 00000000                   h........^F.....
+  is_64_bit = False
+  is_arm = False
+  byte_order = 'little'
+  ret = []
+  for line in output.splitlines():
+    if line.startswith('Format:') and 'big' in line:
+      byte_order = 'big'
+      continue
+    if line == 'Arch: arm':
+      is_arm = True
+      continue
+    if line == 'AddressSize: 64bit':
+      is_64_bit = True
+      continue
+    if not line.startswith('0x'):
+      continue
+    init_array_address = int(line[:10], 16)
+    parts = line[10:-16].split()
+    assert len(parts) <= 4, 'Too many parts: ' + line
+    if is_64_bit:
+      parts = [parts[i] + parts[i + 1] for i in range(0, len(parts), 2)]
+    arrays = (bytearray.fromhex(p) for p in parts)
+    for a in arrays:
+      address = int.from_bytes(a, byteorder=byte_order, signed=False)
+      if is_arm:
+        address = address & ~1  # Adjust for arm thumb addresses being odd.
+      ret.append((init_array_address, address))
+      init_array_address += 8 if is_64_bit else 4
+  return ret
 
 
-# Regex matching nm output for the symbols we're interested in. The two formats
-# we are interested in are _GLOBAL__sub_I_<filename> and _cxx_global_var_initN.
-# See test_ParseNmLine for examples.
-nm_re = re.compile(
-    r'''(\S+)\s(\S+)\st\s                # Symbol start address and size
-        (
-          (?:_ZN12)?_GLOBAL__(?:sub_)?I_ # Pattern with filename
-        |
-          __cxx_global_var_init\d*       # Pattern without filename
-        )(.*)                            # capture the filename''',
-    re.X)
-def ParseNmLine(line):
-  """Parse static initializers from a line of nm output.
-
-  Given a line of nm output, parse static initializers as a
-  (file, start, size, symbol) tuple."""
-  match = nm_re.match(line)
-  if match:
-    addr, size, prefix, filename = match.groups()
-    return (filename, int(addr, 16), int(size, 16), prefix+filename)
-  return None
-
-
-def test_ParseNmLine():
-  """Verify the nm_re regex matches some sample lines."""
-  parse = ParseNmLine(
-    '0000000001919920 0000000000000008 t '
-    '_ZN12_GLOBAL__I_safe_browsing_service.cc')
-  assert parse == ('safe_browsing_service.cc', 26319136, 8,
-                   '_ZN12_GLOBAL__I_safe_browsing_service.cc'), parse
-
-  parse = ParseNmLine(
-    '00000000026b9eb0 0000000000000024 t '
-    '_GLOBAL__sub_I_extension_specifics.pb.cc')
-  assert parse == ('extension_specifics.pb.cc', 40607408, 36,
-                   '_GLOBAL__sub_I_extension_specifics.pb.cc'), parse
-
-  parse = ParseNmLine(
-    '0000000002e75a60 0000000000000016 t __cxx_global_var_init')
-  assert parse == ('', 48716384, 22, '__cxx_global_var_init'), parse
-
-  parse = ParseNmLine(
-    '0000000002e75a60 0000000000000016 t __cxx_global_var_init89')
-  assert parse == ('', 48716384, 22, '__cxx_global_var_init89'), parse
+def _DumpRelativeRelocations(binary):
+  # Example output from: llvm-readobj --relocations chrome
+  # File: chrome
+  # Format: elf64-x86-64
+  # Arch: x86_64
+  # AddressSize: 64bit
+  # LoadName: <Not found>
+  # Relocations [
+  #   Section (10) .rela.dyn {
+  #     0x26C2AD88 R_X86_64_RELATIVE - 0xA6DABE0
+  #     0x26C2AD90 R_X86_64_RELATIVE - 0xA6DC2B0
+  # ...
+  cmd = [_TOOLCHAIN_PREFIX + 'readobj', '--relocations', binary]
+  lines = subprocess.check_output(cmd, encoding='utf8').splitlines()
+  ret = {}
+  for line in lines:
+    if 'RELATIVE' in line:
+      parts = line.split()
+      ret[int(parts[0], 16)] = int(parts[-1], 16)
+  return ret
 
 
-# Just always run the test; it is fast enough.
-test_ParseNmLine()
+def _ResolveRelativeAddresses(binary, address_tuples):
+  relocations_dict = None
+  ret = []
+  for init_address, address in address_tuples:
+    if address == 0:
+      if relocations_dict is None:
+        relocations_dict = _DumpRelativeRelocations(binary)
+      address = relocations_dict.get(init_address)
+      if address is None:
+        raise Exception('Failed to resolve relocation for address: ' +
+                        hex(init_address))
+    ret.append(address)
+  return ret
 
 
-def ParseNm(toolchain, binary):
-  """Yield static initializers for the given binary.
-
-  Given a binary, yield static initializers as (file, start, size, symbol)
-  tuples."""
-  nm = subprocess.Popen([toolchain + 'nm', '-S', binary],
-                        stdout=subprocess.PIPE,
-                        universal_newlines=True)
-  for line in nm.stdout:
-    parse = ParseNmLine(line)
-    if parse:
-      yield parse
-
-
-# Regex matching objdump output for the symbols we're interested in.
-# Example line:
-#     12354ab:  (disassembly, including <FunctionReference>)
-disassembly_re = re.compile(r'^\s+[0-9a-f]+:.*<(\S+)>')
-def ExtractSymbolReferences(toolchain, binary, start, end, symbol):
-  """Given a span of addresses, returns symbol references from disassembly."""
-  cmd = [toolchain + 'objdump', binary, '--disassemble',
-         '--start-address=0x%x' % start, '--stop-address=0x%x' % end]
-  objdump = subprocess.Popen(cmd,
-                             stdout=subprocess.PIPE,
-                             universal_newlines=True)
-
-  refs = set()
-  for line in objdump.stdout:
-    if '__static_initialization_and_destruction' in line:
-      raise RuntimeError('code mentions '
-                         '__static_initialization_and_destruction; '
-                         'did you accidentally run this on a Debug binary?')
-    match = disassembly_re.search(line)
-    if match:
-      (ref,) = match.groups()
-      if ref.startswith('.LC') or ref.startswith('_DYNAMIC'):
-        # Ignore these, they are uninformative.
-        continue
-      if re.match(symbol, ref):
-        # Probably a relative jump within this function.
-        continue
-      refs.add(ref)
-
-  return sorted(refs)
+def _SymbolizeAddresses(binary, addresses):
+  # Example output from: llvm-symbolizer -e chrome \
+  #    --output-style=JSON --functions 0x3323430 0x403a768 0x5489b98
+  # [{"Address":"0xa6afdd0","ModuleName":"chrome","Symbol":[...]}, ...]
+  # Where Symbol = {"Column":24,"Discriminator":0,"FileName":"...",
+  #    "FunctionName":"MaybeStartBackgroundThread","Line":85,
+  #    "StartAddress":"0xa6afdd0","StartFileName":"","StartLine":0}
+  ret = {}
+  if not addresses:
+    return ret
+  cmd = [
+      _TOOLCHAIN_PREFIX + 'symbolizer', '-e', binary, '--functions',
+      '--output-style=JSON'
+  ] + [hex(a) for a in addresses]
+  output = subprocess.check_output(cmd, encoding='utf8')
+  for main_entry in json.loads(output):
+    # Multiple symbol entries can exist due to inlining. Last entry is the
+    # outer-most symbol.
+    symbols = main_entry['Symbol']
+    name_entry = symbols[-1]
+    # Take the last entry that has a line number as the best filename.
+    file_entry = next((x for x in symbols[::-1] if x['Line'] != 0), name_entry)
+    address = int(main_entry['Address'], 16)
+    filename = file_entry['FileName']
+    line = file_entry['Line']
+    if line:
+      filename += f':{line}'
+    ret[address] = (filename, name_entry['FunctionName'])
+  return ret
 
 
 def main():
-  parser = optparse.OptionParser(usage='%prog [option] filename')
-  parser.add_option('-d', '--diffable', dest='diffable',
-                    action='store_true', default=False,
-                    help='Prints the filename on each line, for more easily '
-                         'diff-able output. (Used by sizes.py)')
-  parser.add_option('-t', '--toolchain-prefix', dest='toolchain',
-                    action='store', default='',
-                    help='Toolchain prefix to append to all tool invocations '
-                         '(nm, objdump).')
-  opts, args = parser.parse_args()
-  if len(args) != 1:
-    parser.error('missing filename argument')
-    return 1
-  binary = args[0]
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--json',
+                      action='store_true',
+                      help='Output in JSON format')
+  parser.add_argument('binary', help='The non-stripped binary to analyze.')
+  args = parser.parse_args()
 
-  demangler = Demangler(opts.toolchain)
-  file_count = 0
-  initializer_count = 0
+  address_tuples = _DumpInitArray(args.binary)
+  addresses = _ResolveRelativeAddresses(args.binary, address_tuples)
+  symbolized_by_address = _SymbolizeAddresses(args.binary, addresses)
 
-  files = ParseNm(opts.toolchain, binary)
-  if opts.diffable:
-    files = sorted(files)
-  for filename, addr, size, symbol in files:
-    file_count += 1
-    ref_output = []
+  skip_disassembly = len(addresses) > _MAX_DISASSEMBLY_SYMBOLS
+  if skip_disassembly:
+    sys.stderr.write('Not collection disassembly due to the large number of '
+                     'results.\n')
+  else:
+    size_by_address = _ParseNm(args.binary, addresses)
 
-    qualified_filename = QualifyFilenameAsProto(filename)
-
-    if size == 2:
-      # gcc generates a two-byte 'repz retq' initializer when there is a
-      # ctor even when the ctor is empty.  This is fixed in gcc 4.6, but
-      # Android uses gcc 4.4.
-      ref_output.append('[empty ctor, but it still has cost on gcc <4.6]')
+  entries = []
+  for address in addresses:
+    filename, symbol_name = symbolized_by_address[address]
+    if skip_disassembly:
+      disassembly = ''
     else:
-      for ref in ExtractSymbolReferences(opts.toolchain, binary, addr,
-                                         addr+size, symbol):
-        initializer_count += 1
-
-        ref = demangler.Demangle(ref)
-        if qualified_filename == filename:
-          qualified_filename = QualifyFilename(filename, ref)
-
-        note = ''
-        if ref in NOTES:
-          note = NOTES[ref]
-        elif ref.endswith('_2eproto()'):
-          note = 'protocol compiler bug: crbug.com/105626'
-
-        if note:
-          ref_output.append('%s [%s]' % (ref, note))
-        else:
-          ref_output.append(ref)
-
-    if opts.diffable:
-      if ref_output:
-        print('\n'.join(
-            '# ' + qualified_filename + ' ' + r for r in ref_output))
+      size = size_by_address.get(address, 0)
+      if size == 0:
+        disassembly = ('Not showing disassembly because of unknown symbol size '
+                       '(assembly symbols sometimes omit size).\n')
       else:
-        print('# %s: (empty initializer list)' % qualified_filename)
-    else:
-      print('%s (initializer offset 0x%x size 0x%x)' % (qualified_filename,
-                                                        addr, size))
-      print(''.join('  %s\n' % r for r in ref_output))
+        disassembly = _Disassemble(args.binary, address, address + size)
+    entries.append({
+        'address': address,
+        'disassembly': disassembly,
+        'filename': filename,
+        'symbol_name': symbol_name,
+    })
 
-  if opts.diffable:
-    print('#', end=' ')
-  print('Found %d static initializers in %d files.' % (initializer_count,
-                                                       file_count))
+  if args.json:
+    print(json.dumps({'entries': entries}))
+    return
 
-  return 0
+  for e in entries:
+    print(f'# 0x{e["address"]:x} {e["filename"]} {e["symbol_name"]}')
+    print(e['disassembly'])
+
+  print(f'Found {len(entries)} files containing static initializers.')
 
 
 if '__main__' == __name__:
-  sys.exit(main())
+  main()

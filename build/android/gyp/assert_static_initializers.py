@@ -41,24 +41,14 @@ def _VerifyLibBuildIdsMatch(tool_prefix, *so_files):
                     'Your output directory is likely stale.')
 
 
-def _GetStaticInitializers(so_path, tool_prefix):
-  output = subprocess.check_output(
-      [_DUMP_STATIC_INITIALIZERS_PATH, '-d', so_path, '-t', tool_prefix],
-      encoding='utf-8')
-  summary = re.search(r'Found \d+ static initializers in (\d+) files.', output)
-  return output.splitlines()[:-1], int(summary.group(1))
-
-
-def _PrintDumpSIsCount(apk_so_name, unzipped_so, out_dir, tool_prefix):
+def _DumpStaticInitializers(apk_so_name, unzipped_so, out_dir, tool_prefix):
   lib_name = os.path.basename(apk_so_name).replace('crazy.', '')
   so_with_symbols_path = os.path.join(out_dir, 'lib.unstripped', lib_name)
   if not os.path.exists(so_with_symbols_path):
     raise Exception('Unstripped .so not found. Looked here: %s' %
                     so_with_symbols_path)
   _VerifyLibBuildIdsMatch(tool_prefix, unzipped_so, so_with_symbols_path)
-  sis, _ = _GetStaticInitializers(so_with_symbols_path, tool_prefix)
-  for si in sis:
-    print(si)
+  subprocess.check_call([_DUMP_STATIC_INITIALIZERS_PATH, so_with_symbols_path])
 
 
 def _ReadInitArray(so_path, tool_prefix, expect_no_initializers):
@@ -126,10 +116,7 @@ def _AnalyzeStaticInitializers(apk_or_aab, tool_prefix, dump_sis, out_dir,
         si_count += _CountStaticInitializers(temp.name, tool_prefix,
                                              expect_no_initializers)
         if dump_sis:
-          # Print count and list of SIs reported by dump-static-initializers.py.
-          # Doesn't work well on all archs (particularly arm), which is why
-          # the readelf method is used for tracking SI counts.
-          _PrintDumpSIsCount(f.filename, temp.name, out_dir, tool_prefix)
+          _DumpStaticInitializers(f.filename, temp.name, out_dir, tool_prefix)
   return si_count
 
 
