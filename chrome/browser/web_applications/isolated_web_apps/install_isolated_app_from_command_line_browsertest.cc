@@ -76,5 +76,6 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedAppFromCommandLineBrowserTest,
   const WebApp* web_app = GetWebAppRegistrar().GetAppById(app_id);
   EXPECT_THAT(web_app->isolation_data().has_value(), IsTrue());
 }
+
 }  // namespace
 }  // namespace web_app

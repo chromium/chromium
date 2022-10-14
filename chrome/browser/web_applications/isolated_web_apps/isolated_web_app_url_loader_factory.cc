@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/isolation_data.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/url_constants.h"
@@ -140,6 +141,7 @@ void LogErrorMessageToConsole(int frame_tree_node_id,
     LOG(ERROR) << error_message;
     return;
   }
+
   web_contents->ForEachRenderFrameHostWithAction(
       [frame_tree_node_id,
        &error_message](content::RenderFrameHost* render_frame_host) {
@@ -194,8 +196,8 @@ class IsolatedWebAppURLLoader : public network::mojom::URLLoader {
 
   IsolatedWebAppURLLoader(const IsolatedWebAppURLLoader&) = delete;
   IsolatedWebAppURLLoader& operator=(const IsolatedWebAppURLLoader&) = delete;
-
-  ~IsolatedWebAppURLLoader() override = default;
+  IsolatedWebAppURLLoader(IsolatedWebAppURLLoader&&) = delete;
+  IsolatedWebAppURLLoader& operator=(IsolatedWebAppURLLoader&&) = delete;
 
  private:
   void OnResponseRead(
@@ -348,63 +350,79 @@ void IsolatedWebAppURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
+  auto forward_request_to_isolation_data_content =
+      [&](const IsolationData& isolation_data) {
+        if (!IsSupportedHttpMethod(resource_request.method)) {
+          CompleteWithGeneratedHtmlResponse(
+              mojo::Remote<network::mojom::URLLoaderClient>(
+                  std::move(loader_client)),
+              net::HTTP_METHOD_NOT_ALLOWED, /*body=*/absl::nullopt);
+          return;
+        }
+
+        absl::visit(
+            base::Overloaded{
+                [&](const IsolationData::InstalledBundle& content) {
+                  auto* isolated_web_app_reader_registry =
+                      IsolatedWebAppReaderRegistryFactory::GetForProfile(
+                          profile_);
+                  if (!isolated_web_app_reader_registry) {
+                    LogErrorAndFail(
+                        "Support for Isolated Web Apps is not enabled.",
+                        std::move(loader_client));
+                    return;
+                  }
+                  mojo::MakeSelfOwnedReceiver(
+                      std::make_unique<IsolatedWebAppURLLoader>(
+                          isolated_web_app_reader_registry, content.path,
+                          *web_bundle_id, std::move(loader_client),
+                          resource_request, frame_tree_node_id_),
+                      mojo::PendingReceiver<network::mojom::URLLoader>(
+                          std::move(loader_receiver)));
+                },
+                [&](const IsolationData::DevModeBundle& content) {
+                  // TODO: Implement dev mode bundles.
+                  CompleteWithGeneratedHtmlResponse(
+                      mojo::Remote<network::mojom::URLLoaderClient>(
+                          std::move(loader_client)),
+                      net::HTTP_NOT_FOUND, /*body=*/absl::nullopt);
+                },
+                [&](const IsolationData::DevModeProxy& content) {
+                  HandleDevModeProxy(*url_info, content,
+                                     std::move(loader_receiver),
+                                     resource_request, std::move(loader_client),
+                                     traffic_annotation);
+                }},
+            isolation_data.content);
+      };
+
+  absl::optional<IsolationData> pending_install_isolation_data =
+      IsolatedWebAppPendingInstallInfo::FromWebContents(
+          *content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_))
+          .isolation_data();
+  if (pending_install_isolation_data.has_value()) {
+    if (resource_request.url.path() == kInstallPagePath &&
+        IsSupportedHttpMethod(resource_request.method)) {
+      CompleteWithGeneratedHtmlResponse(
+          mojo::Remote<network::mojom::URLLoaderClient>(
+              std::move(loader_client)),
+          net::HTTP_OK, kInstallPageContent);
+      return;
+    }
+
+    forward_request_to_isolation_data_content(*pending_install_isolation_data);
+    return;
+  }
+
   base::expected<std::reference_wrapper<const WebApp>, std::string> iwa =
       FindIsolatedWebApp(profile_, *url_info);
+
   if (!iwa.has_value()) {
     LogErrorAndFail(iwa.error(), std::move(loader_client));
     return;
   }
 
-  if (!IsSupportedHttpMethod(resource_request.method)) {
-    CompleteWithGeneratedHtmlResponse(
-        mojo::Remote<network::mojom::URLLoaderClient>(std::move(loader_client)),
-        net::HTTP_METHOD_NOT_ALLOWED, /*body=*/absl::nullopt);
-    return;
-  }
-
-  // TODO(crbug.com/1333966): Check that the app is being installed before
-  // returning the auto-generated installation page.
-  if (resource_request.url.path() == kInstallPagePath) {
-    CompleteWithGeneratedHtmlResponse(
-        mojo::Remote<network::mojom::URLLoaderClient>(std::move(loader_client)),
-        net::HTTP_OK, kInstallPageContent);
-    return;
-  }
-
-  IsolationData isolation_data = iwa->get().isolation_data().value();
-  absl::visit(
-      base::Overloaded{
-          [&](const IsolationData::InstalledBundle& content) {
-            auto* isolated_web_app_reader_registry =
-                IsolatedWebAppReaderRegistryFactory::GetForProfile(profile_);
-            if (!isolated_web_app_reader_registry) {
-              LogErrorAndFail("Support for Isolated Web Apps is not enabled.",
-                              std::move(loader_client));
-              return;
-            }
-
-            auto loader = std::make_unique<IsolatedWebAppURLLoader>(
-                isolated_web_app_reader_registry, content.path, *web_bundle_id,
-                std::move(loader_client), resource_request,
-                frame_tree_node_id_);
-            mojo::MakeSelfOwnedReceiver(
-                std::move(std::move(loader)),
-                mojo::PendingReceiver<network::mojom::URLLoader>(
-                    std::move(loader_receiver)));
-          },
-          [&loader_client](const IsolationData::DevModeBundle& content) {
-            // TODO: Implement dev mode bundles.
-            CompleteWithGeneratedHtmlResponse(
-                mojo::Remote<network::mojom::URLLoaderClient>(
-                    std::move(loader_client)),
-                net::HTTP_NOT_FOUND, /*body=*/absl::nullopt);
-          },
-          [&](const IsolationData::DevModeProxy& content) {
-            HandleDevModeProxy(*url_info, content, std::move(loader_receiver),
-                               resource_request, std::move(loader_client),
-                               traffic_annotation);
-          }},
-      isolation_data.content);
+  forward_request_to_isolation_data_content(*iwa->get().isolation_data());
 }
 
 void IsolatedWebAppURLLoaderFactory::OnProfileWillBeDestroyed(
@@ -439,19 +457,20 @@ void IsolatedWebAppURLLoaderFactory::HandleDevModeProxy(
   network::ResourceRequest proxy_request(resource_request);
   proxy_request.url = proxy_url;
 
-  content::StoragePartition* iwa_partition = profile_->GetStoragePartition(
+  content::StoragePartition* storage_partition = profile_->GetStoragePartition(
       url_info.storage_partition_config(profile_), /*can_create=*/false);
-  if (iwa_partition == nullptr) {
+  if (storage_partition == nullptr) {
     LogErrorAndFail(base::StrCat({"Storage not found for Isolated Web App: ",
                                   resource_request.url.spec()}),
                     std::move(loader_client));
     return;
   }
 
-  iwa_partition->GetURLLoaderFactoryForBrowserProcess()->CreateLoaderAndStart(
-      std::move(loader_receiver),
-      /*request_id=*/0, network::mojom::kURLLoadOptionNone, proxy_request,
-      std::move(loader_client), traffic_annotation);
+  storage_partition->GetURLLoaderFactoryForBrowserProcess()
+      ->CreateLoaderAndStart(std::move(loader_receiver),
+                             /*request_id=*/0,
+                             network::mojom::kURLLoadOptionNone, proxy_request,
+                             std::move(loader_client), traffic_annotation);
 }
 
 void IsolatedWebAppURLLoaderFactory::LogErrorAndFail(
