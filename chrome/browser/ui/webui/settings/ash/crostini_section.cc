@@ -32,14 +32,22 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kBruschettaDetailsSubpagePath;
+using ::chromeos::settings::mojom::kBruschettaUsbPreferencesSubpagePath;
+using ::chromeos::settings::mojom::kCrostiniBackupAndRestoreSubpagePath;
+using ::chromeos::settings::mojom::kCrostiniDetailsSubpagePath;
+using ::chromeos::settings::mojom::kCrostiniDevelopAndroidAppsSubpagePath;
+using ::chromeos::settings::mojom::kCrostiniExtraContainersSubpagePath;
+using ::chromeos::settings::mojom::kCrostiniManageSharedFoldersSubpagePath;
+using ::chromeos::settings::mojom::kCrostiniPortForwardingSubpagePath;
+using ::chromeos::settings::mojom::kCrostiniSectionPath;
+using ::chromeos::settings::mojom::kCrostiniUsbPreferencesSubpagePath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -393,8 +401,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCrostiniBullseyeUpgrade)) {
+  if (base::FeatureList::IsEnabled(features::kCrostiniBullseyeUpgrade)) {
     html_source->AddString(
         "crostiniContainerUpgrade",
         l10n_util::GetStringUTF16(
@@ -484,7 +491,7 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("showCrostiniExtraContainers",
                           IsMultiContainerAllowed());
   html_source->AddBoolean("isOwnerProfile",
-                          chromeos::ProfileHelper::IsOwnerProfile(profile_));
+                          ProfileHelper::IsOwnerProfile(profile_));
   html_source->AddBoolean("isEnterpriseManaged",
                           IsDeviceManaged() || IsProfileManaged(profile_));
   html_source->AddBoolean("showCrostiniContainerUpgrade",
@@ -665,5 +672,4 @@ void CrostiniSection::UpdateSearchTags() {
   // TODO(crbug:1261319): search concepts for extras containers.
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

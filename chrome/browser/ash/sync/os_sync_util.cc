@@ -36,8 +36,7 @@ bool MaybeMigratePreferencesForSyncSettingsCategorization(PrefService* prefs) {
     // app).
     bool sync_wallpaper =
         sync_apps && prefs->GetBoolean(syncer::prefs::kSyncThemes);
-    prefs->SetBoolean(chromeos::settings::prefs::kSyncOsWallpaper,
-                      sync_wallpaper);
+    prefs->SetBoolean(ash::settings::prefs::kSyncOsWallpaper, sync_wallpaper);
     prefs->SetBoolean(syncer::prefs::kOsSyncPrefsMigrated, true);
     migrated_this_time = true;
   }

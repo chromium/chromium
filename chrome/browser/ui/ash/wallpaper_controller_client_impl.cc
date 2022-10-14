@@ -535,7 +535,7 @@ bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
   syncer::SyncUserSettings* user_settings = sync_service->GetUserSettings();
   return user_settings->IsSyncAllOsTypesEnabled() ||
          profile->GetPrefs()->GetBoolean(
-             chromeos::settings::prefs::kSyncOsWallpaper);
+             ash::settings::prefs::kSyncOsWallpaper);
 }
 
 void WallpaperControllerClientImpl::OnVolumeMounted(

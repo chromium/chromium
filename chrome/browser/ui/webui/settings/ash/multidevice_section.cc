@@ -39,24 +39,23 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath;
+using ::chromeos::settings::mojom::kMultiDeviceSectionPath;
+using ::chromeos::settings::mojom::kNearbyShareSubpagePath;
+using ::chromeos::settings::mojom::kSmartLockSubpagePath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
 
-using Feature = ::ash::multidevice_setup::mojom::Feature;
-using FeatureState = ::ash::multidevice_setup::mojom::FeatureState;
-using HostStatus = ::ash::multidevice_setup::mojom::HostStatus;
-
-// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
-namespace phonehub = ::ash::phonehub;
+using Feature = multidevice_setup::mojom::Feature;
+using FeatureState = multidevice_setup::mojom::FeatureState;
+using HostStatus = multidevice_setup::mojom::HostStatus;
 
 const std::vector<SearchConcept>& GetMultiDeviceOptedInSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags(
@@ -324,7 +323,7 @@ MultiDeviceSection::MultiDeviceSection(
     phonehub::PhoneHubManager* phone_hub_manager,
     android_sms::AndroidSmsService* android_sms_service,
     PrefService* pref_service,
-    ash::eche_app::EcheAppManager* eche_app_manager)
+    eche_app::EcheAppManager* eche_app_manager)
     : OsSettingsSection(profile, search_tag_registry),
       multidevice_setup_client_(multidevice_setup_client),
       phone_hub_manager_(phone_hub_manager),
@@ -347,7 +346,7 @@ MultiDeviceSection::MultiDeviceSection(
   if (features::IsEcheSWAEnabled()) {
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
-        ash::prefs::kEnableAutoScreenLock,
+        prefs::kEnableAutoScreenLock,
         base::BindRepeating(&MultiDeviceSection::OnEnableScreenLockChanged,
                             base::Unretained(this)));
     pref_change_registrar_.Add(
@@ -511,10 +510,9 @@ void MultiDeviceSection::AddLoadTimeData(
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean(
-      "multideviceAllowedByPolicy",
-      chromeos::multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(
-          profile()->GetPrefs()));
+  html_source->AddBoolean("multideviceAllowedByPolicy",
+                          multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(
+                              profile()->GetPrefs()));
   html_source->AddString(
       "multideviceNotificationAccessSetupScreenLockTitle",
       ui::SubstituteChromeOSDeviceType(
@@ -889,5 +887,4 @@ void MultiDeviceSection::OnScreenLockStatusChanged() {
   }
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

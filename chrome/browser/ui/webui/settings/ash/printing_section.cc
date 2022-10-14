@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/settings/ash/cups_printers_handler.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -16,14 +17,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kPrintingDetailsSubpagePath;
+using ::chromeos::settings::mojom::kPrintingSectionPath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -323,8 +324,9 @@ void PrintingSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                             kPrintingDetailsSettings, generator);
 }
 
-void PrintingSection::OnPrintersChanged(PrinterClass printer_class,
-                                        const std::vector<Printer>& printers) {
+void PrintingSection::OnPrintersChanged(
+    chromeos::PrinterClass printer_class,
+    const std::vector<chromeos::Printer>& printers) {
   UpdateSavedPrintersSearchTags();
 }
 
@@ -333,12 +335,11 @@ void PrintingSection::UpdateSavedPrintersSearchTags() {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetSavedPrintersSearchConcepts());
 
-  std::vector<Printer> saved_printers =
-      printers_manager_->GetPrinters(PrinterClass::kSaved);
+  std::vector<chromeos::Printer> saved_printers =
+      printers_manager_->GetPrinters(chromeos::PrinterClass::kSaved);
   if (!saved_printers.empty()) {
     updater.AddSearchTags(GetSavedPrintersSearchConcepts());
   }
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

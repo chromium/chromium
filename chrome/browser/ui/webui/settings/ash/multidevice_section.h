@@ -5,17 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_MULTIDEVICE_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_MULTIDEVICE_SECTION_H_
 
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "ash/components/phonehub/phone_hub_manager.h"
 #include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chrome/browser/ash/android_sms/android_sms_service.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
+#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -24,8 +18,19 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
+
+namespace android_sms {
+class AndroidSmsService;
+}
+
+namespace phonehub {
+class PhoneHubManager;
+}
+
 namespace settings {
+
+class SearchTagRegistry;
 
 // Provides UI strings and search tags for MultiDevice settings. Different
 // search tags are registered depending on whether MultiDevice features are
@@ -42,7 +47,7 @@ class MultiDeviceSection
       phonehub::PhoneHubManager* phone_hub_manager,
       android_sms::AndroidSmsService* android_sms_service,
       PrefService* pref_service,
-      ash::eche_app::EcheAppManager* eche_app_manager);
+      eche_app::EcheAppManager* eche_app_manager);
   ~MultiDeviceSection() override;
 
  private:
@@ -51,10 +56,11 @@ class MultiDeviceSection
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
-  mojom::Section GetSection() const override;
-  ash::settings::mojom::SearchResultIcon GetSectionIcon() const override;
+  chromeos::settings::mojom::Section GetSection() const override;
+  mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
-  bool LogMetric(mojom::Setting setting, base::Value& value) const override;
+  bool LogMetric(chromeos::settings::mojom::Setting setting,
+                 base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   // multidevice_setup::MultiDeviceSetupClient::Observer:
@@ -71,7 +77,7 @@ class MultiDeviceSection
   // Phone screen lock status pref change observer.
   void OnScreenLockStatusChanged();
 
-  bool IsFeatureSupported(ash::multidevice_setup::mojom::Feature feature);
+  bool IsFeatureSupported(multidevice_setup::mojom::Feature feature);
   void RefreshNearbyBackgroundScanningShareSearchConcepts();
 
   // nearby_share::mojom::NearbyShareSettingsObserver:
@@ -95,16 +101,11 @@ class MultiDeviceSection
   android_sms::AndroidSmsService* android_sms_service_;
   PrefService* pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
-  ash::eche_app::EcheAppManager* eche_app_manager_;
+  eche_app::EcheAppManager* eche_app_manager_;
   content::WebUIDataSource* html_source_;
 };
 
 }  // namespace settings
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings {
-using ::chromeos::settings::MultiDeviceSection;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_MULTIDEVICE_SECTION_H_

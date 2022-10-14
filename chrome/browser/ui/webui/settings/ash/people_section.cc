@@ -62,19 +62,20 @@
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kMyAccountsSubpagePath;
+using ::chromeos::settings::mojom::kPeopleSectionPath;
+using ::chromeos::settings::mojom::kSyncDeprecatedAdvancedSubpagePath;
+using ::chromeos::settings::mojom::kSyncSetupSubpagePath;
+using ::chromeos::settings::mojom::kSyncSubpagePath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
-
-using ::ash::IsAccountManagerAvailable;
 
 const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
@@ -192,7 +193,7 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+  if (AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
     html_source->AddString("accountListDescription",
                            l10n_util::GetStringFUTF16(
                                IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION_V2,
@@ -227,7 +228,7 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
                           crosapi::browser_util::IsLacrosEnabled());
   html_source->AddBoolean(
       "arcAccountRestrictionsEnabled",
-      ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+      AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
 }
 
 void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
@@ -285,7 +286,7 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("quickUnlockEnabled", quick_unlock::IsPinEnabled());
   html_source->AddBoolean("quickUnlockPinAutosubmitFeatureEnabled",
-                          chromeos::features::IsPinAutosubmitFeatureEnabled());
+                          ash::features::IsPinAutosubmitFeatureEnabled());
   html_source->AddBoolean("quickUnlockDisabledByPolicy",
                           quick_unlock::IsPinDisabledByPolicy(
                               pref_service, quick_unlock::Purpose::kAny));
@@ -561,7 +562,7 @@ PeopleSection::PeopleSection(Profile* profile,
     DCHECK(account_manager_facade_);
     account_manager_facade_observation_.Observe(account_manager_facade_);
     account_apps_availability_ =
-        ash::AccountAppsAvailabilityFactory::GetForProfile(profile);
+        AccountAppsAvailabilityFactory::GetForProfile(profile);
     FetchAccounts();
   }
 
@@ -809,5 +810,4 @@ bool PeopleSection::AreFingerprintSettingsAllowed() {
                                             quick_unlock::Purpose::kAny);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

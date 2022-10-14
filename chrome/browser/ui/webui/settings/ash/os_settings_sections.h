@@ -84,4 +84,9 @@ class OsSettingsSections {
 }  // namespace settings
 }  // namespace ash
 
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::OsSettingsSections;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_SECTIONS_H_

@@ -43,14 +43,22 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kAccessibilitySectionPath;
+using ::chromeos::settings::mojom::kAudioAndCaptionsSubpagePath;
+using ::chromeos::settings::mojom::kCaptionsSubpagePath;
+using ::chromeos::settings::mojom::kCursorAndTouchpadSubpagePath;
+using ::chromeos::settings::mojom::kDisplayAndMagnificationSubpagePath;
+using ::chromeos::settings::mojom::kKeyboardAndTextInputSubpagePath;
+using ::chromeos::settings::mojom::kManageAccessibilitySubpagePath;
+using ::chromeos::settings::mojom::kSwitchAccessOptionsSubpagePath;
+using ::chromeos::settings::mojom::kTextToSpeechPagePath;
+using ::chromeos::settings::mojom::kTextToSpeechSubpagePath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -471,8 +479,8 @@ bool IsSwitchAccessTextAllowed() {
 }
 
 bool AreTabletNavigationButtonsAllowed() {
-  return ash::features::IsHideShelfControlsInTabletModeEnabled() &&
-         ash::TabletMode::IsBoardTypeMarkedAsTabletCapable();
+  return features::IsHideShelfControlsInTabletModeEnabled() &&
+         TabletMode::IsBoardTypeMarkedAsTabletCapable();
 }
 
 }  // namespace
@@ -491,15 +499,15 @@ AccessibilitySection::AccessibilitySection(
 
   pref_change_registrar_.Init(pref_service_);
   pref_change_registrar_.Add(
-      ash::prefs::kAccessibilitySwitchAccessEnabled,
+      prefs::kAccessibilitySwitchAccessEnabled,
       base::BindRepeating(&AccessibilitySection::UpdateSearchTags,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      ash::prefs::kAccessibilitySwitchAccessAutoScanEnabled,
+      prefs::kAccessibilitySwitchAccessAutoScanEnabled,
       base::BindRepeating(&AccessibilitySection::UpdateSearchTags,
                           base::Unretained(this)));
   pref_change_registrar_.Add(
-      ash::prefs::kAccessibilityScreenMagnifierEnabled,
+      prefs::kAccessibilityScreenMagnifierEnabled,
       base::BindRepeating(&AccessibilitySection::UpdateSearchTags,
                           base::Unretained(this)));
 
@@ -984,7 +992,7 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
       base::UmaHistogramEnumeration(
           "ChromeOS.Settings.Accessibility."
           "FullscreenMagnifierMouseFollowingMode",
-          static_cast<ash::MagnifierMouseFollowingMode>(value.GetInt()));
+          static_cast<MagnifierMouseFollowingMode>(value.GetInt()));
       return true;
 
     default:
@@ -1163,8 +1171,7 @@ void AccessibilitySection::UpdateSearchTags() {
     updater.RemoveSearchTags(GetA11yLiveCaptionSearchConcepts());
   }
 
-  if (pref_service_->GetBoolean(
-          ash::prefs::kAccessibilityScreenMagnifierEnabled)) {
+  if (pref_service_->GetBoolean(prefs::kAccessibilityScreenMagnifierEnabled)) {
     updater.AddSearchTags(
         GetA11yFullscreenMagnifierFocusFollowingSearchConcepts());
   } else {
@@ -1176,8 +1183,7 @@ void AccessibilitySection::UpdateSearchTags() {
     updater.AddSearchTags(GetA11yVisibilitySearchConcepts());
   }
 
-  if (!pref_service_->GetBoolean(
-          ash::prefs::kAccessibilitySwitchAccessEnabled)) {
+  if (!pref_service_->GetBoolean(prefs::kAccessibilitySwitchAccessEnabled)) {
     return;
   }
 
@@ -1185,10 +1191,9 @@ void AccessibilitySection::UpdateSearchTags() {
 
   if (IsSwitchAccessTextAllowed() &&
       pref_service_->GetBoolean(
-          ash::prefs::kAccessibilitySwitchAccessAutoScanEnabled)) {
+          prefs::kAccessibilitySwitchAccessAutoScanEnabled)) {
     updater.AddSearchTags(GetA11ySwitchAccessKeyboardSearchConcepts());
   }
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

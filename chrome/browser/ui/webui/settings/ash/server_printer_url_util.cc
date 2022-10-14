@@ -25,8 +25,7 @@ GURL UpdateServerPrinterGURL(const GURL& gurl,
 
 }  // namespace
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 bool HasValidServerPrinterScheme(const GURL& gurl) {
   return gurl.SchemeIsHTTPOrHTTPS() || gurl.SchemeIs("ipp") ||
@@ -69,5 +68,4 @@ absl::optional<GURL> GenerateServerPrinterUrlWithValidScheme(
   return gurl->IsStandard() ? gurl : absl::nullopt;
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

@@ -9,7 +9,7 @@
 
 #include "base/notreached.h"
 
-namespace chromeos::settings {
+namespace ash::settings {
 
 int64_t RoundByteSize(int64_t bytes) {
   if (bytes < 0) {
@@ -36,4 +36,4 @@ int64_t RoundByteSize(int64_t bytes) {
   return bytes;
 }
 
-}  // namespace chromeos::settings
+}  // namespace ash::settings

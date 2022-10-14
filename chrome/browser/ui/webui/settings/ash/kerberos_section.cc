@@ -12,14 +12,14 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kKerberosAccountsV2SubpagePath;
+using ::chromeos::settings::mojom::kKerberosSectionPath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -174,5 +174,4 @@ void KerberosSection::UpdateKerberosSearchConcepts() {
   }
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-namespace chromeos::settings {
+namespace ash::settings {
 
 // Round |bytes| to the next power of 2, where the next power of 2 is greater
 // than or equal to |bytes|.
@@ -15,11 +15,6 @@ namespace chromeos::settings {
 // RoundByteSize(4) will return 4.
 int64_t RoundByteSize(int64_t bytes);
 
-}  // namespace chromeos::settings
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings {
-using ::chromeos::settings::RoundByteSize;
-}
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_STORAGE_UTIL_H_

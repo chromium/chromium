@@ -7,8 +7,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/tts_controller.h"
 #include "extensions/browser/extension_registry.h"
@@ -20,8 +18,9 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
+
+class SearchTagRegistry;
 
 // Provides UI strings and search tags for Accessibility settings.
 class AccessibilitySection : public OsSettingsSection,
@@ -38,10 +37,11 @@ class AccessibilitySection : public OsSettingsSection,
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
-  mojom::Section GetSection() const override;
-  ash::settings::mojom::SearchResultIcon GetSectionIcon() const override;
+  chromeos::settings::mojom::Section GetSection() const override;
+  mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
-  bool LogMetric(mojom::Setting setting, base::Value& value) const override;
+  bool LogMetric(chromeos::settings::mojom::Setting setting,
+                 base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   // content::VoicesChangedDelegate:
@@ -63,12 +63,6 @@ class AccessibilitySection : public OsSettingsSection,
   extensions::ExtensionRegistry* extension_registry_ = nullptr;
 };
 
-}  // namespace settings
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings {
-using ::chromeos::settings::AccessibilitySection;
-}
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_ACCESSIBILITY_SECTION_H_

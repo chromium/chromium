@@ -18,14 +18,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kFilesSectionPath;
+using ::chromeos::settings::mojom::kNetworkFileSharesSubpagePath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -102,7 +102,7 @@ void FilesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                          GetHelpUrlWithBoard(chrome::kSmbSharesLearnMoreURL));
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile());
+      ProfileHelper::Get()->GetUserByProfile(profile());
   html_source->AddBoolean("isActiveDirectoryUser",
                           user && user->IsActiveDirectoryUser());
 }
@@ -143,5 +143,4 @@ void FilesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       mojom::kNetworkFileSharesSubpagePath);
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

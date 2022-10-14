@@ -93,4 +93,9 @@ GetActivityControlConsentSettingType(const SettingZippyList& setting_zippys);
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::IsHotwordDspAvailable;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_ASSISTANT_OPTIN_ASSISTANT_OPTIN_UTILS_H_

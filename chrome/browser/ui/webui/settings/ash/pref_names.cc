@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/pref_names.h"
 
-namespace chromeos {
-namespace settings {
-namespace prefs {
+namespace ash::settings::prefs {
 
 // Boolean specifying whether OS wallpaper sync is enabled. This is stored
 // separately from the other OS sync preferences because it's an edge case;
@@ -19,6 +17,4 @@ namespace prefs {
 // TODO(https://crbug.com/1318106): Create a helper method that checks both.
 const char kSyncOsWallpaper[] = "sync.os_wallpaper";
 
-}  // namespace prefs
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings::prefs

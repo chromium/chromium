@@ -10,8 +10,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -23,8 +21,9 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
+
+class SearchTagRegistry;
 
 class InternetSection : public OsSettingsSection,
                         public network_config::CrosNetworkConfigObserver {
@@ -37,31 +36,35 @@ class InternetSection : public OsSettingsSection,
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
-  mojom::Section GetSection() const override;
-  ash::settings::mojom::SearchResultIcon GetSectionIcon() const override;
+  chromeos::settings::mojom::Section GetSection() const override;
+  mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
-  bool LogMetric(mojom::Setting setting, base::Value& value) const override;
+  bool LogMetric(chromeos::settings::mojom::Setting setting,
+                 base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
   std::string ModifySearchResultUrl(
-      ash::settings::mojom::SearchResultType type,
+      mojom::SearchResultType type,
       OsSettingsIdentifier id,
       const std::string& url_to_modify) const override;
 
   // network_config::CrosNetworkConfigObserver:
   void OnActiveNetworksChanged(
-      std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks)
-      override;
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          networks) override;
   void OnDeviceStateListChanged() override;
 
   void FetchDeviceList();
-  void OnGlobalPolicy(network_config::mojom::GlobalPolicyPtr global_policy);
+  void OnGlobalPolicy(
+      chromeos::network_config::mojom::GlobalPolicyPtr global_policy);
   void OnDeviceList(
-      network_config::mojom::GlobalPolicyPtr global_policy,
-      std::vector<network_config::mojom::DeviceStatePropertiesPtr> devices);
+      chromeos::network_config::mojom::GlobalPolicyPtr global_policy,
+      std::vector<chromeos::network_config::mojom::DeviceStatePropertiesPtr>
+          devices);
 
   void FetchNetworkList();
   void OnNetworkList(
-      std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks);
+      std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
+          networks);
 
   // Null if no active cellular network exists. The active cellular network
   // corresponds to the currently active SIM slot, and may not be
@@ -78,17 +81,12 @@ class InternetSection : public OsSettingsSection,
 
   bool does_ethernet_device_exist_ = false;
 
-  mojo::Receiver<network_config::mojom::CrosNetworkConfigObserver> receiver_{
-      this};
-  mojo::Remote<network_config::mojom::CrosNetworkConfig> cros_network_config_;
+  mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
+      receiver_{this};
+  mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
+      cros_network_config_;
 };
 
-}  // namespace settings
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings {
-using ::chromeos::settings::InternetSection;
-}
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_INTERNET_SECTION_H_

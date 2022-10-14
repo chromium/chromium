@@ -10,8 +10,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class ServerPrinterUrlUtilTest : public testing::Test {
  public:
@@ -85,5 +84,4 @@ TEST_F(ServerPrinterUrlUtilTest, ConvertToGURL) {
   ASSERT_EQ("https://123.123.11.11:555/", gurl5->spec());
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

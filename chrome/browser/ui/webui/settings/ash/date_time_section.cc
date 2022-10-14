@@ -22,14 +22,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kDateAndTimeSectionPath;
+using ::chromeos::settings::mojom::kTimeZoneSubpagePath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -80,7 +80,7 @@ const std::vector<SearchConcept>& GetNoFineGrainedTimeZoneSearchConcepts() {
 
 bool IsFineGrainedTimeZoneEnabled() {
   SystemSettingsProvider provider;
-  return provider.Get(chromeos::kFineGrainedTimeZoneResolveEnabled)->GetBool();
+  return provider.Get(kFineGrainedTimeZoneResolveEnabled)->GetBool();
 }
 
 }  // namespace
@@ -186,5 +186,4 @@ void DateTimeSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   }
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

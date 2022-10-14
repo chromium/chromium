@@ -11,8 +11,7 @@
 
 class GURL;
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Returns true if |gurl| has any the following scheme: HTTP, HTTPS, IPP, or
 // IPPS. Returns false for an empty or any other scheme.
@@ -24,13 +23,6 @@ bool HasValidServerPrinterScheme(const GURL& gurl);
 absl::optional<GURL> GenerateServerPrinterUrlWithValidScheme(
     const std::string& url);
 
-}  // namespace settings
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings {
-using ::chromeos::settings::GenerateServerPrinterUrlWithValidScheme;
-using ::chromeos::settings::HasValidServerPrinterScheme;
 }  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SERVER_PRINTER_URL_UTIL_H_

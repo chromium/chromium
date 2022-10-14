@@ -12,8 +12,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/system/pointer_device_observer.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -27,16 +25,17 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
+
+class SearchTagRegistry;
 
 // Provides UI strings and search tags for Device settings.
 class DeviceSection : public OsSettingsSection,
                       public system::PointerDeviceObserver::Observer,
                       public ui::InputDeviceEventObserver,
-                      public ash::NightLightController::Observer,
+                      public NightLightController::Observer,
                       public crosapi::mojom::CrosDisplayConfigObserver,
-                      public PowerManagerClient::Observer {
+                      public chromeos::PowerManagerClient::Observer {
  public:
   DeviceSection(Profile* profile,
                 SearchTagRegistry* search_tag_registry,
@@ -48,10 +47,11 @@ class DeviceSection : public OsSettingsSection,
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
-  mojom::Section GetSection() const override;
-  ash::settings::mojom::SearchResultIcon GetSectionIcon() const override;
+  chromeos::settings::mojom::Section GetSection() const override;
+  mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
-  bool LogMetric(mojom::Setting setting, base::Value& value) const override;
+  bool LogMetric(chromeos::settings::mojom::Setting setting,
+                 base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   // system::PointerDeviceObserver::Observer:
@@ -63,17 +63,17 @@ class DeviceSection : public OsSettingsSection,
   // ui::InputDeviceObserver:
   void OnDeviceListsComplete() override;
 
-  // ash::NightLightController::Observer:
+  // NightLightController::Observer:
   void OnNightLightEnabledChanged(bool enabled) override;
 
-  // ash::mojom::CrosDisplayConfigObserver
+  // mojom::CrosDisplayConfigObserver
   void OnDisplayConfigChanged() override;
 
-  // PowerManagerClient::Observer:
+  // chromeos::PowerManagerClient::Observer:
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
 
   void OnGotSwitchStates(
-      absl::optional<PowerManagerClient::SwitchStates> result);
+      absl::optional<chromeos::PowerManagerClient::SwitchStates> result);
 
   void UpdateStylusSearchTags();
 
@@ -94,12 +94,6 @@ class DeviceSection : public OsSettingsSection,
   base::WeakPtrFactory<DeviceSection> weak_ptr_factory_{this};
 };
 
-}  // namespace settings
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings {
-using ::chromeos::settings::DeviceSection;
-}
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_DEVICE_SECTION_H_

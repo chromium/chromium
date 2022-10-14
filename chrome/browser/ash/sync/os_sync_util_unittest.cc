@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sp = syncer::prefs;
-namespace csp = chromeos::settings::prefs;
+namespace csp = ::ash::settings::prefs;
 
 class OsSyncUtilTest : public testing::Test {
  public:

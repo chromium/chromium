@@ -34,14 +34,16 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kBluetoothDeviceDetailSubpagePath;
+using ::chromeos::settings::mojom::kBluetoothDevicesSubpagePath;
+using ::chromeos::settings::mojom::kBluetoothSavedDevicesSubpagePath;
+using ::chromeos::settings::mojom::kBluetoothSectionPath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -161,7 +163,7 @@ BluetoothSection::BluetoothSection(Profile* profile,
   if (ash::features::IsFastPairEnabled()) {
     pref_change_registrar_->Init(pref_service_);
     pref_change_registrar_->Add(
-        ash::prefs::kFastPairEnabled,
+        prefs::kFastPairEnabled,
         base::BindRepeating(&BluetoothSection::OnFastPairEnabledChanged,
                             base::Unretained(this)));
   }
@@ -333,7 +335,7 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 void BluetoothSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<BluetoothHandler>());
 
-  if (ash::features::IsFastPairEnabled() &&
+  if (features::IsFastPairEnabled() &&
       features::IsFastPairSavedDevicesEnabled()) {
     web_ui->AddMessageHandler(std::make_unique<FastPairSavedDevicesHandler>());
   }
@@ -450,7 +452,7 @@ void BluetoothSection::UpdateSearchTags() {
 
   updater.AddSearchTags(GetBluetoothSearchConcepts());
 
-  if (ash::features::IsFastPairEnabled()) {
+  if (features::IsFastPairEnabled()) {
     if (pref_service_->GetBoolean(ash::prefs::kFastPairEnabled)) {
       updater.AddSearchTags(GetFastPairOnSearchConcepts());
     } else {
@@ -471,5 +473,4 @@ void BluetoothSection::UpdateSearchTags() {
   updater.AddSearchTags(GetBluetoothPairableSearchConcepts());
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

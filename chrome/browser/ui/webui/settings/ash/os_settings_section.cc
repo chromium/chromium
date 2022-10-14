@@ -15,7 +15,6 @@
 namespace ash::settings {
 
 namespace mojom {
-using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom

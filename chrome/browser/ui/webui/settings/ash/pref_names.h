@@ -5,19 +5,15 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PREF_NAMES_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PREF_NAMES_H_
 
-namespace chromeos {
-namespace settings {
-namespace prefs {
+namespace ash::settings::prefs {
 
 extern const char kSyncOsWallpaper[];
 
-}  // namespace prefs
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings::prefs
 
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings::prefs {
-using ::chromeos::settings::prefs::kSyncOsWallpaper;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings::prefs {
+using ::ash::settings::prefs::kSyncOsWallpaper;
 }
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PREF_NAMES_H_

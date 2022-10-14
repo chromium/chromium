@@ -36,14 +36,20 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kAppDetailsSubpagePath;
+using ::chromeos::settings::mojom::kAppManagementSubpagePath;
+using ::chromeos::settings::mojom::kAppNotificationsSubpagePath;
+using ::chromeos::settings::mojom::kAppsSectionPath;
+using ::chromeos::settings::mojom::kArcVmUsbPreferencesSubpagePath;
+using ::chromeos::settings::mojom::kGooglePlayStoreSubpagePath;
+using ::chromeos::settings::mojom::kPluginVmSharedPathsSubpagePath;
+using ::chromeos::settings::mojom::kPluginVmUsbPreferencesSubpagePath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -347,9 +353,9 @@ AppsSection::AppsSection(Profile* profile,
 
   // Note: The MessageCenterAsh check here is added for unit testing purposes
   // otherwise check statements are not needed in production.
-  if (ash::MessageCenterAsh::Get()) {
-    ash::MessageCenterAsh::Get()->AddObserver(this);
-    OnQuietModeChanged(ash::MessageCenterAsh::Get()->IsQuietMode());
+  if (MessageCenterAsh::Get()) {
+    MessageCenterAsh::Get()->AddObserver(this);
+    OnQuietModeChanged(MessageCenterAsh::Get()->IsQuietMode());
   }
 
   if (arc::IsArcAllowedForProfile(profile)) {
@@ -373,8 +379,8 @@ AppsSection::~AppsSection() {
   // TODO(crbug.com/1237465): observer is never removed because ash::Shell is
   // destroyed first.
   // Note: The MessageCenterAsh check is also added for unit testing purposes.
-  if (ash::MessageCenterAsh::Get()) {
-    ash::MessageCenterAsh::Get()->RemoveObserver(this);
+  if (MessageCenterAsh::Get()) {
+    MessageCenterAsh::Get()->RemoveObserver(this);
   }
 
   if (arc::IsArcAllowedForProfile(profile())) {
@@ -421,8 +427,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean(
       "showOsSettingsAppNotificationsRow",
-      base::FeatureList::IsEnabled(
-          chromeos::features::kOsSettingsAppNotificationsPage));
+      base::FeatureList::IsEnabled(features::kOsSettingsAppNotificationsPage));
   html_source->AddBoolean("showArcvmManageUsb", arc::IsArcVmEnabled());
 
   html_source->AddBoolean(
@@ -648,7 +653,7 @@ void AppsSection::OnQuietModeChanged(bool in_quiet_mode) {
 
   updater.AddSearchTags(GetAppNotificationsSearchConcepts());
 
-  if (!ash::MessageCenterAsh::Get()->IsQuietMode()) {
+  if (!MessageCenterAsh::Get()->IsQuietMode()) {
     updater.AddSearchTags(GetTurnOnAppNotificationSearchConcepts());
     return;
   }
@@ -656,5 +661,4 @@ void AppsSection::OnQuietModeChanged(bool in_quiet_mode) {
   updater.AddSearchTags(GetTurnOffAppNotificationSearchConcepts());
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

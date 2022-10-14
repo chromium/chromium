@@ -8,10 +8,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search.mojom.h"
 #include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
@@ -25,6 +21,8 @@
 
 namespace ash::settings {
 
+class Hierarchy;
+class OsSettingsSections;
 struct SearchConcept;
 
 // Handles search queries for Chrome OS settings. Search() is expected to be

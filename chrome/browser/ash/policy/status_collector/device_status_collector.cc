@@ -1518,7 +1518,7 @@ class DeviceStatusCollectorState : public StatusCollectorState {
       return;
     }
     response_params_.device_status->set_root_device_total_storage_bytes(
-        chromeos::settings::RoundByteSize(root_device_size.value()));
+        ash::settings::RoundByteSize(root_device_size.value()));
     SetDeviceStatusReported();
   }
 

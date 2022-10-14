@@ -14,8 +14,7 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 // Provides UI strings for the main settings page, including the toolbar, search
 // functionality, and common strings. Note that no search tags are provided,
@@ -31,22 +30,17 @@ class MainSection : public OsSettingsSection {
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
-  mojom::Section GetSection() const override;
-  ash::settings::mojom::SearchResultIcon GetSectionIcon() const override;
+  chromeos::settings::mojom::Section GetSection() const override;
+  mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
-  bool LogMetric(mojom::Setting setting, base::Value& value) const override;
+  bool LogMetric(chromeos::settings::mojom::Setting setting,
+                 base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   void AddChromeOSUserStrings(content::WebUIDataSource* html_source);
   std::unique_ptr<PluralStringHandler> CreatePluralStringHandler();
 };
 
-}  // namespace settings
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings {
-using ::chromeos::settings::MainSection;
-}
+}  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_MAIN_SECTION_H_

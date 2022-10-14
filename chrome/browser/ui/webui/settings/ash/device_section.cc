@@ -38,14 +38,21 @@
 #include "ui/display/manager/touch_device_manager.h"
 #include "ui/events/devices/device_data_manager.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kAudioSubpagePath;
+using ::chromeos::settings::mojom::kDeviceSectionPath;
+using ::chromeos::settings::mojom::kDisplaySubpagePath;
+using ::chromeos::settings::mojom::kExternalStorageSubpagePath;
+using ::chromeos::settings::mojom::kKeyboardSubpagePath;
+using ::chromeos::settings::mojom::kPointersSubpagePath;
+using ::chromeos::settings::mojom::kPowerSubpagePath;
+using ::chromeos::settings::mojom::kStorageSubpagePath;
+using ::chromeos::settings::mojom::kStylusSubpagePath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -522,8 +529,7 @@ const std::vector<SearchConcept>& GetPowerWithAdaptiveChargingSearchConcepts() {
 }
 
 bool AreScrollSettingsAllowed() {
-  return base::FeatureList::IsEnabled(
-      ::chromeos::features::kAllowScrollSettings);
+  return base::FeatureList::IsEnabled(ash::features::kAllowScrollSettings);
 }
 
 bool IsUnifiedDesktopAvailable() {
@@ -611,7 +617,7 @@ void AddDeviceStylusStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kStylusStrings);
 
   html_source->AddBoolean("hasInternalStylus",
-                          ash::stylus_utils::HasInternalStylus());
+                          stylus_utils::HasInternalStylus());
 }
 
 void AddDeviceDisplayStrings(content::WebUIDataSource* html_source) {
@@ -836,7 +842,8 @@ DeviceSection::DeviceSection(Profile* profile,
   if (features::ShouldShowExternalStorageSettings(profile))
     updater.AddSearchTags(GetExternalStorageSearchConcepts());
 
-  PowerManagerClient* power_manager_client = PowerManagerClient::Get();
+  chromeos::PowerManagerClient* power_manager_client =
+      chromeos::PowerManagerClient::Get();
   if (power_manager_client) {
     power_manager_client->AddObserver(this);
 
@@ -864,7 +871,7 @@ DeviceSection::DeviceSection(Profile* profile,
   UpdateStylusSearchTags();
 
   // Display search tags are added/removed dynamically.
-  ash::BindCrosDisplayConfigController(
+  BindCrosDisplayConfigController(
       cros_display_config_.BindNewPipeAndPassReceiver());
   mojo::PendingAssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
       observer;
@@ -874,12 +881,12 @@ DeviceSection::DeviceSection(Profile* profile,
   OnDisplayConfigChanged();
 
   // Night Light settings are added/removed dynamically.
-  ash::NightLightController* night_light_controller =
-      ash::NightLightController::GetInstance();
+  NightLightController* night_light_controller =
+      NightLightController::GetInstance();
   if (night_light_controller) {
-    ash::NightLightController::GetInstance()->AddObserver(this);
+    NightLightController::GetInstance()->AddObserver(this);
     OnNightLightEnabledChanged(
-        ash::NightLightController::GetInstance()->GetEnabled());
+        NightLightController::GetInstance()->GetEnabled());
   }
 }
 
@@ -887,12 +894,13 @@ DeviceSection::~DeviceSection() {
   pointer_device_observer_.RemoveObserver(this);
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
 
-  PowerManagerClient* power_manager_client = PowerManagerClient::Get();
+  chromeos::PowerManagerClient* power_manager_client =
+      chromeos::PowerManagerClient::Get();
   if (power_manager_client)
     power_manager_client->RemoveObserver(this);
 
-  ash::NightLightController* night_light_controller =
-      ash::NightLightController::GetInstance();
+  NightLightController* night_light_controller =
+      NightLightController::GetInstance();
   if (night_light_controller)
     night_light_controller->RemoveObserver(this);
 }
@@ -1077,7 +1085,7 @@ void DeviceSection::TouchpadExists(bool exists) {
 
   if (exists) {
     updater.AddSearchTags(GetTouchpadSearchConcepts());
-    if (base::FeatureList::IsEnabled(chromeos::features::kAllowScrollSettings))
+    if (base::FeatureList::IsEnabled(ash::features::kAllowScrollSettings))
       updater.AddSearchTags(GetTouchpadScrollAccelerationSearchConcepts());
   }
 }
@@ -1229,17 +1237,18 @@ void DeviceSection::OnGetDisplayLayoutInfo(
     updater.RemoveSearchTags(GetDisplayTouchCalibrationSearchConcepts());
 
   // Night Light on settings.
-  if (ash::NightLightController::GetInstance()->GetEnabled())
+  if (NightLightController::GetInstance()->GetEnabled())
     updater.AddSearchTags(GetDisplayNightLightOnSearchConcepts());
   else
     updater.RemoveSearchTags(GetDisplayNightLightOnSearchConcepts());
 }
 
 void DeviceSection::OnGotSwitchStates(
-    absl::optional<PowerManagerClient::SwitchStates> result) {
+    absl::optional<chromeos::PowerManagerClient::SwitchStates> result) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
-  if (result && result->lid_state != PowerManagerClient::LidState::NOT_PRESENT)
+  if (result &&
+      result->lid_state != chromeos::PowerManagerClient::LidState::NOT_PRESENT)
     updater.AddSearchTags(GetPowerWithLaptopLidSearchConcepts());
 }
 
@@ -1253,7 +1262,7 @@ void DeviceSection::UpdateStylusSearchTags() {
   // TODO(https://crbug.com/1071905): Only show stylus settings if a stylus has
   // been set up. HasStylusInput() will return true for any stylus-compatible
   // device, even if it doesn't have a stylus.
-  if (ash::stylus_utils::HasStylusInput())
+  if (stylus_utils::HasStylusInput())
     updater.AddSearchTags(GetStylusSearchConcepts());
   else
     updater.RemoveSearchTags(GetStylusSearchConcepts());
@@ -1320,5 +1329,4 @@ void DeviceSection::AddDevicePointersStrings(
       base::FeatureList::IsEnabled(ash::features::kAudioSettingsPage));
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

@@ -9,8 +9,6 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chrome/browser/ui/webui/settings/ash/search/search_tag_registry.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -34,12 +32,12 @@ class SyncService;
 }  // namespace syncer
 
 namespace ash {
-class AccountAppsAvailability;
-}
 
-namespace chromeos {
+class AccountAppsAvailability;
 
 namespace settings {
+
+class SearchTagRegistry;
 
 // Provides UI strings and search tags for People settings. Search tags are only
 // added for non-guest sessions.
@@ -63,10 +61,11 @@ class PeopleSection : public OsSettingsSection,
   void AddLoadTimeData(content::WebUIDataSource* html_source) override;
   void AddHandlers(content::WebUI* web_ui) override;
   int GetSectionNameMessageId() const override;
-  mojom::Section GetSection() const override;
-  ash::settings::mojom::SearchResultIcon GetSectionIcon() const override;
+  chromeos::settings::mojom::Section GetSection() const override;
+  mojom::SearchResultIcon GetSectionIcon() const override;
   std::string GetSectionPath() const override;
-  bool LogMetric(mojom::Setting setting, base::Value& value) const override;
+  bool LogMetric(chromeos::settings::mojom::Setting setting,
+                 base::Value& value) const override;
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
   // AccountManagerFacade::Observer:
@@ -82,7 +81,7 @@ class PeopleSection : public OsSettingsSection,
 
   account_manager::AccountManager* account_manager_ = nullptr;
   account_manager::AccountManagerFacade* account_manager_facade_ = nullptr;
-  ash::AccountAppsAvailability* account_apps_availability_ = nullptr;
+  AccountAppsAvailability* account_apps_availability_ = nullptr;
   SupervisedUserService* supervised_user_service_;
   signin::IdentityManager* identity_manager_;
   PrefService* pref_service_;
@@ -97,11 +96,6 @@ class PeopleSection : public OsSettingsSection,
 };
 
 }  // namespace settings
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when it moved to ash.
-namespace ash::settings {
-using ::chromeos::settings::PeopleSection;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_PEOPLE_SECTION_H_

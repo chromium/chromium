@@ -33,14 +33,18 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kFingerprintSubpagePathV2;
+using ::chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2;
+using ::chromeos::settings::mojom::kPrivacyAndSecuritySectionPath;
+using ::chromeos::settings::mojom::kPrivacyHubSubpagePath;
+using ::chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2;
+using ::chromeos::settings::mojom::kSmartPrivacySubpagePath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -240,7 +244,7 @@ const std::vector<SearchConcept>& GetPrivacyGoogleChromeSearchConcepts() {
 bool IsSecureDnsAvailable() {
   return
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      base::FeatureList::IsEnabled(chromeos::features::kEnableDnsProxy) &&
+      base::FeatureList::IsEnabled(ash::features::kEnableDnsProxy) &&
       base::FeatureList::IsEnabled(::features::kDnsProxyEnableDOH) &&
 #endif
       ::features::kDnsOverHttpsShowUiParam.Get();
@@ -515,5 +519,4 @@ void PrivacySection::UpdateRemoveFingerprintSearchTags() {
   }
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

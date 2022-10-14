@@ -26,14 +26,19 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kEditDictionarySubpagePath;
+using ::chromeos::settings::mojom::kInputMethodOptionsSubpagePath;
+using ::chromeos::settings::mojom::kInputSubpagePath;
+using ::chromeos::settings::mojom::kJapaneseManageUserDictionarySubpagePath;
+using ::chromeos::settings::mojom::kLanguagesAndInputSectionPath;
+using ::chromeos::settings::mojom::kLanguagesSubpagePath;
+using ::chromeos::settings::mojom::kSmartInputsSubpagePath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -150,12 +155,11 @@ const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
 
 bool IsAssistivePersonalInfoAllowed() {
   return !features::IsGuestModeActive() &&
-         base::FeatureList::IsEnabled(
-             ::chromeos::features::kAssistPersonalInfo);
+         base::FeatureList::IsEnabled(ash::features::kAssistPersonalInfo);
 }
 
 bool IsPredictiveWritingAllowed() {
-  return chromeos::features::IsAssistiveMultiWordEnabled();
+  return ash::features::IsAssistiveMultiWordEnabled();
 }
 
 // TODO(crbug/1113611): As Smart Inputs page is renamed to Suggestions.
@@ -353,7 +357,7 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "allowDiacriticsOnPhysicalKeyboardLongpress",
       base::FeatureList::IsEnabled(
-          ::chromeos::features::kDiacriticsOnPhysicalKeyboardLongpress));
+          ash::features::kDiacriticsOnPhysicalKeyboardLongpress));
 }
 
 void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
@@ -552,15 +556,15 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddInputPageStringsV2(html_source);
 
   html_source->AddBoolean("enableLanguageSettingsV2Update2", true);
-  html_source->AddBoolean("onDeviceGrammarCheckEnabled",
-                          base::FeatureList::IsEnabled(
-                              ::chromeos::features::kOnDeviceGrammarCheck));
+  html_source->AddBoolean(
+      "onDeviceGrammarCheckEnabled",
+      base::FeatureList::IsEnabled(ash::features::kOnDeviceGrammarCheck));
   html_source->AddBoolean("languagePacksHandwritingEnabled",
-                          ::chromeos::features::IsLanguagePacksEnabled());
+                          ash::features::IsLanguagePacksEnabled());
   html_source->AddBoolean(
       "languageSettingsUpdateJapanese",
       ::base::FeatureList::IsEnabled(
-          ::chromeos::features::kCrosLanguageSettingsUpdateJapanese));
+          ash::features::kCrosLanguageSettingsUpdateJapanese));
 }
 
 void LanguagesSection::AddHandlers(content::WebUI* web_ui) {
@@ -655,8 +659,7 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 }
 
 bool LanguagesSection::IsEmojiSuggestionAllowed() const {
-  return pref_service_->GetBoolean(
-      ::chromeos::prefs::kEmojiSuggestionEnterpriseAllowed);
+  return pref_service_->GetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed);
 }
 
 bool LanguagesSection::IsSpellCheckEnabled() const {
@@ -671,5 +674,4 @@ void LanguagesSection::UpdateSpellCheckSearchTags() {
   }
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

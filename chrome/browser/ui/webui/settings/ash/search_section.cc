@@ -32,14 +32,15 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultDefaultRank;
-using ::ash::settings::mojom::SearchResultIcon;
-using ::ash::settings::mojom::SearchResultType;
+using ::chromeos::settings::mojom::kAssistantSubpagePath;
+using ::chromeos::settings::mojom::kSearchAndAssistantSectionPath;
+using ::chromeos::settings::mojom::kSearchSubpagePath;
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
@@ -269,7 +270,7 @@ SearchSection::SearchSection(Profile* profile,
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetSearchPageSearchConcepts());
 
-  ash::AssistantState* assistant_state = ash::AssistantState::Get();
+  AssistantState* assistant_state = AssistantState::Get();
   if (IsAssistantAllowed() && assistant_state) {
     updater.AddSearchTags(GetAssistantSearchConcepts());
 
@@ -284,7 +285,7 @@ SearchSection::SearchSection(Profile* profile,
 }
 
 SearchSection::~SearchSection() {
-  ash::AssistantState* assistant_state = ash::AssistantState::Get();
+  AssistantState* assistant_state = AssistantState::Get();
   if (IsAssistantAllowed() && assistant_state)
     assistant_state->RemoveObserver(this);
 }
@@ -430,7 +431,7 @@ void SearchSection::OnEligibilityChanged(bool eligible) {
 bool SearchSection::IsAssistantAllowed() const {
   // NOTE: This will be false when the flag is disabled.
   return ::assistant::IsAssistantAllowedForProfile(profile()) ==
-         chromeos::assistant::AssistantAllowedState::ALLOWED;
+         assistant::AssistantAllowedState::ALLOWED;
 }
 
 void SearchSection::UpdateAssistantSearchTags() {
@@ -441,7 +442,7 @@ void SearchSection::UpdateAssistantSearchTags() {
   updater.RemoveSearchTags(GetAssistantOffSearchConcepts());
   updater.RemoveSearchTags(GetAssistantVoiceMatchSearchConcepts());
 
-  ash::AssistantState* assistant_state = ash::AssistantState::Get();
+  AssistantState* assistant_state = AssistantState::Get();
 
   // The setting_enabled() function is the top-level enabled state. If this is
   // off, none of the sub-features are enabled.
@@ -481,5 +482,4 @@ void SearchSection::UpdateQuickAnswersSearchTags() {
   }
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

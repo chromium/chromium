@@ -25,8 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
 class MockWebUIDataSource : public content::WebUIDataSource {
  public:
@@ -87,12 +86,11 @@ class MultiDeviceSectionTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
-    pref_service_.registry()->RegisterBooleanPref(
-        ash::prefs::kEnableAutoScreenLock, false);
+    pref_service_.registry()->RegisterBooleanPref(prefs::kEnableAutoScreenLock,
+                                                  false);
     pref_service_.registry()->RegisterIntegerPref(
-        ash::phonehub::prefs::kScreenLockStatus,
-        static_cast<int>(
-            ash::phonehub::ScreenLockManager::LockStatus::kLockedOn));
+        phonehub::prefs::kScreenLockStatus,
+        static_cast<int>(phonehub::ScreenLockManager::LockStatus::kLockedOn));
     mock_web_ui_data_source_ = std::make_unique<MockWebUIDataSource>();
     service_proxy_ =
         std::make_unique<local_search_service::LocalSearchServiceProxy>(
@@ -109,7 +107,7 @@ class MultiDeviceSectionTest : public testing::Test {
         fake_multidevice_setup_client_.get(), fake_phone_hub_manager_.get(),
         android_sms::AndroidSmsServiceFactory::GetForBrowserContext(profile),
         &pref_service_,
-        ash::eche_app::EcheAppManagerFactory::GetForProfile(profile));
+        eche_app::EcheAppManagerFactory::GetForProfile(profile));
   }
 
   void VerifyOnEnableScreenLockChangedIsCalled() {
@@ -121,7 +119,7 @@ class MultiDeviceSectionTest : public testing::Test {
         *mock_web_ui_data_source_,
         AddBoolean(testing::Eq("isChromeosScreenLockEnabled"), testing::_))
         .Times(1);
-    pref_service_.SetBoolean(ash::prefs::kEnableAutoScreenLock, true);
+    pref_service_.SetBoolean(prefs::kEnableAutoScreenLock, true);
   }
 
   void VerifyOnScreenLockStatusChangedIsCalled() {
@@ -133,9 +131,8 @@ class MultiDeviceSectionTest : public testing::Test {
                 AddBoolean(testing::Eq("isPhoneScreenLockEnabled"), testing::_))
         .Times(1);
     pref_service_.SetInteger(
-        ash::phonehub::prefs::kScreenLockStatus,
-        static_cast<int>(
-            ash::phonehub::ScreenLockManager::LockStatus::kLockedOn));
+        phonehub::prefs::kScreenLockStatus,
+        static_cast<int>(phonehub::ScreenLockManager::LockStatus::kLockedOn));
   }
 
  private:
@@ -160,5 +157,4 @@ TEST_F(MultiDeviceSectionTest, OnScreenLockStatusChanged) {
   VerifyOnScreenLockStatusChangedIsCalled();
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

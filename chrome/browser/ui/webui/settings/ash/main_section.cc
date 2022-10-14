@@ -39,13 +39,12 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
-namespace settings {
+namespace ash::settings {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
 namespace mojom {
-using ::ash::settings::mojom::SearchResultIcon;
-}
+using ::chromeos::settings::mojom::Section;
+using ::chromeos::settings::mojom::Setting;
+}  // namespace mojom
 
 namespace {
 
@@ -60,9 +59,8 @@ void AddSearchInSettingsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // Used to link to personalization app search results.
-  html_source->AddString(
-      "personalizationAppUrl",
-      ash::personalization_app::kChromeUIPersonalizationAppURL);
+  html_source->AddString("personalizationAppUrl",
+                         personalization_app::kChromeUIPersonalizationAppURL);
 }
 
 void AddUpdateRequiredEolStrings(content::WebUIDataSource* html_source) {
@@ -185,10 +183,10 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   // to Personalization Hub though Settings search.
   html_source->AddInteger(
       "settingsSearchEntryPoint",
-      static_cast<int>(ash::PersonalizationEntryPoint::kSettingsSearch));
+      static_cast<int>(PersonalizationEntryPoint::kSettingsSearch));
   html_source->AddInteger(
       "entryPointEnumSize",
-      static_cast<int>(ash::PersonalizationEntryPoint::kMaxValue) + 1);
+      static_cast<int>(PersonalizationEntryPoint::kMaxValue) + 1);
 
   AddSearchInSettingsStrings(html_source);
   AddChromeOSUserStrings(html_source);
@@ -288,5 +286,4 @@ std::unique_ptr<PluralStringHandler> MainSection::CreatePluralStringHandler() {
   return plural_string_handler;
 }
 
-}  // namespace settings
-}  // namespace chromeos
+}  // namespace ash::settings

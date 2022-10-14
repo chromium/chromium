@@ -175,4 +175,9 @@ class Hierarchy {
 
 }  // namespace ash::settings
 
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::settings {
+using ::ash::settings::Hierarchy;
+}
+
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_HIERARCHY_H_
