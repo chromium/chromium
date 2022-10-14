@@ -108,6 +108,25 @@ std::u16string GetFootnoteDescription(
   return l10n_util::GetStringFUTF16(title_id, host);
 }
 
+std::u16string GetFootnotePolicyText(
+    ToolbarActionViewController::HoverCardPolicyState state) {
+  int text_id = -1;
+  switch (state) {
+    case ToolbarActionViewController::HoverCardPolicyState::kPinnedByAdmin:
+      text_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_PINNED_TEXT;
+      break;
+    case ToolbarActionViewController::HoverCardPolicyState::kInstalledByAdmin:
+      text_id =
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_INSTALLED_TEXT;
+      break;
+    case ToolbarActionViewController::HoverCardPolicyState::kNone:
+      NOTREACHED();
+      break;
+  }
+  return l10n_util::GetStringUTF16(text_id);
+}
+
 // Label that renders its background in a solid color. Placed in front of a
 // normal label either by being later in the draw order or on a layer, it can
 // be used to animate a fade-out.
@@ -244,8 +263,6 @@ class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
 
     policy_label_ = AddChildView(
         std::make_unique<FadeLabel>(views::style::CONTEXT_DIALOG_BODY_TEXT));
-    policy_label_->SetText(l10n_util::GetStringUTF16(
-        IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_TEXT));
 
     // Separator doesn't need margin to span the dialog width.
     auto style_label = [](FadeLabel* label) {
@@ -272,12 +289,16 @@ class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
         color_provider->GetColor(ui::kColorBubbleFooterBorder)));
   }
 
-  void UpdateContent(ToolbarActionViewController::HoverCardState state,
-                     bool show_policy_label,
-                     std::u16string host) {
-    bool show_site_access_labels = state !=
+  void UpdateContent(
+      ToolbarActionViewController::HoverCardState site_access_state,
+      ToolbarActionViewController::HoverCardPolicyState policy_state,
+      std::u16string host) {
+    bool show_site_access_labels = site_access_state !=
                                    ToolbarActionViewController::HoverCardState::
                                        kExtensionDoesNotWantAccess;
+    bool show_policy_label =
+        policy_state !=
+        ToolbarActionViewController::HoverCardPolicyState::kNone;
     bool footer_visible = show_site_access_labels || show_policy_label;
     SetVisible(footer_visible);
 
@@ -290,9 +311,13 @@ class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
     separator_->SetVisible(show_site_access_labels && show_policy_label);
 
     if (show_site_access_labels) {
-      title_label_->SetText(GetFootnoteTitle(state));
-      description_label_->SetText(GetFootnoteDescription(state, host));
+      title_label_->SetText(GetFootnoteTitle(site_access_state));
+      description_label_->SetText(
+          GetFootnoteDescription(site_access_state, host));
     }
+
+    if (show_policy_label)
+      policy_label_->SetText(GetFootnotePolicyText(policy_state));
   }
 
   void SetFade(double percent) {
@@ -317,12 +342,10 @@ class ToolbarActionHoverCardBubbleView::FootnoteView : public views::View {
 // ----------------------------------------------------------
 
 ToolbarActionHoverCardBubbleView::ToolbarActionHoverCardBubbleView(
-    ToolbarActionView* action_view,
-    Profile* profile)
+    ToolbarActionView* action_view)
     : BubbleDialogDelegateView(action_view,
                                views::BubbleBorder::TOP_LEFT,
-                               views::BubbleBorder::STANDARD_SHADOW),
-      model_(ToolbarActionsModel::Get(profile)) {
+                               views::BubbleBorder::STANDARD_SHADOW) {
   DCHECK(base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
@@ -401,7 +424,7 @@ void ToolbarActionHoverCardBubbleView::UpdateCardContent(
   title_label_->SetText(action_controller->GetActionName());
   footnote_view_->UpdateContent(
       action_controller->GetHoverCardState(web_contents),
-      model_->IsActionForcePinned(action_controller->GetId()),
+      action_controller->GetHoverCardPolicyState(),
       GetCurrentHost(web_contents));
 }
 

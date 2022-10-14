@@ -210,20 +210,19 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
                        WidgetUpdatedWhenHoveringBetweenActionViews) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  // Add two extensions with no host permissions, and two with them.
-  auto simple_extension_A = InstallExtension("Simple extension A");
-  auto simple_extension_B = InstallExtension("Simple extension B");
-  auto extension_with_permissions_A = InstallExtensionWithHostPermissions(
-      "Extension with host permissions A", "<all_urls>");
-  auto extension_with_permissions_B = InstallExtensionWithHostPermissions(
-      "Extension with host permissions B", "<all_urls>");
+  // Install four extensions with different policy and site access permissions
+  // to test all the possible footnote combinations.
+  auto simple_extension = InstallExtension("Extension A");
+  auto force_installed_extension = ForceInstallExtension("Extension B");
+  auto extension_with_host_permissions =
+      InstallExtensionWithHostPermissions("Extension C", "<all_urls>");
+  auto force_pinned_extension_with_host_permissions =
+      InstallExtensionWithHostPermissions("Extension D", "<all_urls>");
 
-  // Pin extensions "A" and force pin extensions "B" in order to test all
-  // possible footer combinations.
-  PinExtension(simple_extension_A->id());
-  ForcePinExtension(simple_extension_B->id());
-  PinExtension(extension_with_permissions_A->id());
-  ForcePinExtension(extension_with_permissions_B->id());
+  PinExtension(simple_extension->id());
+  PinExtension(force_installed_extension->id());
+  PinExtension(extension_with_host_permissions->id());
+  ForcePinExtension(force_pinned_extension_with_host_permissions->id());
 
   auto action_views = GetVisibleToolbarActionViews();
   ASSERT_EQ(action_views.size(), 4u);
@@ -235,31 +234,32 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   // Hover over the simple extension pinned by the user.
   // Verify card anchors to its action, and it contains the extension's name and
   // no footnote.
-  ToolbarActionView* simple_action_A =
-      GetExtensionsToolbarContainer()->GetViewForId(simple_extension_A->id());
-  HoverMouseOverActionView(simple_action_A);
+  ToolbarActionView* simple_action =
+      GetExtensionsToolbarContainer()->GetViewForId(simple_extension->id());
+  HoverMouseOverActionView(simple_action);
   views::Widget* const widget = hover_card()->GetWidget();
   views::test::WidgetVisibleWaiter(widget).Wait();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
-  EXPECT_EQ(hover_card()->GetAnchorView(), simple_action_A);
+  EXPECT_EQ(hover_card()->GetAnchorView(), simple_action);
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
-            simple_action_A->view_controller()->GetActionName());
+            simple_action->view_controller()->GetActionName());
   EXPECT_FALSE(hover_card()->IsFooterVisible());
 
-  // Hover over the simple extension pinned by policy.
+  // Hover over the extension installed by policy and pinned by the user.
   // Verify card anchors to its action using the same widget, because it
   // transitions from one action view to the other, and it contains contains the
   // extension's name and a footnote with only policy label.
-  ToolbarActionView* simple_action_B =
-      GetExtensionsToolbarContainer()->GetViewForId(simple_extension_B->id());
-  HoverMouseOverActionView(simple_action_B);
+  ToolbarActionView* force_installed_action =
+      GetExtensionsToolbarContainer()->GetViewForId(
+          force_installed_extension->id());
+  HoverMouseOverActionView(force_installed_action);
   views::test::WidgetVisibleWaiter(widget).Wait();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
-  EXPECT_EQ(hover_card()->GetAnchorView(), simple_action_B);
+  EXPECT_EQ(hover_card()->GetAnchorView(), force_installed_action);
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
-            simple_action_B->view_controller()->GetActionName());
+            force_installed_action->view_controller()->GetActionName());
   EXPECT_TRUE(hover_card()->IsFooterVisible());
   EXPECT_FALSE(hover_card()->IsFooterTitleLabelVisible());
   EXPECT_FALSE(hover_card()->IsFooterDescriptionLabelVisible());
@@ -270,37 +270,39 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   // Verify card anchors to its action using the same widget, and it contains
   // contains the extension's name and a footnote with only title and
   // description labels.
-  ToolbarActionView* action_with_permissions_A =
+  ToolbarActionView* action_with_host_permissions =
       GetExtensionsToolbarContainer()->GetViewForId(
-          extension_with_permissions_A->id());
-  HoverMouseOverActionView(action_with_permissions_A);
+          extension_with_host_permissions->id());
+  HoverMouseOverActionView(action_with_host_permissions);
   views::test::WidgetVisibleWaiter(widget).Wait();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
-  EXPECT_EQ(hover_card()->GetAnchorView(), action_with_permissions_A);
+  EXPECT_EQ(hover_card()->GetAnchorView(), action_with_host_permissions);
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
-            action_with_permissions_A->view_controller()->GetActionName());
+            action_with_host_permissions->view_controller()->GetActionName());
   EXPECT_TRUE(hover_card()->IsFooterVisible());
   EXPECT_TRUE(hover_card()->IsFooterTitleLabelVisible());
   EXPECT_TRUE(hover_card()->IsFooterDescriptionLabelVisible());
   EXPECT_FALSE(hover_card()->IsFooterPolicyLabelVisible());
   EXPECT_FALSE(hover_card()->IsFooterSeparatorVisible());
 
-  // Hover over the extension with host permission pinned by policy.
-  // Verify card anchors to its action using the same widget, and it contains
-  // contains the extension's name and a footnote with both title and
+  // Hover over the extension with host permission installed and pinned by
+  // policy. Verify card anchors to its action using the same widget, and it
+  // contains contains the extension's name and a footnote with both title and
   // description labels, and policy label. Since all labels are visible,
   // separator should also be visible to distinct between them.
-  ToolbarActionView* action_with_permissions_B =
+  ToolbarActionView* force_pinned_action_with_host_permissions =
       GetExtensionsToolbarContainer()->GetViewForId(
-          extension_with_permissions_B->id());
-  HoverMouseOverActionView(action_with_permissions_B);
+          force_pinned_extension_with_host_permissions->id());
+  HoverMouseOverActionView(force_pinned_action_with_host_permissions);
   views::test::WidgetVisibleWaiter(widget).Wait();
   ASSERT_TRUE(widget);
   EXPECT_TRUE(widget->IsVisible());
-  EXPECT_EQ(hover_card()->GetAnchorView(), action_with_permissions_B);
+  EXPECT_EQ(hover_card()->GetAnchorView(),
+            force_pinned_action_with_host_permissions);
   EXPECT_EQ(hover_card()->GetTitleTextForTesting(),
-            action_with_permissions_B->view_controller()->GetActionName());
+            force_pinned_action_with_host_permissions->view_controller()
+                ->GetActionName());
   EXPECT_TRUE(hover_card()->IsFooterVisible());
   EXPECT_TRUE(hover_card()->IsFooterTitleLabelVisible());
   EXPECT_TRUE(hover_card()->IsFooterDescriptionLabelVisible());

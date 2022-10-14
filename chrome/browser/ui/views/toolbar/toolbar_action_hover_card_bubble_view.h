@@ -18,8 +18,7 @@ class ToolbarActionHoverCardBubbleView
     : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(ToolbarActionHoverCardBubbleView);
-  explicit ToolbarActionHoverCardBubbleView(ToolbarActionView* action_view,
-                                            Profile* profile);
+  explicit ToolbarActionHoverCardBubbleView(ToolbarActionView* action_view);
   ToolbarActionHoverCardBubbleView(const ToolbarActionHoverCardBubbleView&) =
       delete;
   ToolbarActionHoverCardBubbleView& operator=(
@@ -51,9 +50,6 @@ class ToolbarActionHoverCardBubbleView
 
   // views::BubbleDialogDelegateView:
   void OnThemeChanged() override;
-
-  // The associated ToolbarActionsModel. Not owned.
-  raw_ptr<ToolbarActionsModel> model_;
 
   raw_ptr<FadeLabel> title_label_ = nullptr;
   raw_ptr<FootnoteView> footnote_view_ = nullptr;

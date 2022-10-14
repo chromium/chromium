@@ -22,13 +22,11 @@
 class ToolbarActionHoverCardBubbleView;
 class ExtensionsToolbarContainer;
 class ToolbarActionView;
-class Profile;
 
 // Controls how hover cards are shown and hidden for toolbar actions.
 class ToolbarActionHoverCardController : public views::ViewObserver {
  public:
   explicit ToolbarActionHoverCardController(
-      Profile* profile,
       ExtensionsToolbarContainer* extensions_container);
   ~ToolbarActionHoverCardController() override;
 
@@ -73,8 +71,6 @@ class ToolbarActionHoverCardController : public views::ViewObserver {
   void OnViewIsDeleting(views::View* observed_view) override;
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
-
-  raw_ptr<Profile> profile_;
 
   // Timestamp of the last time the hover card is hidden by the mouse leaving
   // the tab strip. This is used for reshowing the hover card without delay if

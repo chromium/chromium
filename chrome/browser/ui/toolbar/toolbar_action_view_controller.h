@@ -62,7 +62,9 @@ class ToolbarActionViewController {
     kMaxValue = kRequestAccessButton,
   };
 
-  // Hover card states for a toolbar action view.
+  // Site access state for the toolbar action view's hover card.
+  // TODO(emiliapaz): Change the enum name to reflect "site acesss" state, or
+  // bundle both enums in one struct.
   enum class HoverCardState {
     // All extensions are allowed on the current site by the user.
     kAllExtensionsAllowed,
@@ -78,6 +80,17 @@ class ToolbarActionViewController {
 
     // The extension does not want access to the current site.
     kExtensionDoesNotWantAccess,
+  };
+
+  // Policy state for the toolbar action view's hover card.
+  enum class HoverCardPolicyState {
+    kNone,
+
+    // Extension is force pinned by administrator.
+    kPinnedByAdmin,
+
+    // Extension if force installed by administrator.
+    kInstalledByAdmin
   };
 
   virtual ~ToolbarActionViewController() = default;
@@ -110,6 +123,8 @@ class ToolbarActionViewController {
   // Returns the hover card state to use for the given `web_contents`.
   virtual HoverCardState GetHoverCardState(
       content::WebContents* web_contents) const = 0;
+
+  virtual HoverCardPolicyState GetHoverCardPolicyState() const = 0;
 
   // Returns true if the action should be enabled on the given |web_contents|.
   virtual bool IsEnabled(content::WebContents* web_contents) const = 0;

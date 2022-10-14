@@ -428,6 +428,24 @@ ExtensionActionViewController::GetHoverCardState(
   }
 }
 
+ToolbarActionViewController::HoverCardPolicyState
+ExtensionActionViewController::GetHoverCardPolicyState() const {
+  // An extension pinned by admin is also installed by admin. Thus,
+  // "pinned by admin" has preference.
+  auto* const model = ToolbarActionsModel::Get(browser_->profile());
+  if (model->IsActionForcePinned(GetId()))
+    return HoverCardPolicyState::kPinnedByAdmin;
+
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionRegistry::Get(browser_->profile())
+          ->enabled_extensions()
+          .GetByID(GetId());
+  if (extensions::Manifest::IsPolicyLocation(extension->location()))
+    return HoverCardPolicyState::kInstalledByAdmin;
+
+  return HoverCardPolicyState::kNone;
+}
+
 bool ExtensionActionViewController::CanHandleAccelerators() const {
   if (!ExtensionIsValid())
     return false;

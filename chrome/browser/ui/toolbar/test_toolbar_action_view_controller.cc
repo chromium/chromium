@@ -6,11 +6,9 @@
 
 #include <string>
 
-#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_delegate.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_skia.h"
 
 TestToolbarActionViewController::TestToolbarActionViewController(
     const std::string& id)
@@ -56,6 +54,11 @@ TestToolbarActionViewController::GetHoverCardState(
     content::WebContents* web_contents) const {
   return ToolbarActionViewController::HoverCardState::
       kExtensionDoesNotWantAccess;
+}
+
+ToolbarActionViewController::HoverCardPolicyState
+TestToolbarActionViewController::GetHoverCardPolicyState() const {
+  return ToolbarActionViewController::HoverCardPolicyState::kNone;
 }
 
 bool TestToolbarActionViewController::IsEnabled(

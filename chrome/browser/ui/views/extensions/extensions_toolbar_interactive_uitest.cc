@@ -16,9 +16,9 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_paths.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/view_utils.h"
 
@@ -45,7 +45,18 @@ ExtensionsToolbarUITest::LoadTestExtension(const std::string& path,
   // Allow it to finish laying out appropriately.
   auto* container = GetExtensionsToolbarContainer();
   container->GetWidget()->LayoutRootViewIfNecessary();
+  return extension;
+}
 
+scoped_refptr<const extensions::Extension>
+ExtensionsToolbarUITest::ForceInstallExtension(const std::string& name) {
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("extension")
+          .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicy)
+          .Build();
+  extensions::ExtensionSystem::Get(browser()->profile())
+      ->extension_service()
+      ->AddExtension(extension.get());
   return extension;
 }
 

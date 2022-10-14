@@ -5061,8 +5061,11 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_DESCRIPTION_EXTENSION_REQUESTS_ACESSS" desc="The description in the footer of the card that shows up on mouse hover of a toolbar action when the extension requests access to the current site.">
           Click this extension's icon to read &amp; change <ph name="HOST">$1<ex>google.com</ex></ph>
         </message>
-        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_TEXT" desc="The text in the footer of the card that shows up on mouse hover of a toolbar action when extension was pinned by the administrator.">
+        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_PINNED_TEXT" desc="The text in the footer of the card that shows up on mouse hover of a toolbar action when extension was pinned by the administrator.">
           Pinned by your administrator
+        </message>
+        <message name="IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_FOOTER_POLICY_LABEL_INSTALLED_TEXT" desc="The text in the footer of the card that shows up on mouse hover of a toolbar action when extension was installed by the administrator.">
+          Installed by your administrator
         </message>
 
         <if expr="not use_titlecase">
