@@ -107,7 +107,8 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
   if (!is_drag_to_open_ && !multitask_menu_ &&
       !gfx::RectF(active_window->GetBoundsInScreen().CenterPoint().x() -
                       kTargetAreaWidth / 2,
-                  0, kTargetAreaWidth, kTargetAreaHeight)
+                  active_window->GetBoundsInScreen().y(), kTargetAreaWidth,
+                  kTargetAreaHeight)
            .Contains(screen_location)) {
     return;
   }

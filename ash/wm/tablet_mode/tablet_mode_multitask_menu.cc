@@ -140,14 +140,17 @@ void TabletModeMultitaskMenu::AnimateShow() {
       multitask_menu_widget_->GetContentsView()->GetPreferredSize();
   const gfx::Rect start_bounds(
       window_->bounds().CenterPoint().x() - widget_size.width() / 2,
-      -widget_size.height(), widget_size.width(), widget_size.height());
+      window_->bounds().y() - widget_size.height(), widget_size.width(),
+      widget_size.height());
   multitask_menu_widget_->SetBounds(start_bounds);
   multitask_menu_widget_->Show();
   multitask_menu_widget_->SetOpacity(0.f);
 
   auto* widget_layer = multitask_menu_widget_->GetLayer();
   const gfx::Rect end_bounds(
-      gfx::Point(start_bounds.x(), kMultitaskMenuVerticalPadding), widget_size);
+      gfx::Point(start_bounds.x(),
+                 window_->bounds().y() + kMultitaskMenuVerticalPadding),
+      widget_size);
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
@@ -167,7 +170,8 @@ void TabletModeMultitaskMenu::AnimateClose() {
       multitask_menu_widget_->GetContentsView()->GetPreferredSize();
   const gfx::Rect end_bounds(
       multitask_menu_widget_->GetWindowBoundsInScreen().x(),
-      -widget_size.height() - kMultitaskMenuVerticalPadding,
+      window_->bounds().y() - widget_size.height() -
+          kMultitaskMenuVerticalPadding,
       widget_size.width(), widget_size.height());
   auto* widget_layer = multitask_menu_widget_->GetLayer();
   views::AnimationBuilder()
