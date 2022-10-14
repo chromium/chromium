@@ -134,6 +134,16 @@
 #include "ash/constants/ash_features.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/version.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_lacros.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/lacros/lacros_test_helper.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include <ImageIO/ImageIO.h>
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
@@ -611,6 +621,28 @@ void WaitForAndAcceptInstallDialogForSite(InstallableSite site) {
   views::test::AcceptDialog(widget);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// Clear any apps that may have been left in the Ash App Service cache by
+// earlier tests.
+void ReinitializeAppService(Profile* profile) {
+  if (chromeos::IsAshVersionAtLeastForTesting(base::Version({108, 0, 5354}))) {
+    crosapi::mojom::TestControllerAsyncWaiter(
+        chromeos::LacrosService::Get()
+            ->GetRemote<crosapi::mojom::TestController>()
+            .get())
+        .ReinitializeAppService();
+
+    apps::AppServiceProxyFactory::GetForProfile(profile)
+        ->ReinitializeForTesting(profile);
+    AppTypeInitializationWaiter(profile, apps::AppType::kWeb).Await();
+  } else {
+    LOG(ERROR) << "Cannot ReinitializeAppService - Unsupported ash version.";
+  }
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 }  // anonymous namespace
 
 BrowserState::BrowserState(
@@ -771,6 +803,11 @@ void WebAppIntegrationTestDriver::SetUpOnMainThread() {
   if (!delegate_->IsSyncTest()) {
     observation_.Observe(&provider()->install_manager());
   }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  ReinitializeAppService(browser()->profile());
+#endif
+
   web_app::test::WaitUntilReady(
       web_app::WebAppProvider::GetForTest(browser()->profile()));
 }
