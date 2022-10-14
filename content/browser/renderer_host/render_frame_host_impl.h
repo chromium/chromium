@@ -1268,11 +1268,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // callbacks to be invoked before timing out.
   void SetBeforeUnloadTimeoutDelayForTesting(const base::TimeDelta& timeout);
 
-  // Update the frame's opener in the renderer process in response to the
-  // opener being modified (e.g., with window.open or being set to null) in
-  // another renderer process.
-  void UpdateOpener();
-
   // Set this frame as focused in the renderer process.  This supports
   // cross-process window.focus() calls.
   void SetFocusedFrame();

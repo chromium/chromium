@@ -891,6 +891,11 @@ class CONTENT_EXPORT RenderFrameHostManager {
   std::unique_ptr<StoredPage> CollectPage(
       std::unique_ptr<RenderFrameHostImpl> main_render_frame_host);
 
+  // Update `render_frame_host`'s opener in the renderer process in response to
+  // the opener being modified (e.g., with window.open or being set to null) in
+  // another renderer process.
+  void UpdateOpener(RenderFrameHostImpl* render_frame_host);
+
   // For use in creating RenderFrameHosts.
   raw_ptr<FrameTreeNode> frame_tree_node_;
 

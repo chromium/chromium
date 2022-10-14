@@ -8804,24 +8804,6 @@ void RenderFrameHostImpl::OnUnloadTimeout() {
   parent_->RemoveChild(frame_tree_node_);
 }
 
-void RenderFrameHostImpl::UpdateOpener() {
-  TRACE_EVENT1("navigation", "RenderFrameHostImpl::UpdateOpener",
-               "render_frame_host", this);
-
-  // This frame (the frame whose opener is being updated) might not have had
-  // proxies for the new opener chain in its SiteInstance.  Make sure they
-  // exist.
-  if (frame_tree_node_->opener()) {
-    frame_tree_node_->opener()->render_manager()->CreateOpenerProxies(
-        GetSiteInstance(), frame_tree_node_, browsing_context_state_);
-  }
-
-  auto opener_frame_token =
-      frame_tree_node_->render_manager()->GetOpenerFrameToken(
-          GetSiteInstance()->group());
-  GetAssociatedLocalFrame()->UpdateOpener(opener_frame_token);
-}
-
 void RenderFrameHostImpl::SetFocusedFrame() {
   GetAssociatedLocalFrame()->Focus();
 }

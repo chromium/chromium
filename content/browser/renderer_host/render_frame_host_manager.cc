@@ -660,7 +660,7 @@ void RenderFrameHostManager::DidChangeOpener(
 
   if (render_frame_host_->GetSiteInstance()->group() !=
       source_site_instance_group) {
-    render_frame_host_->UpdateOpener();
+    UpdateOpener(render_frame_host_.get());
   }
 
   // Notify the speculative RenderFrameHosts as well.  This is necessary in case
@@ -668,7 +668,7 @@ void RenderFrameHostManager::DidChangeOpener(
   if (speculative_render_frame_host_ &&
       speculative_render_frame_host_->GetSiteInstance()->group() !=
           source_site_instance_group) {
-    speculative_render_frame_host_->UpdateOpener();
+    UpdateOpener(speculative_render_frame_host_.get());
   }
 }
 
@@ -760,6 +760,26 @@ std::unique_ptr<StoredPage> RenderFrameHostManager::CollectPage(
       std::move(main_render_frame_host), std::move(proxy_hosts),
       std::move(render_view_hosts));
   return stored_page;
+}
+
+void RenderFrameHostManager::UpdateOpener(
+    RenderFrameHostImpl* render_frame_host) {
+  TRACE_EVENT1("navigation", "RenderFrameHostManager::UpdateOpener",
+               "render_frame_host", render_frame_host);
+
+  // `render_frame_host` (the frame whose opener is being updated) might not
+  // have had proxies for the new opener chain in its SiteInstance.  Make sure
+  // they exist.
+  if (frame_tree_node_->opener()) {
+    frame_tree_node_->opener()->render_manager()->CreateOpenerProxies(
+        render_frame_host->GetSiteInstance(), frame_tree_node_,
+        render_frame_host->browsing_context_state());
+  }
+
+  auto opener_frame_token =
+      GetOpenerFrameToken(render_frame_host->GetSiteInstance()->group());
+  render_frame_host->GetAssociatedLocalFrame()->UpdateOpener(
+      opener_frame_token);
 }
 
 void RenderFrameHostManager::UnloadOldFrame(
