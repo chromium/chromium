@@ -92,10 +92,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include "base/nix/xdg_util.h"
-#endif
-
 namespace content {
 namespace {
 
@@ -218,13 +214,6 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
                                           std::move(cancel_request_callback));
   }
 };
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-base::FilePath GetTemporaryDownloadDirectory() {
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  return base::nix::GetXDGDirectory(env.get(), "XDG_DATA_HOME", ".local/share");
-}
-#endif
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>
 CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
@@ -655,13 +644,6 @@ bool DownloadManagerImpl::InterceptDownload(
 
 base::FilePath DownloadManagerImpl::GetDefaultDownloadDirectory() {
   base::FilePath default_download_directory;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // TODO(thomasanderson,crbug.com/784010): Remove this when all Linux
-  // distros with versions of GTK lower than 3.14.7 are no longer
-  // supported.  This should happen when support for Ubuntu Trusty and
-  // Debian Jessie are removed.
-  default_download_directory = GetTemporaryDownloadDirectory();
-#endif
 
   if (delegate_ && default_download_directory.empty()) {
     base::FilePath website_save_directory;  // Unused

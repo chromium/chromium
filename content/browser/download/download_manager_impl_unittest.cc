@@ -614,16 +614,7 @@ TEST_F(DownloadManagerTest, StartDownload) {
   EXPECT_CALL(GetMockDownloadManagerDelegate(), GetNextId_(_))
       .WillOnce(RunOnceCallback<0>(local_id));
 
-  // TODO(thomasanderson,crbug.com/784010): Remove this when all Linux
-  // distros with versions of GTK lower than 3.14.7 are no longer
-  // supported.  This should happen when support for Ubuntu Trusty and
-  // Debian Jessie are removed.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Doing nothing will set the default download directory to null.
-  EXPECT_CALL(GetMockDownloadManagerDelegate(), GetSaveDir(_, _, _)).Times(0);
-#else
   EXPECT_CALL(GetMockDownloadManagerDelegate(), GetSaveDir(_, _, _));
-#endif
 
   EXPECT_CALL(GetMockDownloadManagerDelegate(),
               ApplicationClientIdForFileScanning())
@@ -657,16 +648,7 @@ TEST_F(DownloadManagerTest, StartDownloadWithoutHistoryDB) {
   EXPECT_CALL(GetMockDownloadManagerDelegate(), GetNextId_(_))
       .WillOnce(RunOnceCallback<0>(download::DownloadItem::kInvalidId));
 
-  // TODO(thomasanderson,crbug.com/784010): Remove this when all Linux
-  // distros with versions of GTK lower than 3.14.7 are no longer
-  // supported.  This should happen when support for Ubuntu Trusty and
-  // Debian Jessie are removed.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Doing nothing will set the default download directory to null.
-  EXPECT_CALL(GetMockDownloadManagerDelegate(), GetSaveDir(_, _, _)).Times(0);
-#else
   EXPECT_CALL(GetMockDownloadManagerDelegate(), GetSaveDir(_, _, _));
-#endif
 
   EXPECT_CALL(GetMockDownloadManagerDelegate(),
               ApplicationClientIdForFileScanning())
