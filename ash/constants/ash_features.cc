@@ -1226,11 +1226,10 @@ BASE_FEATURE(kLacrosProfileMigrationForceOff,
              "LacrosProfileMigrationForceOff",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable this to turn on profile migration for non-googlers. Currently the
-// feature is only limited to googlers only.
+// Disable this to turn off profile migration for non-googlers.
 BASE_FEATURE(kLacrosProfileMigrationForAnyUser,
              "LacrosProfileMigrationForAnyUser",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, use `MoveMigrator` instead of `CopyMigrator` to migrate data.
 // `MoveMigrator` moves data from ash to lacros instead of copying them.

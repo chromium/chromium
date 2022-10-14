@@ -157,9 +157,6 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
 // and severity when an upgrade is detected.
 TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Forcibly enable Lacros Profile migration.
-  base::test::ScopedFeatureList feature_list(
-      ash::features::kLacrosProfileMigrationForAnyUser);
   auto set_lacros_enabled =
       crosapi::browser_util::SetLacrosEnabledForTest(true);
 #endif

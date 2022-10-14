@@ -405,9 +405,10 @@ bool IsProfileMigrationEnabled(const AccountId& account_id) {
     return false;
   }
 
-  //  Currently we turn on profile migration only for Googlers.
-  //  `kLacrosProfileMigrationForAnyUser` can be enabled to allow testing with
-  //  non-googler accounts.
+  // Now `kLacrosProfileMigrationForAnyUser` is enabled by default thus the
+  // following condition is false only when the account is not an internal
+  // google account (@google.com account) and the user has disabled
+  // `kLacrosProfileMigrationForAnyUser`.
   if (gaia::IsGoogleInternalAccountEmail(account_id.GetUserEmail()) ||
       base::FeatureList::IsEnabled(
           ash::features::kLacrosProfileMigrationForAnyUser))

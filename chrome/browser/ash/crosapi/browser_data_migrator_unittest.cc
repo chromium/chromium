@@ -449,8 +449,6 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
   {
     // If Lacros is not enabled, migration should not run.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {ash::features::kLacrosProfileMigrationForAnyUser}, {});
     EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
                   user, crosapi::browser_util::PolicyInitState::kAfterInit),
               crosapi::browser_util::MigrationMode::kCopy);
@@ -462,10 +460,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
   {
     // If Lacros is enabled, migration should run.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {ash::features::kLacrosSupport,
-         ash::features::kLacrosProfileMigrationForAnyUser},
-        {});
+    feature_list.InitWithFeatures({ash::features::kLacrosSupport}, {});
     EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
                   user, crosapi::browser_util::PolicyInitState::kAfterInit),
               crosapi::browser_util::MigrationMode::kCopy);
@@ -481,10 +476,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
   {
     // If migration is marked as completed, migration should not run.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        {ash::features::kLacrosSupport,
-         ash::features::kLacrosProfileMigrationForAnyUser},
-        {});
+    feature_list.InitWithFeatures({ash::features::kLacrosSupport}, {});
     EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
                   user, crosapi::browser_util::PolicyInitState::kAfterInit),
               crosapi::browser_util::MigrationMode::kCopy);
@@ -502,8 +494,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures(
         {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForAnyUser},
+         ash::features::kLacrosOnly},
         {});
     EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
                   user, crosapi::browser_util::PolicyInitState::kAfterInit),
@@ -524,8 +515,7 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures(
         {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForAnyUser},
+         ash::features::kLacrosOnly},
         {});
     EXPECT_EQ(crosapi::browser_util::GetMigrationMode(
                   user, crosapi::browser_util::PolicyInitState::kAfterInit),
@@ -535,4 +525,59 @@ TEST_F(BrowserDataMigratorRestartTest, MaybeRestartToMigrateMoveAfterCopy) {
         crosapi::browser_util::PolicyInitState::kAfterInit));
   }
 }
+
+TEST_F(BrowserDataMigratorRestartTest,
+       LacrosProfileMigrationForAnyUserDisabled) {
+  AddRegularUser("user@gmail.com");
+  const user_manager::User* const user =
+      ash::ProfileHelper::Get()->GetUserByProfile(testing_profile());
+
+  crosapi::browser_util::RecordDataVer(
+      local_state(), user->username_hash(),
+      base::Version(
+          base::StringPiece(crosapi::browser_util::kRequiredDataVersion)));
+  {
+    // If Lacros is enabled, migration should run.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures({ash::features::kLacrosSupport}, {});
+    EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+
+  {
+    // If Lacros is enabled but `kLacrosProfileMigrationForAnyUser` is disabled,
+    // migration should not run.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {}, {ash::features::kLacrosProfileMigrationForAnyUser});
+    EXPECT_FALSE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+}
+
+TEST_F(BrowserDataMigratorRestartTest,
+       LacrosProfileMigrationForAnyUserDisabledForGoogler) {
+  AddRegularUser("user@google.com");
+  const user_manager::User* const user =
+      ash::ProfileHelper::Get()->GetUserByProfile(testing_profile());
+
+  crosapi::browser_util::RecordDataVer(
+      local_state(), user->username_hash(),
+      base::Version(
+          base::StringPiece(crosapi::browser_util::kRequiredDataVersion)));
+  {
+    // If Lacros is enabled, migration should run even if
+    // `kLacrosProfileMigrationForAnyUser` is disabled for Googlers.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {ash::features::kLacrosSupport},
+        {ash::features::kLacrosProfileMigrationForAnyUser});
+    EXPECT_TRUE(BrowserDataMigratorImpl::MaybeRestartToMigrateInternal(
+        user->GetAccountId(), user->username_hash(),
+        crosapi::browser_util::PolicyInitState::kAfterInit));
+  }
+}
+
 }  // namespace ash

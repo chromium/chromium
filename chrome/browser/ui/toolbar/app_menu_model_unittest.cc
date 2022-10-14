@@ -160,10 +160,6 @@ TEST_F(AppMenuModelTest, Basics) {
   EXPECT_TRUE(detector->notify_upgrade());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Forcibly enable Lacros Profile migration,
-  // so that IDC_LACROS_DATA_MIGRATION can get visible.
-  base::test::ScopedFeatureList feature_list(
-      ash::features::kLacrosProfileMigrationForAnyUser);
   auto set_lacros_enabled =
       crosapi::browser_util::SetLacrosEnabledForTest(true);
 #endif

@@ -132,10 +132,7 @@ class BrowserDataMigratorCopyMigrateOnSignIn
   ~BrowserDataMigratorCopyMigrateOnSignIn() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport,
-         ash::features::kLacrosProfileMigrationForAnyUser},
-        {});
+    feature_list_.InitWithFeatures({ash::features::kLacrosSupport}, {});
 
     BrowserDataMigratorOnSignIn::SetUp();
   }
@@ -193,16 +190,6 @@ class BrowserDataMigratorMoveMigrateOnSignInByPolicy
   BrowserDataMigratorMoveMigrateOnSignInByPolicy& operator=(
       BrowserDataMigratorMoveMigrateOnSignInByPolicy&) = delete;
   ~BrowserDataMigratorMoveMigrateOnSignInByPolicy() override = default;
-
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {ash::features::kLacrosProfileMigrationForAnyUser}, {});
-
-    BrowserDataMigratorOnSignIn::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Enabling LacrosOnly by policy should trigger move migration during signin.
@@ -236,8 +223,7 @@ class BrowserDataMigratorMoveMigrateOnSignInByFeature
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForAnyUser},
+         ash::features::kLacrosOnly},
         {});
 
     BrowserDataMigratorOnSignIn::SetUp();
@@ -376,8 +362,7 @@ class BrowserDataMigratorMoveMigrateOnRestartInSessionByFeature
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
-         ash::features::kLacrosOnly,
-         ash::features::kLacrosProfileMigrationForAnyUser},
+         ash::features::kLacrosOnly},
         {});
 
     BrowserDataMigratorRestartInSession::SetUp();
@@ -408,13 +393,6 @@ class BrowserDataMigratorMoveMigrateOnRestartInSessionByPolicy
       BrowserDataMigratorMoveMigrateOnRestartInSessionByPolicy&) = delete;
   ~BrowserDataMigratorMoveMigrateOnRestartInSessionByPolicy() override =
       default;
-
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        ash::features::kLacrosProfileMigrationForAnyUser);
-
-    BrowserDataMigratorRestartInSession::SetUp();
-  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(
@@ -479,10 +457,7 @@ class BrowserDataMigratorForKiosk : public KioskBaseTest {
   ~BrowserDataMigratorForKiosk() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport,
-         ash::features::kLacrosProfileMigrationForAnyUser},
-        {});
+    feature_list_.InitWithFeatures({ash::features::kLacrosSupport}, {});
 
     KioskBaseTest::SetUp();
   }
