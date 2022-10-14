@@ -2662,6 +2662,23 @@ failing to fetch the updates which puts users' security at risk. -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.{Process}Throttle.IntervalBetweenStartAndProcess"
+    units="ms" expires_after="2023-10-13">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs the interval between when the {Process} URL loader starts a request and
+    when the {Process} URL loader is ready to process the response. Logs each
+    time the URL loader is ready to process the response and the start request
+    function is previously called. During this interval, Safe Browsing checks
+    are performend in parallel.
+  </summary>
+  <token key="Process">
+    <variant name="Browser" summary="browser"/>
+    <variant name="Renderer" summary="renderer"/>
+  </token>
+</histogram>
+
 <histogram name="SafeBrowsingBinaryUploadRequest.DlpResult"
     enum="BooleanSuccess" expires_after="2023-05-01">
   <owner>domfc@chromium.org</owner>

@@ -66,6 +66,8 @@ void RendererURLLoaderThrottle::WillStartRequest(
 
   original_url_ = request->url;
   pending_checks_++;
+  start_request_time_ = base::TimeTicks::Now();
+  is_start_request_called_ = true;
   // Use a weak pointer to self because |safe_browsing_| may not be owned by
   // this object.
   net::HttpRequestHeaders headers;
@@ -117,6 +119,12 @@ void RendererURLLoaderThrottle::WillProcessResponse(
   base::UmaHistogramBoolean(
       "SafeBrowsing.RendererThrottle.IsCheckCompletedOnProcessResponse",
       check_completed);
+  if (is_start_request_called_) {
+    base::UmaHistogramTimes(
+        "SafeBrowsing.RendererThrottle.IntervalBetweenStartAndProcess",
+        base::TimeTicks::Now() - start_request_time_);
+    is_start_request_called_ = false;
+  }
 
   if (check_completed)
     return;

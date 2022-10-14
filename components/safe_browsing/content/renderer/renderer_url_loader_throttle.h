@@ -86,6 +86,10 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
   size_t pending_slow_checks_ = 0;
   bool blocked_ = false;
 
+  // The time when |WillStartRequest| is called.
+  base::TimeTicks start_request_time_;
+  bool is_start_request_called_ = false;
+
   // The time when we started deferring the request.
   base::TimeTicks defer_start_time_;
   bool deferred_ = false;

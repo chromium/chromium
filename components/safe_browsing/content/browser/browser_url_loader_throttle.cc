@@ -227,6 +227,8 @@ void BrowserURLLoaderThrottle::WillStartRequest(
 
   original_url_ = request->url;
   pending_checks_++;
+  start_request_time_ = base::TimeTicks::Now();
+  is_start_request_called_ = true;
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&BrowserURLLoaderThrottle::CheckerOnIO::Start,
                                 io_checker_->AsWeakPtr(), request->headers,
@@ -280,6 +282,12 @@ void BrowserURLLoaderThrottle::WillProcessResponse(
   base::UmaHistogramBoolean(
       "SafeBrowsing.BrowserThrottle.IsCheckCompletedOnProcessResponse",
       check_completed);
+  if (is_start_request_called_) {
+    base::UmaHistogramTimes(
+        "SafeBrowsing.BrowserThrottle.IntervalBetweenStartAndProcess",
+        base::TimeTicks::Now() - start_request_time_);
+    is_start_request_called_ = false;
+  }
 
   if (check_completed)
     return;
