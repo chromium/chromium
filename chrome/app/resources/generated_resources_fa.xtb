@@ -619,7 +619,6 @@
 <translation id="1585717515139318619">‏برنامه دیگری در رایانه شما یک زمینه اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="1587129667417059148">با این کار همه داده‌ها و کوکی‌های ذخیره‌شده توسط <ph name="ORIGIN_NAME" /> پاک می‌شود</translation>
 <translation id="1587275751631642843">کنسول &amp;جاوا اسکریپت</translation>
 <translation id="1587907146729660231">دکمه روشن/خاموش را با انگشتتان لمس کنید</translation>
 <translation id="1588438908519853928">معمولی</translation>
@@ -1059,7 +1058,6 @@
 <translation id="1956167375087861299">سایت‌هایی که مجاز نیستند از شناسه‌ها برای پخش محتوای محافظت‌شده استفاده کنند</translation>
 <translation id="1956390763342388273">با این کار همه فایل‌ها از «<ph name="FOLDER_PATH" />» بارگذاری خواهد شد. تنها درصورتی که به این سایت اعتماد دارید، این کار را انجام دهید.</translation>
 <translation id="1962233722219655970">‏این صفحه از برنامه Native Client استفاده می‌کند که روی رایانه شما کار نمی‌کند.</translation>
-<translation id="1963227389609234879">حذف همه</translation>
 <translation id="1963976881984600709">محافظت استاندارد</translation>
 <translation id="1965624977906726414">مجوز خاصی ندارد.</translation>
 <translation id="1969654639948595766">‏گزارش‌های نوشتاری WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
@@ -1214,7 +1212,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />توجه:<ph name="END_BOLD" />  سیستم درطول پردازش مجدداً راه‌اندازی می‌شود.</translation>
 <translation id="2095774564753225041">انواع فایل‌های پشتیبانی‌شده</translation>
-<translation id="2096715839409389970">پاک کردن کوکی‌های شخص ثالث</translation>
 <translation id="2098805196501063469">بررسی گذرواژه‌های باقی‌مانده</translation>
 <translation id="2099686503067610784">مجوز سرور "<ph name="CERTIFICATE_NAME" />" حذف شود؟</translation>
 <translation id="2100273922101894616">ورود به سیستم خودکار</translation>
@@ -1406,7 +1403,6 @@
 <translation id="2274840746523584236">‏Chromebook خود را شارژ کنید</translation>
 <translation id="2276503375879033601">افزودن برنامه‌های بیشتر</translation>
 <translation id="2276910256003242519">درحال پاک کردن داده‌ها…</translation>
-<translation id="2277255602909579701">همه کوکی‌ها و داده‌های سایت</translation>
 <translation id="2278562042389100163">باز کردن پنجرهٔ مرورگر</translation>
 <translation id="2278668501808246459">راه‌اندازی مدیر محتوی</translation>
 <translation id="2280486287150724112">حاشیه راست</translation>
@@ -2069,7 +2065,6 @@
 <translation id="2851728849045278002">مشکلی پیش آمد. برای جزئیات بیشتر کلیک کنید.</translation>
 <translation id="2852385257476173980">وقتی وب را مرور می‌کنید، ممکن است فهرست سایت‌هایی که بازدید می‌کنید در اینجا نشان داده شود</translation>
 <translation id="285241945869362924">به‌طور خودکار زیرنویس ناشنوایان برای صدا و ویدیو ایجاد می‌کند. صداها و زیرنویس ناشنوایان هرگز از دستگاهتان خارج نمی‌شوند.</translation>
-<translation id="2854896010770911740">حذف کوکی‌های شخص ثالث</translation>
 <translation id="2856776373509145513">ایجاد محتوی جدید</translation>
 <translation id="2858138569776157458">سایت‌های برتر</translation>
 <translation id="2859383038987078242">‏آزمایش‌های عیب‌یابی ChromeOS را اجرا کند.</translation>
@@ -2353,7 +2348,6 @@
 <translation id="3122496702278727796">ایجاد دایرکتوری داده ناموفق بود</translation>
 <translation id="3124111068741548686">کنترل‌های کاربر</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127156390846601284">این کار باعث حذف داده‌های ذخیره‌شده روی دستگاهتان برای همه سایت‌های نشان‌داده‌شده می‌شود. می‌خواهید ادامه دهید؟</translation>
 <translation id="3127860049873093642">‏برای اجتناب از مشکلات شارژ و عملکرد، از آداپتور برق Dell یا USB Type-C سازگاری استفاده کنید.</translation>
 <translation id="3127862849166875294">‏تغییر اندازه دیسک Linux</translation>
 <translation id="3127882968243210659">‏برای راه‌اندازی Google Play، <ph name="MANAGER" /> از شما می‌خواهد از داده‌هایتان پشتیبان بگیرید و این Chromebook را به تنظیمات کارخانه بازنشانی کنید.</translation>
@@ -2480,7 +2474,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{فایل}one{# فایل}other{# فایل}}</translation>
 <translation id="326999365752735949">در حال بارگیری تفاوت</translation>
 <translation id="3270965368676314374">خواندن، تغییر و حذف عکس‌ها، موسیقی و سایر رسانه‌ها از رایانه‌تان</translation>
-<translation id="327147043223061465">مشاهده همه کوکی‌ها و داده‌های سایت</translation>
 <translation id="3274763671541996799">شما به حالت تمام صفحه رفته‌اید.</translation>
 <translation id="3275778809241512831">کلید امنیتی توکار درحال‌حاضر امن نیست. لطفاً این کلید را از هرسرویسی که از آن با این کلید استفاده می‌کنید، بردارید. برای حل این مشکل، لطفاً کلید امنیتی را بازنشانی کنید.</translation>
 <translation id="3275778913554317645">باز کردن به‌عنوان پنجره</translation>
@@ -2640,7 +2633,6 @@
 <translation id="3429160811076349561">ویژگی‌های آزمایشی خاموش است</translation>
 <translation id="3429271624041785769">زبان محتوای وب</translation>
 <translation id="3429275422858276529">این صفحه را نشانک‌گذاری کنید تا بعداً آن را به‌آسانی پیدا کنید</translation>
-<translation id="3432227430032737297">حذف همه موارد نشان‌ داده‌شده</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">قفل شدن با دور شدن</translation>
 <translation id="3433621910545056227">اوه! این سیستم نتوانست قفل ویژگی‌های زمان نصب دستگاه را ایجاد کند.</translation>
@@ -3970,6 +3962,7 @@
 <translation id="4677772697204437347">‏حافظه GPU</translation>
 <translation id="467823995058589466">دوربین خاموش شد</translation>
 <translation id="4680105648806843642">این صفحه بی‌صدا شده است</translation>
+<translation id="4680112532510845139">تصویر را به اینجا بکشید</translation>
 <translation id="4681453295291708042">غیرفعال کردن «هم‌رسانی با اطراف»</translation>
 <translation id="4681512854288453141">خط‌مشی منبع</translation>
 <translation id="4681930562518940301">باز کردن &amp;تصویر اصلی در برگه جدید</translation>
@@ -4566,6 +4559,7 @@
 <translation id="527605982717517565">همیشه جاوا اسکریپت در <ph name="HOST" /> مجاز باشد</translation>
 <translation id="5277127016695466621">نمایش پانل کناری</translation>
 <translation id="5278823018825269962">شناسه وضعیت</translation>
+<translation id="5279600392753459966">انسداد همه</translation>
 <translation id="5280064835262749532">به‌روزرسانی اطلاعات کاربری <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">وقتی همه پنجره‌ها را می‌بندید، کوکی‌ها و داده‌های سایت پاک شود</translation>
 <translation id="5280335021886535443">برای کانونی کردن این حبابک، |<ph name="ACCELERATOR" />| را فشار دهید.</translation>
@@ -4935,6 +4929,7 @@
            و <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> تأثیر می‌گیرد</translation>
 <translation id="5620568081365989559">‏DevTools درخواست دسترسی کامل به <ph name="FOLDER_PATH" /> را دارد. مراقب باشید هیچ اطلاعات حساسی را در دسترس قرار ندهید.</translation>
 <translation id="5620612546311710611">آمار استفاده</translation>
+<translation id="562250930904332809">&amp;غیرفعال کردن زیرنویس ناشنوایان زنده</translation>
 <translation id="5623282979409330487">این سایت به حسگرهای حرکتی دسترسی دارد.</translation>
 <translation id="5623842676595125836">گزارش</translation>
 <translation id="5624120631404540903">مدیریت گذرواژه‌ها</translation>
@@ -5082,7 +5077,6 @@
 <translation id="5772114492540073460">‏<ph name="PARALLELS_NAME" /> به شما اجازه می‌دهد برنامه‌های Windows®‎ را در Chromebook اجرا کنید. <ph name="MINIMUM_SPACE" /> فضای خالی برای نصب توصیه می‌شود.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{می‌توانید منتظر پاسخگویی صفحه بمانید یا از آن خارج شوید.}one{می‌توانید منتظر پاسخگویی صفحه‌ها بمانید یا از آن‌ها خارج شوید.}other{می‌توانید منتظر پاسخگویی صفحه‌ها بمانید یا از آن‌ها خارج شوید.}}</translation>
 <translation id="5774295353725270860">‏باز کردن برنامه Files</translation>
-<translation id="577624874850706961">جستجوی کوکی‌ها</translation>
 <translation id="5776450228446082914">فهرست وب‌سایت‌هایی که می‌توانند در هر دو مرورگر باز شوند</translation>
 <translation id="5776571780337000608">می‌توانید فایل‌های پشتیبانی‌شده را با این برنامه ازطریق مرورگر فایل یا برنامه‌های دیگر باز کنید و ویرایش کنید. برای کنترل اینکه کدام فایل‌ها این برنامه را به‌طور پیش‌فرض باز کنند، <ph name="BEGIN_LINK" />با نحوه تنظیم برنامه‌های پیش‌فرض در دستگاه آشنا شوید<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">‏باز کردن Chrome</translation>
@@ -5339,7 +5333,6 @@
 <translation id="6007240208646052708">جستجوی گفتاری به زبان شما در دسترس نیست.</translation>
 <translation id="6010651352520077187">‏وقتی روشن باشد، «ترجمه Google» پیشنهاد می‌کند که سایت‌ها را به زبان برگزیده‌تان ترجمه کند. «ترجمه Google» می‌تواند سایت‌ها را به‌طور خودکار ترجمه کند.</translation>
 <translation id="6011193465932186973">اثر انگشت</translation>
-<translation id="6011449291337289699">پاک کردن داده‌های سایت</translation>
 <translation id="6011908034087870826">درحال ارسال پیوند به <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">دریافت زیرنویس ناشنوایان برای صدا و ویدیو</translation>
 <translation id="6015796118275082299">سال</translation>
@@ -6712,7 +6705,6 @@
 <translation id="7345706641791090287">گذرواژه‌تان را تأیید کنید</translation>
 <translation id="7345919885156673810">مورد انتخاب‌شده به زبان <ph name="LANGUAGE" /> نیست</translation>
 <translation id="7346909386216857016">بله متوجه شدم.</translation>
-<translation id="7347452120014970266">با این کار همه داده‌ها و کوکی‌های ذخیره‌شده توسط <ph name="ORIGIN_NAME" /> و برنامه‌های نصب‌شده آن پاک می‌شود</translation>
 <translation id="7347751611463936647">‏برای استفاده از این برنامهٔ افزودنی، "<ph name="EXTENSION_KEYWORD" />"، سپس TAB و نظر یا جستجوی خود را تایپ کنید.</translation>
 <translation id="7347943691222276892">برای خارج شدن از <ph name="SUBPAGE_TITLE" />، کلیک کنید.</translation>
 <translation id="7348093485538360975">صفحه‌کلید مجازی</translation>
@@ -7239,7 +7231,6 @@
 <translation id="7826249772873145665">‏اشکال‌زدایی ADB (پل اشکال‌زدایی Android) غیرفعال شد</translation>
 <translation id="7826254698725248775">شناسه دستگاه یکسان نیست.</translation>
 <translation id="7828642077514646543">خطا: گواهینامه رمزگشایی نمی‌شود</translation>
-<translation id="7828731929332799387">با این کار همه کوکی‌ها و داده‌های سایت موجود در بافت‌های شخص ثالث حذف می‌شود. می‌خواهید ادامه دهید؟</translation>
 <translation id="7829877209233347340">از ولی‌تان بخواهید به سیستم وارد شود و با افزودن حساب محل تحصیل موافقت کند</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">‏اگر Google تخفیفی را پیدا کند، در این صفحه آن را خواهید دید</translation>
@@ -7802,7 +7793,6 @@
 <translation id="8337020675372081178">{HOURS,plural, =1{این دستگاه به‌مدت یک ساعت ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}one{این دستگاه به‌مدت {HOURS} ساعت ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}other{این دستگاه به‌مدت {HOURS} ساعت ذخیره خواهد شد و دفعه بعد می‌توانید بدون کد متصل شوید. سرپرستتان این مورد را تنظیم کرده است.}}</translation>
 <translation id="8337047789441383384">قبلاً این کلید امنیتی را ثبت کرده‌اید. لازم نیست آن را دوباره ثبت کنید.</translation>
 <translation id="8338952601723052325">وب‌سایت برنامه‌نویس</translation>
-<translation id="8339059274628563283">داده‌های ذخیره‌شده محلی <ph name="SITE" /></translation>
 <translation id="833986336429795709">برای باز کردن این پیوند، برنامه‌ای انتخاب کنید</translation>
 <translation id="8340547030807793004">کنش‌های بیشتر برای <ph name="DEVICE" /></translation>
 <translation id="8342221978608739536">امتحان نکرده‌ام</translation>
@@ -8453,6 +8443,7 @@
 <translation id="8970887620466824814">مشکلی پیش آمد.</translation>
 <translation id="89720367119469899">فرار</translation>
 <translation id="8972513834460200407">‏لطفاً با سرپرست شبکه خود بررسی کنید تا مطمئن شوید فایروال از بارگیری از سرورهای Google جلوگیری نمی‌کند.</translation>
+<translation id="8973263196882835828">&amp;فعال کردن زیرنویس ناشنوایان زنده</translation>
 <translation id="8973557916016709913">برداشتن سطح بزرگ‌نمایی</translation>
 <translation id="8973596347849323817">می‌توانید این دستگاه را متناسب با نیازهایتان سفارشی کنید. می‌توانید بعداً در «تنظیمات»، این ویژگی‌های دسترس‌پذیری را تغییر دهید.</translation>
 <translation id="897414447285476047">فایل مقصد به‌علت مشکل اتصال، ناقص بود.</translation>

@@ -340,9 +340,9 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2865888419503095837">Podatki o omrežju</translation>
 <translation id="2872961005593481000">Zaustavitev</translation>
 <translation id="2878884018241093801">Ni nedavnih elementov</translation>
+<translation id="2885950158625301909">Več o tem</translation>
 <translation id="2891209721153296020">»Preklic izbire«</translation>
 <translation id="2894949423239620203">Kabel lahko vpliva na delovanje.</translation>
-<translation id="2903844815300039659">Vzpostavljena povezava z omrežjem <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Posnetki zaslona</translation>
 <translation id="2941112035454246133">Nizka</translation>
 <translation id="2942350706960889382">Zasidrana lupa</translation>
@@ -1051,6 +1051,7 @@ Nova namestitev</translation>
 <translation id="6961121602502368900">Utišanje telefona ni na voljo v delovnem profilu</translation>
 <translation id="6961840794482373852">Bližnjica na tipkovnici alt + puščica gor je spremenjena. Če želite uporabiti tipko za stran navzgor, pritisnite tipko za <ph name="LAUNCHER_KEY_NAME" /> in puščico gor.</translation>
 <translation id="696267987219125751">Kadriranje fotoaparata je izklopljeno.</translation>
+<translation id="6964690557625666701">Vsi pripeti elementi plešejo</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6972754398087986839">Začnite</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1360,8 @@ Nova namestitev</translation>
 <translation id="8734991477317290293">Morda poskuša beležiti vse, kar natipkate</translation>
 <translation id="8735678380411481005">Barva osvetlitve tipkovnice</translation>
 <translation id="8735953464173050365">Prikaz nastavitev tipkovnice. Izbrana je tipkovnica <ph name="KEYBOARD_NAME" />.</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Omogočite dostop do kamere, če želite aplikacijam in spletnim stranem, ki imajo dovoljenje za uporabo kamer, dovolite uporabo kamer, povezanih s to napravo.</translation>
 <translation id="8755498163081687682">Preverjanje identitete: Spletno mesto <ph name="ORIGIN_NAME" /> želi potrditi, ali ste to res vi.</translation>
 <translation id="875593634123171288">Prikaz nastavitev omrežja VPN</translation>

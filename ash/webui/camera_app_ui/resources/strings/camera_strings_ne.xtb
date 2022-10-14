@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="1057925581724305206">फुल एचडी (१०८० पिक्सेल)</translation>
 <translation id="1113173431709655881">क्यामेरा मोड</translation>
 <translation id="1153190633558910465">ग्रिड अफ गर्नुहोस्</translation>
 <translation id="1175958423215084756">लिंक भेट्टियो। <ph name="HOSTNAME" /></translation>
@@ -18,6 +19,7 @@
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
 <translation id="1627744224761163218">४ x ४</translation>
+<translation id="1644345013557678440">एचडी (७२० पिक्सेल)</translation>
 <translation id="1664224225747386870">केही पनि रेकर्ड गरिएन</translation>
 <translation id="1838104802459806957">माथितिर ढल्काइयोस्</translation>
 <translation id="1851169887664797861">क्यामेरासम्बन्धी थप कन्ट्रोलहरू उपलब्ध छन्</translation>
@@ -90,6 +92,7 @@
 <translation id="4705093842003735294">पूर्ण रिजोल्युसन</translation>
 <translation id="4890010094662541459">३ x ३</translation>
 <translation id="491895758387112773">मल्टिस्ट्रिम भिडियो रेकर्डिङ</translation>
+<translation id="4984613436295737187">क्वाड एचडी (१४४० पिक्सेल)</translation>
 <translation id="5034763830503483128">फोटोको एस्पेक्ट रेसियो</translation>
 <translation id="5057360777601936059">तपाईंको क्यामेरा हाल उपलब्ध छैन।
         कृपया क्यामेरा राम्ररी जडान गरिएको छ कि छैन भनी जाँच गर्नुहोस्।</translation>
@@ -98,6 +101,7 @@
 <translation id="5266635337630551423">कागजातको सिरानको बायाँ कुना</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5320594929574852403">बायाँतिर सारिँदै छ</translation>
+<translation id="5374917190292010970">४K (२१६० पिक्सेल)</translation>
 <translation id="5444515100983837161">डकुमेन्टका सबै किनारा फ्रेमभित्र पार्नुहोस्। डकुमेन्ट र पृष्ठभूमि बेग्लाबेग्लै रङका भएका खण्डमा स्क्यान गर्ने सुविधाले सबैभन्दा राम्ररी काम गर्छ।</translation>
 <translation id="5662366948659129155">पेज <ph name="COUNT" /> स्क्यान गरिँदै छ</translation>
 <translation id="5671277269877808209">वर्गाकार</translation>

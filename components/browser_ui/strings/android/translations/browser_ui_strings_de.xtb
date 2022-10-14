@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Kamera ausschalten</translation>
 <translation id="2717722538473713889">E-Mail-Adressen</translation>
 <translation id="2750481671343847896">Websites dürfen Anmeldungsaufforderungen von Identitätsdiensten anzeigen.</translation>
-<translation id="2785051990912111074">Mit dieser Option werden Cookies für <ph name="WEBSITE" /> gelöscht</translation>
 <translation id="2822354292072154809">Möchtest du wirklich alle Websiteberechtigungen für <ph name="CHOSEN_OBJECT_NAME" /> zurücksetzen?</translation>
 <translation id="2870560284913253234">Website</translation>
 <translation id="2874939134665556319">Vorheriger Titel</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Zuletzt besucht am <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Keine Kontakte gefunden</translation>
 <translation id="4996978546172906250">Teilen über</translation>
-<translation id="5014906230196386306">Cookies löschen?</translation>
 <translation id="5039804452771397117">Zulassen</translation>
 <translation id="5048398596102334565">Websites den Zugriff auf Bewegungssensoren erlauben (empfohlen)</translation>
 <translation id="5050380848339752099">Diese Website ist im Begriff, Informationen mit einer Anwendung außerhalb des Inkognitomodus zu teilen.</translation>

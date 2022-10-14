@@ -692,6 +692,7 @@
 <translation id="2728127805433021124">サーバーの証明書は脆弱な署名アルゴリズムを使用して署名されています。</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />接続診断ツールを実行する<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">クラシック音楽</translation>
+<translation id="2734319753272419592">カートに入れたアイテムの割引情報の検索を Google に許可します。見つかった割引情報はカートに自動的に表示されます。</translation>
 <translation id="2738330467931008676">受け取り場所の住所を選択</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742511345840685325">卓球</translation>
@@ -1152,6 +1153,7 @@
 <translation id="4040350669425716613">大学</translation>
 <translation id="405399507749852140">値下げしたサイトがある場合に通知します</translation>
 <translation id="4056223980640387499">セピア</translation>
+<translation id="4063063121357725926">Google でカートの割引情報を検索</translation>
 <translation id="4063924980214801036">デバイスのロック解除を使用してカードをすばやく確認する</translation>
 <translation id="4067098466788473230">奨学金</translation>
 <translation id="4067947977115446013">有効なアドレスの追加</translation>

@@ -340,9 +340,9 @@
 <translation id="2865888419503095837">ข้อมูลเครือข่าย</translation>
 <translation id="2872961005593481000">ปิด</translation>
 <translation id="2878884018241093801">ไม่มีรายการล่าสุด</translation>
+<translation id="2885950158625301909">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="2891209721153296020">"ยกเลิกการเลือก"</translation>
 <translation id="2894949423239620203">สายสัญญาณอาจส่งผลต่อประสิทธิภาพ</translation>
-<translation id="2903844815300039659">เชื่อมต่อกับ <ph name="NAME" /> <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">การจับภาพหน้าจอ</translation>
 <translation id="2941112035454246133">ต่ำ</translation>
 <translation id="2942350706960889382">แว่นขยายหน้าจอบางส่วน</translation>
@@ -1051,6 +1051,7 @@
 <translation id="6961121602502368900">ฟีเจอร์ปิดเสียงโทรศัพท์ใช้งานไม่ได้ในโปรไฟล์งาน</translation>
 <translation id="6961840794482373852">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + ลูกศรขึ้น หากต้องการใช้แป้น Page Up ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขึ้น</translation>
 <translation id="696267987219125751">การจัดเฟรมกล้องปิดอยู่</translation>
+<translation id="6964690557625666701">ทุกรายการที่ปักหมุดไม่ได้อยู่ในแถบ</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6972754398087986839">เริ่มต้นใช้งาน</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
@@ -1359,6 +1360,8 @@
 <translation id="8734991477317290293">แป้นพิมพ์นี้อาจพยายามขโมยการกดแป้นพิมพ์ของคุณ</translation>
 <translation id="8735678380411481005">สีไฟแบ็กไลต์ของแป้นพิมพ์</translation>
 <translation id="8735953464173050365">แสดงการตั้งค่าแป้นพิมพ์ เลือก<ph name="KEYBOARD_NAME" />ไว้</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">เปิดการเข้าถึงกล้องเพื่ออนุญาตให้แอปและหน้าเว็บที่มีสิทธิ์ดังกล่าวใช้กล้องที่เชื่อมต่อกับอุปกรณ์นี้</translation>
 <translation id="8755498163081687682">ยืนยันตัวตนของคุณ: <ph name="ORIGIN_NAME" /> ต้องการยืนยันว่าเป็นคุณ</translation>
 <translation id="875593634123171288">แสดงการตั้งค่า VPN</translation>

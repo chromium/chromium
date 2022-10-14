@@ -340,9 +340,9 @@
 <translation id="2865888419503095837">የአውታረ መረብ መረጃ</translation>
 <translation id="2872961005593481000">ዝጋ</translation>
 <translation id="2878884018241093801">ምንም የቅርብ ጊዜ ንጥሎች የሉም</translation>
+<translation id="2885950158625301909">የበለጠ ለመረዳት</translation>
 <translation id="2891209721153296020">«አትምረጥ»</translation>
 <translation id="2894949423239620203">ገመድ በአፈጻጸም ላይ ተጽዕኖ ሊያሳድር ይችላል</translation>
-<translation id="2903844815300039659">ከ<ph name="NAME" /> ጋር ተገናኝቷል፣ <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">የማያ ገጽ ምስሎች</translation>
 <translation id="2941112035454246133">ዝቅተኛ</translation>
 <translation id="2942350706960889382">የተተከለ ማጉያ</translation>
@@ -1051,6 +1051,7 @@
 <translation id="6961121602502368900">በሥራ መገለጫ ላይ የስልክ ድምጽን ማጥፋት አይገኝም</translation>
 <translation id="6961840794482373852">የAlt + የላይ ቀስት ቁልፍ ሰሌዳ አቋራጭ ተለውጧል። የገጽ የላይ ቁልፍ ለመጠቀም የ<ph name="LAUNCHER_KEY_NAME" /> ቁልፍ + የላይ ቀስት ይጫኑ።</translation>
 <translation id="696267987219125751">የካሜራ ክፈፍ መስራት ጠፍቷል።</translation>
+<translation id="6964690557625666701">ሁሉም የተሰኩ ንጥሎች እየታዩ አይደለም</translation>
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6972754398087986839">አስጀማሪ መመሪያ</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1360,8 @@
 <translation id="8734991477317290293">የእርስዎን የቁልፍ ጭረቶች ለመስረቅ እየሞከረ ሊሆን ይችላል</translation>
 <translation id="8735678380411481005">የቁልፍ ሰሌዳ የጀርባ ብርሃን ቀለም</translation>
 <translation id="8735953464173050365">የቁልፍ ሰሌዳ ቅንብሮችን አሳይ። <ph name="KEYBOARD_NAME" /> ተመርጧል</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />፣
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">የካሜራ ፈቃድ ያላቸው መተግበሪያዎች እና ድረ-ገጾች ከዚህ መሣሪያ ጋር የተገናኘውን ካሜራ(ዎች) እንዲጠቀሙ ለመፍቀድ የካሜራ መዳረሻን ያብሩ።</translation>
 <translation id="8755498163081687682">የእርስዎን ማንነት ያረጋግጡ፦ <ph name="ORIGIN_NAME" /> እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="875593634123171288">የቪፒኤን ቅንብሮችን አሳይ</translation>

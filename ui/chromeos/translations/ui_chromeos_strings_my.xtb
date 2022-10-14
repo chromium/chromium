@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">ယခု မလို</translation>
 <translation id="3486821258960016770">မွန်ဂိုလီးယား</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> အမှားများ။</translation>
-<translation id="3495810061346586977">ဤဖိုင်ကလျှို့ဝှက်ဖြစ်ပြီး စီမံခန့်ခွဲသူ၏မူဝါဒဖြင့် ကန့်သတ်ချက်များနှင့်အညီ ဖြစ်သည်။ <ph name="BEGIN_LINK_HELP" />ပိုမိုလေ့လာရန်<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်များ</translation>
 <translation id="3522708245912499433">ပေါ်တူဂီ</translation>
 <translation id="3524311639100184459">သတိ- ဤဖိုင်များသည် ယာယီဖြစ်ပြီး ဒစ်ခ်နေရာလွတ်ပြုလုပ်ရန် အလိုအလျောက် ဖျက်နိုင်ပါသည်။  <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
@@ -456,6 +455,7 @@
 <translation id="4900532980794411603">Parallels Desktop အား မျှဝေရန်</translation>
 <translation id="4902546322522096650">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ချိတ်ဆက်ရန်</translation>
 <translation id="4906580650526544301">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="PHONE_NAME" />၊ <ph name="PROVIDER_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" />%၊ အသေးစိတ်</translation>
+<translation id="4929673617759421391">ဤဖိုင်ကူးထည့်ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="4935975195727477204">ဂါဇာနီယာပန်း</translation>
 <translation id="4943368462779413526">ဘောလုံး</translation>
 <translation id="4961158930123534723">ဖိုင်တွဲ 1 ခုကို Parallels Desktop အား မျှဝေထားသည်</translation>
@@ -512,6 +512,7 @@
 <translation id="5278111733643988471">ဤဖိုင်ကို ပြန်ယူရန် အမှိုက်ပုံးပြင်ပရှိ ဖိုင်တွဲအသစ်ထဲသို့ ဖိဆွဲပါ။ ဤဖိုင်၏ မူရင်းဖိုင်တွဲ “<ph name="PARENT_FOLDER_NAME" />” ကို ဖျက်လိုက်သည်။</translation>
 <translation id="5286194356314741248">ရှာဖွေနေသည်</translation>
 <translation id="5288441970121584418">အသားညှပ်ပေါင်မုန့်လုံး</translation>
+<translation id="5293615890992542006">ဤဖိုင်ရွှေ့ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="5305688511332277257">ဘာမှ မသွင်းထား</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5318819489018851358">Linux ဖြင့် မျှဝေရန်</translation>
@@ -713,6 +714,7 @@
 <translation id="6993826899923627728">ဤဖိုင်များသည် အမှိုက်ပုံးထဲတွင် ရှိသည်</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> ဖိုင်တွဲရွေးထား</translation>
 <translation id="7008426324576352165">အပ်လုဒ်ပြီးစီးနိုင်ရန် သင့်အဖွဲ့အစည်းက သိုလှောင်ခန်း ထပ်မံလိုအပ်ပါသည်။</translation>
+<translation id="7009985720488544166">ဖိုင် <ph name="COUNT" /> ဖိုင် ရွှေ့ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">ထည့်သွင်းခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="7031639531908619281">တူရကီ</translation>
@@ -972,6 +974,7 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">ကာဇာခ်</translation>
 <translation id="9200427192836333033">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခု ထုတ်ယူပြီးပြီ။</translation>
+<translation id="9210751050717126865">ဖိုင် <ph name="COUNT" /> ဖိုင် ကူးထည့်ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="9213073329713032541">စတင်ထည့်သွင်းနေပါပြီ။</translation>
 <translation id="9219103736887031265">ပုံများ</translation>
 <translation id="9219908252191632183">လ</translation>

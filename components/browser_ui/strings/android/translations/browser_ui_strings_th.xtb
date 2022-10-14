@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">ปิดกล้อง</translation>
 <translation id="2717722538473713889">อีเมล</translation>
 <translation id="2750481671343847896">เว็บไซต์สามารถแสดงข้อความแจ้งให้ลงชื่อเข้าใช้จากบริการระบุตัวตนได้</translation>
-<translation id="2785051990912111074">ตัวเลือกนี้จะล้างคุกกี้ของ <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">แน่ใจไหมว่าต้องการรีเซ็ตสิทธิ์ทั้งหมดของเว็บไซต์สำหรับ <ph name="CHOSEN_OBJECT_NAME" /></translation>
 <translation id="2870560284913253234">เว็บไซต์</translation>
 <translation id="2874939134665556319">แทร็กก่อนหน้า</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">เข้าชมล่าสุด <ph name="DATE" /></translation>
 <translation id="4994033804516042629">ไม่พบรายชื่อติดต่อ</translation>
 <translation id="4996978546172906250">แชร์ผ่าน</translation>
-<translation id="5014906230196386306">ล้างคุกกี้ใช่ไหม</translation>
 <translation id="5039804452771397117">อนุญาต</translation>
 <translation id="5048398596102334565">อนุญาตให้เว็บไซต์เข้าถึงเซ็นเซอร์ตรวจจับความเคลื่อนไหว (แนะนำ)</translation>
 <translation id="5050380848339752099">เว็บไซต์นี้กำลังจะแชร์ข้อมูลกับแอปนอกโหมดไม่ระบุตัวตน</translation>

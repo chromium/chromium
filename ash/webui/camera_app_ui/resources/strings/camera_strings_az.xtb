@@ -2,9 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="1057925581724305206">Tam HD (1080p)</translation>
+<translation id="1076394037877376434"><ph name="PAGE_NUMBER" /> saylı səhifəni silin</translation>
 <translation id="1113173431709655881">Kamera rejimi</translation>
 <translation id="1153190633558910465">Tor deaktivdir</translation>
 <translation id="1175958423215084756">Keçid aşkarlanıb. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Səhifə <ph name="PAGE_NUMBER" /> silindi</translation>
 <translation id="1258009455399840361">Saat əqrəbi istiqamətində 90 dərəcə fırladın</translation>
 <translation id="1276998909102132017">Qalereya şəkilləri</translation>
 <translation id="1300209025925956156">Sənədinizi skanlayın</translation>

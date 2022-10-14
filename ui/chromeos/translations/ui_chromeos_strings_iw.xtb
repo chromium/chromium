@@ -280,7 +280,6 @@
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3486821258960016770">מונגולית</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> שגיאות.</translation>
-<translation id="3495810061346586977">הקובץ הזה סודי וכפוף להגבלות של מדיניות האדמין. <ph name="BEGIN_LINK_HELP" />מידע נוסף<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, פרטים</translation>
 <translation id="3522708245912499433">פורטוגזית</translation>
 <translation id="3524311639100184459">זהירות: הקבצים האלה זמניים, וייתכן שהם יימחקו באופן אוטומטי כדי לפנות מקום בכונן.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
@@ -645,6 +644,7 @@
 <translation id="642282551015776456">ייתכן שלא ניתן להשתמש בשם זה כשם קובץ או תיקייה</translation>
 <translation id="6423031066725912715">‏וייטנאמית עם מקלדת TCVN</translation>
 <translation id="6430271654280079150">נותר לך עוד ניסיון אחד.</translation>
+<translation id="643243556292470964">הקבצים שנמחקו מועברים עכשיו לאשפה</translation>
 <translation id="6485131920355264772">נכשל בקבלת מידע על שטח האחסון</translation>
 <translation id="6495925982925244349">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, הרשת מנוהלת על ידי מנהל המערכת שלך, פרטים</translation>
 <translation id="649877868557234318">מתבצע חילוץ של הקובץ <ph name="FILE_NAME" /> אל <ph name="FOLDER_NAME" /></translation>

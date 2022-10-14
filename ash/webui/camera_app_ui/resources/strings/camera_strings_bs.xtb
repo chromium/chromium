@@ -2,11 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="1057925581724305206">Full HD (1080 p)</translation>
-<translation id="1076394037877376434">Izbriši stranicu <ph name="PAGE_NUMBER" /></translation>
+<translation id="1076394037877376434">Izbriši <ph name="PAGE_NUMBER" />. stranicu</translation>
 <translation id="1113173431709655881">Način rada kamere</translation>
 <translation id="1153190633558910465">Rešetka je isključena</translation>
 <translation id="1175958423215084756">Link je otkriven. <ph name="HOSTNAME" /></translation>
-<translation id="1197694886744716213">Stranica <ph name="PAGE_NUMBER" /> je izbrisana</translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. stranica je izbrisana</translation>
 <translation id="1258009455399840361">Rotiranje 90 stepeni udesno</translation>
 <translation id="1276998909102132017">Slike iz Galerije</translation>
 <translation id="1300209025925956156">Skenirajte dokument</translation>

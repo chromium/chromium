@@ -16,6 +16,7 @@
 <translation id="1385859895174722837">Google Assistant Chromiumissa</translation>
 <translation id="1396446129537741364">Chromium yrittää näyttää salasanat.</translation>
 <translation id="1414495520565016063">Olet kirjautunut Chromiumiin!</translation>
+<translation id="1493803763272692301">Saat eniten irti Chromiumista</translation>
 <translation id="1524282610922162960">Jaa Chromium-välilehti</translation>
 <translation id="1553461853655228091">Chromium tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Ylläpitäjä vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön.}=1{Ylläpitäjä vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito-ikkunaasi ei avata uudelleen.}other{Ylläpitäjä vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # incognito-ikkunaasi ei avata uudelleen.}}</translation>

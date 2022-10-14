@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
+<translation id="1076394037877376434"><ph name="PAGE_NUMBER" />వ పేజీని తొలగించండి</translation>
 <translation id="1113173431709655881">కెమెరా మోడ్</translation>
 <translation id="1153190633558910465">గ్రిడ్‌ను ఆఫ్ చేయండి</translation>
 <translation id="1175958423215084756">లింక్ గుర్తించబడింది. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" />వ పేజీ తొలగించబడింది</translation>
 <translation id="1258009455399840361">90 డిగ్రీలు సవ్యదిశలో తిప్పండి</translation>
 <translation id="1276998909102132017">గ్యాలరీ చిత్రాలు</translation>
 <translation id="1300209025925956156">మీ డాక్యుమెంట్‌ను స్కాన్ చేయండి</translation>

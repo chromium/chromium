@@ -340,9 +340,9 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2865888419503095837">Netværksoplysninger</translation>
 <translation id="2872961005593481000">Sluk</translation>
 <translation id="2878884018241093801">Der er ingen nye elementer</translation>
+<translation id="2885950158625301909">Få flere oplysninger</translation>
 <translation id="2891209721153296020">"Fravælg"</translation>
 <translation id="2894949423239620203">Kablet kan påvirke ydeevnen</translation>
-<translation id="2903844815300039659">Der er forbindelse til <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Screenshots</translation>
 <translation id="2941112035454246133">Lav</translation>
 <translation id="2942350706960889382">Fastgjort lupvindue</translation>
@@ -1051,6 +1051,7 @@ Installeret for nylig</translation>
 <translation id="6961121602502368900">Du kan ikke sætte din telefon på lydløs med en arbejdsprofil</translation>
 <translation id="6961840794482373852">Tastaturgenvejen Alt+pil op er blevet ændret. Hvis du vil bruge tasten Side op, skal du trykke på tasten <ph name="LAUNCHER_KEY_NAME" />+pil op.</translation>
 <translation id="696267987219125751">Automatisk zoom er deaktiveret.</translation>
+<translation id="6964690557625666701">Alle fastgjorte elementer vises ikke på hylden, fordi de danser</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Kom godt i gang</translation>
 <translation id="6979158407327259162">Google Drev</translation>
@@ -1359,6 +1360,8 @@ Installeret for nylig</translation>
 <translation id="8734991477317290293">Det forsøger muligvis at stjæle dine indtastninger</translation>
 <translation id="8735678380411481005">Farve på tastaturets baggrundslys</translation>
 <translation id="8735953464173050365">Vis tastaturindstillinger. <ph name="KEYBOARD_NAME" /> er valgt</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Aktivér kameraadgang for at tillade, at apps og websider med kameratilladelsen kan bruge de kameraer, der er knyttet til denne enhed.</translation>
 <translation id="8755498163081687682">Bekræft din identitet: <ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>
 <translation id="875593634123171288">Vis VPN-indstillinger</translation>

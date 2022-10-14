@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
+<translation id="1076394037877376434">Odstrániť <ph name="PAGE_NUMBER" />. stranu</translation>
 <translation id="1113173431709655881">Režim kamery</translation>
 <translation id="1153190633558910465">Vypnúť mriežku</translation>
 <translation id="1175958423215084756">Bol rozpoznaný odkaz. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213"><ph name="PAGE_NUMBER" />. strana bola odstránená</translation>
 <translation id="1258009455399840361">Otočiť o 90 stupňov v smere hodinových ručičiek</translation>
 <translation id="1276998909102132017">Obrázky galérie</translation>
 <translation id="1300209025925956156">Skenovanie dokumentu</translation>

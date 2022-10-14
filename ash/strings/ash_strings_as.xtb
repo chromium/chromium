@@ -339,9 +339,9 @@
 <translation id="2865888419503095837">নেটৱৰ্কৰ তথ্য</translation>
 <translation id="2872961005593481000">শ্বাট ডাউন কৰক</translation>
 <translation id="2878884018241093801">কোনো শেহতীয়া বস্তু নাই</translation>
+<translation id="2885950158625301909">অধিক জানক</translation>
 <translation id="2891209721153296020">"বাছনি বাতিল কৰক"</translation>
 <translation id="2894949423239620203">কে’বলে কাৰ্যক্ষমতাত প্ৰভাৱ পেলাব পাৰে</translation>
-<translation id="2903844815300039659"><ph name="NAME" />ৰ সৈতে সংযোগ কৰা হ’ল, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">স্ক্ৰীন কেপচাৰ</translation>
 <translation id="2941112035454246133">কম</translation>
 <translation id="2942350706960889382">ড'ক কৰা বিৱৰ্ধক</translation>
@@ -1047,6 +1047,7 @@
 <translation id="6961121602502368900">কৰ্মস্থানৰ প্ৰ’ফাইলত নীৰৱ ফ’ন উপলব্ধ নহয়</translation>
 <translation id="6961840794482373852">কীব’ৰ্ডৰ শ্বৰ্টকাট অল্ট + আপ এৰ'টো সলনি হৈছে। পেজ আপ কীটো ব্যৱহাৰ কৰিবলৈ, <ph name="LAUNCHER_KEY_NAME" /> কীটো + আপ এৰ' টিপক।</translation>
 <translation id="696267987219125751">কেমেৰা ফ্ৰে’মিং অফ হৈ আছে।</translation>
+<translation id="6964690557625666701">পিন কৰা আটাইবোৰ বস্তু অস্থিৰ হৈ আছে</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6972754398087986839">আৰম্ভ কৰক</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1355,6 +1356,8 @@
 <translation id="8734991477317290293">এইটোৱে আপোনাৰ কীষ্ট্র’ক চুৰ কৰিব চেষ্টা কৰি থাকিব পাৰে</translation>
 <translation id="8735678380411481005">কীব’ৰ্ডৰ বেকলাইটৰ ৰং</translation>
 <translation id="8735953464173050365">কীব'ৰ্ডৰ ছেটিংসমূহ দেখুৱাওক। <ph name="KEYBOARD_NAME" /> বাছনি কৰা হৈছে।</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">কেমেৰাৰ অনুমতি থকা এপ্‌ আৰু ৱেবপৃষ্ঠাসমূহক এই ডিভাইচটোৰ সৈতে সংযুক্ত কেমেৰা(সমূহ) ব্যৱহাৰ কৰাৰ অনুমতি দিবলৈ কেমেৰাৰ এক্সেছ অন কৰক।</translation>
 <translation id="8755498163081687682">আপোনাৰ পৰিচয় সত্যাপন কৰক: <ph name="ORIGIN_NAME" />এ এয়া আপুনি বুলি নিশ্চিত কৰিবলৈ বিচাৰিছে</translation>
 <translation id="875593634123171288">VPN ছেটিংসমূহ দেখুৱাওক</translation>

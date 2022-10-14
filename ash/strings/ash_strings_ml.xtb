@@ -340,9 +340,9 @@
 <translation id="2865888419503095837">നെറ്റ്‌വർക്ക് വിവരം</translation>
 <translation id="2872961005593481000">അടയ്ക്കുക</translation>
 <translation id="2878884018241093801">സമീപകാല ഇനങ്ങൾ ഒന്നുമില്ല</translation>
+<translation id="2885950158625301909">കൂടുതലറിയുക</translation>
 <translation id="2891209721153296020">"തിരഞ്ഞെടുത്തത് മാറ്റുക"</translation>
 <translation id="2894949423239620203">കേബിൾ, പ്രകടനത്തെ ബാധിച്ചേക്കാം</translation>
-<translation id="2903844815300039659"><ph name="NAME" />-ലേക്ക് കണക്റ്റ് ചെയ്‌‌തു, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">സ്ക്രീൻ ക്യാപ്‌ചറുകൾ</translation>
 <translation id="2941112035454246133">താഴ്ന്ന</translation>
 <translation id="2942350706960889382">ഡോക്ക് ചെയ്‌ത മാഗ്നിഫയർ</translation>
@@ -1051,6 +1051,7 @@
 <translation id="6961121602502368900">ഔദ്യോഗിക പ്രൊഫൈലിൽ ഫോൺ നിശബ്‌ദമാക്കൽ ലഭ്യമല്ല</translation>
 <translation id="6961840794482373852">'Alt + മുകളിലേയ്ക്കുള്ള അമ്പടയാളം' കീബോഡ് കുറുക്കുവഴി മാമാറിയിട്ടുണ്ട്. Page Up കീ ഉപയോഗിക്കാൻ, <ph name="LAUNCHER_KEY_NAME" /> കീ+ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം അമർത്തുക.</translation>
 <translation id="696267987219125751">ക്യാമറാ ഫ്രെയിമിംഗ് ഓഫാണ്.</translation>
+<translation id="6964690557625666701">പിൻ ചെയ്‌ത എല്ലാ ഇനങ്ങളും ഷെൽഫ് പാർട്ടിയിലാണ്</translation>
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6972754398087986839">ആരംഭിക്കാം</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1360,8 @@
 <translation id="8734991477317290293">ഇത് നിങ്ങളുടെ കീസ്ട്രോക്കുകൾ മോഷ്‌ടിക്കാൻ ശ്രമിച്ചേക്കാം.</translation>
 <translation id="8735678380411481005">കീബോർഡ് ബാക്ക്‌ലൈറ്റ് നിറം</translation>
 <translation id="8735953464173050365">കീബോഡ് ക്രമീകരണം കാണിക്കുക. <ph name="KEYBOARD_NAME" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">ഈ ഉപകരണത്തിലേക്ക് കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്ന ക്യാമറ(കൾ) ഉപയോഗിക്കാൻ ക്യാമറ അനുമതിയുള്ള ആപ്പുകളെയും വെബ്‌പേജുകളെയും അനുവദിക്കാൻ ക്യാമറ ആക്‌സസ് ഓണാക്കുക.</translation>
 <translation id="8755498163081687682">നിങ്ങളുടെ ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കുക: ഇത് നിങ്ങൾ തന്നെയാണെന്ന് സ്ഥിരീകരിക്കാൻ <ph name="ORIGIN_NAME" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="875593634123171288">VPN ക്രമീകരണം കാണിക്കുക</translation>

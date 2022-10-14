@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">Agora non</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
-<translation id="3495810061346586977">Este ficheiro é confidencial e está suxeito ás restricións da política do administrador. <ph name="BEGIN_LINK_HELP" />Máis información<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3522708245912499433">Portugués</translation>
 <translation id="3524311639100184459">Precaución: Estes ficheiros son temporais e pódense eliminar automaticamente para liberar espazo no disco.  <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
@@ -456,6 +455,7 @@
 <translation id="4900532980794411603">Compartir con Parallels Desktop</translation>
 <translation id="4902546322522096650">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
 <translation id="4906580650526544301">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, batería do teléfono ao <ph name="BATTERY_STATUS" /> %, detalles</translation>
+<translation id="4929673617759421391">A política do administrador bloqueou a función de pegar este ficheiro</translation>
 <translation id="4935975195727477204">Flor de gazania</translation>
 <translation id="4943368462779413526">Fútbol</translation>
 <translation id="4961158930123534723">Compartiuse 1 cartafol con Parallels Desktop</translation>
@@ -512,6 +512,7 @@
 <translation id="5278111733643988471">Para restaurar este elemento, arrástrao a un cartafol novo fóra da papeleira. Eliminouse o cartafol orixinal "<ph name="PARENT_FOLDER_NAME" />" deste elemento.</translation>
 <translation id="5286194356314741248">Buscando</translation>
 <translation id="5288441970121584418">Hamburguesa</translation>
+<translation id="5293615890992542006">A política do administrador bloqueou a función de mover este ficheiro</translation>
 <translation id="5305688511332277257">Ningún instalado</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5318819489018851358">Compartir con Linux</translation>
@@ -646,6 +647,7 @@
 <translation id="642282551015776456">Non se pode utilizar este nome como nome de ficheiro de cartafol</translation>
 <translation id="6423031066725912715">Vietnamita con teclado TCVN</translation>
 <translation id="6430271654280079150">Quédache 1 intento.</translation>
+<translation id="643243556292470964">Os ficheiros eliminados movéronse á papeleira</translation>
 <translation id="6485131920355264772">Non se puido recuperar a información sobre o espazo</translation>
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, detalles</translation>
 <translation id="649877868557234318">Extraendo <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>
@@ -712,6 +714,7 @@
 <translation id="6993826899923627728">Estes elementos están na papeleira</translation>
 <translation id="6998711733709403587"><ph name="SELCTED_FOLDERS_COUNT" /> cartafoles seleccionados</translation>
 <translation id="7008426324576352165">Para completar a carga, a túa organización precisa máis espazo de almacenamento.</translation>
+<translation id="7009985720488544166">A política do administrador bloqueou a función de mover <ph name="COUNT" /> ficheiros</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Non se puido efectuar a instalación.</translation>
 <translation id="7031639531908619281">Turco</translation>
@@ -971,6 +974,7 @@
 <translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="9189836632794948435">Kazako</translation>
 <translation id="9200427192836333033">Extraéronse <ph name="NUMBER_OF_ITEMS" /> elementos.</translation>
+<translation id="9210751050717126865">A política do administrador bloqueou a función de pegar <ph name="COUNT" /> ficheiros</translation>
 <translation id="9213073329713032541">Iniciouse correctamente a instalación.</translation>
 <translation id="9219103736887031265">Imaxes</translation>
 <translation id="9219908252191632183">Paisaxe lunar</translation>

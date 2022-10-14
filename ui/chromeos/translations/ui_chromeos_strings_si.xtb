@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">දැන් නොවේ</translation>
 <translation id="3486821258960016770">මොන්ගෝලියානු</translation>
 <translation id="3495304270784461826">දෝෂ <ph name="COUNT" />.</translation>
-<translation id="3495810061346586977">මෙම ගොනුව රහස්‍ය වන අතර පරිපාලක ප්‍රතිපත්තිය මගින් සීමා කිරීම්වලට යටත් වේ. <ph name="BEGIN_LINK_HELP" />තව දැන ගන්න<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
 <translation id="3522708245912499433">පෘතුගීසි</translation>
 <translation id="3524311639100184459">අවවාදය: මෙම ගොනු තාවකාලික වන අතර, තැටි ඉඩ නිදහස් කිරීමට ස්වයංක්‍රීයව මකනු ලැබිය හැක.  <ph name="BEGIN_LINK" />තවත් දැන ගන්න<ph name="END_LINK" /></translation>
@@ -456,6 +455,7 @@
 <translation id="4900532980794411603">Parallels Desktop සමග බෙදා ගන්න</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, සබඳින්න</translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, දුරකථන බැටරිය <ph name="BATTERY_STATUS" />%, විස්තර</translation>
+<translation id="4929673617759421391">මෙම ගොනුව ඇලවීම පරිපාලක ප්‍රතිපත්තිය මගින් අවහිර කර ඇත</translation>
 <translation id="4935975195727477204">ගැන්සානියා මල</translation>
 <translation id="4943368462779413526">පාපන්දු</translation>
 <translation id="4961158930123534723">Parallels Desktop සමග එක ෆෝල්ඩරයක් බෙදා ගන්නා ලදි</translation>
@@ -512,6 +512,7 @@
 <translation id="5278111733643988471">මෙම අයිතමය ප්‍රතිසාධනය කිරීමට, එය කුණු කූඩයෙන් පිටත නව ෆෝල්ඩරයකට අදින්න. මෙම අයිතමය සඳහා මුල් ෆෝල්ඩරය "<ph name="PARENT_FOLDER_NAME" />" මකා ඇත.</translation>
 <translation id="5286194356314741248">ස්කෑන් කිරීම</translation>
 <translation id="5288441970121584418">බර්ගර්</translation>
+<translation id="5293615890992542006">මෙම ගොනුව ගෙන යාම පරිපාලක ප්‍රතිපත්තිය මගින් අවහිර කර ඇත</translation>
 <translation id="5305688511332277257">කිසිවක් ස්ථාපනය නොවිණ</translation>
 <translation id="5317780077021120954">සුරකින්න</translation>
 <translation id="5318819489018851358">Linux සමග බෙදාගන්න</translation>
@@ -646,6 +647,7 @@
 <translation id="642282551015776456">මෙම නම ගොනුවක් හෝ ෆෝල්ඩර නමක් ලෙස භාවිතා නොවනු ඇත</translation>
 <translation id="6423031066725912715">TCVN යතුරු පුවරුව සමඟ වියට්නාම</translation>
 <translation id="6430271654280079150">ඔබට 1 උත්සාහයක් ඉතුරුයි.</translation>
+<translation id="643243556292470964">මකා දැමූ ගොනු දැන් කුණු කූඩයට ගෙන ගොස් ඇත</translation>
 <translation id="6485131920355264772">ඉඩ තතු යළි ලබා ගැනීමට අසමත් විය</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි, විස්තර</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> වෙත උපුටා ගනිමින්</translation>
@@ -712,6 +714,7 @@
 <translation id="6993826899923627728">මෙම අයිතම ඔබේ කුණු කූඩයේ ඇත</translation>
 <translation id="6998711733709403587">ෆෝල්ඩර <ph name="SELCTED_FOLDERS_COUNT" />ක් තෝරාගැනිණි</translation>
 <translation id="7008426324576352165">ඔබේ ආයතනය උඩුගත කිරීම සම්පූර්ණ කිරීමට තව ආචයනය අවශ්‍ය කරයි.</translation>
+<translation id="7009985720488544166">පරිපාලක ප්‍රතිපත්තිය මගින් ගොනු <ph name="COUNT" />ක් ගෙන යාම අවහිර කර ඇත</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> <ph name="ROOT_SUMMARY" /></translation>
 <translation id="7014174261166285193">ස්ථාපනය අසමත් විය.</translation>
 <translation id="7031639531908619281">තුර්කි</translation>
@@ -971,6 +974,7 @@
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9189836632794948435">කසක්</translation>
 <translation id="9200427192836333033">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් උපුටා ගන්නා ලදි.</translation>
+<translation id="9210751050717126865">පරිපාලක ප්‍රතිපත්තිය මගින් ගොනු <ph name="COUNT" />ක් ඇලවීම අවහිර කර ඇත</translation>
 <translation id="9213073329713032541">ස්ථාපනය සාර්ථකව ආරම්භ විය.</translation>
 <translation id="9219103736887031265">රූප</translation>
 <translation id="9219908252191632183">චන්ද්‍රයා</translation>

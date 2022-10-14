@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">Не сега</translation>
 <translation id="3486821258960016770">монголски</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> грешки.</translation>
-<translation id="3495810061346586977">Датотекава е доверлива и подлежи на ограничувања според правилата на администраторот. <ph name="BEGIN_LINK_HELP" />Дознајте повеќе<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, детали</translation>
 <translation id="3522708245912499433">португалски</translation>
 <translation id="3524311639100184459">Внимание: датотекиве се привремени и може да се бришат автоматски за да се ослободи простор на дискот.  <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>

@@ -109,6 +109,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1687475363370981210">Označiť všetko ako prečítané</translation>
 <translation id="1689333818294560261">Prezývka</translation>
 <translation id="1700629756560807968">Počet vybraných záložiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1715515772563243997">Ak doméne <ph name="SITE" /> dôverujete, môžete sa prihlásiť uloženým heslom.</translation>
 <translation id="1740468249224277719">Dvojitým klepnutím spustíte inštaláciu.</translation>
 <translation id="1752547299766512813">Ukladať heslá</translation>
 <translation id="1753905327828125965">Najviac navšt.</translation>
@@ -151,6 +152,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="2149973817440762519">Upraviť záložku</translation>
 <translation id="2155145621546387786">Zdieľať Chrome</translation>
 <translation id="2175927920773552910">QR kód</translation>
+<translation id="2178545675770638239">Vyberte heslo</translation>
 <translation id="2218443599109088993">Oddialiť</translation>
 <translation id="2230173723195178503">Načítala sa webová stránka</translation>
 <translation id="2239626343334228536">Vymazávajú sa dáta prehliadania…</translation>
@@ -434,6 +436,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4502566650163919158">Skontrolovať</translation>
 <translation id="4505980578794259603">Posledná kontrola: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Zavrieť propagáciu prihlásenia</translation>
+<translation id="4514889972748124117">Navrhnúť silné heslo…</translation>
 <translation id="4526249700380860531">Zobrazte si a spravujte uložené heslá na stránke <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Skontrolovať synchronizované údaje</translation>
 <translation id="4536418791685807335">Skúste sa znova prihlásiť.</translation>
@@ -1015,6 +1018,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8917490105272468696">Áno, súhlasím</translation>
 <translation id="8928133177108699615">Počítač</translation>
 <translation id="8952559610785099500">Pridanie hesla</translation>
+<translation id="8953046091948372197">Tu nájdete svoje heslá</translation>
 <translation id="895541991026785598">Nahlásiť problém</translation>
 <translation id="8974714402877957201">1. Otvorte nastavenia iPadu</translation>
 <translation id="8976382372951310360">Pomocník</translation>
@@ -1048,6 +1052,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9200875785104711666">Pred <ph name="TIME" /> d.</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9223358826628549784">Správa o zlyhaní bola odoslaná.</translation>
+<translation id="941747855997058526">Vybrať heslo…</translation>
 <translation id="952704832371081537">Zrušiť</translation>
 <translation id="953008885340860025">Chrome je odhlásený</translation>
 <translation id="959066944189734975">Sledujete kanál <ph name="CHANNEL_NAME" /></translation>

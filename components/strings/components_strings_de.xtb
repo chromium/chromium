@@ -396,6 +396,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="192020519938775529">{COUNT,plural, =0{Keine}=1{1 Website}other{# Websites}}</translation>
 <translation id="1924727005275031552">Neu</translation>
 <translation id="1927439593081478069">Schaltfläche zum Ausführen des Chrome-Sicherheitschecks – drücke die Eingabetaste, um den Sicherheitscheck in den Chrome-Einstellungen auszuführen</translation>
+<translation id="1935995810530254458">Trotzdem kopieren</translation>
 <translation id="1939175642807587452">Darf nachfragen, wenn sie Benachrichtigungen senden möchte</translation>
 <translation id="1943994668912612445">Design</translation>
 <translation id="1945968466830820669">Du könntest den Zugriff auf das Konto deines Unternehmens verlieren oder zum Opfer von Identitätsdiebstahl werden. Chromium empfiehlt dir, dein Passwort jetzt zu ändern.</translation>
@@ -449,6 +450,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2085876078937250610">Speichern…</translation>
 <translation id="2088086323192747268">Schaltfläche zum Verwalten der Synchronisierung – drücke die Eingabetaste, um in den Chrome-Einstellungen zu verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="2091887806945687916">Ton</translation>
+<translation id="2093982008204312032">Google Chrome versucht, Windows Hello zum Ausfüllen von Passwörtern zu deaktivieren.</translation>
 <translation id="2094505752054353250">Domains stimmen nicht überein.</translation>
 <translation id="2099652385553570808">Drei Heftklammern links</translation>
 <translation id="2101225219012730419">Version:</translation>
@@ -692,6 +694,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2728127805433021124">Das Serverzertifikat ist mit einem schwachen Signaturalgorithmus signiert.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />Verbindungsdiagnose ausführen<ph name="END_LINK" /></translation>
 <translation id="2730600605555029057">Klassische Musik</translation>
+<translation id="2734319753272419592">Google kann personalisierte Rabatte für deinen Einkaufswagen finden. Sofern verfügbar, werden die Rabatte dann automatisch in deinem Einkaufswagen angezeigt.</translation>
 <translation id="2738330467931008676">Abholadresse auswählen</translation>
 <translation id="2740531572673183784">Ok</translation>
 <translation id="2742511345840685325">Tischtennis</translation>
@@ -1144,12 +1147,14 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF-Dokument mit {COUNT} Seite}other{PDF-Dokument mit {COUNT} Seiten}}</translation>
 <translation id="4022639246993848966">3,5 × 5</translation>
 <translation id="4023431997072828269">Dieses Formular wird über eine Verbindung gesendet, die nicht vollständig sicher ist. Hierdurch können deine Informationen für andere sichtbar sein.</translation>
+<translation id="4024923292610332139">Touch ID zum Ausfüllen von Passwörtern deaktivieren</translation>
 <translation id="4025913568718019429">Schaltfläche „Datenschutzeinstellungen des Google-Kontos verwalten“ – drücke die Eingabetaste, um die Datenschutzeinstellungen deines Google-Kontos aufzurufen</translation>
 <translation id="4030383055268325496">&amp;Hinzufügen rückgängig machen</translation>
 <translation id="4031179711345676612">Mikrofonnutzung zulässig</translation>
 <translation id="4040350669425716613">Hochschulen und Universitäten</translation>
 <translation id="405399507749852140">Du wirst bei einem Preisnachlass benachrichtigt</translation>
 <translation id="4056223980640387499">Sepia</translation>
+<translation id="4063063121357725926">Google kann dir helfen, Rabatte für deinen Einkaufswagen zu finden</translation>
 <translation id="4063924980214801036">Geräteentsperrung verwenden, um Karten schneller zu bestätigen</translation>
 <translation id="4067098466788473230">Stipendien</translation>
 <translation id="4067947977115446013">Gültige Adresse hinzufügen</translation>
@@ -1261,6 +1266,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="42981349822642051">Maximieren</translation>
 <translation id="4300675098767811073">Mehrfache Lochung rechts</translation>
 <translation id="4302514097724775343">Tippe auf den Dino, um die Wiedergabe zu starten</translation>
+<translation id="4304049446746819918">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei nach <ph name="DESTINATION_NAME" /> zu verschieben}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien nach <ph name="DESTINATION_NAME" /> zu verschieben}}</translation>
 <translation id="4305666528087210886">Zugriff auf die Datei nicht möglich</translation>
 <translation id="4306529830550717874">Adresse speichern?</translation>
 <translation id="4306812610847412719">Zwischenablage</translation>
@@ -1637,6 +1643,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5254043433801397071">Druckinhalte optimieren</translation>
 <translation id="5254958791078852567">E1</translation>
 <translation id="5255690596502591079">Trotzdem aufnehmen</translation>
+<translation id="5257739419779698609">{0,plural, =1{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Datei nach <ph name="DESTINATION_NAME" /> zu kopieren}other{Gemäß der Administratorrichtlinie wird nicht empfohlen, diese Dateien nach <ph name="DESTINATION_NAME" /> zu kopieren}}</translation>
 <translation id="5266128565379329178">Bindung oben</translation>
 <translation id="5269225904387178860">Vierfache Lochung unten</translation>
 <translation id="5269999699920406580">Systemweite Funktionen können nur vom Inhaber festgelegt werden: <ph name="OWNER_EMAIL" /></translation>
@@ -1700,6 +1707,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5412236728747081950">Diese Website ruft deine Interessen von Chrome ab, damit sie dir relevantere Werbung anzeigen kann</translation>
 <translation id="5412245327974352290"><ph name="TRADITIONAL_TEXT" /> – <ph name="ADDITIONAL_TEXT" /></translation>
 <translation id="541416427766103491">Stapelfach 4</translation>
+<translation id="5414511064953050917">Trotzdem verschieben</translation>
 <translation id="5421136146218899937">Browserdaten löschen...</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Keine Websites blockiert}=1{1 Website blockiert}other{# Websites blockiert}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> möchte dir Benachrichtigungen senden</translation>
@@ -2321,6 +2329,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="7153549335910886479">{PAYMENT_METHOD,plural, =0{<ph name="PAYMENT_METHOD_PREVIEW" />}=1{<ph name="PAYMENT_METHOD_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}other{<ph name="PAYMENT_METHOD_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> weitere}}</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7156870133441232244">Der Server sollte auf TLS 1.2 oder höher aktualisiert werden.</translation>
+<translation id="7163295244162773898">{0,plural, =1{Vertrauliche Datei kopieren?}other{Vertrauliche Dateien kopieren?}}</translation>
 <translation id="717330890047184534">GAIA-ID: </translation>
 <translation id="7174545416324379297">Zusammengeführt</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> weitere}other{<ph name="SHIPPING_OPTION_PREVIEW" /> und <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> weitere}}</translation>
@@ -2929,6 +2938,7 @@ Weitere Details:
 <translation id="8763986294015493060">Alle geöffneten Inkognitofenster schließen</translation>
 <translation id="8766943070169463815">Ansicht zum Authentifizieren der sicheren Anmeldedaten für Zahlungen ist geöffnet</translation>
 <translation id="8767765348545497220">Infofeld schließen</translation>
+<translation id="877348612833018844">{0,plural, =1{Vertrauliche Datei verschieben?}other{Vertrauliche Dateien verschieben?}}</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8785658048882205566">Motorräder</translation>
 <translation id="8790007591277257123">&amp;Löschen wiederholen</translation>

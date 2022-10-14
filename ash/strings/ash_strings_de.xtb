@@ -266,6 +266,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2405664212338326887">Nicht verbunden</translation>
 <translation id="2408955596600435184">PIN eingeben</translation>
 <translation id="2412593942846481727">Update verfügbar</translation>
+<translation id="2417486498593892439">Im Netzwerk anmelden</translation>
 <translation id="2426051945783024481">Bildausschnitt automatisch zentriert</translation>
 <translation id="2427507373259914951">Linksklick</translation>
 <translation id="2429753432712299108">Das Bluetooth-Gerät „<ph name="DEVICE_NAME" />“ bittet um Erlaubnis für Kopplung. Bevor du akzeptierst, überprüfe, ob folgender Zugangscode auf dem Gerät angezeigt wird: <ph name="PASSKEY" />.</translation>
@@ -342,7 +343,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2885950158625301909">Weitere Informationen</translation>
 <translation id="2891209721153296020">„Auswahl aufheben“</translation>
 <translation id="2894949423239620203">Kabel beeinträchtigt eventuell die Leistung</translation>
-<translation id="2903844815300039659">Verbunden mit <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Screenshots</translation>
 <translation id="2941112035454246133">Niedrig</translation>
 <translation id="2942350706960889382">Angedockte Lupe</translation>
@@ -424,6 +424,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3368922792935385530">Verbunden</translation>
 <translation id="3371140690572404006">USB-C-Gerät (Port vorne rechts)</translation>
 <translation id="3375634426936648815">Verbunden</translation>
+<translation id="3378438761594387761">Hier findest du deine letzten Downloads und Bildschirmaufnahmen</translation>
 <translation id="3378442621503952303">Verbindung zum Profil wird hergestellt. Warte ein paar Minuten.</translation>
 <translation id="3386978599540877378">die Vollbildlupe</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -730,6 +731,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5083553833479578423">Möchtest du weitere Assistant-Funktionen freischalten?</translation>
 <translation id="509790653408515442">Wenn du Apps von deinem Smartphone streamst, werden sie hier angezeigt</translation>
 <translation id="5098537242461068432">Desktop und Fenster wieder geöffnet</translation>
+<translation id="5104236669533825617">Screencast kann nicht erstellt werden</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Nächsten Monat anzeigen</translation>
 <translation id="5136175204352732067">Andere Tastatur angeschlossen</translation>
@@ -775,6 +777,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (rechts)</translation>
 <translation id="5352250171825660495">Dunkles Design ist aktiviert</translation>
 <translation id="5356963482258194581">Du kannst zwischen dem dunklen und hellen Design wechseln. Klicke mit der rechten Maustaste auf den Desktop und wähle „Hintergrund &amp; Stil“ aus.</translation>
+<translation id="536019650977002321">Dein Administrator erlaubt keine Audioaufnahmen. Weitere Informationen erhältst du von deinem Administrator.</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Diesen Tab aufrufen</translation>
 <translation id="5379115545237091094">Zu viele Versuche</translation>
 <translation id="5391307769715781764">Gespeicherten Desktop ersetzen?</translation>
@@ -1396,6 +1399,7 @@ Neuinstallation</translation>
 <translation id="8936501819958976551">deaktiviert</translation>
 <translation id="8938800817013097409">USB-C-Gerät (rechter Port hinten)</translation>
 <translation id="8940956008527784070">Niedriger Akkustand (<ph name="PERCENTAGE" /> %)</translation>
+<translation id="8949925099261528566">Verbunden, kein Internet</translation>
 <translation id="8951539504029375108">Nur zugelassene Thunderbolt-Geräte sind mit Chromebook kompatibel</translation>
 <translation id="8982906748181120328">Nearby-Sichtbarkeit</translation>
 <translation id="8983038754672563810">HSPA</translation>

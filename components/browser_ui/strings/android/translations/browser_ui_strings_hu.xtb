@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Kamera kikapcsolása</translation>
 <translation id="2717722538473713889">E-mail-címek</translation>
 <translation id="2750481671343847896">A webhelyek megjeleníthetnek identitásszolgáltatásoktól származó bejelentkezési értesítéseket.</translation>
-<translation id="2785051990912111074">Ezzel törli a(z) <ph name="WEBSITE" /> webhelyhez tartozó cookie-kat.</translation>
 <translation id="2822354292072154809">Biztosan visszaállítja a(z) <ph name="CHOSEN_OBJECT_NAME" /> minden webhelyengedélyét?</translation>
 <translation id="2870560284913253234">Webhely</translation>
 <translation id="2874939134665556319">Előző szám</translation>
@@ -111,6 +110,7 @@
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3248611290851046188">Ez a webhely olyan érdeklődési köröket határoz meg, amelyeket más webhelyek arra használhatnak fel, hogy hirdetéseket jelenítsenek meg Önnek. Ez a webhely ezenkívül a Chrome-tól is lekéri az érdeklődési köreit, hogy relevánsabb hirdetéseket jelenítsen meg Önnek.</translation>
 <translation id="3277252321222022663">Az érzékelőkhöz való hozzáférés engedélyezése a webhelyek számára (ajánlott)</translation>
+<translation id="3285500645985761267">A csoportban végzett tevékenységei megtekintésének engedélyezése a kapcsolódó webhelyek számára</translation>
 <translation id="3295602654194328831">Információk elrejtése…</translation>
 <translation id="3328801116991980348">Webhelyadatok</translation>
 <translation id="3333961966071413176">Összes névjegy</translation>
@@ -118,6 +118,7 @@
 <translation id="3386292677130313581">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára a tartózkodási helyhez való hozzáférést (ajánlott)</translation>
 <translation id="3521663503435878242">Webhelyek a(z) <ph name="DOMAIN" /> domain alatt</translation>
 <translation id="3538390592868664640">Az Ön környezetéről készített 3D-s térkép létrehozásának, valamint a kamerapozíció követésének letiltása a webhelyek számára</translation>
+<translation id="3544058026430919413">Az egyes vállalatok meghatározhatják azon webhelyek csoportját, amelyek cookie-k használatával megoszthatják egymással az Ön által a csoportban végzett tevékenységeket. Inkognitóban ki van kapcsolva ez a funkció.</translation>
 <translation id="3551268116566418498">Kilép az inkognitó módból?</translation>
 <translation id="3586500876634962664">Kamera- és mikrofonhasználat</translation>
 <translation id="358794129225322306">Engedély webhelynek több fájl automatikus letöltésére.</translation>
@@ -160,6 +161,7 @@
 <translation id="4434045419905280838">Előugró ablakok és átirányítások</translation>
 <translation id="445467742685312942">Védett tartalmak lejátszásának engedélyezése a webhelyek számára</translation>
 <translation id="4468959413250150279">Egy adott webhely hangjának némítása.</translation>
+<translation id="4475912480633855319">{COOKIES,plural, =1{# cookie}other{# cookie}}</translation>
 <translation id="4479647676395637221">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára a kamera használatát (ajánlott)</translation>
 <translation id="4505788138578415521">URL kibontva</translation>
 <translation id="4534723447064627427">Ahhoz, hogy a(z) <ph name="APP_NAME" /> hozzáférhessen a mikrofonhoz, a mikrofont az <ph name="BEGIN_LINK" />Android-beállítások<ph name="END_LINK" /> között is be kell kapcsolni.</translation>
@@ -178,7 +180,6 @@
 <translation id="4976702386844183910">Utolsó látogatás: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nem találhatók névjegyek</translation>
 <translation id="4996978546172906250">Megosztás itt:</translation>
-<translation id="5014906230196386306">Törli a cookie-kat?</translation>
 <translation id="5039804452771397117">Engedélyezés</translation>
 <translation id="5048398596102334565">A mozgásérzékelőkhöz való hozzáférés engedélyezése a webhelyek számára (ajánlott)</translation>
 <translation id="5050380848339752099">A webhely adatokat kíván megosztani az inkognitó módon kívüli alkalmazással.</translation>

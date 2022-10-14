@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2717722538473713889">Adrese e-pošte</translation>
 <translation id="2750481671343847896">Web lokacije vam mogu prikazati upite za prijavu koji potiču od usluga identiteta.</translation>
-<translation id="2785051990912111074">Ovim odabirom će se obrisati kolačići za web lokaciju <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Jeste li sigurni da želite poništiti sva odobrenja web lokacije za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Web lokacija</translation>
 <translation id="2874939134665556319">Prethodna numera</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Posljednji put je posjećeno <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nije pronađen nijedan kontakt</translation>
 <translation id="4996978546172906250">Dijeljenje koristeći</translation>
-<translation id="5014906230196386306">Obrisati kolačiće?</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
 <translation id="5048398596102334565">Dozvoli web lokacijama pristup senzorima pokreta (preporučeno)</translation>
 <translation id="5050380848339752099">Ova web lokacija će podijeliti informacije s aplikacijom izvan anonimnog načina rada.</translation>

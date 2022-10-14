@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">ახლა არა</translation>
 <translation id="3486821258960016770">მონღოლური</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> შეცდომა.</translation>
-<translation id="3495810061346586977">ეს ფაილი კონფიდენციალურია და ექვემდებარე ადმინისტრატორის მიერ დადგენილი წესებით განსაზღვრულ შეზღუდვებს. <ph name="BEGIN_LINK_HELP" />შეიტყვეთ მეტი<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="3522708245912499433">პორტუგალიური</translation>
 <translation id="3524311639100184459">გაფრთხილება: ეს ფაილები დროებითია და შეიძლება ავტომატურად წაიშალოს დისკზე ადგილის გასათავისუფლებლად.  <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>

@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">Қазір емес</translation>
 <translation id="3486821258960016770">Моңғол</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> қате.</translation>
-<translation id="3495810061346586977">Бұл файл құпия және әкімші саясатымен шектеледі. <ph name="BEGIN_LINK_HELP" />Толық ақпарат<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, мәліметтер</translation>
 <translation id="3522708245912499433">португал</translation>
 <translation id="3524311639100184459">Абайлаңыз: бұл файлдар уақытша және дискідегі орынды босату үшін автоматты түрде жойылуы мүмкін.  <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
@@ -646,6 +645,7 @@
 <translation id="642282551015776456">Бұл атауды файл немесе қалта атауы ретінде пайдалануға болмайды</translation>
 <translation id="6423031066725912715">Вьетнам (TCVN пернетақтасымен)</translation>
 <translation id="6430271654280079150">1 мүмкіндік қалды.</translation>
+<translation id="643243556292470964">Жойылған файлдар енді себетке жылжытылады.</translation>
 <translation id="6485131920355264772">Бос орын ақпаратын шығарып алу сәтсіз аяқталды</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші:<ph name="SIGNAL_STRENGTH" />%, әкімшіңіз басқарады, мәліметтер</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> файлы <ph name="FOLDER_NAME" /> қалтасына көшірілуде</translation>

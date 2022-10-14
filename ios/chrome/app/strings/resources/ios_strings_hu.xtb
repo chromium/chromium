@@ -109,6 +109,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1687475363370981210">Összes megjelölése olvasottként</translation>
 <translation id="1689333818294560261">Egyedi név</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> kiválasztva</translation>
+<translation id="1715515772563243997">Ha megbízik a(z) <ph name="SITE" /> webhelyben, a bejelentkezéshez használhatja mentett jelszavát.</translation>
 <translation id="1740468249224277719">A telepítéshez koppintson duplán.</translation>
 <translation id="1752547299766512813">Jelszómentés</translation>
 <translation id="1753905327828125965">Leggyakrabban látogatott</translation>
@@ -151,6 +152,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="2149973817440762519">Könyvjelző szerkesztése</translation>
 <translation id="2155145621546387786">A Chrome megosztása</translation>
 <translation id="2175927920773552910">QR-kód</translation>
+<translation id="2178545675770638239">Jelszó kiválasztása</translation>
 <translation id="2218443599109088993">Kicsinyítés</translation>
 <translation id="2230173723195178503">A weboldal betöltött</translation>
 <translation id="2239626343334228536">Böngészési adatok törlése…</translation>
@@ -434,6 +436,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="4502566650163919158">Ellenőrzés most</translation>
 <translation id="4505980578794259603">Legutóbb ellenőrizve: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Bejelentkezési promóció bezárása</translation>
+<translation id="4514889972748124117">Erős jelszó ajánlása…</translation>
 <translation id="4526249700380860531">A mentett jelszavak megtekintése és kezelése a <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> címen</translation>
 <translation id="452750746583162491">A szinkronizált adatok áttekintése</translation>
 <translation id="4536418791685807335">Próbáljon meg újra bejelentkezni.</translation>
@@ -1015,6 +1018,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8917490105272468696">Igen, elfogadom</translation>
 <translation id="8928133177108699615">Asztali</translation>
 <translation id="8952559610785099500">Jelszó hozzáadása</translation>
+<translation id="8953046091948372197">Itt láthatja majd a jelszavait</translation>
 <translation id="895541991026785598">Hibabejelentés</translation>
 <translation id="8974714402877957201">1. Nyissa meg az iPad Beállítások menüjét.</translation>
 <translation id="8976382372951310360">Súgó</translation>
@@ -1048,6 +1052,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="9200875785104711666"><ph name="TIME" /> napja</translation>
 <translation id="9203116392574189331">Átadás</translation>
 <translation id="9223358826628549784">Hibajelentés elküldve.</translation>
+<translation id="941747855997058526">Jelszó kiválasztása…</translation>
 <translation id="952704832371081537">Mégse</translation>
 <translation id="953008885340860025">Kijelentkezett a Chrome-ból</translation>
 <translation id="959066944189734975">Követi a következőt: <ph name="CHANNEL_NAME" /></translation>

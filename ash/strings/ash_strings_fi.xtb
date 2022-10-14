@@ -340,9 +340,9 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2865888419503095837">Verkon tiedot</translation>
 <translation id="2872961005593481000">Sammuta</translation>
 <translation id="2878884018241093801">Ei viimeaikaisia kohteita</translation>
+<translation id="2885950158625301909">Lue lisää</translation>
 <translation id="2891209721153296020">"Poista valinta"</translation>
 <translation id="2894949423239620203">Johto voi vaikuttaa suorituskykyyn</translation>
-<translation id="2903844815300039659">Yhdistetty: <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Kuvakaappaukset</translation>
 <translation id="2941112035454246133">Matala</translation>
 <translation id="2942350706960889382">Kiinnitetty suurennus</translation>
@@ -1051,6 +1051,7 @@ Uusi asennus</translation>
 <translation id="6961121602502368900">Puhelimen hiljentäminen ei ole käytettävissä työprofiililla</translation>
 <translation id="6961840794482373852">Pikanäppäinyhdistelmä Alt + ylänuoli on muuttunut. Jos haluat käyttää Page Up ‑näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylänuoli.</translation>
 <translation id="696267987219125751">Kameran kehystys on pois päältä.</translation>
+<translation id="6964690557625666701">Kaikki kiinnitetyt kohteet tanssivat</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Aloitusopas</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1360,7 @@ Uusi asennus</translation>
 <translation id="8734991477317290293">Sillä voidaan yrittää kaapata näppäinpainalluksesi</translation>
 <translation id="8735678380411481005">Näppäimistön taustavalon väri</translation>
 <translation id="8735953464173050365">Näytä näppäimistöasetukset. <ph name="KEYBOARD_NAME" /> on valittuna.</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Salli pääsy kameraan, jotta sovellukset ja verkkosivut, joilla on kameralupa, voivat käyttää tähän laitteeseen liitettyjä kameroita.</translation>
 <translation id="8755498163081687682">Vahvista henkilöllisyytesi: <ph name="ORIGIN_NAME" /> haluaa vahvistaa henkilöllisyytesi</translation>
 <translation id="875593634123171288">Näytä VPN-asetukset</translation>

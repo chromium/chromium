@@ -280,7 +280,6 @@
 <translation id="3479552764303398839">以后再说</translation>
 <translation id="3486821258960016770">蒙古语</translation>
 <translation id="3495304270784461826"><ph name="COUNT" />个错误。</translation>
-<translation id="3495810061346586977">此文件属于机密信息，受管理员政策的限制。<ph name="BEGIN_LINK_HELP" />了解详情<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，详细信息</translation>
 <translation id="3522708245912499433">葡萄牙语</translation>
 <translation id="3524311639100184459">警告：这些都是临时文件，可能会被系统自动删除以释放磁盘空间。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
@@ -642,6 +641,7 @@
 <translation id="642282551015776456">该名称可能无法用作文件名或文件夹名</translation>
 <translation id="6423031066725912715">越南语 TCVN 键盘</translation>
 <translation id="6430271654280079150">您还有 1 次尝试机会。</translation>
+<translation id="643243556292470964">被删除的文件现已移至回收站</translation>
 <translation id="6485131920355264772">检索存储空间信息失败</translation>
 <translation id="6495925982925244349">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，由您的管理员管理，详细信息</translation>
 <translation id="649877868557234318">正在将文件“<ph name="FILE_NAME" />”提取到文件夹“<ph name="FOLDER_NAME" />”</translation>

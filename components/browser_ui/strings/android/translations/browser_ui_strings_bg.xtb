@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Изключване на камерата</translation>
 <translation id="2717722538473713889">Имейл адреси</translation>
 <translation id="2750481671343847896">Сайтовете могат да показват подкани за вход от услуги за идентифициране.</translation>
-<translation id="2785051990912111074">Така ще се изчистят „бисквитките“ за <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Наистина ли искате да зададете повторно всички разрешения за сайта за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Предишен запис</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Последно посещение: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Няма намерени контакти</translation>
 <translation id="4996978546172906250">Споделяне чрез</translation>
-<translation id="5014906230196386306">Да се изчистят ли „бисквитките“?</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
 <translation id="5048398596102334565">Разрешаване на достъпа на сайтовете до сензорите за движение (препоръчително)</translation>
 <translation id="5050380848339752099">Този сайт е напът да сподели информация с приложение, което не е в режим „инкогнито“.</translation>

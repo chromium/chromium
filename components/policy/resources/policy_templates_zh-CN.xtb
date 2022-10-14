@@ -207,9 +207,6 @@
 <translation id="1197437816436565375">您无法强制 Android 应用使用代理。一小部分代理设置已可供 Android 应用使用，此类应用可能会主动选择使用这些设置。有关详情，请参阅 <ph name="PROXY_MODE_POLICY_NAME" /> 政策。</translation>
 <translation id="1198183996903759302">如果此政策设为 True（或者 <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> 设为 False），网页会无法访问 WebGL API，而且插件会无法使用 Pepper 3D API。
       如果此政策设为 False 或未设置，网页可以使用 WebGL API，而且插件可以使用 Pepper 3D API，但浏览器的默认设置可能仍然要求在使用这些 API 前先传递命令行参数。</translation>
-<translation id="1199366379198964260">如果此政策已启用，系统会允许使用安全系数低的 PIN 码。安全系数低的 PIN 码的一些特征：由同一个数字构成 (1111)、数字以 1 为单位递增 (1234)、数字以 1 为单位递减 (4321)，以及常用的 PIN 码。如果此政策已停用，用户将无法设置安全系数低且易被猜中的 PIN 码。
-
-      默认情况下，如果系统认为 PIN 码的安全系数偏低，就会向用户显示警告（而非错误消息）。</translation>
 <translation id="1202216683470826356">在“新标签页”页面上显示卡片</translation>
 <translation id="1204263402976895730">已启用企业打印机</translation>
 <translation id="1209065772997672966">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站可以打开弹出式窗口。
@@ -245,10 +242,6 @@
 <translation id="1240722269871366886">通过设置此政策，您可让 <ph name="PRODUCT_OS_NAME" />在用户使用虚拟键盘或实体键盘输入文字时建议表情符号。
       如果此政策设为 true，该功能便会处于开启状态，但用户可以自行更改此设置。
       此政策默认设为 false，在这种情况下，系统不会建议任何表情符号，而且用户无法覆盖此设置。</translation>
-<translation id="1241325191379810167">PIN 码自动提交功能会更改 PIN 码在 Chrome 操作系统中的输入方式。
-          该功能会显示一个特殊界面以清楚地指明用户的 PIN 码需要包含的位数，而不会显示原本用于输入密码的文本字段。因此，用户的 PIN 码长度会存储在用户加密数据之外。仅支持长度介于 6-12 位数字的 PIN 码。
-
-          如果此政策设为 false，用户将无法在“设置”页面上选择启用该功能。</translation>
 <translation id="1241536186320046498">每当网站想获得窗口放置权限时都询问</translation>
 <translation id="1243570869342663665">控制 SafeSites 的成人内容滤除机制。</translation>
 <translation id="1244309789361056660">此政策已从 M87 中移除；只要用户登录，主目录就会自动迁移至 ext4。
@@ -1127,17 +1120,6 @@
 <translation id="2135335181634291106">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> 来指定默认搜索服务提供商的网站图标网址。
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />，搜索服务提供商便不会有任何图标。</translation>
-<translation id="2138370265180425265">旨在以列表形式为登录屏幕和锁定的屏幕上的一系列网址启用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
-
-      通过设置此政策，您可以指定应允许哪些网址参与认证流程，以便接收来自计算机的一系列信号。
-
-      如果您未设置此政策或将其留空，任何端点都将无法启动认证流程，也无法接收来自计算机的信号。
-
-      注意：允许使用通配符 <ph name="WILDCARD_VALUE" />。
-
-      此政策只会影响登录屏幕和锁定的屏幕上的认证流程。如需更改会话期间认证流程，请使用 <ph name="CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" /> 政策。
-
-      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://www.chromium.org/administrators/url-blocklist-filter-format。</translation>
 <translation id="2144236546337326489">允许启用 Phone Hub 任务延续功能</translation>
 <translation id="2145735238144543545">必需的客户端证书</translation>
 <translation id="2146103669166779785">将被用于生成主题并向浏览器应用该主题的十六进制颜色。</translation>
@@ -1450,13 +1432,6 @@
       如果此政策未设置，用户便可自行选择是否使用该服务。
 
       拼写检查功能始终都能就地使用已下载的字典，除非该功能已被 <ph name="SPELLCHECK_ENABLED_POLICY_NAME" /> 停用（在这种情况下，此政策将不会产生任何影响）。</translation>
-<translation id="2433256976163104361">以列表形式指定 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 会应用于哪些网址。此政策对用户设定的自动打开值没有任何影响。
-
-      如果您设置了此政策，那么仅当文件的网址包含在列表中且文件类型已列在 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 中时，相应文件才会依照此政策自动打开。如果不符合上述任一条件，下载内容便不会依照此政策自动打开。
-
-      如果此政策未设置，文件类型已列在 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 中的所有下载内容都将会自动打开。
-
-      必须根据 https://www.chromium.org/administrators/url-blocklist-filter-format 来设置网址格式。</translation>
 <translation id="2433516903565257847">应在指定天数后更新的设备所占的百分比。</translation>
 <translation id="2435052056904485763">Kerberos 委派服务器许可名单</translation>
 <translation id="2435232509335686514">与<ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" />对所下载文件的处理方式有关的配置政策</translation>
@@ -1860,7 +1835,6 @@
 <translation id="2853649500575897584">不屏蔽浏览器进程中的旧版扩展点</translation>
 <translation id="285480231336205327">启用高反差模式</translation>
 <translation id="285627849510728211">设定日间高级电池充电模式配置</translation>
-<translation id="2856674246949497058">如果操作系统版本比目标版本新，则回滚到并持续使用目标版本。在此过程中，系统会执行 Powerwash 操作。</translation>
 <translation id="2866619962692161453">元政策类型</translation>
 <translation id="2866726566162790531">允许所有 HTTP 身份验证的来源列表</translation>
 <translation id="2868756546751652023">允许用户使用“即时网络共享”功能</translation>
@@ -2454,17 +2428,6 @@
       如果您不设置此政策，则超时时间为 0 毫秒。
 
       如果 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策未设置，则此政策不会产生任何效力。</translation>
-<translation id="3395409052977893716">旨在以列表形式为一系列网址启用 <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR" />。
-
-      通过设置此政策，您可以指定应允许哪些网址参与认证流程，以便接收来自计算机的一系列信号。
-
-      如果您未设置此政策或将其留空，任何端点都将无法启动认证流程，也无法接收来自计算机的信号。
-
-      注意：允许使用通配符 <ph name="WILDCARD_VALUE" />。
-
-      对于 ChromeOS，此政策会与远程认证关联，在这种情况下，系统会自动生成一个证书，并将其上传到设备管理服务器。
-
-      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://www.chromium.org/administrators/url-blocklist-filter-format。</translation>
 <translation id="3397883909301547525">不在 <ph name="PRODUCT_OS_NAME" /> 启动器中显示推荐的应用</translation>
 <translation id="3399859571630358395">强制停用快速配对（快速蓝牙配对）。</translation>
 <translation id="3404681701763345449">启用 <ph name="GOOGLE_CALENDAR_NAME" />集成。</translation>
@@ -3251,16 +3214,6 @@
       如果此政策已停用或未设置，用户便可在使用移动网络连接时将文件传输到 Google 云端硬盘。</translation>
 <translation id="4248277954659222481">允许符合网址格式许可名单中所列格式的网页自动播放媒体内容</translation>
 <translation id="4250680216510889253">否</translation>
-<translation id="4259636715493757956">让您能在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中为身份验证网址指定配置。
-
-      这些身份验证网址将被 <ph name="WEBVIEW_PRODUCT_NAME" /> 视为特殊网址，因此在身份验证期间，当网页在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中被导航到身份验证网址时，系统将会启动可处理此身份验证网址的相应身份提供方身份验证器应用。
-
-      身份提供方将使用上述身份提供方身份验证器应用启动流程来支持一些使用情形（例如提供跨应用式单点登录）或通过以下方式提供更高的安全性：在身份验证期间收集零信任设备信号以了解设备状态。
-
-      如果设备上未安装任何用于处理身份验证网址的有效应用，导航将在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中继续。
-
-      身份验证网址的格式必须符合 https://www.chromium.org/administrators/url-blocklist-filter-format 中列出的要求。
-      </translation>
 <translation id="4260027436474745627">如果您设置了此政策，逗号分隔列表中指定的每个来源都将在一个专用进程中运行。所指定的每个来源的进程都只能包含来自相应来源及其子网域的文档。例如，如果指定 https://a1.example.com/，则同一进程中可以包含 https://a2.a1.example.com/，但不可包含 https://example.com 或 https://b.example.com。
 
       从 <ph name="PRODUCT_NAME" /> 77 版起，您也可以使用通配符来指定一系列要隔离的来源。例如，如果指定 https://[*.]corp.example.com，则 https://corp.example.com 下的每个来源都会有自己的专用进程，包括 https://corp.example.com 本身、https://a1.corp.example.com 和 https://a2.a1.corp.example.com。
@@ -3277,15 +3230,6 @@
 
       如果此政策未设置，系统会应用默认时间间隔（10 分钟）。</translation>
 <translation id="4263788921751326798">停用设备崩溃报告信息报告功能</translation>
-<translation id="4266547484666068234">通过设置此政策，您可列出允许访问的网址，以便将这些网址作为 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，将 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 设成 * 会屏蔽所有请求，但您可以通过此政策来允许访问您所列出的部分网址。您可借助此政策为某些协议、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://www.chromium.org/administrators/url-blocklist-filter-format）。系统会屏蔽还是允许某个网址取决于最具体的过滤条件。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1000 个条目。
-
-      通过此政策，您还可让浏览器自动调用以下类型的外部应用：已注册为所列协议（如“tel:”或“ssh:”）的协议处理程序。
-
-      如果您未设置此政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 将不会有任何例外情况。
-
-      从 <ph name="PRODUCT_NAME" /> 92 版开始，此政策在无头模式中也受支持。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于移动设备管理 (MDM) 下的实例或通过 MCX 加入某个网域的实例。</translation>
 <translation id="4268586991084547853">更好地兼容 Microsoft IE/Edge 企业模式 sitelist。</translation>
 <translation id="4269798992490176617">如果此政策已启用，<ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> 会执行来自远程主机浏览会话的 WebAuthn API 请求。
 
@@ -3750,15 +3694,6 @@
 <translation id="487460824085252184">自动迁移，不询问用户是否同意。</translation>
 <translation id="4874982543810021567">禁止这些网站使用 WebUSB</translation>
 <translation id="4876805738539874299">启用最高 SSL 版本</translation>
-<translation id="4877402532842958110">此政策已被弃用，请改用“<ph name="URL_ALLOWLIST_POLICY_NAME" />”政策。
-
-      通过设置此政策，您可列出允许访问的网址，以便将这些网址作为网址屏蔽名单的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，将 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 设成 * 会屏蔽所有请求，但您可以通过本政策来允许访问您所列出的部分网址。您可借助本政策为某些协议、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://www.chromium.org/administrators/url-blocklist-filter-format）。系统会屏蔽还是允许某个网址取决于最具体的过滤条件。许可名单的优先级高于屏蔽名单。此政策最多只能包含 1000 个条目。
-
-      通过此政策，您还可让浏览器自动调用以下类型的外部应用：已注册为所列协议（如“tel:”或“ssh:”）的协议处理程序。
-
-      如果您未设置此政策，网址屏蔽名单将不会有任何例外情况。
-
-      在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于移动设备管理 (MDM) 下的实例或通过 MCX 加入某个网域的实例。</translation>
 <translation id="4886783562285047261">如果此政策已启用，<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />注册会是强制性的。如果注册失败，<ph name="PRODUCT_NAME" /> 便无法启动。
 
       如果此政策已停用或未设置，<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />则是可选的。如果注册失败，<ph name="PRODUCT_NAME" /> 仍能正常启动。
@@ -4212,35 +4147,6 @@
 <translation id="5331746669335642668"><ph name="PRODUCT_NAME" /> 云政策会替换平台政策。</translation>
 <translation id="5346587320074666194">禁止在这些网站上使用传感器</translation>
 <translation id="534836255587440809">禁止在登录屏幕上自动点击</translation>
-<translation id="5357039649371478544">配置一个规则列表，以防止 <ph name="PRODUCT_OS_NAME" /> 上发生数据泄露。
-      复制和粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
-
-      每条规则均包含以下内容：
-      - 一个来源列表，来源用网址定义。系统会将这些来源中的所有数据都视为机密数据并对其应用限制条件。
-      - 一个目的地列表，目的地用网址或组件定义。您可以允许或禁止将机密数据共享到这些目的地。
-      - 一个限制条件列表，包含要应用到来源所含数据上的限制条件。
-
-      您可通过添加规则来实现以下目的：
-      - 控制在来源和目的地之间共享的剪贴板数据。
-      - 控制针对任何来源的截屏操作。
-      - 控制针对任何来源的打印操作。
-      - 在任何来源可见时控制隐私保护屏幕。
-      - 控制针对任何来源的屏幕共享操作。
-      - 控制从任何来源下载的要传输到目的地的文件。在 <ph name="PRODUCT_OS_NAME" /> 108 及更高版本上受支持。
-
-      限制级别可设为 BLOCK、ALLOW、REPORT 或 WARN。
-      - 如果限制级别设为 BLOCK，系统将不允许执行该操作。如果 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 设为 True，系统会向管理员报告被禁止的操作。
-      - 如果限制级别设为 ALLOW，系统将允许执行该操作。
-      - 如果限制级别设为 REPORT 并且 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 设为 True，系统会向管理员报告该操作。
-      - 如果限制级别设为 WARN，用户将收到警告消息，但可选择是继续还是取消该操作。如果 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 设为 True，无论是显示了警告消息的情况，还是用户选择了继续该操作的情况，都会被报告给管理员。
-
-      注意：
-      - PRIVACY_SCREEN 限制条件不会禁止开启隐私保护屏幕，但会在限制级别设为 BLOCK 时强制使用隐私保护屏幕。
-      - 如果限制条件列表含有 CLIPBOARD 或 FILES，目的地便不能为空，但它们对其余的限制条件没有任何影响。
-      - 对于 CLIPBOARD 限制条件，系统会忽略 DRIVE 和 USB 目的地。
-      - 所列网址必须采用这种格式 ( https://www.chromium.org/administrators/url-blocklist-filter-format )。
-
-      如果此政策未设置，系统将不会应用任何限制条件。</translation>
 <translation id="5362531528507578966">覆盖默认背景图片打印模式。</translation>
 <translation id="5365476955714838841">用于启动替代浏览器的命令行参数。</translation>
 <translation id="5365946944967967336">在工具栏上显示“主页”按钮</translation>
@@ -5671,11 +5577,6 @@
       如果您未设置此政策，高对比度模式会在登录屏幕上处于关闭状态。用户可以随时开启该功能，并且它在登录屏幕上的状态对所有用户都一致。
 
           注意：<ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" />（若已指定）会覆盖此政策。</translation>
-<translation id="6833462729740272863">以列表形式配置一系列网址，从而指定当设备从锁屏状态恢复后哪些网址可在不显示通知的情况下保持全屏模式。
-
-          通常，当设备从锁屏状态恢复后，系统会关闭全屏模式以降低遭遇钓鱼式攻击的风险。此政策允许指定哪些网址会被视为可信来源且能在屏幕解锁后继续处于全屏模式。设置此政策时，必须按照这种格式 ( https://www.chromium.org/administrators/url-blocklist-filter-format ) 指定网址格式列表。例如，可通过指定与所有网址都匹配的通配符 <ph name="WILDCARD_VALUE" /> 来允许始终在屏幕解锁后保持全屏模式并彻底停用通知功能。
-
-          如果此政策设为空列表或未设置，任何网址都无法在不显示通知的情况下继续处于全屏模式。</translation>
 <translation id="6833988859168635883">启动页、主页和新标签页</translation>
 <translation id="6835883744948188639">显示建议用户重新启动浏览器的周期性提示</translation>
 <translation id="683688607121170501">通过此设置，您可允许用户在登录其 <ph name="PRODUCT_OS_NAME" />设备后从浏览器窗口的内容区域和 Android 应用中切换 Google 帐号。
@@ -5722,13 +5623,6 @@
       如果您未设置此政策，此政策便不会对用户能在锁定屏幕上启用的应用集施加任何限制。</translation>
 <translation id="6882028194958060206">将 Flash 内容设置的涵盖面扩展至所有内容（已弃用）</translation>
 <translation id="6889123056995503704">由用户决定版本降级行为</translation>
-<translation id="6893442532580358855">通过设置此政策，您可禁止加载已列入屏蔽名单的网址所对应的网页。此政策让您能够列出一系列网址格式，从而指定禁止加载的网址。如果您未设置此政策，那么任何网址都能在浏览器中加载。所列网址必须采用 https://www.chromium.org/administrators/url-blocklist-filter-format 规定的格式。在 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 中，您最多可定义 1,000 个例外情况。
-
-      从 <ph name="PRODUCT_NAME" /> 73 版开始，您可以屏蔽 javascript://* 网址。不过，这仅会影响在地址栏（或小书签等）中输入的 JavaScript 网址。凡是能动态加载数据的页内 JavaScript 网址都不会受此政策影响。例如，即使您屏蔽了 example.com/abc，example.com 仍可以使用 XMLHTTPRequest 加载 example.com/abc。
-
-      从 <ph name="PRODUCT_NAME" /> 92 版开始，此政策在无头模式中也受支持。
-
-      注意：屏蔽内部 chrome://* 网址和 chrome-trusted://* 网址可能会导致意外错误，或者可能会在特殊情况下被规避。您最好查看是否存在更多的具体政策，而不是屏蔽某些内部网址。对于常见情况：请使用 <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />，而不要屏蔽 chrome://settings/certificates。请使用 <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />，而不要屏蔽 chrome-trusted://crosh。</translation>
 <translation id="6894178810167845842">在新标签页中打开的页面网址</translation>
 <translation id="6897730193187922386">禁止显示 <ph name="CLOUD_PRINT_NAME" />弃用消息</translation>
 <translation id="6899705656741990703">自动检测代理设置</translation>
@@ -5828,11 +5722,6 @@
       停用此政策会对 <ph name="PRODUCT_NAME" /> 的安全性和稳定性产生不利影响，因为如果此政策已停用，不明的潜在恶意代码便可在 <ph name="PRODUCT_NAME" /> 的渲染程序进程中加载。仅当那些必须在 <ph name="PRODUCT_NAME" /> 的渲染程序进程中运行的第三方软件遇到兼容性问题时，才应停用此政策。
 
       注意：不妨详细了解一下进程缓解政策 ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies )。</translation>
-<translation id="6969131408525928234">设置此政策可关闭对指定网址中所含主机名的证书透明度披露要求。虽然这会导致更难以检测到误颁的证书，但相应主机可以继续使用因没有恰当公开披露相关信息而不受信任的证书。
-
-      如果您未设置此政策，<ph name="PRODUCT_NAME" /> 便会将那些应按照证书透明度要求进行披露但却未予披露的证书视为不可信证书。
-
-      网址格式应采用 https://www.chromium.org/administrators/url-blocklist-filter-format 中规定的格式。不过，判定给定主机名的证书是否有效与架构、端口或路径皆无关，因此 <ph name="PRODUCT_NAME" /> 只会考虑相应网址的主机名部分。采用通配符的主机名不受支持。</translation>
 <translation id="6969332115615661188">停用视频输入</translation>
 <translation id="6972540544240464302">选择任务调度程序配置</translation>
 <translation id="6975533677426693807">始终使用内部 PDF 查看器打开 PDF 文件</translation>
@@ -5982,7 +5871,6 @@
       如果此政策设为 False，系统将停用该功能。</translation>
 <translation id="7126716959063786004">允许在任务管理器中结束进程</translation>
 <translation id="7126928806195745404">JavaScript 设置</translation>
-<translation id="7127892035367404455">回滚到目标版本</translation>
 <translation id="7127980134843952133">下载记录</translation>
 <translation id="712963038874313213">提供应在默认 Crostini 容器中执行的 Ansible Playbook。
 
@@ -6278,7 +6166,6 @@
 
       如果停用此政策，“新标签页”页面将不会显示中间槽通知（即使有）。
       </translation>
-<translation id="7458437477941640506">如果操作系统版本比目标版本新，则不会回滚到目标版本。相应更新也会被停用。</translation>
 <translation id="7459601923199346224">控制证书管理机制的用户和设备政策。</translation>
 <translation id="7459633275230216698">允许显示文件选择对话框</translation>
 <translation id="7464058117970792805">启用打印预览</translation>
@@ -7012,6 +6899,8 @@
 <translation id="8244525275280476362">政策失效后的最大提取延迟</translation>
 <translation id="8245574649143980200">如果此政策未设置或已启用，用户便可以在上下文菜单中查看和使用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索菜单项。如果此政策已停用，而且系统支持 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索，用户将不会在上下文菜单中看到 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索菜单项。</translation>
 <translation id="824818544897669723">禁止删除浏览器历史记录和下载记录</translation>
+<translation id="8250048892729838843">此政策已被弃用。如果此政策已启用或未设置，系统便会允许设备接收精细报告控件的报告。
+      如果此政策已停用，已注册的设备将不会接收精细报告控件的报告。</translation>
 <translation id="82530263956734297">要从屏蔽名单中排除的扩展程序 ID</translation>
 <translation id="8256688113167012935">控制 <ph name="PRODUCT_OS_NAME" />在登录屏幕上为相应的设备本地帐号显示的帐号名。
 
@@ -7915,8 +7804,6 @@
 <translation id="9148720248753722892">禁止使用 SHA-1 签名证书</translation>
 <translation id="9150416707757015439">此政策已弃用，请改用 IncognitoModeAvailability。在 <ph name="PRODUCT_NAME" />中启用隐身模式。如果已启用或未配置此设置，用户就可以在隐身模式下打开网页。如果停用此设置，用户就无法在隐身模式下打开网页。如果未设置此政策，将会启用此设置，用户便能使用隐身模式。</translation>
 <translation id="9152473318295429890">允许根据上下文建议相关的网页</translation>
-<translation id="9153446010242995516">如果操作系统版本比目标版本新，则回滚到目标版本，并一直使用此版本。如果可能，会尝试通过回滚过程保留设备级配置（包括网络凭据），但即使无法恢复数据（因为目标版本不支持恢复数据，或因为发生了无法向后兼容的更改），也会通过执行完整的 Powerwash 操作进行回滚。
-          <ph name="PRODUCT_OS_NAME" /> 75 及更高版本均支持。对于旧版客户端，此值意味着禁用回滚。</translation>
 <translation id="9155218447258425310">当用户从 <ph name="PRODUCT_OS_NAME" />设备上移除智能卡时，通知会持续显示多长时间。</translation>
 <translation id="9155375380628728544">如果您设置了此政策，用户只能将此政策所列出的语言之一添加到首选语言列表内。
 
@@ -7990,13 +7877,6 @@
 <translation id="943865157632139008">可让您配置安装 <ph name="PRODUCT_FRAME_NAME" />时默认使用的 HTML 渲染程序。
       默认设置是允许托管浏览器执行渲染操作，不过您可以视情况替换此设置，并默认让 <ph name="PRODUCT_FRAME_NAME" />渲染 HTML 网页。</translation>
 <translation id="944817693306670849">设置磁盘缓存大小</translation>
-<translation id="947333773406819973">此政策已被弃用，请改用“<ph name="URL_BLOCKLIST_POLICY_NAME" />”政策。
-
-      通过设置此政策，您可禁止加载已列入屏蔽名单的网址所对应的网页。此政策列出了一系列网址格式，用于指定禁止加载的网址。如果您未设置此政策，那么任何网址都能在浏览器中加载。所列网址必须采用 https://www.chromium.org/administrators/url-blocklist-filter-format 规定的格式。在 <ph name="URL_ALLOWLIST_POLICY_NAME" /> 中，您最多可定义 1000 个例外情况。
-
-      从 <ph name="PRODUCT_NAME" /> 73 版开始，您可以屏蔽 javascript://* 网址。不过，这仅会影响在地址栏（或小书签等）中输入的 JavaScript 网址。凡是能动态加载数据的页内 JavaScript 网址都不会受此政策影响。例如，即使您屏蔽了 example.com/abc，example.com 仍可以使用 XMLHTTPRequest 加载 example.com/abc。
-
-      注意：屏蔽内部 chrome://* 网址可能会导致意外的错误。</translation>
 <translation id="957778406002650056">可供下载相应 <ph name="PLUGIN_VM_NAME" /> 图片的网址。</translation>
 <translation id="958285142322823422">禁止自助服务终端 Web 应用再打开一个浏览器窗口</translation>
 <translation id="958577147847681221">控制 <ph name="PRODUCT_OS_NAME" />是否允许创建新的用户帐号。

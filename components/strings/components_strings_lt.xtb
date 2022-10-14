@@ -320,6 +320,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1717218214683051432">Judesių jutikliai</translation>
 <translation id="1717494416764505390">3 pašto dėžutė</translation>
 <translation id="1718029547804390981">Dokumentas per didelis, kad būtų galima komentuoti</translation>
+<translation id="1719434663396780149">Įspėjimai apie sumažintas kainas įjungti. Tai galite pakeisti skiltyje <ph name="BEGIN_LINK" />„<ph name="NOTIFICATION_SETTINGS" />“<ph name="END_LINK" />.</translation>
 <translation id="1720941539803966190">Uždaryti mokymo programą</translation>
 <translation id="1721424275792716183">* Būtina užpildyti lauką</translation>
 <translation id="1725591448053514783">„You 6“ vokas</translation>
@@ -980,6 +981,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3550112004925580947">Svetingumo pramonė</translation>
 <translation id="3552297013052089404">Šriftas be užraitų</translation>
 <translation id="3558573058928565255">Dienos metas</translation>
+<translation id="3560824484345057728">Žr. susijusias svetaines</translation>
 <translation id="3566021033012934673">Jūsų ryšys nėra privatus</translation>
 <translation id="3567778190852720481">Negalima užsiregistruoti naudojant įmonės paskyrą (įmonės paskyra netinkama).</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
@@ -1365,6 +1367,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4542971377163063093">6 dėklas</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">Pabandykite išjungti plėtinius.</translation>
+<translation id="4559134504959026834">Ši svetainė yra <ph name="SET_OWNER" /> nustatytoje grupėje, kurioje galima peržiūrėti jūsų veiklą</translation>
 <translation id="4559332380232738994">10 x 11</translation>
 <translation id="4566017918361049074">Renginiai lauke</translation>
 <translation id="4567686777917670400">Administratorius gali nuotoliniu būdu keisti naršyklės sąranką. Veiklą šiame įrenginyje taip pat galima tvarkyti ne naršyklėje „Chromium“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
@@ -2671,6 +2674,7 @@ Papildoma išsami informacija:
 <translation id="7995512525968007366">Nenurodytas</translation>
 <translation id="7998269595945679889">Atidarykite inkognito skirtuką, paspauskite „Enter“, kad būtų atidarytas naujas privataus naršymo inkognito skirtukas</translation>
 <translation id="800218591365569300">Pabandykite uždaryti skirtukus arba kitas programas, kad atlaisvintumėte atminties.</translation>
+<translation id="8002230960325005199">Žr. susijusias svetaines naujame skirtuke</translation>
 <translation id="8003046808285812021">„<ph name="SEARCH_TERMS" />“</translation>
 <translation id="8004582292198964060">Naršyklė</translation>
 <translation id="8009225694047762179">Tvarkyti slaptažodžius</translation>
@@ -2774,6 +2778,7 @@ Papildoma išsami informacija:
 <translation id="8270242299912238708">PDF dokumentai</translation>
 <translation id="8275952078857499577">Nesiūlyti versti šios svetainės</translation>
 <translation id="8277900682056760511">Mokėjimo doroklės lapas atidarytas</translation>
+<translation id="8279611986089885641">„Chrome“ pranešimai turi būti įjungti. Juos galite įjungti skiltyje <ph name="BEGIN_LINK" />„<ph name="NOTIFICATION_SETTINGS" />“<ph name="END_LINK" />.</translation>
 <translation id="8280630997017109758">Vienuoliktas dėklas</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">Praleisti</translation>

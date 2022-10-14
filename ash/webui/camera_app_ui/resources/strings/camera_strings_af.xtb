@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1076394037877376434">Vee bladsy <ph name="PAGE_NUMBER" /> uit</translation>
 <translation id="1113173431709655881">Kameramodus</translation>
 <translation id="1153190633558910465">Rooster af</translation>
 <translation id="1175958423215084756">Skakel is bespeur. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Bladsy <ph name="PAGE_NUMBER" /> is uitgevee</translation>
 <translation id="1258009455399840361">Draai 90 grade kloksgewys</translation>
 <translation id="1276998909102132017">Galeryprente</translation>
 <translation id="1300209025925956156">Skandeer jou dokument</translation>

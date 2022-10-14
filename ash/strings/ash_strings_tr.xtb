@@ -340,9 +340,9 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="2865888419503095837">Ağ bilgisi</translation>
 <translation id="2872961005593481000">Kapat</translation>
 <translation id="2878884018241093801">Yeni öğe yok</translation>
+<translation id="2885950158625301909">Daha fazla bilgi</translation>
 <translation id="2891209721153296020">"Seçimi kaldır"</translation>
 <translation id="2894949423239620203">Kullanılan kablo, performansı etkileyebilir</translation>
-<translation id="2903844815300039659"><ph name="NAME" /> ağına bağlı, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Yakalanan ekranlar</translation>
 <translation id="2941112035454246133">Düşük</translation>
 <translation id="2942350706960889382">Yerleştirilmiş Büyüteç</translation>
@@ -1051,6 +1051,7 @@ Yeni yüklenmiş</translation>
 <translation id="6961121602502368900">Telefonu sessize alma özelliği, iş profilinde kullanılamaz</translation>
 <translation id="6961840794482373852">Alt + Yukarı Ok klavye kısayolu değişti. Page Up tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Yukarı Ok tuşlarına basın.</translation>
 <translation id="696267987219125751">Kamera çerçevelemesi kapalı.</translation>
+<translation id="6964690557625666701">Sabitlenen tüm öğeler partide</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6972754398087986839">Başlarken</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1360,8 @@ Yeni yüklenmiş</translation>
 <translation id="8734991477317290293">Bu klavye, tuş vuruşlarınızı çalmaya çalışıyor olabilir</translation>
 <translation id="8735678380411481005">Klavye arka ışığı rengi</translation>
 <translation id="8735953464173050365">Klavye ayarlarını göster. <ph name="KEYBOARD_NAME" /> seçildi</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Kamera izni olan uygulamaların ve web sayfalarının bu cihaza bağlı kameraları kullanmasına izin vermek için kamera erişimini açın.</translation>
 <translation id="8755498163081687682">Kimliğinizi doğrulayın: <ph name="ORIGIN_NAME" />, kimliğinizi doğrulamak istiyor</translation>
 <translation id="875593634123171288">VPN ayarlarını göster</translation>

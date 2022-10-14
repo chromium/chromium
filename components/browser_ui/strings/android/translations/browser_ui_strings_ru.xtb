@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Выключить камеру</translation>
 <translation id="2717722538473713889">Адреса электронной почты</translation>
 <translation id="2750481671343847896">Сайты могут показывать предложения войти в аккаунт от сервисов подтверждения личности.</translation>
-<translation id="2785051990912111074">Будут удалены файлы cookie для <ph name="WEBSITE" />.</translation>
 <translation id="2822354292072154809">Сбросить разрешения для сайта <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Сайт</translation>
 <translation id="2874939134665556319">Предыдущий трек</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Последнее посещение: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Контакты не найдены</translation>
 <translation id="4996978546172906250">Способ отправки</translation>
-<translation id="5014906230196386306">Удалить файлы cookie?</translation>
 <translation id="5039804452771397117">Разрешить</translation>
 <translation id="5048398596102334565">Предоставить сайтам доступ к датчикам движения (рекомендуется)</translation>
 <translation id="5050380848339752099">Этот сайт передает информацию стороннему приложению, пока вы находитесь в режиме инкогнито.</translation>

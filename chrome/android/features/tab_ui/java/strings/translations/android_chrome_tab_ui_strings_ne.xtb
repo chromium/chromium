@@ -80,6 +80,7 @@
 <translation id="753732157349120914">ट्याब स्विचर</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google बाट प्राप्त <ph name="REVIEWS_COUNT_ONE" /> वटा समीक्षा}other{Google बाट प्राप्त <ph name="REVIEWS_COUNT_MANY" /> वटा समीक्षा}}</translation>
 <translation id="7559245342362162951">समूहका ट्याबहरूलाई फुल स्क्रिन ग्रिडमा देखाउनुहोस्</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> वटा ट्याब सेयर गर्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> वटा ट्याब सेयर गर्नुहोस्}}</translation>
 <translation id="7792771145871471484">सुझावहरूको समीक्षा गर्नुहोस्।</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{चयन गरिएको <ph name="TABS_COUNT_ONE" /> ट्याब कुनै समूहमा थप्नुहोस्}other{चयन गरिएका <ph name="TABS_COUNT_MANY" /> ट्याबहरू कुनै समूहमा थप्नुहोस्}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन, <ph name="REVIEWS_COUNT_ONE" /> समीक्षा}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> मूल्याङ्कन, <ph name="REVIEWS_COUNT_MANY" /> वटा समीक्षा}}</translation>

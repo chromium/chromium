@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">இப்பொழுது இல்லை</translation>
 <translation id="3486821258960016770">மங்கோலியன்</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> பிழைகள்.</translation>
-<translation id="3495810061346586977">இந்த ஃபைல் ரகசியமானது, அத்துடன் நிர்வாகிக் கொள்கையின் வரம்புகளுக்கும் உட்பட்டது. <ph name="BEGIN_LINK_HELP" />மேலும் அறிக<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, விவரங்கள்</translation>
 <translation id="3522708245912499433">போர்ச்சுகீஸ்</translation>
 <translation id="3524311639100184459">எச்சரிக்கை: இந்த ஃபைல்கள் தற்காலிகமானவை, டிஸ்க்கில் இடத்தைக் காலியாக்கும் வகையில் இவை தானாகவே நீக்கப்படலாம்.  <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
@@ -647,6 +646,7 @@
 <translation id="642282551015776456">ஃபோல்டர் பெயரின் ஃபைலாக இந்தப் பெயரைப் பயன்பட முடியாமல் போகக்கூடும்</translation>
 <translation id="6423031066725912715">வியட்நாமிஸ் - TCVN கீபோர்டு</translation>
 <translation id="6430271654280079150">1 வாய்ப்பு மீதமுள்ளது.</translation>
+<translation id="643243556292470964">நீக்கிய ஃபைல்கள் இப்போது ‘நீக்கியவை’ பிரிவுக்கு நகர்த்தப்படும்</translation>
 <translation id="6485131920355264772">இடத் தகவலை மீட்டெடுப்பதில் தோல்வி</translation>
 <translation id="6495925982925244349">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி நிர்வகிக்கிறார், விவரங்கள்</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> ஃபைல் <ph name="FOLDER_NAME" /> ஃபோல்டருக்குப் பிரித்தெடுக்கப்படுகிறது</translation>

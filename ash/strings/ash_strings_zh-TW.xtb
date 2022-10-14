@@ -340,9 +340,9 @@
 <translation id="2865888419503095837">網路資訊</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2878884018241093801">最近沒有任何項目</translation>
+<translation id="2885950158625301909">瞭解詳情</translation>
 <translation id="2891209721153296020">「取消選取」</translation>
 <translation id="2894949423239620203">連接線可能會影響效能</translation>
-<translation id="2903844815300039659">已連上 <ph name="NAME" />，<ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">螢幕截圖</translation>
 <translation id="2941112035454246133">低</translation>
 <translation id="2942350706960889382">停駐放大鏡</translation>
@@ -1049,6 +1049,7 @@
 <translation id="6961121602502368900">工作資料夾不支援將手機設為靜音</translation>
 <translation id="6961840794482373852">「Alt + 向上鍵」的鍵盤快速鍵已變更。如要使用 Page Up 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向上鍵。</translation>
 <translation id="696267987219125751">已關閉相機取景功能。</translation>
+<translation id="6964690557625666701">所有固定項目都已隱藏</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6972754398087986839">開始使用</translation>
 <translation id="6979158407327259162">Google 雲端硬碟</translation>
@@ -1357,6 +1358,7 @@
 <translation id="8734991477317290293">你的按鍵行為可能會遭到側錄</translation>
 <translation id="8735678380411481005">鍵盤背光顏色</translation>
 <translation id="8735953464173050365">顯示鍵盤設定。已選取<ph name="KEYBOARD_NAME" /></translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，<ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">開啟相機存取權，允許任何具有相機權限的應用程式和網頁使用連結至這部裝置的相機。</translation>
 <translation id="8755498163081687682">驗證身分：<ph name="ORIGIN_NAME" /> 要求確認你的身分</translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>

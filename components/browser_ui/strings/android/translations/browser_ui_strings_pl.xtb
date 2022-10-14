@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Wyłącz kamerę</translation>
 <translation id="2717722538473713889">Adresy e-mail</translation>
 <translation id="2750481671343847896">Witryny mogą wyświetlać prośby o zalogowanie się pochodzące od usług tożsamości.</translation>
-<translation id="2785051990912111074">Spowoduje to usunięcie plików cookie witryny <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Czy na pewno chcesz zresetować wszystkie uprawnienia witryny dla obiektu <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Witryna</translation>
 <translation id="2874939134665556319">Poprzedni utwór</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Ostatnia wizyta <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nie znaleziono kontaktów</translation>
 <translation id="4996978546172906250">Udostępnij przez</translation>
-<translation id="5014906230196386306">Usunąć pliki cookie?</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
 <translation id="5048398596102334565">Zezwalaj stronom na dostęp do czujników ruchu (zalecane)</translation>
 <translation id="5050380848339752099">Ta strona zamierza udostępnić informacje aplikacji poza trybem incognito.</translation>

@@ -211,9 +211,6 @@
 <translation id="1198183996903759302">Si cette règle est définie sur "True" (ou que la règle <ph name="HARDWARE_ACCELERATION_MODE_ENABLED_POLICY_NAME" /> est définie sur "False") les pages Web ne peuvent pas accéder à l'API WebGL, et les plug-ins ne peuvent pas utiliser l'API Pepper 3D.
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les pages Web peuvent accéder à l'API WebGL, et les plug-ins peuvent utiliser l'API Pepper 3D. Toutefois, il peut quand même être nécessaire d'ajouter des arguments de ligne de commande aux paramètres par défaut du navigateur pour utiliser ces API.</translation>
-<translation id="1199366379198964260">Si cette règle est activée, les utilisateurs peuvent définir des codes peu sécurisés. Exemples de codes peu sécurisés : les séries de chiffres identiques (1111), dans l'ordre croissant (1234) et dans l'ordre décroissant (4321), et les codes trop communs. Si cette règle est désactivée, les utilisateurs ne peuvent pas définir de codes peu sécurisés et faciles à deviner.
-
-      Par défaut, un message d'avertissement (et non un message d'erreur) s'affiche quand le code choisi par l'utilisateur est peu sécurisé.</translation>
 <translation id="1202216683470826356">Afficher les fiches sur la page Nouvel onglet</translation>
 <translation id="1204263402976895730">Imprimantes d'entreprise activées</translation>
 <translation id="1209065772997672966">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à ouvrir les fenêtres pop-up.
@@ -250,10 +247,6 @@
 <translation id="1240722269871366886">Cette règle permet à <ph name="PRODUCT_OS_NAME" /> de suggérer des emoji lorsque l'utilisateur saisit du texte sur un clavier virtuel ou physique.
       Si cette règle est définie sur "True", la fonctionnalité est activée, et l'utilisateur peut la modifier.
       Cette règle est définie par défaut sur "False". Aucun emoji n'est alors suggéré, et l'utilisateur ne peut pas ignorer ce paramètre.</translation>
-<translation id="1241325191379810167">La fonctionnalité d'envoi automatique du code modifie la façon dont celui-ci est saisi dans Chrome OS.
-          Au lieu d'afficher le champ de texte utilisé pour la saisie du mot de passe, cette fonctionnalité présente une interface utilisateur spéciale qui indique clairement à l'utilisateur le nombre de chiffres à saisir pour son code. De ce fait, la longueur du code de l'utilisateur est stockée en dehors des données chiffrées de l'utilisateur. Les codes compatibles comptent entre 6 et 12 chiffres.
-
-          Si cette règle est définie sur "False", aucun utilisateur ne peut activer la fonctionnalité sur la page des paramètres.</translation>
 <translation id="1241536186320046498">Demander chaque fois qu'un site souhaite obtenir l'autorisation de positionnement des fenêtres</translation>
 <translation id="1243570869342663665">Contrôler le filtrage SafeSites des contenus réservés aux adultes.</translation>
 <translation id="1244309789361056660">Cette règle a été supprimée dans M87 et les répertoires personnels feront l'objet d'une migration automatique vers le chiffrement ext4 à la connexion.
@@ -1471,13 +1464,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
       Si elle n'est pas définie, les utilisateurs peuvent choisir d'utiliser ou non le service de correction orthographique.
 
       Le correcteur orthographique peut toujours utiliser un dictionnaire téléchargé en local, sauf si la fonctionnalité est désactivée par <ph name="SPELLCHECK_ENABLED_POLICY_NAME" />, auquel cas cette règle n'a aucun effet.</translation>
-<translation id="2433256976163104361">Liste d'URL indiquant les URL pour lesquelles la règle <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> s'applique. Cette règle n'a aucune incidence sur les valeurs définies par les utilisateurs pour l'ouverture automatique.
-
-      Si cette règle est configurée, les fichiers seront ouverts automatiquement à condition que la règle s'applique à l'URL et que le type de fichier figure dans <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" />. Si l'une des deux conditions est fausse, le fichier téléchargé ne s'ouvrira pas automatiquement suivant cette règle.
-
-      Si cette règle n'est pas configurée, tous les fichiers téléchargés qui concernent un type de fichier figurant dans <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> seront ouverts automatiquement.
-
-      Un format d'URL doit respecter les conditions énoncées à la page https://www.chromium.org/administrators/url-blocklist-filter-format.</translation>
 <translation id="2433516903565257847">Pourcentage du parc à mettre à jour au terme du nombre de jours indiqué.</translation>
 <translation id="2435052056904485763">Liste d'autorisation des serveurs de délégation Kerberos</translation>
 <translation id="2435232509335686514">Règle de configuration de <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR" /> pour la gestion des fichiers téléchargés</translation>
@@ -1911,7 +1897,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2853649500575897584">Ne pas bloquer les anciens points d'extension du processus du navigateur</translation>
 <translation id="285480231336205327">Activer le mode Contraste élevé</translation>
 <translation id="285627849510728211">Définir le jour de recharge de la batterie en mode avancé</translation>
-<translation id="2856674246949497058">Rétablissez et conservez la version cible si elle est antérieure à la version de l'OS. Effectuez un Powerwash pendant le processus.</translation>
 <translation id="2866619962692161453">Type de métarègles</translation>
 <translation id="2866726566162790531">Liste des origines autorisant toutes les authentifications HTTP</translation>
 <translation id="2868756546751652023">Autoriser le partage de connexion instantané pour les utilisateurs</translation>
@@ -3323,18 +3308,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4248277954659222481">Autoriser la lecture automatique des contenus multimédias pour les formats d'URL sur liste d'autorisation</translation>
 <translation id="4250680216510889253">Non</translation>
 <translation id="4252522848899331223">Autoriser l'utilisateur à contourner l'avertissement de navigation sécurisée</translation>
-<translation id="4259636715493757956">Permet de spécifier les configurations pour les URL d'authentification dans <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Ces URL d'authentification seraient traitées spécialement par <ph name="WEBVIEW_PRODUCT_NAME" />, de sorte que durant l'authentification, lorsque la page Web dans <ph name="WEBVIEW_PRODUCT_NAME" />
-      navigue vers les URL d'authentification, l'appli d'authentification des fournisseurs d'identité correspondants qui peut traiter cette URL d'authentification est lancée.
-
-      Ce flux de lancement de l'appli d'authentification des fournisseurs d'identité serait utilisé par les fournisseurs d'identité pour activer
-      les cas d'utilisation comme la fourniture du SSO dans les applis ou pour proposer une meilleure protection en récoltant les signaux d'appareil zéro confiance pour comprendre la position de l'appareil lors de l'authentification.
-
-      Si aucune appli valide n'est installée pour gérer l'URL d'authentification sur l'appareil, la navigation se poursuivra dans <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Le format de l'URL d'authentification doit respecter ce format : https://www.chromium.org/administrators/url-blocklist-filter-format.
-      </translation>
 <translation id="4260027436474745627">Si cette règle est configurée, chacune des origines définies dans une liste d'éléments séparés par une virgule exécute un processus dédié. Le processus de chaque origine définie ne pourra contenir que des documents de cette origine et de ses sous-domaines. Par exemple, spécifier https://a1.example.com/ autorise https://a2.a1.example.com/ dans le même processus, mais pas https://example.com ni https://b.example.com.
 
       Depuis <ph name="PRODUCT_NAME" /> 77, vous pouvez aussi spécifier une plage d'origines à isoler à l'aide d'un caractère générique. Par exemple, spécifier https://[*.]corp.example.com attribuera à chaque origine sous https://corp.example.com son propre processus dédié, y compris https://corp.example.com, https://a1.corp.example.com et https://a2.a1.corp.example.com.
@@ -3351,15 +3324,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Si la règle n'est pas configurée, la fréquence par défaut (10 minutes) est appliquée.</translation>
 <translation id="4263788921751326798">Désactiver les rapports d'erreur de l'appareil</translation>
-<translation id="4266547484666068234">Configurer cette règle autorise l'accès aux URL répertoriées (prévaut sur <ph name="URL_BLOCKLIST_POLICY_NAME" />). Consultez la description de la règle pour connaître le format des entrées de cette liste. Par exemple, définir <ph name="URL_BLOCKLIST_POLICY_NAME" /> sur "*" bloque toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à une liste limitée d'URL. Utilisez-la pour définir des exceptions à certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines à l'aide du format spécifié sur https://www.chromium.org/administrators/url-blocklist-filter-format. Le filtre le plus spécifique détermine si une URL est bloquée ou autorisée. La règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> prévaut sur <ph name="URL_BLOCKLIST_POLICY_NAME" />. Cette règle est limitée à 1 000 entrées.
-
-      Elle permet aussi d'autoriser le navigateur d'une application externe enregistrée comme gestionnaire de protocoles à appeler automatiquement les protocoles répertoriés tels que "tel:" ou "ssh:".
-
-      Si cette règle n'est pas configurée, aucune exception à <ph name="URL_BLOCKLIST_POLICY_NAME" /> n'est autorisée.
-
-      À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode sans interface graphique.
-
-      Sous <ph name="MS_WIN_NAME" />, cette fonctionnalité n'est disponible que sur les instances jointes à un domaine <ph name="MS_AD_NAME" />, s'exécutant sous Windows 10 Pro ou bénéficiant de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou jointes à un domaine via MCX.</translation>
 <translation id="4268586991084547853">Meilleure compatibilité avec les listes des sites Microsoft IE/Edge en mode Entreprise.</translation>
 <translation id="4269798992490176617">Si cette règle est activée, <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" /> peut exécuter les requêtes API WebAuthn envoyées à partir d'une session de navigation sur un hôte à distance.
 
@@ -3843,15 +3807,6 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="487460824085252184">Effectuer automatiquement la migration, sans demander l'autorisation de l'utilisateur.</translation>
 <translation id="4874982543810021567">Bloquer WebUSB sur ces sites</translation>
 <translation id="4876805738539874299">Version SSL maximale activée</translation>
-<translation id="4877402532842958110">Cette règle est obsolète (veuillez utiliser la règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> à la place).
-
-      Définir cette règle permet d'autoriser l'accès aux URL répertoriées comme exceptions à la liste des URL bloquées. Consultez la description de la règle pour connaître le format des entrées de cette liste. Par exemple, définir la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> sur "*" entraîne le blocage de toutes les requêtes, et vous pouvez appliquer cette règle pour autoriser l'accès à un nombre limité d'URL. Cela vous permet d'ouvrir des exceptions pour certains schémas, ports, chemins d'accès spécifiques ou sous-domaines d'autres domaines utilisant le format spécifié à la page https://www.chromium.org/administrators/url-blocklist-filter-format. Le filtre le plus spécifique détermine si une URL est bloquée ou non. Sachez également que la liste d'autorisation prévaut sur la liste de blocage. Cette règle est limitée à 1 000 entrées.
-
-      Elle permet également d'autoriser ou non le navigateur d'une application externe enregistrée comme gestionnaire de protocoles à appeler automatiquement les protocoles répertoriés tels que "tel:" ou "ssh:".
-
-      Si cette règle n'est pas configurée, aucune exception n'est autorisée.
-
-      Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sous Windows 10 Pro ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="4886783562285047261">Si cette règle est activée, l'inscription à la règle <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> est obligatoire. En cas d'échec, le processus de lancement de <ph name="PRODUCT_NAME" /> est bloqué.
 
       Si cette règle est désactivée ou si elle n'est pas configurée, l'inscription à la règle <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> est facultative. En cas d'échec, le processus de lancement de <ph name="PRODUCT_NAME" /> n'est pas bloqué.
@@ -4307,35 +4262,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="5331746669335642668">Les règles relatives au cloud de <ph name="PRODUCT_NAME" /> sont prioritaires sur les règles relatives à la plate-forme.</translation>
 <translation id="5334501839642146593">Ne pas envoyer de statistiques à Google</translation>
 <translation id="5346587320074666194">Bloquer l'accès aux capteurs sur ces sites</translation>
-<translation id="5357039649371478544">Configure la liste des règles visant à empêcher les fuites de données sur <ph name="PRODUCT_OS_NAME" />.
-      Une fuite de données peut se produire lors d'un copier-coller de données, d'un transfert de fichiers, d'une impression, d'un partage ou d'une capture d'écran, etc.
-
-      Chaque règle se compose des éléments suivants :
-      - Une liste de sources définies sous la forme d'URL. Les données de ces sources sont considérées comme confidentielles, et les restrictions leur sont appliquées.
-      - Une liste de destinations définies sous la forme d'URL ou de composants, et pour lesquelles le partage de données confidentielles est autorisé ou non.
-      - Une liste de restrictions à appliquer aux données des sources.
-
-      Les règles peuvent être ajoutées pour :
-      - Contrôler les données du presse-papiers partagées entre les sources et les destinations.
-      - Contrôler les captures d'écran de n'importe quelle source.
-      - Contrôler l'impression de n'importe quelle source.
-      - Contrôler l'écran de confidentialité lorsque l'une des sources est visible.
-      - Contrôler le partage d'écran de n'importe quelle source.
-      - Contrôler les fichiers téléchargés à partir de n'importe quelle source lorsqu'ils sont transférés vers la destination. Compatible avec <ph name="PRODUCT_OS_NAME" /> version 108 ou ultérieure.
-
-      Le niveau de restriction peut être défini sur "BLOCK", "ALLOW", "REPORT" ou "WARN".
-      - Si le niveau de restriction est défini sur "BLOCK", l'action concernée ne sera pas autorisée. Si <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> est défini sur "True", l'action bloquée sera signalée à l'administrateur.
-      - Si le niveau de restriction est défini sur "ALLOW", l'action sera autorisée.
-      - Si le niveau de restriction est défini sur "REPORT" et que <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> est défini sur "True", l'action sera signalée à l'administrateur.
-      - Si le niveau de restriction est défini sur "WARN", l'utilisateur sera averti et pourra choisir de continuer ou d'annuler l'action. Si <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> est défini sur "True", l'affichage de l'avertissement sera signalé à l'administrateur. La poursuite de l'action par l'utilisateur lui sera également signalée.
-
-      Remarques :
-      - La restriction "PRIVACY_SCREEN" n'empêche pas d'activer l'écran de confidentialité, mais elle force son affichage lorsque le niveau de restriction est défini sur "BLOCK".
-      - Les destinations ne peuvent pas être vides si l'une des restrictions est "CLIPBOARD" ou "FILES", mais elles n'ont aucune incidence pour les autres restrictions.
-      - Les destinations "DRIVE" et "USB" sont ignorées pour la restriction "CLIPBOARD".
-      - Les formats d'URL doivent respecter les conditions énoncées à la page https://www.chromium.org/administrators/url-blocklist-filter-format.
-
-      Si la règle n'est pas configurée, aucune restriction ne sera appliquée.</translation>
 <translation id="5362531528507578966">Permet d'ignorer le mode d'impression d'images de fond par défaut.</translation>
 <translation id="5365476955714838841">Paramètres de ligne de commande pour le navigateur secondaire.</translation>
 <translation id="5365946944967967336">Afficher le bouton Accueil sur la barre d'outils</translation>
@@ -5814,11 +5740,6 @@ Si vous sélectionnez les options suivantes :
       Si cette règle n'est pas définie, le mode Contraste élevé est désactivé sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment. Dans ce cas, il reste activé d'un utilisateur à l'autre.
 
           Remarque : <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> remplace cette règle si l'ancienne est définie.</translation>
-<translation id="6833462729740272863">Configure une liste d'URL autorisées à rester en mode plein écran sans afficher de notification lorsque l'appareil est réactivé après avoir été en mode verrouillage de l'écran.
-
-          Normalement, le mode plein écran est désactivé lors de cette réactivation afin de réduire le risque d'attaques par hameçonnage. Cette règle permet d'indiquer des URL qui seront considérées comme des source fiables et autorisées à conserver le mode plein écran lors du déverrouillage. Pour la définir, vous devez spécifier une liste d'URL au format indiqué sur https://www.chromium.org/administrators/url-blocklist-filter-format. Par exemple, vous pouvez toujours conserver le mode plein écran lors du déverrouillage et désactiver complètement les notifications en spécifiant le caractère générique <ph name="WILDCARD_VALUE" />, qui correspond à toutes les URL.
-
-          Si cette règle est associée à une liste vide ou si elle n'est pas définie, aucune URL n'est autorisée à conserver le mode plein écran sans notification.</translation>
 <translation id="6833988859168635883">Démarrage, page d'accueil et page Nouvel onglet</translation>
 <translation id="6835254082476223414">Activer la sauvegarde et la restauration des machines virtuelles Linux</translation>
 <translation id="6835883744948188639">Afficher une invite récurrente indiquant qu'un redémarrage est recommandé</translation>
@@ -5867,13 +5788,6 @@ Si vous sélectionnez les options suivantes :
       Si cette règle n'est pas configurée, aucune restriction qu'elle impose n'est appliquée à l'ensemble des applications que les utilisateurs peuvent activer sur l'écran de verrouillage.</translation>
 <translation id="6882028194958060206">Appliquer le paramètre de contenu Flash à tous les contenus (obsolète)</translation>
 <translation id="6889123056995503704">L'utilisateur détermine le comportement de retour à une version antérieure</translation>
-<translation id="6893442532580358855">Configurer cette règle empêche les pages Web ayant des URL interdites de se charger. Cette règle fournit une liste de formats d'URL précisant les URL interdites. Si elle n'est pas configurée, aucune URL n'est interdite dans le navigateur. Les formats d'URL doivent respecter les conditions énoncées à la page https://www.chromium.org/administrators/url-blocklist-filter-format. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      À compter de la version 73 de <ph name="PRODUCT_NAME" />, vous pouvez bloquer les URL javascript://*. Toutefois, cela ne concerne que le JavaScript saisi dans la barre d'adresse (ou, par exemple, les favoris intelligents). Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages si les données sont chargées dynamiquement. Par exemple, si vous bloquez "example.com/abc", la page example.com pourra quand même charger "example.com/abc" via une requête XMLHTTPRequest.
-
-      À compter de la version 92 de <ph name="PRODUCT_NAME" />, cette règle est aussi prise en charge en mode sans interface graphique.
-
-      Remarque : bloquer des URL internes chrome://* et chrome-untrusted://* peut entraîner des erreurs inattendues ou être contourné dans certains cas particuliers. Au lieu de bloquer certaines URL internes, vérifiez si des règles plus spécifiques sont disponibles. Cas courants : au lieu de bloquer chrome://settings/certificates, utilisez <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME" />. Au lieu de bloquer chrome-untrusted://crosh, utilisez <ph name="SYSTEM_FEATURES_DISABLE_LIST_POLICY_NAME" />.</translation>
 <translation id="6894178810167845842">URL de la page "Nouvel onglet"</translation>
 <translation id="6897730193187922386">Supprimer les messages d'abandon de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6899705656741990703">Détecter automatiquement les paramètres de proxy</translation>
@@ -5972,11 +5886,6 @@ Si vous sélectionnez les options suivantes :
       Si elle est désactivée, cela altère la sécurité et la stabilité de <ph name="PRODUCT_NAME" />, car des codes inconnus et potentiellement hostiles pourront être chargés dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec des logiciels tiers devant s'exécuter dans les processus du moteur de rendu de <ph name="PRODUCT_NAME" />.
 
       Remarque : Consultez la page https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus sur les règles d'atténuation des risques liés aux processus.</translation>
-<translation id="6969131408525928234">Permet de désactiver l'application des exigences de divulgation stipulées dans les règles de transparence des certificats pour les noms d'hôte dans la liste d'URL spécifiées. Même si cela complique la détection des certificats qui ne sont pas émis correctement, les hôtes peuvent continuer d'utiliser des certificats qui ne seraient sinon pas jugés fiables (pour ne pas avoir été communiqués au public comme il se doit).
-
-      Si cette règle n'est pas configurée, cela signifie que si les certificats ne sont pas communiqués tel que le prévoient les règles de transparence des certificats, <ph name="PRODUCT_NAME" /> considère alors qu'ils ne sont pas fiables.
-
-      Le format d'une URL doit respecter les conditions indiquées à la page https://www.chromium.org/administrators/url-blocklist-filter-format. Toutefois, la validité des certificats pour un nom d'hôte donné étant indépendante du schéma, du port ou du chemin d'accès, <ph name="PRODUCT_NAME" /> ne prend en compte que la partie du nom d'hôte de l'URL. Les hôtes génériques ne sont pas acceptés.</translation>
 <translation id="6969332115615661188">Désactiver l'entrée vidéo</translation>
 <translation id="6972540544240464302">Sélectionner la configuration du planificateur de tâches</translation>
 <translation id="6975533677426693807">Toujours ouvrir les fichiers PDF dans la visionneuse de PDF interne</translation>
@@ -6128,7 +6037,6 @@ Si vous sélectionnez les options suivantes :
       Si cette règle est définie sur "False", cette fonctionnalité est désactivée.</translation>
 <translation id="7126716959063786004">Mettre fin aux processus dans le gestionnaire des tâches</translation>
 <translation id="7126928806195745404">Paramètres JavaScript</translation>
-<translation id="7127892035367404455">Rétablir la version cible</translation>
 <translation id="7127980134843952133">Historique des téléchargements</translation>
 <translation id="712963038874313213">Fournit un playbook Ansible à exécuter dans le conteneur Crostini par défaut.
 
@@ -6401,7 +6309,7 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Cette règle est habituellement désactivée pour protéger les utilisateurs contre l'hameçonnage.</translation>
 <translation id="7403217961820363141">Afficher les parcours sur la page de l'historique de Chrome.</translation>
 <translation id="7406039009275722824">Si vous désactivez <ph name="CHROME_SYNC_NAME" />, la sauvegarde et la restauration Android ne fonctionneront pas correctement.</translation>
-<translation id="7407441173422042771">Cette règle permet de contrôler la prédiction réseau dans <ph name="PRODUCT_NAME" />. Elle contrôle la prélecture des DNS, ainsi que la préconnexion et le préchargement TCP et SSL des pages Web.
+<translation id="7407441173422042771">Cette règle permet de contrôler la prédiction réseau dans <ph name="PRODUCT_NAME" />. Elle contrôle la prélecture des DNS, ainsi que la préconnexion et le prérendu TCP et SSL des pages Web.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, la prédiction réseau est activée. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="7408815947231046196">Autoriser la sauvegarde des données de <ph name="PRODUCT_NAME" /></translation>
@@ -6427,7 +6335,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 
       Si elle est désactivée, la page "Nouvel onglet" n'affichera pas l'annonce d'espace intermédiaire, même si elle est disponible.
       </translation>
-<translation id="7458437477941640506">Ne rétablissez pas la version cible si elle est antérieure à la version de l'OS. Les mises à jour seront également désactivées.</translation>
 <translation id="7459601923199346224">Configure les règles au niveau de l'utilisateur et de l'appareil dans le cadre de la gestion des certificats.</translation>
 <translation id="7459633275230216698">Autoriser l'affichage de boîtes de dialogue de sélection de fichiers</translation>
 <translation id="7463055558720530430">Autoriser les utilisateurs à mémoriser les mots de passe Kerberos</translation>
@@ -6914,7 +6821,7 @@ Dans le cas contraire, le moteur de rendu par défaut sera utilisé pour tous le
 
       Active la prédiction réseau dans <ph name="PRODUCT_NAME" /> et empêche les utilisateurs de modifier ce paramètre.
 
-      Ceci permet de contrôler la prélecture des DNS, ainsi que la préconnexion et le préchargement TCP et SSL des pages Web. Le nom de cette règle évoque la prélecture des DNS pour des raisons historiques.
+      Ceci permet de contrôler la prélecture des DNS, ainsi que la préconnexion et le prérendu TCP et SSL des pages Web. Le nom de cette règle évoque la prélecture des DNS pour des raisons historiques.
 
       Si vous activez ou désactivez ce paramètre, les utilisateurs ne peuvent pas le modifier ni l'ignorer dans <ph name="PRODUCT_NAME" />.
 
@@ -8115,8 +8022,6 @@ Si ce paramètre est désactivé, les utilisateurs ne peuvent pas ouvrir de page
 
 Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateur est en mesure d'utiliser le mode navigation privée.</translation>
 <translation id="9152473318295429890">Activer les suggestions contextuelles des pages Web associées</translation>
-<translation id="9153446010242995516">Effectuez un rollback et conservez la version cible si elle est antérieure à la version de l'OS. Essayez de conserver la configuration de l'appareil (y compris les identifiants réseau) lors du processus si possible, mais effectuez un Powerwash complet même s'il est impossible de restaurer les données (car la version cible n'est pas compatible avec la restauration de données ou en raison d'une modification incompatible avec la restauration).
-          Compatible avec la version 75 et les versions ultérieures de <ph name="PRODUCT_OS_NAME" />. Pour les clients plus anciens, cette valeur signifie que la fonction de rollback est désactivée.</translation>
 <translation id="9155218447258425310">Durée d'affichage de la notification de retrait de la carte à puce pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="9155375380628728544">Permet aux utilisateurs d'ajouter une seule des langues répertoriées dans cette règle à la liste des langues préférées.
 
@@ -8193,13 +8098,6 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
 <translation id="943865157632139008">Permet de configurer le moteur de rendu HTML par défaut lorsque <ph name="PRODUCT_FRAME_NAME" /> est installé.
       Le paramétrage par défaut de cette stratégie autorise le navigateur hôte à effectuer le rendu. Toutefois, vous pouvez remplacer ce paramétrage pour que <ph name="PRODUCT_FRAME_NAME" /> assure le rendu des pages HTML par défaut.</translation>
 <translation id="944817693306670849">Définir la taille du cache disque</translation>
-<translation id="947333773406819973">Cette règle est obsolète (veuillez utiliser la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> à la place).
-
-      Si cette règle est configurée, les pages Web avec des URL interdites ne peuvent pas se charger. Cette règle fournit une liste de formats d'URL précisant les URL interdites. Si elle n'est pas configurée, aucune URL n'est interdite dans le navigateur. Les formats d'URL doivent respecter les conditions énoncées à la page https://www.chromium.org/administrators/url-blocklist-filter-format. Vous pouvez définir jusqu'à 1 000 exceptions dans <ph name="URL_ALLOWLIST_POLICY_NAME" />.
-
-      À compter de la version 73 de <ph name="PRODUCT_NAME" />, vous pouvez bloquer les URL javascript://*. Toutefois, cela ne concerne que le code JavaScript saisi dans la barre d'adresse (ou, par exemple, les favoris intelligents). Cette règle ne s'applique pas aux URL JavaScript intégrées dans les pages si les données sont chargées dynamiquement. Par exemple, si vous bloquez "example.com/abc", la page example.com pourra quand même charger "example.com/abc" via une requête XMLHTTPRequest.
-
-      Remarque : le blocage des URL internes chrome://* peut provoquer des erreurs inattendues.</translation>
 <translation id="957778406002650056">URL depuis laquelle l'image de <ph name="PLUGIN_VM_NAME" /> peut être téléchargée.</translation>
 <translation id="958285142322823422">Interdire à une appli Web kiosque d'ouvrir une autre fenêtre de navigateur</translation>
 <translation id="958577147847681221">Détermine si <ph name="PRODUCT_OS_NAME" /> autorise la création de comptes utilisateur.

@@ -80,6 +80,7 @@
 <translation id="753732157349120914">Faneskift</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> anmeldelse fra Google}one{<ph name="REVIEWS_COUNT_MANY" /> anmeldelse fra Google}other{<ph name="REVIEWS_COUNT_MANY" /> anmeldelser fra Google}}</translation>
 <translation id="7559245342362162951">Vis gruppens faner i et fuldskærmsgitter</translation>
+<translation id="7699041944097291312">{TABS_COUNT,plural, =1{Del <ph name="TABS_COUNT_ONE" /> valgt fane}one{Del <ph name="TABS_COUNT_MANY" /> valgt fane}other{Del <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="7792771145871471484">Gennemgå forslagene.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{Gruppér <ph name="TABS_COUNT_ONE" /> valgt fane}one{Gruppér <ph name="TABS_COUNT_MANY" /> valgt fane}other{Gruppér de <ph name="TABS_COUNT_MANY" /> valgte faner}}</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ Bedømmelse: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> – <ph name="REVIEWS_COUNT_ONE" /> anmeldelse}one{Bedømmelse: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> – <ph name="REVIEWS_COUNT_MANY" /> anmeldelse}other{Bedømmelse: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> – <ph name="REVIEWS_COUNT_MANY" /> anmeldelser}}</translation>

@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Slå av kameraet</translation>
 <translation id="2717722538473713889">E-postadresser</translation>
 <translation id="2750481671343847896">Nettsteder kan vise påloggingsforespørsler fra identitetstjenester.</translation>
-<translation id="2785051990912111074">Dette valget sletter informasjonskapsler for <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Er du sikker på at du vil tilbakestille alle nettstedstillatelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Nettsted</translation>
 <translation id="2874939134665556319">Forrige spor</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Sist besøkt <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Fant ingen kontakter</translation>
 <translation id="4996978546172906250">Del via</translation>
-<translation id="5014906230196386306">Vil du slette informasjonskapsler?</translation>
 <translation id="5039804452771397117">Tillat</translation>
 <translation id="5048398596102334565">Gi nettsteder tilgang til bevegelsessensorer (anbefalt)</translation>
 <translation id="5050380848339752099">Dette nettstedet er i ferd med å dele informasjon med en app utenfor Inkognitomodus.</translation>

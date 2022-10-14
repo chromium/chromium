@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2717722538473713889">Imejl adrese</translation>
 <translation id="2750481671343847896">Sajtovi mogu da prikazuju upite za prijavljivanje iz usluga za identitet.</translation>
-<translation id="2785051990912111074">Ovaj izbor će obrisati kolačiće za <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Želite li stvarno da resetujete sve dozvole za sajt za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Sajt</translation>
 <translation id="2874939134665556319">Prethodna pesma</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Poslednja poseta: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nije pronađen nijedan kontakt</translation>
 <translation id="4996978546172906250">Deljenje preko</translation>
-<translation id="5014906230196386306">Želite da obrišete kolačiće?</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
 <translation id="5048398596102334565">Dozvoli sajtovima da pristupaju senzorima za pokret (preporučeno)</translation>
 <translation id="5050380848339752099">Ovaj sajt će deliti informacije sa aplikacijom izvan režima bez arhiviranja.</translation>

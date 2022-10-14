@@ -340,9 +340,9 @@
 <translation id="2865888419503095837">ජාල තොරතුරු</translation>
 <translation id="2872961005593481000">වසන්න</translation>
 <translation id="2878884018241093801">මෑත අයිතම නැත</translation>
+<translation id="2885950158625301909">තව දැන ගන්න</translation>
 <translation id="2891209721153296020">"තේරීම ඉවත් කරන්න"</translation>
 <translation id="2894949423239620203">කේබලය කාර්ය සාධනයට බලපෑ හැකිය</translation>
-<translation id="2903844815300039659"><ph name="NAME" /> වෙත සම්බන්ධිතයි, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">තිර ග්‍රහණ</translation>
 <translation id="2941112035454246133">අඩු</translation>
 <translation id="2942350706960889382">ඈඳන ලද විශාලකය</translation>
@@ -1051,6 +1051,7 @@
 <translation id="6961121602502368900">කාර්යාල පැතිකඩෙහි දුරකථනය නිහඬ කිරීම ලබා ගත නොහැකිය</translation>
 <translation id="6961840794482373852">Alt + ඉහළට ඊතලය යතුරු පුවරු කෙටි මග වෙනස් වී ඇත. Page Up යතුර භාවිත කිරීමට, <ph name="LAUNCHER_KEY_NAME" /> යතුර + ඉහළට ඊතලය ඔබන්න.</translation>
 <translation id="696267987219125751">කැමරා රාමු කිරීම ක්‍රියා විරහිතයි.</translation>
+<translation id="6964690557625666701">අමුණන ලද සියලු අයිතම සාද පවත්වයි</translation>
 <translation id="6965382102122355670">හරි</translation>
 <translation id="6972754398087986839">අරඹන්න</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1360,8 @@
 <translation id="8734991477317290293">එය ඔබගේ යතුරු පහර සොරකම් කිරීමට උත්සාහ ගන්නවා විය හැක</translation>
 <translation id="8735678380411481005">යතුරුපුවරු පසුබිම් වර්ණය</translation>
 <translation id="8735953464173050365">යතුරුපුවරු සැකසීම් පෙන්වන්න. <ph name="KEYBOARD_NAME" /> තෝරාගෙන ඇත</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">මෙම උපාංගයට සම්බන්ධ කර ඇති කැමරාව(න්) භාවිතා කිරීමට කැමරා අවසරය සහිත යෙදුම් සහ වෙබ් පිටුවලට ඉඩ දීමට කැමරා ප්‍රවේශය ක්‍රියාත්මක කරන්න.</translation>
 <translation id="8755498163081687682">ඔබගේ අනන්‍යතාව සත්‍යාපනය කරන්න: <ph name="ORIGIN_NAME" /> ඒ ඔබ බව තහවුරු කිරීමට කැමතියි</translation>
 <translation id="875593634123171288">VPN සැකසීම් පෙන්වන්න</translation>

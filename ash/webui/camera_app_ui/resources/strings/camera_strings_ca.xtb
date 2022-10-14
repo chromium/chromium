@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1076394037877376434">Suprimeix la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1113173431709655881">Mode de càmera</translation>
 <translation id="1153190633558910465">Quadrícula desactivada</translation>
 <translation id="1175958423215084756">Enllaç detectat. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">S'ha suprimit la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="1258009455399840361">Gira 90 graus en sentit horari</translation>
 <translation id="1276998909102132017">Imatges de la galeria</translation>
 <translation id="1300209025925956156">Escaneja el document</translation>

@@ -340,9 +340,9 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2865888419503095837">Informacioni i rrjetit</translation>
 <translation id="2872961005593481000">Ndërprit punën</translation>
 <translation id="2878884018241093801">Nuk ka asnjë artikull të fundit</translation>
+<translation id="2885950158625301909">Mëso më shumë</translation>
 <translation id="2891209721153296020">"Anulo zgjedhjen"</translation>
 <translation id="2894949423239620203">Kablloja mund të ndikojë te cilësia e funksionimit</translation>
-<translation id="2903844815300039659">Lidhur me <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Regjistrimet e ekranit</translation>
 <translation id="2941112035454246133">E ulët</translation>
 <translation id="2942350706960889382">Zmadhuesi i stacionuar</translation>
@@ -1051,6 +1051,7 @@ Instalim i ri</translation>
 <translation id="6961121602502368900">"Vendose telefonin në heshtje" nuk ofrohet në profilin e punës</translation>
 <translation id="6961840794482373852">Shkurtorja e tastierës për Alt + Shigjeta lart është ndryshuar. Për të përdorur tastin Page Up, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + Shigjeta lart.</translation>
 <translation id="696267987219125751">Inkuadrimi i kamerës është joaktiv.</translation>
+<translation id="6964690557625666701">Të gjithë artikujt e gozhduar janë në festë</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6972754398087986839">Fillo</translation>
 <translation id="6979158407327259162">Disku i Google</translation>
@@ -1359,6 +1360,8 @@ Instalim i ri</translation>
 <translation id="8734991477317290293">Ajo ndoshta po përpiqet të regjistrojë goditjet e tasteve</translation>
 <translation id="8735678380411481005">Ngjyra e dritës së sfondit të tastierës</translation>
 <translation id="8735953464173050365">Shfaq cilësimet e tastierës. Është zgjedhur <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Aktivizo qasjen te kamera për të lejuar që aplikacionet dhe faqet e uebit me lejen e kamerës të përdorin kamerat e lidhura me këtë pajisje.</translation>
 <translation id="8755498163081687682">Verifiko identitetin tënd: <ph name="ORIGIN_NAME" /> dëshiron të konfirmojë që je ti</translation>
 <translation id="875593634123171288">Shfaq cilësimet e VPN</translation>

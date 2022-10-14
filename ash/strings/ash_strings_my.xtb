@@ -340,9 +340,9 @@
 <translation id="2865888419503095837">ကွန်ရက် အချက်အလက်</translation>
 <translation id="2872961005593481000">ပိတ်ရန်</translation>
 <translation id="2878884018241093801">မကြာမီကဖွင့်ထားသည်များ မရှိပါ</translation>
+<translation id="2885950158625301909">ပိုမိုလေ့လာရန်</translation>
 <translation id="2891209721153296020">“ပြန်ဖြုတ်ရန်”</translation>
 <translation id="2894949423239620203">ကေဘယ်ကြိုးက စွမ်းဆောင်ရည်အပေါ် သက်ရောက်မှုရှိနိုင်သည်</translation>
-<translation id="2903844815300039659"><ph name="NAME" /> သို့ ချိတ်ဆက်ထားသည်၊ <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">ဖန်သားပြင် ရိုက်ယူမှုများ</translation>
 <translation id="2941112035454246133">နိမ့်</translation>
 <translation id="2942350706960889382">နေရာချထားသည့် မှန်ဘီလူး</translation>
@@ -1051,6 +1051,7 @@
 <translation id="6961121602502368900">အလုပ်ပရိုဖိုင်တွင် ဖုန်းအသံတိတ်ခြင်း မရနိုင်ပါ</translation>
 <translation id="6961840794482373852">‘Alt + အပေါ်ညွှန်မြား’ လက်ကွက်ဖြတ်လမ်းကို ပြောင်းထားသည်။ ‘စာမျက်နှာ အပေါ်သို့’ ကီးသုံးလိုပါက <ph name="LAUNCHER_KEY_NAME" /> ကီး + ‘အပေါ်ညွှန်မြား’ နှိပ်ပါ။</translation>
 <translation id="696267987219125751">ကင်မရာဘောင်ချိန်ခြင်း ပိတ်ထားသည်။</translation>
+<translation id="6964690557625666701">ပင်ထိုးထားသည့်ဖိုင်အားလုံး ကခုန်နေသည်</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">စကြရအောင်</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1360,8 @@
 <translation id="8734991477317290293">၎င်းသည် သင်၏ ခလုတ်နှိပ်ချက်များကို ခိုးယူရန် ကြိုးပမ်းနိုင်သည်။</translation>
 <translation id="8735678380411481005">ကီးဘုတ်နောက်ခံမီးရောင်</translation>
 <translation id="8735953464173050365">ကီးဘုတ်ဆက်တင်များကို ပြရန်။ <ph name="KEYBOARD_NAME" /> ကို ရွေးထားသည်</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />၊
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">ဤစက်သို့ ချိတ်ဆက်ထားသည့် ကင်မရာ(များ) အသုံးပြုရန်အတွက် ကင်မရာခွင့်ပြုချက်နှင့်အတူ အက်ပ်နှင့် ဝဘ်စာမျက်နှာများအား ခွင့်ပြုရန် ကင်မရာသုံးခွင့်ကို ဖွင့်ပါ။</translation>
 <translation id="8755498163081687682">သင်၏အထောက်အထားကို အတည်ပြုပါ- သင်ဖြစ်ကြောင်း <ph name="ORIGIN_NAME" /> က အတည်ပြုလိုသည်</translation>
 <translation id="875593634123171288">VPN ဆက်တင်များကို ပြရန်</translation>

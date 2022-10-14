@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
+<translation id="1057925581724305206">Fuld HD (1080p)</translation>
 <translation id="1113173431709655881">Kameratilstand</translation>
 <translation id="1153190633558910465">Ingen gitterlinjer</translation>
 <translation id="1175958423215084756">Link registreret. <ph name="HOSTNAME" /></translation>
@@ -19,6 +20,7 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4x4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
 <translation id="1664224225747386870">Der er ingen optagelser</translation>
 <translation id="1838104802459806957">Drej opad</translation>
 <translation id="1843105061469674856">Scan ekstra side</translation>
@@ -93,6 +95,7 @@
 <translation id="4705093842003735294">Fuld opløsning</translation>
 <translation id="4890010094662541459">3x3</translation>
 <translation id="491895758387112773">Videooptagelse med flere streams</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
 <translation id="5034763830503483128">Billedformat</translation>
 <translation id="5057360777601936059">Dit kamera er ikke tilgængeligt lige nu.
         Tjek, om kameraet er tilsluttet korrekt.</translation>
@@ -101,6 +104,7 @@
 <translation id="5266635337630551423">Dokumentets øverste venstre hjørne</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5320594929574852403">Flyttes mod venstre</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
 <translation id="5444515100983837161">Sørg for, at alle dokumentets kanter er inden for rammen. Scanning fungerer bedst, når dokumentet har en anden farve end baggrunden.</translation>
 <translation id="5662366948659129155">Scanner side <ph name="COUNT" /></translation>
 <translation id="5671277269877808209">Kvadrat</translation>

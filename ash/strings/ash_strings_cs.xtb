@@ -340,9 +340,9 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2865888419503095837">Informace o síti</translation>
 <translation id="2872961005593481000">Vypnout</translation>
 <translation id="2878884018241093801">Žádné nedávné položky</translation>
+<translation id="2885950158625301909">Další informace</translation>
 <translation id="2891209721153296020">„Zrušit výběr“</translation>
 <translation id="2894949423239620203">Kabel může mít vliv na výkon</translation>
-<translation id="2903844815300039659">Jste připojeni k síti <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Snímky obrazovky</translation>
 <translation id="2941112035454246133">Nízká</translation>
 <translation id="2942350706960889382">Zabudovaná lupa</translation>
@@ -1051,6 +1051,7 @@ Nová instalace</translation>
 <translation id="6961121602502368900">Ztlumení telefonu v pracovním profilu není k dispozici</translation>
 <translation id="6961840794482373852">Klávesová zkratka Alt + šipka nahoru se změnila. Pokud chcete použít klávesu Page Up, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku nahoru.</translation>
 <translation id="696267987219125751">Automatické zabírání je vypnuté.</translation>
+<translation id="6964690557625666701">Všechny připnuté položky zrovna slaví</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Začínáme</translation>
 <translation id="6979158407327259162">Disk Google</translation>
@@ -1359,6 +1360,7 @@ Nová instalace</translation>
 <translation id="8734991477317290293">Je možné, že se pokouší odcizit vaše stisknutí kláves.</translation>
 <translation id="8735678380411481005">Barva podsvícení klávesnice</translation>
 <translation id="8735953464173050365">Zobrazit nastavení klávesnice. Je vybrána klávesnice <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Zapnutím přístupu k fotoaparátu povolíte aplikacím a webovým stránkám s oprávněním k fotoaparátu používat kamery připojené k tomuto zařízení.</translation>
 <translation id="8755498163081687682">Ověření identity: Web <ph name="ORIGIN_NAME" /> chce ověřit, zda jste to vy</translation>
 <translation id="875593634123171288">Zobrazit nastavení VPN</translation>

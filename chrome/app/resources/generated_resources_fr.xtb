@@ -614,7 +614,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1585717515139318619">Un thème qui risque de modifier le fonctionnement de Chrome a été ajouté via un autre programme sur votre ordinateur.
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="1587129667417059148">L'ensemble des données et des cookies stockés par <ph name="ORIGIN_NAME" /> seront effacés.</translation>
 <translation id="1587275751631642843">Console &amp;JavaScript</translation>
 <translation id="1587907146729660231">Appuyez sur le bouton Marche/Arrêt avec votre doigt</translation>
 <translation id="1588438908519853928">Standard</translation>
@@ -1045,7 +1044,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1956167375087861299">Sites non autorisés à utiliser des ID pour lire du contenu protégé</translation>
 <translation id="1956390763342388273">Tous les fichiers seront téléchargés depuis "<ph name="FOLDER_PATH" />". N'effectuez cette opération que s'il s'agit d'un site de confiance.</translation>
 <translation id="1962233722219655970">Cette page utilise une application cliente native qui ne fonctionne pas sur votre ordinateur.</translation>
-<translation id="1963227389609234879">Tout supprimer</translation>
 <translation id="1963976881984600709">Protection standard</translation>
 <translation id="1965624977906726414">Ne dispose d'aucune autorisation spéciale.</translation>
 <translation id="1969654639948595766">Journaux texte WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
@@ -1198,7 +1196,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Remarque<ph name="END_BOLD" /> : Le système redémarre au cours de ce processus.</translation>
 <translation id="2095774564753225041">Types de fichiers compatibles</translation>
-<translation id="2096715839409389970">Effacer les cookies tiers</translation>
 <translation id="2098805196501063469">Vérifier les mots de passe restants</translation>
 <translation id="2099686503067610784">Supprimer le certificat de serveur "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="2100273922101894616">Connexion automatique</translation>
@@ -1362,6 +1359,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2251809247798634662">Nouvelle fenêtre de navigation privée</translation>
 <translation id="2252017960592955005">Protection de l'affichage (bêta)</translation>
 <translation id="225240747099314620">Autoriser les identifiants pour le contenu protégé (le redémarrage de l'ordinateur peut être nécessaire)</translation>
+<translation id="2252617660166797081">En savoir plus sur la modification automatique du mot de passe</translation>
 <translation id="2255077166240162850">Cet appareil a été verrouillé dans un autre mode ou avec un autre domaine.</translation>
 <translation id="2255317897038918278">Enregistrement des informations de date Microsoft</translation>
 <translation id="2256115617011615191">Redémarrer maintenant</translation>
@@ -1385,7 +1383,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2274840746523584236">Chargez votre Chromebook</translation>
 <translation id="2276503375879033601">Ajouter d'autres applications</translation>
 <translation id="2276910256003242519">Suppression des données…</translation>
-<translation id="2277255602909579701">Ensemble des cookies et données de site</translation>
 <translation id="2278562042389100163">Ouvrir une fenêtre du navigateur</translation>
 <translation id="2278668501808246459">Démarrage du gestionnaire de conteneurs</translation>
 <translation id="2280486287150724112">Marge droite</translation>
@@ -1492,6 +1489,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2348176352564285430">Application : <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> : autorisation demandée, appuyez sur Ctrl+Suivant pour répondre</translation>
 <translation id="234889437187286781">Erreur lors du chargement des données.</translation>
+<translation id="2348939752188770364">Supprimer les données de personnalisation…</translation>
 <translation id="2349610121459545414">Continuer à autoriser l'accès à votre position pour ce site</translation>
 <translation id="2349896577940037438">Si vous avez activé le paramètre "Activité supplémentaire sur le Web et les applications", ces données peuvent être enregistrées dans votre compte Google. Vous pouvez consulter vos données, les supprimer et modifier les paramètres de votre compte sur la page account.google.com.</translation>
 <translation id="2350133097354918058">Extension actualisée</translation>
@@ -1908,6 +1906,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="274029851662193272">Bord en retrait</translation>
 <translation id="2740363334137520315">Ajoutez une section dans "Rechercher dans les onglets" pour trouver facilement les onglets où sont lus des contenus audio ou vidéo. Pour y accéder, utilisez le bouton dans l'angle supérieur de votre navigateur.</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2740876196999178364">Ces clés d'accès ne sont enregistrées que sur cet appareil. Elles ne sont pas enregistrées dans votre compte Google.</translation>
 <translation id="2741713322780029189">Ouvrir le terminal de récupération</translation>
 <translation id="2741912629735277980">Afficher l'UI sur l'écran de connexion</translation>
 <translation id="2742448780373473567">L'installation de <ph name="DEVICE_OS" /> va écraser toutes les données de votre appareil.</translation>
@@ -2044,7 +2043,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2851728849045278002">Un problème est survenu. Cliquez ici pour en savoir plus.</translation>
 <translation id="2852385257476173980">La liste des sites que vous consulterez pourra s'afficher ici dès que vous naviguerez sur le Web</translation>
 <translation id="285241945869362924">Crée automatiquement des sous-titres pour les contenus audio et vidéo. Les contenus audio et les sous-titres ne quittent pas votre appareil.</translation>
-<translation id="2854896010770911740">Supprimer les cookies tiers</translation>
 <translation id="2856776373509145513">Créer un conteneur</translation>
 <translation id="2858138569776157458">Sites populaires</translation>
 <translation id="2859383038987078242">Exécuter des tests de diagnostic Chrome OS.</translation>
@@ -2327,7 +2325,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3122496702278727796">Échec de la création du répertoire des données</translation>
 <translation id="3124111068741548686">Handles UTILISATEUR</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127156390846601284">Toutes les données enregistrées sur votre appareil seront supprimées pour tous les sites affichés. Voulez-vous continuer ?</translation>
 <translation id="3127860049873093642">Pour éviter tout problème de charge et de performances, utilisez un adaptateur secteur USB Type-C ou Dell compatible.</translation>
 <translation id="3127862849166875294">Redimensionnement du disque Linux</translation>
 <translation id="3127882968243210659"><ph name="MANAGER" /> vous demande de sauvegarder vos données et de rétablir la configuration d'usine de ce Chromebook pour ouvrir Google Play.</translation>
@@ -2408,7 +2405,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3217843140356091325">Créer un raccourci ?</translation>
 <translation id="321834671654278338">Programme de désinstallation de Linux</translation>
 <translation id="3220943972464248773">Confirmez votre identité pour synchroniser vos mots de passe</translation>
-<translation id="3222066309010235055">Pré-rendu : <ph name="PRERENDER_CONTENTS_NAME" /></translation>
+<translation id="3222066309010235055">Prérendu : <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989">Se connecter à <ph name="USB_VM_NAME" /></translation>
 <translation id="3223531857777746191">Bouton de réinitialisation</translation>
 <translation id="3225084153129302039">Avatar violet par défaut</translation>
@@ -2454,7 +2451,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3269689705184377744">{COUNT,plural, =1{Fichier}one{# fichier}other{# fichiers}}</translation>
 <translation id="326999365752735949">Différence de téléchargement</translation>
 <translation id="3270965368676314374">Accéder aux photos, à la musique et aux autres fichiers multimédias stockés sur votre ordinateur, les modifier et les supprimer</translation>
-<translation id="327147043223061465">Afficher l'ensemble des cookies et données de sites</translation>
 <translation id="3274763671541996799">Le mode plein écran a été activé.</translation>
 <translation id="3275778809241512831">Votre clé de sécurité interne n'est plus sécurisée. Veuillez la supprimer dans tous les services avec lesquels vous l'utilisez. Pour résoudre ce problème, veuillez réinitialiser la clé de sécurité.</translation>
 <translation id="3275778913554317645">Ouvrir dans une fenêtre</translation>
@@ -2613,7 +2609,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3429160811076349561">Les fonctionnalités à l'essai sont désactivées</translation>
 <translation id="3429271624041785769">Langues du contenu Web</translation>
 <translation id="3429275422858276529">Ajoutez cette page aux favoris pour la retrouver facilement</translation>
-<translation id="3432227430032737297">Supprimer tous les cookies affichés</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Verrouiller en cas d'éloignement</translation>
 <translation id="3433621910545056227">Petit problème… Le système n'a pas réussi à établir le verrouillage des attributs du temps d'installation de l'appareil.</translation>
@@ -3647,6 +3642,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="4409697491990005945">Marges</translation>
 <translation id="4410545552906060960">Utilisez un numéro (code) au lieu d'un mot de passe pour déverrouiller votre appareil. Pour définir votre code ultérieurement, accédez aux paramètres.</translation>
 <translation id="4411578466613447185">Signataire de code</translation>
+<translation id="4411719918614785832">Ces clés d'accès sont enregistrées dans Windows Hello sur cet ordinateur. Elles ne sont pas enregistrées dans votre compte Google.</translation>
 <translation id="4412698727486357573">Centre d'aide</translation>
 <translation id="44141919652824029">Autoriser <ph name="APP_NAME" /> à obtenir la liste des appareils USB connectés ?</translation>
 <translation id="4414232939543644979">Nouvelle fenêtre de nav&amp;igation privée</translation>
@@ -4380,6 +4376,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5130675701626084557">Impossible de télécharger le profil. Réessayez plus tard ou demandez de l'aide à votre opérateur.</translation>
 <translation id="5131591206283983824">Faire glisser à l'aide du pavé tactile</translation>
 <translation id="5135533361271311778">Impossible de créer le favori.</translation>
+<translation id="5135828720964881054">Modification automatique du mot de passe</translation>
 <translation id="5136343472380336530">Assurez-vous que les deux appareils sont déverrouillés, qu'ils sont proches l'un de l'autre et que le Bluetooth est activé sur les deux. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5137501176474113045">Supprimer cet élément</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, recherche dans <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
@@ -4524,6 +4521,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="527605982717517565">Toujours exécuter JavaScript sur <ph name="HOST" /></translation>
 <translation id="5277127016695466621">Afficher le panneau latéral</translation>
 <translation id="5278823018825269962">ID d'état</translation>
+<translation id="5279600392753459966">Tout bloquer</translation>
 <translation id="5280064835262749532">Mettre à jour les identifiants pour <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Effacer les cookies et les données des sites à la fermeture du navigateur</translation>
 <translation id="5280335021886535443">Appuyez sur |<ph name="ACCELERATOR" />| pour sélectionner cette info-bulle.</translation>
@@ -5036,7 +5034,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> vous permet d'exécuter les applications Windows® sur votre Chromebook. Espace libre recommandé pour cette installation : <ph name="MINIMUM_SPACE" />.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Vous pouvez attendre que la page soit de nouveau accessible ou la quitter.}one{Vous pouvez attendre que la page soit de nouveau accessible ou la quitter.}other{Vous pouvez attendre que les pages soient de nouveau accessibles ou les quitter.}}</translation>
 <translation id="5774295353725270860">Ouvrir l'application Fichiers</translation>
-<translation id="577624874850706961">Rechercher des cookies</translation>
 <translation id="5776450228446082914">La liste des sites Web qui peuvent s'ouvrir dans les deux navigateurs.</translation>
 <translation id="5776571780337000608">Vous pouvez ouvrir et modifier les fichiers compatibles avec cette appli depuis le navigateur de fichiers ou d'autres applis. Pour contrôler quels fichiers s'ouvrent dans cette appli par défaut, découvrez comment <ph name="BEGIN_LINK" />définir les applis par défaut sur votre appareil<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Ouvrir Chrome</translation>
@@ -5291,7 +5288,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6007240208646052708">La recherche vocale n'est pas disponible dans votre langue.</translation>
 <translation id="6010651352520077187">Lorsque cette option est activée, Google Traduction vous propose de traduire les sites dans la langue de votre choix. Il peut aussi traduire automatiquement des sites.</translation>
 <translation id="6011193465932186973">Empreinte digitale</translation>
-<translation id="6011449291337289699">Effacer les données des sites</translation>
 <translation id="6011908034087870826">Envoi du lien à l'appareil <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Afficher des sous-titres pour vos contenus audio et vidéo</translation>
 <translation id="6015796118275082299">Année</translation>
@@ -6653,7 +6649,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7345706641791090287">Confirmez votre mot de passe.</translation>
 <translation id="7345919885156673810">La sélection n'est pas en <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">OK</translation>
-<translation id="7347452120014970266">L'ensemble des données et des cookies stockés par <ph name="ORIGIN_NAME" /> seront effacés, ainsi que les applications installées correspondantes</translation>
 <translation id="7347751611463936647">Pour utiliser cette extension, saisissez "<ph name="EXTENSION_KEYWORD" />", TAB, puis votre commande ou votre recherche.</translation>
 <translation id="7347943691222276892">Cliquez ici pour quitter la sous-page <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Clavier virtuel</translation>
@@ -7181,7 +7176,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7826249772873145665">Débogage ADB désactivé</translation>
 <translation id="7826254698725248775">Identifiant de l'appareil en conflit.</translation>
 <translation id="7828642077514646543">Erreur : Impossible de décoder le certificat</translation>
-<translation id="7828731929332799387">Cette action supprimera l'ensemble des cookies et données de sites disponibles dans des contextes tiers. Voulez-vous continuer ?</translation>
 <translation id="7829877209233347340">Demande à un parent de t'autoriser à ajouter un compte scolaire</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Si Google trouve une remise, vous la verrez sur cette page</translation>
@@ -7740,7 +7734,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8337020675372081178">{HOURS,plural, =1{Pendant 1 heure, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}one{Pendant {HOURS} heure, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}other{Pendant {HOURS} heures, cet appareil sera enregistré et vous n'aurez pas besoin de code pour vous reconnecter. Ce paramètre est défini par votre administrateur.}}</translation>
 <translation id="8337047789441383384">Cette clé de sécurité est déjà enregistrée. Il n'est pas nécessaire de l'enregistrer à nouveau.</translation>
 <translation id="8338952601723052325">Site Web du développeur</translation>
-<translation id="8339059274628563283">Données stockées en local pour <ph name="SITE" /></translation>
 <translation id="833986336429795709">Pour ouvrir ce lien, sélectionner une application</translation>
 <translation id="8340547030807793004">Plus d'actions pour <ph name="DEVICE" /></translation>
 <translation id="8342221978608739536">Je n'ai pas essayé.</translation>

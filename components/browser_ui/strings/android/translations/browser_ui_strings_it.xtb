@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Disattiva fotocamera</translation>
 <translation id="2717722538473713889">Indirizzi email</translation>
 <translation id="2750481671343847896">I siti possono mostrare richieste di accesso da servizi di identità.</translation>
-<translation id="2785051990912111074">Questa selezione cancellerà i cookie per <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Vuoi reimpostare tutte le autorizzazioni del sito per <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2874939134665556319">Traccia precedente</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Ultima visita: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nessun contatto trovato</translation>
 <translation id="4996978546172906250">Condividi tramite</translation>
-<translation id="5014906230196386306">Cancellare i cookie?</translation>
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5048398596102334565">Consenti ai siti di accedere ai sensori di movimento (opzione consigliata)</translation>
 <translation id="5050380848339752099">Questo sito sta per condividere informazioni con un'app esterna alla modalità di navigazione in incognito.</translation>

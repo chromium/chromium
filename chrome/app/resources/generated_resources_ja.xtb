@@ -615,7 +615,6 @@
 <translation id="1585717515139318619">パソコン上の別のプログラムにより、Chrome の動作に影響を及ぼす可能性のあるテーマが追加されました。
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="1587129667417059148"><ph name="ORIGIN_NAME" /> により保存されたすべてのデータと Cookie が削除されます</translation>
 <translation id="1587275751631642843">JavaScript コンソール(&amp;J)</translation>
 <translation id="1587907146729660231">電源ボタンを指でタップしてください</translation>
 <translation id="1588438908519853928">ノーマル</translation>
@@ -1043,7 +1042,6 @@
 <translation id="1956167375087861299">識別子の使用と保護されたコンテンツの再生を許可しないサイト</translation>
 <translation id="1956390763342388273">「<ph name="FOLDER_PATH" />」のすべてのファイルがアップロードされます。この操作は、サイトを信頼できる場合にのみ行ってください。</translation>
 <translation id="1962233722219655970">このページは、お使いのパソコンでは動作しないネイティブ クライアント アプリを使用しています。</translation>
-<translation id="1963227389609234879">すべて削除</translation>
 <translation id="1963976881984600709">標準保護機能</translation>
 <translation id="1965624977906726414">特別な権限はありません。</translation>
 <translation id="1969654639948595766">WebRTC テキストログ（<ph name="WEBRTC_TEXT_LOG_COUNT" />）</translation>
@@ -1198,7 +1196,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />注:<ph name="END_BOLD" /> このプロセス中にシステムが再起動されます。</translation>
 <translation id="2095774564753225041">サポートされているファイル形式</translation>
-<translation id="2096715839409389970">サードパーティの Cookie を消去</translation>
 <translation id="2098805196501063469">他のパスワードを確認</translation>
 <translation id="2099686503067610784">サーバー証明書「<ph name="CERTIFICATE_NAME" />」を削除しますか？</translation>
 <translation id="2100273922101894616">自動ログイン</translation>
@@ -1385,7 +1382,6 @@
 <translation id="2274840746523584236">Chromebook を充電してください</translation>
 <translation id="2276503375879033601">アプリを追加</translation>
 <translation id="2276910256003242519">データを消去しています...</translation>
-<translation id="2277255602909579701">すべての Cookie とサイトデータ</translation>
 <translation id="2278562042389100163">ブラウザ ウィンドウを開く</translation>
 <translation id="2278668501808246459">コンテナ マネージャーを起動しています</translation>
 <translation id="2280486287150724112">右余白</translation>
@@ -1491,6 +1487,7 @@
 <translation id="2348176352564285430">アプリ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 権限がリクエストされました。対応するには、Ctrl+Forward キーを押してください</translation>
 <translation id="234889437187286781">データの読み込み中にエラーが発生しました</translation>
+<translation id="2348939752188770364">入力履歴の消去...</translation>
 <translation id="2349610121459545414">このサイトによる位置情報へのアクセスを引き続き許可する</translation>
 <translation id="2349896577940037438">[その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータは Google アカウントに保存されます。データの確認、削除、アカウント設定の変更は、account.google.com で行うことができます。</translation>
 <translation id="2350133097354918058">再読み込みされました</translation>
@@ -2040,7 +2037,6 @@
 <translation id="2851728849045278002">エラーが発生しました。クリックして詳細をご確認ください。</translation>
 <translation id="2852385257476173980">ウェブを閲覧すると、アクセスしたサイトのリストがこちらに表示されます</translation>
 <translation id="285241945869362924">音声と動画の字幕を自動的に作成します。音声と字幕がデバイスの外部に送信されることはありません。</translation>
-<translation id="2854896010770911740">サードパーティの Cookie を削除</translation>
 <translation id="2856776373509145513">新しいコンテナの作成</translation>
 <translation id="2858138569776157458">上位のサイト</translation>
 <translation id="2859383038987078242">Chrome OS 診断テストを実行する。</translation>
@@ -2323,7 +2319,6 @@
 <translation id="3122496702278727796">データ ディレクトリの作成に失敗しました</translation>
 <translation id="3124111068741548686">USER ハンドル</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127156390846601284">表示されているすべてのサイトについて、デバイスに保存されているデータを削除します。続行しますか？</translation>
 <translation id="3127860049873093642">充電やパフォーマンスに関する問題を回避するには、対応する Dell または USB Type-C の電源アダプターを使用してください。</translation>
 <translation id="3127862849166875294">Linux のディスクサイズ変更</translation>
 <translation id="3127882968243210659">Google Play を起動するため、<ph name="MANAGER" /> がデータをバックアップし、この Chromebook を初期状態にリセットするよう求めています。</translation>
@@ -2450,7 +2445,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{ファイル}other{# 件のファイル}}</translation>
 <translation id="326999365752735949">差分のダウンロード中</translation>
 <translation id="3270965368676314374">パソコンからの写真、音楽、その他のメディアの読み取り、変更、削除</translation>
-<translation id="327147043223061465">すべての Cookie とサイトデータを表示</translation>
 <translation id="3274763671541996799">全画面表示になりました。</translation>
 <translation id="3275778809241512831">ご使用の内部セキュリティ キーは現在、安全ではありません。このキーを使用しているすべてのサービスからキーを削除してください。この問題を解決するには、セキュリティ キーをリセットしてください。</translation>
 <translation id="3275778913554317645">ウィンドウとして開く</translation>
@@ -2610,7 +2604,6 @@
 <translation id="3429160811076349561">試用版機能はオフになっています</translation>
 <translation id="3429271624041785769">ウェブ コンテンツの言語</translation>
 <translation id="3429275422858276529">後で見つけやすいようにこのページをブックマークできます</translation>
-<translation id="3432227430032737297">表示中のサイトをすべて削除</translation>
 <translation id="3432762828853624962">共有ワーカー</translation>
 <translation id="3433507769937235446">退席時ロック</translation>
 <translation id="3433621910545056227">デバイス インストール時の属性のロックを確立できませんでした。</translation>
@@ -3932,6 +3925,7 @@
 <translation id="4677772697204437347">GPU メモリ</translation>
 <translation id="467823995058589466">カメラがオフになっています</translation>
 <translation id="4680105648806843642">このページでは音声がミュートされています</translation>
+<translation id="4680112532510845139">ここに画像をドロップしてください</translation>
 <translation id="4681453295291708042">ニアバイシェアを無効にする</translation>
 <translation id="4681512854288453141">参照元ポリシー</translation>
 <translation id="4681930562518940301">元の画像を新しいタブで開く(&amp;I)</translation>
@@ -4523,6 +4517,7 @@
 <translation id="527605982717517565"><ph name="HOST" /> の JavaScript を常に許可する</translation>
 <translation id="5277127016695466621">サイドパネルを表示</translation>
 <translation id="5278823018825269962">ステータス ID</translation>
+<translation id="5279600392753459966">すべてブロックする</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" /> の認証情報を更新してください</translation>
 <translation id="5280243692621919988">すべてのウィンドウを閉じるときに Cookie とサイトデータを削除する</translation>
 <translation id="5280335021886535443">このバブルをフォーカスするには |<ph name="ACCELERATOR" />| を押します。</translation>
@@ -4889,6 +4884,7 @@
            <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> の影響を受けます</translation>
 <translation id="5620568081365989559">デベロッパー ツールでは <ph name="FOLDER_PATH" /> へのフルアクセスがリクエストされます。機密情報の漏えいにご注意ください。</translation>
 <translation id="5620612546311710611">使用統計データ</translation>
+<translation id="562250930904332809">自動字幕起こしをオフにする(&amp;D)</translation>
 <translation id="5623282979409330487">このサイトはモーション センサーにアクセスしています。</translation>
 <translation id="5623842676595125836">ログ</translation>
 <translation id="5624120631404540903">パスワードを管理</translation>
@@ -5035,7 +5031,6 @@
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> を使用すると、Chromebook で Windows® アプリを実行できます。インストール用に推奨される空き容量は <ph name="MINIMUM_SPACE" /> です。</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{応答があるまで待つか、このページを離れるか、いずれかの対応方法をおとりください。}other{応答があるまで待つか、このページを離れるか、いずれかの対応方法をおとりください。}}</translation>
 <translation id="5774295353725270860">ファイルのアプリを開く</translation>
-<translation id="577624874850706961">Cookie を検索</translation>
 <translation id="5776450228446082914">どちらのブラウザでも開くことができるウェブサイトのリストです。</translation>
 <translation id="5776571780337000608">ファイル ブラウザからこのアプリまたは他のアプリで、サポートされているファイルを開いて編集できます。デフォルトでこのアプリを使用して開くファイルを管理するには、<ph name="BEGIN_LINK" />デバイスでデフォルトのアプリを設定する方法<ph name="END_LINK" />をご確認ください。</translation>
 <translation id="5777468213129569553">Chrome を起動</translation>
@@ -5290,7 +5285,6 @@
 <translation id="6007240208646052708">お使いの言語では音声検索はご利用いただけません。</translation>
 <translation id="6010651352520077187">Google 翻訳をオンにすると、指定した言語でサイトを翻訳するかを確認するメッセージが表示されます。また、サイトを自動的に翻訳することもできます。</translation>
 <translation id="6011193465932186973">指紋</translation>
-<translation id="6011449291337289699">サイトデータの削除</translation>
 <translation id="6011908034087870826">リンクを <ph name="DEVICE_NAME" /> に送信しています</translation>
 <translation id="6013027779243312217">音声と動画の字幕を生成します</translation>
 <translation id="6015796118275082299">年</translation>
@@ -6654,7 +6648,6 @@
 <translation id="7345706641791090287">パスワードを再入力</translation>
 <translation id="7345919885156673810">選択内容は <ph name="LANGUAGE" /> ではありません</translation>
 <translation id="7346909386216857016">OK</translation>
-<translation id="7347452120014970266"><ph name="ORIGIN_NAME" /> により保存されたすべてのデータと Cookie、インストールされたアプリが削除されます</translation>
 <translation id="7347751611463936647">この拡張機能を使用するには、「<ph name="EXTENSION_KEYWORD" />」と入力して Tab キーを押してからコマンドまたは検索キーワードを入力してください。</translation>
 <translation id="7347943691222276892">クリックすると <ph name="SUBPAGE_TITLE" /> から移動します。</translation>
 <translation id="7348093485538360975">画面キーボード</translation>
@@ -7178,7 +7171,6 @@
 <translation id="7826249772873145665">ADB デバッグが無効になりました</translation>
 <translation id="7826254698725248775">競合するデバイス識別子です。</translation>
 <translation id="7828642077514646543">エラー: 証明書をデコードできません</translation>
-<translation id="7828731929332799387">サードパーティのコンテキストで使用される Cookie とサイトデータがすべて削除されます。続行しますか？</translation>
 <translation id="7829877209233347340">保護者の方に、ログインして学校用アカウントの追加を許可してもらってください。</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">割引情報が見つかった場合は、このページに表示されます</translation>
@@ -7736,7 +7728,6 @@
 <translation id="8337020675372081178">{HOURS,plural, =1{このデバイスは 1 時間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}other{このデバイスは {HOURS} 時間保存され、次回はコードなしで接続できます。これは管理者によって設定されています。}}</translation>
 <translation id="8337047789441383384">このセキュリティ キーは登録済みです。再度登録する必要はありません。</translation>
 <translation id="8338952601723052325">デベロッパーのウェブサイト</translation>
-<translation id="8339059274628563283"><ph name="SITE" /> によりデータがローカルに保存されました</translation>
 <translation id="833986336429795709">このリンクを開くにはアプリを選択します</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> に対するその他の操作</translation>
 <translation id="8342221978608739536">試していない</translation>
@@ -8385,6 +8376,7 @@
 <translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="89720367119469899">Esc</translation>
 <translation id="8972513834460200407">ファイアウォールが Google のサーバーからのダウンロードをブロックしていないかどうかをネットワーク管理者に確認してください。</translation>
+<translation id="8973263196882835828">自動字幕起こしをオンにする(&amp;E)</translation>
 <translation id="8973557916016709913">拡大縮小値の指定を削除</translation>
 <translation id="8973596347849323817">このデバイスを必要に応じてカスタマイズできます。このユーザー補助機能は後から [設定] で変更できます。</translation>
 <translation id="897414447285476047">接続の問題により、ダウンロードされたファイルは不完全です。</translation>

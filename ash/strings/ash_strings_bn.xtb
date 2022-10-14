@@ -340,9 +340,9 @@
 <translation id="2865888419503095837">নেটওয়ার্ক তথ্য</translation>
 <translation id="2872961005593481000">বন্ধ করুন</translation>
 <translation id="2878884018241093801">কোনও সাম্প্রতিক আইটেম নেই</translation>
+<translation id="2885950158625301909">আরও জানুন</translation>
 <translation id="2891209721153296020">"বাদ দিন"</translation>
 <translation id="2894949423239620203">কেবেলের মাধ্যমে কানেক্ট করা থাকলে পারফর্ম্যান্সে প্রভাব পড়তে পারে</translation>
-<translation id="2903844815300039659"><ph name="NAME" /> এর সাথে সংযুক্ত আছে, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">স্ক্রিন ক্যাপচার</translation>
 <translation id="2941112035454246133">নিম্ন</translation>
 <translation id="2942350706960889382">ডক করা ম্যাগনিফায়ার</translation>
@@ -1051,6 +1051,7 @@
 <translation id="6961121602502368900">অফিস প্রোফাইলে 'সাইলেন্স ফোন' ফিচার উপলভ্য নেই</translation>
 <translation id="6961840794482373852">Alt + Up Arrow কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। Page Up কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> + Up Arrow কী প্রেস করুন।</translation>
 <translation id="696267987219125751">ক্যামেরা ফ্রেমিং বন্ধ আছে।</translation>
+<translation id="6964690557625666701">সমস্ত পিন করা আইটেম দেখানো হয় না</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6972754398087986839">শুরু করুন</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1360,8 @@
 <translation id="8734991477317290293">এটি আপনার পাসওয়ার্ড চুরি করার চেষ্টা করতে পারে</translation>
 <translation id="8735678380411481005">কীবোর্ড ব্যাকলাইটের রঙ</translation>
 <translation id="8735953464173050365">কীবোর্ড সেটিংস দেখান। <ph name="KEYBOARD_NAME" /> বেছে নেওয়া হয়েছে</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">এই ডিভাইসের সাথে সংযুক্ত ক্যামেরা ব্যবহার করার জন্য ক্যামেরার অনুমতি সহ অ্যাপ এবং ওয়েবপেজে অনুমতি দিতে ক্যামেরা অ্যাক্সেস চালু করুন।</translation>
 <translation id="8755498163081687682">আপনার পরিচয় যাচাই করুন: <ph name="ORIGIN_NAME" /> আপনার পরিচয় যাচাই করতে চায়</translation>
 <translation id="875593634123171288">VPN সেটিংস দেখান</translation>

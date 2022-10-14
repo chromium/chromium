@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">Pas maintenant</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> erreurs</translation>
-<translation id="3495810061346586977">Ce fichier est confidentiel et est sujet à des restrictions selon les règles définies par l'administrateur. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="3522708245912499433">Portugais</translation>
 <translation id="3524311639100184459">Attention : Ces fichiers sont temporaires et peuvent être automatiquement supprimés pour libérer de l'espace disque.  <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
@@ -647,6 +646,7 @@
 <translation id="642282551015776456">Ce nom ne peut pas être utilisé comme nom de fichier ni de dossier.</translation>
 <translation id="6423031066725912715">Vietnamien (avec clavier TCVN)</translation>
 <translation id="6430271654280079150">Il vous reste 1 tentative.</translation>
+<translation id="643243556292470964">Les fichiers supprimés sont maintenant placés dans la corbeille</translation>
 <translation id="6485131920355264772">Échec de la récupération des informations sur l'espace disponible</translation>
 <translation id="6495925982925244349">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, géré par votre administrateur, détails</translation>
 <translation id="649877868557234318">Extraction de <ph name="FILE_NAME" /> vers <ph name="FOLDER_NAME" /></translation>

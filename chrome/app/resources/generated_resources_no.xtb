@@ -618,7 +618,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1585717515139318619">Et annet program på datamaskinen la til et tema som kan endre måten Chrome fungerer på. 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="1587129667417059148">Dette sletter alle data og informasjonskapsler som er lagret av <ph name="ORIGIN_NAME" /></translation>
 <translation id="1587275751631642843">&amp;JavaScript-konsoll</translation>
 <translation id="1587907146729660231">Legg fingeren på av/på-knappen</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -1056,7 +1055,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1956167375087861299">Nettsteder som ikke har lov til å bruke identifikatorer til å spille av beskyttet innhold</translation>
 <translation id="1956390763342388273">Dette fører til at alle filer fra «<ph name="FOLDER_PATH" />» lastes opp. Du bør bare gjøre dette hvis du stoler på nettstedet.</translation>
 <translation id="1962233722219655970">Denne siden bruker en Native Client-app som ikke fungerer på datamaskinen din.</translation>
-<translation id="1963227389609234879">Fjern alle</translation>
 <translation id="1963976881984600709">Standardbeskyttelse</translation>
 <translation id="1965624977906726414">Har ingen spesielle tillatelser.</translation>
 <translation id="1969654639948595766">WebRTC-tekstlogger (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
@@ -1211,7 +1209,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
     <ph name="BR" />
     <ph name="BEGIN_BOLD" />Merk:<ph name="END_BOLD" /> Systemet startes på nytt i løpet av prosessen.</translation>
 <translation id="2095774564753225041">Støttede filtyper</translation>
-<translation id="2096715839409389970">Slett informasjonskapsler fra tredjeparter</translation>
 <translation id="2098805196501063469">Sjekk resten av passordene</translation>
 <translation id="2099686503067610784">Slette tjenersertifikatet «<ph name="CERTIFICATE_NAME" />»?</translation>
 <translation id="2100273922101894616">Automatisk pålogging</translation>
@@ -1403,7 +1400,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2274840746523584236">Lad Chromebooken</translation>
 <translation id="2276503375879033601">Legg til flere programmer</translation>
 <translation id="2276910256003242519">Fjerner dataene …</translation>
-<translation id="2277255602909579701">Alle informasjonskapsler og nettstedsdata</translation>
 <translation id="2278562042389100163">Åpne nettleservindu</translation>
 <translation id="2278668501808246459">Starter beholderbehandling</translation>
 <translation id="2280486287150724112">Høyremarg</translation>
@@ -2066,7 +2062,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2851728849045278002">Noe gikk galt. Klikk hvis du vil ha mer informasjon.</translation>
 <translation id="2852385257476173980">En liste over nettsteder du besøker, kan vises her mens du surfer på nettet</translation>
 <translation id="285241945869362924">Lager automatisk teksting for lyd og video. Lyden og tekstingen forlater aldri enheten.</translation>
-<translation id="2854896010770911740">Fjern informasjonskapsler fra tredjeparter</translation>
 <translation id="2856776373509145513">Opprett en ny beholder</translation>
 <translation id="2858138569776157458">Populært</translation>
 <translation id="2859383038987078242">Kjør diagnostikktester for ChromeOS.</translation>
@@ -2350,7 +2345,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3122496702278727796">Kan ikke opprette datakatalog</translation>
 <translation id="3124111068741548686">BRUKEREN håndterer</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127156390846601284">Dette fører til at alle data de viste nettstedene har lagret på enheten din, blir slettet. Vil du fortsette?</translation>
 <translation id="3127860049873093642">For å unngå problemer med lading og ytelse, bruk en kompatibel Dell- eller USB-C-strømadapter.</translation>
 <translation id="3127862849166875294">Endre diskstørrelsen for Linux</translation>
 <translation id="3127882968243210659">Før du kan starte Google Play, krever <ph name="MANAGER" /> at du sikkerhetskopierer dataene dine og tilbakestiller Chromebook til fabrikkstandard.</translation>
@@ -2477,7 +2471,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3269689705184377744">{COUNT,plural, =1{Fil}other{# filer}}</translation>
 <translation id="326999365752735949">Nedlastingsproblemer</translation>
 <translation id="3270965368676314374">lese, endre og slette bilder, musikk og andre medier fra datamaskinen din</translation>
-<translation id="327147043223061465">Se alle informasjonskapsler og nettstedsdata</translation>
 <translation id="3274763671541996799">Du bruker full skjerm.</translation>
 <translation id="3275778809241512831">Den interne sikkerhetsnøkkelen din er ikke sikker. Fjern den fra eventuelle tjenester du har brukt den på. For å løse problemet må du tilbakestille sikkerhetsnøkkelen.</translation>
 <translation id="3275778913554317645">Åpne som vindu</translation>
@@ -2637,7 +2630,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3429160811076349561">Prøvefunksjoner er avslått</translation>
 <translation id="3429271624041785769">Språk for nettinnhold</translation>
 <translation id="3429275422858276529">Sett denne siden som bokmerke for å finne den enkelt senere</translation>
-<translation id="3432227430032737297">Fjern alle som vises</translation>
 <translation id="3432762828853624962">Delte arbeidere (SharedWorker)</translation>
 <translation id="3433507769937235446">Lås når enheten forlates</translation>
 <translation id="3433621910545056227">Beklager. Systemet kunne ikke oppdage enhetens attributtlås for installasjonstid.</translation>
@@ -4561,6 +4553,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="527605982717517565">Tillat alltid JavaScript på <ph name="HOST" /></translation>
 <translation id="5277127016695466621">Vis sidepanelet</translation>
 <translation id="5278823018825269962">Status-ID</translation>
+<translation id="5279600392753459966">Blokkér alle</translation>
 <translation id="5280064835262749532">Oppdater legitimasjonen for <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Slett informasjonskapsler og nettstedsdata når du lukker alle vinduer</translation>
 <translation id="5280335021886535443">Trykk på |<ph name="ACCELERATOR" />| for å fokusere på denne boblen.</translation>
@@ -5077,7 +5070,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5772114492540073460">Med <ph name="PARALLELS_NAME" /> kan du kjøre Windows®-apper på Chromebook. <ph name="MINIMUM_SPACE" /> ledig plass anbefales for installasjonen.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Du kan vente til siden svarer, eller du kan lukke den.}other{Du kan vente til sidene svarer, eller du kan lukke dem.}}</translation>
 <translation id="5774295353725270860">Åpne Filer-appen</translation>
-<translation id="577624874850706961">Søk i informasjonskapsler</translation>
 <translation id="5776450228446082914">Listen over nettsteder som kan åpnes i begge nettleserne.</translation>
 <translation id="5776571780337000608">Du kan åpne og redigere støttede filer med denne appen i filbehandleren eller andre apper. For å styre hvilke filer som åpner denne appen som standard, <ph name="BEGIN_LINK" />finn ut hvordan du angir standardapper på enheten<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Åpne Chrome</translation>
@@ -5334,7 +5326,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6007240208646052708">Talesøk er ikke tilgjengelig på språket ditt.</translation>
 <translation id="6010651352520077187">Når dette er slått på, tilbyr Google Oversetter å oversette nettsteder til språket du foretrekker. Den kan også oversette nettsteder automatisk.</translation>
 <translation id="6011193465932186973">Fingeravtrykk</translation>
-<translation id="6011449291337289699">Fjern nettstedsdata</translation>
 <translation id="6011908034087870826">Sender link til <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Få teksting av lyd og video</translation>
 <translation id="6015796118275082299">År</translation>
@@ -6705,7 +6696,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7345706641791090287">Bekreft passordet</translation>
 <translation id="7345919885156673810">Den merkede teksten er ikke på <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">Greit</translation>
-<translation id="7347452120014970266">Dette sletter alle dataene og informasjonskapslene som er lagret av <ph name="ORIGIN_NAME" /> og de tilhørende appene som er installert</translation>
 <translation id="7347751611463936647">For å bruke denne utvidelsen, skriver du «<ph name="EXTENSION_KEYWORD" />» , trykker på TAB, og skriver kommandoordet eller søkeordet.</translation>
 <translation id="7347943691222276892">Klikk for å navigere bort fra <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Skjermtastatur</translation>
@@ -7233,7 +7223,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7826249772873145665">ADB-feilsøking er slått av</translation>
 <translation id="7826254698725248775">Motstridende enhetsidentifikator.</translation>
 <translation id="7828642077514646543">Feil: Kan ikke dekode sertifikatet</translation>
-<translation id="7828731929332799387">Dette sletter alle informasjonskapsler og nettstedsdata som er tilgjengelige i tredjepartskontekster. Vil du fortsette?</translation>
 <translation id="7829877209233347340">Be en forelder om å logge på for å gi tillatelse til å legge til en skolekonto</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Hvis Google finner en rabatt, ser du den på denne siden</translation>
@@ -7796,7 +7785,6 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8337020675372081178">{HOURS,plural, =1{Denne enheten blir lagret i 1 time, og du kan koble til uten noen kode neste gang. Dette er angitt av administratoren din.}other{Denne enheten blir lagret i ‏{HOURS} timer, og du kan koble til uten noen kode neste gang. Dette er angitt av administratoren din.}}</translation>
 <translation id="8337047789441383384">Du har allerede registrert denne sikkerhetsnøkkelen. Du trenger ikke å registrere den på nytt.</translation>
 <translation id="8338952601723052325">Utviklernettsted</translation>
-<translation id="8339059274628563283">Data lagret lokalt på <ph name="SITE" /></translation>
 <translation id="833986336429795709">For å åpne denne linken, velg en app</translation>
 <translation id="8340547030807793004">Flere handlinger for <ph name="DEVICE" /></translation>
 <translation id="8342221978608739536">Prøvde ikke</translation>

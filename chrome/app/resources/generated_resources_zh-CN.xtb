@@ -610,7 +610,6 @@
 <translation id="1585717515139318619">您计算机上的其他程序擅自安装了一个可能会更改 Chrome 工作方式的主题背景。
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="1587129667417059148">此操作会清除 <ph name="ORIGIN_NAME" /> 存储的所有数据和 Cookie</translation>
 <translation id="1587275751631642843">JavaScript 控制台(&amp;J)</translation>
 <translation id="1587907146729660231">用手指轻触电源按钮</translation>
 <translation id="1588438908519853928">正常</translation>
@@ -1039,7 +1038,6 @@
 <translation id="1956167375087861299">不得使用标识符来播放受保护内容</translation>
 <translation id="1956390763342388273">此操作会上传“<ph name="FOLDER_PATH" />”下的所有文件。请仅在您信任该网站的情况下执行此操作。</translation>
 <translation id="1962233722219655970">此页使用了您的计算机不支持的 Native Client 应用。</translation>
-<translation id="1963227389609234879">全部删除</translation>
 <translation id="1963976881984600709">标准保护</translation>
 <translation id="1965624977906726414">无需特殊权限。</translation>
 <translation id="1969654639948595766">WebRTC 文本日志 (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
@@ -1193,7 +1191,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />注意<ph name="END_BOLD" />：在此过程中，系统将会重新启动。</translation>
 <translation id="2095774564753225041">支持的文件类型</translation>
-<translation id="2096715839409389970">清除第三方 Cookie</translation>
 <translation id="2098805196501063469">检查其余的密码</translation>
 <translation id="2099686503067610784">要删除服务器证书“<ph name="CERTIFICATE_NAME" />”吗？</translation>
 <translation id="2100273922101894616">自动登录</translation>
@@ -1380,7 +1377,6 @@
 <translation id="2274840746523584236">您的 Chromebook 需要充电</translation>
 <translation id="2276503375879033601">添加更多应用</translation>
 <translation id="2276910256003242519">正在清除数据…</translation>
-<translation id="2277255602909579701">所有 Cookie 和网站数据</translation>
 <translation id="2278562042389100163">打开浏览器窗口</translation>
 <translation id="2278668501808246459">正在启动容器管理器</translation>
 <translation id="2280486287150724112">右侧页边距</translation>
@@ -1487,6 +1483,7 @@
 <translation id="2348176352564285430">应用：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2348729153658512593"><ph name="WINDOW_TITLE" /> - 收到了权限请求，按 Ctrl + 前进键即可回复</translation>
 <translation id="234889437187286781">加载数据时出错</translation>
+<translation id="2348939752188770364">清除个性化数据…</translation>
 <translation id="2349610121459545414">继续允许此网站使用您的位置信息</translation>
 <translation id="2349896577940037438">如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。您可在 account.google.com 上查看和删除您的数据以及更改您的帐号设置。</translation>
 <translation id="2350133097354918058">已重新加载</translation>
@@ -2036,7 +2033,6 @@
 <translation id="2851728849045278002">出了点问题。点击即可了解更多详情。</translation>
 <translation id="2852385257476173980">当您浏览网页时，此处可能会列出您访问过的网站</translation>
 <translation id="285241945869362924">自动为音频和视频创建字幕。音频和字幕绝不会从设备中泄露出去。</translation>
-<translation id="2854896010770911740">移除第三方 Cookie</translation>
 <translation id="2856776373509145513">创建一个新容器</translation>
 <translation id="2858138569776157458">热门网站</translation>
 <translation id="2859383038987078242">运行 Chrome 操作系统诊断测试。</translation>
@@ -2319,7 +2315,6 @@
 <translation id="3122496702278727796">无法创建数据目录</translation>
 <translation id="3124111068741548686">USER处理函数</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127156390846601284">此操作会删除所显示的全部网站在您设备上存储的所有数据。要继续吗？</translation>
 <translation id="3127860049873093642">为避免遇到充电/性能方面的问题，请使用兼容的戴尔或 USB C 型电源适配器。</translation>
 <translation id="3127862849166875294">调整为 Linux 分配的磁盘空间大小</translation>
 <translation id="3127882968243210659">根据 <ph name="MANAGER" /> 的要求，您必须先备份自己的数据并将此 Chromebook 恢复出厂设置，然后才能启动 Google Play。</translation>
@@ -2446,7 +2441,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{文件}other{# 个文件}}</translation>
 <translation id="326999365752735949">正在下载diff</translation>
 <translation id="3270965368676314374">读取、更改和删除您计算机上的照片、音乐和其他媒体</translation>
-<translation id="327147043223061465">查看所有 Cookie 和网站数据</translation>
 <translation id="3274763671541996799">您已进入全屏模式。</translation>
 <translation id="3275778809241512831">您的内部安全密钥目前不安全。请从所有使用了此密钥的服务中将其移除。要想解决该问题，请重置此安全密钥。</translation>
 <translation id="3275778913554317645">在窗口中打开</translation>
@@ -2606,7 +2600,6 @@
 <translation id="3429160811076349561">试用版功能已关闭</translation>
 <translation id="3429271624041785769">网页内容语言</translation>
 <translation id="3429275422858276529">为此网页添加书签，以便日后查找</translation>
-<translation id="3432227430032737297">移除显示的所有 Cookie</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">离开时锁定</translation>
 <translation id="3433621910545056227">糟糕！系统无法建立设备安装时间属性锁定。</translation>
@@ -3927,6 +3920,7 @@
 <translation id="4677772697204437347">GPU内存</translation>
 <translation id="467823995058589466">摄像头未开启</translation>
 <translation id="4680105648806843642">此网页已设为静音</translation>
+<translation id="4680112532510845139">将图片放到此处</translation>
 <translation id="4681453295291708042">停用“附近分享”功能</translation>
 <translation id="4681512854288453141">来源政策</translation>
 <translation id="4681930562518940301">在新标签页中打开原始图片(&amp;I)</translation>
@@ -4518,6 +4512,7 @@
 <translation id="527605982717517565">始终允许使用 <ph name="HOST" /> 上的 JavaScript</translation>
 <translation id="5277127016695466621">显示侧边栏</translation>
 <translation id="5278823018825269962">状态 ID</translation>
+<translation id="5279600392753459966">阻止所有插件</translation>
 <translation id="5280064835262749532">更新 <ph name="SHARE_PATH" /> 的访问凭据</translation>
 <translation id="5280243692621919988">关闭所有窗口时清除 Cookie 及网站数据</translation>
 <translation id="5280335021886535443">按 |<ph name="ACCELERATOR" />| 可聚焦于此气泡。</translation>
@@ -4883,6 +4878,7 @@
 <translation id="5620540760831960151">此列表受 <ph name="BEGIN_LINK1" />{BrowserSwitcherUrlList}<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />{BrowserSwitcherExternalSitelistUrl}<ph name="END_LINK2" /> 和 <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> 影响</translation>
 <translation id="5620568081365989559">DevTools 请求获得对 <ph name="FOLDER_PATH" /> 的完整访问权限。请确保您不会泄露任何敏感信息。</translation>
 <translation id="5620612546311710611">使用情况统计信息</translation>
+<translation id="562250930904332809">停用实时字幕(&amp;D)</translation>
 <translation id="5623282979409330487">此网站正在使用您的移动传感器。</translation>
 <translation id="5623842676595125836">日志</translation>
 <translation id="5624120631404540903">管理密码</translation>
@@ -5029,7 +5025,6 @@
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> 允许您在 Chromebook 上运行 Windows® 应用。建议您为这项安装留出 <ph name="MINIMUM_SPACE" /> 的可用空间。</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{您可以等待该页面恢复响应，也可以退出该页面。}other{您可以等待这些页面恢复响应，也可以退出这些页面。}}</translation>
 <translation id="5774295353725270860">打开文件应用</translation>
-<translation id="577624874850706961">搜索 Cookie</translation>
 <translation id="5776450228446082914">可在这两款浏览器中的任一款中打开的网站的列表。</translation>
 <translation id="5776571780337000608">您可以在文件浏览器或其他应用中，使用此应用打开和编辑支持的文件。若要控制哪些文件默认打开此应用，请<ph name="BEGIN_LINK" />了解如何在设备上设置默认应用<ph name="END_LINK" />。</translation>
 <translation id="5777468213129569553">打开 Chrome</translation>
@@ -5283,7 +5278,6 @@
 <translation id="6007240208646052708">不支持使用您所用的语言执行语音搜索。</translation>
 <translation id="6010651352520077187">当此功能处于开启状态时，“Google 翻译”会询问您是否要将网站翻译成您的首选语言。它还可以自动翻译网站。</translation>
 <translation id="6011193465932186973">指纹</translation>
-<translation id="6011449291337289699">清除网站数据</translation>
 <translation id="6011908034087870826">正在将链接发送到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="6013027779243312217">为您的音频和视频生成字幕</translation>
 <translation id="6015796118275082299">年</translation>
@@ -6650,7 +6644,6 @@
 <translation id="7345706641791090287">确认您的密码</translation>
 <translation id="7345919885156673810">所选内容的语言不是<ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">知道了</translation>
-<translation id="7347452120014970266">此操作会清除 <ph name="ORIGIN_NAME" /> 及其安装的应用存储的所有数据和 Cookie</translation>
 <translation id="7347751611463936647">要使用该扩展程序，请依次键入“<ph name="EXTENSION_KEYWORD" />”和 TAB，然后键入您的命令或搜索。</translation>
 <translation id="7347943691222276892">点击此按钮即可离开“<ph name="SUBPAGE_TITLE" />”子页面。</translation>
 <translation id="7348093485538360975">屏幕键盘</translation>
@@ -7175,7 +7168,6 @@
 <translation id="7826249772873145665">ADB 调试已停用</translation>
 <translation id="7826254698725248775">设备标识符冲突。</translation>
 <translation id="7828642077514646543">错误：无法对证书进行解码</translation>
-<translation id="7828731929332799387">这将会删除第三方环境下的所有可用 Cookie 和网站数据。要继续吗？</translation>
 <translation id="7829877209233347340">如需添加学校帐号，请让家长登录并向您授权</translation>
 <translation id="7831754656372780761">“<ph name="TAB_TITLE" />”<ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">如果 Google 找到了折扣信息，您就会在此页面上看到相应信息</translation>
@@ -7733,7 +7725,6 @@
 <translation id="8337020675372081178">{HOURS,plural, =1{此设备将被保存 1 小时，下次您无需代码即可连接。这项设置是由您的管理员指定的。}other{此设备将被保存 {HOURS} 小时，下次您无需代码即可连接。这项设置是由您的管理员指定的。}}</translation>
 <translation id="8337047789441383384">您已注册过此安全密钥。无需再次注册。</translation>
 <translation id="8338952601723052325">开发者网站</translation>
-<translation id="8339059274628563283"><ph name="SITE" /> 本地存储的数据</translation>
 <translation id="833986336429795709">要打开此链接，请选择一个应用</translation>
 <translation id="8340547030807793004">显示可对“<ph name="DEVICE" />”执行的更多操作</translation>
 <translation id="8342221978608739536">没试过</translation>
@@ -8382,6 +8373,7 @@
 <translation id="8970887620466824814">出了点问题。</translation>
 <translation id="89720367119469899">转义</translation>
 <translation id="8972513834460200407">请与您的网络管理员联系，确保防火墙没有阻止系统从 Google 服务器下载内容。</translation>
+<translation id="8973263196882835828">启用实时字幕(&amp;E)</translation>
 <translation id="8973557916016709913">移除缩放级别</translation>
 <translation id="8973596347849323817">您可以根据自己的需求对此设备进行自定义。日后若有需要，您可在“设置”部分中更改这些无障碍功能。</translation>
 <translation id="897414447285476047">由于网络连接问题，目标文件下载未完成。</translation>

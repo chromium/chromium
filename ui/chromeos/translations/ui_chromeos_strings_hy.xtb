@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">Հիմա չէ</translation>
 <translation id="3486821258960016770">մոնղոլերեն</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> սխալ:</translation>
-<translation id="3495810061346586977">Այս ֆայլը կոնֆիդենցիալ է և կարգավորվում է անդմինիստրատորի քաղաքականության սահմանափակումներով։ <ph name="BEGIN_LINK_HELP" />Իմանալ ավելին<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մանրամասներ</translation>
 <translation id="3522708245912499433">պորտուգալերեն</translation>
 <translation id="3524311639100184459">Ուշադրություն. այս ֆայլերը ժամանակավոր են և կարող են ավտոմատ ջնջվել՝ սկավառակի վրա տարածք ազատելու համար։  <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -456,6 +455,7 @@
 <translation id="4900532980794411603">Հասանելի դարձնել Parallels Desktop-ին</translation>
 <translation id="4902546322522096650">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կապակցում</translation>
 <translation id="4906580650526544301">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, մանրամասներ</translation>
+<translation id="4929673617759421391">Ադմինիստրատորն արգելել է տեղադրել այս ֆայլը</translation>
 <translation id="4935975195727477204">Ծաղիկ</translation>
 <translation id="4943368462779413526">Ֆուտբոլ</translation>
 <translation id="4961158930123534723">Parallels Desktop-ին հասանելի է դարձել 1 պանակ</translation>
@@ -512,6 +512,7 @@
 <translation id="5278111733643988471">Այս տարրը վերականգնելու համար այն աղբարկղից քաշեք նոր պանակ։ Տարրի սկզբնական պանակը (<ph name="PARENT_FOLDER_NAME" />) ջնջվել է։</translation>
 <translation id="5286194356314741248">Որոնում</translation>
 <translation id="5288441970121584418">Բուրգեր</translation>
+<translation id="5293615890992542006">Ադմինիստրատորն արգելել է տեղափոխել այս ֆայլը</translation>
 <translation id="5305688511332277257">Տեղադրված չկա</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5318819489018851358">Հասանելի դարձնել Լինուքսին</translation>
@@ -646,6 +647,7 @@
 <translation id="642282551015776456">Այս անունը չի կարող լինել ֆայլի կամ պանակի անուն</translation>
 <translation id="6423031066725912715">վիետնամերեն (TCVN ստեղնաշար)</translation>
 <translation id="6430271654280079150">Մնաց 1 փորձ։</translation>
+<translation id="643243556292470964">Ջնջված ֆայլերն այժմ աղբարկղում են</translation>
 <translation id="6485131920355264772">Չհաջողվեց առբերել ազատ տարածքի մասին տեղեկությունները</translation>
 <translation id="6495925982925244349">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="649877868557234318">Ֆայլը (<ph name="FILE_NAME" />) արտահանվում է <ph name="FOLDER_NAME" /> պանակ</translation>
@@ -712,6 +714,7 @@
 <translation id="6993826899923627728">Այս տարրերը ձեր աղբարկղում են</translation>
 <translation id="6998711733709403587">Ընտրված է <ph name="SELCTED_FOLDERS_COUNT" /> պանակ</translation>
 <translation id="7008426324576352165">Վերբեռնումն ավարտելու համար ձեր կազմակերպությանն ավելի շատ տարածք է հարկավոր։</translation>
+<translation id="7009985720488544166">Ադմինիստրատորն արգելել է տեղափոխել ֆայլերը (<ph name="COUNT" />)</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Տեղադրումը չհաջողվեց:</translation>
 <translation id="7031639531908619281">թուրքերեն</translation>
@@ -971,6 +974,7 @@
 <translation id="9183302530794969518">Google Փաստաթղթեր</translation>
 <translation id="9189836632794948435">ղազախերեն</translation>
 <translation id="9200427192836333033">Դուրս բերվեց <ph name="NUMBER_OF_ITEMS" /> տարր։</translation>
+<translation id="9210751050717126865">Ադմինիստրատորն արգելել է տեղադրել ֆայլերը (<ph name="COUNT" />)</translation>
 <translation id="9213073329713032541">Տեղադրումը սկսվեց:</translation>
 <translation id="9219103736887031265">Պատկերներ</translation>
 <translation id="9219908252191632183">Լուսնային լանդշաֆտ</translation>

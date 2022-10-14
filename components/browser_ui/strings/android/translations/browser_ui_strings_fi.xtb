@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Sammuta kamera</translation>
 <translation id="2717722538473713889">Sähköpostiosoitteet</translation>
 <translation id="2750481671343847896">Sivustot voivat näyttää henkilöllisyyspalveluiden sisäänkirjautumiskehotteita.</translation>
-<translation id="2785051990912111074">Valinta tyhjentää evästeet osoitteessa <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Haluatko varmasti nollata kaikki sivuston käyttöoikeudet (<ph name="CHOSEN_OBJECT_NAME" />)?</translation>
 <translation id="2870560284913253234">Sivusto</translation>
 <translation id="2874939134665556319">Edellinen kappale</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Viimeksi avattu <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Kontakteja ei löytynyt</translation>
 <translation id="4996978546172906250">Jaa palvelussa:</translation>
-<translation id="5014906230196386306">Poistetaanko evästeet?</translation>
 <translation id="5039804452771397117">Salli</translation>
 <translation id="5048398596102334565">Anna sivustojen käyttää liiketunnistimien lukemia (suositus)</translation>
 <translation id="5050380848339752099">Tämä sivusto aikoo jakaa tietoja sovellukselle incognito-tilan ulkopuolella.</translation>

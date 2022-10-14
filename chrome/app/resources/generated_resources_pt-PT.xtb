@@ -618,7 +618,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1585717515139318619">Outro programa no computador adicionou um tema que pode alterar o funcionamento do Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="1587129667417059148">Esta ação limpa todos os dados e cookies armazenados por <ph name="ORIGIN_NAME" />.</translation>
 <translation id="1587275751631642843">Consola de &amp;JavaScript</translation>
 <translation id="1587907146729660231">Toque no botão ligar/desligar com o dedo</translation>
 <translation id="1588438908519853928">Normal</translation>
@@ -1050,7 +1049,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1956167375087861299">Sem autorização para utilizar identificadores para reproduzir conteúdo protegido</translation>
 <translation id="1956390763342388273">Esta ação irá carregar todos os ficheiros de "<ph name="FOLDER_PATH" />". Faça isto apenas se confiar no site.</translation>
 <translation id="1962233722219655970">Esta página utiliza uma aplicação Native Client que não funciona no computador.</translation>
-<translation id="1963227389609234879">Remover tudo</translation>
 <translation id="1963976881984600709">Proteção padrão</translation>
 <translation id="1965624977906726414">Não tem permissões especiais.</translation>
 <translation id="1969654639948595766">Registos de texto WebRTC (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
@@ -1205,7 +1203,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> o sistema será reiniciado durante o processo.</translation>
 <translation id="2095774564753225041">Tipos de ficheiro suportados</translation>
-<translation id="2096715839409389970">Limpar cookies de terceiros</translation>
 <translation id="2098805196501063469">Verificar palavras-passe restantes</translation>
 <translation id="2099686503067610784">Eliminar o certificado do servidor "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="2100273922101894616">Início de sessão automático</translation>
@@ -1394,7 +1391,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2274840746523584236">Carregue o seu Chromebook</translation>
 <translation id="2276503375879033601">Adicionar mais aplicações</translation>
 <translation id="2276910256003242519">A limpar dados…</translation>
-<translation id="2277255602909579701">Todos os cookies e dados do site</translation>
 <translation id="2278562042389100163">Abrir janela do browser</translation>
 <translation id="2278668501808246459">A iniciar o gestor de contentores…</translation>
 <translation id="2280486287150724112">Margem direita</translation>
@@ -2058,7 +2054,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2851728849045278002">Ocorreu um erro. Clique para obter mais detalhes.</translation>
 <translation id="2852385257476173980">Uma lista de sites que visita pode aparecer aqui enquanto navega na Web</translation>
 <translation id="285241945869362924">Cria automaticamente legendas para áudio e vídeo. O áudio e as legendas nunca saem do seu dispositivo.</translation>
-<translation id="2854896010770911740">Remover cookies de terceiros</translation>
 <translation id="2856776373509145513">Crie um novo contentor</translation>
 <translation id="2858138569776157458">Princ. sites</translation>
 <translation id="2859383038987078242">Executar testes de diagnóstico do ChromeOS.</translation>
@@ -2343,7 +2338,6 @@ Pretende pará-lo?</translation>
 <translation id="3122496702278727796">Falha ao criar directório de dados</translation>
 <translation id="3124111068741548686">Identificadores de UTILIZADOR</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127156390846601284">Esta ação irá eliminar todos os dados armazenados no dispositivo para todos os sites apresentados. Pretende continuar?</translation>
 <translation id="3127860049873093642">Para evitar problemas de carregamento e desempenho, utilize um transformador Dell ou USB tipo C compatível.</translation>
 <translation id="3127862849166875294">Redimensionamento de disco do Linux</translation>
 <translation id="3127882968243210659">Para iniciar o Google Play, <ph name="MANAGER" /> necessita que faça uma cópia de segurança dos seus dados e reponha as definições de fábrica deste Chromebook.</translation>
@@ -2470,7 +2464,6 @@ Pretende pará-lo?</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Ficheiro}other{# ficheiros}}</translation>
 <translation id="326999365752735949">A transferir dif.</translation>
 <translation id="3270965368676314374">Ler, alterar e eliminar fotos, música e outros elementos multimédia do computador</translation>
-<translation id="327147043223061465">Ver todos os cookies e os dados de sites</translation>
 <translation id="3274763671541996799">Mudou para o ecrã inteiro.</translation>
 <translation id="3275778809241512831">A sua chave de segurança interna é atualmente insegura. Remova-a de todos os serviços nos quais a utilizou. Para resolver o problema, reponha a chave de segurança.</translation>
 <translation id="3275778913554317645">Abrir como janela</translation>
@@ -2630,7 +2623,6 @@ Pretende pará-lo?</translation>
 <translation id="3429160811076349561">As funcionalidades de avaliação estão desativadas</translation>
 <translation id="3429271624041785769">Idiomas de conteúdo Web</translation>
 <translation id="3429275422858276529">Adicione esta página aos marcadores para encontrá-la facilmente mais tarde</translation>
-<translation id="3432227430032737297">Remover tudo o que é mostrado</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433507769937235446">Bloquear ao sair</translation>
 <translation id="3433621910545056227">Ups! Falha do sistema ao estabelecer o bloqueio dos atributos de hora-instalação do dispositivo.</translation>
@@ -4557,6 +4549,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="527605982717517565">Permitir sempre JavaScript em <ph name="HOST" /></translation>
 <translation id="5277127016695466621">Mostre o painel lateral</translation>
 <translation id="5278823018825269962">ID de estado</translation>
+<translation id="5279600392753459966">Bloquear todos</translation>
 <translation id="5280064835262749532">Atualize as credenciais de <ph name="SHARE_PATH" /></translation>
 <translation id="5280243692621919988">Limpar cookies e dados de sites quando fechar todas as janelas</translation>
 <translation id="5280335021886535443">Prima |<ph name="ACCELERATOR" />| para focar este balão.</translation>
@@ -5075,7 +5068,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5772114492540073460">O <ph name="PARALLELS_NAME" /> permite-lhe executar apps Windows® no Chromebook. Recomenda-se, pelo menos, <ph name="MINIMUM_SPACE" /> de espaço livre para a instalação.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Pode aguardar que a página responda ou sair da mesma.}other{Pode aguardar que as páginas respondam ou sair das mesmas.}}</translation>
 <translation id="5774295353725270860">Aplicação Abrir Ficheiros</translation>
-<translation id="577624874850706961">Pesquisar cookies</translation>
 <translation id="5776450228446082914">A lista de Websites que podem ser abertos em qualquer navegador.</translation>
 <translation id="5776571780337000608">Pode abrir e editar ficheiros suportados com esta app a partir do navegador de ficheiros ou outras apps. Para controlar que ficheiros abrem esta app por predefinição, <ph name="BEGIN_LINK" />saiba como definir apps predefinidas no dispositivo<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Abrir o Chrome</translation>
@@ -5333,7 +5325,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6007240208646052708">A pesquisa por voz não está disponível no seu idioma.</translation>
 <translation id="6010651352520077187">Quando ativado, o Google Tradutor sugere a tradução de sites para o seu idioma preferido. Também pode traduzir sites automaticamente.</translation>
 <translation id="6011193465932186973">Impressão digital</translation>
-<translation id="6011449291337289699">Limpar dados do site</translation>
 <translation id="6011908034087870826">A enviar link para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6013027779243312217">Obtenha legendas para o áudio e o vídeo.</translation>
 <translation id="6015796118275082299">Ano</translation>
@@ -6704,7 +6695,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7345706641791090287">Confirmar a palavra-passe</translation>
 <translation id="7345919885156673810">A seleção não está em <ph name="LANGUAGE" /></translation>
 <translation id="7346909386216857016">OK</translation>
-<translation id="7347452120014970266">Esta ação limpa todos os dados e cookies armazenados por <ph name="ORIGIN_NAME" /> e respetivas apps instaladas.</translation>
 <translation id="7347751611463936647">Para utilizar esta extensão, escreva "<ph name="EXTENSION_KEYWORD" />", prima TAB e, em seguida, introduza o seu comando ou pesquisa.</translation>
 <translation id="7347943691222276892">Clique para sair de <ph name="SUBPAGE_TITLE" />.</translation>
 <translation id="7348093485538360975">Teclado no ecrã</translation>
@@ -7232,7 +7222,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7826249772873145665">Depuração do ADB desativada</translation>
 <translation id="7826254698725248775">O identificador do dispositivo está em conflito.</translation>
 <translation id="7828642077514646543">Erro: não foi possível descodificar o certificado</translation>
-<translation id="7828731929332799387">Esta ação eliminará todos os cookies e dados de sites disponíveis em contextos de terceiros. Pretende continuar?</translation>
 <translation id="7829877209233347340">Peça a um dos seus pais para lhe conceder autorização para adicionar uma conta escolar.</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Se a Google encontrar um desconto, este será apresentado nesta página</translation>
@@ -7795,7 +7784,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8337020675372081178">{HOURS,plural, =1{Este dispositivo vai ser guardado durante 1 hora e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}other{Este dispositivo vai ser guardado durante {HOURS} horas e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}}</translation>
 <translation id="8337047789441383384">Já registou esta chave de segurança. Não tem de a registar novamente.</translation>
 <translation id="8338952601723052325">Website para programadores</translation>
-<translation id="8339059274628563283">Dados de <ph name="SITE" /> armazenados localmente</translation>
 <translation id="833986336429795709">Para abrir este link, escolher uma aplicação</translation>
 <translation id="8340547030807793004">Mais ações para <ph name="DEVICE" /></translation>
 <translation id="8341557223534936723">{NUM_SITES,plural, =1{Reveja <ph name="BEGIN_BOLD" />1 site<ph name="END_BOLD" /> que enviou recentemente muitas notificações}other{Reveja <ph name="BEGIN_BOLD" />{NUM_SITES} sites<ph name="END_BOLD" /> que enviaram recentemente muitas notificações}}</translation>

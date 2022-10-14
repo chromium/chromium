@@ -340,9 +340,9 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2865888419503095837">Información de red</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="2878884018241093801">No hay elementos recientes</translation>
+<translation id="2885950158625301909">Más información</translation>
 <translation id="2891209721153296020">"Anular la selección"</translation>
 <translation id="2894949423239620203">El cable puede reducir el rendimiento</translation>
-<translation id="2903844815300039659">Conectado a <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Capturas de pantalla</translation>
 <translation id="2941112035454246133">Baja</translation>
 <translation id="2942350706960889382">Lupa con vista acoplada</translation>
@@ -1052,6 +1052,7 @@ Nueva instalación</translation>
 <translation id="6961121602502368900">La opción Silenciar teléfono no está disponible en los perfiles de trabajo</translation>
 <translation id="6961840794482373852">Se modificó la combinación de teclas Alt + flecha hacia arriba. Para usar la tecla Re Pág, presiona la tecla <ph name="LAUNCHER_KEY_NAME" /> + flecha hacia arriba.</translation>
 <translation id="696267987219125751">El encuadre de la cámara está desactivado.</translation>
+<translation id="6964690557625666701">Todos los elementos fijados están en movimiento y no se muestran</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6972754398087986839">Comenzar</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1360,6 +1361,8 @@ Nueva instalación</translation>
 <translation id="8734991477317290293">Es posible que alguien esté intentando determinar qué teclas presionaste</translation>
 <translation id="8735678380411481005">Color de retroiluminación del teclado</translation>
 <translation id="8735953464173050365">Mostrar la configuración del teclado: Está seleccionado el teclado <ph name="KEYBOARD_NAME" /></translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Activa el acceso a la cámara para permitir que las apps y páginas web con permiso de la cámara usen las cámaras conectadas a este dispositivo</translation>
 <translation id="8755498163081687682">Verifica tu identidad: <ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
 <translation id="875593634123171288">Mostrar la configuración de la VPN</translation>

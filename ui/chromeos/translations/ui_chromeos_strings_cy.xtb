@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">Nid nawr</translation>
 <translation id="3486821258960016770">Mongoleg</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> o wallau.</translation>
-<translation id="3495810061346586977">Mae'r ffeil hon yn gyfrinachol ac yn amodol ar gyfyngiadau gan bolisi gweinyddwr. <ph name="BEGIN_LINK_HELP" />Dysgu rhagor<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Manylion</translation>
 <translation id="3522708245912499433">Portiwgaleg</translation>
 <translation id="3524311639100184459">Rhybudd: Mae'r ffeiliau hyn dros dro a gellir eu dileu yn awtomatig i greu rhagor o le ar y disg.  <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>

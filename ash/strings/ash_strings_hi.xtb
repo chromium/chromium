@@ -339,9 +339,9 @@
 <translation id="2865888419503095837">नेटवर्क जानकारी</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
 <translation id="2878884018241093801">हाल का कोई आइटम नहीं</translation>
+<translation id="2885950158625301909">ज़्यादा जानें</translation>
 <translation id="2891209721153296020">"चुने हुए का निशान हटाएं"</translation>
 <translation id="2894949423239620203">केबल कनेक्ट करने से, परफ़ॉर्मेंस पर असर पड़ सकता है</translation>
-<translation id="2903844815300039659"><ph name="NAME" /> से जुड़ गया है, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">स्क्रीन कैप्चर</translation>
 <translation id="2941112035454246133">कम</translation>
 <translation id="2942350706960889382">सामग्री को बड़ा दिखाने की डॉक की गई सुविधा</translation>
@@ -1048,6 +1048,7 @@
 <translation id="6961121602502368900">वर्क प्रोफ़ाइल में, फ़ोन को साइलेंट रखने की सुविधा उपलब्ध नहीं है</translation>
 <translation id="6961840794482373852">Alt + अप ऐरो कीबोर्ड शॉर्टकट बदल गया है. Page Up बटन का इस्तेमाल करने के लिए, <ph name="LAUNCHER_KEY_NAME" /> बटन + अप ऐरो दबाएं.</translation>
 <translation id="696267987219125751">ऑटो फ़्रेमिंग की सुविधा बंद है.</translation>
+<translation id="6964690557625666701">पिन किए गए सभी आइटम शेल्फ़ पर मौजूद नहीं हैं</translation>
 <translation id="6965382102122355670">ठीक है</translation>
 <translation id="6972754398087986839">शुरू करें</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1356,6 +1357,8 @@
 <translation id="8734991477317290293">यह आपके कीस्ट्रोक चुराने की कोशिश कर सकता है</translation>
 <translation id="8735678380411481005">कीबोर्ड की बैकलाइट का रंग</translation>
 <translation id="8735953464173050365">कीबोर्ड सेटिंग दिखाएं. <ph name="KEYBOARD_NAME" /> चुना गया है</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">कैमरा ऐक्सेस करने की अनुमति दें, ताकि ऐप्लिकेशन और वेबपेज को इस डिवाइस से कनेक्ट किए गए कैमरे (कैमरों) का इस्तेमाल करने की अनुमति मिल सके.</translation>
 <translation id="8755498163081687682">अपनी पहचान की पुष्टि करें: <ph name="ORIGIN_NAME" /> आपकी पहचान की पुष्टि करना चाहता है</translation>
 <translation id="875593634123171288">VPN सेटिंग दिखाएं</translation>

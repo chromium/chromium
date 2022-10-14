@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Desaktibatu kamera</translation>
 <translation id="2717722538473713889">Helbide elektronikoak</translation>
 <translation id="2750481671343847896">Identitate-zerbitzuek saioa hasteko bidalitako onarpen-mezuak blokea ditzakete webguneek.</translation>
-<translation id="2785051990912111074"><ph name="WEBSITE" /> webgunearen cookieak ezabatuko dira</translation>
 <translation id="2822354292072154809">Ziur <ph name="CHOSEN_OBJECT_NAME" /> objektuaren webgune-baimen guztiak berrezarri nahi dituzula?</translation>
 <translation id="2870560284913253234">Webgunea</translation>
 <translation id="2874939134665556319">Aurreko pista</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Azken bisita: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Ez da aurkitu kontakturik</translation>
 <translation id="4996978546172906250">Partekatu honen bidez:</translation>
-<translation id="5014906230196386306">Cookieak garbitu nahi dituzu?</translation>
 <translation id="5039804452771397117">Baimendu</translation>
 <translation id="5048398596102334565">Eman mugimendu-sentsoreak atzitzeko baimena webguneei (gomendatua)</translation>
 <translation id="5050380848339752099">Webgunea informazioa partekatzera doa aplikazio batekin ezkutuko modutik kanpo.</translation>

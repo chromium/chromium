@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Искључи камеру</translation>
 <translation id="2717722538473713889">Имејл адресе</translation>
 <translation id="2750481671343847896">Сајтови могу да приказују упите за пријављивање из услуга за идентитет.</translation>
-<translation id="2785051990912111074">Овај избор ће обрисати колачиће за <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Желите ли стварно да ресетујете све дозволе за сајт за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Сајт</translation>
 <translation id="2874939134665556319">Претходна песма</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Последња посета: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Није пронађен ниједан контакт</translation>
 <translation id="4996978546172906250">Дељење преко</translation>
-<translation id="5014906230196386306">Желите да обришете колачиће?</translation>
 <translation id="5039804452771397117">Дозволи</translation>
 <translation id="5048398596102334565">Дозволи сајтовима да приступају сензорима за покрет (препоручено)</translation>
 <translation id="5050380848339752099">Овај сајт ће делити информације са апликацијом изван режима без архивирања.</translation>

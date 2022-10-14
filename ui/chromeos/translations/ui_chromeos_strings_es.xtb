@@ -281,7 +281,6 @@
 <translation id="3479552764303398839">Ahora no</translation>
 <translation id="3486821258960016770">Mongol</translation>
 <translation id="3495304270784461826"><ph name="COUNT" /> errores.</translation>
-<translation id="3495810061346586977">Este archivo es confidencial y está sujeto a restricciones según la política del administrador. <ph name="BEGIN_LINK_HELP" />Más información<ph name="END_LINK_HELP" /></translation>
 <translation id="3509680540198371098">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3522708245912499433">Portugués</translation>
 <translation id="3524311639100184459">Aviso: Estos archivos son temporales y es posible que se eliminen automáticamente para liberar espacio en el disco.  <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -649,6 +648,7 @@
 <translation id="642282551015776456">Este nombre no se puede utilizar como nombre de archivo de carpeta.</translation>
 <translation id="6423031066725912715">Vietnamita con teclado TCVN</translation>
 <translation id="6430271654280079150">Te queda 1 intento.</translation>
+<translation id="643243556292470964">Los archivos eliminados ahora se mueven a la papelera</translation>
 <translation id="6485131920355264772">No se ha podido obtener información sobre el espacio.</translation>
 <translation id="6495925982925244349">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /> %, gestionada por el administrador, detalles</translation>
 <translation id="649877868557234318">Extrayendo <ph name="FILE_NAME" /> en <ph name="FOLDER_NAME" /></translation>

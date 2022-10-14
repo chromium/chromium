@@ -320,6 +320,7 @@
 <translation id="1717218214683051432">動作感應器</translation>
 <translation id="1717494416764505390">出紙槽 3</translation>
 <translation id="1718029547804390981">文件過大，無法加入註釋</translation>
+<translation id="1719434663396780149">降價快訊已開啟。你可以前往<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />進行變更。</translation>
 <translation id="1720941539803966190">閂教學課程</translation>
 <translation id="1721424275792716183">* 為必填欄位</translation>
 <translation id="1725591448053514783">You 6 信封</translation>
@@ -978,6 +979,7 @@
 <translation id="3550112004925580947">服務性行業</translation>
 <translation id="3552297013052089404">Sans-serif 字型</translation>
 <translation id="3558573058928565255">日間</translation>
+<translation id="3560824484345057728">查看相關網站</translation>
 <translation id="3566021033012934673">您的連線不是私人連線</translation>
 <translation id="3567778190852720481">無法使用企業帳戶註冊 (企業賬戶不符合資格)。</translation>
 <translation id="3574305903863751447"><ph name="CITY" />，<ph name="STATE" />，<ph name="COUNTRY" /></translation>
@@ -1363,6 +1365,7 @@
 <translation id="4542971377163063093">紙匣 6</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4558551763791394412">嘗試停用擴充程式。</translation>
+<translation id="4559134504959026834">這個網站屬於由 <ph name="SET_OWNER" /> 定義的群組，因此可以查看你的活動</translation>
 <translation id="4559332380232738994">10x11</translation>
 <translation id="4566017918361049074">戶外活動</translation>
 <translation id="4567686777917670400">您的管理員可遠端變更瀏覽器設定。此裝置上的活動也可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
@@ -2669,6 +2672,7 @@
 <translation id="7995512525968007366">未指定　</translation>
 <translation id="7998269595945679889">開啟無痕式分頁按鈕，㩒一下 Enter 鍵就可以開新嘅無痕式分頁私下瀏覽</translation>
 <translation id="800218591365569300">嘗試關閉其他分頁或應用程式，以釋出記憶體。</translation>
+<translation id="8002230960325005199">在新分頁中查看相關網站</translation>
 <translation id="8003046808285812021">「<ph name="SEARCH_TERMS" />」</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8009225694047762179">管理密碼</translation>
@@ -2772,6 +2776,7 @@
 <translation id="8270242299912238708">PDF 文件</translation>
 <translation id="8275952078857499577">不要詢問是否翻譯此網站</translation>
 <translation id="8277900682056760511">付款處理常式工作表開咗</translation>
+<translation id="8279611986089885641">請務必開啟 Chrome 通知，你可以前往<ph name="BEGIN_LINK" /><ph name="NOTIFICATION_SETTINGS" /><ph name="END_LINK" />進行變更。</translation>
 <translation id="8280630997017109758">紙匣 11</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
 <translation id="8281886186245836920">略過</translation>

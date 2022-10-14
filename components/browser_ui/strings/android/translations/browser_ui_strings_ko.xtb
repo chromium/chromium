@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">카메라 끄기</translation>
 <translation id="2717722538473713889">이메일 주소</translation>
 <translation id="2750481671343847896">사이트에서 ID 서비스의 로그인 메시지를 표시할 수 있습니다.</translation>
-<translation id="2785051990912111074"><ph name="WEBSITE" />의 쿠키가 삭제됩니다.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" />의 모든 사이트 권한을 재설정하시겠습니까?</translation>
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2874939134665556319">이전 트랙</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">최근 방문: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">연락처 없음</translation>
 <translation id="4996978546172906250">공유 방법</translation>
-<translation id="5014906230196386306">쿠키를 삭제하시겠습니까?</translation>
 <translation id="5039804452771397117">허용</translation>
 <translation id="5048398596102334565">사이트의 움직임 감지 센서 액세스 허용(권장)</translation>
 <translation id="5050380848339752099">이 사이트에서 시크릿 모드 외부의 앱을 사용하여 정보를 공유하려고 합니다.</translation>

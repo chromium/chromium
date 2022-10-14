@@ -620,7 +620,6 @@
 <translation id="1584990664401018068">Таны ашиглаж байгаа Wi-Fi сүлжээ (<ph name="NETWORK_ID" />) таниулах үйлдэл шаардаж байж магадгүй.</translation>
 <translation id="1585717515139318619">Таны компьютерын өөр нэг программ загвар нэмсэн бөгөөд энэ нь Chrome-н ажиллах зарчмыг өөрчилж болзошгүй.
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="1587129667417059148">Энэ нь <ph name="ORIGIN_NAME" />-н хадгалсан бүх өгөгдөл болон күүкийг арилгана</translation>
 <translation id="1587275751631642843">&amp;JavaScript системийн удирдлагын мессеж</translation>
 <translation id="1587907146729660231">Асаах товчийг хуруугаараа товшино уу</translation>
 <translation id="1588438908519853928">Хэвийн</translation>
@@ -1061,7 +1060,6 @@
 <translation id="1956167375087861299">Хамгаалагдсан контентыг тоглуулахын тулд таниулбар ашиглахыг зөвшөөрөөгүй</translation>
 <translation id="1956390763342388273">Энэ нь "<ph name="FOLDER_PATH" />"-н бүх файлыг байршуулна. Та тэдгээр файлыг зөвхөн энэ сайтад итгэдэг тохиолдолд байршуулна уу.</translation>
 <translation id="1962233722219655970">Энэ хуудас нь таны компьютер дээр ажиллах боломжгүй Native Client аппликейшнийг ашиглаж байна.</translation>
-<translation id="1963227389609234879">Бүгдийг устгах</translation>
 <translation id="1963976881984600709">Стандарт хамгаалалт</translation>
 <translation id="1965624977906726414">Ямар ч тусгай зөвшөөрөл байхгүй.</translation>
 <translation id="1969654639948595766">WebRTC текст лог (<ph name="WEBRTC_TEXT_LOG_COUNT" />)</translation>
@@ -1216,7 +1214,6 @@
       <ph name="BR" />
       <ph name="BEGIN_BOLD" />Санамж:<ph name="END_BOLD" />  Уг явцын үеэр системийг дахин асаана.</translation>
 <translation id="2095774564753225041">Дэмжигдсэн файлын төрлүүд</translation>
-<translation id="2096715839409389970">Гуравдагч талын күүкиг устгах</translation>
 <translation id="2098805196501063469">Үлдсэн нууц үгнүүдийг шалгах</translation>
 <translation id="2099686503067610784">"<ph name="CERTIFICATE_NAME" />" серверийн сертификатыг устгах уу?</translation>
 <translation id="2100273922101894616">Автоматаар нэвтэх</translation>
@@ -1408,7 +1405,6 @@
 <translation id="2274840746523584236">Chromebook-ээ цэнэглэнэ үү</translation>
 <translation id="2276503375879033601">Илүү их апп нэмэх</translation>
 <translation id="2276910256003242519">Өгөгдлийг арилгаж байна...</translation>
-<translation id="2277255602909579701">Бүх күүки, сайтын өгөгдөл</translation>
 <translation id="2278562042389100163">Интернет хөтчийн цонхыг нээ</translation>
 <translation id="2278668501808246459">Контейнерын менежерийг эхлүүлж байна</translation>
 <translation id="2280486287150724112">Right margin</translation>
@@ -1909,6 +1905,7 @@
 <translation id="2721334646575696520">Microsoft-Edge</translation>
 <translation id="2721695630904737430">Таны админ хяналттай хэрэглэгчийг цуцалсан.</translation>
 <translation id="2722540561488096675">Таны төхөөрөмж <ph name="TIME_LEFT" />-н дараа унтарна. Төхөөрөмжөө буцааж асаахаасаа өмнө USB-г салгана уу. Дараа нь та <ph name="DEVICE_OS" />-г ашиглаж эхлэх боломжтой.</translation>
+<translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
 <translation id="2724841811573117416">WebRTC бүртгэлүүд</translation>
 <translation id="272488616838512378">Нэгж хөрвүүлэлт</translation>
 <translation id="2725200716980197196">Сүлжээний холболтыг дахин сэргээсэн байна.</translation>
@@ -2073,7 +2070,6 @@
 <translation id="2851728849045278002">Алдаа гарлаа. Дэлгэрэнгүй мэдээлэл авах бол товшино уу.</translation>
 <translation id="2852385257476173980">Таныг веб үзэж байх үед таны зочилж магадгүй сайтуудын жагсаалт энд харагдана</translation>
 <translation id="285241945869362924">Аудио болон видеонд автоматаар тайлбар үүсгэдэг. Аудио болон тайлбар таны төхөөрөмжөөс хэзээ ч гардаггүй.</translation>
-<translation id="2854896010770911740">Гуравдагч талын күүкиг устгах</translation>
 <translation id="2856776373509145513">Шинэ контейнер үүсгэх</translation>
 <translation id="2858138569776157458">Шилдэг сайтууд</translation>
 <translation id="2859383038987078242">ChromeOS-н оношилгооны туршилтыг ажиллуулна.</translation>
@@ -2357,7 +2353,6 @@
 <translation id="3122496702278727796">Өгөгдлийн хадгалалтын санг үүсгэж чадсангүй</translation>
 <translation id="3124111068741548686">USER-ийн тохиргоо</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3127156390846601284">Энэ нь таны төхөөрөмжид хадгалсан бүх өгөгдлийг харагдаж байгаа сайтаас устгах болно. Үргэлжлүүлэх үү?</translation>
 <translation id="3127860049873093642">Цэнэглэх болон гүйцэтгэлтэй холбоотой асуудлаас зайлсхийхийн тулд тохирох Dell эсвэл USB C-Төрлийн тэжээлийн залгуурыг ашиглана уу.</translation>
 <translation id="3127862849166875294">Linux-н дискийн хэмжээг өөрчлөх</translation>
 <translation id="3127882968243210659">Google Play-г эхлүүлэхийн тулд <ph name="MANAGER" /> танаас өгөгдлөө хуулбарлаж, энэ Chromebook-г үйлдвэрийн тохиргоонд шинэчлэхийг шаардаж байна.</translation>
@@ -2485,7 +2480,6 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}other{# файл}}</translation>
 <translation id="326999365752735949">Татаж авахын ялгаа</translation>
 <translation id="3270965368676314374">Компьютероосоо зураг, хөгжим болон бусад медиагаа уншуулах, өөрчлөх эсвэл устгах</translation>
-<translation id="327147043223061465">Бүх күүки болон сайтын өгөгдлийг харах</translation>
 <translation id="3274763671541996799">Та дэлгэцийг бүтнээр нь ашиглах сонголт хийсэн байна.</translation>
 <translation id="3275778809241512831">Таны дотоод аюулгүй байдлын түлхүүр одоогоор хамгаалалтгүй байна. Үүнийг хэрэглэсэн бүх үйлчилгээнээсээ устгана уу. Асуудлыг шийдвэрлэхийн тулд аюулгүй байдлын түлхүүрийг шинэчилнэ үү.</translation>
 <translation id="3275778913554317645">Цонх хэлбэрээр нээ</translation>
@@ -2645,7 +2639,6 @@
 <translation id="3429160811076349561">Туршилтын онцлог унтраалттай байна</translation>
 <translation id="3429271624041785769">Веб контентын хэлнүүд</translation>
 <translation id="3429275422858276529">Энэ хуудсыг дараа хялбар олохын тулд тэмдэглэнэ үү</translation>
-<translation id="3432227430032737297">Харуулсан бүх зүйлийг устгах</translation>
 <translation id="3432762828853624962">Хуваалцсан ажилчид</translation>
 <translation id="3433507769937235446">Гарах үед түгжих</translation>
 <translation id="3433621910545056227">Анхаарна уу! Систем төхөөрөмжийг суурьлуулж чадахгүй байна.</translation>
@@ -3086,6 +3079,7 @@
 <translation id="3828029223314399057">Хадгалагдсан хуудсуудыг хайх</translation>
 <translation id="3828953470056652895">Би <ph name="BEGIN_LINK1" />Google-н үйлчилгээний нөхцөл<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome, ChromeOS-н үйлчилгээний нэмэлт нөхцөл<ph name="END_LINK2" /> болон <ph name="BEGIN_LINK3" />Play-н үйлчилгээний нөхцөлийг<ph name="END_LINK3" /> уншсан бөгөөд зөвшөөрч байна.</translation>
 <translation id="3829765597456725595">SMB-н файл хуваалцах</translation>
+<translation id="3830268140528557982"><ph name="RP_MAIN_ETLD_PLUS_ONE" />-д</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Таны администратор аюултай байж болзошгүй 1 өргөтгөлийг буцааж идэвхжүүлсэн}other{Таны администратор аюултай байж болзошгүй {NUM_EXTENSIONS} өргөтгөлийг буцааж идэвхжүүлсэн}}</translation>
 <translation id="3831436149286513437">Google Драйвын хайлтын зөвлөмж</translation>
 <translation id="3834728400518755610">Микрофоны тохиргоонд хийсэн өөрчлөлт Linux-г унтраахыг шаардаж байна. Үргэлжлүүлэхийн тулд Linux-г унтраана уу.</translation>
@@ -4575,6 +4569,7 @@
 <translation id="527605982717517565"><ph name="HOST" />-д байгаа JavaScript-ийг үргэлж зөвшөөрөх</translation>
 <translation id="5277127016695466621">Хажуугийн самбарыг харуулах</translation>
 <translation id="5278823018825269962">Төлөвийн Id</translation>
+<translation id="5279600392753459966">Бүгдийг хориглох</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" />-н мандат үнэмлэхийг шинэчлэх</translation>
 <translation id="5280243692621919988">Таныг бүх цонхыг хаахад күүки болон сайтын өгөгдлийг устгах</translation>
 <translation id="5280335021886535443">Энэ бөмбөлгийг сонгохын тулд |<ph name="ACCELERATOR" />| дээр дарна уу.</translation>
@@ -5094,7 +5089,6 @@
 <translation id="5772114492540073460"><ph name="PARALLELS_NAME" /> нь танд Chromebook дээрээ Windows® аппуудыг ажиллуулах боломж олгодог. Суулгахад <ph name="MINIMUM_SPACE" />-н сул зайтай байхыг зөвлөдөг.</translation>
 <translation id="5772265531560382923">{NUM_PAGES,plural, =1{Та үүнийг хариу өгөх хүртэл хүлээх эсвэл хуудаснаас гарах боломжтой.}other{Та тэднээс хариу өгөх хүртэл хүлээх эсвэл хуудаснаас гарах боломжтой.}}</translation>
 <translation id="5774295353725270860">Файлууд аппликейшнийг нээх</translation>
-<translation id="577624874850706961">Үүссэн мэдээллийг хайх</translation>
 <translation id="5776450228446082914">Аль ч хөтчид нээгдэх боломжтой вебсайтын жагсаалт.</translation>
 <translation id="5776571780337000608">Та дэмжигдсэн файлуудыг файлын хөтчөөсөө энэ аппаар эсвэл бусад аппаар нээх болон засах боломжтой. Энэ аппад өгөгдмөлөөр аль файлуудыг нээхийг хянахын тулд <ph name="BEGIN_LINK" />төхөөрөмж дээрээ өгөгдмөл аппуудыг хэрхэн тохируулах талаар мэдэж авна уу<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Chrome-г нээх</translation>
@@ -5222,6 +5216,7 @@
 <translation id="5884474295213649357">Энэ таб USB төхөөрөмжид холбогдсон байна.</translation>
 <translation id="5885314688092915589">Танай байгууллага энэ профайлыг удирдана</translation>
 <translation id="5886009770935151472">Хуруу 1</translation>
+<translation id="5886112770923972514">Ойролцоох Хурдан холбох төхөөрөмжүүдэд холбогдож, шуурхай тохируулах</translation>
 <translation id="5886384907280980632">Одоо унтраах</translation>
 <translation id="5889282057229379085">Завсрын Cas-ийн хамгийн их тоо: <ph name="NUM_INTERMEDIATE_CA" /></translation>
 <translation id="5891688036610113830">Сонгосон Wi-Fi сүлжээнүүд</translation>
@@ -5351,7 +5346,6 @@
 <translation id="6007240208646052708">Таны хэлэнд дуут хайлт боломжгүй байна.</translation>
 <translation id="6010651352520077187">Асаалттай үед Google Орчуулагч сайтуудыг таны сонгосон хэл рүү орчуулахыг санал болгоно. Мөн сайтуудыг автоматаар орчуулах боломжтой.</translation>
 <translation id="6011193465932186973">Хурууны хээ</translation>
-<translation id="6011449291337289699">Сайтын өгөгдлийг устгах</translation>
 <translation id="6011908034087870826"><ph name="DEVICE_NAME" />-д холбоос илгээж байна</translation>
 <translation id="6013027779243312217">Аудио болон видеондоо хадмал аваарай</translation>
 <translation id="6015796118275082299">Жил</translation>
@@ -6727,7 +6721,6 @@
 <translation id="7345706641791090287">Нууц үгээ баталгаажуулна уу</translation>
 <translation id="7345919885156673810">Сонголт <ph name="LANGUAGE" />-р биш байна</translation>
 <translation id="7346909386216857016">OK, ойлголоо</translation>
-<translation id="7347452120014970266">Энэ нь <ph name="ORIGIN_NAME" /> болон үүний суулгасан аппуудын хадгалсан бүх өгөгдөл, күүкийг арилгана</translation>
 <translation id="7347751611463936647">Энэ өргөтгөлийг ашиглахын тулд,  "<ph name="EXTENSION_KEYWORD" /> " гэж бичээд, ЦОНХ үүсгээд дараа нь командаа өгч эсвэл хайлтаа хийнэ үү.</translation>
 <translation id="7347943691222276892"><ph name="SUBPAGE_TITLE" />-с шилжиж гарахын тулд товшино уу.</translation>
 <translation id="7348093485538360975">Дэлгэцэн дээрх компьютерийн гар</translation>
@@ -7256,7 +7249,6 @@
 <translation id="7826249772873145665">ADB дебаг хийхийг идэвхгүй болгосон</translation>
 <translation id="7826254698725248775">Төхөөрөмжийн таниулбар зөрчилдөж байна.</translation>
 <translation id="7828642077514646543">Алдаа: Гэрчилгээний кодыг тайлах боломжгүй</translation>
-<translation id="7828731929332799387">Энэ нь гуравдагч талын хам сэдэв дээр боломжтой бүх күүки, сайтын өгөгдлийг устгана. Та үргэлжлүүлмээр байна уу?</translation>
 <translation id="7829877209233347340">Эцэг эхээсээ нэвтэрч, сургуулийн бүртгэл нэмэх зөвшөөрөл олгохыг хүснэ үү</translation>
 <translation id="7831754656372780761"><ph name="TAB_TITLE" /> <ph name="EMOJI_MUTING" /></translation>
 <translation id="783229689197954457">Google хөнгөлөлт олсон тохиолдолд та энэ хуудсанд харна</translation>
@@ -7818,9 +7810,9 @@
 <translation id="8337020675372081178">{HOURS,plural, =1{Энэ төхөөрөмжийг 1 цагийн турш хадгалах бөгөөд та дараагийн удаа кодгүйгээр холбогдох боломжтой. Үүнийг танай администратор тохируулсан.}other{Энэ төхөөрөмжийг {HOURS} цагийн турш хадгалах бөгөөд та дараагийн удаа кодгүйгээр холбогдох боломжтой. Үүнийг танай администратор тохируулсан.}}</translation>
 <translation id="8337047789441383384">Та энэ аюулгүй байдлын түлхүүрийг аль хэдийн бүртгүүлсэн байна. Та үүнийг дахин бүртгүүлэх шаардлагагүй.</translation>
 <translation id="8338952601723052325">Хөгжүүлэгч вебсайт</translation>
-<translation id="8339059274628563283"><ph name="SITE" /> дотоодод хадгалсан өгөгдөл</translation>
 <translation id="833986336429795709">Энэ холбоосыг нээхийн тулд апп сонгоно уу</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" />-н бусад үйлдэл</translation>
+<translation id="8341557223534936723">{NUM_SITES,plural, =1{Саяхан маш олон мэдэгдэл илгээсэн <ph name="BEGIN_BOLD" />1 сайтыг<ph name="END_BOLD" /> шалгах}other{Саяхан маш олон мэдэгдэл илгээсэн <ph name="BEGIN_BOLD" />{NUM_SITES} сайтыг<ph name="END_BOLD" /> шалгах}}</translation>
 <translation id="8342221978608739536">Оролдож үзээгүй</translation>
 <translation id="8342861492835240085">Цуглуулга сонгох</translation>
 <translation id="8345848587667658367">Та одоо утасныхаа саяхны зургууд, медиа, мэдэгдлүүд болон аппуудыг харах боломжтой</translation>
@@ -8816,6 +8808,7 @@
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Аюулгүй холболт хийж байна...</translation>
 <translation id="996803490569799917">Дуртай хүмүүс болон бусад зүйлийнхээ дурсамжийг хараарай</translation>
+<translation id="997143476478634194">Таныг сайтуудад зочлоход тэд энэ тохиргоог автоматаар дагана Сайтууд ихэвчлэн танд шуурхай мэдээ эсвэл чатын мессежийн талаар мэдэгдэхийн тулд мэдэгдэл илгээдэг.</translation>
 <translation id="99731366405731005">Wi-Fi синкийг ашиглахын тулд <ph name="LINK1_BEGIN" />Chrome Синк<ph name="LINK1_END" />-ийг асаана уу. <ph name="LINK2_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">Шалгах</translation>
 </translationbundle>

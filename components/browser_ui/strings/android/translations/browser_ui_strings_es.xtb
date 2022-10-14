@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Desactivar cámara</translation>
 <translation id="2717722538473713889">Direcciones de correo electrónico</translation>
 <translation id="2750481671343847896">Los sitios pueden mostrar solicitudes de inicio de sesión de servicios de identidad.</translation>
-<translation id="2785051990912111074">Se borrarán las cookies de <ph name="WEBSITE" />.</translation>
 <translation id="2822354292072154809">¿Seguro que quieres restablecer todos los permisos de los sitios de <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Última visita: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">No se han encontrado contactos</translation>
 <translation id="4996978546172906250">Compartir a través de</translation>
-<translation id="5014906230196386306">¿Borrar cookies?</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5048398596102334565">Permitir que los sitios accedan a los sensores de movimiento (recomendado)</translation>
 <translation id="5050380848339752099">Este sitio va a compartir información con una aplicación fuera del modo Incógnito.</translation>

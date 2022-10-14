@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Vypnout kameru</translation>
 <translation id="2717722538473713889">E‑mailové adresy</translation>
 <translation id="2750481671343847896">Weby mohou zobrazovat výzvy k přihlášení od služeb zjišťujících identitu</translation>
-<translation id="2785051990912111074">Výběrem této možnosti vymažete soubory cookie webu <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Opravdu chcete resetovat všechna oprávnění webů pro objekt <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Stránky</translation>
 <translation id="2874939134665556319">Předchozí skladba</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Naposledy navštíveno <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Nebyly nalezeny žádné kontakty</translation>
 <translation id="4996978546172906250">Sdílet prostřednictvím</translation>
-<translation id="5014906230196386306">Vymazat soubory cookie?</translation>
 <translation id="5039804452771397117">Povolit</translation>
 <translation id="5048398596102334565">Povolit webům přístup k senzorům pohybu (doporučeno)</translation>
 <translation id="5050380848339752099">Tento web chce sdílet informace s aplikací mimo anonymní režim.</translation>

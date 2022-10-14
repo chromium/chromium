@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">კამერის გამორთვა</translation>
 <translation id="2717722538473713889">ელფოსტის მისამართები</translation>
 <translation id="2750481671343847896">საიტებს შეუძლია სისტემაში შესვლის მოთხოვნების ჩვენება პირადობის მონაცემების სერვისებიდან.</translation>
-<translation id="2785051990912111074">ეს არჩევანი გაასუფთავებს ქუქი-ჩანაწერებს <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="2822354292072154809">ნამდვილად გსურთ, საიტის ყველა ნებართვის გადაყენება <ph name="CHOSEN_OBJECT_NAME" />-ისთვის?</translation>
 <translation id="2870560284913253234">საიტი</translation>
 <translation id="2874939134665556319">წინა ჩანაწერი</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">ბოლო ვიზიტი: <ph name="DATE" /></translation>
 <translation id="4994033804516042629">კონტაქტები ვერ მოიძებნა</translation>
 <translation id="4996978546172906250">გაზიარების პროგრამა</translation>
-<translation id="5014906230196386306">გსურთ ქუქი-ჩანაწერების გასუფთავება?</translation>
 <translation id="5039804452771397117">დაშვება</translation>
 <translation id="5048398596102334565">საიტებისთვის მოძრაობის სენსორებზე წვდომის დაშვება (რეკომენდებული)</translation>
 <translation id="5050380848339752099">ეს საიტი აპირებს, ინკოგნიტო რეჟიმის გარეთ გაუზიაროს ინფორმაცია აპს.</translation>

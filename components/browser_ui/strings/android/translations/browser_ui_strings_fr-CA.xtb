@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">Désactiver la caméra</translation>
 <translation id="2717722538473713889">Adresses de courriel</translation>
 <translation id="2750481671343847896">Les sites peuvent afficher des invites de connexion provenant de services de vérification d'identité.</translation>
-<translation id="2785051990912111074">Ce choix effacera les témoins du site <ph name="WEBSITE" /></translation>
 <translation id="2822354292072154809">Voulez-vous vraiment réinitialiser toutes les autorisations de site pour <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2870560284913253234">Site</translation>
 <translation id="2874939134665556319">Chanson précédente</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">Dernière visite : <ph name="DATE" /></translation>
 <translation id="4994033804516042629">Aucun contact trouvé</translation>
 <translation id="4996978546172906250">Partager par</translation>
-<translation id="5014906230196386306">Effacer les témoins?</translation>
 <translation id="5039804452771397117">Autoriser</translation>
 <translation id="5048398596102334565">Autoriser les sites à accéder à vos capteurs de mouvements (recommandé)</translation>
 <translation id="5050380848339752099">Ce site est sur le point de partager des renseignements avec une application à l'extérieur du mode de navigation privée.</translation>

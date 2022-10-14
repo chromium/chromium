@@ -9,6 +9,7 @@
 <translation id="1300209025925956156">Dokument scannen</translation>
 <translation id="1309250603447638106">Updates zum Scannen von Dokumenten werden heruntergeladen</translation>
 <translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. „Suchtaste + Linkspfeil“ drücken, um darauf zuzugreifen.</translation>
+<translation id="1417314334557041815">Seite <ph name="INDEX" /> bearbeiten</translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1467231725790366244">Verbindung zu <ph name="CAMERA" /> wurde getrennt.</translation>
 <translation id="1473110567575736769">3-Sekunden-Timer</translation>
@@ -20,6 +21,7 @@
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Keine Aufzeichnung</translation>
 <translation id="1838104802459806957">Nach oben neigen</translation>
+<translation id="1843105061469674856">Zusätzliche Seite scannen</translation>
 <translation id="1851169887664797861">Zusätzliche Kameraeinstellungen verfügbar</translation>
 <translation id="1851616744363735765">PAUSIERT</translation>
 <translation id="1862930711583847113">Export von "<ph name="FILE" />" nicht möglich</translation>
@@ -77,6 +79,7 @@
 <translation id="414641094616694804">Diese Kamera kann die Auflösung nicht ändern</translation>
 <translation id="4269820728363426813">URL kopieren</translation>
 <translation id="4281620174117014503">Mittlere Auflösung</translation>
+<translation id="428234092390943511">Miniaturansicht der Seite</translation>
 <translation id="4329152592498422850">Zum Modus für quadratische Fotos wechseln</translation>
 <translation id="4340659173795395806">Du kannst jetzt PDF-Dateien mit mehreren Seiten erstellen</translation>
 <translation id="4383571725254449280">Druckleistungsprotokolle drucken</translation>

@@ -340,9 +340,9 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="2865888419503095837">Informações de rede</translation>
 <translation id="2872961005593481000">Desligar</translation>
 <translation id="2878884018241093801">Nenhum item recente</translation>
+<translation id="2885950158625301909">Saiba mais</translation>
 <translation id="2891209721153296020">"Desmarcar"</translation>
 <translation id="2894949423239620203">O cabo pode afetar o desempenho</translation>
-<translation id="2903844815300039659">Conectado a <ph name="NAME" />, <ph name="STRENGTH" /></translation>
 <translation id="2914580577416829331">Capturas de tela</translation>
 <translation id="2941112035454246133">Baixa</translation>
 <translation id="2942350706960889382">Lupa em área fixa</translation>
@@ -1051,6 +1051,7 @@ Nova instalação</translation>
 <translation id="6961121602502368900">O recurso "Silenciar smartphone" não está disponível no perfil de trabalho</translation>
 <translation id="6961840794482373852">O atalho de teclado Alt + seta para cima mudou. Para usar a tecla Page Up, pressione <ph name="LAUNCHER_KEY_NAME" /> + seta para cima.</translation>
 <translation id="696267987219125751">O enquadramento da câmera está desativado.</translation>
+<translation id="6964690557625666701">Todos os itens fixados estão em estantes</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Vamos começar</translation>
 <translation id="6979158407327259162">Google Drive</translation>
@@ -1359,6 +1360,8 @@ Nova instalação</translation>
 <translation id="8734991477317290293">Ele pode estar tentando capturar sua digitação</translation>
 <translation id="8735678380411481005">Cor da luz de fundo do teclado</translation>
 <translation id="8735953464173050365">Mostrar configurações do teclado. <ph name="KEYBOARD_NAME" /> está selecionado</translation>
+<translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
+        <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8752416742247198423">Conceda acesso à câmera para que apps e páginas da Web com permissão usem as câmeras conectadas a este dispositivo.</translation>
 <translation id="8755498163081687682">Verifique sua identidade: <ph name="ORIGIN_NAME" /> quer confirmar que é você</translation>
 <translation id="875593634123171288">Mostrar configurações de VPN</translation>

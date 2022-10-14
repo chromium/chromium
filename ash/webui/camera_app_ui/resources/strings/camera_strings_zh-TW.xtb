@@ -1,9 +1,11 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-TW">
+<translation id="1076394037877376434">刪除第 <ph name="PAGE_NUMBER" /> 頁</translation>
 <translation id="1113173431709655881">相機模式</translation>
 <translation id="1153190633558910465">關閉格線</translation>
 <translation id="1175958423215084756">偵測到連結。<ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">已刪除第 <ph name="PAGE_NUMBER" /> 頁</translation>
 <translation id="1258009455399840361">順時針旋轉 90 度</translation>
 <translation id="1276998909102132017">圖片庫圖片</translation>
 <translation id="1300209025925956156">掃描你的文件</translation>

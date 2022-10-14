@@ -86,7 +86,6 @@
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2717722538473713889">电子邮件地址</translation>
 <translation id="2750481671343847896">网站可以显示来自身份服务的登录提示。</translation>
-<translation id="2785051990912111074">此选项会清除 <ph name="WEBSITE" /> 的 Cookie</translation>
 <translation id="2822354292072154809">确定要重置<ph name="CHOSEN_OBJECT_NAME" />的所有网站权限吗？</translation>
 <translation id="2870560284913253234">网站</translation>
 <translation id="2874939134665556319">上一首</translation>
@@ -178,7 +177,6 @@
 <translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
 <translation id="4994033804516042629">找不到任何联系人</translation>
 <translation id="4996978546172906250">分享方式</translation>
-<translation id="5014906230196386306">清除 Cookie？</translation>
 <translation id="5039804452771397117">允许</translation>
 <translation id="5048398596102334565">允许网站使用移动传感器（推荐）</translation>
 <translation id="5050380848339752099">该网站即将与某个并非处于无痕模式下的应用共享信息。</translation>
