@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>TestDriver get_all_cookies method w/ default SameSite</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script>
+promise_test(async t => {
+  document.cookie = "test0=0";
+  const cookies = await test_driver.get_all_cookies();
+  assert_equals(cookies.length, 1);
+  let cookieMap = new Map();
+  for (const cookie of cookies) {
+    cookieMap.set(cookie["name"], cookie);
+  }
+  assert_equals(cookieMap.get("test0")["name"], "test0");
+  assert_equals(cookieMap.get("test0")["value"], "0");
+  assert_equals(cookieMap.get("test0")["sameSite"], "Lax");
+}, "Get all cookies w/ default SameSite");
+</script>

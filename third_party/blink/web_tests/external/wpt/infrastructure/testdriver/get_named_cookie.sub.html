@@ -26,7 +26,8 @@ promise_test(async t => {
   assert_equals(cookie["secure"], false);
   assert_equals(cookie["httpOnly"], false);
   assert_equals(cookie["expiry"], undefined);
-  assert_equals(cookie["sameSite"], "Lax");
+  // The 'default lax' behavior varies by browser.
+  // assert_equals(cookie["sameSite"], "Lax");
 
   // test1 [Expires in 10 days]
   cookie = await test_driver.get_named_cookie("test1");
@@ -37,7 +38,8 @@ promise_test(async t => {
   assert_equals(cookie["secure"], false);
   assert_equals(cookie["httpOnly"], false);
   assert_equals(cookie["expiry"], Math.floor(kTenDaysFromNow.getTime()/1000));
-  assert_equals(cookie["sameSite"], "Lax");
+  // The 'default lax' behavior varies by browser.
+  // assert_equals(cookie["sameSite"], "Lax");
 
   // test2 [Path /]
   cookie = await test_driver.get_named_cookie("test2");
@@ -48,7 +50,8 @@ promise_test(async t => {
   assert_equals(cookie["secure"], false);
   assert_equals(cookie["httpOnly"], false);
   assert_equals(cookie["expiry"], undefined);
-  assert_equals(cookie["sameSite"], "Lax");
+  // The 'default lax' behavior varies by browser.
+  // assert_equals(cookie["sameSite"], "Lax");
 
   // test3 [HttpOnly]
   cookie = await test_driver.get_named_cookie("test3");
@@ -59,7 +62,8 @@ promise_test(async t => {
   assert_equals(cookie["secure"], false);
   assert_equals(cookie["httpOnly"], true);
   assert_equals(cookie["expiry"], undefined);
-  assert_equals(cookie["sameSite"], "Lax");
+  // The 'default lax' behavior varies by browser.
+  // assert_equals(cookie["sameSite"], "Lax");
 
   // test4 [Secure] Omitted
   try {

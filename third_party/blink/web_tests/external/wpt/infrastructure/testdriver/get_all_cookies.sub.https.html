@@ -31,7 +31,8 @@ promise_test(async t => {
   assert_equals(cookieMap.get("test0")["secure"], false);
   assert_equals(cookieMap.get("test0")["httpOnly"], false);
   assert_equals(cookieMap.get("test0")["expiry"], undefined);
-  assert_equals(cookieMap.get("test0")["sameSite"], "Lax");
+  // The 'default lax' behavior varies by browser.
+  // assert_equals(cookieMap.get("test0")["sameSite"], "Lax");
 
   // test1 [Expires in 10 days]
   assert_equals(cookieMap.get("test1")["name"], "test1");
@@ -41,7 +42,8 @@ promise_test(async t => {
   assert_equals(cookieMap.get("test1")["secure"], false);
   assert_equals(cookieMap.get("test1")["httpOnly"], false);
   assert_equals(cookieMap.get("test1")["expiry"], Math.floor(kTenDaysFromNow.getTime()/1000));
-  assert_equals(cookieMap.get("test1")["sameSite"], "Lax");
+  // The 'default lax' behavior varies by browser.
+  // assert_equals(cookieMap.get("test0")["sameSite"], "Lax");
 
   // test2 [Path /]
   assert_equals(cookieMap.get("test2")["name"], "test2");
@@ -51,7 +53,8 @@ promise_test(async t => {
   assert_equals(cookieMap.get("test2")["secure"], false);
   assert_equals(cookieMap.get("test2")["httpOnly"], false);
   assert_equals(cookieMap.get("test2")["expiry"], undefined);
-  assert_equals(cookieMap.get("test2")["sameSite"], "Lax");
+  // The 'default lax' behavior varies by browser.
+  // assert_equals(cookieMap.get("test0")["sameSite"], "Lax");
 
   // test3 [HttpOnly]
   assert_equals(cookieMap.get("test3")["name"], "test3");
@@ -61,7 +64,8 @@ promise_test(async t => {
   assert_equals(cookieMap.get("test3")["secure"], false);
   assert_equals(cookieMap.get("test3")["httpOnly"], true);
   assert_equals(cookieMap.get("test3")["expiry"], undefined);
-  assert_equals(cookieMap.get("test3")["sameSite"], "Lax");
+  // The 'default lax' behavior varies by browser.
+  // assert_equals(cookieMap.get("test0")["sameSite"], "Lax");
 
   // test4 [Secure]
   assert_equals(cookieMap.get("test4")["name"], "test4");
@@ -71,7 +75,8 @@ promise_test(async t => {
   assert_equals(cookieMap.get("test4")["secure"], true);
   assert_equals(cookieMap.get("test4")["httpOnly"], false);
   assert_equals(cookieMap.get("test4")["expiry"], undefined);
-  assert_equals(cookieMap.get("test4")["sameSite"], "Lax");
+  // The 'default lax' behavior varies by browser.
+  // assert_equals(cookieMap.get("test0")["sameSite"], "Lax");
 
   // test5 [SameSite Strict]
   assert_equals(cookieMap.get("test5")["name"], "test5");
