@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
@@ -68,20 +69,8 @@ void ScheduleInstallIsolatedApp(GURL url,
           base::BindOnce(&ReportInstallationResult).Then(std::move(callback))));
 }
 
-base::OnceClosure& GetNextDoneCallbackInstance() {
-  static base::NoDestructor<base::OnceClosure> kInstance{base::NullCallback()};
-  return *kInstance;
-}
-
-}  // namespace
-
-void SetNextInstallationDoneCallbackForTesting(  // IN-TEST
-    base::OnceClosure done_callback) {
-  GetNextDoneCallbackInstance() = std::move(done_callback);
-}
-
 base::expected<absl::optional<IsolationData>, std::string>
-GetIsolationDataFromCommandLine(const base::CommandLine& command_line) {
+GetProxyUrlFromCommandLine(const base::CommandLine& command_line) {
   std::string switch_value =
       command_line.GetSwitchValueASCII(switches::kInstallIsolatedWebAppFromUrl);
 
@@ -98,6 +87,60 @@ GetIsolationDataFromCommandLine(const base::CommandLine& command_line) {
   }
 
   return IsolationData{IsolationData::DevModeProxy{.proxy_url = url.spec()}};
+}
+
+base::expected<absl::optional<IsolationData>, std::string>
+GetBundlePathFromCommandLine(const base::CommandLine& command_line) {
+  base::FilePath switch_value =
+      command_line.GetSwitchValuePath(switches::kInstallIsolatedWebAppFromFile);
+
+  if (switch_value.empty()) {
+    return absl::nullopt;
+  }
+
+  base::FilePath absolute_path = base::MakeAbsoluteFilePath(switch_value);
+
+  if (!base::PathExists(absolute_path) ||
+      base::DirectoryExists(absolute_path)) {
+    return base::unexpected(base::StrCat(
+        {"Invalid path provided to --", switches::kInstallIsolatedWebAppFromUrl,
+         " flag: '", absolute_path.AsUTF8Unsafe(), "'"}));
+  }
+
+  return IsolationData{IsolationData::DevModeBundle{.path = absolute_path}};
+}
+
+base::OnceClosure& GetNextDoneCallbackInstance() {
+  static base::NoDestructor<base::OnceClosure> kInstance{base::NullCallback()};
+  return *kInstance;
+}
+
+}  // namespace
+
+void SetNextInstallationDoneCallbackForTesting(  // IN-TEST
+    base::OnceClosure done_callback) {
+  GetNextDoneCallbackInstance() = std::move(done_callback);
+}
+
+base::expected<absl::optional<IsolationData>, std::string>
+GetIsolationDataFromCommandLine(const base::CommandLine& command_line) {
+  base::expected<absl::optional<IsolationData>, std::string> proxy_url =
+      GetProxyUrlFromCommandLine(command_line);
+  base::expected<absl::optional<IsolationData>, std::string> bundle_path =
+      GetBundlePathFromCommandLine(command_line);
+
+  // Return an error if both flags are set.
+  bool was_proxy_url_set = !proxy_url.has_value() || proxy_url->has_value();
+  bool was_bundle_path_set =
+      !bundle_path.has_value() || bundle_path->has_value();
+  if (was_proxy_url_set && was_bundle_path_set) {
+    return base::unexpected(
+        base::StrCat({"--", switches::kInstallIsolatedWebAppFromUrl, " and --",
+                      switches::kInstallIsolatedWebAppFromFile,
+                      " cannot both be provided."}));
+  }
+
+  return was_proxy_url_set ? proxy_url : bundle_path;
 }
 
 void MaybeInstallAppFromCommandLine(const base::CommandLine& command_line,
