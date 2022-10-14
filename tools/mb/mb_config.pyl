@@ -3237,7 +3237,7 @@
     ],
 
     'official_goma_fuchsia_arm64_perf': [
-      'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator', 'fuchsia_cfv2_script'
+      'cast_receiver_size_optimized_internal', 'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator', 'fuchsia_cfv2_script'
     ],
 
     'official_goma_fuchsia_x64_perf': [
@@ -3870,6 +3870,10 @@
 
     'cast_receiver_size_optimized': {
       'args_file': '//build/config/fuchsia/size_optimized_cast_receiver_args.gn',
+    },
+
+    'cast_receiver_size_optimized_internal': {
+      'args_file': '//build/config/fuchsia/size_optimized_cast_receiver_args_internal.gn',
     },
 
     'cfi': {
