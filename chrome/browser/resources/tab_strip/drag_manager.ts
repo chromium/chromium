@@ -69,7 +69,7 @@ export interface DragManagerDelegate {
 
   placeTabGroupElement(element: TabGroupElement, index: number): void;
 
-  shouldPreventDrag(): boolean;
+  shouldPreventDrag(isDraggingTab: boolean): boolean;
 }
 
 type DragManagerDelegateElement = DragManagerDelegate&HTMLElement;
@@ -470,7 +470,7 @@ export class DragManager {
       return;
     }
 
-    if (this.delegate_.shouldPreventDrag()) {
+    if (this.delegate_.shouldPreventDrag(isTabElement(draggedItem))) {
       event.preventDefault();
       return;
     }

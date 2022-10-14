@@ -778,12 +778,17 @@ export class TabListElement extends CustomElement implements
     this.animateScrollPosition_(scrollBy);
   }
 
-  shouldPreventDrag(): boolean {
-    // Do not allow dragging if there's only 1 tab with no tab group, or only 1
-    // tab group with no other tabs outside of the tab group.
-    return (this.pinnedTabsElement_.childElementCount +
-        this.unpinnedTabsElement_.childElementCount) ===
-        1;
+  shouldPreventDrag(isDraggingTab: boolean): boolean {
+    if (isDraggingTab) {
+      // Do not allow dragging a tab if there's only 1 tab.
+      return this.$all('tabstrip-tab').length === 1;
+    } else {
+      // Do not allow dragging the tab group with no others outside of the tab
+      // group. In this case there is only 1 pinned and unpinned top level
+      // element, which is the dragging tab group itself.
+      return (this.pinnedTabsElement_.childElementCount +
+              this.unpinnedTabsElement_.childElementCount) === 1;
+    }
   }
 
   private tabThumbnailUpdated_(tabId: number, imgData: string) {

@@ -994,15 +994,15 @@ suite('TabList', () => {
   });
 
   test('PreventsDraggingWhenOnlyOneTab', () => {
-    assertFalse(tabList.shouldPreventDrag());
+    assertFalse(tabList.shouldPreventDrag(/*isDraggingTab=*/ true));
     const tabElements = getUnpinnedTabs();
     tabElements[1]!.remove();
     tabElements[2]!.remove();
-    assertTrue(tabList.shouldPreventDrag());
+    assertTrue(tabList.shouldPreventDrag(/*isDraggingTab=*/ true));
   });
 
   test('PreventsDraggingWhenOnlyOneTabGroup', async () => {
-    // Create a tab group with 2 tabs.
+    // Create a tab group with 1 tab.
     const appendedTab = createTab({
       groupId: 'group0',
       id: 3,
@@ -1011,6 +1011,22 @@ suite('TabList', () => {
     });
     callbackRouter.tabCreated(appendedTab);
     await flushTasks();
+
+    // Remove all tabs outside the tab group.
+    const tabElements = getUnpinnedTabs();
+    tabElements[0]!.remove();
+    tabElements[1]!.remove();
+    tabElements[2]!.remove();
+
+    // At this point there's only 1 tab in 1 tab group.
+
+    // Dragging a tab is not allowed.
+    assertTrue(tabList.shouldPreventDrag(/*isDraggingTab=*/ true));
+
+    // Dragging a tab group is not allowed.
+    assertTrue(tabList.shouldPreventDrag(/*isDraggingTab=*/ false));
+
+    // Add another tab in the same tab group.
     const appendedTabInSameGroup = createTab({
       groupId: 'group0',
       id: 4,
@@ -1019,13 +1035,13 @@ suite('TabList', () => {
     });
     callbackRouter.tabCreated(appendedTabInSameGroup);
     await flushTasks();
-    assertFalse(tabList.shouldPreventDrag());
 
-    // Remove all tabs outside the tab group.
-    const tabElements = getUnpinnedTabs();
-    tabElements[0]!.remove();
-    tabElements[1]!.remove();
-    tabElements[2]!.remove();
-    assertTrue(tabList.shouldPreventDrag());
+    // At this point there are 2 tabs in 1 tab group;
+
+    // Dragging a tab is still allowed.
+    assertFalse(tabList.shouldPreventDrag(/*isDraggingTab=*/ true));
+
+    // Dragging a tab group is not allowed.
+    assertTrue(tabList.shouldPreventDrag(/*isDraggingTab=*/ false));
   });
 });
