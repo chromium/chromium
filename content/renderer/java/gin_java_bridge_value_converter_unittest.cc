@@ -140,9 +140,9 @@ TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
         converter->FromV8Value(v8_typed_array, context));
     ASSERT_TRUE(list_value.get()) << typed_array_type;
     ASSERT_TRUE(list_value->is_list()) << typed_array_type;
-    EXPECT_EQ(1u, list_value->GetListDeprecated().size()) << typed_array_type;
+    EXPECT_EQ(1u, list_value->GetList().size()) << typed_array_type;
 
-    const auto value = list_value->GetListDeprecated().cbegin();
+    const auto value = list_value->GetList().cbegin();
     if (value->type() == base::Value::Type::BINARY) {
       std::unique_ptr<const GinJavaBridgeValue> gin_value(
           GinJavaBridgeValue::FromValue(&*value));
