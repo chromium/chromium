@@ -4637,4 +4637,47 @@ TEST_P(CrasAudioHandlerTest,
   EXPECT_TRUE(cras_audio_handler_->IsOutputMutedBySecurityCurtain());
 }
 
+TEST_P(CrasAudioHandlerTest, MicrophoneMuteKeyboardSwitchTest) {
+  // Set up initial input audio devices, with internal mic and mic jack.
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalMic, kMicJack});
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // Setting the hw toggle to off first.
+  ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
+      /*switch_on=*/false);
+  EXPECT_FALSE(cras_audio_handler_->IsInputMuted());
+
+  int input_mute_changed_counter = test_observer_->input_mute_changed_count();
+
+  // This is similar to pressing the keyboard button for toggling the microphone
+  // mute state.
+  cras_audio_handler_->HandleKeyboardMicrophoneMuteSwitchPressed(
+      !cras_audio_handler_->IsInputMuted());
+
+  // Verify the input is muted, OnInputMuteChanged event is fired.
+  EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+  EXPECT_EQ(++input_mute_changed_counter,
+            test_observer_->input_mute_changed_count());
+
+  // Setting the hw toggle on. Pressing the keyboard switch should not be able
+  // to change the system input mute state as long as the hw switch is on.
+  ui::MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(
+      /*switch_on=*/true);
+
+  // Input should still be muted as it was before toggling the hw switch.
+  // OnInputMuteChanged event should not be fired.
+  EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+  EXPECT_EQ(input_mute_changed_counter,
+            test_observer_->input_mute_changed_count());
+
+  // Trying to toggle system input mute state using the keyboard switch.
+  cras_audio_handler_->HandleKeyboardMicrophoneMuteSwitchPressed(
+      !cras_audio_handler_->IsInputMuted());
+
+  // Input should still be muted. OnInputMuteChanged event should not be fired.
+  EXPECT_TRUE(cras_audio_handler_->IsInputMuted());
+  EXPECT_EQ(input_mute_changed_counter,
+            test_observer_->input_mute_changed_count());
+}
+
 }  // namespace ash

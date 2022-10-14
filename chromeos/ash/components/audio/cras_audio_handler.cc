@@ -85,6 +85,8 @@ void CrasAudioHandler::AudioObserver::OnOutputMuteChanged(bool /* mute_on */) {}
 
 void CrasAudioHandler::AudioObserver::OnInputMuteChanged(bool /* mute_on */) {}
 
+void CrasAudioHandler::AudioObserver::OnInputMutedByKeyboardSwitchChanged() {}
+
 void CrasAudioHandler::AudioObserver::OnInputMutedByMicrophoneMuteSwitchChanged(
     bool /* muted */) {}
 
@@ -312,6 +314,16 @@ void CrasAudioHandler::MediaSessionPositionChanged(
     return;
 
   CrasAudioClient::Get()->SetPlayerPosition(current_position);
+}
+
+void CrasAudioHandler::HandleKeyboardMicrophoneMuteSwitchPressed(bool muted) {
+  const bool old_mute_on = input_mute_on_;
+  SetInputMute(muted);
+
+  if (old_mute_on != input_mute_on_) {
+    for (auto& observer : observers_)
+      observer.OnInputMutedByKeyboardSwitchChanged();
+  }
 }
 
 void CrasAudioHandler::OnMicrophoneMuteSwitchValueChanged(bool muted) {

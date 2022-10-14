@@ -105,13 +105,22 @@ void UnifiedSliderBubbleController::OnOutputMuteChanged(bool mute_on) {
   ShowBubble(SLIDER_TYPE_VOLUME);
 }
 
-void UnifiedSliderBubbleController::OnInputMuteChanged(bool mute_on) {
-  // We will display the mic mute toast only when the device has an
-  // internal/external microphone attached.
+void UnifiedSliderBubbleController::DisplayMicrophoneMuteToast() {
+  // We will not display the microphone mute toast if no microphone is connected
+  // to the device.
   if (features::IsMicMuteNotificationsEnabled() &&
       CrasAudioHandler::Get()->HasActiveInputDeviceForSimpleUsage()) {
     ShowBubble(SLIDER_TYPE_MIC);
   }
+}
+
+void UnifiedSliderBubbleController::OnInputMutedByKeyboardSwitchChanged() {
+  DisplayMicrophoneMuteToast();
+}
+
+void UnifiedSliderBubbleController::OnInputMutedByMicrophoneMuteSwitchChanged(
+    bool muted) {
+  DisplayMicrophoneMuteToast();
 }
 
 void UnifiedSliderBubbleController::OnDisplayBrightnessChanged(bool by_user) {
