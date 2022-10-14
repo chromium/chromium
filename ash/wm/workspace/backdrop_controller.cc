@@ -306,9 +306,8 @@ aura::Window* BackdropController::GetTopmostWindowWithBackdrop() {
       continue;
 
     // No need to check the visibility or the activateability of the window if
-    // this is an inactive desk's container.
-    if (!desks_util::IsDeskContainer(container_) ||
-        desks_util::IsActiveDeskContainer(container_)) {
+    // this is not a desk container.
+    if (desks_util::IsDeskContainer(container_)) {
       if (!window->layer()->GetTargetVisibility())
         continue;
 
@@ -558,10 +557,12 @@ void BackdropController::Show() {
 }
 
 void BackdropController::Hide(bool destroy, bool animate) {
-  if (!backdrop_)
+  if (!backdrop_ || is_hiding_backdrop_)
     return;
 
   DCHECK(backdrop_window_);
+  base::AutoReset<bool> lock(&is_hiding_backdrop_, true);
+
   const aura::Window::Windows windows = container_->children();
   auto window_iter = base::ranges::find(windows, backdrop_window_);
   ++window_iter;
