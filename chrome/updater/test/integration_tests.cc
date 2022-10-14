@@ -369,9 +369,7 @@ TEST_F(IntegrationTest, InstallUninstall) {
   Uninstall();
 }
 
-// TODO(crbug.com/1345407): this test is disabled temporarily. Reenable after
-// the build that adds `IUpdater::FetchPolicies` is published to CIPD.
-TEST_F(IntegrationTest, DISABLED_OverinstallWorking) {
+TEST_F(IntegrationTest, OverinstallWorking) {
   SetupRealUpdaterLowerVersion();
   EXPECT_TRUE(WaitForUpdaterExit());
   ExpectVersionNotActive(kUpdaterVersion);
@@ -385,13 +383,7 @@ TEST_F(IntegrationTest, DISABLED_OverinstallWorking) {
   Uninstall();
 }
 
-// TODO(crbug.com/1359334): Flaky on Win10.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_OverinstallBroken DISABLED_OverinstallBroken
-#else
-#define MAYBE_OverinstallBroken OverinstallBroken
-#endif
-TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
+TEST_F(IntegrationTest, OverinstallBroken) {
   SetupRealUpdaterLowerVersion();
   EXPECT_TRUE(WaitForUpdaterExit());
   DeleteUpdaterDirectory();
