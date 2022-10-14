@@ -34,7 +34,6 @@ using quic::kDefaultMaxStreamsPerConnection;
 using quic::kQBIC;
 using quic::NullDecrypter;
 using quic::NullEncrypter;
-using quic::PACKET_8BYTE_CONNECTION_ID;
 using quic::Perspective;
 using quic::ProofVerifyContext;
 using quic::QUIC_CRYPTO_MESSAGE_AFTER_HANDSHAKE_COMPLETE;
@@ -53,6 +52,11 @@ using quic::TransportParameters;
 using std::string;
 
 namespace net {
+namespace {
+
+static constexpr int k8ByteConnectionId = 8;
+
+}  // namespace
 
 MockCryptoClientStream::MockCryptoClientStream(
     const QuicServerId& server_id,
@@ -365,7 +369,7 @@ void MockCryptoClientStream::SetConfigNegotiated() {
 #endif
   cgst.push_back(kQBIC);
   QuicConfig config(config_);
-  config.SetBytesForConnectionIdToSend(PACKET_8BYTE_CONNECTION_ID);
+  config.SetBytesForConnectionIdToSend(k8ByteConnectionId);
   config.SetMaxBidirectionalStreamsToSend(kDefaultMaxStreamsPerConnection / 2);
   config.SetMaxUnidirectionalStreamsToSend(kDefaultMaxStreamsPerConnection / 2);
   config.SetInitialMaxStreamDataBytesIncomingBidirectionalToSend(

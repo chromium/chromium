@@ -92,6 +92,9 @@ static const int kLen33 = kLen3 + kLen3;
 static const char kMsg333[] = "bye!bye!bye!";
 static const int kLen333 = kLen3 + kLen3 + kLen3;
 
+static constexpr int k0ByteConnectionId = 0;
+static constexpr int k8ByteConnectionId = 8;
+
 struct TestParams {
   quic::ParsedQuicVersion version;
   bool client_headers_include_h2_stream_dependency;
@@ -130,7 +133,7 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
       quic::ParsedQuicVersion version,
       bool include_version,
       bool include_diversification_nonce,
-      quic::QuicConnectionIdLength connection_id_length,
+      int connection_id_length,
       quic::QuicPacketNumberLength packet_number_length,
       quic::QuicStreamOffset offset) {
     quiche::QuicheVariableLengthIntegerLength retry_token_length_length =
@@ -145,10 +148,10 @@ class QuicProxyClientSocketTest : public ::testing::TestWithParam<TestParams>,
         quic::NullEncrypter(quic::Perspective::IS_CLIENT)
             .GetCiphertextSize(min_data_length) +
         quic::QuicPacketCreator::StreamFramePacketOverhead(
-            version.transport_version, quic::PACKET_8BYTE_CONNECTION_ID,
-            quic::PACKET_0BYTE_CONNECTION_ID, include_version,
-            include_diversification_nonce, packet_number_length,
-            retry_token_length_length, length_length, offset);
+            version.transport_version, k8ByteConnectionId, k0ByteConnectionId,
+            include_version, include_diversification_nonce,
+            packet_number_length, retry_token_length_length, length_length,
+            offset);
 
     DCHECK(packet_length >= min_packet_length);
     return min_data_length + packet_length - min_packet_length;
@@ -1095,7 +1098,7 @@ TEST_P(QuicProxyClientSocketTest, WriteSplitsLargeDataIntoMultiplePackets) {
   for (int i = 0; i < numDataPackets; ++i) {
     size_t max_packet_data_length = GetStreamFrameDataLengthFromPacketLength(
         quic::kDefaultMaxPacketSize, version_, !kIncludeVersion,
-        !kIncludeDiversificationNonce, quic::PACKET_8BYTE_CONNECTION_ID,
+        !kIncludeDiversificationNonce, k8ByteConnectionId,
         quic::PACKET_1BYTE_PACKET_NUMBER, offset);
     if (version_.HasIetfQuicFrames() && i == 0) {
       // 3673 is the data frame length from packet length.
