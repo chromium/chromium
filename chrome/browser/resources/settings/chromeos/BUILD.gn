@@ -22,7 +22,6 @@ assert(is_chromeos_ash, "ChromeOS Settings is ChromeOS only")
 
 preprocessed_folder = "preprocessed"
 preprocessed_ts_folder = "preprocessed_ts"
-browser_settings_tsc_manifest = "browser_settings_tsc_manifest.json"
 external_mojo_manifest = "external_mojo_manifest.json"
 
 if (optimize_webui) {
@@ -44,7 +43,6 @@ if (optimize_webui) {
 
     deps = [
       ":build_ts",
-      ":preprocess_browser_settings_tsc",
       "//chrome/browser/resources/nearby_share/shared:preprocess_v3",
       "//ui/webui/resources:preprocess",
       "//ui/webui/resources/cr_components/app_management:build_ts",
@@ -102,53 +100,62 @@ ts_library("build_ts") {
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
+    ":generate_html_wrapper_files",
     ":generate_mojom_webui",
-    ":preprocess_gen_ts_files",
-    ":preprocess_src_ts_files",
+    ":generate_web_component_css_wrapper_files",
+    ":preprocess",
+    ":preprocess_gen_web_component_files",
     "//ash/webui/common/resources:generate_definitions",
   ]
   definitions = [
-    "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/bluetooth.d.ts",
     "//tools/typescript/definitions/bluetooth_private.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/quick_unlock_private.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
   ]
   root_dir = "$target_gen_dir/$preprocessed_ts_folder"
-  in_files = src_ts_files + gen_ts_files + mojom_webui_files
+  in_files = src_ts_files + html_wrapper_files + css_wrapper_files +
+             gen_web_component_files + mojom_webui_files
   out_dir = "$target_gen_dir/$preprocessed_folder"
 }
 
-preprocess_if_expr("preprocess_src_ts_files") {
+preprocess_if_expr("preprocess") {
   defines = chrome_grit_defines
   in_folder = "../"
-  in_files = src_ts_files
+  in_files = src_ts_files + html_files + css_files
   out_folder = "$target_gen_dir/$preprocessed_ts_folder"
 }
 
-preprocess_if_expr("preprocess_gen_ts_files") {
+preprocess_if_expr("preprocess_gen_web_component_files") {
   defines = chrome_grit_defines
   deps = [
-    ":generate_web_component_css_wrapper_files",
-    ":generate_web_component_html_wrapper_files",
+    # preprocess should happen before these code gen.
+    # This remaining target should natually disappear after we migrated fully
+    # to typescript.
     ":generate_web_components",
   ]
   in_folder = get_path_info("../", "gen_dir")
-  in_files = gen_ts_files
+  in_files = gen_web_component_files
   out_folder = "$target_gen_dir/$preprocessed_ts_folder"
 }
 
-html_to_wrapper("generate_web_component_html_wrapper_files") {
-  in_folder = "../"
-  in_files = web_component_html_files
-  out_folder = get_path_info("../", "gen_dir")
+html_to_wrapper("generate_html_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_files = html_files
+  in_folder = "$target_gen_dir/$preprocessed_ts_folder"
+  out_folder = "$target_gen_dir/$preprocessed_ts_folder"
 }
 
 css_to_wrapper("generate_web_component_css_wrapper_files") {
-  in_folder = "../"
+  deps = [ ":preprocess" ]
   in_files = css_files
-  out_folder = get_path_info("../", "gen_dir")
+  in_folder = "$target_gen_dir/$preprocessed_ts_folder"
+  out_folder = "$target_gen_dir/$preprocessed_ts_folder"
 }
 
 # Generate all WebUI mojom files and copy them to preprocessed_ts_folder to be
@@ -323,72 +330,12 @@ generate_grd("build_grd") {
   } else {
     deps += [
       ":build_ts",
-      ":preprocess_browser_settings_tsc",
       "//chrome/browser/resources/nearby_share/shared:build_v3_grdp",
       "//ui/webui/resources/cr_components/app_management:build_ts",
     ]
     grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v3.grdp" ]
-    manifest_files += [
-      "$target_gen_dir/$browser_settings_tsc_manifest",
-      "$target_gen_dir/build_ts.manifest",
-    ]
+    manifest_files += [ "$target_gen_dir/build_ts.manifest" ]
     resource_path_rewrites += [ "chromeos/os_settings.html|os_settings.html" ]
-  }
-}
-
-# Since Browser Settings is migrating to TypeScript (crbug.com/1234307), and
-# some files are still shared with CrOS Settings, need to copy the transpiled
-# JS files from TS compiler's output.
-preprocess_if_expr("preprocess_browser_settings_tsc") {
-  defines = chrome_grit_defines
-  deps = [ "..:build_ts" ]
-  in_folder = "$root_gen_dir/chrome/browser/resources/settings/tsc"
-  out_folder = "$target_gen_dir/$preprocessed_folder"
-  out_manifest = "$target_gen_dir/$browser_settings_tsc_manifest"
-
-  # Files that have a corresponding HTML wrapper file.
-  browser_settings_web_component_files = [
-    "a11y_page/captions_subpage.js",
-    "a11y_page/live_caption_section.js",
-    "controls/controlled_button.js",
-    "controls/extension_controlled_indicator.js",
-    "controls/password_prompt_dialog.js",
-    "controls/settings_slider.js",
-    "controls/settings_textarea.js",
-    "people_page/signout_dialog.js",
-    "people_page/sync_account_control.js",
-    "people_page/sync_controls.js",
-    "people_page/sync_encryption_options.js",
-    "people_page/sync_page.js",
-    "privacy_page/personalization_options.js",
-    "privacy_page/secure_dns_input.js",
-    "privacy_page/secure_dns.js",
-    "settings_page/settings_animated_pages.js",
-    "settings_page/settings_section.js",
-    "site_favicon.js",
-  ]
-
-  # Files that don't have a corresponding HTML file.
-  in_files = [
-    "appearance_page/fonts_browser_proxy.js",
-    "extension_control_browser_proxy.js",
-    "icons.html.js",
-    "people_page/profile_info_browser_proxy.js",
-    "people_page/sync_browser_proxy.js",
-    "prefs/prefs_mixin.js",
-    "privacy_page/autofill_assistant_browser_proxy.js",
-    "privacy_page/privacy_page_browser_proxy.js",
-    "relaunch_mixin.js",
-    "settings_page_styles.css.js",
-    "settings_shared.css.js",
-    "settings_vars.css.js",
-  ]
-
-  foreach(f, browser_settings_web_component_files) {
-    in_files += [
-      f,
-      string_replace(f, ".js", ".html.js"),
-    ]
   }
 }
 
