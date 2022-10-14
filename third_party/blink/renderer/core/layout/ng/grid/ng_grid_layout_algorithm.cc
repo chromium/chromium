@@ -1482,21 +1482,6 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
 
   track_collection->ResetBaselines();
 
-  auto UpdateBaseline = [&](const GridItemData& grid_item,
-                            LayoutUnit candidate_baseline) {
-    // "If a box spans multiple shared alignment contexts, then it participates
-    //  in first/last baseline alignment within its start-most/end-most shared
-    //  alignment context along that axis"
-    // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
-    if (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor) {
-      track_collection->SetMajorBaseline(
-          grid_item.SetIndices(track_direction).begin, candidate_baseline);
-    } else {
-      track_collection->SetMinorBaseline(
-          grid_item.SetIndices(track_direction).end - 1, candidate_baseline);
-    }
-  };
-
   for (auto& grid_item : *grid_items) {
     if (!grid_item.IsBaselineSpecifiedForDirection(track_direction))
       continue;
@@ -1531,21 +1516,27 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
         !baseline_fragment.FirstBaseline().has_value();
     grid_item.SetAlignmentFallback(track_direction, has_synthesized_baseline);
 
+    if (!grid_item.IsBaselineAlignedForDirection(track_direction))
+      continue;
+
     const auto margins =
         ComputeMarginsFor(space, item_style, baseline_writing_direction);
     const bool is_last_baseline =
         grid_item.IsLastBaselineSpecifiedForDirection(track_direction);
-
-    LayoutUnit baseline =
+    const LayoutUnit baseline =
         (is_last_baseline ? margins.block_end : margins.block_start) +
         GetLogicalBaseline(baseline_fragment, is_last_baseline);
 
-    // TODO(kschmi): The IsReplaced() check here is a bit strange, but is
-    // necessary to pass some of the tests. Follow-up to see if there's
-    // a better solution.
-    if (grid_item.IsBaselineAlignedForDirection(track_direction) ||
-        grid_item.node.IsReplaced()) {
-      UpdateBaseline(grid_item, baseline);
+    // "If a box spans multiple shared alignment contexts, then it participates
+    //  in first/last baseline alignment within its start-most/end-most shared
+    //  alignment context along that axis"
+    // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
+    if (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor) {
+      track_collection->SetMajorBaseline(
+          grid_item.SetIndices(track_direction).begin, baseline);
+    } else {
+      track_collection->SetMinorBaseline(
+          grid_item.SetIndices(track_direction).end - 1, baseline);
     }
   }
 }
