@@ -14,8 +14,6 @@ features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome.*
 items:
 - caption: Battery Saver Mode will be disabled.
   name: Disabled
@@ -36,5 +34,8 @@ schema:
   - 1
   - 2
   type: integer
+supported_on:
+- chrome.*:108-
+- chrome_os:108-
 tags: []
 type: int-enum

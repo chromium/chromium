@@ -35428,7 +35428,7 @@ This policy has no effect if the option to keep existing browsing data is not av
       'caption': 'Enable High Efficiency Mode',
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'future_on': ['chrome.*' ],
+      'supported_on': [ 'chrome.*:108-', 'chrome_os:108-', ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -35464,7 +35464,7 @@ This policy has no effect if the option to keep existing browsing data is not av
         'type': 'integer',
         'enum': [ 0, 1, 2 ],
       },
-      'future_on': ['chrome.*' ],
+      'supported_on': [ 'chrome.*:108-', 'chrome_os:108-', ],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -35508,7 +35508,7 @@ This policy has no effect if the option to keep existing browsing data is not av
         'type': 'array',
         'items': { 'type': 'string' }
       },
-      'future_on': ['chrome.*' ],
+      'supported_on': [ 'chrome.*:108-', 'chrome_os:108-', ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
