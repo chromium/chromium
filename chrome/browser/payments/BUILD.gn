@@ -10,6 +10,7 @@ source_set("browser_tests") {
   sources = [
     "abort_payment_handler_browsertest.cc",
     "android_payment_app_factory_browsertest.cc",
+    "can_make_payment_event_fields_browsertest.cc",
     "colocated_payment_manifests_browsertest.cc",
     "empty_parameters_browsertest.cc",
     "has_enrolled_instrument_browsertest.cc",
