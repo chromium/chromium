@@ -19,10 +19,8 @@
 #include "chrome/browser/ash/login/saml/public_saml_url_fetcher.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-#include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/chromeos/login/online_login_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/saml_challenge_key_handler.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/components/security_token_pin/constants.h"
 #include "components/user_manager/user_type.h"
 #include "net/base/net_errors.h"
@@ -37,7 +35,7 @@ class ElapsedTimer;
 
 namespace network {
 class NSSTempCertsCacheChromeOS;
-}
+}  // namespace network
 
 namespace chromeos {
 class SigninScreenHandler;
@@ -120,8 +118,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
     FRAME_STATE_ERROR
   };
 
-  explicit GaiaScreenHandler(
-      const scoped_refptr<NetworkStateInformer>& network_state_informer);
+  GaiaScreenHandler();
 
   GaiaScreenHandler(const GaiaScreenHandler&) = delete;
   GaiaScreenHandler& operator=(const GaiaScreenHandler&) = delete;
@@ -275,8 +272,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // extension reloading, if it has already been loaded.
   void LoadAuthExtension(bool force);
 
-  // TODO(antrim): GaiaScreenHandler should implement
-  // NetworkStateInformer::Observer.
+  // Remainder of NetworkStateInformerObserver. This function will be moved to
+  // GaiaScreen.
   void UpdateState(NetworkError::ErrorReason reason);
 
   // TODO(antrim): remove this dependency.
@@ -319,9 +316,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // Latest Gaia frame error.
   net::Error frame_error_ = net::OK;
 
-  // Network state informer used to keep signin screen up.
-  scoped_refptr<NetworkStateInformer> network_state_informer_;
-
   // Account to pre-populate with.
   AccountId populated_account_id_;
 
@@ -360,9 +354,6 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // TODO(antrim): GaiaScreenHandler shouldn't communicate with
   // signin_screen_handler directly.
   SigninScreenHandler* signin_screen_handler_ = nullptr;
-
-  // True if the authentication extension is still loading.
-  bool auth_extension_being_loaded_ = false;
 
   // Makes untrusted authority certificates from device policy available for
   // client certificate discovery.

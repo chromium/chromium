@@ -324,12 +324,7 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
 
 }  // namespace
 
-GaiaScreenHandler::GaiaScreenHandler(
-    const scoped_refptr<NetworkStateInformer>& network_state_informer)
-    : BaseScreenHandler(kScreenId),
-      network_state_informer_(network_state_informer) {
-  DCHECK(network_state_informer_.get());
-}
+GaiaScreenHandler::GaiaScreenHandler() : BaseScreenHandler(kScreenId) {}
 
 GaiaScreenHandler::~GaiaScreenHandler() {
   if (is_security_token_pin_enabled_)
@@ -563,7 +558,6 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
 
   was_security_token_pin_canceled_ = false;
 
-  frame_state_ = FRAME_STATE_LOADING;
   CallExternalAPI("loadAuthExtension", std::move(params));
 }
 
@@ -572,7 +566,8 @@ void GaiaScreenHandler::ReloadGaia(bool force_reload) {
     VLOG(1) << "Skipping reloading of Gaia since gaia is loading.";
     return;
   }
-  NetworkStateInformer::State state = network_state_informer_->state();
+  const NetworkStateInformer::State state =
+      signin_screen_handler_->GetNetworkStateInformerStateForMigration();
   if (state != NetworkStateInformer::ONLINE &&
       !signin_screen_handler_->proxy_auth_dialog_need_reload_) {
     VLOG(1) << "Skipping reloading of Gaia since network state=" << state;
@@ -581,7 +576,6 @@ void GaiaScreenHandler::ReloadGaia(bool force_reload) {
 
   signin_screen_handler_->proxy_auth_dialog_need_reload_ = false;
   VLOG(1) << "Reloading Gaia.";
-  frame_state_ = FRAME_STATE_LOADING;
   LoadAuthExtension(force_reload);
 }
 
@@ -688,7 +682,6 @@ void GaiaScreenHandler::HandleIdentifierEntered(const std::string& user_email) {
 
 void GaiaScreenHandler::HandleAuthExtensionLoaded() {
   VLOG(1) << "Auth extension finished loading";
-  auth_extension_being_loaded_ = false;
   // Recreate the client cert usage observer, in order to track only the certs
   // used during the current sign-in attempt.
   extension_provided_client_cert_usage_observer_ =
@@ -926,7 +919,9 @@ void GaiaScreenHandler::HandleGaiaUIReady() {
   frame_error_ = net::OK;
   frame_state_ = FRAME_STATE_LOADED;
 
-  if (network_state_informer_->state() == NetworkStateInformer::ONLINE)
+  const NetworkStateInformer::State state =
+      signin_screen_handler_->GetNetworkStateInformerStateForMigration();
+  if (state == NetworkStateInformer::ONLINE)
     UpdateState(NetworkError::ERROR_REASON_UPDATE);
 
   if (test_expects_complete_login_)
@@ -1198,8 +1193,7 @@ void GaiaScreenHandler::ShowSigninScreenForTest(const std::string& username,
   // reload gaia then follow the loading case.
   if (frame_state() == GaiaScreenHandler::FRAME_STATE_LOADED) {
     SubmitLoginFormForTest();
-  } else if (frame_state() != GaiaScreenHandler::FRAME_STATE_LOADING &&
-             !auth_extension_being_loaded_) {
+  } else if (frame_state() != GaiaScreenHandler::FRAME_STATE_LOADING) {
     LoginDisplayHost::default_host()->ShowGaiaDialog(EmptyAccountId());
   }
 }
@@ -1286,7 +1280,6 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
     return;
   }
 
-  std::string active_network_path = network_state_informer_->network_path();
   if (!untrusted_authority_certs_cache_) {
     // Make additional untrusted authority certificates available for client
     // certificate discovery in case a SAML flow is used which requires a client
@@ -1334,12 +1327,12 @@ void GaiaScreenHandler::ReloadGaiaAuthenticator() {
 
 void GaiaScreenHandler::LoadAuthExtension(bool force) {
   VLOG(1) << "LoadAuthExtension, force: " << force;
-  if (auth_extension_being_loaded_) {
+  if (frame_state_ == FRAME_STATE_LOADING && !force) {
     VLOG(1) << "Skip loading the Auth extension as it's already being loaded";
     return;
   }
 
-  auth_extension_being_loaded_ = true;
+  frame_state_ = FRAME_STATE_LOADING;
   login::GaiaContext context;
   context.force_reload = force;
   context.email = populated_account_id_.GetUserEmail();

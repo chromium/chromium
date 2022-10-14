@@ -345,4 +345,9 @@ net::Error SigninScreenHandler::FrameError() const {
   return gaia_screen_handler_->frame_error();
 }
 
+NetworkStateInformer::State
+SigninScreenHandler::GetNetworkStateInformerStateForMigration() {
+  return network_state_informer_->state();
+}
+
 }  // namespace chromeos
