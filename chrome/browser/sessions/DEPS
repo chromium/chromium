@@ -8,8 +8,4 @@ specific_include_rules = {
     # Tests may depend upon views.
     "+chrome/browser/ui/views",
   ],
-  "session_restore\.cc": [
-    "+ash/shell.h",
-    "+ash/metrics/login_unlock_throughput_recorder.h",
-  ],
 }

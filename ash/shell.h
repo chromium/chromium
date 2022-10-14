@@ -738,10 +738,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   void NotifyShelfAlignmentChanged(aura::Window* root_window,
                                    ShelfAlignment old_alignment);
 
-  LoginUnlockThroughputRecorder* login_unlock_throughput_recorder() {
-    return login_unlock_throughput_recorder_.get();
-  }
-
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtendedDesktopTest, TestCursor);
   FRIEND_TEST_ALL_PREFIXES(WindowManagerTest, MouseEventCursors);

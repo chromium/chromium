@@ -326,9 +326,6 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
     return current_ghost_view_index_;
   }
 
-  void AddAnimationObserver(views::BoundsAnimatorObserver* observer);
-  void RemoveAnimationObserver(views::BoundsAnimatorObserver* observer);
-
  private:
   friend class ShelfViewTestAPI;
 
