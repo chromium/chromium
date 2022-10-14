@@ -145,8 +145,7 @@ void AddContentColors(ui::ColorMixer& mixer,
   mixer[kColorAshTextColorPositive] = {cros_tokens::kColorPositive};
   mixer[kColorAshTextColorURL] = {cros_tokens::kColorProminent};
   mixer[kColorAshIconColorPrimary] = {kColorAshTextColorPrimary};
-  // TODO(skau): Figure out if this should be kColorSecondary instead.
-  mixer[kColorAshIconColorSecondary] = {cros_tokens::kColorDisabledDark};
+  mixer[kColorAshIconColorSecondary] = {cros_tokens::kColorSecondary};
   mixer[kColorAshIconColorAlert] = {kColorAshTextColorAlert};
   mixer[kColorAshIconColorWarning] = {kColorAshTextColorWarning};
   mixer[kColorAshIconColorPositive] = {kColorAshTextColorPositive};
