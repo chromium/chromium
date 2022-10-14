@@ -30,6 +30,11 @@ namespace safe_browsing {
 
 namespace {
 
+// The version of this client supporting tailored warnings.
+// Please update the description of TailoredInfo field in csd.proto when
+// changing this value.
+constexpr int kTailoredWarningVersion = 1;
+
 DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
     content::WebContents* web_contents) {
   DownloadRequestMaker::TabUrls result;
@@ -162,6 +167,8 @@ void DownloadRequestMaker::Start(DownloadRequestMaker::Callback callback) {
   request_->set_locale(g_browser_process->GetApplicationLocale());
   request_->set_file_basename(target_file_path_.BaseName().AsUTF8Unsafe());
 
+  PopulateTailoredInfo();
+
   file_analyzer_->Start(
       target_file_path_, full_path_,
       base::BindOnce(&DownloadRequestMaker::OnFileFeatureExtractionDone,
@@ -254,6 +261,12 @@ void DownloadRequestMaker::OnGotTabRedirects(
   }
 
   std::move(callback_).Run(std::move(request_));
+}
+
+void DownloadRequestMaker::PopulateTailoredInfo() {
+  ClientDownloadRequest::TailoredInfo tailored_info;
+  tailored_info.set_version(kTailoredWarningVersion);
+  *request_->mutable_tailored_info() = tailored_info;
 }
 
 }  // namespace safe_browsing

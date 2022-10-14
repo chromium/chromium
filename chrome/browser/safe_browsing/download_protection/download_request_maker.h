@@ -74,6 +74,9 @@ class DownloadRequestMaker {
   // Callback when the history service has retrieved the tab redirects.
   void OnGotTabRedirects(history::RedirectList redirect_list);
 
+  // Populates the tailored info field for tailored warnings.
+  void PopulateTailoredInfo();
+
   raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<ClientDownloadRequest> request_;
   const scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
