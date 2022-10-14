@@ -27,16 +27,30 @@ export class FileMetadataFormatter extends EventTarget {
    */
   setDateTimeFormat(use12hourClock) {
     const locale = util.getCurrentLocaleOrDefault();
-    this.timeFormatter_ = new Intl.DateTimeFormat(
-        locale, {hour: 'numeric', minute: 'numeric', hour12: use12hourClock});
-    this.dateFormatter_ = new Intl.DateTimeFormat(locale, {
+    const options = {
+      hour: 'numeric',
+      minute: 'numeric',
+    };
+    if (use12hourClock) {
+      options['hour12'] = true;
+    } else {
+      options['hourCycle'] = 'h23';
+    }
+    this.timeFormatter_ = new Intl.DateTimeFormat(locale, options);
+    const dateOptions = {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: 'numeric',
       minute: 'numeric',
-      hour12: use12hourClock,
-    });
+    };
+    if (use12hourClock) {
+      dateOptions['hour12'] = true;
+    } else {
+      dateOptions['hourCycle'] = 'h23';
+    }
+
+    this.dateFormatter_ = new Intl.DateTimeFormat(locale, dateOptions);
     dispatchSimpleEvent(this, 'date-time-format-changed');
   }
 
