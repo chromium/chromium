@@ -19,6 +19,7 @@
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/metrics/website_metrics_service_lacros.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
@@ -633,6 +634,13 @@ void AppServiceProxyLacros::Initialize() {
   content::URLDataSource::Add(profile_,
                               std::make_unique<apps::AppIconSource>(profile_));
 
+  if (!profile_->AsTestingProfile()) {
+    metrics_service_ = std::make_unique<WebsiteMetricsServiceLacros>();
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&AppServiceProxyLacros::InitWebsiteMetrics,
+                                  weak_ptr_factory_.GetWeakPtr()));
+  }
+
   auto* service = chromeos::LacrosService::Get();
 
   if (!service || !service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
@@ -702,6 +710,12 @@ void AppServiceProxyLacros::ProxyLaunch(
     return;
   }
   remote_crosapi_app_service_proxy_->Launch(std::move(params));
+}
+
+void AppServiceProxyLacros::InitWebsiteMetrics() {
+  if (metrics_service_) {
+    metrics_service_->Start();
+  }
 }
 
 }  // namespace apps

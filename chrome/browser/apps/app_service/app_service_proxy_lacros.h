@@ -53,6 +53,7 @@ namespace apps {
 
 class BrowserAppInstanceForwarder;
 class BrowserAppInstanceTracker;
+class WebsiteMetricsServiceLacros;
 
 struct AppLaunchParams;
 
@@ -380,6 +381,8 @@ class AppServiceProxyLacros : public KeyedService,
   // special handling.
   void ProxyLaunch(crosapi::mojom::LaunchParamsPtr params);
 
+  void InitWebsiteMetrics();
+
   apps::AppRegistryCache app_registry_cache_;
   apps::AppCapabilityAccessCache app_capability_access_cache_;
 
@@ -415,6 +418,8 @@ class AppServiceProxyLacros : public KeyedService,
   raw_ptr<crosapi::mojom::AppServiceProxy> remote_crosapi_app_service_proxy_ =
       nullptr;
   int crosapi_app_service_proxy_version_ = 0;
+
+  std::unique_ptr<apps::WebsiteMetricsServiceLacros> metrics_service_;
 
   base::WeakPtrFactory<AppServiceProxyLacros> weak_ptr_factory_{this};
 
