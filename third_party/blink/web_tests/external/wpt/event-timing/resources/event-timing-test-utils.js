@@ -81,17 +81,15 @@ function waitForTick() {
   // attempt to check that the duration is appropriately checked by:
   // * Asserting that entries received have a duration which is the smallest multiple of 8
   //   that is greater than or equal to |dur|.
-  // * Issuing |numEntries| entries that are fast, of duration |slowDur|.
-  // * Issuing |numEntries| entries that are slow, of duration |fastDur|.
-  // * Asserting that at least |numEntries| entries are received (at least the slow ones).
+  // * Issuing |numEntries| entries that has duration greater than |slowDur|.
+  // * Asserting that exactly |numEntries| entries are received.
   // Parameters:
   // |t|          - the test harness.
   // |dur|        - the durationThreshold for the PerformanceObserver.
   // |id|         - the ID of the element to be clicked.
-  // |numEntries| - the number of slow and number of fast entries.
+  // |numEntries| - the number of entries.
   // |slowDur|    - the min duration of a slow entry.
-  // |fastDur|    - the min duration of a fast entry.
-async function testDuration(t, id, numEntries, dur, fastDur, slowDur) {
+async function testDuration(t, id, numEntries, dur, slowDur) {
   assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported.');
   const observerPromise = new Promise(async resolve => {
     let minDuration = Math.ceil(dur / 8) * 8;
@@ -106,23 +104,16 @@ async function testDuration(t, id, numEntries, dur, fastDur, slowDur) {
         });
       });
       numEntriesReceived += pointerDowns.length;
-      // Note that we may receive more entries if the 'fast' click events turn out slower
-      // than expected.
-      if (numEntriesReceived >= numEntries)
+      // All the entries should be received since the slowDur is higher
+      // than the duration threshold.
+      if (numEntriesReceived === numEntries)
         resolve();
     }).observe({type: "event", durationThreshold: dur});
   });
   const clicksPromise = new Promise(async resolve => {
     for (let index = 0; index < numEntries; index++) {
-      // Add some fast click events.
+      // Add some click events that has at least slowDur for duration.
       await clickOnElementAndDelay(id, slowDur);
-      // Add some slow click events.
-      if (fastDur > 0) {
-        await clickOnElementAndDelay(id, fastDur);
-      } else {
-        // We can just directly call test_driver when |fastDur| is 0.
-        await test_driver.click(document.getElementById(id));
-      }
     }
     resolve();
   });
