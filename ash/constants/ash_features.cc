@@ -1481,6 +1481,12 @@ BASE_FEATURE(kOsSettingsAppNotificationsPage,
              "OsSettingsAppNotificationsPage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables app badging toggle to be displayed in app notification page in
+// ChromeOS Settings.
+BASE_FEATURE(kOsSettingsAppBadgingToggle,
+             "OsSettingsAppBadgingToggle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables search result feedback in ChromeOS Settings when no search results
 // are returned.
 BASE_FEATURE(kOsSettingsSearchFeedback,
@@ -2772,6 +2778,10 @@ bool IsOobeRemoveShutdownButtonEnabled() {
 
 bool IsOobeThemeSelectionEnabled() {
   return base::FeatureList::IsEnabled(kEnableOobeThemeSelection);
+}
+
+bool IsOsSettingsAppBadgingToggleEnabled() {
+  return base::FeatureList::IsEnabled(kOsSettingsAppBadgingToggle);
 }
 
 bool IsOsSettingsSearchFeedbackEnabled() {

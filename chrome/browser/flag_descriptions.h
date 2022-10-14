@@ -3409,6 +3409,9 @@ extern const char kNearbySharingWifiLanDescription[];
 extern const char kOobeHidDetectionRevampName[];
 extern const char kOobeHidDetectionRevampDescription[];
 
+extern const char kOsSettingsAppBadgingToggleName[];
+extern const char kOsSettingsAppBadgingToggleDescription[];
+
 extern const char kOsSettingsSearchFeedbackName[];
 extern const char kOsSettingsSearchFeedbackDescription[];
 

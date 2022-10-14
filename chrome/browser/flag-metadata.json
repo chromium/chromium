@@ -5318,6 +5318,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "os-settings-app-badging-toggle",
+    "owners": [ "wesokuhara", "cros-settings@google.com" ],
+    "expiry_milestone": 116
+  },
+  {
     "name": "os-settings-app-notifications-page",
     "owners": ["hsuregan"],
     "expiry_milestone": 99

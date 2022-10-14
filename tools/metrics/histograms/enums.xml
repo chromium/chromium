@@ -57885,6 +57885,7 @@ from previous Chrome versions.
   <int value="-1438279809" label="GamepadExtensions:disabled"/>
   <int value="-1437526584" label="HelpAppReleaseNotes:enabled"/>
   <int value="-1436892902" label="FastPairSavedDevices:disabled"/>
+  <int value="-1436885151" label="OsSettingsAppBadgingToggle:disabled"/>
   <int value="-1436251034" label="VoiceSearchOnLocalNtp:disabled"/>
   <int value="-1435804236" label="ThrottleIntersectionObserverUMA:enabled"/>
   <int value="-1433719718" label="enable-webrtc-stun-origin"/>
@@ -58278,6 +58279,7 @@ from previous Chrome versions.
   <int value="-1222159993"
       label="HappinessTrackingSurveysForDesktopSettings:enabled"/>
   <int value="-1222106729" label="ArcNearbyShareFuseBox:enabled"/>
+  <int value="-1221040370" label="OsSettingsAppBadgingToggle:enabled"/>
   <int value="-1220675698" label="OmniboxDeferredKeyboardPopup:enabled"/>
   <int value="-1219547098" label="SearchWebInSidePanel:disabled"/>
   <int value="-1218608640" label="disable-offline-load-stale-cache"/>

@@ -5962,6 +5962,12 @@ const char kOobeHidDetectionRevampDescription[] =
     "Enables the ChromeOS HID Detection Revamp, which updates OOBE HID "
     "detection screen UI and related infrastructure.";
 
+const char kOsSettingsAppBadgingToggleName[] =
+    "ChromeOS Settings App Badging Toggle";
+const char kOsSettingsAppBadgingToggleDescription[] =
+    "Enables app badging toggle to be displayed in app notification page in"
+    "ChromeOS Settings.";
+
 const char kOsSettingsSearchFeedbackName[] =
     "ChromeOS Settings Search Feedback";
 const char kOsSettingsSearchFeedbackDescription[] =
