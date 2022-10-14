@@ -8,8 +8,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.AttributeSet;
 
 import androidx.annotation.NonNull;
@@ -122,7 +120,6 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
      */
     public void setConstraintsSupplier(ObservableSupplier<Integer> constraintsSupplier) {
         assert mConstraintsChecker == null;
-        mConstraintsChecker = new ConstraintsChecker(
-                getResourceAdapter(), constraintsSupplier, new Handler(Looper.getMainLooper()));
+        mConstraintsChecker = new ConstraintsChecker(getResourceAdapter(), constraintsSupplier);
     }
 }

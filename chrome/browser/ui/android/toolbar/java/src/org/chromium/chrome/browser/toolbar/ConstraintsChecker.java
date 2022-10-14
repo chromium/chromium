@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import android.os.Handler;
-
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
@@ -21,19 +19,15 @@ public class ConstraintsChecker implements Callback<Integer> {
     private final ViewResourceAdapter mViewResourceAdapter;
     @NonNull
     private final ObservableSupplier<Integer> mConstraintsSupplier;
-    @NonNull
-    private final Handler mHandler;
 
     /**
      * @param viewResourceAdapter The target to notify when a capture is needed.
      * @param constraintsSupplier The underlying supplier for the state of constraints.
-     * @param handler Handler to post deferred tasks to.
      */
     public ConstraintsChecker(@NonNull ViewResourceAdapter viewResourceAdapter,
-            @NonNull ObservableSupplier<Integer> constraintsSupplier, @NonNull Handler handler) {
+            @NonNull ObservableSupplier<Integer> constraintsSupplier) {
         mViewResourceAdapter = viewResourceAdapter;
         mConstraintsSupplier = constraintsSupplier;
-        mHandler = handler;
     }
 
     /**
@@ -59,7 +53,7 @@ public class ConstraintsChecker implements Callback<Integer> {
     public void onResult(Integer result) {
         if (!areControlsLocked()) {
             mConstraintsSupplier.removeObserver(this);
-            mHandler.post(() -> mViewResourceAdapter.onResourceRequested());
+            mViewResourceAdapter.onResourceRequested();
         }
     }
 }
