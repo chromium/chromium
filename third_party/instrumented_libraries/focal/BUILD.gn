@@ -239,6 +239,10 @@ instrumented_library("libatk-bridge2.0-0") {
 instrumented_library("libatspi2.0-0") {
   build_method = "meson"
   extra_configure_flags = [ "-Dintrospection=no" ]
+  package_cflags = [
+    "-Wno-incompatible-function-pointer-types",
+    "-Wno-implicit-function-declaration",
+  ]
 }
 
 instrumented_library("libavahi-client3") {
@@ -440,6 +444,7 @@ instrumented_library("libglib2.0-0") {
   ]
   msan_ignorelist = "ignorelists/msan/libglib2.0-0.txt"
   pre_build = "scripts/pre-build/libglib2.0-0.sh"
+  package_cflags = [ "-Wno-int-conversion" ]
 }
 
 instrumented_library("libgnutls30") {
@@ -474,7 +479,11 @@ instrumented_library("libgpg-error0") {
 }
 
 instrumented_library("libgtk-3-0") {
-  package_cflags = [ "-Wno-return-type" ]
+  package_cflags = [
+    "-Wno-implicit-function-declaration",
+    "-Wno-int-conversion",
+    "-Wno-return-type",
+  ]
   extra_configure_flags = [
     "--disable-static",
     "--disable-introspection",
@@ -536,7 +545,7 @@ instrumented_library("libldap-2.4-2") {
     "--enable-local",
     "--with-subdir=ldap",
     "--with-cyrus-sasl",
-    "--with-threads",
+    "--without-threads",
     "--with-gssapi",
     "--with-tls=gnutls",
     "--with-odbc=unixodbc",
@@ -545,6 +554,11 @@ instrumented_library("libldap-2.4-2") {
   # Debian adds a custom patch that adds @VERSION_OPTION@, which must
   # be substituted before building.
   pre_build = "scripts/pre-build/dh_autoreconf.sh"
+
+  package_cflags = [
+    "-Wno-implicit-function-declaration",
+    "-Wno-implicit-int",
+  ]
 }
 
 instrumented_library("libnspr4") {
@@ -610,7 +624,10 @@ instrumented_library("librtmp1") {
 instrumented_library("libsasl2-2") {
   build_method = "debian"
   pre_build = "scripts/pre-build/libsasl2-2.sh"
-  package_cflags = [ "-Wno-return-type" ]
+  package_cflags = [
+    "-Wno-implicit-function-declaration",
+    "-Wno-return-type",
+  ]
 }
 
 instrumented_library("libsecret") {
@@ -644,6 +661,7 @@ instrumented_library("libtasn1-6") {
 instrumented_library("libunity9") {
   extra_configure_flags = [ "--disable-static" ]
   pre_build = "scripts/pre-build/autogen.sh"
+  package_cflags = [ "-Wno-incompatible-function-pointer-types" ]
 }
 
 instrumented_library("libva2") {

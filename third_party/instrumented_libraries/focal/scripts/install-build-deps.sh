@@ -40,6 +40,7 @@ graphite2 \
 gtk+3.0 \
 ido \
 jasper-initramfs \
+libappindicator3-1 \
 libcap2 \
 libdbusmenu \
 libdbusmenu-gtk3-dev \
@@ -48,9 +49,10 @@ libgpg-error \
 libidn \
 libindicator \
 libjpeg-turbo \
+libldap-2.4-2 \
 libmicrohttpd \
 libpng1.6 \
-libsasl2-dev \
+libsasl2-2 \
 libunity \
 libx11 \
 libxau \
