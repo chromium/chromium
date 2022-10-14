@@ -16,8 +16,10 @@ namespace blink {
 RTCEncodedAudioUnderlyingSink::RTCEncodedAudioUnderlyingSink(
     ScriptState* script_state,
     scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
-        transformer_broker)
-    : transformer_broker_(std::move(transformer_broker)) {
+        transformer_broker,
+    webrtc::TransformableFrameInterface::Direction expected_direction)
+    : transformer_broker_(std::move(transformer_broker)),
+      expected_direction_(expected_direction) {
   DCHECK(transformer_broker_);
 }
 
@@ -53,6 +55,12 @@ ScriptPromise RTCEncodedAudioUnderlyingSink::write(
   if (!webrtc_frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Empty frame");
+    return ScriptPromise();
+  }
+
+  if (webrtc_frame->GetDirection() != expected_direction_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Invalid frame");
     return ScriptPromise();
   }
 

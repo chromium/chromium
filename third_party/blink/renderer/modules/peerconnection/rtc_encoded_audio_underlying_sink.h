@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
+#include "third_party/webrtc/api/frame_transformer_interface.h"
 
 namespace blink {
 
@@ -20,7 +21,8 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSink final
  public:
   RTCEncodedAudioUnderlyingSink(
       ScriptState*,
-      scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>);
+      scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>,
+      webrtc::TransformableFrameInterface::Direction);
 
   // UnderlyingSinkBase
   ScriptPromise start(ScriptState*,
@@ -40,6 +42,7 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSink final
  private:
   scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
       transformer_broker_;
+  webrtc::TransformableFrameInterface::Direction expected_direction_;
   THREAD_CHECKER(thread_checker_);
 };
 

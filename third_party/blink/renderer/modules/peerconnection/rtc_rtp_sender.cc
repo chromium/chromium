@@ -900,7 +900,8 @@ void RTCRtpSender::InitializeEncodedAudioStreams(ScriptState* script_state) {
     // Set up writable.
     audio_to_packetizer_underlying_sink_ =
         MakeGarbageCollected<RTCEncodedAudioUnderlyingSink>(
-            script_state, encoded_audio_transformer_);
+            script_state, encoded_audio_transformer_,
+            webrtc::TransformableFrameInterface::Direction::kSender);
 
     auto set_underlying_sink =
         WTF::CrossThreadBindOnce(&RTCRtpSender::SetAudioUnderlyingSink,

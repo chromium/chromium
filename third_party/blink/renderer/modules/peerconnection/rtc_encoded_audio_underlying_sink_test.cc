@@ -11,19 +11,26 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
+#include "third_party/blink/renderer/modules/peerconnection/testing/mock_transformable_audio_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 using testing::_;
+using testing::NiceMock;
+using testing::Return;
 
 namespace blink {
 
@@ -71,16 +78,27 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
     EXPECT_FALSE(transformer_.HasTransformedFrameCallback());
   }
 
-  RTCEncodedAudioUnderlyingSink* CreateSink(ScriptState* script_state) {
+  RTCEncodedAudioUnderlyingSink* CreateSink(
+      ScriptState* script_state,
+      webrtc::TransformableFrameInterface::Direction expected_direction =
+          webrtc::TransformableFrameInterface::Direction::kSender) {
     return MakeGarbageCollected<RTCEncodedAudioUnderlyingSink>(
-        script_state, transformer_.GetBroker());
+        script_state, transformer_.GetBroker(), expected_direction);
   }
 
   RTCEncodedAudioStreamTransformer* GetTransformer() { return &transformer_; }
 
-  ScriptValue CreateEncodedAudioFrameChunk(ScriptState* script_state) {
-    RTCEncodedAudioFrame* frame = MakeGarbageCollected<RTCEncodedAudioFrame>(
-        std::make_unique<FakeAudioFrame>());
+  ScriptValue CreateEncodedAudioFrameChunk(
+      ScriptState* script_state,
+      webrtc::TransformableFrameInterface::Direction direction =
+          webrtc::TransformableFrameInterface::Direction::kSender) {
+    auto mock_frame = std::make_unique<NiceMock<MockTransformableAudioFrame>>();
+    ON_CALL(*mock_frame.get(), GetDirection).WillByDefault(Return(direction));
+    std::unique_ptr<webrtc::TransformableAudioFrameInterface> audio_frame =
+        base::WrapUnique(static_cast<webrtc::TransformableAudioFrameInterface*>(
+            mock_frame.release()));
+    RTCEncodedAudioFrame* frame =
+        MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(audio_frame));
     return ScriptValue(
         script_state->GetIsolate(),
         ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)
@@ -136,6 +154,23 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteInvalidDataFails) {
   // should fail.
   DummyExceptionStateForTesting dummy_exception_state;
   sink->write(script_state, v8_integer, nullptr, dummy_exception_state);
+  EXPECT_TRUE(dummy_exception_state.HadException());
+}
+
+TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteInvalidDirectionFails) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* sink = CreateSink(
+      script_state, webrtc::TransformableFrameInterface::Direction::kSender);
+
+  // Write an encoded chunk with direction set to Receiver should fail as it
+  // doesn't match the expected direction of our sink.
+  DummyExceptionStateForTesting dummy_exception_state;
+  sink->write(script_state,
+              CreateEncodedAudioFrameChunk(
+                  script_state,
+                  webrtc::TransformableFrameInterface::Direction::kReceiver),
+              nullptr, dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
 }
 
