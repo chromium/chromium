@@ -32,17 +32,17 @@ class DevToolsTrustTokenBrowsertest : public DevToolsProtocolTest,
   }
 
   // The returned view is only valid until the next |SendCommand| call.
-  base::Value::ConstListView GetTrustTokensViaProtocol() {
+  const base::Value::List& GetTrustTokensViaProtocol() {
     SendCommandSync("Storage.getTrustTokens");
     const base::Value* tokens = result()->Find("tokens");
     CHECK(tokens);
-    return tokens->GetListDeprecated();
+    return tokens->GetList();
   }
 
   // Asserts that CDP reports |count| number of tokens for |issuerOrigin|.
   void AssertTrustTokensViaProtocol(const std::string& issuerOrigin,
                                     int expectedCount) {
-    auto tokens = GetTrustTokensViaProtocol();
+    const base::Value::List& tokens = GetTrustTokensViaProtocol();
     EXPECT_GT(tokens.size(), 0ul);
 
     for (const auto& token : tokens) {
