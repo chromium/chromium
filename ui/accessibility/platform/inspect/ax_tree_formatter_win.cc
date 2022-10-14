@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_tree_formatter_win.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_win.h"
 
 #include <math.h>
 #include <stddef.h>
@@ -20,24 +20,17 @@
 #include "base/values.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/public/browser/ax_inspect_factory.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
+#include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/gfx/win/hwnd_util.h"
 
-namespace content {
+namespace ui {
 
-using ui::AXFormatValue;
-using ui::IAccessible2RoleToString;
-using ui::IAccessible2StateToStringVector;
-using ui::IAccessibleStateToStringVector;
-
-void AccessibilityTreeFormatterWin::AddDefaultFilters(
+void AXTreeFormatterWin::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
   // Too noisy: HOTTRACKED, LINKED, SELECTABLE, IA2_STATE_EDITABLE,
   //            IA2_STATE_OPAQUE, IA2_STATE_SELECTAbLE_TEXT,
@@ -84,22 +77,23 @@ void AccessibilityTreeFormatterWin::AddDefaultFilters(
   AddPropertyFilter(property_filters, "OFFSCREEN", AXPropertyFilter::DENY);
 }
 
-AccessibilityTreeFormatterWin::AccessibilityTreeFormatterWin() {
-  ui::win::CreateATLModuleIfNeeded();
+AXTreeFormatterWin::AXTreeFormatterWin() {
+  win::CreateATLModuleIfNeeded();
 }
 
-AccessibilityTreeFormatterWin::~AccessibilityTreeFormatterWin() {}
+AXTreeFormatterWin::~AXTreeFormatterWin() {}
 
-Microsoft::WRL::ComPtr<IAccessible>
-GetIAObject(ui::AXPlatformNodeDelegate* node, LONG& root_x, LONG& root_y) {
+Microsoft::WRL::ComPtr<IAccessible> GetIAObject(AXPlatformNodeDelegate* node,
+                                                LONG& root_x,
+                                                LONG& root_y) {
   DCHECK(node);
-  ui::AXTreeManager* root_manager = node->GetTreeManager()->GetRootManager();
+  AXTreeManager* root_manager = node->GetTreeManager()->GetRootManager();
   DCHECK(root_manager);
 
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   LONG root_width, root_height;
 
-  HRESULT hr = static_cast<ui::AXPlatformTreeManager*>(root_manager)
+  HRESULT hr = static_cast<AXPlatformTreeManager*>(root_manager)
                    ->RootDelegate()
                    ->GetNativeViewAccessible()
                    ->accLocation(&root_x, &root_y, &root_width, &root_height,
@@ -109,8 +103,8 @@ GetIAObject(ui::AXPlatformNodeDelegate* node, LONG& root_x, LONG& root_y) {
   return node->GetNativeViewAccessible();
 }
 
-base::Value::Dict AccessibilityTreeFormatterWin::BuildNode(
-    ui::AXPlatformNodeDelegate* node) const {
+base::Value::Dict AXTreeFormatterWin::BuildNode(
+    AXPlatformNodeDelegate* node) const {
   LONG root_x = 0, root_y = 0;
   Microsoft::WRL::ComPtr<IAccessible> node_ia =
       GetIAObject(node, root_x, root_y);
@@ -120,8 +114,8 @@ base::Value::Dict AccessibilityTreeFormatterWin::BuildNode(
   return dict;
 }
 
-base::Value::Dict AccessibilityTreeFormatterWin::BuildTree(
-    ui::AXPlatformNodeDelegate* start) const {
+base::Value::Dict AXTreeFormatterWin::BuildTree(
+    AXPlatformNodeDelegate* start) const {
   LONG root_x = 0, root_y = 0;
   Microsoft::WRL::ComPtr<IAccessible> start_ia =
       GetIAObject(start, root_x, root_y);
@@ -131,7 +125,7 @@ base::Value::Dict AccessibilityTreeFormatterWin::BuildTree(
   return dict;
 }
 
-base::Value::Dict AccessibilityTreeFormatterWin::BuildTreeForSelector(
+base::Value::Dict AXTreeFormatterWin::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   base::Value::Dict dict;
 
@@ -156,17 +150,17 @@ base::Value::Dict AccessibilityTreeFormatterWin::BuildTreeForSelector(
   return dict;
 }
 
-void AccessibilityTreeFormatterWin::RecursiveBuildTree(
+void AXTreeFormatterWin::RecursiveBuildTree(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value::Dict* dict,
     LONG root_x,
     LONG root_y) const {
-  ui::AXPlatformNode* platform_node =
-      ui::AXPlatformNode::FromNativeViewAccessible(node.Get());
+  AXPlatformNode* platform_node =
+      AXPlatformNode::FromNativeViewAccessible(node.Get());
 
   bool skipChildren = false;
   if (platform_node) {
-    ui::AXPlatformNodeDelegate* delegate = platform_node->GetDelegate();
+    AXPlatformNodeDelegate* delegate = platform_node->GetDelegate();
     DCHECK(delegate);
 
     if (!ShouldDumpNode(*delegate))
@@ -181,7 +175,7 @@ void AccessibilityTreeFormatterWin::RecursiveBuildTree(
     return;
 
   base::Value::List child_list;
-  for (const ui::MSAAChild& msaa_child : ui::MSAAChildren(node)) {
+  for (const MSAAChild& msaa_child : MSAAChildren(node)) {
     base::Value::Dict child_dict;
 
     Microsoft::WRL::ComPtr<IAccessible> child = msaa_child.AsIAccessible();
@@ -255,7 +249,7 @@ const char* const ALL_ATTRIBUTES[] = {
     "ia2_table_cell_row_index",
 };
 
-void AccessibilityTreeFormatterWin::AddProperties(
+void AXTreeFormatterWin::AddProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value::Dict* dict,
     LONG root_x,
@@ -280,7 +274,7 @@ std::u16string RoleVariantToString(const base::win::ScopedVariant& role) {
   return std::u16string();
 }
 
-void AccessibilityTreeFormatterWin::AddMSAAProperties(
+void AXTreeFormatterWin::AddMSAAProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value::Dict* dict,
     LONG root_x,
@@ -380,13 +374,12 @@ void AccessibilityTreeFormatterWin::AddMSAAProperties(
   }
 }
 
-void AccessibilityTreeFormatterWin::AddSimpleDOMNodeProperties(
+void AXTreeFormatterWin::AddSimpleDOMNodeProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<ISimpleDOMNode> simple_dom_node;
 
-  if (S_OK !=
-      ui::IA2QueryInterface<ISimpleDOMNode>(node.Get(), &simple_dom_node))
+  if (S_OK != IA2QueryInterface<ISimpleDOMNode>(node.Get(), &simple_dom_node))
     return;
 
   base::win::ScopedBstr bstr;
@@ -396,11 +389,11 @@ void AccessibilityTreeFormatterWin::AddSimpleDOMNodeProperties(
   bstr.Reset();
 }
 
-bool AccessibilityTreeFormatterWin::AddIA2Properties(
+bool AXTreeFormatterWin::AddIA2Properties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IAccessible2> ia2;
-  if (S_OK != ui::IA2QueryInterface<IAccessible2>(node.Get(), &ia2))
+  if (S_OK != IA2QueryInterface<IAccessible2>(node.Get(), &ia2))
     return false;
 
   LONG ia2_role = 0;
@@ -469,11 +462,11 @@ bool AccessibilityTreeFormatterWin::AddIA2Properties(
   return true;
 }
 
-void AccessibilityTreeFormatterWin::AddIA2ActionProperties(
+void AXTreeFormatterWin::AddIA2ActionProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleAction> ia2action;
-  if (S_OK != ui::IA2QueryInterface<IAccessibleAction>(node.Get(), &ia2action))
+  if (S_OK != IA2QueryInterface<IAccessibleAction>(node.Get(), &ia2action))
     return;
 
   // |IAccessibleAction::get_name| returns a localized string.
@@ -484,12 +477,11 @@ void AccessibilityTreeFormatterWin::AddIA2ActionProperties(
   }
 }
 
-void AccessibilityTreeFormatterWin::AddIA2HypertextProperties(
+void AXTreeFormatterWin::AddIA2HypertextProperties(
     Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleHypertext> ia2hyper;
-  if (S_OK !=
-      ui::IA2QueryInterface<IAccessibleHypertext>(node.Get(), &ia2hyper))
+  if (S_OK != IA2QueryInterface<IAccessibleHypertext>(node.Get(), &ia2hyper))
     return;
 
   base::win::ScopedBstr text_bstr;
@@ -507,12 +499,12 @@ void AccessibilityTreeFormatterWin::AddIA2HypertextProperties(
     // Replace all embedded characters with the child indices of the
     // accessibility objects they refer to.
     std::wstring embedded_character = base::UTF16ToWide(
-        std::u16string(1, ui::AXPlatformNodeBase::kEmbeddedCharacter));
+        std::u16string(1, AXPlatformNodeBase::kEmbeddedCharacter));
     size_t character_index = 0;
     size_t hypertext_index = 0;
     while (hypertext_index < ia2_hypertext.length()) {
       if (ia2_hypertext[hypertext_index] !=
-          ui::AXPlatformNodeBase::kEmbeddedCharacter) {
+          AXPlatformNodeBase::kEmbeddedCharacter) {
         ++character_index;
         ++hypertext_index;
         continue;
@@ -553,11 +545,11 @@ void AccessibilityTreeFormatterWin::AddIA2HypertextProperties(
   dict->Set("ia2_hypertext", base::WideToUTF16(ia2_hypertext));
 }
 
-void AccessibilityTreeFormatterWin::AddIA2TableProperties(
+void AXTreeFormatterWin::AddIA2TableProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleTable> ia2table;
-  if (S_OK != ui::IA2QueryInterface<IAccessibleTable>(node.Get(), &ia2table))
+  if (S_OK != IA2QueryInterface<IAccessibleTable>(node.Get(), &ia2table))
     return;  // No IA2Text, we are finished with this node.
 
   LONG table_rows;
@@ -592,11 +584,11 @@ static std::u16string ProcessAccessiblesArray(IUnknown** accessibles,
   return related_accessibles_string + u">";
 }
 
-void AccessibilityTreeFormatterWin::AddIA2TableCellProperties(
+void AXTreeFormatterWin::AddIA2TableCellProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleTableCell> ia2cell;
-  if (S_OK != ui::IA2QueryInterface<IAccessibleTableCell>(node.Get(), &ia2cell))
+  if (S_OK != IA2QueryInterface<IAccessibleTableCell>(node.Get(), &ia2cell))
     return;  // No IA2Text, we are finished with this node.
 
   LONG column_index;
@@ -632,12 +624,12 @@ void AccessibilityTreeFormatterWin::AddIA2TableCellProperties(
   }
 }
 
-void AccessibilityTreeFormatterWin::AddIA2TextProperties(
+void AXTreeFormatterWin::AddIA2TextProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleText> ia2text;
 
-  if (S_OK != ui::IA2QueryInterface<IAccessibleText>(node.Get(), &ia2text))
+  if (S_OK != IA2QueryInterface<IAccessibleText>(node.Get(), &ia2text))
     return;
 
   LONG n_characters;
@@ -700,11 +692,11 @@ void AccessibilityTreeFormatterWin::AddIA2TextProperties(
   dict->Set("text_attributes", std::move(text_attributes));
 }
 
-void AccessibilityTreeFormatterWin::AddIA2ValueProperties(
+void AXTreeFormatterWin::AddIA2ValueProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleValue> ia2value;
-  if (S_OK != ui::IA2QueryInterface<IAccessibleValue>(node.Get(), &ia2value))
+  if (S_OK != IA2QueryInterface<IAccessibleValue>(node.Get(), &ia2value))
     return;  // No IA2Value, we are finished with this node.
 
   base::win::ScopedVariant current_value;
@@ -726,7 +718,7 @@ void AccessibilityTreeFormatterWin::AddIA2ValueProperties(
   }
 }
 
-std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
+std::string AXTreeFormatterWin::ProcessTreeForOutput(
     const base::Value::Dict& dict) const {
   std::string line;
 
@@ -777,15 +769,15 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
   return line;
 }
 
-Microsoft::WRL::ComPtr<IAccessible>
-AccessibilityTreeFormatterWin::FindActiveDocument(IAccessible* root) const {
-  for (const ui::MSAAChild& child : ui::MSAAChildren(root)) {
+Microsoft::WRL::ComPtr<IAccessible> AXTreeFormatterWin::FindActiveDocument(
+    IAccessible* root) const {
+  for (const MSAAChild& child : MSAAChildren(root)) {
     IAccessible* ia = child.AsIAccessible();
     if (!ia)
       continue;
 
     Microsoft::WRL::ComPtr<IAccessible2> ia2;
-    if (FAILED(ui::IA2QueryInterface<IAccessible2>(ia, &ia2)))
+    if (FAILED(IA2QueryInterface<IAccessible2>(ia, &ia2)))
       continue;  // No IA2, we are finished with this node.
 
     LONG role = 0;
@@ -819,4 +811,4 @@ AccessibilityTreeFormatterWin::FindActiveDocument(IAccessible* root) const {
   return nullptr;
 }
 
-}  // namespace content
+}  // namespace ui

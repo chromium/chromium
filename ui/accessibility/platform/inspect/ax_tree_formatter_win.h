@@ -2,28 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_WIN_H_
-#define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_WIN_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_WIN_H_
+#define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_WIN_H_
 
 #include <oleacc.h>
 #include <wrl/client.h>
 
-#include "content/common/content_export.h"
+#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
-namespace content {
+namespace ui {
 
-class CONTENT_EXPORT AccessibilityTreeFormatterWin
-    : public ui::AXTreeFormatterBase {
+class AX_EXPORT AXTreeFormatterWin : public AXTreeFormatterBase {
  public:
-  AccessibilityTreeFormatterWin();
-  ~AccessibilityTreeFormatterWin() override;
+  AXTreeFormatterWin();
+  ~AXTreeFormatterWin() override;
 
-  base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* start) const override;
+  base::Value::Dict BuildTree(AXPlatformNodeDelegate* start) const override;
   base::Value::Dict BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
-  base::Value::Dict BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const override;
 
  protected:
   void AddDefaultFilters(
@@ -67,6 +66,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatterWin
       IAccessible* root) const;
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_WIN_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_WIN_H_

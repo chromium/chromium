@@ -2399,8 +2399,6 @@ source_set("browser") {
 
   if (is_win) {
     sources += [
-      "accessibility/accessibility_tree_formatter_win.cc",
-      "accessibility/accessibility_tree_formatter_win.h",
       "accessibility/browser_accessibility_com_win.cc",
       "accessibility/browser_accessibility_com_win.h",
       "accessibility/browser_accessibility_manager_win.cc",
