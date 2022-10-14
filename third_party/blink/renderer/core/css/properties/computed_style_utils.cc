@@ -1428,28 +1428,58 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   wtf_size_t auto_repeat_insertion_point =
       computed_grid_track_list.auto_repeat_insertion_point;
 
-  // If the element is a grid container, the resolved value is the used value,
-  // specifying track sizes in pixels and expanding the repeat() notation.
   if (is_layout_grid) {
     const auto* grid = ToInterface<LayoutNGGridInterface>(layout_object);
-    OrderedNamedLinesCollectorInGridLayout collector(
-        computed_grid_track_list.ordered_named_grid_lines,
-        computed_grid_track_list.auto_repeat_ordered_named_grid_lines,
-        auto_repeat_insertion_point,
-        grid->AutoRepeatCountForDirection(direction),
-        auto_repeat_track_sizes.size());
-    auto getTrackSize = [&](const LayoutUnit& v) {
-      return ZoomAdjustedPixelValue(v, style);
-    };
-    // Named grid line indices are relative to the explicit grid, but we are
-    // including all tracks. So we need to subtract the number of leading
-    // implicit tracks in order to get the proper line index.
-    int offset = -base::checked_cast<int>(
-        grid->ExplicitGridStartForDirection(direction));
-    PopulateGridTrackList(list, collector,
-                          grid->TrackSizesForComputedStyle(direction),
-                          getTrackSize, offset);
-    return list;
+    if (computed_grid_track_list.IsSubgriddedAxis()) {
+      // If the track list is subgridded, return the word 'subgrid', followed by
+      // the specified named grid lines in brackets. Empty brackets are also
+      // valid.
+      list->Append(
+          *MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kSubgrid));
+
+      wtf_size_t subgrid_line_names_start =
+          grid->ExplicitGridStartForDirection(direction);
+      wtf_size_t subgrid_line_names_end =
+          grid->ExplicitGridEndForDirection(direction);
+      for (wtf_size_t i = subgrid_line_names_start; i <= subgrid_line_names_end;
+           ++i) {
+        auto iter = computed_grid_track_list.ordered_named_grid_lines.find(i);
+
+        cssvalue::CSSBracketedValueList* value_list =
+            MakeGarbageCollected<cssvalue::CSSBracketedValueList>();
+
+        if (iter != computed_grid_track_list.ordered_named_grid_lines.end()) {
+          for (auto named_grid_line : iter->value) {
+            value_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(
+                named_grid_line.line_name));
+          }
+        }
+        list->Append(*value_list);
+      }
+      return list;
+    } else {
+      // If the element is a grid container, the resolved value is the used
+      // value, specifying track sizes in pixels and expanding the repeat()
+      // notation.
+      OrderedNamedLinesCollectorInGridLayout collector(
+          computed_grid_track_list.ordered_named_grid_lines,
+          computed_grid_track_list.auto_repeat_ordered_named_grid_lines,
+          auto_repeat_insertion_point,
+          grid->AutoRepeatCountForDirection(direction),
+          auto_repeat_track_sizes.size());
+      auto getTrackSize = [&](const LayoutUnit& v) {
+        return ZoomAdjustedPixelValue(v, style);
+      };
+      // Named grid line indices are relative to the explicit grid, but we are
+      // including all tracks. So we need to subtract the number of leading
+      // implicit tracks in order to get the proper line index.
+      int offset = -base::checked_cast<int>(
+          grid->ExplicitGridStartForDirection(direction));
+      PopulateGridTrackList(list, collector,
+                            grid->TrackSizesForComputedStyle(direction),
+                            getTrackSize, offset);
+      return list;
+    }
   }
 
   // Otherwise, the resolved value is the computed value, preserving repeat().

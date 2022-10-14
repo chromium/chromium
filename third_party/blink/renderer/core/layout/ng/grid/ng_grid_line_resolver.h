@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_LINE_RESOLVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_LINE_RESOLVER_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/style/computed_grid_track_list.h"
+#include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/core/style/named_grid_lines_map.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -27,12 +29,13 @@ class NGGridLineResolver {
   NGGridLineResolver() = default;
 
   explicit NGGridLineResolver(const ComputedStyle& grid_style)
-      : style_(&grid_style), is_subgrid_line_resolver_(false) {}
+      : style_(&grid_style) {}
 
   // Subgrids need to map named lines from every parent grid. This constructor
   // should be used exclusively by subgrids to differentiate such scenario.
   explicit NGGridLineResolver(const ComputedStyle& grid_style,
-                              const NGGridLineResolver& parent_line_resolver);
+                              const NGGridLineResolver& parent_line_resolver,
+                              GridArea subgrid_area);
 
   wtf_size_t ExplicitGridColumnCount(
       wtf_size_t auto_repeat_columns_count,
@@ -67,20 +70,22 @@ class NGGridLineResolver {
       const GridPosition& position,
       GridPositionSide side,
       wtf_size_t auto_repeat_tracks_count,
-      wtf_size_t subgrid_span_size) const;
+      wtf_size_t subgrid_span_size,
+      bool is_subgridded_to_parent) const;
 
   GridSpan ResolveNamedGridLinePositionAgainstOppositePosition(
       int opposite_line,
       const GridPosition& position,
       wtf_size_t auto_repeat_tracks_count,
       GridPositionSide side,
-      wtf_size_t subgrid_span_size) const;
+      wtf_size_t subgrid_span_size,
+      bool is_subgridded_to_parent) const;
 
-  int ResolveGridPositionFromStyle(const GridPosition& position,
-                                   GridPositionSide side,
-                                   wtf_size_t auto_repeat_tracks_count,
-                                   bool is_subgridded_to_parent,
-                                   wtf_size_t subgrid_span_size) const;
+  int ResolveGridPosition(const GridPosition& position,
+                          GridPositionSide side,
+                          wtf_size_t auto_repeat_tracks_count,
+                          bool is_subgridded_to_parent,
+                          wtf_size_t subgrid_span_size) const;
 
   wtf_size_t ExplicitGridSizeForSide(GridPositionSide side,
                                      wtf_size_t auto_repeat_tracks_count,
@@ -101,10 +106,11 @@ class NGGridLineResolver {
   wtf_size_t SpanSizeFromPositions(const GridPosition& initial_position,
                                    const GridPosition& final_position) const;
 
-  int ResolveNamedGridLinePositionFromStyle(const GridPosition& position,
-                                            GridPositionSide side,
-                                            wtf_size_t auto_repeat_tracks_count,
-                                            wtf_size_t subgrid_span_size) const;
+  int ResolveNamedGridLinePosition(const GridPosition& position,
+                                   GridPositionSide side,
+                                   wtf_size_t auto_repeat_tracks_count,
+                                   wtf_size_t subgrid_span_size,
+                                   bool is_subgridded_to_parent) const;
 
   void InitialAndFinalPositionsFromStyle(
       const ComputedStyle& grid_item_style,
@@ -121,10 +127,13 @@ class NGGridLineResolver {
 
   scoped_refptr<const ComputedStyle> style_;
 
-  bool is_subgrid_line_resolver_ : 1;
+  // TODO(kschmi) remove these, as they will be unnecessary when the rest of
+  // the line resolution work is completed.
+  absl::optional<wtf_size_t> subgrid_column_start_line_;
+  absl::optional<wtf_size_t> subgrid_row_start_line_;
 
-  NamedGridLinesMap column_subgrid_merged_grid_line_names_;
-  NamedGridLinesMap row_subgrid_merged_grid_line_names_;
+  absl::optional<NamedGridLinesMap> column_subgrid_merged_grid_line_names_;
+  absl::optional<NamedGridLinesMap> row_subgrid_merged_grid_line_names_;
 };
 
 }  // namespace blink

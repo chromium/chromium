@@ -1015,9 +1015,8 @@ static void ConvertGridLineNamesList(
     bool is_first_repeat = false) {
   DCHECK(value.IsGridLineNamesValue());
 
-  // TODO(ansollan): Serialize subgrid's empty lines.
   for (auto& named_grid_line_value : To<CSSValueList>(value)) {
-    String named_grid_line =
+    AtomicString named_grid_line =
         To<CSSCustomIdentValue>(*named_grid_line_value).Value();
     NamedGridLinesMap::AddResult result =
         named_grid_lines.insert(named_grid_line, Vector<wtf_size_t>());

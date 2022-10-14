@@ -507,28 +507,29 @@ wtf_size_t NGGridLayoutAlgorithm::BuildGridSizingSubtree(
   const auto& style = node.Style();
 
   bool has_nested_subgrid;
+
   auto& sizing_data = sizing_tree->CreateSizingData(node, parent_sizing_data,
                                                     subgrid_data_in_parent);
   {
+    GridArea subgridded_area_in_parent;
+    if (subgrid_data_in_parent) {
+      subgridded_area_in_parent = subgrid_data_in_parent->resolved_position;
+      if (!subgrid_data_in_parent->is_parallel_with_root_grid) {
+        std::swap(subgridded_area_in_parent.columns,
+                  subgridded_area_in_parent.rows);
+      }
+
+      if (!subgrid_data_in_parent->has_subgridded_columns)
+        subgridded_area_in_parent.columns = GridSpan::IndefiniteGridSpan();
+      if (!subgrid_data_in_parent->has_subgridded_rows)
+        subgridded_area_in_parent.rows = GridSpan::IndefiniteGridSpan();
+    }
+
     // Initialize this grid's placement data.
     auto placement_data =
-        parent_line_resolver ? NGGridPlacementData(style, *parent_line_resolver)
+        parent_line_resolver ? NGGridPlacementData(style, *parent_line_resolver,
+                                                   subgridded_area_in_parent)
                              : NGGridPlacementData(style);
-
-    if (subgrid_data_in_parent) {
-      wtf_size_t column_span_size_in_parent =
-          subgrid_data_in_parent->SpanSize(kForColumns);
-      wtf_size_t row_span_size_in_parent =
-          subgrid_data_in_parent->SpanSize(kForRows);
-
-      if (!subgrid_data_in_parent->is_parallel_with_root_grid)
-        std::swap(column_span_size_in_parent, row_span_size_in_parent);
-
-      if (subgrid_data_in_parent->has_subgridded_columns)
-        placement_data.subgridded_column_span_size = column_span_size_in_parent;
-      if (subgrid_data_in_parent->has_subgridded_rows)
-        placement_data.subgridded_row_span_size = row_span_size_in_parent;
-    }
 
     // TODO(ethavar): Compute automatic repetitions for subgridded axes as
     // described in https://drafts.csswg.org/css-grid-2/#auto-repeat.

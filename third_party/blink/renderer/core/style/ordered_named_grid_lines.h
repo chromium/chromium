@@ -7,13 +7,12 @@
 
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 struct NamedGridLine {
-  explicit NamedGridLine(const String line_name,
+  explicit NamedGridLine(const AtomicString& line_name,
                          bool is_in_repeat = false,
                          bool is_first_repeat = false)
       : line_name(line_name),
@@ -25,9 +24,9 @@ struct NamedGridLine {
            is_first_repeat == other.is_first_repeat;
   }
 
-  String line_name;
-  bool is_in_repeat;
-  bool is_first_repeat;
+  AtomicString line_name;
+  bool is_in_repeat : 1;
+  bool is_first_repeat : 1;
 };
 
 using OrderedNamedGridLines =

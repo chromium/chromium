@@ -22,8 +22,15 @@ struct CORE_EXPORT NGGridPlacementData {
   // Subgrids need to map named lines from every parent grid. This constructor
   // should be used exclusively by subgrids to differentiate such scenario.
   NGGridPlacementData(const ComputedStyle& grid_style,
-                      const NGGridLineResolver& parent_line_resolver)
-      : line_resolver(grid_style, parent_line_resolver) {}
+                      const NGGridLineResolver& parent_line_resolver,
+                      GridArea subgrid_area)
+      : line_resolver(grid_style, parent_line_resolver, subgrid_area),
+        subgridded_column_span_size(subgrid_area.columns.IsTranslatedDefinite()
+                                        ? subgrid_area.SpanSize(kForColumns)
+                                        : kNotFound),
+        subgridded_row_span_size(subgrid_area.rows.IsTranslatedDefinite()
+                                     ? subgrid_area.SpanSize(kForRows)
+                                     : kNotFound) {}
 
   // This constructor only copies inputs to the auto-placement algorithm.
   NGGridPlacementData(const NGGridPlacementData& other)

@@ -28,23 +28,73 @@ static inline String ImplicitNamedGridLineForSide(const String& line_name,
 
 NGGridLineResolver::NGGridLineResolver(
     const ComputedStyle& grid_style,
-    const NGGridLineResolver& parent_line_resolver)
-    : style_(&grid_style), is_subgrid_line_resolver_(true) {
-  column_subgrid_merged_grid_line_names_ =
-      grid_style.GridTemplateColumns().named_grid_lines;
-  row_subgrid_merged_grid_line_names_ =
-      grid_style.GridTemplateRows().named_grid_lines;
+    const NGGridLineResolver& parent_line_resolver,
+    GridArea subgrid_area)
+    : style_(&grid_style),
+      subgrid_column_start_line_(subgrid_area.columns.IsTranslatedDefinite()
+                                     ? subgrid_area.StartLine(kForColumns)
+                                     : 0),
+      subgrid_row_start_line_(subgrid_area.rows.IsTranslatedDefinite()
+                                  ? subgrid_area.StartLine(kForRows)
+                                  : 0),
+      column_subgrid_merged_grid_line_names_(
+          grid_style.GridTemplateColumns().named_grid_lines),
+      row_subgrid_merged_grid_line_names_(
+          grid_style.GridTemplateRows().named_grid_lines) {
+  auto MergeNamedGridLinesWithAncestor = [](NamedGridLinesMap& subgrid_map,
+                                            const NamedGridLinesMap& parent_map,
+                                            GridSpan subgrid_span) -> void {
+    // Update `subgrid_map` to a merged map from a parent grid or subgrid map
+    // (`parent_map`). The map is a key-value store with keys as the line name
+    // and the value as an array of ascending indices.
+    for (auto& pair : parent_map) {
+      Vector<wtf_size_t, 16> merged_list;
+      for (const auto& position : pair.value) {
+        // Filter out parent named lines are are out of the subgrid range. Also
+        // offset entries by `subgrid_start_line` before inserting them into the
+        // merged map so they are all relative to offset 0. These are already in
+        // ascending order so there's no need to sort.
+        if ((position >= subgrid_span.StartLine()) &&
+            (position <=
+             (subgrid_span.StartLine() + subgrid_span.IntegerSpan()))) {
+          merged_list.push_back(position - subgrid_span.StartLine());
+        }
+      }
 
-  // Add the parent grid/subgrid's line numbers to the shared line name set.
-  // TODO(kschmi): Merge/filter these lists.
-  for (const auto& pair :
-       parent_line_resolver.ExplicitNamedLinesMap(kForColumns)) {
-    column_subgrid_merged_grid_line_names_.insert(pair.key, pair.value);
+      // If there's a name collision, merge the values and sort. These are from
+      // the subgrid and not the parent container, so they are already relative
+      // to index 0 and don't need to be offset.
+      const auto& existing_entry = subgrid_map.find(pair.key);
+      if (existing_entry != subgrid_map.end()) {
+        for (auto& value : existing_entry->value)
+          merged_list.push_back(value);
+        std::sort(merged_list.begin(), merged_list.end());
+      }
+
+      // Override the existing subgrid's line names map with the new merged list
+      // for this particular line name entry. If `merged_list` list is empty,
+      // (this can happen when all entries for a particular line name are out
+      // of the subgrid range), erase the entry entirely, as
+      // `NGGridNamedLineCollection` doesn't support named line entries without
+      // values.
+      if (merged_list.empty())
+        subgrid_map.erase(pair.key);
+      else
+        subgrid_map.Set(pair.key, merged_list);
+    }
+  };
+
+  if (subgrid_area.columns.IsTranslatedDefinite()) {
+    MergeNamedGridLinesWithAncestor(
+        *column_subgrid_merged_grid_line_names_,
+        parent_line_resolver.ExplicitNamedLinesMap(kForColumns),
+        subgrid_area.columns);
   }
-
-  for (const auto& pair :
-       parent_line_resolver.ExplicitNamedLinesMap(kForRows)) {
-    row_subgrid_merged_grid_line_names_.insert(pair.key, pair.value);
+  if (subgrid_area.rows.IsTranslatedDefinite()) {
+    MergeNamedGridLinesWithAncestor(
+        *row_subgrid_merged_grid_line_names_,
+        parent_line_resolver.ExplicitNamedLinesMap(kForRows),
+        subgrid_area.rows);
   }
 }
 
@@ -134,14 +184,15 @@ GridSpan NGGridLineResolver::DefiniteGridSpanWithNamedSpanAgainstOpposite(
     int last_line,
     NGGridNamedLineCollection& lines_collection) const {
   int start, end;
+  const int span_position = position.SpanPosition();
   if (side == kRowStartSide || side == kColumnStartSide) {
-    start = LookBackForNamedGridLine(opposite_line - 1, position.SpanPosition(),
+    start = LookBackForNamedGridLine(opposite_line - 1, span_position,
                                      last_line, lines_collection);
     end = opposite_line;
   } else {
     start = opposite_line;
-    end = LookAheadForNamedGridLine(opposite_line + 1, position.SpanPosition(),
-                                    last_line, lines_collection);
+    end = LookAheadForNamedGridLine(opposite_line + 1, span_position, last_line,
+                                    lines_collection);
   }
 
   return GridSpan::UntranslatedDefiniteGridSpan(start, end);
@@ -153,7 +204,7 @@ wtf_size_t NGGridLineResolver::ExplicitGridColumnCount(
   if (subgrid_span_size != kNotFound)
     return subgrid_span_size;
 
-  // TODO(kschmi): Refactor with `is_subgrid_line_resolver_` factored in.
+  // TODO(kschmi): Refactor so that `subgrid_span_size` isn't necessary.
   return std::min<wtf_size_t>(std::max(style_->GridTemplateColumns()
                                                .track_sizes.NGTrackList()
                                                .TrackCountWithoutAutoRepeat() +
@@ -168,7 +219,7 @@ wtf_size_t NGGridLineResolver::ExplicitGridRowCount(
   if (subgrid_span_size != kNotFound)
     return subgrid_span_size;
 
-  // TODO(kschmi): Refactor with `is_subgrid_line_resolver_` factored in.
+  // TODO(kschmi): Refactor so that `subgrid_span_size` isn't necessary.
   return std::min<wtf_size_t>(std::max(style_->GridTemplateRows()
                                                .track_sizes.NGTrackList()
                                                .TrackCountWithoutAutoRepeat() +
@@ -194,7 +245,8 @@ NGGridLineResolver::ResolveNamedGridLinePositionAgainstOppositePosition(
     const GridPosition& position,
     wtf_size_t auto_repeat_tracks_count,
     GridPositionSide side,
-    wtf_size_t subgrid_span_size) const {
+    wtf_size_t subgrid_span_size,
+    bool is_subgridded_to_parent) const {
   DCHECK(position.IsSpan());
   DCHECK(!position.NamedGridLine().IsNull());
   // Negative positions are not allowed per the specification and should have
@@ -204,7 +256,6 @@ NGGridLineResolver::ResolveNamedGridLinePositionAgainstOppositePosition(
   GridTrackSizingDirection track_direction = DirectionFromSide(side);
   const auto& implicit_grid_line_names = ImplicitNamedLinesMap(track_direction);
   const auto& explicit_grid_line_names = ExplicitNamedLinesMap(track_direction);
-
   const auto& computed_grid_track_list = ComputedGridTrackList(track_direction);
 
   wtf_size_t last_line = ExplicitGridSizeForSide(side, auto_repeat_tracks_count,
@@ -213,7 +264,7 @@ NGGridLineResolver::ResolveNamedGridLinePositionAgainstOppositePosition(
   NGGridNamedLineCollection lines_collection(
       position.NamedGridLine(), track_direction, implicit_grid_line_names,
       explicit_grid_line_names, computed_grid_track_list, last_line,
-      auto_repeat_tracks_count);
+      auto_repeat_tracks_count, is_subgridded_to_parent);
   return DefiniteGridSpanWithNamedSpanAgainstOpposite(
       opposite_line, position, side, last_line, lines_collection);
 }
@@ -234,7 +285,7 @@ static GridSpan DefiniteGridSpanWithSpanAgainstOpposite(
 
 const NamedGridLinesMap& NGGridLineResolver::ImplicitNamedLinesMap(
     GridTrackSizingDirection track_direction) const {
-  // TODO(kschmi): Merge implicit list if `is_subgrid_line_resolver_`.
+  // TODO(kschmi): Merge implicit list if it's subgridded.
   return (track_direction == kForColumns)
              ? style_->ImplicitNamedGridColumnLines()
              : style_->ImplicitNamedGridRowLines();
@@ -242,20 +293,19 @@ const NamedGridLinesMap& NGGridLineResolver::ImplicitNamedLinesMap(
 
 const NamedGridLinesMap& NGGridLineResolver::ExplicitNamedLinesMap(
     GridTrackSizingDirection track_direction) const {
-  // Subgrids look at the merged map of the parent's grid line names, while
-  // standalone grids should look directly at the style object.
-  if (is_subgrid_line_resolver_) {
-    return (track_direction == kForColumns)
-               ? column_subgrid_merged_grid_line_names_
-               : row_subgrid_merged_grid_line_names_;
-  }
-  return ComputedGridTrackList(track_direction).named_grid_lines;
+  const auto& subgrid_merged_grid_line_names =
+      (track_direction == kForColumns) ? column_subgrid_merged_grid_line_names_
+                                       : row_subgrid_merged_grid_line_names_;
+
+  return subgrid_merged_grid_line_names
+             ? *subgrid_merged_grid_line_names
+             : ComputedGridTrackList(track_direction).named_grid_lines;
 }
 
 const blink::ComputedGridTrackList& NGGridLineResolver::ComputedGridTrackList(
     GridTrackSizingDirection track_direction) const {
-  // TODO(kschmi): Refactor so this isn't necessary when
-  // `is_subgrid_line_resolver_`.
+  // TODO(kschmi): Refactor so this isn't necessary and handle auto-repeats
+  // for subgrids.
   return (track_direction == kForColumns) ? style_->GridTemplateColumns()
                                           : style_->GridTemplateRows();
 }
@@ -265,7 +315,8 @@ GridSpan NGGridLineResolver::ResolveGridPositionAgainstOppositePosition(
     const GridPosition& position,
     GridPositionSide side,
     wtf_size_t auto_repeat_tracks_count,
-    wtf_size_t subgrid_span_size) const {
+    wtf_size_t subgrid_span_size,
+    bool is_subgridded_to_parent) const {
   if (position.IsAuto()) {
     if (side == kColumnStartSide || side == kRowStartSide) {
       return GridSpan::UntranslatedDefiniteGridSpan(opposite_line - 1,
@@ -283,7 +334,7 @@ GridSpan NGGridLineResolver::ResolveGridPositionAgainstOppositePosition(
     // our opposite position.
     return ResolveNamedGridLinePositionAgainstOppositePosition(
         opposite_line, position, auto_repeat_tracks_count, side,
-        subgrid_span_size);
+        subgrid_span_size, is_subgridded_to_parent);
   }
 
   return DefiniteGridSpanWithSpanAgainstOpposite(opposite_line, position, side);
@@ -315,11 +366,12 @@ wtf_size_t NGGridLineResolver::SpanSizeForAutoPlacedItem(
   return SpanSizeFromPositions(initial_position, final_position);
 }
 
-int NGGridLineResolver::ResolveNamedGridLinePositionFromStyle(
+int NGGridLineResolver::ResolveNamedGridLinePosition(
     const GridPosition& position,
     GridPositionSide side,
     wtf_size_t auto_repeat_tracks_count,
-    wtf_size_t subgrid_span_size) const {
+    wtf_size_t subgrid_span_size,
+    bool is_subgridded_to_parent) const {
   DCHECK(!position.NamedGridLine().IsNull());
 
   wtf_size_t last_line = ExplicitGridSizeForSide(side, auto_repeat_tracks_count,
@@ -330,8 +382,8 @@ int NGGridLineResolver::ResolveNamedGridLinePositionFromStyle(
   const auto& track_list = ComputedGridTrackList(track_direction);
   NGGridNamedLineCollection lines_collection(
       position.NamedGridLine(), track_direction, implicit_grid_line_names,
-      explicit_grid_line_names, track_list, last_line,
-      auto_repeat_tracks_count);
+      explicit_grid_line_names, track_list, last_line, auto_repeat_tracks_count,
+      is_subgridded_to_parent);
 
   if (position.IsPositive()) {
     return LookAheadForNamedGridLine(0, abs(position.IntegerPosition()),
@@ -342,19 +394,29 @@ int NGGridLineResolver::ResolveNamedGridLinePositionFromStyle(
                                   last_line, lines_collection);
 }
 
-int NGGridLineResolver::ResolveGridPositionFromStyle(
+int NGGridLineResolver::ResolveGridPosition(
     const GridPosition& position,
     GridPositionSide side,
     wtf_size_t auto_repeat_tracks_count,
     bool is_subgridded_to_parent,
     wtf_size_t subgrid_span_size) const {
+  auto track_direction = DirectionFromSide(side);
+
+  // TODO(kschmi): Remove `subgrid_offset` once `auto_repeat_tracks_count` is
+  // correct.
+  const int subgrid_offset = (track_direction == kForColumns)
+                                 ? subgrid_column_start_line_.value_or(0)
+                                 : subgrid_row_start_line_.value_or(0);
   switch (position.GetType()) {
     case kExplicitPosition: {
       DCHECK(position.IntegerPosition());
 
+      // `ResolveNamedGridLinePosition` already factors in
+      // `subgrid_offset` via `ExplicitGridSizeForSide`.
       if (!position.NamedGridLine().IsNull()) {
-        return ResolveNamedGridLinePositionFromStyle(
-            position, side, auto_repeat_tracks_count, subgrid_span_size);
+        return ResolveNamedGridLinePosition(
+            position, side, auto_repeat_tracks_count, subgrid_span_size,
+            is_subgridded_to_parent);
       }
 
       // Handle <integer> explicit position.
@@ -378,7 +440,6 @@ int NGGridLineResolver::ResolveGridPositionFromStyle(
       wtf_size_t last_line = ExplicitGridSizeForSide(
           side, auto_repeat_tracks_count, subgrid_span_size);
 
-      GridTrackSizingDirection track_direction = DirectionFromSide(side);
       const auto& implicit_grid_line_names =
           ImplicitNamedLinesMap(track_direction);
       const auto& explicit_grid_line_names =
@@ -390,7 +451,7 @@ int NGGridLineResolver::ResolveGridPositionFromStyle(
           implicit_grid_line_names, explicit_grid_line_names, track_list,
           last_line, auto_repeat_tracks_count);
       if (implicit_lines.HasNamedLines())
-        return implicit_lines.FirstPosition();
+        return implicit_lines.FirstPosition() + subgrid_offset;
 
       // Otherwise, if there is a named line with the specified name,
       // contributes the first such line to the grid item's placement.
@@ -399,11 +460,11 @@ int NGGridLineResolver::ResolveGridPositionFromStyle(
           explicit_grid_line_names, track_list, last_line,
           auto_repeat_tracks_count, is_subgridded_to_parent);
       if (explicit_lines.HasNamedLines())
-        return explicit_lines.FirstPosition();
+        return explicit_lines.FirstPosition() + subgrid_offset;
 
       // If none of the above works specs mandate to assume that all the lines
       // in the implicit grid have this name.
-      return last_line + 1;
+      return last_line + subgrid_offset + 1;
     }
     case kAutoPosition:
     case kSpanPosition:
@@ -447,31 +508,31 @@ GridSpan NGGridLineResolver::ResolveGridPositionsFromStyle(
   if (initial_should_be_resolved_against_opposite_position) {
     // Infer the position from the final_position position ('auto / 1' or 'span
     // 2 / 3' case).
-    int end_line = ResolveGridPositionFromStyle(
+    int end_line = ResolveGridPosition(
         final_position, final_side, auto_repeat_tracks_count,
         is_subgridded_to_parent, subgrid_span_size);
     return ResolveGridPositionAgainstOppositePosition(
         end_line, initial_position, initial_side, auto_repeat_tracks_count,
-        subgrid_span_size);
+        subgrid_span_size, is_subgridded_to_parent);
   }
 
   if (final_should_be_resolved_against_opposite_position) {
     // Infer our position from the initial_position position ('1 / auto' or '3 /
     // span 2' case).
-    int start_line = ResolveGridPositionFromStyle(
+    int start_line = ResolveGridPosition(
         initial_position, initial_side, auto_repeat_tracks_count,
         is_subgridded_to_parent, subgrid_span_size);
     return ResolveGridPositionAgainstOppositePosition(
         start_line, final_position, final_side, auto_repeat_tracks_count,
-        subgrid_span_size);
+        subgrid_span_size, is_subgridded_to_parent);
   }
 
-  int start_line = ResolveGridPositionFromStyle(
+  int start_line = ResolveGridPosition(
       initial_position, initial_side, auto_repeat_tracks_count,
       is_subgridded_to_parent, subgrid_span_size);
-  int end_line = ResolveGridPositionFromStyle(
-      final_position, final_side, auto_repeat_tracks_count,
-      is_subgridded_to_parent, subgrid_span_size);
+  int end_line =
+      ResolveGridPosition(final_position, final_side, auto_repeat_tracks_count,
+                          is_subgridded_to_parent, subgrid_span_size);
 
   if (end_line < start_line)
     std::swap(end_line, start_line);
