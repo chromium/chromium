@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace password_manager {
@@ -34,8 +33,8 @@ class WebAuthnCredentialsDelegate {
   virtual void SelectWebAuthnCredential(std::string backend_id) = 0;
 
   // Returns the list of eligible WebAuthn credentials to fulfill an ongoing
-  // WebAuthn request if one has been received. Returns absl::nullopt
-  // otherwise.
+  // WebAuthn request if one has been received and is active. Returns
+  // absl::nullopt otherwise.
   virtual const absl::optional<std::vector<autofill::Suggestion>>&
   GetWebAuthnSuggestions() const = 0;
 

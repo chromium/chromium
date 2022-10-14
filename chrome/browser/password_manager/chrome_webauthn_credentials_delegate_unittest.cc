@@ -22,6 +22,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/test_callback_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -272,4 +273,25 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
   auto credential_id = GetSelectedId();
   EXPECT_EQ(credential_id, CredId2());
 #endif
+}
+
+// Test aborting a request.
+TEST_F(ChromeWebAuthnCredentialsDelegateTest, AbortRequest) {
+  std::vector<device::DiscoverableCredentialMetadata> users;
+  users.emplace_back(kRpId, CredId1(),
+                     device::PublicKeyCredentialUserEntity(
+                         UserId1(), UserName1(), DisplayName1()));
+  credentials_delegate_->OnCredentialsReceived(users);
+  credentials_delegate_->NotifyWebAuthnRequestAborted();
+  EXPECT_FALSE(credentials_delegate_->GetWebAuthnSuggestions());
+}
+
+// Test aborting a request when a retrieve suggestions callback is pending.
+TEST_F(ChromeWebAuthnCredentialsDelegateTest, AbortRequestPendingCallback) {
+  device::test::TestCallbackReceiver<> callback;
+  credentials_delegate_->RetrieveWebAuthnSuggestions(callback.callback());
+  EXPECT_FALSE(callback.was_called());
+  credentials_delegate_->NotifyWebAuthnRequestAborted();
+  EXPECT_TRUE(callback.was_called());
+  EXPECT_FALSE(credentials_delegate_->GetWebAuthnSuggestions());
 }

@@ -2053,8 +2053,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
   webauthn_credential.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
   webauthn_credential.payload = Suggestion::BackendId(kId);
   webauthn_credential.labels = {{Suggestion::Text(kAuthenticator)}};
-  ON_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
-      .WillByDefault(Return(true));
+  EXPECT_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
       .WillRepeatedly(Return(&webauthn_credentials_delegate));
   absl::optional<std::vector<autofill::Suggestion>> webauthn_credential_list =
@@ -2121,9 +2121,10 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
   InitializePasswordAutofillManager(&client, &autofill_client);
 
   // Enable WebAuthn autofill.
-  absl::optional<std::vector<autofill::Suggestion>> webauthn_credentials;
-  ON_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
-      .WillByDefault(Return(true));
+  absl::optional<std::vector<autofill::Suggestion>> webauthn_credentials(
+      absl::in_place);
+  EXPECT_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
       .WillRepeatedly(Return(&webauthn_credentials_delegate));
   EXPECT_CALL(webauthn_credentials_delegate, GetWebAuthnSuggestions)
@@ -2175,9 +2176,9 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnFaviconWithoutPasswords) {
   webauthn_credential.payload = Suggestion::BackendId(kId);
   webauthn_credential.labels = {{Suggestion::Text(kAuthenticator)}};
   absl::optional<std::vector<autofill::Suggestion>> webauthn_credentials =
-      std::vector{webauthn_credential};
-  ON_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
-      .WillByDefault(Return(true));
+      std::vector{std::move(webauthn_credential)};
+  EXPECT_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
+      .WillRepeatedly(Return(true));
   EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
       .WillRepeatedly(Return(&webauthn_credentials_delegate));
   EXPECT_CALL(webauthn_credentials_delegate, GetWebAuthnSuggestions)
@@ -2214,7 +2215,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithoutPasswordData) {
   password_autofill_manager_->DeleteFillData();
 
   // Enable WebAuthn autofill.
-  absl::optional<std::vector<autofill::Suggestion>> webauthn_credentials;
+  absl::optional<std::vector<autofill::Suggestion>> webauthn_credentials(
+      absl::in_place);
   EXPECT_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled)
       .WillRepeatedly(Return(true));
   EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
@@ -2247,7 +2249,8 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
   InitializePasswordAutofillManager(&client, &autofill_client);
 
   // Enable WebAuthn autofill.
-  absl::optional<std::vector<autofill::Suggestion>> webauthn_credentials;
+  absl::optional<std::vector<autofill::Suggestion>> webauthn_credentials(
+      absl::in_place);
   EXPECT_CALL(client, GetWebAuthnCredentialsDelegateForDriver)
       .WillRepeatedly(Return(&webauthn_credentials_delegate));
 

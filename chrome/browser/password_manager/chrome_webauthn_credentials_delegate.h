@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_CHROME_WEBAUTHN_CREDENTIALS_DELEGATE_H_
 
 #include "base/callback.h"
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
@@ -46,6 +45,10 @@ class ChromeWebAuthnCredentialsDelegate
   void OnCredentialsReceived(
       const std::vector<device::DiscoverableCredentialMetadata>& credentials);
 
+  // Lets the delegate know that a WebAuthn request has been aborted, and so
+  // WebAuthn options should no longer show up on the autofill popup.
+  void NotifyWebAuthnRequestAborted();
+
  protected:
   const raw_ptr<content::WebContents> web_contents_;
 
@@ -53,6 +56,8 @@ class ChromeWebAuthnCredentialsDelegate
   // List of autofill suggestions populated from an authenticator from a call
   // to RetrieveWebAuthnSuggestions, and returned to the client via
   // GetWebAuthnSuggestions.
+  // |suggestions_| is nullopt until populated by a WebAuthn request, and reset
+  // to nullopt when the request is cancelled.
   absl::optional<std::vector<autofill::Suggestion>> suggestions_;
 
   base::OnceClosure retrieve_suggestions_callback_;
