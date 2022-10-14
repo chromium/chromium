@@ -2,33 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const INTERNAL_REQUEST_MESSAGE = 'internal-request-message';
+
+const INTERNAL_REPLY_MESSAGE = 'internal-reply-message';
+
 /**
  * Channel to the background script.
- * @constructor
  */
-export function Channel() {
-  this.messageCallbacks_ = {};
-  this.internalRequestCallbacks_ = {};
-}
+export class Channel {
+  constructor() {
+    // Message port to use to communicate with background script.
+    this.port_ = null;
 
-/** @const */
-Channel.INTERNAL_REQUEST_MESSAGE = 'internal-request-message';
+    // Registered message callbacks.
+    this.messageCallbacks_ = {};
 
-/** @const */
-Channel.INTERNAL_REPLY_MESSAGE = 'internal-reply-message';
+    // Internal request id to track pending requests.
+    this.nextInternalRequestId_ = 0;
 
-Channel.prototype = {
-  // Message port to use to communicate with background script.
-  port_: null,
-
-  // Registered message callbacks.
-  messageCallbacks_: null,
-
-  // Internal request id to track pending requests.
-  nextInternalRequestId_: 0,
-
-  // Pending internal request callbacks.
-  internalRequestCallbacks_: null,
+    // Pending internal request callbacks.
+    this.internalRequestCallbacks_ = {};
+  }
 
   /**
    * Initialize the channel with given port for the background script.
@@ -36,7 +30,7 @@ Channel.prototype = {
   init(port) {
     this.port_ = port;
     this.port_.onMessage.addListener(this.onMessage_.bind(this));
-  },
+  }
 
   /**
    * Connects to the background script with the given name.
@@ -44,7 +38,7 @@ Channel.prototype = {
   connect(name) {
     this.port_ = chrome.runtime.connect({name: name});
     this.port_.onMessage.addListener(this.onMessage_.bind(this));
-  },
+  }
 
   /**
    * Associates a message name with a callback. When a message with the name
@@ -53,14 +47,14 @@ Channel.prototype = {
    */
   registerMessage(name, callback) {
     this.messageCallbacks_[name] = callback;
-  },
+  }
 
   /**
    * Sends a message to the other side of the channel.
    */
   send(msg) {
     this.port_.postMessage(msg);
-  },
+  }
 
   /**
    * Sends a message to the other side and invokes the callback with
@@ -70,11 +64,11 @@ Channel.prototype = {
     const requestId = this.nextInternalRequestId_++;
     this.internalRequestCallbacks_[requestId] = callback;
     this.send({
-      name: Channel.INTERNAL_REQUEST_MESSAGE,
+      name: INTERNAL_REQUEST_MESSAGE,
       requestId: requestId,
       payload: msg,
     });
-  },
+  }
 
   /**
    * Invokes message callback using given message.
@@ -88,22 +82,22 @@ Channel.prototype = {
 
     console.error('Error: Unexpected message, name=' + name);
     return null;
-  },
+  }
 
   /**
    * Invoked when a message is received.
    */
   onMessage_(msg) {
     const name = msg.name;
-    if (name === Channel.INTERNAL_REQUEST_MESSAGE) {
+    if (name === INTERNAL_REQUEST_MESSAGE) {
       const payload = msg.payload;
       const result = this.invokeMessageCallbacks_(payload);
       this.send({
-        name: Channel.INTERNAL_REPLY_MESSAGE,
+        name: INTERNAL_REPLY_MESSAGE,
         requestId: msg.requestId,
         result: result,
       });
-    } else if (name === Channel.INTERNAL_REPLY_MESSAGE) {
+    } else if (name === INTERNAL_REPLY_MESSAGE) {
       const callback = this.internalRequestCallbacks_[msg.requestId];
       delete this.internalRequestCallbacks_[msg.requestId];
       if (callback) {
@@ -112,13 +106,5 @@ Channel.prototype = {
     } else {
       this.invokeMessageCallbacks_(msg);
     }
-  },
-};
-
-/**
- * Class factory.
- * @return {Channel}
- */
-Channel.create = function() {
-  return new Channel();
-};
+  }
+}

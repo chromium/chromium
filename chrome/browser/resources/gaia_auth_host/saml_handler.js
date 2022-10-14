@@ -813,7 +813,7 @@ import {WebviewEventManager} from './webview_event_manager.js';
         return;
       }
 
-      const channel = Channel.create();
+      const channel = new PostMessageChannel();
       channel.init(port);
 
       channel.registerMessage('apiCall', this.onAPICall_.bind(this, channel));

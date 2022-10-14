@@ -316,46 +316,42 @@ class ChannelManager {
   }
 }
 
-export const PostMessageChannel = (function() {
+/**
+ * A message channel based on PostMessagePort.
+ * @extends {Channel}
+ */
+export class PostMessageChannel extends Channel {
+  /**
+   * Singleton instance of ChannelManager.
+   * @returns {ChannelManager}
+   */
+  static channelManager() {
+    if (!PostMessageChannel._channelManager) {
+      PostMessageChannel._channelManager = new ChannelManager();
+    }
+    return PostMessageChannel._channelManager;
+  }
+
   /**
    * Whether the script runs in a top level window.
    */
-  function isTopLevel() {
+  isTopLevel() {
     return isTopLevelWindow();
   }
 
-  /**
-   * Singleton instance of ChannelManager.
-   * @type {ChannelManager}
-   */
-  const channelManager = new ChannelManager();
-
-  /**
-   * A message channel based on PostMessagePort.
-   * @extends {Channel}
-   * @constructor
-   */
-  function PostMessageChannel() {
-    Channel.apply(this, arguments);
+  /** @override */
+  connect(name) {
+    this.port_ = PostMessageChannel.channelManager().connectToDaemon(name);
+    this.port_.onMessage.addListener(this.onMessage_.bind(this));
   }
-
-  PostMessageChannel.prototype = {
-    __proto__: Channel.prototype,
-
-    /** @override */
-    connect(name) {
-      this.port_ = channelManager.connectToDaemon(name);
-      this.port_.onMessage.addListener(this.onMessage_.bind(this));
-    },
-  };
 
   /**
    * Initialize webview content window for postMessage channel.
    * @param {Object} webViewContentWindow Content window of the webview.
    */
-  PostMessageChannel.init = function(webViewContentWindow) {
+  static init(webViewContentWindow) {
     webViewContentWindow.postMessage({type: CHANNEL_INIT_MESSAGE}, '*');
-  };
+  }
 
   /**
    * Run in daemon mode and listen for incoming connections. Note that the
@@ -365,18 +361,12 @@ export const PostMessageChannel = (function() {
    * @param {function(PostMessagePort)} callback Invoked when a connection is
    *     made.
    */
-  PostMessageChannel.runAsDaemon = function(callback) {
-    channelManager.isDaemon = true;
+  static runAsDaemon(callback) {
+    PostMessageChannel.channelManager().isDaemon = true;
 
     const onConnect = function(port) {
       callback(port);
     };
-    channelManager.onConnect.addListener(onConnect);
-  };
-
-  return PostMessageChannel;
-})();
-
-Channel.create = function() {
-  return new PostMessageChannel();
-};
+    PostMessageChannel.channelManager().onConnect.addListener(onConnect);
+  }
+}

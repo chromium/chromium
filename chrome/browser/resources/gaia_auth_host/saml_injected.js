@@ -209,7 +209,7 @@ function onGetSAMLFlag(channel, isSAMLPage) {
   }
 }
 
-const channel = Channel.create();
+const channel = new PostMessageChannel();
 channel.connect('injected');
 channel.sendWithCallback(
     {name: 'getSAMLFlag'}, onGetSAMLFlag.bind(undefined, channel));
