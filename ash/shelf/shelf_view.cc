@@ -1985,6 +1985,15 @@ gfx::Rect ShelfView::GetDragIconBoundsInScreenForTest() const {
   return drag_icon_proxy_->GetBoundsInScreen();
 }
 
+void ShelfView::AddAnimationObserver(views::BoundsAnimatorObserver* observer) {
+  bounds_animator_->AddObserver(observer);
+}
+
+void ShelfView::RemoveAnimationObserver(
+    views::BoundsAnimatorObserver* observer) {
+  bounds_animator_->RemoveObserver(observer);
+}
+
 void ShelfView::AnnounceShelfAutohideBehavior() {
   std::u16string announcement;
   switch (shelf_->auto_hide_behavior()) {

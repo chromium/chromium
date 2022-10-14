@@ -14,6 +14,10 @@
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/throughput_tracker.h"
 
+namespace ash {
+class LoginUnlockThroughputRecorderTestBase;
+}
+
 namespace ui {
 
 // Reports cc::FrameSequenceMetrics::ThroughputData between the first animation
@@ -32,9 +36,31 @@ namespace ui {
 // report callback is invoked on the next begin frame if there is enough data.
 // Since this observes multiple animations, aborting one of animations will
 // not cancel the tracking, and the data will be reported as normal.
+//
+// The reporter will not fire if ScopedThroughputReporterBlocker is active.
+// This allows to measure throughput from the very first animation (when
+// reporter was created) till the specific expected animation ends even if
+// there were delays between the animations.
 class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
     : public CompositorObserver {
  public:
+  // This allows to temporarily ignore OnFirstNonAnimatedFrameStarted event
+  // until an interesting event happens.
+  class COMPOSITOR_EXPORT ScopedThroughputReporterBlocker {
+   public:
+    explicit ScopedThroughputReporterBlocker(
+        base::WeakPtr<TotalAnimationThroughputReporter> reporter);
+    ScopedThroughputReporterBlocker(const ScopedThroughputReporterBlocker&) =
+        delete;
+    ~ScopedThroughputReporterBlocker();
+
+    ScopedThroughputReporterBlocker& operator=(
+        const ScopedThroughputReporterBlocker&) = delete;
+
+   private:
+    base::WeakPtr<TotalAnimationThroughputReporter> reporter_;
+  };
+
   using ReportOnceCallback = base::OnceCallback<void(
       const cc::FrameSequenceMetrics::CustomReportData& data)>;
   using ReportRepeatingCallback = base::RepeatingCallback<void(
@@ -64,9 +90,18 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
   void OnFirstNonAnimatedFrameStarted(Compositor* compositor) override;
   void OnCompositingShuttingDown(Compositor* compositor) override;
 
+  base::WeakPtr<ui::TotalAnimationThroughputReporter> GetWeakPtr();
+
   bool IsMeasuringForTesting() const { return bool{throughput_tracker_}; }
 
+  // The returned scope will delay the animation report until the next
+  // |OnFirstNonAnimatedFrameStarted| received after it is destructed. See
+  // |ScopedThroughputReporterBlocker| above.
+  std::unique_ptr<ScopedThroughputReporterBlocker> NewScopedBlocker();
+
  private:
+  friend class ash::LoginUnlockThroughputRecorderTestBase;
+
   TotalAnimationThroughputReporter(Compositor* compositor,
                                    ReportRepeatingCallback repeating_callback,
                                    ReportOnceCallback once_callback,
@@ -74,11 +109,17 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
 
   void Report(const cc::FrameSequenceMetrics::CustomReportData& data);
 
+  // Returns true if there is an active ScopedThroughputReporterBlocker.
+  bool IsBlocked() const;
+
   raw_ptr<Compositor> compositor_;
   ReportRepeatingCallback report_repeating_callback_;
   ReportOnceCallback report_once_callback_;
   bool should_delete_ = false;
   absl::optional<ThroughputTracker> throughput_tracker_;
+
+  // Number of active ScopedThroughputReporterBlocker objects.
+  int scoped_blocker_count_ = 0;
 
   base::WeakPtrFactory<TotalAnimationThroughputReporter> ptr_factory_{this};
 };
