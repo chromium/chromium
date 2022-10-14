@@ -87,6 +87,7 @@
                 "-webkit-border-horizontal-spacing",
                 "-webkit-border-vertical-spacing", "TextAutosizingMultiplier",
                 "ImplicitNamedGridColumnLines","ImplicitNamedGridRowLines", "NamedGridArea",
+                "initial-letter",
                 "grid-auto-rows", "grid-template-rows", "grid-template-columns",
                 "grid-auto-columns", "row-gap", "NamedGridAreaRowCount",
                 "NamedGridAreaColumnCount", "grid-auto-flow",
