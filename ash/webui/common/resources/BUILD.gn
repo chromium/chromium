@@ -219,6 +219,10 @@ generate_grd("build_grdp") {
     "keyboard_layouts.js",
     "mojo_utils.js",
 
+    # Test runner used by file manager tests, webui_resource_browsertest.cc, and
+    # default_keyboard_extension_browser_test.cc
+    "webui_resource_test.js",
+
     "cellular_setup/sim_detect_error.svg",
     "cellular_setup/sim_detect_error_dark.svg",
     "cellular_setup/error.svg",
@@ -417,6 +421,7 @@ js_type_check("closure_compile_local") {
     ":navigation_selector",
     ":navigation_view_panel",
     ":page_toolbar",
+    ":webui_resource_test",
   ]
 }
 
@@ -531,4 +536,8 @@ js_library("page_toolbar") {
 
 js_library("web_ui_listener_behavior") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_library("webui_resource_test") {
+  externs_list = [ "//ui/webui/resources/js/dom_automation_controller.js" ]
 }

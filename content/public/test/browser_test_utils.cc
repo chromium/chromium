@@ -471,6 +471,7 @@ class TestNavigationManagerThrottle : public NavigationThrottle {
   base::OnceClosure on_will_process_response_closure_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool HasGzipHeader(const base::RefCountedMemory& maybe_gzipped) {
   net::GZipHeader header;
   net::GZipHeader::Status header_status = net::GZipHeader::INCOMPLETE_HEADER;
@@ -504,6 +505,7 @@ void AppendGzippedResource(const base::RefCountedMemory& encoded,
     to_append->append(dest_buffer->data(), rv);
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Queries for video input devices on the current system using the getSources
 // API.
@@ -2014,12 +2016,13 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
   return visited_frames;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool ExecuteWebUIResourceTest(WebContents* web_contents) {
   // Inject WebUI test runner script.
   std::string script;
   scoped_refptr<base::RefCountedMemory> bytes =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
-          IDR_WEBUI_JS_WEBUI_RESOURCE_TEST_JS);
+          IDR_ASH_COMMON_WEBUI_RESOURCE_TEST_JS);
 
   if (HasGzipHeader(*bytes))
     AppendGzippedResource(*bytes, &script);
@@ -2053,6 +2056,7 @@ bool ExecuteWebUIResourceTest(WebContents* web_contents) {
 
   return message.compare("\"SUCCESS\"") == 0;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::string GetCookies(BrowserContext* browser_context,
                        const GURL& url,

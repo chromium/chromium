@@ -84,7 +84,6 @@ preprocess_if_expr("preprocess_src") {
     "parse_html_subset.js",
     "promise_resolver.js",
     "util.js",
-    "webui_resource_test.js",
   ]
 
   if (is_chromeos_ash || is_ios) {
@@ -106,10 +105,7 @@ group("closure_compile") {
 
 js_type_check("js_resources") {
   uses_legacy_modules = true
-  deps = [
-    ":load_time_data_deprecated",
-    ":webui_resource_test",
-  ]
+  deps = [ ":load_time_data_deprecated" ]
 
   if (is_ios) {
     deps += [ "ios:web_ui" ]
@@ -126,10 +122,6 @@ js_library("load_time_data_deprecated") {
 if (is_chromeos_ash) {
   js_library("util_deprecated") {
   }
-}
-
-js_library("webui_resource_test") {
-  externs_list = [ "dom_automation_controller.js" ]
 }
 
 # Targets for type-checking JS Modules

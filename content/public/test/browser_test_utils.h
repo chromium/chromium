@@ -958,11 +958,13 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(Page& page);
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
     WebContents* web_contents);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Executes the WebUI resource tests. Injects the test runner script prior to
 // executing the tests.
 //
 // Returns true if tests ran successfully, false otherwise.
 bool ExecuteWebUIResourceTest(WebContents* web_contents);
+#endif
 
 // Returns the serialized cookie string for the given url. Uses an inclusive
 // SameSiteCookieContext by default, which gets cookies regardless of their

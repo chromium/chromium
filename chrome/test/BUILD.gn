@@ -2363,7 +2363,6 @@ if (!is_android) {
       "data/webui/mojo/mojo_web_ui_controller_browsertest.cc",
       "data/webui/ntp4_browsertest.cc",
       "data/webui/ntp4_browsertest.h",
-      "data/webui/webui_resource_browsertest.cc",
       "gpu/webgl_infobar_browsertest.cc",
       "interaction/webui_interaction_test_util_browsertest.cc",
       "v8/wasm_trap_handler_browsertest.cc",
@@ -2436,6 +2435,7 @@ if (!is_android) {
       sources += [
         "../browser/media/webrtc/get_display_media_set_browsertest.cc",
         "../browser/sessions/tab_restore_service_browsertest.cc",
+        "data/webui/chromeos/webui_resource_browsertest.cc",
       ]
       deps += [
         "//chrome/browser/ash/system_web_apps:browser_tests",

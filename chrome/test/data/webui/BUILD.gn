@@ -472,6 +472,7 @@ generate_grd("build_grd") {
     "mocha_adapter.js",
     "mock_controller.js",
     "mock_timer.js",
+    "mock_timer_test.js",
     "mojo_webui_test_support.js",
     "test_browser_proxy.js",
     "test_util.js",

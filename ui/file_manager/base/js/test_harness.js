@@ -11,7 +11,7 @@ async function run() {
   const jsModuleUrl = params.get('test_module');
 
   // Push all entities to global namespace to be visible to the test harness:
-  // ui/webui/resources/js/webui_resource_test.js
+  // ash/webui/common/resources/webui_resource_test.js
   const TestModule = await import(jsModuleUrl);
   for (const name in TestModule) {
     window[name] = TestModule[name];
