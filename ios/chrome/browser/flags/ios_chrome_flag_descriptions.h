@@ -198,6 +198,11 @@ extern const char kDiscoverFeedInNtpDescription[];
 extern const char kEnableCheckVisibilityOnAttentionLogStartName[];
 extern const char kEnableCheckVisibilityOnAttentionLogStartDescription[];
 
+// Title and description for the flag to enable the muting of compromised
+// passwords in the Password Manager.
+extern const char kEnableCompromisedPasswordsMutingName[];
+extern const char kEnableCompromisedPasswordsMutingDescription[];
+
 // Title and description for the flag to enable the sync promotion on top of the
 // discover feed.
 extern const char kEnableDiscoverFeedTopSyncPromoName[];

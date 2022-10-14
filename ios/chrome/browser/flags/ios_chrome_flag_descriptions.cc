@@ -259,6 +259,12 @@ const char kEnableCheckVisibilityOnAttentionLogStartName[] =
 const char kEnableCheckVisibilityOnAttentionLogStartDescription[] =
     "Enable checking feed visibility on attention log start.";
 
+const char kEnableCompromisedPasswordsMutingName[] =
+    "Enable the muting of compromised passwords in the Password Manager";
+const char kEnableCompromisedPasswordsMutingDescription[] =
+    "Enable the compromised password alert mutings in Password Manager to be "
+    "respected in the app.";
+
 const char kEnableDiscoverFeedDiscoFeedEndpointName[] =
     "Enable discover feed discofeed";
 const char kEnableDiscoverFeedDiscoFeedEndpointDescription[] =

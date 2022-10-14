@@ -1272,6 +1272,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableRefineDataSourceReloadReportingDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableRefineDataSourceReloadReporting)},
+    {"enable-compromised-passwords-muting",
+     flag_descriptions::kEnableCompromisedPasswordsMutingName,
+     flag_descriptions::kEnableCompromisedPasswordsMutingDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kMuteCompromisedPasswords)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

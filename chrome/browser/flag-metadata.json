@@ -1879,6 +1879,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-compromised-passwords-muting",
+    "owners": [ "noemies@google.com", "tmartino" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "enable-conditional-tabstrip",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 90
