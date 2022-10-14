@@ -125,6 +125,7 @@ BASE_DECLARE_FEATURE(kCellularBypassESimInstallationConnectivityCheck);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCellularUseSecondEuicc);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kChromadAvailable);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kClipboardHistoryNudgeSessionReset);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kClipboardHistoryReorder);
@@ -631,6 +632,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCalendarModelDebugModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptivePortalUI2022Enabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsChromadAvailableEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherItemColorSyncEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsClipboardHistoryNudgeSessionResetEnabled();

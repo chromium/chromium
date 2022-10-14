@@ -697,7 +697,7 @@ const char kChromeLabsDescription[] =
 const char kClosedTabCacheName[] = "Closed Tab Cache";
 const char kClosedTabCacheDescription[] =
     "Enables closed tab cache to instantaneously restore recently closed tabs. "
-    "NOTE: This feature is higly experimental and will lead to various "
+    "NOTE: This feature is highly experimental and will lead to various "
     "breakages, enable at your own risk.";
 
 const char kCommerceHintAndroidName[] = "Commerce Hint Android";
@@ -1414,7 +1414,7 @@ const char kEnableResamplingScrollEventsExperimentalPredictionDescription[] =
     "when the frame is visible.";
 
 const char kEnableRestrictedWebApisName[] =
-    "Enable the restriced web APIs for high-trusted apps.";
+    "Enable the restricted web APIs for high-trusted apps.";
 const char kEnableRestrictedWebApisDescription[] =
     "Enable the restricted web APIs for dev trial. This will be replaced with "
     "permission policies to control the capabilities afterwards.";

@@ -517,6 +517,15 @@ BASE_FEATURE(kCaptivePortalUI2022,
              "CaptivePortalUI2022",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether Active Directory management on ChromeOS (Chromad) is
+// supported or not. When this feature is enabled, Chromad continues working
+// normally. Disabling this feature will block enrollment in AD mode, and will
+// disable devices that are already in AD mode - displaying an error message to
+// the user.
+BASE_FEATURE(kChromadAvailable,
+             "ChromadAvailable",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables always using device-activity-status data to filter
 // eligible host phones.
 BASE_FEATURE(kCryptAuthV2AlwaysUseActiveEligibleHosts,
@@ -1693,7 +1702,7 @@ BASE_FEATURE(kReleaseTrackUi,
              "ReleaseTrackUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the overivew and desk reverse scrolling behaviors are changed
+// When enabled, the overview and desk reverse scrolling behaviors are changed
 // and if the user performs the old gestures, a notification or toast will show
 // up.
 // TODO(https://crbug.com/1107183): Remove this after the feature is launched.
@@ -2293,6 +2302,10 @@ bool IsCaptivePortalUI2022Enabled() {
 
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
   return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
+}
+
+bool IsChromadAvailableEnabled() {
+  return base::FeatureList::IsEnabled(kChromadAvailable);
 }
 
 bool IsClipboardHistoryNudgeSessionResetEnabled() {

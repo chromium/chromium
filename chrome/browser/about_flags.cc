@@ -727,7 +727,7 @@ const FeatureEntry::FeatureParam kSearchSuggestionPrerenderIgnoringPrefetch[] =
     {{"implementation_type", "ignore_prefetch"}};
 
 const FeatureEntry::FeatureVariation
-    kSearchSuggsetionPrerenderTypeVariations[] = {
+    kSearchSuggestionPrerenderTypeVariations[] = {
         {"use prefetched request", kSearchSuggestionPrerenderUsingPrefetch,
          std::size(kSearchSuggestionPrerenderUsingPrefetch), nullptr},
         {"ignore prefetched request",
@@ -8155,7 +8155,7 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          features::kSupportSearchSuggestionForPrerender2,
-         kSearchSuggsetionPrerenderTypeVariations,
+         kSearchSuggestionPrerenderTypeVariations,
          "SearchSuggestionPrerender")},
 
     {"omnibox-search-prefetch",
