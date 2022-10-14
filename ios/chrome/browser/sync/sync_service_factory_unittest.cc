@@ -53,7 +53,7 @@ class SyncServiceFactoryTest : public PlatformTest {
  protected:
   // Returns the collection of default datatypes.
   syncer::ModelTypeSet DefaultDatatypes() {
-    static_assert(42 == syncer::GetNumModelTypes(),
+    static_assert(43 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -78,6 +78,9 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::PREFERENCES);
     datatypes.Put(syncer::PRIORITY_PREFERENCES);
     datatypes.Put(syncer::READING_LIST);
+    if (base::FeatureList::IsEnabled(syncer::kSyncSegmentationDataType)) {
+      datatypes.Put(syncer::SEGMENTATION);
+    }
     // TODO(crbug.com/919489) Add SECURITY_EVENTS data type once it is enabled.
     datatypes.Put(syncer::SESSIONS);
     datatypes.Put(syncer::PROXY_TABS);

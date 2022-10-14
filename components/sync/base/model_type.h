@@ -112,6 +112,8 @@ enum ModelType {
   USER_EVENTS,
   // Commit only user consents.
   USER_CONSENTS,
+  // Segmentation data.
+  SEGMENTATION,
   // Tabs sent between devices.
   SEND_TAB_TO_SELF,
   // Commit only security events.
@@ -238,7 +240,8 @@ enum class ModelTypeForHistograms {
   kPrintersAuthorizationServers = 52,
   kContactInfo = 53,
   kAutofillWalletUsage = 54,
-  kMaxValue = kAutofillWalletUsage
+  kSegmentation = 55,
+  kMaxValue = kSegmentation
 };
 
 // Used to mark the type of EntitySpecifics that has no actual data.

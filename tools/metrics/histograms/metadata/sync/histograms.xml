@@ -54,6 +54,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".READING_LIST" summary="READING_LIST"/>
   <variant name=".SEARCH_ENGINE" summary="SEARCH_ENGINE"/>
   <variant name=".SECURITY_EVENT" summary="SECURITY_EVENT"/>
+  <variant name=".SEGMENTATION" summary="SEGMENTATION"/>
   <variant name=".SEND_TAB_TO_SELF" summary="SEND_TAB_TO_SELF"/>
   <variant name=".SESSION" summary="SESSION"/>
   <variant name=".SHARING_MESSAGE" summary="SHARING_MESSAGE"/>

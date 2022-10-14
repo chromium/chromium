@@ -33,7 +33,7 @@ constexpr char kTabsTypeName[] = "tabs";
 constexpr char kWifiConfigurationsTypeName[] = "wifiConfigurations";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
-  static_assert(42 == syncer::GetNumModelTypes(),
+  static_assert(43 == syncer::GetNumModelTypes(),
                 "Almost always when adding a new ModelType, you must tie it to "
                 "a UserSelectableType below (new or existing) so the user can "
                 "disable syncing of that data. Today you must also update the "
@@ -45,9 +45,12 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kBookmarks:
       return {kBookmarksTypeName, BOOKMARKS, {BOOKMARKS}};
     case UserSelectableType::kPreferences:
+      // TODO(crbug.com/1369259): Add GetPreconditionState() logic to check
+      // history state as a precondition for SEGMENTATION.
       return {kPreferencesTypeName,
               PREFERENCES,
-              {PREFERENCES, DICTIONARY, PRIORITY_PREFERENCES, SEARCH_ENGINES}};
+              {PREFERENCES, DICTIONARY, PRIORITY_PREFERENCES, SEARCH_ENGINES,
+               SEGMENTATION}};
     case UserSelectableType::kPasswords:
       return {kPasswordsTypeName, PASSWORDS, {PASSWORDS}};
     case UserSelectableType::kAutofill:

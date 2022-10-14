@@ -72,6 +72,9 @@ BASE_DECLARE_FEATURE(kSyncExtensionTypesThrottling);
 
 BASE_DECLARE_FEATURE(kSyncResetPollIntervalOnStart);
 
+// If enabled, Segmentation data type will be synced.
+BASE_DECLARE_FEATURE(kSyncSegmentationDataType);
+
 // If enabled, interested data types, excluding Wallet and Offer, will be sent
 // to the Sync Server as part of DeviceInfo.
 BASE_DECLARE_FEATURE(kSyncSendInterestedDataTypes);

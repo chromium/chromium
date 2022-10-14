@@ -30,6 +30,9 @@ constexpr base::TimeDelta kVeryBigLocalChangeNudgeDelay = kDefaultPollInterval;
 constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSessions =
     base::Seconds(11);
 
+constexpr base::TimeDelta kDefaultLocalChangeNudgeDelayForSegmentations =
+    base::Seconds(11);
+
 // Nudge delay for remote invalidations. Common to all data types.
 constexpr base::TimeDelta kRemoteInvalidationDelay = base::Milliseconds(250);
 
@@ -56,6 +59,11 @@ base::TimeDelta GetDefaultLocalChangeNudgeDelay(ModelType model_type) {
       // custom nudge delay, tuned for a reasonable trade-off between traffic
       // and freshness.
       return kDefaultLocalChangeNudgeDelayForSessions;
+    case SEGMENTATION:
+      // There are multiple segmentations computed during start-up within
+      // seconds. Applies a custom nudge delay, so that they are batched into
+      // one commit.
+      return kDefaultLocalChangeNudgeDelayForSegmentations;
     case BOOKMARKS:
     case PREFERENCES:
       // Types with sometimes automatic changes get longer delays to allow more
@@ -146,6 +154,7 @@ bool CanGetCommitsFromExtensions(ModelType model_type) {
     case PRINTERS_AUTHORIZATION_SERVERS:
     case READING_LIST:
     case USER_CONSENTS:
+    case SEGMENTATION:
     case SEND_TAB_TO_SELF:
     case SECURITY_EVENTS:
     case WIFI_CONFIGURATIONS:
