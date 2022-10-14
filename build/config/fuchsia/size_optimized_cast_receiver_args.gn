@@ -34,3 +34,8 @@ enable_pdf = false
 enable_plugins = false
 optimize_for_size = true
 optional_trace_events_enabled = false
+
+# Ensure PGO and ThinLTO are disabled as these optimizations increase the binary
+# size (see crbug.com/1322959).
+chrome_pgo_phase = 0
+use_thin_lto = false
