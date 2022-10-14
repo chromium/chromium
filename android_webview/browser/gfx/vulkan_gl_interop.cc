@@ -11,7 +11,6 @@
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "gpu/ipc/common/android/android_image_reader_utils.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
@@ -23,6 +22,7 @@
 #include "third_party/skia/include/gpu/vk/GrVkExtensions.h"
 #include "third_party/skia/src/gpu/vk/GrVkSecondaryCBDrawContext.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gl/android/egl_fence_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context_egl.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -248,7 +248,7 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
   }
 
   // Ask GL to wait on any Vk sync_fd before writing.
-  gpu::InsertEglFenceAndWait(std::move(pending_draw->sync_fd));
+  gl::InsertEglFenceAndWait(std::move(pending_draw->sync_fd));
 
   // Bind buffer and render with GL.
   base::ScopedFD gl_done_fd;
@@ -261,7 +261,7 @@ void VulkanGLInterop::DrawVk(sk_sp<GrVkSecondaryCBDrawContext> draw_context,
     glClear(GL_COLOR_BUFFER_BIT);
     render_thread_manager_->DrawOnRT(/*save_restore=*/false, params,
                                      overlays_params);
-    gl_done_fd = gpu::CreateEglFenceAndExportFd();
+    gl_done_fd = gl::CreateEglFenceAndExportFd();
   }
 
   pending_draw->draw_context = std::move(draw_context);

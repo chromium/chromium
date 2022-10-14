@@ -25,7 +25,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "gpu/ipc/common/android/android_image_reader_utils.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
 #include "ui/gl/gl_utils.h"

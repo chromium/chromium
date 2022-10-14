@@ -25,7 +25,6 @@
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/command_buffer/service/texture_owner.h"
-#include "gpu/ipc/common/android/android_image_reader_utils.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -35,6 +34,7 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "ui/gl/android/egl_fence_utils.h"
 #include "ui/gl/gl_image_ahardwarebuffer.h"
 #include "ui/gl/gl_utils.h"
 
@@ -218,7 +218,7 @@ class VideoImageReaderImageBacking::GLTextureVideoImageRepresentation
   void EndAccess() override {
     DCHECK(scoped_hardware_buffer_);
 
-    base::ScopedFD sync_fd = CreateEglFenceAndExportFd();
+    base::ScopedFD sync_fd = gl::CreateEglFenceAndExportFd();
     scoped_hardware_buffer_->SetReadFence(std::move(sync_fd), true);
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     scoped_hardware_buffer_ = nullptr;
@@ -285,7 +285,7 @@ class VideoImageReaderImageBacking::GLTexturePassthroughVideoImageRepresentation
   void EndAccess() override {
     DCHECK(scoped_hardware_buffer_);
 
-    base::ScopedFD sync_fd = CreateEglFenceAndExportFd();
+    base::ScopedFD sync_fd = gl::CreateEglFenceAndExportFd();
     scoped_hardware_buffer_->SetReadFence(std::move(sync_fd), true);
     base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
     scoped_hardware_buffer_ = nullptr;

@@ -534,10 +534,7 @@ target(link_target_type, "gles2_sources") {
     defines = [ "VK_USE_PLATFORM_ANDROID_KHR" ]
     deps += [ "//third_party/libsync" ]
     if (enable_vulkan) {
-      deps += [
-        "//gpu/ipc/common:android_image_reader_utils",
-        "//gpu/vulkan",
-      ]
+      deps += [ "//gpu/vulkan" ]
     }
   }
 

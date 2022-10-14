@@ -81,7 +81,6 @@ source_set("gfx") {
     "//content/public/browser",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/service",
-    "//gpu/ipc/common:android_image_reader_utils",
     "//gpu/ipc/common:common",
     "//gpu/skia_bindings",
     "//gpu/vulkan:vulkan",

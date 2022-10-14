@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/common/android/android_image_reader_utils.h"
+#include "ui/gl/android/egl_fence_utils.h"
 
 #include "ui/gl/gl_fence_android_native_fence_sync.h"
 
-namespace gpu {
+namespace gl {
 
 base::ScopedFD CreateEglFenceAndExportFd() {
   std::unique_ptr<gl::GLFenceAndroidNativeFenceSync> android_native_fence =
@@ -62,4 +62,4 @@ bool InsertEglFenceAndWait(base::ScopedFD acquire_fence_fd) {
   return true;
 }
 
-}  // namespace gpu
+}  // namespace gl

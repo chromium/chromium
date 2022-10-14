@@ -180,25 +180,6 @@ source_set("ipc_common_sources") {
   }
 }
 
-if (is_android) {
-  source_set("android_image_reader_utils") {
-    sources = [
-      "android/android_image_reader_utils.cc",
-      "android/android_image_reader_utils.h",
-    ]
-    configs += [ "//gpu:gpu_implementation" ]
-    deps = [
-      "//base",
-      "//ui/gl",
-    ]
-    visibility = [
-      "//android_webview/browser/gfx",
-      "//gpu/*",
-      "//media/gpu:gpu",
-    ]
-  }
-}
-
 # Depend on this to use surface_handle.h without pulling in all of gpu ipc.
 source_set("surface_handle_type") {
   public = [ "surface_handle.h" ]

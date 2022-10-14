@@ -168,7 +168,6 @@ component("gpu") {
     libs += [ "android" ]
     deps += [
       ":mediacodec_stubs",
-      "//gpu/ipc/common:android_image_reader_utils",
 
       # TODO(crbug.com/789435): This can be removed once CdmManager is removed.
       "//gpu/ipc/common",

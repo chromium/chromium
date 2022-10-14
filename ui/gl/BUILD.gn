@@ -241,6 +241,8 @@ component("gl") {
 
     if (is_android) {
       sources += [
+        "android/egl_fence_utils.cc",
+        "android/egl_fence_utils.h",
         "gl_image_ahardwarebuffer.cc",
         "gl_image_ahardwarebuffer.h",
         "gl_surface_egl_surface_control.cc",
