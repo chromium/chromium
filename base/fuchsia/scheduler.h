@@ -15,7 +15,7 @@ namespace base {
 // this constants.
 constexpr TimeDelta kAudioSchedulingPeriod = Milliseconds(10);
 
-// Reserve 30% of one CPU core for audio threads.
+// Request 30% max CPU deadline utilization for an audio thread.
 // TODO(crbug.com/1174811): A different value may need to be used for WebAudio
 // threads (see media::FuchsiaAudioOutputDevice). A higher capacity may need to
 // be allocated in that case.
@@ -26,7 +26,7 @@ constexpr float kAudioSchedulingCapacity = 0.3;
 // this constants.
 constexpr TimeDelta kDisplaySchedulingPeriod = Seconds(1) / 60;
 
-// Reserve 50% of one CPU core for display threads.
+// Request 50% max CPU deadline utilization for a display thread.
 // TODO(crbug.com/1181421): Currently DISPLAY priority is not enabled for any
 // thread on Fuchsia. The value below will need to be fine-tuned when it's
 // enabled.

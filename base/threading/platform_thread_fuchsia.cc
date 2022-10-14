@@ -8,6 +8,8 @@
 #include <sched.h>
 #include <zircon/syscalls.h>
 
+#include <mutex>
+
 #include <fuchsia/media/cpp/fidl.h>
 #include <lib/fdio/directory.h>
 #include <lib/sys/cpp/component_context.h>
@@ -26,15 +28,26 @@ namespace {
 
 fuchsia::media::ProfileProviderSyncPtr ConnectProfileProvider() {
   fuchsia::media::ProfileProviderSyncPtr profile_provider;
-  base::ComponentContextForProcess()->svc()->Connect(
+  const zx_status_t status = base::ComponentContextForProcess()->svc()->Connect(
       profile_provider.NewRequest());
+  if (status != ZX_OK) {
+    ZX_LOG(ERROR, status)
+        << "Failed to connect to ProfileProvider! Is "
+           "fuchsia.media.ProfileProvider in the component sandbox?";
+  }
   return profile_provider;
 }
 
-void ScheduleAsMediaThread(StringPiece name, TimeDelta period, float capacity) {
-  DCHECK(!period.is_zero());
-  DCHECK_GT(capacity, 0.0);
-  DCHECK_LT(capacity, 1.0);
+// Sets the current thread to the given scheduling role, optionally including
+// hints about the workload period and max CPU runtime (capacity * period) in
+// that period.
+// TODO(crbug.com/1365682): Migrate to the new fuchsia.scheduler.ProfileProvider
+// API when available.
+void SetThreadRole(StringPiece role_name,
+                   TimeDelta period = {},
+                   float capacity = 0.0f) {
+  DCHECK_GE(capacity, 0.0);
+  DCHECK_LE(capacity, 1.0);
 
   static const base::NoDestructor<fuchsia::media::ProfileProviderSyncPtr>
       profile_provider(ConnectProfileProvider());
@@ -44,17 +57,12 @@ void ScheduleAsMediaThread(StringPiece name, TimeDelta period, float capacity) {
       zx::thread::self()->duplicate(ZX_RIGHT_SAME_RIGHTS, &dup_thread);
   ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
 
+  std::string role_selector{role_name};
   int64_t out_period, out_capacity;
-  status = (*profile_provider)
-               ->RegisterHandlerWithCapacity(
-                   std::move(dup_thread), std::string(name),
-                   period.ToZxDuration(), capacity, &out_period, &out_capacity);
-
-  if (status != ZX_OK) {
-    ZX_LOG(WARNING, status)
-        << "Failed to register a realtime thread. Is "
-           "fuchsia.media.ProfileProvider in the component sandbox?";
-  }
+  (*profile_provider)
+      ->RegisterHandlerWithCapacity(std::move(dup_thread), role_selector,
+                                    period.ToZxDuration(), capacity,
+                                    &out_period, &out_capacity);
 }
 
 }  // namespace
@@ -87,21 +95,32 @@ namespace internal {
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint) {
   switch (thread_type) {
-    case ThreadType::kBackground:
-    case ThreadType::kResourceEfficient:
     case ThreadType::kDefault:
+      SetThreadRole("chromium.base.threading.default");
+
+      break;
+
+    case ThreadType::kBackground:
+      SetThreadRole("chromium.base.threading.background");
+      break;
+
+    case ThreadType::kResourceEfficient:
+      SetThreadRole("chromium.base.threading.resource-efficient");
+      break;
+
     case ThreadType::kCompositing:
+      SetThreadRole("chromium.base.threading.compositing",
+                    kDisplaySchedulingPeriod, kDisplaySchedulingCapacity);
       break;
 
     case ThreadType::kDisplayCritical:
-      ScheduleAsMediaThread("chromium.base.threading.display",
-                            kDisplaySchedulingPeriod,
-                            kDisplaySchedulingCapacity);
+      SetThreadRole("chromium.base.threading.display", kDisplaySchedulingPeriod,
+                    kDisplaySchedulingCapacity);
       break;
 
     case ThreadType::kRealtimeAudio:
-      ScheduleAsMediaThread("chromium.base.threading.realtime-audio",
-                            kAudioSchedulingPeriod, kAudioSchedulingCapacity);
+      SetThreadRole("chromium.base.threading.realtime-audio",
+                    kAudioSchedulingPeriod, kAudioSchedulingCapacity);
       break;
   }
 }
