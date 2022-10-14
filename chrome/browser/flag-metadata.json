@@ -4458,7 +4458,7 @@
   {
     "name": "lightweight-reactions-android",
     "owners": [ "gujen", "sophey", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 108
+    "expiry_milestone": 110
   },
   {
     "name": "link-capturing-auto-display-intent-picker",
