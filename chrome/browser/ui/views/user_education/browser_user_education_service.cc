@@ -336,6 +336,11 @@ void MaybeRegisterChromeFeaturePromos(
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_NOT_NOW)
           .SetBubbleTitleText(IDS_HIGH_EFFICIENCY_MODE_PROMO_TITLE)));
+
+  // kIPHPriceTrackingInSidePanelFeature;
+  registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
+      &feature_engagement::kIPHPriceTrackingInSidePanelFeature,
+      kReadLaterButtonElementId, IDS_PRICE_TRACKING_SIDE_PANEL_IPH));
 }
 
 void MaybeRegisterChromeTutorials(

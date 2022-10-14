@@ -11,10 +11,12 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/mojom/shopping_list.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/commerce/core/webui/shopping_list_handler.h"
+#include "components/feature_engagement/test/mock_tracker.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
@@ -42,6 +44,22 @@ class MockPage : public shopping_list::mojom::Page {
   MOCK_METHOD1(PriceUntrackedForBookmark, void(int64_t bookmark_id));
 };
 
+void GetEvaluationProductInfos(
+    base::OnceClosure closure,
+    std::vector<shopping_list::mojom::BookmarkProductInfoPtr> expected,
+    std::vector<shopping_list::mojom::BookmarkProductInfoPtr> found) {
+  ASSERT_EQ(expected.size(), found.size());
+  for (size_t i = 0; i < expected.size(); i++) {
+    ASSERT_EQ(expected[i]->bookmark_id, found[i]->bookmark_id);
+    ASSERT_EQ(expected[i]->info->current_price, found[i]->info->current_price);
+    ASSERT_EQ(expected[i]->info->domain, found[i]->info->domain);
+    ASSERT_EQ(expected[i]->info->title, found[i]->info->title);
+    ASSERT_EQ(expected[i]->info->image_url.spec(),
+              found[i]->info->image_url.spec());
+  }
+  std::move(closure).Run();
+}
+
 class ShoppingListHandlerTest : public testing::Test {
  public:
   ShoppingListHandlerTest() { features_.InitAndEnableFeature(kShoppingList); }
@@ -57,7 +75,7 @@ class ShoppingListHandlerTest : public testing::Test {
         page_.BindAndGetRemote(),
         mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler>(),
         bookmark_model_.get(), shopping_service_.get(), pref_service_.get(),
-        "en-us");
+        &tracker_, "en-us");
   }
 
   MockPage page_;
@@ -65,6 +83,7 @@ class ShoppingListHandlerTest : public testing::Test {
   std::unique_ptr<MockShoppingService> shopping_service_;
   std::unique_ptr<commerce::ShoppingListHandler> handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  feature_engagement::test::MockTracker tracker_;
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList features_;
 };
@@ -184,6 +203,71 @@ TEST_F(ShoppingListHandlerTest, PageNotUpdateForIrrelevantChange) {
   EXPECT_CALL(page_, PriceTrackedForBookmark(testing::_)).Times(0);
   EXPECT_CALL(page_, PriceUntrackedForBookmark(node->id())).Times(0);
   bookmark_model_->SetNodeMetaInfo(node, "test_key", "test_value");
+}
+
+TEST_F(ShoppingListHandlerTest, TestGetProductInfo_FeatureEnabled) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(tracker_, NotifyEvent("price_tracking_side_panel_shown"));
+
+  const bookmarks::BookmarkNode* product = AddProductBookmark(
+      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
+      true, 1230000, "usd");
+
+  std::vector<const bookmarks::BookmarkNode*> bookmark_list;
+  bookmark_list.push_back(product);
+  std::vector<shopping_list::mojom::BookmarkProductInfoPtr> mojo_list =
+      ShoppingListHandler::BookmarkListToMojoList(*bookmark_model_,
+                                                  bookmark_list, "en-us");
+
+  handler_->GetAllPriceTrackedBookmarkProductInfo(
+      base::BindOnce(&GetEvaluationProductInfos, run_loop.QuitClosure(),
+                     std::move(mojo_list)));
+}
+
+class ShoppingListHandlerFeatureDisableTest : public testing::Test {
+ public:
+  ShoppingListHandlerFeatureDisableTest() {
+    features_.InitAndDisableFeature(kShoppingList);
+  }
+
+ protected:
+  void SetUp() override {
+    bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
+    shopping_service_ = std::make_unique<MockShoppingService>();
+    handler_ = std::make_unique<commerce::ShoppingListHandler>(
+        page_.BindAndGetRemote(),
+        mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandler>(),
+        bookmark_model_.get(), shopping_service_.get(), pref_service_.get(),
+        &tracker_, "en-us");
+  }
+
+  MockPage page_;
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  std::unique_ptr<MockShoppingService> shopping_service_;
+  std::unique_ptr<commerce::ShoppingListHandler> handler_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  feature_engagement::test::MockTracker tracker_;
+  base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(ShoppingListHandlerFeatureDisableTest,
+       TestGetProductInfo_FeatureDisabled) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(tracker_, NotifyEvent("price_tracking_side_panel_shown"))
+      .Times(0);
+
+  const bookmarks::BookmarkNode* product = AddProductBookmark(
+      bookmark_model_.get(), u"product 1", GURL("http://example.com/1"), 123L,
+      true, 1230000, "usd");
+
+  std::vector<const bookmarks::BookmarkNode*> bookmark_list;
+  bookmark_list.push_back(product);
+  std::vector<shopping_list::mojom::BookmarkProductInfoPtr> empty_list;
+
+  handler_->GetAllPriceTrackedBookmarkProductInfo(
+      base::BindOnce(&GetEvaluationProductInfos, run_loop.QuitClosure(),
+                     std::move(empty_list)));
 }
 
 }  // namespace

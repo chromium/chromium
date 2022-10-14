@@ -23,9 +23,11 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/test/feature_promo_test_util.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -44,7 +46,10 @@ const char kTestURL[] = "about:blank";
 class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
  public:
   PriceTrackingIconViewInteractiveTest() {
-    test_features_.InitAndEnableFeature(commerce::kShoppingList);
+    test_features_.InitWithFeatures(
+        {commerce::kShoppingList,
+         feature_engagement::kIPHPriceTrackingInSidePanelFeature},
+        {});
   }
 
   PriceTrackingIconViewInteractiveTest(
@@ -292,6 +297,12 @@ class PriceTrackingBubbleInteractiveTest
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
                        TrackPriceOnFUEBubble) {
+  BrowserFeaturePromoController* const promo_controller =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetFeaturePromoController();
+  EXPECT_TRUE(
+      user_education::test::WaitForFeatureEngagementReady(promo_controller));
+
   // Show PriceTackingIconView.
   auto* icon_view = GetChip();
   icon_view->ForceVisibleForTesting(/*is_tracking_price=*/false);
@@ -324,6 +335,10 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
   EXPECT_EQ(icon_view->GetTextForTooltipAndAccessibleName(),
             l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACKING_PRICE));
   EXPECT_TRUE(GetBookmarkStar()->GetActive());
+
+  // Verify IPH is showing after accepting the FUE bubble.
+  EXPECT_TRUE(promo_controller->IsPromoActive(
+      feature_engagement::kIPHPriceTrackingInSidePanelFeature));
 }
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,

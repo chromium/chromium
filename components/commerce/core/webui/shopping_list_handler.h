@@ -23,6 +23,10 @@ namespace bookmarks {
 class BookmarkNode;
 }  // namespace bookmarks
 
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
+
 namespace commerce {
 
 class ShoppingService;
@@ -36,6 +40,7 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
       bookmarks::BookmarkModel* bookmark_model,
       ShoppingService* shopping_service,
       PrefService* prefs,
+      feature_engagement::Tracker* tracker,
       const std::string& locale);
   ShoppingListHandler(const ShoppingListHandler&) = delete;
   ShoppingListHandler& operator=(const ShoppingListHandler&) = delete;
@@ -65,13 +70,14 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
 
   mojo::Remote<shopping_list::mojom::Page> remote_page_;
   mojo::Receiver<shopping_list::mojom::ShoppingListHandler> receiver_;
-  // The bookmark model and shopping service will outlive this implementation
-  // since it is a keyed service bound to the browser context (which in turn has
-  // the same lifecycle as the browser). The web UI that hosts this will be shut
-  // down prior to the rest of the browser.
+  // The bookmark model, shopping service and tracker will outlive this
+  // implementation since it is a keyed service bound to the browser context
+  // (which in turn has the same lifecycle as the browser). The web UI that
+  // hosts this will be shut down prior to the rest of the browser.
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<ShoppingService> shopping_service_;
   raw_ptr<PrefService> pref_service_;
+  raw_ptr<feature_engagement::Tracker> tracker_;
   const std::string locale_;
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<bookmarks::BookmarkModel,

@@ -9,13 +9,16 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/price_tracking_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
@@ -30,13 +33,14 @@
 PriceTrackingIconView::PriceTrackingIconView(
     IconLabelBubbleView::Delegate* parent_delegate,
     Delegate* delegate,
-    Profile* profile)
+    Browser* browser)
     : PageActionIconView(nullptr,
                          0,
                          parent_delegate,
                          delegate,
                          "PriceTracking"),
-      profile_(profile),
+      browser_(browser),
+      profile_(browser->profile()),
       bubble_coordinator_(this),
       icon_(&omnibox::kPriceTrackingDisabledIcon) {
   SetProperty(views::kElementIdentifierKey, kPriceTrackingChipElementId);
@@ -149,6 +153,8 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
     base::RecordAction(
         base::UserMetricsAction("Commerce.PriceTracking.OmniboxChip.Tracked"));
     commerce::MaybeEnableEmailNotifications(profile_->GetPrefs());
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHPriceTrackingInSidePanelFeature);
   }
 
   const bookmarks::BookmarkNode* node =
