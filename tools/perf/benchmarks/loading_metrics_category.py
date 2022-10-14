@@ -26,5 +26,6 @@ def AugmentOptionsForLoadingMetrics(tbm_options):
   # properly compute time-to-interactive.
   cat_filter.AddDisabledByDefault('disabled-by-default-network')
 
-  tbm_options.AddTimelineBasedMetric('loadingMetric')
+  tbm_options.ExtendTimelineBasedMetric(
+      ['loadingMetric', 'coreWebVitalsMetric'])
   return tbm_options
