@@ -2512,11 +2512,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
             blink::switches::kWebSQLNonSecureContextEnabled);
       }
 
-      // Enable persistent quota if enabled by enterprise policy.
-      if (prefs->GetBoolean(storage::kPersistentQuotaEnabled)) {
-        command_line->AppendSwitch(blink::switches::kPersistentQuotaEnabled);
-      }
-
       // Enable legacy quota API if enabled by enterprise policy.
       if (prefs->GetBoolean(storage::kPrefixedStorageInfoEnabled)) {
         command_line->AppendSwitch(

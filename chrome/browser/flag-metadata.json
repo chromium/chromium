@@ -5563,11 +5563,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "persistent-quota-is-temporary-quota",
-    "owners": [ "mek", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 107
-  },
-  {
     "name": "pervasive-system-accent-color",
     "owners": ["pkasting"],
     "expiry_milestone": 110

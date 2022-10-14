@@ -8824,11 +8824,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(extensions_features::kExtensionsFSPInServiceWorkers)},
 #endif
 
-    {"persistent-quota-is-temporary-quota",
-     flag_descriptions::kPersistentQuotaIsTemporaryQuotaName,
-     flag_descriptions::kPersistentQuotaIsTemporaryQuotaDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kPersistentQuotaIsTemporaryQuota)},
-
     {"canvas-oop-rasterization", flag_descriptions::kCanvasOopRasterizationName,
      flag_descriptions::kCanvasOopRasterizationDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kCanvasOopRasterization)},

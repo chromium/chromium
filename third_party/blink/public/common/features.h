@@ -463,10 +463,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowDropAlphaForMediaStream);
 // inspector issue anyway.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCORSErrorsIssueOnly);
 
-// Makes Persistent quota the same as Temporary quota.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPersistentQuotaIsTemporaryQuota);
-BLINK_COMMON_EXPORT bool IsPersistentQuotaIsTemporaryQuota();
-
 // If enabled, the ResourceLoadScheculer will take the current network state
 // into consideration, when it plans to delay a low-priority throttleable
 // requests in the tight mode. The factors include:

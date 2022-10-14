@@ -15,9 +15,6 @@ const char kWebSQLAccess[] = "policy.web_sql_access";
 const char kWebSQLNonSecureContextEnabled[] =
     "policy.web_sql_non_secure_context_enabled";
 
-// Boolean policy to force enable persistent quota.
-const char kPersistentQuotaEnabled[] = "policy.persistent_quota_enabled";
-
 // Boolean policy to force PrefixedStorageInfo to be enabled.
 const char kPrefixedStorageInfoEnabled[] =
     "policy.prefixed_storage_info_enabled";
@@ -29,7 +26,6 @@ const char kFileSystemSyncAccessHandleAsyncInterfaceEnabled[] =
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kWebSQLAccess, false);
   registry->RegisterBooleanPref(kWebSQLNonSecureContextEnabled, false);
-  registry->RegisterBooleanPref(kPersistentQuotaEnabled, false);
   registry->RegisterBooleanPref(kPrefixedStorageInfoEnabled, false);
   registry->RegisterBooleanPref(
       kFileSystemSyncAccessHandleAsyncInterfaceEnabled, false);

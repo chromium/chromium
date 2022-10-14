@@ -179,9 +179,6 @@ extern const char kEventPathPolicy[] = "event-path-policy";
 extern const char kEventPathPolicy_ForceDisable[] = "0";
 extern const char kEventPathPolicy_ForceEnable[] = "1";
 
-// Controls whether persistent quota is force enabled.
-const char kPersistentQuotaEnabled[] = "persistent-quota-enabled";
-
 // Controls whether legacy quota API webkitStorageInfo is forced enabled.
 const char kPrefixedStorageInfoEnabled[] = "prefixed-storage-info-enabled";
 

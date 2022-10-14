@@ -2433,12 +2433,6 @@ const char kPermissionQuietChipDescription[] =
     "right-hand side address bar icon for quiet permission prompts. Requires "
     "chrome://flags/#quiet-notification-prompts to be enabled.";
 
-const char kPersistentQuotaIsTemporaryQuotaName[] =
-    "window.PERSISTENT is temporary quota.";
-const char kPersistentQuotaIsTemporaryQuotaDescription[] =
-    "Causes the window.PERSISTENT quota type to have the same semantics as "
-    "window.TEMPORARY.";
-
 const char kPointerLockOptionsName[] = "Enables pointer lock options";
 const char kPointerLockOptionsDescription[] =
     "Enables pointer lock unadjustedMovement. When unadjustedMovement is set "

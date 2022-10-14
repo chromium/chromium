@@ -1364,9 +1364,6 @@ extern const char kPermissionPredictionsDescription[];
 extern const char kPermissionQuietChipName[];
 extern const char kPermissionQuietChipDescription[];
 
-extern const char kPersistentQuotaIsTemporaryQuotaName[];
-extern const char kPersistentQuotaIsTemporaryQuotaDescription[];
-
 extern const char kPointerLockOptionsName[];
 extern const char kPointerLockOptionsDescription[];
 

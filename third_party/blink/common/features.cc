@@ -1044,17 +1044,6 @@ BASE_FEATURE(kCORSErrorsIssueOnly,
              "CORSErrorsIssueOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPersistentQuotaIsTemporaryQuota,
-             "PersistentQuotaIsTemporaryQuota",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsPersistentQuotaIsTemporaryQuota() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kPersistentQuotaEnabled) &&
-         base::FeatureList::IsEnabled(
-             features::kPersistentQuotaIsTemporaryQuota);
-}
-
 BASE_FEATURE(kDelayLowPriorityRequestsAccordingToNetworkState,
              "DelayLowPriorityRequestsAccordingToNetworkState",
              base::FEATURE_DISABLED_BY_DEFAULT);

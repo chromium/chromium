@@ -960,23 +960,6 @@ TEST_F(ChromeContentBrowserClientSwitchTest,
       result.HasSwitch(blink::switches::kWebSQLNonSecureContextEnabled));
 }
 
-TEST_F(ChromeContentBrowserClientSwitchTest, PersistentQuotaEnabledDefault) {
-  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
-  EXPECT_FALSE(result.HasSwitch(blink::switches::kPersistentQuotaEnabled));
-}
-
-TEST_F(ChromeContentBrowserClientSwitchTest, PersistentQuotaEnabledDisabled) {
-  profile()->GetPrefs()->SetBoolean(storage::kPersistentQuotaEnabled, false);
-  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
-  EXPECT_FALSE(result.HasSwitch(blink::switches::kPersistentQuotaEnabled));
-}
-
-TEST_F(ChromeContentBrowserClientSwitchTest, PersistentQuotaEnabledEnabled) {
-  profile()->GetPrefs()->SetBoolean(storage::kPersistentQuotaEnabled, true);
-  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
-  EXPECT_TRUE(result.HasSwitch(blink::switches::kPersistentQuotaEnabled));
-}
-
 TEST_F(ChromeContentBrowserClientSwitchTest,
        FileSystemSyncAccessHandleAsyncInterfaceEnabledDefault) {
   base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
