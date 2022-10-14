@@ -8,6 +8,10 @@
     margin-inline-start: var(--cr-section-padding);
   }
 
+  .doubly-indented {
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
   .underbar {
     border-bottom: var(--cr-separator-line);
   }
@@ -60,6 +64,24 @@
       sub-label="$i18n{smartPrivacyQuickDimSubtext}"
       deep-link-focus-id$="[[Setting.kQuickDim]]">
   </settings-toggle-button>
+  <iron-collapse id="quickDimOptions"
+      opened="[[prefs.power.quick_dim_enabled.value]]">
+    <div class="doubly-indented">
+      <div class="underbar indented"></div>
+      <div class="settings-box continuation">
+        <div class="start" aria-hidden="true">
+          $i18n{smartPrivacyQuickLockTitle}
+        </div>
+        <settings-slider
+          pref="{{prefs.power.quick_lock_delay.ms}}"
+          ticks="[[smartPrivacyQuickLockRangeMs_]]"
+          label-aria="$i18n{smartPrivacyQuickLockTitle}"
+          label-min="$i18n{smartPrivacyQuickLockShort}"
+          label-max="$i18n{smartPrivacyQuickLockLong}">
+        </settings-slider>
+      </div>
+    </div>
+  </iron-collapse>
 
   <!-- Underbar is only needed if we need to separate the two
        settings. -->
@@ -77,9 +99,13 @@
   </settings-toggle-button>
   <iron-collapse id="snoopingProtectionOptions"
       opened="[[prefs.ash.privacy.snooping_protection_enabled.value]]">
-      <settings-toggle-button class="settings-box continuation indented"
+    <div class="doubly-indented">
+      <div class="underbar indented"></div>
+      <settings-toggle-button
+          class="settings-box continuation"
           pref="{{prefs.ash.privacy.snooping_protection_notification_suppression_enabled}}"
           label="$i18n{smartPrivacySnoopingNotifications}">
       </settings-toggle-button>
+    </div>
   </iron-collapse>
 </template>

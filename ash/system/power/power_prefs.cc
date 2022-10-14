@@ -117,6 +117,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kPowerSmartDimEnabled, true);
   registry->RegisterBooleanPref(prefs::kPowerAlsLoggingEnabled, false);
   registry->RegisterBooleanPref(prefs::kPowerQuickDimEnabled, false);
+  registry->RegisterIntegerPref(prefs::kPowerQuickLockDelay,
+                                hps::GetQuickLockDelay().InMilliseconds());
 
   registry->RegisterBooleanPref(prefs::kAllowScreenLock, true);
   registry->RegisterBooleanPref(
@@ -346,8 +348,9 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
       values.ac_quick_dim_delay_ms = hps::GetQuickDimDelay().InMilliseconds();
 
       values.battery_quick_lock_delay_ms =
-          hps::GetQuickLockDelay().InMilliseconds();
-      values.ac_quick_lock_delay_ms = hps::GetQuickLockDelay().InMilliseconds();
+          prefs->GetInteger(prefs::kPowerQuickLockDelay);
+      values.ac_quick_lock_delay_ms =
+          prefs->GetInteger(prefs::kPowerQuickLockDelay);
 
       values.send_feedback_if_undimmed = hps::GetQuickDimFeedbackEnabled();
 
@@ -497,6 +500,7 @@ void PowerPrefs::ObservePrefs(PrefService* prefs) {
                           update_callback);
   profile_registrar_->Add(prefs::kPowerAlsLoggingEnabled, update_callback);
   profile_registrar_->Add(prefs::kPowerQuickDimEnabled, update_callback);
+  profile_registrar_->Add(prefs::kPowerQuickLockDelay, update_callback);
   profile_registrar_->Add(prefs::kPowerAdaptiveChargingEnabled,
                           update_callback);
 

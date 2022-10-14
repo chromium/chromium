@@ -27,6 +27,26 @@ import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 /**
+ * The values that the quick lock slider can have, in ms.
+ * @const {!Array<number>}
+ */
+const QUICK_LOCK_DELAY_MS = [
+  30000,
+  60000,
+  120000,
+  180000,
+];
+
+/**
+ * Formatter for displaying duration text for the slider of quick dim
+ * delay.
+ * @const {Object}
+ */
+const secondsFormatter = new Intl.NumberFormat(
+    window.navigator.language,
+    {style: 'unit', unit: 'second', unitDisplay: 'narrow'});
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {DeepLinkingBehaviorInterface}
@@ -74,6 +94,19 @@ class SettingsSmartPrivacyPage extends SettingsSmartPrivacyPageBase {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isQuickDimEnabled');
+        },
+      },
+
+      /**
+       * Text that shows when moving the quick dim delay slider.
+       * @private {!Array<!SliderTick>}
+       */
+      smartPrivacyQuickLockRangeMs_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return QUICK_LOCK_DELAY_MS.map(
+              x => ({label: secondsFormatter.format(x / 1000), value: x}));
         },
       },
 

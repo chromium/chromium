@@ -16,12 +16,13 @@ suite('SmartPrivacySubpageTests', function() {
 
   /**
    * Generate preferences for the smart privacy page that either enable or
-   * disable the snooping protection feature.
-   * @ param {boolean} state Whether to enable or disable.
+   * disable the quick dim or snooping protection feature.
+   * @ param {boolean} quickDimState To enable or disable quick dim.
+   * @ param {boolean} snoopingState To enable or disable snooping protection.
    * @return {!CrSettingsPrefs} The corresponding pref dictionary.
    * @private
    */
-  function makePrefs(snoopingState) {
+  function makePrefs(quickDimState, snoopingState) {
     return {
       'ash': {
         'privacy': {
@@ -30,19 +31,25 @@ suite('SmartPrivacySubpageTests', function() {
           },
         },
       },
+      'power': {
+        'quick_dim_enabled': {
+          value: quickDimState,
+        },
+      },
     };
   }
 
   setup(async () => {
-    // Options aren't shown unless the snooping protection feature is enabled.
+    // Options aren't shown unless the feature is enabled.
     loadTimeData.overrideValues({
+      isQuickDimEnabled: true,
       isSnoopingProtectionEnabled: true,
     });
 
     PolymerTest.clearBody();
     smartPrivacySubpage = document.createElement('settings-smart-privacy-page');
     assertTrue(!!smartPrivacySubpage);
-    smartPrivacySubpage.prefs = makePrefs(false);
+    smartPrivacySubpage.prefs = makePrefs(false, false);
     document.body.appendChild(smartPrivacySubpage);
   });
 
@@ -61,7 +68,23 @@ suite('SmartPrivacySubpageTests', function() {
     assertFalse(collapse.opened);
 
     // Atomic reassign to so that Polymer notices the change.
-    smartPrivacySubpage.prefs = makePrefs(true);
+    smartPrivacySubpage.prefs = makePrefs(false, true);
+    flush();
+
+    assertTrue(collapse.opened);
+  });
+
+  test('Quick dim slider visibility tied to pref', async () => {
+    // The $ method won't find elements inside templates.
+    /** @type {?HTMLElement} */
+    const collapse =
+        smartPrivacySubpage.shadowRoot.querySelector('#quickDimOptions');
+
+    // Default pref value is false.
+    assertFalse(collapse.opened);
+
+    // Atomic reassign to so that Polymer notices the change.
+    smartPrivacySubpage.prefs = makePrefs(true, false);
     flush();
 
     assertTrue(collapse.opened);

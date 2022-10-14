@@ -66,6 +66,9 @@ js_library("smart_privacy_page") {
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js" ]
 }
 
 js_library("privacy_hub_page") {

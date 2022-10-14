@@ -4425,6 +4425,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_DIM_TITLE" desc="The name of the quick dim feature shown as the label of a toggle in the smart privacy subpage.">
     Lock-on-leave
   </message>
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_LOCK_LONG" desc="The name of the maximum value of the quick lock slider in the smart privacy subpage.">
+    Long
+  </message>
+    <message name="IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_LOCK_SHORT" desc="The name of the minimum value of the quick lock slider in the smart privacy subpage.">
+    Short
+  </message>
+    <message name="IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_LOCK_TITLE" desc="The text that shows the Time to lock for the quick lock slider in the smart privacy subpage.">
+    Time to lock
+  </message>
   <message name="IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_DIM_SUBTEXT" desc="Sub-label elaborating on the meaning of smart screen locking.">
     If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If you aren't using a lock screen, your device will sleep instead of lock.
   </message>
