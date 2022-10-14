@@ -34,6 +34,7 @@ FeaturePromoDialogIntentChipTest.InvokeUi_*
 FeaturePromoDialogTest.InvokeUi_*
 FileSystemAccessUsageBubbleViewTest.*
 FirstRunDialogTest.*
+FirstRunIntroPixelTest.*
 GlobalErrorBubbleTest.*
 HatsBubbleTest.*
 HomeButtonUiTest.*

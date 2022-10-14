@@ -2821,6 +2821,12 @@ if (!is_android) {
       if (is_win) {
         sources += [ "../browser/signin/signin_util_win_browsertest.cc" ]
       }
+
+      # TODO(crbug.com/1052397): Update guard when pixel tests support widens.
+      if (is_win || is_linux || is_chromeos_lacros) {
+        sources +=
+            [ "../browser/ui/views/profiles/first_run_intro_browsertest.cc" ]
+      }
     } else {
       sources += [ "../browser/signin/mirror_browsertest.cc" ]
     }

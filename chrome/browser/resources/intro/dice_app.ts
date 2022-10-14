@@ -83,11 +83,14 @@ export class IntroAppElement extends IntroAppElementBase {
   }
 
   private async setupViewManager_() {
-    this.$.viewManager.switchView('splash', 'fade-in', 'fade-out');
+    const queryParams = new URLSearchParams(window.location.search);
+    if (!queryParams.has('noAnimations')) {
+      this.$.viewManager.switchView('splash', 'fade-in', 'fade-out');
 
-    // TODO(crbug.com/1347507): Delay the switch to signInPromo based on the
-    // splash animation timing instead.
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      // TODO(crbug.com/1347507): Delay the switch to signInPromo based on the
+      // splash animation timing instead.
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
 
     this.$.viewManager.switchView('signInPromo', 'fade-in', 'no-animation');
   }
