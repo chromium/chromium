@@ -306,6 +306,104 @@ TEST_F(FeedApiTest, FetchImage) {
   EXPECT_EQ("dummyresponse", receiver.GetResult()->response_bytes);
 }
 
+TEST_F(FeedStreamTestForAllStreamTypes,
+       ReportContentLifetimeMetricsViaOnLoadStream) {
+  base::HistogramTester histograms;
+  {
+    RefreshResponseData injected_response;
+    injected_response.model_update_request = MakeTypicalInitialModelState();
+    feedstore::Metadata::StreamMetadata::ContentLifetime content_lifetime;
+    content_lifetime.set_stale_age_ms(10);
+    content_lifetime.set_invalid_age_ms(11);
+    injected_response.content_lifetime = std::move(content_lifetime);
+    response_translator_.InjectResponse(std::move(injected_response));
+
+    TestForYouSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+    ASSERT_TRUE(response_translator_.InjectedResponseConsumed());
+  }
+  ASSERT_TRUE(network_.query_request_sent);
+
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentLifetime.StaleAgeIsPresent", true, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentLifetime.InvalidAgeIsPresent", true, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentLifetime.StaleAge", 10, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentLifetime.InvalidAge", 11, 1);
+}
+
+TEST_F(FeedStreamTestForAllStreamTypes,
+       DoNotReportContentLifetimeMetricsWhenStreamMetadataNotPopulated) {
+  base::HistogramTester histograms;
+  {
+    RefreshResponseData injected_response;
+    injected_response.model_update_request = MakeTypicalInitialModelState();
+    response_translator_.InjectResponse(std::move(injected_response));
+
+    TestForYouSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+    ASSERT_TRUE(response_translator_.InjectedResponseConsumed());
+  }
+  ASSERT_TRUE(network_.query_request_sent);
+
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentLifetime.StaleAgeIsPresent", false, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentLifetime.InvalidAgeIsPresent", false, 1);
+}
+
+TEST_F(FeedStreamTestForAllStreamTypes,
+       DoNotReportContentLifetimeStaleAgeWhenNotPopulated) {
+  base::HistogramTester histograms;
+  {
+    RefreshResponseData injected_response;
+    injected_response.model_update_request = MakeTypicalInitialModelState();
+    feedstore::Metadata::StreamMetadata::ContentLifetime content_lifetime;
+    content_lifetime.set_invalid_age_ms(11);
+    injected_response.content_lifetime = std::move(content_lifetime);
+    response_translator_.InjectResponse(std::move(injected_response));
+
+    TestForYouSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+    ASSERT_TRUE(response_translator_.InjectedResponseConsumed());
+  }
+  ASSERT_TRUE(network_.query_request_sent);
+
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentLifetime.StaleAgeIsPresent", false, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentLifetime.InvalidAgeIsPresent", true, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentLifetime.InvalidAge", 11, 1);
+}
+
+TEST_F(FeedStreamTestForAllStreamTypes,
+       DoNotReportContentLifetimeInvalidAgeWhenNotPopulated) {
+  base::HistogramTester histograms;
+  {
+    RefreshResponseData injected_response;
+    injected_response.model_update_request = MakeTypicalInitialModelState();
+    feedstore::Metadata::StreamMetadata::ContentLifetime content_lifetime;
+    content_lifetime.set_stale_age_ms(10);
+    injected_response.content_lifetime = std::move(content_lifetime);
+    response_translator_.InjectResponse(std::move(injected_response));
+
+    TestForYouSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+    ASSERT_TRUE(response_translator_.InjectedResponseConsumed());
+  }
+  ASSERT_TRUE(network_.query_request_sent);
+
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentLifetime.StaleAgeIsPresent", true, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentLifetime.InvalidAgeIsPresent", false, 1);
+  histograms.ExpectUniqueSample(
+      "ContentSuggestions.Feed.ContentLifetime.StaleAge", 10, 1);
+}
+
 TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
   {
     WaitForIdleTaskQueue();

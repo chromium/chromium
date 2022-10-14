@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/public/common_enums.h"
@@ -99,14 +100,28 @@ class MetricsReporter {
 
   // Stream events.
 
+  struct LoadStreamResultSummary {
+    LoadStreamResultSummary();
+    LoadStreamResultSummary(
+        LoadStreamStatus load_from_store_status,
+        LoadStreamStatus final_status,
+        bool is_initial_load,
+        bool loaded_new_content_from_network,
+        base::TimeDelta stored_content_age,
+        ContentOrder content_order,
+        absl::optional<feedstore::Metadata::StreamMetadata> stream_metadata);
+    ~LoadStreamResultSummary();
+    LoadStreamStatus load_from_store_status;
+    LoadStreamStatus final_status;
+    bool is_initial_load;
+    bool loaded_new_content_from_network;
+    base::TimeDelta stored_content_age;
+    ContentOrder content_order;
+    absl::optional<feedstore::Metadata::StreamMetadata> stream_metadata;
+  };
   virtual void OnLoadStream(const StreamType& stream_type,
-                            LoadStreamStatus load_from_store_status,
-                            LoadStreamStatus final_status,
-                            bool is_initial_load,
-                            bool loaded_new_content_from_network,
-                            base::TimeDelta stored_content_age,
+                            const LoadStreamResultSummary& result_summary,
                             const ContentStats& content_stats,
-                            ContentOrder content_order,
                             std::unique_ptr<LoadLatencyTimes> load_latencies);
   virtual void OnBackgroundRefresh(const StreamType& stream_type,
                                    LoadStreamStatus final_status);

@@ -688,6 +688,52 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.ContentLifetime.InvalidAge" units="ms"
+    expires_after="2023-03-01">
+  <owner>birnie@google.com</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The invalid age lifetime of content fetched from the server.
+    Reported when new content is served to the feed from the server. This
+    provides a measure of how stale feed content is from the client side.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.ContentLifetime.InvalidAgeIsPresent"
+    enum="Boolean" expires_after="2023-03-01">
+  <owner>birnie@google.com</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: If the content lifetime of a feed response has a non zero invalid
+    age when fetched from the server. Reported when new content is served to the
+    feed from the server. This provides a measure of how stale feed content is
+    from the client side.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.ContentLifetime.StaleAge" units="ms"
+    expires_after="2023-03-01">
+  <owner>birnie@google.com</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: The stale age lifetime of content fetched from the server. Reported
+    when new content is served to the feed from the server. This provides a
+    measure of how stale feed content is from the client side.
+  </summary>
+</histogram>
+
+<histogram name="ContentSuggestions.Feed.ContentLifetime.StaleAgeIsPresent"
+    enum="Boolean" expires_after="2023-03-01">
+  <owner>birnie@google.com</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: If the content lifetime of a feed response has a non zero stale age
+    when fetched from the server. Reported when new content is served to the
+    feed from the server. This provides a measure of how stale feed content is
+    from the client side.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.Controls.Actions"
     enum="FeedControlsActions" expires_after="never">
 <!-- expires-never: tracked as an important feed metric. -->

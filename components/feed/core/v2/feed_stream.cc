@@ -14,6 +14,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -307,12 +308,26 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
   if (stream.model)
     content_stats = stream.model->GetContentStats();
 
-  metrics_reporter_->OnLoadStream(
-      stream.type, result.load_from_store_status, result.final_status,
+  // stream_metadata is an optional because in some scenarios StreamLoadComplete
+  // is called bypassing the task queue. In this case WaitForStoreInitialize
+  // task is not completed first and the metadata is not populated. Thus, we
+  // dont need to track content_lifetime.
+  absl::optional<feedstore::Metadata::StreamMetadata> stream_metadata;
+  if (metadata_populated_) {
+    feedstore::Metadata metadata = GetMetadata();
+    stream_metadata =
+        feedstore::MetadataForStream(metadata, result.stream_type);
+  }
+  const MetricsReporter::LoadStreamResultSummary result_summary = {
+      result.load_from_store_status,
+      result.final_status,
       result.load_type == LoadType::kInitialLoad,
-      result.loaded_new_content_from_network, result.stored_content_age,
-      content_stats, GetContentOrder(result.stream_type),
-      std::move(result.latencies));
+      result.loaded_new_content_from_network,
+      result.stored_content_age,
+      GetContentOrder(result.stream_type),
+      stream_metadata};
+  metrics_reporter_->OnLoadStream(stream.type, result_summary, content_stats,
+                                  std::move(result.latencies));
 
   stream.model_loading_in_progress = false;
   stream.surface_updater->LoadStreamComplete(

@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <ratio>
 #include <string>
 
@@ -140,6 +141,35 @@ void ReportLoadLatencies(std::unique_ptr<LoadLatencyTimes> latencies) {
   }
 }
 
+void ReportContentLifetimeStaleAge(base::TimeDelta content_lifetime_stale_age) {
+  if (content_lifetime_stale_age.is_zero()) {
+    base::UmaHistogramBoolean(
+        "ContentSuggestions.Feed.ContentLifetime.StaleAgeIsPresent", false);
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "ContentSuggestions.Feed.ContentLifetime.StaleAgeIsPresent", true);
+  base::UmaHistogramCustomTimes(
+      "ContentSuggestions.Feed.ContentLifetime.StaleAge",
+      content_lifetime_stale_age, base::Minutes(1), base::Days(7),
+      /*buckets=*/50);
+}
+
+void ReportContentLifetimeInvalidAge(
+    base::TimeDelta content_lifetime_invalid_age) {
+  if (content_lifetime_invalid_age.is_zero()) {
+    base::UmaHistogramBoolean(
+        "ContentSuggestions.Feed.ContentLifetime.InvalidAgeIsPresent", false);
+    return;
+  }
+  base::UmaHistogramBoolean(
+      "ContentSuggestions.Feed.ContentLifetime.InvalidAgeIsPresent", true);
+  base::UmaHistogramCustomTimes(
+      "ContentSuggestions.Feed.ContentLifetime.InvalidAge",
+      content_lifetime_invalid_age, base::Minutes(1), base::Days(7),
+      /*buckets=*/50);
+}
+
 base::StringPiece NetworkRequestTypeUmaName(NetworkRequestType type) {
   switch (type) {
     case NetworkRequestType::kFeedQuery:
@@ -260,6 +290,24 @@ bool IsGoodExplicitInteraction(FeedUserActionType action) {
 }
 
 }  // namespace
+MetricsReporter::LoadStreamResultSummary::LoadStreamResultSummary() = default;
+MetricsReporter::LoadStreamResultSummary::LoadStreamResultSummary(
+    LoadStreamStatus load_from_store_status,
+    LoadStreamStatus final_status,
+    bool is_initial_load,
+    bool loaded_new_content_from_network,
+    base::TimeDelta stored_content_age,
+    ContentOrder content_order,
+    absl::optional<feedstore::Metadata::StreamMetadata> stream_metadata) {
+  this->load_from_store_status = load_from_store_status;
+  this->final_status = final_status;
+  this->is_initial_load = is_initial_load;
+  this->loaded_new_content_from_network = loaded_new_content_from_network;
+  this->stored_content_age = stored_content_age;
+  this->content_order = content_order;
+  this->stream_metadata = stream_metadata;
+}
+MetricsReporter::LoadStreamResultSummary::~LoadStreamResultSummary() = default;
 
 MetricsReporter::SurfaceWaiting::SurfaceWaiting() = default;
 MetricsReporter::SurfaceWaiting::SurfaceWaiting(
@@ -831,14 +879,19 @@ void MetricsReporter::NetworkRequestComplete(
 
 void MetricsReporter::OnLoadStream(
     const StreamType& stream_type,
-    LoadStreamStatus load_from_store_status,
-    LoadStreamStatus final_status,
-    bool is_initial_load,
-    bool loaded_new_content_from_network,
-    base::TimeDelta stored_content_age,
+    const LoadStreamResultSummary& result_summary,
     const ContentStats& content_stats,
-    ContentOrder content_order,
     std::unique_ptr<LoadLatencyTimes> load_latencies) {
+  LoadStreamStatus load_from_store_status =
+      result_summary.load_from_store_status;
+  LoadStreamStatus final_status = result_summary.final_status;
+  bool is_initial_load = result_summary.is_initial_load;
+  bool loaded_new_content_from_network =
+      result_summary.loaded_new_content_from_network;
+  base::TimeDelta stored_content_age = result_summary.stored_content_age;
+  absl::optional<feedstore::Metadata::StreamMetadata> stream_metadata =
+      result_summary.stream_metadata;
+  ContentOrder content_order = result_summary.content_order;
   VVLOG << "OnLoadStream load_from_store_status=" << load_from_store_status
         << " final_status=" << final_status;
   load_latencies_ = std::move(load_latencies);
@@ -848,6 +901,19 @@ void MetricsReporter::OnLoadStream(
       base::StrCat({"ContentSuggestions.", HistogramReplacement(stream_type),
                     "LoadStreamStatus.", load_type_name}),
       final_status);
+
+  if (stream_metadata.has_value()) {
+    feedstore::Metadata::StreamMetadata::ContentLifetime content_lifetime =
+        stream_metadata->content_lifetime();
+    base::TimeDelta content_lifetime_stale_age_delta =
+        base::Milliseconds(content_lifetime.stale_age_ms());
+    ReportContentLifetimeStaleAge(content_lifetime_stale_age_delta);
+
+    base::TimeDelta content_lifetime_invalid_age_delta =
+        base::Milliseconds(content_lifetime.invalid_age_ms());
+    ReportContentLifetimeInvalidAge(content_lifetime_invalid_age_delta);
+  }
+
   if (!is_initial_load)
     return;
 
@@ -970,7 +1036,7 @@ void MetricsReporter::OnClearAll(base::TimeDelta time_since_last_clear) {
   base::UmaHistogramCustomTimes(
       "ContentSuggestions.Feed.Scheduler.TimeSinceLastFetchOnClear",
       time_since_last_clear, base::Seconds(1), base::Days(7),
-      /*bucket_count=*/50);
+      /*buckets=*/50);
 }
 
 void MetricsReporter::ReportPersistentDataIfDayIsDone() {
