@@ -8,8 +8,8 @@
  * Launch PaymentRequest with a show promise that resolves with an empty
  * dictionary. The payment method to be used is 'basic-card'.
  */
-function buy() { // eslint-disable-line no-unused-vars
-    buyWithMethods('basic-card');
+function buy() {
+  buyWithMethods('basic-card');
 }
 
 /**
@@ -17,14 +17,14 @@ function buy() { // eslint-disable-line no-unused-vars
  * dictionary. The payment method to be used is the current url of the page.
  * @return {string} - The error message, if any.
  */
-async function buyWithCurrentUrlMethod() { // eslint-disable-line no-unused-vars
-    return buyWithMethods(window.location.href);
+async function buyWithCurrentUrlMethod() {
+  return buyWithMethods(window.location.href);
 }
 
 /**
  * Launch PaymentRequest with a show promise that resolves with an empty
  * dictionary. The payment method to be used is 'https://bobpay.com'.
  */
-function buyWithUrlMethod() { // eslint-disable-line no-unused-vars
-    buyWithMethods('https://bobpay.com');
+function buyWithUrlMethod() {
+  buyWithMethods('https://bobpay.com');
 }

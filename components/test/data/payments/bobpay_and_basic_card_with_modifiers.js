@@ -4,13 +4,11 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-
 /**
  * Launches the PaymentRequest UI with Bob Pay and basic-card as payment
  * methods and a modifier for basic-card.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   try {
     new PaymentRequest(
         [
@@ -54,7 +52,7 @@ function buy() { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with Bob Pay and basic-card as payment
  * methods and a modifier for Bob Pay.
  */
-function buyWithBobPayDiscount() { // eslint-disable-line no-unused-vars
+function buyWithBobPayDiscount() {
   try {
     new PaymentRequest(
         [
@@ -98,7 +96,7 @@ function buyWithBobPayDiscount() { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with Bob Pay and basic-card as payment
  * methods and a modifier for basic-card with "visa" network
  */
-function visaSupportedNetwork() { // eslint-disable-line no-unused-vars
+function visaSupportedNetwork() {
   try {
     new PaymentRequest(
         [
@@ -145,7 +143,7 @@ function visaSupportedNetwork() { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with Bob Pay and basic-card as payment
  * methods and a modifier for basic-card with "mastercard" network
  */
-function mastercardSupportedNetwork() { // eslint-disable-line no-unused-vars
+function mastercardSupportedNetwork() {
   try {
     new PaymentRequest(
         [
@@ -192,7 +190,7 @@ function mastercardSupportedNetwork() { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with Bob Pay and basic-card as payment
  * methods and a modifier for basic-card with "mastercard" network.
  */
-function mastercardAnySupportedType() { // eslint-disable-line no-unused-vars
+function mastercardAnySupportedType() {
   try {
     new PaymentRequest(
         [
@@ -240,7 +238,7 @@ function mastercardAnySupportedType() { // eslint-disable-line no-unused-vars
  * modifier for basic-card with "mastercard" network, but the modifier does not
  * have a total specified.
  */
-function noTotal() { // eslint-disable-line no-unused-vars
+function noTotal() {
   try {
     new PaymentRequest([{supportedMethods: 'basic-card'}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},

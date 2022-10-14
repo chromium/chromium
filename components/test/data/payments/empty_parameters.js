@@ -9,7 +9,7 @@
  * Regression test for: https://crbug.com/1022810
  * @return {Promise<boolean>} - Whether a payment can be made.
  */
-async function runTest() { // eslint-disable-line no-unused-vars
+async function runTest() {
   return new PaymentRequest(
              [{supportedMethods: 'https://kylepay.com/webpay'}], {
                displayItems: [],

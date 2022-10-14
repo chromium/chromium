@@ -12,7 +12,7 @@
  * @param {boolean} abortResponse - Whether the app should be abortable.
  * @return {string} - Either 'Abort completed' or an error message.
  */
-async function launchAndAbort(method, abortResponse) { // eslint-disable-line no-unused-vars, max-len
+async function launchAndAbort(method, abortResponse) {
   try {
     const details = {
       total: {label: 'TEST', amount: {currency: 'USD', value: '0.01'}},

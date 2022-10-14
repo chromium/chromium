@@ -10,7 +10,7 @@
  * @param {string} supportedMethods The payment method that is supported by this
  *        request.
  */
-function buyWithMethods(supportedMethods) { // eslint-disable-line no-unused-vars, max-len
+function buyWithMethods(supportedMethods) {
   try {
     var request = new PaymentRequest(
         [{supportedMethods}], {

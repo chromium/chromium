@@ -4,8 +4,6 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-
 /**
  * Builds a payment request with URL based payment methods.
  * @return {!PaymentRequest} A payment request with URL based payment methods.
@@ -26,7 +24,7 @@ function buildPaymentRequest() {
  * reads it from the page and the C++ browser test reads the return value.
  * @return {string} - the response or error string.
  */
-async function buy() { // eslint-disable-line no-unused-vars
+async function buy() {
   let responseString;
   try {
     const resp = await buildPaymentRequest().show();
@@ -46,7 +44,7 @@ async function buy() { // eslint-disable-line no-unused-vars
  * and the C++ browser test reads the return value.
  * @return {string} - the result or error string.
  */
-async function canMakePayment() { // eslint-disable-line no-unused-vars
+async function canMakePayment() {
   try {
     const result = await buildPaymentRequest().canMakePayment();
     print(result);

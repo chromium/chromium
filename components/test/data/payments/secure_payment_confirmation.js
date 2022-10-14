@@ -13,7 +13,7 @@ var statusPromise = null;
  * Return the outstanding status promise, if any.
  * @return {string} - The status field or error message.
  */
-async function getOutstandingStatusPromise() { // eslint-disable-line no-unused-vars, max-len
+async function getOutstandingStatusPromise() {
   return statusPromise;
 }
 
@@ -84,7 +84,8 @@ function getTestMethodDataWithInstrument(
  * If not specified, the parameter is not set in the input data blob.
  * @return {string} - The status field or error message.
  */
-async function getSecurePaymentConfirmationStatus(credentialIdentifier, iconUrl, showOptOut) { // eslint-disable-line no-unused-vars, max-len
+async function getSecurePaymentConfirmationStatus(
+    credentialIdentifier, iconUrl, showOptOut) {
   statusPromise = getStatusForMethodData(
       getTestMethodData(credentialIdentifier, iconUrl, showOptOut));
   return statusPromise;
@@ -96,7 +97,7 @@ async function getSecurePaymentConfirmationStatus(credentialIdentifier, iconUrl,
  * request.
  * @return {string} - The status field or error message.
  */
-async function getSecurePaymentConfirmationStatusAfterCanMakePayment() { // eslint-disable-line no-unused-vars, max-len
+async function getSecurePaymentConfirmationStatusAfterCanMakePayment() {
   statusPromise = getStatusForMethodDataAfterCanMakePayment(
       getTestMethodData(), /* checkCanMakePaymentFirst = */true);
   return statusPromise;
@@ -110,7 +111,8 @@ async function getSecurePaymentConfirmationStatusAfterCanMakePayment() { // esli
  * @param {string} credentialIdentifier - base64 encoded credential identifier.
  * @return {string} - Output instrument icon string.
  */
-async function getSecurePaymentConfirmationResponseIconWithInstrument(paymentInstrument, credentialIdentifier) { // eslint-disable-line no-unused-vars, max-len
+async function getSecurePaymentConfirmationResponseIconWithInstrument(
+    paymentInstrument, credentialIdentifier) {
   const methodData = getTestMethodDataWithInstrument(
     paymentInstrument, credentialIdentifier);
   const request = new PaymentRequest(
@@ -130,7 +132,7 @@ async function getSecurePaymentConfirmationResponseIconWithInstrument(paymentIns
  * 'window.location.origin/icon.png' is used.
  * @return {string} - 'true', 'false', or error message on failure.
  */
-async function securePaymentConfirmationCanMakePayment(iconUrl) { // eslint-disable-line no-unused-vars, max-len
+async function securePaymentConfirmationCanMakePayment(iconUrl) {
   return canMakePaymentForMethodData(getTestMethodData(
       /* credentialIdentifier = */undefined, iconUrl));
 }
@@ -140,7 +142,7 @@ async function securePaymentConfirmationCanMakePayment(iconUrl) { // eslint-disa
  * canMakePayment twice, and returns the second value.
  * @return {string} - 'true', 'false', or error message on failure.
  */
-async function securePaymentConfirmationCanMakePaymentTwice() { // eslint-disable-line no-unused-vars, max-len
+async function securePaymentConfirmationCanMakePaymentTwice() {
   return canMakePaymentForMethodDataTwice(getTestMethodData());
 }
 
@@ -148,7 +150,7 @@ async function securePaymentConfirmationCanMakePaymentTwice() { // eslint-disabl
  * Checks whether secure payment confirmation has enrolled instruments.
  * @return {string} - 'true', 'false', or error message on failure.
  */
-async function securePaymentConfirmationHasEnrolledInstrument() { // eslint-disable-line no-unused-vars, max-len
+async function securePaymentConfirmationHasEnrolledInstrument() {
   return hasEnrolledInstrumentForMethodData(getTestMethodData());
 }
 
@@ -157,7 +159,7 @@ async function securePaymentConfirmationHasEnrolledInstrument() { // eslint-disa
  * @param {string} icon - The URL of the icon for the credential.
  * @return {string} - Either "OK" or an error string.
  */
-async function createPaymentCredential(icon) { // eslint-disable-line no-unused-vars, max-len
+async function createPaymentCredential(icon) {
   try {
     // Intentionally ignore the result.
     await createAndReturnPaymentCredential(icon);
@@ -173,7 +175,7 @@ async function createPaymentCredential(icon) { // eslint-disable-line no-unused-
  * @return {string} - The base64 encoded identifier of the new credential,
  * or the error message.
  */
-async function createCredentialAndReturnItsIdentifier(icon) { // eslint-disable-line no-unused-vars, max-len
+async function createCredentialAndReturnItsIdentifier(icon) {
   try {
     const credential = await createAndReturnPaymentCredential(icon);
     return btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
@@ -188,7 +190,7 @@ async function createCredentialAndReturnItsIdentifier(icon) { // eslint-disable-
  * @param {string} icon - The URL of the icon for the credential.
  * @return {string} - The clientDataJson.type field of the new credential.
  */
-async function createCredentialAndReturnClientDataType(icon) { // eslint-disable-line no-unused-vars, max-len
+async function createCredentialAndReturnClientDataType(icon) {
   const credential = await createAndReturnPaymentCredential(icon);
   return JSON.parse(String.fromCharCode(...new Uint8Array(
       credential.response.clientDataJSON))).type;
@@ -199,7 +201,7 @@ async function createCredentialAndReturnClientDataType(icon) { // eslint-disable
  * @param {string} icon - The URL of the icon for the credential.
  * @return {string} - Either "PaymentCredential" or "PublicKeyCredential".
  */
-async function createCredentialAndReturnItsType(icon) { // eslint-disable-line no-unused-vars, max-len
+async function createCredentialAndReturnItsType(icon) {
   const credential = await createAndReturnPaymentCredential(icon);
   return credential.constructor.name;
 }
@@ -239,7 +241,8 @@ async function createAndReturnPaymentCredential(icon) {
  * @param {string} userId - the user ID for the credential.
  * @return {DOMString} - The new credential's identifier in base64 encoding.
  */
-async function createPublicKeyCredentialWithPaymentExtensionAndReturnItsId(userId) { // eslint-disable-line no-unused-vars, max-len
+async function createPublicKeyCredentialWithPaymentExtensionAndReturnItsId(
+    userId) {
   try {
     const textEncoder = new TextEncoder();
     const credential = await navigator.credentials.create({

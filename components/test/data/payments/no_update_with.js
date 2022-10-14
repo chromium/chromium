@@ -52,7 +52,7 @@ function showPaymentRequest(pr) {
  * Show a basic-card PaymentRequest that requests a shipping address, but has no
  * listeners.
  */
-function buyWithoutListeners() { // eslint-disable-line no-unused-vars
+function buyWithoutListeners() {
   buyWithoutListenersWithMethods([{supportedMethods: 'basic-card'}]);
 }
 
@@ -70,7 +70,7 @@ function buyWithoutListeners() { // eslint-disable-line no-unused-vars
  * Show a basic-card PaymentRequest that requests a shipping address, but
  * listeners don't call updateWith().
  */
-function buyWithoutCallingUpdateWith() { // eslint-disable-line no-unused-vars
+function buyWithoutCallingUpdateWith() {
   buyWithoutCallingUpdateWithWithMethods([{supportedMethods: 'basic-card'}]);
 }
 
@@ -95,7 +95,7 @@ function buyWithoutCallingUpdateWith() { // eslint-disable-line no-unused-vars
  * Show a basic-card PaymentRequest that requests a shipping address, but
  * listeners don't use promises to update the UI.
  */
-function buyWithoutPromises() { // eslint-disable-line no-unused-vars
+function buyWithoutPromises() {
   buyWithoutPromisesWithMethods([{supportedMethods: 'basic-card'}]);
 }
 

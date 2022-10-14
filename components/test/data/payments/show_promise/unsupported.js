@@ -9,7 +9,7 @@
  * identifier.
  * @return {string} - The error message, if any.
  */
-async function buy() { // eslint-disable-line no-unused-vars
+async function buy() {
   try {
     await new PaymentRequest([{supportedMethods: 'foo'}], {
       total:

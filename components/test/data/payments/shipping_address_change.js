@@ -8,7 +8,7 @@
  * Launches the PaymentRequest UI that prints the shipping address received
  * on shippingAddressChange events at the end of the transaction.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   try {
     var details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},

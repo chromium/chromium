@@ -4,9 +4,6 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-/* global print:false */
-
 // Global variable. Used by abort().
 var request;
 
@@ -39,7 +36,7 @@ const defaultDetails = Object.freeze({
  * Do not query CanMakePayment before showing the Payment Request. This request
  * will be sent with a url-based method and a basic-card methods.
  */
-function noQueryShow() { // eslint-disable-line no-unused-vars, max-len
+function noQueryShow() {
   noQueryShowWithMethods([bobPayMethod, visaMethod]);
 }
 
@@ -47,7 +44,7 @@ function noQueryShow() { // eslint-disable-line no-unused-vars, max-len
  * Do not query CanMakePayment before showing the Payment Request. This request
  * will be sent with url-based methods only.
  */
- function noQueryShowWithUrlMethods() { // eslint-disable-line no-unused-vars
+function noQueryShowWithUrlMethods() {
   noQueryShowWithMethods([bobPayMethod, kylePayMethod]);
 }
 
@@ -58,7 +55,7 @@ function noQueryShow() { // eslint-disable-line no-unused-vars, max-len
  * @return {string} 'success' if show() has been successfully called; otherwise,
  *         return the error message.
  */
-function noQueryShowWithMethods(methods) { // eslint-disable-line no-unused-vars
+function noQueryShowWithMethods(methods) {
   try {
     request = new PaymentRequest(methods, defaultDetails);
     request.show()
@@ -85,7 +82,7 @@ function noQueryShowWithMethods(methods) { // eslint-disable-line no-unused-vars
  * Queries CanMakePayment and the shows the PaymentRequest after. This request
  * will be sent with a url-based method and a basic-card methods.
  */
-async function queryShow() { // eslint-disable-line no-unused-vars, max-len
+async function queryShow() {
   queryShowWithMethods([bobPayMethod, visaMethod]);
 }
 
@@ -93,7 +90,7 @@ async function queryShow() { // eslint-disable-line no-unused-vars, max-len
  * Queries CanMakePayment and the shows the PaymentRequest after. This request
  * will be sent with url-based methods only.
  */
-async function queryShowWithUrlMethods() { // eslint-disable-line no-unused-vars
+async function queryShowWithUrlMethods() {
   queryShowWithMethods([bobPayMethod, kylePayMethod]);
 }
 
@@ -104,7 +101,7 @@ async function queryShowWithUrlMethods() { // eslint-disable-line no-unused-vars
  * @return {string} 'success' if show() has been successfully called; otherwise,
  *         return the error message.
  */
- async function queryShowWithMethods(methods) { // eslint-disable-line no-unused-vars, max-len
+async function queryShowWithMethods(methods) {
   try {
     request = new PaymentRequest(methods, defaultDetails);
     print(await request.canMakePayment());
@@ -137,7 +134,7 @@ async function queryShowWithUrlMethods() { // eslint-disable-line no-unused-vars
  * @return {Promise<string>} 'success' if the execution is successful;
  *         otherwise, returns the cause of the failure.
  */
- async function queryShowWithMethodsBlocking(methods) { // eslint-disable-line no-unused-vars, max-len
+async function queryShowWithMethodsBlocking(methods) {
   try {
     request = new PaymentRequest(methods, defaultDetails);
     print(await request.canMakePayment());
@@ -156,7 +153,7 @@ async function queryShowWithUrlMethods() { // eslint-disable-line no-unused-vars
  * Queries CanMakePayment but does not show the PaymentRequest after. This
  * request will be sent with a url-based method and a basic-card methods.
  */
-async function queryNoShow() { // eslint-disable-line no-unused-vars, max-len
+async function queryNoShow() {
   queryNoShowWithMethods([bobPayMethod, visaMethod]);
 }
 
@@ -164,7 +161,7 @@ async function queryNoShow() { // eslint-disable-line no-unused-vars, max-len
  * Queries CanMakePayment but does not show the PaymentRequest after. This
  * request will be sent with the given methods.
  */
-async function queryNoShowWithUrlMethods() { // eslint-disable-line no-unused-vars, max-len
+async function queryNoShowWithUrlMethods() {
   queryNoShowWithMethods([bobPayMethod, kylePayMethod]);
 }
 
@@ -175,7 +172,7 @@ async function queryNoShowWithUrlMethods() { // eslint-disable-line no-unused-va
  * @return {Promise<string>} 'success' if the execution is successful;
  *         otherwise, returns the cause of the failure.
  */
-async function queryNoShowWithMethods(methods) { // eslint-disable-line no-unused-vars, max-len
+async function queryNoShowWithMethods(methods) {
   try {
     request = new PaymentRequest(methods, defaultDetails);
     print(await request.canMakePayment());
@@ -190,7 +187,7 @@ async function queryNoShowWithMethods(methods) { // eslint-disable-line no-unuse
 /**
  * Aborts the PaymentRequest UI.
  */
-function abort() { // eslint-disable-line no-unused-vars
+function abort() {
   try {
     request.abort()
         .then(function() {

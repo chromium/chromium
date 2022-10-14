@@ -4,36 +4,36 @@
  * found in the LICENSE file.
  */
 
-const basicCardMethod = { // eslint-disable-line no-unused-vars
+const basicCardMethod = {
   supportedMethods: 'basic-card',
 };
 
-const basicMastercardVisaMethod = { // eslint-disable-line no-unused-vars
+const basicMastercardVisaMethod = {
   supportedMethods: 'basic-card',
   data: {
     supportedNetworks: ['mastercard', 'visa'],
   },
 };
 
-const basicVisaMethod = { // eslint-disable-line no-unused-vars
+const basicVisaMethod = {
   supportedMethods: 'basic-card',
   data: {
     supportedNetworks: ['visa'],
   },
 };
 
-const basicMastercardMethod = { // eslint-disable-line no-unused-vars
+const basicMastercardMethod = {
   supportedMethods: 'basic-card',
   data: {
     supportedNetworks: ['mastercard'],
   },
 };
 
-const alicePayMethod = { // eslint-disable-line no-unused-vars
+const alicePayMethod = {
   supportedMethods: 'https://alicepay.com/webpay',
 };
 
-const bobPayMethod = { // eslint-disable-line no-unused-vars
+const bobPayMethod = {
   supportedMethods: 'https://bobpay.com/webpay',
 };
 
@@ -66,7 +66,7 @@ function run(testFunction) {
  * @param {sequence<PaymentMethodData>} methodData The supported methods.
  * @private
  */
-function checkCanMakePayment(methodData) { // eslint-disable-line no-unused-vars
+function checkCanMakePayment(methodData) {
   run(() => {
     const request = new PaymentRequest(methodData, defaultDetails);
     return request.canMakePayment();
@@ -77,7 +77,7 @@ function checkCanMakePayment(methodData) { // eslint-disable-line no-unused-vars
  * Calls PaymentRequest.hasEnrolledInstrument() and prints out the result.
  * @param {sequence<PaymentMethodData>} methodData The supported methods.
  */
-function checkHasEnrolledInstrument(methodData) { // eslint-disable-line no-unused-vars, max-len
+function checkHasEnrolledInstrument(methodData) {
   run(() => {
     const request = new PaymentRequest(methodData, defaultDetails);
     return request.hasEnrolledInstrument();
@@ -114,6 +114,6 @@ function buyHelper(methodData) {
  * Merchant requests payment via either "mastercard" or "basic-card" with "visa"
  * as the supported network.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   buyHelper([basicMastercardVisaMethod]);
 }

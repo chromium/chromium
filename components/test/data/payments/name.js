@@ -4,14 +4,12 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-
 /**
  * Launches the PaymentRequest UI that requests payer name.
  *
  * Legacy entry function until basic-card is removed.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   buyWithMethods(
       [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}]);
 }

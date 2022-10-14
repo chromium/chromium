@@ -4,8 +4,6 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-
 /**
  * Launches the PaymentRequest UI with the given payment method(s) and a
  * modifier for the second one.
@@ -13,7 +11,7 @@
  * @param {sequence<PaymentMethodData>} methodData - An array of payment method
  *        objects.
  */
-function modifierToSecondaryMethod(methodData) { // eslint-disable-line no-unused-vars, max-len
+function modifierToSecondaryMethod(methodData) {
   try {
     new PaymentRequest(methodData, {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
@@ -57,7 +55,7 @@ function modifierToSecondaryMethod(methodData) { // eslint-disable-line no-unuse
  * @param {sequence<PaymentMethodData>} methodData - An array of payment method
  *        objects.
  */
-function modifierWithNoTotal(methodData) { // eslint-disable-line no-unused-vars
+function modifierWithNoTotal(methodData) {
   try {
     new PaymentRequest(methodData, {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},

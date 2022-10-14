@@ -34,7 +34,7 @@ function updateLogView(text) {
  * Installs the payment handler.
  * @return {string} - the message about the installation result.
  */
-async function install() { // eslint-disable-line no-unused-vars
+async function install() {
   try {
     let registration =
         await navigator.serviceWorker.getRegistration(swSrcUrl);
@@ -64,7 +64,7 @@ async function install() { // eslint-disable-line no-unused-vars
  * Uninstall the payment handler.
  * @return {string} - the message about the uninstallation result.
  */
-async function uninstall() { // eslint-disable-line no-unused-vars
+async function uninstall() {
   let registration = await navigator.serviceWorker.getRegistration(swSrcUrl);
   if (!registration) {
     return 'The Payment handler has not been installed yet.';
@@ -79,8 +79,7 @@ async function uninstall() { // eslint-disable-line no-unused-vars
  * @param {string} url - open a specified url in payment handler window.
  * @return {Promise<string>} - the message about the launch result.
  */
-function launchAndWaitUntilReady( // eslint-disable-line no-unused-vars
-    url = './payment_handler_window.html') {
+function launchAndWaitUntilReady(url = './payment_handler_window.html') {
   let appReadyResolver;
   appReadyPromise = new Promise((r) => {
     appReadyResolver = r;
@@ -107,7 +106,7 @@ function launchAndWaitUntilReady( // eslint-disable-line no-unused-vars
  * @return {Promise<string>} - the payment handler's response to the
  * 'paymentrequest' event.
  */
-async function getResult() { // eslint-disable-line no-unused-vars
+async function getResult() {
   try {
     const response = await resultPromise;
     const result = response.details.status;

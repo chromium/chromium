@@ -11,7 +11,7 @@
  * @param {object} msg - The message to post to the iframe.
  * @return {Promise<object>} - What the iframe returned.
  */
-async function postToIframe(url, msg) { // eslint-disable-line no-unused-vars
+async function postToIframe(url, msg) {
   let resolveFunction = null;
   const promise = new Promise((resolve) => {
     resolveFunction = resolve;

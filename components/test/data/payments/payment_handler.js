@@ -15,7 +15,7 @@ var request;
  *    supports.
  * @return {Promise<string>} - 'success' or error message on failure.
  */
-async function install(method=DEFAULT_METHOD_NAME) { // eslint-disable-line no-unused-vars, max-len
+async function install(method = DEFAULT_METHOD_NAME) {
   try {
     methodName = method;
     let registration =
@@ -44,7 +44,7 @@ async function install(method=DEFAULT_METHOD_NAME) { // eslint-disable-line no-u
  * Uninstalls the payment handler.
  * @return {Promise<string>} - 'success' or error message on failure.
  */
-async function uninstall() { // eslint-disable-line no-unused-vars
+async function uninstall() {
   try {
     let registration =
         await navigator.serviceWorker.getRegistration(SW_SRC_URL);
@@ -63,7 +63,7 @@ async function uninstall() { // eslint-disable-line no-unused-vars
  * @param {Array<string>} delegations The list of payment options to delegate.
  * @return {Promise<string>} - 'success' or error message on failure.
  */
-async function enableDelegations(delegations) { // eslint-disable-line no-unused-vars, max-len
+async function enableDelegations(delegations) {
   try {
     await navigator.serviceWorker.ready;
     let registration =
@@ -89,7 +89,7 @@ async function enableDelegations(delegations) { // eslint-disable-line no-unused
  * Launches the payment handler.
  * @return {Promise<string>} - 'success' or error message on failure.
  */
-async function launch() { // eslint-disable-line no-unused-vars
+async function launch() {
   try {
     const request = new PaymentRequest([{supportedMethods: methodName}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
@@ -106,7 +106,7 @@ async function launch() { // eslint-disable-line no-unused-vars
  * Launches the payment handler without waiting for a response to be returned.
  * @return {string} The 'success' or error message.
  */
-function launchWithoutWaitForResponse() { // eslint-disable-line no-unused-vars
+function launchWithoutWaitForResponse() {
   try {
     request = new PaymentRequest([{supportedMethods: methodName}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
@@ -122,7 +122,7 @@ function launchWithoutWaitForResponse() { // eslint-disable-line no-unused-vars
  * Aborts the on-going payment request.
  * @return {Promise<string>} - 'success' or error message on failure.
  */
-async function abort() { // eslint-disable-line no-unused-vars
+async function abort() {
   try {
     await request.abort();
     return 'success';
@@ -140,7 +140,7 @@ var paymentOptions = null;
  * @param {Object} options The list of requested paymentOptions.
  * @return {string} The 'success' or error message.
  */
-function paymentRequestWithOptions(options) { // eslint-disable-line no-unused-vars, max-len
+function paymentRequestWithOptions(options) {
   paymentOptions = options;
   try {
     const request = new PaymentRequest([{

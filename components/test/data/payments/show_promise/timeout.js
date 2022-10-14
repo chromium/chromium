@@ -8,7 +8,7 @@
  * Launch PaymentRequest with a show promise and don't resolve or reject it.
  * @return {string} - The error message, if any.
  */
-async function buy() { // eslint-disable-line no-unused-vars
+async function buy() {
   try {
     await new PaymentRequest(
         [{supportedMethods: window.location.href}],

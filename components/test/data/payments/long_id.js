@@ -5,7 +5,7 @@
  */
 
 /** Invokes PaymentRequest with a very long request identifier. */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   var foo = Object.freeze({supportedMethods: 'basic-card'});
   var defaultMethods = Object.freeze([foo]);
   var defaultDetails = Object.freeze({

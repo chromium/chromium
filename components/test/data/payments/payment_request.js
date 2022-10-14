@@ -34,7 +34,7 @@ function updateDetails(details, shippingOption) {
  * Launches payment request that provides multiple shipping options worldwide,
  * regardless of the shipping address.
  */
-function onBuyClicked() { // eslint-disable-line no-unused-vars
+function onBuyClicked() {
   var supportedInstruments = [
     {
       supportedMethods: 'https://android.com/pay',

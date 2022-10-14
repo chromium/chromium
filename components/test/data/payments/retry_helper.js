@@ -11,7 +11,7 @@
  * @param {PaymentOptions?} options Payment options
  * @return {Promise<PaymentResponse>} Payment response
  */
-function getPaymentResponse(options) { // eslint-disable-line no-unused-vars
+function getPaymentResponse(options) {
   return getPaymentResponseWithMethod(
       options, [{supportedMethods: 'basic-card'}]);
 }
@@ -25,7 +25,7 @@ function getPaymentResponse(options) { // eslint-disable-line no-unused-vars
  *        the first parameter of the PaymentRequest API.
  * @return {Promise<PaymentResponse>} Payment response
  */
-function getPaymentResponseWithMethod(options, methodData) { // eslint-disable-line no-unused-vars, max-len
+function getPaymentResponseWithMethod(options, methodData) {
   var details = {
     total: {
       label: 'Total',

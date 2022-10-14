@@ -4,9 +4,6 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-/* global print:false */
-
 const bobPayMethod = {supportedMethods: 'https://bobpay.com'};
 
 const defaultDetails = {
@@ -35,7 +32,7 @@ function run(testFunction) {
 /**
  * Checks for existence of Bob Pay or a complete credit card.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   buyWithMethods([bobPayMethod]);
 }
 
@@ -45,7 +42,7 @@ function buy() { // eslint-disable-line no-unused-vars
  * @return {Promise<bool|string>} Either the boolean indicating whether the
  * given payment method is available, or an error message string.
  */
-async function checkCanMakePayment(methodName) { // eslint-disable-line no-unused-vars, max-len
+async function checkCanMakePayment(methodName) {
   try {
     return new PaymentRequest([{supportedMethods: methodName}], defaultDetails)
         .canMakePayment();
@@ -60,7 +57,7 @@ async function checkCanMakePayment(methodName) { // eslint-disable-line no-unuse
  * @return {Promise<bool|string>} Either the boolean indicating whether the
  * given payment method has an enrolled instrument, or an error message string.
  */
-async function checkHasEnrolledInstrument(methodName) { // eslint-disable-line no-unused-vars, max-len
+async function checkHasEnrolledInstrument(methodName) {
   try {
     return new PaymentRequest([{supportedMethods: methodName}], defaultDetails)
         .hasEnrolledInstrument();
@@ -75,7 +72,7 @@ async function checkHasEnrolledInstrument(methodName) { // eslint-disable-line n
  * @return {Promise<string>} The payment response from the payment handler, or
  * an error message.
  */
-async function getShowResponse(methodName) { // eslint-disable-line no-unused-vars, max-len
+async function getShowResponse(methodName) {
   try {
     const request =
         new PaymentRequest([{supportedMethods: methodName}], defaultDetails);
@@ -102,7 +99,7 @@ function buyWithMethods(methodData) {
 /**
  * Show payment UI for Bob Pay or a complete credit card.
  */
-function show() { // eslint-disable-line no-unused-vars
+function show() {
   showWithMethods([bobPayMethod]);
 }
 
@@ -121,7 +118,7 @@ function showWithMethods(methodData) {
 /**
  * Checks for enrolled instrument of Bob Pay or a complete credit card.
  */
-function hasEnrolledInstrument() { // eslint-disable-line no-unused-vars
+function hasEnrolledInstrument() {
   hasEnrolledInstrumentWithMethods([bobPayMethod]);
 }
 

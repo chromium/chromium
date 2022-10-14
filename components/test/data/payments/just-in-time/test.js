@@ -14,7 +14,7 @@ const serviceWorkerFileName = 'sw.js';
  * @return {Promise<String>} - A promise that resolves with a string that is
  * either "success" or an error message.
  */
-async function installOnlyServiceWorker() { // eslint-disable-line no-unused-vars, max-len
+async function installOnlyServiceWorker() {
   try {
     await navigator.serviceWorker.register(serviceWorkerFileName);
     return 'success';
@@ -30,7 +30,7 @@ async function installOnlyServiceWorker() { // eslint-disable-line no-unused-var
  * @return {Promise<String>} - A promise that resolves with a string that is
  * either "success" or an error message.
  */
-async function installPaymentHandlerJustInTime() { // eslint-disable-line no-unused-vars, max-len
+async function installPaymentHandlerJustInTime() {
   try {
     const request = new PaymentRequest(
         [{supportedMethods}],

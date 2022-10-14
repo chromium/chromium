@@ -10,7 +10,7 @@
  * @param {string} method - The payment method identifier to use.
  * @return {string} - The request identifier from the response.
  */
-async function getResponseId(method) { // eslint-disable-line no-unused-vars
+async function getResponseId(method) {
   try {
     const request = new PaymentRequest(
         [{supportedMethods: method}],

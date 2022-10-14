@@ -4,8 +4,6 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-
 var request;
 
 const bobPayMethod = Object.freeze({
@@ -19,14 +17,14 @@ const kylePayMethod = Object.freeze({
 /**
  * Launches the PaymentRequest UI that accepts url payment methods.
  */
-function buyWithUrlMethods() { // eslint-disable-line no-unused-vars
+function buyWithUrlMethods() {
   buyWithMethods([bobPayMethod, kylePayMethod]);
 }
 
 /**
  * Launches the PaymentRequest UI that accepts credit cards.
  */
-function ccBuy() { // eslint-disable-line no-unused-vars
+function ccBuy() {
   buyWithMethods([{
     supportedMethods: 'basic-card',
     data: {supportedNetworks: ['visa']},
@@ -102,7 +100,7 @@ function ccBuy() { // eslint-disable-line no-unused-vars
 /**
  * Launches the PaymentRequest UI which accepts only Android Pay.
  */
-function androidPayBuy() { // eslint-disable-line no-unused-vars
+function androidPayBuy() {
   try {
     request = new PaymentRequest(
         [{
@@ -148,7 +146,7 @@ function androidPayBuy() { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI which accepts only Android Pay and does not
  * require any other information.
  */
-function androidPaySkipUiBuy() { // eslint-disable-line no-unused-vars
+function androidPaySkipUiBuy() {
   try {
     request = new PaymentRequest(
         [{
@@ -184,7 +182,7 @@ function androidPaySkipUiBuy() { // eslint-disable-line no-unused-vars
  * @return {Promise<string>} - Either payment response as a JSON string or the
  * error message.
  */
-async function noSupportedPromise() { // eslint-disable-line no-unused-vars
+async function noSupportedPromise() {
   try {
     const request = new PaymentRequest(
         [{
@@ -222,7 +220,7 @@ async function noSupportedPromise() { // eslint-disable-line no-unused-vars
 /**
  * Launches the PaymentRequest UI which accepts credit cards and Bob Pay.
  */
-function cardsAndBobPayBuy() { // eslint-disable-line no-unused-vars
+function cardsAndBobPayBuy() {
   try {
     request = new PaymentRequest(
         [
@@ -275,7 +273,7 @@ function cardsAndBobPayBuy() { // eslint-disable-line no-unused-vars
 /**
  * Launches the PaymentRequest UI that requests contact information.
  */
-function contactInfoBuy() { // eslint-disable-line no-unused-vars
+function contactInfoBuy() {
   try {
     new PaymentRequest(
         [
@@ -314,7 +312,7 @@ function contactInfoBuy() { // eslint-disable-line no-unused-vars
 /**
  * Aborts the current PaymentRequest.
  */
-function abort() { // eslint-disable-line no-unused-vars
+function abort() {
   try {
     request.abort()
         .then(function() {

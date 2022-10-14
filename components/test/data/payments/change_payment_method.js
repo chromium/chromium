@@ -8,12 +8,12 @@ let methodName = window.location.origin + '/pay';
 let request = undefined;
 
 /** Switches to the basic-card method name. */
-function basicCardMethodName() { // eslint-disable-line no-unused-vars
+function basicCardMethodName() {
   methodName = 'basic-card';
 }
 
 /** Installs the payment handler. */
-function install() { // eslint-disable-line no-unused-vars
+function install() {
   navigator.serviceWorker
     .getRegistration('change_payment_method_app.js')
     .then((registration) => {
@@ -90,7 +90,7 @@ function initTestNoHandler() {
  * Verifies that PaymentRequestEvent.changePaymentMethod() returns null if there
  * is no handler for the "paymentmethodchange" event in PaymentRequest.
  */
-function testNoHandler() { // eslint-disable-line no-unused-vars
+function testNoHandler() {
   // Intentionally do not respond to the 'paymentmethodchange' event.
   outputChangePaymentMethodReturnValue(initTestNoHandler());
 }
@@ -110,7 +110,7 @@ function initTestReject() {
  * Verifies that PaymentRequest.show() is rejected if the promise passed into
  * PaymentMethodChangeEvent.updateWith() is rejected.
  */
-function testReject() { // eslint-disable-line no-unused-vars
+function testReject() {
   outputChangePaymentMethodReturnValue(initTestReject());
 }
 
@@ -133,7 +133,7 @@ function initTestThrow() {
  * Verifies that PaymentRequest.show() is rejected if there is an exception in
  * the promised passed into PaymentMethodChangeEvent.updateWith().
  */
-function testThrow() { // eslint-disable-line no-unused-vars
+function testThrow() {
   outputChangePaymentMethodReturnValue(initTestThrow());
 }
 
@@ -199,6 +199,6 @@ function initTestDetails() {
  * Verifies that PaymentRequestEvent.changePaymentMethod() returns a subset of
  * details passed into PaymentMethodChangeEvent.updateWith() method.
  */
-function testDetails() { // eslint-disable-line no-unused-vars
+function testDetails() {
   outputChangePaymentMethodReturnValue(initTestDetails());
 }

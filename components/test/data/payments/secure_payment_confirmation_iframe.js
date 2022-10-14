@@ -13,7 +13,7 @@
  * @return {Promise<string>} - Either the clientDataJSON string or an error
  * message.
  */
-async function requestPaymentWithData(credentialId, data) { // eslint-disable-line no-unused-vars, max-len
+async function requestPaymentWithData(credentialId, data) {
   try {
     const request = new PaymentRequest(
       [{
@@ -38,7 +38,7 @@ async function requestPaymentWithData(credentialId, data) { // eslint-disable-li
  * @return {Promise<string>} - Either the clientDataJSON string or an error
  * message.
  */
-async function requestPayment(credentialId) { // eslint-disable-line no-unused-vars, max-len
+async function requestPayment(credentialId) {
   return requestPaymentWithData(credentialId, {
     action: 'authenticate',
     credentialIds:
@@ -62,7 +62,7 @@ async function requestPayment(credentialId) { // eslint-disable-line no-unused-v
  * @return {Promise<string>} - Either the clientDataJSON string or an error
  * message.
  */
-async function requestPaymentWithPayeeName(credentialId) { // eslint-disable-line no-unused-vars, max-len
+async function requestPaymentWithPayeeName(credentialId) {
   return requestPaymentWithData(credentialId, {
     action: 'authenticate',
     credentialIds:
@@ -86,7 +86,7 @@ async function requestPaymentWithPayeeName(credentialId) { // eslint-disable-lin
  * @return {Promise<string>} - Either the clientDataJSON string or an error
  * message.
  */
-async function requestPaymentWithPayeeNameAndOrigin(credentialId) { // eslint-disable-line no-unused-vars, max-len
+async function requestPaymentWithPayeeNameAndOrigin(credentialId) {
   return requestPaymentWithData(credentialId, {
     action: 'authenticate',
     credentialIds:

@@ -4,15 +4,13 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-
 /**
  * Launches the PaymentRequest UI and always fails to complete the transaction.
  *
  * @param {sequence<PaymentMethodData>} methodData - An array of payment method
  *        objects.
  */
-function buyWithMethods(methodData) { // eslint-disable-line no-unused-vars
+function buyWithMethods(methodData) {
   failComplete(methodData)
       .then((result) => print(result))
       .catch((error) => print(error.message));

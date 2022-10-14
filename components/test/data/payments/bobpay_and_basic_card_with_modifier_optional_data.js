@@ -10,7 +10,7 @@
  * @param {boolean} useBasicCard - Whether basic-card payment method should be
  * used in PaymentRequest as well.
  */
-function buyWithBasicCard(useBasicCard) { // eslint-disable-line no-unused-vars
+function buyWithBasicCard(useBasicCard) {
   let methodData = [{supportedMethods: 'https://bobpay.com'}];
   if (useBasicCard) {
     methodData.push({supportedMethods: 'basic-card'});
@@ -56,7 +56,7 @@ function buyWithBasicCard(useBasicCard) { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with Bob Pay and 'basic-card' as
  * payment methods, and Bob Pay modifier.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   buyWithBasicCard(true);
 }
 
@@ -64,7 +64,7 @@ function buy() { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with Bob Pay as
  * the payment method and Bob Pay modifier.
  */
-function buyWithBobPay() { // eslint-disable-line no-unused-vars
+function buyWithBobPay() {
   buyWithBasicCard(false);
 }
 
@@ -72,7 +72,7 @@ function buyWithBobPay() { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with 'basic-card' payment method and
  * all cards modifier.
  */
-function buyWithAllCardsModifier() { // eslint-disable-line no-unused-vars
+function buyWithAllCardsModifier() {
   try {
     new PaymentRequest([{supportedMethods: 'basic-card'}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
@@ -111,7 +111,7 @@ function buyWithAllCardsModifier() { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with 'basic-card' as payment method and
  * visa card modifier.
  */
-function buyWithVisaModifier() { // eslint-disable-line no-unused-vars
+function buyWithVisaModifier() {
   try {
     new PaymentRequest(
         [{
@@ -160,7 +160,7 @@ function buyWithVisaModifier() { // eslint-disable-line no-unused-vars
  * @param {Object} options The list of requested paymentOptions.
  * @return {string} The 'success' or error message.
  */
-function paymentRequestWithOptions(options) { // eslint-disable-line no-unused-vars, max-len
+function paymentRequestWithOptions(options) {
   try {
     const request = new PaymentRequest(
         [
@@ -191,7 +191,7 @@ function paymentRequestWithOptions(options) { // eslint-disable-line no-unused-v
  * Launches the PaymentRequest UI with 'basic-card' and 'bobpay' as payment
  * methods and shipping address requested.
  */
-function buyWithShippingRequested() { // eslint-disable-line no-unused-vars
+function buyWithShippingRequested() {
   paymentRequestWithOptions({requestShipping: true, requestPayerName: false,
       requestPayerEmail: false, requestPayerPhone: false});
 }
@@ -200,7 +200,7 @@ function buyWithShippingRequested() { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with 'basic-card' and 'bobpay' as payment
  * methods and payer's contact details requested.
  */
-function buyWithContactRequested() { // eslint-disable-line no-unused-vars
+function buyWithContactRequested() {
   paymentRequestWithOptions({requestPayerName: true, requestPayerEmail: true,
       requestPayerPhone: true});
 }
@@ -209,7 +209,7 @@ function buyWithContactRequested() { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with 'basic-card' and 'bobpay' as payment
  * methods and both shipping address and payer's contact details requested.
  */
-function buyWithShippingAndContactRequested() { // eslint-disable-line no-unused-vars, max-len
+function buyWithShippingAndContactRequested() {
   paymentRequestWithOptions({requestShipping: true, requestPayerName: true,
       requestPayerEmail: true, requestPayerPhone: true});
 }

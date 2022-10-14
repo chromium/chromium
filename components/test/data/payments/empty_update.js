@@ -8,7 +8,7 @@
  * Invokes PaymentRequest with shipping and immediately rejects all shipping
  * addresses by calling updateWith({}), which is an "empty update."
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   buyWithMethods([{supportedMethods: 'basic-card'}]);
 }
 

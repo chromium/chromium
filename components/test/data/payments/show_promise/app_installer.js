@@ -7,7 +7,7 @@
 /**
  * Installs the payment handler.
  */
-function install() { // eslint-disable-line no-unused-vars
+function install() {
   if (!navigator.serviceWorker) {
     output('install()', 'ServiceWorker API not found.');
     return;

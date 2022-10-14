@@ -11,7 +11,7 @@ var request = null;
  * @param {DOMString} supportedMethods - The payment method name. If absent,
  * then the page URL is used instead.
  */
-function create(supportedMethods) { // eslint-disable-line no-unused-vars
+function create(supportedMethods) {
   if (!supportedMethods) {
     supportedMethods = window.location.href;
   }
@@ -28,7 +28,7 @@ function create(supportedMethods) { // eslint-disable-line no-unused-vars
 /**
  * Launch PaymentRequest with a show promise for digital goods.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   try {
     request
         .show(new Promise(function(resolve) {

@@ -10,7 +10,7 @@
  *        request.
  * @return {string} - The error message, if any.
  */
-async function buyWithMethods(supportedMethods) { // eslint-disable-line no-unused-vars, max-len
+async function buyWithMethods(supportedMethods) {
   try {
     await new PaymentRequest([{supportedMethods}], {
       total: {

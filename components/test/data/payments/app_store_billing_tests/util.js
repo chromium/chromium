@@ -11,7 +11,7 @@ var timeoutID2;
  * Prints the given error message.
  * @param {string} msg - The error message to print.
  */
-function error(msg) { // eslint-disable-line no-unused-vars
+function error(msg) {
   if (timeoutID1) {
     window.clearTimeout(timeoutID1);
   }
@@ -50,7 +50,7 @@ function info(msg) {
  * @param {PaymentAddress} addr - The address to convert.
  * @return {object} The resulting dictionary.
  */
-function toDictionary(addr) { // eslint-disable-line no-unused-vars
+function toDictionary(addr) {
   let dict = {};
   if (addr) {
     if (addr.toJSON) {
@@ -76,7 +76,7 @@ function toDictionary(addr) { // eslint-disable-line no-unused-vars
  * @param {string} message - The human readable message to display.
  * @param {PaymentResponse} resp - The payment response.
  */
-function done(message, resp) { // eslint-disable-line no-unused-vars
+function done(message, resp) {
   let element = document.getElementById('contents');
   element.innerHTML = message;
 
@@ -112,6 +112,6 @@ function done(message, resp) { // eslint-disable-line no-unused-vars
 /**
  * Clears all messages.
  */
-function clearAllMessages() { // eslint-disable-line no-unused-vars
+function clearAllMessages() {
   document.getElementById('msg').innerHTML = '';
 }

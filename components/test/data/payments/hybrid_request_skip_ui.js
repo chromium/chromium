@@ -53,7 +53,7 @@ function makeRequest(params) {
  * @return {string} A stringified result of the PaymentResponse or an error.
  *     This is tested against expectations in the browsertest.
  */
-async function buy(params) { // eslint-disable-line no-unused-vars
+async function buy(params) {
   let request = makeRequest(params || {});
   const result = await request.show()
                      .then((response) => {

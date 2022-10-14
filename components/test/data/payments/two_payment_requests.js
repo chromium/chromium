@@ -12,7 +12,8 @@
  * 'true' in hasEnrolledInstrument() call. Otherwise 'false' or an error
  * message.
  */
-async function hasEnrolledInstrumentInTwoPaymentRequestObjects(supportedMethods) { // eslint-disable-line no-unused-vars, max-len
+async function hasEnrolledInstrumentInTwoPaymentRequestObjects(
+    supportedMethods) {
   try {
     const methods = [{supportedMethods}];
     const details = {

@@ -4,8 +4,6 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-
 var request = null;
 var showPromise = null;
 
@@ -51,7 +49,7 @@ async function testPaymentMethods(methods, requestShippingContact = false) {
 /**
  * Aborts the PaymentRequest initiated by testPaymentMethods().
  */
-async function abort() { // eslint-disable-line no-unused-vars
+async function abort() {
   await request.abort();
   return await showPromise.catch((e) => {
     return e.name == 'AbortError';
@@ -62,7 +60,7 @@ async function abort() { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with Bob Pay and credit cards as payment
  * methods.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   testPaymentMethods([
       {supportedMethods: 'https://bobpay.com'},
       {
@@ -76,7 +74,7 @@ function buy() { // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with kylepay.com and basic-card as payment
  * methods. kylepay.com hosts an installable payment app.
  */
-function testInstallableAppAndCard() { // eslint-disable-line no-unused-vars
+function testInstallableAppAndCard() {
   testPaymentMethods([
       {supportedMethods: 'https://kylepay.com/webpay'},
       {supportedMethods: 'basic-card'},

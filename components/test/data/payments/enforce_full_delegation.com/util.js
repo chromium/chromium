@@ -8,7 +8,7 @@
  * Prints the given informational message.
  * @param {string} msg - The information message to print.
  */
-function info(msg) { // eslint-disable-line no-unused-vars
+function info(msg) {
   let element = document.createElement('pre');
   element.innerHTML = msg;
   element.className = 'info';

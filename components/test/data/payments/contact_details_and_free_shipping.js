@@ -4,13 +4,11 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-
 /**
  * Launches the PaymentRequest UI that requests an email address and a phone
  * number and offers free shipping worldwide.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   buyWithMethods([
     {
       supportedMethods: 'basic-card',
@@ -25,7 +23,7 @@ function buy() { // eslint-disable-line no-unused-vars
  * number and offers free shipping worldwide.
  * @param {Array<Object>} methodData An array of payment method objects.
  */
-function buyWithMethods(methodData) { // eslint-disable-line no-unused-vars
+function buyWithMethods(methodData) {
   try {
     var details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},

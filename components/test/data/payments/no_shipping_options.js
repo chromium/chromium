@@ -4,9 +4,6 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-/* global print:false */
-
 /**
  * Launches the PaymentRequest UI that is invalid because requestShipping is
  * true but no shipping options are provided.

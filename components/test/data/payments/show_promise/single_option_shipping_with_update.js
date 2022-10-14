@@ -11,7 +11,7 @@
  * @param {string} supportedMethods The payment method that is supported by this
  *        request.
  */
-function buyWithMethods(supportedMethods) { // eslint-disable-line no-unused-vars, max-len
+function buyWithMethods(supportedMethods) {
   var finalizedDetails = {
     total: {label: 'Total', amount: {currency: 'USD', value: '1.00'}},
     shippingOptions: [{
@@ -57,4 +57,3 @@ function buyWithMethods(supportedMethods) { // eslint-disable-line no-unused-var
     print(error.message);
   }
 }
-

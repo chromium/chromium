@@ -30,7 +30,7 @@ function buildPaymentRequest(options, method) {
  * @return {Promise<boolean|string>} The boolean value of
  * hasEnrolledInstrument() or the error message string.
  */
-async function hasEnrolledInstrument(options, method) { // eslint-disable-line no-unused-vars,max-len
+async function hasEnrolledInstrument(options, method) {
   try {
     return await buildPaymentRequest(options, method).hasEnrolledInstrument();
   } catch (e) {
@@ -43,7 +43,7 @@ async function hasEnrolledInstrument(options, method) { // eslint-disable-line n
  * @param {PaymentOptions} options - The payment options to use.
  * @return {Promise<string>} The error message string, if any.
  */
-async function show(options) { // eslint-disable-line no-unused-vars
+async function show(options) {
   try {
     await buildPaymentRequest(options).show();
     return '';
@@ -59,7 +59,7 @@ async function show(options) { // eslint-disable-line no-unused-vars
  * @param {PaymentOptions} options - The payment options to use.
  * @return {Promise<string>} The error message string, if any.
  */
-async function delayedShow(options) { // eslint-disable-line no-unused-vars
+async function delayedShow(options) {
   let request = buildPaymentRequest(options);
 
   try {

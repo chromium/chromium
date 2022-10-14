@@ -13,7 +13,7 @@ const kDetails = {
  * @param {string} method - The payment method identifier to check.
  * @return {string} - 'true', 'false', or error message on failure.
  */
-async function canMakePayment(method) { // eslint-disable-line no-unused-vars, max-len
+async function canMakePayment(method) {
   try {
     const request = new PaymentRequest([{supportedMethods: method}], kDetails);
     const result = await request.canMakePayment();
@@ -28,7 +28,7 @@ async function canMakePayment(method) { // eslint-disable-line no-unused-vars, m
  * @param {object} methodData - The payment method data to build the request.
  * @return {string} - 'true', 'false', or error message on failure.
  */
-async function canMakePaymentForMethodData(methodData) { // eslint-disable-line no-unused-vars, max-len
+async function canMakePaymentForMethodData(methodData) {
   try {
     const request = new PaymentRequest(methodData, kDetails);
     const result = await request.canMakePayment();
@@ -44,7 +44,7 @@ async function canMakePaymentForMethodData(methodData) { // eslint-disable-line 
  * @param {object} methodData - The payment method data to build the request.
  * @return {string} - 'true', 'false', or error message on failure.
  */
-async function canMakePaymentForMethodDataTwice(methodData) { // eslint-disable-line no-unused-vars, max-len
+async function canMakePaymentForMethodDataTwice(methodData) {
   try {
     const request = new PaymentRequest(methodData, kDetails);
     await request.canMakePayment(); // Discard first result.

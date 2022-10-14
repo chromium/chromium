@@ -12,7 +12,7 @@ let request = undefined;
  * @param {String} swApp The name of the service worker based payment app to
  *     install.
  */
-function install(swApp) { // eslint-disable-line no-unused-vars
+function install(swApp) {
   navigator.serviceWorker.getRegistration(swApp)
       .then((registration) => {
         if (registration) {
@@ -68,7 +68,7 @@ function install(swApp) { // eslint-disable-line no-unused-vars
  * @param {PaymentRequest} request The PaymentRequest object for showing the
  *     payment sheet.
  */
-function outputChangeShippingAddressOptionReturnValue(request) { // eslint-disable-line no-unused-vars, max-len
+function outputChangeShippingAddressOptionReturnValue(request) {
   request.show()
       .then((response) => {
         response.complete('success').then(() => {
@@ -103,7 +103,7 @@ function createPaymentRequest() {
 /**
  * @return {PaymentRequest} The Payment Request object for testNoHandler().
  */
-function initTestNoHandler() { // eslint-disable-line no-unused-vars
+function initTestNoHandler() {
   createPaymentRequest();
   return request;
 }
@@ -112,7 +112,7 @@ function initTestNoHandler() { // eslint-disable-line no-unused-vars
  * @param {String} eventType The type of the event to listen for.
  * @return {PaymentRequest} The Payment Request object for testReject().
  */
-function initTestReject(eventType) { // eslint-disable-line no-unused-vars
+function initTestReject(eventType) {
   createPaymentRequest();
   request.addEventListener(eventType, (event) => {
     event.updateWith(Promise.reject('Error for test'));
@@ -124,7 +124,7 @@ function initTestReject(eventType) { // eslint-disable-line no-unused-vars
  * @param {String} eventType The type of the event to listen for.
  * @return {PaymentRequest} The Payment Request object for testThrow().
  */
-function initTestThrow(eventType) { // eslint-disable-line no-unused-vars
+function initTestThrow(eventType) {
   createPaymentRequest();
   request.addEventListener(eventType, (event) => {
     event.updateWith(new Promise(() => {
@@ -138,7 +138,7 @@ function initTestThrow(eventType) { // eslint-disable-line no-unused-vars
  * @param {String} eventType The type of the event to listen for.
  * @return {PaymentRequest} The Payment Request object for testDetails().
  */
-function initTestDetails(eventType) { // eslint-disable-line no-unused-vars
+function initTestDetails(eventType) {
   createPaymentRequest();
   request.addEventListener(eventType, (event) => {
     event.updateWith({

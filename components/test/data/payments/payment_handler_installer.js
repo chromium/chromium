@@ -14,7 +14,7 @@
  * own scope as a payment method.
  * @return {Promise<string>} - 'success' or error message on failure.
  */
-async function install(swUrl, methods, ownScopeMethod) { // eslint-disable-line no-unused-vars, max-len
+async function install(swUrl, methods, ownScopeMethod) {
   try {
     const registration = await navigator.serviceWorker.register(swUrl);
     await activation(registration);

@@ -9,7 +9,7 @@
  * @param {string} method - The payment method name to check.
  * @return {Promise<bool|string>} - true, false, or error message on failure.
  */
-async function canMakePayment(method) { // eslint-disable-line no-unused-vars
+async function canMakePayment(method) {
   try {
     return new PaymentRequest([{supportedMethods: method}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '0.01'}},
@@ -18,4 +18,3 @@ async function canMakePayment(method) { // eslint-disable-line no-unused-vars
     return e.toString();
   }
 }
-

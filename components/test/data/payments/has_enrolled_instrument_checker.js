@@ -9,7 +9,7 @@
  * @param {string} method - The payment method identifier to check.
  * @return {string} - 'true', 'false', or error message on failure.
  */
-async function hasEnrolledInstrument(method) { // eslint-disable-line no-unused-vars, max-len
+async function hasEnrolledInstrument(method) {
   return hasEnrolledInstrumentForMethodData([{supportedMethods: method}]);
 }
 

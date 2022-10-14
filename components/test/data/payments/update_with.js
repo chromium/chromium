@@ -62,7 +62,7 @@ function showPaymentRequest(pr) {
  * Calls updateWith() with {}
  * @param {String} paymentMethod - the payment method to be used.
  */
-function updateWithEmpty(paymentMethod) { // eslint-disable-line no-unused-vars
+function updateWithEmpty(paymentMethod) {
   var pr = buildPaymentRequest(paymentMethod);
   var updatedDetails = {};
   pr.addEventListener('shippingaddresschange', function(e) {
@@ -78,7 +78,7 @@ function updateWithEmpty(paymentMethod) { // eslint-disable-line no-unused-vars
  * Calls updateWith() with total
  * @param {String} paymentMethod - the payment method to be used.
  */
-function updateWithTotal(paymentMethod) { // eslint-disable-line no-unused-vars
+function updateWithTotal(paymentMethod) {
   var pr = buildPaymentRequest(paymentMethod);
   var updatedDetails = {
     total: {label: 'Updated total', amount: {currency: 'USD', value: '10.00'}},
@@ -96,7 +96,7 @@ function updateWithTotal(paymentMethod) { // eslint-disable-line no-unused-vars
  * Calls updateWith() with displayItems
  * @param {String} paymentMethod - the payment method to be used.
  */
-function updateWithDisplayItems(paymentMethod) { // eslint-disable-line no-unused-vars, max-len
+function updateWithDisplayItems(paymentMethod) {
   var pr = buildPaymentRequest(paymentMethod);
   var updatedDetails = {
     displayItems: [
@@ -117,7 +117,7 @@ function updateWithDisplayItems(paymentMethod) { // eslint-disable-line no-unuse
  * Calls updateWith() with shipping options
  * @param {String} paymentMethod - the payment method to be used.
  */
-function updateWithShippingOptions(paymentMethod) { // eslint-disable-line no-unused-vars, max-len
+function updateWithShippingOptions(paymentMethod) {
   var pr = buildPaymentRequest(paymentMethod);
   var updatedDetails = {
     shippingOptions: [{
@@ -140,7 +140,7 @@ function updateWithShippingOptions(paymentMethod) { // eslint-disable-line no-un
  * Calls updateWith() with modifiers
  * @param {String} paymentMethod - the payment method to be used.
  */
-function updateWithModifiers(paymentMethod) { // eslint-disable-line no-unused-vars, max-len
+function updateWithModifiers(paymentMethod) {
   var pr = buildPaymentRequest(paymentMethod);
   var updatedDetails = {
     modifiers: [{
@@ -168,7 +168,7 @@ function updateWithModifiers(paymentMethod) { // eslint-disable-line no-unused-v
  * Calls updateWith() with an error.
  * @param {String} paymentMethod - the payment method to be used.
  */
-function updateWithError(paymentMethod) { // eslint-disable-line no-unused-vars
+function updateWithError(paymentMethod) {
   var pr = buildPaymentRequest(paymentMethod);
   var errorDetails = {
     error: 'This is an error for a browsertest',

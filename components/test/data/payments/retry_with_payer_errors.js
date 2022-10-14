@@ -12,7 +12,7 @@ var gPaymentResponse = null;
  *
  * Legacy entry-point for basic-card tests; to be removed.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   var options = {
     requestPayerEmail: true,
     requestPayerName: true,
@@ -33,7 +33,7 @@ function buy() { // eslint-disable-line no-unused-vars
  * @param {sequence<PaymentMethodData>} methodData An array of payment method
  *        objects.
  */
-function buyWithMethods(methodData) { // eslint-disable-line no-unused-vars
+function buyWithMethods(methodData) {
   var options = {
     requestPayerEmail: true,
     requestPayerName: true,
@@ -47,7 +47,7 @@ function buyWithMethods(methodData) { // eslint-disable-line no-unused-vars
  * response as gPaymentResponse and sets the response as the HTML body text for
  * test consumption.
  */
-async function processShowResponse() { // eslint-disable-line no-unused-vars
+async function processShowResponse() {
   gPaymentResponse = await gShowPromise;
   print(JSON.stringify(gPaymentResponse, undefined, 2));
 }
@@ -57,7 +57,7 @@ async function processShowResponse() { // eslint-disable-line no-unused-vars
  *
  * @param {PaymentValidationErrors} validationErrors Represent validation errors
  */
-function retry(validationErrors) { // eslint-disable-line no-unused-vars
+function retry(validationErrors) {
   if (gPaymentResponse == null) {
     return;
   }

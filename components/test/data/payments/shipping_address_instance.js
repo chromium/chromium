@@ -10,7 +10,7 @@
  *
  * Legacy entry function until basic-card is removed.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   buyWithMethods([{supportedMethods: 'basic-card'}]);
 }
 
@@ -20,40 +20,40 @@ function buy() { // eslint-disable-line no-unused-vars
  *
  * @param {String} methodData - An array of payment method objects.
  */
-function buyWithMethods(methodData) { // eslint-disable-line no-unused-vars
-    try {
-        var details = {
-            total: {
-                label: 'Total',
-                amount: {
-                    currency: 'USD',
-                    value: '5.00',
-                },
-            },
-            shippingOptions: [{
-                id: 'freeShippingOption',
-                label: 'Free global shipping',
-                amount: {
-                    currency: 'USD',
-                    value: '0',
-                },
-                selected: true,
-            }],
-        };
-        var request = new PaymentRequest(methodData, details, {
-                requestShipping: true,
-            });
-        request.show()
-            .then(function(resp) {
-                print('Same instance: ' +
-                    (request.shippingAddress === resp.shippingAddress)
-                    .toString());
-                resp.complete('success');
-            })
-            .catch(function(error) {
-                print('User did not authorized transaction: ' + error);
-            });
-    } catch (error) {
-        print('Developer mistake ' + error);
-    }
+function buyWithMethods(methodData) {
+  try {
+    var details = {
+      total: {
+        label: 'Total',
+        amount: {
+          currency: 'USD',
+          value: '5.00',
+        },
+      },
+      shippingOptions: [{
+        id: 'freeShippingOption',
+        label: 'Free global shipping',
+        amount: {
+          currency: 'USD',
+          value: '0',
+        },
+        selected: true,
+      }],
+    };
+    var request = new PaymentRequest(methodData, details, {
+      requestShipping: true,
+    });
+    request.show()
+        .then(function(resp) {
+          print(
+              'Same instance: ' +
+              (request.shippingAddress === resp.shippingAddress).toString());
+          resp.complete('success');
+        })
+        .catch(function(error) {
+          print('User did not authorized transaction: ' + error);
+        });
+  } catch (error) {
+    print('Developer mistake ' + error);
+  }
 }

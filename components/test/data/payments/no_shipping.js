@@ -4,12 +4,10 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-
 /**
  * Launches the PaymentRequest UI that does not require a shipping address.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   buyWithMethods([
     {
       supportedMethods: 'basic-card',

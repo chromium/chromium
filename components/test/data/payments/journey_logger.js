@@ -4,8 +4,6 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-
 var request = null;
 var showPromise = null;
 
@@ -30,7 +28,7 @@ function testPaymentMethods(methods) {
  * Saves the newly created PaymentRequest and its show promise in global
  * variables. Tests can optionally call abort() to cancel this request.
  */
-function testBasicCard() { // eslint-disable-line no-unused-vars
+function testBasicCard() {
   testPaymentMethods([
     {supportedMethods: 'basic-card'},
   ]);
@@ -39,7 +37,7 @@ function testBasicCard() { // eslint-disable-line no-unused-vars
 /**
  * Aborts the PaymentRequest initiated by testBasicCard().
  */
-async function abort() { // eslint-disable-line no-unused-vars
+async function abort() {
   await request.abort();
   return await showPromise.catch((e) => {
     return e.name == 'AbortError';
@@ -52,7 +50,7 @@ async function abort() { // eslint-disable-line no-unused-vars
  * //components/test/data/payments/google.com.
  * This function blocks until a response is received from the payment app.
  */
-async function testGPay() { // eslint-disable-line no-unused-vars
+async function testGPay() {
   const gpayData = {
     supportedMethods: 'https://google.com/pay',
     data: {

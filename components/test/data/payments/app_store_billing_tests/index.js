@@ -13,7 +13,7 @@ let supportedInstruments = [];
  * @return {string} - a message indicating whether the installation is
  *  successful.
  */
-async function install() { // eslint-disable-line no-unused-vars
+async function install() {
   info('installing');
 
   await navigator.serviceWorker.register('empty_app.js');
@@ -40,7 +40,7 @@ async function install() { // eslint-disable-line no-unused-vars
  * @param {string} method - the payment method.
  * @return {string} - a message indicating whether the operation is successful.
  */
-function addSupportedMethod(method) { // eslint-disable-line no-unused-vars
+function addSupportedMethod(method) {
   info('addSupportedMethod: ' + method);
   supportedInstruments.push({
     supportedMethods: [
@@ -54,7 +54,7 @@ function addSupportedMethod(method) { // eslint-disable-line no-unused-vars
  * Create a PaymentRequest.
  * @return {string} - a message indicating whether the operation is successful.
  */
-function createPaymentRequest() { // eslint-disable-line no-unused-vars
+function createPaymentRequest() {
   info('createPaymentRequest: ' + JSON.stringify(supportedInstruments));
   const details = {
     total: {
@@ -73,7 +73,7 @@ function createPaymentRequest() { // eslint-disable-line no-unused-vars
  * Check whether payments can be made.
  * @return {string} - "true", "false", or an error message.
  */
-async function canMakePayment() { // eslint-disable-line no-unused-vars
+async function canMakePayment() {
   info('canMakePayment');
   try {
     const result = await request.canMakePayment();
@@ -88,7 +88,7 @@ async function canMakePayment() { // eslint-disable-line no-unused-vars
  * Show the payment sheet.
  * @return {string} - a message indicating whether the operation is successful.
  */
-async function show() { // eslint-disable-line no-unused-vars
+async function show() {
   info('show');
   try {
     return await request.show();

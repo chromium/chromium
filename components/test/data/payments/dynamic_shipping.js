@@ -4,15 +4,13 @@
  * found in the LICENSE file.
  */
 
-/* global PaymentRequest:false */
-
 /**
  * Launches the PaymentRequest UI that offers free shipping in California and
  * $5.00 shipping in US. Does not allow shipping outside of US.
  *
  * Legacy entry-point until basic-card is disabled
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   buyWithMethods(
       [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}]);
 }
@@ -23,7 +21,7 @@ function buy() { // eslint-disable-line no-unused-vars
  *
  * @param {String} methodData - An array of payment method objects.
  */
-function buyWithMethods(methodData) { // eslint-disable-line no-unused-vars
+function buyWithMethods(methodData) {
   try {
     var details = {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},

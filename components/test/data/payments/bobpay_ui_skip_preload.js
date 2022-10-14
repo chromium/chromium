@@ -48,7 +48,7 @@ function initPaymentRequest() {
  * Preloads the second instance of PaymentRequest while the first instance is
  * showing.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   var request = initPaymentRequest();
   request.show()
       .then(function(instrumentResponse) {

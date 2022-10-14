@@ -8,7 +8,7 @@
  * Prints the message on the page.
  * @param {String} msg - The message to print.
  */
-function print(msg) { // eslint-disable-line no-unused-vars
+function print(msg) {
   document.getElementById('result').innerHTML = msg;
 }
 
@@ -19,7 +19,7 @@ function print(msg) { // eslint-disable-line no-unused-vars
  *                       coming from.
  * @param {String} txt - The text to print.
  */
-function output(src, txt) { // eslint-disable-line no-unused-vars
+function output(src, txt) {
   // Handle DOMException:
   if (txt && txt.message) {
     txt = txt.message;

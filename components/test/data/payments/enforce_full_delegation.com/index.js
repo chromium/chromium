@@ -17,7 +17,7 @@ let supportedInstruments = [];
  *    supports.
  * @return {Promise<string>} - 'success' or error message on failure.
  */
-async function install(method=METHOD_NAME) { // eslint-disable-line no-unused-vars, max-len
+async function install(method = METHOD_NAME) {
   info('installing');
   try {
     const registration = await navigator.serviceWorker.register(SW_SRC_URL);
@@ -63,7 +63,7 @@ async function activation(registration) {
  * Uninstall the payment handler.
  * @return {string} - the message about the uninstallation result.
  */
-async function uninstall() { // eslint-disable-line no-unused-vars
+async function uninstall() {
   info('uninstall');
   let registration = await navigator.serviceWorker.getRegistration(SW_SRC_URL);
   if (!registration) {
@@ -78,7 +78,7 @@ async function uninstall() { // eslint-disable-line no-unused-vars
  * @param {Array<string>} delegations The list of payment options to delegate.
  * @return {string} The 'success' or error message.
  */
-async function enableDelegations(delegations) { // eslint-disable-line no-unused-vars, max-len
+async function enableDelegations(delegations) {
   info('enableDelegations: ' + JSON.stringify(delegations));
   try {
     await navigator.serviceWorker.ready;
@@ -106,7 +106,7 @@ async function enableDelegations(delegations) { // eslint-disable-line no-unused
  * @param {string[]} methods - the payment methods.
  * @return {string} - a message indicating whether the operation is successful.
  */
-function addSupportedMethods(methods) { // eslint-disable-line no-unused-vars
+function addSupportedMethods(methods) {
   info('addSupportedMethods: ' + JSON.stringify(methods));
   methods.forEach((method)=>{
     supportedInstruments.push({
@@ -122,7 +122,7 @@ function addSupportedMethods(methods) { // eslint-disable-line no-unused-vars
  * Add the payment method of this test to the payment request.
  * @return {string} - a message indicating whether the operation is successful.
  */
-function addDefaultSupportedMethod() { // eslint-disable-line no-unused-vars
+function addDefaultSupportedMethod() {
   return addSupportedMethods([METHOD_NAME]);
 }
 
@@ -131,7 +131,7 @@ function addDefaultSupportedMethod() { // eslint-disable-line no-unused-vars
  * @param {PaymentOptions} options - the payment options.
  * @return {string} - a message indicating whether the operation is successful.
  */
-function createPaymentRequestWithOptions(options) { // eslint-disable-line no-unused-vars, max-len
+function createPaymentRequestWithOptions(options) {
   info('createPaymentRequestWithOptions: ' +
       JSON.stringify(supportedInstruments) + ', ' + JSON.stringify(options));
   const details = {
@@ -151,7 +151,7 @@ function createPaymentRequestWithOptions(options) { // eslint-disable-line no-un
  * Show the payment sheet. This method is not blocking.
  * @return {string} - a message indicating whether the operation is successful.
  */
-function show() { // eslint-disable-line no-unused-vars
+function show() {
   info('show');
   request.show().then((response) => {
     info('complete: status=' + response.details.status + ', payerName='

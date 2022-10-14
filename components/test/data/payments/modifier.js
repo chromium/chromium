@@ -8,7 +8,7 @@
  * Invokes the PaymentRequest with a modifier that contains the bare mininum of
  * required fields.
  */
-function buy() { // eslint-disable-line no-unused-vars
+function buy() {
   try {
     new PaymentRequest(
         [{

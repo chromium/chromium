@@ -11,7 +11,7 @@
  * method. By default, basic-card payment method is used.
  * @return {string} - The error message, if any.
  */
-async function buy(useUrlPaymentMethod) { // eslint-disable-line no-unused-vars
+async function buy(useUrlPaymentMethod) {
   try {
     let supportedMethods = 'basic-card';
     if (useUrlPaymentMethod) {

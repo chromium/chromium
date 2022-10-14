@@ -27,7 +27,7 @@ function output(src, txt) {
  * Installs a payment app.
  * @param {String} method - The payment method name that this app supports.
  */
-function install(method) { // eslint-disable-line no-unused-vars
+function install(method) {
   if (!navigator.serviceWorker) {
     output('install()', 'ServiceWorker API not found.');
     return;
