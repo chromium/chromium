@@ -399,7 +399,7 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, SideShelfVisibilityAnimation) {
             privacy_indicators_view()->GetPreferredSize().height());
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, StateChangeDuringAnimation) {
+TEST_F(PrivacyIndicatorsTrayItemViewTest, DISABLED_StateChangeDuringAnimation) {
   SetViewVisibleWithAnimation();
   double progress = 0.5;
 
