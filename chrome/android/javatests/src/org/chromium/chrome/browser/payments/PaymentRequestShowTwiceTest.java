@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
@@ -24,7 +23,6 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.NotShownReason;
-import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -46,30 +44,6 @@ public class PaymentRequestShowTwiceTest implements MainActivityStartCallback {
                 "Los Angeles", "", "90291", "", "US", "555-555-5555", "", "en-US"));
     }
 
-    /**
-     * Runs a piece of JavaScript with a user gesture and waits for a given CallbackHelper to occur.
-     **/
-    private void runJavascriptAndWaitFor(String code, CallbackHelper helper)
-            throws TimeoutException {
-        int callCount = helper.getCallCount();
-        mPaymentRequestTestRule.runJavaScriptCodeWithUserGestureInCurrentTab(code);
-        helper.waitForCallback(callCount);
-    }
-
-    /**
-     * Runs a piece of JavaScript with a user gesture and waits for the promise it returns to settle
-     * or reject; returning the result in either case.
-     *
-     * @param promiseCode a JavaScript snippet that will return a promise
-     */
-    private String runJavaScriptWithUserGestureAndWaitForPromise(String promiseCode)
-            throws TimeoutException {
-        String code = promiseCode + ".then(result => domAutomationController.send(result))"
-                + ".catch(error => domAutomationController.send(error));";
-        return JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(
-                mPaymentRequestTestRule.getWebContents(), code);
-    }
-
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -81,10 +55,11 @@ public class PaymentRequestShowTwiceTest implements MainActivityStartCallback {
                 "https://alicepay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
         mPaymentRequestTestRule.openPage();
-        runJavascriptAndWaitFor("showFirst()", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "showFirst()", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(
                 "\"Second request: AbortError: Another PaymentRequest UI is already showing in a different tab or window.\"",
-                runJavaScriptWithUserGestureAndWaitForPromise("showSecond()"));
+                mPaymentRequestTestRule.runJavaScriptAndWaitForPromise("showSecond()"));
 
         // The web payments UI was not aborted.
         mPaymentRequestTestRule.assertOnlySpecificAbortMetricLogged(-1 /* none */);

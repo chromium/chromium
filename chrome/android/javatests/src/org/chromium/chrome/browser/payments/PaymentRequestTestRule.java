@@ -379,13 +379,38 @@ public class PaymentRequestTestRule extends ChromeTabbedActivityTestRule
         helper.waitForCallback(callCount);
     }
 
+    /**
+     * Executes a snippet of JavaScript code in the current tab, and returns the result of the
+     * snippet. The JavaScript code is run without a user gesture, and any async result (i.e.,
+     * Promise) is not waited for.
+     */
     protected String executeJavaScriptAndWaitForResult(String script) throws TimeoutException {
         return JavaScriptUtils.executeJavaScriptAndWaitForResult(mWebContentsRef.get(), script);
     }
 
-    // public is used so as to be visible to the payment tests in //clank.
-    public String runJavascriptWithAsyncResult(String script) throws TimeoutException {
-        return JavaScriptUtils.runJavascriptWithAsyncResult(mWebContentsRef.get(), script);
+    /**
+     * Executes a snippet of JavaScript code in the current tab, and waits for a given UI event to
+     * occur. The JavaScript code is run with a user gesture present, and any async result (i.e.,
+     * Promise) is not waited for.
+     */
+    protected void runJavaScriptAndWaitForUIEvent(String code, CallbackHelper helper)
+            throws TimeoutException {
+        int callCount = helper.getCallCount();
+        runJavaScriptCodeWithUserGestureInCurrentTab(code);
+        helper.waitForCallback(callCount);
+    }
+
+    /**
+     * Executes a snippet of JavaScript code in the current tab, and waits for the promise it
+     * returns to settle with some value or to reject with an error message; returning the result as
+     * a String in either case. The JavaScript code is run with a user gesture present.
+     *
+     * @param promiseCode a JavaScript snippet that will return a promise
+     */
+    protected String runJavaScriptAndWaitForPromise(String promiseCode) throws TimeoutException {
+        String code = promiseCode + ".then(result => domAutomationController.send(result))"
+                + ".catch(error => domAutomationController.send(error));";
+        return JavaScriptUtils.runJavascriptWithUserGestureAndAsyncResult(getWebContents(), code);
     }
 
     /** Clicks on an HTML node. */
