@@ -46,10 +46,12 @@ bool ShouldUseDefaultColor(SkColor color) {
 KeyboardBacklightColorController::KeyboardBacklightColorController()
     : keyboard_backlight_color_nudge_controller_(
           std::make_unique<KeyboardBacklightColorNudgeController>()) {
-  wallpaper_controller_observation_.Observe(WallpaperController::Get());
+  Shell::Get()->rgb_keyboard_manager()->AddObserver(this);
 }
 
-KeyboardBacklightColorController::~KeyboardBacklightColorController() = default;
+KeyboardBacklightColorController::~KeyboardBacklightColorController() {
+  Shell::Get()->rgb_keyboard_manager()->RemoveObserver(this);
+}
 
 // static
 void KeyboardBacklightColorController::RegisterProfilePrefs(
@@ -73,14 +75,22 @@ KeyboardBacklightColorController::GetBacklightColor(
   if (account_id.empty())
     return personalization_app::mojom::BacklightColor::kWallpaper;
   auto* pref_service = GetUserPrefService(account_id);
-  if (!pref_service) {
-    // TODO(b/238463679): Migrate to local state pref. There may be a timing
-    // issue that results in null pref service. Defaults to |kWallpaper| when
-    // that happens.
-    return personalization_app::mojom::BacklightColor::kWallpaper;
-  }
+  DCHECK(pref_service);
   return static_cast<personalization_app::mojom::BacklightColor>(
       pref_service->GetInteger(prefs::kPersonalizationKeyboardBacklightColor));
+}
+
+void KeyboardBacklightColorController::OnRgbKeyboardSupportedChanged(
+    bool supported) {
+  if (supported) {
+    if (!session_observer_.IsObserving())
+      session_observer_.Observe(Shell::Get()->session_controller());
+    if (!wallpaper_controller_observation_.IsObserving())
+      wallpaper_controller_observation_.Observe(WallpaperController::Get());
+  } else {
+    session_observer_.Reset();
+    wallpaper_controller_observation_.Reset();
+  }
 }
 
 void KeyboardBacklightColorController::OnSessionStateChanged(

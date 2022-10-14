@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
+#include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_keyboard_backlight_provider.h"
 #include "base/scoped_observation.h"
@@ -52,12 +53,22 @@ class PersonalizationAppKeyboardBacklightProviderImpl
   // WallpaperControllerObserver:
   void OnWallpaperColorsChanged() override;
 
+  // Tests can provide the controller in case it is not initialized in
+  // ash::Shell.
+  void SetKeyboardBacklightColorControllerForTesting(
+      KeyboardBacklightColorController* controller);
+
  private:
+  KeyboardBacklightColorController* GetKeyboardBacklightColorController();
+
   // Notify webUI the current state of backlight color.
   void NotifyBacklightColorChanged();
 
   // Pointer to profile of user that opened personalization SWA. Not owned.
   raw_ptr<Profile> const profile_ = nullptr;
+
+  raw_ptr<KeyboardBacklightColorController>
+      keyboard_backlight_color_controller_for_testing_;
 
   mojo::Receiver<mojom::KeyboardBacklightProvider> keyboard_backlight_receiver_{
       this};

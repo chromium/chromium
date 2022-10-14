@@ -24,15 +24,6 @@
 
 namespace ash::personalization_app {
 
-namespace {
-KeyboardBacklightColorController* GetKeyboardBacklightColorController() {
-  auto* keyboard_backlight_color_controller =
-      ash::Shell::Get()->keyboard_backlight_color_controller();
-  DCHECK(keyboard_backlight_color_controller);
-  return keyboard_backlight_color_controller;
-}
-}  // namespace
-
 PersonalizationAppKeyboardBacklightProviderImpl::
     PersonalizationAppKeyboardBacklightProviderImpl(content::WebUI* web_ui)
     : profile_(Profile::FromWebUI(web_ui)) {}
@@ -98,6 +89,23 @@ void PersonalizationAppKeyboardBacklightProviderImpl::
   keyboard_backlight_observer_remote_->OnWallpaperColorChanged(
       ConvertBacklightColorToSkColor(
           personalization_app::mojom::BacklightColor::kWallpaper));
+}
+
+void PersonalizationAppKeyboardBacklightProviderImpl::
+    SetKeyboardBacklightColorControllerForTesting(
+        KeyboardBacklightColorController* controller) {
+  keyboard_backlight_color_controller_for_testing_ = controller;
+}
+
+KeyboardBacklightColorController*
+PersonalizationAppKeyboardBacklightProviderImpl::
+    GetKeyboardBacklightColorController() {
+  if (keyboard_backlight_color_controller_for_testing_)
+    return keyboard_backlight_color_controller_for_testing_;
+  auto* keyboard_backlight_color_controller =
+      ash::Shell::Get()->keyboard_backlight_color_controller();
+  DCHECK(keyboard_backlight_color_controller);
+  return keyboard_backlight_color_controller;
 }
 
 void PersonalizationAppKeyboardBacklightProviderImpl::

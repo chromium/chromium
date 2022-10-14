@@ -846,6 +846,7 @@ component("ash") {
     "rgb_keyboard/histogram_util.h",
     "rgb_keyboard/rgb_keyboard_manager.cc",
     "rgb_keyboard/rgb_keyboard_manager.h",
+    "rgb_keyboard/rgb_keyboard_manager_observer.h",
     "rgb_keyboard/rgb_keyboard_util.cc",
     "rgb_keyboard/rgb_keyboard_util.h",
     "root_window_controller.cc",

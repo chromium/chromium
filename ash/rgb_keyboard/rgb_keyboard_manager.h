@@ -16,6 +16,8 @@
 
 namespace ash {
 
+class RgbKeyboardManagerObserver;
+
 // RgbKeyboardManager is singleton class that provides clients access to
 // RGB keyboard-related API's. Clients should interact with this class instead
 // of the rgbkbd DBus client.
@@ -40,6 +42,10 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer,
   bool IsRgbKeyboardSupported() const {
     return capabilities_ != rgbkbd::RgbKeyboardCapabilities::kNone;
   }
+
+  // Add and remove observers.
+  void AddObserver(RgbKeyboardManagerObserver* observer);
+  void RemoveObserver(RgbKeyboardManagerObserver* observer);
 
  private:
   // Enum to track the background mode sent to rgbkbd
@@ -75,6 +81,8 @@ class ASH_EXPORT RgbKeyboardManager : public ImeControllerImpl::Observer,
   // `BackgroundType::kStaticSingleColor`.
   SkColor background_color_;
   BackgroundType background_type_ = BackgroundType::kNone;
+
+  base::ObserverList<RgbKeyboardManagerObserver> observers_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

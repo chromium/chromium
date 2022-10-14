@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_keyboard_backlight_provider_impl.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
+#include "ash/system/keyboard_brightness/keyboard_backlight_color_controller.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -101,11 +104,17 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
     keyboard_backlight_provider_ =
         std::make_unique<PersonalizationAppKeyboardBacklightProviderImpl>(
             &web_ui_);
+    keyboard_backlight_color_controller_ =
+        std::make_unique<KeyboardBacklightColorController>();
+    keyboard_backlight_color_controller_->OnRgbKeyboardSupportedChanged(true);
+    keyboard_backlight_provider_->SetKeyboardBacklightColorControllerForTesting(
+        keyboard_backlight_color_controller_.get());
     keyboard_backlight_provider_->BindInterface(
         keyboard_backlight_provider_remote_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override {
+    keyboard_backlight_color_controller_.reset();
     keyboard_backlight_provider_.reset();
     ChromeAshTestBase::TearDown();
   }
@@ -148,6 +157,8 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
   TestingProfile* profile_;
+  std::unique_ptr<KeyboardBacklightColorController>
+      keyboard_backlight_color_controller_;
   mojo::Remote<ash::personalization_app::mojom::KeyboardBacklightProvider>
       keyboard_backlight_provider_remote_;
   std::unique_ptr<PersonalizationAppKeyboardBacklightProviderImpl>

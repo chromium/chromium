@@ -10,6 +10,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/rgb_keyboard/histogram_util.h"
+#include "ash/rgb_keyboard/rgb_keyboard_manager_observer.h"
 #include "ash/rgb_keyboard/rgb_keyboard_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
@@ -117,6 +118,14 @@ RgbKeyboardManager* RgbKeyboardManager::Get() {
   return g_instance;
 }
 
+void RgbKeyboardManager::AddObserver(RgbKeyboardManagerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void RgbKeyboardManager::RemoveObserver(RgbKeyboardManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void RgbKeyboardManager::OnCapabilityUpdatedForTesting(
     rgbkbd::RgbKeyboardCapabilities capability) {
   capabilities_ = capability;
@@ -138,6 +147,9 @@ void RgbKeyboardManager::OnGetRgbKeyboardCapabilities(
 
   if (IsRgbKeyboardSupported())
     InitializeRgbKeyboard();
+
+  for (auto& observer : observers_)
+    observer.OnRgbKeyboardSupportedChanged(IsRgbKeyboardSupported());
 }
 
 void RgbKeyboardManager::InitializeRgbKeyboard() {

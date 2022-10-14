@@ -9,6 +9,9 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
+#include "ash/rgb_keyboard/rgb_keyboard_manager.h"
+#include "ash/rgb_keyboard/rgb_keyboard_manager_observer.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "base/scoped_observation.h"
 #include "components/session_manager/session_manager_types.h"
@@ -22,7 +25,8 @@ class KeyboardBacklightColorNudgeController;
 
 // Controller to manage keyboard backlight colors.
 class ASH_EXPORT KeyboardBacklightColorController
-    : public SessionObserver,
+    : public RgbKeyboardManagerObserver,
+      public SessionObserver,
       public WallpaperControllerObserver {
  public:
   KeyboardBacklightColorController();
@@ -44,6 +48,9 @@ class ASH_EXPORT KeyboardBacklightColorController
   // Returns the currently set backlight color for user with |account_id|.
   personalization_app::mojom::BacklightColor GetBacklightColor(
       const AccountId& account_id);
+
+  // RgbKeyboardManagerObserver:
+  void OnRgbKeyboardSupportedChanged(bool supported) override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
@@ -71,7 +78,8 @@ class ASH_EXPORT KeyboardBacklightColorController
 
   SkColor displayed_color_for_testing_ = SK_ColorTRANSPARENT;
 
-  ScopedSessionObserver scoped_session_observer_{this};
+  base::ScopedObservation<SessionControllerImpl, SessionObserver>
+      session_observer_{this};
 
   base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
       wallpaper_controller_observation_{this};
