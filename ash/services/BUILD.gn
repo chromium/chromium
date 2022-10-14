@@ -17,8 +17,6 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     "//ash/services/device_sync:unit_tests",
-    "//ash/services/ime:services_unittests",
-    "//ash/services/ime:unit_tests",
     "//ash/services/multidevice_setup:unit_tests",
     "//ash/services/secure_channel:unit_tests",
   ]

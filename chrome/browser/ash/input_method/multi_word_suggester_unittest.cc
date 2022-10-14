@@ -8,11 +8,11 @@
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

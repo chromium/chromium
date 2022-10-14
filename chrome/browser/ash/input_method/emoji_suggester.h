@@ -7,13 +7,13 @@
 
 #include <string>
 
-#include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
+#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;

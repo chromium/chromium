@@ -5,8 +5,8 @@
 #ifndef UI_BASE_IME_ASH_INPUT_METHOD_UKM_H_
 #define UI_BASE_IME_ASH_INPUT_METHOD_UKM_H_
 
-#include "ash/services/ime/public/mojom/input_method_host.mojom-shared.h"
 #include "base/component_export.h"
+#include "chromeos/ash/services/ime/public/mojom/input_method_host.mojom-shared.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/ime/text_input_type.h"
 

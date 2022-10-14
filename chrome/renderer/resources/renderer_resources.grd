@@ -71,10 +71,10 @@
 
           <!-- ChromeOS IME Mojo service and bindings. -->
           <include name="IDR_IME_SERVICE_BINDINGS_JS" file="extensions\chromeos_ime_service_bindings.js" type="BINDATA" />
-          <include name="IDR_IME_SERVICE_MOJOM_JS" file="${mojom_root}\ash\services\ime\public\mojom\ime_service.mojom.js" use_base_dir="false" type="BINDATA" />
-          <include name="IDR_IME_SERVICE_INPUT_ENGINE_MOJOM_JS" file="${mojom_root}\ash\services\ime\public\mojom\input_engine.mojom.js" use_base_dir="false" type="BINDATA" />
-          <include name="IDR_IME_SERVICE_INPUT_METHOD_MOJOM_JS" file="${mojom_root}\ash\services\ime\public\mojom\input_method.mojom.js" use_base_dir="false" type="BINDATA" />
-          <include name="IDR_IME_SERVICE_INPUT_METHOD_HOST_MOJOM_JS" file="${mojom_root}\ash\services\ime\public\mojom\input_method_host.mojom.js" use_base_dir="false" type="BINDATA" />
+          <include name="IDR_IME_SERVICE_MOJOM_JS" file="${mojom_root}\chromeos\ash\services\ime\public\mojom\ime_service.mojom.js" use_base_dir="false" type="BINDATA" />
+          <include name="IDR_IME_SERVICE_INPUT_ENGINE_MOJOM_JS" file="${mojom_root}\chromeos\ash\services\ime\public\mojom\input_engine.mojom.js" use_base_dir="false" type="BINDATA" />
+          <include name="IDR_IME_SERVICE_INPUT_METHOD_MOJOM_JS" file="${mojom_root}\chromeos\ash\services\ime\public\mojom\input_method.mojom.js" use_base_dir="false" type="BINDATA" />
+          <include name="IDR_IME_SERVICE_INPUT_METHOD_HOST_MOJOM_JS" file="${mojom_root}\chromeos\ash\services\ime\public\mojom\input_method_host.mojom.js" use_base_dir="false" type="BINDATA" />
 
           <include name="IDR_GOOGLE_TTS_STREAM_BINDINGS_JS" file="extensions\chromeos_google_tts_stream_bindings.js" type="BINDATA" />
           <include name="IDR_GOOGLE_TTS_STREAM_MOJOM_JS" file="${mojom_root}\chromeos\services\tts\public\mojom\tts_service.mojom.js" use_base_dir="false" type="BINDATA" />

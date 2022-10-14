@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/suggestions_source.h"
+#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

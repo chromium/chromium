@@ -51,8 +51,8 @@
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/services/ime/ime_sandbox_hook.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/ash/services/ime/ime_sandbox_hook.h"
 #include "chromeos/services/tts/tts_sandbox_hook.h"
 
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)

@@ -44,8 +44,8 @@ grit("resources") {
   }
   if (is_chromeos_ash) {
     deps += [
-      "//ash/services/ime/public/mojom:mojom_js",
       "//chromeos/ash/components/enhanced_network_tts/mojom:mojom_js",
+      "//chromeos/ash/services/ime/public/mojom:mojom_js",
       "//chromeos/services/tts/public/mojom:mojom_js",
     ]
   }

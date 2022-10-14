@@ -1,5 +1,5 @@
 include_rules = [
-  "+ash/services/ime/public/mojom",
+  "+chromeos/ash/services/ime/public/mojom",
   "+chromeos/ime",
   "+ui/chromeos/strings",
   "+ui/ozone/public",

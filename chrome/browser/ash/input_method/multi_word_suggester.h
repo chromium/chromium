@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_MULTI_WORD_SUGGESTER_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_MULTI_WORD_SUGGESTER_H_
 
-#include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/suggester.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
+#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {

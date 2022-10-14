@@ -1,0 +1,23 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.ime.mojom;
+
+// A message channel is a paired message sender and receiver. It provides the
+// communication channel between the IME extension process and the core IME
+// service in ChromeOS.
+// In order to encapsulate all the communication, (e.g. access to some
+// closed-sourced input engine with decoders), implement the method that takes
+// a serialized protobuf message (instead of a plaintext) as its argument.
+//
+// Note that only closed source proto messages are allowed to be sent via
+// the ProcessMessage() method. All other proto messages must be mirrored with
+// a respective mojom method here in this interface for security (see
+// chromeos/ash/services/ime/decoder/system_engine.cc for an example of
+// mirroring).
+interface InputChannel {
+  // Returns a serialized protobuf result after processing a serialized
+  // protobuf message.
+  ProcessMessage(array<uint8> message) => (array<uint8> result);
+};

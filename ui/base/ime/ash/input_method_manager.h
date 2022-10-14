@@ -12,9 +12,9 @@
 #include <string>
 #include <vector>
 
-#include "ash/services/ime/public/mojom/ime_service.mojom.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
+#include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/ime/ash/ime_keyset.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"

@@ -7,7 +7,6 @@
 #include <cmath>
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -16,6 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
+#include "chromeos/ash/services/ime/public/cpp/suggestions.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/dom/dom_code.h"

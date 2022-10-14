@@ -86,8 +86,8 @@ source_set("utility") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//ash/services/ime:sandbox_hook",
       "//chromeos/ash/components/assistant:buildflags",
+      "//chromeos/ash/services/ime:sandbox_hook",
       "//chromeos/services/tts:sandbox_hook",
     ]
     if (use_vaapi || use_v4l2_codec) {

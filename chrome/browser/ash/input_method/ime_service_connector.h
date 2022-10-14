@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_IME_SERVICE_CONNECTOR_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_IME_SERVICE_CONNECTOR_H_
 
-#include "ash/services/ime/public/mojom/ime_service.mojom.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/services/ime/public/mojom/ime_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"

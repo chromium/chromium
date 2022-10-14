@@ -1,6 +1,4 @@
 include_rules = [
-  "+ash/services/ime/ime_service.h",
-  "+ash/services/ime/public/mojom",
   "+chrome/grit",
   "+chrome/installer/util",
   "+chrome/services/ipp_parser/ipp_parser.h",
@@ -32,6 +30,8 @@ include_rules = [
   "+chromeos/ash/components/trash_service/public/mojom",
   "+chromeos/ash/services/assistant",
   "+chromeos/ash/services/assistant/audio_decoder",
+  "+chromeos/ash/services/ime/ime_service.h",
+  "+chromeos/ash/services/ime/public/mojom",
   "+chromeos/ash/services/libassistant/libassistant_service.h",
   "+chromeos/ash/services/nearby",
   "+chromeos/ash/services/recording/recording_service.h",
