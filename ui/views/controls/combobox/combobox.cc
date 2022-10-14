@@ -432,9 +432,6 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
   }
 
   if (new_index.has_value()) {
-    if (menu_selection_at_callback_)
-      menu_selection_at_callback_.Run(new_index.value());
-
     SetSelectedIndex(new_index);
     OnPerformAction();
   }
