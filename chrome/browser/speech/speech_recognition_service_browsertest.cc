@@ -4,6 +4,7 @@
 
 #include <algorithm>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/notreached.h"
@@ -517,11 +518,12 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CompromisedRenderer) {
   base::FilePath config_dir =
       GetSodaLanguagePacksDirectory()
           .AppendASCII(kUsEnglishLocale)
-          .Append("1.1.1")
+          .Append(FILE_PATH_LITERAL("1.1.1"))
           .Append(kSodaLanguagePackDirectoryRelativePath);
   base::CreateDirectory(config_dir);
   ASSERT_TRUE(base::PathExists(config_dir));
-  base::FilePath config_file_path = config_dir.Append("config_file");
+  base::FilePath config_file_path =
+      config_dir.Append(FILE_PATH_LITERAL("config_file"));
   ASSERT_EQ(base::WriteFile(config_file_path, nullptr, 0), 0);
   ASSERT_TRUE(base::PathExists(config_file_path));
   g_browser_process->local_state()->SetFilePath(prefs::kSodaEnUsConfigPath,
