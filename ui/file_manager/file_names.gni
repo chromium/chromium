@@ -244,10 +244,15 @@ static_js_files = [
 # END: static_js_files.
 
 ts_files = [
+  # Common.
+  "file_manager/common/js/dom_utils.ts",
+
+  # Lib.
   "file_manager/lib/actions_producer.ts",
   "file_manager/lib/base_store.ts",
   "file_manager/lib/concurrency_models.ts",
 
+  # State.
   "file_manager/state/store.ts",
   "file_manager/state/reducers/root.ts",
   "file_manager/state/reducers/all_entries.ts",
@@ -255,10 +260,14 @@ ts_files = [
   "file_manager/state/reducers/search.ts",
   "file_manager/state/actions.ts",
   "file_manager/state/file_key.ts",
-  "file_manager/widgets/xf_breadcrumb.ts",
-  "file_manager/widgets/xf_nudge.ts",
+
+  # Containers.
   "file_manager/containers/breadcrumb_container.ts",
   "file_manager/containers/nudge_container.ts",
+
+  # Widgets.
+  "file_manager/widgets/xf_breadcrumb.ts",
+  "file_manager/widgets/xf_nudge.ts",
   "file_manager/widgets/xf_dlp_restriction_details_dialog.ts",
 ]
 

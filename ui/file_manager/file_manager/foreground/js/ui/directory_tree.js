@@ -4,10 +4,8 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {dispatchSimpleEvent, getPropertyDescriptor, PropertyKind} from 'chrome://resources/js/cr.m.js';
-import {Command} from './command.js';
-import {contextMenuHandler} from './context_menu_handler.js';
-import {Menu} from './menu.js';
 
+import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
 import {FileType} from '../../../common/js/file_type.js';
 import {vmTypeToIconName} from '../../../common/js/icon_util.js';
 import {metrics} from '../../../common/js/metrics.js';
@@ -23,6 +21,9 @@ import {DirectoryModel} from '../directory_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';
 import {NavigationListModel, NavigationModelAndroidAppItem, NavigationModelFakeItem, NavigationModelItem, NavigationModelItemType, NavigationModelShortcutItem, NavigationModelVolumeItem, NavigationSection} from '../navigation_list_model.js';
 
+import {Command} from './command.js';
+import {contextMenuHandler} from './context_menu_handler.js';
+import {Menu} from './menu.js';
 import {Tree, TreeItem} from './tree.js';
 
 // Namespace
@@ -2017,6 +2018,9 @@ export class DirectoryTree extends Tree {
       }
     });
 
+    this.addEventListener(
+        'mouseover', this.onMouseOver_.bind(this), {passive: true});
+
     this.privateOnDirectoryChangedBound_ =
         this.onDirectoryContentChanged_.bind(this);
     chrome.fileManagerPrivate.onDirectoryChanged.addListener(
@@ -2028,6 +2032,27 @@ export class DirectoryTree extends Tree {
      * @private
      */
     this.fakeEntriesVisible_ = fakeEntriesVisible;
+  }
+
+  onMouseOver_(event) {
+    this.maybeShowToolTip(event);
+  }
+
+  maybeShowToolTip(event) {
+    const target = event.composedPath()[0];
+    if (!target) {
+      return;
+    }
+    if (!(target.classList.contains('tree-row') &&
+          target.parentElement?.label)) {
+      return;
+    }
+    const labelElement = target.querySelector('.label');
+    if (!labelElement) {
+      return;
+    }
+
+    maybeShowTooltip(labelElement, target.parentElement.label);
   }
 
   /**

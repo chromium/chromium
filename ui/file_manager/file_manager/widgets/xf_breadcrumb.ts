@@ -4,6 +4,8 @@
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
+import {mouseEnterMaybeShowTooltip} from '../common/js/dom_utils.js';
+
 import {getTemplate} from './xf_breadcrumb.html.js';
 
 /**
@@ -35,6 +37,12 @@ export class XfBreadcrumb extends HTMLElement {
     this.addEventListener('tabkeyclose', this.onTabkeyClose_.bind(this));
     this.addEventListener('close', this.closeMenu_.bind(this));
     this.addEventListener('blur', this.closeMenu_.bind(this));
+    const buttons =
+        Array.from(this.shadowRoot!.querySelectorAll('button:not([elider])')) as
+        HTMLButtonElement[];
+    buttons.forEach(button => {
+      button.addEventListener('mouseenter', mouseEnterMaybeShowTooltip);
+    });
   }
 
   /** Gets parts.  */
@@ -123,6 +131,9 @@ export class XfBreadcrumb extends HTMLElement {
 
     const menu = this.shadowRoot!.querySelector('cr-action-menu')!;
     menu.innerHTML = elidedParts;
+    menu.querySelectorAll('button').forEach(button => {
+      button.addEventListener('mouseenter', mouseEnterMaybeShowTooltip);
+    });
 
     (elider.previousElementSibling as HTMLButtonElement).hidden = false;
     elider.hidden = false;
@@ -132,7 +143,7 @@ export class XfBreadcrumb extends HTMLElement {
    * Returns the breadcrumb buttons: they contain the current path ordered by
    * its parts, which are stored in the <button>.textContent.
    */
-  private getBreadcrumbButtons_(): HTMLButtonElement[] {
+  getBreadcrumbButtons(): HTMLButtonElement[] {
     const parts = this.shadowRoot!.querySelectorAll<HTMLButtonElement>(
         'button[id]:not([hidden])')!;
     if (this.parts_.length <= 4) {
@@ -143,36 +154,6 @@ export class XfBreadcrumb extends HTMLElement {
         'cr-action-menu button')!;
     return [parts[0]].concat(Array.from(elided), Array.from(parts).slice(1)) as
         HTMLButtonElement[];
-  }
-
-  /**
-   * Returns the visible buttons rendered CSS overflow: ellipsis that have no
-   * 'has-tooltip' attribute.
-   *
-   * Note: call in a requestAnimationFrame() to avoid a style resolve.
-   *
-   * @return  buttons Callers can set the tool tip attribute on the returned
-   *     buttons.
-   */
-  getEllipsisButtons(): HTMLButtonElement[] {
-    return this.getBreadcrumbButtons_().filter(button => {
-      if (!button.hasAttribute('has-tooltip') && button.offsetWidth) {
-        return button.offsetWidth < button.scrollWidth;
-      }
-      return false;
-    });
-  }
-
-  /**
-   * Returns breadcrumb buttons that have a 'has-tooltip' attribute. Note the
-   * elider button is excluded since it has an i18n aria-label.
-   *
-   * @return buttons Caller could remove the tool tip event listeners from the
-   *     returned buttons.
-   */
-  getToolTipButtons(): HTMLButtonElement[] {
-    const hasToolTip = 'button:not([elider])[has-tooltip]';
-    return Array.from(this.shadowRoot!.querySelectorAll(hasToolTip));
   }
 
   /**
@@ -196,7 +177,7 @@ export class XfBreadcrumb extends HTMLElement {
     }
 
     if (element instanceof HTMLButtonElement) {
-      const parts = this.getBreadcrumbButtons_();
+      const parts = this.getBreadcrumbButtons();
       this.dispatchEvent(new CustomEvent(BREADCRUMB_CLICKED, {
         bubbles: true,
         composed: true,
