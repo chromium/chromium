@@ -31,29 +31,35 @@
 namespace global_variables_test {
 
 struct MyStruct {
+  MyStruct(int& r) : ref(r), ref2(r) {}
   // Expected to be emitted in automated-fields-to-ignore.txt, because
   // of |g_struct| below.
   int* ptr;
+  int& ref;
 
   // Verification that *all* fields of a struct are covered (e.g. that the
   // |forEach| matcher is used instead of the |has| matcher).
   int* ptr2;
+  int& ref2;
 };
-
-MyStruct g_struct;
+int num = 11;
+MyStruct g_struct(num);
 
 }  // namespace global_variables_test
 
 namespace static_variables_test {
 
 struct MyStruct {
+  MyStruct(int& r) : ref(r) {}
   // Expected to be emitted in automated-fields-to-ignore.txt, because
   // of |s_struct| below.
   int* ptr;
+  int& ref;
 };
 
 void foo() {
-  static MyStruct s_struct;
+  static int n = 11;
+  static MyStruct s_struct(n);
 }
 
 }  // namespace static_variables_test
@@ -61,28 +67,34 @@ void foo() {
 namespace nested_struct_test {
 
 struct MyStruct {
+  MyStruct(int& r) : ref(r) {}
   // Expected to be emitted in automated-fields-to-ignore.txt, because
   // of |g_outer_struct| below.
   int* ptr;
+  int& ref;
 };
 
 struct MyOuterStruct {
+  MyOuterStruct(int& r) : inner_struct(r) {}
   MyStruct inner_struct;
 };
-
-static MyOuterStruct g_outer_struct;
+static int n = 42;
+static MyOuterStruct g_outer_struct(n);
 
 }  // namespace nested_struct_test
 
 namespace nested_in_array_test {
 
 struct MyStruct {
+  MyStruct(int& r) : ref(r) {}
   // Expected to be emitted in automated-fields-to-ignore.txt, because
   // of |g_outer_array| below.
   int* ptr;
-};
 
-static MyStruct g_outer_struct[] = {nullptr, nullptr, nullptr};
+  int& ref;
+};
+static int num = 42;
+static MyStruct g_outer_struct[] = {num, num, num};
 
 }  // namespace nested_in_array_test
 
@@ -90,16 +102,25 @@ namespace nested_template_test {
 
 template <typename T>
 struct MyStruct {
+  MyStruct(T& r) : ref(r), ref2(r) {}
   // Expected to be emitted in automated-fields-to-ignore.txt, because
   // of |g_outer_struct| below.
   T* ptr;
+
+  T* ptr2;
+
+  T& ref;
+
+  T& ref2;
 };
 
 struct MyOuterStruct {
+  MyOuterStruct(int& r) : inner_struct(r) {}
   MyStruct<int> inner_struct;
 };
 
-static MyOuterStruct g_outer_struct;
+static int num = 42;
+static MyOuterStruct g_outer_struct(num);
 
 }  // namespace nested_template_test
 

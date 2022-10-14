@@ -55,3 +55,33 @@ struct MacroTest2 {
   TAILQ_ENTRY(event) ev_active_next;
   TAILQ_ENTRY(event) ev_signal_next;
 };
+
+namespace raw_ref_test {
+struct Elf64_Dyn;
+
+#define __ELF_NATIVE_CLASS 64
+#define ElfW(type) _ElfW(Elf, __ELF_NATIVE_CLASS, type)
+#define _ElfW(e, w, t) _ElfW_1(e, w, _##t)
+#define _ElfW_1(e, w, t) e##w##t
+
+struct MacroTest1 {
+  ElfW(Dyn) & ref_field;
+};
+
+struct event;
+struct event_base;
+// anonymous structs are not matched because they don't compile when trying to
+// set raw_ref members using initializer list.
+#define TAILQ_ENTRY2(type) \
+  struct {                 \
+    struct type& tqe_next; \
+    struct type& tqe_prev; \
+  }
+
+struct MacroTest2 {
+  TAILQ_ENTRY2(event) ev_next;
+  TAILQ_ENTRY2(event) ev_active_next;
+  TAILQ_ENTRY2(event) ev_signal_next;
+};
+
+}  // namespace raw_ref_test

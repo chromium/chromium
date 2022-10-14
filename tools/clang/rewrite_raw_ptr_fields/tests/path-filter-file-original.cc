@@ -8,4 +8,5 @@ struct MyStruct {
   // No rewrite expected - this whole source file is mentioned in the
   // tests/paths-to-ignore.txt file.
   SomeClass* ptr_field_;
+  SomeClass& ref_field_;
 };

@@ -12,6 +12,12 @@ typedef SomeClass* SomeClassPtrTypedef;
 // TODO(lukasza): Handle rewriting type aliases.
 using SomeClassPtrTypeAlias = SomeClass*;
 
+// No rewrite.
+typedef SomeClass& SomeClassRefTypedef;
+
+// No rewrite.
+using SomeClassRefTypeAlias = SomeClass&;
+
 struct MyStruct {
   // No rewrite expected here.
   SomeClassPtrTypedef field1;
@@ -23,4 +29,13 @@ struct MyStruct {
   SomeClassPtrTypedef* field3;
   // Expected rewrite: raw_ptr<SomeClassPtrTypeAlias> field4;
   SomeClassPtrTypeAlias* field4;
+
+  // No rewrite expected here.
+  SomeClassRefTypedef ref_field1;
+  SomeClassRefTypeAlias ref_field2;
+
+  // Expected rewrite: raw_ref<SomeClass> ref_field3;
+  SomeClassRefTypedef& ref_field3;
+  // Expected rewrite: raw_ref<SomeClass> ref_field4;
+  SomeClassRefTypeAlias& ref_field4;
 };

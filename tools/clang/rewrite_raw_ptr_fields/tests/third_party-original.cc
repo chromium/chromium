@@ -20,4 +20,5 @@ struct MyStruct {
   // No rewrite expected, because the path of this source file contains
   // "third_party" substring.
   SomeClass* ptr_field;
+  SomeClass& ref_field;
 };

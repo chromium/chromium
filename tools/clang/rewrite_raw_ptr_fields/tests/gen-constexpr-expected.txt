@@ -1,15 +1,19 @@
 ==== BEGIN EDITS ====
 include-user-header:::gen-constexpr-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
-r:::gen-constexpr-actual.cc:::1088:::5:::raw_ptr<int> 
-r:::gen-constexpr-actual.cc:::1196:::5:::raw_ptr<int> 
-r:::gen-constexpr-actual.cc:::1311:::5:::raw_ptr<int> 
-r:::gen-constexpr-actual.cc:::2021:::16:::raw_ptr<const char16_t> 
-r:::gen-constexpr-actual.cc:::2430:::16:::raw_ptr<const char16_t> 
-r:::gen-constexpr-actual.cc:::2853:::12:::raw_ptr<const char> 
-r:::gen-constexpr-actual.cc:::2884:::12:::raw_ptr<const char> 
-r:::gen-constexpr-actual.cc:::2913:::12:::raw_ptr<const char> 
-r:::gen-constexpr-actual.cc:::2935:::12:::raw_ptr<const char> 
-r:::gen-constexpr-actual.cc:::3480:::6:::raw_ptr<void> 
+include-user-header:::gen-constexpr-actual.cc:::-1:::-1:::base/memory/raw_ref.h
+r:::gen-constexpr-actual.cc:::1105:::5:::raw_ptr<int> 
+r:::gen-constexpr-actual.cc:::1213:::5:::raw_ptr<int> 
+r:::gen-constexpr-actual.cc:::1328:::5:::raw_ptr<int> 
+r:::gen-constexpr-actual.cc:::1551:::5:::raw_ref<int> 
+r:::gen-constexpr-actual.cc:::1659:::5:::raw_ref<int> 
+r:::gen-constexpr-actual.cc:::2369:::16:::raw_ptr<const char16_t> 
+r:::gen-constexpr-actual.cc:::2778:::16:::raw_ptr<const char16_t> 
+r:::gen-constexpr-actual.cc:::3201:::12:::raw_ptr<const char> 
+r:::gen-constexpr-actual.cc:::3232:::12:::raw_ptr<const char> 
+r:::gen-constexpr-actual.cc:::3261:::12:::raw_ptr<const char> 
+r:::gen-constexpr-actual.cc:::3283:::12:::raw_ptr<const char> 
+r:::gen-constexpr-actual.cc:::3829:::6:::raw_ptr<void> 
+r:::gen-constexpr-actual.cc:::4092:::12:::raw_ptr<const void> 
 ==== END EDITS ====
 ==== BEGIN FIELD FILTERS ====
 constexpr_variable_designated_initializers::foo()::(anonymous struct)::str2  # const-char, constexpr-var-initializer
@@ -20,4 +24,7 @@ constexpr_variable_initializer::foo()::(anonymous struct)::str  # const-char, co
 constexpr_variable_uninitialized_field::foo()::(anonymous struct)::str  # const-char
 field_initializer_in_constexpr_ctor::Foo::ptr2_  # constexpr-ctor-field-initializer
 field_initializer_in_constexpr_ctor::Foo::ptr_  # constexpr-ctor-field-initializer
+field_initializer_in_constexpr_ctor::Foo::ref2_  # constexpr-ctor-field-initializer
+field_initializer_in_constexpr_ctor::Foo::ref_  # constexpr-ctor-field-initializer
+implicit_constexpr_ctor::Baz::no_rewrite  # constexpr-ctor-field-initializer
 ==== END FIELD FILTERS ====

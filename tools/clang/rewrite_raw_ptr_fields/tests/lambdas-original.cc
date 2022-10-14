@@ -18,9 +18,12 @@ class MyClass {
     // |isLambda|, rather than |hasAncestor|.
     auto lambda = [&]() -> int {
       struct NestedStruct {
+        NestedStruct(int& n) : ref_field(n) {}
         // Expected rewrite: raw_ptr<int> ptr_field;
         int* ptr_field;
-      } var;
+        // Expected rewrite: raw_ref<int> ref_field;
+        int& ref_field;
+      } var(x);
       var.ptr_field = &x;
 
       return x;

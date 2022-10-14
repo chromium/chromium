@@ -63,7 +63,11 @@ namespace {
 
 // Include path that needs to be added to all the files where raw_ptr<...>
 // replaces a raw pointer.
-const char kIncludePath[] = "base/memory/raw_ptr.h";
+const char kRawPtrIncludePath[] = "base/memory/raw_ptr.h";
+
+// Include path that needs to be added to all the files where raw_ref<...>
+// replaces a raw reference.
+const char kRawRefIncludePath[] = "base/memory/raw_ref.h";
 
 // Name of a cmdline parameter that can be used to specify a file listing fields
 // that should not be rewritten to use raw_ptr<T>.
@@ -169,7 +173,7 @@ class OutputHelper : public clang::tooling::SourceFileCallbacks {
   void AddReplacement(const clang::SourceManager& source_manager,
                       const clang::SourceRange& replacement_range,
                       std::string replacement_text,
-                      bool should_add_include = false) {
+                      const char* include_path = nullptr) {
     clang::tooling::Replacement replacement(
         source_manager, clang::CharSourceRange::getCharRange(replacement_range),
         replacement_text);
@@ -183,9 +187,9 @@ class OutputHelper : public clang::tooling::SourceFileCallbacks {
         replacement.getLength(), replacement_text);
     edits_helper_.Add(replacement_directive);
 
-    if (should_add_include) {
+    if (include_path) {
       std::string include_directive = llvm::formatv(
-          "include-user-header:::{0}:::-1:::-1:::{1}", file_path, kIncludePath);
+          "include-user-header:::{0}:::-1:::-1:::{1}", file_path, include_path);
       edits_helper_.Add(include_directive);
     }
   }
@@ -230,6 +234,7 @@ class OutputHelper : public clang::tooling::SourceFileCallbacks {
       case clang::Language::CUDA:
       case clang::Language::RenderScript:
       case clang::Language::HIP:
+      case clang::Language::HLSL:
         // Rewriter can't handle rewriting the current input language.
         return true;
 
@@ -313,7 +318,7 @@ class FilterFile {
   // Only returns true if |string_to_match| both matches an inclusion filter and
   // is *not* matched by an exclusion filter.
   bool ContainsSubstringOf(llvm::StringRef string_to_match) const {
-    if (!inclusion_substring_regex_.hasValue()) {
+    if (!inclusion_substring_regex_.has_value()) {
       std::vector<std::string> regex_escaped_inclusion_file_lines;
       std::vector<std::string> regex_escaped_exclusion_file_lines;
       regex_escaped_inclusion_file_lines.reserve(file_lines_.size());
@@ -831,30 +836,37 @@ AST_MATCHER_P2(clang::InitListExpr,
   return is_matching;
 }
 
-// Rewrites |SomeClass* field| (matched as "affectedFieldDecl") into
-// |raw_ptr<SomeClass> field| and for each file rewritten in such way adds an
-// |#include "base/memory/raw_ptr.h"|.
 class FieldDeclRewriter : public MatchFinder::MatchCallback {
  public:
-  explicit FieldDeclRewriter(OutputHelper* output_helper)
-      : output_helper_(output_helper) {}
+  explicit FieldDeclRewriter(OutputHelper* output_helper,
+                             const char* format_string,
+                             const char* include_path)
+      : output_helper_(output_helper),
+        format_string_(format_string),
+        include_path_(include_path) {}
 
   FieldDeclRewriter(const FieldDeclRewriter&) = delete;
   FieldDeclRewriter& operator=(const FieldDeclRewriter&) = delete;
 
+  virtual bool earlyExit(const MatchFinder::MatchResult& result) const = 0;
+
   void run(const MatchFinder::MatchResult& result) override {
+    if (earlyExit(result)) {
+      return;
+    }
     const clang::ASTContext& ast_context = *result.Context;
     const clang::SourceManager& source_manager = *result.SourceManager;
 
     const clang::FieldDecl* field_decl =
         result.Nodes.getNodeAs<clang::FieldDecl>("affectedFieldDecl");
+
     assert(field_decl && "matcher should bind 'fieldDecl'");
 
     const clang::TypeSourceInfo* type_source_info =
         field_decl->getTypeSourceInfo();
     if (auto* ivar_decl = clang::dyn_cast<clang::ObjCIvarDecl>(field_decl)) {
-      // Objective-C @synthesize statements should not be rewritten. They return
-      // null for getTypeSourceInfo().
+      // Objective-C @synthesize statements should not be rewritten. They
+      // return null for getTypeSourceInfo().
       if (ivar_decl->getSynthesize()) {
         assert(!type_source_info);
         return;
@@ -863,8 +875,6 @@ class FieldDeclRewriter : public MatchFinder::MatchCallback {
     assert(type_source_info && "assuming |type_source_info| is always present");
 
     clang::QualType pointer_type = type_source_info->getType();
-    assert(type_source_info->getType()->isPointerType() &&
-           "matcher should only match pointer types");
 
     // Calculate the |replacement_range|.
     //
@@ -877,8 +887,8 @@ class FieldDeclRewriter : public MatchFinder::MatchCallback {
     //            ^------^          = TypeLoc::getSourceRange
     //
     // We get the |replacement_range| in a bit clumsy way, because clang docs
-    // for QualifiedTypeLoc explicitly say that these objects "intentionally do
-    // not provide source location for type qualifiers".
+    // for QualifiedTypeLoc explicitly say that these objects "intentionally
+    // do not provide source location for type qualifiers".
     clang::SourceRange replacement_range(field_decl->getBeginLoc(),
                                          field_decl->getLocation());
 
@@ -889,8 +899,7 @@ class FieldDeclRewriter : public MatchFinder::MatchCallback {
 
     // Generate and print a replacement.
     output_helper_->AddReplacement(source_manager, replacement_range,
-                                   replacement_text,
-                                   true /* should_add_include */);
+                                   replacement_text, include_path_);
   }
 
  private:
@@ -898,12 +907,12 @@ class FieldDeclRewriter : public MatchFinder::MatchCallback {
                               const clang::QualType& pointer_type) {
     std::string result;
 
-    assert(pointer_type->isPointerType() && "caller must pass a pointer type!");
     clang::QualType pointee_type = pointer_type->getPointeeType();
 
     // Preserve qualifiers.
-    assert(!pointer_type.isRestrictQualified() &&
-           "|restrict| is a C-only qualifier and raw_ptr<T> needs C++");
+    assert(
+        !pointer_type.isRestrictQualified() &&
+        "|restrict| is a C-only qualifier and raw_ptr<T>/raw_ref<T> need C++");
     if (pointer_type.isConstQualified())
       result += "const ";
     if (pointer_type.isVolatileQualified())
@@ -914,20 +923,23 @@ class FieldDeclRewriter : public MatchFinder::MatchCallback {
     printing_policy.SuppressScope = 1;  // s/blink::Pointee/Pointee/
     std::string pointee_type_as_string =
         pointee_type.getAsString(printing_policy);
-    result += llvm::formatv("raw_ptr<{0}> ", pointee_type_as_string);
+    result += llvm::formatv(format_string_, pointee_type_as_string);
 
     return result;
   }
 
   OutputHelper* const output_helper_;
+  const char* format_string_;
+  const char* include_path_;
 };
 
-// Rewrites |my_struct.ptr_field| (matched as "affectedMemberExpr") into
-// |my_struct.ptr_field.get()|.
 class AffectedExprRewriter : public MatchFinder::MatchCallback {
  public:
-  explicit AffectedExprRewriter(OutputHelper* output_helper)
-      : output_helper_(output_helper) {}
+  explicit AffectedExprRewriter(
+      OutputHelper* output_helper,
+      std::function<std::pair<clang::SourceRange, std::string>(
+          const MatchFinder::MatchResult&)> fct)
+      : output_helper_(output_helper), getRangeAndText_(fct) {}
 
   AffectedExprRewriter(const AffectedExprRewriter&) = delete;
   AffectedExprRewriter& operator=(const AffectedExprRewriter&) = delete;
@@ -935,22 +947,16 @@ class AffectedExprRewriter : public MatchFinder::MatchCallback {
   void run(const MatchFinder::MatchResult& result) override {
     const clang::SourceManager& source_manager = *result.SourceManager;
 
-    const clang::MemberExpr* member_expr =
-        result.Nodes.getNodeAs<clang::MemberExpr>("affectedMemberExpr");
-    assert(member_expr && "matcher should bind 'affectedMemberExpr'");
-
-    clang::SourceLocation member_name_start = member_expr->getMemberLoc();
-    size_t member_name_length = member_expr->getMemberDecl()->getName().size();
-    clang::SourceLocation insertion_loc =
-        member_name_start.getLocWithOffset(member_name_length);
-
-    clang::SourceRange replacement_range(insertion_loc, insertion_loc);
-
-    output_helper_->AddReplacement(source_manager, replacement_range, ".get()");
+    auto [replacement_range, text] = getRangeAndText_(result);
+    output_helper_->AddReplacement(source_manager, replacement_range,
+                                   text.c_str());
   }
 
  private:
   OutputHelper* const output_helper_;
+  std::function<std::pair<clang::SourceRange, std::string>(
+      const MatchFinder::MatchResult&)>
+      getRangeAndText_;
 };
 
 // Emits problematic fields (matched as "affectedFieldDecl") as filtered fields.
@@ -975,6 +981,703 @@ class FilteredExprWriter : public MatchFinder::MatchCallback {
   llvm::StringRef filter_tag_;
 };
 
+AST_MATCHER(clang::CXXRecordDecl, isAnonymousStructOrUnion) {
+  return Node.getName().empty();
+}
+
+class RawPtrRewriter {
+ public:
+  RawPtrRewriter(OutputHelper* output_helper,
+                 MatchFinder& finder,
+                 FilterFile& fields_to_exclude,
+                 FilterFile& paths_to_exclude)
+      : match_finder(finder),
+        field_decl_rewriter(output_helper, "raw_ptr<{0}> ", kRawPtrIncludePath),
+        affected_expr_rewriter(output_helper, getRangeAndText_),
+        filtered_addr_of_expr_writer(output_helper, "addr-of"),
+        filtered_in_out_ref_arg_writer(output_helper, "in-out-param-ref"),
+        overlapping_field_decl_writer(output_helper, "overlapping"),
+        constexpr_ctor_field_initializer_writer(
+            output_helper,
+            "constexpr-ctor-field-initializer"),
+        constexpr_var_initializer_writer(output_helper,
+                                         "constexpr-var-initializer"),
+        macro_field_decl_writer(output_helper, "macro"),
+        char_ptr_field_decl_writer(output_helper, "const-char"),
+        global_scope_rewriter(output_helper, "global-scope"),
+        union_field_decl_writer(output_helper, "union"),
+        reinterpret_cast_struct_writer(output_helper,
+                                       "reinterpret-cast-trivial-type"),
+        fields_to_exclude(fields_to_exclude),
+        paths_to_exclude(paths_to_exclude) {}
+
+  void addMatchers() {
+    // Supported pointer types =========
+    // Given
+    //   struct MyStrict {
+    //     int* int_ptr;
+    //     int i;
+    //     int (*func_ptr)();
+    //     int (MyStruct::* member_func_ptr)(char);
+    //     int (*ptr_to_array_of_ints)[123]
+    //   };
+    // matches |int*|, but not the other types.
+    auto supported_pointer_types_matcher =
+        pointerType(unless(pointee(hasUnqualifiedDesugaredType(
+            anyOf(functionType(), memberPointerType(), arrayType())))));
+
+    // Implicit field declarations =========
+    // Matches field declarations that do not explicitly appear in the source
+    // code:
+    // 1. fields of classes generated by the compiler to back capturing lambdas,
+    // 2. fields within an implicit class or function template specialization
+    //    (e.g. when a template is instantiated by a bit of code and there's no
+    //    explicit specialization for it).
+    auto implicit_class_specialization_matcher =
+        classTemplateSpecializationDecl(
+            isImplicitClassTemplateSpecialization());
+    auto implicit_function_specialization_matcher =
+        functionDecl(isImplicitFunctionTemplateSpecialization());
+    auto implicit_field_decl_matcher = fieldDecl(hasParent(cxxRecordDecl(anyOf(
+        isLambda(), implicit_class_specialization_matcher,
+        hasAncestor(decl(anyOf(implicit_class_specialization_matcher,
+                               implicit_function_specialization_matcher)))))));
+
+    // Field declarations =========
+    // Given
+    //   struct S {
+    //     int* y;
+    //   };
+    // matches |int* y|.  Doesn't match:
+    // - non-pointer types
+    // - fields of lambda-supporting classes
+    // - fields listed in the --exclude-fields cmdline param or located in paths
+    //   matched by --exclude-paths cmdline param
+    // - "implicit" fields (i.e. field decls that are not explicitly present in
+    //   the source code)
+    auto field_decl_matcher =
+        fieldDecl(
+            allOf(hasType(supported_pointer_types_matcher),
+                  unless(anyOf(
+                      isExpansionInSystemHeader(), isInExternCContext(),
+                      isInThirdPartyLocation(), isInGeneratedLocation(),
+                      isInLocationListedInFilterFile(&paths_to_exclude),
+                      isFieldDeclListedInFilterFile(&fields_to_exclude),
+                      IsExclusionAnnotated(), implicit_field_decl_matcher))))
+            .bind("affectedFieldDecl");
+
+    match_finder.addMatcher(field_decl_matcher, &field_decl_rewriter);
+
+    // Matches expressions that used to return a value of type |SomeClass*|
+    // but after the rewrite return an instance of |raw_ptr<SomeClass>|.
+    // Many such expressions might need additional changes after the rewrite:
+    // - Some expressions (printf args, const_cast args, etc.) might need
+    // |.get()|
+    //   appended.
+    // - Using such expressions in specific contexts (e.g. as in-out arguments
+    // or
+    //   as a return value of a function returning references) may require
+    //   additional work and should cause related fields to be emitted as
+    //   candidates for the --field-filter-file parameter.
+    auto affected_member_expr_matcher =
+        memberExpr(member(fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))
+            .bind("affectedMemberExpr");
+    auto affected_expr_matcher = ignoringImplicit(affected_member_expr_matcher);
+
+    // Places where |.get()| needs to be appended =========
+    // Given
+    //   void foo(const S& s) {
+    //     printf("%p", s.y);
+    //     const_cast<...>(s.y)
+    //     reinterpret_cast<...>(s.y)
+    //   }
+    // matches the |s.y| expr if it matches the |affected_expr_matcher| above.
+    //
+    // See also testcases in tests/affected-expr-original.cc
+    auto affected_expr_that_needs_fixing_matcher = expr(allOf(
+        affected_expr_matcher,
+        hasParent(expr(anyOf(callExpr(callee(functionDecl(isVariadic()))),
+                             cxxConstCastExpr(), cxxReinterpretCastExpr())))));
+
+    match_finder.addMatcher(affected_expr_that_needs_fixing_matcher,
+                            &affected_expr_rewriter);
+
+    // Affected ternary operator args =========
+    // Given
+    //   void foo(const S& s) {
+    //     cond ? s.y : ...
+    //   }
+    // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
+    //
+    // See also testcases in tests/affected-expr-original.cc
+    auto affected_ternary_operator_arg_matcher =
+        conditionalOperator(eachOf(hasTrueExpression(affected_expr_matcher),
+                                   hasFalseExpression(affected_expr_matcher)));
+    match_finder.addMatcher(affected_ternary_operator_arg_matcher,
+                            &affected_expr_rewriter);
+
+    // Affected string binary operator =========
+    // Given
+    //   struct S { const char* y; }
+    //   void foo(const S& s) {
+    //     std::string other;
+    //     bool v1 = s.y == other;
+    //     std::string v2 = s.y + other;
+    //   }
+    // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
+    //
+    // See also testcases in tests/affected-expr-original.cc
+    auto std_string_expr_matcher =
+        expr(hasType(cxxRecordDecl(hasName("::std::basic_string"))));
+    auto affected_string_binary_operator_arg_matcher = cxxOperatorCallExpr(
+        hasAnyOverloadedOperatorName("+", "==", "!=", "<", "<=", ">", ">="),
+        hasAnyArgument(std_string_expr_matcher),
+        forEachArgumentWithParam(affected_expr_matcher, parmVarDecl()));
+    match_finder.addMatcher(affected_string_binary_operator_arg_matcher,
+                            &affected_expr_rewriter);
+
+    // Calls to templated functions =========
+    // Given
+    //   struct S { int* y; };
+    //   template <typename T>
+    //   void templatedFunc(T* arg) {}
+    //   void foo(const S& s) {
+    //     templatedFunc(s.y);
+    //   }
+    // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
+    //
+    // See also testcases in tests/affected-expr-original.cc
+    auto templated_function_arg_matcher = forEachArgumentWithParam(
+        affected_expr_matcher,
+        parmVarDecl(allOf(
+            hasType(
+                qualType(allOf(findAll(qualType(substTemplateTypeParmType())),
+                               unless(referenceType())))),
+            unless(hasAncestor(functionDecl(hasName("Unretained")))))));
+    match_finder.addMatcher(callExpr(templated_function_arg_matcher),
+                            &affected_expr_rewriter);
+    // TODO(lukasza): It is unclear why |traverse| below is needed.  Maybe it
+    // can be removed if https://bugs.llvm.org/show_bug.cgi?id=46287 is fixed.
+    match_finder.addMatcher(
+        traverse(clang::TraversalKind::TK_AsIs,
+                 cxxConstructExpr(templated_function_arg_matcher)),
+        &affected_expr_rewriter);
+
+    // Calls to constructors via an implicit cast =========
+    // Given
+    //   struct I { I(int*) {} };
+    //   void bar(I i) {}
+    //   struct S { int* y; };
+    //   void foo(const S& s) {
+    //     bar(s.y);  // implicit cast from |s.y| to I.
+    //   }
+    // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
+    //
+    // See also testcases in tests/affected-expr-original.cc
+    auto implicit_ctor_expr_matcher = cxxConstructExpr(
+        allOf(anyOf(hasParent(materializeTemporaryExpr()),
+                    hasParent(implicitCastExpr())),
+              hasDeclaration(cxxConstructorDecl(
+                  allOf(parameterCountIs(1), unless(isExplicit())))),
+              forEachArgumentWithParam(affected_expr_matcher, parmVarDecl())));
+    match_finder.addMatcher(implicit_ctor_expr_matcher,
+                            &affected_expr_rewriter);
+
+    // |auto| type declarations =========
+    // Given
+    //   struct S { int* y; };
+    //   void foo(const S& s) {
+    //     auto* p = s.y;
+    //   }
+    // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
+    //
+    // See also testcases in tests/affected-expr-original.cc
+    auto auto_var_decl_matcher = declStmt(forEach(
+        varDecl(allOf(hasType(pointerType(pointee(autoType()))),
+                      hasInitializer(anyOf(
+                          affected_expr_matcher,
+                          initListExpr(hasInit(0, affected_expr_matcher))))))));
+    match_finder.addMatcher(auto_var_decl_matcher, &affected_expr_rewriter);
+
+    // address-of(affected-expr) =========
+    // Given
+    //   ... &s.y ...
+    // matches the |s.y| expr if it matches the |affected_member_expr_matcher|
+    // above.
+    //
+    // See also the testcases in tests/gen-in-out-arg-test.cc.
+    auto affected_addr_of_expr_matcher = expr(allOf(
+        affected_expr_matcher, hasParent(unaryOperator(hasOperatorName("&")))));
+
+    match_finder.addMatcher(affected_addr_of_expr_matcher,
+                            &filtered_addr_of_expr_writer);
+
+    // in-out reference arg =========
+    // Given
+    //   struct S { SomeClass* ptr_field; };
+    //   void f(SomeClass*& in_out_arg) { ... }
+    //   template <typename T> void f2(T&& rvalue_ref_arg) { ... }
+    //   template <typename... Ts> void f3(Ts&&... rvalue_ref_args) { ... }
+    //   void bar() {
+    //     S s;
+    //     foo(s.ptr_field)
+    //   }
+    // matches the |s.ptr_field| expr if it matches the
+    // |affected_member_expr_matcher| and is passed as a function argument that
+    // has |FooBar*&| type (like |f|, but unlike |f2| and |f3|).
+    //
+    // See also the testcases in tests/gen-in-out-arg-test.cc.
+    auto affected_in_out_ref_arg_matcher = callExpr(forEachArgumentWithParam(
+        affected_expr_matcher, hasExplicitParmVarDecl(hasType(qualType(
+                                   allOf(referenceType(pointee(pointerType())),
+                                         unless(rValueReferenceType())))))));
+
+    match_finder.addMatcher(affected_in_out_ref_arg_matcher,
+                            &filtered_in_out_ref_arg_writer);
+
+    // See the doc comment for the overlapsOtherDeclsWithinRecordDecl matcher
+    // and the testcases in tests/gen-overlapping-test.cc.
+    auto overlapping_field_decl_matcher = fieldDecl(
+        allOf(field_decl_matcher, overlapsOtherDeclsWithinRecordDecl()));
+
+    match_finder.addMatcher(overlapping_field_decl_matcher,
+                            &overlapping_field_decl_writer);
+
+    // Matches fields initialized with a non-nullptr value in a constexpr
+    // constructor.  See also the testcase in tests/gen-constexpr-test.cc.
+    auto non_nullptr_expr_matcher =
+        expr(unless(ignoringImplicit(cxxNullPtrLiteralExpr())));
+    auto constexpr_ctor_field_initializer_matcher = cxxConstructorDecl(
+        allOf(isConstexpr(), unless(isImplicit()),
+              forEachConstructorInitializer(
+                  allOf(forField(field_decl_matcher),
+                        withInitializer(non_nullptr_expr_matcher)))));
+
+    match_finder.addMatcher(constexpr_ctor_field_initializer_matcher,
+                            &constexpr_ctor_field_initializer_writer);
+
+    // Matches constexpr initializer list expressions that initialize a
+    // rewritable field with a non-nullptr value.  For more details and
+    // rationale see the testcases in tests/gen-constexpr-test.cc.
+    auto constexpr_var_initializer_matcher = varDecl(
+        allOf(isConstexpr(),
+              hasInitializer(findAll(initListExpr(forEachInitExprWithFieldDecl(
+                  non_nullptr_expr_matcher,
+                  hasExplicitFieldDecl(field_decl_matcher)))))));
+
+    match_finder.addMatcher(constexpr_var_initializer_matcher,
+                            &constexpr_var_initializer_writer);
+
+    // See the doc comment for the isInMacroLocation matcher
+    // and the testcases in tests/gen-macros-test.cc.
+    auto macro_field_decl_matcher =
+        fieldDecl(allOf(field_decl_matcher, isInMacroLocation()));
+
+    match_finder.addMatcher(macro_field_decl_matcher, &macro_field_decl_writer);
+
+    // See the doc comment for the anyCharType matcher
+    // and the testcases in tests/gen-char-test.cc.
+    auto char_ptr_field_decl_matcher =
+        fieldDecl(allOf(field_decl_matcher,
+                        hasType(pointerType(pointee(qualType(allOf(
+                            isConstQualified(),
+                            hasUnqualifiedDesugaredType(anyCharType()))))))));
+
+    match_finder.addMatcher(char_ptr_field_decl_matcher,
+                            &char_ptr_field_decl_writer);
+
+    // See the testcases in tests/gen-global-scope-test.cc.
+    auto global_scope_matcher =
+        varDecl(allOf(hasGlobalStorage(),
+                      hasType(typeWithEmbeddedFieldDecl(field_decl_matcher))));
+
+    match_finder.addMatcher(global_scope_matcher, &global_scope_rewriter);
+
+    // Matches fields in unions (both directly rewritable fields as well as
+    // union fields that embed a struct that contains a rewritable field).  See
+    // also the testcases in tests/gen-unions-test.cc.
+    auto union_field_decl_matcher = recordDecl(allOf(
+        isUnion(), forEach(fieldDecl(anyOf(field_decl_matcher,
+                                           hasType(typeWithEmbeddedFieldDecl(
+                                               field_decl_matcher)))))));
+
+    match_finder.addMatcher(union_field_decl_matcher, &union_field_decl_writer);
+
+    // Matches rewritable fields of struct `SomeStruct` if that struct happens
+    // to be a destination type of a `reinterpret_cast<SomeStruct*>` cast and is
+    // a trivial type (otherwise `reinterpret_cast<SomeStruct*>` wouldn't be
+    // valid before the rewrite if it skipped non-trivial constructors).
+    auto reinterpret_cast_struct_matcher =
+        cxxReinterpretCastExpr(hasDestinationType(pointerType(pointee(
+            hasUnqualifiedDesugaredType(recordType(hasDeclaration(cxxRecordDecl(
+                allOf(forEach(field_decl_matcher), isTrivial())))))))));
+
+    match_finder.addMatcher(reinterpret_cast_struct_matcher,
+                            &reinterpret_cast_struct_writer);
+  }
+
+ private:
+  // Rewrites |SomeClass* field| (matched as "affectedFieldDecl") into
+  // |raw_ptr<SomeClass> field| and for each file rewritten in such way adds an
+  // |#include "base/memory/raw_ptr.h"|.
+  class RawPtrFieldDeclRewriter : public FieldDeclRewriter {
+   public:
+    explicit RawPtrFieldDeclRewriter(OutputHelper* output_helper,
+                                     const char* format_string,
+                                     const char* include_path)
+        : FieldDeclRewriter(output_helper, format_string, include_path) {}
+
+    bool earlyExit(const MatchFinder::MatchResult& result) const override {
+      return false;
+    }
+  };
+  // Rewrites |my_struct.ptr_field| (matched as "affectedMemberExpr") into
+  // |my_struct.ptr_field.get()|.
+  std::function<std::pair<clang::SourceRange, std::string>(
+      const MatchFinder::MatchResult&)>
+      getRangeAndText_ = [](const MatchFinder::MatchResult& result)
+      -> std::pair<clang::SourceRange, std::string> {
+    const clang::MemberExpr* member_expr =
+        result.Nodes.getNodeAs<clang::MemberExpr>("affectedMemberExpr");
+    assert(member_expr && "matcher should bind 'affectedMemberExpr'");
+
+    clang::SourceLocation member_name_start = member_expr->getMemberLoc();
+    size_t member_name_length = member_expr->getMemberDecl()->getName().size();
+    clang::SourceLocation insertion_loc =
+        member_name_start.getLocWithOffset(member_name_length);
+
+    clang::SourceRange replacement_range(insertion_loc, insertion_loc);
+    return {replacement_range, ".get()"};
+  };
+  MatchFinder& match_finder;
+  RawPtrFieldDeclRewriter field_decl_rewriter;
+  AffectedExprRewriter affected_expr_rewriter;
+  FilteredExprWriter filtered_addr_of_expr_writer;
+  FilteredExprWriter filtered_in_out_ref_arg_writer;
+  FilteredExprWriter overlapping_field_decl_writer;
+  FilteredExprWriter constexpr_ctor_field_initializer_writer;
+  FilteredExprWriter constexpr_var_initializer_writer;
+  FilteredExprWriter macro_field_decl_writer;
+  FilteredExprWriter char_ptr_field_decl_writer;
+  FilteredExprWriter global_scope_rewriter;
+  FilteredExprWriter union_field_decl_writer;
+  FilteredExprWriter reinterpret_cast_struct_writer;
+  FilterFile& fields_to_exclude;
+  FilterFile& paths_to_exclude;
+};
+
+class RawRefRewriter {
+ public:
+  RawRefRewriter(OutputHelper* output_helper,
+                 MatchFinder& finder,
+                 FilterFile& fields_to_exclude,
+                 FilterFile& paths_to_exclude)
+      : match_finder(finder),
+        field_decl_rewriter(output_helper, "raw_ref<{0}> ", kRawRefIncludePath),
+        affected_expr_operator_rewriter(output_helper,
+                                        affectedMemberExprOperatorFct_),
+        affected_expr_rewriter(output_helper, affectedMemberExprFct_),
+        affected_expr_rewriter_withParentheses(output_helper,
+                                               affectedMemberExprWithParenFct_),
+        global_scope_rewriter(output_helper, "global-scope"),
+        overlapping_field_decl_writer(output_helper, "overlapping"),
+        constexpr_ctor_field_initializer_writer(
+            output_helper,
+            "constexpr-ctor-field-initializer"),
+        constexpr_var_initializer_writer(output_helper,
+                                         "constexpr-var-initializer"),
+        macro_field_decl_writer(output_helper, "macro"),
+        fields_to_exclude(fields_to_exclude),
+        paths_to_exclude(paths_to_exclude) {}
+
+  void addMatchers() {
+    // Implicit field declarations =========
+    // Matches field declarations that do not explicitly appear in the source
+    // code:
+    // 1. fields of classes generated by the compiler to back capturing lambdas,
+    // 2. fields within an implicit class or function template specialization
+    //    (e.g. when a template is instantiated by a bit of code and there's no
+    //    explicit specialization for it).
+    auto implicit_class_specialization_matcher =
+        classTemplateSpecializationDecl(
+            isImplicitClassTemplateSpecialization());
+    auto implicit_function_specialization_matcher =
+        functionDecl(isImplicitFunctionTemplateSpecialization());
+    auto implicit_field_decl_matcher = fieldDecl(hasParent(cxxRecordDecl(anyOf(
+        isLambda(), isAnonymousStructOrUnion(),
+        implicit_class_specialization_matcher,
+        hasAncestor(decl(anyOf(implicit_class_specialization_matcher,
+                               implicit_function_specialization_matcher)))))));
+
+    // Field declarations =========
+    // Given
+    //   struct S {
+    //     int& y;
+    //   };
+    // matches |int& y|.  Doesn't match:
+    // - non-reference types
+    // - fields of lambda-supporting classes
+    // - fields listed in the --exclude-fields cmdline param or located in paths
+    //   matched by --exclude-paths cmdline param
+    // - "implicit" fields (i.e. field decls that are not explicitly present in
+    //   the source code)
+
+    auto field_decl_matcher =
+        fieldDecl(allOf(has(referenceTypeLoc().bind("affectedFieldDeclType")),
+                        unless(anyOf(
+                            isExpansionInSystemHeader(), isInExternCContext(),
+                            isInThirdPartyLocation(), isInGeneratedLocation(),
+                            isInLocationListedInFilterFile(&paths_to_exclude),
+                            isFieldDeclListedInFilterFile(&fields_to_exclude),
+                            implicit_field_decl_matcher))))
+            .bind("affectedFieldDecl");
+
+    match_finder.addMatcher(field_decl_matcher, &field_decl_rewriter);
+
+    // Matches expressions of the form |someClass.ref_field.sub_member| which
+    // should be rewritten as |someClass.ref_field->sub_member| as we can't
+    // overload `operator.` in C++.
+    auto affected_member_expr_operator_matcher =
+        expr(
+            anyOf(memberExpr(has(memberExpr(member(
+                      fieldDecl(hasExplicitFieldDecl(field_decl_matcher)))))),
+                  memberExpr(has(implicitCastExpr(has(memberExpr(member(
+                      fieldDecl(hasExplicitFieldDecl(field_decl_matcher)))))))),
+                  cxxDependentScopeMemberExpr(has(memberExpr(member(
+                      fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))))))
+            .bind("affectedMemberExprOperator");
+
+    match_finder.addMatcher(affected_member_expr_operator_matcher,
+                            &affected_expr_operator_rewriter);
+
+    // Matches expressions that used to have |SomeType&| as return type and
+    // became |raw_ref<SomeType>| after the rewrite.
+    auto affected_member_expr =
+        memberExpr(
+            member(fieldDecl(hasExplicitFieldDecl(field_decl_matcher))),
+            unless(anyOf(
+                hasParent(memberExpr()),
+                hasParent(implicitCastExpr(hasParent(memberExpr()))),
+                hasParent(cxxDependentScopeMemberExpr()),
+                hasParent(varDecl(unless(
+                    anyOf(hasType(referenceType(pointee(autoType()))),
+                          hasParent(declStmt(hasParent(cxxForRangeStmt()))))))),
+                hasAncestor(cxxConstructorDecl(isDefaulted())),
+                hasParent(cxxOperatorCallExpr()),
+                hasParent(arraySubscriptExpr()),
+                hasParent(callExpr(callee(
+                    fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))))))
+            .bind("affectedMemberExpr");
+
+    match_finder.addMatcher(affected_member_expr, &affected_expr_rewriter);
+
+    auto affected_member_expr_matcher =
+        memberExpr(member(fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))
+            .bind("affectedMemberExpr");
+
+    // Calls to constructors via an implicit cast =========
+    // Given
+    //   struct I { I(int&) {} };
+    //   void bar(I i) {}
+    //   struct S { int& y; };
+    //   void foo(const S& s) {
+    //     bar(s.y);  // implicit cast from |s.y| to I.
+    //   }
+    // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
+    //
+    // See also testcases in tests/affected-expr-original.cc
+    auto implicit_ctor_expr_matcher = cxxConstructExpr(allOf(
+        anyOf(hasParent(materializeTemporaryExpr()),
+              hasParent(implicitCastExpr())),
+        hasDeclaration(cxxConstructorDecl(
+            allOf(parameterCountIs(1), unless(isExplicit())))),
+        forEachArgumentWithParam(affected_member_expr_matcher, parmVarDecl())));
+    match_finder.addMatcher(implicit_ctor_expr_matcher,
+                            &affected_expr_rewriter);
+
+    // |auto| type declarations =========
+    // Given
+    //   struct S { int& y; };
+    //   void foo(const S& s) {
+    //     auto& p = s.y;
+    //   }
+    // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
+    //
+    // See also testcases in tests/affected-expr-original.cc
+    auto auto_var_decl_matcher = declStmt(forEach(varDecl(
+        allOf(hasType(referenceType(pointee(autoType()))),
+              hasInitializer(anyOf(
+                  affected_member_expr_matcher,
+                  initListExpr(hasInit(0, affected_member_expr_matcher))))))));
+    match_finder.addMatcher(auto_var_decl_matcher, &affected_expr_rewriter);
+
+    // Matches affected member expressions that need parenthesization.
+    auto affected_member_expr_withParentheses =
+        memberExpr(member(fieldDecl(hasExplicitFieldDecl(field_decl_matcher))),
+                   anyOf(hasParent(cxxOperatorCallExpr()),
+                         hasParent(arraySubscriptExpr()),
+                         hasParent(callExpr(callee(fieldDecl(
+                             hasExplicitFieldDecl(field_decl_matcher)))))))
+            .bind("affectedMemberExprWithParentheses");
+
+    match_finder.addMatcher(affected_member_expr_withParentheses,
+                            &affected_expr_rewriter_withParentheses);
+
+    // See the doc comment for the overlapsOtherDeclsWithinRecordDecl
+    // matcher and the testcases in tests/gen-overlapping-test.cc.
+    auto overlapping_field_decl_matcher = fieldDecl(
+        allOf(field_decl_matcher, overlapsOtherDeclsWithinRecordDecl()));
+
+    match_finder.addMatcher(overlapping_field_decl_matcher,
+                            &overlapping_field_decl_writer);
+
+    // Matches fields initialized with a non-nullptr value in a constexpr
+    // constructor.  See also the testcase in tests/gen-constexpr-test.cc.
+    auto non_nullptr_expr_matcher =
+        expr(unless(ignoringImplicit(cxxNullPtrLiteralExpr())));
+    auto constexpr_ctor_field_initializer_matcher = cxxConstructorDecl(
+        allOf(isConstexpr(), forEachConstructorInitializer(allOf(
+                                 forField(field_decl_matcher),
+                                 withInitializer(non_nullptr_expr_matcher)))));
+
+    match_finder.addMatcher(constexpr_ctor_field_initializer_matcher,
+                            &constexpr_ctor_field_initializer_writer);
+
+    // Matches constexpr initializer list expressions that initialize a
+    // rewritable field with a non-nullptr value.  For more details and
+    // rationale see the testcases in tests/gen-constexpr-test.cc.
+    auto constexpr_var_initializer_matcher = varDecl(
+        allOf(isConstexpr(),
+              hasInitializer(findAll(initListExpr(forEachInitExprWithFieldDecl(
+                  non_nullptr_expr_matcher,
+                  hasExplicitFieldDecl(field_decl_matcher)))))));
+
+    match_finder.addMatcher(constexpr_var_initializer_matcher,
+                            &constexpr_var_initializer_writer);
+
+    // See the doc comment for the isInMacroLocation matcher
+    // and the testcases in tests/gen-macros-test.cc.
+    auto macro_field_decl_matcher =
+        fieldDecl(allOf(field_decl_matcher, isInMacroLocation()));
+
+    match_finder.addMatcher(macro_field_decl_matcher, &macro_field_decl_writer);
+
+    // See the testcases in tests/gen-global-scope-test.cc.
+    auto global_scope_matcher =
+        varDecl(allOf(hasGlobalStorage(),
+                      hasType(typeWithEmbeddedFieldDecl(field_decl_matcher))));
+
+    match_finder.addMatcher(global_scope_matcher, &global_scope_rewriter);
+  }
+
+ private:
+  // Rewrites |SomeClass& field| (matched as "affectedFieldDecl") as
+  // |raw_ref<SomeClass> field| and for each file rewritten in such way adds an
+  // |#include "base/memory/raw_ref.h"|.
+  class RawRefFieldDeclRewriter : public FieldDeclRewriter {
+   public:
+    explicit RawRefFieldDeclRewriter(OutputHelper* output_helper,
+                                     const char* format_string,
+                                     const char* include_path)
+        : FieldDeclRewriter(output_helper, format_string, include_path) {}
+
+    bool earlyExit(const MatchFinder::MatchResult& result) const override {
+      auto* type = result.Nodes.getNodeAs<clang::LValueReferenceTypeLoc>(
+          "affectedFieldDeclType");
+      // in this case, it's not an lvalue reference type member => DO NOTHING
+      return !type;
+    }
+  };
+
+  // Rewrites |my_struct.ref_field| (matched as "affectedMemberExpr") as
+  // |*my_struct.ref_field|.
+  std::function<std::pair<clang::SourceRange, std::string>(
+      const MatchFinder::MatchResult&)>
+      affectedMemberExprFct_ = [](const MatchFinder::MatchResult& result)
+      -> std::pair<clang::SourceRange, std::string> {
+    const clang::MemberExpr* member_expr =
+        result.Nodes.getNodeAs<clang::MemberExpr>("affectedMemberExpr");
+    assert(member_expr && "matcher should bind 'affectedMemberExpr'");
+    clang::SourceRange replacement_range(member_expr->getBeginLoc(),
+                                         member_expr->getBeginLoc());
+    return {replacement_range, "*"};
+  };
+
+  // Rewrites |my_struct.ref_field| (matched as
+  // "affectedMemberExprWithParentheses") as
+  // |(*my_struct.ref_field)|.
+  // Examples on why this is needed:
+  //  1- std::vector<T>& v; => raw_ref<std::vector<T>> v;
+  //     v[0] => needs to be rewritten as (*v)[0] after the rewrite.
+  //  2- key_compare& comp_; => raw_ref<key_compare> comp_;
+  //     comp_(a, b) => needs to be rewritten as (*comp_)(a,b) after the
+  //     rewrite.
+  std::function<std::pair<clang::SourceRange, std::string>(
+      const MatchFinder::MatchResult&)>
+      affectedMemberExprWithParenFct_ =
+          [](const MatchFinder::MatchResult& result)
+      -> std::pair<clang::SourceRange, std::string> {
+    const clang::SourceManager& source_manager = *result.SourceManager;
+
+    const clang::MemberExpr* member_expr =
+        result.Nodes.getNodeAs<clang::MemberExpr>(
+            "affectedMemberExprWithParentheses");
+    assert(member_expr &&
+           "matcher should bind 'affectedMemberExprWithParentheses'");
+
+    clang::SourceLocation member_name_start = member_expr->getMemberLoc();
+    clang::SourceLocation endLoc = member_name_start.getLocWithOffset(
+        member_expr->getMemberDecl()->getName().size());
+
+    clang::SourceRange replacement_range(member_expr->getBeginLoc(), endLoc);
+
+    auto source_text = clang::Lexer::getSourceText(
+        clang::CharSourceRange::getTokenRange(member_expr->getSourceRange()),
+        source_manager, result.Context->getLangOpts());
+    return {replacement_range,
+            llvm::formatv("(*{0})",
+                          std::string(source_text.begin(), source_text.end()))};
+  };
+
+  // Rewrites |my_struct.ptr_field.sub_field| (matched as
+  // "affectedMemberExprOperator") into |my_struct.ptr_field->sub_field|.
+  std::function<std::pair<clang::SourceRange, std::string>(
+      const MatchFinder::MatchResult&)>
+      affectedMemberExprOperatorFct_ =
+          [](const MatchFinder::MatchResult& result)
+      -> std::pair<clang::SourceRange, std::string> {
+    const clang::MemberExpr* member_expr =
+        result.Nodes.getNodeAs<clang::MemberExpr>("affectedMemberExprOperator");
+    const clang::CXXDependentScopeMemberExpr* cxx_dependent_scope_member_expr =
+        result.Nodes.getNodeAs<clang::CXXDependentScopeMemberExpr>(
+            "affectedMemberExprOperator");
+    assert((member_expr || cxx_dependent_scope_member_expr) &&
+           "matcher should bind 'affectedMemberExprOperator'");
+    if (member_expr) {
+      clang::SourceRange replacement_range(member_expr->getOperatorLoc(),
+                                           member_expr->getMemberLoc());
+      return {replacement_range, "->"};
+    }
+    clang::SourceRange replacement_range(
+        cxx_dependent_scope_member_expr->getOperatorLoc(),
+        cxx_dependent_scope_member_expr->getMemberLoc());
+    return {replacement_range, "->"};
+  };
+
+  MatchFinder& match_finder;
+  RawRefFieldDeclRewriter field_decl_rewriter;
+  AffectedExprRewriter affected_expr_operator_rewriter;
+  AffectedExprRewriter affected_expr_rewriter;
+  AffectedExprRewriter affected_expr_rewriter_withParentheses;
+  FilteredExprWriter global_scope_rewriter;
+  FilteredExprWriter overlapping_field_decl_writer;
+  FilteredExprWriter constexpr_ctor_field_initializer_writer;
+  FilteredExprWriter constexpr_var_initializer_writer;
+  FilteredExprWriter macro_field_decl_writer;
+  FilterFile& fields_to_exclude;
+  FilterFile& paths_to_exclude;
+};
+
 }  // namespace
 
 int main(int argc, const char* argv[]) {
@@ -990,319 +1693,43 @@ int main(int argc, const char* argv[]) {
   llvm::cl::opt<std::string> exclude_paths_param(
       kExcludePathsParamName, llvm::cl::value_desc("filepath"),
       llvm::cl::desc("file listing paths to be blocked (not rewritten)"));
+
+  llvm::cl::opt<bool> enable_raw_ref_rewrite(
+      "enable_raw_ref_rewrite", llvm::cl::init(false),
+      llvm::cl::desc("Rewrite T& into raw_ref<T>"));
+
+  llvm::cl::opt<bool> enable_raw_ptr_rewrite(
+      "enable_raw_ptr_rewrite", llvm::cl::init(false),
+      llvm::cl::desc("Rewrite T* into raw_ptr<T>"));
+
   llvm::Expected<clang::tooling::CommonOptionsParser> options =
       clang::tooling::CommonOptionsParser::create(argc, argv, category);
   assert(static_cast<bool>(options));  // Should not return an error.
   clang::tooling::ClangTool tool(options->getCompilations(),
                                  options->getSourcePathList());
 
+  // Rewrite both T& and T* into raw_ref<T> and raw_ptr<T> respectively if no
+  // argument is provided.
+  bool rewrite_raw_ref_and_ptr =
+      !enable_raw_ref_rewrite && !enable_raw_ptr_rewrite;
   MatchFinder match_finder;
   OutputHelper output_helper;
-
-  // Supported pointer types =========
-  // Given
-  //   struct MyStrict {
-  //     int* int_ptr;
-  //     int i;
-  //     int (*func_ptr)();
-  //     int (MyStruct::* member_func_ptr)(char);
-  //     int (*ptr_to_array_of_ints)[123]
-  //   };
-  // matches |int*|, but not the other types.
-  auto supported_pointer_types_matcher =
-      pointerType(unless(pointee(hasUnqualifiedDesugaredType(
-          anyOf(functionType(), memberPointerType(), arrayType())))));
-
-  // Implicit field declarations =========
-  // Matches field declarations that do not explicitly appear in the source
-  // code:
-  // 1. fields of classes generated by the compiler to back capturing lambdas,
-  // 2. fields within an implicit class or function template specialization
-  //    (e.g. when a template is instantiated by a bit of code and there's no
-  //    explicit specialization for it).
-  auto implicit_class_specialization_matcher =
-      classTemplateSpecializationDecl(isImplicitClassTemplateSpecialization());
-  auto implicit_function_specialization_matcher =
-      functionDecl(isImplicitFunctionTemplateSpecialization());
-  auto implicit_field_decl_matcher = fieldDecl(hasParent(cxxRecordDecl(anyOf(
-      isLambda(), implicit_class_specialization_matcher,
-      hasAncestor(decl(anyOf(implicit_class_specialization_matcher,
-                             implicit_function_specialization_matcher)))))));
-
-  // Field declarations =========
-  // Given
-  //   struct S {
-  //     int* y;
-  //   };
-  // matches |int* y|.  Doesn't match:
-  // - non-pointer types
-  // - fields of lambda-supporting classes
-  // - fields listed in the --exclude-fields cmdline param or located in paths
-  //   matched by --exclude-paths cmdline param
-  // - "implicit" fields (i.e. field decls that are not explicitly present in
-  //   the source code)
   FilterFile fields_to_exclude(exclude_fields_param);
   FilterFile paths_to_exclude(exclude_paths_param);
-  auto field_decl_matcher =
-      fieldDecl(
-          allOf(hasType(supported_pointer_types_matcher),
-                unless(anyOf(isExpansionInSystemHeader(), isInExternCContext(),
-                             isInThirdPartyLocation(), isInGeneratedLocation(),
-                             isInLocationListedInFilterFile(&paths_to_exclude),
-                             isFieldDeclListedInFilterFile(&fields_to_exclude),
-                             IsExclusionAnnotated(),
-                             implicit_field_decl_matcher))))
-          .bind("affectedFieldDecl");
-  FieldDeclRewriter field_decl_rewriter(&output_helper);
-  match_finder.addMatcher(field_decl_matcher, &field_decl_rewriter);
 
-  // Matches expressions that used to return a value of type |SomeClass*|
-  // but after the rewrite return an instance of |raw_ptr<SomeClass>|.
-  // Many such expressions might need additional changes after the rewrite:
-  // - Some expressions (printf args, const_cast args, etc.) might need |.get()|
-  //   appended.
-  // - Using such expressions in specific contexts (e.g. as in-out arguments or
-  //   as a return value of a function returning references) may require
-  //   additional work and should cause related fields to be emitted as
-  //   candidates for the --field-filter-file parameter.
-  auto affected_member_expr_matcher =
-      memberExpr(member(fieldDecl(hasExplicitFieldDecl(field_decl_matcher))))
-          .bind("affectedMemberExpr");
-  auto affected_expr_matcher = ignoringImplicit(affected_member_expr_matcher);
+  RawPtrRewriter raw_ptr_rewriter(&output_helper, match_finder,
+                                  fields_to_exclude, paths_to_exclude);
 
-  // Places where |.get()| needs to be appended =========
-  // Given
-  //   void foo(const S& s) {
-  //     printf("%p", s.y);
-  //     const_cast<...>(s.y)
-  //     reinterpret_cast<...>(s.y)
-  //   }
-  // matches the |s.y| expr if it matches the |affected_expr_matcher| above.
-  //
-  // See also testcases in tests/affected-expr-original.cc
-  auto affected_expr_that_needs_fixing_matcher = expr(allOf(
-      affected_expr_matcher,
-      hasParent(expr(anyOf(callExpr(callee(functionDecl(isVariadic()))),
-                           cxxConstCastExpr(), cxxReinterpretCastExpr())))));
-  AffectedExprRewriter affected_expr_rewriter(&output_helper);
-  match_finder.addMatcher(affected_expr_that_needs_fixing_matcher,
-                          &affected_expr_rewriter);
+  if (rewrite_raw_ref_and_ptr || enable_raw_ptr_rewrite) {
+    raw_ptr_rewriter.addMatchers();
+  }
 
-  // Affected ternary operator args =========
-  // Given
-  //   void foo(const S& s) {
-  //     cond ? s.y : ...
-  //   }
-  // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
-  //
-  // See also testcases in tests/affected-expr-original.cc
-  auto affected_ternary_operator_arg_matcher =
-      conditionalOperator(eachOf(hasTrueExpression(affected_expr_matcher),
-                                 hasFalseExpression(affected_expr_matcher)));
-  match_finder.addMatcher(affected_ternary_operator_arg_matcher,
-                          &affected_expr_rewriter);
+  RawRefRewriter raw_ref_rewriter(&output_helper, match_finder,
+                                  fields_to_exclude, paths_to_exclude);
 
-  // Affected string binary operator =========
-  // Given
-  //   struct S { const char* y; }
-  //   void foo(const S& s) {
-  //     std::string other;
-  //     bool v1 = s.y == other;
-  //     std::string v2 = s.y + other;
-  //   }
-  // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
-  //
-  // See also testcases in tests/affected-expr-original.cc
-  auto std_string_expr_matcher =
-      expr(hasType(cxxRecordDecl(hasName("::std::basic_string"))));
-  auto affected_string_binary_operator_arg_matcher = cxxOperatorCallExpr(
-      hasAnyOverloadedOperatorName("+", "==", "!=", "<", "<=", ">", ">="),
-      hasAnyArgument(std_string_expr_matcher),
-      forEachArgumentWithParam(affected_expr_matcher, parmVarDecl()));
-  match_finder.addMatcher(affected_string_binary_operator_arg_matcher,
-                          &affected_expr_rewriter);
-
-  // Calls to templated functions =========
-  // Given
-  //   struct S { int* y; };
-  //   template <typename T>
-  //   void templatedFunc(T* arg) {}
-  //   void foo(const S& s) {
-  //     templatedFunc(s.y);
-  //   }
-  // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
-  //
-  // See also testcases in tests/affected-expr-original.cc
-  auto templated_function_arg_matcher = forEachArgumentWithParam(
-      affected_expr_matcher,
-      parmVarDecl(allOf(
-          hasType(qualType(allOf(findAll(qualType(substTemplateTypeParmType())),
-                                 unless(referenceType())))),
-          unless(hasAncestor(functionDecl(hasName("Unretained")))))));
-  match_finder.addMatcher(callExpr(templated_function_arg_matcher),
-                          &affected_expr_rewriter);
-  // TODO(lukasza): It is unclear why |traverse| below is needed.  Maybe it can
-  // be removed if https://bugs.llvm.org/show_bug.cgi?id=46287 is fixed.
-  match_finder.addMatcher(
-      traverse(clang::TraversalKind::TK_AsIs,
-               cxxConstructExpr(templated_function_arg_matcher)),
-      &affected_expr_rewriter);
-
-  // Calls to constructors via an implicit cast =========
-  // Given
-  //   struct I { I(int*) {} };
-  //   void bar(I i) {}
-  //   struct S { int* y; };
-  //   void foo(const S& s) {
-  //     bar(s.y);  // implicit cast from |s.y| to I.
-  //   }
-  // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
-  //
-  // See also testcases in tests/affected-expr-original.cc
-  auto implicit_ctor_expr_matcher = cxxConstructExpr(allOf(
-      anyOf(hasParent(materializeTemporaryExpr()),
-            hasParent(implicitCastExpr())),
-      hasDeclaration(
-          cxxConstructorDecl(allOf(parameterCountIs(1), unless(isExplicit())))),
-      forEachArgumentWithParam(affected_expr_matcher, parmVarDecl())));
-  match_finder.addMatcher(implicit_ctor_expr_matcher, &affected_expr_rewriter);
-
-  // |auto| type declarations =========
-  // Given
-  //   struct S { int* y; };
-  //   void foo(const S& s) {
-  //     auto* p = s.y;
-  //   }
-  // binds the |s.y| expr if it matches the |affected_expr_matcher| above.
-  //
-  // See also testcases in tests/affected-expr-original.cc
-  auto auto_var_decl_matcher = declStmt(forEach(
-      varDecl(allOf(hasType(pointerType(pointee(autoType()))),
-                    hasInitializer(anyOf(
-                        affected_expr_matcher,
-                        initListExpr(hasInit(0, affected_expr_matcher))))))));
-  match_finder.addMatcher(auto_var_decl_matcher, &affected_expr_rewriter);
-
-  // address-of(affected-expr) =========
-  // Given
-  //   ... &s.y ...
-  // matches the |s.y| expr if it matches the |affected_member_expr_matcher|
-  // above.
-  //
-  // See also the testcases in tests/gen-in-out-arg-test.cc.
-  auto affected_addr_of_expr_matcher = expr(allOf(
-      affected_expr_matcher, hasParent(unaryOperator(hasOperatorName("&")))));
-  FilteredExprWriter filtered_addr_of_expr_writer(&output_helper, "addr-of");
-  match_finder.addMatcher(affected_addr_of_expr_matcher,
-                          &filtered_addr_of_expr_writer);
-
-  // in-out reference arg =========
-  // Given
-  //   struct S { SomeClass* ptr_field; };
-  //   void f(SomeClass*& in_out_arg) { ... }
-  //   template <typename T> void f2(T&& rvalue_ref_arg) { ... }
-  //   template <typename... Ts> void f3(Ts&&... rvalue_ref_args) { ... }
-  //   void bar() {
-  //     S s;
-  //     foo(s.ptr_field)
-  //   }
-  // matches the |s.ptr_field| expr if it matches the
-  // |affected_member_expr_matcher| and is passed as a function argument that
-  // has |FooBar*&| type (like |f|, but unlike |f2| and |f3|).
-  //
-  // See also the testcases in tests/gen-in-out-arg-test.cc.
-  auto affected_in_out_ref_arg_matcher = callExpr(forEachArgumentWithParam(
-      affected_expr_matcher, hasExplicitParmVarDecl(hasType(qualType(
-                                 allOf(referenceType(pointee(pointerType())),
-                                       unless(rValueReferenceType())))))));
-  FilteredExprWriter filtered_in_out_ref_arg_writer(&output_helper,
-                                                    "in-out-param-ref");
-  match_finder.addMatcher(affected_in_out_ref_arg_matcher,
-                          &filtered_in_out_ref_arg_writer);
-
-  // See the doc comment for the overlapsOtherDeclsWithinRecordDecl matcher
-  // and the testcases in tests/gen-overlapping-test.cc.
-  auto overlapping_field_decl_matcher = fieldDecl(
-      allOf(field_decl_matcher, overlapsOtherDeclsWithinRecordDecl()));
-  FilteredExprWriter overlapping_field_decl_writer(&output_helper,
-                                                   "overlapping");
-  match_finder.addMatcher(overlapping_field_decl_matcher,
-                          &overlapping_field_decl_writer);
-
-  // Matches fields initialized with a non-nullptr value in a constexpr
-  // constructor.  See also the testcase in tests/gen-constexpr-test.cc.
-  auto non_nullptr_expr_matcher =
-      expr(unless(ignoringImplicit(cxxNullPtrLiteralExpr())));
-  auto constexpr_ctor_field_initializer_matcher = cxxConstructorDecl(
-      allOf(isConstexpr(), unless(isImplicit()),
-            forEachConstructorInitializer(
-                allOf(forField(field_decl_matcher),
-                      withInitializer(non_nullptr_expr_matcher)))));
-  FilteredExprWriter constexpr_ctor_field_initializer_writer(
-      &output_helper, "constexpr-ctor-field-initializer");
-  match_finder.addMatcher(constexpr_ctor_field_initializer_matcher,
-                          &constexpr_ctor_field_initializer_writer);
-
-  // Matches constexpr initializer list expressions that initialize a rewritable
-  // field with a non-nullptr value.  For more details and rationale see the
-  // testcases in tests/gen-constexpr-test.cc.
-  auto constexpr_var_initializer_matcher = varDecl(
-      allOf(isConstexpr(),
-            hasInitializer(findAll(initListExpr(forEachInitExprWithFieldDecl(
-                non_nullptr_expr_matcher,
-                hasExplicitFieldDecl(field_decl_matcher)))))));
-  FilteredExprWriter constexpr_var_initializer_writer(
-      &output_helper, "constexpr-var-initializer");
-  match_finder.addMatcher(constexpr_var_initializer_matcher,
-                          &constexpr_var_initializer_writer);
-
-  // See the doc comment for the isInMacroLocation matcher
-  // and the testcases in tests/gen-macros-test.cc.
-  auto macro_field_decl_matcher =
-      fieldDecl(allOf(field_decl_matcher, isInMacroLocation()));
-  FilteredExprWriter macro_field_decl_writer(&output_helper, "macro");
-  match_finder.addMatcher(macro_field_decl_matcher, &macro_field_decl_writer);
-
-  // See the doc comment for the anyCharType matcher
-  // and the testcases in tests/gen-char-test.cc.
-  auto char_ptr_field_decl_matcher = fieldDecl(allOf(
-      field_decl_matcher,
-      hasType(pointerType(pointee(qualType(allOf(
-          isConstQualified(), hasUnqualifiedDesugaredType(anyCharType()))))))));
-  FilteredExprWriter char_ptr_field_decl_writer(&output_helper, "const-char");
-  match_finder.addMatcher(char_ptr_field_decl_matcher,
-                          &char_ptr_field_decl_writer);
-
-  // See the testcases in tests/gen-global-scope-test.cc.
-  auto global_scope_matcher =
-      varDecl(allOf(hasGlobalStorage(),
-                    hasType(typeWithEmbeddedFieldDecl(field_decl_matcher))));
-  FilteredExprWriter global_scope_rewriter(&output_helper, "global-scope");
-  match_finder.addMatcher(global_scope_matcher, &global_scope_rewriter);
-
-  // Matches fields in unions (both directly rewritable fields as well as union
-  // fields that embed a struct that contains a rewritable field).  See also the
-  // testcases in tests/gen-unions-test.cc.
-  auto union_field_decl_matcher = recordDecl(allOf(
-      isUnion(), forEach(fieldDecl(anyOf(field_decl_matcher,
-                                         hasType(typeWithEmbeddedFieldDecl(
-                                             field_decl_matcher)))))));
-  FilteredExprWriter union_field_decl_writer(&output_helper, "union");
-  match_finder.addMatcher(union_field_decl_matcher, &union_field_decl_writer);
-
-  // Matches rewritable fields of struct `SomeStruct` if that struct happens to
-  // be a destination type of a `reinterpret_cast<SomeStruct*>` cast and is a
-  // trivial type (otherwise `reinterpret_cast<SomeStruct*>` wouldn't be valid
-  // before the rewrite if it skipped non-trivial constructors).
-  auto reinterpret_cast_struct_matcher =
-      cxxReinterpretCastExpr(hasDestinationType(pointerType(pointee(
-          hasUnqualifiedDesugaredType(recordType(hasDeclaration(cxxRecordDecl(
-              allOf(forEach(field_decl_matcher), isTrivial())))))))));
-  FilteredExprWriter reinterpret_cast_struct_writer(
-      &output_helper, "reinterpret-cast-trivial-type");
-  match_finder.addMatcher(reinterpret_cast_struct_matcher,
-                          &reinterpret_cast_struct_writer);
-
+  if (rewrite_raw_ref_and_ptr || enable_raw_ref_rewrite) {
+    raw_ref_rewriter.addMatchers();
+  }
   // Prepare and run the tool.
   std::unique_ptr<clang::tooling::FrontendActionFactory> factory =
       clang::tooling::newFrontendActionFactory(&match_finder, &output_helper);
