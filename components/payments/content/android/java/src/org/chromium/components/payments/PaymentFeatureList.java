@@ -23,12 +23,6 @@ public class PaymentFeatureList {
             "ClearIdentityInCanMakePaymentEvent";
     public static final String ENFORCE_FULL_DELEGATION = "EnforceFullDelegation";
     public static final String GPAY_APP_DYNAMIC_UPDATE = "GPayAppDynamicUpdate";
-
-    // TODO(crbug.com/1290492): Remove the duplicate variable name after all dependencies have been
-    // updated.
-    public static final String IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT_FEATURE =
-            CLEAR_IDENTITY_IN_CAN_MAKE_PAYMENT_EVENT;
-
     public static final String SECURE_PAYMENT_CONFIRMATION = "SecurePaymentConfirmationBrowser";
     public static final String SERVICE_WORKER_PAYMENT_APPS = "ServiceWorkerPaymentApps";
     public static final String WEB_PAYMENTS = "WebPayments";
