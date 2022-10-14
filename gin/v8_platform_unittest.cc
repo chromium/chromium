@@ -66,6 +66,8 @@ TEST(V8PlatformTest, TraceStateObserverFired) {
       &test_observer);
   ASSERT_EQ(1, test_observer.Enabled());
   ASSERT_EQ(0, test_observer.Disabled());
+  V8Platform::Get()->GetTracingController()->RemoveTraceStateObserver(
+      &test_observer);
 }
 
 // Tests that PostJob runs a task and is done after Join.
