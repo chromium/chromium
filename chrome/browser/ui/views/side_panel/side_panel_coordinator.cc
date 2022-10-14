@@ -521,9 +521,8 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
                           base::Unretained(this)));
   combobox->SetSelectedIndex(combobox_model_->GetIndexForKey(
       (GetLastActiveEntryKey().value_or(SidePanelEntry::Key(kDefaultEntry)))));
-  // TODO(corising): Replace this with something appropriate.
   combobox->SetAccessibleName(
-      combobox_model_->GetItemAt(combobox->GetSelectedIndex().value()));
+      l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_PANEL_SELECTOR));
   combobox->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
