@@ -287,15 +287,14 @@ std::string CreateCommandLineArgumentFromFeatureList(
 
 }  // namespace
 
-ScopedFeatureList::FeatureAndParams::FeatureAndParams(
-    const Feature& feature,
-    const FieldTrialParams& params)
+FeatureRefAndParams::FeatureRefAndParams(const Feature& feature,
+                                         const FieldTrialParams& params)
     : feature(feature), params(params) {}
 
-ScopedFeatureList::FeatureAndParams::~FeatureAndParams() = default;
+FeatureRefAndParams::FeatureRefAndParams(const FeatureRefAndParams& other) =
+    default;
 
-ScopedFeatureList::FeatureAndParams::FeatureAndParams(
-    const FeatureAndParams& other) = default;
+FeatureRefAndParams::~FeatureRefAndParams() = default;
 
 ScopedFeatureList::ScopedFeatureList() = default;
 
@@ -438,7 +437,7 @@ void ScopedFeatureList::InitWithFeatureState(const Feature& feature,
 
 void ScopedFeatureList::InitWithFeaturesImpl(
     const std::vector<FeatureRef>& enabled_features,
-    const std::vector<FeatureAndParams>& enabled_features_and_params,
+    const std::vector<FeatureRefAndParams>& enabled_features_and_params,
     const std::vector<FeatureRef>& disabled_features,
     bool keep_existing_states) {
   DCHECK(!init_called_);
@@ -485,7 +484,7 @@ void ScopedFeatureList::InitAndEnableFeatureWithParameters(
 }
 
 void ScopedFeatureList::InitWithFeaturesAndParameters(
-    const std::vector<FeatureAndParams>& enabled_features,
+    const std::vector<FeatureRefAndParams>& enabled_features,
     const std::vector<FeatureRef>& disabled_features) {
   InitWithFeaturesImpl({}, enabled_features, disabled_features);
 }
