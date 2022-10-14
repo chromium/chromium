@@ -7280,3 +7280,6 @@ crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-audio.h
 crbug.com/1374264 [ Mac ] external/wpt/screen-capture/permissions-policy-video.https.sub.html [ Failure ]
 
 crbug.com/1372181 external/wpt/scroll-animations/css/scroll-timeline-default-iframe-print.html [ Failure ]
+
+# Sheriff 2022-10-04
+crbug.com/1145491 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/media/video-overlay-menu.html [ Skip ]
