@@ -190,7 +190,7 @@ absl::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::NFC;
     case PermissionName::STORAGE_ACCESS:
       return PermissionType::STORAGE_ACCESS_GRANT;
-    case PermissionName::WINDOW_PLACEMENT:
+    case PermissionName::WINDOW_MANAGEMENT:
       return PermissionType::WINDOW_PLACEMENT;
     case PermissionName::LOCAL_FONTS:
       return PermissionType::LOCAL_FONTS;

@@ -71,7 +71,7 @@ ScriptPromise WindowScreens::GetScreenDetails(ScriptState* script_state,
   }
 
   auto permission_descriptor = CreatePermissionDescriptor(
-      mojom::blink::PermissionName::WINDOW_PLACEMENT);
+      mojom::blink::PermissionName::WINDOW_MANAGEMENT);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   auto callback = WTF::BindOnce(&WindowScreens::OnPermissionRequestComplete,
                                 WrapPersistent(this), WrapPersistent(resolver));
