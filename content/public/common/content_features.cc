@@ -30,12 +30,6 @@ BASE_FEATURE(kAndroidDownloadableFontsMatching,
              "AndroidDownloadableFontsMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kAudioProcessHighPriorityWin,
-             "AudioProcessHighPriorityWin",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 // Launches the audio service on the browser startup.
 BASE_FEATURE(kAudioServiceLaunchOnStartup,
              "AudioServiceLaunchOnStartup",

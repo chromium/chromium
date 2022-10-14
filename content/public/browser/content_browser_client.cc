@@ -841,7 +841,9 @@ bool ContentBrowserClient::IsRendererCodeIntegrityEnabled() {
 }
 
 bool ContentBrowserClient::ShouldEnableAudioProcessHighPriority() {
-  return base::FeatureList::IsEnabled(features::kAudioProcessHighPriorityWin);
+  // TODO(crbug.com/1374069): Delete this method when the
+  // kAudioProcessHighPriorityEnabled enterprise policy is deprecated.
+  return false;
 }
 
 #endif  // BUILDFLAG(IS_WIN)
