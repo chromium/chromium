@@ -466,9 +466,11 @@ _LACROS_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 ])
 _FUCHSIA_PERF_ASTRO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('media.mobile'),
 ])
 _FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('media.mobile'),
 ])
 _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('power.desktop'),
@@ -478,18 +480,12 @@ _LINUX_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
 _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_desktop'),
     _GetBenchmarkConfig('rendering.mobile'),
-    _GetBenchmarkConfig('media.mobile'),
     _GetBenchmarkConfig('jetstream2'),
-    _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer')
 ])
 _FUCHSIA_SHERLOCK_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.memory_desktop'),
     _GetBenchmarkConfig('rendering.mobile'),
-    _GetBenchmarkConfig('media.mobile'),
     _GetBenchmarkConfig('jetstream2'),
-    _GetBenchmarkConfig('speedometer2'),
-    _GetBenchmarkConfig('speedometer')
 ])
 _FUCHSIA_ATLAS_PERF_FYI_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('system_health.common_desktop'),
@@ -703,7 +699,7 @@ LACROS_X86_PERF = PerfPlatform('lacros-x86-perf', '', _LACROS_BENCHMARK_CONFIGS,
 FUCHSIA_PERF_ASTRO = PerfPlatform('fuchsia-perf-ast',
                                   '',
                                   _FUCHSIA_PERF_ASTRO_BENCHMARK_CONFIGS,
-                                  1,
+                                  2,
                                   'fuchsia',
                                   is_fyi=True,
                                   executables=FUCHSIA_EXEC_CONFIGS['astro'])
@@ -711,7 +707,7 @@ FUCHSIA_PERF_SHERLOCK = PerfPlatform(
     'fuchsia-perf-shk',
     '',
     _FUCHSIA_PERF_SHERLOCK_BENCHMARK_CONFIGS,
-    1,
+    2,
     'fuchsia',
     is_fyi=True,
     executables=FUCHSIA_EXEC_CONFIGS['sherlock'])
@@ -752,16 +748,14 @@ FUCHSIA_PERF_FYI = PerfPlatform('fuchsia-perf-fyi',
                                 _FUCHSIA_PERF_FYI_BENCHMARK_CONFIGS,
                                 10,
                                 'fuchsia',
-                                is_fyi=True,
-                                executables=FUCHSIA_EXEC_CONFIGS['astro'])
+                                is_fyi=True)
 FUCHSIA_PERF_SHERLOCK_FYI = PerfPlatform(
     'fuchsia-perf-sherlock-fyi',
     '',
     _FUCHSIA_SHERLOCK_PERF_FYI_BENCHMARK_CONFIGS,
     6,
     'fuchsia',
-    is_fyi=True,
-    executables=FUCHSIA_EXEC_CONFIGS['sherlock'])
+    is_fyi=True)
 FUCHSIA_PERF_ATLAS_FYI = PerfPlatform('fuchsia-perf-atlas-fyi',
                                       '',
                                       _FUCHSIA_ATLAS_PERF_FYI_BENCHMARK_CONFIGS,
