@@ -66,9 +66,8 @@ struct BoxedV8ModuleHash {
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::Member<blink::BoxedV8Module>> {
-  using Hash = blink::BoxedV8ModuleHash;
-};
+struct DefaultHash<blink::Member<blink::BoxedV8Module>>
+    : blink::BoxedV8ModuleHash {};
 
 }  // namespace WTF
 

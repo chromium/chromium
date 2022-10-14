@@ -114,7 +114,7 @@ class CORE_EXPORT MatchedPropertiesCache {
   // |RemoveCachedMatchedPropertiesWithDeadEntries|.
   using Cache = HeapHashMap<unsigned,
                             Member<CachedMatchedProperties>,
-                            DefaultHash<unsigned>::Hash,
+                            DefaultHash<unsigned>,
                             HashTraits<unsigned>>;
 
   void RemoveCachedMatchedPropertiesWithDeadEntries(const LivenessBroker&);

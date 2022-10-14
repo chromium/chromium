@@ -54,9 +54,8 @@ struct AttributionGroupHash {
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::scheduler::AttributionGroup> {
-  using Hash = blink::scheduler::AttributionGroupHash;
-};
+struct DefaultHash<blink::scheduler::AttributionGroup>
+    : blink::scheduler::AttributionGroupHash {};
 
 template <>
 struct HashTraits<blink::scheduler::AttributionGroup>

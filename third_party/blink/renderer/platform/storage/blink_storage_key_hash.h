@@ -20,8 +20,7 @@ struct BlinkStorageKeyHash {
     size_t nonce_hash = nonce ? base::UnguessableTokenHash()(*nonce) : 0;
     unsigned hash_codes[] = {
       SecurityOriginHash::GetHash(storage_key->GetSecurityOrigin()),
-      DefaultHash<BlinkSchemefulSite>::Hash::GetHash(
-          storage_key->GetTopLevelSite()),
+      DefaultHash<BlinkSchemefulSite>::GetHash(storage_key->GetTopLevelSite()),
       static_cast<unsigned>(storage_key->GetAncestorChainBit()),
 #if ARCH_CPU_32_BITS
       nonce_hash,

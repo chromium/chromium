@@ -32,7 +32,7 @@ namespace WTF {
 // the set. The iterators have fields ->key and ->value that return the set
 // members and their counts, respectively.
 template <typename Value,
-          typename HashFunctions = typename DefaultHash<Value>::Hash,
+          typename HashFunctions = DefaultHash<Value>,
           typename Traits = HashTraits<Value>,
           typename Allocator = PartitionAllocator>
 class HashCountedSet {

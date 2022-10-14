@@ -105,22 +105,20 @@ struct MoveOnlyHashTraits : public GenericHashTraits<MoveOnlyHashValue> {
 
 struct MoveOnlyHash {
   static unsigned GetHash(const MoveOnlyHashValue& value) {
-    return DefaultHash<int>::Hash::GetHash(value.Value());
+    return DefaultHash<int>::GetHash(value.Value());
   }
   static bool Equal(const MoveOnlyHashValue& left,
                     const MoveOnlyHashValue& right) {
-    return DefaultHash<int>::Hash::Equal(left.Value(), right.Value());
+    return DefaultHash<int>::Equal(left.Value(), right.Value());
   }
   static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
 template <>
-struct HashTraits<MoveOnlyHashValue> : public MoveOnlyHashTraits {};
+struct HashTraits<MoveOnlyHashValue> : MoveOnlyHashTraits {};
 
 template <>
-struct DefaultHash<MoveOnlyHashValue> {
-  using Hash = MoveOnlyHash;
-};
+struct DefaultHash<MoveOnlyHashValue> : MoveOnlyHash {};
 
 class CountCopy final {
  public:
@@ -169,12 +167,10 @@ struct CountCopyHash : public PtrHash<const int*> {
 };
 
 template <>
-struct HashTraits<CountCopy> : public CountCopyHashTraits {};
+struct HashTraits<CountCopy> : CountCopyHashTraits {};
 
 template <>
-struct DefaultHash<CountCopy> {
-  using Hash = CountCopyHash;
-};
+struct DefaultHash<CountCopy> : CountCopyHash {};
 
 template <typename T>
 class ValueInstanceCount final {
@@ -247,9 +243,7 @@ struct HashTraits<ValueInstanceCount<T>>
     : public ValueInstanceCountHashTraits<T> {};
 
 template <typename T>
-struct DefaultHash<ValueInstanceCount<T>> {
-  using Hash = ValueInstanceCountHash<T>;
-};
+struct DefaultHash<ValueInstanceCount<T>> : public ValueInstanceCountHash<T> {};
 
 class DummyRefCounted : public RefCounted<DummyRefCounted> {
  public:

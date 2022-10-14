@@ -75,20 +75,18 @@ namespace WTF {
 
 template <>
 struct DefaultHash<blink::ContainerSelector> {
-  struct Hash {
-    STATIC_ONLY(Hash);
-    static unsigned GetHash(const blink::ContainerSelector& selector) {
-      return selector.GetHash();
-    }
+  STATIC_ONLY(DefaultHash);
+  static unsigned GetHash(const blink::ContainerSelector& selector) {
+    return selector.GetHash();
+  }
 
-    static bool Equal(const blink::ContainerSelector& a,
-                      const blink::ContainerSelector& b) {
-      return a == b;
-    }
+  static bool Equal(const blink::ContainerSelector& a,
+                    const blink::ContainerSelector& b) {
+    return a == b;
+  }
 
-    static const bool safe_to_compare_to_empty_or_deleted =
-        DefaultHash<AtomicString>::Hash::safe_to_compare_to_empty_or_deleted;
-  };
+  static const bool safe_to_compare_to_empty_or_deleted =
+      DefaultHash<AtomicString>::safe_to_compare_to_empty_or_deleted;
 };
 
 template <>

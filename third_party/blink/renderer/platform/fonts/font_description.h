@@ -543,31 +543,24 @@ class PLATFORM_EXPORT FontDescription {
   static bool use_subpixel_text_positioning_;
 };
 
-struct FontDescriptionHash {
-  STATIC_ONLY(FontDescriptionHash);
+}  // namespace blink
 
-  static unsigned GetHash(const FontDescription& description) {
+namespace WTF {
+
+template <>
+struct DefaultHash<blink::FontDescription> {
+  static unsigned GetHash(const blink::FontDescription& description) {
     return description.GetHash();
   }
 
-  static bool Equal(const FontDescription& a, const FontDescription& b) {
+  static bool Equal(const blink::FontDescription& a,
+                    const blink::FontDescription& b) {
     return a == b;
   }
 
   // Empty and deleted FontDescriptions have different HashCategory flag values
   // from all regular FontDescriptions.
   static const bool safe_to_compare_to_empty_or_deleted = true;
-};
-
-}  // namespace blink
-
-namespace WTF {
-
-template <typename T>
-struct DefaultHash;
-template <>
-struct DefaultHash<blink::FontDescription> {
-  using Hash = blink::FontDescriptionHash;
 };
 
 template <typename T>

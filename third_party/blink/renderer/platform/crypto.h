@@ -65,21 +65,13 @@ struct DigestValueHash {
   static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 template <>
-struct DefaultHash<blink::DigestValue> {
-  STATIC_ONLY(DefaultHash);
-  typedef DigestValueHash Hash;
-};
+struct DefaultHash<blink::DigestValue> : DigestValueHash {};
 
 template <>
-struct DefaultHash<blink::HashAlgorithm> {
-  STATIC_ONLY(DefaultHash);
-  typedef IntHash<blink::HashAlgorithm> Hash;
-};
+struct DefaultHash<blink::HashAlgorithm> : IntHash<blink::HashAlgorithm> {};
 template <>
 struct HashTraits<blink::HashAlgorithm>
-    : UnsignedWithZeroKeyHashTraits<blink::HashAlgorithm> {
-  STATIC_ONLY(HashTraits);
-};
+    : UnsignedWithZeroKeyHashTraits<blink::HashAlgorithm> {};
 
 }  // namespace WTF
 

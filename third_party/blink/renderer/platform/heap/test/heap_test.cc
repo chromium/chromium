@@ -498,9 +498,7 @@ namespace WTF {
 template <typename T>
 struct DefaultHash;
 template <>
-struct DefaultHash<blink::ThreadMarker> {
-  typedef blink::ThreadMarkerHash Hash;
-};
+struct DefaultHash<blink::ThreadMarker> : blink::ThreadMarkerHash {};
 
 // ThreadMarkerHash is the default hash for ThreadMarker
 template <>
@@ -634,10 +632,9 @@ TEST_F(HeapTest, HashMapOfMembers) {
   IntWrapper::destructor_calls_ = 0;
   size_t initial_object_payload_size = GetOverallObjectSize();
   {
-    typedef HeapHashMap<Member<IntWrapper>, Member<IntWrapper>,
-                        DefaultHash<Member<IntWrapper>>::Hash,
-                        HashTraits<Member<IntWrapper>>,
-                        HashTraits<Member<IntWrapper>>>
+    typedef HeapHashMap<
+        Member<IntWrapper>, Member<IntWrapper>, DefaultHash<Member<IntWrapper>>,
+        HashTraits<Member<IntWrapper>>, HashTraits<Member<IntWrapper>>>
         HeapObjectIdentityMap;
 
     Persistent<HeapObjectIdentityMap> map =
@@ -1736,7 +1733,7 @@ static void HeapMapDestructorHelper(bool clear_maps) {
       RefMap;
 
   typedef HeapHashMap<WeakMember<IntWrapper>, ThingWithDestructor,
-                      DefaultHash<WeakMember<IntWrapper>>::Hash,
+                      DefaultHash<WeakMember<IntWrapper>>,
                       HashTraits<WeakMember<IntWrapper>>>
       Map;
 
@@ -3113,7 +3110,7 @@ class KeyWithCopyingMoveConstructor final {
   DISALLOW_NEW();
 
  public:
-  struct Hash final {
+  struct Hash {
     STATIC_ONLY(Hash);
 
    public:
@@ -3161,9 +3158,8 @@ class KeyWithCopyingMoveConstructor final {
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::KeyWithCopyingMoveConstructor> {
-  using Hash = blink::KeyWithCopyingMoveConstructor::Hash;
-};
+struct DefaultHash<blink::KeyWithCopyingMoveConstructor>
+    : blink::KeyWithCopyingMoveConstructor::Hash {};
 
 template <>
 struct HashTraits<blink::KeyWithCopyingMoveConstructor>

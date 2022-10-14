@@ -328,15 +328,12 @@ class LineLayoutItem {
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::LineLayoutItem> {
-  using Hash = blink::LineLayoutItem::LineLayoutItemHash;
-};
+struct DefaultHash<blink::LineLayoutItem>
+    : blink::LineLayoutItem::LineLayoutItemHash {};
 
 template <>
 struct HashTraits<blink::LineLayoutItem>
-    : SimpleClassHashTraits<blink::LineLayoutItem> {
-  STATIC_ONLY(HashTraits);
-};
+    : SimpleClassHashTraits<blink::LineLayoutItem> {};
 
 }  // namespace WTF
 

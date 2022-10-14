@@ -691,7 +691,7 @@ struct AnimatedPropertyTypeHashTraits : HashTraits<AnimatedPropertyType> {
 
 using AttributeToPropertyTypeMap = HashMap<QualifiedName,
                                            AnimatedPropertyType,
-                                           DefaultHash<QualifiedName>::Hash,
+                                           DefaultHash<QualifiedName>,
                                            HashTraits<QualifiedName>,
                                            AnimatedPropertyTypeHashTraits>;
 AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(

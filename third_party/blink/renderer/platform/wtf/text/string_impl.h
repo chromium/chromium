@@ -947,19 +947,13 @@ inline void StringImpl::PrependTo(BufferType& result,
     result.Prepend(Characters16() + start, number_of_characters_to_copy);
 }
 
-struct StringHash;
-
-// StringHash is the default hash for StringImpl* and scoped_refptr<StringImpl>
 template <typename T>
 struct DefaultHash;
+// Defined in string_hash.h.
 template <>
-struct DefaultHash<StringImpl*> {
-  typedef StringHash Hash;
-};
+struct DefaultHash<StringImpl*>;
 template <>
-struct DefaultHash<scoped_refptr<StringImpl>> {
-  typedef StringHash Hash;
-};
+struct DefaultHash<scoped_refptr<StringImpl>>;
 
 }  // namespace WTF
 

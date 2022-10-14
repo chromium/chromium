@@ -146,7 +146,7 @@ namespace WTF {
 struct {{hash_fn_name}} {
   static unsigned GetHash(const {{enum_name}}& value) {
     using utype = std::underlying_type<{{enum_name}}>::type;
-    return DefaultHash<utype>::Hash().GetHash(static_cast<utype>(value));
+    return DefaultHash<utype>::GetHash(static_cast<utype>(value));
   }
   static bool Equal(const {{enum_name}}& left, const {{enum_name}}& right) {
     return left == right;

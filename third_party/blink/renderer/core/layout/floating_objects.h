@@ -182,7 +182,7 @@ class FloatingObject : public GarbageCollected<FloatingObject> {
 struct FloatingObjectHashFunctions {
   STATIC_ONLY(FloatingObjectHashFunctions);
   static unsigned GetHash(FloatingObject* key) {
-    return DefaultHash<LayoutBox*>::Hash::GetHash(key->GetLayoutObject());
+    return DefaultHash<LayoutBox*>::GetHash(key->GetLayoutObject());
   }
   static unsigned GetHash(const Member<FloatingObject>& key) {
     return GetHash(key.Get());
@@ -200,7 +200,7 @@ struct FloatingObjectHashFunctions {
 struct FloatingObjectHashTranslator {
   STATIC_ONLY(FloatingObjectHashTranslator);
   static unsigned GetHash(LayoutBox* key) {
-    return DefaultHash<LayoutBox*>::Hash::GetHash(key);
+    return DefaultHash<LayoutBox*>::GetHash(key);
   }
   static bool Equal(FloatingObject* a, LayoutBox* b) {
     return a->GetLayoutObject() == b;

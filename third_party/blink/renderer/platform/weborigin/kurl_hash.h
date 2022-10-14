@@ -55,6 +55,9 @@ struct KURLHash {
 namespace WTF {
 
 template <>
+struct DefaultHash<blink::KURL> : blink::KURLHash {};
+
+template <>
 struct HashTraits<blink::KURL> : SimpleClassHashTraits<blink::KURL> {
   static bool IsDeletedValue(const blink::KURL& value) {
     return HashTraits<String>::IsDeletedValue(value.GetString());

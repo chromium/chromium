@@ -57,29 +57,6 @@ size_t WTFHash(size_t seed, const T& value) {
   return WTFHashTraits<T>::Hash(seed, value);
 }
 
-template <typename T>
-struct StructPtrHashFn {
-  static unsigned GetHash(const StructPtr<T>& value) {
-    return static_cast<unsigned>(value.Hash(kHashSeed));
-  }
-  static bool Equal(const StructPtr<T>& left, const StructPtr<T>& right) {
-    return left.Equals(right);
-  }
-  static const bool safe_to_compare_to_empty_or_deleted = false;
-};
-
-template <typename T>
-struct InlinedStructPtrHashFn {
-  static unsigned GetHash(const InlinedStructPtr<T>& value) {
-    return static_cast<unsigned>(value.Hash(kHashSeed));
-  }
-  static bool Equal(const InlinedStructPtr<T>& left,
-                    const InlinedStructPtr<T>& right) {
-    return left.Equals(right);
-  }
-  static const bool safe_to_compare_to_empty_or_deleted = false;
-};
-
 }  // namespace internal
 }  // namespace mojo
 
@@ -87,7 +64,14 @@ namespace WTF {
 
 template <typename T>
 struct DefaultHash<mojo::StructPtr<T>> {
-  using Hash = mojo::internal::StructPtrHashFn<T>;
+  static unsigned GetHash(const mojo::StructPtr<T>& value) {
+    return static_cast<unsigned>(value.Hash(mojo::internal::kHashSeed));
+  }
+  static bool Equal(const mojo::StructPtr<T>& left,
+                    const mojo::StructPtr<T>& right) {
+    return left.Equals(right);
+  }
+  static const bool safe_to_compare_to_empty_or_deleted = false;
 };
 
 template <typename T>
@@ -108,7 +92,14 @@ struct HashTraits<mojo::StructPtr<T>>
 
 template <typename T>
 struct DefaultHash<mojo::InlinedStructPtr<T>> {
-  using Hash = mojo::internal::InlinedStructPtrHashFn<T>;
+  static unsigned GetHash(const mojo::InlinedStructPtr<T>& value) {
+    return static_cast<unsigned>(value.Hash(mojo::internal::kHashSeed));
+  }
+  static bool Equal(const mojo::InlinedStructPtr<T>& left,
+                    const mojo::InlinedStructPtr<T>& right) {
+    return left.Equals(right);
+  }
+  static const bool safe_to_compare_to_empty_or_deleted = false;
 };
 
 template <typename T>

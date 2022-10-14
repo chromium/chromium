@@ -34,14 +34,11 @@ namespace WTF {
 template <>
 struct DefaultHash<SkSize> {
   STATIC_ONLY(DefaultHash);
-  struct Hash {
-    STATIC_ONLY(Hash);
-    static unsigned GetHash(const SkSize& key) {
-      return HashInts(key.width(), key.height());
-    }
-    static bool Equal(const SkSize& a, const SkSize& b) { return a == b; }
-    static const bool safe_to_compare_to_empty_or_deleted = true;
-  };
+  static unsigned GetHash(const SkSize& key) {
+    return HashInts(key.width(), key.height());
+  }
+  static bool Equal(const SkSize& a, const SkSize& b) { return a == b; }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
 template <>
@@ -60,14 +57,11 @@ struct HashTraits<SkSize> : GenericHashTraits<SkSize> {
 template <>
 struct DefaultHash<SkISize> {
   STATIC_ONLY(DefaultHash);
-  struct Hash {
-    STATIC_ONLY(Hash);
-    static unsigned GetHash(const SkISize& key) {
-      return HashInts(key.width(), key.height());
-    }
-    static bool Equal(const SkISize& a, const SkISize& b) { return a == b; }
-    static const bool safe_to_compare_to_empty_or_deleted = true;
-  };
+  static unsigned GetHash(const SkISize& key) {
+    return HashInts(key.width(), key.height());
+  }
+  static bool Equal(const SkISize& a, const SkISize& b) { return a == b; }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
 template <>

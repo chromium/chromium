@@ -383,19 +383,16 @@ struct HashTraits<blink::DisplayItem::Id::HashKey>
 
 template <>
 struct DefaultHash<blink::DisplayItem::Id::HashKey> {
-  struct Hash {
-    STATIC_ONLY(Hash);
-    using Key = blink::DisplayItem::Id::HashKey;
-    static unsigned GetHash(const Key& id) {
-      unsigned hash =
-          IntHash<blink::DisplayItemClientId>::GetHash(id.client_id);
-      WTF::AddIntToHash(hash, id.type);
-      WTF::AddIntToHash(hash, id.fragment);
-      return hash;
-    }
-    static bool Equal(const Key& a, const Key& b) { return a == b; }
-    static const bool safe_to_compare_to_empty_or_deleted = false;
-  };
+  STATIC_ONLY(DefaultHash);
+  using Key = blink::DisplayItem::Id::HashKey;
+  static unsigned GetHash(const Key& id) {
+    unsigned hash = IntHash<blink::DisplayItemClientId>::GetHash(id.client_id);
+    WTF::AddIntToHash(hash, id.type);
+    WTF::AddIntToHash(hash, id.fragment);
+    return hash;
+  }
+  static bool Equal(const Key& a, const Key& b) { return a == b; }
+  static const bool safe_to_compare_to_empty_or_deleted = false;
 };
 
 }  // namespace WTF

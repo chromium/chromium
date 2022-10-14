@@ -49,9 +49,8 @@ struct HashTraits<blink::CustomElementDescriptor>
 };
 
 template <>
-struct DefaultHash<blink::CustomElementDescriptor> {
-  using Hash = blink::CustomElementDescriptorHash;
-};
+struct DefaultHash<blink::CustomElementDescriptor>
+    : blink::CustomElementDescriptorHash {};
 
 }  // namespace WTF
 

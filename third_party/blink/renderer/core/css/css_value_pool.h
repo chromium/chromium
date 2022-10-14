@@ -77,7 +77,7 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   };
   using ColorValueCache = HeapHashMap<Color,
                                       Member<CSSColor>,
-                                      typename DefaultHash<Color>::Hash,
+                                      DefaultHash<Color>,
                                       ColorHashTraitsForCSSValuePool>;
   static const unsigned kMaximumColorCacheSize = 512;
   using FontFaceValueCache =

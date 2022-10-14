@@ -196,7 +196,7 @@ class GridTrackSizingAlgorithm final
 
   // Helper methods for step 4. Strech flexible tracks.
   typedef HashSet<size_t,
-                  DefaultHash<size_t>::Hash,
+                  DefaultHash<size_t>,
                   WTF::UnsignedWithZeroKeyHashTraits<size_t>>
       TrackIndexSet;
   double ComputeFlexFactorUnitSize(

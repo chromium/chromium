@@ -62,7 +62,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
   struct NodeListAtomicCacheMapEntryHash {
     STATIC_ONLY(NodeListAtomicCacheMapEntryHash);
     static unsigned GetHash(const NamedNodeListKey& entry) {
-      return DefaultHash<AtomicString>::Hash::GetHash(
+      return DefaultHash<AtomicString>::GetHash(
                  entry.second == CSSSelector::UniversalSelectorAtom()
                      ? g_star_atom
                      : entry.second) +
@@ -72,7 +72,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
       return a == b;
     }
     static const bool safe_to_compare_to_empty_or_deleted =
-        DefaultHash<AtomicString>::Hash::safe_to_compare_to_empty_or_deleted;
+        DefaultHash<AtomicString>::safe_to_compare_to_empty_or_deleted;
   };
 
   typedef HeapHashMap<NamedNodeListKey,

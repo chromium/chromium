@@ -229,9 +229,7 @@ WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::QualifiedName)
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::QualifiedName> {
-  typedef blink::QualifiedNameHash Hash;
-};
+struct DefaultHash<blink::QualifiedName> : blink::QualifiedNameHash {};
 
 template <>
 struct HashTraits<blink::QualifiedName>

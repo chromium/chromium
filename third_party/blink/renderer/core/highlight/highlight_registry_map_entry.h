@@ -33,27 +33,25 @@ namespace WTF {
 
 template <>
 struct DefaultHash<blink::Member<blink::HighlightRegistryMapEntry>> {
-  struct Hash {
-    STATIC_ONLY(Hash);
+  STATIC_ONLY(DefaultHash);
 
-    // Note that GetHash and Equal only take into account the |highlight_name|
-    // because |HighlightRegistryMapEntry| is used for storing map entries
-    // inside a set (i.e. there can only be one map entry in the set with the
-    // same key which is |highlight_name|).
-    static inline unsigned GetHash(
-        const blink::Member<blink::HighlightRegistryMapEntry>& key) {
-      DCHECK(key);
-      return AtomicStringHash::GetHash(key->highlight_name);
-    }
-    static inline bool Equal(
-        const blink::Member<blink::HighlightRegistryMapEntry>& a,
-        const blink::Member<blink::HighlightRegistryMapEntry>& b) {
-      DCHECK(a && b);
-      return AtomicStringHash::Equal(a->highlight_name, b->highlight_name);
-    }
+  // Note that GetHash and Equal only take into account the |highlight_name|
+  // because |HighlightRegistryMapEntry| is used for storing map entries
+  // inside a set (i.e. there can only be one map entry in the set with the
+  // same key which is |highlight_name|).
+  static inline unsigned GetHash(
+      const blink::Member<blink::HighlightRegistryMapEntry>& key) {
+    DCHECK(key);
+    return AtomicStringHash::GetHash(key->highlight_name);
+  }
+  static inline bool Equal(
+      const blink::Member<blink::HighlightRegistryMapEntry>& a,
+      const blink::Member<blink::HighlightRegistryMapEntry>& b) {
+    DCHECK(a && b);
+    return AtomicStringHash::Equal(a->highlight_name, b->highlight_name);
+  }
 
-    static const bool safe_to_compare_to_empty_or_deleted = false;
-  };
+  static const bool safe_to_compare_to_empty_or_deleted = false;
 };
 
 }  // namespace WTF

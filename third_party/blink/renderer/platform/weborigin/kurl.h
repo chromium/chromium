@@ -72,8 +72,6 @@ class GURL;
 
 namespace blink {
 
-struct KURLHash;
-
 class PLATFORM_EXPORT KURL {
   USING_FAST_MALLOC(KURL);
 
@@ -312,11 +310,9 @@ PLATFORM_EXPORT String EncodeWithURLEscapeSequences(const String&);
 
 namespace WTF {
 
-// KURLHash is the default hash for String
+// Defined in kurl_hash.h.
 template <>
-struct DefaultHash<blink::KURL> {
-  typedef blink::KURLHash Hash;
-};
+struct DefaultHash<blink::KURL>;
 
 template <>
 struct CrossThreadCopier<blink::KURL>

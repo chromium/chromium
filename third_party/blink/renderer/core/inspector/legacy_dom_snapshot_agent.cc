@@ -61,9 +61,9 @@ std::unique_ptr<protocol::DOM::Rect> LegacyBuildRectForPhysicalRect(
 struct LegacyDOMSnapshotAgent::VectorStringHashTraits
     : public WTF::GenericHashTraits<Vector<String>> {
   static unsigned GetHash(const Vector<String>& vec) {
-    unsigned h = DefaultHash<size_t>::Hash::GetHash(vec.size());
-    for (wtf_size_t i = 0; i < vec.size(); i++) {
-      h = WTF::HashInts(h, DefaultHash<String>::Hash::GetHash(vec[i]));
+    unsigned h = DefaultHash<size_t>::GetHash(vec.size());
+    for (const String& s : vec) {
+      h = WTF::HashInts(h, DefaultHash<String>::GetHash(s));
     }
     return h;
   }

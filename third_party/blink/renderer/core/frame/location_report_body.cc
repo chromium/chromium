@@ -44,10 +44,9 @@ unsigned LocationReportBody::MatchId() const {
   const absl::optional<uint32_t> line = lineNumber(), column = columnNumber();
 
   unsigned hash = sourceFile().IsNull() ? 0 : sourceFile().Impl()->GetHash();
-  hash = WTF::HashInts(hash,
-                       line ? DefaultHash<uint32_t>::Hash::GetHash(*line) : 0);
-  hash = WTF::HashInts(
-      hash, column ? DefaultHash<uint32_t>::Hash::GetHash(*column) : 0);
+  hash = WTF::HashInts(hash, line ? DefaultHash<uint32_t>::GetHash(*line) : 0);
+  hash =
+      WTF::HashInts(hash, column ? DefaultHash<uint32_t>::GetHash(*column) : 0);
   return hash;
 }
 

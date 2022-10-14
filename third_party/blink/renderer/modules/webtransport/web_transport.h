@@ -168,7 +168,7 @@ class MODULES_EXPORT WebTransport final
   // TODO(ricea): Find out if such large stream ids are possible.
   HeapHashMap<uint32_t,
               Member<IncomingStream>,
-              WTF::DefaultHash<uint32_t>::Hash,
+              WTF::DefaultHash<uint32_t>,
               WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
       incoming_stream_map_;
 
@@ -178,7 +178,7 @@ class MODULES_EXPORT WebTransport final
   // TODO(ricea): Find out if such large stream ids are possible.
   HeapHashMap<uint32_t,
               Member<OutgoingStream>,
-              WTF::DefaultHash<uint32_t>::Hash,
+              WTF::DefaultHash<uint32_t>,
               WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
       outgoing_stream_map_;
 
@@ -187,7 +187,7 @@ class MODULES_EXPORT WebTransport final
   // corresponding incoming stream, the event is recorded here.
   HashMap<uint32_t,
           bool,
-          WTF::DefaultHash<uint32_t>::Hash,
+          WTF::DefaultHash<uint32_t>,
           WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
       closed_potentially_pending_streams_;
 

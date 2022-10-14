@@ -50,7 +50,7 @@ namespace WTF {
 // Note: empty/deleted values as defined in HashTraits are not allowed.
 template <typename ValueArg,
           typename TraitsArg = HashTraits<ValueArg>,
-          typename HashArg = typename DefaultHash<ValueArg>::Hash,
+          typename HashArg = DefaultHash<ValueArg>,
           typename Allocator = PartitionAllocator>
 class LinkedHashSet {
   USE_ALLOCATOR(LinkedHashSet, Allocator);

@@ -666,13 +666,11 @@ struct HashTraits<EmptyString> : SimpleClassHashTraits<EmptyString> {
 
 template <>
 struct DefaultHash<EmptyString> {
-  struct Hash {
-    static unsigned GetHash(const EmptyString&) { return 0; }
-    static bool Equal(const EmptyString& value1, const EmptyString& value2) {
-      return value1 == value2;
-    }
-    static const bool safe_to_compare_to_empty_or_deleted = true;
-  };
+  static unsigned GetHash(const EmptyString&) { return 0; }
+  static bool Equal(const EmptyString& value1, const EmptyString& value2) {
+    return value1 == value2;
+  }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
 TEST(LinkedHashSetTest, Swap) {

@@ -25,8 +25,8 @@
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace WTF {
 
@@ -77,6 +77,15 @@ struct AlreadyHashed : IntHash<unsigned> {
   STATIC_ONLY(AlreadyHashed);
   static unsigned GetHash(unsigned key) { return key; }
 };
+
+// StringHash is the default hash for String, StringImpl* and
+// scopoed_refptr<StringImpl>.
+template <>
+struct DefaultHash<String> : StringHash {};
+template <>
+struct DefaultHash<StringImpl*> : StringHash {};
+template <>
+struct DefaultHash<scoped_refptr<StringImpl>> : StringHash {};
 
 }  // namespace WTF
 

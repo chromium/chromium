@@ -167,16 +167,11 @@ struct FontCacheKeyTraits : WTF::SimpleClassHashTraits<FontCacheKey> {
 
 namespace WTF {
 template <>
-struct DefaultHash<blink::FontCacheKey> {
-  STATIC_ONLY(DefaultHash);
-  typedef blink::FontCacheKeyHash Hash;
-};
+struct DefaultHash<blink::FontCacheKey> : blink::FontCacheKeyHash {};
 
 template <>
 struct HashTraits<blink::FontCacheKey>
     : WTF::SimpleClassHashTraits<blink::FontCacheKey> {
-  STATIC_ONLY(HashTraits);
-
   // std::string's empty state need not be zero in all implementations,
   // and it is held within FontFaceCreationParams.
   static const bool kEmptyValueIsZero = false;

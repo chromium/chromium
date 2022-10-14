@@ -87,10 +87,7 @@ class PLATFORM_EXPORT GenericFontFamilySettings {
     static bool IsDeletedValue(int value) { return value == -3; }
   };
 
-  typedef HashMap<int,
-                  AtomicString,
-                  DefaultHash<int>::Hash,
-                  UScriptCodeHashTraits>
+  typedef HashMap<int, AtomicString, DefaultHash<int>, UScriptCodeHashTraits>
       ScriptFontFamilyMap;
 
   void SetGenericFontFamilyMap(ScriptFontFamilyMap&,

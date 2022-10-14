@@ -120,21 +120,19 @@ namespace WTF {
 
 template <>
 struct DefaultHash<blink::BlinkSchemefulSite> {
-  struct Hash {
-    STATIC_ONLY(Hash);
+  STATIC_ONLY(DefaultHash);
 
-    static unsigned GetHash(const blink::BlinkSchemefulSite& schemeful_site) {
-      return blink::SecurityOriginHash::GetHash(schemeful_site.site_as_origin_);
-    }
+  static unsigned GetHash(const blink::BlinkSchemefulSite& schemeful_site) {
+    return blink::SecurityOriginHash::GetHash(schemeful_site.site_as_origin_);
+  }
 
-    static bool Equal(const blink::BlinkSchemefulSite& a,
-                      const blink::BlinkSchemefulSite& b) {
-      return blink::SecurityOriginHash::Equal(a.site_as_origin_,
-                                              b.site_as_origin_);
-    }
+  static bool Equal(const blink::BlinkSchemefulSite& a,
+                    const blink::BlinkSchemefulSite& b) {
+    return blink::SecurityOriginHash::Equal(a.site_as_origin_,
+                                            b.site_as_origin_);
+  }
 
-    static const bool safe_to_compare_to_empty_or_deleted = false;
-  };
+  static const bool safe_to_compare_to_empty_or_deleted = false;
 };
 
 template <>

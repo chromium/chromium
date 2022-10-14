@@ -215,7 +215,7 @@ class ShapeCache {
       SmallStringMap;
   typedef HashMap<uint32_t,
                   ShapeCacheEntry,
-                  DefaultHash<uint32_t>::Hash,
+                  DefaultHash<uint32_t>,
                   WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
       SingleCharMap;
 

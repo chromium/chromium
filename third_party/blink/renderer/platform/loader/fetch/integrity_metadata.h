@@ -56,10 +56,8 @@ enum class IntegrityAlgorithm : uint8_t { kSha256, kSha384, kSha512 };
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::IntegrityAlgorithm> {
-  STATIC_ONLY(DefaultHash);
-  typedef IntHash<blink::IntegrityAlgorithm> Hash;
-};
+struct DefaultHash<blink::IntegrityAlgorithm>
+    : IntHash<blink::IntegrityAlgorithm> {};
 
 template <>
 struct HashTraits<blink::IntegrityAlgorithm>

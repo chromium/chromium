@@ -41,7 +41,7 @@ using URLSchemesSet = HashSet<String>;
 template <typename Mapped, typename MappedTraits>
 using URLSchemesMap = HashMap<String,
                               Mapped,
-                              DefaultHash<String>::Hash,
+                              DefaultHash<String>,
                               HashTraits<String>,
                               MappedTraits>;
 

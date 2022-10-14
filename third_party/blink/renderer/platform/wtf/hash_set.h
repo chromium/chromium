@@ -38,7 +38,7 @@ struct IdentityExtractor;
 // allowed; for integer keys 0 or -1 can't be used as a key. This restriction
 // can be lifted if you supply custom key traits.
 template <typename ValueArg,
-          typename HashArg = typename DefaultHash<ValueArg>::Hash,
+          typename HashArg = DefaultHash<ValueArg>,
           typename TraitsArg = HashTraits<ValueArg>,
           typename Allocator = PartitionAllocator>
 class HashSet {

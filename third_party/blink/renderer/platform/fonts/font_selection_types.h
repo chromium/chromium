@@ -484,16 +484,12 @@ struct PLATFORM_EXPORT FontSelectionCapabilitiesHash {
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::FontSelectionCapabilities> {
-  STATIC_ONLY(DefaultHash);
-  typedef blink::FontSelectionCapabilitiesHash Hash;
-};
+struct DefaultHash<blink::FontSelectionCapabilities>
+    : blink::FontSelectionCapabilitiesHash {};
 
 template <>
 struct HashTraits<blink::FontSelectionCapabilities>
-    : SimpleClassHashTraits<blink::FontSelectionCapabilities> {
-  STATIC_ONLY(HashTraits);
-};
+    : SimpleClassHashTraits<blink::FontSelectionCapabilities> {};
 
 }  // namespace WTF
 

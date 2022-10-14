@@ -1124,7 +1124,7 @@ void LayoutGrid::PlaceSpecifiedMajorAxisItemsOnGrid(
   // auto-placed item's position inserted on that track. This is needed to
   // implement "sparse" packing for items locked to a given track.
   // See https://drafts.csswg.org/css-grid/#auto-placement-algo
-  HashMap<unsigned, unsigned, DefaultHash<unsigned>::Hash,
+  HashMap<unsigned, unsigned, DefaultHash<unsigned>,
           WTF::UnsignedWithZeroKeyHashTraits<unsigned>>
       minor_axis_cursors;
 

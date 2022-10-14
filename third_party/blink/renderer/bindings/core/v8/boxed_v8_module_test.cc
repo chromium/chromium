@@ -48,9 +48,8 @@ TEST(BoxedV8ModuleTest, equalAndHash) {
   EXPECT_FALSE(BoxedV8ModuleHash::Equal(module_a, module_b));
 
   EXPECT_NE(
-      DefaultHash<blink::Member<blink::BoxedV8Module>>::Hash::GetHash(module_a),
-      DefaultHash<blink::Member<blink::BoxedV8Module>>::Hash::GetHash(
-          module_b));
+      DefaultHash<blink::Member<blink::BoxedV8Module>>::GetHash(module_a),
+      DefaultHash<blink::Member<blink::BoxedV8Module>>::GetHash(module_b));
 }
 
 }  // namespace

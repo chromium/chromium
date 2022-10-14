@@ -244,7 +244,7 @@ void NGGridPlacement::PlaceGridItemsLockedToMajorAxis(
   // line inserted on that track. This is needed to implement "sparse" packing
   // for grid items locked to a given major axis track.
   // See https://drafts.csswg.org/css-grid/#auto-placement-algo.
-  HashMap<wtf_size_t, wtf_size_t, DefaultHash<wtf_size_t>::Hash,
+  HashMap<wtf_size_t, wtf_size_t, DefaultHash<wtf_size_t>,
           WTF::UnsignedWithZeroKeyHashTraits<wtf_size_t>>
       minor_cursors;
 

@@ -60,7 +60,7 @@ struct KeyValuePairKeyExtractor {
 // can be lifted if you supply custom key traits.
 template <typename KeyArg,
           typename MappedArg,
-          typename HashArg = typename DefaultHash<KeyArg>::Hash,
+          typename HashArg = DefaultHash<KeyArg>,
           typename KeyTraitsArg = HashTraits<KeyArg>,
           typename MappedTraitsArg = HashTraits<MappedArg>,
           typename Allocator = PartitionAllocator>

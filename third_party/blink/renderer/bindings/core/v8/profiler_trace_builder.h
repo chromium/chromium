@@ -58,8 +58,8 @@ struct ProfilerNodeFrameHash {
   static unsigned GetHash(const v8::CpuProfileNode* node) {
     return StringHash::GetHash(node->GetFunctionNameStr()) ^
            StringHash::GetHash(node->GetScriptResourceNameStr()) ^
-           DefaultHash<unsigned>::Hash().GetHash(node->GetLineNumber()) ^
-           DefaultHash<unsigned>::Hash().GetHash(node->GetColumnNumber());
+           DefaultHash<unsigned>::GetHash(node->GetLineNumber()) ^
+           DefaultHash<unsigned>::GetHash(node->GetColumnNumber());
   }
 
   static const bool safe_to_compare_to_empty_or_deleted = false;

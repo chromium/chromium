@@ -63,7 +63,7 @@ using FeatureNameMap = HashMap<String, mojom::blink::PermissionsPolicyFeature>;
 
 using DocumentPolicyFeatureSet = HashSet<
     mojom::blink::DocumentPolicyFeature,
-    DefaultHash<mojom::blink::DocumentPolicyFeature>::Hash,
+    DefaultHash<mojom::blink::DocumentPolicyFeature>,
     WTF::EnumOrGenericHashTraits<true, mojom::blink::DocumentPolicyFeature>>;
 
 class FeatureContext;

@@ -318,14 +318,11 @@ namespace WTF {
 template <>
 struct DefaultHash<blink::Color> {
   STATIC_ONLY(DefaultHash);
-  struct Hash {
-    STATIC_ONLY(Hash);
-    static unsigned GetHash(const blink::Color& key) { return key.GetHash(); }
-    static bool Equal(const blink::Color& a, const blink::Color& b) {
-      return a == b;
-    }
-    static const bool safe_to_compare_to_empty_or_deleted = true;
-  };
+  static unsigned GetHash(const blink::Color& key) { return key.GetHash(); }
+  static bool Equal(const blink::Color& a, const blink::Color& b) {
+    return a == b;
+  }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 }  // namespace WTF
 

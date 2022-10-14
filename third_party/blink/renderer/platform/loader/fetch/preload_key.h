@@ -54,9 +54,7 @@ struct PreloadKey final {
 namespace WTF {
 
 template <>
-struct DefaultHash<blink::PreloadKey> {
-  using Hash = blink::PreloadKey::Hash;
-};
+struct DefaultHash<blink::PreloadKey> : blink::PreloadKey::Hash {};
 
 template <>
 struct HashTraits<blink::PreloadKey>

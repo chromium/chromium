@@ -193,7 +193,7 @@ class GridBaselineAlignment {
 
   typedef HeapHashMap<unsigned,
                       Member<BaselineContext>,
-                      DefaultHash<unsigned>::Hash,
+                      DefaultHash<unsigned>,
                       WTF::UnsignedWithZeroKeyHashTraits<unsigned>>
       BaselineContextsMap;
 

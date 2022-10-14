@@ -15,7 +15,7 @@ namespace blink {
 
 template <typename KeyArg,
           typename MappedArg,
-          typename HashArg = typename DefaultHash<KeyArg>::Hash,
+          typename HashArg = DefaultHash<KeyArg>,
           typename KeyTraitsArg = HashTraits<KeyArg>,
           typename MappedTraitsArg = HashTraits<MappedArg>>
 class HeapHashMap final : public GarbageCollected<HeapHashMap<KeyArg,

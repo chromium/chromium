@@ -13,7 +13,7 @@
 namespace blink {
 
 template <typename Value,
-          typename HashFunctions = typename DefaultHash<Value>::Hash,
+          typename HashFunctions = DefaultHash<Value>,
           typename Traits = HashTraits<Value>>
 class HeapHashCountedSet final
     : public GarbageCollected<HeapHashCountedSet<Value, HashFunctions, Traits>>,

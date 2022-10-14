@@ -138,7 +138,7 @@ class MODULES_EXPORT ImageDecoderCore {
   // resolution of promises until a new bitmap is generated.
   HashMap<uint32_t,
           uint32_t,
-          DefaultHash<uint32_t>::Hash,
+          DefaultHash<uint32_t>,
           WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
       incomplete_frames_;
 

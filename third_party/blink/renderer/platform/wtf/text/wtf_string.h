@@ -45,8 +45,6 @@
 
 namespace WTF {
 
-struct StringHash;
-
 #define DISPATCH_CASE_OP(caseSensitivity, op, args)     \
   ((caseSensitivity == kTextCaseSensitive)              \
        ? op args                                        \
@@ -666,13 +664,11 @@ void String::PrependTo(BufferType& result,
   impl_->PrependTo(result, position, length);
 }
 
-// StringHash is the default hash for String
 template <typename T>
 struct DefaultHash;
+// Defined in string_hash.h.
 template <>
-struct DefaultHash<String> {
-  typedef StringHash Hash;
-};
+struct DefaultHash<String>;
 
 // Shared global empty string.
 WTF_EXPORT extern const String& g_empty_string;

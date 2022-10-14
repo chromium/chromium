@@ -133,19 +133,17 @@ namespace WTF {
 
 template <>
 struct DefaultHash<blink::PropertyHandle> {
-  struct Hash {
-    STATIC_ONLY(Hash);
-    static unsigned GetHash(const blink::PropertyHandle& handle) {
-      return handle.GetHash();
-    }
+  STATIC_ONLY(DefaultHash);
+  static unsigned GetHash(const blink::PropertyHandle& handle) {
+    return handle.GetHash();
+  }
 
-    static bool Equal(const blink::PropertyHandle& a,
-                      const blink::PropertyHandle& b) {
-      return a == b;
-    }
+  static bool Equal(const blink::PropertyHandle& a,
+                    const blink::PropertyHandle& b) {
+    return a == b;
+  }
 
-    static const bool safe_to_compare_to_empty_or_deleted = true;
-  };
+  static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
 template <>

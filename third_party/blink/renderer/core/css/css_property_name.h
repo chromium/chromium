@@ -88,19 +88,17 @@ namespace WTF {
 
 template <>
 struct DefaultHash<blink::CSSPropertyName> {
-  struct Hash {
-    STATIC_ONLY(Hash);
-    static unsigned GetHash(const blink::CSSPropertyName& name) {
-      return name.GetHash();
-    }
+  STATIC_ONLY(DefaultHash);
+  static unsigned GetHash(const blink::CSSPropertyName& name) {
+    return name.GetHash();
+  }
 
-    static bool Equal(const blink::CSSPropertyName& a,
-                      const blink::CSSPropertyName& b) {
-      return a == b;
-    }
+  static bool Equal(const blink::CSSPropertyName& a,
+                    const blink::CSSPropertyName& b) {
+    return a == b;
+  }
 
-    static const bool safe_to_compare_to_empty_or_deleted = true;
-  };
+  static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
 template <>

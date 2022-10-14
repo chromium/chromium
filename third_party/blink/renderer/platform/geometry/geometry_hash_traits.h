@@ -14,19 +14,15 @@ namespace WTF {
 template <>
 struct DefaultHash<gfx::SizeF> {
   STATIC_ONLY(DefaultHash);
-  struct Hash {
-    STATIC_ONLY(Hash);
-    typedef typename IntTypes<sizeof(float)>::UnsignedType Bits;
-    static unsigned GetHash(const gfx::SizeF& key) {
-      return HashInts(DefaultHash<float>::Hash::GetHash(key.width()),
-                      DefaultHash<float>::Hash::GetHash(key.height()));
-    }
-    static bool Equal(const gfx::SizeF& a, const gfx::SizeF& b) {
-      return DefaultHash<float>::Hash::Equal(a.width(), b.width()) &&
-             DefaultHash<float>::Hash::Equal(a.height(), b.height());
-    }
-    static const bool safe_to_compare_to_empty_or_deleted = true;
-  };
+  static unsigned GetHash(const gfx::SizeF& key) {
+    return HashInts(DefaultHash<float>::GetHash(key.width()),
+                    DefaultHash<float>::GetHash(key.height()));
+  }
+  static bool Equal(const gfx::SizeF& a, const gfx::SizeF& b) {
+    return DefaultHash<float>::Equal(a.width(), b.width()) &&
+           DefaultHash<float>::Equal(a.height(), b.height());
+  }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
 template <>
@@ -52,15 +48,12 @@ struct HashTraits<gfx::SizeF> : GenericHashTraits<gfx::SizeF> {
 template <>
 struct DefaultHash<SkIRect> {
   STATIC_ONLY(DefaultHash);
-  struct Hash {
-    STATIC_ONLY(Hash);
-    static unsigned GetHash(const SkIRect& key) {
-      return HashInts(HashInts(key.x(), key.y()),
-                      HashInts(key.right(), key.bottom()));
-    }
-    static bool Equal(const SkIRect& a, const SkIRect& b) { return a == b; }
-    static const bool safe_to_compare_to_empty_or_deleted = true;
-  };
+  static unsigned GetHash(const SkIRect& key) {
+    return HashInts(HashInts(key.x(), key.y()),
+                    HashInts(key.right(), key.bottom()));
+  }
+  static bool Equal(const SkIRect& a, const SkIRect& b) { return a == b; }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
 template <>

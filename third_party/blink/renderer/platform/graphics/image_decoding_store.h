@@ -175,25 +175,21 @@ namespace WTF {
 template <>
 struct DefaultHash<blink::DecoderCacheKey> {
   STATIC_ONLY(DefaultHash);
-  struct Hash {
-    STATIC_ONLY(Hash);
-    static unsigned GetHash(const blink::DecoderCacheKey& p) {
-      auto first =
-          HashInts(DefaultHash<blink::ImageFrameGenerator*>::Hash::GetHash(
-                       const_cast<blink::ImageFrameGenerator*>(p.gen_)),
-                   DefaultHash<SkISize>::Hash::GetHash(p.size_));
-      auto second = HashInts(DefaultHash<uint8_t>::Hash::GetHash(
-                                 static_cast<uint8_t>(p.alpha_option_)),
-                             p.client_id_);
-      return HashInts(first, second);
-    }
-    static bool Equal(const blink::DecoderCacheKey& a,
-                      const blink::DecoderCacheKey& b) {
-      return a.gen_ == b.gen_ && a.size_ == b.size_ &&
-             a.alpha_option_ == b.alpha_option_ && a.client_id_ == b.client_id_;
-    }
-    static const bool safe_to_compare_to_empty_or_deleted = true;
-  };
+  static unsigned GetHash(const blink::DecoderCacheKey& p) {
+    auto first = HashInts(DefaultHash<blink::ImageFrameGenerator*>::GetHash(
+                              const_cast<blink::ImageFrameGenerator*>(p.gen_)),
+                          DefaultHash<SkISize>::GetHash(p.size_));
+    auto second = HashInts(
+        DefaultHash<uint8_t>::GetHash(static_cast<uint8_t>(p.alpha_option_)),
+        p.client_id_);
+    return HashInts(first, second);
+  }
+  static bool Equal(const blink::DecoderCacheKey& a,
+                    const blink::DecoderCacheKey& b) {
+    return a.gen_ == b.gen_ && a.size_ == b.size_ &&
+           a.alpha_option_ == b.alpha_option_ && a.client_id_ == b.client_id_;
+  }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
 };
 
 template <>
