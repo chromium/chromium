@@ -141,6 +141,14 @@ public class RadioButtonWithDescriptionAndAuxButton extends RadioButtonWithDescr
     }
 
     /**
+     * Set the aux button content description.
+     * @param contentDescription for aux button, used for accessibility purposes.
+     */
+    public void setAuxButtonContentDescription(String contentDescription) {
+        mAuxButton.setContentDescription(contentDescription);
+    }
+
+    /**
      * @return the aux button living inside this widget.
      */
     @VisibleForTesting

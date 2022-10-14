@@ -152,8 +152,8 @@ public class FourStateCookieSettingsPreference extends Preference
 
         mManagedView = (TextViewWithCompoundDrawables) holder.findViewById(R.id.managed_view);
         Drawable[] drawables = mManagedView.getCompoundDrawablesRelative();
-        Drawable managedIcon = ApiCompatibilityUtils.getDrawable(getContext().getResources(),
-                ManagedPreferencesUtils.getManagedByEnterpriseIconId());
+        Drawable managedIcon = ApiCompatibilityUtils.getDrawable(
+                getResources(), ManagedPreferencesUtils.getManagedByEnterpriseIconId());
         mManagedView.setCompoundDrawablesRelativeWithIntrinsicBounds(
                 managedIcon, drawables[1], drawables[2], drawables[3]);
 
@@ -163,26 +163,45 @@ public class FourStateCookieSettingsPreference extends Preference
         }
     }
 
+    private Resources getResources() {
+        return getContext().getResources();
+    }
+
     private void setRadioButtonsVisibility(Params params) {
         if (params.isPrivacySandboxFirstPartySetsUIEnabled) {
             mViewHolder.findViewById(R.id.block_third_party_incognito).setVisibility(View.GONE);
             mViewHolder.findViewById(R.id.block_third_party).setVisibility(View.GONE);
-            mBlockThirdPartyIncognitoButton =
-                    (RadioButtonWithDescriptionAndAuxButton) mViewHolder.findViewById(
-                            R.id.block_third_party_incognito_with_aux);
-            mBlockThirdPartyButton =
-                    (RadioButtonWithDescriptionAndAuxButton) mViewHolder.findViewById(
-                            R.id.block_third_party_with_aux);
-            mBlockThirdPartyIncognitoButton.setVisibility(View.VISIBLE);
-            mBlockThirdPartyButton.setVisibility(View.VISIBLE);
-            setBlockThirdPartyCookieDescription(params);
+
             // TODO(crbug.com/1349370): Change the buttons class into a
             // RadioButtonWithDescriptionAndAuxButton and remove the following casts when the
             // PrivacySandboxFirstPartySetsUI feature is launched
-            ((RadioButtonWithDescriptionAndAuxButton) mBlockThirdPartyIncognitoButton)
-                    .setAuxButtonClickedListener(this);
-            ((RadioButtonWithDescriptionAndAuxButton) mBlockThirdPartyButton)
-                    .setAuxButtonClickedListener(this);
+            var blockTPIncognitoBtnWithDescAndAux =
+                    (RadioButtonWithDescriptionAndAuxButton) mViewHolder.findViewById(
+                            R.id.block_third_party_incognito_with_aux);
+            var blockTPButtonWithDescAndAux =
+                    (RadioButtonWithDescriptionAndAuxButton) mViewHolder.findViewById(
+                            R.id.block_third_party_with_aux);
+
+            String blockTPIncognitoCtxDescription = getResources().getString(
+                    R.string.website_settings_category_cookie_block_third_party_incognito_title);
+            blockTPIncognitoBtnWithDescAndAux.setAuxButtonContentDescription(
+                    getResources().getString(
+                            R.string.accessibility_expand_button_with_target_description,
+                            blockTPIncognitoCtxDescription));
+            blockTPIncognitoBtnWithDescAndAux.setVisibility(View.VISIBLE);
+
+            String blockTPCtxDescription = getResources().getString(
+                    R.string.website_settings_category_cookie_block_third_party_title);
+            blockTPButtonWithDescAndAux.setAuxButtonContentDescription(getResources().getString(
+                    R.string.accessibility_expand_button_with_target_description,
+                    blockTPCtxDescription));
+            blockTPButtonWithDescAndAux.setVisibility(View.VISIBLE);
+
+            blockTPIncognitoBtnWithDescAndAux.setAuxButtonClickedListener(this);
+            blockTPButtonWithDescAndAux.setAuxButtonClickedListener(this);
+            mBlockThirdPartyIncognitoButton = blockTPIncognitoBtnWithDescAndAux;
+            mBlockThirdPartyButton = blockTPButtonWithDescAndAux;
+            setBlockThirdPartyCookieDescription(params);
         } else {
             mBlockThirdPartyIncognitoButton = (RadioButtonWithDescription) mViewHolder.findViewById(
                     R.id.block_third_party_incognito);
@@ -192,13 +211,12 @@ public class FourStateCookieSettingsPreference extends Preference
     }
 
     private void setBlockThirdPartyCookieDescription(Params params) {
-        Resources resources = getContext().getResources();
-        String defaultDescription = resources.getString(
+        String defaultDescription = getResources().getString(
                 R.string.website_settings_category_cookie_block_third_party_addition);
         if (params.isFirstPartySetsDataAccessEnabled) {
-            String fpsAdditionalDescription = resources.getString(
+            String fpsAdditionalDescription = getResources().getString(
                     R.string.website_settings_category_cookie_block_third_party_fps_addition);
-            String description = resources.getString(R.string.concat_two_strings_with_periods,
+            String description = getResources().getString(R.string.concat_two_strings_with_periods,
                     defaultDescription, fpsAdditionalDescription);
             mBlockThirdPartyButton.setDescriptionText(description);
         } else {
