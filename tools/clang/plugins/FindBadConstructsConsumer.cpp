@@ -4,7 +4,6 @@
 
 #include "FindBadConstructsConsumer.h"
 
-#include "FindBadRawPtrPatterns.h"
 #include "Util.h"
 #include "clang/AST/Attr.h"
 #include "clang/Frontend/CompilerInstance.h"
@@ -231,7 +230,6 @@ void FindBadConstructsConsumer::Traverse(ASTContext& context) {
   RecursiveASTVisitor::TraverseDecl(context.getTranslationUnitDecl());
   if (ipc_visitor_)
     ipc_visitor_->set_context(nullptr);
-  FindBadRawPtrPatterns(options_, context, instance());
 }
 
 bool FindBadConstructsConsumer::TraverseDecl(Decl* decl) {
