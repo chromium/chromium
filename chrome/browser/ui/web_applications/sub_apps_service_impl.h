@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_SUB_APPS_SERVICE_IMPL_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_SUB_APPS_SERVICE_IMPL_H_
 
+#include <utility>
+#include <vector>
+
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "content/public/browser/document_service.h"
 #include "third_party/blink/public/mojom/subapps/sub_apps_service.mojom.h"
@@ -18,6 +21,12 @@ namespace web_app {
 class SubAppsServiceImpl
     : public content::DocumentService<blink::mojom::SubAppsService> {
  public:
+  using AddResults = std::vector<
+      std::pair<UnhashedAppId, blink::mojom::SubAppsServiceAddResultCode>>;
+  using AddResultsMojo = std::vector<blink::mojom::SubAppsServiceAddResultPtr>;
+
+  static AddResultsMojo AddResultsToMojo(AddResults add_results);
+
   SubAppsServiceImpl(const SubAppsServiceImpl&) = delete;
   SubAppsServiceImpl& operator=(const SubAppsServiceImpl&) = delete;
   ~SubAppsServiceImpl() override;

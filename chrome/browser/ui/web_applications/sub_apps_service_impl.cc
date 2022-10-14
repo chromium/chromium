@@ -26,6 +26,8 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
+using blink::mojom::SubAppsService;
+using blink::mojom::SubAppsServiceAddInfoPtr;
 using blink::mojom::SubAppsServiceAddResult;
 using blink::mojom::SubAppsServiceAddResultCode;
 using blink::mojom::SubAppsServiceAddResultPtr;
@@ -36,29 +38,13 @@ namespace web_app {
 
 namespace {
 
-std::vector<blink::mojom::SubAppsServiceAddResultPtr> ResultsToMojo(
-    std::vector<
-        std::pair<UnhashedAppId, blink::mojom::SubAppsServiceAddResultCode>>
-        sub_apps_idl) {
-  std::vector<blink::mojom::SubAppsServiceAddResultPtr> subapps;
-  for (const auto& [app_id, install_result_code] : sub_apps_idl) {
-    blink::mojom::SubAppsServiceAddResultPtr mojom_pair =
-        blink::mojom::SubAppsServiceAddResult::New();
-    mojom_pair->unhashed_app_id = app_id;
-    mojom_pair->result_code = install_result_code;
-    subapps.push_back(std::move(mojom_pair));
+std::vector<std::pair<UnhashedAppId, GURL>> AddOptionsFromMojo(
+    std::vector<SubAppsServiceAddInfoPtr> sub_apps_mojo) {
+  std::vector<std::pair<UnhashedAppId, GURL>> sub_apps;
+  for (const auto& sub_app : sub_apps_mojo) {
+    sub_apps.emplace_back(sub_app->unhashed_app_id, sub_app->install_url);
   }
-  return subapps;
-}
-
-std::vector<std::pair<UnhashedAppId, GURL>> InstallParamsFromMojo(
-    std::vector<blink::mojom::SubAppsServiceAddInfoPtr> sub_apps_mojo) {
-  std::vector<std::pair<UnhashedAppId, GURL>> subapps;
-  for (const auto& pair : sub_apps_mojo) {
-    subapps.emplace_back(UnhashedAppId(pair->unhashed_app_id),
-                         pair->install_url);
-  }
-  return subapps;
+  return sub_apps;
 }
 
 WebAppProvider* GetWebAppProvider(content::RenderFrameHost& render_frame_host) {
@@ -75,11 +61,10 @@ const AppId* GetAppId(content::RenderFrameHost& render_frame_host) {
   return WebAppTabHelper::GetAppId(initiator_web_contents);
 }
 
-void OnAdd(
-    SubAppsServiceImpl::AddCallback result_callback,
-    std::vector<std::pair<UnhashedAppId,
-                          blink::mojom::SubAppsServiceAddResultCode>> results) {
-  std::move(result_callback).Run(ResultsToMojo(std::move(results)));
+void OnAdd(SubAppsServiceImpl::AddCallback result_callback,
+           SubAppsServiceImpl::AddResults results) {
+  std::move(result_callback)
+      .Run(SubAppsServiceImpl::AddResultsToMojo(std::move(results)));
 }
 
 void OnRemove(SubAppsServiceImpl::RemoveCallback result_callback,
@@ -92,9 +77,20 @@ void OnRemove(SubAppsServiceImpl::RemoveCallback result_callback,
 
 }  // namespace
 
+// static
+SubAppsServiceImpl::AddResultsMojo SubAppsServiceImpl::AddResultsToMojo(
+    AddResults add_results) {
+  AddResultsMojo add_results_mojo;
+  for (const auto& [unhashed_app_id, result_code] : add_results) {
+    add_results_mojo.emplace_back(
+        SubAppsServiceAddResult::New(unhashed_app_id, result_code));
+  }
+  return add_results_mojo;
+}
+
 SubAppsServiceImpl::SubAppsServiceImpl(
     content::RenderFrameHost& render_frame_host,
-    mojo::PendingReceiver<blink::mojom::SubAppsService> receiver)
+    mojo::PendingReceiver<SubAppsService> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {}
 
 SubAppsServiceImpl::~SubAppsServiceImpl() = default;
@@ -102,7 +98,7 @@ SubAppsServiceImpl::~SubAppsServiceImpl() = default;
 // static
 void SubAppsServiceImpl::CreateIfAllowed(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::SubAppsService> receiver) {
+    mojo::PendingReceiver<SubAppsService> receiver) {
   CHECK(render_frame_host);
 
   // This class is created only on the primary main frame.
@@ -122,9 +118,8 @@ void SubAppsServiceImpl::CreateIfAllowed(
   new SubAppsServiceImpl(*render_frame_host, std::move(receiver));
 }
 
-void SubAppsServiceImpl::Add(
-    std::vector<blink::mojom::SubAppsServiceAddInfoPtr> sub_apps,
-    AddCallback result_callback) {
+void SubAppsServiceImpl::Add(std::vector<SubAppsServiceAddInfoPtr> sub_apps,
+                             AddCallback result_callback) {
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   if (!provider->on_registry_ready().is_signaled()) {
     provider->on_registry_ready().Post(
@@ -153,7 +148,7 @@ void SubAppsServiceImpl::Add(
 
   // Check that each sub app's install url has the same origin as the parent
   // app and that the unhashed app id is a valid URL.
-  for (const blink::mojom::SubAppsServiceAddInfoPtr& sub_app : sub_apps) {
+  for (const SubAppsServiceAddInfoPtr& sub_app : sub_apps) {
     GURL sub_app_install_url(sub_app->install_url);
     if (!url::IsSameOriginWith(sub_app_install_url, parent_app_url)) {
       std::move(result_callback).Run(/*mojom_results=*/{});
@@ -171,7 +166,7 @@ void SubAppsServiceImpl::Add(
   }
 
   auto install_command = std::make_unique<SubAppInstallCommand>(
-      *parent_app_id, InstallParamsFromMojo(std::move(sub_apps)),
+      *parent_app_id, AddOptionsFromMojo(std::move(sub_apps)),
       base::BindOnce(&OnAdd, std::move(result_callback)),
       Profile::FromBrowserContext(render_frame_host().GetBrowserContext()),
       &provider->registrar(), &provider->install_finalizer(),

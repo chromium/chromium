@@ -25,6 +25,9 @@
 
 namespace blink {
 
+using mojom::blink::SubAppsService;
+using mojom::blink::SubAppsServiceAddInfo;
+using mojom::blink::SubAppsServiceAddInfoPtr;
 using mojom::blink::SubAppsServiceAddResultCode;
 using mojom::blink::SubAppsServiceAddResultPtr;
 using mojom::blink::SubAppsServiceListResultPtr;
@@ -32,56 +35,51 @@ using mojom::blink::SubAppsServiceResult;
 
 namespace {
 
-Vector<std::pair<String, String>> ResultsFromMojo(
-    Vector<mojom::blink::SubAppsServiceAddResultPtr> sub_apps_mojo) {
-  Vector<std::pair<String, String>> subapps;
-  for (const auto& pair : sub_apps_mojo) {
+Vector<std::pair<String, String>> AddResultsFromMojo(
+    Vector<SubAppsServiceAddResultPtr> add_results_mojo) {
+  Vector<std::pair<String, String>> add_results_idl;
+  for (auto& add_result : add_results_mojo) {
     std::string result;
 
-    switch (pair->result_code) {
-      case mojom::blink::SubAppsServiceAddResultCode::kSuccessNewInstall:
+    switch (add_result->result_code) {
+      case SubAppsServiceAddResultCode::kSuccessNewInstall:
         result = "success-new-install";
         break;
-      case mojom::blink::SubAppsServiceAddResultCode::kSuccessAlreadyInstalled:
+      case SubAppsServiceAddResultCode::kSuccessAlreadyInstalled:
         result = "success-already-installed";
         break;
-      case mojom::blink::SubAppsServiceAddResultCode::kUserInstallDeclined:
+      case SubAppsServiceAddResultCode::kUserInstallDeclined:
         result = "user-install-declined";
         break;
-      case mojom::blink::SubAppsServiceAddResultCode::kExpectedAppIdCheckFailed:
+      case SubAppsServiceAddResultCode::kExpectedAppIdCheckFailed:
         result = "expected-app-id-check-failed";
         break;
-      case mojom::blink::SubAppsServiceAddResultCode::kParentAppUninstalled:
+      case SubAppsServiceAddResultCode::kParentAppUninstalled:
         result = "parent-app-uninstalled";
         break;
-      case mojom::blink::SubAppsServiceAddResultCode::kInstallUrlInvalid:
+      case SubAppsServiceAddResultCode::kInstallUrlInvalid:
         result = "install-url-invalid";
         break;
-      case mojom::blink::SubAppsServiceAddResultCode::
-          kNotValidManifestForWebApp:
+      case SubAppsServiceAddResultCode::kNotValidManifestForWebApp:
         result = "invalid-manifest-for-web-app";
         break;
-      case mojom::blink::SubAppsServiceAddResultCode::kFailure:
+      case SubAppsServiceAddResultCode::kFailure:
         result = "failure";
         break;
     }
-    subapps.emplace_back(pair->unhashed_app_id, result);
+    add_results_idl.emplace_back(add_result->unhashed_app_id, result);
   }
-  return subapps;
+  return add_results_idl;
 }
 
-Vector<mojom::blink::SubAppsServiceAddInfoPtr> InstallParamsToMojo(
-    const HeapVector<std::pair<String, Member<SubAppsAddOptions>>>
-        sub_apps_idl) {
-  Vector<mojom::blink::SubAppsServiceAddInfoPtr> subapps;
-  for (const auto& [unhashed_app_id, install_options] : sub_apps_idl) {
-    mojom::blink::SubAppsServiceAddInfoPtr mojom_pair =
-        mojom::blink::SubAppsServiceAddInfo::New();
-    mojom_pair->unhashed_app_id = unhashed_app_id;
-    mojom_pair->install_url = KURL(install_options->installUrl());
-    subapps.push_back(std::move(mojom_pair));
+Vector<SubAppsServiceAddInfoPtr> AddOptionsToMojo(
+    HeapVector<std::pair<String, Member<SubAppsAddOptions>>> sub_apps_idl) {
+  Vector<SubAppsServiceAddInfoPtr> sub_apps_mojo;
+  for (auto& [unhashed_app_id, add_options] : sub_apps_idl) {
+    sub_apps_mojo.emplace_back(SubAppsServiceAddInfo::New(
+        unhashed_app_id, KURL(add_options->installUrl())));
   }
-  return subapps;
+  return sub_apps_mojo;
 }
 
 }  // namespace
@@ -109,7 +107,7 @@ void SubApps::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
 }
 
-HeapMojoRemote<mojom::blink::SubAppsService>& SubApps::GetService() {
+HeapMojoRemote<SubAppsService>& SubApps::GetService() {
   if (!service_.is_bound()) {
     auto* context = GetSupplementable()->GetExecutionContext();
     context->GetBrowserInterfaceBroker().GetInterface(
@@ -146,8 +144,8 @@ ScriptPromise SubApps::add(
 
   // Check that each sub app's install url has the same origin as the parent
   // app, throw exception otherwise.
-  for (const auto& [manifest_id, install_options] : sub_apps) {
-    KURL sub_app_install_url(install_options->installUrl());
+  for (const auto& [unhashed_app_id, add_options] : sub_apps) {
+    KURL sub_app_install_url(add_options->installUrl());
     if (!frame_origin->IsSameOriginWith(
             SecurityOrigin::Create(sub_app_install_url).get())) {
       exception_state.ThrowDOMException(
@@ -160,20 +158,20 @@ ScriptPromise SubApps::add(
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   GetService()->Add(
-      InstallParamsToMojo(sub_apps),
+      AddOptionsToMojo(std::move(sub_apps)),
       resolver->WrapCallbackInScriptScope(
           WTF::BindOnce([](ScriptPromiseResolver* resolver,
-                           Vector<SubAppsServiceAddResultPtr> mojom_results) {
-            for (const SubAppsServiceAddResultPtr& add_result : mojom_results) {
+                           Vector<SubAppsServiceAddResultPtr> results_mojo) {
+            for (const auto& add_result : results_mojo) {
               if (add_result->result_code !=
                       SubAppsServiceAddResultCode::kSuccessNewInstall &&
                   add_result->result_code !=
                       SubAppsServiceAddResultCode::kSuccessAlreadyInstalled) {
                 return resolver->Reject(
-                    ResultsFromMojo(std::move(mojom_results)));
+                    AddResultsFromMojo(std::move(results_mojo)));
               }
             }
-            resolver->Resolve(ResultsFromMojo(std::move(mojom_results)));
+            resolver->Resolve(AddResultsFromMojo(std::move(results_mojo)));
           })));
   return resolver->Promise();
 }
