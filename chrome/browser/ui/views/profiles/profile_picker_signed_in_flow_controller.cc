@@ -9,6 +9,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_turn_sync_on_delegate.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
@@ -54,9 +55,9 @@ void ProfilePickerSignedInFlowController::Init() {
                                      "primary account must be passed in.";
   email_ = account_info.email;
 
-  base::OnceClosure sync_consent_completed_closure = base::BindOnce(
-      &ProfilePickerSignedInFlowController::FinishAndOpenBrowser,
-      weak_ptr_factory_.GetWeakPtr(), ProfilePicker::BrowserOpenedCallback());
+  base::OnceClosure sync_consent_completed_closure =
+      base::BindOnce(&ProfilePickerSignedInFlowController::FinishAndOpenBrowser,
+                     weak_ptr_factory_.GetWeakPtr(), PostHostClearedCallback());
 
   // TurnSyncOnHelper deletes itself once done.
   new TurnSyncOnHelper(

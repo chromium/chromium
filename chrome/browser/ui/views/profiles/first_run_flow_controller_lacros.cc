@@ -14,10 +14,10 @@
 namespace {
 
 // Helper to run `callback`, after hiding the profile picker.
-void HideProfilePickerAndRun(ProfilePicker::BrowserOpenedCallback callback) {
+void HideProfilePickerAndRun(PostHostClearedCallback callback) {
   ProfilePicker::Hide();
 
-  if (!callback)
+  if (callback->is_null())
     return;
 
   // See if there is already a browser we can use.
@@ -35,7 +35,7 @@ void HideProfilePickerAndRun(ProfilePicker::BrowserOpenedCallback callback) {
     return;
   }
 
-  std::move(callback).Run(browser);
+  std::move(callback.value()).Run(browser);
 }
 
 }  // namespace
@@ -48,16 +48,16 @@ FirstRunFlowControllerLacros::FirstRunFlowControllerLacros(
       first_run_exited_callback_(std::move(first_run_exited_callback)) {
   DCHECK(first_run_exited_callback_);
 
-  auto finish_and_continue_in_browser_callback =
+  auto finish_flow_callback = FinishFlowCallback(
       base::BindOnce(&FirstRunFlowControllerLacros::ExitFlowAndRun,
                      // Unretained ok: the callback is passed to a step that
                      // the `this` will own and outlive.
-                     base::Unretained(this));
+                     base::Unretained(this)));
 
   auto signed_in_flow = std::make_unique<LacrosFirstRunSignedInFlowController>(
       host, profile,
       content::WebContents::Create(content::WebContents::CreateParams(profile)),
-      std::move(finish_and_continue_in_browser_callback));
+      std::move(finish_flow_callback));
   signed_in_flow_ = signed_in_flow->GetWeakPtr();
 
   RegisterStep(initial_step(),
@@ -66,9 +66,8 @@ FirstRunFlowControllerLacros::FirstRunFlowControllerLacros(
 }
 
 FirstRunFlowControllerLacros::~FirstRunFlowControllerLacros() {
-  // Call the callback if not called yet. This can happen in case of early
-  // exits for example, the original intent callback just gets dropped. See
-  // https://crbug.com/1307754.
+  // Call the callback if not called yet. This happens when the user exits the
+  // flow by closing the window, or for intent overrides.
   if (first_run_exited_callback_ && signed_in_flow_) {
     std::move(first_run_exited_callback_)
         .Run(signed_in_flow_->sync_confirmation_seen()
@@ -83,12 +82,7 @@ FirstRunFlowControllerLacros::~FirstRunFlowControllerLacros() {
 }
 
 void FirstRunFlowControllerLacros::ExitFlowAndRun(
-    ProfilePicker::BrowserOpenedCallback callback) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = profile_manager->GetProfileByPath(
-      profile_manager->GetPrimaryUserProfilePath());
-  DCHECK(profile);
-
+    PostHostClearedCallback callback) {
   std::move(first_run_exited_callback_)
       .Run(ProfilePicker::FirstRunExitStatus::kCompleted,
            ProfilePicker::FirstRunExitSource::kFlowFinished,

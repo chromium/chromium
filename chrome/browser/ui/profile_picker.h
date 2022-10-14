@@ -17,7 +17,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
-class Browser;
 class GURL;
 class Profile;
 namespace content {
@@ -31,7 +30,6 @@ class WebView;
 
 class ProfilePicker {
  public:
-  using BrowserOpenedCallback = base::OnceCallback<void(Browser*)>;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   enum class FirstRunExitStatus {
     // The user completed the FRE and is continuing to launch the browser.

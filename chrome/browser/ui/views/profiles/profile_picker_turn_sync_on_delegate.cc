@@ -8,12 +8,9 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profile_picker.h"
-#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -86,7 +83,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
   if (IsLacrosPrimaryProfileFirstRun(profile_)) {
     // The primary profile onboarding is silently skipped if there's any error.
     if (controller_)
-      controller_->FinishAndOpenBrowser(ProfilePicker::BrowserOpenedCallback());
+      controller_->FinishAndOpenBrowser(PostHostClearedCallback());
     return;
   }
 
@@ -103,8 +100,8 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
 
   // Open the browser and when it's done, show the login error.
   if (controller_) {
-    controller_->FinishAndOpenBrowser(base::BindOnce(
-        &TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error));
+    controller_->FinishAndOpenBrowser(PostHostClearedCallback(base::BindOnce(
+        &TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error)));
   }
 }
 
@@ -198,7 +195,8 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
 void ProfilePickerTurnSyncOnDelegate::ShowSyncSettings() {
   // Open the browser and when it's done, open settings in the browser.
   if (controller_) {
-    controller_->FinishAndOpenBrowser(base::BindOnce(&OpenSettingsInBrowser));
+    controller_->FinishAndOpenBrowser(
+        PostHostClearedCallback(base::BindOnce(&OpenSettingsInBrowser)));
   }
 }
 

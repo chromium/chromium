@@ -6,10 +6,8 @@
 
 #include "base/logging.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace {
@@ -47,13 +45,12 @@ LacrosFirstRunSignedInFlowController::LacrosFirstRunSignedInFlowController(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
     std::unique_ptr<content::WebContents> contents,
-    base::OnceCallback<void(ProfilePicker::BrowserOpenedCallback
-                                maybe_callback)> flow_completed_callback)
+    FinishFlowCallback finish_flow_callback)
     : ProfilePickerSignedInFlowController(host,
                                           profile,
                                           std::move(contents),
                                           absl::optional<SkColor>()),
-      flow_completed_callback_(std::move(flow_completed_callback)) {}
+      finish_flow_callback_(std::move(finish_flow_callback)) {}
 
 LacrosFirstRunSignedInFlowController::~LacrosFirstRunSignedInFlowController() =
     default;
@@ -90,9 +87,9 @@ void LacrosFirstRunSignedInFlowController::Init() {
 }
 
 void LacrosFirstRunSignedInFlowController::FinishAndOpenBrowser(
-    ProfilePicker::BrowserOpenedCallback callback) {
-  if (flow_completed_callback_)
-    std::move(flow_completed_callback_).Run(std::move(callback));
+    PostHostClearedCallback callback) {
+  if (finish_flow_callback_.value())
+    std::move(finish_flow_callback_.value()).Run(std::move(callback));
 }
 
 void LacrosFirstRunSignedInFlowController::SwitchToSyncConfirmation() {

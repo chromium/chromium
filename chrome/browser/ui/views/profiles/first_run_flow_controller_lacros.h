@@ -8,11 +8,16 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
 
 class LacrosFirstRunSignedInFlowController;
 
 class FirstRunFlowControllerLacros : public ProfileManagementFlowController {
  public:
+  // Profile management flow controller that will run the FRE for `profile` in
+  // `host`.
+  // `first_run_exited_callback` is guaranteed to be called when the flow is
+  // exited.
   FirstRunFlowControllerLacros(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
@@ -25,11 +30,11 @@ class FirstRunFlowControllerLacros : public ProfileManagementFlowController {
   ~FirstRunFlowControllerLacros() override;
 
  private:
-  void ExitFlowAndRun(ProfilePicker::BrowserOpenedCallback callback);
+  void ExitFlowAndRun(PostHostClearedCallback callback);
 
   // Captures the operation that the user expected to run at the time we chose
-  // to show them the FRE. When we complete the FRE, we run this and we expect
-  // that it will cause a browser to be opened.
+  // to show them the FRE. When we exit the FRE, we MUST run this. We expect
+  // that it will cause a UI for the primary profile to be opened.
   ProfilePicker::DebugFirstRunExitedCallback first_run_exited_callback_;
 
   // Gives access to the signed-in flow controller, which is owned by the step.

@@ -131,7 +131,7 @@ void ProfileCreationSignedInFlowController::Cancel() {
 }
 
 void ProfileCreationSignedInFlowController::FinishAndOpenBrowser(
-    ProfilePicker::BrowserOpenedCallback callback) {
+    PostHostClearedCallback callback) {
   // Do nothing if the sign-in flow is aborted or if this has already been
   // called. Note that this can get called first time from a special case
   // handling (such as the Settings link) and than second time when the
@@ -153,7 +153,7 @@ void ProfileCreationSignedInFlowController::FinishAndOpenBrowser(
 }
 
 void ProfileCreationSignedInFlowController::FinishAndOpenBrowserImpl(
-    ProfilePicker::BrowserOpenedCallback callback) {
+    PostHostClearedCallback callback) {
   TRACE_EVENT1(
       "browser",
       "ProfileCreationSignedInFlowController::FinishAndOpenBrowserImpl",
@@ -170,14 +170,16 @@ void ProfileCreationSignedInFlowController::FinishAndOpenBrowserImpl(
 
   // If there's no custom callback specified (that overrides profile
   // customization bubble), Chrome should show the customization bubble.
-  if (!callback) {
+  if (callback->is_null()) {
     // If there's no color to apply to the profile, skip the customization
     // bubble and trigger an IPH, instead.
     if (ThemeServiceFactory::GetForProfile(profile())->UsingPolicyTheme() ||
         !GetProfileColor().has_value()) {
-      callback = base::BindOnce(&MaybeShowProfileSwitchIPH);
+      callback =
+          PostHostClearedCallback(base::BindOnce(&MaybeShowProfileSwitchIPH));
     } else {
-      callback = base::BindOnce(&ShowCustomizationBubble, GetProfileColor());
+      callback = PostHostClearedCallback(
+          base::BindOnce(&ShowCustomizationBubble, GetProfileColor()));
 
       // If sync cannot start, we apply `GetProfileColor()` right away before
       // opening a browser window to avoid flicker. Otherwise, it's applied
@@ -195,7 +197,7 @@ void ProfileCreationSignedInFlowController::FinishAndOpenBrowserImpl(
 }
 
 void ProfileCreationSignedInFlowController::ExitPickerAndRunInNewBrowser(
-    ProfilePicker::BrowserOpenedCallback callback) {
+    PostHostClearedCallback callback) {
   profiles::OpenBrowserWindowForProfile(
       base::BindOnce(&ProfileCreationSignedInFlowController::OnBrowserOpened,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
@@ -232,12 +234,12 @@ void ProfileCreationSignedInFlowController::OnSignInContentsFreedUp() {
   ProfileMetrics::LogProfileAddNewUser(
       ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
 
-  ExitPickerAndRunInNewBrowser(
-      base::BindOnce(&ContinueSAMLSignin, ReleaseContents()));
+  ExitPickerAndRunInNewBrowser(PostHostClearedCallback(
+      base::BindOnce(&ContinueSAMLSignin, ReleaseContents())));
 }
 
 void ProfileCreationSignedInFlowController::OnBrowserOpened(
-    ProfilePicker::BrowserOpenedCallback finish_flow_callback,
+    PostHostClearedCallback finish_flow_callback,
     Profile* profile_with_browser_opened) {
   CHECK_EQ(profile_with_browser_opened, profile());
   TRACE_EVENT1("browser",
@@ -248,10 +250,10 @@ void ProfileCreationSignedInFlowController::OnBrowserOpened(
   // window incl. this view.
   host()->Clear();
 
-  if (!finish_flow_callback)
+  if (finish_flow_callback->is_null())
     return;
 
   Browser* browser = chrome::FindLastActiveWithProfile(profile());
   CHECK(browser);
-  std::move(finish_flow_callback).Run(browser);
+  std::move(finish_flow_callback.value()).Run(browser);
 }

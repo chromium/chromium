@@ -31,13 +31,14 @@ class ProfileCreationSignedInFlowController
   // ProfilePickerSignedInFlowController:
   void Init() override;
   void Cancel() override;
-  void FinishAndOpenBrowser(
-      ProfilePicker::BrowserOpenedCallback callback) override;
+  // If empty `callback` is provided, the default action is performed: showing
+  // the profile customization bubble and/or profile IPH.
+  void FinishAndOpenBrowser(PostHostClearedCallback callback) override;
 
  private:
   // Finishes the non-SAML flow, registering customisation-related callbacks if
   // no `callback` is povided.
-  void FinishAndOpenBrowserImpl(ProfilePicker::BrowserOpenedCallback callback);
+  void FinishAndOpenBrowserImpl(PostHostClearedCallback callback);
 
   // Finishes the SAML flow by continuing the sign-in in a browser window.
   void FinishAndOpenBrowserForSAML();
@@ -45,14 +46,12 @@ class ProfileCreationSignedInFlowController
 
   // Shared helper. Opens a new browser window, closes the picker and runs
   // `callback` in the opened window.
-  void ExitPickerAndRunInNewBrowser(
-      ProfilePicker::BrowserOpenedCallback callback);
+  void ExitPickerAndRunInNewBrowser(PostHostClearedCallback callback);
 
   // Internal callback to finish the last steps of the signed-in creation
   // flow.
-  void OnBrowserOpened(
-      ProfilePicker::BrowserOpenedCallback finish_flow_callback,
-      Profile* profile_with_browser_opened);
+  void OnBrowserOpened(PostHostClearedCallback finish_flow_callback,
+                       Profile* profile_with_browser_opened);
 
   // Stores whether this is profile creation for saml sign-in (that skips most
   // of the logic).
