@@ -41,72 +41,52 @@
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
 
 namespace {
 
-void CreateContextProvider(
-    const KURL& url,
-    base::WaitableEvent* waitable_event,
-    std::unique_ptr<WebGraphicsContext3DProvider>* created_context_provider) {
+void CreateContextProviderOnMainThread(
+    ExecutionContext* execution_context,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    CrossThreadOnceFunction<void(std::unique_ptr<WebGraphicsContext3DProvider>)>
+        callback) {
   DCHECK(IsMainThread());
-  *created_context_provider =
-      Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url);
-  waitable_event->Signal();
-}
-
-std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProviderOnMainThread(
-    const KURL& url) {
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      Thread::MainThread()->GetDeprecatedTaskRunner();
-
-  base::WaitableEvent waitable_event;
-  std::unique_ptr<WebGraphicsContext3DProvider> created_context_provider;
+  const KURL& url = execution_context->Url();
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
-      CrossThreadBindOnce(&CreateContextProvider, url,
-                          CrossThreadUnretained(&waitable_event),
-                          CrossThreadUnretained(&created_context_provider)));
-
-  waitable_event.Wait();
-  return created_context_provider;
+      CrossThreadBindOnce(
+          std::move(callback),
+          Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url)));
 }
 
-std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
-    ExecutionContext& execution_context) {
-  const KURL& url = execution_context.Url();
-  std::unique_ptr<WebGraphicsContext3DProvider> context_provider;
+void EnsureDawnControlClientInitialized(
+    ExecutionContext* execution_context,
+    base::OnceCallback<void(std::unique_ptr<WebGraphicsContext3DProvider>)>
+        callback) {
   if (IsMainThread()) {
-    context_provider =
-        Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url);
+    const KURL& url = execution_context->Url();
+    std::move(callback).Run(
+        Platform::Current()->CreateWebGPUGraphicsContext3DProvider(url));
   } else {
-    context_provider = CreateContextProviderOnMainThread(url);
+    // Posts a task to the main thread to create context provider
+    // because the current RendererBlinkPlatformImpl and viz::Gpu
+    // APIs allow to create it only on the main thread.
+    // When it is created, posts it back to the current thread
+    // and call the callback with it.
+    // TODO(takahiro): Directly create context provider on Workers threads
+    //                 if RendererBlinkPlatformImpl and viz::Gpu will start to
+    //                 allow the context provider creation on Workers.
+    PostCrossThreadTask(
+        *Thread::MainThread()->GetDeprecatedTaskRunner(), FROM_HERE,
+        CrossThreadBindOnce(&CreateContextProviderOnMainThread,
+                            WrapCrossThreadPersistent(execution_context),
+                            execution_context->GetTaskRunner(TaskType::kWebGPU),
+                            CrossThreadBindOnce(std::move(callback))));
   }
-
-  // Note that we check for API blocking *after* creating the context. This is
-  // because context creation synchronizes against GpuProcessHost lifetime in
-  // the browser process, and GpuProcessHost destruction is what updates API
-  // blocking state on a GPU process crash. See https://crbug.com/1215907#c10
-  // for more details.
-  bool blocked = true;
-  mojo::Remote<mojom::blink::GpuDataManager> gpu_data_manager;
-  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      gpu_data_manager.BindNewPipeAndPassReceiver());
-  gpu_data_manager->Are3DAPIsBlockedForUrl(url, &blocked);
-  if (blocked) {
-    return nullptr;
-  }
-
-  // TODO(kainino): we will need a better way of accessing the GPU interface
-  // from multiple threads than BindToCurrentSequence et al.
-  if (context_provider && !context_provider->BindToCurrentSequence()) {
-    // TODO(crbug.com/973017): Collect GPU info and surface context creation
-    // error.
-    return nullptr;
-  }
-  return context_provider;
 }
 
 [[maybe_unused]] void AddConsoleWarning(ExecutionContext* execution_context,
@@ -287,34 +267,95 @@ void GPU::RecordAdapterForIdentifiability(
       .Record(context->UkmRecorder());
 }
 
-ScriptPromise GPU::requestAdapter(ScriptState* script_state,
-                                  const GPURequestAdapterOptions* options) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+std::unique_ptr<WebGraphicsContext3DProvider> CheckContextProvider(
+    const KURL& url,
+    std::unique_ptr<WebGraphicsContext3DProvider> context_provider) {
+  // Note that we check for API blocking *after* creating the context. This is
+  // because context creation synchronizes against GpuProcessHost lifetime in
+  // the browser process, and GpuProcessHost destruction is what updates API
+  // blocking state on a GPU process crash. See https://crbug.com/1215907#c10
+  // for more details.
+  bool blocked = true;
+  mojo::Remote<mojom::blink::GpuDataManager> gpu_data_manager;
+  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
+      gpu_data_manager.BindNewPipeAndPassReceiver());
+  gpu_data_manager->Are3DAPIsBlockedForUrl(url, &blocked);
+  if (blocked) {
+    return nullptr;
+  }
 
+  // TODO(kainino): we will need a better way of accessing the GPU interface
+  // from multiple threads than BindToCurrentSequence et al.
+  if (context_provider && !context_provider->BindToCurrentSequence()) {
+    // TODO(crbug.com/973017): Collect GPU info and surface context creation
+    // error.
+    return nullptr;
+  }
+
+  return context_provider;
+}
+
+void GPU::RequestAdapterImpl(ScriptState* script_state,
+                             const GPURequestAdapterOptions* options,
+                             ScriptPromiseResolver* resolver) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (!dawn_control_client_ || dawn_control_client_->IsContextLost()) {
+    dawn_control_client_initialized_callbacks_.push_back(WTF::BindOnce(
+        [](GPU* gpu, ScriptState* script_state,
+           const GPURequestAdapterOptions* options,
+           ScriptPromiseResolver* resolver) {
+          if (gpu->dawn_control_client_ &&
+              !gpu->dawn_control_client_->IsContextLost()) {
+            gpu->RequestAdapterImpl(script_state, options, resolver);
+          } else {
+            // Failed to create context provider, won't be able to request
+            // adapter
+            // TODO(crbug.com/973017): Collect GPU info and surface context
+            // creation error.
+            resolver->Resolve(v8::Null(script_state->GetIsolate()));
+          }
+        },
+        WrapPersistent(this), WrapPersistent(script_state),
+        WrapPersistent(options), WrapPersistent(resolver)));
+
+    // Returning since the task to create the control client from a previous
+    // call to EnsureDawnControlClientInitialized should be already running
+    if (dawn_control_client_initialized_callbacks_.size() > 1) {
+      return;
+    }
+
     // TODO(natlee@microsoft.com): if GPU process is lost, wait for the GPU
     // process to come back instead of rejecting right away
-    std::unique_ptr<WebGraphicsContext3DProvider> context_provider =
-        CreateContextProvider(*execution_context);
 
-    if (!context_provider) {
-      // Failed to create context provider, won't be able to request adapter
-      // TODO(crbug.com/973017): Collect GPU info and surface context creation
-      // error.
-      resolver->Resolve(v8::Null(script_state->GetIsolate()));
-      return promise;
-    } else {
-      context_provider->WebGPUInterface()->SetWebGPUExecutionContextToken(
-          GetExecutionContextToken(execution_context));
+    EnsureDawnControlClientInitialized(
+        execution_context,
+        WTF::BindOnce(
+            [](GPU* gpu, ExecutionContext* execution_context,
+               std::unique_ptr<WebGraphicsContext3DProvider> context_provider) {
+              const KURL& url = execution_context->Url();
+              context_provider =
+                  CheckContextProvider(url, std::move(context_provider));
+              if (context_provider) {
+                context_provider->WebGPUInterface()
+                    ->SetWebGPUExecutionContextToken(
+                        GetExecutionContextToken(execution_context));
 
-      // Make a new DawnControlClientHolder with the context provider we just
-      // made and set the lost context callback
-      dawn_control_client_ = DawnControlClientHolder::Create(
-          std::move(context_provider),
-          execution_context->GetTaskRunner(TaskType::kWebGPU));
-    }
+                // Make a new DawnControlClientHolder with the context provider
+                // we just made and set the lost context callback
+                gpu->dawn_control_client_ = DawnControlClientHolder::Create(
+                    std::move(context_provider),
+                    execution_context->GetTaskRunner(TaskType::kWebGPU));
+              }
+
+              WTF::Vector<base::OnceCallback<void()>> callbacks =
+                  std::move(gpu->dawn_control_client_initialized_callbacks_);
+              for (auto& callback : callbacks) {
+                std::move(callback).Run();
+              }
+            },
+            WrapPersistent(this), WrapPersistent(execution_context)));
+
+    return;
   }
 
   DCHECK_NE(dawn_control_client_, nullptr);
@@ -332,7 +373,13 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
       *execution_context->GetAgent()->event_loop());
 
   UseCounter::Count(execution_context, WebFeature::kWebGPU);
+}
 
+ScriptPromise GPU::requestAdapter(ScriptState* script_state,
+                                  const GPURequestAdapterOptions* options) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  RequestAdapterImpl(script_state, options, resolver);
   return promise;
 }
 

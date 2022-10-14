@@ -8,6 +8,7 @@
 #include <dawn/webgpu.h>
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -105,7 +106,21 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
                                        const GPURequestAdapterOptions* options,
                                        GPUAdapter* adapter) const;
 
+  void OnContextProviderCreated(
+      const KURL& url,
+      ScriptState* script_state,
+      const GPURequestAdapterOptions* options,
+      ScriptPromiseResolver* resolver,
+      ExecutionContext* execution_context,
+      std::unique_ptr<WebGraphicsContext3DProvider> context_provider);
+
+  void RequestAdapterImpl(ScriptState* script_state,
+                          const GPURequestAdapterOptions* options,
+                          ScriptPromiseResolver* resolver);
+
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
+  WTF::Vector<base::OnceCallback<void()>>
+      dawn_control_client_initialized_callbacks_;
   HeapHashSet<WeakMember<GPUBuffer>> mappable_buffers_;
   // Mappable buffers remove themselves from this set on destruction.
   // It is boxed in a scoped_refptr so GPUBuffer can access it in its
