@@ -1,7 +1,7 @@
 // META: script=/resources/testharness.js
 // META: script=/resources/testharnessreport.js
 // META: script=/common/utils.js
-// META: script=/pending_beacon/resources/pending_beacon-helper.js
+// META: script=/unload-beacon/resources/pending_beacon-helper.js
 
 'use strict';
 
@@ -22,7 +22,7 @@ async function setBackgroundSyncEnabled(enabled) {
 
 parallelPromiseTest(async t => {
   const uuid = token();
-  const url = `/pending_beacon/resources/set_beacon.py?uuid=${uuid}`;
+  const url = generateSetBeaconURL(uuid);
   const numPerMethod = 20;
   const total = numPerMethod * 2;
   // "Sending beacon on page discard" requires BackgroundSync permission.
@@ -46,7 +46,7 @@ parallelPromiseTest(async t => {
 
 parallelPromiseTest(async t => {
   const uuid = token();
-  const url = `/pending_beacon/resources/set_beacon.py?uuid=${uuid}`;
+  const url = generateSetBeaconURL(uuid);
   // "Sending beacon on page discard" requires BackgroundSync permission.
   await setBackgroundSyncEnabled(true);
 
@@ -67,7 +67,7 @@ parallelPromiseTest(async t => {
 
 parallelPromiseTest(async t => {
   const uuid = token();
-  const url = `/pending_beacon/resources/set_beacon.py?uuid=${uuid}`;
+  const url = generateSetBeaconURL(uuid);
   const numPerMethod = 20;
   const total = numPerMethod * 2;
   // "Sending beacon on page discard" requires BackgroundSync permission.
@@ -94,7 +94,7 @@ parallelPromiseTest(async t => {
 
 parallelPromiseTest(async t => {
   const uuid = token();
-  const url = `/pending_beacon/resources/set_beacon.py?uuid=${uuid}`;
+  const url = generateSetBeaconURL(uuid);
   const numPerMethod = 20;
   const total = numPerMethod * 2;
   // "Sending beacon on page discard" requires BackgroundSync permission.

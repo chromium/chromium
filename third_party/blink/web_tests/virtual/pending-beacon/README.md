@@ -1,7 +1,7 @@
 # PendingBeacon Virtual Tests
 
 This folder contains virtual test suites for the PendingBeacon feature.
-The suite runs `web_tests/external/wpt/pending_beacon/` with `--enable-features=PendingBeaconAPI`.
+The suite runs `web_tests/external/wpt/unload-beacon/` with `--enable-features=PendingBeaconAPI`.
 
 To manually run the suites, use the following command:
 
@@ -14,5 +14,5 @@ third_party/blink/tools/run_web_tests.py -t Default virtual/pending-beacon/
 To run single test:
 
 ```bash
-third_party/blink/tools/run_web_tests.py -t Default virtual/pending-beacon/external/wpt/pending_beacon/pending_beacon-basic.tentative.window.html
+third_party/blink/tools/run_web_tests.py -t Default virtual/pending-beacon/external/wpt/unload-beacon/pending_beacon-basic.tentative.window.html
 ```

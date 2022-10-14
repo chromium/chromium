@@ -1252,7 +1252,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "external/wpt/unload-beacon",
-      "wpt_internal/pending_beacon"
+      "wpt_internal/unload-beacon"
     ],
     "args": [
       "--enable-features=PendingBeaconAPI:requires_origin_trial/false"

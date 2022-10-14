@@ -7162,7 +7162,7 @@ crbug.com/1366717 http/tests/inspector-protocol/storage/indexed-db-storage-key-t
 # Disable PendingBeaconAPI related internal tests tentatively until it is
 # fully launched.
 # The ones defined in VirtualTestSuites are run instead.
-crbug.com/1293679 wpt_internal/pending_beacon/* [ Skip ]
+crbug.com/1293679 wpt_internal/unload-beacon/* [ Skip ]
 
 # TODO(crbug.com/1367103): Re-enable this test
 external/wpt/css/css-values/calc-in-media-queries-with-mixed-units.html [ Skip ]
