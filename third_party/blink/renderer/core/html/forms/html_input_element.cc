@@ -503,7 +503,7 @@ void HTMLInputElement::UpdateType() {
   if (old_value_mode == ValueMode::kValue &&
       (new_value_mode == ValueMode::kDefault ||
        new_value_mode == ValueMode::kDefaultOn)) {
-    if (HasDirtyValue())
+    if (HasDirtyValue() && !non_attribute_value_.empty())
       setAttribute(html_names::kValueAttr, AtomicString(non_attribute_value_));
     non_attribute_value_ = String();
     has_dirty_value_ = false;
