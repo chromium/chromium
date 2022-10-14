@@ -2333,39 +2333,6 @@ TEST_P(LtrRtlShelfViewTest, TapInFullscreen) {
   EXPECT_EQ(0, GetHapticTickEventsCount());
 }
 
-// Verifies that partying items are hidden from the shelf.
-// TODO(crbug/1372295): This test consistently times out.
-TEST_P(LtrRtlShelfViewTest, DISABLED_PartyingItemsHiddenFromShelf) {
-  AddAppShortcut();
-  AddAppShortcut();
-  AddApp();
-  ShelfItem item = model_->items()[1u];
-  item.status = STATUS_RUNNING;
-  model_->Set(1, item);
-  const gfx::Rect initial_bounds0 = test_api_->GetBoundsByIndex(0);
-  const gfx::Rect initial_bounds2 = test_api_->GetBoundsByIndex(2);
-
-  // Start shelf party.
-  model_->ToggleShelfParty();
-  {
-    const std::vector<size_t> not_partying = {1, 3};
-    EXPECT_EQ(not_partying, shelf_view_->visible_views_indices());
-  }
-  test_api_->RunMessageLoopUntilAnimationsDone();
-  EXPECT_TRUE(test_api_->GetBoundsByIndex(0).IsEmpty());
-  EXPECT_TRUE(test_api_->GetBoundsByIndex(2).IsEmpty());
-
-  // End shelf party.
-  model_->ToggleShelfParty();
-  {
-    const std::vector<size_t> not_partying = {0, 1, 2, 3};
-    EXPECT_EQ(not_partying, shelf_view_->visible_views_indices());
-  }
-  test_api_->RunMessageLoopUntilAnimationsDone();
-  EXPECT_EQ(initial_bounds0, test_api_->GetBoundsByIndex(0));
-  EXPECT_EQ(initial_bounds2, test_api_->GetBoundsByIndex(2));
-}
-
 // Test class that tests both context and application menus.
 class ShelfViewMenuTest : public ShelfViewTest,
                           public testing::WithParamInterface<bool> {
@@ -3663,6 +3630,38 @@ TEST_P(ShelfPartyTest, PartyAnimation) {
   task_environment()->FastForwardBy(base::Seconds(2));
   model_->ToggleShelfParty();
   test_api_->RunMessageLoopUntilAnimationsDone();
+}
+
+// Verifies that partying items are hidden from the shelf.
+TEST_P(ShelfPartyTest, PartyingItemsHiddenFromShelf) {
+  AddAppShortcut();
+  AddAppShortcut();
+  AddApp();
+  ShelfItem item = model_->items()[1u];
+  item.status = STATUS_RUNNING;
+  model_->Set(1, item);
+  const gfx::Rect initial_bounds0 = test_api_->GetBoundsByIndex(0);
+  const gfx::Rect initial_bounds2 = test_api_->GetBoundsByIndex(2);
+
+  // Start shelf party.
+  model_->ToggleShelfParty();
+  {
+    const std::vector<size_t> not_partying = {1, 3};
+    EXPECT_EQ(not_partying, shelf_view_->visible_views_indices());
+  }
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(test_api_->GetBoundsByIndex(0).IsEmpty());
+  EXPECT_TRUE(test_api_->GetBoundsByIndex(2).IsEmpty());
+
+  // End shelf party.
+  model_->ToggleShelfParty();
+  {
+    const std::vector<size_t> not_partying = {0, 1, 2, 3};
+    EXPECT_EQ(not_partying, shelf_view_->visible_views_indices());
+  }
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  EXPECT_EQ(initial_bounds0, test_api_->GetBoundsByIndex(0));
+  EXPECT_EQ(initial_bounds2, test_api_->GetBoundsByIndex(2));
 }
 
 }  // namespace ash
