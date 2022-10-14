@@ -110,15 +110,6 @@ typedef NS_ENUM(NSInteger, BookmarksContextBarState) {
 // Estimated TableView row height.
 const CGFloat kEstimatedRowHeight = 65.0;
 
-// TableView rows that are hidden by the NavigationBar, causing them to be
-// "visible" for the tableView but not for the user. This is used to calculate
-// the top most visibile table view indexPath row.
-// TODO(crbug.com/879001): This value is aproximate based on the standard (no
-// dynamic type) height. If the dynamic font is too large or too small it will
-// result in a small offset on the cache, in order to prevent this we need to
-// calculate this value dynamically.
-const int kRowsHiddenByNavigationBar = 3;
-
 // Returns a vector of all URLs in `nodes`.
 std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   std::vector<GURL> urls;
@@ -1277,14 +1268,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   if (topMostIndexPath.row == 0)
     return 0;
 
-  // To avoid an index out of bounds, check if there are less or equal
-  // kRowsHiddenByNavigationBar than number of visibleIndexPaths.
-  if ([visibleIndexPaths count] <= kRowsHiddenByNavigationBar)
-    return 0;
-
-  // Return the first visible row not covered by the NavigationBar.
-  topMostIndexPath =
-      [visibleIndexPaths objectAtIndex:kRowsHiddenByNavigationBar];
+  // Return the first visible row.
+  topMostIndexPath = [visibleIndexPaths objectAtIndex:0];
   return topMostIndexPath.row;
 }
 
