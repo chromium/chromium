@@ -1297,26 +1297,18 @@ void InspectorAccessibilityAgent::ProvideTo(LocalFrame* frame) {
   }
 }
 
-void InspectorAccessibilityAgent::RetainAXContextForDocument(
+AXObjectCacheImpl& InspectorAccessibilityAgent::AttachToAXObjectCache(
     Document* document) {
+  DCHECK(document);
+  DCHECK(document->IsActive());
   if (!document_to_context_map_.Contains(document)) {
     auto context = std::make_unique<AXContext>(*document, ui::kAXModeComplete);
     document_to_context_map_.insert(document, std::move(context));
   }
-}
-
-AXObjectCacheImpl& InspectorAccessibilityAgent::GetAXObjectCacheImplForDocument(
-    Document* document) {
-  AXContext ax_context(*document, ui::kAXModeComplete);
-  return To<AXObjectCacheImpl>(ax_context.GetAXObjectCache());
-}
-
-AXObjectCacheImpl& InspectorAccessibilityAgent::AttachToAXObjectCache(
-    Document* document) {
-  RetainAXContextForDocument(document);
-  auto& cache = GetAXObjectCacheImplForDocument(document);
-  cache.AddInspectorAgent(this);
-  return cache;
+  AXObjectCacheImpl* cache =
+      To<AXObjectCacheImpl>(document->ExistingAXObjectCache());
+  cache->AddInspectorAgent(this);
+  return *cache;
 }
 
 void InspectorAccessibilityAgent::Trace(Visitor* visitor) const {
