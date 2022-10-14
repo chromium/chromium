@@ -3757,13 +3757,11 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
 
 INSTANTIATE_TEST_SUITE_P(All, ContentAnalysisPrintBrowserTest, testing::Bool());
 
-// This test suite doesn't run on CrOS since it doesn't support non-print
-// preview scripted printing.
-#if !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
 INSTANTIATE_TEST_SUITE_P(All,
                          ContentAnalysisScriptedPreviewlessPrintBrowserTest,
                          testing::Bool());
-#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
 
 #endif  // BUILDFLAG(ENABLE_PRINT_SCANNING)
 
