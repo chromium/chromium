@@ -157,7 +157,8 @@ class Pointer : public SurfaceTreeHost,
 
   // Change pointer focus to |surface|.
   void SetFocus(Surface* surface,
-                const gfx::PointF& location,
+                const gfx::PointF& root_location,
+                const gfx::PointF& surface_location,
                 int button_flags);
 
   // Updates the root_surface in |SurfaceTreeHost| from which the cursor
@@ -174,10 +175,6 @@ class Pointer : public SurfaceTreeHost,
 
   // Update |cursor_| to |cursor_bitmap_| transformed for the current display.
   void UpdateCursor();
-
-  // Convert the given |location_in_target| to coordinates in the root window.
-  gfx::PointF GetLocationInRoot(Surface* target,
-                                gfx::PointF location_in_target);
 
   // Called to check if cursor should be moved to the center of the window when
   // sending relative movements.
@@ -225,8 +222,8 @@ class Pointer : public SurfaceTreeHost,
   // The current focus surface for the pointer.
   Surface* focus_surface_ = nullptr;
 
-  // The location of the pointer in the current focus surface.
-  gfx::PointF location_;
+  // The location of the pointer in the root window.
+  gfx::PointF location_in_root_;
 
   // The location of the pointer when pointer capture is first enabled.
   absl::optional<gfx::Point> location_when_pointer_capture_enabled_;
