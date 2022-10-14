@@ -192,8 +192,8 @@ absl::optional<double> CalculateConv2dOutputSize(
   // Calculate the output size in double precision floating point number that
   // ensures all dimension values of type uint32_t can be exactly represented.
   // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
-  // The max value of checked_output_size should be 3 * UINT_MAX + 1, assert it
-  // is less than max integer value of double type.
+  // The max value of checked_output_size should be 3 * UINT_MAX + 1,
+  // which is smaller than the max safe integer value for double type.
   auto checked_output_size =
       (base::MakeCheckedNum<double>(input_size) -
        checked_effective_filter_size + beginning_padding + ending_padding) /
