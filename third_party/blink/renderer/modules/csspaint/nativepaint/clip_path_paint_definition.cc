@@ -120,10 +120,9 @@ scoped_refptr<BasicShape> CreateBasicShape(
       interpolable_value, untyped_non_interpolable_value, conversion_data);
 }
 
-void GetAnimatedShapesFromKeyframes(
+scoped_refptr<BasicShape> GetAnimatedShapeFromKeyframe(
     const PropertySpecificKeyframe* frame,
     const KeyframeEffectModelBase* model,
-    Vector<scoped_refptr<BasicShape>>* animated_shapes,
     const Element* element) {
   scoped_refptr<BasicShape> basic_shape;
   if (model->IsStringKeyframeEffectModel()) {
@@ -156,7 +155,7 @@ void GetAnimatedShapesFromKeyframes(
         *non_interpolable_value);
   }
   DCHECK(basic_shape);
-  animated_shapes->push_back(basic_shape);
+  return basic_shape;
 }
 
 void GetCompositorKeyframeOffset(const PropertySpecificKeyframe* frame,
@@ -322,7 +321,7 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
     const gfx::SizeF& clip_area_size,
     const Node& node) {
   DCHECK(node.IsElementNode());
-  const Element* element = static_cast<Element*>(const_cast<Node*>(&node));
+  const Element* element = To<Element>(&node);
 
   Vector<scoped_refptr<BasicShape>> animated_shapes;
   Vector<double> offsets;
@@ -343,7 +342,8 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
           PropertyHandle(GetCSSPropertyClipPath()));
 
   for (const auto& frame : *frames) {
-    GetAnimatedShapesFromKeyframes(frame, model, &animated_shapes, element);
+    animated_shapes.push_back(
+        GetAnimatedShapeFromKeyframe(frame, model, element));
     GetCompositorKeyframeOffset(frame, offsets);
   }
   progress = effect->Progress();
@@ -362,6 +362,39 @@ scoped_refptr<Image> ClipPathPaintDefinition::Paint(
           offsets, progress, std::move(input_property_keys));
 
   return PaintWorkletDeferredImage::Create(std::move(input), clip_area_size);
+}
+
+// TODO(crbug.com/1374390) adjust for custom timing functions
+gfx::RectF ClipPathPaintDefinition::ClipAreaRect(
+    const Node& node,
+    const gfx::RectF& reference_box,
+    float zoom) {
+  DCHECK(node.IsElementNode());
+  const Element* element = To<Element>(&node);
+
+  const Animation* animation = GetAnimationIfCompositable(element);
+  DCHECK(animation);
+
+  const AnimationEffect* effect = animation->effect();
+  DCHECK(effect->IsKeyframeEffect());
+  const KeyframeEffectModelBase* model =
+      static_cast<const KeyframeEffect*>(effect)->Model();
+  const PropertySpecificKeyframeVector* frames =
+      model->GetPropertySpecificKeyframes(
+          PropertyHandle(GetCSSPropertyClipPath()));
+
+  gfx::RectF clip_area;
+
+  for (const auto& frame : *frames) {
+    scoped_refptr<BasicShape> basic_shape =
+        GetAnimatedShapeFromKeyframe(frame, model, element);
+    scoped_refptr<ShapeClipPathOperation> scpo =
+        ShapeClipPathOperation::Create(basic_shape);
+    Path path = scpo->GetPath(reference_box, zoom);
+    clip_area.Union(path.BoundingRect());
+  }
+
+  return clip_area;
 }
 
 void ClipPathPaintDefinition::Trace(Visitor* visitor) const {

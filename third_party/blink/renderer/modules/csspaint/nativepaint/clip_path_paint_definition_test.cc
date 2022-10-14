@@ -69,4 +69,48 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationNotFallback) {
             animation);
 }
 
+TEST_F(ClipPathPaintDefinitionTest, ClipBoundingBoxEncompassesAnimation) {
+  ScopedCompositeClipPathAnimationForTest composite_clip_path_animation(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id ="target" style="position: fixed; width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(30);
+
+  CSSPropertyID property_id = CSSPropertyID::kClipPath;
+  Persistent<StringKeyframe> start_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  start_keyframe->SetCSSPropertyValue(property_id, "inset(20% 20%)",
+                                      SecureContextMode::kInsecureContext,
+                                      nullptr);
+  Persistent<StringKeyframe> end_keyframe =
+      MakeGarbageCollected<StringKeyframe>();
+  end_keyframe->SetCSSPropertyValue(property_id, "inset(-100% -100%)",
+                                    SecureContextMode::kInsecureContext,
+                                    nullptr);
+
+  StringKeyframeVector keyframes;
+  keyframes.push_back(start_keyframe);
+  keyframes.push_back(end_keyframe);
+
+  auto* model = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
+  model->SetComposite(EffectModel::kCompositeReplace);
+
+  Element* element = GetElementById("target");
+  NonThrowableExceptionState exception_state;
+  DocumentTimeline* timeline =
+      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+  Animation* animation = Animation::Create(
+      MakeGarbageCollected<KeyframeEffect>(element, model, timing), timeline,
+      exception_state);
+  UpdateAllLifecyclePhasesForTest();
+  animation->play();
+
+  gfx::RectF reference_box = gfx::RectF(0, 0, 100, 100);
+  EXPECT_EQ(ClipPathPaintDefinition::ClipAreaRect(*element, reference_box, 1.f),
+            gfx::RectF(-100, -100, 300, 300));
+}
+
 }  // namespace blink

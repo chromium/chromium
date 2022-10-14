@@ -26,6 +26,9 @@ class MODULES_EXPORT ClipPathPaintImageGeneratorImpl final
                              const gfx::RectF& reference_box,
                              const gfx::SizeF& clip_area_size,
                              const Node&) final;
+  gfx::RectF ClipAreaRect(const Node& node,
+                          const gfx::RectF& reference_box,
+                          float zoom) const final;
   Animation* GetAnimationIfCompositable(const Element* element) final;
 
   void Shutdown() final;

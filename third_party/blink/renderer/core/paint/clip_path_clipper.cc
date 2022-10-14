@@ -105,8 +105,6 @@ static void PaintWorkletBasedClip(GraphicsContext& context,
   ClipPathPaintImageGenerator* generator =
       clip_path_owner.GetFrame()->GetClipPathPaintImageGenerator();
 
-  // TODO(crbug.com/1248610): Fix bounding box. It should enclose affected area
-  // of the animation.
   // The bounding rect of the clip-path animation, relative to the layout
   // object.
   absl::optional<gfx::RectF> bounding_box =
@@ -158,16 +156,27 @@ absl::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
   ClipPathOperation& clip_path = *object.StyleRef().ClipPath();
   if (clip_path.GetType() == ClipPathOperation::kShape) {
     auto zoom = object.StyleRef().EffectiveZoom();
+
+    bool uses_zoomed_reference_box = UsesZoomedReferenceBox(object);
+    gfx::RectF adjusted_reference_box =
+        uses_zoomed_reference_box ? reference_box
+                                  : gfx::ScaleRect(reference_box, zoom);
+
     gfx::RectF bounding_box;
-    auto& shape = To<ShapeClipPathOperation>(clip_path);
-    if (UsesZoomedReferenceBox(object)) {
-      bounding_box = shape.GetPath(reference_box, zoom).BoundingRect();
+    if (HasCompositeClipPathAnimation(object)) {
+      // For composite clip path animations, the bounding rect needs to contain
+      // the *entire* animation, or the animation may be clipped.
+      ClipPathPaintImageGenerator* generator =
+          object.GetFrame()->GetClipPathPaintImageGenerator();
+      bounding_box = generator->ClipAreaRect(*object.GetNode(),
+                                             adjusted_reference_box, zoom);
     } else {
-      bounding_box = gfx::ScaleRect(
-          shape.GetPath(gfx::ScaleRect(reference_box, zoom), zoom)
-              .BoundingRect(),
-          1.f / zoom);
+      auto& shape = To<ShapeClipPathOperation>(clip_path);
+      bounding_box = shape.GetPath(adjusted_reference_box, zoom).BoundingRect();
     }
+
+    if (!uses_zoomed_reference_box)
+      bounding_box = gfx::ScaleRect(bounding_box, 1.f / zoom);
     bounding_box.Intersect(gfx::RectF(LayoutRect::InfiniteIntRect()));
     return bounding_box;
   }
@@ -257,8 +266,6 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
                                                   DisplayItem::kSVGClip))
     return;
 
-  // TODO(crbug.com/1248610): Fix paint rectangle for
-  // CompositeClipPathAnimation.
   DrawingRecorder recorder(
       context, display_item_client, DisplayItem::kSVGClip,
       gfx::ToEnclosingRect(properties->MaskClip()->PaintClipRect().Rect()));

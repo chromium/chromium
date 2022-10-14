@@ -33,6 +33,9 @@ class CORE_EXPORT ClipPathPaintImageGenerator
                                      const gfx::RectF& reference_box,
                                      const gfx::SizeF& clip_area_size,
                                      const Node&) = 0;
+  virtual gfx::RectF ClipAreaRect(const Node& node,
+                                  const gfx::RectF& reference_box,
+                                  float zoom) const = 0;
 };
 
 }  // namespace blink
