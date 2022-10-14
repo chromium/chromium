@@ -2,136 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/audio/cras_audio_handler.h"
+// Generated test cases from cl/479121699.
+// DO NOT EDIT.
 
-#include <inttypes.h>
+#include "chromeos/ash/components/audio/audio_device_selection_test_base.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "chromeos/ash/components/audio/audio_devices_pref_handler_impl.h"
-#include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
-#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace {
 
-class ActiveNodeObserver : public CrasAudioClient::Observer {
- protected:
-  void ActiveInputNodeChanged(uint64_t node_id) override {
-    active_input_node_id_ = node_id;
-  }
-  void ActiveOutputNodeChanged(uint64_t node_id) override {
-    active_output_node_id_ = node_id;
-  }
-
+class AudioDeviceSelectionGeneratedTest : public AudioDeviceSelectionTestBase {
  public:
-  uint64_t GetActiveInputNodeId() { return active_input_node_id_; }
-  uint64_t GetActiveOutputNodeId() { return active_output_node_id_; }
-  void Reset() {
-    active_input_node_id_ = 0;
-    active_output_node_id_ = 0;
-  }
+  AudioDeviceSelectionGeneratedTest()
+      : feature_list_(ash::features::kRobustAudioDeviceSelectLogic) {}
 
  private:
-  uint64_t active_input_node_id_ = 0;
-  uint64_t active_output_node_id_ = 0;
-};
-
-class AudioDeviceSelectionTest : public testing::Test {
- public:
-  AudioDeviceSelectionTest()
-      : feature_list_(chromeos::features::kRobustAudioDeviceSelectLogic) {}
-
- protected:
-  void SetUp() override {
-    node_count_ = 0;
-    plugged_time_ = 0;
-
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    AudioDevicesPrefHandlerImpl::RegisterPrefs(pref_service_->registry());
-    audio_pref_handler_ = audio_pref_handler_ =
-        new AudioDevicesPrefHandlerImpl(pref_service_.get());
-
-    CrasAudioClient::InitializeFake();
-    fake_cras_audio_client_ = FakeCrasAudioClient::Get();
-    // Delete audio nodes created in FakeCrasAudioClient::FakeCrasAudioClient()
-    fake_cras_audio_client_->SetAudioNodesForTesting({});
-    active_node_observer_.Reset();
-    fake_cras_audio_client_->AddObserver(&active_node_observer_);
-
-    CrasAudioHandler::Initialize(mojo::NullRemote(), audio_pref_handler_);
-    cras_audio_handler_ = CrasAudioHandler::Get();
-
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void TearDown() override {
-    CrasAudioHandler::Shutdown();
-    audio_pref_handler_ = nullptr;
-    CrasAudioClient::Shutdown();
-    pref_service_.reset();
-  }
-
-  // Register audio devices available in each test case.
-  // Each call to NewInputNode or NewOutputNode returns an AudioNode
-  // with an auto-incremented node ID, starting at 1.
-  AudioNode NewInputNode(const std::string& type) {
-    return NewNode(true, type);
-  }
-  AudioNode NewOutputNode(const std::string& type) {
-    return NewNode(false, type);
-  }
-
-  void Plug(AudioNode node) {
-    node.plugged_time = ++plugged_time_;
-    fake_cras_audio_client_->InsertAudioNodeToList(node);
-  }
-  void Unplug(const AudioNode& node) {
-    fake_cras_audio_client_->RemoveAudioNodeFromList(node.id);
-  }
-  void Select(const AudioNode& node) {
-    if (node.is_input) {
-      ASSERT_TRUE(cras_audio_handler_->SetActiveInputNodes({node.id}));
-    } else {
-      ASSERT_TRUE(cras_audio_handler_->SetActiveOutputNodes({node.id}));
-    }
-  }
-
-  uint64_t ActiveInputNodeId() {
-    return active_node_observer_.GetActiveInputNodeId();
-  }
-  uint64_t ActiveOutputNodeId() {
-    return active_node_observer_.GetActiveOutputNodeId();
-  }
-
- private:
-  AudioNode NewNode(bool is_input, const std::string& type) {
-    ++node_count_;
-    std::string name =
-        base::StringPrintf("%s-%" PRIu64, type.c_str(), node_count_);
-    return AudioNode(is_input, node_count_, true, node_count_, node_count_,
-                     name, type, name, false, 0, 2, 0, 0);
-  }
-
- private:
-  // Test services
-  ActiveNodeObserver active_node_observer_;
   base::test::ScopedFeatureList feature_list_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  CrasAudioHandler* cras_audio_handler_ = nullptr;         // Not owned.
-  FakeCrasAudioClient* fake_cras_audio_client_ = nullptr;  // Not owned.
-  scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-
-  // Counters
-  uint64_t node_count_ = 0;
-  uint64_t plugged_time_ = 0;
 };
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario1Input) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario1Input) {
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -167,7 +59,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario1Input) {
   EXPECT_EQ(ActiveInputNodeId(), usb2.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario1Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario1Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -203,7 +95,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario1Output) {
   EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario2Input) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario2Input) {
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -239,7 +131,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario2Input) {
   EXPECT_EQ(ActiveInputNodeId(), usb2.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario2Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario2Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -275,7 +167,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario2Output) {
   EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario3Input) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario3Input) {
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -321,7 +213,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario3Input) {
   EXPECT_EQ(ActiveInputNodeId(), usb2.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario3Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario3Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -367,7 +259,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario3Output) {
   EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario4Input) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario4Input) {
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -408,7 +300,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario4Input) {
   EXPECT_EQ(ActiveInputNodeId(), usb3.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario4Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario4Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -449,7 +341,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario4Output) {
   EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario5Input) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario5Input) {
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -490,7 +382,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario5Input) {
   EXPECT_EQ(ActiveInputNodeId(), usb3.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario5Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario5Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -531,7 +423,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario5Output) {
   EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario6Input) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario6Input) {
   AudioNode internal1 = NewInputNode("INTERNAL_MIC");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -597,7 +489,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario6Input) {
   EXPECT_EQ(ActiveInputNodeId(), usb2.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario6Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario6Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
@@ -663,7 +555,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario6Output) {
   EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario7Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario7Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode usb3 = NewOutputNode("USB");
@@ -700,7 +592,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedBandDocScenario7Output) {
   EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedDdDd11Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, DdDd11Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode headphone2 = NewOutputNode("HEADPHONE");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -756,7 +648,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedDdDd11Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedDdDd12Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, DdDd12Output) {
   AudioNode hdmi1 = NewOutputNode("HDMI");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -853,7 +745,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedDdDd12Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedDdDd21Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, DdDd21Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -884,7 +776,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedDdDd21Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedDdDd22Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, DdDd22Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -921,7 +813,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedDdDd22Output) {
   EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedDdDd23Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, DdDd23Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -979,7 +871,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedDdDd23Output) {
   EXPECT_EQ(ActiveOutputNodeId(), headphone3.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedDdDd24Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, DdDd24Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -1026,7 +918,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedDdDd24Output) {
   EXPECT_EQ(ActiveOutputNodeId(), hdmi4.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedDiscussionIssue1Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, DiscussionIssue1Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -1072,7 +964,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedDiscussionIssue1Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedDiscussionIssue2Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, DiscussionIssue2Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode usb3 = NewOutputNode("USB");
@@ -1118,7 +1010,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedDiscussionIssue2Output) {
   EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedFeedbackComment3Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment3Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -1175,7 +1067,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedFeedbackComment3Output) {
   EXPECT_EQ(ActiveOutputNodeId(), usb4.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedFeedbackComment5Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment5Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -1221,7 +1113,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedFeedbackComment5Output) {
   EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedFeedbackComment8Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment8Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -1252,7 +1144,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedFeedbackComment8Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedFeedbackComment10Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment10Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -1284,7 +1176,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedFeedbackComment10Output) {
   EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedGreendocH4Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, GreendocH4Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
 
@@ -1314,7 +1206,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedGreendocH4Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedGreendocH7Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, GreendocH7Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -1345,7 +1237,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedGreendocH7Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedGreendocM1Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, GreendocM1Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -1366,7 +1258,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedGreendocM1Output) {
   EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedGreendocM3Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, GreendocM3Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -1403,7 +1295,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedGreendocM3Output) {
   EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedGreendocM4Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, GreendocM4Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode hdmi3 = NewOutputNode("HDMI");
@@ -1444,7 +1336,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedGreendocM4Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedGreendocM5Output) {
+TEST_F(AudioDeviceSelectionGeneratedTest, GreendocM5Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
   AudioNode headphone3 = NewOutputNode("HEADPHONE");
@@ -1485,7 +1377,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedGreendocM5Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedSimpleInput) {
+TEST_F(AudioDeviceSelectionGeneratedTest, SimpleInput) {
   AudioNode usb1 = NewInputNode("USB");
   AudioNode usb2 = NewInputNode("USB");
   AudioNode usb3 = NewInputNode("USB");
@@ -1516,7 +1408,7 @@ TEST_F(AudioDeviceSelectionTest, GeneratedSimpleInput) {
   EXPECT_EQ(ActiveInputNodeId(), usb1.id);
 }
 
-TEST_F(AudioDeviceSelectionTest, GeneratedSimpleOutput) {
+TEST_F(AudioDeviceSelectionGeneratedTest, SimpleOutput) {
   AudioNode usb1 = NewOutputNode("USB");
   AudioNode usb2 = NewOutputNode("USB");
   AudioNode usb3 = NewOutputNode("USB");
