@@ -13,6 +13,9 @@ import "printing/mojom/printing_context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
+[EnableIf=is_win]
+import "chrome/services/printing/public/mojom/printer_xml_parser.mojom";
+
 // The default printer name, or the `ResultCode` if there was an error when
 // trying to retrieve this data.
 union DefaultPrinterNameResult {
@@ -90,6 +93,11 @@ interface PrintBackendService {
   // Establish the locale to be used for calls with this service and the
   // interface to the underlying data source.
   Init(string locale);
+
+  // Binds an interface that is used to communicate with the browser process
+  // to parse XML in a separate process.
+  [EnableIf=is_win]
+  BindPrinterXmlParser(pending_remote<PrinterXmlParser> remote);
 
   // TODO(crbug.com/1225111)  Message with no arguments and no reply that is
   // useful to ensure that an idle timeout change takes effect.

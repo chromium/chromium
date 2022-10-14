@@ -1,0 +1,27 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module printing.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+import "printing/mojom/print.mojom";
+
+// The capabilities of a printer as a `base::Value`, or the `ResultCode` if
+// there was an error when trying to retrieve this data.
+union PrinterCapabilitiesValueResult {
+  mojo_base.mojom.Value capabilities;
+  ResultCode result_code;
+};
+
+// An interface that is used by printing utility services to send XML parse
+// requests to the browser process. The browser process can then facilitate
+// safely parsing the XML.
+interface PrinterXmlParser {
+  // Receives an XML string of printer capabilities and responds with a
+  // base::Value of the parsed XML or ResultCode if there was an error
+  // retrieving the data.
+  [Sync]
+  ParseXmlForPrinterCapabilities(string capabilities_xml) =>
+    (PrinterCapabilitiesValueResult value_result);
+};

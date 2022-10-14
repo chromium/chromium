@@ -6925,6 +6925,13 @@ static_library("browser") {
         "//chrome/services/printing/public/mojom",
         "//components/crash/core/common",
       ]
+      if (is_win) {
+        sources += [
+          "printing/printer_xml_parser_impl.cc",
+          "printing/printer_xml_parser_impl.h",
+        ]
+        deps += [ "//printing:printing_base" ]
+      }
     }
     if (is_win || enable_print_preview) {
       deps += [ "//chrome/services/printing/public/mojom" ]

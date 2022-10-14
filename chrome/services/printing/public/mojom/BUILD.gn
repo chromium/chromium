@@ -46,6 +46,9 @@ mojom("mojom") {
       "//printing/mojom:printing_context",
       "//ui/gfx/geometry/mojom",
     ]
+    if (is_win) {
+      sources += [ "printer_xml_parser.mojom" ]
+    }
   }
 
   cpp_typemaps = [

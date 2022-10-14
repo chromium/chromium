@@ -51,6 +51,9 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/containers/queue.h"
 #include "base/win/win_util.h"
+#include "chrome/services/printing/public/mojom/printer_xml_parser.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "printing/emf_win.h"
 #include "printing/printed_page_win.h"
 #include "ui/gfx/geometry/rect.h"
@@ -733,6 +736,13 @@ void PrintBackendServiceImpl::DocumentDone(
                            base::Unretained(this), std::ref(*document_helper),
                            std::move(callback)));
 }
+
+#if BUILDFLAG(IS_WIN)
+void PrintBackendServiceImpl::BindPrinterXmlParser(
+    mojo::PendingRemote<mojom::PrinterXmlParser> remote) {
+  xml_parser_remote_.Bind(std::move(remote));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void PrintBackendServiceImpl::OnDidStartPrintingReadyDocument(
     DocumentHelper& document_helper,

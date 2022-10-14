@@ -27,6 +27,12 @@
 #include "printing/printing_context.h"
 #include "ui/gfx/native_widget_types.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/services/printing/public/mojom/printer_xml_parser.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if !BUILDFLAG(ENABLE_OOP_PRINTING)
 #error "Out-of-process printing must be enabled."
 #endif
@@ -122,6 +128,10 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
 
   // mojom::PrintBackendService implementation:
   void Init(const std::string& locale) override;
+#if BUILDFLAG(IS_WIN)
+  void BindPrinterXmlParser(
+      mojo::PendingRemote<mojom::PrinterXmlParser> remote) override;
+#endif  // BUILDFLAG(IS_WIN)
   void Poke() override;
   void EnumeratePrinters(
       mojom::PrintBackendService::EnumeratePrintersCallback callback) override;
@@ -218,6 +228,10 @@ class PrintBackendServiceImpl : public mojom::PrintBackendService {
   std::vector<std::unique_ptr<DocumentHelper>> documents_;
 
   mojo::Receiver<mojom::PrintBackendService> receiver_;
+
+#if BUILDFLAG(IS_WIN)
+  mojo::Remote<mojom::PrinterXmlParser> xml_parser_remote_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 }  // namespace printing
