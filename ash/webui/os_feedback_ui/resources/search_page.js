@@ -153,6 +153,12 @@ export class SearchPageElement extends SearchPageElementBase {
      * @private {Array<string>}
      */
     this.appendedQuestions = [];
+
+    /**
+     * Whether the search result content is returned with popular content.
+     * @private {!boolean}
+     */
+    this.isPopularContentForTesting_;
   }
 
   ready() {
@@ -181,7 +187,8 @@ export class SearchPageElement extends SearchPageElementBase {
       this.hideError_();
     }
 
-    if (Math.abs(newCharCount - this.lastCharCount_) >= MIN_CHARS_COUNT) {
+    if (newCharCount == 0 ||
+        Math.abs(newCharCount - this.lastCharCount_) >= MIN_CHARS_COUNT) {
       this.lastCharCount_ = newCharCount;
       this.fetchHelpContent_(newInput);
     }
@@ -218,13 +225,16 @@ export class SearchPageElement extends SearchPageElementBase {
         response = await this.helpContentProvider_.getHelpContents(request);
         this.popularHelpContentList_ = response.response.results;
       }
+      this.helpContentSearchResultCount = this.popularHelpContentList_.length;
       isPopularContent = true;
     } else {
       response = await this.helpContentProvider_.getHelpContents(request);
       isPopularContent = (response.response.totalResults === 0);
+      this.helpContentSearchResultCount = response.response.results.length;
     }
 
     /** @type {!SearchResult} */
+    this.isPopularContentForTesting_ = isPopularContent;
     const data = {
       contentList: /** @type {!HelpContentList} */ (
           isPopularContent ? this.popularHelpContentList_ :
@@ -234,8 +244,6 @@ export class SearchPageElement extends SearchPageElementBase {
     };
 
     this.noHelpContentDisplayed = (data.contentList.length === 0);
-
-    this.helpContentSearchResultCount = response.response.results.length;
 
     // Wait for the iframe to complete loading before postMessage.
     await this.iframeLoaded_;
@@ -363,6 +371,13 @@ export class SearchPageElement extends SearchPageElementBase {
    */
   getSearchResultCountForTesting() {
     return this.helpContentSearchResultCount;
+  }
+
+  /**
+   * @return {!boolean}
+   */
+  getIsPopularContentForTesting_() {
+    return this.isPopularContentForTesting_;
   }
 
   /**

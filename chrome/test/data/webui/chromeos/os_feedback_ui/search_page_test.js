@@ -108,6 +108,7 @@ export function searchPageTestSuite() {
    *   not triggered.
    * - Case 2: When number of characters newly entered is 3 or more, search is
    *   triggered and help contents are populated.
+   * - Case 3: When the text area is empty, search is NOT triggered.
    */
   test('HelpContentPopulated', async () => {
     /** {?Element} */
@@ -124,6 +125,7 @@ export function searchPageTestSuite() {
         'Share your feedback or describe your issue. ' +
             'If possible, include steps to reproduce your issue.',
         textAreaElement.placeholder);
+    assertTrue(page.getIsPopularContentForTesting_());
 
     // Enter three chars.
     textAreaElement.value = 'abc';
@@ -134,6 +136,7 @@ export function searchPageTestSuite() {
     await flushTasks();
     // Verify that getHelpContent() has been called with query 'abc'.
     assertEquals('abc', provider.lastQuery);
+    assertFalse(page.getIsPopularContentForTesting_());
 
     // Enter 2 more characters. This should NOT trigger another search.
     textAreaElement.value = 'abc12';
@@ -151,6 +154,18 @@ export function searchPageTestSuite() {
     await flushTasks();
     // Verify that getHelpContent() has been called with query 'abc123'.
     assertEquals('abc123', provider.lastQuery);
+    assertFalse(page.getIsPopularContentForTesting_());
+
+    // Remove all the text area characters. This should NOT trigger
+    // getHelpContent().
+    textAreaElement.value = '';
+    textAreaElement.dispatchEvent(new Event('input'));
+    await flushTasks();
+
+    // Verify that getHelpContent() is not called, and the help content
+    // is the default popular content.
+    assertNotEquals('', provider.lastQuery);
+    assertTrue(page.getIsPopularContentForTesting_());
   });
 
   test('HelpContentSearchResultCountColdStart', async () => {
