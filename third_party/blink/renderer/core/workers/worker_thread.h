@@ -31,6 +31,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -82,7 +83,7 @@ struct WorkerMainScriptLoadParameters;
 // abstract class. Multiple WorkerThreads may share one WorkerBackingThread for
 // worklets.
 //
-// WorkerThread start and termination must be initiated on the main thread and
+// WorkerThread start and termination must be initiated on the parent thread and
 // an actual task is executed on the worker thread.
 //
 // When termination starts, (debugger) tasks on WorkerThread are handled as
@@ -105,7 +106,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   ~WorkerThread() override;
 
   // Starts the underlying thread and creates the global scope. Called on the
-  // main thread.
+  // parent thread.
   // Startup data for WorkerBackingThread is absl::nullopt if |this| doesn't own
   // the underlying WorkerBackingThread.
   // TODO(nhiroki): We could separate WorkerBackingThread initialization from
@@ -117,14 +118,14 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
              std::unique_ptr<WorkerDevToolsParams>);
 
   // Posts a task to evaluate a top-level classic script on the worker thread.
-  // Called on the main thread after Start().
+  // Called on the parent thread after Start().
   void EvaluateClassicScript(const KURL& script_url,
                              const String& source_code,
                              std::unique_ptr<Vector<uint8_t>> cached_meta_data,
                              const v8_inspector::V8StackTraceId& stack_id);
 
   // Posts a task to fetch and run a top-level classic script on the worker
-  // thread. Called on the main thread after Start().
+  // thread. Called on the parent thread after Start().
   void FetchAndRunClassicScript(
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>
@@ -136,7 +137,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
       const v8_inspector::V8StackTraceId& stack_id);
 
   // Posts a task to fetch and run a top-level module script on the worker
-  // thread. Called on the main thread after Start().
+  // thread. Called on the parent thread after Start().
   void FetchAndRunModuleScript(
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>
@@ -158,7 +159,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // Terminates the worker thread. Subclasses of WorkerThread can override this
   // to do cleanup. The default behavior is to call Terminate() and
   // synchronously call EnsureScriptExecutionTerminates() to ensure the thread
-  // is quickly terminated. Called on the main thread.
+  // is quickly terminated. Called on the parent thread.
   virtual void TerminateForTesting();
 
   // Thread::TaskObserver.
@@ -185,7 +186,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   void DebuggerTaskStarted();
   void DebuggerTaskFinished();
 
-  // Callable on both the main thread and the worker thread.
+  // Callable on both the parent thread and the worker thread.
   const base::UnguessableToken& GetDevToolsWorkerToken() const {
     return devtools_worker_token_;
   }
@@ -330,7 +331,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // already shutting down. Does not terminate if a debugger task is running,
   // because the debugger task is guaranteed to finish and it heavily uses V8
   // API calls which would crash after forcible script termination. Called on
-  // the main thread.
+  // the parent thread.
   void EnsureScriptExecutionTerminates(ExitCode) LOCKS_EXCLUDED(lock_);
 
   // These are called in this order during worker thread startup.
@@ -417,7 +418,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // A unique identifier among all WorkerThreads.
   const int worker_thread_id_;
 
-  // Set on the main thread.
+  // Set on the parent thread.
   bool requested_to_terminate_ GUARDED_BY(lock_) = false;
 
   ThreadState thread_state_ GUARDED_BY(lock_) = ThreadState::kNotStarted;
@@ -451,7 +452,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
                                     TaskTypeTraits>;
   TaskRunnerHashMap worker_task_runners_;
 
-  // This lock protects shared states between the main thread and the worker
+  // This lock protects shared states between the parent thread and the worker
   // thread. See thread-safety annotations (e.g., GUARDED_BY) in this header
   // file.
   base::Lock lock_;
@@ -459,6 +460,10 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // Whether the thread is paused in a nested message loop or not. Used
   // only on the worker thread.
   int pause_or_freeze_count_ = 0;
+
+  // The `PauseHandle` needs to be destroyed before the scheduler is destroyed
+  // otherwise we will hit a DCHECK.
+  std::unique_ptr<scheduler::WorkerScheduler::PauseHandle> pause_handle_;
 
   // A nested message loop for handling pausing. Pointer is not owned. Used only
   // on the worker thread.
@@ -484,6 +489,12 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
   // a void* and we need to pass more data that just a ptr, so we pass
   // a pointer to a member in this list.
   HashSet<std::unique_ptr<InterruptData>> pending_interrupts_ GUARDED_BY(lock_);
+
+  // Since the WorkerThread is allocated and deallocated on the parent thread,
+  // we need a WeakPtrFactory that is allocated and cleared on the backing
+  // thread.
+  absl::optional<base::WeakPtrFactory<WorkerThread>>
+      backing_thread_weak_factory_;
 
   THREAD_CHECKER(parent_thread_checker_);
 };
