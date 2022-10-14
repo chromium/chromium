@@ -80,7 +80,7 @@ struct OverflowMenuDestinationList: View {
     }
     .animation(nil)
     .background(
-      uiConfiguration.highlightDestinationsRow ? Color("destination_highlight_color") : Color.clear
+      Color("destination_highlight_color").opacity(uiConfiguration.highlightDestinationsRow ? 1 : 0)
     )
     .animation(.linear(duration: kMaterialDuration3))
     .onPreferenceChange(ScrollViewLeadingOffset.self) { newOffset in
