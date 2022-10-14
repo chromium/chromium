@@ -12,12 +12,16 @@
 
 namespace guest_view {
 
+GuestViewEvent::GuestViewEvent(const std::string& name, base::Value::Dict args)
+    : name_(name),
+      args_(base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(base::Value(std::move(args))))) {}
+
 GuestViewEvent::GuestViewEvent(const std::string& name,
                                std::unique_ptr<base::DictionaryValue> args)
     : name_(name), args_(std::move(args)) {}
 
-GuestViewEvent::~GuestViewEvent() {
-}
+GuestViewEvent::~GuestViewEvent() = default;
 
 void GuestViewEvent::Dispatch(GuestViewBase* guest, int instance_id) {
   DCHECK(args_) << "Dispatch was probably invoked twice!";

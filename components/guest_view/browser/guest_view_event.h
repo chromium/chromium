@@ -20,6 +20,9 @@ class GuestViewBase;
 // on attachment. GuestViewEvents are owned by GuestViewBase.
 class GuestViewEvent {
  public:
+  GuestViewEvent(const std::string& name, base::Value::Dict args);
+
+  // Deprecated. Prefer the ctor above.
   GuestViewEvent(const std::string& name,
                  std::unique_ptr<base::DictionaryValue> args);
 
