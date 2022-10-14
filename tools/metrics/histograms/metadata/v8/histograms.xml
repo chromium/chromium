@@ -348,6 +348,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.DebugPauseToPausedEventMilliSeconds" units="ms"
+    expires_after="2023-08-01">
+  <owner>bmeurer@chromium.org</owner>
+  <owner>szuend@chromium.org</owner>
+  <owner>chrome-devtools@google.com</owner>
+  <summary>
+    Duration beginning when V8 stops execution due to a breakpoint/exception
+    until the &quot;Debugger.paused&quot; CDP event is sent by the V8 inspector.
+    The event is recorded when all the event data was collected and processed,
+    but before the event is serialized and put on the wire.
+  </summary>
+</histogram>
+
 <histogram name="V8.ErrorsThrownPerContext" units="errors"
     expires_after="2020-02-23">
   <owner>hablich@chromium.org</owner>
