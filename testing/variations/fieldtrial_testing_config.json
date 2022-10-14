@@ -12444,6 +12444,24 @@
             ]
         }
     ],
+    "Win10UnattendedDefault": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Default"
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Win10UnattendedDefault"
+                    ]
+                }
+            ]
+        }
+    ],
     "ZeroCopyTabCaptureStudyMac": [
         {
             "platforms": [
