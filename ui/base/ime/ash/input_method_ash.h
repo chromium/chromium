@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/ime/ash/text_input_method.h"
 #include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/ash/typing_session_manager.h"
 #include "ui/base/ime/character_composer.h"
@@ -176,7 +177,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
 
   // Check whether text entered into the focused text input client should be
   // used to improve typing suggestions for the user.
-  bool GetClientShouldDoLearning() const;
+  PersonalizationMode GetClientPersonalizationMode() const;
 
   // Gets the text input flags of the focused text input client. Returns
   // 0 if there is no focused client.

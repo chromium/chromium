@@ -215,6 +215,18 @@ std::string GetKeyFromEvent(const ui::KeyEvent& event) {
   return base::UTF16ToUTF8(std::u16string(1, ch));
 }
 
+// TODO(b/247441188): Change the input extension JS API to use
+// PersonalizationMode instead of a bool.
+bool ConvertPersonalizationMode(
+    const ui::TextInputMethod::InputContext& context) {
+  switch (context.personalization_mode) {
+    case ui::PersonalizationMode::kEnabled:
+      return true;
+    case ui::PersonalizationMode::kDisabled:
+      return false;
+  }
+}
+
 InputMethodEngine* GetEngineIfActive(Profile* profile,
                                      const std::string& extension_id,
                                      std::string* error) {
@@ -480,7 +492,8 @@ class ImeObserverChromeOS
           ConvertInputContextSpellCheck(context.flags);
       private_api_input_context.has_been_password =
           ConvertHasBeenPassword(context);
-      private_api_input_context.should_do_learning = context.should_do_learning;
+      private_api_input_context.should_do_learning =
+          ConvertPersonalizationMode(context);
       private_api_input_context.focus_reason =
           input_method_private::ParseFocusReason(
               ConvertInputContextFocusReason(context));
@@ -509,7 +522,8 @@ class ImeObserverChromeOS
           ConvertInputContextAutoCapitalizePublic(context.flags);
       public_api_input_context.spell_check =
           ConvertInputContextSpellCheck(context.flags);
-      public_api_input_context.should_do_learning = context.should_do_learning;
+      public_api_input_context.should_do_learning =
+          ConvertPersonalizationMode(context);
 
       auto args(input_ime::OnFocus::Create(public_api_input_context));
       DispatchEventToExtension(extensions::events::INPUT_IME_ON_FOCUS,

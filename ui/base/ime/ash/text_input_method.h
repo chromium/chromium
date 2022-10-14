@@ -37,6 +37,18 @@ enum class KeyEventHandledState {
 };
 }  // namespace ime
 
+enum class PersonalizationMode {
+  // The input method MUST not use anything from the input field to update any
+  // personalized data (e.g. to improve suggestions quality). Personalization
+  // could be disabled if the content is privacy-sensitive (e.g. incognito mode
+  // in
+  // Chrome browser), or if using personalization does not make sense (e.g.
+  // playing a typing game may pollute the dictionary with uncommon words).
+  kDisabled,
+  // The input method MAY use the input field contents for personalization.
+  kEnabled
+};
+
 // An interface representing an input method that can read and manipulate text
 // in a TextInputTarget. For example, this can represent a Japanese input method
 // that can compose and insert Japanese characters into a TextInputTarget.
@@ -53,12 +65,12 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
                  TextInputMode mode,
                  int flags,
                  TextInputClient::FocusReason focus_reason,
-                 bool should_do_learning)
+                 PersonalizationMode personalization_mode)
         : type(type),
           mode(mode),
           flags(flags),
           focus_reason(focus_reason),
-          should_do_learning(should_do_learning) {}
+          personalization_mode(personalization_mode) {}
     TextInputType type;
     TextInputMode mode;
     // Flags for web input fields. Please refer to WebTextInputType.
@@ -67,7 +79,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) TextInputMethod {
     TextInputClient::FocusReason focus_reason;
     // Whether text entered in this field should be used to improve typing
     // suggestions for the user.
-    bool should_do_learning;
+    PersonalizationMode personalization_mode;
   };
 
   virtual ~TextInputMethod() = default;

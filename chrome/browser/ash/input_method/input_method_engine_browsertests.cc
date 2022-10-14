@@ -82,7 +82,7 @@ class InputMethodEngineBrowserTest
     return ui::TextInputMethod::InputContext(
         type, ui::TEXT_INPUT_MODE_DEFAULT, ui::TEXT_INPUT_FLAG_NONE,
         ui::TextInputClient::FOCUS_REASON_OTHER,
-        false /* should_do_learning */);
+        ui::PersonalizationMode::kDisabled);
   }
 
  protected:
@@ -1426,7 +1426,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, ShouldDoLearning) {
   ExtensionTestMessageListener focus_listener(
       "onFocus:text:true:true:true:true");
   auto context = CreateInputContextWithInputType(ui::TEXT_INPUT_TYPE_TEXT);
-  context.should_do_learning = true;
+  context.personalization_mode = ui::PersonalizationMode::kEnabled;
   engine_handler->FocusIn(context);
   ASSERT_TRUE(focus_listener.WaitUntilSatisfied());
   ASSERT_TRUE(focus_listener.was_satisfied());

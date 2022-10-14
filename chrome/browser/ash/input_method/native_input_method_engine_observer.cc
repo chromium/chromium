@@ -468,6 +468,16 @@ std::string MojomLayoutToXkbLayout(mojom::PinyinLayout layout) {
   }
 }
 
+mojom::PersonalizationMode GetPersonalizationMode(
+    ui::PersonalizationMode mode) {
+  switch (mode) {
+    case ui::PersonalizationMode::kEnabled:
+      return mojom::PersonalizationMode::kEnabled;
+    case ui::PersonalizationMode::kDisabled:
+      return mojom::PersonalizationMode::kDisabled;
+  }
+}
+
 mojom::InputFieldInfoPtr CreateInputFieldInfo(
     const std::string& engine_id,
     const ui::TextInputMethod::InputContext& context,
@@ -488,8 +498,7 @@ mojom::InputFieldInfoPtr CreateInputFieldInfo(
   return mojom::InputFieldInfo::New(
       TextInputTypeToMojoType(context.type),
       AutocorrectFlagsToMojoType(context.flags),
-      context.should_do_learning ? mojom::PersonalizationMode::kEnabled
-                                 : mojom::PersonalizationMode::kDisabled,
+      GetPersonalizationMode(context.personalization_mode),
       GetTextPredictionMode(engine_id, input_field_context, prefs));
 }
 

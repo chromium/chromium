@@ -459,7 +459,7 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
   ui::TextInputMethod::InputContext input_context(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      /*should_do_learning=*/true);
+      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method connected.
   engine.FocusIn(input_context);
@@ -508,7 +508,7 @@ TEST_F(NativeInputMethodEngineTest,
   ui::TextInputMethod::InputContext input_context(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      /*should_do_learning=*/true);
+      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method connected.
   engine.FocusIn(input_context);
@@ -533,7 +533,7 @@ TEST_F(NativeInputMethodEngineTest, FocusUpdatesXkbLayout) {
   ui::TextInputMethod::InputContext input_context(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      /*should_do_learning=*/true);
+      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdPinyin);
   engine.FlushForTesting();  // ensure input_method is connected.
   engine.FocusIn(input_context);
@@ -587,7 +587,7 @@ TEST_F(NativeInputMethodEngineTest,
   ui::TextInputMethod::InputContext input_context(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      /*should_do_learning=*/true);
+      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
   engine.FocusIn(input_context);
@@ -638,7 +638,7 @@ TEST_F(
   ui::TextInputMethod::InputContext input_context(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      /*should_do_learning=*/true);
+      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
   engine.FocusIn(input_context);
@@ -669,7 +669,7 @@ TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
   ui::TextInputMethod::InputContext input_context(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      /*should_do_learning=*/true);
+      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();  // ensure input_method is connected.
   engine.FocusIn(input_context);
@@ -725,7 +725,7 @@ TEST_F(NativeInputMethodEngineTest,
   engine.FocusIn(ui::TextInputMethod::InputContext(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      /*should_do_learning=*/true));
+      ui::PersonalizationMode::kEnabled));
   // Each character in "你好" is one UTF-16 code unit.
   engine.SetSurroundingText(u"你好",
                             /*cursor_pos=*/2,
@@ -780,7 +780,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
   engine.FocusIn(ui::TextInputMethod::InputContext(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      /*should_do_learning=*/true));
+      ui::PersonalizationMode::kEnabled));
 
   // Quote ("VKEY_OEM_7") + A is a dead key combination.
   engine.ProcessKeyEvent(
@@ -845,7 +845,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
   engine.FocusIn(ui::TextInputMethod::InputContext(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      /*should_do_learning=*/true));
+      ui::PersonalizationMode::kEnabled));
 
   // Enter and Backspace are named keys with Unicode representation.
   engine.ProcessKeyEvent(
@@ -896,7 +896,7 @@ TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
   engine.FocusIn(ui::TextInputMethod::InputContext(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      /*should_do_learning=*/true));
+      ui::PersonalizationMode::kEnabled));
 
   // Help is a named DOM key, but is not used by IMEs.
   engine.ProcessKeyEvent({ui::ET_KEY_PRESSED, ui::VKEY_HELP, ui::DomCode::HELP,
@@ -961,7 +961,7 @@ TEST_F(NativeInputMethodEngineWithRenderViewHostTest,
   ui::TextInputMethod::InputContext input_context(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
-      /*should_do_learning=*/true);
+      ui::PersonalizationMode::kEnabled);
   engine.Enable(kEngineIdUs);
   engine.FlushForTesting();
 

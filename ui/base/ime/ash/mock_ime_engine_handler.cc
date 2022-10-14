@@ -17,7 +17,7 @@ MockIMEEngineHandler::MockIMEEngineHandler()
                                ui::TEXT_INPUT_MODE_DEFAULT,
                                ui::TEXT_INPUT_FLAG_NONE,
                                ui::TextInputClient::FOCUS_REASON_NONE,
-                               false /* should_do_learning */),
+                               ui::PersonalizationMode::kDisabled),
       last_set_surrounding_cursor_pos_(0),
       last_set_surrounding_anchor_pos_(0) {}
 

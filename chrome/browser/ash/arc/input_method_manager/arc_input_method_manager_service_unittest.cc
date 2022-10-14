@@ -943,7 +943,8 @@ TEST_F(ArcInputMethodManagerServiceTest, FocusAndBlur) {
   // Set up mock input context.
   const ui::TextInputMethod::InputContext test_context{
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT, 0 /* flags */,
-      ui::TextInputClient::FOCUS_REASON_MOUSE, true /* should_do_learning */};
+      ui::TextInputClient::FOCUS_REASON_MOUSE,
+      ui::PersonalizationMode::kEnabled};
   ui::MockInputMethod mock_input_method(nullptr);
   TestIMEInputContextHandler test_context_handler(&mock_input_method);
   ui::DummyTextInputClient dummy_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
@@ -1039,7 +1040,8 @@ TEST_F(ArcInputMethodManagerServiceTest, ShowVirtualKeyboard) {
   // Set up mock input context.
   const ui::TextInputMethod::InputContext test_context{
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT, 0 /* flags */,
-      ui::TextInputClient::FOCUS_REASON_MOUSE, true /* should_do_learning */};
+      ui::TextInputClient::FOCUS_REASON_MOUSE,
+      ui::PersonalizationMode::kEnabled};
   ui::MockInputMethod mock_input_method(nullptr);
   TestIMEInputContextHandler test_context_handler(&mock_input_method);
   ui::DummyTextInputClient dummy_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);
@@ -1104,7 +1106,8 @@ TEST_F(ArcInputMethodManagerServiceTest, VisibilityObserver) {
   // Set up mock input context.
   const ui::TextInputMethod::InputContext test_context{
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT, 0 /* flags */,
-      ui::TextInputClient::FOCUS_REASON_MOUSE, true /* should_do_learning */};
+      ui::TextInputClient::FOCUS_REASON_MOUSE,
+      ui::PersonalizationMode::kEnabled};
   ui::MockInputMethod mock_input_method(nullptr);
   TestIMEInputContextHandler test_context_handler(&mock_input_method);
   ui::DummyTextInputClient dummy_text_input_client(ui::TEXT_INPUT_TYPE_TEXT);

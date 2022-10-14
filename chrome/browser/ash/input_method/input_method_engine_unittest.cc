@@ -172,7 +172,7 @@ class InputMethodEngineTest : public testing::Test {
     ui::TextInputMethod::InputContext input_context(
         input_type, ui::TEXT_INPUT_MODE_DEFAULT, ui::TEXT_INPUT_FLAG_NONE,
         ui::TextInputClient::FOCUS_REASON_OTHER,
-        false /* should_do_learning */);
+        ui::PersonalizationMode::kDisabled);
     engine_->FocusIn(input_context);
     ui::IMEBridge::Get()->SetCurrentInputContext(input_context);
   }

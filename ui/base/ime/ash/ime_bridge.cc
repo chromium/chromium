@@ -13,7 +13,7 @@ IMEBridge::IMEBridge()
                              ui::TEXT_INPUT_MODE_DEFAULT,
                              0,
                              ui::TextInputClient::FOCUS_REASON_NONE,
-                             false /* should_do_learning */) {}
+                             PersonalizationMode::kDisabled) {}
 
 IMEBridge::~IMEBridge() = default;
 

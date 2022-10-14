@@ -205,7 +205,7 @@ void InputMethodAsh::OnTextInputTypeChanged(TextInputClient* client) {
   if (engine) {
     ui::TextInputMethod::InputContext context(
         GetTextInputType(), GetTextInputMode(), GetTextInputFlags(),
-        GetClientFocusReason(), GetClientShouldDoLearning());
+        GetClientFocusReason(), GetClientPersonalizationMode());
     // When focused input client is not changed, a text input type change
     // should cause blur/focus events to engine. The focus in to or out from
     // password field should also notify engine.
@@ -366,7 +366,7 @@ void InputMethodAsh::OnDidChangeFocusedClient(TextInputClient* focused_before,
   if (GetEngine()) {
     ui::TextInputMethod::InputContext context(
         GetTextInputType(), GetTextInputMode(), GetTextInputFlags(),
-        GetClientFocusReason(), GetClientShouldDoLearning());
+        GetClientFocusReason(), GetClientPersonalizationMode());
     GetEngine()->FocusIn(context);
   }
 
@@ -572,7 +572,7 @@ void InputMethodAsh::UpdateContextFocusState() {
 
   ui::TextInputMethod::InputContext context(
       GetTextInputType(), GetTextInputMode(), GetTextInputFlags(),
-      GetClientFocusReason(), GetClientShouldDoLearning());
+      GetClientFocusReason(), GetClientPersonalizationMode());
   ui::IMEBridge::Get()->SetCurrentInputContext(context);
 }
 
@@ -855,9 +855,10 @@ bool InputMethodAsh::CanComposeInline() const {
   return client ? client->CanComposeInline() : true;
 }
 
-bool InputMethodAsh::GetClientShouldDoLearning() const {
+PersonalizationMode InputMethodAsh::GetClientPersonalizationMode() const {
   TextInputClient* client = GetTextInputClient();
-  return client && client->ShouldDoLearning();
+  return client && client->ShouldDoLearning() ? PersonalizationMode::kEnabled
+                                              : PersonalizationMode::kDisabled;
 }
 
 int InputMethodAsh::GetTextInputFlags() const {
