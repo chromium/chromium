@@ -57,6 +57,15 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
     configs.push_back(std::move(config));
   }
   {
+    std::unique_ptr<Config> config = std::make_unique<Config>();
+    config->segmentation_key = kTestSegmentationKey4;
+    config->segment_selection_ttl = base::Days(14);
+    config->AddSegmentId(
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER);
+    config->on_demand_execution = true;
+    configs.push_back(std::move(config));
+  }
+  {
     // Empty config.
     std::unique_ptr<Config> config = std::make_unique<Config>();
     config->segmentation_key = "test_key";
@@ -71,6 +80,7 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
 constexpr char kTestSegmentationKey1[] = "test_key1";
 constexpr char kTestSegmentationKey2[] = "test_key2";
 constexpr char kTestSegmentationKey3[] = "test_key3";
+constexpr char kTestSegmentationKey4[] = "test_key4";
 
 SegmentationPlatformServiceTestBase::SegmentationPlatformServiceTestBase() =
     default;

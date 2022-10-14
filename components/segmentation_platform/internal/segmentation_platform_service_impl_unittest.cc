@@ -12,6 +12,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -30,8 +31,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::Invoke;
+using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace segmentation_platform {
 namespace {
@@ -68,7 +72,7 @@ class SegmentationPlatformServiceImplTest
     ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_.get());
-    auto ukm_database = std::make_unique<MockUkmDatabase>();
+    auto ukm_database = std::make_unique<NiceMock<MockUkmDatabase>>();
     static_cast<UkmDataManagerImpl*>(ukm_data_manager_.get())
         ->InitializeForTesting(std::move(ukm_database), ukm_observer_.get());
   }
@@ -79,9 +83,16 @@ class SegmentationPlatformServiceImplTest
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
 
+    // Setup model provider data for default model for supporting on demand
+    // execution.
+    model_provider_data_.segments_supporting_default_model = {
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER};
+
     // TODO(ssid): use mock a history service here.
     SegmentationPlatformServiceTestBase::InitPlatform(
         ukm_data_manager_.get(), /*history_service=*/nullptr);
+
+    SetUpDefaultModelProviders();
 
     segmentation_platform_service_impl_->GetServiceProxy()->AddObserver(
         &observer_);
@@ -89,6 +100,24 @@ class SegmentationPlatformServiceImplTest
 
   void TearDown() override {
     SegmentationPlatformServiceTestBase::DestroyPlatform();
+  }
+
+  void SetUpDefaultModelProviders() {
+    proto::SegmentationModelMetadata metadata;
+    metadata.set_time_unit(proto::TimeUnit::DAY);
+    metadata.set_bucket_duration(42u);
+    auto& model_provider =
+        *(*model_provider_data_.default_model_providers.find(
+              SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER))
+             .second;
+
+    EXPECT_CALL(model_provider, InitAndFetchModel(_))
+        .WillRepeatedly(RunOnceCallback<0>(
+            SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER, metadata,
+            1));
+    EXPECT_CALL(model_provider, ExecuteModelWithInput(_, _))
+        .WillRepeatedly(RunOnceCallback<1>(1));
+    EXPECT_CALL(model_provider, ModelAvailable()).WillRepeatedly(Return(true));
   }
 
   void OnGetSelectedSegment(base::RepeatingClosure closure,
@@ -126,6 +155,24 @@ class SegmentationPlatformServiceImplTest
     ASSERT_EQ(result,
               segmentation_platform_service_impl_->GetCachedSegmentResult(
                   segmentation_key));
+  }
+
+  void AssertSelectedSegmentOnDemand(
+      const std::string& segmentation_key,
+      bool is_ready,
+      SegmentId expected = SegmentId::OPTIMIZATION_TARGET_UNKNOWN) {
+    SegmentSelectionResult result;
+    result.is_ready = is_ready;
+    if (is_ready)
+      result.segment = expected;
+    base::RunLoop loop;
+    segmentation_platform_service_impl_->GetSelectedSegmentOnDemand(
+        segmentation_key, nullptr,
+        base::BindOnce(
+            &SegmentationPlatformServiceImplTest::OnGetSelectedSegment,
+            base::Unretained(this), loop.QuitClosure(), result));
+    segment_db_->LoadCallback(true);
+    loop.Run();
   }
 
  protected:
@@ -238,6 +285,10 @@ class SegmentationPlatformServiceImplTest
     AssertCachedSegment(kTestSegmentationKey3, false);
   }
 
+  int GetPendingActionsQueueSize() {
+    return segmentation_platform_service_impl_->pending_actions_.size();
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   MockServiceProxyObserver observer_;
@@ -262,6 +313,22 @@ TEST_F(SegmentationPlatformServiceImplTest,
       base::BindOnce(&SegmentationPlatformServiceImplTest::OnGetSelectedSegment,
                      base::Unretained(this), loop.QuitClosure(), expected));
   loop.Run();
+}
+
+TEST_F(SegmentationPlatformServiceImplTest,
+       GetSelectedSegmentOnDemandIfDbInitialized) {
+  EXPECT_FALSE(segmentation_platform_service_impl_->IsPlatformInitialized());
+  int pending_queue_size = GetPendingActionsQueueSize();
+  // Initialize the platform
+  TestInitializationFlow();
+  // Platform is initialized, so the API call to get the selected
+  // segment on demand is executed.
+  EXPECT_TRUE(segmentation_platform_service_impl_->IsPlatformInitialized());
+  EXPECT_EQ(pending_queue_size, GetPendingActionsQueueSize());
+  AssertSelectedSegmentOnDemand(
+      kTestSegmentationKey4, /*is_ready=*/true,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER);
+  EXPECT_EQ(pending_queue_size, GetPendingActionsQueueSize());
 }
 
 class SegmentationPlatformServiceImplEmptyConfigTest
