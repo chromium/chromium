@@ -26,11 +26,6 @@ var hasWindow = !!this.window;
 var testing = {};
 (function(exports) {
 /**
- * Holds the original version of the |chrome| object.
- */
-const originalChrome = null;
-
-/**
  * Hold the currentTestCase across between preLoad and run.
  * @type {TestCase}
  */
