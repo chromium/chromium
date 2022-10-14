@@ -398,7 +398,6 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
     private boolean isNewAllSitesUiEnabled() {
         // Only in the "All sites" mode and with the flag enabled.
         return mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES
-                && SiteSettingsFeatureList.isEnabled(
-                        SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS);
+                && SiteSettingsUtil.isSiteDataImprovementEnabled();
     }
 }

@@ -4,6 +4,9 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import android.content.Context;
+import android.text.format.Formatter;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
@@ -75,5 +78,35 @@ public class SiteSettingsUtil {
             }
         }
         return ContentSettingsType.DEFAULT;
+    }
+
+    /**
+     * @return whether the flag for the improved UI for "All sites" and "Site settings" is enabled.
+     */
+    public static boolean isSiteDataImprovementEnabled() {
+        return SiteSettingsFeatureList.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS);
+    }
+
+    /**
+     * @param context A {@link Context} object to pull strings out of.
+     * @param storage The amount of storage (in bytes) used by the entry.
+     * @param cookies The number of cookies associated with the entry.
+     * @return A string to display in the UI to show and clear storage and cookies.
+     */
+    public static String generateStorageUsageText(Context context, long storage, int cookies) {
+        String result = "";
+        if (storage > 0) {
+            result = String.format(context.getString(R.string.origin_settings_storage_usage_brief),
+                    Formatter.formatShortFileSize(context, storage));
+        }
+        if (cookies > 0) {
+            String cookie_str = context.getResources().getQuantityString(
+                    R.plurals.cookies_count, cookies, cookies);
+            result = result.isEmpty()
+                    ? cookie_str
+                    : String.format(context.getString(R.string.summary_with_one_bullet), result,
+                            cookie_str);
+        }
+        return result;
     }
 }

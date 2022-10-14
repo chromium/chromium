@@ -4,9 +4,7 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.text.format.Formatter;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -81,12 +79,11 @@ public class GroupedWebsitesSettings extends SiteSettingsPreferenceFragment {
 
     private void setUpClearDataPreference() {
         ClearWebsiteStorage preference = findPreference(PREF_CLEAR_DATA);
-        long usage = mSiteGroup.getTotalUsage();
-        if (usage > 0) {
-            Context context = preference.getContext();
-            preference.setTitle(
-                    String.format(context.getString(R.string.origin_settings_storage_usage_brief),
-                            Formatter.formatShortFileSize(context, usage)));
+        long storage = mSiteGroup.getTotalUsage();
+        int cookies = mSiteGroup.getNumberOfCookies();
+        if (storage > 0 || cookies > 0) {
+            preference.setTitle(SiteSettingsUtil.generateStorageUsageText(
+                    preference.getContext(), storage, cookies));
             // TODO(crbug.com/1342991): Get clearingApps information from underlying sites.
             preference.setDataForDisplay(mSiteGroup.getDomainAndRegistry(), /*clearingApps=*/false);
             // TODO(crbug.com/1342991): Disable the preference if all underlying origins have

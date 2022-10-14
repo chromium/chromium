@@ -524,13 +524,20 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     private void setUpClearDataPreference() {
         ClearWebsiteStorage preference = findPreference(PREF_CLEAR_DATA);
         long usage = mSite.getTotalUsage();
-        if (usage > 0) {
+        int cookies = mSite.getNumberOfCookies();
+        // Only take cookies into account when the new UI is enabled.
+        if (usage > 0 || (SiteSettingsUtil.isSiteDataImprovementEnabled() && cookies > 0)) {
             boolean appFound = getSiteSettingsDelegate().getOriginsWithInstalledApp().contains(
                     mSite.getAddress().getOrigin());
             Context context = preference.getContext();
-            preference.setTitle(
-                    String.format(context.getString(R.string.origin_settings_storage_usage_brief),
-                            Formatter.formatShortFileSize(context, usage)));
+            if (SiteSettingsUtil.isSiteDataImprovementEnabled()) {
+                preference.setTitle(
+                        SiteSettingsUtil.generateStorageUsageText(context, usage, cookies));
+            } else {
+                preference.setTitle(String.format(
+                        context.getString(R.string.origin_settings_storage_usage_brief),
+                        Formatter.formatShortFileSize(context, usage)));
+            }
             preference.setDataForDisplay(mSite.getTitle(), appFound);
             if (WebsitePreferenceBridge.isCookieDeletionDisabled(
                         getSiteSettingsDelegate().getBrowserContextHandle(),
@@ -545,7 +552,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
     private void setupResetSitePreference() {
         Preference preference = findPreference(PREF_RESET_SITE);
         int titleResId;
-        if (SiteSettingsFeatureList.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)) {
+        if (SiteSettingsUtil.isSiteDataImprovementEnabled()) {
             titleResId = mHideNonPermissionPreferences ? R.string.page_info_permissions_reset
                                                        : R.string.website_reset_full;
         } else {
