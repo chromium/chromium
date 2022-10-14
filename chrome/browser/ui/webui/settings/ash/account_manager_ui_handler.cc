@@ -274,6 +274,11 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
     const std::vector<std::pair<::account_manager::Account, bool>>&
         account_dummy_token_list,
     const base::flat_set<account_manager::Account>& arc_accounts) {
+  // If JS was disallowed (e.g. the Settings window was closed) - return without
+  // resolving the callback_id.
+  if (!IsJavascriptAllowed())
+    return;
+
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
 
