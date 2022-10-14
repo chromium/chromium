@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/common/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/web_ui_message_handler.h"

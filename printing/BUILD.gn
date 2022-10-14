@@ -194,7 +194,7 @@ component("printing") {
     ]
   }
 
-  if (is_chromeos) {
+  if (!enable_basic_print_dialog) {
     sources += [
       "printing_context_no_system_dialog.cc",
       "printing_context_no_system_dialog.h",

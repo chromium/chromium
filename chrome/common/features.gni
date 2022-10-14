@@ -42,10 +42,6 @@ declare_args() {
   enable_background_contents = !is_android
   enable_background_mode = !is_android && !is_chromeos
 
-  # Enable the printing system dialog for platforms that support printing
-  # and have a system dialog.
-  enable_basic_print_dialog = enable_basic_printing && !is_chromeos
-
   # Enables usage of notifications via Chrome's MessageCenter.
   enable_chrome_notifications = is_mac || is_win || is_linux || is_fuchsia
 

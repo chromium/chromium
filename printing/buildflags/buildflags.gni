@@ -20,6 +20,10 @@ declare_args() {
   # The is_android condition is currently redundant but left for clarity.
   enable_print_preview = enable_basic_printing && enable_pdf && !is_android
 
+  # Enable the printing system dialog for platforms that support printing
+  # and have a system dialog.
+  enable_basic_print_dialog = enable_basic_printing && !is_chromeos
+
   if (use_fuzzing_engine && (is_linux || is_chromeos)) {
     # For fuzzing, just restrict to chromeos and linux.
     use_cups = true
