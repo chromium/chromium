@@ -68,6 +68,11 @@ AffineTransform LayoutNGSVGForeignObject::LocalToSVGParentTransform() const {
   return transform;
 }
 
+LayoutPoint LayoutNGSVGForeignObject::Location() const {
+  NOT_DESTROYED();
+  return overridden_location_;
+}
+
 PaintLayerType LayoutNGSVGForeignObject::LayerTypeRequired() const {
   NOT_DESTROYED();
   // Skip LayoutSVGBlock's override.
@@ -136,7 +141,7 @@ void LayoutNGSVGForeignObject::UpdateBlockLayout(bool relayout_children) {
   // would pull this information from ComputedStyle - in SVG those properties
   // are ignored for non <svg> elements, so we mimic what happens when
   // specifying them through CSS.
-  SetLocation(LayoutPoint(zoomed_location));
+  overridden_location_ = LayoutPoint(zoomed_location);
 
   UpdateNGBlockLayout();
   DCHECK(!NeedsLayout());

@@ -44,6 +44,7 @@ class LayoutNGSVGForeignObject final
   AffineTransform LocalToSVGParentTransform() const override;
 
   // LayoutBox override:
+  LayoutPoint Location() const override;
   PaintLayerType LayerTypeRequired() const override;
   bool CreatesNewFormattingContext() const override;
 
@@ -53,6 +54,10 @@ class LayoutNGSVGForeignObject final
   // The resolved viewport in the regular SVG coordinate space (after any
   // 'transform' has been applied but without zoom-adjustment).
   gfx::RectF viewport_;
+
+  // Override of LayoutBox::frame_rect_.location_.
+  // A physical fragment for <foreignObject> doesn't have the owner NGLink.
+  LayoutPoint overridden_location_;
 };
 
 template <>
