@@ -252,6 +252,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "privacy_indicators_microphone.icon",
     "privacy_indicators_screen_share.icon",
     "privacy_screen.icon",
+    "quick_settings_back.icon",
     "remove_outline.icon",
     "reorder.icon",
     "reorder_nudge_dark_clamshell.icon",

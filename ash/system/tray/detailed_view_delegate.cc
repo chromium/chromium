@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/detailed_view_delegate.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
@@ -28,6 +29,8 @@ using ContentLayerType = AshColorProvider::ContentLayerType;
 
 namespace {
 
+constexpr int kQsItemBetweenSpacing = 8;
+
 void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
   std::unique_ptr<views::BoxLayout> layout;
 
@@ -39,7 +42,9 @@ void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
                                    : 0;
       layout = std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
-          gfx::Insets::TLBR(0, left_padding, 0, 0), kUnifiedTopShortcutSpacing);
+          gfx::Insets::TLBR(0, left_padding, 0, 0),
+          features::IsQsRevampEnabled() ? kQsItemBetweenSpacing
+                                        : kUnifiedTopShortcutSpacing);
       layout->set_main_axis_alignment(
           views::BoxLayout::MainAxisAlignment::kCenter);
       layout->set_cross_axis_alignment(
@@ -53,6 +58,11 @@ void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
           views::BoxLayout::Orientation::kVertical);
       layout->set_main_axis_alignment(
           views::BoxLayout::MainAxisAlignment::kCenter);
+      if (features::IsQsRevampEnabled()) {
+        layout->set_cross_axis_alignment(
+            views::BoxLayout::CrossAxisAlignment::kCenter);
+        break;
+      }
       layout->set_cross_axis_alignment(
           views::BoxLayout::CrossAxisAlignment::kStretch);
       break;
@@ -62,27 +72,6 @@ void ConfigureTitleTriView(TriView* tri_view, TriView::Container container) {
   tri_view->SetMinSize(container,
                        gfx::Size(0, kUnifiedDetailedViewTitleRowHeight));
 }
-
-class BackButton : public IconButton {
- public:
-  BackButton(views::Button::PressedCallback callback)
-      : IconButton(std::move(callback),
-                   IconButton::Type::kSmallFloating,
-                   &kUnifiedMenuExpandIcon,
-                   IDS_ASH_STATUS_TRAY_PREVIOUS_MENU) {}
-  BackButton(const BackButton&) = delete;
-  BackButton& operator=(const BackButton&) = delete;
-  ~BackButton() override = default;
-
-  // Use the same icon as CollapseButton with rotation.
-  void PaintButtonContents(gfx::Canvas* canvas) override {
-    gfx::ScopedCanvas scoped(canvas);
-    canvas->Translate(gfx::Vector2d(size().width() / 2, size().height() / 2));
-    canvas->sk_canvas()->rotate(-90);
-    gfx::ImageSkia image = GetImageToPaint();
-    canvas->DrawImageInt(image, -image.width() / 2, -image.height() / 2);
-  }
-};
 
 }  // namespace
 
@@ -171,9 +160,15 @@ HoverHighlightView* DetailedViewDelegate::CreateScrollListItem(
   return item;
 }
 
+// TODO(b/253091169): Refactor the following creating buttons methods to return
+// unique pointers.
 views::Button* DetailedViewDelegate::CreateBackButton(
     views::Button::PressedCallback callback) {
-  return new BackButton(std::move(callback));
+  return new IconButton(
+      std::move(callback),
+      features::IsQsRevampEnabled() ? IconButton::Type::kSmall
+                                    : IconButton::Type::kSmallFloating,
+      &kQuickSettingsBackIcon, IDS_ASH_STATUS_TRAY_PREVIOUS_MENU);
 }
 
 views::Button* DetailedViewDelegate::CreateInfoButton(

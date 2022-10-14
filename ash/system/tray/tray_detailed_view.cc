@@ -77,6 +77,12 @@ class ScrollContentsView : public views::View {
   }
 
   void PaintChildren(const views::PaintInfo& paint_info) override {
+    // No sticky header and no shadow for the revamped view.
+    if (features::IsQsRevampEnabled()) {
+      views::View::PaintChildren(paint_info);
+      return;
+    }
+
     int sticky_header_height = 0;
     for (const auto& header : headers_) {
       // Sticky header is at the top.
@@ -125,6 +131,11 @@ class ScrollContentsView : public views::View {
 
   void Layout() override {
     views::View::Layout();
+
+    // No sticky headers for the revamped view.
+    if (features::IsQsRevampEnabled())
+      return;
+
     headers_.clear();
     for (auto* child : children()) {
       if (child->GetID() == VIEW_ID_STICKY_HEADER)
@@ -278,6 +289,9 @@ TrayDetailedView::TrayDetailedView(DetailedViewDelegate* delegate)
       views::BoxLayout::Orientation::kVertical));
   SetBackground(views::CreateSolidBackground(
       delegate_->GetBackgroundColor().value_or(SK_ColorTRANSPARENT)));
+
+  if (features::IsQsRevampEnabled())
+    IgnoreSeparator();
 }
 
 TrayDetailedView::~TrayDetailedView() = default;
@@ -314,6 +328,28 @@ void TrayDetailedView::CreateTitleRow(int string_id) {
   }
 
   CreateExtraTitleRowButtons();
+
+  if (!features::IsQsRevampEnabled()) {
+    Layout();
+    return;
+  }
+  // Makes the `tri_view_`'s `START` and `END`container have the same width,
+  // so the header text will be in the center of the `QuickSettingsView`
+  // horizontally.
+  auto* start_view =
+      tri_view_->children()[static_cast<size_t>(TriView::Container::START)];
+  auto* end_view =
+      tri_view_->children()[static_cast<size_t>(TriView::Container::END)];
+  int start_width = start_view->GetPreferredSize().width();
+  int end_width = end_view->GetPreferredSize().width();
+  if (start_width < end_width) {
+    start_view->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, 0, 0, end_width - start_width)));
+  } else {
+    end_view->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(0, start_width - end_width, 0, 0)));
+  }
+
   Layout();
 }
 
