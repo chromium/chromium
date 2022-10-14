@@ -584,12 +584,16 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mActionChipLabel.setVisibility(VISIBLE);
         mBackground.setVisibility(VISIBLE);
 
-        // TODO(salg): Add a check to avoid expanding too much.
         float actionChipLabelTextWidth =
                 mActionChipLabel.getPaint().measureText(mActionChipLabelString);
 
-        int expandedStateWidthPx =
-                (int) (mCollapsedStateWidthPx + actionChipLabelTextWidth + mExpandedStatePaddingPx);
+        int maxExpandedStateWidthPx = getResources().getDimensionPixelSize(
+                R.dimen.toolbar_phone_optional_button_action_chip_max_width);
+
+        int expandedStateWidthPx = Math.min(
+                (int) (mCollapsedStateWidthPx + actionChipLabelTextWidth + mExpandedStatePaddingPx),
+                maxExpandedStateWidthPx);
+
         setWidth(expandedStateWidthPx);
 
         mState = State.RUNNING_ACTION_CHIP_EXPANSION_TRANSITION;

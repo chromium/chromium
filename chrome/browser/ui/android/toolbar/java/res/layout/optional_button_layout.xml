@@ -35,6 +35,8 @@ found in the LICENSE file.
         android:layout_marginStart="40dp"
         android:gravity="center"
         android:visibility="gone"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
     <org.chromium.ui.widget.ChromeImageView
         android:layout_width="40dp"
