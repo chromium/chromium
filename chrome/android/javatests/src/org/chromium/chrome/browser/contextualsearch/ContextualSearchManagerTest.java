@@ -149,7 +149,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/765403")
+    @DisabledTest(message = "crbug.com/1373276")
     public void testSwipeExpand() throws Exception {
         // TODO(donnd): enable for all features.
         FeatureList.setTestFeatures(ENABLE_NONE);
