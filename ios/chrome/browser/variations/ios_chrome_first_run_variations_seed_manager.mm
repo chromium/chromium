@@ -72,7 +72,7 @@ static IOSChromeSeedResponse* g_shared_seed = nil;
 #endif
     _variationsDomain = variations::kDefaultServerUrl;
     _forcedChannel = std::string();
-    [self applySwitchesFromCommandLine];
+    [self applySwitchesFromArguments:[[NSProcessInfo processInfo] arguments]];
   }
   return self;
 }
@@ -129,8 +129,7 @@ static IOSChromeSeedResponse* g_shared_seed = nil;
 #pragma mark - Private
 
 // Parse custom values from the command line and apply them to the seed manager.
-- (void)applySwitchesFromCommandLine {
-  NSArray<NSString*>* arguments = [[NSProcessInfo processInfo] arguments];
+- (void)applySwitchesFromArguments:(NSArray<NSString*>*)arguments {
   std::string url_switch =
       "--" + std::string(variations::switches::kVariationsServerURL) + "=";
   std::string channel_switch =
@@ -152,7 +151,7 @@ static IOSChromeSeedResponse* g_shared_seed = nil;
 // Helper method for `startSeedFetch` that initiates an HTTPS request to the
 // Finch server in the static serial queue.
 - (void)startSeedFetchHelper {
-  DCHECK(g_seed_fetching_in_progress)
+  DCHECK(!g_seed_fetching_in_progress)
       << "SeedFetch started while already in progress";
 
   // Stops executing if seed fetching is disabled.
@@ -219,25 +218,29 @@ static IOSChromeSeedResponse* g_shared_seed = nil;
   NSString* country = [httpResponse valueForHTTPHeaderField:@"X-Country"];
 
   // Returned seed should have been gzip compressed.
-  NSArray<NSString*>* instanceManipulations = [[httpResponse
-      valueForHTTPHeaderField:@"IM"] componentsSeparatedByString:@","];
   NSCharacterSet* whitespace = [NSCharacterSet whitespaceCharacterSet];
+  NSPredicate* nonEmpty = [NSPredicate
+      predicateWithBlock:^BOOL(NSString* im, NSDictionary* bindings) {
+        return [[im stringByTrimmingCharactersInSet:whitespace] length] > 0;
+      }];
+  NSArray<NSString*>* instanceManipulations = [[[httpResponse
+      valueForHTTPHeaderField:@"IM"] componentsSeparatedByString:@","]
+      filteredArrayUsingPredicate:nonEmpty];
   // Only gzip compressed data is supported on first run seed fetching with
   // "gzip" specified in the request.
-  if ([instanceManipulations count] != 1 ||
-      ![[instanceManipulations[0] stringByTrimmingCharactersInSet:whitespace]
+  if ([instanceManipulations count] == 1 &&
+      [[instanceManipulations[0] stringByTrimmingCharactersInSet:whitespace]
           isEqualToString:@"gzip"]) {
+    IOSChromeSeedResponse* seed =
+        [[IOSChromeSeedResponse alloc] initWithSignature:signature
+                                                 country:country
+                                                    time:[NSDate now]
+                                                    data:data
+                                              compressed:YES];
+    return seed;
+  }
     [self recordSeedFetchResult];
     return nil;
-  }
-
-  IOSChromeSeedResponse* seed =
-      [[IOSChromeSeedResponse alloc] initWithSignature:signature
-                                               country:country
-                                                  time:[NSDate now]
-                                                  data:data
-                                            compressed:YES];
-  return seed;
 }
 
 // Records the seed fetch result on UMA.
@@ -264,6 +267,12 @@ static IOSChromeSeedResponse* g_shared_seed = nil;
       [weakSelf.delegate didFetchSeedSuccess:result];
     });
   }
+}
+
+// Invoked by the testing code to reset the fetching status after each test. DO
+// NOT INVOKE IN PRODUCTION CODE.
++ (void)resetFetchingStatusForTesting {
+  g_seed_fetching_in_progress = NO;
 }
 
 @end

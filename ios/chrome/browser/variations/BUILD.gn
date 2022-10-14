@@ -127,3 +127,19 @@ source_set("eg2_tests") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "ios_chrome_first_run_variations_seed_manager_unittest.mm" ]
+  deps = [
+    ":first_run",
+    "//base",
+    "//base/test:test_support",
+    "//components/variations",
+    "//components/version_info:version_info",
+    "//net",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
