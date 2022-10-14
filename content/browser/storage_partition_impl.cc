@@ -2613,7 +2613,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
       attribution_manager->ClearData(
           begin, end, generic_filter, filter_builder,
           remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL,
-          CreateTaskCompletionClosure(TracingDataType::kConversions));
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              CreateTaskCompletionClosure(TracingDataType::kConversions)));
     } else if (storage_key.IsFirstPartyContext()) {
       // Attribution Reporting API doesn't support cross-site data deletion.
       std::unique_ptr<BrowsingDataFilterBuilder> effective_filter_builder =
@@ -2623,7 +2624,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
       attribution_manager->ClearData(
           begin, end, generic_filter, effective_filter_builder.get(),
           remove_mask_ & REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL,
-          CreateTaskCompletionClosure(TracingDataType::kConversions));
+          mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+              CreateTaskCompletionClosure(TracingDataType::kConversions)));
     }
   }
 
@@ -2638,7 +2640,8 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     // `CookiesTreeModel`.
     aggregation_service->ClearData(
         begin, end, generic_filter,
-        CreateTaskCompletionClosure(TracingDataType::kAggregationService));
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            CreateTaskCompletionClosure(TracingDataType::kAggregationService)));
   }
 
   if (private_aggregation_manager &&
