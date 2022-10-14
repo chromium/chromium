@@ -61,21 +61,20 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettings {
 
   // Returns true if the study is active for this client. Once if it returns
   // true, it doesn't return false at any point after. The converse is not true.
+  // Note that metrics might still need to be sampled (because of tracing) even
+  // if this returns `false`. Use one of the `ShouldSample...` methods below for
+  // deciding whether a surface needs to be sampled.
   bool IsActive() const;
 
   // Returns true if |surface| should be sampled.
-  //
-  // Will always return false if IsActive() is false. If the study is inactive,
-  // all surfaces are considered to be blocked. Hence it is sufficient to call
-  // this function directly instead of calling IsActive() before it.
   bool ShouldSampleSurface(IdentifiableSurface surface) const;
 
   // Returns true if |type| should be sampled.
-  //
-  // Will always return false if IsActive() is false. If the study is inactive,
-  // all surface types are considered to be blocked. Hence it is sufficient to
-  // call this function directly instead of calling IsActive() before it.
   bool ShouldSampleType(IdentifiableSurface::Type type) const;
+
+  // Returns true if any of |types| should be sampled.
+  bool ShouldSampleAnyType(
+      std::initializer_list<IdentifiableSurface::Type> types) const;
 
   // Convenience method for determining whether the surface constructable from
   // the type (|kWebFeature|) and the |feature| is allowed. See
@@ -98,6 +97,9 @@ class BLINK_COMMON_EXPORT IdentifiabilityStudySettings {
       delete;
 
  private:
+  // If this returns `false`, then nothing should be sampled.
+  bool ShouldSampleAnything() const;
+
   const std::unique_ptr<IdentifiabilityStudySettingsProvider> provider_;
   const bool is_enabled_ = false;
   const bool is_any_surface_or_type_blocked_ = false;

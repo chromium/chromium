@@ -33,6 +33,22 @@ HashSet<T> SetIntersection(const HashSet<T>& a, const HashSet<T>& b) {
 
 namespace blink {
 
+namespace {
+
+bool IdentifiabilityStudyShouldSampleFonts() {
+  return IdentifiabilityStudySettings::Get()->ShouldSampleAnyType({
+      IdentifiableSurface::Type::kLocalFontLookupByUniqueOrFamilyName,
+      IdentifiableSurface::Type::kLocalFontLookupByUniqueNameOnly,
+      IdentifiableSurface::Type::kLocalFontLookupByFallbackCharacter,
+      IdentifiableSurface::Type::kLocalFontLookupAsLastResort,
+      IdentifiableSurface::Type::kGenericFontLookup,
+      IdentifiableSurface::Type::kLocalFontLoadPostScriptName,
+      IdentifiableSurface::Type::kLocalFontExistenceByUniqueNameOnly,
+  });
+}
+
+}  // namespace
+
 FontMatchingMetrics::FontMatchingMetrics(
     bool top_level,
     ukm::UkmRecorder* ukm_recorder,
@@ -116,7 +132,7 @@ void FontMatchingMetrics::ReportLocalFontExistenceByUniqueNameOnly(
 void FontMatchingMetrics::InsertFontHashIntoMap(IdentifiableTokenKey input_key,
                                                 SimpleFontData* font_data,
                                                 TokenToTokenHashMap& hash_map) {
-  DCHECK(IdentifiabilityStudySettings::Get()->IsActive());
+  DCHECK(IdentifiabilityStudyShouldSampleFonts());
   if (hash_map.Contains(input_key))
     return;
   IdentifiableToken output_token(GetHashForFontData(font_data));
@@ -269,7 +285,7 @@ void FontMatchingMetrics::ReportEmojiSegmentGlyphCoverage(
 }
 
 void FontMatchingMetrics::PublishIdentifiabilityMetrics() {
-  if (!IdentifiabilityStudySettings::Get()->IsActive())
+  if (!IdentifiabilityStudyShouldSampleFonts())
     return;
 
   IdentifiabilityMetricBuilder builder(source_id_);
@@ -349,7 +365,7 @@ void FontMatchingMetrics::PublishEmojiGlyphMetrics() {
 }
 
 void FontMatchingMetrics::OnFontLookup() {
-  DCHECK(IdentifiabilityStudySettings::Get()->IsActive());
+  DCHECK(IdentifiabilityStudyShouldSampleFonts());
   if (!identifiability_metrics_timer_.IsActive()) {
     identifiability_metrics_timer_.StartOneShot(base::Minutes(1), FROM_HERE);
   }
