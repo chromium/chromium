@@ -62,7 +62,7 @@ BASE_FEATURE(kSkipServiceWorkerCheckInstallOnly,
 // Enables showing a detailed install dialog for user installs.
 BASE_FEATURE(kDesktopPWAsDetailedInstallDialog,
              "DesktopPWAsDetailedInstallDialog",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables sending the beforeinstallprompt without a service worker check.
 BASE_FEATURE(kSkipServiceWorkerForInstallPrompt,
