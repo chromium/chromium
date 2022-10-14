@@ -53,7 +53,7 @@ export class FileTasks {
    * @param {?FileTransferController} fileTransferController
    * @param {!Array<!Entry>} entries
    * @param {!Array<?string>} mimeTypes
-   * @param {!Array<!chrome.fileManagerPrivate.FileTask>} tasks
+   * @param {!chrome.fileManagerPrivate.ResultingTasks} resultingTasks
    * @param {?chrome.fileManagerPrivate.FileTask} defaultTask
    * @param {!TaskHistory} taskHistory
    * @param {!NamingController} namingController
@@ -62,8 +62,8 @@ export class FileTasks {
    */
   constructor(
       volumeManager, metadataModel, directoryModel, ui, fileTransferController,
-      entries, mimeTypes, tasks, defaultTask, taskHistory, namingController,
-      crostini, progressCenter) {
+      entries, mimeTypes, resultingTasks, defaultTask, taskHistory,
+      namingController, crostini, progressCenter) {
     /** @private @const {!VolumeManager} */
     this.volumeManager_ = volumeManager;
 
@@ -85,8 +85,8 @@ export class FileTasks {
     /** @private @const {!Array<?string>} */
     this.mimeTypes_ = mimeTypes;
 
-    /** @private @const {!Array<!chrome.fileManagerPrivate.FileTask>} */
-    this.tasks_ = tasks;
+    /** @private @const {!chrome.fileManagerPrivate.ResultingTasks} */
+    this.resultingTasks_ = resultingTasks;
 
     /** @private @const {?chrome.fileManagerPrivate.FileTask} */
     this.defaultTask_ = defaultTask;
@@ -138,19 +138,18 @@ export class FileTasks {
       volumeManager, metadataModel, directoryModel, ui, fileTransferController,
       entries, mimeTypes, taskHistory, namingController, crostini,
       progressCenter) {
-    /** @type {!Array<!chrome.fileManagerPrivate.FileTask>} */
-    let tasks = [];
+    /** @type {!chrome.fileManagerPrivate.ResultingTasks} */
+    let resultingTasks = {tasks: []};
 
     // Cannot use fake entries with getFileTasks.
     entries = entries.filter(e => !util.isFakeEntry(e));
     if (entries.length !== 0) {
-      const resultingTasks = await new Promise(
+      resultingTasks = await new Promise(
           fulfill => chrome.fileManagerPrivate.getFileTasks(entries, fulfill));
       if (!resultingTasks || !resultingTasks.tasks) {
         throw new Error(
             'Cannot get file tasks: ' + chrome.runtime.lastError.message);
       }
-      tasks = resultingTasks.tasks;
     }
 
     // Linux package installation is currently only supported for a single file
@@ -163,19 +162,20 @@ export class FileTasks {
           crostini.canSharePath(
               constants.DEFAULT_CROSTINI_VM, entries[0],
               false /* persist */))) {
-      tasks = tasks.filter(
+      resultingTasks.tasks = resultingTasks.tasks.filter(
           task => !util.descriptorEqual(
               task.descriptor,
               FileTasks.INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR));
     }
 
-    tasks = FileTasks.annotateTasks_(tasks, entries);
+    resultingTasks.tasks =
+        FileTasks.annotateTasks_(resultingTasks.tasks, entries);
 
-    const defaultTask = FileTasks.getDefaultTask(tasks, taskHistory);
+    const defaultTask = FileTasks.getDefaultTask(resultingTasks, taskHistory);
 
     return new FileTasks(
         volumeManager, metadataModel, directoryModel, ui,
-        fileTransferController, entries, mimeTypes, tasks, defaultTask,
+        fileTransferController, entries, mimeTypes, resultingTasks, defaultTask,
         taskHistory, namingController, crostini, progressCenter);
   }
 
@@ -184,7 +184,7 @@ export class FileTasks {
    * @return {!Array<!chrome.fileManagerPrivate.FileTask>}
    */
   getTaskItems() {
-    return this.tasks_;
+    return this.resultingTasks_.tasks;
   }
 
   /**
@@ -192,7 +192,15 @@ export class FileTasks {
    * @return {!Array<!chrome.fileManagerPrivate.FileTask>}
    */
   getOpenTaskItems() {
-    return this.tasks_.filter(FileTasks.isOpenTask);
+    return this.resultingTasks_.tasks.filter(FileTasks.isOpenTask);
+  }
+
+  /**
+   * Gets the policy default handler status.
+   * @return {!chrome.fileManagerPrivate.PolicyDefaultHandlerStatus|undefined}
+   */
+  getPolicyDefaultHandlerStatus() {
+    return this.resultingTasks_.policyDefaultHandlerStatus;
   }
 
   /**
@@ -571,13 +579,24 @@ export class FileTasks {
   executeDefaultInternal_(opt_callback) {
     const callback = opt_callback || ((arg1, arg2) => {});
 
-    if (this.defaultTask_ !== null) {
+    if (this.defaultTask_) {
       this.executeInternal_(this.defaultTask_);
       callback(true, this.entries_);
       return;
     }
 
-    const nonGenericTasks = this.tasks_.filter(t => !t.isGenericFileHandler);
+    // If there's policy involved and |defaultTask_| is null, means that policy
+    // assignment was incorrect. We should not execute anything in this case.
+    if (this.getPolicyDefaultHandlerStatus()) {
+      assert(
+          this.getPolicyDefaultHandlerStatus() ===
+          chrome.fileManagerPrivate.PolicyDefaultHandlerStatus
+              .INCORRECT_ASSIGNMENT);
+      return;
+    }
+
+    const nonGenericTasks =
+        this.resultingTasks_.tasks.filter(t => !t.isGenericFileHandler);
     // If there is only one task that is not a generic file handler, it should
     // be executed as a default task. If there are multiple tasks that are not
     // generic file handlers, and none of them are considered as default, we
@@ -1049,13 +1068,7 @@ export class FileTasks {
    * @public
    */
   display(openCombobutton) {
-    const openTasks = [];
-    for (const task of this.tasks_) {
-      if (FileTasks.isOpenTask(task)) {
-        openTasks.push(task);
-      }
-    }
-    this.updateOpenComboButton_(openCombobutton, openTasks);
+    this.updateOpenComboButton_(openCombobutton, this.getOpenTaskItems());
   }
 
   /**
@@ -1089,8 +1102,7 @@ export class FileTasks {
     // (including defaultTask). If only one generic task is available, we
     // also show it in the context menu.
     const items = this.createItems_(tasks);
-    if (items.length > 1 ||
-        (items.length === 1 && this.defaultTask_ === null)) {
+    if (items.length > 1 || (items.length === 1 && !this.defaultTask_)) {
       for (const item of items) {
         combobutton.addDropDownItem(item);
       }
@@ -1101,9 +1113,20 @@ export class FileTasks {
         combobutton.addSeparator();
         const changeDefaultMenuItem = combobutton.addDropDownItem({
           type: FileTasks.TaskMenuButtonItemType.ChangeDefaultTask,
-          label: loadTimeData.getString('CHANGE_DEFAULT_MENU_ITEM'),
+          label: str('CHANGE_DEFAULT_MENU_ITEM'),
         });
         changeDefaultMenuItem.classList.add('change-default');
+
+        // Disables CHANGE_DEFAULT button if default has been set by policy.
+        if (this.getPolicyDefaultHandlerStatus()) {
+          // |defaultTask_| exists, thus |policyDefaultHandlerStatus| cannot be
+          // INCORRECT_ASSIGNMENT.
+          assert(
+              this.getPolicyDefaultHandlerStatus() ===
+              chrome.fileManagerPrivate.PolicyDefaultHandlerStatus
+                  .DEFAULT_HANDLER_ASSIGNED_BY_POLICY);
+          changeDefaultMenuItem.disabled = true;
+        }
       }
     }
   }
@@ -1214,19 +1237,37 @@ export class FileTasks {
    * Gets the default task from tasks. In case there is no such task (i.e. all
    * tasks are generic file handlers), then return null.
    *
-   * @param {!Array<!chrome.fileManagerPrivate.FileTask>} tasks The list of
-   *     tasks from where to choose the default task.
+   * @param {!chrome.fileManagerPrivate.ResultingTasks} resultingTasks The list
+   *     of tasks from where to choose the default task.
    * @param {!TaskHistory} taskHistory
    * @return {?chrome.fileManagerPrivate.FileTask} the default task, or null if
    *     no default task found.
    */
-  static getDefaultTask(tasks, taskHistory) {
+  static getDefaultTask(resultingTasks, taskHistory) {
+    const {tasks, policyDefaultHandlerStatus} = resultingTasks;
+
+    // If policy assignment is incorrect, then no default should be set.
+    if (policyDefaultHandlerStatus &&
+        policyDefaultHandlerStatus ===
+            chrome.fileManagerPrivate.PolicyDefaultHandlerStatus
+                .INCORRECT_ASSIGNMENT) {
+      return null;
+    }
+
     // 1. Default app set for MIME or file extension by user, or built-in app.
     for (const task of tasks) {
       if (task.isDefault) {
         return task;
       }
     }
+
+    // If policy assignment is marked as correct, then by this moment we
+    // should've already found the default.
+    assert(
+        !(policyDefaultHandlerStatus &&
+          policyDefaultHandlerStatus ===
+              chrome.fileManagerPrivate.PolicyDefaultHandlerStatus
+                  .DEFAULT_HANDLER_ASSIGNED_BY_POLICY));
 
     const nonGenericTasks = tasks.filter(t => !t.isGenericFileHandler);
     if (nonGenericTasks.length === 0) {

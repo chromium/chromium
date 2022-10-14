@@ -360,11 +360,11 @@ export class TaskController {
       // Compare entries while ignoring changes inside directories.
       if (!util.isSameEntries(this.lastSelectedEntries_, selection.entries)) {
         // Update the context menu if selection changed.
-        this.updateContextMenuTaskItems_([]);
+        this.updateContextMenuTaskItems_({tasks: []});
       }
     } else {
       // Update context menu.
-      this.updateContextMenuTaskItems_([]);
+      this.updateContextMenuTaskItems_({tasks: []});
     }
     this.lastSelectedEntries_ = selection.entries;
   }
@@ -409,7 +409,9 @@ export class TaskController {
       // Update the DOM.
       tasks.display(this.ui_.taskMenuButton);
       const openTaskItems = tasks.getOpenTaskItems();
-      this.updateContextMenuTaskItems_(openTaskItems);
+      const policyDefaultHandlerStatus = tasks.getPolicyDefaultHandlerStatus();
+      this.updateContextMenuTaskItems_(
+          {tasks: openTaskItems, policyDefaultHandlerStatus});
       if (window.IN_TEST) {
         this.ui_.taskMenuButton.toggleAttribute('get-tasks-completed', true);
       }
@@ -478,44 +480,48 @@ export class TaskController {
   /**
    * Updates tasks menu item to match passed task items.
    *
-   * @param {!Array<!chrome.fileManagerPrivate.FileTask>} openTasks List of OPEN
+   * @param {!chrome.fileManagerPrivate.ResultingTasks} openTasks List of OPEN
    *     tasks.
    * @private
    */
   updateContextMenuTaskItems_(openTasks) {
-    const defaultTask = FileTasks.getDefaultTask(openTasks, this.taskHistory_);
-    if (defaultTask) {
-      const menuItem = this.ui_.defaultTaskMenuItem;
-      /**
-       * Menu icon can be controlled by either `iconEndImage` or
-       * `iconEndFileType`, since the default task menu item DOM is shared,
-       * before updating it, we should remove the previous one, e.g. reset both
-       * `iconEndImage` and `iconEndFileType`.
-       */
-      menuItem.iconEndImage = '';
-      menuItem.removeIconEndFileType();
+    const taskCount = openTasks.tasks.length;
+    if (taskCount > 0) {
+      const defaultTask =
+          FileTasks.getDefaultTask(openTasks, this.taskHistory_);
+      if (defaultTask) {
+        const menuItem = this.ui_.defaultTaskMenuItem;
+        /**
+         * Menu icon can be controlled by either `iconEndImage` or
+         * `iconEndFileType`, since the default task menu item DOM is shared,
+         * before updating it, we should remove the previous one, e.g. reset
+         * both `iconEndImage` and `iconEndFileType`.
+         */
+        menuItem.iconEndImage = '';
+        menuItem.removeIconEndFileType();
 
-      menuItem.setIconEndHidden(false);
-      if (defaultTask.iconType) {
-        menuItem.iconEndFileType = defaultTask.iconType;
-      } else if (defaultTask.iconUrl) {
-        menuItem.iconEndImage = 'url(' + defaultTask.iconUrl + ')';
-      } else {
-        menuItem.setIconEndHidden(true);
+        menuItem.setIconEndHidden(false);
+        if (defaultTask.iconType) {
+          menuItem.iconEndFileType = defaultTask.iconType;
+        } else if (defaultTask.iconUrl) {
+          menuItem.iconEndImage = 'url(' + defaultTask.iconUrl + ')';
+        } else {
+          menuItem.setIconEndHidden(true);
+        }
+
+        menuItem.label = defaultTask.label || defaultTask.title;
+        menuItem.disabled = !!defaultTask.disabled;
+        menuItem.descriptor = defaultTask.descriptor;
       }
 
-      menuItem.label = defaultTask.label || defaultTask.title;
-      menuItem.disabled = !!defaultTask.disabled;
-      menuItem.descriptor = defaultTask.descriptor;
+      this.canExecuteDefaultTask_ = defaultTask != null;
+      this.defaultTaskCommand_.canExecuteChange(this.ui_.listContainer.element);
     }
 
-    this.canExecuteDefaultTask_ = defaultTask != null;
-    this.defaultTaskCommand_.canExecuteChange(this.ui_.listContainer.element);
-
-    this.canExecuteOpenActions_ = openTasks.length > 1;
+    this.canExecuteOpenActions_ = taskCount > 1;
     this.openWithCommand_.canExecuteChange(this.ui_.listContainer.element);
 
-    this.ui_.tasksSeparator.hidden = openTasks.length === 0;
+    this.ui_.tasksSeparator.hidden = taskCount === 0;
   }
 
   /**
