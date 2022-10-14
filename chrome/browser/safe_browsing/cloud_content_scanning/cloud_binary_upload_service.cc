@@ -221,6 +221,12 @@ void CloudBinaryUploadService::MaybeAcknowledge(std::unique_ptr<Ack> ack) {
   // Nothing to do for cloud upload service.
 }
 
+void CloudBinaryUploadService::MaybeCancelRequests(
+    std::unique_ptr<CancelRequests> cancel) {
+  // Nothing to do for cloud upload service.
+  // TODO(1374944): Might consider canceling requests in `request_queue_`.
+}
+
 void CloudBinaryUploadService::MaybeUploadForDeepScanningCallback(
     std::unique_ptr<CloudBinaryUploadService::Request> request,
     bool authorized) {

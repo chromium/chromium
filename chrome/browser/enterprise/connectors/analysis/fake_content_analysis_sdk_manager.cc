@@ -30,6 +30,10 @@ void FakeContentAnalysisSdkManager::SetClientAckStatus(int status) {
   ack_status_ = status;
 }
 
+void FakeContentAnalysisSdkManager::SetClientCancelStatus(int status) {
+  cancel_status_ = status;
+}
+
 std::unique_ptr<content_analysis::sdk::Client>
 FakeContentAnalysisSdkManager::CreateClient(
     const content_analysis::sdk::Client::Config& config) {
@@ -37,6 +41,7 @@ FakeContentAnalysisSdkManager::CreateClient(
   client->SetSendStatus(send_status_);
   client->SetSendResponse(response_);
   client->SetAckStatus(ack_status_);
+  client->SetCancelStatus(cancel_status_);
   fake_clients_.insert(std::make_pair(std::move(config), client.get()));
 
   return client;

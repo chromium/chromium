@@ -242,6 +242,36 @@ class BinaryUploadService : public KeyedService {
         cloud_or_local_settings_;
   };
 
+  // A class to encapsulate requests to cancel.  Any request that match the
+  // given criteria is canceled.  This is best effort only, in some cases
+  // requests may have already started and can no longer be canceled.
+  class CancelRequests {
+   public:
+    explicit CancelRequests(
+        enterprise_connectors::CloudOrLocalAnalysisSettings settings);
+    virtual ~CancelRequests();
+    CancelRequests(const CancelRequests&) = delete;
+    CancelRequests& operator=(const CancelRequests&) = delete;
+    CancelRequests(CancelRequests&&) = delete;
+    CancelRequests& operator=(CancelRequests&&) = delete;
+
+    void set_user_action_id(const std::string& user_action_id);
+    const std::string& get_user_action_id() const { return user_action_id_; }
+
+    const enterprise_connectors::CloudOrLocalAnalysisSettings&
+    cloud_or_local_settings() const {
+      return cloud_or_local_settings_;
+    }
+
+   private:
+    std::string user_action_id_;
+
+    // Settings used to determine how the request is used in the cloud or
+    // locally.
+    enterprise_connectors::CloudOrLocalAnalysisSettings
+        cloud_or_local_settings_;
+  };
+
   static BinaryUploadService* GetForProfile(
       Profile* profile,
       const enterprise_connectors::AnalysisSettings& settings);
@@ -252,6 +282,11 @@ class BinaryUploadService : public KeyedService {
 
   // Send an acknowledgement for the request with the given token.
   virtual void MaybeAcknowledge(std::unique_ptr<Ack> ack) = 0;
+
+  // Cancel any requests that match the given criteria .  This is a best effort
+  // approach only, since it is possible that requests have been started in a
+  // way that they are no longer cancelable.
+  virtual void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) = 0;
 };
 
 }  // namespace safe_browsing

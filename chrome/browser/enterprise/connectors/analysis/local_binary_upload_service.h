@@ -69,6 +69,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // Send the given file contents to local partners for deep scanning.
   void MaybeUploadForDeepScanning(std::unique_ptr<Request> request) override;
   void MaybeAcknowledge(std::unique_ptr<Ack> ack) override;
+  void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override;
 
   size_t GetActiveRequestCountForTesting() const {
     return active_requests_.size();

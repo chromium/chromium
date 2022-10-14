@@ -31,12 +31,15 @@ class FakeContentAnalysisSdkManager final : public ContentAnalysisSdkManager {
 
   void SetClientAckStatus(int status);
 
+  void SetClientCancelStatus(int status);
+
   FakeContentAnalysisSdkClient* GetFakeClient(
       const content_analysis::sdk::Client::Config& config);
 
  private:
   int send_status_ = 0;
   int ack_status_ = 0;
+  int cancel_status_ = 0;
   content_analysis::sdk::ContentAnalysisResponse response_;
 
   constexpr static auto CompareConfig =

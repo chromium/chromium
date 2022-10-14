@@ -144,6 +144,8 @@ class FakeBinaryUploadService : public BinaryUploadService {
     ASSERT_TRUE(base::Contains(requests_tokens_, ack->ack().request_token()));
   }
 
+  void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override {}
+
   void SetResponse(const base::FilePath& path,
                    BinaryUploadService::Result result,
                    enterprise_connectors::ContentAnalysisResponse response) {

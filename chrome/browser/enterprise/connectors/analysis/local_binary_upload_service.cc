@@ -34,6 +34,14 @@ content_analysis::sdk::Client::Config SDKConfigFromAck(
           ack->cloud_or_local_settings().user_specific()};
 }
 
+// Build a content analysis SDK client config based on the cancel requests being
+// sent.
+content_analysis::sdk::Client::Config SDKConfigFromCancel(
+    const safe_browsing::BinaryUploadService::CancelRequests* cancel) {
+  return {cancel->cloud_or_local_settings().local_path(),
+          cancel->cloud_or_local_settings().user_specific()};
+}
+
 // Convert enterprise connector ContentAnalysisRequest into the SDK equivalent.
 // SDK ContentAnalysisRequest is a strict subset of the enterprise connector
 // version, therefore the function should always work.
@@ -92,7 +100,15 @@ int SendAckToSDK(
   return wrapped->client()->Acknowledge(sdk_ack);
 }
 
-void HandleAckResponse(
+int SendCancelToSDK(
+    scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
+    content_analysis::sdk::ContentAnalysisCancelRequests sdk_cancel) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  return wrapped->client()->CancelRequests(sdk_cancel);
+}
+
+void HandleAckOrCancelResponse(
     scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
     int status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -114,7 +130,24 @@ void DoSendAck(scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&SendAckToSDK, wrapped, std::move(sdk_ack)),
-      base::BindOnce(&HandleAckResponse, wrapped));
+      base::BindOnce(&HandleAckOrCancelResponse, wrapped));
+}
+
+void DoSendCancel(
+    scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
+    std::unique_ptr<safe_browsing::BinaryUploadService::CancelRequests>
+        cancel) {
+  if (!wrapped || !wrapped->client())
+    return;
+
+  content_analysis::sdk::ContentAnalysisCancelRequests sdk_cancel;
+  sdk_cancel.set_user_action_id(cancel->get_user_action_id());
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SendCancelToSDK, wrapped, std::move(sdk_cancel)),
+      base::BindOnce(&HandleAckOrCancelResponse, wrapped));
 }
 
 // Sends a request to the local agent and waits for a response.
@@ -199,6 +232,35 @@ void LocalBinaryUploadService::MaybeAcknowledge(std::unique_ptr<Ack> ack) {
   DoSendAck(
       ContentAnalysisSdkManager::Get()->GetClient(SDKConfigFromAck(ack_ptr)),
       std::move(ack));
+}
+
+void LocalBinaryUploadService::MaybeCancelRequests(
+    std::unique_ptr<CancelRequests> cancel) {
+  // Cancel all active requests.  If the agent returns a response for any,
+  // they will be ignored.
+  for (auto it = active_requests_.begin(); it != active_requests_.end();) {
+    if (it->second.request->user_action_id() == cancel->get_user_action_id()) {
+      it = active_requests_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  // Cancel all pending requests.
+  for (auto it = pending_requests_.begin(); it != pending_requests_.end();) {
+    if (it->request->user_action_id() == cancel->get_user_action_id()) {
+      it = pending_requests_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+
+  // Tell agent to cancel requests.  This is a best effort only on the part of
+  // the agent.
+  auto* cancel_ptr = cancel.get();
+  DoSendCancel(ContentAnalysisSdkManager::Get()->GetClient(
+                   SDKConfigFromCancel(cancel_ptr)),
+               std::move(cancel));
 }
 
 void LocalBinaryUploadService::DoLocalContentAnalysis(RequestKey key,

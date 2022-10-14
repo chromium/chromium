@@ -29,6 +29,10 @@ class FakeContentAnalysisSdkClient : public content_analysis::sdk::Client {
   // Get the latest request client receives.
   const content_analysis::sdk::ContentAnalysisRequest& GetRequest();
 
+  // Get the latest cancel requests receives.
+  const content_analysis::sdk::ContentAnalysisCancelRequests&
+  GetCancelRequests();
+
   // Configure response acknowledgement status.
   void SetAckStatus(int status);
 
@@ -46,6 +50,7 @@ class FakeContentAnalysisSdkClient : public content_analysis::sdk::Client {
   content_analysis::sdk::Client::Config config_;
   content_analysis::sdk::ContentAnalysisResponse response_;
   content_analysis::sdk::ContentAnalysisRequest request_;
+  content_analysis::sdk::ContentAnalysisCancelRequests cancel_;
   int send_status_ = 0;
   int ack_status_ = 0;
   int cancel_status_ = 0;
