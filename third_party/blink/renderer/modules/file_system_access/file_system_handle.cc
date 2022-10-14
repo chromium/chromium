@@ -143,10 +143,8 @@ ScriptPromise FileSystemHandle::move(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  String dest_name = new_entry_name.empty() ? name_ : new_entry_name;
-
   MoveImpl(
-      destination_directory->Transfer(), dest_name,
+      destination_directory->Transfer(), new_entry_name,
       WTF::BindOnce(
           [](FileSystemHandle* handle, const String& new_name,
              ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result) {
@@ -155,7 +153,7 @@ ScriptPromise FileSystemHandle::move(
             }
             file_system_access_error::ResolveOrReject(resolver, *result);
           },
-          WrapPersistent(this), dest_name, WrapPersistent(resolver)));
+          WrapPersistent(this), new_entry_name, WrapPersistent(resolver)));
 
   return result;
 }

@@ -138,15 +138,15 @@ directory_test(async (t, root) => {
   const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
   const dir_dest = await root.getDirectoryHandle('dir-dest', {create: true});
   const file = await createFileWithContents(t, 'file', 'abc', dir_src);
-  await file.move(dir_dest, '');
+  await promise_rejects_js(t, TypeError, file.move(dir_dest, ''));
 
   assert_array_equals(
       await getSortedDirectoryEntries(root), ['dir-dest/', 'dir-src/']);
-  assert_array_equals(await getSortedDirectoryEntries(dir_src), []);
-  assert_array_equals(await getSortedDirectoryEntries(dir_dest), ['file']);
+  assert_array_equals(await getSortedDirectoryEntries(dir_src), ['file']);
+  assert_array_equals(await getSortedDirectoryEntries(dir_dest), []);
   assert_equals(await getFileContents(file), 'abc');
   assert_equals(await getFileSize(file), 3);
-}, 'move(dir, "") to move a file to a new directory');
+}, 'move(dir, "") to move a file to a new directory fails');
 
 directory_test(async (t, root) => {
   const dir_src = await root.getDirectoryHandle('dir-src', {create: true});
@@ -190,33 +190,6 @@ directory_test(async (t, root) => {
   assert_array_equals(await getSortedDirectoryEntries(dir2), []);
   assert_equals(await getFileContents(handle), 'foo');
 }, 'move(dir) can be called multiple times');
-
-directory_test(async (t, root) => {
-  const dir1 = await root.getDirectoryHandle('dir1', {create: true});
-  const dir2 = await root.getDirectoryHandle('dir2', {create: true});
-  const handle = await createFileWithContents(t, 'file', 'foo', root);
-
-  await handle.move(dir1, "");
-  assert_array_equals(
-      await getSortedDirectoryEntries(root), ['dir1/', 'dir2/']);
-  assert_array_equals(await getSortedDirectoryEntries(dir1), ['file']);
-  assert_array_equals(await getSortedDirectoryEntries(dir2), []);
-  assert_equals(await getFileContents(handle), 'foo');
-
-  await handle.move(dir2, "");
-  assert_array_equals(
-      await getSortedDirectoryEntries(root), ['dir1/', 'dir2/']);
-  assert_array_equals(await getSortedDirectoryEntries(dir1), []);
-  assert_array_equals(await getSortedDirectoryEntries(dir2), ['file']);
-  assert_equals(await getFileContents(handle), 'foo');
-
-  await handle.move(root, "");
-  assert_array_equals(
-      await getSortedDirectoryEntries(root), ['dir1/', 'dir2/', 'file']);
-  assert_array_equals(await getSortedDirectoryEntries(dir1), []);
-  assert_array_equals(await getSortedDirectoryEntries(dir2), []);
-  assert_equals(await getFileContents(handle), 'foo');
-}, 'move(dir, "") can be called multiple times');
 
 directory_test(async (t, root) => {
   const dir1 = await root.getDirectoryHandle('dir1', {create: true});

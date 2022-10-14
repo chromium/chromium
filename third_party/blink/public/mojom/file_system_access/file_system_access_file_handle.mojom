@@ -68,8 +68,7 @@ interface FileSystemAccessFileHandle {
   CreateFileWriter(bool keep_existing_data, bool auto_close) => (
       FileSystemAccessError result, pending_remote<FileSystemAccessFileWriter>? writer);
 
-  // Renames the file represented by this handle to `new_entry_name`, which
-  // cannot be empty. This is guaranteed to be atomic.
+  // Renames the file represented by this handle to `new_entry_name`.
   // Returns an error if the file does not exist.
   Rename(string new_entry_name) => (FileSystemAccessError result);
 

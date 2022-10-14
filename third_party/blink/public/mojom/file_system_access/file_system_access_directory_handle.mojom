@@ -66,8 +66,7 @@ interface FileSystemAccessDirectoryHandle {
   // Returns all the direct children of this directory.
   GetEntries(pending_remote<FileSystemAccessDirectoryEntriesListener> listener);
 
-  // Renames the directory represented by this handle to `new_entry_name`, which
-  // cannot be empty. This is guaranteed to be atomic.
+  // Renames the directory represented by this handle to `new_entry_name`.
   // Returns an error if the directory does not exist.
   Rename(string new_entry_name) => (FileSystemAccessError result);
 
