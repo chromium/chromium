@@ -36,14 +36,21 @@ struct NGGridBreakTokenData final : NGBlockBreakTokenData {
       LayoutUnit consumed_grid_block_size,
       const Vector<GridItemPlacementData>& grid_items_placement_data,
       const Vector<LayoutUnit>& row_offset_adjustments,
-      const Vector<EBreakBetween>& row_break_between)
+      const Vector<EBreakBetween>& row_break_between,
+      const HeapVector<Member<LayoutBox>>& oof_children)
       : NGBlockBreakTokenData(kGridBreakTokenData, break_token_data),
         layout_data(layout_data),
         intrinsic_block_size(intrinsic_block_size),
         consumed_grid_block_size(consumed_grid_block_size),
         grid_items_placement_data(grid_items_placement_data),
         row_offset_adjustments(row_offset_adjustments),
-        row_break_between(row_break_between) {}
+        row_break_between(row_break_between),
+        oof_children(oof_children) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(oof_children);
+    NGBlockBreakTokenData::Trace(visitor);
+  }
 
   NGGridLayoutData layout_data;
   LayoutUnit intrinsic_block_size;
@@ -56,6 +63,7 @@ struct NGGridBreakTokenData final : NGBlockBreakTokenData {
   Vector<GridItemPlacementData> grid_items_placement_data;
   Vector<LayoutUnit> row_offset_adjustments;
   Vector<EBreakBetween> row_break_between;
+  HeapVector<Member<LayoutBox>> oof_children;
 };
 
 template <>

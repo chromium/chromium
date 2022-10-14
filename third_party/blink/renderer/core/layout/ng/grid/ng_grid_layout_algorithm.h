@@ -61,13 +61,17 @@ class CORE_EXPORT NGGridLayoutAlgorithm
  private:
   friend class NGGridLayoutAlgorithmTest;
 
+  // Aggregate all direct OOF children from the current grid to `oof_children`,
+  // unless `oof_children` is nullptr.
   wtf_size_t BuildGridSizingSubtree(
       NGGridSizingTree* sizing_tree,
+      HeapVector<Member<LayoutBox>>* oof_children = nullptr,
       const NGGridSizingData* parent_sizing_data = nullptr,
       const NGGridLineResolver* parent_line_resolver = nullptr,
       const GridItemData* subgrid_data_in_parent = nullptr) const;
 
-  NGGridSizingTree BuildGridSizingTree() const;
+  NGGridSizingTree BuildGridSizingTree(
+      HeapVector<Member<LayoutBox>>* oof_children = nullptr) const;
 
   const NGLayoutResult* LayoutInternal();
 
@@ -220,9 +224,10 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       LayoutUnit* consumed_grid_block_size);
 
   // Computes the static position, grid area and its offset of out of flow
-  // elements in the grid.
+  // elements in the grid (as provided by `oof_children`).
   void PlaceOutOfFlowItems(const NGGridLayoutData& layout_data,
-                           const LayoutUnit block_size);
+                           const LayoutUnit block_size,
+                           const HeapVector<Member<LayoutBox>>& oof_children);
 
   void ComputeGridItemOffsetAndSize(
       const GridItemData& grid_item,

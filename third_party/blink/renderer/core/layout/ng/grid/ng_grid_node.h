@@ -21,15 +21,21 @@ class CORE_EXPORT NGGridNode final : public NGBlockNode {
 
   const NGGridPlacementData& CachedPlacementData() const;
 
+  // Aggregate any OOF children to `oof_children`, unless nullptr.
   GridItems ConstructGridItems(const NGGridPlacementData& placement_data,
+                               HeapVector<Member<LayoutBox>>* oof_children,
                                bool* has_nested_subgrid) const;
-  GridItems ConstructGridItems(const NGGridPlacementData& placement_data,
-                               const ComputedStyle& root_grid_style,
-                               bool must_consider_grid_items_for_column_sizing,
-                               bool must_consider_grid_items_for_row_sizing,
-                               bool* has_nested_subgrid = nullptr) const;
 
   void AppendSubgriddedItems(GridItems* grid_items) const;
+
+ private:
+  GridItems ConstructGridItems(
+      const NGGridPlacementData& placement_data,
+      const ComputedStyle& root_grid_style,
+      bool must_consider_grid_items_for_column_sizing,
+      bool must_consider_grid_items_for_row_sizing,
+      HeapVector<Member<LayoutBox>>* oof_children = nullptr,
+      bool* has_nested_subgrid = nullptr) const;
 };
 
 template <>
