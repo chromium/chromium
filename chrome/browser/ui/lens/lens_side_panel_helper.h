@@ -25,6 +25,9 @@ namespace lens {
 void OpenLensSidePanel(Browser* browser,
                        const content::OpenURLParams& url_params);
 
+// Opens the Lens region search feature in a new tab with a WebUI page.
+void OpenLensStaticPage(Browser* browser);
+
 // Check if the lens URL is a valid results page. This is done by checking if
 // the URL has a payload parameter.
 bool IsValidLensResultUrl(const GURL& url);

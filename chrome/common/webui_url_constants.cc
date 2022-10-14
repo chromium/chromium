@@ -619,6 +619,11 @@ const char kCleanupSubPage[] = "cleanup";
 const char kChromeUICastFeedbackHost[] = "cast-feedback";
 #endif
 
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+const char kChromeUILensURL[] = "chrome://lens/";
+const char kChromeUILensHost[] = "lens";
+#endif
+
 // Extension sub pages.
 const char kExtensionConfigureCommandsSubPage[] = "configureCommands";
 

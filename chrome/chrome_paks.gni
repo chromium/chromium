@@ -217,6 +217,11 @@ template("chrome_extra_paks") {
           "//chrome/browser/resources/media_router/cast_feedback:resources",
         ]
       }
+
+      if (is_chrome_branded && toolkit_views) {
+        sources += [ "$root_gen_dir/chrome/lens_resources.pak" ]
+        deps += [ "//chrome/browser/resources/lens:resources" ]
+      }
     }
     if (is_chromeos_ash) {
       sources += [

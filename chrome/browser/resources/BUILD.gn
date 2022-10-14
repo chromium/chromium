@@ -53,7 +53,10 @@ group("resources") {
       "whats_new:resources",
     ]
     if (is_chrome_branded) {
-      public_deps += [ "media_router/cast_feedback:resources" ]
+      public_deps += [
+        "lens:resources",
+        "media_router/cast_feedback:resources",
+      ]
     }
   }
 

@@ -8514,6 +8514,11 @@ const FeatureEntry kFeatureEntries[] = {
          kLensInstructionChipVariations,
          "LensInstructionChipImprovements")},
 
+    {"enable-lens-region-search-static-page",
+     flag_descriptions::kLensRegionSearchStaticPageName,
+     flag_descriptions::kLensRegionSearchStaticPageDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensRegionSearchStaticPage)},
+
     {"enable-region-search-on-pdf-viewer",
      flag_descriptions::kEnableRegionSearchOnPdfViewerName,
      flag_descriptions::kEnableRegionSearchOnPdfViewerDescription, kOsDesktop,

@@ -44,6 +44,9 @@ BASE_DECLARE_FEATURE(kLensInstructionChipImprovements);
 // engines
 BASE_DECLARE_FEATURE(kEnableImageSearchSidePanelFor3PDse);
 
+// Enables launching the region search experience in a new tab with WebUI.
+BASE_DECLARE_FEATURE(kLensRegionSearchStaticPage);
+
 // Enables using `Google` as the visual search provider instead of `Google
 // Lens`.
 extern const base::FeatureParam<bool> kUseGoogleAsVisualSearchProvider;
@@ -174,6 +177,9 @@ extern bool UseSelectionIconWithImage();
 
 // Returns whether we should use an alternative instruction chip string.
 extern bool UseAltChipString();
+
+// Returns whether we should use a WebUI static page for region search.
+extern bool IsLensRegionSearchStaticPageEnabled();
 }  // namespace features
 }  // namespace lens
 

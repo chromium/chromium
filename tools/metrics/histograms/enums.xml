@@ -56820,6 +56820,7 @@ from previous Chrome versions.
   <int value="-2054612904" label="BuiltInModuleInfra:enabled"/>
   <int value="-2053860791" label="XGEOVisibleNetworks:enabled"/>
   <int value="-2053062676" label="EnableNeuralPalmAdaptiveHold:enabled"/>
+  <int value="-2050829390" label="LensRegionSearchStaticPage:enabled"/>
   <int value="-2050039250"
       label="JourneysOnDeviceClusteringContentClustering:enabled"/>
   <int value="-2048927838" label="AutoplayWhitelistSettings:enabled"/>
@@ -61223,6 +61224,7 @@ from previous Chrome versions.
   <int value="564355877" label="OopRasterizationDDL:disabled"/>
   <int value="564452531" label="SystemEmojiPickerExtension:enabled"/>
   <int value="564522013" label="Av1Decoder:disabled"/>
+  <int value="565254510" label="LensRegionSearchStaticPage:disabled"/>
   <int value="565406673" label="EnableVirtualKeyboardMdUi:enabled"/>
   <int value="567368307" label="enable-experimental-canvas-features"/>
   <int value="570469494" label="LoginDetection:disabled"/>

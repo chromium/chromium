@@ -50,6 +50,10 @@ BASE_FEATURE(kEnableImageSearchSidePanelFor3PDse,
              "EnableImageSearchSidePanelFor3PDse",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensRegionSearchStaticPage,
+             "LensRegionSearchStaticPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
     &kLensStandalone, "region-search-enable-ukm-logging", true};
 
@@ -219,6 +223,10 @@ bool UseSidePanelForScreenshotSharing() {
 // method is not called if kLensSearchImageInScreenshotSharing is false
 bool EnablePersistentBubble() {
   return kEnablePersistentBubble.Get();
+}
+
+bool IsLensRegionSearchStaticPageEnabled() {
+  return base::FeatureList::IsEnabled(kLensRegionSearchStaticPage);
 }
 
 }  // namespace features

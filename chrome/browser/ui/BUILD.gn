@@ -1762,6 +1762,13 @@ static_library("ui") {
       ]
     }
 
+    if (toolkit_views && is_chrome_branded) {
+      sources += [
+        "webui/lens/lens_ui.cc",
+        "webui/lens/lens_ui.h",
+      ]
+    }
+
     deps += [
       "//base",
       "//build:chromeos_buildflags",

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_rendering_environment.h"
@@ -117,6 +118,18 @@ content::WebContents* GetLensUnifiedSidePanelWebContentsForTesting(
       lens_side_panel_coordinator->GetViewWebContentsForTesting();
   DCHECK(web_contents);
   return web_contents;
+}
+
+void OpenLensStaticPage(Browser* browser) {
+  // TODO(juanmojica): Expand this function to simulate the current region
+  // search experience in the new tab.
+  DCHECK(browser);
+  GURL url(chrome::kChromeUILensURL);
+  content::OpenURLParams params(
+      url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
+  params.initiator_origin = url::Origin::Create(url);
+  browser->OpenURL(params);
 }
 
 }  // namespace lens

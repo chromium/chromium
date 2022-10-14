@@ -247,6 +247,7 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
+#include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 #endif
@@ -3638,9 +3639,14 @@ void RenderViewContextMenu::ExecRegionSearch(
     int event_flags,
     bool is_google_default_search_provider) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  Browser* browser = GetBrowser();
+  CHECK(browser);
+  if (lens::features::IsLensRegionSearchStaticPageEnabled()) {
+    lens::OpenLensStaticPage(browser);
+    return;
+  }
+
   if (!lens_region_search_controller_) {
-    Browser* browser = GetBrowser();
-    CHECK(browser);
     WebContents* web_contents = source_web_contents_;
     if (base::FeatureList::IsEnabled(
             lens::features::kEnableRegionSearchOnPdfViewer)) {
