@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "net/base/features.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_access_result.h"
@@ -70,6 +71,30 @@ class NET_EXPORT CanonicalCookie {
   CanonicalCookie& operator=(const CanonicalCookie& other);
   CanonicalCookie& operator=(CanonicalCookie&& other);
   ~CanonicalCookie();
+
+  // This constructor does not validate or canonicalize their inputs;
+  // the resulting CanonicalCookies should not be relied on to be canonical
+  // unless the caller has done appropriate validation and canonicalization
+  // themselves.
+  // NOTE: Prefer using CreateSanitizedCookie() over directly using this
+  // constructor.
+  CanonicalCookie(base::PassKey<CanonicalCookie>,
+                  std::string name,
+                  std::string value,
+                  std::string domain,
+                  std::string path,
+                  base::Time creation,
+                  base::Time expiration,
+                  base::Time last_access,
+                  base::Time last_update,
+                  bool secure,
+                  bool httponly,
+                  CookieSameSite same_site,
+                  CookiePriority priority,
+                  bool same_party,
+                  absl::optional<CookiePartitionKey> partition_key,
+                  CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
+                  int source_port = url::PORT_UNSPECIFIED);
 
   // Creates a new |CanonicalCookie| from the |cookie_line| and the
   // |creation_time|.  Canonicalizes inputs.  May return nullptr if
@@ -439,29 +464,6 @@ class NET_EXPORT CanonicalCookie {
  private:
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest, TestPrefixHistograms);
   FRIEND_TEST_ALL_PREFIXES(CanonicalCookieTest, TestHasHiddenPrefixName);
-
-  // This constructor does not validate or canonicalize their inputs;
-  // the resulting CanonicalCookies should not be relied on to be canonical
-  // unless the caller has done appropriate validation and canonicalization
-  // themselves.
-  // NOTE: Prefer using CreateSanitizedCookie() over directly using this
-  // constructor.
-  CanonicalCookie(std::string name,
-                  std::string value,
-                  std::string domain,
-                  std::string path,
-                  base::Time creation,
-                  base::Time expiration,
-                  base::Time last_access,
-                  base::Time last_update,
-                  bool secure,
-                  bool httponly,
-                  CookieSameSite same_site,
-                  CookiePriority priority,
-                  bool same_party,
-                  absl::optional<CookiePartitionKey> partition_key,
-                  CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
-                  int source_port = url::PORT_UNSPECIFIED);
 
   // The special cookie prefixes as defined in
   // https://tools.ietf.org/html/draft-west-cookie-prefixes
