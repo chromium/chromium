@@ -60,6 +60,7 @@
 #include "chrome/browser/extensions/chrome_extension_cookies.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/first_party_sets/first_party_sets_navigation_throttle.h"
 #include "chrome/browser/font_family_cache.h"
 #include "chrome/browser/gpu/chrome_browser_main_extra_parts_gpu.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
@@ -232,6 +233,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/browser_url_loader_throttle.h"
@@ -4788,6 +4790,15 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 #if !BUILDFLAG(IS_ANDROID)
   MaybeAddThrottle(MaybeCreateAboutThisSiteThrottleFor(handle), &throttles);
 #endif
+
+  if (profile && profile->GetPrefs() &&
+      profile->GetPrefs()->GetBoolean(
+          prefs::kPrivacySandboxFirstPartySetsEnabled) &&
+      base::FeatureList::IsEnabled(features::kFirstPartySets)) {
+    MaybeAddThrottle(first_party_sets::FirstPartySetsNavigationThrottle::
+                         MaybeCreateNavigationThrottle(handle),
+                     &throttles);
+  }
   return throttles;
 }
 

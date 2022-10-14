@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_POLICY_SERVICE_H_
 #define CHROME_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_POLICY_SERVICE_H_
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -59,6 +60,11 @@ class FirstPartySetsPolicyService : public KeyedService {
   // First-Party Sets enabled pref changes.
   void OnFirstPartySetsEnabledChanged(bool enabled);
 
+  // Invoke the callback synchronously to resume navigation if the instance is
+  // ready; or stores the callback to be invoked when this service is ready to
+  // do so.
+  void RegisterThrottleResumeCallback(base::OnceClosure resume_callback);
+
   // KeyedService:
   void Shutdown() override;
 
@@ -80,6 +86,13 @@ class FirstPartySetsPolicyService : public KeyedService {
           void(PrefService*,
                base::OnceCallback<void(net::FirstPartySetsContextConfig)>)>
           get_config);
+
+  // Returns true when this instance has received the config thus has been fully
+  // initialized.
+  bool is_ready() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return config_.has_value();
+  }
 
   void ResetForTesting();
 
@@ -142,6 +155,10 @@ class FirstPartySetsPolicyService : public KeyedService {
 
   // The filter used to bypass cache access in the network for this profile.
   absl::optional<net::FirstPartySetsCacheFilter> cache_filter_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The queue of callbacks that are waiting for the instance to be initialized.
+  base::circular_deque<base::OnceClosure> on_ready_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Callback used by tests to wait for the ctor's initialization flow to

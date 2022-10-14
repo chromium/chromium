@@ -489,4 +489,59 @@ TEST_F(FirstPartySetsPolicyServiceWithMockHandlerTest,
   env().RunUntilIdle();
 }
 
+namespace {
+
+enum PrefState { kDefault, kDisabled, kEnabled };
+
+}  // namespace
+
+class FirstPartySetsPolicyServiceResumeThrottleTest
+    : public FirstPartySetsPolicyServiceTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool, PrefState>> {
+ public:
+  FirstPartySetsPolicyServiceResumeThrottleTest() {
+    if (IsFeatureEnabled()) {
+      features_.InitAndEnableFeatureWithParameters(
+          features::kFirstPartySets,
+          {{features::kFirstPartySetsClearSiteDataOnChangedSets.name,
+            IsClearingFeatureEnabled() ? "true" : "false"}});
+    } else {
+      features_.InitAndDisableFeature(features::kFirstPartySets);
+    }
+  }
+
+  bool IsPrefEnabled() { return GetPrefState() == PrefState::kEnabled; }
+
+ private:
+  bool IsFeatureEnabled() { return std::get<0>(GetParam()); }
+  bool IsClearingFeatureEnabled() { return std::get<1>(GetParam()); }
+  PrefState GetPrefState() { return std::get<2>(GetParam()); }
+
+  base::test::ScopedFeatureList features_;
+};
+
+// Verify the throttle resume callback is always invoked.
+TEST_P(FirstPartySetsPolicyServiceResumeThrottleTest,
+       MaybeAddNavigationThrottleResumeCallback) {
+  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled,
+                                    IsPrefEnabled());
+  base::RunLoop run_loop;
+  service()->RegisterThrottleResumeCallback(run_loop.QuitClosure());
+  service()->InitForTesting(
+      [&](PrefService* prefs,
+          base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
+        std::move(callback).Run(net::FirstPartySetsContextConfig());
+      });
+  run_loop.Run();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FirstPartySetsPolicyServiceResumeThrottleTest,
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Bool(),
+                       ::testing::Values(PrefState::kDefault,
+                                         PrefState::kDisabled,
+                                         PrefState::kEnabled)));
+
 }  // namespace first_party_sets
