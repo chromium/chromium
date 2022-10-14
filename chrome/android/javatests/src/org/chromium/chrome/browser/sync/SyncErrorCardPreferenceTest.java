@@ -110,8 +110,31 @@ public class SyncErrorCardPreferenceTest {
     @LargeTest
     @Feature("RenderTest")
     @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
+    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForAuthErrorWithTitleFeatureDisabled(boolean nightModeEnabled)
+    public void testSyncErrorCardForAuthErrorWithTitleFeatureDisabledUpmEnabled(
+            boolean nightModeEnabled) throws Exception {
+        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> Assert.assertEquals("AUTH_ERROR SyncError should be set",
+                                SyncSettingsUtils.SyncError.AUTH_ERROR,
+                                SyncSettingsUtils.getSyncError()));
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        mRenderTestRule.render(
+                getPersonalizedSyncPromoView(), "sync_error_card_auth_error_with_upm");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @DisableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES})
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void
+    testSyncErrorCardForAuthErrorWithTitleFeatureDisabledUpmDisabled(boolean nightModeEnabled)
             throws Exception {
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
@@ -128,10 +151,33 @@ public class SyncErrorCardPreferenceTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE,
+            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    public void testSyncErrorCardForAuthErrorWithTitleFeatureEnabled(boolean nightModeEnabled)
+    public void
+    testSyncErrorCardForAuthErrorWithTitleFeatureEnabledUpmEnabled(boolean nightModeEnabled)
             throws Exception {
+        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> Assert.assertEquals("AUTH_ERROR SyncError should be set",
+                                SyncSettingsUtils.SyncError.AUTH_ERROR,
+                                SyncSettingsUtils.getSyncError()));
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        mRenderTestRule.render(getPersonalizedSyncPromoView(),
+                "sync_error_card_auth_error_with_new_title_and_upm");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @EnableFeatures({ChromeFeatureList.SYNC_ANDROID_PROMOS_WITH_TITLE})
+    @DisableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES})
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSyncErrorCardForAuthErrorWithTitleFeatureEnabledUpmDisabled(
+            boolean nightModeEnabled) throws Exception {
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
         mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
         TestThreadUtils.runOnUiThreadBlocking(
