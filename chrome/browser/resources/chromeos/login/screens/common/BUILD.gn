@@ -362,7 +362,7 @@ js_library("marketing_opt_in") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/marketing_opt_in.js" ]
   deps = [
     "../../components:display_manager_types.m",
-    "../../components:oobe_a11y_option.m",
+    "../../components:oobe_a11y_option",
     "../../components:oobe_cr_lottie.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:multi_step_behavior.m",
@@ -395,7 +395,7 @@ js_library("multidevice_setup.m") {
 js_library("offline_ad_login") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/offline_ad_login.js" ]
   deps = [
-    "../../components:oobe_a11y_option.m",
+    "../../components:oobe_a11y_option",
     "../../components:oobe_select.m",
     "../../components/behaviors:login_screen_behavior.m",
     "../../components/behaviors:oobe_dialog_host_behavior.m",

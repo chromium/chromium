@@ -2,14 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_toggle/cr_toggle.js';
+import '//resources/cr_elements/cr_shared_vars.css.js';
+import './common_styles/common_styles.m.js';
 
-/* #export */ class OobeA11yOption extends Polymer.Element {
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+/** @polymer */
+export class OobeA11yOption extends PolymerElement {
   static get is() {
     return 'oobe-a11y-option';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {

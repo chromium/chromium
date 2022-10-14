@@ -1,52 +1,47 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_shared_vars.css.html">
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
-<link rel="import" href="./common_styles/common_styles.html">
+<style include="oobe-common-styles">
+  :host {
+    display: flex;
+    min-height: 0;
+    width: 100%;
+  }
 
-<dom-module id="oobe-a11y-option">
-  <template>
-    <style include="oobe-common-styles">
-      :host {
-        display: flex;
-        min-height: 0;
-        width: 100%;
-      }
+  #elementBox {
+    width: inherit;
+  }
 
-      #elementBox {
-        width: inherit;
-      }
+  cr-toggle {
+    align-self: center;
+    margin-inline-end: 12px;
+  }
 
-      cr-toggle {
-        align-self: center;
-        margin-inline-end: 12px;
-      }
+  #titleContainer ::slotted(*) {
+    color: var(--cros-text-color-primary);
+  }
 
-      #titleContainer ::slotted(*) {
-        color: var(--cros-text-color-primary);
-      }
-
-      .display-value ::slotted(*) {
-        color: var(--cros-color-secondary);
-      }
-    </style>
-    <div id="elementBox" class="layout horizontal">
-      <div class="flex layout vertical center-justified">
-        <div id="titleContainer">
-          <slot name="title"></slot>
-        </div>
-        <div class="display-value" hidden="[[!checked]]" aria-hidden="true">
-          <slot name="checked-value"></slot>
-        </div>
-        <div class="display-value" hidden="[[checked]]" aria-hidden="true">
-          <slot  name="unchecked-value"></slot>
-        </div>
-      </div>
-      <cr-toggle id="button" checked="{{checked}}"
-          aria-labeledby="titleContainer"
-          aria-label$="[[labelForAria]]">
-      </cr-toggle>
+  .display-value ::slotted(*) {
+    color: var(--cros-color-secondary);
+  }
+</style>
+<div id="elementBox" class="layout horizontal">
+  <div class="flex layout vertical center-justified">
+    <div id="titleContainer">
+      <slot name="title"></slot>
     </div>
-  </template>
-  <script src="oobe_a11y_option.js"></script>
-</dom-module>
+    <div class="display-value" hidden="[[!checked]]" aria-hidden="true">
+      <slot name="checked-value"></slot>
+    </div>
+    <div class="display-value" hidden="[[checked]]" aria-hidden="true">
+      <slot  name="unchecked-value"></slot>
+    </div>
+  </div>
+  <cr-toggle id="button" checked="{{checked}}"
+      aria-labeledby="titleContainer"
+      aria-label$="[[labelForAria]]">
+  </cr-toggle>
+</div>
