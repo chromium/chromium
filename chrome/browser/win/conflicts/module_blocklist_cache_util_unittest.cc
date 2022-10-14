@@ -52,8 +52,8 @@ std::vector<third_party_dlls::PackedListModule> CreateUniqueModuleEntries(
 
   // Sort the entries and make sure each module is unique.
   std::sort(entries.begin(), entries.end(), internal::ModuleLess());
-  CHECK(std::adjacent_find(entries.begin(), entries.end(),
-                           internal::ModuleEqual()) == entries.end());
+  CHECK(base::ranges::adjacent_find(entries, internal::ModuleEqual()) ==
+        entries.end());
 
   return entries;
 }

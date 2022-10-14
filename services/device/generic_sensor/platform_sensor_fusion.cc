@@ -4,8 +4,6 @@
 
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
 
-#include <algorithm>
-
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -47,7 +45,7 @@ class PlatformSensorFusion::Factory : public base::RefCounted<Factory> {
     const auto& types = fusion_algorithm_->source_types();
     DCHECK(!types.empty());
     // Make sure there are no dups.
-    DCHECK(std::adjacent_find(types.begin(), types.end()) == types.end());
+    DCHECK(base::ranges::adjacent_find(types) == types.end());
     DCHECK(result_callback_);
     DCHECK(reading_buffer_);
     DCHECK(provider_);
