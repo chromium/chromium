@@ -93,19 +93,17 @@ AccessibilityTreeFormatterWin::~AccessibilityTreeFormatterWin() {}
 Microsoft::WRL::ComPtr<IAccessible>
 GetIAObject(ui::AXPlatformNodeDelegate* node, LONG& root_x, LONG& root_y) {
   DCHECK(node);
-  BrowserAccessibility* node_internal =
-      BrowserAccessibility::FromAXPlatformNodeDelegate(node);
-  DCHECK(node_internal);
-  BrowserAccessibilityManager* root_manager =
-      node_internal->manager()->GetManagerForRootFrame();
+  ui::AXTreeManager* root_manager = node->GetTreeManager()->GetRootManager();
   DCHECK(root_manager);
 
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   LONG root_width, root_height;
 
-  HRESULT hr =
-      root_manager->RootDelegate()->GetNativeViewAccessible()->accLocation(
-          &root_x, &root_y, &root_width, &root_height, variant_self);
+  HRESULT hr = static_cast<ui::AXPlatformTreeManager*>(root_manager)
+                   ->RootDelegate()
+                   ->GetNativeViewAccessible()
+                   ->accLocation(&root_x, &root_y, &root_width, &root_height,
+                                 variant_self);
   DCHECK(SUCCEEDED(hr));
 
   return node->GetNativeViewAccessible();
