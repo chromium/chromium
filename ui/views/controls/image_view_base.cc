@@ -40,7 +40,7 @@ void ImageViewBase::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 
   node_data->role = ax::mojom::Role::kImage;
-  node_data->SetName(name);
+  node_data->SetNameChecked(name);
 }
 
 void ImageViewBase::SetHorizontalAlignment(Alignment alignment) {
