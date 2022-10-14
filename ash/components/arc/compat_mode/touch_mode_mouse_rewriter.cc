@@ -173,7 +173,7 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteMouseWheelEvent(
   scroll_y_offset_ += kWheelToSmoothScrollScale * event.y_offset();
   scroll_x_offset_ += kWheelToSmoothScrollScale * event.x_offset();
   scroll_timeout_ = kSmoothScrollTimeout;
-  if (started) {
+  if (!started) {
     ui::ScrollEvent fling_cancel_event(
         ui::ET_SCROLL_FLING_CANCEL, event.location_f(), event.root_location_f(),
         event.time_stamp(), 0, 0, 0, 0, 0, 0);

@@ -64,6 +64,7 @@ class ScrollReceiverView : public views::View {
       smooth_scrolled_ = true;
       x_offset_ += event->x_offset();
       y_offset_ += event->y_offset();
+      scroll_timestamps.push_back(base::TimeTicks::Now());
     }
   }
 
@@ -72,6 +73,9 @@ class ScrollReceiverView : public views::View {
   bool smooth_scrolled() const { return smooth_scrolled_; }
   int x_scroll_offset() { return x_offset_; }
   int y_scroll_offset() { return y_offset_; }
+  std::vector<base::TimeTicks> get_scroll_timestamps() {
+    return scroll_timestamps;
+  }
 
  private:
   bool fling_started_ = false;
@@ -79,6 +83,7 @@ class ScrollReceiverView : public views::View {
   bool smooth_scrolled_ = false;
   int x_offset_ = 0;
   int y_offset_ = 0;
+  std::vector<base::TimeTicks> scroll_timestamps;
 };
 
 }  // namespace
@@ -394,6 +399,43 @@ TEST_F(TouchModeMouseRewriterTest,
   EXPECT_TRUE(view->fling_started());
   // x_wheel_scroll * kWheelToSmoothScrollScale == 60
   EXPECT_EQ(60, view->x_scroll_offset());
+
+  touch_mode_mouse_rewriter.DisableForWindow(widget->GetNativeWindow());
+}
+
+TEST_F(TouchModeMouseRewriterTest, VerticalWheelScrollCorrectInterval) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+  ScrollReceiverView* view =
+      widget->SetContentsView(std::make_unique<ScrollReceiverView>());
+  widget->Show();
+
+  TouchModeMouseRewriter touch_mode_mouse_rewriter;
+  touch_mode_mouse_rewriter.EnableForWindow(widget->GetNativeWindow());
+  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+
+  // Generate 3 scrolls at 5ms after another (0ms, 5ms, 10ms).
+  // The scroll event should still be sent at (0ms, 20ms, 40ms, ...),
+  // and not (0ms, 5ms, 10ms, 20ms, 25ms, 30ms).
+  // Interval is set at kSmoothScrollEventInterval.
+  generator.MoveMouseWheel(0, 10);
+  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(5));
+  generator.MoveMouseWheel(0, 10);
+  base::RunLoop().RunUntilIdle();
+  task_environment()->FastForwardBy(base::Milliseconds(5));
+  generator.MoveMouseWheel(0, 10);
+  base::RunLoop().RunUntilIdle();
+
+  // Smooth scrolling ended.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::vector<base::TimeTicks> timestamps = view->get_scroll_timestamps();
+  EXPECT_TRUE(!timestamps.empty());
+  for (size_t i = 1; i < timestamps.size(); i++) {
+    base::TimeDelta interval = timestamps[i] - timestamps[i - 1];
+    EXPECT_EQ(base::Milliseconds(20), interval);
+  }
 
   touch_mode_mouse_rewriter.DisableForWindow(widget->GetNativeWindow());
 }
