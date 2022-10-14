@@ -485,6 +485,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
 }
 
 // TODO(crbug.com/1107958): Re-enable this test after fixing flakes.
+// TODO(crbug.com/950391): Re-enable this test before launching voice switching.
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithLanguageDetection,
                        DISABLED_BreaksAtLanguageBounds) {
   ActivateSelectToSpeakInWindowBounds(

@@ -3189,6 +3189,10 @@ extern const char kExperimentalAccessibilityDictationMoreCommandsDescription[];
 extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[];
 extern const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[];
 
+extern const char kExperimentalAccessibilitySelectToSpeakVoiceSwitchingName[];
+extern const char
+    kExperimentalAccessibilitySelectToSpeakVoiceSwitchingDescription[];
+
 extern const char kExperimentalAccessibilitySwitchAccessTextName[];
 extern const char kExperimentalAccessibilitySwitchAccessTextDescription[];
 

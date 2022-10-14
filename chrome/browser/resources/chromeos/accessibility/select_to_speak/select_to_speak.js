@@ -144,6 +144,12 @@ export class SelectToSpeak {
      */
     this.onStateChangeRequestedCallbackForTest_ = null;
 
+    /**
+     * Feature flag controlling STS voice switching.
+     * @type {boolean}
+     */
+    this.isVoiceSwitchingEnabled_ = false;
+
     /** @private {PrefsManager} */
     this.prefsManager_ = new PrefsManager();
 
@@ -196,10 +202,12 @@ export class SelectToSpeak {
     this.runContentScripts_();
     this.setUpEventListeners_();
 
-    // TODO(chrishall): do we want to (also?) expose this in preferences?
-    chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-language-detection', result => {
-          this.enableLanguageDetectionIntegration_ = result;
+    const voiceSwitchingFeature =
+        chrome.accessibilityPrivate.AccessibilityFeature
+            .SELECT_TO_SPEAK_VOICE_SWITCHING;
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        voiceSwitchingFeature, (enabled) => {
+          this.isVoiceSwitchingEnabled_ = enabled;
         });
 
     chrome.accessibilityPrivate.isFeatureEnabled(
@@ -1038,7 +1046,7 @@ export class SelectToSpeak {
       // generate node groups for next/previous paragraphs which may be fully or
       // partially scrolled out of view.
       const nodeGroup = ParagraphUtils.buildNodeGroup(nodes, i, {
-        splitOnLanguage: this.enableLanguageDetectionIntegration_,
+        splitOnLanguage: this.shouldUseVoiceSwitching_(),
         clipOverflowWords: !this.shouldShowNavigationControls_(),
       });
 
@@ -1125,8 +1133,7 @@ export class SelectToSpeak {
     // Copy options so we can add lang below
     Object.assign(
         options, this.prefsManager_.getSpeechOptions(this.enhancedVoicesFlag_));
-    if (this.enableLanguageDetectionIntegration_ &&
-        nodeGroup.detectedLanguage) {
+    if (this.shouldUseVoiceSwitching_() && nodeGroup.detectedLanguage) {
       options.lang = nodeGroup.detectedLanguage;
     }
     if (this.shouldShowNavigationControls_()) {
@@ -1725,5 +1732,16 @@ export class SelectToSpeak {
    */
   fireMockMouseUpEvent(event) {
     this.inputHandler_.onMouseUp_(event);
+  }
+
+  /**
+   * TODO(crbug.com/950391): Consider adding a metric for when voice switching
+   * gets used.
+   * @return {boolean}
+   * @private
+   */
+  shouldUseVoiceSwitching_() {
+    return this.isVoiceSwitchingEnabled_ &&
+        this.prefsManager_.voiceSwitchingEnabled();
   }
 }

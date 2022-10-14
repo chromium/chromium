@@ -57587,6 +57587,8 @@ from previous Chrome versions.
   <int value="-1607691647" label="MojoVideoEncodeAccelerator:disabled"/>
   <int value="-1607297082" label="ash-enable-persistent-window-bounds"/>
   <int value="-1607175130" label="force-enable-metrics-reporting"/>
+  <int value="-1606890766"
+      label="ExperimentalAccessibilitySelectToSpeakVoiceSwitching:disabled"/>
   <int value="-1606215707" label="WebAppWindowControlsOverlay:enabled"/>
   <int value="-1605920602" label="AVFoundationCaptureV2:disabled"/>
   <int value="-1605567628" label="disable-overlay-scrollbar"/>
@@ -60110,6 +60112,8 @@ from previous Chrome versions.
   <int value="-99781021" label="disable-roboto-font-ui"/>
   <int value="-97599565" label="WebViewNewInvalidateHeuristic:disabled"/>
   <int value="-97145978" label="DesktopPWAsStayInWindow:enabled"/>
+  <int value="-96820962"
+      label="ExperimentalAccessibilitySelectToSpeakVoiceSwitching:enabled"/>
   <int value="-94335249" label="UseAAudioDriver:enabled"/>
   <int value="-93619449" label="video-tutorials-instant-fetch"/>
   <int value="-92116820" label="InlineUpdateFlow:enabled"/>

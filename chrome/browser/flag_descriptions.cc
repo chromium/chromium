@@ -5586,6 +5586,12 @@ const char kExperimentalAccessibilityDictationMoreCommandsName[] =
 const char kExperimentalAccessibilityDictationMoreCommandsDescription[] =
     "Enables experimental dictation commands.";
 
+const char kExperimentalAccessibilitySelectToSpeakVoiceSwitchingName[] =
+    "Experimental accessibility Select-to-Speak voice switching.";
+const char kExperimentalAccessibilitySelectToSpeakVoiceSwitchingDescription[] =
+    "Enables Select-to-Speak voice switching, which will change the "
+    "text-to-speech voice depending on the language it encounters.";
+
 const char kExperimentalAccessibilityGoogleTtsLanguagePacksName[] =
     "Experimental accessibility Google TTS Langauge Packs.";
 const char kExperimentalAccessibilityGoogleTtsLanguagePacksDescription[] =

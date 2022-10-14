@@ -5183,6 +5183,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          features::kExperimentalAccessibilityGoogleTtsLanguagePacks)},
+    {"enable-experimental-accessibility-select-to-speak-voice-switching",
+     flag_descriptions::
+         kExperimentalAccessibilitySelectToSpeakVoiceSwitchingName,
+     flag_descriptions::
+         kExperimentalAccessibilitySelectToSpeakVoiceSwitchingDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         features::kExperimentalAccessibilitySelectToSpeakVoiceSwitching)},
     {"enable-experimental-accessibility-switch-access-text",
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextName,
      flag_descriptions::kExperimentalAccessibilitySwitchAccessTextDescription,

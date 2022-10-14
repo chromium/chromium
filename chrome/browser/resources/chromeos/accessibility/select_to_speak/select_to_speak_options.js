@@ -4,6 +4,8 @@
 
 import {PrefsManager} from './prefs_manager.js';
 
+const AccessibilityFeature = chrome.accessibilityPrivate.AccessibilityFeature;
+
 class SelectToSpeakOptionsPage {
   constructor() {
     this.init_();
@@ -17,8 +19,6 @@ class SelectToSpeakOptionsPage {
     this.addTranslatedMessagesToDom_();
     // Depending on whether the enhanced TTS voices are enabled, show either the
     // enhanced voices settings or the legacy settings.
-    const AccessibilityFeature =
-        chrome.accessibilityPrivate.AccessibilityFeature;
     chrome.accessibilityPrivate.isFeatureEnabled(
         AccessibilityFeature.ENHANCED_NETWORK_VOICES, result => {
           const newElem = document.getElementById('naturalVoicesOptions');
@@ -73,6 +73,12 @@ class SelectToSpeakOptionsPage {
           }
         });
 
+    chrome.accessibilityPrivate.isFeatureEnabled(
+        AccessibilityFeature.SELECT_TO_SPEAK_VOICE_SWITCHING, (enabled) => {
+          const option = document.getElementById('voiceSwitchingOption');
+          enabled ? this.showElement(option) : this.hideElement(option);
+        });
+
     this.syncCheckboxControlToPref_(
         'wordHighlight', 'wordHighlight', checked => {
           const elem = document.getElementById('highlightSubOption');
@@ -86,6 +92,7 @@ class SelectToSpeakOptionsPage {
           this.setElementVisible(elem, checked);
         });
     this.syncCheckboxControlToPref_('navigationControls', 'navigationControls');
+    this.syncCheckboxControlToPref_('voiceSwitching', 'voiceSwitching');
 
     this.setUpHighlightListener_();
     this.setUpTtsButtonClickListener_();

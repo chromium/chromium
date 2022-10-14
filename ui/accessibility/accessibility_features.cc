@@ -156,6 +156,15 @@ bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled() {
       ::features::kExperimentalAccessibilityGoogleTtsLanguagePacks);
 }
 
+BASE_FEATURE(kExperimentalAccessibilitySelectToSpeakVoiceSwitching,
+             "ExperimentalAccessibilitySelectToSpeakVoiceSwitching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kExperimentalAccessibilitySelectToSpeakVoiceSwitching);
+}
+
 BASE_FEATURE(kEnhancedNetworkVoices,
              "EnhancedNetworkVoices",
              base::FEATURE_ENABLED_BY_DEFAULT);

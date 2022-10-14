@@ -116,6 +116,14 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 // enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();
 
+// Enables Select-to-Speak voice switching.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(
+    kExperimentalAccessibilitySelectToSpeakVoiceSwitching);
+
+// Returns true if the Select-to-Speak voice switching feature is enabled.
+AX_BASE_EXPORT bool
+IsExperimentalAccessibilitySelectToSpeakVoiceSwitchingEnabled();
+
 // Enables high-quality, network-based voices in Select-to-speak.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnhancedNetworkVoices);
 

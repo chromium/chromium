@@ -69,6 +69,12 @@ export class PrefsManager {
 
     /** @private {boolean} */
     this.wordHighlight_ = true;
+
+    /**
+     * TODO(crbug.com/950391): Ask UX about the default value here.
+     * @private {boolean}
+     */
+    this.voiceSwitching_ = false;
   }
 
   /**
@@ -285,6 +291,7 @@ export class PrefsManager {
               'enhancedNetworkVoices',
               'enhancedVoicesDialogShown',
               'enhancedVoiceName',
+              'voiceSwitching',
             ],
             resolve));
 
@@ -330,6 +337,13 @@ export class PrefsManager {
     } else {
       chrome.storage.sync.set({
         'enhancedVoicesDialogShown': this.enhancedVoicesDialogShown_,
+      });
+    }
+    if (prefs['voiceSwitching'] !== undefined) {
+      this.voiceSwitching_ = prefs['voiceSwitching'];
+    } else {
+      chrome.storage.sync.set({
+        'voiceSwitching': this.voiceSwitching_,
       });
     }
     if (prefs['rate'] && prefs['pitch']) {
@@ -516,6 +530,11 @@ export class PrefsManager {
             'Network voices dialog was shown when the policy disallows it.');
       }
     }
+  }
+
+  /** @return {boolean} */
+  voiceSwitchingEnabled() {
+    return this.voiceSwitching_;
   }
 }
 
