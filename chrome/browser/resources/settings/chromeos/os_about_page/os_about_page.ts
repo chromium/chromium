@@ -37,10 +37,9 @@ import {LifetimeBrowserProxyImpl} from '../../lifetime_browser_proxy.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
-import {MainPageBehavior, MainPageBehaviorInterface} from '../main_page_behavior.js';
+import {MainPageMixin, MainPageMixinInterface} from '../main_page_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {routes} from '../os_route.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, AboutPageUpdateInfo, BrowserChannel, browserChannelToI18nId, RegulatoryInfo, TpmFirmwareUpdateStatusChangedEvent, UpdateStatus, UpdateStatusChangedEvent} from './about_page_browser_proxy.js';
 import {getTemplate} from './os_about_page.html.js';
@@ -62,13 +61,11 @@ const OsSettingsAboutPageBaseElement =
     mixinBehaviors(
         [
           DeepLinkingBehavior,
-          MainPageBehavior,
-          RouteObserverBehavior,
         ],
-        I18nMixin(WebUIListenerMixin(PolymerElement))) as {
-      new (): PolymerElement & DeepLinkingBehaviorInterface &
-          WebUIListenerMixinInterface & MainPageBehaviorInterface &
-          RouteObserverBehaviorInterface & I18nMixinInterface,
+        MainPageMixin(I18nMixin(WebUIListenerMixin(PolymerElement)))) as {
+      new (): PolymerElement & WebUIListenerMixinInterface &
+          I18nMixinInterface & MainPageMixinInterface &
+          DeepLinkingBehaviorInterface,
     };
 
 class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
@@ -337,12 +334,9 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBaseElement {
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
-    // super.currentRouteChanged() does not produce desired results since
-    // RouteObserverBehavior has higher precedence than MainPageBehavior given
-    // this element's behavior list order. In order to trigger the
-    // MainPageBehavior method, we must directly call it.
+    // MainPageMixin#currentRouteChanged() should be the super class method
     // See https://crbug.com/1324103 for more details.
-    MainPageBehavior.currentRouteChanged.call(this, newRoute, oldRoute);
+    super.currentRouteChanged(newRoute, oldRoute);
 
     // Does not apply to this page.
     if (newRoute !== routes.ABOUT_ABOUT) {

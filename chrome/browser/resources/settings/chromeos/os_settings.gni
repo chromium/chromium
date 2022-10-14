@@ -141,7 +141,7 @@ non_web_component_files = [
   "chromeos/internet_page/internet_page_browser_proxy.js",
   "chromeos/kerberos_page/kerberos_accounts_browser_proxy.js",
   "chromeos/lazy_load.js",
-  "chromeos/main_page_behavior.js",
+  "chromeos/main_page_mixin.ts",
   "chromeos/metrics_recorder.js",
   "chromeos/multidevice_page/multidevice_browser_proxy.js",
   "chromeos/multidevice_page/multidevice_constants.js",

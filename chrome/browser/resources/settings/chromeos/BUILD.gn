@@ -406,7 +406,6 @@ js_type_check("closure_compile_local_module") {
     ":find_shortcut_behavior",
     ":global_scroll_target_behavior",
     ":lazy_load",
-    ":main_page_behavior",
     ":metrics_recorder",
     ":os_icons",
     ":os_page_visibility",
@@ -452,15 +451,6 @@ js_library("global_scroll_target_behavior") {
     ":route_observer_behavior",
     "..:router",
     "//ui/webui/resources/js:promise_resolver",
-  ]
-}
-
-js_library("main_page_behavior") {
-  deps = [
-    "..:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
   ]
 }
 
