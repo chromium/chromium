@@ -259,7 +259,7 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
     absl::optional<std::vector<MediaRoute>> cached_route_list_;
 
     // Per-MRP lists of routes for the query.
-    // TODO(crbug.com/761493): Consider making MRP ID an attribute of
+    // TODO(crbug.com/1374496): Consider making MRP ID an attribute of
     // MediaRoute, so that we can simplify these into vectors.
     base::flat_map<mojom::MediaRouteProviderId, std::vector<MediaRoute>>
         providers_to_routes_;
