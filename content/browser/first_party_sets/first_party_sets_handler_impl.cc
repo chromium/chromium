@@ -222,12 +222,6 @@ void FirstPartySetsHandlerImpl::ResetForTesting() {
   db_helper_.Reset();
 }
 
-void FirstPartySetsHandlerImpl::SetGlobalSetsForTesting(
-    net::GlobalFirstPartySets global_sets) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  global_sets_ = std::move(global_sets);
-}
-
 void FirstPartySetsHandlerImpl::GetPersistedGlobalSetsForTesting(
     const std::string& browser_context_id,
     base::OnceCallback<void(absl::optional<net::GlobalFirstPartySets>)>

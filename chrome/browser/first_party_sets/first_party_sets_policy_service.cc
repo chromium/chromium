@@ -51,29 +51,17 @@ FirstPartySetsPolicyService::FirstPartySetsPolicyService(
     : browser_context_(browser_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(browser_context);
-  Init([](PrefService* prefs,
-          base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
-    content::FirstPartySetsHandler::GetInstance()->GetContextConfigForPolicy(
-        GetOverridesPolicyForProfile(prefs), std::move(callback));
-  });
+  Init();
 }
 
 FirstPartySetsPolicyService::~FirstPartySetsPolicyService() = default;
 
-void FirstPartySetsPolicyService::InitForTesting(
-    base::FunctionRef<
-        void(PrefService*,
-             base::OnceCallback<void(net::FirstPartySetsContextConfig)>)>
-        get_config) {
+void FirstPartySetsPolicyService::InitForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Init(get_config);
+  Init();
 }
 
-void FirstPartySetsPolicyService::Init(
-    base::FunctionRef<
-        void(PrefService*,
-             base::OnceCallback<void(net::FirstPartySetsContextConfig)>)>
-        get_config) {
+void FirstPartySetsPolicyService::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
     OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig(),
@@ -98,14 +86,15 @@ void FirstPartySetsPolicyService::Init(
   // dynamically refresh, and all the delegates for `context` will have the same
   // policy and thus the same config.
   PrefService* prefs = profile->GetPrefs();
-  get_config(prefs, base::BindOnce(
-                        &FirstPartySetsPolicyService::OnProfileConfigReady,
-                        weak_factory_.GetWeakPtr(),
-                        // We should only clear site data if First-Party Sets is
-                        // enabled when the service is created, to allow users
-                        // to play with the FPS enabled setting without
-                        // affecting user experience during the browser session.
-                        GetEnabledPolicyForProfile(prefs)));
+  content::FirstPartySetsHandler::GetInstance()->GetContextConfigForPolicy(
+      GetOverridesPolicyForProfile(prefs),
+      base::BindOnce(&FirstPartySetsPolicyService::OnProfileConfigReady,
+                     weak_factory_.GetWeakPtr(),
+                     // We should only clear site data if First-Party Sets is
+                     // enabled when the service is created, to allow users
+                     // to play with the FPS enabled setting without
+                     // affecting user experience during the browser session.
+                     GetEnabledPolicyForProfile(prefs)));
 }
 
 void FirstPartySetsPolicyService::AddRemoteAccessDelegate(

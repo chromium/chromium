@@ -14,8 +14,6 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/mojom/first_party_sets_access_delegate.mojom.h"
 
-class PrefService;
-
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -76,16 +74,11 @@ class FirstPartySetsPolicyService : public KeyedService {
   // factory for FirstPartySetsPolicyService instances in tests, so every
   // instance calls into the prod logic to eagerly initialize itself. This
   // method allows tests to wait for that eager initialization to complete, then
-  // reset state, and re-run initialization via `InitForTesting`.
+  // reset state, and re-run initialization via `Init`.
   void WaitForFirstInitCompleteForTesting(base::OnceClosure callback);
 
-  // Testing-only method that allows injecting different logic to get the
-  // config.
-  void InitForTesting(
-      base::FunctionRef<
-          void(PrefService*,
-               base::OnceCallback<void(net::FirstPartySetsContextConfig)>)>
-          get_config);
+  // Exposes `Init` for use in tests.
+  void InitForTesting();
 
   // Returns true when this instance has received the config thus has been fully
   // initialized.
@@ -122,11 +115,8 @@ class FirstPartySetsPolicyService : public KeyedService {
   }
 
  private:
-  // Initialize this instance by getting the config via `get_config` if needed.
-  void Init(base::FunctionRef<
-            void(PrefService*,
-                 base::OnceCallback<void(net::FirstPartySetsContextConfig)>)>
-                get_config);
+  // Initialize this instance by getting the config if needed.
+  void Init();
 
   // Sets the `config_` member and provides it to all delegates via NotifyReady.
   void OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig config,

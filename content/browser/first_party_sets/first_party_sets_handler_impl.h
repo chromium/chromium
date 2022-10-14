@@ -111,7 +111,6 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   void SetPublicFirstPartySets(const base::Version& version,
                                base::File sets_file) override;
   void ResetForTesting() override;
-  void SetGlobalSetsForTesting(net::GlobalFirstPartySets global_sets) override;
   absl::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const override;

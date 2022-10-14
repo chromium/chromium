@@ -19,7 +19,6 @@ namespace net {
 class FirstPartySetEntry;
 class FirstPartySetsCacheFilter;
 class FirstPartySetsContextConfig;
-class GlobalFirstPartySets;
 class SchemefulSite;
 }
 
@@ -139,10 +138,6 @@ class CONTENT_EXPORT FirstPartySetsHandler {
 
   // Resets the state on the instance for testing.
   virtual void ResetForTesting() = 0;
-
-  // Allows tests to override the post-initalization global First-Party Sets.
-  virtual void SetGlobalSetsForTesting(
-      net::GlobalFirstPartySets global_sets) = 0;
 
   // Looks up `site` in the global First-Party Sets and `config` to find its
   // associated FirstPartySetEntry.

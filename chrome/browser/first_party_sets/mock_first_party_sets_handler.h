@@ -40,7 +40,6 @@ class MockFirstPartySetsHandler : public content::FirstPartySetsHandler {
   void SetPublicFirstPartySets(const base::Version& version,
                                base::File sets_file) override;
   void ResetForTesting() override;
-  void SetGlobalSetsForTesting(net::GlobalFirstPartySets global_sets) override;
   absl::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site,
       const net::FirstPartySetsContextConfig& config) const override;
@@ -59,7 +58,10 @@ class MockFirstPartySetsHandler : public content::FirstPartySetsHandler {
 
   // Helper functions for tests to set up context.
   void SetContextConfig(net::FirstPartySetsContextConfig config);
+
   void SetCacheFilter(net::FirstPartySetsCacheFilter cache_filter);
+
+  void SetGlobalSets(net::GlobalFirstPartySets global_sets);
 
  private:
   absl::optional<net::GlobalFirstPartySets> global_sets_;

@@ -7,7 +7,9 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/types/optional_util.h"
+#include "content/public/common/content_features.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/first_party_sets/first_party_sets_context_config.h"
 #include "net/first_party_sets/global_first_party_sets.h"
@@ -26,15 +28,11 @@ void MockFirstPartySetsHandler::SetPublicFirstPartySets(
     const base::Version& version,
     base::File sets_file) {}
 
-void MockFirstPartySetsHandler::SetGlobalSetsForTesting(
-    net::GlobalFirstPartySets global_sets) {
-  global_sets_ = std::move(global_sets);
-}
-
 absl::optional<net::FirstPartySetEntry> MockFirstPartySetsHandler::FindEntry(
     const net::SchemefulSite& site,
     const net::FirstPartySetsContextConfig& config) const {
-  if (!global_sets_.has_value()) {
+  if (!global_sets_.has_value() ||
+      !base::FeatureList::IsEnabled(features::kFirstPartySets)) {
     return absl::nullopt;
   }
   return global_sets_->FindEntry(site, config);
@@ -68,9 +66,15 @@ void MockFirstPartySetsHandler::SetContextConfig(
     net::FirstPartySetsContextConfig config) {
   config_ = std::move(config);
 }
+
 void MockFirstPartySetsHandler::SetCacheFilter(
     net::FirstPartySetsCacheFilter cache_filter) {
   cache_filter_ = std::move(cache_filter);
+}
+
+void MockFirstPartySetsHandler::SetGlobalSets(
+    net::GlobalFirstPartySets global_sets) {
+  global_sets_ = std::move(global_sets);
 }
 
 }  // namespace first_party_sets
