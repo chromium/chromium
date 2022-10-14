@@ -213,6 +213,11 @@ class VisitRowElement extends ClusterMenuElementBase {
   //============================================================================
 
   private computeAnnotations_(): string[] {
+    // Disabling annotations until more appropriate design for annotations in
+    // the side panel is complete.
+    if (this.inSidePanel_) {
+      return [];
+    }
     return this.visit.annotations
         .map((annotation: number) => annotationToStringId.get(annotation))
         .filter(
