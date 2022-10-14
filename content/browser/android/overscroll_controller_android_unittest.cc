@@ -52,6 +52,8 @@ class MockCompositor : public WindowAndroidCompositor {
     return nullptr;
   }
   void OnUpdateOverlayTransform() override {}
+  void PostRequestPresentationTimeForNextFrame(
+      PresentationTimeCallback callback) override {}
 };
 
 class MockGlowClient : public OverscrollGlowClient {

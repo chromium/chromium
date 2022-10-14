@@ -156,6 +156,8 @@ class TabAndroid : public base::SupportsUserData {
       const base::android::JavaParamRef<jstring>& jtitle);
 
   void LoadOriginalImage(JNIEnv* env);
+  void OnShow(JNIEnv* env);
+
   scoped_refptr<content::DevToolsAgentHost> GetDevToolsAgentHost();
 
   void SetDevToolsAgentHost(scoped_refptr<content::DevToolsAgentHost> host);

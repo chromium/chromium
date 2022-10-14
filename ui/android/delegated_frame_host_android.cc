@@ -67,6 +67,35 @@ scoped_refptr<cc::SurfaceLayer> CreateSurfaceLayer(
   return layer;
 }
 
+// From content::VisibleTimeRequestTrigger::ConsumeAndMergeRequests
+// TODO(crbug.com/1263687): Use separate start time for each event.
+blink::mojom::RecordContentToVisibleTimeRequestPtr ConsumeAndMergeRequests(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr request1,
+    blink::mojom::RecordContentToVisibleTimeRequestPtr request2) {
+  if (!request1 && !request2)
+    return nullptr;
+
+  // Pick any non-null request to merge into.
+  blink::mojom::RecordContentToVisibleTimeRequestPtr to;
+  blink::mojom::RecordContentToVisibleTimeRequestPtr from;
+  if (request1) {
+    to = std::move(request1);
+    from = std::move(request2);
+  } else {
+    to = std::move(request2);
+    from = std::move(request1);
+  }
+
+  if (from) {
+    to->event_start_time =
+        std::min(to->event_start_time, from->event_start_time);
+    to->destination_is_loaded |= from->destination_is_loaded;
+    to->show_reason_tab_switching |= from->show_reason_tab_switching;
+    to->show_reason_bfcache_restore |= from->show_reason_bfcache_restore;
+  }
+  return to;
+}
+
 }  // namespace
 
 DelegatedFrameHostAndroid::DelegatedFrameHostAndroid(
@@ -240,6 +269,12 @@ void DelegatedFrameHostAndroid::AttachToCompositor(
     DetachFromCompositor();
   compositor->AddChildFrameSink(frame_sink_id_);
   registered_parent_compositor_ = compositor;
+  if (content_to_visible_time_request_) {
+    registered_parent_compositor_->PostRequestPresentationTimeForNextFrame(
+        content_to_visible_time_recorder_.TabWasShown(
+            true /* has_saved_frames */,
+            std::move(content_to_visible_time_request_)));
+  }
 }
 
 void DelegatedFrameHostAndroid::DetachFromCompositor() {
@@ -258,13 +293,20 @@ bool DelegatedFrameHostAndroid::HasSavedFrame() const {
 }
 
 void DelegatedFrameHostAndroid::WasHidden() {
+  CancelPresentationTimeRequest();
   frame_evictor_->SetVisible(false);
 }
 
 void DelegatedFrameHostAndroid::WasShown(
     const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Size& new_size_in_pixels,
-    bool is_fullscreen) {
+    bool is_fullscreen,
+    blink::mojom::RecordContentToVisibleTimeRequestPtr
+        content_to_visible_time_request) {
+  if (content_to_visible_time_request) {
+    PostRequestPresentationTimeForNextFrame(
+        std::move(content_to_visible_time_request));
+  }
   frame_evictor_->SetVisible(true);
 
   EmbedSurface(
@@ -362,6 +404,18 @@ void DelegatedFrameHostAndroid::EmbedSurface(
   }
 }
 
+void DelegatedFrameHostAndroid::RequestPresentationTimeForNextFrame(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr
+        content_to_content_to_visible_time_request) {
+  PostRequestPresentationTimeForNextFrame(
+      std::move(content_to_content_to_visible_time_request));
+}
+
+void DelegatedFrameHostAndroid::CancelPresentationTimeRequest() {
+  content_to_visible_time_request_.reset();
+  content_to_visible_time_recorder_.TabWasHidden();
+}
+
 void DelegatedFrameHostAndroid::OnFirstSurfaceActivation(
     const viz::SurfaceInfo& surface_info) {
   NOTREACHED();
@@ -435,6 +489,25 @@ void DelegatedFrameHostAndroid::SetTopControlsVisibleHeight(float height) {
   top_controls_visible_height_ = height;
   auto swap_promise = std::make_unique<TopControlsSwapPromise>(height);
   content_layer_->layer_tree_host()->QueueSwapPromise(std::move(swap_promise));
+}
+
+void DelegatedFrameHostAndroid::PostRequestPresentationTimeForNextFrame(
+    blink::mojom::RecordContentToVisibleTimeRequestPtr
+        content_to_visible_time_request) {
+  // Since we could receive multiple requests while awaiting
+  // `registered_parent_compositor_` we merge them.
+  auto request =
+      ConsumeAndMergeRequests(std::move(content_to_visible_time_request_),
+                              std::move(content_to_visible_time_request));
+
+  if (!registered_parent_compositor_) {
+    content_to_visible_time_request_ = std::move(request);
+    return;
+  }
+
+  registered_parent_compositor_->PostRequestPresentationTimeForNextFrame(
+      content_to_visible_time_recorder_.TabWasShown(true /* has_saved_frames */,
+                                                    std::move(request)));
 }
 
 }  // namespace ui

@@ -683,6 +683,22 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
 
             loadIfNeeded(caller);
 
+            // TODO(crbug.com/1253938): We should provide a timestamp that apporoximates the input
+            // event timestamp. When presenting a Tablet UI, StripLayoutTab.handleClick does
+            // receive a timestamp. When presenting a Phone UI
+            // TabGridViewBinder.bindClosableTabProperties is called by Android.View.performClick,
+            // and does not receive the event timestamp. This currently triggers an animation in
+            // TabSwitcherAndStartSurfaceLayout.startHidingImpl which lasts around 300ms.
+            // TabSwitcherAndStartSurfaceLayout.doneHiding runs after the animation, actually
+            // triggering this tab change.
+            //
+            // Due to this TabSwitchMetrics.startTabSwitchLatencyTiming is not using an accurate
+            // start time and needs updating.
+            //
+            // We should also consider merging the TabImpl and WebContents onShow into a single Jni
+            // call.
+            TabImplJni.get().onShow(mNativeTabAndroid);
+
             if (getWebContents() != null) getWebContents().onShow();
 
             // If the NativePage was frozen while in the background (see NativePageAssassin),
@@ -1709,7 +1725,8 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         TabImpl fromWebContents(WebContents webContents);
         void init(TabImpl caller);
         void destroy(long nativeTabAndroid);
@@ -1725,5 +1742,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         void setActiveNavigationEntryTitleForUrl(long nativeTabAndroid, String url, String title);
         void loadOriginalImage(long nativeTabAndroid);
         boolean handleNonNavigationAboutURL(GURL url);
+        void onShow(long nativeTabAndroid);
     }
 }

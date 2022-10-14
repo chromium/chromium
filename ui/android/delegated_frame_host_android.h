@@ -17,6 +17,8 @@
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/host_frame_sink_client.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "ui/android/ui_android_export.h"
 
 namespace cc {
@@ -116,11 +118,21 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
   void WasHidden();
   void WasShown(const viz::LocalSurfaceId& local_surface_id,
                 const gfx::Size& size_in_pixels,
-                bool is_fullscreen);
+                bool is_fullscreen,
+                blink::mojom::RecordContentToVisibleTimeRequestPtr
+                    content_to_visible_time_request);
   void EmbedSurface(const viz::LocalSurfaceId& new_local_surface_id,
                     const gfx::Size& new_size_in_pixels,
                     cc::DeadlinePolicy deadline_policy,
                     bool is_fullscreen);
+
+  // Called to request the presentation time for the next frame or cancel any
+  // requests when the RenderWidget's visibility state is not changing. If the
+  // visibility state is changing call WasHidden or WasShown instead.
+  void RequestPresentationTimeForNextFrame(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr
+          content_to_visible_time_request);
+  void CancelPresentationTimeRequest();
 
   // Returns the ID for the current Surface. Returns an invalid ID if no
   // surface exists (!HasDelegatedContent()).
@@ -157,6 +169,14 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   void SetLocalSurfaceId(const viz::LocalSurfaceId& local_surface_id);
 
+  // We cannot guarantee to be attached to `registered_parent_compositor_` when
+  // either WasShown or RequestPresentationTimeForNextFrame is called. In such
+  // cases we enqueue the request and attempt again to send it once the
+  // compositor has been attached.
+  void PostRequestPresentationTimeForNextFrame(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr
+          content_to_visible_time_request);
+
   const viz::FrameSinkId frame_sink_id_;
 
   raw_ptr<ViewAndroid> view_;
@@ -183,6 +203,13 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   // The size of the above surface (updated at the same time).
   gfx::Size surface_size_in_pixels_;
+
+  // If `registered_parent_compositor_` is not attached when we receive a
+  // request, we save it and attempt again to send it once the compositor has
+  // been attached.
+  blink::mojom::RecordContentToVisibleTimeRequestPtr
+      content_to_visible_time_request_;
+  blink::ContentToVisibleTimeReporter content_to_visible_time_recorder_;
 
   std::unique_ptr<viz::FrameEvictor> frame_evictor_;
 };
