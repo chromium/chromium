@@ -11131,6 +11131,7 @@ if (is_chromeos_ash) {
     sources = [
       "../browser/ash/crosapi/test/crosapi_test_base.cc",
       "../browser/ash/crosapi/test/crosapi_test_base.h",
+      "../browser/ash/crosapi/test/network_change_ash_crosapitest.cc",
     ]
     deps = [
       ":ash_crosapi_tests_runner",
@@ -11155,10 +11156,7 @@ if (is_chromeos_ash) {
     use_xvfb = use_xvfb_in_this_config
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [
-      "../browser/ash/crosapi/test/file_manager_ash_browsertest.cc",
-      "../browser/ash/crosapi/test/network_change_ash_browsertest.cc",
-    ]
+    sources = [ "../browser/ash/crosapi/test/file_manager_ash_browsertest.cc" ]
     deps = [
       ":browser_tests_runner",
       ":test_support_ui",
