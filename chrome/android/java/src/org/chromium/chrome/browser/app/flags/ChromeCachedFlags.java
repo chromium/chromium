@@ -158,6 +158,7 @@ public class ChromeCachedFlags {
                         add(OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE);
                         add(OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET);
                         add(OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX);
+                        add(OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN);
                         add(PageAnnotationsServiceConfig.PAGE_ANNOTATIONS_BASE_URL);
                         add(PartialCustomTabHeightStrategy.LOG_IMMERSIVE_MODE_CONFIRMATIONS);
                         add(ReturnToChromeUtil.TAB_SWITCHER_ON_RETURN_MS);

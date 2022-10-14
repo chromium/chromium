@@ -2429,30 +2429,55 @@ const FeatureEntry::FeatureVariation kOmniboxAssistantVoiceSearchVariations[] =
 };
 
 const FeatureEntry::FeatureParam
-    kOmniboxModernizeVisualUpdateExcludeTabletsActiveOmnibox[] = {
+    kOmniboxModernizeVisualUpdateExcludeTabletsActiveOmniboxSmallMargin[] = {
         {"enable_modernize_visual_update_on_tablet", "false"},
-        {"modernize_visual_update_active_color_on_omnibox", "true"}};
+        {"modernize_visual_update_active_color_on_omnibox", "true"},
+        {"modernize_visual_update_small_bottom_margin", "true"}};
 
 const FeatureEntry::FeatureParam
-    kOmniboxModernizeVisualUpdateExcludeTabletsDeactiveOmnibox[] = {
+    kOmniboxModernizeVisualUpdateExcludeTabletsActiveOmniboxBigMargin[] = {
         {"enable_modernize_visual_update_on_tablet", "false"},
-        {"modernize_visual_update_active_color_on_omnibox", "false"}};
+        {"modernize_visual_update_active_color_on_omnibox", "true"},
+        {"modernize_visual_update_small_bottom_margin", "false"}};
+
+const FeatureEntry::FeatureParam
+    kOmniboxModernizeVisualUpdateExcludeTabletsDeactiveOmniboxSmallMargin[] = {
+        {"enable_modernize_visual_update_on_tablet", "false"},
+        {"modernize_visual_update_active_color_on_omnibox", "false"},
+        {"modernize_visual_update_small_bottom_margin", "true"}};
+
+const FeatureEntry::FeatureParam
+    kOmniboxModernizeVisualUpdateExcludeTabletsDeactiveOmniboxBigMargin[] = {
+        {"enable_modernize_visual_update_on_tablet", "false"},
+        {"modernize_visual_update_active_color_on_omnibox", "false"},
+        {"modernize_visual_update_small_bottom_margin", "false"}};
 
 const FeatureEntry::FeatureParam kOmniboxModernizeVisualUpdateIncludeTablets[] =
     {{"enable_modernize_visual_update_on_tablet", "true"}};
 
-const FeatureEntry::FeatureVariation kOmniboxModernizeVisualUpdateVariations[] =
-    {
-        {"(active color omnibox, exclude tablet)",
-         kOmniboxModernizeVisualUpdateExcludeTabletsActiveOmnibox,
-         std::size(kOmniboxModernizeVisualUpdateExcludeTabletsActiveOmnibox),
-         nullptr},
-        {"(no active color omnibox, exclude tablet)",
-         kOmniboxModernizeVisualUpdateExcludeTabletsDeactiveOmnibox,
-         std::size(kOmniboxModernizeVisualUpdateExcludeTabletsDeactiveOmnibox),
-         nullptr},
-        {"(include tablet)", kOmniboxModernizeVisualUpdateIncludeTablets,
-         std::size(kOmniboxModernizeVisualUpdateIncludeTablets), nullptr},
+const FeatureEntry::FeatureVariation kOmniboxModernizeVisualUpdateVariations[] = {
+    {"(+color, Short)",
+     kOmniboxModernizeVisualUpdateExcludeTabletsActiveOmniboxSmallMargin,
+     std::size(
+         kOmniboxModernizeVisualUpdateExcludeTabletsActiveOmniboxSmallMargin),
+     nullptr},
+    {"(+color, Tall)",
+     kOmniboxModernizeVisualUpdateExcludeTabletsActiveOmniboxBigMargin,
+     std::size(
+         kOmniboxModernizeVisualUpdateExcludeTabletsActiveOmniboxBigMargin),
+     nullptr},
+    {"(-color, Short)",
+     kOmniboxModernizeVisualUpdateExcludeTabletsDeactiveOmniboxSmallMargin,
+     std::size(
+         kOmniboxModernizeVisualUpdateExcludeTabletsDeactiveOmniboxSmallMargin),
+     nullptr},
+    {"(-color, Tall)",
+     kOmniboxModernizeVisualUpdateExcludeTabletsDeactiveOmniboxBigMargin,
+     std::size(
+         kOmniboxModernizeVisualUpdateExcludeTabletsDeactiveOmniboxBigMargin),
+     nullptr},
+    {"(Tablet)", kOmniboxModernizeVisualUpdateIncludeTablets,
+     std::size(kOmniboxModernizeVisualUpdateIncludeTablets), nullptr},
 };
 
 const FeatureEntry::FeatureParam

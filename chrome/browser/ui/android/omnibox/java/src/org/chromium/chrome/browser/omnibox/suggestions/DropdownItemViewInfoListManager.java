@@ -138,8 +138,12 @@ class DropdownItemViewInfoListManager {
                 : SuggestionCommonProperties.FormFactor.PHONE;
         DropdownItemViewInfo previousItem = null;
         boolean inDropdownItemBackgroundRoundingGroup = false;
-        int groupVerticalMargin = mContext.getResources().getDimensionPixelSize(
+        int groupTopMargin = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_group_vertical_margin);
+        int groupBottomMargin = mContext.getResources().getDimensionPixelSize(
+                OmniboxFeatures.shouldShowSmallBottomMargin()
+                        ? R.dimen.omnibox_suggestion_group_vertical_small_bottom_margin
+                        : R.dimen.omnibox_suggestion_group_vertical_margin);
         int suggestionVerticalMargin = mContext.getResources().getDimensionPixelSize(
                 R.dimen.omnibox_suggestion_vertical_margin);
 
@@ -158,15 +162,19 @@ class DropdownItemViewInfoListManager {
                 currentSection = groupConfig != null ? groupConfig.getSection()
                                                      : GroupSection.SECTION_DEFAULT;
                 var applyRounding = currentSection != previousSection;
-                var verticalMargin = applyRounding ? groupVerticalMargin : suggestionVerticalMargin;
+                var topMargin = applyRounding ? groupTopMargin : suggestionVerticalMargin;
+                var bottomMargin = applyRounding ? groupBottomMargin : suggestionVerticalMargin;
 
                 model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, applyRounding);
-                model.set(DropdownCommonProperties.TOP_MARGIN, verticalMargin);
+                // Do not have margin for the first suggestion, otherwise the first suggestion will
+                // have a big gap with the Omnibox.
+                model.set(
+                        DropdownCommonProperties.TOP_MARGIN, previousItem == null ? 0 : topMargin);
 
                 if (previousItem != null) {
                     previousItem.model.set(
                             DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, applyRounding);
-                    previousItem.model.set(DropdownCommonProperties.BOTTOM_MARGIN, verticalMargin);
+                    previousItem.model.set(DropdownCommonProperties.BOTTOM_MARGIN, bottomMargin);
                 }
 
                 previousItem = item;

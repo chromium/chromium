@@ -24,6 +24,11 @@ public class OmniboxFeatures {
                     ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
                     "modernize_visual_update_active_color_on_omnibox", false);
 
+    public static final BooleanCachedFieldTrialParameter
+            MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN = new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE,
+                    "modernize_visual_update_small_bottom_margin", false);
+
     /**
      * @param context The activity context.
      * @return Whether the new modernize visual UI update should be shown.
@@ -39,6 +44,14 @@ public class OmniboxFeatures {
      */
     public static boolean shouldShowActiveColorOnOmnibox() {
         return MODERNIZE_VISUAL_UPDATE_ACTIVE_COLOR_ON_OMNIBOX.getValue();
+    }
+
+    /**
+     * @return Whether to show an active color for Omnibox which has a different background color
+     *         than toolbar.
+     */
+    public static boolean shouldShowSmallBottomMargin() {
+        return MODERNIZE_VISUAL_UPDATE_SMALL_BOTTOM_MARGIN.getValue();
     }
 
     /**
