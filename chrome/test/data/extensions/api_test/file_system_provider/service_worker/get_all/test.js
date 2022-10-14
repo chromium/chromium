@@ -2,38 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {mountTestFileSystem, openFile, remoteProvider, startReadTextFromBlob} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
+import {getAllFsInfos, getFsInfoById, mountTestFileSystem, openFile, remoteProvider, startReadTextFromBlob, unmount} from '/_test_resources/api_test/file_system_provider/service_worker/helpers.js';
 // For shared constants.
 import {TestFileSystemProvider} from '/_test_resources/api_test/file_system_provider/service_worker/provider.js';
-
-// Wrappers for chrome.fileSystemProvider.* are still needed for Closure to
-// work, as it's not aware they are returning promises if callbacks are omitted.
-
-/**
- * @returns {!Promise<!Array<!chrome.fileSystemProvider.FileSystemInfo>>}
- * @suppress {checkTypes}
- */
-async function getAllFsInfos() {
-  return chrome.fileSystemProvider.getAll();
-}
-
-/**
- * @param {string} fileSystemId
- * @returns {!Promise<!chrome.fileSystemProvider.FileSystemInfo>}
- * @suppress {checkTypes}
- */
-async function getFsInfoById(fileSystemId) {
-  return chrome.fileSystemProvider.get(fileSystemId);
-}
-
-/**
- * @param {string} fileSystemId
- * @returns {!Promise<void>}
- * @suppress {checkTypes}
- */
-async function unmount(fileSystemId) {
-  return chrome.fileSystemProvider.unmount({fileSystemId});
-}
 
 async function main() {
   await navigator.serviceWorker.ready;
@@ -110,7 +81,6 @@ async function main() {
     async function mountError() {
       try {
         try {
-          /** @suppress {checkTypes} */
           await chrome.fileSystemProvider.mount(
               {fileSystemId: '', displayName: ''});
           chrome.test.fail('Mount operation should have failed.');

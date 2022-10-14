@@ -492,6 +492,11 @@ export class TestFileSystemProvider {
       return;
     }
 
+    if (options.entryPath === '/' + TestFileSystemProvider.FILE_FAIL) {
+      onError(chrome.fileSystemProvider.ProviderError.FAILED);
+      return;
+    }
+
     if (this.findEntryByPath(options.entryPath)) {
       onSuccess();
       return;
@@ -996,7 +1001,7 @@ export class TestFileSystemProvider {
 TestFileSystemProvider.FILESYSTEM_ID = 'test-fs';
 
 /**
- * Reads and writes of this file always fail.
+ * Reads, writes and add/remove watchers of this file always fail.
  *
  * @type {string}
  * @const

@@ -43,6 +43,36 @@ export async function getVolumeInfo(fileSystemId) {
 };
 
 /**
+ * Wrappers for chrome.fileSystemProvider.* are still needed for Closure to
+ * work, as it's not aware they are returning promises if callbacks are omitted.
+ * @returns {!Promise<!Array<!chrome.fileSystemProvider.FileSystemInfo>>}
+ * @suppress {checkTypes}
+ */
+export async function getAllFsInfos() {
+  return chrome.fileSystemProvider.getAll();
+}
+
+/**
+ * Async wrapper.
+ * @param {string} fileSystemId
+ * @returns {!Promise<void>}
+ * @suppress {checkTypes}
+ */
+export async function unmount(fileSystemId) {
+  return chrome.fileSystemProvider.unmount({fileSystemId});
+}
+
+/**
+ * Async wrapper.
+ * @param {string} fileSystemId
+ * @returns {!Promise<!chrome.fileSystemProvider.FileSystemInfo>}
+ * @suppress {checkTypes}
+ */
+export async function getFsInfoById(fileSystemId) {
+  return chrome.fileSystemProvider.get(fileSystemId);
+}
+
+/**
  * @param {number=} openedFilesLimit Limit of opened files at once. If 0 or
  *     unspecified, then not limited.
  * @returns {!Promise<{fileSystem: !FileSystem, volumeInfo:
