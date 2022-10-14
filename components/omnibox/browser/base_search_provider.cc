@@ -20,6 +20,7 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -528,7 +529,36 @@ void BaseSearchProvider::AddMatchToMap(
                      match.search_terms_args->additional_query_params));
   const std::pair<MatchMap::iterator, bool> i(
       map->insert(std::make_pair(match_key, match)));
-  if (!i.second) {
+  if (i.second) {
+    auto& added_match = i.first->second;
+    // If the newly added match has non-empty additional query params and
+    // another match with the same search terms and a unique non-empty
+    // additional query params is already present in the map, proactively set
+    // `stripped_destination_url` to be the same as `destination_url`.
+    // Otherwise, `stripped_destination_url` will later be set by
+    // `AutocompleteResult::ComputeStrippedDestinationURL()` which strips away
+    // the additional query params from `destination_url` leaving only the
+    // search terms. That would result in these matches to be erroneously
+    // deduped despite having unique additional query params.
+    // Note that the match previously added to the map will continue to get the
+    // typical `stripped_destination_url` allowing it to be deduped with the
+    // plain-text matches (i.e., with no additional query params) as expected.
+    const auto& added_match_query = match_key.first;
+    const auto& added_match_query_params = match_key.second;
+    if (base::FeatureList::IsEnabled(omnibox::kDisambiguateEntitySuggestions) &&
+        !added_match_query_params.empty()) {
+      for (const auto& entry : *map) {
+        const auto& existing_match_query = entry.first.first;
+        const auto& existing_match_query_params = entry.first.second;
+        if (existing_match_query == added_match_query &&
+            !existing_match_query_params.empty() &&
+            existing_match_query_params != added_match_query_params) {
+          added_match.stripped_destination_url = added_match.destination_url;
+          break;
+        }
+      }
+    }
+  } else {
     auto& existing_match = i.first->second;
     // If a duplicate match is already in the map, replace it with `match` if it
     // is more relevant.
@@ -575,13 +605,19 @@ void BaseSearchProvider::AddMatchToMap(
       }
       existing_match.duplicate_matches.push_back(std::move(match));
     }
-    // Copy over answer data from lower-ranking duplicate, if necessary.
-    // This depends on the lower-ranking duplicate always being added last - see
-    // use of push_back above.
+
+    // Copy over `answer` and `stripped_destination_url` from the lower-ranking
+    // duplicate, if necessary. Note that this requires the lower-ranking
+    // duplicate being added last. See the use of push_back above.
     const auto& less_relevant_duplicate_match =
         existing_match.duplicate_matches.back();
     if (less_relevant_duplicate_match.answer && !existing_match.answer) {
       existing_match.answer = less_relevant_duplicate_match.answer;
+    }
+    if (!less_relevant_duplicate_match.stripped_destination_url.is_empty() &&
+        existing_match.stripped_destination_url.is_empty()) {
+      existing_match.stripped_destination_url =
+          less_relevant_duplicate_match.stripped_destination_url;
     }
   }
 }

@@ -42,6 +42,9 @@ BASE_DECLARE_FEATURE(kOmniboxMaxURLMatches);
 BASE_DECLARE_FEATURE(kDynamicMaxAutocomplete);
 BASE_DECLARE_FEATURE(kRetainSuggestionsWithHeaders);
 
+// Entity suggestion disambiguation.
+BASE_DECLARE_FEATURE(kDisambiguateEntitySuggestions);
+
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 BASE_DECLARE_FEATURE(kAdjustLocalHistoryZeroSuggestRelevanceScore);
 BASE_DECLARE_FEATURE(kClobberTriggersContextualWebZeroSuggest);

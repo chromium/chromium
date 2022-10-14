@@ -143,6 +143,12 @@ BASE_FEATURE(kDynamicMaxAutocomplete,
              "OmniboxDynamicMaxAutocomplete",
              enabled_by_default_desktop_android);
 
+// If enabled, proactively sets the `stripped_destination_url` for the entity
+// suggestions with identical search terms so they are not erroneously deduped.
+BASE_FEATURE(kDisambiguateEntitySuggestions,
+             "DisambiguateEntitySuggestions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Used to adjust the relevance for the local history zero-prefix suggestions.
 // If enabled, the relevance is determined by this feature's companion
 // parameter, OmniboxFieldTrial::kLocalHistoryZeroSuggestRelevanceScore.
