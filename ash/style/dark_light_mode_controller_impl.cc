@@ -21,8 +21,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "ui/chromeos/styles/cros_styles.h"
-#include "ui/gfx/color_analysis.h"
-#include "ui/gfx/color_utils.h"
 
 namespace ash {
 
