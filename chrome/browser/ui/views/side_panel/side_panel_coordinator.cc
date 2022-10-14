@@ -413,8 +413,11 @@ void SidePanelCoordinator::PopulateSidePanel(
   auto* previous_entry = current_entry_.get();
   current_entry_ = entry->GetWeakPtr();
   entry->OnEntryShown();
-  if (previous_entry)
+  if (previous_entry) {
     previous_entry->OnEntryHidden();
+  } else {
+    header_combobox_->RequestFocus();
+  }
 }
 
 void SidePanelCoordinator::ClearCachedEntryViews() {

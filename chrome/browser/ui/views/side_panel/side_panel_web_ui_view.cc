@@ -70,7 +70,8 @@ void SidePanelWebUIView::ViewHierarchyChanged(
 void SidePanelWebUIView::ShowUI() {
   SetVisible(true);
   SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(true);
-  RequestFocus();
+  if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel))
+    RequestFocus();
   if (on_show_cb_)
     on_show_cb_.Run();
 }
