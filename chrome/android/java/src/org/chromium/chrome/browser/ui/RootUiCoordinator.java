@@ -1111,7 +1111,7 @@ public class RootUiCoordinator
                     mActivity, mActivityLifecycleDispatcher, mProfileSupplier);
             PriceTrackingButtonController priceTrackingButtonController =
                     new PriceTrackingButtonController(mActivityTabProvider,
-                            mModalDialogManagerSupplier.get(), getBottomSheetController(),
+                            mModalDialogManagerSupplier.get(),
                             AppCompatResources.getDrawable(
                                     mActivity, R.drawable.price_tracking_disabled),
                             mTabBookmarkerSupplier);
