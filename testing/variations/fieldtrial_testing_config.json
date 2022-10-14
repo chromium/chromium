@@ -4188,26 +4188,6 @@
             ]
         }
     ],
-    "DnsHttpsSvcbSchemeUpgrade": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20221001",
-                    "enable_features": [
-                        "UseDnsHttpsSvcbAlpn"
-                    ]
-                }
-            ]
-        }
-    ],
     "DnsOverHttpsCox": [
         {
             "platforms": [
@@ -10941,6 +10921,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UseCompositorJob"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UseDnsHttpsSvcbAlpn": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20221013",
+                    "enable_features": [
+                        "UseDnsHttpsSvcbAlpn"
                     ]
                 }
             ]
