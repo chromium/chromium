@@ -14,6 +14,10 @@
 
 class GURL;
 
+namespace url {
+class Origin;
+}
+
 namespace weblayer {
 
 class WebLayerWebappsClient : public webapps::WebappsClient {
@@ -28,6 +32,7 @@ class WebLayerWebappsClient : public webapps::WebappsClient {
   static void Create();
 
   // WebappsClient:
+  bool IsOriginConsideredSecure(const url::Origin& origin) override;
   security_state::SecurityLevel GetSecurityLevelForWebContents(
       content::WebContents* web_contents) override;
   infobars::ContentInfoBarManager* GetInfoBarManagerForWebContents(

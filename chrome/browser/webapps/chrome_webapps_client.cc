@@ -8,9 +8,11 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/shortcut_helper.h"
@@ -32,6 +34,10 @@ namespace webapps {
 ChromeWebappsClient* ChromeWebappsClient::GetInstance() {
   static base::NoDestructor<ChromeWebappsClient> instance;
   return instance.get();
+}
+
+bool ChromeWebappsClient::IsOriginConsideredSecure(const url::Origin& origin) {
+  return origin.scheme() == chrome::kIsolatedAppScheme;
 }
 
 security_state::SecurityLevel

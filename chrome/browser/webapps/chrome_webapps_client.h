@@ -9,6 +9,10 @@
 #include "build/build_config.h"
 #include "components/webapps/browser/webapps_client.h"
 
+namespace url {
+class Origin;
+}
+
 namespace webapps {
 
 class ChromeWebappsClient : public WebappsClient {
@@ -19,6 +23,7 @@ class ChromeWebappsClient : public WebappsClient {
   static ChromeWebappsClient* GetInstance();
 
   // WebappsClient:
+  bool IsOriginConsideredSecure(const url::Origin& origin) override;
   security_state::SecurityLevel GetSecurityLevelForWebContents(
       content::WebContents* web_contents) override;
   infobars::ContentInfoBarManager* GetInfoBarManagerForWebContents(

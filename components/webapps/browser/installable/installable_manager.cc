@@ -290,9 +290,12 @@ bool InstallableManager::IsContentSecure(content::WebContents* web_contents) {
 
 // static
 bool InstallableManager::IsOriginConsideredSecure(const GURL& url) {
-  return net::IsLocalhost(url) ||
+  auto origin = url::Origin::Create(url);
+  auto* webapps_client = webapps::WebappsClient::Get();
+  return (webapps_client && webapps_client->IsOriginConsideredSecure(origin)) ||
+         net::IsLocalhost(url) ||
          network::SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(
-             url::Origin::Create(url));
+             origin);
 }
 
 void InstallableManager::GetData(const InstallableParams& params,

@@ -23,6 +23,7 @@
 #include "ui/android/color_utils_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "weblayer/browser/webapps/webapk_install_scheduler.h"
 #include "weblayer/browser/webapps/webapps_utils.h"
 #include "weblayer/browser/webapps/weblayer_app_banner_manager_android.h"
@@ -41,6 +42,11 @@ WebLayerWebappsClient::~WebLayerWebappsClient() = default;
 void WebLayerWebappsClient::Create() {
   static base::NoDestructor<WebLayerWebappsClient> instance;
   instance.get();
+}
+
+bool WebLayerWebappsClient::IsOriginConsideredSecure(
+    const url::Origin& origin) {
+  return false;
 }
 
 security_state::SecurityLevel
