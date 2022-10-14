@@ -6,10 +6,13 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/files/file_util.h"
 #import "base/ios/block_types.h"
+#import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
@@ -43,6 +46,52 @@ namespace {
 // The path in the temp directory containing documents that are to be opened in
 // other applications.
 static NSString* const kDocumentsTemporaryPath = @"OpenIn";
+
+// Returns the temporary path where documents are stored.
+NSString* GetTemporaryDocumentDirectory() {
+  return [NSTemporaryDirectory()
+      stringByAppendingPathComponent:kDocumentsTemporaryPath];
+}
+
+// Removes all the stored files at `path`.
+void RemoveAllStoredDocumentsAtPath(NSString* path) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+  NSFileManager* file_manager = [NSFileManager defaultManager];
+
+  NSError* error = nil;
+  NSArray<NSString*>* document_files =
+      [file_manager contentsOfDirectoryAtPath:path error:&error];
+  if (!document_files) {
+    DLOG(ERROR) << "Failed to get content of directory at path: "
+                << base::SysNSStringToUTF8([error description]);
+    return;
+  }
+
+  for (NSString* filename in document_files) {
+    NSString* file_path = [path stringByAppendingPathComponent:filename];
+    if (![file_manager removeItemAtPath:file_path error:&error]) {
+      DLOG(ERROR) << "Failed to remove file: "
+                  << base::SysNSStringToUTF8([error description]);
+    }
+  }
+}
+
+// Ensures the destination directory is created and any contained obsolete files
+// are deleted. Returns YES if the directory is created successfully.
+BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
+  NSString* temporary_directory_path = GetTemporaryDocumentDirectory();
+  base::File::Error error;
+  if (!CreateDirectoryAndGetError(
+          base::mac::NSStringToFilePath(temporary_directory_path), &error)) {
+    DLOG(ERROR) << "Error creating destination dir: " << error;
+    return NO;
+  }
+  // Remove all documents that might be still on temporary storage.
+  RemoveAllStoredDocumentsAtPath(temporary_directory_path);
+  return YES;
+}
+
 }  // namespace
 
 @interface SharingCoordinator () <ActivityServicePositioner,
@@ -148,12 +197,16 @@ static NSString* const kDocumentsTemporaryPath = @"OpenIn";
       self.browser->GetWebStateList()->GetActiveWebState();
   if (currentWebState && OpenInTabHelper::ShouldDownload(currentWebState) &&
       IsOpenInActivitiesInShareButtonEnabled()) {
-    self.dispatcher = self.browser->GetCommandDispatcher();
-    [self.dispatcher
-        startDispatchingToTarget:self
-                     forProtocol:@protocol(ShareDownloadOverlayCommands)];
-    [self startDisplayDownloadOverlayOnWebView:currentWebState];
-    [self startDownloadFromWebState:currentWebState];
+    // Creating the directory can block the main thread, so perform it on a
+    // background sequence, then on current sequence complete the workflow.
+    __weak SharingCoordinator* weakSelf = self;
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+        base::BindOnce(&CreateDestinationDirectoryAndRemoveObsoleteFiles),
+        base::BindOnce(^(BOOL directoryCreated) {
+          [weakSelf startDownloadWithExistingDirectory:directoryCreated
+                                              webState:currentWebState];
+        }));
   } else {
     [self startActivityService];
   }
@@ -162,7 +215,6 @@ static NSString* const kDocumentsTemporaryPath = @"OpenIn";
 - (void)stop {
   [self activityServiceDidEndPresenting];
   [self hideQRCode];
-  [self.dispatcher stopDispatchingToTarget:self];
   self.originView = nil;
 }
 
@@ -212,6 +264,18 @@ static NSString* const kDocumentsTemporaryPath = @"OpenIn";
 
 #pragma mark - Private Methods
 
+// Starts download only if the final directory is created, if not created, shows
+// the share menu without file options.
+- (void)startDownloadWithExistingDirectory:(BOOL)directoryCreated
+                                  webState:(web::WebState*)webState {
+  if (directoryCreated) {
+    [self startDisplayDownloadOverlayOnWebView:webState];
+    [self startDownloadFromWebState:webState];
+  } else {
+    [self startActivityService];
+  }
+}
+
 // Starts the share menu feature.
 - (void)startActivityService {
   self.activityServiceCoordinator = [[ActivityServiceCoordinator alloc]
@@ -237,8 +301,7 @@ static NSString* const kDocumentsTemporaryPath = @"OpenIn";
 // Starts downloading the file currently displayed at path `self.filePath`.
 - (void)startDownloadFromWebState:(web::WebState*)webState {
   self.isDownloadCanceled = NO;
-  NSString* tempDirPath = [NSTemporaryDirectory()
-      stringByAppendingPathComponent:kDocumentsTemporaryPath];
+  NSString* tempDirPath = GetTemporaryDocumentDirectory();
   OpenInTabHelper* helper = OpenInTabHelper::FromWebState(webState);
   self.filePath = [tempDirPath
       stringByAppendingPathComponent:base::SysUTF16ToNSString(
@@ -290,6 +353,10 @@ static NSString* const kDocumentsTemporaryPath = @"OpenIn";
 // Shows an overlayed spinner on the top view to indicate that a file download
 // is in progress.
 - (void)startDisplayDownloadOverlayOnWebView:(web::WebState*)currentWebState {
+  self.dispatcher = self.browser->GetCommandDispatcher();
+  [self.dispatcher
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(ShareDownloadOverlayCommands)];
   self.overlay = [[ShareDownloadOverlayCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
@@ -301,6 +368,7 @@ static NSString* const kDocumentsTemporaryPath = @"OpenIn";
 - (void)stopDisplayDownloadOverlay {
   [self.overlay stop];
   self.overlay = nil;
+  [self.dispatcher stopDispatchingToTarget:self];
 }
 
 // Removes downloaded file at `self.filePath`.
