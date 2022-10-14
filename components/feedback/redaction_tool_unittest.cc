@@ -368,15 +368,27 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
             RedactCustomPatterns("ssid=\"LittleTsunami\""));
   EXPECT_EQ("* SSID=<SSID: 5>", RedactCustomPatterns("* SSID=agnagna"));
 
-  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 6>",
+  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: \"<SSID: 6>\" foo",
             RedactCustomPatterns(
-                "Specifier: <ArcNetworkFactory#1> SSID: \"GoogleGuest\""));
-  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 7>",
+                "Specifier: <ArcNetworkFactory#1> SSID: \"GoogleGuest1\" foo"));
+  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: '<SSID: 7>' foo",
             RedactCustomPatterns(
-                "Specifier: <ArcNetworkFactory#1> SSID: 'GoogleGuest'"));
+                "Specifier: <ArcNetworkFactory#1> SSID: 'GoogleGuest2' foo"));
   EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 8>",
             RedactCustomPatterns(
-                "Specifier: <ArcNetworkFactory#1> SSID: GoogleGuest"));
+                "Specifier: <ArcNetworkFactory#1> SSID: GoogleGuest3"));
+  EXPECT_EQ(
+      "Specifier: <ArcNetworkFactory#1> SSID: <SSID: 9>",
+      RedactCustomPatterns(
+          "Specifier: <ArcNetworkFactory#1> SSID: less than 32 characters"));
+  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 10>foo",
+            RedactCustomPatterns("Specifier: <ArcNetworkFactory#1> SSID: this "
+                                 "line is 32 characters long!foo"));
+  EXPECT_EQ(
+      "<WifiNetworkSpecifier [, SSID Match pattern=PatternMatcher{LITERAL: "
+      "<SSID: 11>}, ...]",
+      RedactCustomPatterns("<WifiNetworkSpecifier [, SSID Match "
+                           "pattern=PatternMatcher{LITERAL: Google-A}, ...]"));
 
   EXPECT_EQ("SerialNumber: <Serial: 1>",
             RedactCustomPatterns("SerialNumber: 1217D7EF"));
