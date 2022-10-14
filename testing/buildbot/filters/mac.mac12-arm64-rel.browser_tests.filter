@@ -1,5 +1,7 @@
 # crbug.com/1262402 Test filter for browser_tests on mac12-arm64-rel
 
+-AccessCodeCastHandlerBrowserTest.ExpectNetworkErrorWhenNoNetwork
+-AccessCodeCastHandlerBrowserTest.ReturnSuccessfulResponse
 -All/CryptotokenBrowserTest.SandboxedPageDoesNotSign/0
 -All/CryptotokenBrowserTest.SignShowsPrompt/0
 -All/LoginPromptBrowserTest.TestBasicAuth/0
@@ -80,6 +82,8 @@
 -FirstRunMasterPrefsWithTrackedPreferencesInstance/FirstRunMasterPrefsWithTrackedPreferences.TrackedPreferencesSurviveFirstRun/2
 -FirstRunMasterPrefsWithTrackedPreferencesInstance/FirstRunMasterPrefsWithTrackedPreferences.TrackedPreferencesSurviveFirstRun/3
 -FirstRunMasterPrefsVariationsSeedTests/FirstRunMasterPrefsVariationsSeedTest.Test/1
+-FormfillPageLoadMetricsObserverBrowserTest.UserDataFieldFilledPreviouslyUseCounter
+-FormfillPageLoadMetricsObserverBrowserTest.UserDataFieldFilledUseCounter
 -GlobalErrorServiceBrowserTest.BubbleViewDismissedOnRemove
 -HttpsOnlyModeBrowserTest.BadHttpsFollowedByGoodHttps
 -IdleServiceTest.Basic
