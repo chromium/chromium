@@ -113,6 +113,11 @@ bool UserPerformanceTuningManager::IsBatterySaverModeDisabledForSession()
   return battery_saver_mode_disabled_for_session_;
 }
 
+bool UserPerformanceTuningManager::IsHighEfficiencyModeActive() const {
+  return pref_change_registrar_.prefs()->GetBoolean(
+      performance_manager::user_tuning::prefs::kHighEfficiencyModeEnabled);
+}
+
 bool UserPerformanceTuningManager::IsBatterySaverActive() const {
   return battery_saver_mode_enabled_;
 }

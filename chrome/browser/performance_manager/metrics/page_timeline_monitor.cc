@@ -13,11 +13,17 @@
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace performance_manager::metrics {
 
@@ -93,8 +99,39 @@ void PageTimelineMonitor::CollectSlice() {
       curr_info->time_of_last_foreground_millisecond_update = now;
     }
 
+    bool is_active_tab = false;
+    bool has_notification_permission = false;
+    bool is_capturing_media = false;
+    bool is_connected_to_device = false;
+
+    const auto* page_live_state_data =
+        PageLiveStateDecorator::Data::FromPageNode(page_node);
+    if (page_live_state_data) {
+      is_active_tab = page_live_state_data->IsActiveTab();
+      has_notification_permission =
+          page_live_state_data->IsContentSettingTypeAllowed(
+              ContentSettingsType::NOTIFICATIONS);
+      is_capturing_media = page_live_state_data->IsCapturingVideo() ||
+                           page_live_state_data->IsCapturingAudio() ||
+                           page_live_state_data->IsBeingMirrored() ||
+                           page_live_state_data->IsCapturingWindow() ||
+                           page_live_state_data->IsCapturingDisplay();
+      is_connected_to_device =
+          page_live_state_data->IsConnectedToUSBDevice() ||
+          page_live_state_data->IsConnectedToBluetoothDevice();
+    }
+
     ukm::builders::PerformanceManager_PageTimelineState(source_id)
         .SetSliceId(slice_id)
+#if !BUILDFLAG(IS_ANDROID)
+        .SetHighEfficiencyMode(
+            user_tuning::UserPerformanceTuningManager::GetInstance()
+                ->IsHighEfficiencyModeActive())
+        .SetBatterySaverMode(
+            user_tuning::UserPerformanceTuningManager::GetInstance()
+                ->IsBatterySaverActive())
+#endif  // !BUILDFLAG(IS_ANDROID)
+        .SetIsActiveTab(is_active_tab)
         .SetTimeSinceLastSlice(ukm::GetSemanticBucketMinForDurationTiming(
             time_since_last_slice.InMilliseconds()))
         .SetTimeSinceCreation(ukm::GetSemanticBucketMinForDurationTiming(
@@ -107,6 +144,11 @@ void PageTimelineMonitor::CollectSlice() {
             curr_info->total_foreground_milliseconds))
         .SetChangedFaviconOrTitleInBackground(
             curr_info->updated_title_or_favicon_in_background)
+        .SetHasNotificationPermission(has_notification_permission)
+        .SetIsCapturingMedia(is_capturing_media)
+        .SetIsConnectedToDevice(is_connected_to_device)
+        .SetIsPlayingAudio(page_node->IsAudible())
+        .SetResidentSetSize(page_node->EstimateResidentSetSize())
         .Record(ukm::UkmRecorder::Get());
   }
 }

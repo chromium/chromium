@@ -19,9 +19,6 @@ class PageTimelineMonitorUnitTest;
 
 // Periodically reports tab state via UKM, to enable analysis of usage patterns
 // over time.
-//
-// TODO(crbug.com/1367052): Report whether high-efficiency mode and/or
-// battery-saver mode are enabled.
 class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
                             public GraphOwned {
  public:

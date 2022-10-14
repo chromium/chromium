@@ -16542,6 +16542,11 @@ be describing additional metrics about the same event.
     PageTimelineState UKM events. One PageTimelineState is recorded for each
     browser tab when a slice is collected.
   </summary>
+  <metric name="BatterySaverMode" enum="Boolean">
+    <summary>
+      True if Batter Saver Mode is enabled at the time this event is recorded.
+    </summary>
+  </metric>
   <metric name="ChangedFaviconOrTitleInBackground" enum="Boolean">
     <summary>
       True if this page has been observed to change its favicon or title when in
@@ -16551,6 +16556,43 @@ be describing additional metrics about the same event.
   <metric name="CurrentState" enum="PageState">
     <summary>
       The state the tab was in when the slice was recorded.
+    </summary>
+  </metric>
+  <metric name="HasNotificationPermission" enum="Boolean">
+    <summary>
+      True if this page has been granted the notification permission.
+    </summary>
+  </metric>
+  <metric name="HighEfficiencyMode" enum="Boolean">
+    <summary>
+      True if High Efficiency Mode is enabled at the time this event is
+      recorded.
+    </summary>
+  </metric>
+  <metric name="IsActiveTab" enum="Boolean">
+    <summary>
+      True if this page is the active tab in its tab strip.
+    </summary>
+  </metric>
+  <metric name="IsCapturingMedia" enum="Boolean">
+    <summary>
+      True if this page is capturing media (audio/video/screen).
+    </summary>
+  </metric>
+  <metric name="IsConnectedToDevice" enum="Boolean">
+    <summary>
+      True if this page is connected to a BT or USB device.
+    </summary>
+  </metric>
+  <metric name="IsPlayingAudio" enum="Boolean">
+    <summary>
+      True if this page is playing audio.
+    </summary>
+  </metric>
+  <metric name="ResidentSetSize">
+    <summary>
+      The total resident set size footprint of this page at the moment the
+      sample was recorded, in bytes.
     </summary>
   </metric>
   <metric name="SliceId">
