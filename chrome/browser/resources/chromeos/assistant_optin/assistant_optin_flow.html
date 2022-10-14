@@ -3,35 +3,13 @@ Copyright 2018 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="../components/common_styles/common_styles.html">
-<link rel="import" href="../components/behaviors/multi_step_behavior.html">
-<link rel="import" href="../components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="../components/behaviors/oobe_i18n_behavior.html">
-
-<link rel="import" href="./assistant_common_styles.html">
-<link rel="import" href="./assistant_icon.html">
-<link rel="import" href="./assistant_loading.html">
-<link rel="import" href="./assistant_related_info.html">
-<link rel="import" href="./assistant_voice_match.html">
-<link rel="import" href="./assistant_value_prop.html">
-<link rel="import" href="./browser_proxy.html">
-<link rel="import" href="./setting_zippy.html">
-
-<dom-module id="assistant-optin-flow-element">
-  <template>
-    <style include="oobe-common-styles assistant-common-styles"></style>
-    <link rel="stylesheet" href="../login/oobe_popup_overlay.css">
-    <assistant-loading id="loading" for-step="loading">
-    </assistant-loading>
-    <assistant-value-prop id="valueProp" for-step="value-prop">
-    </assistant-value-prop>
-    <assistant-related-info id="relatedInfo" for-step="related-info">
-    </assistant-related-info>
-    <assistant-voice-match id="voiceMatch" for-step="voice-match">
-    </assistant-voice-match>
-  </template>
-  <script src="assistant_optin_flow.js"></script>
-</dom-module>
+<link rel="stylesheet" href="../login/oobe_popup_overlay.css">
+<style include="oobe-common-styles assistant-common-styles"></style>
+<assistant-loading id="loading" for-step="loading">
+</assistant-loading>
+<assistant-value-prop id="valueProp" for-step="value-prop">
+</assistant-value-prop>
+<assistant-related-info id="relatedInfo" for-step="related-info">
+</assistant-related-info>
+<assistant-voice-match id="voiceMatch" for-step="voice-match">
+</assistant-voice-match>

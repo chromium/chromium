@@ -8,7 +8,24 @@
  *
  */
 
-/* #js_imports_placeholder */
+import '../components/common_styles/common_styles.m.js';
+import './assistant_common_styles.m.js';
+import './assistant_icon.m.js';
+import './assistant_loading.m.js';
+import './assistant_related_info.m.js';
+import './assistant_voice_match.m.js';
+import './assistant_value_prop.m.js';
+import './setting_zippy.m.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../components/behaviors/multi_step_behavior.m.js';
+import {OobeDialogHostBehavior} from '../components/behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../components/behaviors/oobe_i18n_behavior.m.js';
+
+import {BrowserProxyImpl} from './browser_proxy.m.js';
+
 
 /**
  * UI mode for the dialog.
@@ -25,9 +42,9 @@ const AssistantUIState = {
  * @constructor
  * @extends {PolymerElement}
  */
-const AssistantOptInFlowBase = Polymer.mixinBehaviors(
+const AssistantOptInFlowBase = mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior, MultiStepBehavior],
-    Polymer.Element);
+    PolymerElement);
 
 /**
  * @polymer
@@ -37,15 +54,17 @@ class AssistantOptInFlow extends AssistantOptInFlowBase {
     return 'assistant-optin-flow-element';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   constructor() {
     super();
 
     this.UI_STEPS = AssistantUIState;
 
-    /** @private {?assistant.BrowserProxy} */
-    this.browserProxy_ = assistant.BrowserProxyImpl.getInstance();
+    /** @private {?BrowserProxy} */
+    this.browserProxy_ = BrowserProxyImpl.getInstance();
   }
 
   /** @override */

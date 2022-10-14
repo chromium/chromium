@@ -6,7 +6,7 @@
  * @fileoverview Oobe Assistant OptIn Flow screen implementation.
  */
 
-import '../../assistant_optin/assistant_optin_flow.m.js';
+import '../../assistant_optin/assistant_optin_flow.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

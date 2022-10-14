@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './assistant_optin_flow.js';
+
 import {$} from 'chrome://resources/js/util.js';
 
-import './assistant_optin_flow.m.js';
 import {BrowserProxyImpl} from './browser_proxy.m.js';
 
 class InSessionAssistantScreen {
