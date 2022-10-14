@@ -19,6 +19,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/base_export.h"
 #include "base/check.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -34,7 +35,6 @@
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/base_export.h"
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR) ||
         // defined(PA_ENABLE_MTE_CHECKED_PTR_SUPPORT_WITH_64_BITS_POINTERS)
 
