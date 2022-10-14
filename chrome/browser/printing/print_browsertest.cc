@@ -271,7 +271,7 @@ class BrowserPrintingContextFactoryForTest
     fail_on_use_default_settings_ = true;
   }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   void SetCancelErrorOnAskUserForSettings() {
     cancel_on_ask_user_for_settings_ = true;
   }
@@ -291,7 +291,7 @@ class BrowserPrintingContextFactoryForTest
   bool access_denied_errors_for_render_document_ = false;
   bool access_denied_errors_for_document_done_ = false;
   bool fail_on_use_default_settings_ = false;
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   bool cancel_on_ask_user_for_settings_ = false;
 #endif
   int new_document_called_count_ = 0;
@@ -2741,7 +2741,7 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
     test_printing_context_factory()->SetFailErrorOnUseDefaultSettings();
   }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   void PrimeForCancelInAskUserForSettings() {
     test_printing_context_factory()->SetCancelErrorOnAskUserForSettings();
   }
@@ -2789,7 +2789,7 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
     return use_default_settings_result_;
   }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   mojom::ResultCode ask_user_for_settings_result() const {
     return ask_user_for_settings_result_;
   }
@@ -2874,7 +2874,7 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
     CheckForQuit();
   }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   void OnDidAskUserForSettings(mojom::ResultCode result) {
     ask_user_for_settings_result_ = result;
     CheckForQuit();
@@ -2945,7 +2945,7 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest,
   raw_ptr<PrintJob> print_job_ = nullptr;
   bool reset_errors_after_check_ = true;
   mojom::ResultCode use_default_settings_result_ = mojom::ResultCode::kFailed;
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
   mojom::ResultCode ask_user_for_settings_result_ = mojom::ResultCode::kFailed;
 #endif
   mojom::ResultCode start_printing_result_ = mojom::ResultCode::kFailed;
@@ -3386,9 +3386,7 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessSandboxedServicePrintBrowserTest,
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
 
-// TODO(crbug.com/809738)  Extend to Linux once Wayland can be made to support
-// a system be modal against an application window in the browser process.
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
                        StartBasicPrint) {
   AddPrinter("printer1");
@@ -3403,24 +3401,53 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   ASSERT_TRUE(web_contents);
   SetUpPrintViewManager(web_contents);
 
+#if BUILDFLAG(IS_WIN)
   // The test will get the default settings followed by asking the user for
   // settings.  After that a print job will be started, with a page getting
   // rendered, and finally the document done notification.  Wait for the one
   // print job to be destroyed to ensure printing finished cleanly before
   // completing the test.  This results in a total of 6 calls.
   SetNumExpectedMessages(/*num=*/6);
+#else
+  // The test sequence for this is:
+  // - Get the default settings.
+  // - Ask the user for settings.  Due to issues with displaying a system dialog
+  //   from the utility process, there is no callback to capture the request for
+  //   user supplied settings.
+  // - A print job is started.
+  // - The document is rendered.
+  // - Receive document done notification.
+  // - Wait for the one print job to be destroyed, to ensure printing finished
+  //   cleanly before completing the test.
+  // This results in a total of 5 calls.
+  // TODO(crbug.com/1374188)  Update this expectation once
+  // `AskUserForSettings()` is able to be pushed OOP for Linux.
+  SetNumExpectedMessages(/*num=*/5);
+#endif
 
   StartBasicPrint(web_contents);
 
   WaitUntilCallbackReceived();
 
   EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kSuccess);
+  // macOS and Linux currently have to invoke a system dialog from within the
+  // browser process.  There is not a callback to capture the result in these
+  // cases.
+  // TODO(crbug.com/1374188)  Re-enable this check against
+  // `ask_user_for_settings_result()` once `AskForUserSettings()` is able to be
+  // pushed OOP for Linux.
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(ask_user_for_settings_result(), mojom::ResultCode::kSuccess);
+#endif
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+#if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/1008222)  Include Windows coverage of
   // RenderPrintedDocument() once XPS print pipeline is added.
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 1);
+#else
+  EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
+#endif
   EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(print_job_destruction_count(), 1);
 }
@@ -3459,8 +3486,18 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
   EXPECT_FALSE(print_backend_service_use_detected());
 }
 
+// macOS and Linux currently have to invoke a system dialog from within the
+// browser process.  There is not a callback to capture the result in these
+// cases.
+// TODO(crbug.com/1374188)  Re-enable for Linux once `AskForUserSettings()` is
+// able to be pushed OOP for Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_StartBasicPrintCancel DISABLED_StartBasicPrintCancel
+#else
+#define MAYBE_StartBasicPrintCancel StartBasicPrintCancel
+#endif
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
-                       StartBasicPrintCancel) {
+                       MAYBE_StartBasicPrintCancel) {
   AddPrinter("printer1");
   SetPrinterNameForSubsequentContexts("printer1");
   PrimeForCancelInAskUserForSettings();
@@ -3510,17 +3547,18 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   // Now initiate a system print that would exist concurrently with that.
   StartBasicPrint(web_contents);
 
-  // On Windows, concurrent system print is not allowed.
-  // TODO(crbug.com/809738):  Demonstrate that Linux allows multiple system
-  // prints at a time.
   const absl::optional<bool>& result = print_view_manager->print_now_result();
   ASSERT_TRUE(result.has_value());
+  // With the exception of Linux, concurrent system print is not allowed.
+#if BUILDFLAG(IS_LINUX)
+  EXPECT_TRUE(*result);
+#else
   EXPECT_FALSE(*result);
+#endif
 
   // Cleanup before test shutdown.
   PrintBackendServiceManager::GetInstance().UnregisterClient(*client_id);
 }
-#endif  // BUILDFLAG(IS_WIN)
 
 // https://crbug.com/1320681 flaky.
 IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
@@ -3549,6 +3587,7 @@ IN_PROC_BROWSER_TEST_P(SystemAccessProcessServicePrintBrowserTest,
   EXPECT_EQ(use_default_settings_result(), mojom::ResultCode::kFailed);
   EXPECT_EQ(print_job_construction_count(), 1);
 }
+#endif  // BUILDFLAG(ENABLE_BASIC_PRINT_DIALOG)
 
 #endif  //  BUILDFLAG(ENABLE_OOP_PRINTING)
 
