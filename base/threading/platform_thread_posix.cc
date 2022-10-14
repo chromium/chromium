@@ -40,8 +40,7 @@
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-#include <lib/zx/thread.h>
-#include "base/fuchsia/koid.h"
+#include <zircon/process.h>
 #else
 #include <sys/resource.h>
 #endif
@@ -257,10 +256,7 @@ PlatformThreadId PlatformThread::CurrentId() {
   //   thread control block of pthread). See gettid.c in bionic.
   return gettid();
 #elif BUILDFLAG(IS_FUCHSIA)
-  thread_local static zx_koid_t id =
-      GetKoid(*zx::unowned_thread(zx::thread::self()))
-          .value_or(ZX_KOID_INVALID);
-  return id;
+  return zx_thread_self();
 #elif BUILDFLAG(IS_SOLARIS) || BUILDFLAG(IS_QNX)
   return pthread_self();
 #elif BUILDFLAG(IS_NACL) && defined(__GLIBC__)
