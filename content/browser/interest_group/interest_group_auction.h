@@ -467,6 +467,36 @@ class CONTENT_EXPORT InterestGroupAuction
   // interest groups of a particular buyer, etc).
   class BuyerHelper;
 
+  struct LeaderInfo {
+    LeaderInfo();
+    ~LeaderInfo();
+
+    LeaderInfo(const LeaderInfo&) = delete;
+    LeaderInfo& operator=(LeaderInfo&) = delete;
+
+    // The highest scoring bid so far. Null if no bid has been accepted yet.
+    std::unique_ptr<ScoredBid> top_bid;
+    // Number of bidders with the same score as `top_bidder`.
+    size_t num_top_bids = 0;
+    // Number of bidders with the same score as `second_highest_score`. If the
+    // second highest score matches the highest score, this does not include the
+    // top bid.
+    size_t num_second_highest_bids = 0;
+
+    // The numeric value of the bid that got the second highest score. When
+    // there's a tie for the second highest score, one of the second highest
+    // scoring bids is randomly chosen.
+    double highest_scoring_other_bid = 0.0;
+    double second_highest_score = 0.0;
+    // Whether all bids of the highest score are from the same interest group
+    // owner.
+    bool at_most_one_top_bid_owner = true;
+    // Will be null in the end if there are interest groups having the second
+    // highest score with different owners. That includes the top bid itself, in
+    // the case there's a tie for the top bid.
+    absl::optional<url::Origin> highest_scoring_other_bid_owner;
+  };
+
   // ---------------------------------
   // Load interest group phase methods
   // ---------------------------------
@@ -567,12 +597,24 @@ class CONTENT_EXPORT InterestGroupAuction
       PrivateAggregationRequests pa_requests,
       const std::vector<std::string>& errors) override;
 
+  // Compares `bid` with current auction leaders in `leader_info`, updating
+  // `leader_info` if needed.
+  void UpdateAuctionLeaders(
+      std::unique_ptr<Bid> bid,
+      double score,
+      auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
+          component_auction_modified_bid_params,
+      uint32_t data_version,
+      bool has_data_version,
+      LeaderInfo& leader_info);
+
   // Invoked when the bid becomes the new highest scoring other bid, to handle
   // calculation of post auction signals. `owner` is nullptr in the event the
   // bid is tied with the top bid, and they have different origins.
   void OnNewHighestScoringOtherBid(double score,
                                    double bid_value,
-                                   const url::Origin* owner);
+                                   const url::Origin* owner,
+                                   LeaderInfo& leader_info);
 
   absl::optional<base::TimeDelta> PerBuyerTimeout(const BidState* state);
   absl::optional<base::TimeDelta> SellerTimeout();
@@ -727,27 +769,7 @@ class CONTENT_EXPORT InterestGroupAuction
   std::vector<std::pair<blink::InterestGroupKey, double>>
       post_auction_priority_updates_;
 
-  // The highest scoring bid so far. Null if no bid has been accepted yet.
-  std::unique_ptr<ScoredBid> top_bid_;
-  // Number of bidders with the same score as `top_bidder`.
-  size_t num_top_bids_ = 0;
-  // Number of bidders with the same score as `second_highest_score_`. If the
-  // second highest score matches the highest score, this does not include the
-  // top bid.
-  size_t num_second_highest_bids_ = 0;
-
-  // The numeric value of the bid that got the second highest score. When
-  // there's a tie for the second highest score, one of the second highest
-  // scoring bids is randomly chosen.
-  double highest_scoring_other_bid_ = 0.0;
-  double second_highest_score_ = 0.0;
-  // Whether all bids of the highest score are from the same interest group
-  // owner.
-  bool at_most_one_top_bid_owner_ = true;
-  // Will be null in the end if there are interest groups having the second
-  // highest score with different owners. That includes the top bid itself, in
-  // the case there's a tie for the top bid.
-  absl::optional<url::Origin> highest_scoring_other_bid_owner_;
+  LeaderInfo auction_leader_;
 
   // Holds a reference to the SellerWorklet used by the auction.
   std::unique_ptr<AuctionWorkletManager::WorkletHandle> seller_worklet_handle_;

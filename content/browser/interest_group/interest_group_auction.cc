@@ -1091,7 +1091,7 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
   DCHECK(!bidding_and_scoring_phase_callback_);
   DCHECK(!reporting_phase_callback_);
   DCHECK(!final_auction_result_);
-  DCHECK(!top_bid_);
+  DCHECK(!auction_leader_.top_bid);
   DCHECK_EQ(pending_component_seller_worklet_requests_, 0u);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidding_and_scoring_phase",
@@ -1139,16 +1139,17 @@ void InterestGroupAuction::StartReportingPhase(
   DCHECK(!bidding_and_scoring_phase_callback_);
   DCHECK(!reporting_phase_callback_);
   DCHECK(!final_auction_result_);
-  DCHECK(top_bid_);
+  DCHECK(auction_leader_.top_bid);
   // This should only be called on top-level auctions.
   DCHECK(!parent_);
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "reporting_phase", trace_id_);
 
   InterestGroupAuctionReporter::WinningBidInfo winning_bid_info;
-  winning_bid_info.storage_interest_group = &top_bid_->bid->bid_state->bidder;
-  winning_bid_info.render_url = top_bid_->bid->render_url;
-  winning_bid_info.ad_components = top_bid_->bid->ad_components;
+  winning_bid_info.storage_interest_group =
+      &auction_leader_.top_bid->bid->bid_state->bidder;
+  winning_bid_info.render_url = auction_leader_.top_bid->bid->render_url;
+  winning_bid_info.ad_components = auction_leader_.top_bid->bid->ad_components;
   // Need the bid from the bidder itself. If the bid was from a component
   // auction, then `top_bid_->bid` will be the bid from the component auction,
   // which the component seller worklet may have modified, and thus the wrong
@@ -1157,22 +1158,23 @@ void InterestGroupAuction::StartReportingPhase(
   // the bid was from the top-level auction, and the original top bid from the
   // component auction, otherwise, so will always be the bid returned by the
   // winning bidder's generateBid() method.
-  winning_bid_info.bid = top_bid_->bid->auction->top_bid()->bid->bid;
-  winning_bid_info.bid_duration = top_bid_->bid->bid_duration;
+  winning_bid_info.bid =
+      auction_leader_.top_bid->bid->auction->top_bid()->bid->bid;
+  winning_bid_info.bid_duration = auction_leader_.top_bid->bid->bid_duration;
   winning_bid_info.bidding_signals_data_version =
-      top_bid_->bid->bidding_signals_data_version;
+      auction_leader_.top_bid->bid->bidding_signals_data_version;
 
   InterestGroupAuctionReporter::SellerWinningBidInfo
       top_level_seller_winning_bid_info;
   top_level_seller_winning_bid_info.auction_config = config_;
-  top_level_seller_winning_bid_info.bid = top_bid_->bid->bid;
-  top_level_seller_winning_bid_info.score = top_bid_->score;
+  top_level_seller_winning_bid_info.bid = auction_leader_.top_bid->bid->bid;
+  top_level_seller_winning_bid_info.score = auction_leader_.top_bid->score;
   top_level_seller_winning_bid_info.highest_scoring_other_bid =
-      highest_scoring_other_bid_;
+      auction_leader_.highest_scoring_other_bid;
   top_level_seller_winning_bid_info.highest_scoring_other_bid_owner =
-      highest_scoring_other_bid_owner_;
+      auction_leader_.highest_scoring_other_bid_owner;
   top_level_seller_winning_bid_info.scoring_signals_data_version =
-      top_bid_->scoring_signals_data_version;
+      auction_leader_.top_bid->scoring_signals_data_version;
   top_level_seller_winning_bid_info.trace_id = trace_id_;
 
   // Populate the SellerWinningBidInfo for the component auction that the
@@ -1187,25 +1189,27 @@ void InterestGroupAuction::StartReportingPhase(
   // SellerWinningBidInfos.
   absl::optional<InterestGroupAuctionReporter::SellerWinningBidInfo>
       component_seller_winning_bid_info;
-  if (top_bid_->bid->auction != this) {
-    const InterestGroupAuction* component_auction = top_bid_->bid->auction;
+  if (auction_leader_.top_bid->bid->auction != this) {
+    const InterestGroupAuction* component_auction =
+        auction_leader_.top_bid->bid->auction;
     component_seller_winning_bid_info.emplace();
     component_seller_winning_bid_info->auction_config =
         component_auction->config_;
     component_seller_winning_bid_info->bid =
-        component_auction->top_bid_->bid->bid;
+        component_auction->auction_leader_.top_bid->bid->bid;
     component_seller_winning_bid_info->score =
-        component_auction->top_bid_->score;
+        component_auction->auction_leader_.top_bid->score;
     component_seller_winning_bid_info->highest_scoring_other_bid =
-        component_auction->highest_scoring_other_bid_;
+        component_auction->auction_leader_.highest_scoring_other_bid;
     component_seller_winning_bid_info->highest_scoring_other_bid_owner =
-        component_auction->highest_scoring_other_bid_owner_;
+        component_auction->auction_leader_.highest_scoring_other_bid_owner;
     component_seller_winning_bid_info->scoring_signals_data_version =
-        component_auction->top_bid_->scoring_signals_data_version;
+        component_auction->auction_leader_.top_bid
+            ->scoring_signals_data_version;
     component_seller_winning_bid_info->trace_id = component_auction->trace_id_;
     component_seller_winning_bid_info->component_auction_modified_bid_params =
-        component_auction->top_bid_->component_auction_modified_bid_params
-            ->Clone();
+        component_auction->auction_leader_.top_bid
+            ->component_auction_modified_bid_params->Clone();
   }
 
   reporting_phase_callback_ = std::move(reporting_phase_callback);
@@ -1369,14 +1373,15 @@ void InterestGroupAuction::TakeDebugReportUrls(
   // `debug_win_report_urls`.
   BidState* winner = nullptr;
   if (final_auction_result_ == AuctionResult::kSuccess &&
-      top_bid_->bid->auction == this) {
-    winner = top_bid_->bid->bid_state;
+      auction_leader_.top_bid->bid->auction == this) {
+    winner = auction_leader_.top_bid->bid->bid_state;
   }
 
   // `signals` includes post auction signals from current auction.
   PostAuctionSignals signals;
-  signals.winning_bid = top_bid_ ? top_bid_->bid->bid : 0.0;
-  signals.highest_scoring_other_bid = highest_scoring_other_bid_;
+  signals.winning_bid =
+      auction_leader_.top_bid ? auction_leader_.top_bid->bid->bid : 0.0;
+  signals.highest_scoring_other_bid = auction_leader_.highest_scoring_other_bid;
   // `top_level_signals` includes post auction signals from top-level auction.
   // Will only will be used in debug report URLs of top-level seller and
   // component sellers.
@@ -1386,27 +1391,31 @@ void InterestGroupAuction::TakeDebugReportUrls(
   if (parent_) {
     top_level_signals = PostAuctionSignals();
     top_level_signals->winning_bid =
-        parent_->top_bid_ ? parent_->top_bid_->bid->bid : 0.0;
+        parent_->auction_leader_.top_bid
+            ? parent_->auction_leader_.top_bid->bid->bid
+            : 0.0;
   }
 
-  if (!top_bid_) {
-    DCHECK_EQ(highest_scoring_other_bid_, 0);
-    DCHECK(!highest_scoring_other_bid_owner_.has_value());
+  if (!auction_leader_.top_bid) {
+    DCHECK_EQ(auction_leader_.highest_scoring_other_bid, 0);
+    DCHECK(!auction_leader_.highest_scoring_other_bid_owner.has_value());
   }
 
   for (const auto& buyer_helper : buyer_helpers_) {
     const url::Origin& owner = buyer_helper->owner();
-    if (top_bid_)
-      signals.made_winning_bid = owner == top_bid_->bid->interest_group->owner;
-
-    if (highest_scoring_other_bid_owner_.has_value()) {
-      DCHECK_GT(highest_scoring_other_bid_, 0);
-      signals.made_highest_scoring_other_bid =
-          owner == highest_scoring_other_bid_owner_.value();
+    if (auction_leader_.top_bid) {
+      signals.made_winning_bid =
+          owner == auction_leader_.top_bid->bid->interest_group->owner;
     }
-    if (parent_ && parent_->top_bid_) {
+
+    if (auction_leader_.highest_scoring_other_bid_owner.has_value()) {
+      DCHECK_GT(auction_leader_.highest_scoring_other_bid, 0);
+      signals.made_highest_scoring_other_bid =
+          owner == auction_leader_.highest_scoring_other_bid_owner.value();
+    }
+    if (parent_ && parent_->auction_leader_.top_bid) {
       top_level_signals->made_winning_bid =
-          owner == parent_->top_bid_->bid->interest_group->owner;
+          owner == parent_->auction_leader_.top_bid->bid->interest_group->owner;
     }
 
     buyer_helper->TakeDebugReportUrls(winner, signals, top_level_signals,
@@ -1463,8 +1472,8 @@ void InterestGroupAuction::TakePostAuctionUpdateOwners(
 
 InterestGroupAuction::ScoredBid* InterestGroupAuction::top_bid() {
   DCHECK(all_bids_scored_);
-  DCHECK(top_bid_);
-  return top_bid_.get();
+  DCHECK(auction_leader_.top_bid);
+  return auction_leader_.top_bid.get();
 }
 
 absl::optional<uint16_t> InterestGroupAuction::GetBuyerExperimentId(
@@ -1488,6 +1497,9 @@ absl::optional<std::string> InterestGroupAuction::GetPerBuyerSignals(
   }
   return absl::nullopt;
 }
+
+InterestGroupAuction::LeaderInfo::LeaderInfo() = default;
+InterestGroupAuction::LeaderInfo::~LeaderInfo() = default;
 
 void InterestGroupAuction::OnInterestGroupRead(
     std::vector<StorageInterestGroup> interest_groups) {
@@ -1848,8 +1860,8 @@ void InterestGroupAuction::OnScoreAdComplete(
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
-  // Use separate fields for component and top-level seller reports, so both can
-  // send debug reports.
+  // Use separate fields for component and top-level seller reports, so both
+  // can send debug reports.
   if (bid->auction == this) {
     bid->bid_state->seller_debug_loss_report_url =
         std::move(debug_loss_report_url);
@@ -1866,88 +1878,101 @@ void InterestGroupAuction::OnScoreAdComplete(
   }
 
   // A score <= 0 means the seller rejected the bid.
-  if (score <= 0) {
-    // Need to delete `bid` because OnBiddingAndScoringComplete() may delete
-    // this, which leaves danging pointers on the stack. While this is safe to
-    // do (nothing has access to `bid` to dereference them), it makes the
-    // dangling pointer tooling sad.
-    bid.reset();
-    MaybeCompleteBiddingAndScoringPhase();
-    return;
+  if (score > 0) {
+    UpdateAuctionLeaders(std::move(bid), score,
+                         std::move(component_auction_modified_bid_params),
+                         data_version, has_data_version, auction_leader_);
   }
 
+  // Need to delete `bid` because OnBiddingAndScoringComplete() may delete
+  // this, which leaves danging pointers on the stack. While this is safe to
+  // do (nothing has access to `bid` to dereference them), it makes the
+  // dangling pointer tooling sad.
+  bid.reset();
+  MaybeCompleteBiddingAndScoringPhase();
+}
+
+void InterestGroupAuction::UpdateAuctionLeaders(
+    std::unique_ptr<Bid> bid,
+    double score,
+    auction_worklet::mojom::ComponentAuctionModifiedBidParamsPtr
+        component_auction_modified_bid_params,
+    uint32_t data_version,
+    bool has_data_version,
+    LeaderInfo& leader_info) {
   bool is_top_bid = false;
   const url::Origin& owner = bid->interest_group->owner;
 
-  if (!top_bid_ || score > top_bid_->score) {
+  if (!leader_info.top_bid || score > leader_info.top_bid->score) {
     // If there's no previous top bidder, or the bidder has the highest score,
     // need to replace the previous top bidder.
     is_top_bid = true;
-    if (top_bid_) {
-      OnNewHighestScoringOtherBid(top_bid_->score, top_bid_->bid->bid,
-                                  &top_bid_->bid->interest_group->owner);
+    if (leader_info.top_bid) {
+      OnNewHighestScoringOtherBid(
+          leader_info.top_bid->score, leader_info.top_bid->bid->bid,
+          &leader_info.top_bid->bid->interest_group->owner, leader_info);
     }
-    num_top_bids_ = 1;
-    at_most_one_top_bid_owner_ = true;
-  } else if (score == top_bid_->score) {
+    leader_info.num_top_bids = 1;
+    leader_info.at_most_one_top_bid_owner = true;
+  } else if (score == leader_info.top_bid->score) {
     // If there's a tie, replace the top-bidder with 1-in-`num_top_bids_`
     // chance. This is the select random value from a stream with fixed
     // storage problem.
-    ++num_top_bids_;
-    if (1 == base::RandInt(1, num_top_bids_))
+    ++leader_info.num_top_bids;
+    if (1 == base::RandInt(1, leader_info.num_top_bids))
       is_top_bid = true;
-    if (owner != top_bid_->bid->interest_group->owner)
-      at_most_one_top_bid_owner_ = false;
+    if (owner != leader_info.top_bid->bid->interest_group->owner)
+      leader_info.at_most_one_top_bid_owner = false;
     // If the top bid is being replaced, need to add the old top bid as a second
     // highest bid. Otherwise, need to add the current bid as a second highest
     // bid.
     double new_highest_scoring_other_bid =
-        is_top_bid ? top_bid_->bid->bid : bid->bid;
-    OnNewHighestScoringOtherBid(
-        score, new_highest_scoring_other_bid,
-        at_most_one_top_bid_owner_ ? &bid->interest_group->owner : nullptr);
-  } else if (score >= second_highest_score_) {
+        is_top_bid ? leader_info.top_bid->bid->bid : bid->bid;
+    OnNewHighestScoringOtherBid(score, new_highest_scoring_other_bid,
+                                leader_info.at_most_one_top_bid_owner
+                                    ? &bid->interest_group->owner
+                                    : nullptr,
+                                leader_info);
+  } else if (score >= leader_info.second_highest_score) {
     // Also use this bid (the most recent one) as highest scoring other bid if
     // there's a tie for second highest score.
-    OnNewHighestScoringOtherBid(score, bid->bid, &owner);
+    OnNewHighestScoringOtherBid(score, bid->bid, &owner, leader_info);
   }
 
   if (is_top_bid) {
-    top_bid_ = std::make_unique<ScoredBid>(
+    leader_info.top_bid = std::make_unique<ScoredBid>(
         score, has_data_version ? data_version : absl::optional<uint32_t>(),
         std::move(bid), std::move(component_auction_modified_bid_params));
   }
-
-  bid.reset();
-  MaybeCompleteBiddingAndScoringPhase();
 }
 
 void InterestGroupAuction::OnNewHighestScoringOtherBid(
     double score,
     double bid_value,
-    const url::Origin* owner) {
+    const url::Origin* owner,
+    LeaderInfo& leader_info) {
   // Current (the most recent) bid becomes highest scoring other bid.
-  if (score > second_highest_score_) {
-    highest_scoring_other_bid_ = bid_value;
-    num_second_highest_bids_ = 1;
+  if (score > leader_info.second_highest_score) {
+    leader_info.highest_scoring_other_bid = bid_value;
+    leader_info.num_second_highest_bids = 1;
     // Owner may be false if this is one of the bids tied for first place.
     if (!owner) {
-      highest_scoring_other_bid_owner_.reset();
+      leader_info.highest_scoring_other_bid_owner.reset();
     } else {
-      highest_scoring_other_bid_owner_ = *owner;
+      leader_info.highest_scoring_other_bid_owner = *owner;
     }
-    second_highest_score_ = score;
+    leader_info.second_highest_score = score;
     return;
   }
 
-  DCHECK_EQ(score, second_highest_score_);
-  if (!owner || *owner != highest_scoring_other_bid_owner_)
-    highest_scoring_other_bid_owner_.reset();
-  ++num_second_highest_bids_;
+  DCHECK_EQ(score, leader_info.second_highest_score);
+  if (!owner || *owner != leader_info.highest_scoring_other_bid_owner)
+    leader_info.highest_scoring_other_bid_owner.reset();
+  ++leader_info.num_second_highest_bids;
   // In case of a tie, randomly pick one. This is the select random value from a
   // stream with fixed storage problem.
-  if (1 == base::RandInt(1, num_second_highest_bids_))
-    highest_scoring_other_bid_ = bid_value;
+  if (1 == base::RandInt(1, leader_info.num_second_highest_bids))
+    leader_info.highest_scoring_other_bid = bid_value;
 }
 
 absl::optional<base::TimeDelta> InterestGroupAuction::PerBuyerTimeout(
@@ -1983,7 +2008,7 @@ void InterestGroupAuction::MaybeCompleteBiddingAndScoringPhase() {
 
   // If there's no winning bid, fail with kAllBidsRejected if there were any
   // bids. Otherwise, fail with kNoBids.
-  if (!top_bid_) {
+  if (!auction_leader_.top_bid) {
     if (any_bid_made_) {
       OnBiddingAndScoringComplete(AuctionResult::kAllBidsRejected);
     } else {
@@ -2036,8 +2061,10 @@ void InterestGroupAuction::OnBiddingAndScoringComplete(
   for (auto& component_auction : component_auctions_) {
     // Leave the state of the winning component auction alone, if the winning
     // bid is from a component auction.
-    if (top_bid_ && top_bid_->bid->auction == component_auction.get())
+    if (auction_leader_.top_bid &&
+        auction_leader_.top_bid->bid->auction == component_auction.get()) {
       continue;
+    }
     if (component_auction->final_auction_result_)
       continue;
     component_auction->final_auction_result_ =
@@ -2069,8 +2096,10 @@ void InterestGroupAuction::OnReportingPhaseComplete() {
   // TODO(mmenke): Extract relevant data from `this` when creating the Reporter,
   // and have it handle reporting only if auction results are loaded in a frame,
   // or if there's no result.
-  if (top_bid_)
-    top_bid_->bid->auction->final_auction_result_ = AuctionResult::kSuccess;
+  if (auction_leader_.top_bid) {
+    auction_leader_.top_bid->bid->auction->final_auction_result_ =
+        AuctionResult::kSuccess;
+  }
 
   // Close all pipes, as they're no longer needed.
   ClosePipes();
