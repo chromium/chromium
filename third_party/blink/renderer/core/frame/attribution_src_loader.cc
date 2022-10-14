@@ -332,6 +332,13 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
   auto* client = MakeGarbageCollected<ResourceClient>(
       this, src_type, associated_with_navigation);
   ++num_resource_clients_;
+
+  // TODO(https://crbug.com/1374121): If this registration is
+  // `associated_with_navigation`, there is a risk that the navigation will
+  // complete before the resource fetch here is complete. In this case, the
+  // browser will mark the page as frozen. This will cause MojoURLLoaderClient
+  // to store the request and never dispatch it, causing ResponseReceived() to
+  // never be called.
   RawResource::Fetch(params, local_frame_->DomWindow()->Fetcher(), client);
 
   RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kRequested);

@@ -848,8 +848,13 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   expected_report.WaitForReport();
 }
 
+// TODO(https://crbug.com/1374121): This is failing flakily because clicking the
+// link will cause a navigation. It is possible that the navigation will
+// complete before the attributionsSrc resource has been received. In this case,
+// the browser will mark the page as "frozen", causing MojoURLLoaderClient to
+// store the message and never dispatch it.
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
-                       ImpressionConversionSameDomain_ReportSent) {
+                       DISABLED_ImpressionConversionSameDomain_ReportSent) {
   // Expected reports must be registered before the server starts.
   ExpectedReportWaiter expected_report(
       GURL("https://d.test/.well-known/attribution-reporting/"
