@@ -1950,18 +1950,6 @@ void InterestGroupAuction::OnNewHighestScoringOtherBid(
     highest_scoring_other_bid_ = bid_value;
 }
 
-absl::optional<std::string> InterestGroupAuction::PerBuyerSignals(
-    const BidState* state) {
-  const auto& per_buyer_signals = config_->non_shared_params.per_buyer_signals;
-  if (per_buyer_signals.has_value()) {
-    auto it =
-        per_buyer_signals.value().find(state->bidder.interest_group.owner);
-    if (it != per_buyer_signals.value().end())
-      return it->second;
-  }
-  return absl::nullopt;
-}
-
 absl::optional<base::TimeDelta> InterestGroupAuction::PerBuyerTimeout(
     const BidState* state) {
   const auto& per_buyer_timeouts =

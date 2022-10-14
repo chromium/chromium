@@ -574,7 +574,6 @@ class CONTENT_EXPORT InterestGroupAuction
                                    double bid_value,
                                    const url::Origin* owner);
 
-  absl::optional<std::string> PerBuyerSignals(const BidState* state);
   absl::optional<base::TimeDelta> PerBuyerTimeout(const BidState* state);
   absl::optional<base::TimeDelta> SellerTimeout();
 
