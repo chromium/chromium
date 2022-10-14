@@ -3300,6 +3300,20 @@ const FeatureEntry::FeatureVariation kTabStripImprovementsTabWidthVariations[] =
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kTabStripRedesignFolio[] = {
+    {"enable_folio", "true"}};
+const FeatureEntry::FeatureParam kTabStripRedesignDetached[] = {
+    {"enable_detached", "true"}};
+
+const FeatureEntry::FeatureVariation kTabStripRedesignVariations[] = {
+    {"Folio", kTabStripRedesignFolio, std::size(kTabStripRedesignFolio),
+     nullptr},
+    {"Detached", kTabStripRedesignDetached,
+     std::size(kTabStripRedesignDetached), nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
 constexpr FeatureEntry::FeatureParam kUpmAndroidShadowSyncingUsers[] = {
     {password_manager::features::kUpmExperimentVariationParam.name,
      password_manager::features::kUpmExperimentVariationOption[1].name}};
@@ -6466,7 +6480,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-tab-strip-redesign",
      flag_descriptions::kTabStripRedesignAndroidName,
      flag_descriptions::kTabStripRedesignAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabStripRedesign)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabStripRedesign,
+                                    kTabStripRedesignVariations,
+                                    "TabStripRedesignAndroid")},
 
     {"enable-conditional-tabstrip",
      flag_descriptions::kConditionalTabStripAndroidName,
