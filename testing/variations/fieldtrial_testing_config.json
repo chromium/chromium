@@ -6650,7 +6650,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "nesting": "10"
+                        "nesting": "15"
                     },
                     "enable_features": [
                         "MaxUnthrottledTimeoutNestingLevel"

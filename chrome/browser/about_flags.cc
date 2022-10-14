@@ -3352,10 +3352,10 @@ constexpr FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kUnthrottledNestedTimeout_NestingLevel = {
-    "nesting", "100"};
+    "nesting", "15"};
 
 const FeatureEntry::FeatureVariation kUnthrottledNestedTimeout_Variations[] = {
-    {"100", &kUnthrottledNestedTimeout_NestingLevel, 1, nullptr},
+    {"15", &kUnthrottledNestedTimeout_NestingLevel, 1, nullptr},
 };
 
 constexpr FeatureEntry::FeatureParam kLensStandaloneWithSidePanel[] = {
