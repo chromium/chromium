@@ -1108,9 +1108,10 @@ def RunTestsInPlatformMode(args, result_sink_client=None):
             flakiness_server=getattr(args, 'flakiness_dashboard_server',
                                      None))
 
-        if iteration_results.GetNotPass():
-          _LogRerunStatement(iteration_results.GetNotPass(),
-                             args.wrapper_script_args)
+        failed_tests = (iteration_results.GetNotPass() -
+                        iteration_results.GetSkip())
+        if failed_tests:
+          _LogRerunStatement(failed_tests, args.wrapper_script_args)
 
         if args.break_on_failure and not iteration_results.DidRunPass():
           break
