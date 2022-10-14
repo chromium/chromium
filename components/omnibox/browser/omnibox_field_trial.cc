@@ -646,6 +646,17 @@ bool OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kSiteSearchStarterPack);
 }
 
+// Omnibox UI simplification - Uniform Suggestion Row Heights
+
+bool IsUniformRowHeightEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kUniformRowHeight);
+}
+
+const base::FeatureParam<int> OmniboxFieldTrial::kSuggestionRowHeight(
+    &omnibox::kUniformRowHeight,
+    "OmniboxUniformRowHeight",
+    36);
+
 const char OmniboxFieldTrial::kBundledExperimentFieldTrialName[] =
     "OmniboxBundledExperimentV1";
 const char OmniboxFieldTrial::kDisableProvidersRule[] = "DisableProviders";

@@ -61832,6 +61832,7 @@ from previous Chrome versions.
   <int value="939366135" label="DownloadsLocationChange:disabled"/>
   <int value="939554480" label="enable-credit-card-scan"/>
   <int value="939603162" label="BackgroundLoadingForDownloads:disabled"/>
+  <int value="940302066" label="OmniboxUniformRowHeight:disabled"/>
   <int value="941036016" label="ContentSuggestionsSettings:disabled"/>
   <int value="941883332" label="ProactiveTabFreezeAndDiscard:disabled"/>
   <int value="941948340" label="PlaybackSpeedButton:enabled"/>
@@ -63804,6 +63805,7 @@ from previous Chrome versions.
   <int value="2142979536" label="EnableManualFallbacksFilling:disabled"/>
   <int value="2144581598" label="UpcomingSharingFeatures:enabled"/>
   <int value="2145140507" label="WebViewRecordAppDataDirectorySize:enabled"/>
+  <int value="2147448086" label="OmniboxUniformRowHeight:enabled"/>
 </enum>
 
 <enum name="LoginDatabaseInitError">

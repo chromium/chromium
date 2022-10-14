@@ -5243,6 +5243,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "omnibox-uniform-suggestion-height",
+    "owners": [ "yohanes@google.com", "manukh", "chrome-omnibox-team@google.com"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "omnibox-updated-connection-security-indicators",
     "owners": [ "meacer", "chrome-trusty-transport@google.com" ],
     "expiry_milestone": 110

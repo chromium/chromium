@@ -1573,6 +1573,18 @@ const FeatureEntry::FeatureVariation
         {"10 suggestions if 2 or fewer URLs", kOmniboxDynamicMaxAutocomplete102,
          std::size(kOmniboxDynamicMaxAutocomplete102), nullptr}};
 
+const FeatureEntry::FeatureParam kOmniboxUniformRowHeight36[] = {
+    {"OmniboxUniformRowHeight", "36"}};
+const FeatureEntry::FeatureParam kOmniboxUniformRowHeight40[] = {
+    {"OmniboxUniformRowHeight", "40"}};
+
+const FeatureEntry::FeatureVariation kOmniboxSuggestionHeightVariations[] = {
+    {"36 px height for all omnibox suggestions", kOmniboxUniformRowHeight36,
+     std::size(kOmniboxUniformRowHeight36), nullptr},
+    {"40 px height for all omnibox suggestions", kOmniboxUniformRowHeight40,
+     std::size(kOmniboxUniformRowHeight40), nullptr},
+};
+
 const FeatureEntry::FeatureParam
     kOrganicRepeatableQueriesCappedWithHighPrivilege[] = {
         {"MaxNumRepeatableQueries", "4"},
@@ -5748,6 +5760,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxShortBookmarkSuggestionsName,
      flag_descriptions::kOmniboxShortBookmarkSuggestionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kShortBookmarkSuggestions)},
+
+    {"omnibox-uniform-suggestion-height",
+     flag_descriptions::kOmniboxSimplifiedUiUniformRowHeightName,
+     flag_descriptions::kOmniboxSimplifiedUiUniformRowHeightDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kUniformRowHeight,
+                                    kOmniboxSuggestionHeightVariations,
+                                    "Uniform Omnibox Suggest Heights")},
 
     {"optimization-guide-debug-logs",
      flag_descriptions::kOptimizationGuideDebugLogsName,

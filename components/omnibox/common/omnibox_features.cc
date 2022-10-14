@@ -4,6 +4,7 @@
 
 #include "components/omnibox/common/omnibox_features.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 
 namespace omnibox {
@@ -415,6 +416,11 @@ BASE_FEATURE(kOmniboxMostVisitedTilesFadingOnTablet,
 // a search result page that does not do search term replacement.
 BASE_FEATURE(kOmniboxMostVisitedTilesOnSrp,
              "OmniboxMostVisitedTilesOnSrp",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, forces omnibox suggestion rows to be uniformly sized.
+BASE_FEATURE(kUniformRowHeight,
+             "OmniboxUniformRowHeight",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, use Assistant for omnibox voice query recognition instead of
