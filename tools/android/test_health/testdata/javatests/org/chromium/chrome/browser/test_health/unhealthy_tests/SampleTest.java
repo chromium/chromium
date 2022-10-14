@@ -13,9 +13,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.FlakyTest;
-
-import java.util.Random;
 
 /** A sample Java test. */
 @SmallTest
@@ -41,15 +38,5 @@ public class SampleTest {
     @Test
     public void testDisableIfTest() {
         Assert.assertTrue(false);
-    }
-
-    @FlakyTest
-    @Test
-    public void testFlakyTest() {
-        Random random = new Random();
-
-        boolean value = random.nextBoolean();
-
-        Assert.assertFalse(value);
     }
 }

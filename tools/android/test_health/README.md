@@ -11,7 +11,7 @@ or flaky tests.
 The `get_test_health.py` script extracts Java test health from a Git repository.
 The script defaults to the Chromium repository containing this script itself.
 The test health data includes a listing of tests that are disabled (annotated as
-`@DisabledTest`), conditionally-disabled (`@DisableIf`) or flaky (`@FlakyTest`).
+`@DisabledTest`) or conditionally-disabled (`@DisableIf`).
 The script exports the data in newline-delimited JSON
 ([JSON Lines](http://jsonlines.org)) format so that it can be easily
 [ingested into BigQuery][bq-load-gcs-json].
@@ -43,8 +43,8 @@ optional arguments:
 ### Java Test Utilities
 
 The `java_test_utils` module contains utility functions to extract counts of
-test cases annotated with `@DisabledTest`, `@DisableIf` and `@FlakyTest`, as
-well as the Java package name, from the source code of Java test files.
+test cases annotated with `@DisabledTest` and `@DisableIf`, as well as the
+Java package name, from the source code of Java test files.
 
 ### Other Modules
 

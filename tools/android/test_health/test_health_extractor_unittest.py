@@ -31,7 +31,7 @@ _INVALID_SYNTAX_TEST_PATH = (
     _UNHEALTHY_TESTS_PATH /
     'InvalidSyntaxTest.java').relative_to(_TEST_FILES_PATH)
 
-_IGNORED_DIRS = ('disabled_tests', 'flaky_tests', 'unhealthy_tests')
+_IGNORED_DIRS = ('disabled_tests', 'unhealthy_tests')
 
 _BASE_JAVA_PACKAGE = 'org.chromium.chrome.browser.test_health'
 _JAVA_PACKAGE_HEALTHY_TESTS = _BASE_JAVA_PACKAGE + '.healthy_tests'
@@ -74,12 +74,12 @@ class GetRepoTestHealth(unittest.TestCase):
                 java_package=_JAVA_PACKAGE_UNHEALTHY_TESTS,
                 disabled_tests_count=1,
                 disable_if_tests_count=1,
-                flaky_tests_count=1),
+                flaky_tests_count=0),
             git_repo_info=_CHROMIUM_REPO_INFO)
 
         test_health_infos = test_health_extractor.get_repo_test_health(
             test_dir=_TEST_FILES_PATH,
-            ignored_dirs=('disabled_tests', 'flaky_tests', 'healthy_tests'),
+            ignored_dirs=('disabled_tests', 'healthy_tests'),
             ignored_files={str(_INVALID_SYNTAX_TEST_PATH)})
 
         self.assertEqual(expected_test_health_info, test_health_infos[0])
@@ -101,8 +101,7 @@ class GetRepoTestHealth(unittest.TestCase):
         with self.assertLogs(level=logging.WARNING) as logging_cm:
             test_health_infos = test_health_extractor.get_repo_test_health(
                 test_dir=_TEST_FILES_PATH,
-                ignored_dirs=('disabled_tests', 'flaky_tests',
-                              'healthy_tests'),
+                ignored_dirs=('disabled_tests', 'healthy_tests'),
                 ignored_files={
                     str((_UNHEALTHY_TESTS_PATH /
                          'SampleTest.java').relative_to(_TEST_FILES_PATH))

@@ -32,7 +32,6 @@ from javalang.tree import (Annotation, ClassDeclaration, CompilationUnit,
 
 _DISABLED_TEST_ANNOTATION = 'DisabledTest'
 _DISABLE_IF_TEST_ANNOTATION = 'DisableIf'
-_FLAKY_TEST_ANNOTATION = 'FlakyTest'
 
 _DISABLE_IF_TEST_PATTERN = re.compile(_DISABLE_IF_TEST_ANNOTATION + r'\.\w+')
 
@@ -47,7 +46,7 @@ class JavaTestHealth:
     disable_if_tests_count: int
     """The number of test cases annotated with @DisableIf."""
     flaky_tests_count: int
-    """The number of test cases annotated with @FlakyTest."""
+    """The number of test cases annotated with the removed @FlakyTest, now always 0."""
 
 
 def get_java_test_health(test_path: pathlib.Path) -> JavaTestHealth:
@@ -108,7 +107,7 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
         java_package=_get_java_package_name(java_ast),
         disabled_tests_count=annotation_counter[_DISABLED_TEST_ANNOTATION],
         disable_if_tests_count=annotation_counter[_DISABLE_IF_TEST_ANNOTATION],
-        flaky_tests_count=annotation_counter[_FLAKY_TEST_ANNOTATION])
+        flaky_tests_count=0)
 
 
 def _get_java_package_name(java_ast: CompilationUnit) -> Optional[str]:
@@ -137,8 +136,6 @@ def _count_annotations(annotations: List[Annotation]) -> collections.Counter:
             counter[_DISABLED_TEST_ANNOTATION] += 1
         elif re.fullmatch(_DISABLE_IF_TEST_PATTERN, annotation.name):
             counter[_DISABLE_IF_TEST_ANNOTATION] += 1
-        elif annotation.name == _FLAKY_TEST_ANNOTATION:
-            counter[_FLAKY_TEST_ANNOTATION] += 1
 
     return counter
 

@@ -65,7 +65,7 @@ def get_repo_test_health(git_repo: Optional[pathlib.Path] = None,
                          ) -> List[TestHealthInfo]:
     """Gets test health information and stats for a Git repository.
 
-    This function checks for Java tests annotated as disabled or flaky but could
+    This function checks for Java tests annotated as disabled but could
     be extended to check other metrics or languages in the future.
 
     Args:

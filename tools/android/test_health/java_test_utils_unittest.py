@@ -33,13 +33,11 @@ _DISABLED_TEST_PATH = (_TEST_FILES_PATH / 'disabled_tests' /
                        'SampleDisabledTest.java')
 _DISABLE_IF_TEST_PATH = (_TEST_FILES_PATH / 'disabled_tests' /
                          'SampleDisableIfTest.java')
-_FLAKY_TEST_PATH = _TEST_FILES_PATH / 'flaky_tests' / 'SampleFlakyTest.java'
 
 _BASE_JAVA_PACKAGE = 'org.chromium.chrome.browser.test_health'
 _JAVA_PACKAGE_HEALTHY_TESTS = _BASE_JAVA_PACKAGE + '.healthy_tests'
 _JAVA_PACKAGE_UNHEALTHY_TESTS = _BASE_JAVA_PACKAGE + '.unhealthy_tests'
 _JAVA_PACKAGE_DISABLED_TESTS = _BASE_JAVA_PACKAGE + '.disabled_tests'
-_JAVA_PACKAGE_FLAKY_TESTS = _BASE_JAVA_PACKAGE + '.flaky_tests'
 
 
 class TestJavaTestHealthStats(unittest.TestCase):
@@ -70,7 +68,7 @@ class TestJavaTestHealthStats(unittest.TestCase):
                          test_health.java_package)
         self.assertEqual(1, test_health.disabled_tests_count)
         self.assertEqual(1, test_health.disable_if_tests_count)
-        self.assertEqual(1, test_health.flaky_tests_count)
+        self.assertEqual(0, test_health.flaky_tests_count)
 
     def test_get_java_test_health_stats_disabled_tests(self):
         test_health = java_test_utils.get_java_test_health(_DISABLED_TEST_PATH)
@@ -90,14 +88,6 @@ class TestJavaTestHealthStats(unittest.TestCase):
         self.assertEqual(0, test_health.disabled_tests_count)
         self.assertEqual(2, test_health.disable_if_tests_count)
         self.assertEqual(0, test_health.flaky_tests_count)
-
-    def test_get_java_test_health_stats_flaky_tests(self):
-        test_health = java_test_utils.get_java_test_health(_FLAKY_TEST_PATH)
-
-        self.assertEqual(_JAVA_PACKAGE_FLAKY_TESTS, test_health.java_package)
-        self.assertEqual(0, test_health.disabled_tests_count)
-        self.assertEqual(0, test_health.disable_if_tests_count)
-        self.assertEqual(2, test_health.flaky_tests_count)
 
     def test_get_java_test_health_invalid_test_syntax(self):
         expected_filename = str(
