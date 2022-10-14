@@ -5,34 +5,16 @@
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {
 
-class OriginWithPossibleWildcardsTest : public testing::TestWithParam<bool> {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kWildcardSubdomainsInPermissionsPolicy,
-        HasWildcardSubdomainsInPermissionsPolicy());
-  }
-
-  bool HasWildcardSubdomainsInPermissionsPolicy() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, OriginWithPossibleWildcardsTest, testing::Bool());
-
-TEST_P(OriginWithPossibleWildcardsTest, DoesMatchOrigin) {
+TEST(OriginWithPossibleWildcardsTest, DoesMatchOrigin) {
   // Tuple of {origin to test, origin in policy, w/ wildcard, result,
   // description}.
   const auto& values = {
@@ -78,23 +60,20 @@ TEST_P(OriginWithPossibleWildcardsTest, DoesMatchOrigin) {
                       url::Origin::Create(GURL("https://foo.com")), true, false,
                       "Same origin, w/ wildcard"),
       std::make_tuple(url::Origin::Create(GURL("https://bar.foo.com")),
-                      url::Origin::Create(GURL("https://foo.com")), true,
-                      HasWildcardSubdomainsInPermissionsPolicy(),
+                      url::Origin::Create(GURL("https://foo.com")), true, true,
                       "Subdomain matches, w/ wildcard"),
       std::make_tuple(url::Origin::Create(GURL("http://bar.foo.com")),
                       url::Origin::Create(GURL("https://foo.com")), true, false,
                       "Different scheme, w/ wildcard"),
       std::make_tuple(url::Origin::Create(GURL("https://baz.bar.foo.com")),
-                      url::Origin::Create(GURL("https://foo.com")), true,
-                      HasWildcardSubdomainsInPermissionsPolicy(),
+                      url::Origin::Create(GURL("https://foo.com")), true, true,
                       "Sub-subdomain matches, w/ wildcard"),
       std::make_tuple(url::Origin::Create(GURL("https://foo.com")),
                       url::Origin::Create(GURL("https://bar.foo.com")), true,
                       false, "Subdomain doesn't match, w/ wildcard"),
       std::make_tuple(url::Origin::Create(GURL("https://bar.foo.com")),
                       url::Origin::Create(GURL("https://foo.com:443")), true,
-                      HasWildcardSubdomainsInPermissionsPolicy(),
-                      "Ignore default port, w/ wildcard"),
+                      true, "Ignore default port, w/ wildcard"),
       std::make_tuple(url::Origin(),
                       url::Origin::Create(GURL("https://foo.com")), true, false,
                       "Opaque to origin, w/ wildcard"),
@@ -121,7 +100,7 @@ TEST_P(OriginWithPossibleWildcardsTest, DoesMatchOrigin) {
   }
 }
 
-TEST_P(OriginWithPossibleWildcardsTest, Parse) {
+TEST(OriginWithPossibleWildcardsTest, Parse) {
   // Tuple of {serialized value, type, origin, wildcard, description}.
   const auto& values = {
       std::make_tuple("https://foo.com",
@@ -134,10 +113,7 @@ TEST_P(OriginWithPossibleWildcardsTest, Parse) {
                       "Origin without subdomain wildcard in attribute"),
       std::make_tuple(
           "https://*.foo.com", OriginWithPossibleWildcards::NodeType::kHeader,
-          HasWildcardSubdomainsInPermissionsPolicy() ? "https://foo.com"
-                                                     : "https://%2A.foo.com",
-          HasWildcardSubdomainsInPermissionsPolicy(),
-          "Origin with subdomain wildcard in header"),
+          "https://foo.com", true, "Origin with subdomain wildcard in header"),
       std::make_tuple("https://*.foo.com",
                       OriginWithPossibleWildcards::NodeType::kAttribute,
                       "https://%2A.foo.com", false,
@@ -173,10 +149,7 @@ TEST_P(OriginWithPossibleWildcardsTest, Parse) {
           "Origin with only private tld host wildcard in attribute"),
       std::make_tuple("https://*.foo.appspot.com",
                       OriginWithPossibleWildcards::NodeType::kHeader,
-                      HasWildcardSubdomainsInPermissionsPolicy()
-                          ? "https://foo.appspot.com"
-                          : "https://%2A.foo.appspot.com",
-                      HasWildcardSubdomainsInPermissionsPolicy(),
+                      "https://foo.appspot.com", true,
                       "Origin with private tld host wildcard in header"),
       std::make_tuple("https://*.foo.appspot.com",
                       OriginWithPossibleWildcards::NodeType::kAttribute,
@@ -184,10 +157,7 @@ TEST_P(OriginWithPossibleWildcardsTest, Parse) {
                       "Origin with private tld host wildcard in attribute"),
       std::make_tuple("https://*.example.test",
                       OriginWithPossibleWildcards::NodeType::kHeader,
-                      HasWildcardSubdomainsInPermissionsPolicy()
-                          ? "https://example.test"
-                          : "https://%2A.example.test",
-                      HasWildcardSubdomainsInPermissionsPolicy(),
+                      "https://example.test", true,
                       "Origin with unknown tld host wildcard in header"),
       std::make_tuple("https://*.example.test",
                       OriginWithPossibleWildcards::NodeType::kAttribute,
@@ -228,7 +198,7 @@ TEST_P(OriginWithPossibleWildcardsTest, Parse) {
   }
 }
 
-TEST_P(OriginWithPossibleWildcardsTest, Serialize) {
+TEST(OriginWithPossibleWildcardsTest, Serialize) {
   // Tuple of {origin, wildcard, serialized value, description}.
   const auto& values = {
       std::make_tuple("https://foo.com", false, "https://foo.com",
@@ -249,7 +219,7 @@ TEST_P(OriginWithPossibleWildcardsTest, Serialize) {
   }
 }
 
-TEST_P(OriginWithPossibleWildcardsTest, Constructors) {
+TEST(OriginWithPossibleWildcardsTest, Constructors) {
   OriginWithPossibleWildcards a;
   OriginWithPossibleWildcards b(url::Origin(), false);
   OriginWithPossibleWildcards c(b);
@@ -261,7 +231,7 @@ TEST_P(OriginWithPossibleWildcardsTest, Constructors) {
   EXPECT_EQ(a, b);
 }
 
-TEST_P(OriginWithPossibleWildcardsTest, Opaque) {
+TEST(OriginWithPossibleWildcardsTest, Opaque) {
   EXPECT_DCHECK_DEATH(OriginWithPossibleWildcards(url::Origin(), true));
   OriginWithPossibleWildcards original(url::Origin(), false);
   original.has_subdomain_wildcard = true;

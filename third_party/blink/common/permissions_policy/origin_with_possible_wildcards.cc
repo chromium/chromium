@@ -4,10 +4,8 @@
 
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 
-#include "base/feature_list.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/cors/origin_access_entry.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -41,9 +39,7 @@ OriginWithPossibleWildcards OriginWithPossibleWildcards::Parse(
   // subdomain wildcard if there is a exactly one `*` and it's after the scheme
   // and before the rest of the host. Invalid origins return an instance of
   // OriginWithPossibleWildcards with an opaque origin member.
-  if (base::FeatureList::IsEnabled(
-          features::kWildcardSubdomainsInPermissionsPolicy) &&
-      type == NodeType::kHeader &&
+  if (type == NodeType::kHeader &&
       (wildcard_pos = allowlist_entry.find("://*.")) != std::string::npos &&
       allowlist_entry.find('*') == allowlist_entry.rfind('*')) {
     // We need a copy as erase modifies the original.
@@ -90,13 +86,7 @@ std::string OriginWithPossibleWildcards::Serialize() const {
 
 bool OriginWithPossibleWildcards::DoesMatchOrigin(
     const url::Origin& match_origin) const {
-  // TODO(crbug.com/1345994): Merge logic with IsSubdomainOfHost where possible.
   if (has_subdomain_wildcard) {
-    // Only try to match at all if wildcard matching is enabled.
-    if (!base::FeatureList::IsEnabled(
-            features::kWildcardSubdomainsInPermissionsPolicy)) {
-      return false;
-    }
     // This function won't match https://*.foo.com with https://foo.com.
     if (origin == match_origin) {
       return false;

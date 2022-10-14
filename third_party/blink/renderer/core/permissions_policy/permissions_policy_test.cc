@@ -8,9 +8,7 @@
 #include <string>
 
 #include "base/ranges/algorithm.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -140,7 +138,6 @@ struct PermissionsPolicyParserTestCase {
   const char* permissions_policy_string;
   const char* self_origin;
   const char* src_origin;
-  const bool subdomain_wildcards;
 
   // Test expectation.
   ParsedPolicyForTest expected_parse_result;
@@ -222,8 +219,6 @@ class PermissionsPolicyParserParsingTest
     }
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-
  public:
   static const PermissionsPolicyParserTestCase kCases[];
 };
@@ -236,7 +231,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ "",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ ORIGIN_B,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */ {},
         },
         {
@@ -245,7 +239,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ "geolocation=self",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ ORIGIN_B,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -262,7 +255,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ "geolocation=(self)",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ ORIGIN_B,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -279,7 +271,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ "geolocation=*",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ ORIGIN_B,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -302,7 +293,6 @@ const PermissionsPolicyParserTestCase
             "payment=self",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ ORIGIN_B,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -338,7 +328,6 @@ const PermissionsPolicyParserTestCase
             "payment=(self \"badorigin\")",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ ORIGIN_B,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -372,7 +361,6 @@ const PermissionsPolicyParserTestCase
             "geolocation=self,fullscreen=self,payment=self",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ nullptr,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -401,7 +389,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ "",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ OPAQUE_ORIGIN,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */ {},
         },
         {
@@ -410,7 +397,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ NOT_APPLICABLE,
             /* self_origin */ ORIGIN_A,
             /* src_origin */ OPAQUE_ORIGIN,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -427,7 +413,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ NOT_APPLICABLE,
             /* self_origin */ ORIGIN_A,
             /* src_origin */ OPAQUE_ORIGIN,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -444,7 +429,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ "geolocation=*",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ OPAQUE_ORIGIN,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -462,7 +446,6 @@ const PermissionsPolicyParserTestCase
             "geolocation=(\"" ORIGIN_B "\" \"" ORIGIN_C "\")",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ OPAQUE_ORIGIN,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -481,7 +464,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ NOT_APPLICABLE,
             /* self_origin */ ORIGIN_A,
             /* src_origin */ OPAQUE_ORIGIN,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -499,7 +481,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ "geolocation=9",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ nullptr,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -517,7 +498,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ "geolocation=1.1",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ nullptr,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -535,7 +515,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ "geolocation=?0",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ nullptr,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -552,7 +531,6 @@ const PermissionsPolicyParserTestCase
             /* permissions_policy_string */ "geolocation=\"\"",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ nullptr,
-            /* subdomain_wildcards */ false,
             /* expected_parse_result */
             {
                 {
@@ -564,34 +542,12 @@ const PermissionsPolicyParserTestCase
             },
         },
         {
-            /* test_name */ "ProperWildcardIncludedWhileFeatureDisabled",
-            /* feature_policy_string */
-            "fullscreen " ORIGIN_A_SUBDOMAIN_WILDCARD,
-            /* permissions_policy_string */
-            "fullscreen=(\"" ORIGIN_A_SUBDOMAIN_WILDCARD "\")",
-            /* self_origin */ ORIGIN_A,
-            /* src_origin */ ORIGIN_B,
-            /* subdomain_wildcards */ false,
-            /* expected_parse_result */
-            {
-                {
-                    mojom::blink::PermissionsPolicyFeature::kFullscreen,
-                    /* matches_all_origins */ false,
-                    /* matches_opaque_src */ false,
-                    {{ORIGIN_A_SUBDOMAIN_ESCAPED,
-                      /*has_subdomain_wildcard=*/false}},
-                },
-            },
-        },
-        {
-            /* test_name */ "ProperWildcardIncludedWhileFeatureEnabledForFeatur"
-                            "ePolicy",
+            /* test_name */ "ProperWildcardIncludedForFeaturePolicy",
             /* feature_policy_string */
             "fullscreen " ORIGIN_A_SUBDOMAIN_WILDCARD,
             /* permissions_policy_string */ NOT_APPLICABLE,
             /* self_origin */ ORIGIN_A,
             /* src_origin */ ORIGIN_B,
-            /* subdomain_wildcards */ true,
             /* expected_parse_result */
             {
                 {
@@ -604,14 +560,12 @@ const PermissionsPolicyParserTestCase
             },
         },
         {
-            /* test_name */ "ProperWildcardIncludedWhileFeatureEnabledForPermis"
-                            "sionsPolicy",
+            /* test_name */ "ProperWildcardIncludedForPermissionsPolicy",
             /* feature_policy_string */ NOT_APPLICABLE,
             /* permissions_policy_string */
             "fullscreen=(\"" ORIGIN_A_SUBDOMAIN_WILDCARD "\")",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ ORIGIN_B,
-            /* subdomain_wildcards */ true,
             /* expected_parse_result */
             {
                 {
@@ -624,7 +578,7 @@ const PermissionsPolicyParserTestCase
             },
         },
         {
-            /* test_name */ "ImproperWildcardsIncludedWhileFeatureDisabled",
+            /* test_name */ "ImproperWildcardsIncluded",
             /* feature_policy_string */
             "fullscreen *://example.com https://foo.*.example.com "
             "https://*.*.example.com https://example.com:*",
@@ -633,31 +587,6 @@ const PermissionsPolicyParserTestCase
             "\"https://*.*.example.com\"  \"https://example.com:*\")",
             /* self_origin */ ORIGIN_A,
             /* src_origin */ ORIGIN_B,
-            /* subdomain_wildcards */ false,
-            /* expected_parse_result */
-            {
-                {
-                    mojom::blink::PermissionsPolicyFeature::kFullscreen,
-                    /* matches_all_origins */ false,
-                    /* matches_opaque_src */ false,
-                    {{"https://%2A.%2A.example.com",
-                      /*has_subdomain_wildcard=*/false},
-                     {"https://foo.%2A.example.com",
-                      /*has_subdomain_wildcard=*/false}},
-                },
-            },
-        },
-        {
-            /* test_name */ "ImproperWildcardsIncludedWhileFeatureEnabled",
-            /* feature_policy_string */
-            "fullscreen *://example.com https://foo.*.example.com "
-            "https://*.*.example.com https://example.com:*",
-            /* permissions_policy_string */
-            "fullscreen=(\"*://example.com\" \"https://foo.*.example.com\" "
-            "\"https://*.*.example.com\"  \"https://example.com:*\")",
-            /* self_origin */ ORIGIN_A,
-            /* src_origin */ ORIGIN_B,
-            /* subdomain_wildcards */ true,
             /* expected_parse_result */
             {
                 {
@@ -687,9 +616,6 @@ TEST_P(PermissionsPolicyParserParsingTest, FeaturePolicyParsedCorrectly) {
     return;
 
   ASSERT_NE(test_case.self_origin, nullptr);
-  scoped_feature_list_.InitWithFeatureState(
-      features::kWildcardSubdomainsInPermissionsPolicy,
-      test_case.subdomain_wildcards);
   CheckParsedPolicy(
       ParseFeaturePolicy(test_case.feature_policy_string, test_case.self_origin,
                          test_case.src_origin, logger, test_feature_name_map),
@@ -703,9 +629,6 @@ TEST_P(PermissionsPolicyParserParsingTest, PermissionsPolicyParsedCorrectly) {
     return;
 
   ASSERT_NE(test_case.self_origin, nullptr);
-  scoped_feature_list_.InitWithFeatureState(
-      features::kWildcardSubdomainsInPermissionsPolicy,
-      test_case.subdomain_wildcards);
   CheckParsedPolicy(
       ParsePermissionsPolicy(test_case.permissions_policy_string,
                              test_case.self_origin, test_case.src_origin,

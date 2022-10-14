@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/permissions_policy/dom_feature_policy.h"
@@ -26,12 +24,9 @@ constexpr char kOriginBSubdomain[] = "https://sub.example.net";
 
 using testing::UnorderedElementsAre;
 
-class PolicyTest : public testing::TestWithParam<bool> {
+class PolicyTest : public testing::Test {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kWildcardSubdomainsInPermissionsPolicy,
-        HasWildcardSubdomainsInPermissionsPolicy());
     page_holder_ = std::make_unique<DummyPageHolder>();
 
     auto origin = SecurityOrigin::CreateFromString(kSelfOrigin);
@@ -53,15 +48,12 @@ class PolicyTest : public testing::TestWithParam<bool> {
 
   DOMFeaturePolicy* GetPolicy() const { return policy_; }
 
-  bool HasWildcardSubdomainsInPermissionsPolicy() { return GetParam(); }
-
   PolicyParserMessageBuffer dummy_logger_ =
       PolicyParserMessageBuffer("", true /* discard_message */);
 
  protected:
   std::unique_ptr<DummyPageHolder> page_holder_;
   Persistent<DOMFeaturePolicy> policy_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class DOMFeaturePolicyTest : public PolicyTest {
@@ -73,8 +65,6 @@ class DOMFeaturePolicyTest : public PolicyTest {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All, DOMFeaturePolicyTest, testing::Bool());
-
 class IFramePolicyTest : public PolicyTest {
  public:
   void SetUp() override {
@@ -85,9 +75,7 @@ class IFramePolicyTest : public PolicyTest {
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(All, IFramePolicyTest, testing::Bool());
-
-TEST_P(DOMFeaturePolicyTest, TestAllowsFeature) {
+TEST_F(DOMFeaturePolicyTest, TestAllowsFeature) {
   EXPECT_FALSE(GetPolicy()->allowsFeature(nullptr, "badfeature"));
   EXPECT_FALSE(GetPolicy()->allowsFeature(nullptr, "midi"));
   EXPECT_FALSE(GetPolicy()->allowsFeature(nullptr, "midi", kSelfOrigin));
@@ -106,15 +94,14 @@ TEST_P(DOMFeaturePolicyTest, TestAllowsFeature) {
   EXPECT_TRUE(GetPolicy()->allowsFeature(nullptr, "sync-xhr", kOriginA));
   EXPECT_TRUE(GetPolicy()->allowsFeature(nullptr, "gyroscope"));
   EXPECT_FALSE(GetPolicy()->allowsFeature(nullptr, "gyroscope", kOriginA));
-  EXPECT_EQ(
-      HasWildcardSubdomainsInPermissionsPolicy(),
+  EXPECT_TRUE(
       GetPolicy()->allowsFeature(nullptr, "gyroscope", kOriginASubdomain));
   EXPECT_TRUE(GetPolicy()->allowsFeature(nullptr, "gyroscope", kOriginB));
   EXPECT_FALSE(
       GetPolicy()->allowsFeature(nullptr, "gyroscope", kOriginBSubdomain));
 }
 
-TEST_P(DOMFeaturePolicyTest, TestGetAllowList) {
+TEST_F(DOMFeaturePolicyTest, TestGetAllowList) {
   EXPECT_THAT(GetPolicy()->getAllowlistForFeature(nullptr, "camera"),
               UnorderedElementsAre(kSelfOrigin, kOriginA, kOriginB));
   EXPECT_THAT(GetPolicy()->getAllowlistForFeature(nullptr, "payment"),
@@ -128,14 +115,12 @@ TEST_P(DOMFeaturePolicyTest, TestGetAllowList) {
   EXPECT_TRUE(GetPolicy()->getAllowlistForFeature(nullptr, "midi").empty());
   EXPECT_THAT(GetPolicy()->getAllowlistForFeature(nullptr, "sync-xhr"),
               UnorderedElementsAre("*"));
-  EXPECT_THAT(GetPolicy()->getAllowlistForFeature(nullptr, "gyroscope"),
-              UnorderedElementsAre(kSelfOrigin, kOriginB,
-                                   HasWildcardSubdomainsInPermissionsPolicy()
-                                       ? "https://*.example.com"
-                                       : "https://%2A.example.com"));
+  EXPECT_THAT(
+      GetPolicy()->getAllowlistForFeature(nullptr, "gyroscope"),
+      UnorderedElementsAre(kSelfOrigin, kOriginB, "https://*.example.com"));
 }
 
-TEST_P(DOMFeaturePolicyTest, TestAllowedFeatures) {
+TEST_F(DOMFeaturePolicyTest, TestAllowedFeatures) {
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
   EXPECT_TRUE(allowed_features.Contains("fullscreen"));
   EXPECT_TRUE(allowed_features.Contains("payment"));
@@ -149,7 +134,7 @@ TEST_P(DOMFeaturePolicyTest, TestAllowedFeatures) {
   EXPECT_TRUE(allowed_features.Contains("sync-xhr"));
 }
 
-TEST_P(IFramePolicyTest, TestAllowsFeature) {
+TEST_F(IFramePolicyTest, TestAllowsFeature) {
   EXPECT_FALSE(GetPolicy()->allowsFeature(nullptr, "badfeature"));
   EXPECT_FALSE(GetPolicy()->allowsFeature(nullptr, "midi"));
   EXPECT_FALSE(GetPolicy()->allowsFeature(nullptr, "midi", kSelfOrigin));
@@ -176,7 +161,7 @@ TEST_P(IFramePolicyTest, TestAllowsFeature) {
       GetPolicy()->allowsFeature(nullptr, "gyroscope", kOriginBSubdomain));
 }
 
-TEST_P(IFramePolicyTest, TestGetAllowList) {
+TEST_F(IFramePolicyTest, TestGetAllowList) {
   EXPECT_THAT(GetPolicy()->getAllowlistForFeature(nullptr, "camera"),
               UnorderedElementsAre(kSelfOrigin));
   EXPECT_THAT(GetPolicy()->getAllowlistForFeature(nullptr, "payment"),
@@ -194,7 +179,7 @@ TEST_P(IFramePolicyTest, TestGetAllowList) {
               UnorderedElementsAre(kSelfOrigin));
 }
 
-TEST_P(IFramePolicyTest, TestSameOriginAllowedFeatures) {
+TEST_F(IFramePolicyTest, TestSameOriginAllowedFeatures) {
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
   // These features are allowed in a same origin context, and not restricted by
   // the parent document's policy.
@@ -211,7 +196,7 @@ TEST_P(IFramePolicyTest, TestSameOriginAllowedFeatures) {
   EXPECT_FALSE(allowed_features.Contains("badfeature"));
 }
 
-TEST_P(IFramePolicyTest, TestCrossOriginAllowedFeatures) {
+TEST_F(IFramePolicyTest, TestCrossOriginAllowedFeatures) {
   // Update the iframe's policy, given a new origin.
   GetPolicy()->UpdateContainerPolicy(
       ParsedPermissionsPolicy(), SecurityOrigin::CreateFromString(kOriginA));
@@ -229,7 +214,7 @@ TEST_P(IFramePolicyTest, TestCrossOriginAllowedFeatures) {
   EXPECT_FALSE(allowed_features.Contains("badfeature"));
 }
 
-TEST_P(IFramePolicyTest, TestCombinedPolicyOnOriginA) {
+TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginA) {
   ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
@@ -255,7 +240,7 @@ TEST_P(IFramePolicyTest, TestCombinedPolicyOnOriginA) {
   EXPECT_FALSE(allowed_features.Contains("badfeature"));
 }
 
-TEST_P(IFramePolicyTest, TestCombinedPolicyOnOriginASubdomain) {
+TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginASubdomain) {
   ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
@@ -273,16 +258,15 @@ TEST_P(IFramePolicyTest, TestCombinedPolicyOnOriginASubdomain) {
   // These are allowed by the attribute, but still blocked by the parent policy.
   EXPECT_FALSE(allowed_features.Contains("midi"));
   EXPECT_FALSE(allowed_features.Contains("camera"));
-  // These features are allowed if subdomain wildcard matching is on.
-  EXPECT_EQ(HasWildcardSubdomainsInPermissionsPolicy(),
-            allowed_features.Contains("gyroscope"));
+  // These features are allowed via wildcard matching.
+  EXPECT_TRUE(allowed_features.Contains("gyroscope"));
   // "sync-xhr" is still implicitly allowed on all origins.
   EXPECT_TRUE(allowed_features.Contains("sync-xhr"));
   // This feature does not exist, so should not be advertised as allowed.
   EXPECT_FALSE(allowed_features.Contains("badfeature"));
 }
 
-TEST_P(IFramePolicyTest, TestCombinedPolicyOnOriginB) {
+TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginB) {
   ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
@@ -307,7 +291,7 @@ TEST_P(IFramePolicyTest, TestCombinedPolicyOnOriginB) {
   EXPECT_FALSE(allowed_features.Contains("badfeature"));
 }
 
-TEST_P(IFramePolicyTest, TestCombinedPolicyOnOriginBSubdomain) {
+TEST_F(IFramePolicyTest, TestCombinedPolicyOnOriginBSubdomain) {
   ParsedPermissionsPolicy container_policy =
       PermissionsPolicyParser::ParseAttribute(
           "geolocation 'src'; payment 'none'; midi; camera 'src'; gyroscope "
