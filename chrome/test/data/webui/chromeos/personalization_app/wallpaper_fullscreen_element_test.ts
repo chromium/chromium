@@ -26,7 +26,6 @@ suite('WallpaperFullscreenTest', function() {
     layout: WallpaperLayout.kCenter,
     key: 'testing',
     type: WallpaperType.kCustomized,
-    url: {url: 'data://testing'},
   };
 
   const pendingSelectedCustomImage:

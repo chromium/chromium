@@ -72,7 +72,9 @@
   <template is="dom-if" if="[[showImage_]]">
     <div id="imageContainer" class="preview-image-container">
       <div class="preview-image-border"></div>
-      <img class="preview-image" src$="[[image_.url.url]]" aria-hidden="true">
+      <img aria-hidden="true"
+          class="preview-image"
+          src$="[[getWallpaperSrc_(image_)]]">
     </div>
     <h2 id="textContainer" class="preview-text-container" aria-live="polite" aria-label$="[[getAriaLabel_(image_, dailyRefreshState_)]]">
       <span id="currentlySet" aria-hidden="true">$i18n{currentlySet}</span>

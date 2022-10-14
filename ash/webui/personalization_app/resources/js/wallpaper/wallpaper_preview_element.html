@@ -84,16 +84,16 @@
       <div id="imageContainer" class="photo-images-container clickable"
           on-click="onClickWallpaper_" on-keypress="onClickWallpaper_">
         <div class="photo-images-border"></div>
-        <img src$="[[image_.url.url]]"
-            alt$="[[getImageAltDescription_(image_)]]">
+        <img alt$="[[getImageAltDescription_(image_)]]"
+            src$="[[getWallpaperSrc_(image_)]]">
       </div>
     </template>
     <template is="dom-if" if="[[isPolicyControlled_(image_)]]">
       <div id="imageContainer" class="photo-images-container">
         <div class="photo-images-border"></div>
-        <img src$="[[image_.url.url]]"
+        <img alt$="[[getImageAltDescription_(image_)]]"
             aria-description="$i18n{managedSetting}"
-            alt$="[[getImageAltDescription_(image_)]]">
+            src$="[[getWallpaperSrc_(image_)]]">
       </div>
     </template>
   </template>

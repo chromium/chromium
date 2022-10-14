@@ -8,7 +8,6 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
-import {isPngDataUrl} from '../utils.js';
 
 import {DisplayableImage} from './constants.js';
 
@@ -449,9 +448,6 @@ export type SetSelectedImageAction = Action&{
  */
 export function setSelectedImageAction(image: CurrentWallpaper|
                                        null): SetSelectedImageAction {
-  assert(
-      image === null || isPngDataUrl(image.url),
-      'only png data urls are supported');
   return {
     image,
     name: WallpaperActionName.SET_SELECTED_IMAGE,

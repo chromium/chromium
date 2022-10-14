@@ -86,7 +86,11 @@ suite('WallpaperPreviewTest', function() {
     await waitAfterNextRender(wallpaperPreviewElement);
 
     const img = wallpaperPreviewElement.shadowRoot!.querySelector('img');
-    assertEquals(wallpaperProvider.currentWallpaper.url.url, img!.src);
+    assertEquals(
+        `chrome://personalization/wallpaper.png?key=${
+            wallpaperProvider.currentWallpaper.key}`,
+        img!.src,
+        'current wallpaper key is appended to url as query parameter');
   });
 
   test('shows placeholders when image fails to load', async () => {

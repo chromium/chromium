@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-forward.h"
+#include "base/memory/weak_ptr.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
@@ -69,6 +71,10 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
 
  private:
   void AddBooleans(content::WebUIDataSource* source);
+
+  void HandleWebUIRequest(const std::string& path,
+                          content::WebUIDataSource::GotDataCallback callback);
+
   std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider_;
   std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
       keyboard_backlight_provider_;
@@ -78,6 +84,8 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
   // The color change handler notifies the WebUI when the color provider
   // changes.
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+
+  base::WeakPtrFactory<PersonalizationAppUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

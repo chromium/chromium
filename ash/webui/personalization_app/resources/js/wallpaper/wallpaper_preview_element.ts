@@ -21,7 +21,7 @@ import {Paths, PersonalizationRouter} from '../personalization_router_element.js
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';
 
-import {getLocalStorageAttribution} from './utils.js';
+import {getLocalStorageAttribution, getWallpaperSrc} from './utils.js';
 import {WallpaperObserver} from './wallpaper_observer.js';
 import {getTemplate} from './wallpaper_preview_element.html.js';
 
@@ -65,6 +65,10 @@ export class WallpaperPreview extends WithPersonalizationStore {
   private onClickWallpaper_() {
     assert(!!this.image_ && this.image_.type !== WallpaperType.kPolicy);
     PersonalizationRouter.instance().goToRoute(Paths.COLLECTIONS);
+  }
+
+  private getWallpaperSrc_(image: CurrentWallpaper|null): string|null {
+    return getWallpaperSrc(image);
   }
 
   private getImageAltDescription_(image: CurrentWallpaper|null): string {

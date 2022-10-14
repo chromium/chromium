@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
 #include "ash/webui/grit/ash_personalization_app_resources.h"
@@ -17,9 +18,12 @@
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
@@ -259,6 +263,10 @@ void AddStrings(content::WebUIDataSource* source) {
   source->EnableReplaceI18nInJS();
 }
 
+bool ShouldHandleWebUIRequest(const std::string& path) {
+  return base::StartsWith(path, "wallpaper.png");
+}
+
 }  // namespace
 
 PersonalizationAppUI::PersonalizationAppUI(
@@ -280,6 +288,12 @@ PersonalizationAppUI::PersonalizationAppUI(
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIPersonalizationAppHost);
+
+  // Supply a custom wallpaper image.
+  source->SetRequestFilter(
+      base::BindRepeating(&ShouldHandleWebUIRequest),
+      base::BindRepeating(&PersonalizationAppUI::HandleWebUIRequest,
+                          weak_ptr_factory_.GetWeakPtr()));
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
@@ -356,6 +370,14 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
                      features::IsAvatarsCloudMigrationEnabled());
 
   source->AddBoolean("isJellyEnabled", features::IsJellyEnabled());
+}
+
+void PersonalizationAppUI::HandleWebUIRequest(
+    const std::string& path,
+    content::WebUIDataSource::GotDataCallback callback) {
+  DCHECK(base::Contains(path, "?key="))
+      << "wallpaper key must be provided to prevent browser cache collisions";
+  wallpaper_provider_->GetWallpaperAsPngBytes(std::move(callback));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PersonalizationAppUI)

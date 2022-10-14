@@ -12,6 +12,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/unguessable_token.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -37,6 +38,10 @@ class FakePersonalizationAppWallpaperProvider
   void BindInterface(
       mojo::PendingReceiver<ash::personalization_app::mojom::WallpaperProvider>
           receiver) override;
+
+  void GetWallpaperAsPngBytes(
+      content::WebUIDataSource::GotDataCallback callback) override;
+
   bool IsEligibleForGooglePhotos() override;
 
   // ash::personalization_app::mojom::WallpaperProvider:

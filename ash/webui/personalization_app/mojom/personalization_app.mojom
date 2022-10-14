@@ -167,9 +167,6 @@ struct FetchGooglePhotosPhotosResponse {
 
 // Represents the currently selected wallpaper image.
 struct CurrentWallpaper {
-  // URL of the currently selected wallpaper image in data scheme.
-  url.mojom.Url url;
-
   // Attribution text such as "Photo by John Doe" or the file name of the local
   // image.
   array<string> attribution;

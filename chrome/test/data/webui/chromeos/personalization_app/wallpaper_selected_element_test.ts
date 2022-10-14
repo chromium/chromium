@@ -91,7 +91,10 @@ suite('WallpaperSelectedTest', function() {
     await waitAfterNextRender(wallpaperSelectedElement);
 
     const img = wallpaperSelectedElement.shadowRoot!.querySelector('img');
-    assertEquals(wallpaperProvider.currentWallpaper.url.url, img!.src);
+    assertEquals(
+        `chrome://personalization/wallpaper.png?key=${
+            wallpaperProvider.currentWallpaper.key}`,
+        img!.src, 'sets current wallpaper key appended to url');
 
     const textContainerElements =
         wallpaperSelectedElement.shadowRoot!.querySelectorAll(
@@ -142,17 +145,22 @@ suite('WallpaperSelectedTest', function() {
 
     const img = wallpaperSelectedElement.shadowRoot!.querySelector('img') as
         HTMLImageElement;
-    assertEquals(wallpaperProvider.currentWallpaper.url.url, img.src);
+    assertEquals(
+        `chrome://personalization/wallpaper.png?key=${
+            wallpaperProvider.currentWallpaper.key}`,
+        img!.src, 'sets current wallpaper key appended to url');
+
 
     personalizationStore.data.wallpaper.currentSelected = {
-      url: {url: 'data:image/png;base64_some_new_data'},
-      attribution: ['New attribution'],
-      assetId: BigInt(100),
+      ...personalizationStore.data.wallpaper.currentSelected,
+      key: 'new_key',
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertEquals('data:image/png;base64_some_new_data', img.src);
+    assertEquals(
+        `chrome://personalization/wallpaper.png?key=new_key`, img.src,
+        'updates wallpaper key query parameter');
   });
 
   test('shows placeholders when image fails to load', async () => {
@@ -179,20 +187,6 @@ suite('WallpaperSelectedTest', function() {
     assertNotEquals('none', placeholder.style.display);
     assertEquals(
         null, wallpaperSelectedElement.shadowRoot!.querySelector('img'));
-  });
-
-  test('shows image url with data scheme', async () => {
-    personalizationStore.data.wallpaper.currentSelected = {
-      url: {url: 'data:image/png;base64,abc='},
-      attribution: [],
-      assetId: BigInt(100),
-    };
-    personalizationStore.data.wallpaper.loading.selected = false;
-    wallpaperSelectedElement = initElement(WallpaperSelected);
-    await waitAfterNextRender(wallpaperSelectedElement);
-
-    const img = wallpaperSelectedElement.shadowRoot!.querySelector('img');
-    assertEquals('data:image/png;base64,abc=', img!.src);
   });
 
   test('shows daily refresh option on the collection view', async () => {
@@ -335,7 +329,6 @@ suite('WallpaperSelectedTest', function() {
 
   test('shows attribution for device default wallpaper', async () => {
     const currentSelected: CurrentWallpaper = {
-      url: {url: 'url'},
       attribution: ['testing attribution'],
       layout: WallpaperLayout.kStretch,
       type: WallpaperType.kDefault,

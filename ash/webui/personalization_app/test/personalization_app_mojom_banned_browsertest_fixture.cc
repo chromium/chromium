@@ -12,6 +12,7 @@
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
+#include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -118,6 +119,10 @@ class MockPersonalizationAppWallpaperProvider
                   ash::personalization_app::mojom::WallpaperProvider> receiver),
               (override));
   bool IsEligibleForGooglePhotos() override { return true; }
+  void GetWallpaperAsPngBytes(
+      content::WebUIDataSource::GotDataCallback callback) override {
+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>());
+  }
   MOCK_METHOD(void, MakeTransparent, (), (override));
   MOCK_METHOD(void, MakeOpaque, (), (override));
   MOCK_METHOD(void,

@@ -12,6 +12,8 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/check_op.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -33,6 +35,11 @@ void FakePersonalizationAppWallpaperProvider::BindInterface(
         receiver) {
   wallpaper_receiver_.reset();
   wallpaper_receiver_.Bind(std::move(receiver));
+}
+
+void FakePersonalizationAppWallpaperProvider::GetWallpaperAsPngBytes(
+    content::WebUIDataSource::GotDataCallback callback) {
+  std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>());
 }
 
 bool FakePersonalizationAppWallpaperProvider::IsEligibleForGooglePhotos() {

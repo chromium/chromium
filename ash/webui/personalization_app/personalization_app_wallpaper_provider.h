@@ -6,6 +6,7 @@
 #define ASH_WEBUI_PERSONALIZATION_APP_PERSONALIZATION_APP_WALLPAPER_PROVIDER_H_
 
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace ash::personalization_app {
@@ -16,6 +17,9 @@ class PersonalizationAppWallpaperProvider : public mojom::WallpaperProvider {
  public:
   virtual void BindInterface(
       mojo::PendingReceiver<mojom::WallpaperProvider> receiver) = 0;
+
+  virtual void GetWallpaperAsPngBytes(
+      content::WebUIDataSource::GotDataCallback callback) = 0;
 
   // Not all users that can view the personalization app can also see google
   // photos. Users without a gaia account cannot use the photos APIs.

@@ -23,6 +23,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/account_id/account_id.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -76,6 +77,9 @@ class PersonalizationAppWallpaperProviderImpl
   void BindInterface(
       mojo::PendingReceiver<ash::personalization_app::mojom::WallpaperProvider>
           receiver) override;
+
+  void GetWallpaperAsPngBytes(
+      content::WebUIDataSource::GotDataCallback callback) override;
 
   // Not all users can see google photos. Requires a gaia account to be able to
   // fetch photos.
@@ -232,12 +236,10 @@ class PersonalizationAppWallpaperProviderImpl
 
   void FindAttribution(
       const ash::WallpaperInfo& info,
-      const GURL& wallpaper_data_url,
       const absl::optional<std::vector<backdrop::Collection>>& collections);
 
   void FindAttributionInCollection(
       const ash::WallpaperInfo& info,
-      const GURL& wallpaper_data_url,
       std::size_t current_index,
       const absl::optional<std::vector<backdrop::Collection>>& collections,
       bool success,
@@ -246,7 +248,6 @@ class PersonalizationAppWallpaperProviderImpl
 
   void SendGooglePhotosAttribution(
       const ash::WallpaperInfo& info,
-      const GURL& wallpaper_data_url,
       mojo::StructPtr<ash::personalization_app::mojom::GooglePhotosPhoto> photo,
       bool success);
 

@@ -121,3 +121,19 @@ export function getLocalStorageAttribution(key: string): string[] {
   }
   return attribution;
 }
+
+/**
+ * Get a url to download a high quality preview of the current wallpaper.
+ * Responds with null in case |image| is invalid or null.
+ */
+export function getWallpaperSrc(image: CurrentWallpaper|null): string|null {
+  if (!image) {
+    return null;
+  }
+  if (typeof image.key !== 'string' || !image.key) {
+    console.warn('Invalid image key received');
+    return null;
+  }
+  // Add a key query parameter to cache bust when the image changes.
+  return `/wallpaper.png?key=${encodeURIComponent(image.key)}`;
+}

@@ -19,6 +19,9 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -55,6 +58,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/codec/png_codec.h"
 
 namespace ash::personalization_app {
 
@@ -413,7 +417,6 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
 
 TEST_P(PersonalizationAppWallpaperProviderImplTest,
        ObserveWallpaperFiresWhenBound) {
-  // This will create the data url referenced below in expectation.
   test_wallpaper_controller()->ShowWallpaperImage(
       CreateSolidImageSkia(/*width=*/1, /*height=*/1, SK_ColorBLACK));
 
@@ -443,10 +446,6 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest,
   EXPECT_EQ(ash::WallpaperType::kOnline, current->type);
   EXPECT_EQ(ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
             current->layout);
-  // Data url of a solid black image scaled up to 512x512.
-  EXPECT_EQ(webui::GetBitmapDataUrl(
-                *CreateSolidImageSkia(512, 512, SK_ColorBLACK).bitmap()),
-            current->url);
 }
 
 TEST_P(PersonalizationAppWallpaperProviderImplTest, SetCurrentWallpaperLayout) {
@@ -483,6 +482,33 @@ TEST_P(PersonalizationAppWallpaperProviderImplTest,
       .Times(0);
 
   ResetWallpaperProvider();
+}
+
+TEST_P(PersonalizationAppWallpaperProviderImplTest, GetWallpaperAsPngBytes) {
+  test_wallpaper_controller()->ShowWallpaperImage(
+      CreateSolidImageSkia(/*width=*/1, /*height=*/1, SK_ColorRED));
+
+  scoped_refptr<base::RefCountedMemory> png_bytes;
+
+  base::RunLoop loop;
+  delegate()->GetWallpaperAsPngBytes(base::BindLambdaForTesting(
+      [quit = loop.QuitClosure(),
+       &png_bytes](scoped_refptr<base::RefCountedMemory> bytes) {
+        bytes.swap(png_bytes);
+        std::move(quit).Run();
+      }));
+  loop.Run();
+
+  // Png bytes of a solid black image scaled up to 1024x1024.
+  scoped_refptr<base::RefCountedBytes> expected_png_bytes =
+      base::MakeRefCounted<base::RefCountedBytes>();
+  gfx::PNGCodec::EncodeBGRASkBitmap(
+      CreateSolidImageSkia(1024, 1024, SK_ColorRED)
+          .GetRepresentation(/*scale=*/1)
+          .GetBitmap(),
+      /*discard_transparency=*/false, &expected_png_bytes->data());
+
+  EXPECT_TRUE(expected_png_bytes->Equals(png_bytes));
 }
 
 class PersonalizationAppWallpaperProviderImplGooglePhotosTest
