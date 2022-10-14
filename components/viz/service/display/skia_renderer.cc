@@ -2718,6 +2718,9 @@ void SkiaRenderer::ScheduleOverlays() {
 #elif defined(USE_OZONE)
   // Only Wayland uses this code path.
   for (auto& overlay : current_frame()->overlay_list) {
+    if (overlay.is_root_render_pass) {
+      continue;
+    }
     if (overlay.rpdq) {
       PrepareRenderPassOverlay(&overlay);
       locks.emplace_back(overlay.mailbox);
@@ -3708,6 +3711,23 @@ void SkiaRenderer::EnsureMinNumberOfBuffers(int n) {
     buffer_queue_->EnsureMinNumberOfBuffers(n);
   } else if (skia_output_surface_->EnsureMinNumberOfBuffers(n)) {
     ReallocatedFrameBuffers();
+  }
+}
+
+gpu::Mailbox SkiaRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
+  // For the purpose of testing the overlay configuration, the mailbox for ANY
+  // buffer from BufferQueue is good enough because they're all created with
+  // identical properties.
+  // At the time we're testing overlays we don't yet know which mailbox will be
+  // presented this frame so we'll just use the last swapped buffer. (We might
+  // present a new frame's mailbox, or if we empty-swap we'll present the
+  // previous frame's mailbox.)
+  if (buffer_queue_) {
+    return buffer_queue_->GetLastSwappedBuffer();
+  } else {
+    // OutputSurface::GetOverlayMailbox() returns the mailbox for the last
+    // swapped buffer.
+    return skia_output_surface_->GetOverlayMailbox();
   }
 }
 

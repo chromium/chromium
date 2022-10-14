@@ -504,4 +504,53 @@ TEST_F(BufferQueueTest, EnsureMinNumberOfBuffers) {
   SendDamagedFrame(small_damage);
 }
 
+TEST_F(BufferQueueTest, GetLastSwappedBuffer) {
+  // No images allocated, so zero-mailbox is returned.
+  EXPECT_TRUE(buffer_queue_->GetLastSwappedBuffer().IsZero());
+
+  // After reshape we'll get the last buffer in the queue.
+  EXPECT_TRUE(buffer_queue_->Reshape(screen_size, kBufferQueueColorSpace,
+                                     kBufferQueueFormat));
+  gpu::Mailbox last_swapped1 = buffer_queue_->GetLastSwappedBuffer();
+  EXPECT_FALSE(last_swapped1.IsZero());
+
+  // The last swapped buffer won't change until calling SwapBuffersComplete.
+  gpu::Mailbox mailbox1 = buffer_queue_->GetCurrentBuffer();
+  EXPECT_NE(last_swapped1, mailbox1);
+  EXPECT_EQ(last_swapped1, buffer_queue_->GetLastSwappedBuffer());
+  buffer_queue_->SwapBuffers(screen_rect);
+  EXPECT_EQ(last_swapped1, buffer_queue_->GetLastSwappedBuffer());
+  buffer_queue_->SwapBuffersComplete();
+  EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox1);
+
+  // Swap another frame. Last swapped only updates after SwapBuffersComplete().
+  gpu::Mailbox mailbox2 = buffer_queue_->GetCurrentBuffer();
+  buffer_queue_->SwapBuffers(screen_rect);
+  EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox1);
+  buffer_queue_->SwapBuffersComplete();
+  EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox2);
+
+  // Swap a third frame. Last swapped only updates after SwapBuffersComplete().
+  gpu::Mailbox mailbox3 = buffer_queue_->GetCurrentBuffer();
+  // The third mailbox is the first one we got from GetLastSwappedBuffer().
+  EXPECT_EQ(mailbox3, last_swapped1);
+  buffer_queue_->SwapBuffers(screen_rect);
+  EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox2);
+  buffer_queue_->SwapBuffersComplete();
+  EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox3);
+
+  // Empty swap, Last swapped stays the same.
+  buffer_queue_->SwapBuffers(gfx::Rect());
+  EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox3);
+  buffer_queue_->SwapBuffersComplete();
+  EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox3);
+
+  // Swap a fourth frame. Last swapped only updates after SwapBuffersComplete().
+  EXPECT_EQ(buffer_queue_->GetCurrentBuffer(), mailbox1);
+  buffer_queue_->SwapBuffers(screen_rect);
+  EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox3);
+  buffer_queue_->SwapBuffersComplete();
+  EXPECT_EQ(buffer_queue_->GetLastSwappedBuffer(), mailbox1);
+}
+
 }  // namespace viz

@@ -180,6 +180,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // 0 < n <= capabilities_.number_of_buffers.
   virtual void EnsureMinNumberOfBuffers(int n) {}
 
+  // Gets a mailbox that can be used for overlay testing the primary plane. This
+  // does not need to be the next mailbox that will be swapped.
+  virtual gpu::Mailbox GetPrimaryPlaneOverlayTestingMailbox();
+
   // Return the bounding rect of previously drawn delegated ink trail.
   gfx::Rect GetDelegatedInkTrailDamageRect();
 

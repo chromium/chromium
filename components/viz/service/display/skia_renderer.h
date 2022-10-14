@@ -75,6 +75,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   gfx::Rect GetCurrentFramebufferDamage() const override;
   void Reshape(const OutputSurface::ReshapeParams& reshape_params) override;
   void EnsureMinNumberOfBuffers(int n) override;
+  gpu::Mailbox GetPrimaryPlaneOverlayTestingMailbox() override;
 
  protected:
   bool CanPartialSwap() override;

@@ -49,6 +49,8 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // target for compositing).
   gpu::Mailbox GetCurrentBuffer();
 
+  gpu::Mailbox GetLastSwappedBuffer();
+
   // Returns a rectangle whose contents may have changed since the current
   // buffer was last submitted and needs to be redrawn. For partial swap,
   // only the contents outside this rectangle can be considered valid and do not

@@ -158,6 +158,29 @@ std::unique_ptr<BufferQueue::AllocatedBuffer> BufferQueue::GetNextBuffer() {
   return buffer;
 }
 
+gpu::Mailbox BufferQueue::GetLastSwappedBuffer() {
+  // The last swapped buffer will generally be in displayed_buffer_, as long as
+  // SwapBuffersComplete() has been called at least once for a non-empty swap
+  // since the last Reshape().
+  if (displayed_buffer_) {
+    return displayed_buffer_->mailbox;
+  }
+
+  // If displayed_buffer_ is null then any available buffer will do.
+  if (!available_buffers_.empty()) {
+    return available_buffers_.back()->mailbox;
+  }
+
+  // If there's nothing displayed or available, then we should have no buffers
+  // allocated because Reshape() hasn't been called yet, so a zero-mailbox is
+  // returned.
+  // If any buffers are in flight at this point then BufferQueue is being used
+  // incorrectly. We should not be Swap()ing all available buffers before
+  // receiving any SwapBuffersComplete() calls.
+  DCHECK(in_flight_buffers_.empty());
+  return gpu::Mailbox();
+}
+
 void BufferQueue::EnsureMinNumberOfBuffers(size_t n) {
   if (n <= number_of_buffers_) {
     return;
