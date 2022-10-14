@@ -441,11 +441,29 @@ class ThemeColorObserver : public WebContentsObserver {
  public:
   explicit ThemeColorObserver(WebContents* contents)
       : WebContentsObserver(contents) {}
-  void DidChangeThemeColor() override { observed_ = true; }
+
+  // Can only be called once.
+  bool WaitUntilThemeColorChange() {
+    CHECK(!loop_);
+    loop_ = std::make_unique<base::RunLoop>();
+    if (observed_) {
+      return true;
+    }
+    loop_->Run();
+    return observed_;
+  }
+
+  void DidChangeThemeColor() override {
+    observed_ = true;
+    if (loop_) {
+      loop_->Quit();
+    }
+  }
 
   bool did_fire() const { return observed_; }
 
  private:
+  std::unique_ptr<base::RunLoop> loop_;
   bool observed_ = false;
 };
 
@@ -980,15 +998,15 @@ IN_PROC_BROWSER_TEST_F(
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to A.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
   WaitForFirstVisuallyNonEmptyPaint(shell()->web_contents());
   RenderFrameHostImpl* rfh_a = current_frame_host();
   RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
 
   // 2) Navigate to B.
-  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
   ASSERT_FALSE(delete_observer_rfh_a.deleted());
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
   WaitForFirstVisuallyNonEmptyPaint(shell()->web_contents());
 
   // 3) Navigate to back to A.
@@ -1006,21 +1024,19 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   GURL url_a(embedded_test_server()->GetURL("a.com", "/theme_color.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
 
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
   WaitForFirstVisuallyNonEmptyPaint(web_contents());
-  RenderFrameHostImpl* rfh_a = current_frame_host();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
   EXPECT_EQ(web_contents()->GetThemeColor(), 0xFFFF0000u);
 
-  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
   WaitForFirstVisuallyNonEmptyPaint(web_contents());
-  ASSERT_FALSE(delete_observer_rfh_a.deleted());
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  ASSERT_TRUE(rfh_a->IsInBackForwardCache());
   EXPECT_EQ(web_contents()->GetThemeColor(), absl::nullopt);
 
   ThemeColorObserver observer(web_contents());
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  EXPECT_TRUE(observer.did_fire());
+  ASSERT_TRUE(observer.WaitUntilThemeColorChange());
   EXPECT_EQ(web_contents()->GetThemeColor(), 0xFFFF0000u);
 }
 
