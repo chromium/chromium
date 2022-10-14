@@ -274,7 +274,7 @@ js_library("gaia_signin") {
   deps = [
     "../..:display_manager.m",
     "../../../../gaia_auth_host:authenticator",
-    "../../components:gaia_dialog.m",
+    "../../components:gaia_dialog",
     "../../components:notification_card",
     "../../components:oobe_types.m",
     "../../components:security_token_pin",

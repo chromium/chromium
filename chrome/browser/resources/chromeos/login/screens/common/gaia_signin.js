@@ -11,7 +11,7 @@ import '//resources/js/action_link.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../components/notification_card.js';
 import '../../components/security_token_pin.js';
-import '../../components/gaia_dialog.m.js';
+import '../../components/gaia_dialog.js';
 import '../../components/oobe_icons.m.js';
 import '../../components/buttons/oobe_back_button.m.js';
 import '../../components/buttons/oobe_next_button.m.js';

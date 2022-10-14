@@ -3,19 +3,45 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Polymer element to handle Gaia authentication. Encapsulates
- * authenticator.js and SAML notice handling.
+ * @fileoverview Polymer element to handle Gaia authentication (Gaia webview,
+ * action buttons, back button events, Gaia dialog beign shown, SAML UI).
+ * Encapsulates authenticator.js and SAML notice handling.
+ *
+ * Events:
+ *   identifierentered: Fired after user types their email.
+ *   loadabort: Fired on the webview error.
+ *   ready: Fired when the webview (not necessarily Gaia) is loaded first time.
+ *   showview: Message from Gaia meaning Gaia UI is ready to be shown.
+ *   startenrollment: User action to start enterprise enrollment.
+ *   closesaml: User closes the dialog on the SAML page.
+ *   backcancel: User presses back button when there is no history in Gaia page.
  */
 
-/* #js_imports_placeholder */
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/cr_shared_style.css.js';
+import './buttons/oobe_back_button.m.js';
+import './buttons/oobe_text_button.m.js';
+import './common_styles/common_styles.m.js';
+import './common_styles/oobe_dialog_host_styles.m.js';
+import './dialogs/oobe_content_dialog.m.js';
+
+import {sendWithPromise} from '//resources/js/cr.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Authenticator, AuthFlow} from '../../../gaia_auth_host/authenticator.js';
+
+import {OobeDialogHostBehavior} from './behaviors/oobe_dialog_host_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from './behaviors/oobe_i18n_behavior.m.js';
+import {OobeTypes} from './oobe_types.m.js';
 
 /**
  * @constructor
  * @extends {PolymerElement}
  * @implements {OobeI18nBehaviorInterface}
  */
-const GaiaDialogBase = Polymer.mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior], Polymer.Element);
+const GaiaDialogBase =
+    mixinBehaviors([OobeI18nBehavior, OobeDialogHostBehavior], PolymerElement);
 
 const CHROMEOS_GAIA_PASSWORD_METRIC = 'ChromeOS.Gaia.PasswordFlow';
 
@@ -27,7 +53,9 @@ class GaiaDialog extends GaiaDialogBase {
     return 'gaia-dialog';
   }
 
-  /* #html_template_placeholder */
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
   static get properties() {
     return {
@@ -41,7 +69,7 @@ class GaiaDialog extends GaiaDialogBase {
       },
 
       /**
-       * Current auth flow. See cr.login.Authenticator.AuthFlow
+       * Current auth flow. See AuthFlow
        */
       authFlow: {
         type: Number,
@@ -218,7 +246,7 @@ class GaiaDialog extends GaiaDialogBase {
   ready() {
     super.ready();
     const webview = /** @type {!WebView} */ (this.$['signin-frame']);
-    this.authenticator_ = new cr.login.Authenticator(webview);
+    this.authenticator_ = new Authenticator(webview);
     /**
      * Event listeners for the events triggered by the authenticator.
      */
@@ -299,7 +327,7 @@ class GaiaDialog extends GaiaDialogBase {
       },
       'apiPasswordAdded': (e) => {
         // Only record the metric for Gaia flow without 3rd-party SAML IdP.
-        if (this.authFlow !== cr.login.Authenticator.AuthFlow.DEFAULT) {
+        if (this.authFlow !== AuthFlow.DEFAULT) {
           return;
         }
         chrome.send(
@@ -309,7 +337,7 @@ class GaiaDialog extends GaiaDialogBase {
       },
       'authCompleted': (e) => {
         // Only record the metric for Gaia flow without 3rd-party SAML IdP.
-        if (this.authFlow === cr.login.Authenticator.AuthFlow.DEFAULT) {
+        if (this.authFlow === AuthFlow.DEFAULT) {
           chrome.send(
               'metricsHandler:recordBooleanHistogram',
               [CHROMEOS_GAIA_PASSWORD_METRIC, true]);
@@ -325,7 +353,7 @@ class GaiaDialog extends GaiaDialogBase {
           eventName, authenticatorEventListeners[eventName].bind(this));
     }
 
-    cr.sendWithPromise('getIsSshConfigured')
+    sendWithPromise('getIsSshConfigured')
         .then(this.updateSshWarningVisibility.bind(this));
   }
 
