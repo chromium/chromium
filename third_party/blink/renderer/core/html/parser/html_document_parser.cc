@@ -1699,7 +1699,7 @@ bool HTMLDocumentParser::ShouldPumpTokenizerNowForFinishAppend() const {
   // commit. Processing the data now can lead to unexpected states.
   // TODO(https://crbug.com/1364695): see if this limitation can be removed.
   if (auto* sink = probe::ToCoreProbeSink(GetDocument())) {
-    if (sink->HasAgentsGlobal(CoreProbeSink::kInspectorDOMDebuggerAgent))
+    if (sink->HasAgentsGlobal(CoreProbeSink::kDevToolsSession))
       return false;
   }
 
