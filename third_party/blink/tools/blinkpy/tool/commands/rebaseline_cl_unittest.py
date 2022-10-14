@@ -18,6 +18,7 @@ from blinkpy.tool.commands.rebaseline import TestBaselineSet
 from blinkpy.tool.commands.rebaseline_cl import RebaselineCL
 from blinkpy.tool.commands.rebaseline_unittest import BaseTestCase
 from blinkpy.web_tests.builder_list import BuilderList
+from unittest import mock
 
 
 class RebaselineCLTest(BaseTestCase, LoggingTestCase):
@@ -332,14 +333,15 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 build, self.web_test_resultsdb)
             self.tool.results_fetcher.set_artifact_query_for_build(
                 build, self.test_artifacts_list)
-        exit_code = self.command.execute(self.command_options(resultDB=True),
-                                         [], self.tool)
-        self.assertEqual(exit_code, 0)
-        self.assertLog([
-            'INFO: All builds finished.\n',
-            'INFO: Rebaselining one/missing.html\n',
-            'INFO: Rebaselining two/image-fail.html\n',
-        ])
+        with mock.patch('blinkpy.common.message_pool.get'):
+            exit_code = self.command.execute(
+                self.command_options(resultDB=True), [], self.tool)
+            self.assertEqual(exit_code, 0)
+            self.assertLog([
+                'INFO: All builds finished.\n',
+                'INFO: Rebaselining one/missing.html\n',
+                'INFO: Rebaselining two/image-fail.html\n',
+            ])
 
     def test_execute_with_test_name_file(self):
         fs = self.mac_port.host.filesystem
@@ -386,17 +388,18 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 build, self.web_test_resultsdb)
             self.tool.results_fetcher.set_artifact_query_for_build(
                 build, self.test_artifacts_list)
-        exit_code = self.command.execute(
-            self.command_options(test_name_file=test_name_file, resultDB=True),
-            [], self.tool)
-        self.assertEqual(exit_code, 0)
-        self.assertLog([
-            'INFO: All builds finished.\n',
-            'INFO: Reading list of tests to rebaseline from %s\n' %
-            test_name_file,
-            'INFO: Rebaselining one/missing.html\n',
-            'INFO: Rebaselining two/image-fail.html\n',
-        ])
+        with mock.patch('blinkpy.common.message_pool.get'):
+            exit_code = self.command.execute(
+                self.command_options(test_name_file=test_name_file,
+                                     resultDB=True), [], self.tool)
+            self.assertEqual(exit_code, 0)
+            self.assertLog([
+                'INFO: All builds finished.\n',
+                'INFO: Reading list of tests to rebaseline from %s\n' %
+                test_name_file,
+                'INFO: Rebaselining one/missing.html\n',
+                'INFO: Rebaselining two/image-fail.html\n',
+            ])
 
     def test_execute_with_no_issue_number_aborts(self):
         # If the user hasn't uploaded a CL, an error message is printed.

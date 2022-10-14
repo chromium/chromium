@@ -34,6 +34,7 @@ import re
 
 from collections import defaultdict
 
+from blinkpy.common import message_pool
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.results_fetcher import Build
@@ -596,7 +597,11 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             system_remover.remove_os_versions(test, versions)
         system_remover.update_expectations()
 
-    def _run_in_parallel(self, commands):
+    def _run_in_parallel(self, commands, resultdb):
+        """
+        Parallel run the commands using the MessagePool class to make sure that
+        each process will have only one request session.
+        """
         if not commands:
             return []
 
@@ -605,15 +610,29 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 _log.debug('Would have run: "%s"',
                            self._tool.executive.command_for_printing(command))
             return [(0, '', '')] * len(commands)
+        results = []
+        if resultdb:
+            try:
+                pool = message_pool.get(self, self._worker_factory,
+                                        self._tool.executive.cpu_count(),
+                                        self._tool)
+                pool.run(('rebaseline', command) for command, cwd in commands)
+            except Exception as error:
+                _log.debug('%s("%s") raised, exiting',
+                           error.__class__.__name__, error)
+                raise
+        else:
+            results = self._tool.executive.run_in_parallel(commands)
 
-        command_results = self._tool.executive.run_in_parallel(commands)
-        for _, _, stderr in command_results:
+        for _, _, stderr in results:
             if stderr:
                 lines = stderr.decode("utf-8", "ignore").splitlines()
                 for line in lines:
                     print(line)
+        return results
 
-        return command_results
+    def _worker_factory(self, worker_connection):
+        return Worker(worker_connection, self._tool.git().checkout_root)
 
     def rebaseline(self, options, test_baseline_set):
         """Fetches new baselines and removes related test expectation lines.
@@ -638,9 +657,12 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         copy_baseline_commands, rebaseline_commands, extra_lines_to_remove = self._rebaseline_commands(
             test_baseline_set, options)
         lines_to_remove = {}
-        self._run_in_parallel(copy_baseline_commands)
-
-        command_results = self._run_in_parallel(rebaseline_commands)
+        # TODO(crbug/1213998): Make both copy and rebaseline command use the
+        # message pool, currently the second time when run the message pool,
+        # it will halt there.
+        self._run_in_parallel(copy_baseline_commands, False)
+        command_results = self._run_in_parallel(
+            rebaseline_commands, getattr(options, 'resultDB', False))
         change_set = self._extract_expectation_line_changes(command_results)
         lines_to_remove = change_set.lines_to_remove
         for test in extra_lines_to_remove:
@@ -824,3 +846,30 @@ class Rebaseline(AbstractParallelRebaselineCommand):
         _log.debug('Rebaselining: %s', test_baseline_set)
 
         self.rebaseline(options, test_baseline_set)
+
+
+class Worker(object):
+    def __init__(self, caller, cwd):
+
+        # Add the header here to avoid the circle import
+        from blinkpy.tool.blink_tool import BlinkTool
+
+        self._caller = caller
+        self._tool = BlinkTool(cwd)
+
+    def __del__(self):
+        self.stop()
+
+    def start(self):
+        """This method is called when the object is starting to be used and it is safe
+        for the object to create state that does not need to be pickled (usually this means
+        it is called in a child process).
+        """
+        pass
+
+    def handle(self, name, source, command):
+        assert name == 'rebaseline'
+        self._tool.main(command[1:])
+
+    def stop(self):
+        _log.debug('%s cleaning up', self._caller.name)
