@@ -354,6 +354,9 @@ BASE_FEATURE(kCalendarModelDebugMode,
              "CalendarModelDebugMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable or disable calendar V2.
+BASE_FEATURE(kCalendarV2, "CalendarV2", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables to allow using document scanning feature via DLC in the camera app.
 BASE_FEATURE(kCameraAppDocScanDlc,
              "CameraAppDocScanDlc",
@@ -2294,6 +2297,10 @@ bool IsCalendarViewEnabled() {
 
 bool IsCalendarModelDebugModeEnabled() {
   return base::FeatureList::IsEnabled(kCalendarModelDebugMode);
+}
+
+bool IsCalendarV2Enabled() {
+  return base::FeatureList::IsEnabled(kCalendarV2);
 }
 
 bool IsCaptivePortalUI2022Enabled() {
