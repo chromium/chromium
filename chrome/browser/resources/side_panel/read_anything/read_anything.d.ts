@@ -38,6 +38,9 @@ declare namespace chrome {
     // the selected text.
     function getTextContent(nodeId: number): string;
 
+    // Returns the text direction of the AXNode for the provided AXNodeID.
+    function getTextDirection(nodeId: number): string;
+
     // Returns the url of the AXNode for the provided AXNodeID.
     function getUrl(nodeId: number): string;
 

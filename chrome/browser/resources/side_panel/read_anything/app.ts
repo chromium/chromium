@@ -82,6 +82,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     const element = document.createElement(htmlTag);
+    const direction = chrome.readAnything.getTextDirection(nodeId);
+    if (direction) {
+      element.setAttribute('dir', direction);
+    }
     const url = chrome.readAnything.getUrl(nodeId);
     if (url) {
       element.setAttribute('href', url);

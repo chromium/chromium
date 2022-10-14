@@ -608,4 +608,146 @@ suite('ReadAnythingAppTest', () => {
     const expected: string = '<div><p>ello</p><p>World</p><p>Fr</p></div>';
     assertContainerInnerHTML(expected);
   });
+
+  test('updateContent textDirection', () => {
+    // root htmlTag='#document' id=1
+    // ++paragraph htmlTag='p' id=2 direction='ltr'
+    // ++++staticText name='This is left to right writing' id=3
+    // ++paragraph htmlTag='p' id=4 direction='rtl'
+    // ++++staticText name='This is right to left writing' id=4
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2, 4],
+        },
+        {
+          id: 2,
+          role: 'paragraph',
+          htmlTag: 'p',
+          direction: 1,
+          childIds: [3],
+        },
+        {
+          id: 3,
+          role: 'staticText',
+          name: 'This is left to right writing',
+        },
+        {
+          id: 4,
+          role: 'paragraph',
+          htmlTag: 'p',
+          direction: 2,
+          childIds: [5],
+        },
+        {
+          id: 5,
+          role: 'staticText',
+          name: 'This is right to left writing',
+        },
+      ],
+    };
+    chrome.readAnything.setContentForTesting(axTree, [2, 4]);
+    const expected: string = '<p dir="ltr">This is left to right writing</p>' +
+        '<p dir="rtl">This is right to left writing</p>';
+    assertContainerInnerHTML(expected);
+  });
+
+  test('updateContent textDirection parentNodeDiffDir', () => {
+    // root htmlTag='#document' id=1
+    // ++paragraph htmlTag='p' id=2 direction='ltr'
+    // ++++staticText name='This is ltr' id=3
+    // ++++link htmlTag='a' url='http://www.google.com/' id=4 direction='rtl'
+    // ++++++staticText name='This link is rtl' id=5
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2],
+        },
+        {
+          id: 2,
+          role: 'paragraph',
+          htmlTag: 'p',
+          direction: 1,
+          childIds: [3, 4],
+        },
+        {
+          id: 3,
+          role: 'staticText',
+          name: 'This is ltr',
+        },
+        {
+          id: 4,
+          role: 'link',
+          htmlTag: 'a',
+          direction: 2,
+          url: 'http://www.google.com/',
+          childIds: [5],
+        },
+        {
+          id: 5,
+          role: 'staticText',
+          name: 'This link is rtl',
+        },
+      ],
+    };
+    chrome.readAnything.setContentForTesting(axTree, [2]);
+    const expected: string =
+        '<p dir="ltr">This is ltr<a dir="rtl" href="http://www.google.com/">This link is rtl</a></p>';
+    assertContainerInnerHTML(expected);
+  });
+
+  test('updateContent textDirection verticalDir', () => {
+    // root htmlTag='#document' id=1
+    // ++paragraph htmlTag='p' id=2 direction='ttb'
+    // ++++staticText name='This should be auto' id=3
+    // ++paragraph htmlTag='p' id=4 direction='btt'
+    // ++++staticText name='This should be also be auto' id=4
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2, 4],
+        },
+        {
+          id: 2,
+          role: 'paragraph',
+          htmlTag: 'p',
+          direction: 3,
+          childIds: [3],
+        },
+        {
+          id: 3,
+          role: 'staticText',
+          name: 'This should be auto',
+        },
+        {
+          id: 4,
+          role: 'paragraph',
+          htmlTag: 'p',
+          direction: 4,
+          childIds: [5],
+        },
+        {
+          id: 5,
+          role: 'staticText',
+          name: 'This should be also be auto',
+        },
+      ],
+    };
+    chrome.readAnything.setContentForTesting(axTree, [2, 4]);
+    const expected: string = '<p dir="auto">This should be auto</p>' +
+        '<p dir="auto">This should be also be auto</p>';
+    assertContainerInnerHTML(expected);
+  });
 });

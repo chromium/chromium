@@ -82,6 +82,7 @@ class ReadAnythingAppController
   std::string GetHtmlTag(ui::AXNodeID ax_node_id);
   std::string GetLanguage(ui::AXNodeID ax_node_id);
   std::string GetTextContent(ui::AXNodeID ax_node_id);
+  std::string GetTextDirection(ui::AXNodeID ax_node_id);
   std::string GetUrl(ui::AXNodeID ax_node_id);
   void OnConnected();
 

@@ -105,6 +105,17 @@ void SetAXNodeDataHtmlTag(v8::Isolate* isolate,
                                    html_tag);
 }
 
+void SetAXNodeDataTextDirection(v8::Isolate* isolate,
+                                gin::Dictionary* v8_dict,
+                                ui::AXNodeData* ax_node_data) {
+  v8::Local<v8::Value> v8_direction;
+  v8_dict->Get("direction", &v8_direction);
+  int direction;
+  gin::ConvertFromV8(isolate, v8_direction, &direction);
+  ax_node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextDirection,
+                                direction);
+}
+
 void SetAXNodeDataUrl(v8::Isolate* isolate,
                       gin::Dictionary* v8_dict,
                       ui::AXNodeData* ax_node_data) {
@@ -183,6 +194,7 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
     SetAXNodeDataChildIds(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataHtmlTag(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataLanguage(isolate, &v8_node_dict, &ax_node_data);
+    SetAXNodeDataTextDirection(isolate, &v8_node_dict, &ax_node_data);
     SetAXNodeDataUrl(isolate, &v8_node_dict, &ax_node_data);
     snapshot.nodes.push_back(ax_node_data);
   }
@@ -325,6 +337,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("letterSpacing", &ReadAnythingAppController::LetterSpacing)
       .SetProperty("lineSpacing", &ReadAnythingAppController::LineSpacing)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
+      .SetMethod("getTextDirection",
+                 &ReadAnythingAppController::GetTextDirection)
       .SetMethod("getHtmlTag", &ReadAnythingAppController::GetHtmlTag)
       .SetMethod("getLanguage", &ReadAnythingAppController::GetLanguage)
       .SetMethod("getTextContent", &ReadAnythingAppController::GetTextContent)
@@ -413,6 +427,30 @@ std::string ReadAnythingAppController::GetTextContent(ui::AXNodeID ax_node_id) {
       text_content.resize(end_offset_);
   }
   return text_content;
+}
+
+std::string ReadAnythingAppController::GetTextDirection(
+    ui::AXNodeID ax_node_id) {
+  ui::AXNode* ax_node = GetAXNode(ax_node_id);
+  if (!ax_node)
+    return std::string();
+
+  auto text_direction = static_cast<ax::mojom::WritingDirection>(
+      ax_node->GetIntAttribute(ax::mojom::IntAttribute::kTextDirection));
+
+  // Vertical writing is displayed horizontally with "auto".
+  switch (text_direction) {
+    case ax::mojom::WritingDirection::kLtr:
+      return "ltr";
+    case ax::mojom::WritingDirection::kRtl:
+      return "rtl";
+    case ax::mojom::WritingDirection::kTtb:
+      return "auto";
+    case ax::mojom::WritingDirection::kBtt:
+      return "auto";
+    default:
+      return std::string();
+  }
 }
 
 std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) {
