@@ -296,7 +296,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1373499")
     public void testSwitchTabModel_ScrollToSelectedTab() throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(10, 0, "about:blank");
@@ -305,7 +304,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         CriteriaHelper.pollUiThread(() -> cta.getCurrentTabModel().isIncognito());
         enterTabSwitcher(cta);
         switchTabModel(cta, false);
-        TabUiTestHelper.verifyAllTabsHaveThumbnail(cta.getCurrentTabModel());
         // Make sure the grid tab switcher is scrolled down to show the selected tab.
         onView(tabSwitcherViewMatcher()).check((v, noMatchException) -> {
             if (noMatchException != null) throw noMatchException;
