@@ -2067,6 +2067,18 @@ message OSReport {
 
   // A string contains OS version.
   optional string version = 3;
+
+  enum VersionType {
+    UNKNOWN = 0;
+    HOME = 1;
+    PROFESSIONAL = 2;
+    SERVER = 3;
+    ENTERPRISE = 4;
+    EDUCATION = 5;
+    EDUCATION_PRO = 6;
+  }
+
+  optional VersionType version_type = 4;
 }
 
 // An enum shows which information a partial CBCM report contains.
