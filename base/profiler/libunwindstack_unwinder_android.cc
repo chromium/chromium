@@ -85,7 +85,11 @@ std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
 LibunwindstackUnwinderAndroid::LibunwindstackUnwinderAndroid()
     : memory_regions_map_(NativeUnwinderAndroid::CreateMaps()),
       process_memory_(std::shared_ptr<unwindstack::Memory>(
-          NativeUnwinderAndroid::CreateProcessMemory().release())) {}
+          NativeUnwinderAndroid::CreateProcessMemory().release())) {
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("cpu_profiler"),
+      "LibunwindstackUnwinderAndroid::LibunwindstackUnwinderAndroid");
+}
 
 LibunwindstackUnwinderAndroid::~LibunwindstackUnwinderAndroid() {
   if (module_cache()) {
