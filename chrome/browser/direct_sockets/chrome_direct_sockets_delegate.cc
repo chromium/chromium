@@ -46,10 +46,3 @@ bool ChromeDirectSocketsDelegate::ValidateAddressAndPort(
       address, port);
   return extensions::SocketsManifestData::CheckRequest(extension, param);
 }
-
-bool ChromeDirectSocketsDelegate::ShouldSkipPostResolveChecks(
-    content::RenderFrameHost* frame) const {
-  // chrome.sockets.* doesn't have any restrictions on resolved addresses, so we
-  // may skip these checks.
-  return IsExtensionFrame(frame);
-}

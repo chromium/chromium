@@ -6,22 +6,15 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
-#include "content/public/browser/direct_sockets_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/address_list.h"
-#include "net/base/ip_address.h"
-#include "net/base/ip_endpoint.h"
 #include "net/net_buildflags.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace content {
 namespace {
-
-constexpr char kPermissionDeniedHistogramName[] =
-    "DirectSockets.PermissionDeniedFailures";
 
 #if BUILDFLAG(ENABLE_MDNS)
 bool ResemblesMulticastDNSName(const std::string& hostname) {
@@ -29,25 +22,6 @@ bool ResemblesMulticastDNSName(const std::string& hostname) {
          base::EndsWith(hostname, ".local.");
 }
 #endif  // !BUILDFLAG(ENABLE_MDNS)
-
-bool IsRawIPAddress(const std::string& address) {
-  net::IPAddress ip;
-  return ip.AssignFromIPLiteral(address);
-}
-
-bool ContainNonPubliclyRoutableAddress(const net::AddressList& addresses) {
-  DCHECK(!addresses.empty());
-  return !base::ranges::all_of(addresses, &net::IPAddress::IsPubliclyRoutable,
-                               &net::IPEndPoint::address);
-}
-
-RenderFrameHost* GetFrameHostFromService(
-    base::WeakPtr<DirectSocketsServiceImpl> service) {
-  if (!service) {
-    return nullptr;
-  }
-  return service->GetFrameHost();
-}
 
 }  // namespace
 
@@ -111,29 +85,7 @@ void ResolveHostAndOpenSocket::OnComplete(
         endpoint_results_with_metadata) {
   DCHECK(receiver_.is_bound());
   receiver_.reset();
-
-  auto* frame = GetFrameHostFromService(service_);
-  if (!frame) {
-    OpenSocket(net::ERR_UNEXPECTED, {});
-    return;
-  }
-
-  if (auto* delegate = DirectSocketsServiceImpl::GetDelegate();
-      delegate && delegate->ShouldSkipPostResolveChecks(frame)) {
-    OpenSocket(result, resolved_addresses);
-    return;
-  }
-
-  // Reject hostnames that resolve to non-public exception unless a raw IP
-  // address or a *.local hostname is entered by the user.
-  if (!IsRawIPAddress(host_) && !is_mdns_name_ && resolved_addresses &&
-      ContainNonPubliclyRoutableAddress(*resolved_addresses)) {
-    base::UmaHistogramEnumeration(
-        kPermissionDeniedHistogramName,
-        blink::mojom::DirectSocketFailureType::kResolvingToNonPublic);
-    OpenSocket(net::ERR_NETWORK_ACCESS_DENIED, {});
-    return;
-  }
+  resolver_.reset();
 
   OpenSocket(result, resolved_addresses);
 }

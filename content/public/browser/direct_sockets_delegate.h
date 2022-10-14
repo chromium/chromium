@@ -28,9 +28,6 @@ class CONTENT_EXPORT DirectSocketsDelegate {
       const std::string& address,
       uint16_t port,
       blink::mojom::DirectSocketProtocolType) const = 0;
-
-  // If yes, skips post-resolve checks for Direct TCP/UDP sockets.
-  virtual bool ShouldSkipPostResolveChecks(content::RenderFrameHost*) const = 0;
 };
 
 }  // namespace content
