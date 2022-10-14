@@ -1,7 +1,5 @@
 # crbug.com/1262402 Test filter for browser_tests on mac12-arm64-rel
 
--AccessCodeCastHandlerBrowserTest.ExpectNetworkErrorWhenNoNetwork
--AccessCodeCastHandlerBrowserTest.ReturnSuccessfulResponse
 -All/CryptotokenBrowserTest.SandboxedPageDoesNotSign/0
 -All/CryptotokenBrowserTest.SignShowsPrompt/0
 -All/LoginPromptBrowserTest.TestBasicAuth/0
@@ -21,6 +19,11 @@
 -All/SearchPrefetchServiceEnabledBrowserTest.PrefetchSecureSecurityState/0
 -All/SearchPrefetchServiceEnabledBrowserTest.PrefetchServedBeforeHeaders/0
 -All/SearchPrefetchServiceEnabledBrowserTest.RemovingMatchCancelsInFlight/1
+-All/PromotionalTabsEnabledPolicyWhatsNewTest.RunTest/0
+-All/PromotionalTabsEnabledPolicyWhatsNewTest.RunTest/2
+-AccessCodeCastHandlerBrowserTest.ExpectGenericErrorWhenNoSync
+-AccessCodeCastHandlerBrowserTest.ExpectNetworkErrorWhenNoNetwork
+-AccessCodeCastHandlerBrowserTest.ReturnSuccessfulResponse
 -AutomationApiTest.ForceLayout
 -BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
 -BackForwardCachePageLoadMetricsObserverBrowserTest.FirstPaintAfterBackForwardCacheRestore
@@ -113,6 +116,7 @@
 -PrintBrowserTest.LazyLoadedIframeFetchedCrossOrigin
 -PrintPreviewDialogControllerBrowserTest.ReloadInitiatorTab
 -PrintPreviewDialogControllerBrowserTest.TaskManagementTest
+-ProcessesApiTest.CannotTerminateBrowserProcess
 -ProfileBrowserTest.CreateOldProfileAsynchronous
 -ProfileBrowserTestWithoutDestroyProfile.DISABLE_DestroyRegularProfileBeforeOTRs
 -ProfileHelperTest.DeleteSoleProfile
