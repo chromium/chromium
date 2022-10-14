@@ -6541,7 +6541,6 @@ should be able to be added at any place in this file.
 
 <action name="ContentSuggestions.Feed.CardAction.Open.StartSurface">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>clank-start@google.com</owner>
   <description>
     The user tapped on a card in the Feed on the start surface.
@@ -18582,7 +18581,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileMenuNewTab.StartSurfaceFinale">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>clank-start@google.com</owner>
   <description>
     User pressed 'New tab' in the app menu when start surface finale is enabled.
@@ -19268,7 +19266,6 @@ should be able to be added at any place in this file.
 
 <action name="MobileOmniboxUse.StartSurface">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>clank-start@google.com</owner>
   <description>
     User used the omnibox while it is showing on the start surface.
@@ -26953,7 +26950,6 @@ should be able to be added at any place in this file.
 
 <action name="SearchResumptionModule.NTP.Click">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <description>
     The search suggestion on the search resumption module is clicked.
@@ -26962,7 +26958,6 @@ should be able to be added at any place in this file.
 
 <action name="SearchResumptionModule.NTP.Collapse">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <description>
     Users click the header of the search resumption module to collapse the
@@ -26972,7 +26967,6 @@ should be able to be added at any place in this file.
 
 <action name="SearchResumptionModule.NTP.Expand">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <description>
     Users click the header of the search resumption module to expand and show
@@ -31093,7 +31087,6 @@ should be able to be added at any place in this file.
 
 <action name="StartSurface.ShownFromBackNavigation">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>andrewheard@chromium.org</owner>
   <description>
     The Start surface is showing due to the user taps the back button.
@@ -32164,7 +32157,6 @@ should be able to be added at any place in this file.
 
 <action name="Suggestions.Tile.Tapped.StartSurface">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>clank-start@google.com</owner>
   <description>
     User tapped on a suggestions tile while viewing the start surface.

@@ -2335,7 +2335,7 @@
   },
   {
     "name": "enable-feed-position-on-ntp",
-    "owners": ["clank-start","hanxi","spdonghao", "andrewheard"],
+    "owners": ["clank-start","hanxi"],
     "expiry_milestone": 110
   },
   {
@@ -2967,7 +2967,7 @@
   },
   {
     "name": "enable-search-resumption-module",
-    "owners": ["clank-start","hanxi","spdonghao", "andrewheard"],
+    "owners": ["clank-start","hanxi"],
     "expiry_milestone": 110
   },
   {
@@ -2998,7 +2998,7 @@
   },
   {
     "name": "enable-show-scrollable-mvt-on-ntp",
-    "owners": ["clank-start","hanxi","spdonghao"],
+    "owners": ["clank-start","hanxi"],
     "expiry_milestone": 110
   },
   {
@@ -3024,12 +3024,12 @@
   },
   {
     "name": "enable-start-surface-disabled-feed-improvement",
-    "owners": [ "hanxi", "spdonghao" ],
+    "owners": [ "hanxi", "clank-start" ],
     "expiry_milestone": 115
   },
   {
     "name": "enable-start-surface-refactor",
-    "owners": [ "hanxi", "spdonghao" ],
+    "owners": [ "hanxi", "clank-start" ],
     "expiry_milestone": 115
   },
   {

@@ -132,10 +132,6 @@ public class InstantStartFeedTest {
             Assert.assertFalse(
                     startSurfaceCoordinator.getMediatorForTesting().shouldShowFeedPlaceholder());
         });
-
-        // TODO(spdonghao): Add a test for Feed placeholder from warm start. It's tested in
-        // StartSurfaceMediatorUnitTest#feedPlaceholderFromWarmStart currently because warm start is
-        // hard to simulate here.
     }
 
     @Test

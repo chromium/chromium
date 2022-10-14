@@ -43,7 +43,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Startup.Android.CachedFeedVisibilityConsistency"
     enum="BooleanConsistent" expires_after="2023-03-05">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
     Records whether or not the cached Feed visibility in the SharedPreferences
@@ -208,7 +207,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Startup.Android.DurationSinceLastBackgroundTime" units="ms"
     expires_after="2023-03-05">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <summary>
     Android: The elapsed time from the last time when Chrome goes to background
     till it becomes foreground again. The histogram is recorded when
@@ -221,7 +219,6 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->
 
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
     Records the time duration from a cold start till the Feeds articles are
@@ -234,7 +231,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Startup.Android.FeedsLoadingPlaceholderShown.Instant"
     units="ms" expires_after="2023-01-15">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
     Records the time duration from a cold start till the Feeds loading
@@ -249,7 +245,6 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->
 
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
     Records the time duration from a cold start till the Feeds stream is created
@@ -263,7 +258,6 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->
 
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
     Records the time duration from a cold start till the first draw completes.
@@ -283,7 +277,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Startup.Android.LastVisitedTabIsSRPWhenOverviewShownAtLaunch"
     enum="Boolean" expires_after="2023-02-12">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
     Records whether or not the last visited tab is a search result page when
@@ -333,7 +326,6 @@ chromium-metrics-reviews@google.com.
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->
 
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
     Records the time duration from a cold start till the title of the single Tab
@@ -346,7 +338,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Startup.Android.StartSurfaceShownAtStartup" enum="Boolean"
     expires_after="2023-02-12">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>wychen@chromium.org</owner>
   <summary>
     Records whether the Start surface homepage is showing at a cold startup when

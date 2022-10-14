@@ -884,7 +884,6 @@ chromium-metrics-reviews@google.com.
     enum="FeedPositionSegmentationResult" expires_after="2022-11-15">
   <owner>hanxi@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <summary>
     Logs the result from segmentation platform that determines whether the user
     is a Feed active user or a non-Feed user. Recorded three times when a new
@@ -1693,7 +1692,6 @@ chromium-metrics-reviews@google.com.
     enum="SearchResumptionModule.ModuleNotShownReason"
     expires_after="2023-04-30">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <summary>
     Logs the reason why the search resumption module is enabled but not shown on
     the NTP. Recorded when NewTabPage is created and the search resumption
@@ -1704,7 +1702,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.SearchResumptionModule.Show"
     enum="SearchResumptionModule.ModuleShowStatus" expires_after="2023-03-05">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <summary>
     Logs whether the search resumption module is expanded or collapsed when the
     module is shown on the NTP. Recorded when the NewTabPage is created and the
@@ -1715,7 +1712,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="NewTabPage.SearchResumptionModule.Show.Cached"
     enum="SearchResumptionModule.ModuleShowStatus" expires_after="2023-03-05">
   <owner>hanxi@chromium.org</owner>
-  <owner>spdonghao@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
     Logs whether the search resumption module is expanded or collapsed when the
