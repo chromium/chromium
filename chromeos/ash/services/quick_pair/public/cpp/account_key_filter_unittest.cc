@@ -34,6 +34,14 @@ const std::vector<uint8_t> kFilter3{0xB8, 0x2A, 0x41, 0xE2, 0x21};
 const std::vector<uint8_t> kSalt3{0x6C, 0xE5};
 const std::vector<uint8_t> kBatteryData3{0x33, 0xE4, 0xE4, 0x4C};
 
+const std::vector<uint8_t> kAccountKey4{0x04, 0x3F, 0xC1, 0x8C, 0x63, 0xDC,
+                                        0x75, 0x1A, 0xE8, 0x1A, 0xCF, 0x65,
+                                        0x10, 0x15, 0x1D, 0xB0};
+const std::vector<uint8_t> kFilter4{0x19, 0x23, 0x50, 0xE8, 0x37,
+                                    0x68, 0xF0, 0x65, 0x22};
+const std::vector<uint8_t> kSalt4{0xD7, 0xDE};
+const std::vector<uint8_t> kBatteryData4{0x33, 0xE4, 0xE4, 0x64};
+
 class AccountKeyFilterTest : public testing::Test {};
 
 TEST_F(AccountKeyFilterTest, EmptyFilter) {
@@ -85,6 +93,16 @@ TEST_F(AccountKeyFilterTest, TwoSaltBytes) {
                      kBatteryData3.end());
 
   EXPECT_TRUE(AccountKeyFilter(kFilter3, salt_values).Test(kAccountKey3));
+}
+
+TEST_F(AccountKeyFilterTest, SassEnabledPeripheral) {
+  // Devices with battery data create account filters by concatenating data to
+  // end of salt bytes
+  std::vector<uint8_t> salt_values{};
+  salt_values.insert(salt_values.end(), kSalt4.begin(), kSalt4.end());
+  salt_values.insert(salt_values.end(), kBatteryData4.begin(),
+                     kBatteryData4.end());
+  EXPECT_TRUE(AccountKeyFilter(kFilter4, salt_values).Test(kAccountKey4));
 }
 
 }  // namespace quick_pair

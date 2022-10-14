@@ -24,6 +24,10 @@ class AccountKeyFilter {
   AccountKeyFilter& operator=(AccountKeyFilter&&);
   ~AccountKeyFilter();
 
+  // Helper to Test, specifically tests whether hashed |data|
+  // is in the account key filter.
+  bool IsAccountKeyInFilter(std::vector<uint8_t> data) const;
+
   // Tests whether the |account_key_bytes| belong to this Account Key Filter.
   // Note: The return value may be a false positive, but will never be a false
   // negative.

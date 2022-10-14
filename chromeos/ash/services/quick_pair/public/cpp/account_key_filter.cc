@@ -15,6 +15,8 @@ namespace ash {
 namespace quick_pair {
 
 constexpr int kBitsInByte = 8;
+constexpr uint8_t kRecentlyUsedByte = 0x05;
+constexpr uint8_t kInUseByte = 0x06;
 
 AccountKeyFilter::AccountKeyFilter(
     const NotDiscoverableAdvertisement& advertisement)
@@ -51,17 +53,7 @@ AccountKeyFilter::AccountKeyFilter(const AccountKeyFilter&) = default;
 AccountKeyFilter& AccountKeyFilter::operator=(AccountKeyFilter&&) = default;
 AccountKeyFilter::~AccountKeyFilter() = default;
 
-bool AccountKeyFilter::Test(
-    const std::vector<uint8_t>& account_key_bytes) const {
-  if (bit_sets_.empty())
-    return false;
-
-  // We first need to append the salt value to the input (see
-  // https://developers.google.com/nearby/fast-pair/spec#AccountKeyFilter).
-  std::vector<uint8_t> data(account_key_bytes);
-  for (auto& byte : salt_values_)
-    data.push_back(byte);
-
+bool AccountKeyFilter::IsAccountKeyInFilter(std::vector<uint8_t> data) const {
   std::array<uint8_t, 32> hashed = crypto::SHA256Hash(data);
 
   // Iterate over the hashed input in 4 byte increments, combine those 4
@@ -82,6 +74,31 @@ bool AccountKeyFilter::Test(
   }
 
   return true;
+}
+
+bool AccountKeyFilter::Test(
+    const std::vector<uint8_t>& account_key_bytes) const {
+  if (bit_sets_.empty())
+    return false;
+
+  // We first need to append the salt value to the input (see
+  // https://developers.google.com/nearby/fast-pair/spec#AccountKeyFilter).
+  std::vector<uint8_t> default_account_key(account_key_bytes);
+  for (auto& byte : salt_values_)
+    default_account_key.push_back(byte);
+
+  // We need to try account keys with different first bytes in case
+  // the peripheral is SASS per
+  // https://developers.google.com/nearby/fast-pair/early-access/specifications/extensions/sass#SassAdvertisingPayload
+  std::vector<uint8_t> recently_used_account_key(default_account_key);
+  recently_used_account_key[0] = kRecentlyUsedByte;
+
+  std::vector<uint8_t> in_use_account_key(default_account_key);
+  in_use_account_key[0] = kInUseByte;
+
+  return IsAccountKeyInFilter(default_account_key) ||
+         IsAccountKeyInFilter(in_use_account_key) ||
+         IsAccountKeyInFilter(recently_used_account_key);
 }
 
 }  // namespace quick_pair
