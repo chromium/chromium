@@ -4323,7 +4323,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderSequentialPrerenderingBrowserTest,
   test::PrerenderHostObserver prerender1_observer(*web_contents(),
                                                   GetHostForUrl(kPrerender1));
 
-  // Defer the activation until the ongoing initial navigation in preerender
+  // Defer the activation until the ongoing initial navigation in prerender
   // frame tree commits.
   TestActivationManager primary_page_manager(shell()->web_contents(),
                                              kPrerender1);
