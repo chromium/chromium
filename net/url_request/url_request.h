@@ -14,7 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -375,7 +375,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // the request is started. The referrer URL may be suppressed or changed
   // during the course of the request, for example because of a referrer policy
   // set with set_referrer_policy().
-  void SetReferrer(const std::string& referrer);
+  void SetReferrer(base::StringPiece referrer);
 
   // The referrer policy to apply when updating the referrer during redirects.
   // The referrer policy may only be changed before Start() is called. Any
@@ -406,10 +406,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Set or remove a extra request header.  These methods may only be called
   // before Start() is called, or between receiving a redirect and trying to
   // follow it.
-  void SetExtraRequestHeaderByName(const std::string& name,
-                                   const std::string& value,
+  void SetExtraRequestHeaderByName(base::StringPiece name,
+                                   base::StringPiece value,
                                    bool overwrite);
-  void RemoveRequestHeaderByName(const std::string& name);
+  void RemoveRequestHeaderByName(base::StringPiece name);
 
   // Sets all extra request headers.  Any extra request headers set by other
   // methods are overwritten by this method.  This method may only be called
@@ -450,15 +450,13 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Logs information about the what external object currently blocking the
   // request.  LogUnblocked must be called before resuming the request.  This
   // can be called multiple times in a row either with or without calling
-  // LogUnblocked between calls.  |blocked_by| must not be NULL or have length
-  // 0.
-  void LogBlockedBy(const char* blocked_by);
+  // LogUnblocked between calls.  |blocked_by| must not be empty.
+  void LogBlockedBy(base::StringPiece blocked_by);
 
   // Just like LogBlockedBy, but also makes GetLoadState return source as the
   // |param| in the value returned by GetLoadState.  Calling LogUnblocked or
-  // LogBlockedBy will clear the load param.  |blocked_by| must not be NULL or
-  // have length 0.
-  void LogAndReportBlockedBy(const char* blocked_by);
+  // LogBlockedBy will clear the load param.  |blocked_by| must not be empty.
+  void LogAndReportBlockedBy(base::StringPiece blocked_by);
 
   // Logs that the request is no longer blocked by the last caller to
   // LogBlockedBy.
@@ -473,7 +471,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // that appear more than once in the response are coalesced, with values
   // separated by commas (per RFC 2616). This will not work with cookies since
   // comma can be used in cookie values.
-  void GetResponseHeaderByName(const std::string& name,
+  void GetResponseHeaderByName(base::StringPiece name,
                                std::string* value) const;
 
   // The time when |this| was constructed.
@@ -811,8 +809,8 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     return expected_response_checksum_;
   }
 
-  void set_expected_response_checksum(const std::string& checksum) {
-    expected_response_checksum_ = checksum;
+  void set_expected_response_checksum(base::StringPiece checksum) {
+    expected_response_checksum_ = std::string(checksum);
   }
 
   static bool DefaultCanUseCookies();
