@@ -19,7 +19,15 @@ MoveToDesksMenuModel::MoveToDesksMenuModel(
                     MOVE_TO_DESK_4 == MOVE_TO_DESK_5 - 1 &&
                     MOVE_TO_DESK_5 == MOVE_TO_DESK_6 - 1 &&
                     MOVE_TO_DESK_6 == MOVE_TO_DESK_7 - 1 &&
-                    MOVE_TO_DESK_7 == MOVE_TO_DESK_8 - 1,
+                    MOVE_TO_DESK_7 == MOVE_TO_DESK_8 - 1 &&
+                    MOVE_TO_DESK_8 == MOVE_TO_DESK_9 - 1 &&
+                    MOVE_TO_DESK_9 == MOVE_TO_DESK_10 - 1 &&
+                    MOVE_TO_DESK_10 == MOVE_TO_DESK_11 - 1 &&
+                    MOVE_TO_DESK_11 == MOVE_TO_DESK_12 - 1 &&
+                    MOVE_TO_DESK_12 == MOVE_TO_DESK_13 - 1 &&
+                    MOVE_TO_DESK_13 == MOVE_TO_DESK_14 - 1 &&
+                    MOVE_TO_DESK_14 == MOVE_TO_DESK_15 - 1 &&
+                    MOVE_TO_DESK_15 == MOVE_TO_DESK_16 - 1,
                 "MOVE_TO_DESK_* commands must be in order.");
 
   if (add_title)
@@ -30,7 +38,7 @@ MoveToDesksMenuModel::MoveToDesksMenuModel(
   assign_to_all_desks_item_index_ = GetItemCount() - 1;
   AddSeparator(ui::NORMAL_SEPARATOR);
 
-  constexpr int kMaxNumberOfDesks = MOVE_TO_DESK_8 - MOVE_TO_DESK_1 + 1;
+  constexpr int kMaxNumberOfDesks = MOVE_TO_DESK_16 - MOVE_TO_DESK_1 + 1;
   for (int i = 0; i < kMaxNumberOfDesks; ++i)
     AddCheckItem(MOVE_TO_DESK_1 + i, std::u16string());
 }

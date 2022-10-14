@@ -38,7 +38,15 @@ class MoveToDesksMenuModel : public ui::SimpleMenuModel {
     MOVE_TO_DESK_6 = 40806,
     MOVE_TO_DESK_7 = 40807,
     MOVE_TO_DESK_8 = 40808,
-    TOGGLE_ASSIGN_TO_ALL_DESKS = 40809,
+    MOVE_TO_DESK_9 = 40809,
+    MOVE_TO_DESK_10 = 40810,
+    MOVE_TO_DESK_11 = 40811,
+    MOVE_TO_DESK_12 = 40812,
+    MOVE_TO_DESK_13 = 40813,
+    MOVE_TO_DESK_14 = 40814,
+    MOVE_TO_DESK_15 = 40815,
+    MOVE_TO_DESK_16 = 40816,
+    TOGGLE_ASSIGN_TO_ALL_DESKS = 40817,
   };
 
   // SimpleMenuModel:

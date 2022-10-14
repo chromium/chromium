@@ -16,7 +16,7 @@ namespace {
 
 int MapCommandIdToDeskIndex(int command_id) {
   DCHECK_GE(command_id, chromeos::MoveToDesksMenuModel::MOVE_TO_DESK_1);
-  DCHECK_LE(command_id, chromeos::MoveToDesksMenuModel::MOVE_TO_DESK_8);
+  DCHECK_LE(command_id, chromeos::MoveToDesksMenuModel::MOVE_TO_DESK_16);
   return command_id - chromeos::MoveToDesksMenuModel::MOVE_TO_DESK_1;
 }
 
@@ -27,7 +27,7 @@ bool IsAssignToAllDesksCommand(int command_id) {
 
 bool IsMoveToDeskCommand(int command_id) {
   return command_id >= chromeos::MoveToDesksMenuModel::MOVE_TO_DESK_1 &&
-         command_id <= chromeos::MoveToDesksMenuModel::MOVE_TO_DESK_8;
+         command_id <= chromeos::MoveToDesksMenuModel::MOVE_TO_DESK_16;
 }
 
 }  // namespace
@@ -69,7 +69,7 @@ bool MoveToDesksMenuDelegate::IsCommandIdVisible(int command_id) const {
 
 bool MoveToDesksMenuDelegate::IsItemForCommandIdDynamic(int command_id) const {
   // The potential command_id is from MoveToDesksMenuModel::MOVE_TO_DESK_1
-  // to MoveToDesksMenuModel::MOVE_TO_DESK_8,
+  // to MoveToDesksMenuModel::MOVE_TO_DESK_16,
   // MoveToDesksMenuModel::TOGGLE_ASSIGN_TO_ALL_DESKS.
   // For Move window to desk menu, all the menu items are dynamic.
   // Therefore, checking whether command_id is within the range from
