@@ -120,7 +120,7 @@ const decorationDefaultColor = 'blue';
  */
 type EnumNodesFunction = (node: Node, index: number, text: string) => boolean;
 
-let decorations: Decoration[];
+let decorations: Decoration[] = [];
 
 let sections: Section[];
 
@@ -145,7 +145,7 @@ function extractText(maxChars: number): void {
  */
 function decorateAnnotations(annotations: Annotation[]): void {
   // Avoid redoing without going through `removeDecorations` first.
-  if (decorations?.length || !annotations.length)
+  if (decorations.length || !annotations.length)
     return;
 
   let failures = 0;
