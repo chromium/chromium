@@ -65,7 +65,7 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
     return promo_controller;
   }
 
-  PageActionIconView* GetHighEfficiencyChipView() {
+  PageActionIconView* GetPageActionIconView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     return browser_view->GetLocationBarView()
@@ -73,10 +73,9 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
         ->GetIconView(PageActionIconType::kHighEfficiency);
   }
 
-  void ClickHighEfficiencyChip() {
+  void PressButton(views::Button* button) {
     views::test::InteractionTestUtilSimulatorViews::PressButton(
-        GetHighEfficiencyChipView(),
-        ui::test::InteractionTestUtil::InputType::kMouse);
+        button, ui::test::InteractionTestUtil::InputType::kMouse);
   }
 
   void SetTabDiscardState(bool is_discarded) {
@@ -101,31 +100,8 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
     waiter.WaitIfNeededAndGet();
   }
 
-  user_education::HelpBubbleView* GetHelpBubbleView() {
-    return GetFeaturePromoController()
-        ->promo_bubble_for_testing()
-        ->AsA<user_education::HelpBubbleViews>()
-        ->bubble_view();
-  }
-
-  void ClickIPHCancelButton() {
-    views::test::WidgetDestroyedWaiter waiter(GetHelpBubbleView()->GetWidget());
-    views::test::InteractionTestUtilSimulatorViews::PressButton(
-        GetHelpBubbleView()->GetDefaultButtonForTesting(),
-        ui::test::InteractionTestUtil::InputType::kMouse);
-    waiter.Wait();
-  }
-
-  void ClickIPHSettingsButton() {
-    views::test::WidgetDestroyedWaiter waiter(GetHelpBubbleView()->GetWidget());
-    views::test::InteractionTestUtilSimulatorViews::PressButton(
-        GetHelpBubbleView()->GetNonDefaultButtonForTesting(0),
-        ui::test::InteractionTestUtil::InputType::kMouse);
-    waiter.Wait();
-  }
-
   views::InkDropState GetInkDropState() {
-    return views::InkDrop::Get(GetHighEfficiencyChipView())
+    return views::InkDrop::Get(GetPageActionIconView())
         ->GetInkDrop()
         ->GetTargetInkDropState();
   }
@@ -135,13 +111,17 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
-                       NavigatesOnIPHSettingsLinkClicked) {
+                       PromoCustomActionClicked) {
   auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+  auto* const promo_controller = GetFeaturePromoController();
 
   EXPECT_FALSE(GetFeaturePromoController()->IsPromoActive(
       feature_engagement::kIPHHighEfficiencyInfoModeFeature));
 
   SetTabDiscardState(true);
+  PageActionIconView* icon = GetPageActionIconView();
+  EXPECT_TRUE(icon->GetVisible());
+
   WaitForIPHToShow();
 
   EXPECT_TRUE(GetFeaturePromoController()->IsPromoActive(
@@ -149,7 +129,11 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
 
   content::TestNavigationObserver navigation_observer(
       browser()->tab_strip_model()->GetWebContentsAt(0));
-  ClickIPHSettingsButton();
+  auto* promo_bubble = promo_controller->promo_bubble_for_testing()
+                           ->AsA<user_education::HelpBubbleViews>()
+                           ->bubble_view();
+  auto* custom_action_button = promo_bubble->GetNonDefaultButtonForTesting(0);
+  PressButton(custom_action_button);
   navigation_observer.Wait();
 
   GURL expected(chrome::kChromeUIPerformanceSettingsURL);
@@ -157,40 +141,56 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
-                       PromoDismissesOnCancelClick) {
+                       PromoDismissesOnChipClick) {
   auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
 
   SetTabDiscardState(true);
+  PageActionIconView* icon = GetPageActionIconView();
   WaitForIPHToShow();
 
   EXPECT_TRUE(GetFeaturePromoController()->IsPromoActive(
       feature_engagement::kIPHHighEfficiencyInfoModeFeature));
 
-  ClickHighEfficiencyChip();
+  PressButton(icon);
 
   // Expect the bubble to be open and the promo to be closed.
   EXPECT_FALSE(GetFeaturePromoController()->IsPromoActive(
       feature_engagement::kIPHHighEfficiencyInfoModeFeature));
-  EXPECT_NE(GetHighEfficiencyChipView()->GetBubble(), nullptr);
+  EXPECT_NE(icon->GetBubble(), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(HighEfficiencyChipViewBrowserTest,
                        ShowAndHideInkDropWithPromo) {
   auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+  auto* const promo_controller = GetFeaturePromoController();
 
   EXPECT_FALSE(GetFeaturePromoController()->IsPromoActive(
       feature_engagement::kIPHHighEfficiencyInfoModeFeature));
 
   SetTabDiscardState(true);
+  PageActionIconView* icon = GetPageActionIconView();
+  EXPECT_TRUE(icon->GetVisible());
+
   WaitForIPHToShow();
 
   EXPECT_TRUE(GetFeaturePromoController()->IsPromoActive(
       feature_engagement::kIPHHighEfficiencyInfoModeFeature));
+
   EXPECT_EQ(GetInkDropState(), views::InkDropState::ACTIVATED);
 
-  ClickIPHCancelButton();
+  auto* promo_bubble = promo_controller->promo_bubble_for_testing()
+                           ->AsA<user_education::HelpBubbleViews>()
+                           ->bubble_view();
 
-  EXPECT_FALSE(GetFeaturePromoController()->IsPromoActive(
+  views::test::WidgetDestroyedWaiter waiter(promo_bubble->GetWidget());
+  auto* default_action_button = promo_bubble->GetDefaultButtonForTesting();
+  PressButton(default_action_button);
+  waiter.Wait();
+
+  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
       feature_engagement::kIPHHighEfficiencyInfoModeFeature));
-  EXPECT_TRUE(GetInkDropState() == views::InkDropState::DEACTIVATED);
+
+  views::InkDropState current_state = GetInkDropState();
+  EXPECT_TRUE(current_state == views::InkDropState::HIDDEN ||
+              current_state == views::InkDropState::DEACTIVATED);
 }
