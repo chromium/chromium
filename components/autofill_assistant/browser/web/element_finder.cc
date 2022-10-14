@@ -123,7 +123,7 @@ void ElementFinder::OnSemanticRunnerResult(
 
   if (selector_.proto.filters_size() > 1) {
     // The semantic filter was only the root, there are more filters to run.
-    // Log and retain teh current result and start a CSS lookup from here.
+    // Log and retain the current result and start a CSS lookup from here.
     UpdateLogInfo(status);
     current_result_ = std::move(result);
 
