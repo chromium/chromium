@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/webui_interaction_test_util.h"
@@ -125,6 +126,66 @@ IN_PROC_BROWSER_TEST_F(AppMenuInteractiveTest, PerformanceShowsNewBadge) {
                              EXPECT_TRUE(performance_menu_item->is_new());
                            }))
                        .Build())
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(ToolsMenuModel::kPerformanceMenuItem)
+                  .SetMustRemainVisible(false)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence*,
+                          ui::TrackedElement* element) {
+                        test_util->SelectMenuItem(
+                            element,
+                            ui::test::InteractionTestUtil::InputType::kMouse);
+                      }))
+                  .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kPrimaryTabPageElementId)
+                       .SetTransitionOnlyOnEvent(true)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             auto* const contents =
+                                 element->AsA<TrackedElementWebPage>()
+                                     ->owner()
+                                     ->web_contents();
+                             EXPECT_EQ(
+                                 GURL(chrome::kChromeUIPerformanceSettingsURL),
+                                 contents->GetURL());
+                           }))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kAppMenuButtonElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             test_util->PressButton(element);
+                           }))
+                       .Build())
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(AppMenuModel::kMoreToolsMenuItem)
+                       .SetMustRemainVisible(false)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                             test_util->SelectMenuItem(element);
+                             AppMenu* app_menu =
+                                 BrowserView::GetBrowserViewForBrowser(
+                                     browser())
+                                     ->toolbar()
+                                     ->app_menu_button()
+                                     ->app_menu();
+                             views::MenuItemView* root_menu =
+                                 app_menu->root_menu_item();
+                             views::MenuItemView* performance_menu_item =
+                                 root_menu->GetMenuItemByID(IDC_PERFORMANCE);
+                             EXPECT_TRUE(performance_menu_item->is_new());
+                           }))
+                       .Build())
           .Build();
+
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
