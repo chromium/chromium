@@ -36,6 +36,7 @@ js_library("account_manager") {
   deps = [
     ":account_manager_browser_proxy",
     "..:deep_linking_behavior",
+    "..:icon",
     "..:metrics_recorder",
     "..:os_route",
     "..:route_observer_behavior",
@@ -44,7 +45,6 @@ js_library("account_manager") {
     "//ash/webui/common/resources:web_ui_listener_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:icon",
   ]
 
   externs_list = [
@@ -128,6 +128,7 @@ js_library("os_people_page") {
     ":lock_state_behavior",
     ":os_sync_controls",
     "..:deep_linking_behavior",
+    "..:icon",
     "..:os_page_visibility",
     "..:os_route",
     "..:route_observer_behavior",
@@ -139,7 +140,6 @@ js_library("os_people_page") {
     "//ash/webui/common/resources/quick_unlock:lock_screen_constants",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:icon",
     "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list =

@@ -405,6 +405,7 @@ js_type_check("closure_compile_local_module") {
     ":deep_linking_behavior",
     ":find_shortcut_behavior",
     ":global_scroll_target_behavior",
+    ":icon",
     ":lazy_load",
     ":metrics_recorder",
     ":os_icons",
@@ -524,6 +525,9 @@ js_library("combined_search_handler") {
     "//ash/webui/personalization_app/search:mojo_bindings_webui_js",
     "//mojo/public/mojom/base:base_webui_js",
   ]
+}
+
+js_library("icon") {
 }
 
 js_library("personalization_search_handler") {

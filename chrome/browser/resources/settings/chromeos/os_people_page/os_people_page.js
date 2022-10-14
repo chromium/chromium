@@ -33,7 +33,6 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {getImage} from 'chrome://resources/js/icon.js';
 import {afterNextRender, flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
@@ -42,6 +41,7 @@ import {ProfileInfoBrowserProxyImpl} from '../../people_page/profile_info_browse
 import {SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';
 import {Route, Router} from '../../router.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {getImage} from '../icon.js';
 import {OSPageVisibility} from '../os_page_visibility.js';
 import {routes} from '../os_route.js';
 import {SettingsParentalControlsPageElement} from '../parental_controls_page/parental_controls_page.js';

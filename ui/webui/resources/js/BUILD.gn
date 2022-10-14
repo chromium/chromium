@@ -48,6 +48,7 @@ preprocess_if_expr("preprocess_src_ts") {
     "focus_grid.ts",
     "focus_outline_manager.ts",
     "focus_row.ts",
+    "icon.ts",
     "keyboard_shortcut_list.ts",
     "plural_string_proxy.ts",
     "search_highlight_utils.ts",
@@ -78,7 +79,6 @@ preprocess_if_expr("preprocess_src") {
     "cr.m.js",
     "cr/event_target.js",
     "cr/ui.js",
-    "icon.js",
     "load_time_data.m.js",
     "load_time_data_deprecated.js",
     "parse_html_subset.js",
@@ -138,7 +138,6 @@ js_type_check("js_resources_modules") {
   deps = [
     ":assert",
     ":cr.m",
-    ":icon",
     ":load_time_data.m",
     ":parse_html_subset",
     ":promise_resolver",
@@ -155,10 +154,6 @@ js_library("cr.m") {
     ":promise_resolver",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("icon") {
-  deps = [ ":cr.m" ]
 }
 
 js_library("load_time_data.m") {
