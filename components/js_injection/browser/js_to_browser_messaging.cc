@@ -10,6 +10,7 @@
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
 #include "components/js_injection/browser/web_message_reply_proxy.h"
+#include "components/js_injection/common/web_message.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -50,7 +51,9 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
 
   // WebMessageReplyProxy:
   void PostWebMessage(std::unique_ptr<WebMessage> message) override {
-    java_to_js_messaging_->OnPostMessage(message->message);
+    JsWebMessage js_message;
+    js_message.string = std::move(message->message);
+    java_to_js_messaging_->OnPostMessage(std::move(js_message));
   }
   bool IsInBackForwardCache() override {
     return render_frame_host_->GetLifecycleState() ==
@@ -82,7 +85,7 @@ void JsToBrowserMessaging::OnBackForwardCacheStateChanged() {
 }
 
 void JsToBrowserMessaging::PostMessage(
-    const std::u16string& message,
+    JsWebMessage message,
     std::vector<blink::MessagePortDescriptor> ports) {
   DCHECK(render_frame_host_);
 
@@ -131,7 +134,7 @@ void JsToBrowserMessaging::PostMessage(
             web_contents->GetPrimaryMainFrame() == render_frame_host_);
 #endif
   std::unique_ptr<WebMessage> web_message = std::make_unique<WebMessage>();
-  web_message->message = message;
+  web_message->message = std::move(message.string);
   web_message->ports = std::move(ports);
   host_->OnPostMessage(std::move(web_message));
 }

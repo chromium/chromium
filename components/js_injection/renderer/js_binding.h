@@ -27,6 +27,7 @@ class RenderFrame;
 
 namespace js_injection {
 class JsCommunication;
+struct JsWebMessage;
 
 // A gin::Wrappable class used for providing JavaScript API. JsCommunication
 // creates an instance of JsBinding for each unique name exposed to the page.
@@ -45,7 +46,7 @@ class JsBinding final : public gin::Wrappable<JsBinding>,
       base::WeakPtr<JsCommunication> js_communication);
 
   // mojom::BrowserToJsMessaging implementation.
-  void OnPostMessage(const std::u16string& message) override;
+  void OnPostMessage(JsWebMessage message) override;
 
   void ReleaseV8GlobalObjects();
 

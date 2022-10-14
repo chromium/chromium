@@ -28,12 +28,19 @@ struct DocumentStartJavaScript {
   js_injection.mojom.OriginMatcher origin_matcher;
 };
 
+// JsWebMessage struct contains the message payload sent between
+// JavaScript and Browser.
+// TODO(crbug.com/1374142): Add ArrayBuffer support.
+union JsWebMessage {
+  mojo_base.mojom.String16 string_value;
+};
+
 // For JavaScript postMessage() API, implemented by browser.
 interface JsToBrowserMessaging {
   // Called from renderer, browser receives |message| and possible |ports|,
   // The |message| is an opaque type and the contents are defined by the client
   // of this API.
-  PostMessage(mojo_base.mojom.String16 message,
+  PostMessage(JsWebMessage message,
               array<blink.mojom.MessagePortDescriptor> ports);
 
   // When there is a new BrowserToJsMessaging created in renderer, we need to
@@ -46,7 +53,7 @@ interface JsToBrowserMessaging {
 // the renderer.
 interface BrowserToJsMessaging {
   // Called from browser, to send message to page.
-  OnPostMessage(mojo_base.mojom.String16 message);
+  OnPostMessage(JsWebMessage message);
 };
 
 // For browser to configure renderer, implemented by renderer.
