@@ -162,10 +162,19 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
       bool is_web_history_inert_commit,
       FrameScheduler::NavigationType navigation_type) override {}
   void OnFirstMeaningfulPaint() override {}
-  void OnStartedUsingFeature(SchedulingPolicy::Feature feature,
-                             const SchedulingPolicy& policy) override {}
-  void OnStoppedUsingFeature(SchedulingPolicy::Feature feature,
-                             const SchedulingPolicy& policy) override {}
+  // |source_location| is nullptr when JS is not running.
+  // |handle| is nullptr when sticky feature starts to be used.
+  void OnStartedUsingNonStickyFeature(
+      SchedulingPolicy::Feature feature,
+      const SchedulingPolicy& policy,
+      std::unique_ptr<SourceLocation> source_location,
+      SchedulingAffectingFeatureHandle* handle) override {}
+  void OnStartedUsingStickyFeature(
+      SchedulingPolicy::Feature feature,
+      const SchedulingPolicy& policy,
+      std::unique_ptr<SourceLocation> source_location) override {}
+  void OnStoppedUsingNonStickyFeature(
+      SchedulingAffectingFeatureHandle* handle) override {}
   bool IsExemptFromBudgetBasedThrottling() const override {
     return is_exempt_from_throttling_;
   }

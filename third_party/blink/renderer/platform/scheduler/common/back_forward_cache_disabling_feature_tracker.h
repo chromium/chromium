@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_BACK_FORWARD_CACHE_DISABLING_FEATURE_TRACKER_H_
 
 #include <bitset>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
@@ -16,6 +17,9 @@
 
 namespace blink {
 namespace scheduler {
+
+using BFCacheBlockingFeatureAndLocations =
+    FrameOrWorkerScheduler::BFCacheBlockingFeatureAndLocations;
 
 class ThreadSchedulerBase;
 
@@ -45,10 +49,28 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   void Reset();
 
   // Called when a usage of |feature| is added.
-  void Add(SchedulingPolicy::Feature feature);
+  // TODO(crbug.com/1366675): Remove this function and replace the bitmask and a
+  // vector to count blocking features with
+  // |non_sticky_features_and_js_locations_| and
+  // |sticky_features_and_js_locations_|.
+  void AddFeatureInternal(SchedulingPolicy::Feature feature);
 
-  // Called when one usage of |feature| is removed.
-  void Remove(SchedulingPolicy::Feature feature);
+  // Called when a usage of |feature| is added.
+  // |feature| should be a non-sticky feature.
+  void AddNonStickyFeature(
+      SchedulingPolicy::Feature feature,
+      std::unique_ptr<SourceLocation> source_location = nullptr,
+      FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle* handle =
+          nullptr);
+
+  // Called when a usage of |feature| is added.
+  // |feature| should be a sticky feature.
+  void AddStickyFeature(
+      SchedulingPolicy::Feature feature,
+      std::unique_ptr<SourceLocation> source_location = nullptr);
+
+  // Called when one usage of feature is removed.
+  void Remove(FeatureAndJSLocationBlockingBFCache feature_and_js_location);
 
   // Gets a hash set of feature usages for metrics.
   WTF::HashSet<SchedulingPolicy::Feature>
@@ -57,13 +79,21 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   // Gets a hash set of feature usages for metrics as a bitmap.
   uint64_t GetActiveFeaturesTrackedForBackForwardCacheMetricsMask() const;
 
+  // Gets a list of non sticky features and their JS locations.
+  BFCacheBlockingFeatureAndLocations&
+  GetActiveNonStickyFeaturesTrackedForBackForwardCache();
+
+  // Gets a list of sticky features and their JS locations.
+  const BFCacheBlockingFeatureAndLocations&
+  GetActiveStickyFeaturesTrackedForBackForwardCache() const;
+
   // Notifies the delegate about the change in the set of active features.
   // The scheduler calls this function when needed after each task finishes,
-  // grouping multiple OnStartedUsingFeature/OnStoppedUsingFeature into
-  // one call to the delegate (which is generally expected to upload them to
-  // the browser process).
-  // No calls will be issued to the delegate if the set of features didn't
-  // change since the previous call.
+  // grouping multiple
+  // OnStartedUsing(Non)StickyFeature/OnStoppedUsing(Non)StickyFeature into one
+  // call to the delegate (which is generally expected to upload them to the
+  // browser process). No calls will be issued to the delegate if the set of
+  // features didn't change since the previous call.
   void ReportFeaturesToDelegate();
 
  private:
@@ -78,6 +108,7 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
 
   base::flat_map<SchedulingPolicy::Feature, int>
       back_forward_cache_disabling_feature_counts_{};
+  // TODO(crbug.com/1366675): Remove back_forward_cache_disabling_features_.
   std::bitset<static_cast<size_t>(SchedulingPolicy::Feature::kMaxValue) + 1>
       back_forward_cache_disabling_features_{};
   TraceableState<bool, TracingCategory::kInfo>
@@ -87,6 +118,9 @@ class PLATFORM_EXPORT BackForwardCacheDisablingFeatureTracker {
   // UpdateBackForwardCacheDisablingFeatures.
   uint64_t last_uploaded_bfcache_disabling_features_ = 0;
   bool feature_report_scheduled_ = false;
+
+  BFCacheBlockingFeatureAndLocations non_sticky_features_and_js_locations_;
+  BFCacheBlockingFeatureAndLocations sticky_features_and_js_locations_;
 
   FrameOrWorkerScheduler::Delegate* delegate_ = nullptr;
   ThreadSchedulerBase* scheduler_;

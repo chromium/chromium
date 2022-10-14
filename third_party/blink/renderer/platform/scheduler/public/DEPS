@@ -1,4 +1,7 @@
 specific_include_rules = {
+  "feature_and_js_location_blocking_bfcache.h": [
+    "+third_party/blink/renderer/platform/bindings/source_location.h",
+  ],
   "thread.h": [
     "+base/task/task_observer.h",
   ]

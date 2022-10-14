@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/strong_alias.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/scheduler/public/feature_and_js_location_blocking_bfcache.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_lifecycle_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
@@ -47,11 +48,19 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
 
   // RAII handle which should be kept alive as long as the feature is active
   // and the policy should be applied.
+  // TODO(crbug.com/1366675): Rename SchedulingAffectingFeatureHandle to
+  // NonStickyFeatureHandle and move it to
+  // back_forward_cache_disabling_feature_tracker.h.
   class PLATFORM_EXPORT SchedulingAffectingFeatureHandle {
     DISALLOW_NEW();
 
    public:
     SchedulingAffectingFeatureHandle() = default;
+    SchedulingAffectingFeatureHandle(
+        SchedulingPolicy::Feature feature,
+        SchedulingPolicy policy,
+        std::unique_ptr<SourceLocation> source_location,
+        base::WeakPtr<FrameOrWorkerScheduler>);
     SchedulingAffectingFeatureHandle(SchedulingAffectingFeatureHandle&&);
     SchedulingAffectingFeatureHandle& operator=(
         SchedulingAffectingFeatureHandle&&);
@@ -62,31 +71,43 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
 
     inline void reset() {
       if (scheduler_)
-        scheduler_->OnStoppedUsingFeature(feature_, policy_);
+        scheduler_->OnStoppedUsingNonStickyFeature(this);
       scheduler_ = nullptr;
     }
+
+    SchedulingPolicy GetPolicy() const;
+
+    const FeatureAndJSLocationBlockingBFCache&
+    GetFeatureAndJSLocationBlockingBFCache() const;
 
    private:
     friend class FrameOrWorkerScheduler;
 
-    SchedulingAffectingFeatureHandle(SchedulingPolicy::Feature feature,
-                                     SchedulingPolicy policy,
-                                     base::WeakPtr<FrameOrWorkerScheduler>);
-
     SchedulingPolicy::Feature feature_ = SchedulingPolicy::Feature::kMaxValue;
     SchedulingPolicy policy_;
+    FeatureAndJSLocationBlockingBFCache feature_and_js_location_;
     base::WeakPtr<FrameOrWorkerScheduler> scheduler_;
   };
 
+  using BFCacheBlockingFeatureAndLocations =
+      WTF::Vector<FeatureAndJSLocationBlockingBFCache>;
+
   class PLATFORM_EXPORT Delegate {
    public:
+    using BFCacheBlockingFeatureAndLocations =
+        FrameOrWorkerScheduler::BFCacheBlockingFeatureAndLocations;
     virtual ~Delegate() = default;
 
-    // Notifies that the list of active features for this worker has changed.
-    // See SchedulingPolicy::Feature for the list of features and the meaning
-    // of individual features.
+    // Notifies that the list of active blocking features for this worker has
+    // changed when a blocking feature and its JS location are registered or
+    // removed.
+    // TODO(crbug.com/1366675): Remove features_mask
     virtual void UpdateBackForwardCacheDisablingFeatures(
-        uint64_t features_mask) = 0;
+        uint64_t features_mask,
+        const BFCacheBlockingFeatureAndLocations&
+            non_sticky_features_and_js_locations,
+        const BFCacheBlockingFeatureAndLocations&
+            sticky_features_and_js_locations) = 0;
   };
 
   virtual ~FrameOrWorkerScheduler();
@@ -102,6 +123,9 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
   // Usage:
   // handle = scheduler->RegisterFeature(
   //     kYourFeature, { SchedulingPolicy::DisableSomething() });
+  // TODO(crbug.com/1366675): Rename RegisterFeature to
+  // RegisterNonStickyFeature.
+
   [[nodiscard]] SchedulingAffectingFeatureHandle RegisterFeature(
       SchedulingPolicy::Feature feature,
       SchedulingPolicy policy);
@@ -152,15 +176,24 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
     return scheduler::SchedulingLifecycleState::kNotThrottled;
   }
 
-  virtual void OnStartedUsingFeature(SchedulingPolicy::Feature feature,
-                                     const SchedulingPolicy& policy) = 0;
-  virtual void OnStoppedUsingFeature(SchedulingPolicy::Feature feature,
-                                     const SchedulingPolicy& policy) = 0;
+  // |source_location| is nullptr when JS is not running.
+  virtual void OnStartedUsingNonStickyFeature(
+      SchedulingPolicy::Feature feature,
+      const SchedulingPolicy& policy,
+      std::unique_ptr<SourceLocation> source_location,
+      SchedulingAffectingFeatureHandle* handle) = 0;
+  // |source_location| is nullptr when JS is not running.
+  virtual void OnStartedUsingStickyFeature(
+      SchedulingPolicy::Feature feature,
+      const SchedulingPolicy& policy,
+      std::unique_ptr<SourceLocation> source_location) = 0;
+  virtual void OnStoppedUsingNonStickyFeature(
+      SchedulingAffectingFeatureHandle* handle) = 0;
 
   // Gets a weak pointer for this scheduler that is reset when the influence by
   // registered features to this scheduler is reset.
   virtual base::WeakPtr<FrameOrWorkerScheduler>
-  GetSchedulingAffectingFeatureWeakPtr() = 0;
+  GetFrameOrWorkerSchedulerWeakPtr() = 0;
 
  private:
   class ObserverState {

@@ -277,31 +277,46 @@ WorkerSchedulerImpl::ThrottleableTaskQueue() {
   return throttleable_task_queue_.get();
 }
 
-void WorkerSchedulerImpl::OnStartedUsingFeature(
+void WorkerSchedulerImpl::OnStartedUsingNonStickyFeature(
     SchedulingPolicy::Feature feature,
-    const SchedulingPolicy& policy) {
+    const SchedulingPolicy& policy,
+    std::unique_ptr<SourceLocation> source_location,
+    SchedulingAffectingFeatureHandle* handle) {
   if (policy.disable_align_wake_ups)
     scheduler::DisableAlignWakeUpsForProcess();
 
   if (!policy.disable_back_forward_cache) {
     return;
   }
-
-  back_forward_cache_disabling_feature_tracker_.Add(feature);
+  back_forward_cache_disabling_feature_tracker_.AddNonStickyFeature(
+      feature, std::move(source_location), handle);
 }
 
-void WorkerSchedulerImpl::OnStoppedUsingFeature(
+void WorkerSchedulerImpl::OnStartedUsingStickyFeature(
     SchedulingPolicy::Feature feature,
-    const SchedulingPolicy& policy) {
+    const SchedulingPolicy& policy,
+    std::unique_ptr<SourceLocation> source_location) {
+  if (policy.disable_align_wake_ups)
+    scheduler::DisableAlignWakeUpsForProcess();
+
   if (!policy.disable_back_forward_cache) {
     return;
   }
+  back_forward_cache_disabling_feature_tracker_.AddStickyFeature(
+      feature, std::move(source_location));
+}
 
-  back_forward_cache_disabling_feature_tracker_.Remove(feature);
+void WorkerSchedulerImpl::OnStoppedUsingNonStickyFeature(
+    SchedulingAffectingFeatureHandle* handle) {
+  if (!handle->GetPolicy().disable_back_forward_cache) {
+    return;
+  }
+  back_forward_cache_disabling_feature_tracker_.Remove(
+      handle->GetFeatureAndJSLocationBlockingBFCache());
 }
 
 base::WeakPtr<FrameOrWorkerScheduler>
-WorkerSchedulerImpl::GetSchedulingAffectingFeatureWeakPtr() {
+WorkerSchedulerImpl::GetFrameOrWorkerSchedulerWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

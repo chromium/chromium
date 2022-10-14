@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/worker_thread_scheduler.h"
@@ -318,7 +319,11 @@ TEST_F(WorkerSchedulerImplTest, MAYBE_NestedPauseHandlesTasks) {
 
 class WorkerSchedulerDelegateForTesting : public WorkerScheduler::Delegate {
  public:
-  MOCK_METHOD1(UpdateBackForwardCacheDisablingFeatures, void(uint64_t));
+  MOCK_METHOD(void,
+              UpdateBackForwardCacheDisablingFeatures,
+              (uint64_t,
+               const BFCacheBlockingFeatureAndLocations&,
+               const BFCacheBlockingFeatureAndLocations&));
 };
 
 // Confirms that the feature usage in a dedicated worker is uploaded to
@@ -352,9 +357,19 @@ TEST_F(WorkerSchedulerImplTest, FeatureUpload) {
                                (1 << static_cast<uint64_t>(
                                     SchedulingPolicy::Feature::
                                         kMainResourceHasCacheControlNoStore)) |
-                               (1 << static_cast<uint64_t>(
-                                    SchedulingPolicy::Feature::
-                                        kMainResourceHasCacheControlNoCache))));
+                                   (1 << static_cast<uint64_t>(
+                                        SchedulingPolicy::Feature::
+                                            kMainResourceHasCacheControlNoCache)),
+                               BFCacheBlockingFeatureAndLocations(),
+                               BFCacheBlockingFeatureAndLocations(
+                                   {FeatureAndJSLocationBlockingBFCache(
+                                        SchedulingPolicy::Feature::
+                                            kMainResourceHasCacheControlNoStore,
+                                        nullptr),
+                                    FeatureAndJSLocationBlockingBFCache(
+                                        SchedulingPolicy::Feature::
+                                            kMainResourceHasCacheControlNoCache,
+                                        nullptr)})));
                      },
                      worker_scheduler_.get(), delegate.get()));
 

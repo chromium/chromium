@@ -43,16 +43,23 @@ FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::
     SchedulingAffectingFeatureHandle(
         SchedulingPolicy::Feature feature,
         SchedulingPolicy policy,
+        std::unique_ptr<SourceLocation> source_location,
         base::WeakPtr<FrameOrWorkerScheduler> scheduler)
-    : feature_(feature), policy_(policy), scheduler_(std::move(scheduler)) {
+    : feature_(feature),
+      policy_(policy),
+      feature_and_js_location_(feature, source_location.get()),
+      scheduler_(std::move(scheduler)) {
   if (!scheduler_)
     return;
-  scheduler_->OnStartedUsingFeature(feature_, policy_);
+  scheduler_->OnStartedUsingNonStickyFeature(feature_, policy_,
+                                             std::move(source_location), this);
 }
 
 FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::
     SchedulingAffectingFeatureHandle(SchedulingAffectingFeatureHandle&& other)
-    : feature_(other.feature_), scheduler_(std::move(other.scheduler_)) {
+    : feature_(other.feature_),
+      feature_and_js_location_(other.feature_and_js_location_),
+      scheduler_(std::move(other.scheduler_)) {
   other.scheduler_ = nullptr;
 }
 
@@ -61,9 +68,21 @@ FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::operator=(
     SchedulingAffectingFeatureHandle&& other) {
   feature_ = other.feature_;
   policy_ = std::move(other.policy_);
+  feature_and_js_location_ = other.feature_and_js_location_;
   scheduler_ = std::move(other.scheduler_);
   other.scheduler_ = nullptr;
   return *this;
+}
+
+SchedulingPolicy
+FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::GetPolicy() const {
+  return policy_;
+}
+
+const FeatureAndJSLocationBlockingBFCache& FrameOrWorkerScheduler::
+    SchedulingAffectingFeatureHandle::GetFeatureAndJSLocationBlockingBFCache()
+        const {
+  return feature_and_js_location_;
 }
 
 FrameOrWorkerScheduler::FrameOrWorkerScheduler() {}
@@ -81,13 +100,13 @@ FrameOrWorkerScheduler::RegisterFeature(SchedulingPolicy::Feature feature,
     // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
     // is running.
     if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
-      // TODO(crbug.com/1366675): Add source location into
-      // SchedulingAffectingFeatureHandle to pass it to the browser.
-      std::unique_ptr<SourceLocation> source_location = CaptureSourceLocation();
+      return SchedulingAffectingFeatureHandle(
+          feature, policy, CaptureSourceLocation(),
+          GetFrameOrWorkerSchedulerWeakPtr());
     }
   }
-  return SchedulingAffectingFeatureHandle(
-      feature, policy, GetSchedulingAffectingFeatureWeakPtr());
+  return SchedulingAffectingFeatureHandle(feature, policy, nullptr,
+                                          GetFrameOrWorkerSchedulerWeakPtr());
 }
 
 void FrameOrWorkerScheduler::RegisterStickyFeature(
@@ -95,16 +114,13 @@ void FrameOrWorkerScheduler::RegisterStickyFeature(
     SchedulingPolicy policy) {
   DCHECK(scheduler::IsFeatureSticky(feature));
   if (IsRegisterJSSourceLocationBlockingBFCache()) {
-    // Check if V8 is currently running an isolate.
     // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
     // is running.
     if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
-      // TODO(crbug.com/1366675): Add source location into
-      // SchedulingAffectingFeatureHandle to pass it to the browser.
-      std::unique_ptr<SourceLocation> source_location = CaptureSourceLocation();
+      OnStartedUsingStickyFeature(feature, policy, CaptureSourceLocation());
     }
   }
-  OnStartedUsingFeature(feature, policy);
+  OnStartedUsingStickyFeature(feature, policy, nullptr);
 }
 
 std::unique_ptr<FrameOrWorkerScheduler::LifecycleObserverHandle>

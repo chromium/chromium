@@ -479,7 +479,11 @@ DedicatedWorkerObjectProxy& DedicatedWorkerGlobalScope::WorkerObjectProxy()
 }
 
 void DedicatedWorkerGlobalScope::UpdateBackForwardCacheDisablingFeatures(
-    uint64_t features_mask) {
+    uint64_t features_mask,
+    const BFCacheBlockingFeatureAndLocations&
+        non_sticky_features_and_js_locations,
+    const BFCacheBlockingFeatureAndLocations&
+        sticky_features_and_js_locations) {
   // `back_forward_cache_controller_host_` might not be bound when non-
   // PlzDedicatedWorker is used. Non-PlzDedicatedWorker will be removed in near
   // future.

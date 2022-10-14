@@ -127,8 +127,12 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   bool IsOffMainThreadScriptFetchDisabled() override;
 
   // Implements scheduler::WorkerScheduler::Delegate.
-  void UpdateBackForwardCacheDisablingFeatures(uint64_t features_mask) override;
-
+  void UpdateBackForwardCacheDisablingFeatures(
+      uint64_t features_mask,
+      const BFCacheBlockingFeatureAndLocations&
+          non_sticky_features_and_js_locations,
+      const BFCacheBlockingFeatureAndLocations&
+          sticky_features_and_js_locations) override;
   // Implements BackForwardCacheLoaderHelperImpl::Delegate.
   void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason reason) override;

@@ -120,6 +120,8 @@ blink_platform_sources("scheduler") {
     "public/cooperative_scheduling_manager.h",
     "public/dummy_schedulers.h",
     "public/event_loop.h",
+    "public/feature_and_js_location_blocking_bfcache.cc",
+    "public/feature_and_js_location_blocking_bfcache.h",
     "public/frame_or_worker_scheduler.h",
     "public/frame_scheduler.h",
     "public/frame_status.h",
