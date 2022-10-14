@@ -102,6 +102,9 @@ NSString* const kBookmarksSymbol = @"star.fill";
 NSString* const kSyncErrorSymbol =
     @"exclamationmark.arrow.triangle.2.circlepath";
 NSString* const kMenuSymbol = @"ellipsis";
+NSString* const kSortSymbol = @"arrow.up.arrow.down";
+NSString* const kBackSymbol = @"arrow.backward";
+NSString* const kForwardSymbol = @"arrow.forward";
 
 const CGFloat kColorfulBackgroundSymbolCornerRadius = 7;
 

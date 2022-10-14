@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/icons/item_icon.h"
+#import "ios/chrome/browser/ui/icons/location_bar_icon.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-const CGFloat kSymbolAccessoryPointSize = 18.;
-
-NSString* const kExternalLinkSymbol = @"arrow.up.forward.square";
-NSString* const kChevronForwardSymbol = @"chevron.forward";
+// Default symbol names.
+NSString* const kSecureLocationBarSymbol = @"lock.fill";

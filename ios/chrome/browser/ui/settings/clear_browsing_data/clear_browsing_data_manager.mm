@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/settings_icon.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
@@ -93,10 +94,6 @@ const std::vector<BrowsingDataRemoveMask> _browsingDataRemoveFlags = {
 
 // The size of the symbol image used in the 'Clear Browsing Data' view.
 const CGFloat kSymbolPointSize = 22;
-
-// Specific symbols used in the 'Clear Browsing Data' view.
-NSString* const kCachedDataSymbol = @"photo.on.rectangle";
-NSString* const kAutofillDataSymbol = @"wand.and.rays";
 
 // Returns the symbol coresponding to the given itemType.
 UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {

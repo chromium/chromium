@@ -80,7 +80,7 @@
     case TableViewDetailTextCellAccessorySymbolExternalLink:
       cell.accessoryView = [[UIImageView alloc]
           initWithImage:DefaultSymbolTemplateWithPointSize(
-                            kExternalLinkSmbol, kSymbolAccessoryPointSize)];
+                            kExternalLinkSymbol, kSymbolAccessoryPointSize)];
       break;
     case TableViewDetailTextCellAccessorySymbolNone:
       cell.accessoryView = nil;

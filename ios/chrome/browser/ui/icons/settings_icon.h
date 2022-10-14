@@ -22,6 +22,8 @@ extern NSString* const kSyncEnabledSymbol;
 extern NSString* const kDefaultBrowserSymbol;
 extern NSString* const kDiscoverSymbol;
 extern NSString* const kBellSymbol;
+extern NSString* const kCachedDataSymbol;
+extern NSString* const kAutofillDataSymbol;
 
 // Returns a SF symbol named `symbol_name` configured for the Settings root
 // screen.

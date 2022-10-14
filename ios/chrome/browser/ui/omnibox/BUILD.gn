@@ -105,6 +105,7 @@ source_set("omnibox_icon_type_constants") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/ui/icons:location_bar_icons",
     "//ios/chrome/browser/ui/icons:symbols",
   ]
 }

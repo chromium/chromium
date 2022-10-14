@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -73,9 +74,6 @@ namespace {
 
 // The size of the symbol image.
 const CGFloat kSymbolImagePointSize = 18;
-
-// The name if the popup symbol.
-NSString* const kRestoreSessionSymbol = @"exclamationmark.triangle.fill";
 
 // The name for directory which contains all session backup subdirectories for
 // multiple sessions.
@@ -157,12 +155,8 @@ class SessionCrashedInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   ui::ImageModel GetIcon() const override {
     if (icon_.IsEmpty()) {
-      UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-          configurationWithPointSize:kSymbolImagePointSize
-                              weight:UIImageSymbolWeightMedium
-                               scale:UIImageSymbolScaleMedium];
-      UIImage* image = [UIImage systemImageNamed:kRestoreSessionSymbol
-                               withConfiguration:configuration];
+      UIImage* image =
+          DefaultSymbolWithPointSize(kWarningFillSymbol, kSymbolImagePointSize);
       icon_ = gfx::Image(image);
     }
     return ui::ImageModel::FromImage(icon_);

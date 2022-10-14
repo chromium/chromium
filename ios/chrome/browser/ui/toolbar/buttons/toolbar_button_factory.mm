@@ -31,10 +31,6 @@ namespace {
 // The size of the symbol image.
 const CGFloat kSymbolToolbarPointSize = 24;
 
-// Specific symbols used in the toolbar.
-NSString* const kToolbarArrowBackwardSymbol = @"arrow.backward";
-NSString* const kToolbarArrowForwardSymbol = @"arrow.forward";
-
 }  // namespace
 
 @implementation ToolbarButtonFactory
@@ -52,10 +48,9 @@ NSString* const kToolbarArrowForwardSymbol = @"arrow.forward";
 
 - (ToolbarButton*)backButton {
   UIImage* backImage;
-  backImage = UseSymbols()
-                  ? DefaultSymbolWithPointSize(kToolbarArrowBackwardSymbol,
-                                               kSymbolToolbarPointSize)
-                  : [UIImage imageNamed:@"toolbar_back"];
+  backImage = UseSymbols() ? DefaultSymbolWithPointSize(kBackSymbol,
+                                                        kSymbolToolbarPointSize)
+                           : [UIImage imageNamed:@"toolbar_back"];
   ToolbarButton* backButton = [ToolbarButton
       toolbarButtonWithImage:[backImage
                                  imageFlippedForRightToLeftLayoutDirection]];
@@ -71,9 +66,9 @@ NSString* const kToolbarArrowForwardSymbol = @"arrow.forward";
 // Returns a forward button without visibility mask configured.
 - (ToolbarButton*)forwardButton {
   UIImage* forwardImage =
-      UseSymbols() ? DefaultSymbolWithPointSize(kToolbarArrowForwardSymbol,
-                                                kSymbolToolbarPointSize)
-                   : [UIImage imageNamed:@"toolbar_forward"];
+      UseSymbols()
+          ? DefaultSymbolWithPointSize(kForwardSymbol, kSymbolToolbarPointSize)
+          : [UIImage imageNamed:@"toolbar_forward"];
   ToolbarButton* forwardButton = [ToolbarButton
       toolbarButtonWithImage:[forwardImage
                                  imageFlippedForRightToLeftLayoutDirection]];

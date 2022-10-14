@@ -318,7 +318,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   TableViewImageItem* googleActivityControlsItem =
       [[TableViewImageItem alloc] initWithType:GoogleActivityControlsItemType];
   googleActivityControlsItem.accessoryView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithConfiguration(kExternalLinkSmbol,
+      initWithImage:DefaultSymbolWithConfiguration(kExternalLinkSymbol,
                                                    AccessoryConfiguration())];
   googleActivityControlsItem.accessoryView.tintColor =
       [UIColor colorNamed:kTextQuaternaryColor];
@@ -334,7 +334,7 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   TableViewImageItem* dataFromChromeSyncItem =
       [[TableViewImageItem alloc] initWithType:DataFromChromeSync];
   dataFromChromeSyncItem.accessoryView = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithConfiguration(kExternalLinkSmbol,
+      initWithImage:DefaultSymbolWithConfiguration(kExternalLinkSymbol,
                                                    AccessoryConfiguration())];
   dataFromChromeSyncItem.accessoryView.tintColor =
       [UIColor colorNamed:kTextQuaternaryColor];

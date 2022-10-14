@@ -3,20 +3,14 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_icon_type.h"
-#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 
 #import "base/notreached.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/location_bar_icon.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-namespace {
-
-// Specific symbol name for the location bar.
-NSString* kSecureLocationBarSymbol = @"lock.fill";
-
-}  // namespace
 
 NSString* GetLocationBarSecurityIconTypeAssetName(
     LocationBarSecurityIconType iconType) {

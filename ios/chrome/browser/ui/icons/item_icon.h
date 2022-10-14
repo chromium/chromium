@@ -11,7 +11,7 @@
 extern const CGFloat kSymbolAccessoryPointSize;
 
 // Specific symbols used to create items.
-extern NSString* const kExternalLinkSmbol;
+extern NSString* const kExternalLinkSymbol;
 extern NSString* const kChevronForwardSymbol;
 
 #endif  // IOS_CHROME_BROWSER_UI_ICONS_ITEM_ICON_H_

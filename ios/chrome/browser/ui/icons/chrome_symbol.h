@@ -62,6 +62,9 @@ extern NSString* const kWifiSymbol;
 extern NSString* const kBookmarksSymbol;
 extern NSString* const kSyncErrorSymbol;
 extern NSString* const kMenuSymbol;
+extern NSString* const kSortSymbol;
+extern NSString* const kBackSymbol;
+extern NSString* const kForwardSymbol;
 
 // The corner radius of the symbol with a colorful background.
 extern const CGFloat kColorfulBackgroundSymbolCornerRadius;

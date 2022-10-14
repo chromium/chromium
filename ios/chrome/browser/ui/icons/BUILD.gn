@@ -92,6 +92,16 @@ source_set("settings_icons") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("location_bar_icons") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "location_bar_icon.h",
+    "location_bar_icon.mm",
+  ]
+  deps = [ ":symbols" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("symbols") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -118,7 +128,6 @@ source_set("symbols") {
     "//ios/chrome/browser/ui/icons/resources:square_bullet_square",
     "//ios/chrome/browser/ui/icons/resources:square_number",
     "//ios/chrome/browser/ui/icons/resources:translate",
-    "//ui/base",
     ios_branded_icons,
   ]
   frameworks = [
