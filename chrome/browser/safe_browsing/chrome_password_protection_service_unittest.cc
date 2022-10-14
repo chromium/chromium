@@ -962,6 +962,26 @@ TEST_F(ChromePasswordProtectionServiceTest,
     EXPECT_EQ("token2", reuse_lookup.verdict_token()) << t;
     t++;
   }
+
+  {
+    auto response = std::make_unique<LoginReputationClientResponse>();
+    response->set_verdict_token("token3");
+    response->set_verdict_type(LoginReputationClientResponse::PHISHING);
+    service_->MaybeLogPasswordReuseLookupEvent(
+        web_contents(), RequestOutcome::RESPONSE_ALREADY_CACHED,
+        PasswordType::PRIMARY_ACCOUNT_PASSWORD, response.get());
+    ASSERT_EQ(t + 1, GetUserEventService()->GetRecordedUserEvents().size())
+        << t;
+    PasswordReuseLookup reuse_lookup = GetUserEventService()
+                                           ->GetRecordedUserEvents()[t]
+                                           .gaia_password_reuse_event()
+                                           .reuse_lookup();
+    EXPECT_EQ(PasswordReuseLookup::CACHE_HIT, reuse_lookup.lookup_result())
+        << t;
+    EXPECT_EQ(PasswordReuseLookup::PHISHING, reuse_lookup.verdict()) << t;
+    EXPECT_EQ("token3", reuse_lookup.verdict_token()) << t;
+    t++;
+  }
 }
 
 TEST_F(ChromePasswordProtectionServiceTest, VerifyGetDefaultChangePasswordURL) {
