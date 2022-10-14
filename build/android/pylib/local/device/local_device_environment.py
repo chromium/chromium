@@ -133,6 +133,7 @@ class LocalDeviceEnvironment(environment.Environment):
     self._trace_all = None
     if hasattr(args, 'trace_all'):
       self._trace_all = args.trace_all
+    self._use_persistent_shell = args.use_persistent_shell
 
     devil_chromium.Initialize(
         output_directory=constants.GetOutDirectory(),
@@ -172,7 +173,8 @@ class LocalDeviceEnvironment(environment.Environment):
         enable_device_files_cache=self._enable_device_cache,
         default_retries=self._max_tries - 1,
         device_arg=device_arg,
-        abis=self._preferred_abis)
+        abis=self._preferred_abis,
+        persistent_shell=self._use_persistent_shell)
 
     if self._logcat_output_file:
       self._logcat_output_dir = tempfile.mkdtemp()
