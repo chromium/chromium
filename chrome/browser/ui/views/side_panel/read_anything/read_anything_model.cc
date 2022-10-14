@@ -47,34 +47,34 @@ void ReadAnythingModel::Init(std::string& font_name,
   // prefs, check they are still a valid, and then assign if so.
   if (font_model_->IsValidFontName(font_name)) {
     font_model_->SetDefaultIndexFromPrefsFontName(font_name);
-    font_name_ = font_name;
   }
 
-  font_scale_ = font_scale;
+  font_scale_ = GetValidFontScale(font_scale);
 
   size_t colors_index = static_cast<size_t>(colors);
   if (colors_model_->IsValidColorsIndex(colors_index)) {
     colors_model_->SetDefaultColorsIndexFromPref(colors_index);
   }
 
-  colors_combobox_index_ = colors_model_->GetStartingStateIndex();
-  auto& initial_colors = colors_model_->GetColorsAt(colors_combobox_index_);
-  foreground_color_ = initial_colors.foreground;
-  background_color_ = initial_colors.background;
-
   size_t line_spacing_index = static_cast<size_t>(line_spacing);
   if (line_spacing_model_->IsValidLineSpacingIndex(line_spacing_index)) {
     line_spacing_model_->SetDefaultLineSpacingIndexFromPref(line_spacing_index);
-    line_spacing_ = line_spacing_model_->GetLineSpacingAt(line_spacing_index);
   }
 
   size_t letter_spacing_index = static_cast<size_t>(letter_spacing);
   if (letter_spacing_model_->IsValidLetterSpacingIndex(letter_spacing_index)) {
     letter_spacing_model_->SetDefaultLetterSpacingIndexFromPref(
         letter_spacing_index);
-    letter_spacing_ =
-        letter_spacing_model_->GetLetterSpacingAt(letter_spacing_index);
   }
+
+  colors_combobox_index_ = colors_model_->GetStartingStateIndex();
+  auto& initial_colors = colors_model_->GetColorsAt(colors_combobox_index_);
+  foreground_color_ = initial_colors.foreground;
+  background_color_ = initial_colors.background;
+  line_spacing = line_spacing_model_->GetLineSpacingAt(
+      line_spacing_model_->GetStartingStateIndex());
+  letter_spacing_ = letter_spacing_model_->GetLetterSpacingAt(
+      letter_spacing_model_->GetStartingStateIndex());
 }
 
 void ReadAnythingModel::AddObserver(Observer* obs) {
@@ -137,6 +137,14 @@ void ReadAnythingModel::SetDistilledAXTree(
   snapshot_ = std::move(snapshot);
   content_node_ids_ = std::move(content_node_ids);
   NotifyAXTreeDistilled();
+}
+
+double ReadAnythingModel::GetValidFontScale(double font_scale) {
+  if (font_scale < kReadAnythingMinimumFontScale)
+    return kReadAnythingMinimumFontScale;
+  if (font_scale > kReadAnythingMaximumFontScale)
+    return kReadAnythingMaximumFontScale;
+  return font_scale;
 }
 
 // TODO(1266555): Update with text scaling approach based on UI/UX feedback.

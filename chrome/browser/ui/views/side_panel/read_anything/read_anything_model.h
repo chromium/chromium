@@ -37,6 +37,7 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   bool IsValidFontIndex(size_t index);
   void SetDefaultIndexFromPrefsFontName(std::string prefs_font_name);
   std::string GetLabelFontListAt(size_t index);
+  size_t GetStartingStateIndex() { return GetDefaultIndex().value(); }
 
  protected:
   // ui::Combobox implementation:
@@ -172,6 +173,7 @@ class ReadAnythingLetterSpacingModel : public ui::ComboboxModel {
   bool IsValidLetterSpacingIndex(size_t index);
   void SetDefaultLetterSpacingIndexFromPref(size_t index);
   read_anything::mojom::Spacing GetLetterSpacingAt(size_t index);
+  size_t GetStartingStateIndex() { return GetDefaultIndex().value(); }
 
  protected:
   // ui::Combobox implementation:
@@ -230,6 +232,7 @@ class ReadAnythingModel {
                           std::vector<ui::AXNodeID> content_node_ids);
 
   void SetSelectedFontByIndex(size_t new_index);
+  double GetValidFontScale(double font_scale);
   void DecreaseTextSize();
   void IncreaseTextSize();
   void SetSelectedColorsByIndex(size_t new_index);
