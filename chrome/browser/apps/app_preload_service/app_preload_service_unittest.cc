@@ -114,8 +114,7 @@ TEST_F(AppPreloadServiceTest, ServiceAccessPerProfile) {
 TEST_F(AppPreloadServiceTest, FirstLoginPrefSet) {
   proto::AppProvisioningResponse response;
   auto* app = response.add_apps_to_install();
-  auto* app_group = app->mutable_app_group();
-  app_group->set_name("Peanut Types");
+  app->set_name("Peanut Types");
 
   url_loader_factory_.AddResponse(kServerUrl, response.SerializeAsString());
 

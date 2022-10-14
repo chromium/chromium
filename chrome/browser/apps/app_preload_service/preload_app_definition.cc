@@ -7,7 +7,7 @@
 namespace apps {
 
 std::string PreloadAppDefinition::GetName() const {
-  return app_proto_.app_group().name();
+  return app_proto_.name();
 }
 
 std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {

@@ -8,18 +8,121 @@ option optimize_for = LITE_RUNTIME;
 
 package apps.proto;
 
-import "common.proto";
-
 // An identical copy of this proto is maintained in the server code base.
 // http://google3/chrome/chromeos/apps_foundation/almanac/fondue/boq/api/app_provisioning.proto
 // Any changes made here must also be made in the file above.
 // In the future this file will be add only, however breaking changes can be
 // be made until the interface is finalized (currently aimed for M110).
+
+// TODO(b/243338003): Review and finalise API. >> THIS IS A DRAFT API ONLY <<
+
+message AppProvisioningRequest {
+  // The board identifier for the device sending the request.
+  optional string board = 1;
+
+  // The model identifier for the device sending the request.
+  optional string model = 2;
+
+  // The SKU identifier for the device sending the request.
+  optional string sku_id = 3;
+
+  // The language-country identifier for the user in language in
+  // "language-COUNTRY" format, and must match one of the valid Google
+  // recognised codes. See:
+  // //i18n/identifiers/languagecodeconverter.h
+  // Note: this should ideally be the user's preferred language, if absent
+  // use the language specified by the UI. The server will attempt to honour
+  // this explicitly, but if it cannot it wil fall-back onto the next best
+  // available or en-US in the worst.case.
+  optional string language = 4;
+
+  // The ChromeOS version information.
+  optional ChromeOSVersion chrome_os_version = 5;
+
+  message ChromeOSVersion {
+    // Ash Chrome version.
+    optional string ash_chrome = 1;
+
+    // Chrome OS platform version.
+    optional string platform = 2;
+  }
+}
+
 message AppProvisioningResponse {
+  // A list of zero or more apps for APS to install.
   repeated App apps_to_install = 1;
+
+  enum Platform {
+    // Default for deserialization when an unexpected value is encountered.
+    // Indicates to the client that the server has a new platform not supported
+    // by this version of the proto.
+    PLATFORM_UNKNOWN = 0;
+
+    // A Web App.
+    PLATFORM_WEB = 1;
+
+    // An Android app managed by Play.
+    PLATFORM_ANDROID = 2;
+  }
+
+  message Icon {
+    // Url to query to get the icon. This will always be from the host
+    // meltingpot.googleusercontent.com.
+    optional string url = 1;
+
+    // Width of the icon in pixels. While App icons are typically square
+    // note there is no guarantee the image provided will be.
+    optional int32 width_in_pixels = 2;
+
+    // Mime type of the icon.
+    optional string mime_type = 3;
+
+    // Whether or not we have permission from the platform to mask the icon.
+    optional bool is_masking_allowed = 4;
+  }
+
+  // Every platform has its own [Platform]Extras message to store platform
+  // specific metadata.
+  // For Android-only metadata.
+  message AndroidExtras {
+    // |package_name| and |activity_name| uniquely identify each Android app.
+    optional string package_name = 1;
+    optional string activity_name = 2;
+  }
+
+  // For Web-only metadata.
+  message WebExtras {
+    // |start_url| and |manifest_id| uniquely identify each Web app.
+    optional string start_url = 1;
+    optional string manifest_id = 2;
+  }
+
   message App {
-    optional AppGroup app_group = 1;
-    optional int32 shelf_order = 2;
-    optional int32 launcher_order = 3;
+    // The identifier for the App Group that Fondue used to derive this app
+    // instance in the response.
+    // Note: this may not be unique in the apps_to_install collection.
+    optional string app_group_uuid = 1;
+
+    // The App's UTF-8 encoded name in the requested language (or next best).
+    optional string name = 2;
+
+    // One or more Icons for this App for the requested language (or next best).
+    repeated Icon icons = 3;
+
+    // Specifies the platform this app uses to install. This will match the
+    // contents of the extras.
+    optional Platform platform = 4;
+
+    // Platform-specific information for installing this app.
+    oneof extras {
+      AndroidExtras android_extras = 5;
+      WebExtras web_extras = 6;
+    }
+
+    // The shelf order for this app.
+    optional int32 shelf_order = 7;
+
+    // The launcher order for this app.
+    optional int32 launcher_order = 8;
   }
 }

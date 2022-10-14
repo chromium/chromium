@@ -11,7 +11,6 @@
 #include "chrome/browser/apps/app_preload_service/device_info_manager.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_provisioning.pb.h"
-#include "chrome/browser/apps/app_preload_service/proto/common.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -86,8 +85,7 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
 TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
   proto::AppProvisioningResponse response;
   auto* app = response.add_apps_to_install();
-  auto* app_group = app->mutable_app_group();
-  app_group->set_name("Peanut Types");
+  app->set_name("Peanut Types");
 
   url_loader_factory_.AddResponse(kServerUrl, response.SerializeAsString());
 
