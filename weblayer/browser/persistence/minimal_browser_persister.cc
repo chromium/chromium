@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_command.h"
@@ -265,7 +266,7 @@ bool PersistTabStatePrimaryPass(const SessionID& browser_session_id,
   auto tabs = browser->GetTabs();
   DCHECK(base::Contains(tabs, tab));
   const int tab_index =
-      static_cast<int>(std::find(tabs.begin(), tabs.end(), tab) - tabs.begin());
+      static_cast<int>(base::ranges::find(tabs, tab) - tabs.begin());
   if (!builder->AppendIfFits(BuildCommandsForTabConfiguration(
           browser_session_id, static_cast<TabImpl*>(tab), tab_index))) {
     return false;
@@ -324,9 +325,8 @@ int GetActiveTabIndex(BrowserImpl* browser) {
   if (!browser->GetActiveTab())
     return -1;
   const std::vector<Tab*>& tabs = browser->GetTabs();
-  return static_cast<int>(
-      std::find(tabs.begin(), tabs.end(), browser->GetActiveTab()) -
-      tabs.begin());
+  return static_cast<int>(base::ranges::find(tabs, browser->GetActiveTab()) -
+                          tabs.begin());
 }
 
 }  // namespace

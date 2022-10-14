@@ -6,11 +6,11 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/ranges/algorithm.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
@@ -38,7 +38,7 @@ namespace {
 
 int GetIndexOfTab(BrowserImpl* browser, Tab* tab) {
   const std::vector<Tab*>& tabs = browser->GetTabs();
-  auto iter = std::find(tabs.begin(), tabs.end(), tab);
+  auto iter = base::ranges::find(tabs, tab);
   DCHECK(iter != tabs.end());
   return static_cast<int>(iter - tabs.begin());
 }
