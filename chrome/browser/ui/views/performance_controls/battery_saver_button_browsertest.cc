@@ -51,9 +51,12 @@ class BatterySaverHelpPromoTest : public InProcessBrowserTest {
   ~BatterySaverHelpPromoTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {feature_engagement::kIPHBatterySaverModeFeature,
-         performance_manager::features::kBatterySaverModeAvailable},
+    feature_list_.InitWithFeaturesAndParameters(
+        {{feature_engagement::kIPHDemoMode,
+          {{feature_engagement::kIPHDemoModeFeatureChoiceParam,
+            feature_engagement::kIPHBatterySaverModeFeature.name}}},
+         {feature_engagement::kIPHBatterySaverModeFeature, {}},
+         {performance_manager::features::kBatterySaverModeAvailable, {}}},
         {});
 
     SetUpFakeBatterySampler();
