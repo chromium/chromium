@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/bind.h"
@@ -382,6 +383,14 @@ void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
   }
 
   device_mode_ = client_->device_mode();
+
+  // If Chromad features are disabled and the management mode setting from DM
+  // Server is Active Directory, we override this setting to cloud management.
+  if (!ash::features::IsChromadAvailableEnabled() &&
+      device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
+    device_mode_ = DEVICE_MODE_ENTERPRISE;
+  }
+
   switch (device_mode_) {
     case DEVICE_MODE_ENTERPRISE:
     case DEVICE_MODE_DEMO:
