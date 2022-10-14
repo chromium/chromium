@@ -988,12 +988,10 @@ base::Value DrawQuadResourcesToList(const DrawQuad::Resources& resources) {
   return list;
 }
 
-bool DrawQuadResourcesFromList(const base::Value& list,
+bool DrawQuadResourcesFromList(const base::Value::List& list,
                                DrawQuad::Resources* resources) {
   DCHECK(resources);
-  if (!list.is_list())
-    return false;
-  size_t size = list.GetList().size();
+  size_t size = list.size();
   if (size == 0u) {
     resources->count = 0u;
     return true;
@@ -1001,13 +999,13 @@ bool DrawQuadResourcesFromList(const base::Value& list,
   if (size > DrawQuad::Resources::kMaxResourceIdCount)
     return false;
   for (size_t ii = 0; ii < size; ++ii) {
-    if (!list.GetList()[ii].is_int())
+    if (!list[ii].is_int())
       return false;
   }
 
   resources->count = static_cast<uint32_t>(size);
   for (size_t ii = 0; ii < size; ++ii) {
-    resources->ids[ii] = ResourceId(list.GetList()[ii].GetInt());
+    resources->ids[ii] = ResourceId(list[ii].GetInt());
   }
   return true;
 }
@@ -1148,7 +1146,7 @@ absl::optional<DrawQuadCommon> GetDrawQuadCommonFromDict(
   absl::optional<bool> needs_blending = dict.FindBool("needs_blending");
   absl::optional<int> shared_quad_state_index =
       dict.FindInt("shared_quad_state_index");
-  const base::Value* resources = dict_value.FindListKey("resources");
+  const base::Value::List* resources = dict.FindList("resources");
   if (!material || !rect || !visible_rect || !needs_blending ||
       !shared_quad_state_index || !resources) {
     return absl::nullopt;
