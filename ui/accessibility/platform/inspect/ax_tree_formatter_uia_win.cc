@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_tree_formatter_uia_win.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_uia_win.h"
 
 #include <math.h>
 #include <oleacc.h>
@@ -34,15 +34,10 @@
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/gfx/win/hwnd_util.h"
 
-using ui::BstrToUTF8;
-using ui::UiaIdentifierToStringUTF8;
-using ui::UiaLiveSettingToString;
-using ui::UiaOrientationToString;
-
 namespace {
 
 std::string UiaIdentifierToCondensedString(int32_t id) {
-  std::string identifier = UiaIdentifierToStringUTF8(id);
+  std::string identifier = ui::UiaIdentifierToStringUTF8(id);
   if (id >= UIA_RuntimeIdPropertyId && id <= UIA_HeadingLevelPropertyId) {
     // remove leading 'UIA_' and trailing 'PropertyId'
     return identifier.substr(4, identifier.size() - 14);
@@ -190,7 +185,7 @@ RECT GetUIARootBounds(ui::AXPlatformNodeDelegate* delegate,
 
 }  // namespace
 
-namespace content {
+namespace ui {
 
 // This is the list of interesting properties to dump.
 //
@@ -204,52 +199,52 @@ namespace content {
 // to be dumped a second time here (e.g., Grid*, GridItem*, RangeValue*, etc.).
 
 // static
-const long AccessibilityTreeFormatterUia::properties_[] = {
+const long AXTreeFormatterUia::properties_[] = {
     // UIA_RuntimeIdPropertyId                          // 30000
-    UIA_BoundingRectanglePropertyId,                    // 30001
+    UIA_BoundingRectanglePropertyId,  // 30001
     // UIA_ProcessIdPropertyId                          // 30002
-    UIA_ControlTypePropertyId,                          // 30003
-    UIA_LocalizedControlTypePropertyId,                 // 30004
-    UIA_NamePropertyId,                                 // 30005
-    UIA_AcceleratorKeyPropertyId,                       // 30006
-    UIA_AccessKeyPropertyId,                            // 30007
-    UIA_HasKeyboardFocusPropertyId,                     // 30008
-    UIA_IsKeyboardFocusablePropertyId,                  // 30009
-    UIA_IsEnabledPropertyId,                            // 30010
-    UIA_AutomationIdPropertyId,                         // 30011
-    UIA_ClassNamePropertyId,                            // 30012
-    UIA_HelpTextPropertyId,                             // 30013
-    UIA_ClickablePointPropertyId,                       // 30014
-    UIA_CulturePropertyId,                              // 30015
-    UIA_IsControlElementPropertyId,                     // 30016
-    UIA_IsContentElementPropertyId,                     // 30017
-    UIA_LabeledByPropertyId,                            // 30018
-    UIA_IsPasswordPropertyId,                           // 30019
+    UIA_ControlTypePropertyId,           // 30003
+    UIA_LocalizedControlTypePropertyId,  // 30004
+    UIA_NamePropertyId,                  // 30005
+    UIA_AcceleratorKeyPropertyId,        // 30006
+    UIA_AccessKeyPropertyId,             // 30007
+    UIA_HasKeyboardFocusPropertyId,      // 30008
+    UIA_IsKeyboardFocusablePropertyId,   // 30009
+    UIA_IsEnabledPropertyId,             // 30010
+    UIA_AutomationIdPropertyId,          // 30011
+    UIA_ClassNamePropertyId,             // 30012
+    UIA_HelpTextPropertyId,              // 30013
+    UIA_ClickablePointPropertyId,        // 30014
+    UIA_CulturePropertyId,               // 30015
+    UIA_IsControlElementPropertyId,      // 30016
+    UIA_IsContentElementPropertyId,      // 30017
+    UIA_LabeledByPropertyId,             // 30018
+    UIA_IsPasswordPropertyId,            // 30019
     // UIA_NativeWindowHandlePropertyId                 // 30020
-    UIA_ItemTypePropertyId,                             // 30021
-    UIA_IsOffscreenPropertyId,                          // 30022
-    UIA_OrientationPropertyId,                          // 30023
-    UIA_FrameworkIdPropertyId,                          // 30024
-    UIA_IsRequiredForFormPropertyId,                    // 30025
-    UIA_ItemStatusPropertyId,                           // 30026
-    UIA_IsDockPatternAvailablePropertyId,               // 30027
-    UIA_IsExpandCollapsePatternAvailablePropertyId,     // 30028
-    UIA_IsGridItemPatternAvailablePropertyId,           // 30029
-    UIA_IsGridPatternAvailablePropertyId,               // 30030
-    UIA_IsInvokePatternAvailablePropertyId,             // 30031
-    UIA_IsMultipleViewPatternAvailablePropertyId,       // 30032
-    UIA_IsRangeValuePatternAvailablePropertyId,         // 30033
-    UIA_IsScrollPatternAvailablePropertyId,             // 30034
-    UIA_IsScrollItemPatternAvailablePropertyId,         // 30035
-    UIA_IsSelectionItemPatternAvailablePropertyId,      // 30036
-    UIA_IsSelectionPatternAvailablePropertyId,          // 30037
-    UIA_IsTablePatternAvailablePropertyId,              // 30038
-    UIA_IsTableItemPatternAvailablePropertyId,          // 30039
-    UIA_IsTextPatternAvailablePropertyId,               // 30040
-    UIA_IsTogglePatternAvailablePropertyId,             // 30041
-    UIA_IsTransformPatternAvailablePropertyId,          // 30042
-    UIA_IsValuePatternAvailablePropertyId,              // 30043
-    UIA_IsWindowPatternAvailablePropertyId,             // 30044
+    UIA_ItemTypePropertyId,                          // 30021
+    UIA_IsOffscreenPropertyId,                       // 30022
+    UIA_OrientationPropertyId,                       // 30023
+    UIA_FrameworkIdPropertyId,                       // 30024
+    UIA_IsRequiredForFormPropertyId,                 // 30025
+    UIA_ItemStatusPropertyId,                        // 30026
+    UIA_IsDockPatternAvailablePropertyId,            // 30027
+    UIA_IsExpandCollapsePatternAvailablePropertyId,  // 30028
+    UIA_IsGridItemPatternAvailablePropertyId,        // 30029
+    UIA_IsGridPatternAvailablePropertyId,            // 30030
+    UIA_IsInvokePatternAvailablePropertyId,          // 30031
+    UIA_IsMultipleViewPatternAvailablePropertyId,    // 30032
+    UIA_IsRangeValuePatternAvailablePropertyId,      // 30033
+    UIA_IsScrollPatternAvailablePropertyId,          // 30034
+    UIA_IsScrollItemPatternAvailablePropertyId,      // 30035
+    UIA_IsSelectionItemPatternAvailablePropertyId,   // 30036
+    UIA_IsSelectionPatternAvailablePropertyId,       // 30037
+    UIA_IsTablePatternAvailablePropertyId,           // 30038
+    UIA_IsTableItemPatternAvailablePropertyId,       // 30039
+    UIA_IsTextPatternAvailablePropertyId,            // 30040
+    UIA_IsTogglePatternAvailablePropertyId,          // 30041
+    UIA_IsTransformPatternAvailablePropertyId,       // 30042
+    UIA_IsValuePatternAvailablePropertyId,           // 30043
+    UIA_IsWindowPatternAvailablePropertyId,          // 30044
     // UIA_Value*                                       // 30045-30046
     // UIA_RangeValue*                                  // 30047-30052
     // UIA_Scroll*                                      // 30053-30058
@@ -277,12 +272,12 @@ const long AccessibilityTreeFormatterUia::properties_[] = {
     // UIA_TransformCanRotatePropertyId,                // 30089
     UIA_IsLegacyIAccessiblePatternAvailablePropertyId,  // 30090
     // UIA_LegacyIAccessible*                           // 30091-30100
-    UIA_AriaRolePropertyId,                             // 30101
-    UIA_AriaPropertiesPropertyId,                       // 30102
-    UIA_IsDataValidForFormPropertyId,                   // 30103
-    UIA_ControllerForPropertyId,                        // 30104
-    UIA_DescribedByPropertyId,                          // 30105
-    UIA_FlowsToPropertyId,                              // 30106
+    UIA_AriaRolePropertyId,            // 30101
+    UIA_AriaPropertiesPropertyId,      // 30102
+    UIA_IsDataValidForFormPropertyId,  // 30103
+    UIA_ControllerForPropertyId,       // 30104
+    UIA_DescribedByPropertyId,         // 30105
+    UIA_FlowsToPropertyId,             // 30106
     // UIA_ProviderDescriptionPropertyId                // 30107
     UIA_IsItemContainerPatternAvailablePropertyId,      // 30108
     UIA_IsVirtualizedItemPatternAvailablePropertyId,    // 30109
@@ -352,7 +347,7 @@ const long AccessibilityTreeFormatterUia::properties_[] = {
     UIA_HeadingLevelPropertyId,                         // 30173
 };
 
-const long AccessibilityTreeFormatterUia::patterns_[] = {
+const long AXTreeFormatterUia::patterns_[] = {
     UIA_SelectionPatternId,       // 10001
     UIA_ValuePatternId,           // 10002
     UIA_RangeValuePatternId,      // 10003
@@ -367,7 +362,7 @@ const long AccessibilityTreeFormatterUia::patterns_[] = {
     UIA_AnnotationPatternId,      // 10023
 };
 
-const long AccessibilityTreeFormatterUia::pattern_properties_[] = {
+const long AXTreeFormatterUia::pattern_properties_[] = {
     UIA_ValueValuePropertyId,                         // 30045
     UIA_ValueIsReadOnlyPropertyId,                    // 30046
     UIA_RangeValueValuePropertyId,                    // 30047
@@ -399,7 +394,7 @@ const long AccessibilityTreeFormatterUia::pattern_properties_[] = {
     UIA_ToggleToggleStatePropertyId,                  // 30086
 };
 
-AccessibilityTreeFormatterUia::AccessibilityTreeFormatterUia() {
+AXTreeFormatterUia::AXTreeFormatterUia() {
   // Create an instance of the CUIAutomation class.
   CoCreateInstance(CLSID_CUIAutomation, NULL, CLSCTX_INPROC_SERVER,
                    IID_IUIAutomation, &uia_);
@@ -408,9 +403,9 @@ AccessibilityTreeFormatterUia::AccessibilityTreeFormatterUia() {
   BuildCustomPropertiesMap();
 }
 
-AccessibilityTreeFormatterUia::~AccessibilityTreeFormatterUia() {}
+AXTreeFormatterUia::~AXTreeFormatterUia() {}
 
-void AccessibilityTreeFormatterUia::AddDefaultFilters(
+void AXTreeFormatterUia::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
   // Too noisy: IsKeyboardFocusable, IsDataValidForForm, UIA_ScrollPatternId,
   //  Value.IsReadOnly
@@ -468,7 +463,7 @@ void AccessibilityTreeFormatterUia::AddDefaultFilters(
           "=*");
 }
 
-base::Value::Dict AccessibilityTreeFormatterUia::BuildTree(
+base::Value::Dict AXTreeFormatterUia::BuildTree(
     ui::AXPlatformNodeDelegate* start) const {
   Microsoft::WRL::ComPtr<IUIAutomationElement> start_element;
   GetUIAElementFromDelegate(start, uia_.Get(), &start_element);
@@ -505,7 +500,7 @@ base::Value::Dict AccessibilityTreeFormatterUia::BuildTree(
   return tree;
 }
 
-base::Value::Dict AccessibilityTreeFormatterUia::BuildTreeForSelector(
+base::Value::Dict AXTreeFormatterUia::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   HWND hwnd = GetHWNDBySelector(selector);
 
@@ -524,7 +519,7 @@ base::Value::Dict AccessibilityTreeFormatterUia::BuildTreeForSelector(
   return tree;
 }
 
-base::Value::Dict AccessibilityTreeFormatterUia::BuildNode(
+base::Value::Dict AXTreeFormatterUia::BuildNode(
     ui::AXPlatformNodeDelegate* node) const {
   Microsoft::WRL::ComPtr<IUIAutomationElement> uia_element;
   GetUIAElementFromDelegate(node, uia_.Get(), &uia_element);
@@ -541,11 +536,10 @@ base::Value::Dict AccessibilityTreeFormatterUia::BuildNode(
   return tree;
 }
 
-void AccessibilityTreeFormatterUia::RecursiveBuildTree(
-    IUIAutomationElement* uncached_node,
-    int root_x,
-    int root_y,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::RecursiveBuildTree(IUIAutomationElement* uncached_node,
+                                            int root_x,
+                                            int root_y,
+                                            base::Value::Dict* dict) const {
   // Process this node.
   AddProperties(uncached_node, root_x, root_y, dict);
 
@@ -573,11 +567,10 @@ void AccessibilityTreeFormatterUia::RecursiveBuildTree(
   dict->Set(kChildrenDictAttr, std::move(child_list));
 }
 
-void AccessibilityTreeFormatterUia::AddProperties(
-    IUIAutomationElement* uncached_node,
-    int root_x,
-    int root_y,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::AddProperties(IUIAutomationElement* uncached_node,
+                                       int root_x,
+                                       int root_y,
+                                       base::Value::Dict* dict) const {
   // Update the cache for this node's information.
   Microsoft::WRL::ComPtr<IUIAutomationElement> node;
   uncached_node->BuildUpdatedCache(element_cache_request_.Get(), &node);
@@ -606,7 +599,7 @@ void AccessibilityTreeFormatterUia::AddProperties(
   AddCustomProperties(node.Get(), dict);
 }
 
-void AccessibilityTreeFormatterUia::AddAnnotationProperties(
+void AXTreeFormatterUia::AddAnnotationProperties(
     IUIAutomationElement* node,
     base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IUIAutomationAnnotationPattern> annotation_pattern;
@@ -645,7 +638,7 @@ void AccessibilityTreeFormatterUia::AddAnnotationProperties(
   }
 }
 
-void AccessibilityTreeFormatterUia::AddExpandCollapseProperties(
+void AXTreeFormatterUia::AddExpandCollapseProperties(
     IUIAutomationElement* node,
     base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IUIAutomationExpandCollapsePattern>
@@ -677,9 +670,8 @@ void AccessibilityTreeFormatterUia::AddExpandCollapseProperties(
   }
 }
 
-void AccessibilityTreeFormatterUia::AddGridProperties(
-    IUIAutomationElement* node,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::AddGridProperties(IUIAutomationElement* node,
+                                           base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IUIAutomationGridPattern> grid_pattern;
   if (SUCCEEDED(node->GetCachedPatternAs(UIA_GridPatternId,
                                          IID_PPV_ARGS(&grid_pattern))) &&
@@ -695,9 +687,8 @@ void AccessibilityTreeFormatterUia::AddGridProperties(
   }
 }
 
-void AccessibilityTreeFormatterUia::AddGridItemProperties(
-    IUIAutomationElement* node,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::AddGridItemProperties(IUIAutomationElement* node,
+                                               base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IUIAutomationGridItemPattern> grid_item_pattern;
   if (SUCCEEDED(node->GetCachedPatternAs(UIA_GridItemPatternId,
                                          IID_PPV_ARGS(&grid_item_pattern))) &&
@@ -727,7 +718,7 @@ void AccessibilityTreeFormatterUia::AddGridItemProperties(
   }
 }
 
-void AccessibilityTreeFormatterUia::AddRangeValueProperties(
+void AXTreeFormatterUia::AddRangeValueProperties(
     IUIAutomationElement* node,
     base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IUIAutomationRangeValuePattern> range_value_pattern;
@@ -761,9 +752,8 @@ void AccessibilityTreeFormatterUia::AddRangeValueProperties(
   }
 }
 
-void AccessibilityTreeFormatterUia::AddScrollProperties(
-    IUIAutomationElement* node,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::AddScrollProperties(IUIAutomationElement* node,
+                                             base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IUIAutomationScrollPattern> scroll_pattern;
   if (SUCCEEDED(node->GetCachedPatternAs(UIA_ScrollPatternId,
                                          IID_PPV_ARGS(&scroll_pattern))) &&
@@ -808,9 +798,8 @@ void AccessibilityTreeFormatterUia::AddScrollProperties(
   }
 }
 
-void AccessibilityTreeFormatterUia::AddSelectionProperties(
-    IUIAutomationElement* node,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::AddSelectionProperties(IUIAutomationElement* node,
+                                                base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IUIAutomationSelectionPattern> selection_pattern;
   if (SUCCEEDED(node->GetCachedPatternAs(UIA_SelectionPatternId,
                                          IID_PPV_ARGS(&selection_pattern))) &&
@@ -830,7 +819,7 @@ void AccessibilityTreeFormatterUia::AddSelectionProperties(
   }
 }
 
-void AccessibilityTreeFormatterUia::AddSelectionItemProperties(
+void AXTreeFormatterUia::AddSelectionItemProperties(
     IUIAutomationElement* node,
     base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IUIAutomationSelectionItemPattern>
@@ -851,9 +840,8 @@ void AccessibilityTreeFormatterUia::AddSelectionItemProperties(
   }
 }
 
-void AccessibilityTreeFormatterUia::AddTableProperties(
-    IUIAutomationElement* node,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::AddTableProperties(IUIAutomationElement* node,
+                                            base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IUIAutomationTablePattern> table_pattern;
   if (SUCCEEDED(node->GetCachedPatternAs(UIA_TablePatternId,
                                          IID_PPV_ARGS(&table_pattern))) &&
@@ -878,9 +866,8 @@ void AccessibilityTreeFormatterUia::AddTableProperties(
   }
 }
 
-void AccessibilityTreeFormatterUia::AddToggleProperties(
-    IUIAutomationElement* node,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::AddToggleProperties(IUIAutomationElement* node,
+                                             base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IUIAutomationTogglePattern> toggle_pattern;
   if (SUCCEEDED(node->GetCachedPatternAs(UIA_TogglePatternId,
                                          IID_PPV_ARGS(&toggle_pattern))) &&
@@ -904,9 +891,8 @@ void AccessibilityTreeFormatterUia::AddToggleProperties(
   }
 }
 
-void AccessibilityTreeFormatterUia::AddValueProperties(
-    IUIAutomationElement* node,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::AddValueProperties(IUIAutomationElement* node,
+                                            base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IUIAutomationValuePattern> value_pattern;
   if (SUCCEEDED(node->GetCachedPatternAs(UIA_ValuePatternId,
                                          IID_PPV_ARGS(&value_pattern))) &&
@@ -922,9 +908,8 @@ void AccessibilityTreeFormatterUia::AddValueProperties(
   }
 }
 
-void AccessibilityTreeFormatterUia::AddWindowProperties(
-    IUIAutomationElement* node,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::AddWindowProperties(IUIAutomationElement* node,
+                                             base::Value::Dict* dict) const {
   Microsoft::WRL::ComPtr<IUIAutomationWindowPattern> window_pattern;
   if (SUCCEEDED(node->GetCachedPatternAs(UIA_WindowPatternId,
                                          IID_PPV_ARGS(&window_pattern))) &&
@@ -936,15 +921,14 @@ void AccessibilityTreeFormatterUia::AddWindowProperties(
   }
 }
 
-std::map<long, std::string>&
-AccessibilityTreeFormatterUia::GetCustomPropertiesMap() const {
+std::map<long, std::string>& AXTreeFormatterUia::GetCustomPropertiesMap()
+    const {
   static base::NoDestructor<std::map<long, std::string>> custom_properties_map;
   return *custom_properties_map;
 }
 
-void AccessibilityTreeFormatterUia::AddCustomProperties(
-    IUIAutomationElement* node,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::AddCustomProperties(IUIAutomationElement* node,
+                                             base::Value::Dict* dict) const {
   // Custom properties need to be added separately.
   for (const auto& property : GetCustomPropertiesMap()) {
     base::win::ScopedVariant variant;
@@ -955,8 +939,7 @@ void AccessibilityTreeFormatterUia::AddCustomProperties(
   }
 }
 
-std::string AccessibilityTreeFormatterUia::GetPropertyName(
-    long property_id) const {
+std::string AXTreeFormatterUia::GetPropertyName(long property_id) const {
   // We cannot infer the property name from a custom property id, so we get it
   // from the map we created manually in `BuildCustomPropertiesMap()`.
   auto property = GetCustomPropertiesMap().find(property_id);
@@ -966,12 +949,11 @@ std::string AccessibilityTreeFormatterUia::GetPropertyName(
   return UiaIdentifierToCondensedString(property_id);
 }
 
-void AccessibilityTreeFormatterUia::WriteProperty(
-    long propertyId,
-    const base::win::ScopedVariant& var,
-    base::Value::Dict* dict,
-    int root_x,
-    int root_y) const {
+void AXTreeFormatterUia::WriteProperty(long propertyId,
+                                       const base::win::ScopedVariant& var,
+                                       base::Value::Dict* dict,
+                                       int root_x,
+                                       int root_y) const {
   switch (var.type()) {
     case VT_EMPTY:
     case VT_NULL:
@@ -1024,10 +1006,9 @@ void AccessibilityTreeFormatterUia::WriteProperty(
   }
 }
 
-void AccessibilityTreeFormatterUia::WriteI4Property(
-    long propertyId,
-    long lval,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::WriteI4Property(long propertyId,
+                                         long lval,
+                                         base::Value::Dict* dict) const {
   switch (propertyId) {
     case UIA_ControlTypePropertyId:
       dict->SetByDottedPath(GetPropertyName(propertyId),
@@ -1048,10 +1029,9 @@ void AccessibilityTreeFormatterUia::WriteI4Property(
   }
 }
 
-void AccessibilityTreeFormatterUia::WriteUnknownProperty(
-    long propertyId,
-    IUnknown* unk,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::WriteUnknownProperty(long propertyId,
+                                              IUnknown* unk,
+                                              base::Value::Dict* dict) const {
   switch (propertyId) {
     case UIA_ControllerForPropertyId:
     case UIA_DescribedByPropertyId:
@@ -1075,12 +1055,11 @@ void AccessibilityTreeFormatterUia::WriteUnknownProperty(
   }
 }
 
-void AccessibilityTreeFormatterUia::WriteRectangleProperty(
-    long propertyId,
-    const VARIANT& value,
-    int root_x,
-    int root_y,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::WriteRectangleProperty(long propertyId,
+                                                const VARIANT& value,
+                                                int root_x,
+                                                int root_y,
+                                                base::Value::Dict* dict) const {
   CHECK(value.vt == (VT_ARRAY | VT_R8));
 
   double* data = nullptr;
@@ -1096,10 +1075,9 @@ void AccessibilityTreeFormatterUia::WriteRectangleProperty(
   SafeArrayUnaccessData(value.parray);
 }
 
-void AccessibilityTreeFormatterUia::WriteElementArray(
-    long propertyId,
-    IUIAutomationElementArray* array,
-    base::Value::Dict* dict) const {
+void AXTreeFormatterUia::WriteElementArray(long propertyId,
+                                           IUIAutomationElementArray* array,
+                                           base::Value::Dict* dict) const {
   int count;
   array->get_Length(&count);
   std::u16string element_list;
@@ -1123,7 +1101,7 @@ void AccessibilityTreeFormatterUia::WriteElementArray(
   }
 }
 
-std::u16string AccessibilityTreeFormatterUia::GetNodeName(
+std::u16string AXTreeFormatterUia::GetNodeName(
     IUIAutomationElement* uncached_node) const {
   // Update the cache for this node.
   if (uncached_node) {
@@ -1142,7 +1120,7 @@ std::u16string AccessibilityTreeFormatterUia::GetNodeName(
   return std::u16string();
 }
 
-void AccessibilityTreeFormatterUia::BuildCacheRequests() {
+void AXTreeFormatterUia::BuildCacheRequests() {
   // Create cache request for requesting children of a node.
   uia_->CreateCacheRequest(&children_cache_request_);
   CHECK(children_cache_request_.Get());
@@ -1177,13 +1155,13 @@ void AccessibilityTreeFormatterUia::BuildCacheRequests() {
   }
 }
 
-void AccessibilityTreeFormatterUia::BuildCustomPropertiesMap() {
+void AXTreeFormatterUia::BuildCustomPropertiesMap() {
   GetCustomPropertiesMap().insert(
       {ui::UiaRegistrarWin::GetInstance().GetVirtualContentPropertyId(),
        "VirtualContent"});
 }
 
-std::string AccessibilityTreeFormatterUia::ProcessTreeForOutput(
+std::string AXTreeFormatterUia::ProcessTreeForOutput(
     const base::Value::Dict& dict) const {
   std::string line;
 
@@ -1243,7 +1221,7 @@ std::string AccessibilityTreeFormatterUia::ProcessTreeForOutput(
   return line;
 }
 
-void AccessibilityTreeFormatterUia::ProcessPropertyForOutput(
+void AXTreeFormatterUia::ProcessPropertyForOutput(
     const std::string& property_name,
     const base::Value::Dict& dict,
     std::string& line) const {
@@ -1253,10 +1231,9 @@ void AccessibilityTreeFormatterUia::ProcessPropertyForOutput(
   }
 }
 
-void AccessibilityTreeFormatterUia::ProcessValueForOutput(
-    const std::string& name,
-    const base::Value& value,
-    std::string& line) const {
+void AXTreeFormatterUia::ProcessValueForOutput(const std::string& name,
+                                               const base::Value& value,
+                                               std::string& line) const {
   switch (value.type()) {
     case base::Value::Type::STRING: {
       WriteAttribute(false,
@@ -1299,4 +1276,4 @@ void AccessibilityTreeFormatterUia::ProcessValueForOutput(
   }
 }
 
-}  // namespace content
+}  // namespace ui

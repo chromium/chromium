@@ -1,8 +1,8 @@
 // Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UIA_WIN_H_
-#define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UIA_WIN_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_UIA_WIN_H_
+#define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_UIA_WIN_H_
 
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
@@ -16,13 +16,14 @@
 #include <vector>
 
 #include "base/win/scoped_variant.h"
+#include "ui/accessibility/ax_export.h"
 
-namespace content {
+namespace ui {
 
-class AccessibilityTreeFormatterUia : public ui::AXTreeFormatterBase {
+class AX_EXPORT AXTreeFormatterUia : public ui::AXTreeFormatterBase {
  public:
-  AccessibilityTreeFormatterUia();
-  ~AccessibilityTreeFormatterUia() override;
+  AXTreeFormatterUia();
+  ~AXTreeFormatterUia() override;
 
   // AccessibilityTreeFormatterBase:
   base::Value::Dict BuildTree(ui::AXPlatformNodeDelegate* start) const override;
@@ -111,6 +112,6 @@ class AccessibilityTreeFormatterUia : public ui::AXTreeFormatterBase {
   Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> children_cache_request_;
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_UIA_WIN_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_TREE_FORMATTER_UIA_WIN_H_

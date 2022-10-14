@@ -8,11 +8,11 @@
 #include "base/notreached.h"
 #include "base/win/com_init_util.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_uia_win.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_win.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win_uia.h"
+#include "ui/accessibility/platform/inspect/ax_tree_formatter_uia_win.h"
 
 namespace content {
 
@@ -47,7 +47,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
       return std::make_unique<AccessibilityTreeFormatterWin>();
     case ui::AXApiType::kWinUIA:
       base::win::AssertComInitialized();
-      return std::make_unique<AccessibilityTreeFormatterUia>();
+      return std::make_unique<ui::AXTreeFormatterUia>();
     default:
       NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
