@@ -112,6 +112,9 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
       const CoreAccountInfo& account_info) override;
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error) override;
   void OnRefreshTokensLoaded() override;
 
   // Test-only methods for inspecting/modifying internal state.

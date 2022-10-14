@@ -273,10 +273,15 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutDuringDeferredStartup) {
   sync_service()->AddObserver(&observer);
 
   // Entering the sync-paused state should trigger a notification.
-  EXPECT_CALL(observer, OnStateChanged(sync_service())).WillOnce([&]() {
-    EXPECT_EQ(SyncService::TransportState::PAUSED,
-              sync_service()->GetTransportState());
-  });
+  // Note: Depending on the exact sequence of IdentityManager::Observer calls
+  // (refresh token changed and/or auth error changed), there might be multiple
+  // notifications.
+  EXPECT_CALL(observer, OnStateChanged(sync_service()))
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly([&]() {
+        EXPECT_EQ(SyncService::TransportState::PAUSED,
+                  sync_service()->GetTransportState());
+      });
 
   // Now sign out on the web to enter the sync-paused state.
   SimulateWebSignout();
@@ -309,10 +314,15 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutAfterInitialization) {
   sync_service()->AddObserver(&observer);
 
   // Entering the sync-paused state should trigger a notification.
-  EXPECT_CALL(observer, OnStateChanged(sync_service())).WillOnce([&]() {
-    EXPECT_EQ(SyncService::TransportState::PAUSED,
-              sync_service()->GetTransportState());
-  });
+  // Note: Depending on the exact sequence of IdentityManager::Observer calls
+  // (refresh token changed and/or auth error changed), there might be multiple
+  // notifications.
+  EXPECT_CALL(observer, OnStateChanged(sync_service()))
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly([&]() {
+        EXPECT_EQ(SyncService::TransportState::PAUSED,
+                  sync_service()->GetTransportState());
+      });
 
   // Now sign out on the web to enter the sync-paused state.
   SimulateWebSignout();

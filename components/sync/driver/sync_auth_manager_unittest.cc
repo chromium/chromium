@@ -7,11 +7,13 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "net/base/net_errors.h"
@@ -722,6 +724,41 @@ TEST_F(SyncAuthManagerTest, ClearsCredentialsOnInvalidRefreshToken) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(SyncAuthManagerTest, EntersPausedStateOnPersistentAuthError) {
+  base::test::ScopedFeatureList feature(kSyncPauseUponAnyPersistentAuthError);
+
+  CoreAccountId account_id =
+      identity_env()
+          ->MakePrimaryAccountAvailable("test@email.com",
+                                        signin::ConsentLevel::kSync)
+          .account_id;
+  std::unique_ptr<SyncAuthManager> auth_manager = CreateAuthManager();
+  auth_manager->RegisterForAuthNotifications();
+  ASSERT_EQ(auth_manager->GetActiveAccountInfo().account_info.account_id,
+            account_id);
+
+  auth_manager->ConnectionOpened();
+  identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Now() + base::Hours(1));
+  ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
+
+  // Now everything is okay for a while.
+  auth_manager->ConnectionStatusChanged(syncer::CONNECTION_OK);
+  ASSERT_EQ(auth_manager->GetCredentials().access_token, "access_token");
+  ASSERT_EQ(auth_manager->GetLastAuthError(),
+            GoogleServiceAuthError::AuthErrorNone());
+
+  // But now an auth error happens.
+  identity_env()->UpdatePersistentErrorOfRefreshTokenForAccount(
+      auth_manager->GetActiveAccountInfo().account_info.account_id,
+      GoogleServiceAuthError::FromServiceError("Test error"));
+
+  // Should immediately drop the access token and enter the sync-paused state.
+  EXPECT_TRUE(auth_manager->GetCredentials().access_token.empty());
+  EXPECT_TRUE(auth_manager->GetLastAuthError().IsPersistentError());
+  EXPECT_TRUE(auth_manager->IsSyncPaused());
+}
+
 TEST_F(SyncAuthManagerTest,
        RequestsAccessTokenWhenInvalidRefreshTokenResolved) {
   CoreAccountId account_id =
@@ -780,7 +817,10 @@ TEST_F(SyncAuthManagerTest, DoesNotRequestAccessTokenIfSyncInactive) {
   // An invalid refresh token gets set, i.e. we enter the "Sync paused" state
   // (only from SyncAuthManager's point of view - Sync as a whole is still
   // disabled).
-  EXPECT_CALL(credentials_changed, Run());
+  // Note: Depending on the exact sequence of IdentityManager::Observer calls
+  // (refresh token changed and/or auth error changed), the credentials-changed
+  // callback might get run multiple times.
+  EXPECT_CALL(credentials_changed, Run()).Times(testing::AtLeast(1));
   identity_env()->SetInvalidRefreshTokenForPrimaryAccount();
   ASSERT_TRUE(auth_manager->GetCredentials().access_token.empty());
   ASSERT_TRUE(auth_manager->IsSyncPaused());

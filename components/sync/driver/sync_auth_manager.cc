@@ -414,6 +414,12 @@ void SyncAuthManager::OnRefreshTokenRemovedForAccount(
   credentials_changed_callback_.Run();
 }
 
+void SyncAuthManager::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error) {
+  OnRefreshTokenUpdatedForAccount(account_info);
+}
+
 void SyncAuthManager::OnRefreshTokensLoaded() {
   DCHECK(IsActiveAccountInfoFullyLoaded());
 
