@@ -9,5 +9,6 @@ price_tracking_test_java_sources = [
 
 price_tracking_junit_test_java_sources = [
   "//chrome/browser/commerce/price_tracking/android/javatests/src/org/chromium/chrome/browser/price_tracking/PriceDropNotifierUnitTest.java",
+  "//chrome/browser/commerce/price_tracking/android/javatests/src/org/chromium/chrome/browser/price_tracking/PriceTrackingButtonControllerUnitTest.java",
   "//chrome/browser/commerce/price_tracking/android/javatests/src/org/chromium/chrome/browser/price_tracking/PriceTrackingNotificationBridgeUnitTest.java",
 ]
