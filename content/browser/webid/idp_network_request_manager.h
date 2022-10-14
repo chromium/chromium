@@ -124,8 +124,6 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kTokenEndpointInvalidResponse = 402,
   };
 
-  static constexpr char kManifestFilePath[] = "fedcm.json";
-
   using AccountList = std::vector<content::IdentityRequestAccount>;
   using AccountsRequestCallback =
       base::OnceCallback<void(FetchStatus, AccountList)>;

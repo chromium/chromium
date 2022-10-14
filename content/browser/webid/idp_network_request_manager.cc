@@ -494,9 +494,6 @@ IdpNetworkRequestManager::Endpoints::Endpoints(const Endpoints& other) =
     default;
 
 // static
-constexpr char IdpNetworkRequestManager::kManifestFilePath[];
-
-// static
 std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
     RenderFrameHostImpl* host) {
   // Use the browser process URL loader factory because it has cross-origin
@@ -584,11 +581,8 @@ void IdpNetworkRequestManager::FetchManifest(
     absl::optional<int> idp_brand_icon_ideal_size,
     absl::optional<int> idp_brand_icon_minimum_size,
     FetchManifestCallback callback) {
-  GURL target_url =
-      provider.Resolve(IdpNetworkRequestManager::kManifestFilePath);
-
   std::unique_ptr<network::ResourceRequest> resource_request =
-      CreateUncredentialedResourceRequest(target_url,
+      CreateUncredentialedResourceRequest(provider,
                                           /* send_referrer= */ false);
   DownloadJsonAndParse(
       std::move(resource_request),
