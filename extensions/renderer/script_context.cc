@@ -291,7 +291,7 @@ void ScriptContext::SafeCallFunction(
   DCHECK(thread_checker_.CalledOnValidThread());
   v8::HandleScope handle_scope(isolate());
   v8::Context::Scope scope(v8_context());
-  v8::MicrotasksScope microtasks(isolate(),
+  v8::MicrotasksScope microtasks(isolate(), v8_context()->GetMicrotaskQueue(),
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Object> global = v8_context()->Global();
   if (web_frame_) {
@@ -550,8 +550,8 @@ v8::Local<v8::Value> ScriptContext::RunScript(
     return v8::Undefined(isolate());
   }
 
-  v8::MicrotasksScope microtasks(
-      isolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
+  v8::MicrotasksScope microtasks(isolate(), v8_context()->GetMicrotaskQueue(),
+                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::TryCatch try_catch(isolate());
   try_catch.SetCaptureMessage(true);
   v8::ScriptOrigin origin(isolate(), v8_helpers::ToV8StringUnsafe(

@@ -330,7 +330,8 @@ bool V8VarConverter::ToV8Value(const PP_Var& var,
   v8::Isolate* isolate = context->GetIsolate();
   v8::EscapableHandleScope handle_scope(isolate);
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   VarHandleMap visited_ids;
   ParentVarSet parent_ids;
@@ -486,7 +487,8 @@ bool V8VarConverter::FromV8ValueInternal(
   v8::Isolate* isolate = context->GetIsolate();
   v8::HandleScope handle_scope(isolate);
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   HandleVarMap visited_handles;
   ParentHandleSet parent_handles;

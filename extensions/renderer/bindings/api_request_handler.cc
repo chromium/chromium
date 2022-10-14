@@ -275,7 +275,8 @@ void APIRequestHandler::AsyncResultHandler::ResolvePromise(
 
   v8::Isolate* isolate = context->GetIsolate();
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   if (error.empty()) {
     v8::Local<v8::Value> result;

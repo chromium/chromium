@@ -191,9 +191,17 @@ void LocalFrameClientImpl::DidCommitDocumentReplacementNavigation(
   }
 }
 
-void LocalFrameClientImpl::DispatchDidClearWindowObjectInMainWorld() {
+void LocalFrameClientImpl::DispatchDidClearWindowObjectInMainWorld(
+    v8::Isolate* isolate,
+    v8::MicrotaskQueue* microtask_queue) {
   if (web_frame_->Client()) {
-    web_frame_->Client()->DidClearWindowObject();
+    // Do not run microtasks while invoking the callback.
+    {
+      v8::MicrotasksScope microtasks(isolate, microtask_queue,
+
+                                     v8::MicrotasksScope::kDoNotRunMicrotasks);
+      web_frame_->Client()->DidClearWindowObject();
+    }
     Document* document = web_frame_->GetFrame()->GetDocument();
     if (document) {
       const Settings* const settings = web_frame_->GetFrame()->GetSettings();

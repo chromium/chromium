@@ -213,13 +213,13 @@ gin::WrapperInfo ReadAnythingAppController::kWrapperInfo = {
 ReadAnythingAppController* ReadAnythingAppController::Install(
     content::RenderFrame* render_frame) {
   v8::Isolate* isolate = blink::MainThreadIsolate();
-  v8::MicrotasksScope microtask_scope(isolate,
-                                      v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context =
       render_frame->GetWebFrame()->MainWorldScriptContext();
   if (context.IsEmpty())
     return nullptr;
+  v8::MicrotasksScope microtask_scope(isolate, context->GetMicrotaskQueue(),
+                                      v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   v8::Context::Scope context_scope(context);
 

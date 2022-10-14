@@ -83,7 +83,8 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
     v8::Local<v8::Value> argv[] = {v8_api_name};
     v8::Local<v8::Value> binding_instance_value;
     v8::MicrotasksScope microtasks_scope(
-        v8_context->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
+        v8_context->GetIsolate(), v8_context->GetMicrotaskQueue(),
+        v8::MicrotasksScope::kDoNotRunMicrotasks);
     // TODO(devlin): We should not be using v8::Function::Call() directly here.
     // Instead, we should use JSRunner once it's used outside native bindings.
     if (!create_binding->Call(v8_context, binding, std::size(argv), argv)
@@ -108,7 +109,8 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
   v8::Local<v8::Value> compiled_schema;
   {
     v8::MicrotasksScope microtasks_scope(
-        v8_context->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
+        v8_context->GetIsolate(), v8_context->GetMicrotaskQueue(),
+        v8::MicrotasksScope::kDoNotRunMicrotasks);
     // TODO(devlin): We should not be using v8::Function::Call() directly here.
     // Instead, we should use JSRunner once it's used outside native bindings.
     if (!generate->Call(v8_context, binding_instance, 0, nullptr)

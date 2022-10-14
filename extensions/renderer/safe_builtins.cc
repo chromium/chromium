@@ -186,7 +186,9 @@ class ExtensionImpl : public v8::Extension {
           info[2]->IsObject() &&  // args
           info[3]->IsInt32() &&   // first_arg_index
           info[4]->IsInt32());    // args_length
+    v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
     v8::MicrotasksScope microtasks(info.GetIsolate(),
+                                   context->GetMicrotaskQueue(),
                                    v8::MicrotasksScope::kDoNotRunMicrotasks);
     v8::Local<v8::Function> function = info[0].As<v8::Function>();
     v8::Local<v8::Object> recv;
@@ -207,7 +209,6 @@ class ExtensionImpl : public v8::Extension {
     int first_arg_index = info[3].As<v8::Int32>()->Value();
     int args_length = info[4].As<v8::Int32>()->Value();
 
-    v8::Local<v8::Context> context = info.GetIsolate()->GetCurrentContext();
     int argc = args_length - first_arg_index;
     std::unique_ptr<v8::Local<v8::Value>[]> argv(
         new v8::Local<v8::Value>[argc]);

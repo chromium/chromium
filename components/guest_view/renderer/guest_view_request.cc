@@ -80,7 +80,7 @@ void GuestViewAttachRequest::ExecuteCallbackIfAvailable(
     return;
 
   v8::Context::Scope context_scope(context);
-  v8::MicrotasksScope microtasks(isolate_,
+  v8::MicrotasksScope microtasks(isolate_, context->GetMicrotaskQueue(),
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   callback->Call(context, context->Global(), argc, argv.get())

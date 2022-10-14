@@ -101,7 +101,8 @@ void GCController::AsyncCollectAllWithEmptyStack(
   v8::Context::Scope context_scope(context);
   v8::TryCatch try_catch(isolate);
   v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   auto result = func->Call(context, context->Global(), 0, nullptr);
   // Swallow potential exception.
   std::ignore = result;

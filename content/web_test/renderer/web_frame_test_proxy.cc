@@ -744,8 +744,6 @@ void WebFrameTestProxy::DidClearWindowObject() {
   // Avoid installing bindings on the about:blank in between tests. This is
   // especially problematic for web platform tests that would inject javascript
   // into the page when installing bindings.
-  v8::MicrotasksScope microtask_scope(blink::MainThreadIsolate(),
-                                      v8::MicrotasksScope::kDoNotRunMicrotasks);
   if (test_runner()->TestIsRunning()) {
     blink::WebLocalFrame* frame = GetWebFrame();
     // These calls will install the various JS bindings for web tests into the

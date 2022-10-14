@@ -358,7 +358,9 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       HTMLMediaElement&) override;
 
   void DidCommitDocumentReplacementNavigation(DocumentLoader*) override {}
-  void DispatchDidClearWindowObjectInMainWorld() override {}
+  void DispatchDidClearWindowObjectInMainWorld(
+      v8::Isolate* isolate,
+      v8::MicrotaskQueue* microtask_queue) override {}
   void DocumentElementAvailable() override {}
   void RunScriptsAtDocumentElementAvailable() override {}
   void RunScriptsAtDocumentReady(bool) override {}

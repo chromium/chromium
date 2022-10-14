@@ -3818,9 +3818,6 @@ void RenderFrameImpl::DidCommitDocumentReplacementNavigation(
 }
 
 void RenderFrameImpl::DidClearWindowObject() {
-  v8::MicrotasksScope microtasks(blink::MainThreadIsolate(),
-                                 v8::MicrotasksScope::kDoNotRunMicrotasks);
-
   if (enabled_bindings_ & BINDINGS_POLICY_WEB_UI)
     WebUIExtension::Install(frame_);
 
@@ -4338,6 +4335,7 @@ void RenderFrameImpl::DidObserveLayoutNg(uint32_t all_block_count,
 void RenderFrameImpl::DidCreateScriptContext(v8::Local<v8::Context> context,
                                              int world_id) {
   v8::MicrotasksScope microtasks(blink::MainThreadIsolate(),
+                                 context->GetMicrotaskQueue(),
                                  v8::MicrotasksScope::kDoNotRunMicrotasks);
   if (((enabled_bindings_ & BINDINGS_POLICY_MOJO_WEB_UI) ||
        enable_mojo_js_bindings_) &&
