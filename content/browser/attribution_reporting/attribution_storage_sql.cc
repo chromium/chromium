@@ -2486,7 +2486,7 @@ int AttributionStorageSql::ClearAggregatableAttributionsForSourceIds(
     const std::vector<StoredSource::Id>& source_ids) {
   sql::Transaction transaction(db_.get());
   if (!transaction.Begin())
-    return false;
+    return -1;
 
   static constexpr char kDeleteAggregationsSql[] =
       "DELETE FROM aggregatable_report_metadata "
