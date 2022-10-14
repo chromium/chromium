@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_phone_hub_handler.h"
+#include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_phone_hub_handler.h"
 
 #include <memory>
 #include <string>
@@ -25,8 +25,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 
-namespace chromeos {
-namespace multidevice {
+namespace ash::multidevice {
 
 namespace {
 
@@ -346,7 +345,7 @@ void MultidevicePhoneHubHandler::EnableRealPhoneHubManager() {
   Profile* profile = Profile::FromWebUI(web_ui());
   auto* phone_hub_manager =
       phonehub::PhoneHubManagerFactory::GetForProfile(profile);
-  ash::SystemTray::Get()->SetPhoneHubManager(phone_hub_manager);
+  SystemTray::Get()->SetPhoneHubManager(phone_hub_manager);
 
   RemoveObservers();
   fake_phone_hub_manager_.reset();
@@ -359,7 +358,7 @@ void MultidevicePhoneHubHandler::EnableFakePhoneHubManager() {
 
   PA_LOG(VERBOSE) << "Setting fake Phone Hub Manager";
   fake_phone_hub_manager_ = std::make_unique<phonehub::FakePhoneHubManager>();
-  ash::SystemTray::Get()->SetPhoneHubManager(fake_phone_hub_manager_.get());
+  SystemTray::Get()->SetPhoneHubManager(fake_phone_hub_manager_.get());
   AddObservers();
 }
 
@@ -642,7 +641,7 @@ void MultidevicePhoneHubHandler::HandleSetFakeCameraRoll(
     std::vector<phonehub::CameraRollItem> items;
     // Create items in descending key order
     for (int i = *number_of_thumbnails; i > 0; --i) {
-      ash::phonehub::proto::CameraRollItemMetadata metadata;
+      phonehub::proto::CameraRollItemMetadata metadata;
       metadata.set_key(base::NumberToString(i));
       metadata.set_mime_type(file_type);
       metadata.set_last_modified_millis(1577865600 + i);
@@ -667,23 +666,23 @@ void MultidevicePhoneHubHandler::HandleSetFakeCameraRoll(
     fake_phone_hub_manager_->fake_camera_roll_manager()
         ->SetSimulatedDownloadError(false);
   } else {
-    ash::phonehub::CameraRollManager::Observer::DownloadErrorType error_type;
+    phonehub::CameraRollManager::Observer::DownloadErrorType error_type;
     switch (*download_result_as_int) {
       case 1:
         download_result = "Generic Error";
-        error_type = ash::phonehub::CameraRollManager::Observer::
-            DownloadErrorType::kGenericError;
+        error_type = phonehub::CameraRollManager::Observer::DownloadErrorType::
+            kGenericError;
         break;
       case 2:
         download_result = "Storage Error";
-        error_type = ash::phonehub::CameraRollManager::Observer::
-            DownloadErrorType::kInsufficientStorage;
+        error_type = phonehub::CameraRollManager::Observer::DownloadErrorType::
+            kInsufficientStorage;
         break;
       case 3:
       default:
         download_result = "Network Error";
-        error_type = ash::phonehub::CameraRollManager::Observer::
-            DownloadErrorType::kNetworkConnection;
+        error_type = phonehub::CameraRollManager::Observer::DownloadErrorType::
+            kNetworkConnection;
         break;
     }
     fake_phone_hub_manager_->fake_camera_roll_manager()
@@ -700,5 +699,4 @@ void MultidevicePhoneHubHandler::HandleSetFakeCameraRoll(
                   << "\n  Download result: " << download_result;
 }
 
-}  // namespace multidevice
-}  // namespace chromeos
+}  // namespace ash::multidevice

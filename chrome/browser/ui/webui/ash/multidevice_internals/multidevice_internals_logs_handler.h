@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_LOGS_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_LOGS_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_LOGS_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_LOGS_HANDLER_H_
 
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chromeos/ash/components/multidevice/logging/log_buffer.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
-namespace chromeos {
-
-namespace multidevice {
+namespace ash::multidevice {
 
 // WebUIMessageHandler for the PA_LOG Macro to pass logging messages to the
 // chrome://multidevice-internals logging tab.
@@ -43,8 +41,6 @@ class MultideviceLogsHandler : public content::WebUIMessageHandler,
   base::ScopedObservation<LogBuffer, LogBuffer::Observer> observation_{this};
 };
 
-}  // namespace multidevice
+}  // namespace ash::multidevice
 
-}  // namespace chromeos
-
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_LOGS_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_MULTIDEVICE_INTERNALS_MULTIDEVICE_INTERNALS_LOGS_HANDLER_H_

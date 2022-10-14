@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_handler.h"
+#include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_handler.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -15,9 +15,7 @@
 #include "components/user_manager/user.h"
 #include "ui/base/webui/web_ui_util.h"
 
-namespace chromeos {
-
-namespace multidevice_setup {
+namespace ash::multidevice_setup {
 
 MultideviceSetupHandler::MultideviceSetupHandler() = default;
 
@@ -43,8 +41,7 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
   std::string callback_id = args[0].GetString();
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(
-          Profile::FromWebUI(web_ui()));
+      ProfileHelper::Get()->GetUserByProfile(Profile::FromWebUI(web_ui()));
 
   base::Value::Dict response;
   response.Set("email", user->GetDisplayEmail());
@@ -65,6 +62,4 @@ void MultideviceSetupHandler::HandleOpenMultiDeviceSettings(
       chromeos::settings::mojom::kMultiDeviceFeaturesSubpagePath);
 }
 
-}  // namespace multidevice_setup
-
-}  // namespace chromeos
+}  // namespace ash::multidevice_setup

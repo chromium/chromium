@@ -33,7 +33,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
+#include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"

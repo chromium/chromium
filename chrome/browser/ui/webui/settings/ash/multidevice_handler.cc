@@ -25,7 +25,7 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/session_controller_client_impl.h"
-#include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
+#include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/proximity_auth/proximity_auth_pref_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"

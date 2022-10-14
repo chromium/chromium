@@ -16,7 +16,7 @@ export const Severity = {
 
 /**
  * The type of log message object. The definition is based on
- * chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_logs_handler.cc:
+ * chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_logs_handler.cc:
  * LogMessageToDictionary()
  * @typedef {{text: string,
  *            time: string,

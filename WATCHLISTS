@@ -1433,7 +1433,7 @@
                   '|chrome/browser/ash/secure_channel/'\
                   '|chrome/browser/resources/chromeos/multidevice_setup/'\
                   '|chrome/browser/resources/settings/chromeos/multidevice_page/'\
-                  '|chrome/browser/ui/webui/chromeos/multidevice_setup/'\
+                  '|chrome/browser/ui/webui/ash/multidevice_setup/'\
                   '|chrome/browser/ui/webui/settings/ash/multidevice'\
                   '|chrome/test/data/webui/multidevice_setup/'\
                   '|chromeos/ash/components/multidevice/'\

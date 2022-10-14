@@ -264,6 +264,8 @@
 #include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_start_reauth_ui.h"
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/multidevice_internals/multidevice_internals_ui.h"
+#include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/assistant_optin/assistant_optin_ui.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/certificate_manager_dialog_ui.h"
@@ -274,8 +276,6 @@
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/manage_mirrorsync/manage_mirrorsync_ui.h"
-#include "chrome/browser/ui/webui/chromeos/multidevice_internals/multidevice_internals_ui.h"
-#include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/network_ui.h"
 #include "chrome/browser/ui/webui/chromeos/notification_tester/notification_tester_ui.h"
 #include "chrome/browser/ui/webui/chromeos/parent_access/parent_access_ui.h"
@@ -1024,9 +1024,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
     return &NewWebUI<ash::cellular_setup::MobileSetupUI>;
   if (url.host_piece() == chrome::kChromeUIMultiDeviceInternalsHost)
-    return &NewWebUI<chromeos::MultideviceInternalsUI>;
+    return &NewWebUI<ash::MultideviceInternalsUI>;
   if (url.host_piece() == chrome::kChromeUIMultiDeviceSetupHost)
-    return &NewWebUI<chromeos::multidevice_setup::MultiDeviceSetupDialogUI>;
+    return &NewWebUI<ash::multidevice_setup::MultiDeviceSetupDialogUI>;
   if (url.host_piece() == chrome::kChromeUINetworkHost)
     return &NewWebUI<chromeos::NetworkUI>;
   if (url.host_piece() == chrome::kChromeUIOobeHost) {

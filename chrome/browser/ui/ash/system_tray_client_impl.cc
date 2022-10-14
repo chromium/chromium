@@ -50,10 +50,10 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_dialog.h"
+#include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/bluetooth_pairing_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
@@ -693,7 +693,7 @@ void SystemTrayClientImpl::ShowNetworkSettingsHelper(
 }
 
 void SystemTrayClientImpl::ShowMultiDeviceSetup() {
-  chromeos::multidevice_setup::MultiDeviceSetupDialog::Show();
+  ash::multidevice_setup::MultiDeviceSetupDialog::Show();
 }
 
 void SystemTrayClientImpl::ShowFirmwareUpdate() {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_localized_strings_provider.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/services/multidevice_setup/public/cpp/url_provider.h"
@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_handler.h"
+#include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -29,9 +29,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 
-namespace chromeos {
-
-namespace multidevice_setup {
+namespace ash::multidevice_setup {
 
 namespace {
 
@@ -96,9 +94,7 @@ GetLocalizedStringsWithPlaceholders() {
                 IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE,
                 ui::GetChromeOSDeviceName(), kFootnoteMarker,
                 base::UTF8ToUTF16(
-                    chromeos::multidevice_setup::
-                        GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
-                            .spec())));
+                    GetBoardSpecificBetterTogetherSuiteLearnMoreUrl().spec())));
 
         localized_strings.emplace_back(
             "startSetupPageFootnote",
@@ -116,9 +112,8 @@ GetLocalizedStringsWithPlaceholders() {
             "startSetupPageFeatureListAwm",
             l10n_util::GetStringFUTF16(
                 IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_AWM_DESCRIPTION,
-                base::UTF8ToUTF16(chromeos::multidevice_setup::
-                                      GetBoardSpecificMessagesLearnMoreUrl()
-                                          .spec())));
+                base::UTF8ToUTF16(
+                    GetBoardSpecificMessagesLearnMoreUrl().spec())));
 
         return localized_strings;
       }());
@@ -131,19 +126,16 @@ GetLocalizedStringsWithPlaceholders() {
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStringsWithoutPlaceholders);
 
-  html_source->AddBoolean(
-      "phoneHubEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kPhoneHub));
+  html_source->AddBoolean("phoneHubEnabled",
+                          base::FeatureList::IsEnabled(features::kPhoneHub));
 
   html_source->AddBoolean(
       "phoneHubCameraRollEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kPhoneHub) &&
-          base::FeatureList::IsEnabled(
-              chromeos::features::kPhoneHubCameraRoll));
+      base::FeatureList::IsEnabled(features::kPhoneHub) &&
+          base::FeatureList::IsEnabled(features::kPhoneHubCameraRoll));
 
-  html_source->AddBoolean(
-      "wifiSyncEnabled",
-      base::FeatureList::IsEnabled(chromeos::features::kWifiSyncAndroid));
+  html_source->AddBoolean("wifiSyncEnabled", base::FeatureList::IsEnabled(
+                                                 features::kWifiSyncAndroid));
 
   for (const auto& entry : GetLocalizedStringsWithPlaceholders())
     html_source->AddString(entry.name, entry.localized_string);
@@ -163,12 +155,11 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
   // TODO(crbug.com/964547): Refactor so that any change to these strings will
   // surface in both the OOBE and post-OOBE UIs without having to adjust both
   // localization calls separately.
-  builder->AddF(
-      "startSetupPageMessage", IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE,
-      ui::GetChromeOSDeviceName(), kFootnoteMarker,
-      base::UTF8ToUTF16(chromeos::multidevice_setup::
-                            GetBoardSpecificBetterTogetherSuiteLearnMoreUrl()
-                                .spec()));
+  builder->AddF("startSetupPageMessage",
+                IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE,
+                ui::GetChromeOSDeviceName(), kFootnoteMarker,
+                base::UTF8ToUTF16(
+                    GetBoardSpecificBetterTogetherSuiteLearnMoreUrl().spec()));
 
   builder->AddF("startSetupPageFeatureListHeader",
                 IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FEATURE_LIST_HEADER,
@@ -181,11 +172,7 @@ void AddLocalizedValuesToBuilder(::login::LocalizedValuesBuilder* builder) {
   builder->AddF(
       "startSetupPageFeatureListAwm",
       IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_AWM_DESCRIPTION,
-      base::UTF8ToUTF16(
-          chromeos::multidevice_setup::GetBoardSpecificMessagesLearnMoreUrl()
-              .spec()));
+      base::UTF8ToUTF16(GetBoardSpecificMessagesLearnMoreUrl().spec()));
 }
 
-}  // namespace multidevice_setup
-
-}  // namespace chromeos
+}  // namespace ash::multidevice_setup

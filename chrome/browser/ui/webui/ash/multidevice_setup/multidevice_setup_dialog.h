@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_H_
-#define CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_H_
 
 #include <string>
 #include <vector>
@@ -14,9 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
-namespace chromeos {
-
-namespace multidevice_setup {
+namespace ash::multidevice_setup {
 
 // Dialog which displays the multi-device setup flow which allows users to
 // enable features involving communication between multiple devices (e.g., a
@@ -70,24 +68,12 @@ class MultiDeviceSetupDialogUI : public ui::MojoWebDialogUI {
 
   // Instantiates implementor of the mojom::MultiDeviceSetup mojo interface
   // passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
-          receiver);
+  void BindInterface(mojo::PendingReceiver<mojom::MultiDeviceSetup> receiver);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace multidevice_setup
+}  // namespace ash::multidevice_setup
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-namespace multidevice_setup {
-using ::chromeos::multidevice_setup::MultiDeviceSetupDialog;
-}
-}  // namespace ash
-
-#endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_H_

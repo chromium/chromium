@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
+#include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -18,8 +18,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_handler.h"
-#include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_localized_strings_provider.h"
+#include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_handler.h"
+#include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
@@ -35,9 +35,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/wm/core/shadow_types.h"
 
-namespace chromeos {
-
-namespace multidevice_setup {
+namespace ash::multidevice_setup {
 
 // static
 MultiDeviceSetupDialog* MultiDeviceSetupDialog::current_instance_ = nullptr;
@@ -62,8 +60,8 @@ void MultiDeviceSetupDialog::Show() {
 
   // Remove the black backdrop behind the dialog window which appears in tablet
   // and full-screen mode.
-  ash::WindowBackdrop::Get(containing_window_)
-      ->SetBackdropMode(ash::WindowBackdrop::BackdropMode::kDisabled);
+  WindowBackdrop::Get(containing_window_)
+      ->SetBackdropMode(WindowBackdrop::BackdropMode::kDisabled);
 }
 
 // static
@@ -119,7 +117,7 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
 
   source->DisableTrustedTypesCSP();
 
-  chromeos::multidevice_setup::AddLocalizedStrings(source);
+  AddLocalizedStrings(source);
   source->UseStringsJs();
 
   webui::SetupWebUIDataSource(
@@ -136,8 +134,7 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
 MultiDeviceSetupDialogUI::~MultiDeviceSetupDialogUI() = default;
 
 void MultiDeviceSetupDialogUI::BindInterface(
-    mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
-        receiver) {
+    mojo::PendingReceiver<mojom::MultiDeviceSetup> receiver) {
   MultiDeviceSetupService* service =
       MultiDeviceSetupServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui()));
@@ -147,6 +144,4 @@ void MultiDeviceSetupDialogUI::BindInterface(
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MultiDeviceSetupDialogUI)
 
-}  // namespace multidevice_setup
-
-}  // namespace chromeos
+}  // namespace ash::multidevice_setup
