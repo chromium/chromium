@@ -310,6 +310,16 @@ class AppBannerManager : public content::WebContentsObserver,
   // service worker.
   virtual void OnDidPerformWorkerCheck(const InstallableData& data);
 
+  // Run at the conclusion of OnDidPerformInstallableWebAppCheck. This calls
+  // back to the InstallableManager to continue checking service worker criteria
+  // for showing ambient badge.
+  virtual void PerformWorkerCheckForAmbientBadge();
+
+  // Callback invoked by the InstallableManager once it has finished checking
+  // service worker for showing ambient badge.
+  virtual void OnDidPerformWorkerCheckForAmbientBadge(
+      const InstallableData& data);
+
   // Records that a banner was shown.
   void RecordDidShowBanner();
 
@@ -398,8 +408,15 @@ class AppBannerManager : public content::WebContentsObserver,
   // The screenshots to show in the install UI.
   std::vector<Screenshot> screenshots_;
 
+  // True if the service worker check has passed or no required.
+  bool passed_worker_check_ = false;
+
  private:
   friend class AppBannerManagerTest;
+
+  // Checks whether the web page has sufficient engagement and continue with
+  // the pipeline.
+  void CheckSufficientEngagement();
 
   // Record that the banner could be shown at this point, if the triggering
   // heuristic allowed.
@@ -449,8 +466,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // triggering the pipeline until the load is complete.
   bool has_sufficient_engagement_ = false;
   bool load_finished_ = false;
-
-  bool passed_worker_check_ = false;
 
   std::unique_ptr<StatusReporter> status_reporter_;
   bool install_animation_pending_ = false;

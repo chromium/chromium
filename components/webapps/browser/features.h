@@ -24,8 +24,10 @@ BASE_DECLARE_FEATURE(kWebApkUniqueId);
 BASE_DECLARE_FEATURE(kCreateShortcutIgnoresManifest);
 BASE_DECLARE_FEATURE(kSkipServiceWorkerCheckInstallOnly);
 BASE_DECLARE_FEATURE(kDesktopPWAsDetailedInstallDialog);
+BASE_DECLARE_FEATURE(kSkipServiceWorkerForInstallPrompt);
 
 bool SkipInstallServiceWorkerCheck();
+bool SkipServiceWorkerForInstallPromotion();
 
 }  // namespace features
 }  // namespace webapps

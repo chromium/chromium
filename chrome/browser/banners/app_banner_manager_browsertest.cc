@@ -1089,7 +1089,11 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerFencedFrameBrowserTest,
   EXPECT_EQ(manager->state(), AppBannerManager::State::INACTIVE);
 }
 
-enum class ServiceWorkerCriteriaType { kDisabled, kSkipForInstalls };
+enum class ServiceWorkerCriteriaType {
+  kDisabled,
+  kSkipForInstalls,
+  kNoForBeforeInstalls
+};
 
 class AppBannerServiceWorkerCriteriaTest
     : public AppBannerManagerBrowserTest,
@@ -1098,12 +1102,20 @@ class AppBannerServiceWorkerCriteriaTest
   AppBannerServiceWorkerCriteriaTest() {
     switch (GetParam()) {
       case ServiceWorkerCriteriaType::kDisabled:
-        scoped_feature_list_.InitAndDisableFeature(
-            features::kSkipServiceWorkerCheckInstallOnly);
+        scoped_feature_list_.InitWithFeatures(
+            {}, {features::kSkipServiceWorkerCheckInstallOnly,
+                 features::kSkipServiceWorkerForInstallPrompt});
         break;
       case ServiceWorkerCriteriaType::kSkipForInstalls:
-        scoped_feature_list_.InitAndEnableFeature(
-            features::kSkipServiceWorkerCheckInstallOnly);
+        scoped_feature_list_.InitWithFeatures(
+            {features::kSkipServiceWorkerCheckInstallOnly},
+            {features::kSkipServiceWorkerForInstallPrompt});
+        break;
+      case ServiceWorkerCriteriaType::kNoForBeforeInstalls:
+        scoped_feature_list_.InitWithFeatures(
+            {features::kSkipServiceWorkerCheckInstallOnly,
+             features::kSkipServiceWorkerForInstallPrompt},
+            {});
         break;
     }
   }
@@ -1116,6 +1128,26 @@ class AppBannerServiceWorkerCriteriaTest
 
   void SetUpOnMainThread() override {
     AppBannerManagerBrowserTest::SetUpOnMainThread();
+  }
+
+  void CheckInstallableResult(
+      AppBannerManager::InstallableWebAppCheckResult result,
+      AppBannerManager::InstallableWebAppCheckResult expected_control_result) {
+    switch (GetParam()) {
+      case ServiceWorkerCriteriaType::kDisabled:
+        EXPECT_EQ(result, expected_control_result);
+        break;
+      case ServiceWorkerCriteriaType::kSkipForInstalls:
+        EXPECT_EQ(
+            result,
+            AppBannerManager::InstallableWebAppCheckResult::kYes_ByUserRequest);
+        break;
+      case ServiceWorkerCriteriaType::kNoForBeforeInstalls:
+        EXPECT_EQ(
+            result,
+            AppBannerManager::InstallableWebAppCheckResult::kYes_Promotable);
+        break;
+    }
   }
 
  private:
@@ -1141,42 +1173,48 @@ IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest, NoServiceWorker) {
   // Set not wait for service worker so it will not timeout.
   manager->SetWaitForServiceWorker(false);
 
+  absl::optional<InstallableStatusCode> expected_code;
+  if (GetParam() != ServiceWorkerCriteriaType::kNoForBeforeInstalls)
+    expected_code = NO_MATCHING_SERVICE_WORKER;
+
   RunBannerTest(browser(), manager.get(),
                 embedded_test_server()->GetURL(
                     "/banners/manifest_no_service_worker.html"),
-                NO_MATCHING_SERVICE_WORKER);
+                expected_code);
 
-  EXPECT_EQ(manager->state(), AppBannerManager::State::COMPLETE);
-
-  if (GetParam() == ServiceWorkerCriteriaType::kDisabled) {
-    EXPECT_EQ(manager->GetInstallableWebAppCheckResultForTesting(),
-              AppBannerManager::InstallableWebAppCheckResult::kNo);
+  if (GetParam() == ServiceWorkerCriteriaType::kNoForBeforeInstalls) {
+    EXPECT_EQ(manager->state(),
+              AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
   } else {
-    EXPECT_EQ(
-        manager->GetInstallableWebAppCheckResultForTesting(),
-        AppBannerManager::InstallableWebAppCheckResult::kYes_ByUserRequest);
+    EXPECT_EQ(manager->state(), AppBannerManager::State::COMPLETE);
   }
+
+  CheckInstallableResult(manager->GetInstallableWebAppCheckResultForTesting(),
+                         AppBannerManager::InstallableWebAppCheckResult::kNo);
 }
 
 IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest, NoFetchHandler) {
   std::unique_ptr<AppBannerManagerTest> manager(
       CreateAppBannerManager(browser()));
 
+  absl::optional<InstallableStatusCode> expected_code;
+  if (GetParam() != ServiceWorkerCriteriaType::kNoForBeforeInstalls)
+    expected_code = NOT_OFFLINE_CAPABLE;
+
   RunBannerTest(browser(), manager.get(),
                 embedded_test_server()->GetURL(
                     "/banners/no_sw_fetch_handler_test_page.html"),
-                NOT_OFFLINE_CAPABLE);
+                expected_code);
 
-  EXPECT_EQ(manager->state(), AppBannerManager::State::COMPLETE);
-
-  if (GetParam() == ServiceWorkerCriteriaType::kDisabled) {
-    EXPECT_EQ(manager->GetInstallableWebAppCheckResultForTesting(),
-              AppBannerManager::InstallableWebAppCheckResult::kNo);
+  if (GetParam() == ServiceWorkerCriteriaType::kNoForBeforeInstalls) {
+    EXPECT_EQ(manager->state(),
+              AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
   } else {
-    EXPECT_EQ(
-        manager->GetInstallableWebAppCheckResultForTesting(),
-        AppBannerManager::InstallableWebAppCheckResult::kYes_ByUserRequest);
+    EXPECT_EQ(manager->state(), AppBannerManager::State::COMPLETE);
   }
+
+  CheckInstallableResult(manager->GetInstallableWebAppCheckResultForTesting(),
+                         AppBannerManager::InstallableWebAppCheckResult::kNo);
 }
 
 class PendingWorkerAppBannerManager : public AppBannerManagerTest {
@@ -1213,22 +1251,26 @@ IN_PROC_BROWSER_TEST_P(AppBannerServiceWorkerCriteriaTest,
                     "/banners/manifest_no_service_worker.html"),
                 absl::nullopt);
 
-  EXPECT_EQ(manager->state(), AppBannerManager::State::PENDING_WORKER);
-  if (GetParam() == ServiceWorkerCriteriaType::kDisabled) {
-    EXPECT_EQ(manager->GetInstallableWebAppCheckResultForTesting(),
-              AppBannerManager::InstallableWebAppCheckResult::kUnknown);
+  if (GetParam() == ServiceWorkerCriteriaType::kNoForBeforeInstalls) {
+    EXPECT_EQ(manager->state(),
+              AppBannerManager::State::PENDING_PROMPT_NOT_CANCELED);
   } else {
-    EXPECT_EQ(
-        manager->GetInstallableWebAppCheckResultForTesting(),
-        AppBannerManager::InstallableWebAppCheckResult::kYes_ByUserRequest);
+    EXPECT_EQ(manager->state(), AppBannerManager::State::PENDING_WORKER);
   }
+
+  CheckInstallableResult(
+      manager->GetInstallableWebAppCheckResultForTesting(),
+      AppBannerManager::InstallableWebAppCheckResult::kUnknown);
+
+  EXPECT_EQ(manager->GetAppName(), u"Manifest test app");
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     AppBannerServiceWorkerCriteriaTest,
     testing::Values(ServiceWorkerCriteriaType::kDisabled,
-                    ServiceWorkerCriteriaType::kSkipForInstalls));
+                    ServiceWorkerCriteriaType::kSkipForInstalls,
+                    ServiceWorkerCriteriaType::kNoForBeforeInstalls));
 
 }  // namespace
 }  // namespace webapps

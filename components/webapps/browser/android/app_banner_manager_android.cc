@@ -35,6 +35,7 @@
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/manifest_icon_downloader.h"
@@ -177,6 +178,27 @@ void AppBannerManagerAndroid::PerformInstallableWebAppCheck() {
     return;
   }
   AppBannerManager::PerformInstallableWebAppCheck();
+}
+
+void AppBannerManagerAndroid::PerformWorkerCheckForAmbientBadge() {
+  manager()->GetData(
+      ParamsToPerformWorkerCheck(),
+      base::BindOnce(
+          &AppBannerManagerAndroid::OnDidPerformWorkerCheckForAmbientBadge,
+          weak_factory_.GetWeakPtr()));
+}
+
+void AppBannerManagerAndroid::OnDidPerformWorkerCheckForAmbientBadge(
+    const InstallableData& data) {
+  if (!data.NoBlockingErrors()) {
+    return;
+  }
+
+  passed_worker_check_ = true;
+
+  if (state_ == State::PENDING_PROMPT_NOT_CANCELED) {
+    MaybeShowAmbientBadge();
+  }
 }
 
 void AppBannerManagerAndroid::ResetCurrentPageData() {
@@ -541,7 +563,11 @@ void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
   if (infobar_visible || message_controller_.IsMessageEnqueued())
     return;
 
-  ShowAmbientBadge();
+  // Only show if it's native app, or the worker check already passed.
+  if (!features::SkipServiceWorkerForInstallPromotion() ||
+      passed_worker_check_ || native_app_data_) {
+    ShowAmbientBadge();
+  }
 }
 
 void AppBannerManagerAndroid::HideAmbientBadge() {
