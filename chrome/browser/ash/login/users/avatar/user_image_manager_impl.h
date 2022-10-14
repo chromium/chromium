@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/profiles/profile_downloader_delegate.h"
 #include "components/user_manager/user.h"
@@ -146,6 +147,9 @@ class UserImageManagerImpl : public UserImageManager,
   // Create a sync observer if a user is logged in, the user's user image is
   // allowed to be synced and no sync observer exists yet.
   void TryToCreateImageSyncObserver();
+
+  // Returns the image properties for the user's user image.
+  const base::Value::Dict* GetImageProperties();
 
   // Returns immutable version of user with `user_id_`.
   const user_manager::User* GetUser() const;

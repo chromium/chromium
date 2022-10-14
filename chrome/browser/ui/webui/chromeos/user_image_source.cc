@@ -134,11 +134,6 @@ scoped_refptr<base::RefCountedMemory> GetUserImageInternal(
   }
 
   if (user) {
-    // After the default avatar images are moved to cloud, the user
-    // should have image bytes when using default images.
-    CHECK(!ash::features::IsAvatarsCloudMigrationEnabled() ||
-          !user->HasDefaultImage() || user->has_image_bytes());
-
     if (user->has_image_bytes()) {
       if (user->image_format() == user_manager::UserImage::FORMAT_PNG ||
           user->image_format() == user_manager::UserImage::FORMAT_WEBP) {

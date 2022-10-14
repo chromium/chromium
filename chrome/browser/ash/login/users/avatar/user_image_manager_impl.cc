@@ -235,17 +235,6 @@ class UserImageManagerImpl::Job {
   // Notifies the `parent_` that the Job is done.
   void NotifyJobDone();
 
-  const base::Value::Dict* GetImageProperties() {
-    PrefService* local_state = g_browser_process->local_state();
-    const base::Value::Dict& prefs_images =
-        local_state->GetDict(kUserImageProperties);
-
-    const base::Value::Dict* image_properties =
-        prefs_images.FindDict(account_id().GetUserEmail());
-
-    return image_properties;
-  }
-
   const AccountId& account_id() const { return parent_->account_id_; }
 
   UserImageManagerImpl* parent_;
@@ -279,7 +268,8 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
     // Load one of the default images. This happens synchronously.
     if (ash::features::IsAvatarsCloudMigrationEnabled()) {
       bool image_cache_updated = false;
-      if (const base::Value::Dict* image_properties = GetImageProperties()) {
+      if (const base::Value::Dict* image_properties =
+              parent_->GetImageProperties()) {
         image_cache_updated =
             image_properties->FindBool(kImageCacheUpdated).value_or(false);
       }
@@ -311,7 +301,6 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
       // images to cloud.
       UpdateUserAndSaveImage(std::move(user_image));
     }
-
   } else if (image_index_ == user_manager::User::USER_IMAGE_EXTERNAL ||
              image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
     // Load the user image from a file referenced by `image_path`. This happens
@@ -494,7 +483,8 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
   base::FilePath old_image_path;
   // Because the user ID (i.e. email address) contains '.', the code here
   // cannot use the dots notation (path expantion) hence is verbose.
-  if (const base::Value::Dict* image_properties = GetImageProperties()) {
+  if (const base::Value::Dict* image_properties =
+          parent_->GetImageProperties()) {
     const std::string* value = image_properties->FindString(kImagePathNodeName);
     if (value)
       old_image_path = base::FilePath::FromUTF8Unsafe(*value);
@@ -524,7 +514,9 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
   base::Value::Dict entry;
   entry.Set(kImagePathNodeName, image_path_.value());
   entry.Set(kImageIndexNodeName, image_index_);
-  entry.Set(kImageCacheUpdated, true);
+  // TODO: set to true after we can cache animated avatars.
+  // See b/250810109 for more context.
+  entry.Set(kImageCacheUpdated, false);
   if (!image_url_.is_empty())
     entry.Set(kImageURLNodeName, image_url_.spec());
 
@@ -563,20 +555,13 @@ UserImageManagerImpl::UserImageManagerImpl(
 UserImageManagerImpl::~UserImageManagerImpl() {}
 
 void UserImageManagerImpl::LoadUserImage() {
-  PrefService* local_state = g_browser_process->local_state();
-  const base::Value::Dict& prefs_images =
-      local_state->GetDict(kUserImageProperties);
-  user_manager::User* user = GetUserAndModify();
-
-  const base::Value::Dict* image_properties =
-      prefs_images.FindDict(account_id_.GetUserEmail());
-
   // If the user image for `user_id` is managed by policy and the policy-set
   // image is being loaded and persisted right now, let that job continue. It
   // will update the user image when done.
   if (IsUserImageManaged() && job_.get())
     return;
 
+  const base::Value::Dict* image_properties = GetImageProperties();
   if (!image_properties) {
     SetInitialUserImage();
     return;
@@ -595,6 +580,7 @@ void UserImageManagerImpl::LoadUserImage() {
   const std::string* image_path =
       image_properties->FindString(kImagePathNodeName);
 
+  user_manager::User* user = GetUserAndModify();
   user->SetImageURL(image_url);
   user->SetStubImage(
       std::make_unique<user_manager::UserImage>(
@@ -984,6 +970,17 @@ void UserImageManagerImpl::TryToCreateImageSyncObserver() {
       !IsUserImageManaged()) {
     user_image_sync_observer_ = std::make_unique<UserImageSyncObserver>(user);
   }
+}
+
+const base::Value::Dict* UserImageManagerImpl::GetImageProperties() {
+  PrefService* local_state = g_browser_process->local_state();
+  const base::Value::Dict& prefs_images =
+      local_state->GetDict(kUserImageProperties);
+
+  const base::Value::Dict* image_properties =
+      prefs_images.FindDict(account_id_.GetUserEmail());
+
+  return image_properties;
 }
 
 const user_manager::User* UserImageManagerImpl::GetUser() const {

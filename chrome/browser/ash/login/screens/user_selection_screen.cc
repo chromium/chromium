@@ -522,11 +522,6 @@ UserAvatar UserSelectionScreen::BuildAshUserAvatarForUser(
     avatar.bytes.assign(avatar_data.begin(), avatar_data.end());
   };
 
-  // After the default avatar images are moved to cloud, the user
-  // should have image bytes when using default images.
-  CHECK(!ash::features::IsAvatarsCloudMigrationEnabled() ||
-        !user.HasDefaultImage() || user.has_image_bytes());
-
   // After the avatar cloud migration, remove the second if case.
   if (user.has_image_bytes()) {
     avatar.bytes.assign(

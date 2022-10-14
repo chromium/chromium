@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
@@ -42,6 +43,8 @@ namespace ash {
 namespace user_image_loader {
 namespace {
 
+constexpr const char kURLLoaderDownloadSuccessHistogramName[] =
+    "Ash.UserImage.URLLoaderDownloadSuccess";
 constexpr int64_t kMaxImageSizeInBytes =
     static_cast<int64_t>(IPC::Channel::kMaximumMessageSize);
 
@@ -350,11 +353,13 @@ void OnImageDownloaded(std::unique_ptr<network::SimpleURLLoader> loader,
                        LoadedCallback loaded_cb,
                        std::unique_ptr<std::string> body) {
   if (loader->NetError() != net::OK || !body) {
+    base::UmaHistogramBoolean(kURLLoaderDownloadSuccessHistogramName, false);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(loaded_cb),
                                   std::make_unique<user_manager::UserImage>()));
     return;
   }
+  base::UmaHistogramBoolean(kURLLoaderDownloadSuccessHistogramName, true);
   DecodeAnimation(std::move(loaded_cb), *body);
 }
 
