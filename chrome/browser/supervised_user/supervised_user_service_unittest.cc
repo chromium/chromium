@@ -146,8 +146,14 @@ class SupervisedUserServiceTest : public ::testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-// TODO(crbug.com/1364589): Failing consistently
-TEST_F(SupervisedUserServiceTest, DISABLED_DeprecatedFilterPolicy) {
+// TODO(crbug.com/1364589): Failing consistently on linux-chromeos-dbg
+// due to failed timezone conversion assertion.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_DeprecatedFilterPolicy DISABLED_DeprecatedFilterPolicy
+#else
+#define MAYBE_DeprecatedFilterPolicy DeprecatedFilterPolicy
+#endif
+TEST_F(SupervisedUserServiceTest, MAYBE_DeprecatedFilterPolicy) {
   PrefService* prefs = profile_->GetPrefs();
   EXPECT_EQ(prefs->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior),
             SupervisedUserURLFilter::ALLOW);
