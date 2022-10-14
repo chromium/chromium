@@ -3,6 +3,7 @@ set(plugin_sources
   ChromeClassTester.cpp
   FindBadConstructsAction.cpp
   FindBadConstructsConsumer.cpp
+  FindBadRawPtrPatterns.cpp
   CheckIPCVisitor.cpp
   CheckLayoutObjectMethodsVisitor.cpp
   Util.cpp

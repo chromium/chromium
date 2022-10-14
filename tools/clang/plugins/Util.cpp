@@ -37,9 +37,8 @@ std::string GetNamespace(const clang::Decl* record) {
   return GetNamespaceImpl(record->getDeclContext(), std::string());
 }
 
-std::string GetFilename(clang::CompilerInstance& instance,
+std::string GetFilename(const clang::SourceManager& source_manager,
                         clang::SourceLocation location) {
-  const clang::SourceManager& source_manager = instance.getSourceManager();
   clang::SourceLocation spelling_location =
       source_manager.getSpellingLoc(location);
   clang::PresumedLoc ploc = source_manager.getPresumedLoc(spelling_location);

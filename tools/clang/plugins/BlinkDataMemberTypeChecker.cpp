@@ -51,7 +51,7 @@ BlinkDataMemberTypeChecker::BlinkDataMemberTypeChecker(
 
 void BlinkDataMemberTypeChecker::CheckClass(SourceLocation location,
                                             const CXXRecordDecl* record) {
-  std::string filename = GetFilename(instance_, location);
+  std::string filename = GetFilename(instance_.getSourceManager(), location);
   if (!included_filenames_regex_.match(filename))
     return;
   if (excluded_filenames_regex_.match(filename))
