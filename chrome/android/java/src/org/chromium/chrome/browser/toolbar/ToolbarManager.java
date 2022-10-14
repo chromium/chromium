@@ -749,7 +749,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
              * reduce server pressure.
              */
             private void maybeTriggerCacheRefreshForZeroSuggest(GURL url) {
-                if (url != null && UrlUtilities.isNTPUrl(url)) {
+                if (url != null) {
                     mLocationBarModel.notifyZeroSuggestRefresh();
                 }
             }
