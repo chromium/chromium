@@ -222,8 +222,8 @@ CSSSelectorList ParseSelectorList(const String& string) {
   CSSTokenizer tokenizer(string);
   const auto tokens = tokenizer.TokenizeToEOF();
   CSSParserTokenRange range(tokens);
-  Arena arena;
-  CSSSelectorVector vector =
+  Vector<CSSSelector> arena;
+  base::span<CSSSelector> vector =
       CSSSelectorParser::ParseSelector(range, context, sheet, arena);
   return CSSSelectorList::AdoptSelectorVector(vector);
 }

@@ -334,34 +334,28 @@ unsigned StyleRule::AverageSizeInBytes() {
 }
 
 StyleRule::StyleRule(base::PassKey<StyleRule>,
-                     CSSSelectorVector& selector_vector,
-                     size_t flattened_size,
+                     base::span<CSSSelector> selector_vector,
                      CSSPropertyValueSet* properties)
     : StyleRuleBase(kStyle), properties_(properties) {
-  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray(),
-                                       flattened_size);
+  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray());
 }
 
 StyleRule::StyleRule(base::PassKey<StyleRule>,
-                     CSSSelectorVector& selector_vector,
-                     size_t flattened_size,
+                     base::span<CSSSelector> selector_vector,
                      CSSLazyPropertyParser* lazy_property_parser)
     : StyleRuleBase(kStyle), lazy_property_parser_(lazy_property_parser) {
-  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray(),
-                                       flattened_size);
+  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray());
 }
 
 // NOTE: Currently, this move constructor leaves the other object fully intact,
 // since there's no benefit in not doing so.
 StyleRule::StyleRule(base::PassKey<StyleRule>,
-                     CSSSelectorVector& selector_vector,
-                     size_t flattened_size,
+                     base::span<CSSSelector> selector_vector,
                      StyleRule&& other)
     : StyleRuleBase(kStyle),
       properties_(other.properties_),
       lazy_property_parser_(other.lazy_property_parser_) {
-  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray(),
-                                       flattened_size);
+  CSSSelectorList::AdoptSelectorVector(selector_vector, SelectorArray());
 }
 
 const CSSPropertyValueSet& StyleRule::Properties() const {

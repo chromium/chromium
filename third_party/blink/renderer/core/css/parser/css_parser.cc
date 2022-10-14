@@ -43,11 +43,11 @@ void CSSParser::ParseDeclarationListForInspector(
                                                   observer);
 }
 
-CSSSelectorVector CSSParser::ParseSelector(
+base::span<CSSSelector> CSSParser::ParseSelector(
     const CSSParserContext* context,
     StyleSheetContents* style_sheet_contents,
     const String& selector,
-    Arena& arena) {
+    Vector<CSSSelector>& arena) {
   CSSTokenizer tokenizer(selector);
   const auto tokens = tokenizer.TokenizeToEOF();
   return CSSSelectorParser::ParseSelector(CSSParserTokenRange(tokens), context,

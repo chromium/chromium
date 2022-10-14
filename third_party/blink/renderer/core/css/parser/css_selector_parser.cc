@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
 
+#include <algorithm>
 #include <memory>
 #include "base/auto_reset.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
-#include "third_party/blink/renderer/core/css/parser/arena.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
@@ -45,34 +45,80 @@ bool AtEndIgnoringWhitespace(CSSParserTokenRange range) {
   return range.AtEnd();
 }
 
+bool IsHostPseudoSelector(const CSSSelector& selector) {
+  return selector.GetPseudoType() == CSSSelector::kPseudoHost ||
+         selector.GetPseudoType() == CSSSelector::kPseudoHostContext;
+}
+
+// Some pseudo elements behave as if they have an implicit combinator to their
+// left even though they are written without one. This method returns the
+// correct implicit combinator. If no new combinator should be used,
+// it returns RelationType::kSubSelector.
+CSSSelector::RelationType GetImplicitShadowCombinatorForMatching(
+    const CSSSelector& selector) {
+  switch (selector.GetPseudoType()) {
+    case CSSSelector::PseudoType::kPseudoSlotted:
+      return CSSSelector::RelationType::kShadowSlot;
+    case CSSSelector::PseudoType::kPseudoWebKitCustomElement:
+    case CSSSelector::PseudoType::kPseudoBlinkInternalElement:
+    case CSSSelector::PseudoType::kPseudoCue:
+    case CSSSelector::PseudoType::kPseudoPlaceholder:
+    case CSSSelector::PseudoType::kPseudoFileSelectorButton:
+      return CSSSelector::RelationType::kUAShadow;
+    case CSSSelector::PseudoType::kPseudoPart:
+      return CSSSelector::RelationType::kShadowPart;
+    default:
+      return CSSSelector::RelationType::kSubSelector;
+  }
+}
+
+bool NeedsImplicitShadowCombinatorForMatching(const CSSSelector& selector) {
+  return GetImplicitShadowCombinatorForMatching(selector) !=
+         CSSSelector::RelationType::kSubSelector;
+}
+
+// Marks the end of parsing a complex selector. (In many cases, there may
+// be more complex selectors after this, since we are often dealing with
+// lists of complex selectors. Those are marked using SetLastInSelectorList(),
+// which happens in CSSSelectorList::AdoptSelectorVector.)
+void MarkAsEntireComplexSelector(base::span<CSSSelector> selectors) {
+#if DCHECK_IS_ON()
+  for (CSSSelector& selector : selectors.first(selectors.size() - 1)) {
+    DCHECK(!selector.IsLastInTagHistory());
+  }
+#endif
+  selectors.back().SetLastInTagHistory(true);
+}
+
 }  // namespace
 
 // static
-CSSSelectorVector CSSSelectorParser::ParseSelector(
+base::span<CSSSelector> CSSSelectorParser::ParseSelector(
     CSSParserTokenRange range,
     const CSSParserContext* context,
     StyleSheetContents* style_sheet,
-    Arena& arena) {
+    Vector<CSSSelector>& arena) {
   CSSSelectorParser parser(context, style_sheet, arena);
   range.ConsumeWhitespace();
-  CSSSelectorVector result = parser.ConsumeComplexSelectorList(range);
-  if (!range.AtEnd())
+  base::span<CSSSelector> result = parser.ConsumeComplexSelectorList(range);
+  if (!range.AtEnd()) {
     return {};
+  }
 
   parser.RecordUsageAndDeprecations(result);
   return result;
 }
 
 // static
-CSSSelectorVector CSSSelectorParser::ConsumeSelector(
+base::span<CSSSelector> CSSSelectorParser::ConsumeSelector(
     CSSParserTokenStream& stream,
     const CSSParserContext* context,
     StyleSheetContents* style_sheet,
     CSSParserObserver* observer,
-    Arena& arena) {
+    Vector<CSSSelector>& arena) {
   CSSSelectorParser parser(context, style_sheet, arena);
   stream.ConsumeWhitespace();
-  CSSSelectorVector result =
+  base::span<CSSSelector> result =
       parser.ConsumeComplexSelectorList(stream, observer);
   parser.RecordUsageAndDeprecations(result);
   return result;
@@ -83,7 +129,7 @@ absl::optional<CSSSelectorList> CSSSelectorParser::ParseScopeBoundary(
     CSSParserTokenRange range,
     const CSSParserContext* context,
     StyleSheetContents* style_sheet) {
-  Arena arena;
+  Vector<CSSSelector> arena;
   CSSSelectorParser parser(context, style_sheet, arena);
   DisallowPseudoElementsScope disallow_pseudo_elements(&parser);
 
@@ -105,48 +151,45 @@ bool CSSSelectorParser::SupportsComplexSelector(
     CSSParserTokenRange range,
     const CSSParserContext* context) {
   range.ConsumeWhitespace();
-  Arena arena;
+  Vector<CSSSelector> arena;
   CSSSelectorParser parser(context, nullptr, arena);
   parser.SetInSupportsParsing();
-  auto parser_selector = parser.ConsumeComplexSelector(range);
-  if (parser.failed_parsing_ || !range.AtEnd() || !parser_selector)
+  base::span<CSSSelector> selectors = parser.ConsumeComplexSelector(range);
+  if (parser.failed_parsing_ || !range.AtEnd() || selectors.empty())
     return false;
-  auto complex_selector = parser_selector->ReleaseSelector();
-  if (ContainsUnknownWebkitPseudoElements(complex_selector))
+  if (ContainsUnknownWebkitPseudoElements(selectors))
     return false;
   return true;
 }
 
 CSSSelectorParser::CSSSelectorParser(const CSSParserContext* context,
                                      StyleSheetContents* style_sheet,
-                                     Arena& arena)
-    : context_(context), style_sheet_(style_sheet), arena_(arena) {}
+                                     Vector<CSSSelector>& output)
+    : context_(context), style_sheet_(style_sheet), output_(output) {}
 
-CSSSelectorVector CSSSelectorParser::ConsumeComplexSelectorList(
+base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     CSSParserTokenRange& range) {
-  CSSSelectorVector selector_list;
-  ArenaUniquePtr<CSSParserSelector> selector = ConsumeComplexSelector(range);
-  if (!selector)
+  ResetVectorAfterScope reset_vector(output_);
+  if (ConsumeComplexSelector(range).empty()) {
     return {};
-  selector_list.push_back(std::move(selector));
+  }
   while (!range.AtEnd() && range.Peek().GetType() == kCommaToken) {
     range.ConsumeIncludingWhitespace();
-    selector = ConsumeComplexSelector(range);
-    if (!selector)
+    if (ConsumeComplexSelector(range).empty()) {
       return {};
-    selector_list.push_back(std::move(selector));
+    }
   }
 
   if (failed_parsing_)
     return {};
 
-  return selector_list;
+  return reset_vector.CommitAddedElements();
 }
 
-CSSSelectorVector CSSSelectorParser::ConsumeComplexSelectorList(
+base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelectorList(
     CSSParserTokenStream& stream,
     CSSParserObserver* observer) {
-  CSSSelectorVector selector_list;
+  ResetVectorAfterScope reset_vector(output_);
 
   while (true) {
     const wtf_size_t selector_offset_start = stream.LookAheadOffset();
@@ -157,15 +200,14 @@ CSSSelectorVector CSSSelectorParser::ConsumeComplexSelectorList(
     if (stream.UncheckedAtEnd())
       return {};
 
-    ArenaUniquePtr<CSSParserSelector> selector =
-        ConsumeComplexSelector(complex_selector);
-    if (!selector || failed_parsing_ || !complex_selector.AtEnd())
+    if (ConsumeComplexSelector(complex_selector).empty() || failed_parsing_ ||
+        !complex_selector.AtEnd()) {
       return {};
+    }
 
     if (observer)
       observer->ObserveSelector(selector_offset_start, selector_offset_end);
 
-    selector_list.push_back(std::move(selector));
     if (stream.Peek().GetType() == kLeftBraceToken)
       break;
 
@@ -173,40 +215,50 @@ CSSSelectorVector CSSSelectorParser::ConsumeComplexSelectorList(
     stream.ConsumeIncludingWhitespace();
   }
 
-  return selector_list;
+  return reset_vector.CommitAddedElements();
 }
 
 CSSSelectorList CSSSelectorParser::ConsumeCompoundSelectorList(
     CSSParserTokenRange& range) {
-  CSSSelectorVector selector_list;
-  ArenaUniquePtr<CSSParserSelector> selector = ConsumeCompoundSelector(range);
+  ResetVectorAfterScope reset_vector(output_);
+
+  base::span<CSSSelector> selector = ConsumeCompoundSelector(range);
   range.ConsumeWhitespace();
-  if (!selector)
+  if (selector.empty()) {
     return CSSSelectorList();
-  selector_list.push_back(std::move(selector));
+  }
+  MarkAsEntireComplexSelector(selector);
   while (!range.AtEnd() && range.Peek().GetType() == kCommaToken) {
     range.ConsumeIncludingWhitespace();
     selector = ConsumeCompoundSelector(range);
     range.ConsumeWhitespace();
-    if (!selector)
+    if (selector.empty()) {
       return CSSSelectorList();
-    selector_list.push_back(std::move(selector));
+    }
+    MarkAsEntireComplexSelector(selector);
   }
 
-  if (failed_parsing_)
+  if (failed_parsing_) {
     return CSSSelectorList();
+  }
 
-  return CSSSelectorList::AdoptSelectorVector(selector_list);
+  return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
 }
 
 CSSSelectorList CSSSelectorParser::ConsumeNestedSelectorList(
     CSSParserTokenRange& range) {
   if (inside_compound_pseudo_)
     return ConsumeCompoundSelectorList(range);
-  CSSSelectorVector result = ConsumeComplexSelectorList(range);
-  if (result.empty())
+
+  ResetVectorAfterScope reset_vector(output_);
+  base::span<CSSSelector> result = ConsumeComplexSelectorList(range);
+  if (result.empty()) {
     return {};
-  return CSSSelectorList::AdoptSelectorVector(result);
+  } else {
+    CSSSelectorList selector_list =
+        CSSSelectorList::AdoptSelectorVector(result);
+    return selector_list;
+  }
 }
 
 namespace {
@@ -247,39 +299,45 @@ CSSSelectorParser::ConsumeForgivingNestedSelectorList(
 absl::optional<CSSSelectorList>
 CSSSelectorParser::ConsumeForgivingComplexSelectorList(
     CSSParserTokenRange& range) {
+  ResetVectorAfterScope reset_vector(output_);
+
   if (RuntimeEnabledFeatures::CSSAtSupportsAlwaysNonForgivingParsingEnabled() &&
       in_supports_parsing_) {
-    CSSSelectorVector selector_list = ConsumeComplexSelectorList(range);
-    if (selector_list.empty())
+    base::span<CSSSelector> selectors = ConsumeComplexSelectorList(range);
+    if (selectors.empty()) {
       return absl::nullopt;
-    return CSSSelectorList::AdoptSelectorVector(selector_list);
+    } else {
+      return CSSSelectorList::AdoptSelectorVector(selectors);
+    }
   }
 
-  CSSSelectorVector selector_list;
   CSSAtSupportsDropInvalidWhileForgivingParsingCounter
       at_supports_drop_invalid_counter(context_);
 
   while (!range.AtEnd()) {
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
     CSSParserTokenRange argument = ConsumeNestedArgument(range);
-    ArenaUniquePtr<CSSParserSelector> selector =
-        ConsumeComplexSelector(argument);
-    if (selector && !failed_parsing_ && argument.AtEnd())
-      selector_list.push_back(std::move(selector));
-    else if (in_supports_parsing_)
-      at_supports_drop_invalid_counter.Count();
+    wtf_size_t subpos = output_.size();
+    base::span<CSSSelector> selector = ConsumeComplexSelector(argument);
+    if (selector.empty() || failed_parsing_ || !argument.AtEnd()) {
+      if (in_supports_parsing_) {
+        at_supports_drop_invalid_counter.Count();
+      }
+      output_.resize(subpos);  // Drop what we parsed so far.
+    }
     if (range.Peek().GetType() != kCommaToken)
       break;
     range.ConsumeIncludingWhitespace();
   }
 
-  if (selector_list.empty()) {
+  if (reset_vector.AddedElements().empty()) {
+    // Parsed nothing that was supported.
     if (in_supports_parsing_)
       at_supports_drop_invalid_counter.Count();
     return CSSSelectorList();
   }
 
-  return CSSSelectorList::AdoptSelectorVector(selector_list);
+  return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
 }
 
 absl::optional<CSSSelectorList>
@@ -293,32 +351,36 @@ CSSSelectorParser::ConsumeForgivingCompoundSelectorList(
     return selector_list;
   }
 
-  CSSSelectorVector selector_list;
   CSSAtSupportsDropInvalidWhileForgivingParsingCounter
       at_supports_drop_invalid_counter(context_);
 
+  ResetVectorAfterScope reset_vector(output_);
   while (!range.AtEnd()) {
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
     CSSParserTokenRange argument = ConsumeNestedArgument(range);
-    ArenaUniquePtr<CSSParserSelector> selector =
-        ConsumeCompoundSelector(argument);
+    wtf_size_t subpos = output_.size();
+    base::span<CSSSelector> selector = ConsumeCompoundSelector(argument);
     argument.ConsumeWhitespace();
-    if (selector && !failed_parsing_ && argument.AtEnd())
-      selector_list.push_back(std::move(selector));
-    else if (in_supports_parsing_)
-      at_supports_drop_invalid_counter.Count();
+    if (selector.empty() || failed_parsing_ || !argument.AtEnd()) {
+      if (in_supports_parsing_) {
+        at_supports_drop_invalid_counter.Count();
+      }
+      output_.resize(subpos);  // Drop what we parsed so far.
+    } else {
+      MarkAsEntireComplexSelector(selector);
+    }
     if (range.Peek().GetType() != kCommaToken)
       break;
     range.ConsumeIncludingWhitespace();
   }
 
-  if (selector_list.empty()) {
+  if (reset_vector.AddedElements().empty()) {
     if (in_supports_parsing_)
       at_supports_drop_invalid_counter.Count();
     return CSSSelectorList();
   }
 
-  return CSSSelectorList::AdoptSelectorVector(selector_list);
+  return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
 }
 
 absl::optional<CSSSelectorList>
@@ -332,19 +394,23 @@ CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
     return selector_list;
   }
 
-  CSSSelectorVector selector_list;
   CSSAtSupportsDropInvalidWhileForgivingParsingCounter
       at_supports_drop_invalid_counter(context_);
 
+  ResetVectorAfterScope reset_vector(output_);
   while (!range.AtEnd()) {
     base::AutoReset<bool> reset_failure(&failed_parsing_, false);
     CSSParserTokenRange argument = ConsumeNestedArgument(range);
-    ArenaUniquePtr<CSSParserSelector> selector =
-        ConsumeRelativeSelector(argument);
-    if (selector && !failed_parsing_ && argument.AtEnd())
-      selector_list.push_back(std::move(selector));
-    else if (in_supports_parsing_)
-      at_supports_drop_invalid_counter.Count();
+    wtf_size_t subpos = output_.size();
+    base::span<CSSSelector> selector = ConsumeRelativeSelector(argument);
+    if (selector.empty() || failed_parsing_ || !argument.AtEnd()) {
+      if (in_supports_parsing_) {
+        at_supports_drop_invalid_counter.Count();
+      }
+      output_.resize(subpos);  // Drop what we parsed so far.
+    } else {
+      MarkAsEntireComplexSelector(selector);
+    }
     if (range.Peek().GetType() != kCommaToken)
       break;
     range.ConsumeIncludingWhitespace();
@@ -355,7 +421,7 @@ CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
   // (e.g. '::slotted(:has(.a))', '::part(foo):has(:hover)')
   if (inside_compound_pseudo_ ||
       restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
-      selector_list.empty()) {
+      reset_vector.AddedElements().empty()) {
     if (in_supports_parsing_)
       at_supports_drop_invalid_counter.Count();
 
@@ -365,22 +431,18 @@ CSSSelectorParser::ConsumeForgivingRelativeSelectorList(
     return absl::nullopt;
   }
 
-  return CSSSelectorList::AdoptSelectorVector(selector_list);
+  return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
 }
 
 CSSSelectorList CSSSelectorParser::ConsumeRelativeSelectorList(
     CSSParserTokenRange& range) {
-  CSSSelectorVector selector_list;
-  ArenaUniquePtr<CSSParserSelector> selector = ConsumeRelativeSelector(range);
-  if (!selector)
+  ResetVectorAfterScope reset_vector(output_);
+  if (ConsumeRelativeSelector(range).empty())
     return CSSSelectorList();
-  selector_list.push_back(std::move(selector));
   while (!range.AtEnd() && range.Peek().GetType() == kCommaToken) {
     range.ConsumeIncludingWhitespace();
-    selector = ConsumeRelativeSelector(range);
-    if (!selector)
+    if (ConsumeRelativeSelector(range).empty())
       return CSSSelectorList();
-    selector_list.push_back(std::move(selector));
   }
 
   if (failed_parsing_)
@@ -391,11 +453,11 @@ CSSSelectorList CSSSelectorParser::ConsumeRelativeSelectorList(
   // (e.g. '::slotted(:has(.a))', '::part(foo):has(:hover)')
   if (inside_compound_pseudo_ ||
       restricting_pseudo_element_ != CSSSelector::kPseudoUnknown ||
-      selector_list.empty()) {
+      reset_vector.AddedElements().empty()) {
     return CSSSelectorList();
   }
 
-  return CSSSelectorList::AdoptSelectorVector(selector_list);
+  return CSSSelectorList::AdoptSelectorVector(reset_vector.AddedElements());
 }
 
 namespace {
@@ -404,7 +466,7 @@ enum CompoundSelectorFlags {
   kHasPseudoElementForRightmostCompound = 1 << 0,
 };
 
-unsigned ExtractCompoundFlags(const CSSParserSelector& simple_selector,
+unsigned ExtractCompoundFlags(const CSSSelector& simple_selector,
                               CSSParserMode parser_mode) {
   if (simple_selector.Match() != CSSSelector::kPseudoElement)
     return 0;
@@ -419,15 +481,30 @@ unsigned ExtractCompoundFlags(const CSSParserSelector& simple_selector,
   return kHasPseudoElementForRightmostCompound;
 }
 
+unsigned ExtractCompoundFlags(const base::span<CSSSelector> compound_selector,
+                              CSSParserMode parser_mode) {
+  unsigned compound_flags = 0;
+  for (const CSSSelector& simple : compound_selector) {
+    if (compound_flags) {
+      break;
+    }
+    compound_flags |= ExtractCompoundFlags(simple, parser_mode);
+  }
+  return compound_flags;
+}
+
 }  // namespace
 
-ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeRelativeSelector(
+base::span<CSSSelector> CSSSelectorParser::ConsumeRelativeSelector(
     CSSParserTokenRange& range) {
-  ArenaUniquePtr<CSSParserSelector> selector(arena_.New<CSSParserSelector>());
-  selector->SetMatch(CSSSelector::kPseudoClass);
-  selector->UpdatePseudoType("-internal-relative-anchor", *context_,
-                             false /*has_arguments*/, context_->Mode());
-  DCHECK_EQ(selector->GetPseudoType(), CSSSelector::kPseudoRelativeAnchor);
+  ResetVectorAfterScope reset_vector(output_);
+
+  CSSSelector selector;
+  selector.SetMatch(CSSSelector::kPseudoClass);
+  selector.UpdatePseudoType("-internal-relative-anchor", *context_,
+                            false /*has_arguments*/, context_->Mode());
+  DCHECK_EQ(selector.GetPseudoType(), CSSSelector::kPseudoRelativeAnchor);
+  output_.push_back(selector);
 
   CSSSelector::RelationType combinator = ConsumeCombinator(range);
   switch (combinator) {
@@ -446,67 +523,105 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeRelativeSelector(
       break;
     default:
       NOTREACHED();
-      return nullptr;
+      return {};
   }
 
   unsigned previous_compound_flags = 0;
 
-  return ConsumePartialComplexSelector(range, combinator, std::move(selector),
-                                       previous_compound_flags);
+  if (!ConsumePartialComplexSelector(range, combinator,
+                                     previous_compound_flags)) {
+    return {};
+  }
+
+  // See ConsumeComplexSelector().
+  std::reverse(reset_vector.AddedElements().begin(),
+               reset_vector.AddedElements().end());
+
+  return reset_vector.CommitAddedElements();
 }
 
-ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeComplexSelector(
+base::span<CSSSelector> CSSSelectorParser::ConsumeComplexSelector(
     CSSParserTokenRange& range) {
-  ArenaUniquePtr<CSSParserSelector> selector = ConsumeCompoundSelector(range);
-  if (!selector)
-    return nullptr;
+  ResetVectorAfterScope reset_vector(output_);
 
-  unsigned previous_compound_flags = 0;
+  base::span<CSSSelector> compound_selector = ConsumeCompoundSelector(range);
+  if (compound_selector.empty()) {
+    return {};
+  }
 
-  for (CSSParserSelector* simple = selector.get();
-       simple && !previous_compound_flags; simple = simple->TagHistory())
-    previous_compound_flags |= ExtractCompoundFlags(*simple, context_->Mode());
+  // Reverse the compound selector, so that it comes out properly
+  // after we reverse everything below.
+  std::reverse(compound_selector.begin(), compound_selector.end());
 
   if (CSSSelector::RelationType combinator = ConsumeCombinator(range)) {
     if (is_inside_has_argument_ &&
         is_inside_logical_combination_in_has_argument_) {
       found_complex_logical_combinations_in_has_argument_ = true;
     }
-    return ConsumePartialComplexSelector(range, combinator, std::move(selector),
-                                         previous_compound_flags);
+    unsigned previous_compound_flags =
+        ExtractCompoundFlags(compound_selector, context_->Mode());
+    if (!ConsumePartialComplexSelector(range, combinator,
+                                       previous_compound_flags)) {
+      return {};
+    }
   }
 
-  return selector;
+  // Complex selectors (i.e., groups of compound selectors) are stored
+  // right-to-left, ie., the opposite direction of what we parse them. However,
+  // within each compound selector, the simple selectors are stored
+  // left-to-right. The simplest way of doing this in-place is to reverse each
+  // compound selector after we've parsed it (which we do above), and then
+  // reverse the entire list in the end. So if the CSS text says:
+  //
+  //   .a.b.c .d.e.f .g.h
+  //
+  // we first parse and reverse each compound selector:
+  //
+  //   .c.b.a .f.e.d .h.g
+  //
+  // and then reverse the entire list, giving the desired in-memory layout:
+  //
+  //   .g.h .d.e.f .a.b.c
+  //
+  // The boundaries between the compound selectors are implicit; they are given
+  // by having a Relation() not equal to kSubSelector, so they follow
+  // automatically when we do the reversal.
+  std::reverse(reset_vector.AddedElements().begin(),
+               reset_vector.AddedElements().end());
+
+  MarkAsEntireComplexSelector(reset_vector.AddedElements());
+
+  return reset_vector.CommitAddedElements();
 }
 
-ArenaUniquePtr<CSSParserSelector>
-CSSSelectorParser::ConsumePartialComplexSelector(
+bool CSSSelectorParser::ConsumePartialComplexSelector(
     CSSParserTokenRange& range,
     CSSSelector::RelationType& combinator,
-    ArenaUniquePtr<CSSParserSelector> selector,
-    unsigned& previous_compound_flags) {
+    unsigned previous_compound_flags) {
   do {
-    ArenaUniquePtr<CSSParserSelector> next_selector =
-        ConsumeCompoundSelector(range);
-    if (!next_selector)
-      return combinator == CSSSelector::kDescendant ? std::move(selector)
-                                                    : nullptr;
-    if (previous_compound_flags & kHasPseudoElementForRightmostCompound)
-      return nullptr;
-    CSSParserSelector* end = next_selector.get();
-    unsigned compound_flags = ExtractCompoundFlags(*end, context_->Mode());
-    while (end->TagHistory()) {
-      end = end->TagHistory();
-      compound_flags |= ExtractCompoundFlags(*end, context_->Mode());
+    base::span<CSSSelector> compound_selector = ConsumeCompoundSelector(range);
+    if (compound_selector.empty()) {
+      // No more selectors. If we ended with some explicit combinator
+      // (e.g. “a >” and then nothing), that's a parse error.
+      // But if not, we're simply done and return everything
+      // we've parsed so far.
+      return combinator == CSSSelector::kDescendant;
     }
-    end->SetRelation(combinator);
-    previous_compound_flags = compound_flags;
-    end->SetTagHistory(std::move(selector));
+    compound_selector.back().SetRelation(combinator);
 
-    selector = std::move(next_selector);
+    // See ConsumeComplexSelector().
+    std::reverse(compound_selector.begin(), compound_selector.end());
+
+    if (previous_compound_flags & kHasPseudoElementForRightmostCompound) {
+      // If we've already seen a compound that needs to be rightmost, and still
+      // get more, that's a parse error.
+      return false;
+    }
+    previous_compound_flags =
+        ExtractCompoundFlags(compound_selector, context_->Mode());
   } while ((combinator = ConsumeCombinator(range)));
 
-  return selector;
+  return true;
 }
 
 // static
@@ -672,7 +787,7 @@ bool IsPseudoClassValidAfterPseudoElement(
 }
 
 bool IsSimpleSelectorValidAfterPseudoElement(
-    const CSSParserSelector& simple_selector,
+    const CSSSelector& simple_selector,
     CSSSelector::PseudoType compound_pseudo_element) {
   switch (compound_pseudo_element) {
     case CSSSelector::kPseudoUnknown:
@@ -711,7 +826,7 @@ bool IsSimpleSelectorValidAfterPseudoElement(
   return IsPseudoClassValidAfterPseudoElement(pseudo, compound_pseudo_element);
 }
 
-bool IsPseudoClassValidWithinHasArgument(CSSParserSelector& selector) {
+bool IsPseudoClassValidWithinHasArgument(CSSSelector& selector) {
   DCHECK_EQ(selector.Match(), CSSSelector::kPseudoClass);
   switch (selector.GetPseudoType()) {
     // Limited nested :has() to avoid increasing :has() invalidation complexity.
@@ -724,36 +839,36 @@ bool IsPseudoClassValidWithinHasArgument(CSSParserSelector& selector) {
 
 }  // namespace
 
-ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeCompoundSelector(
+base::span<CSSSelector> CSSSelectorParser::ConsumeCompoundSelector(
     CSSParserTokenRange& range) {
+  ResetVectorAfterScope reset_vector(output_);
+  wtf_size_t start_pos = output_.size();
   base::AutoReset<CSSSelector::PseudoType> reset_restricting(
       &restricting_pseudo_element_, restricting_pseudo_element_);
 
-  ArenaUniquePtr<CSSParserSelector> compound_selector;
+  // See if the compound selector starts with a tag name, universal selector
+  // or the likes (these can only be at the beginning). Note that we don't
+  // add this to output_ yet, because there are situations where it should
+  // be ignored (like if we have a universal selector and don't need it;
+  // e.g. *:hover is the same as :hover). Thus, we just keep its data around
+  // and prepend it if needed.
+  //
+  // TODO(sesse): In 99% of cases, we should add this, so the prepending logic
+  // gets very complex with having to deal with both the explicit and the
+  // implicit case. Consider just inserting it, and then removing it
+  // afterwards if we really don't need it.
   AtomicString namespace_prefix;
   AtomicString element_name;
   const bool has_q_name = ConsumeName(range, element_name, namespace_prefix);
-  if (!has_q_name) {
-    compound_selector = ConsumeSimpleSelector(range);
-    if (!compound_selector)
-      return nullptr;
-    if (compound_selector->Match() == CSSSelector::kPseudoElement)
-      restricting_pseudo_element_ = compound_selector->GetPseudoType();
-  }
   if (context_->IsHTMLDocument())
     element_name = element_name.LowerASCII();
 
-  while (ArenaUniquePtr<CSSParserSelector> simple_selector =
-             ConsumeSimpleSelector(range)) {
-    if (simple_selector->Match() == CSSSelector::kPseudoElement)
-      restricting_pseudo_element_ = simple_selector->GetPseudoType();
-
-    if (compound_selector) {
-      compound_selector = AddSimpleSelectorToCompound(
-          arena_, std::move(compound_selector), std::move(simple_selector));
-    } else {
-      compound_selector = std::move(simple_selector);
-    }
+  // Consume all the simple selectors that are not tag names.
+  while (ConsumeSimpleSelector(range)) {
+    const CSSSelector& simple_selector = output_.back();
+    if (simple_selector.Match() == CSSSelector::kPseudoElement)
+      restricting_pseudo_element_ = simple_selector.GetPseudoType();
+    output_.back().SetRelation(CSSSelector::kSubSelector);
   }
 
   // While inside a nested selector like :is(), the default namespace shall
@@ -769,54 +884,78 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeCompoundSelector(
       ignore_default_namespace_ || (resist_default_namespace_ && !has_q_name &&
                                     AtEndIgnoringWhitespace(range)));
 
-  if (!compound_selector) {
+  if (reset_vector.AddedElements().empty()) {
+    // No simple selectors except for the tag name.
+    // TODO(sesse): Does this share too much code with
+    // PrependTypeSelectorIfNeeded()?
+    if (!has_q_name) {
+      // No tag name either, so we fail parsing of this selector.
+      return {};
+    }
+    DCHECK(has_q_name);
     AtomicString namespace_uri = DetermineNamespace(namespace_prefix);
     if (namespace_uri.IsNull()) {
       context_->Count(WebFeature::kCSSUnknownNamespacePrefixInSelector);
       failed_parsing_ = true;
-      return nullptr;
+      return {};
     }
     if (namespace_uri == DefaultNamespace())
       namespace_prefix = g_null_atom;
     context_->Count(WebFeature::kHasIDClassTagAttribute);
-    return ArenaUniquePtr<CSSParserSelector>(arena_.New<CSSParserSelector>(
+    output_.push_back(CSSSelector(
         QualifiedName(namespace_prefix, element_name, namespace_uri)));
+    return reset_vector.CommitAddedElements();
   }
+
+  // Prepend a tag selector if we have one, either explicitly or implicitly.
+  // One could be added implicitly e.g. if we are in a non-default namespace
+  // and have no tag selector already, we may need to convert .foo to
+  // (ns|*).foo, with an implicit universal selector prepended before .foo.
+  // The explicit case is when we simply have a tag; e.g. if someone wrote
+  // div.foo.bar, we've added .foo.bar earlier and are prepending div now.
+  //
   // TODO(futhark@chromium.org): Prepending a type selector to the compound is
   // unnecessary if this compound is an argument to a pseudo selector like
   // :not(), since a type selector will be prepended at the top level of the
   // selector if necessary. We need to propagate that context information here
   // to tell if we are at the top level.
   PrependTypeSelectorIfNeeded(namespace_prefix, has_q_name, element_name,
-                              compound_selector.get());
-  return SplitCompoundAtImplicitShadowCrossingCombinator(
-      std::move(compound_selector));
+                              start_pos);
+
+  // The relationship between all of these are that they are sub-selectors.
+  for (CSSSelector& selector : reset_vector.AddedElements().first(
+           reset_vector.AddedElements().size() - 1)) {
+    selector.SetRelation(CSSSelector::kSubSelector);
+  }
+
+  SplitCompoundAtImplicitShadowCrossingCombinator(reset_vector.AddedElements());
+  return reset_vector.CommitAddedElements();
 }
 
-ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeSimpleSelector(
-    CSSParserTokenRange& range) {
+bool CSSSelectorParser::ConsumeSimpleSelector(CSSParserTokenRange& range) {
   const CSSParserToken& token = range.Peek();
-  ArenaUniquePtr<CSSParserSelector> selector;
+  bool ok;
   if (token.GetType() == kHashToken)
-    selector = ConsumeId(range);
+    ok = ConsumeId(range);
   else if (token.GetType() == kDelimiterToken && token.Delimiter() == '.')
-    selector = ConsumeClass(range);
+    ok = ConsumeClass(range);
   else if (token.GetType() == kLeftBracketToken)
-    selector = ConsumeAttribute(range);
+    ok = ConsumeAttribute(range);
   else if (token.GetType() == kColonToken)
-    selector = ConsumePseudo(range);
+    ok = ConsumePseudo(range);
   else
-    return nullptr;
+    return false;
   // TODO(futhark@chromium.org): crbug.com/578131
   // The UASheetMode check is a work-around to allow this selector in
   // mediaControls(New).css:
   // video::-webkit-media-text-track-region-container.scrolling
-  if (!selector || (context_->Mode() != kUASheetMode &&
-                    !IsSimpleSelectorValidAfterPseudoElement(
-                        *selector.get(), restricting_pseudo_element_))) {
+  if (!ok || (context_->Mode() != kUASheetMode &&
+              !IsSimpleSelectorValidAfterPseudoElement(
+                  output_.back(), restricting_pseudo_element_))) {
     failed_parsing_ = true;
+    return false;
   }
-  return selector;
+  return true;
 }
 
 bool CSSSelectorParser::ConsumeName(CSSParserTokenRange& range,
@@ -864,36 +1003,35 @@ bool CSSSelectorParser::ConsumeName(CSSParserTokenRange& range,
   return true;
 }
 
-ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeId(
-    CSSParserTokenRange& range) {
+bool CSSSelectorParser::ConsumeId(CSSParserTokenRange& range) {
   DCHECK_EQ(range.Peek().GetType(), kHashToken);
   if (range.Peek().GetHashTokenType() != kHashTokenId)
-    return nullptr;
-  ArenaUniquePtr<CSSParserSelector> selector(arena_.New<CSSParserSelector>());
-  selector->SetMatch(CSSSelector::kId);
+    return false;
+  CSSSelector selector;
+  selector.SetMatch(CSSSelector::kId);
   AtomicString value = range.Consume().Value().ToAtomicString();
-  selector->SetValue(value, IsQuirksModeBehavior(context_->Mode()));
+  selector.SetValue(value, IsQuirksModeBehavior(context_->Mode()));
+  output_.push_back(std::move(selector));
   context_->Count(WebFeature::kHasIDClassTagAttribute);
-  return selector;
+  return true;
 }
 
-ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeClass(
-    CSSParserTokenRange& range) {
+bool CSSSelectorParser::ConsumeClass(CSSParserTokenRange& range) {
   DCHECK_EQ(range.Peek().GetType(), kDelimiterToken);
   DCHECK_EQ(range.Peek().Delimiter(), '.');
   range.Consume();
   if (range.Peek().GetType() != kIdentToken)
-    return nullptr;
-  ArenaUniquePtr<CSSParserSelector> selector(arena_.New<CSSParserSelector>());
-  selector->SetMatch(CSSSelector::kClass);
+    return false;
+  CSSSelector selector;
+  selector.SetMatch(CSSSelector::kClass);
   AtomicString value = range.Consume().Value().ToAtomicString();
-  selector->SetValue(value, IsQuirksModeBehavior(context_->Mode()));
+  selector.SetValue(value, IsQuirksModeBehavior(context_->Mode()));
+  output_.push_back(std::move(selector));
   context_->Count(WebFeature::kHasIDClassTagAttribute);
-  return selector;
+  return true;
 }
 
-ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeAttribute(
-    CSSParserTokenRange& range) {
+bool CSSSelectorParser::ConsumeAttribute(CSSParserTokenRange& range) {
   DCHECK_EQ(range.Peek().GetType(), kLeftBracketToken);
   CSSParserTokenRange block = range.ConsumeBlock();
   block.ConsumeWhitespace();
@@ -901,9 +1039,9 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeAttribute(
   AtomicString namespace_prefix;
   AtomicString attribute_name;
   if (!ConsumeName(block, attribute_name, namespace_prefix))
-    return nullptr;
+    return false;
   if (attribute_name == CSSSelector::UniversalSelectorAtom())
-    return nullptr;
+    return false;
   block.ConsumeWhitespace();
 
   if (context_->IsHTMLDocument())
@@ -911,40 +1049,41 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumeAttribute(
 
   AtomicString namespace_uri = DetermineNamespace(namespace_prefix);
   if (namespace_uri.IsNull())
-    return nullptr;
+    return false;
 
   QualifiedName qualified_name =
       namespace_prefix.IsNull()
           ? QualifiedName(g_null_atom, attribute_name, g_null_atom)
           : QualifiedName(namespace_prefix, attribute_name, namespace_uri);
 
-  ArenaUniquePtr<CSSParserSelector> selector(arena_.New<CSSParserSelector>());
-
   if (block.AtEnd()) {
-    selector->SetAttribute(qualified_name,
-                           CSSSelector::AttributeMatchType::kCaseSensitive);
-    selector->SetMatch(CSSSelector::kAttributeSet);
+    CSSSelector selector;
+    selector.SetAttribute(qualified_name,
+                          CSSSelector::AttributeMatchType::kCaseSensitive);
+    selector.SetMatch(CSSSelector::kAttributeSet);
+    output_.push_back(std::move(selector));
     context_->Count(WebFeature::kHasIDClassTagAttribute);
-    return selector;
+    return true;
   }
 
-  selector->SetMatch(ConsumeAttributeMatch(block));
+  CSSSelector selector;
+  selector.SetMatch(ConsumeAttributeMatch(block));
 
   const CSSParserToken& attribute_value = block.ConsumeIncludingWhitespace();
   if (attribute_value.GetType() != kIdentToken &&
       attribute_value.GetType() != kStringToken)
-    return nullptr;
-  selector->SetValue(attribute_value.Value().ToAtomicString());
-  selector->SetAttribute(qualified_name, ConsumeAttributeFlags(block));
+    return false;
+  selector.SetValue(attribute_value.Value().ToAtomicString());
+  selector.SetAttribute(qualified_name, ConsumeAttributeFlags(block));
 
   if (!block.AtEnd())
-    return nullptr;
+    return false;
+  output_.push_back(std::move(selector));
   context_->Count(WebFeature::kHasIDClassTagAttribute);
-  return selector;
+  return true;
 }
 
-ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
-    CSSParserTokenRange& range) {
+bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
   DCHECK_EQ(range.Peek().GetType(), kColonToken);
   range.Consume();
 
@@ -956,18 +1095,18 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
 
   const CSSParserToken& token = range.Peek();
   if (token.GetType() != kIdentToken && token.GetType() != kFunctionToken)
-    return nullptr;
+    return false;
 
-  ArenaUniquePtr<CSSParserSelector> selector(arena_.New<CSSParserSelector>());
-  selector->SetMatch(colons == 1 ? CSSSelector::kPseudoClass
-                                 : CSSSelector::kPseudoElement);
+  CSSSelector selector;
+  selector.SetMatch(colons == 1 ? CSSSelector::kPseudoClass
+                                : CSSSelector::kPseudoElement);
 
   bool has_arguments = token.GetType() == kFunctionToken;
-  selector->UpdatePseudoType(token.Value().ToAtomicString(), *context_,
-                             has_arguments, context_->Mode());
+  selector.UpdatePseudoType(token.Value().ToAtomicString(), *context_,
+                            has_arguments, context_->Mode());
 
-  if (selector->Match() == CSSSelector::kPseudoElement) {
-    switch (selector->GetPseudoType()) {
+  if (selector.Match() == CSSSelector::kPseudoElement) {
+    switch (selector.GetPseudoType()) {
       case CSSSelector::kPseudoBefore:
       case CSSSelector::kPseudoAfter:
         context_->Count(WebFeature::kHasBeforeOrAfterPseudoElement);
@@ -981,30 +1120,31 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
     }
   }
 
-  if (selector->Match() == CSSSelector::kPseudoElement &&
+  if (selector.Match() == CSSSelector::kPseudoElement &&
       disallow_pseudo_elements_)
-    return nullptr;
+    return false;
 
   if (is_inside_has_argument_) {
     DCHECK(disallow_pseudo_elements_);
-    if (!IsPseudoClassValidWithinHasArgument(*selector))
-      return nullptr;
+    if (!IsPseudoClassValidWithinHasArgument(selector))
+      return false;
     found_pseudo_in_has_argument_ = true;
   }
 
   if (token.GetType() == kIdentToken) {
     range.Consume();
-    if (selector->GetPseudoType() == CSSSelector::kPseudoUnknown)
-      return nullptr;
-    return selector;
+    if (selector.GetPseudoType() == CSSSelector::kPseudoUnknown)
+      return false;
+    output_.push_back(std::move(selector));
+    return true;
   }
 
   CSSParserTokenRange block = range.ConsumeBlock();
   block.ConsumeWhitespace();
-  if (selector->GetPseudoType() == CSSSelector::kPseudoUnknown)
-    return nullptr;
+  if (selector.GetPseudoType() == CSSSelector::kPseudoUnknown)
+    return false;
 
-  switch (selector->GetPseudoType()) {
+  switch (selector.GetPseudoType()) {
     case CSSSelector::kPseudoIs: {
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
@@ -1015,10 +1155,11 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       absl::optional<CSSSelectorList> selector_list =
           ConsumeForgivingNestedSelectorList(block);
       if (!selector_list || !block.AtEnd())
-        return nullptr;
-      selector->SetSelectorList(
+        return false;
+      selector.SetSelectorList(
           std::make_unique<CSSSelectorList>(std::move(*selector_list)));
-      return selector;
+      output_.push_back(std::move(selector));
+      return true;
     }
     case CSSSelector::kPseudoWhere: {
       DisallowPseudoElementsScope scope(this);
@@ -1030,10 +1171,11 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       absl::optional<CSSSelectorList> selector_list =
           ConsumeForgivingNestedSelectorList(block);
       if (!selector_list || !block.AtEnd())
-        return nullptr;
-      selector->SetSelectorList(
+        return false;
+      selector.SetSelectorList(
           std::make_unique<CSSSelectorList>(std::move(*selector_list)));
-      return selector;
+      output_.push_back(std::move(selector));
+      return true;
     }
     case CSSSelector::kPseudoHost:
     case CSSSelector::kPseudoHostContext:
@@ -1044,27 +1186,27 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       base::AutoReset<bool> ignore_namespace(
           &ignore_default_namespace_,
           ignore_default_namespace_ ||
-              selector->GetPseudoType() == CSSSelector::kPseudoCue);
+              selector.GetPseudoType() == CSSSelector::kPseudoCue);
 
-      std::unique_ptr<CSSSelectorList> selector_list =
-          std::make_unique<CSSSelectorList>();
-      *selector_list = ConsumeCompoundSelectorList(block);
-      if (!selector_list->IsValid() || !block.AtEnd())
-        return nullptr;
+      CSSSelectorList selector_list = ConsumeCompoundSelectorList(block);
+      if (!selector_list.IsValid() || !block.AtEnd())
+        return false;
 
-      if (!selector_list->HasOneSelector()) {
-        if (selector->GetPseudoType() == CSSSelector::kPseudoHost)
-          return nullptr;
-        if (selector->GetPseudoType() == CSSSelector::kPseudoHostContext)
-          return nullptr;
+      if (!selector_list.HasOneSelector()) {
+        if (selector.GetPseudoType() == CSSSelector::kPseudoHost)
+          return false;
+        if (selector.GetPseudoType() == CSSSelector::kPseudoHostContext)
+          return false;
       }
 
-      selector->SetSelectorList(std::move(selector_list));
-      return selector;
+      selector.SetSelectorList(
+          std::make_unique<CSSSelectorList>(std::move(selector_list)));
+      output_.push_back(std::move(selector));
+      return true;
     }
     case CSSSelector::kPseudoHas: {
       if (!RuntimeEnabledFeatures::CSSPseudoHasEnabled())
-        return nullptr;
+        return false;
 
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> resist_namespace(&resist_default_namespace_, true);
@@ -1079,14 +1221,15 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       absl::optional<CSSSelectorList> selector_list =
           ConsumeForgivingRelativeSelectorList(block);
       if (!selector_list || !block.AtEnd())
-        return nullptr;
-      selector->SetSelectorList(
+        return false;
+      selector.SetSelectorList(
           std::make_unique<CSSSelectorList>(std::move(*selector_list)));
       if (found_pseudo_in_has_argument_)
-        selector->SetContainsPseudoInsideHasPseudoClass();
+        selector.SetContainsPseudoInsideHasPseudoClass();
       if (found_complex_logical_combinations_in_has_argument_)
-        selector->SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
-      return selector;
+        selector.SetContainsComplexLogicalCombinationsInsideHasPseudoClass();
+      output_.push_back(std::move(selector));
+      return true;
     }
     case CSSSelector::kPseudoNot: {
       DisallowPseudoElementsScope scope(this);
@@ -1095,32 +1238,34 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
           &is_inside_logical_combination_in_has_argument_,
           is_inside_has_argument_);
 
-      std::unique_ptr<CSSSelectorList> selector_list =
-          std::make_unique<CSSSelectorList>();
-      *selector_list = ConsumeNestedSelectorList(block);
-      if (!selector_list->IsValid() || !block.AtEnd())
-        return nullptr;
+      CSSSelectorList selector_list = ConsumeNestedSelectorList(block);
+      if (!selector_list.IsValid() || !block.AtEnd())
+        return false;
 
-      selector->SetSelectorList(std::move(selector_list));
-      return selector;
+      selector.SetSelectorList(
+          std::make_unique<CSSSelectorList>(std::move(selector_list)));
+      output_.push_back(std::move(selector));
+      return true;
     }
     case CSSSelector::kPseudoDir: {
       const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
       if (ident.GetType() != kIdentToken || !block.AtEnd())
-        return nullptr;
-      selector->SetArgument(ident.Value().ToAtomicString());
-      return selector;
+        return false;
+      selector.SetArgument(ident.Value().ToAtomicString());
+      output_.push_back(std::move(selector));
+      return true;
     }
     case CSSSelector::kPseudoPart: {
       Vector<AtomicString> parts;
       do {
         const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
         if (ident.GetType() != kIdentToken)
-          return nullptr;
+          return false;
         parts.push_back(ident.Value().ToAtomicString());
       } while (!block.AtEnd());
-      selector->SetPartNames(std::make_unique<Vector<AtomicString>>(parts));
-      return selector;
+      selector.SetPartNames(std::make_unique<Vector<AtomicString>>(parts));
+      output_.push_back(std::move(selector));
+      return true;
     }
     case CSSSelector::kPseudoPageTransitionContainer:
     case CSSSelector::kPseudoPageTransitionImageWrapper:
@@ -1128,7 +1273,7 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
     case CSSSelector::kPseudoPageTransitionIncomingImage: {
       const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
       if (!block.AtEnd())
-        return nullptr;
+        return false;
 
       absl::optional<AtomicString> argument;
       if (ident.GetType() == kIdentToken)
@@ -1137,32 +1282,38 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
         argument = CSSSelector::UniversalSelectorAtom();
 
       if (!argument)
-        return nullptr;
+        return false;
 
-      selector->SetArgument(*argument);
-      return selector;
+      selector.SetArgument(*argument);
+      output_.push_back(std::move(selector));
+      return true;
     }
     case CSSSelector::kPseudoSlotted: {
       DisallowPseudoElementsScope scope(this);
       base::AutoReset<bool> inside_compound(&inside_compound_pseudo_, true);
 
-      ArenaUniquePtr<CSSParserSelector> inner_selector =
-          ConsumeCompoundSelector(block);
-      block.ConsumeWhitespace();
-      if (!inner_selector || !block.AtEnd())
-        return nullptr;
-      CSSSelectorVector selector_vector;
-      selector_vector.push_back(std::move(inner_selector));
-      selector->AdoptSelectorVector(selector_vector);
-      return selector;
+      {
+        ResetVectorAfterScope reset_vector(output_);
+        base::span<CSSSelector> inner_selector = ConsumeCompoundSelector(block);
+        block.ConsumeWhitespace();
+        if (inner_selector.empty() || !block.AtEnd())
+          return false;
+        MarkAsEntireComplexSelector(reset_vector.AddedElements());
+        selector.SetSelectorList(std::make_unique<CSSSelectorList>(
+            CSSSelectorList::AdoptSelectorVector(
+                reset_vector.AddedElements())));
+      }
+      output_.push_back(std::move(selector));
+      return true;
     }
     case CSSSelector::kPseudoLang: {
       // FIXME: CSS Selectors Level 4 allows :lang(*-foo)
       const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
       if (ident.GetType() != kIdentToken || !block.AtEnd())
-        return nullptr;
-      selector->SetArgument(ident.Value().ToAtomicString());
-      return selector;
+        return false;
+      selector.SetArgument(ident.Value().ToAtomicString());
+      output_.push_back(std::move(selector));
+      return true;
     }
     case CSSSelector::kPseudoNthChild:
     case CSSSelector::kPseudoNthLastChild:
@@ -1170,19 +1321,21 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
     case CSSSelector::kPseudoNthLastOfType: {
       std::pair<int, int> ab;
       if (!ConsumeANPlusB(block, ab))
-        return nullptr;
+        return false;
       block.ConsumeWhitespace();
       if (!block.AtEnd())
-        return nullptr;
-      selector->SetNth(ab.first, ab.second);
-      return selector;
+        return false;
+      selector.SetNth(ab.first, ab.second);
+      output_.push_back(std::move(selector));
+      return true;
     }
     case CSSSelector::kPseudoHighlight: {
       const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
       if (ident.GetType() != kIdentToken || !block.AtEnd())
-        return nullptr;
-      selector->SetArgument(ident.Value().ToAtomicString());
-      return selector;
+        return false;
+      selector.SetArgument(ident.Value().ToAtomicString());
+      output_.push_back(std::move(selector));
+      return true;
     }
     case CSSSelector::kPseudoToggle: {
       using State = ToggleRoot::State;
@@ -1190,7 +1343,7 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       const CSSParserToken& name = block.ConsumeIncludingWhitespace();
       if (name.GetType() != kIdentToken ||
           !css_parsing_utils::IsCustomIdent(name.Id())) {
-        return nullptr;
+        return false;
       }
       std::unique_ptr<State> value;
       if (!block.AtEnd()) {
@@ -1198,31 +1351,32 @@ ArenaUniquePtr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
         switch (value_token.GetType()) {
           case kIdentToken:
             if (!css_parsing_utils::IsCustomIdent(value_token.Id()))
-              return nullptr;
+              return false;
             value =
                 std::make_unique<State>(value_token.Value().ToAtomicString());
             break;
           case kNumberToken:
             if (value_token.GetNumericValueType() != kIntegerValueType ||
                 value_token.NumericValue() < 0) {
-              return nullptr;
+              return false;
             }
             value = std::make_unique<State>(value_token.NumericValue());
             break;
           default:
-            return nullptr;
+            return false;
         }
       }
       if (!block.AtEnd())
-        return nullptr;
-      selector->SetToggle(name.Value().ToAtomicString(), std::move(value));
-      return selector;
+        return false;
+      selector.SetToggle(name.Value().ToAtomicString(), std::move(value));
+      output_.push_back(std::move(selector));
+      return true;
     }
     default:
       break;
   }
 
-  return nullptr;
+  return false;
 }
 
 CSSSelector::RelationType CSSSelectorParser::ConsumeCombinator(
@@ -1405,9 +1559,12 @@ void CSSSelectorParser::PrependTypeSelectorIfNeeded(
     const AtomicString& namespace_prefix,
     bool has_q_name,
     const AtomicString& element_name,
-    CSSParserSelector* compound_selector) {
+    wtf_size_t start_index_of_compound_selector) {
+  const CSSSelector& compound_selector =
+      output_[start_index_of_compound_selector];
+
   if (!has_q_name && DefaultNamespace() == g_star_atom &&
-      !compound_selector->NeedsImplicitShadowCombinatorForMatching())
+      !NeedsImplicitShadowCombinatorForMatching(compound_selector))
     return;
 
   AtomicString determined_element_name =
@@ -1431,32 +1588,33 @@ void CSSSelectorParser::PrependTypeSelectorIfNeeded(
   // ::cue, ::shadow), we need a universal selector to set the combinator
   // (relation) on in the cases where there are no simple selectors preceding
   // the pseudo element.
-  bool is_host_pseudo = compound_selector->IsHostPseudoSelector();
+  bool is_host_pseudo = IsHostPseudoSelector(compound_selector);
   if (is_host_pseudo && !has_q_name && namespace_prefix.IsNull())
     return;
   if (tag != AnyQName() || is_host_pseudo ||
-      compound_selector->NeedsImplicitShadowCombinatorForMatching()) {
-    compound_selector->PrependTagSelector(
-        arena_, tag,
+      NeedsImplicitShadowCombinatorForMatching(compound_selector)) {
+    const bool is_implicit =
         determined_prefix == g_null_atom &&
-            determined_element_name == CSSSelector::UniversalSelectorAtom() &&
-            !is_host_pseudo);
+        determined_element_name == CSSSelector::UniversalSelectorAtom() &&
+        !is_host_pseudo;
+
+    output_.insert(start_index_of_compound_selector,
+                   CSSSelector(tag, is_implicit));
   }
 }
 
-ArenaUniquePtr<CSSParserSelector>
-CSSSelectorParser::AddSimpleSelectorToCompound(
-    Arena& arena,
-    ArenaUniquePtr<CSSParserSelector> compound_selector,
-    ArenaUniquePtr<CSSParserSelector> simple_selector) {
-  compound_selector->AppendTagHistory(CSSSelector::kSubSelector,
-                                      std::move(simple_selector));
-  return compound_selector;
-}
-
-ArenaUniquePtr<CSSParserSelector>
-CSSSelectorParser::SplitCompoundAtImplicitShadowCrossingCombinator(
-    ArenaUniquePtr<CSSParserSelector> compound_selector) {
+// If we have a compound that implicitly crosses a shadow root, rewrite it to
+// have a shadow-crossing combinator (kUAShadow, which has no symbol, but let's
+// call it >> for the same of the argument) instead of kSubSelector. E.g.:
+//
+//   video::-webkit-video-controls => video >> ::webkit-video-controls
+//
+// This is required because the element matching ::-webkit-video-controls is
+// not the video element itself, but an element somewhere down in <video>'s
+// shadow DOM tree. Note that since we store compounds right-to-left, this may
+// require rearranging elements in memory (see the comment below).
+void CSSSelectorParser::SplitCompoundAtImplicitShadowCrossingCombinator(
+    base::span<CSSSelector> selectors) {
   // The tagHistory is a linked list that stores combinator separated compound
   // selectors from right-to-left. Yet, within a single compound selector,
   // stores the simple selectors from left-to-right.
@@ -1476,31 +1634,27 @@ CSSSelectorParser::SplitCompoundAtImplicitShadowCrossingCombinator(
   // Likewise, ::slotted() pseudo element has an implicit ShadowSlot combinator
   // to its left for finding matching slot element in other TreeScope.
   //
-  // ::part has a implicit ShadowPart combinator to it's left finding the host
+  // ::part has a implicit ShadowPart combinator to its left finding the host
   // element in the scope of the style rule.
   //
   // Example:
   //
   // slot[name=foo]::slotted(div) -> [ ::slotted(div), slot, [name=foo] ]
-  CSSParserSelector* split_after = compound_selector.get();
+  for (size_t i = 1; i < selectors.size(); ++i) {
+    if (NeedsImplicitShadowCombinatorForMatching(selectors[i])) {
+      CSSSelector::RelationType relation =
+          GetImplicitShadowCombinatorForMatching(selectors[i]);
+      std::rotate(selectors.begin(), selectors.begin() + i, selectors.end());
 
-  while (split_after->TagHistory() &&
-         !split_after->TagHistory()->NeedsImplicitShadowCombinatorForMatching())
-    split_after = split_after->TagHistory();
-
-  if (!split_after || !split_after->TagHistory())
-    return compound_selector;
-
-  ArenaUniquePtr<CSSParserSelector> remaining =
-      split_after->ReleaseTagHistory();
-  CSSSelector::RelationType relation =
-      remaining->GetImplicitShadowCombinatorForMatching();
-  // We might need to split the compound twice since ::placeholder is allowed
-  // after ::slotted and they both need an implicit combinator for matching.
-  remaining =
-      SplitCompoundAtImplicitShadowCrossingCombinator(std::move(remaining));
-  remaining->AppendTagHistory(relation, std::move(compound_selector));
-  return remaining;
+      base::span<CSSSelector> remaining = selectors.first(selectors.size() - i);
+      // We might need to split the compound twice, since ::placeholder is
+      // allowed after ::slotted and they both need an implicit combinator for
+      // matching.
+      SplitCompoundAtImplicitShadowCrossingCombinator(remaining);
+      remaining.back().SetRelation(relation);
+      break;
+    }
+  }
 }
 
 namespace {
@@ -1725,27 +1879,23 @@ static void RecordUsageAndDeprecationsOneSelector(
 }
 
 void CSSSelectorParser::RecordUsageAndDeprecations(
-    const CSSSelectorVector& selector_vector) {
+    const base::span<CSSSelector> selector_vector) {
   if (!context_->IsUseCounterRecordingEnabled())
     return;
   if (context_->Mode() == kUASheetMode)
     return;
 
-  for (const ArenaUniquePtr<CSSParserSelector>& selector : selector_vector) {
-    for (const CSSParserSelector* current = selector.get(); current;
-         current = current->TagHistory()) {
-      RecordUsageAndDeprecationsOneSelector(current->GetSelector(), context_);
-    }
+  for (const CSSSelector& current : selector_vector) {
+    RecordUsageAndDeprecationsOneSelector(&current, context_);
   }
 }
 
 bool CSSSelectorParser::ContainsUnknownWebkitPseudoElements(
-    const CSSSelector& complex_selector) {
-  for (const CSSSelector* current = &complex_selector; current;
-       current = current->TagHistory()) {
-    if (current->GetPseudoType() != CSSSelector::kPseudoWebKitCustomElement)
+    base::span<CSSSelector> selectors) {
+  for (const CSSSelector& current : selectors) {
+    if (current.GetPseudoType() != CSSSelector::kPseudoWebKitCustomElement)
       continue;
-    WebFeature feature = FeatureForWebKitCustomPseudoElement(current->Value());
+    WebFeature feature = FeatureForWebKitCustomPseudoElement(current.Value());
     if (feature == WebFeature::kCSSSelectorWebkitUnknownPseudo)
       return true;
   }

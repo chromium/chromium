@@ -106,6 +106,7 @@ class CORE_EXPORT CSSSelector {
   String SelectorText() const;
 
   CSSSelector& operator=(const CSSSelector&) = delete;
+  CSSSelector& operator=(CSSSelector&&);
   bool operator==(const CSSSelector&) const = delete;
   bool operator!=(const CSSSelector&) const = delete;
 
@@ -602,7 +603,7 @@ inline CSSSelector::CSSSelector()
       match_(kUnknown),
       pseudo_type_(kPseudoUnknown),
       is_last_in_selector_list_(false),
-      is_last_in_tag_history_(true),
+      is_last_in_tag_history_(false),
       has_rare_data_(false),
       is_for_page_(false),
       tag_is_implicit_(false),
@@ -614,7 +615,7 @@ inline CSSSelector::CSSSelector(const QualifiedName& tag_q_name,
       match_(kTag),
       pseudo_type_(kPseudoUnknown),
       is_last_in_selector_list_(false),
-      is_last_in_tag_history_(true),
+      is_last_in_tag_history_(false),
       has_rare_data_(false),
       is_for_page_(false),
       tag_is_implicit_(tag_is_implicit),
@@ -668,6 +669,12 @@ inline CSSSelector::~CSSSelector() {
     data_.value_.~AtomicString();
 }
 
+inline CSSSelector& CSSSelector::operator=(CSSSelector&& other) {
+  this->~CSSSelector();
+  new (this) CSSSelector(std::move(other));
+  return *this;
+}
+
 inline const QualifiedName& CSSSelector::TagQName() const {
   DCHECK_EQ(match_, static_cast<unsigned>(kTag));
   return data_.tag_q_name_;
@@ -699,6 +706,23 @@ inline bool CSSSelector::IsIdClassOrAttributeSelector() const {
          Match() == CSSSelector::kClass;
 }
 
+inline void swap(CSSSelector& a, CSSSelector& b) {
+  char tmp[sizeof(CSSSelector)];
+  memcpy(tmp, &a, sizeof(CSSSelector));
+  memcpy(&a, &b, sizeof(CSSSelector));
+  memcpy(&b, tmp, sizeof(CSSSelector));
+}
+
 }  // namespace blink
+
+namespace WTF {
+template <>
+struct VectorTraits<blink::CSSSelector> : VectorTraitsBase<blink::CSSSelector> {
+  static const bool kCanInitializeWithMemset = true;
+  static const bool kCanClearUnusedSlotsWithMemset = true;
+  static const bool kCanMoveWithMemcpy = true;
+  static const bool kCanTraceConcurrently = true;
+};
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SELECTOR_H_

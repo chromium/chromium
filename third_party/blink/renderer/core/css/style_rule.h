@@ -147,28 +147,25 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
 
  public:
   // Use these to allocate the right amount of memory for the StyleRule.
-  static StyleRule* Create(CSSSelectorVector& selector_vector,
+  static StyleRule* Create(base::span<CSSSelector> selectors,
                            CSSPropertyValueSet* properties) {
-    size_t flattened_size = CSSSelectorList::FlattenedSize(selector_vector);
     return MakeGarbageCollected<StyleRule>(
-        AdditionalBytesForSelectors(flattened_size), base::PassKey<StyleRule>(),
-        selector_vector, flattened_size, properties);
+        AdditionalBytesForSelectors(selectors.size()),
+        base::PassKey<StyleRule>(), selectors, properties);
   }
-  static StyleRule* Create(CSSSelectorVector& selector_vector,
+  static StyleRule* Create(base::span<CSSSelector> selectors,
                            CSSLazyPropertyParser* lazy_property_parser) {
-    size_t flattened_size = CSSSelectorList::FlattenedSize(selector_vector);
     return MakeGarbageCollected<StyleRule>(
-        AdditionalBytesForSelectors(flattened_size), base::PassKey<StyleRule>(),
-        selector_vector, flattened_size, lazy_property_parser);
+        AdditionalBytesForSelectors(selectors.size()),
+        base::PassKey<StyleRule>(), selectors, lazy_property_parser);
   }
 
   // Creates a StyleRule with the selectors changed (used by setSelectorText()).
-  static StyleRule* Create(CSSSelectorVector& selector_vector,
+  static StyleRule* Create(base::span<CSSSelector> selectors,
                            StyleRule&& other) {
-    size_t flattened_size = CSSSelectorList::FlattenedSize(selector_vector);
     return MakeGarbageCollected<StyleRule>(
-        AdditionalBytesForSelectors(flattened_size), base::PassKey<StyleRule>(),
-        selector_vector, flattened_size, std::move(other));
+        AdditionalBytesForSelectors(selectors.size()),
+        base::PassKey<StyleRule>(), selectors, std::move(other));
   }
 
   // Constructors. Note that these expect that the StyleRule has been
@@ -178,16 +175,13 @@ class CORE_EXPORT StyleRule : public StyleRuleBase {
   // MakeGarbageCollected() can call them. Instead, use Create() above or
   // Copy() below, as appropriate.
   StyleRule(base::PassKey<StyleRule>,
-            CSSSelectorVector& selector_vector,
-            size_t flattened_size,
+            base::span<CSSSelector> selector_vector,
             CSSPropertyValueSet*);
   StyleRule(base::PassKey<StyleRule>,
-            CSSSelectorVector& selector_vector,
-            size_t flattened_size,
+            base::span<CSSSelector> selector_vector,
             CSSLazyPropertyParser*);
   StyleRule(base::PassKey<StyleRule>,
-            CSSSelectorVector& selector_vector,
-            size_t flattened_size,
+            base::span<CSSSelector> selector_vector,
             StyleRule&&);
   StyleRule(const StyleRule&, size_t flattened_size);
   StyleRule(const StyleRule&) = delete;

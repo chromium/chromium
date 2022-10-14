@@ -29,14 +29,8 @@
 #include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
-#include "third_party/blink/renderer/core/css/parser/arena.h"
 
 namespace blink {
-
-class CSSParserSelector;
-
-// See css_selector_parser.h.
-using CSSSelectorVector = Vector<ArenaUniquePtr<CSSParserSelector>>;
 
 // This class represents a CSS selector, i.e. a pattern of one or more
 // simple selectors. https://www.w3.org/TR/css3-selectors/
@@ -87,15 +81,10 @@ class CORE_EXPORT CSSSelectorList {
 
   ~CSSSelectorList() = default;
 
-  // Finds out how many elements one would need to allocate for
-  // AdoptSelectorVector(), ie., storing the selector tree as a flattened list.
-  // The returned count is in CSSSelector elements, not bytes.
-  static size_t FlattenedSize(const CSSSelectorVector& selector_vector);
   static CSSSelectorList AdoptSelectorVector(
-      CSSSelectorVector& selector_vector);
-  static void AdoptSelectorVector(CSSSelectorVector& selector_vector,
-                                  CSSSelector* selector_array,
-                                  size_t flattened_size);
+      base::span<CSSSelector> selector_vector);
+  static void AdoptSelectorVector(base::span<CSSSelector> selector_vector,
+                                  CSSSelector* selector_array);
 
   CSSSelectorList Copy() const;
 

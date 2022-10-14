@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
@@ -20,7 +21,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_lazy_parsing_state.h"
 #include "third_party/blink/renderer/core/css/parser/css_lazy_property_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
@@ -362,31 +362,29 @@ CSSSelectorList CSSParserImpl::ParsePageSelector(
   if (!range.AtEnd())
     return CSSSelectorList();  // Parse error; extra tokens in @page selector
 
-  Arena arena;
-  ArenaUniquePtr<CSSParserSelector> selector;
-  if (!type_selector.IsNull() && pseudo.IsNull()) {
-    selector.reset(arena.New<CSSParserSelector>(
-        QualifiedName(g_null_atom, type_selector, g_star_atom)));
-  } else {
-    selector.reset(arena.New<CSSParserSelector>());
-    if (!pseudo.IsNull()) {
-      selector->SetMatch(CSSSelector::kPagePseudoClass);
-      selector->UpdatePseudoPage(pseudo.LowerASCII(), context.GetDocument());
-      if (selector->GetPseudoType() == CSSSelector::kPseudoUnknown)
-        return CSSSelectorList();
-    }
-    if (!type_selector.IsNull()) {
-      selector->PrependTagSelector(
-          arena, QualifiedName(g_null_atom, type_selector, g_star_atom));
-    }
+  Vector<CSSSelector> selectors;
+  if (!type_selector.IsNull()) {
+    selectors.push_back(
+        CSSSelector(QualifiedName(g_null_atom, type_selector, g_star_atom)));
   }
-
-  selector->SetForPage();
-  Vector<ArenaUniquePtr<CSSParserSelector>> selector_vector;
-  selector_vector.push_back(std::move(selector));
-  CSSSelectorList selector_list =
-      CSSSelectorList::AdoptSelectorVector(selector_vector);
-  return selector_list;
+  if (!pseudo.IsNull()) {
+    CSSSelector selector;
+    selector.SetMatch(CSSSelector::kPagePseudoClass);
+    selector.UpdatePseudoPage(pseudo.LowerASCII(), context.GetDocument());
+    if (selector.GetPseudoType() == CSSSelector::kPseudoUnknown)
+      return CSSSelectorList();
+    if (selectors.size() != 0) {
+      selectors[0].SetLastInTagHistory(false);
+    }
+    selectors.push_back(selector);
+  }
+  if (selectors.empty()) {
+    selectors.push_back(CSSSelector());
+  }
+  selectors[0].SetForPage();
+  selectors.back().SetLastInTagHistory(true);
+  return CSSSelectorList::AdoptSelectorVector(
+      base::span<CSSSelector>(selectors));
 }
 
 std::unique_ptr<Vector<double>> CSSParserImpl::ParseKeyframeKeyList(
@@ -1304,11 +1302,12 @@ StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
 }
 
 StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream) {
+  DCHECK_EQ(0u, arena_.size());
   if (observer_)
     observer_->StartRuleHeader(StyleRule::kStyle, stream.LookAheadOffset());
 
   // Parse the prelude of the style rule
-  CSSSelectorVector selector_vector = CSSSelectorParser::ConsumeSelector(
+  base::span<CSSSelector> selector_vector = CSSSelectorParser::ConsumeSelector(
       stream, context_, style_sheet_, observer_, arena_);
 
   if (selector_vector.empty()) {
@@ -1322,27 +1321,37 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream) {
   if (observer_)
     observer_->EndRuleHeader(stream.LookAheadOffset());
 
-  if (stream.AtEnd())
-    return nullptr;  // Parse error, EOF instead of qualified rule block
+  if (stream.AtEnd()) {
+    // Parse error, EOF instead of qualified rule block.
+    arena_.resize(0);
+    return nullptr;
+  }
 
   DCHECK_EQ(stream.Peek().GetType(), kLeftBraceToken);
   CSSParserTokenStream::BlockGuard guard(stream);
 
-  if (selector_vector.empty())
-    return nullptr;  // Parse error, invalid selector list
+  if (selector_vector.empty()) {
+    // Parse error, invalid selector list.
+    arena_.resize(0);
+    return nullptr;
+  }
 
   // TODO(csharrison): How should we lazily parse css that needs the observer?
   if (!observer_ && lazy_state_) {
     DCHECK(style_sheet_);
-    return StyleRule::Create(selector_vector,
-                             MakeGarbageCollected<CSSLazyPropertyParserImpl>(
-                                 stream.Offset() - 1, lazy_state_));
+    StyleRule* style_rule = StyleRule::Create(
+        selector_vector, MakeGarbageCollected<CSSLazyPropertyParserImpl>(
+                             stream.Offset() - 1, lazy_state_));
+    arena_.resize(0);  // See class comment on CSSSelectorParser.
+    return style_rule;
   }
   ConsumeDeclarationList(stream, StyleRule::kStyle);
 
-  return StyleRule::Create(
+  StyleRule* style_rule = StyleRule::Create(
       selector_vector,
       CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+  arena_.resize(0);  // See class comment on CSSSelectorParser.
+  return style_rule;
 }
 
 void CSSParserImpl::ConsumeDeclarationList(CSSParserTokenStream& stream,

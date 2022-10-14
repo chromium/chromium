@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -74,8 +73,8 @@ class CheckPseudoHasCacheScopeContextTest : public PageTestBase {
       const ExpectedResultCacheEntry (&expected_result_cache_entries)[length],
       unsigned expected_fast_reject_filter_cache_count,
       unsigned expected_bloom_filter_allocation_count) const {
-    Arena arena;
-    CSSSelectorVector selector_vector = CSSParser::ParseSelector(
+    Vector<CSSSelector> arena;
+    base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
         MakeGarbageCollected<CSSParserContext>(
             *document, NullURL(), true /* origin_clean */, Referrer(),
             WTF::TextEncoding(), CSSParserContext::kSnapshotProfile),

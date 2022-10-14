@@ -27,10 +27,8 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 
 #include <memory>
-#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -51,56 +49,24 @@ CSSSelectorList CSSSelectorList::Copy() const {
   return list;
 }
 
-size_t CSSSelectorList::FlattenedSize(
-    const CSSSelectorVector& selector_vector) {
-  size_t flattened_size = 0;
-  for (const ArenaUniquePtr<blink::CSSParserSelector>& selector_ptr :
-       selector_vector) {
-    for (CSSParserSelector* selector = selector_ptr.get(); selector;
-         selector = selector->TagHistory())
-      ++flattened_size;
-  }
-  DCHECK(flattened_size);
-  return flattened_size;
-}
-
-void CSSSelectorList::AdoptSelectorVector(CSSSelectorVector& selector_vector,
-                                          CSSSelector* selector_array,
-                                          size_t flattened_size) {
-  DCHECK_EQ(flattened_size, FlattenedSize(selector_vector));
-  wtf_size_t array_index = 0;
-  for (const ArenaUniquePtr<blink::CSSParserSelector>& selector_ptr :
-       selector_vector) {
-    CSSParserSelector* current = selector_ptr.get();
-    while (current) {
-      new (&selector_array[array_index])
-          CSSSelector(std::move(current->ReleaseSelector()));
-
-      current = current->TagHistory();
-      DCHECK(!selector_array[array_index].IsLastInSelectorList());
-      if (current)
-        selector_array[array_index].SetLastInTagHistory(false);
-      ++array_index;
-    }
-    DCHECK(selector_array[array_index - 1].IsLastInTagHistory());
-  }
-  DCHECK_EQ(flattened_size, array_index);
-  selector_array[array_index - 1].SetLastInSelectorList(true);
-  selector_vector.clear();
+void CSSSelectorList::AdoptSelectorVector(
+    base::span<CSSSelector> selector_vector,
+    CSSSelector* selector_array) {
+  std::uninitialized_move(selector_vector.begin(), selector_vector.end(),
+                          selector_array);
+  selector_array[selector_vector.size() - 1].SetLastInSelectorList(true);
 }
 
 CSSSelectorList CSSSelectorList::AdoptSelectorVector(
-    CSSSelectorVector& selector_vector) {
+    base::span<CSSSelector> selector_vector) {
   if (selector_vector.empty()) {
     return {};
   }
 
-  size_t flattened_size = FlattenedSize(selector_vector);
-
   CSSSelectorList list;
-  list.selector_array_ = std::make_unique<CSSSelector[]>(flattened_size);
-  AdoptSelectorVector(selector_vector, list.selector_array_.get(),
-                      flattened_size);
+  list.selector_array_ =
+      std::make_unique<CSSSelector[]>(selector_vector.size());
+  AdoptSelectorVector(selector_vector, list.selector_array_.get());
   return list;
 }
 

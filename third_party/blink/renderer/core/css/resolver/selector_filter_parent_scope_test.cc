@@ -6,7 +6,6 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -30,7 +29,7 @@ class SelectorFilterParentScopeTest : public testing::Test {
 };
 
 TEST_F(SelectorFilterParentScopeTest, ParentScope) {
-  Arena arena;
+  Vector<CSSSelector> arena;
   GetDocument().body()->setAttribute(html_names::kClassAttr, "match");
   GetDocument().documentElement()->SetIdAttribute("myId");
   auto* div = GetDocument().CreateRawElement(html_names::kDivTag);
@@ -47,7 +46,7 @@ TEST_F(SelectorFilterParentScopeTest, ParentScope) {
       SelectorFilterParentScope div_scope(*div);
       SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-      CSSSelectorVector selector_vector = CSSParser::ParseSelector(
+      base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
           MakeGarbageCollected<CSSParserContext>(
               kHTMLStandardMode, SecureContextMode::kInsecureContext),
           nullptr, "html *, body *, .match *, #myId *", arena);
@@ -79,8 +78,8 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
   SelectorFilterRootScope span_scope(GetDocument().getElementById("y"));
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-  Arena arena;
-  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
+  Vector<CSSSelector> arena;
+  base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode, SecureContextMode::kInsecureContext),
       nullptr, "html *, body *, div *, span *, .x *, #y *", arena);
@@ -135,8 +134,8 @@ TEST_F(SelectorFilterParentScopeTest, AttributeFilter) {
   SelectorFilterRootScope span_scope(inner);
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-  Arena arena;
-  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
+  Vector<CSSSelector> arena;
+  base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode, SecureContextMode::kInsecureContext),
       nullptr, "[Attr] *, [attr] *, [viewbox] *, [VIEWBOX] *", arena);

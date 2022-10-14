@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_property_source_data.h"
 #include "third_party/blink/renderer/core/css/css_property_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenized_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
@@ -226,7 +227,7 @@ class CORE_EXPORT CSSParserImpl {
 
   // Used for temporary allocations of CSSParserSelector (we send it down
   // to CSSSelectorParser, which temporarily holds on to a reference to it).
-  Arena arena_;
+  Vector<CSSSelector> arena_;
 
   HeapHashMap<String, Member<const MediaQuerySet>> media_query_cache_;
 };

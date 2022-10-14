@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -50,7 +49,7 @@ class RuleFeatureSetTest : public testing::Test {
   }
 
   static RuleFeatureSet::SelectorPreMatch CollectFeaturesTo(
-      CSSSelectorVector& selector_vector,
+      base::span<CSSSelector> selector_vector,
       const StyleScope* style_scope,
       RuleFeatureSet& set) {
     if (selector_vector.empty()) {
@@ -80,8 +79,8 @@ class RuleFeatureSetTest : public testing::Test {
   static RuleFeatureSet::SelectorPreMatch CollectFeaturesTo(
       const String& selector_text,
       RuleFeatureSet& set) {
-    Arena arena;
-    CSSSelectorVector selector_vector = CSSParser::ParseSelector(
+    Vector<CSSSelector> arena;
+    base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
         StrictCSSParserContext(SecureContextMode::kInsecureContext), nullptr,
         selector_text, arena);
     return CollectFeaturesTo(selector_vector, nullptr /* style_scope */, set);
