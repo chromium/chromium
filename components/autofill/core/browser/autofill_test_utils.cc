@@ -1096,7 +1096,8 @@ void AddFieldPredictionsToForm(
     const FormFieldData& field_data,
     const std::vector<ServerFieldType>& field_types,
     AutofillQueryResponse_FormSuggestion* form_suggestion) {
-  std::vector<FieldPrediction> field_predictions(field_types.size());
+  std::vector<FieldPrediction> field_predictions;
+  field_predictions.reserve(field_types.size());
   base::ranges::transform(field_types, std::back_inserter(field_predictions),
                           static_cast<FieldPrediction (*)(ServerFieldType)>(
                               &CreateFieldPrediction));

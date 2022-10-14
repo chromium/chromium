@@ -137,8 +137,8 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
     for (size_t i = 0; i < field_ids.size(); ++i) {
       for (auto form_field_data : formData.fields) {
         if (form_field_data.id_attribute == field_ids[i]) {
-          std::vector<ServerFieldType> server_field_types(
-              field_types[i].size());
+          std::vector<ServerFieldType> server_field_types;
+          server_field_types.reserve(field_types[i].size());
           base::ranges::transform(field_types[i],
                                   std::back_inserter(server_field_types),
                                   [](int type) -> ServerFieldType {
