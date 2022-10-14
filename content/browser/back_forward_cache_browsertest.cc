@@ -200,7 +200,7 @@ void BackForwardCacheBrowserTest::TearDownInProcessBrowserTestFixture() {
 }
 
 void BackForwardCacheBrowserTest::SetupFeaturesAndParameters() {
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled_features;
+  std::vector<base::test::FeatureRefAndParams> enabled_features;
 
   for (const auto& [feature_ref, params] : features_with_params_) {
     enabled_features.emplace_back(*feature_ref, params);

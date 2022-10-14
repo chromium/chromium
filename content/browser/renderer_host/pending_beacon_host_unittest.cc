@@ -141,9 +141,8 @@ class PendingBeaconHostTestBase
 class PendingBeaconHostTest : public PendingBeaconHostTestBase {
  protected:
   void SetUp() override {
-    const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features = {{blink::features::kPendingBeaconAPI,
-                             {{"send_on_pagehide", "true"}}}};
+    const std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {blink::features::kPendingBeaconAPI, {{"send_on_pagehide", "true"}}}};
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
     PendingBeaconHostTestBase::SetUp();
   }

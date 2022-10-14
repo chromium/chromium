@@ -99,8 +99,8 @@ IN_PROC_BROWSER_TEST_F(DocumentServicePrerenderingBrowserTest,
 class DocumentServiceBFCacheBrowserTest : public DocumentServiceBrowserTest {
  public:
   DocumentServiceBFCacheBrowserTest() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        additional_features = {{features::kBackForwardCache, {}}};
+    std::vector<base::test::FeatureRefAndParams> additional_features = {
+        {features::kBackForwardCache, {}}};
     feature_list_.InitWithFeaturesAndParameters(
         DefaultEnabledBackForwardCacheParametersForTests(additional_features),
         DefaultDisabledBackForwardCacheParametersForTests());

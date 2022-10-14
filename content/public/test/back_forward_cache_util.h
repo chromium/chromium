@@ -63,13 +63,12 @@ void DisableBackForwardCacheForTesting(
 // testing (enables the cache, sets timeouts, etc.)
 // Optionally, |additional_params| can be passed to specify additional
 // features and parameters that will be in the returned structure.
-std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+std::vector<base::test::FeatureRefAndParams>
 DefaultEnabledBackForwardCacheParametersForTests();
 
-std::vector<base::test::ScopedFeatureList::FeatureAndParams>
+std::vector<base::test::FeatureRefAndParams>
 DefaultEnabledBackForwardCacheParametersForTests(
-    const std::vector<base::test::ScopedFeatureList::FeatureAndParams>&
-        additional_params);
+    const std::vector<base::test::FeatureRefAndParams>& additional_params);
 
 // Returns a vector of features to disable by default when testing with the
 // BackForwardCache.

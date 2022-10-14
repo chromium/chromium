@@ -3306,8 +3306,7 @@ class MediaSessionImplWithBackForwardCacheBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MediaSessionImplBrowserTest::SetUpCommandLine(command_line);
 
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::map<std::string, std::string> params;
 #if BUILDFLAG(IS_ANDROID)
     params["process_binding_strength"] = "NORMAL";

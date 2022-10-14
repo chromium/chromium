@@ -159,7 +159,7 @@ class NavigationControllerBrowserTestBase : public ContentBrowserTest {
 void InitBackForwardCacheFeature(base::test::ScopedFeatureList* feature_list,
                                  bool enable_back_forward_cache) {
   if (enable_back_forward_cache) {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams> features;
+    std::vector<base::test::FeatureRefAndParams> features;
     features.push_back({features::kBackForwardCache, {}});
     features.push_back({kBackForwardCacheNoTimeEviction, {}});
     features.push_back({features::kBackForwardCacheMemoryControls, {}});

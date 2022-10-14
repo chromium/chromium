@@ -45,8 +45,7 @@ MATCHER(IsFrameHidden,
 
 class PendingBeaconTimeoutBrowserTestBase : public ContentBrowserTest {
  protected:
-  using FeaturesType =
-      std::vector<base::test::ScopedFeatureList::FeatureAndParams>;
+  using FeaturesType = std::vector<base::test::FeatureRefAndParams>;
 
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(), {});
