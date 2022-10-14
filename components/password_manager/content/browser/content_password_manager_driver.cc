@@ -484,14 +484,12 @@ ContentPasswordManagerDriver::GetAutofillAgent() {
 
 const mojo::AssociatedRemote<autofill::mojom::PasswordAutofillAgent>&
 ContentPasswordManagerDriver::GetPasswordAutofillAgent() {
-  if (render_frame_host_->IsAnonymous()) {
+  if (render_frame_host_->IsAnonymous() ||
+      render_frame_host_->GetLifecycleState() ==
+          content::RenderFrameHost::LifecycleState::kPrerendering) {
     password_autofill_agent_.reset();
     return password_autofill_agent_;  // Unbound remote.
   }
-
-  DCHECK(!password_autofill_agent_ ||
-         (content::RenderFrameHost::LifecycleState::kPrerendering !=
-          render_frame_host_->GetLifecycleState()));
 
   if (!password_autofill_agent_) {
     // Some test environments may have no remote interface support.
