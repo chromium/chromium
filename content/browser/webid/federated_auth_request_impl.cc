@@ -607,12 +607,8 @@ void FederatedAuthRequestImpl::FetchManifest(const IdentityProvider& idp) {
       base::BindOnce(&FederatedAuthRequestImpl::OnManifestListFetched,
                      weak_ptr_factory_.GetWeakPtr(), idp);
 
-  if (IsFedCmManifestValidationEnabled()) {
-    network_manager_->FetchManifestList(idp.config_url,
-                                        std::move(manifest_list_callback));
-  } else {
-    idp_info_[idp.config_url].manifest_list_checked = true;
-  }
+  network_manager_->FetchManifestList(idp.config_url,
+                                      std::move(manifest_list_callback));
   network_manager_->FetchManifest(idp.config_url, icon_ideal_size,
                                   icon_minimum_size,
                                   std::move(manifest_callback));

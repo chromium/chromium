@@ -373,11 +373,6 @@ const char kFedCmIdpSignoutFieldTrialParamName[] = "IdpSignout";
 // cross-origin iframes.
 const char kFedCmIframeSupportFieldTrialParamName[] = "IframeSupport";
 
-// Kill switch for FedCm manifest validation.
-BASE_FEATURE(kFedCmManifestValidation,
-             "FedCmManifestValidation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables usage of the FedCM API with metrics endpoint at the same time.
 BASE_FEATURE(kFedCmMetricsEndpoint,
              "FedCmMetricsEndpoint",

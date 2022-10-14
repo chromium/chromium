@@ -1071,9 +1071,6 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulRequest) {
 
 // Test successful manifest list fetching.
 TEST_F(FederatedAuthRequestImplTest, ManifestListSuccess) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmManifestValidation);
-
   // Use IdpNetworkRequestManagerParamChecker to validate passed-in parameters
   // to IdpNetworkRequestManager methods.
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
@@ -1087,9 +1084,6 @@ TEST_F(FederatedAuthRequestImplTest, ManifestListSuccess) {
 
 // Test the provider url is not in the manifest list.
 TEST_F(FederatedAuthRequestImplTest, ManifestListNotInList) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmManifestValidation);
-
   RequestExpectations request_not_in_list = {
       RequestTokenStatus::kError,
       FederatedAuthRequestResult::kErrorManifestNotInManifestList,
@@ -1106,9 +1100,6 @@ TEST_F(FederatedAuthRequestImplTest, ManifestListNotInList) {
 
 // Test that not having the filename in the manifest list fails.
 TEST_F(FederatedAuthRequestImplTest, ManifestListHasNoFilename) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmManifestValidation);
-
   IdentityProviderParameters identity_provider{"https://idp.example/foo",
                                                kClientId, kNonce};
   RequestParameters parameters{
