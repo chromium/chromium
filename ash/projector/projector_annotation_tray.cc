@@ -24,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/separator.h"
@@ -61,7 +62,7 @@ enum ProjectorTool { kToolNone, kToolPen };
 
 ProjectorTool GetCurrentTool() {
   auto* controller = Shell::Get()->projector_controller();
-  // ProjctorController may not be available yet as the ProjectorAnnotationTray
+  // `controller` may not be available yet as the `ProjectorAnnotationTray`
   // is created before it.
   if (!controller)
     return kToolNone;
@@ -100,6 +101,27 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
       image_view_(
           tray_container()->AddChildView(std::make_unique<views::ImageView>())),
       pen_view_(nullptr) {
+  SetPressedCallback(base::BindRepeating(
+      [](ProjectorAnnotationTray* projector_annotation_tray,
+         const ui::Event& event) {
+        // NOTE: Long press not supported via the `views::Button` callback, it
+        // is handled via OnGestureEvent override.
+        if (event.IsMouseEvent() &&
+            event.AsMouseEvent()->IsRightMouseButton()) {
+          projector_annotation_tray->ShowBubble();
+          return;
+        }
+
+        projector_annotation_tray->ToggleAnnotator();
+      },
+      base::Unretained(this)));
+  // Right click should show the bubble. In tablet mode, long press is
+  // synonymous with right click, gesture long press must be intercepted via
+  // `OnGestureEvent()` override, as `views::Button` forces long press to show a
+  // contextual menu.
+  SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
+                           ui::EF_RIGHT_MOUSE_BUTTON);
+
   image_view_->SetTooltipText(GetTooltip());
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
@@ -111,28 +133,18 @@ ProjectorAnnotationTray::ProjectorAnnotationTray(Shelf* shelf)
 
 ProjectorAnnotationTray::~ProjectorAnnotationTray() = default;
 
-bool ProjectorAnnotationTray::PerformAction(const ui::Event& event) {
-  ToggleAnnotator();
-  return true;
-}
-
-void ProjectorAnnotationTray::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() != ui::ET_MOUSE_PRESSED) {
+void ProjectorAnnotationTray::OnGestureEvent(ui::GestureEvent* event) {
+  // Long Press typically is used to show a contextual menu, but because in
+  // tablet mode tapping the pod is used to toggle a feature, long press is the
+  // only available way to show the bubble.
+  // TODO(crbug/1374368): Put this where we handle other button activations,
+  // once the `views::Button` code allows it.
+  if (event->details().type() != ui::ET_GESTURE_LONG_PRESS) {
+    TrayBackgroundView::OnGestureEvent(event);
     return;
   }
-  if (event->IsRightMouseButton()) {
-    ShowBubble();
-  } else if (event->IsLeftMouseButton()) {
-    ToggleAnnotator();
-  }
-}
 
-void ProjectorAnnotationTray::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->details().type() == ui::ET_GESTURE_LONG_PRESS) {
-    ShowBubble();
-  } else if (event->details().type() == ui::ET_GESTURE_TAP) {
-    ToggleAnnotator();
-  }
+  ShowBubble();
 }
 
 void ProjectorAnnotationTray::ClickedOutsideBubble() {

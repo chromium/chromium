@@ -11,6 +11,15 @@
 #include "ash/system/tray/view_click_listener.h"
 #include "base/scoped_observation.h"
 
+namespace ui {
+class GestureEvent;
+}  // namespace ui
+
+namespace views {
+class ImageView;
+class Widget;
+}  // namespace views
+
 namespace ash {
 
 class HoverHighlightView;
@@ -34,7 +43,7 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   ~ProjectorAnnotationTray() override;
 
   // TrayBackgroundView:
-  bool PerformAction(const ui::Event& event) override;
+  void OnGestureEvent(ui::GestureEvent* event) override;
   void ClickedOutsideBubble() override;
   std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
@@ -43,8 +52,6 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
   void ShowBubble() override;
   TrayBubbleView* GetBubbleView() override;
   views::Widget* GetBubbleWidget() const override;
-  void OnMouseEvent(ui::MouseEvent* event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
   void OnThemeChanged() override;
 
   // SessionObserver:

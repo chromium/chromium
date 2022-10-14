@@ -24,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
@@ -204,6 +205,77 @@ TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
   histogram_tester.ExpectUniqueSample(kProjectorMarkerColorHistogramName,
                                       ProjectorMarkerColor::kMagenta,
                                       /*count=*/1);
+}
+
+// Tests that right clicking the ProjectorAnnotationTray shows a bubble.
+TEST_F(ProjectorUiControllerTest, RightClickShowsBubble) {
+  controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
+  controller_->OnCanvasInitialized(true);
+
+  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
+                                        ->GetStatusAreaWidget()
+                                        ->projector_annotation_tray();
+
+  // Right click the tray item, it should show a bubble.
+  RightClickOn(projector_annotation_tray);
+  EXPECT_TRUE(projector_annotation_tray->GetBubbleWidget());
+}
+
+// Tests that long pressing the ProjectorAnnotationTray shows a bubble.
+TEST_F(ProjectorUiControllerTest, LongPressShowsBubble) {
+  controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
+  controller_->OnCanvasInitialized(true);
+
+  auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
+                                        ->GetStatusAreaWidget()
+                                        ->projector_annotation_tray();
+
+  // Long press the tray item, it should show a bubble.
+  gfx::Point location =
+      projector_annotation_tray->GetBoundsInScreen().CenterPoint();
+
+  // Temporarily reconfigure gestures so that the long press takes 2
+  // milliseconds.
+  ui::GestureConfiguration* gesture_config =
+      ui::GestureConfiguration::GetInstance();
+  const int old_long_press_time_in_ms = gesture_config->long_press_time_in_ms();
+  const base::TimeDelta old_short_press_time =
+      gesture_config->short_press_time();
+  const int old_show_press_delay_in_ms =
+      gesture_config->show_press_delay_in_ms();
+  gesture_config->set_long_press_time_in_ms(1);
+  gesture_config->set_short_press_time(base::Milliseconds(1));
+  gesture_config->set_show_press_delay_in_ms(1);
+
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->set_current_screen_location(location);
+  event_generator->PressTouch();
+
+  // Hold the press down for 2 ms, to trigger a long press.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2));
+  run_loop.Run();
+
+  gesture_config->set_long_press_time_in_ms(old_long_press_time_in_ms);
+  gesture_config->set_short_press_time(old_short_press_time);
+  gesture_config->set_show_press_delay_in_ms(old_show_press_delay_in_ms);
+
+  event_generator->ReleaseTouch();
+
+  EXPECT_TRUE(projector_annotation_tray->GetBubbleWidget());
+}
+
+// Tests that tapping the ProjectorAnnotationTray enables annotation.
+TEST_F(ProjectorUiControllerTest, TapEnabledAnnotation) {
+  controller_->ShowAnnotationTray(Shell::GetPrimaryRootWindow());
+  controller_->OnCanvasInitialized(true);
+
+  GestureTapOn(Shell::GetPrimaryRootWindowController()
+                   ->GetStatusAreaWidget()
+                   ->projector_annotation_tray());
+
+  EXPECT_TRUE(controller_->is_annotator_enabled());
 }
 
 TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {
