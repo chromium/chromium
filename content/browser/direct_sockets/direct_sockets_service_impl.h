@@ -8,9 +8,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/direct_sockets_delegate.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -24,10 +23,11 @@ class NetworkContext;
 
 namespace content {
 
+class DirectSocketsDelegate;
+
 // Implementation of the DirectSocketsService Mojo service.
 class CONTENT_EXPORT DirectSocketsServiceImpl
-    : public blink::mojom::DirectSocketsService,
-      public WebContentsObserver {
+    : public DocumentService<blink::mojom::DirectSocketsService> {
  public:
   ~DirectSocketsServiceImpl() override;
 
@@ -49,23 +49,17 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
       OpenUdpSocketCallback callback) override;
 
-  // WebContentsObserver:
-  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
-  void RenderFrameHostChanged(RenderFrameHost* old_host,
-                              RenderFrameHost* new_host) override;
-  void WebContentsDestroyed() override;
-
-  network::mojom::NetworkContext* GetNetworkContext() const;
-  RenderFrameHost* GetFrameHost() const;
-
-  static net::MutableNetworkTrafficAnnotationTag MutableTrafficAnnotation();
   static net::NetworkTrafficAnnotationTag TrafficAnnotation();
 
   // Testing:
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
 
  private:
-  explicit DirectSocketsServiceImpl(RenderFrameHost*);
+  DirectSocketsServiceImpl(
+      RenderFrameHost*,
+      mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver);
+
+  network::mojom::NetworkContext* GetNetworkContext() const;
 
   void OnResolveCompleteForTcpSocket(
       blink::mojom::DirectSocketOptionsPtr,
@@ -83,7 +77,6 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       int result,
       const absl::optional<net::AddressList>& resolved_addresses);
 
-  raw_ptr<RenderFrameHost> frame_host_;
   mojo::UniqueReceiverSet<blink::mojom::DirectUDPSocket>
       direct_udp_socket_receivers_;
 

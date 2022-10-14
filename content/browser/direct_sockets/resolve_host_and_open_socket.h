@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DIRECT_SOCKETS_RESOLVE_HOST_AND_OPEN_SOCKET_H_
 #define CONTENT_BROWSER_DIRECT_SOCKETS_RESOLVE_HOST_AND_OPEN_SOCKET_H_
 
-#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -13,12 +12,14 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 
+namespace network::mojom {
+class NetworkContext;
+}  // namespace network::mojom
+
 namespace content {
 
-class DirectSocketsServiceImpl;
-
-// Resolves the host/port pair provided in options. Upon completion invokes the
-// supplied callback and deletes |this|.
+// Resolves the host/port pair provided on creation. After resolver signals
+// completion via OnComplete(), fires the supplied callback and deletes itself.
 class CONTENT_EXPORT ResolveHostAndOpenSocket
     : public network::ResolveHostClientBase {
  public:
@@ -28,17 +29,14 @@ class CONTENT_EXPORT ResolveHostAndOpenSocket
 
   ~ResolveHostAndOpenSocket() override;
 
-  static ResolveHostAndOpenSocket* Create(
-      base::WeakPtr<DirectSocketsServiceImpl>,
-      const std::string& host,
-      uint16_t port,
-      OpenSocketCallback);
+  static ResolveHostAndOpenSocket* Create(const std::string& host,
+                                          uint16_t port,
+                                          OpenSocketCallback);
 
-  void Start();
+  void Start(network::mojom::NetworkContext*);
 
  private:
-  ResolveHostAndOpenSocket(base::WeakPtr<DirectSocketsServiceImpl>,
-                           const std::string& host,
+  ResolveHostAndOpenSocket(const std::string& host,
                            uint16_t port,
                            OpenSocketCallback);
 
@@ -48,17 +46,10 @@ class CONTENT_EXPORT ResolveHostAndOpenSocket
                   const absl::optional<net::HostResolverEndpointResults>&
                       endpoint_results_with_metadata) override;
 
-  void OpenSocket(int result,
-                  const absl::optional<net::AddressList>& resolved_addresses);
-
-  base::WeakPtr<DirectSocketsServiceImpl> service_;
-
   const std::string host_;
   uint16_t port_;
 
   OpenSocketCallback callback_;
-
-  bool is_mdns_name_ = false;
 
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   mojo::Remote<network::mojom::HostResolver> resolver_;
