@@ -100,6 +100,8 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
   }
 
   void SetupAndLoadImagePage(const std::string& image_path) {
+    SetupImageSearchEngine();
+
     // Go to a page with an image in it. The test server doesn't serve the image
     // with the right MIME type, so use a data URL to make a page containing it.
     GURL image_url(embedded_test_server()->GetURL(image_path));
@@ -194,7 +196,6 @@ class SearchImageWithUnifiedSidePanel : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
                        ImageSearchWithValidImageOpensUnifiedSidePanel) {
-  SetupImageSearchEngine();
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
@@ -214,56 +215,7 @@ IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
 }
 
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
-                       EnablesOpenInNewTabForLensErrorUrl) {
-  SetupUnifiedSidePanel();
-  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
-
-  // Make URL have payload param with no value ("p=")
-  auto error_url = embedded_test_server()->GetURL("/imagesearch?p=&ep=ccm");
-  auto url_params = content::OpenURLParams(
-      error_url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK, false);
-  auto load_url_params =
-      content::NavigationController::LoadURLParams(url_params);
-  lens::GetLensUnifiedSidePanelWebContentsForTesting(browser())
-      ->GetController()
-      .LoadURLWithParams(load_url_params);
-
-  // Wait for the side panel to open and finish loading web contents.
-  content::TestNavigationObserver nav_observer(
-      lens::GetLensUnifiedSidePanelWebContentsForTesting(browser()));
-  nav_observer.Wait();
-
-  EXPECT_TRUE(GetLensSidePanelCoordinator()->IsLaunchButtonEnabledForTesting());
-}
-
-IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
-                       EnablesOpenInNewTabForLensAlternateErrorUrl) {
-  SetupUnifiedSidePanel();
-  EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
-
-  // Make URL have payload param with no value ("p=")
-  auto error_url = embedded_test_server()->GetURL("/imagesearch?p");
-  auto url_params = content::OpenURLParams(
-      error_url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui::PAGE_TRANSITION_LINK, false);
-  auto load_url_params =
-      content::NavigationController::LoadURLParams(url_params);
-  lens::GetLensUnifiedSidePanelWebContentsForTesting(browser())
-      ->GetController()
-      .LoadURLWithParams(load_url_params);
-
-  // Wait for the side panel to open and finish loading web contents.
-  content::TestNavigationObserver nav_observer(
-      lens::GetLensUnifiedSidePanelWebContentsForTesting(browser()));
-  nav_observer.Wait();
-
-  EXPECT_TRUE(GetLensSidePanelCoordinator()->IsLaunchButtonEnabledForTesting());
-}
-
-IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanel,
                        EnablesOpenInNewTabForAnyUrlForNonGoogleDse) {
-  SetupImageSearchEngine();
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
@@ -389,7 +341,6 @@ class SearchImageWithUnifiedSidePanelFooterDisabled
 
 IN_PROC_BROWSER_TEST_F(SearchImageWithUnifiedSidePanelFooterDisabled,
                        ImageSearchWithValidImageOpensUnifiedSidePanel) {
-  SetupImageSearchEngine();
   SetupUnifiedSidePanel();
   EXPECT_TRUE(GetUnifiedSidePanel()->GetVisible());
 
