@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
 
+#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
@@ -16,11 +17,10 @@ void Hyphenation::Initialize(const AtomicString& locale) {
 
 wtf_size_t Hyphenation::FirstHyphenLocation(const StringView& text,
                                             wtf_size_t after_index) const {
-  Vector<wtf_size_t, 8> hyphen_locations = HyphenLocations(text);
-  for (auto it = hyphen_locations.rbegin(); it != hyphen_locations.rend();
-       ++it) {
-    if (*it > after_index)
-      return *it;
+  const Vector<wtf_size_t, 8> hyphen_locations = HyphenLocations(text);
+  for (const wtf_size_t index : base::Reversed(hyphen_locations)) {
+    if (index > after_index)
+      return index;
   }
   return 0;
 }
