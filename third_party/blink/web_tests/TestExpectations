@@ -7283,3 +7283,9 @@ crbug.com/1372181 external/wpt/scroll-animations/css/scroll-timeline-default-ifr
 
 # Sheriff 2022-10-04
 crbug.com/1145491 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/media/video-overlay-menu.html [ Skip ]
+
+# Temporarily disable tests to investigate iframe not loading issue
+crbug.com/1373684 external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-escalate-privileges.tentative.sub.window.html [ Failure Pass Timeout ]
+crbug.com/1373684 external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child.tentative.sub.window.html [ Failure Pass Timeout ]
+crbug.com/1373684 external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-child-special-cases.tentative.sub.window.html [ Failure Pass Timeout ]
+crbug.com/1373684 external/wpt/html/semantics/embedded-content/the-iframe-element/sandbox-top-navigation-grandchild.tentative.sub.window.html [ Failure Pass Timeout ]
