@@ -62,6 +62,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 @property(nonatomic, assign) BOOL hasPrimaryAction;
 @property(nonatomic, assign) WhatsNewType type;
 @property(nonatomic, assign) GURL learnMoreURL;
+@property(nonatomic, assign) BOOL hasLearnMoreAction;
 
 // The navigation bar at the top of the view.
 @property(nonatomic, strong) UINavigationBar* navigationBar;
@@ -77,7 +78,8 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
               instructionSteps:(NSArray<NSString*>*)instructionSteps
               hasPrimaryAction:(BOOL)hasPrimaryAction
                           type:(WhatsNewType)type
-                  learnMoreURL:(const GURL&)learnMoreURL {
+                  learnMoreURL:(const GURL&)learnMoreURL
+            hasLearnMoreAction:(BOOL)hasLearnMoreAction {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _bannerImage = image;
@@ -88,6 +90,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
     _hasPrimaryAction = hasPrimaryAction;
     _type = type;
     _learnMoreURL = learnMoreURL;
+    _hasLearnMoreAction = hasLearnMoreAction;
   }
   return self;
 }
@@ -124,7 +127,10 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
   if (self.hasPrimaryAction) {
     [actionStackView addArrangedSubview:self.primaryActionButton];
   }
-  [actionStackView addArrangedSubview:self.learnMoreActionButton];
+  if (self.hasLearnMoreAction) {
+    [actionStackView addArrangedSubview:self.learnMoreActionButton];
+  }
+
   [self.view addSubview:actionStackView];
 
   // Create a layout guide to constrain the width of the content.
