@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.optional_button;
 import static junit.framework.Assert.assertEquals;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.transition.Transition;
@@ -23,6 +25,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,8 +36,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
@@ -42,6 +48,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.Adap
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 /**
  * Unit tests for OptionalButtonCoordinator.
@@ -198,6 +205,91 @@ public class OptionalButtonCoordinatorTest {
         verifyNoMoreInteractions(mockIphCommandBuilder);
 
         verify(mMockOptionalButtonView).updateButtonWithAnimation(buttonData);
+    }
+
+    @Test
+    public void testUpdateButton_actionChipResourceIdGetsRemovedWhenNotInVariant() {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", "false");
+        FeatureList.setTestValues(testValues);
+
+        Drawable iconDrawable = mock(Drawable.class);
+        OnClickListener clickListener = view -> {};
+        IPHCommandBuilder mockIphCommandBuilder = mock(IPHCommandBuilder.class);
+        int contentDescriptionResourceId = 123456;
+        int actionChipResourceId = 987654;
+        boolean isEnabled = true;
+        ButtonData buttonData = new ButtonDataImpl(/* canShow= */ true, iconDrawable, clickListener,
+                contentDescriptionResourceId, actionChipResourceId, /* supportsTinting= */ true,
+                mockIphCommandBuilder,
+                /* isEnabled= */ isEnabled, AdaptiveToolbarButtonVariant.PRICE_TRACKING);
+
+        mOptionalButtonCoordinator.updateButton(buttonData);
+
+        verify(mMockOptionalButtonView).updateButtonWithAnimation(buttonData);
+        Assert.assertEquals(
+                Resources.ID_NULL, buttonData.getButtonSpec().getActionChipLabelResId());
+    }
+
+    @Test
+    public void testUpdateButton_actionChipResourceIdGetsRemovedByFeatureEngagement() {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", "true");
+        FeatureList.setTestValues(testValues);
+
+        doReturn(true).when(mMockTracker).isInitialized();
+        doReturn(false)
+                .when(mMockTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
+
+        Drawable iconDrawable = mock(Drawable.class);
+        OnClickListener clickListener = view -> {};
+        IPHCommandBuilder mockIphCommandBuilder = mock(IPHCommandBuilder.class);
+        int contentDescriptionResourceId = 123456;
+        int actionChipResourceId = 987654;
+        boolean isEnabled = true;
+        ButtonData buttonData = new ButtonDataImpl(/* canShow= */ true, iconDrawable, clickListener,
+                contentDescriptionResourceId, actionChipResourceId, /* supportsTinting= */ true,
+                mockIphCommandBuilder,
+                /* isEnabled= */ isEnabled, AdaptiveToolbarButtonVariant.PRICE_TRACKING);
+
+        mOptionalButtonCoordinator.updateButton(buttonData);
+
+        verify(mMockOptionalButtonView).updateButtonWithAnimation(buttonData);
+        Assert.assertEquals(
+                Resources.ID_NULL, buttonData.getButtonSpec().getActionChipLabelResId());
+    }
+
+    @Test
+    public void testUpdateButton_actionChipResourceIdGetsKeptByFeatureEngagement() {
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, "action_chip", "true");
+        FeatureList.setTestValues(testValues);
+
+        doReturn(true).when(mMockTracker).isInitialized();
+        doReturn(true)
+                .when(mMockTracker)
+                .shouldTriggerHelpUI(FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
+
+        Drawable iconDrawable = mock(Drawable.class);
+        OnClickListener clickListener = view -> {};
+        IPHCommandBuilder mockIphCommandBuilder = mock(IPHCommandBuilder.class);
+        int contentDescriptionResourceId = 123456;
+        int actionChipResourceId = 987654;
+        boolean isEnabled = true;
+        ButtonData buttonData = new ButtonDataImpl(/* canShow= */ true, iconDrawable, clickListener,
+                contentDescriptionResourceId, actionChipResourceId, /* supportsTinting= */ true,
+                mockIphCommandBuilder,
+                /* isEnabled= */ isEnabled, AdaptiveToolbarButtonVariant.PRICE_TRACKING);
+
+        mOptionalButtonCoordinator.updateButton(buttonData);
+
+        verify(mMockOptionalButtonView).updateButtonWithAnimation(buttonData);
+        Assert.assertEquals(
+                actionChipResourceId, buttonData.getButtonSpec().getActionChipLabelResId());
     }
 
     @Test

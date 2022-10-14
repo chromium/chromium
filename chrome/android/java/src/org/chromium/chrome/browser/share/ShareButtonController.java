@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.share;
 
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -54,6 +55,7 @@ public class ShareButtonController extends BaseButtonDataProvider {
             Supplier<Tracker> trackerSupplier, ShareUtils shareUtils,
             ModalDialogManager modalDialogManager, Runnable onShareRunnable) {
         super(tabProvider, modalDialogManager, buttonDrawable, R.string.share,
+                /* actionChipLabelResId= */ Resources.ID_NULL,
                 /*supportsTinting=*/true,
                 /*iphCommandBuilder=*/null, AdaptiveToolbarButtonVariant.SHARE);
 

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -51,8 +52,8 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      */
     public BaseButtonDataProvider(Supplier<Tab> activeTabSupplier,
             @Nullable ModalDialogManager modalDialogManager, Drawable buttonDrawable,
-            @StringRes int contentDescriptionResId, boolean supportsTinting,
-            @Nullable IPHCommandBuilder iphCommandBuilder,
+            @StringRes int contentDescriptionResId, @StringRes int actionChipLabelResId,
+            boolean supportsTinting, @Nullable IPHCommandBuilder iphCommandBuilder,
             @AdaptiveToolbarButtonVariant int adaptiveButtonVariant) {
         mActiveTabSupplier = activeTabSupplier;
         mModalDialogManager = modalDialogManager;
@@ -73,8 +74,14 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
             mModalDialogManager.addObserver(mModalDialogObserver);
         }
 
+        if (!AdaptiveToolbarFeatures.isDynamicAction(adaptiveButtonVariant)) {
+            assert actionChipLabelResId
+                    == Resources.ID_NULL : "Action chip should only be used on dynamic actions";
+        }
+
         mButtonData = new ButtonDataImpl(/*canShow=*/false, buttonDrawable,
-                /* onClickListener= */ this, contentDescriptionResId, supportsTinting,
+                /* onClickListener= */ this, contentDescriptionResId, actionChipLabelResId,
+                supportsTinting,
                 /* iphCommandBuilder= */ iphCommandBuilder, /*isEnabled=*/true,
                 adaptiveButtonVariant);
     }
@@ -107,8 +114,8 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
      */
     private void maybeSetIphCommandBuilder(Tab tab) {
         if (mButtonData.getButtonSpec().getIPHCommandBuilder() != null || tab == null
-                || !FeatureList.isInitialized()
-                || !AdaptiveToolbarFeatures.isCustomizationEnabled()) {
+                || !FeatureList.isInitialized() || !AdaptiveToolbarFeatures.isCustomizationEnabled()
+                || AdaptiveToolbarFeatures.shouldShowActionChip()) {
             return;
         }
 

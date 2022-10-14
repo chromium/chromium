@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -62,6 +63,7 @@ public class VoiceToolbarButtonController extends BaseButtonDataProvider {
             VoiceSearchDelegate voiceSearchDelegate) {
         super(activeTabSupplier, modalDialogManager, buttonDrawable,
                 R.string.accessibility_toolbar_btn_mic,
+                /* actionChipLabelResId= */ Resources.ID_NULL,
                 /* supportsTinting= */ true, /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.VOICE);
         mTrackerSupplier = trackerSupplier;
