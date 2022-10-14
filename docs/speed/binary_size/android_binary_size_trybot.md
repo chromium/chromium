@@ -51,7 +51,7 @@ The bot provides analysis using:
     - If you think that there might not be a consensus that the code your adding
       is worth the added file size, then add why you think it is.
         - To get a feeling for how large existing features are, refer to
-          [milestone size breakdowns].
+          [go/chrome-supersize] (Googlers only).
 
 - Add a footer to the commit description along the lines of:
     - `Binary-Size: Size increase is unavoidable (see above).`
@@ -64,7 +64,7 @@ footers.
 ***
 
 [optimization advice]: /docs/speed/binary_size/optimization_advice.md
-[milestone size breakdowns]: https://storage.googleapis.com/chrome-supersize/index.html
+[go/chrome-supersize]: https://goto.google.com/chrome-supersize
 
 
 
