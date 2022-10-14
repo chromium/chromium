@@ -584,10 +584,4 @@ void MockPeerConnectionImpl::AddIceCandidate(
                : webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION));
 }
 
-webrtc::RTCError MockPeerConnectionImpl::SetBitrate(
-    const webrtc::BitrateSettings& bitrate) {
-  NOTIMPLEMENTED();
-  return webrtc::RTCError::OK();
-}
-
 }  // namespace blink
