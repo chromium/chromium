@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
@@ -36,16 +37,16 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "base/task/task_traits.h"
-#include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "content/public/browser/browser_task_traits.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
@@ -54,11 +55,17 @@ using password_manager::UnsyncedCredentialsDeletionNotifier;
 namespace {
 
 void SyncEnabledOrDisabled(Profile* profile) {
-#if BUILDFLAG(IS_ANDROID)
-  NOTREACHED();
-#else
   // Update all form managers. Incognito tabs originated from this profile
   // can also fill passwords, so they should be included.
+#if BUILDFLAG(IS_ANDROID)
+  for (TabModel* tab_model : TabModelList::models()) {
+    for (int index = 0; index < tab_model->GetTabCount(); index++) {
+      content::WebContents* web_contents = tab_model->GetWebContentsAt(index);
+      ChromePasswordManagerClient::FromWebContents(web_contents)
+          ->UpdateFormManagers();
+    }
+  }
+#else
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile()->GetOriginalProfile() !=
         profile->GetOriginalProfile()) {
@@ -71,11 +78,12 @@ void SyncEnabledOrDisabled(Profile* profile) {
           ->UpdateFormManagers();
     }
   }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   password_manager::PasswordReuseManager* reuse_manager =
       PasswordReuseManagerFactory::GetForProfile(profile);
   if (reuse_manager)
     reuse_manager->AccountStoreStateChanged();
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 #if !BUILDFLAG(IS_ANDROID)
