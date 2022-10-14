@@ -270,7 +270,7 @@ void ClipboardHistoryItemView::GetAccessibleNodeData(ui::AXNodeData* data) {
   // A valid role must be set in the AXNodeData prior to setting the name
   // via AXNodeData::SetName.
   data->role = ax::mojom::Role::kMenuItem;
-  data->SetName(GetAccessibleName());
+  data->SetNameChecked(GetAccessibleName());
 }
 
 void ClipboardHistoryItemView::Activate(Action action, int event_flags) {
