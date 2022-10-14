@@ -3011,6 +3011,40 @@ ProbingResult QuicChromiumClientSession::MaybeStartProbing(
   return StartProbing(network, peer_address);
 }
 
+std::unique_ptr<quic::QuicPathValidationContext>
+QuicChromiumClientSession::CreateContextForMultiPortPath() {
+  if (!connection()->connection_migration_use_new_cid()) {
+    return nullptr;
+  }
+
+  // Create and configure socket on default network
+  std::unique_ptr<DatagramClientSocket> probing_socket =
+      stream_factory_->CreateSocket(net_log_.net_log(), net_log_.source());
+  if (stream_factory_->ConfigureSocket(
+          probing_socket.get(), ToIPEndPoint(peer_address()), default_network_,
+          session_key_.socket_tag()) != OK) {
+    return nullptr;
+  }
+
+  // Create new packet writer and reader on the probing socket.
+  auto probing_writer = std::make_unique<QuicChromiumPacketWriter>(
+      probing_socket.get(), task_runner_);
+  auto probing_reader = std::make_unique<QuicChromiumPacketReader>(
+      probing_socket.get(), clock_, this, yield_after_packets_,
+      yield_after_duration_, net_log_);
+
+  probing_reader->StartReading();
+  path_validation_writer_delegate_.set_network(default_network_);
+  path_validation_writer_delegate_.set_peer_address(peer_address());
+  probing_writer->set_delegate(&path_validation_writer_delegate_);
+  IPEndPoint local_address;
+  probing_socket->GetLocalAddress(&local_address);
+  return std::make_unique<QuicChromiumPathValidationContext>(
+      ToQuicSocketAddress(local_address), peer_address(), default_network_,
+      std::move(probing_socket), std::move(probing_writer),
+      std::move(probing_reader));
+}
+
 ProbingResult QuicChromiumClientSession::StartProbing(
     handles::NetworkHandle network,
     const quic::QuicSocketAddress& peer_address) {

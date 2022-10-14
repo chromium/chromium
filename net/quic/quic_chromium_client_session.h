@@ -695,6 +695,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnPathDegrading() override;
   void OnForwardProgressMadeAfterPathDegrading() override;
   void OnKeyUpdate(quic::KeyUpdateReason reason) override;
+  std::unique_ptr<quic::QuicPathValidationContext>
+  CreateContextForMultiPortPath() override;
 
   // QuicChromiumPacketReader::Visitor methods:
   bool OnReadError(int result, const DatagramClientSocket* socket) override;

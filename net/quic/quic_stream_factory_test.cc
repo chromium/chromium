@@ -4653,6 +4653,134 @@ TEST_P(QuicStreamFactoryTest,
   EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
 }
 
+TEST_P(QuicStreamFactoryTest, MultiPortSession) {
+  if (!version_.HasIetfQuicFrames()) {
+    // Path validator is only supported in IETF QUIC.
+    return;
+  }
+  SetIetfConnectionMigrationFlagsAndConnectionOptions();
+  // Turning on MPQC will implicitly turn on port migration.
+  quic_params_->connection_options.push_back(quic::kMPQC);
+  socket_factory_ = std::make_unique<TestPortMigrationSocketFactory>();
+  Initialize();
+
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  // Using a testing task runner so that we can control time.
+  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+  QuicStreamFactoryPeer::SetTaskRunner(factory_.get(), task_runner.get());
+
+  MockQuicData quic_data1(version_);
+  quic_data1.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket(1));
+  quic_data1.AddWrite(
+      SYNCHRONOUS,
+      ConstructGetRequestPacket(
+          3, GetNthClientInitiatedBidirectionalStreamId(0), true, true));
+  quic_data1.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  quic_data1.AddRead(
+      ASYNC,
+      ConstructOkResponsePacket(
+          2, GetNthClientInitiatedBidirectionalStreamId(0), false, false));
+  quic_data1.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data1.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.MakeAckAndDataPacket(
+          4, /*include_version=*/false, GetQpackDecoderStreamId(),
+          /*largest_received=*/2, /*smallest_received=*/1, /*fin=*/false,
+          StreamCancellationQpackDecoderInstruction(0)));
+  quic_data1.AddWrite(
+      SYNCHRONOUS, client_maker_.MakeRstPacket(
+                       5, false, GetNthClientInitiatedBidirectionalStreamId(0),
+                       quic::QUIC_STREAM_CANCELLED));
+  quic_data1.AddSocketDataToFactory(socket_factory_.get());
+
+  // Set up the second socket data provider that is used for multi-port
+  MockQuicData quic_data2(version_);
+  quic::QuicConnectionId cid_on_new_path =
+      quic::test::TestConnectionId(12345678);
+
+  client_maker_.set_connection_id(cid_on_new_path);
+  // Connectivity probe to be sent on the new path.
+  quic_data2.AddWrite(SYNCHRONOUS,
+                      client_maker_.MakeConnectivityProbingPacket(2, true));
+  quic_data2.AddRead(ASYNC, ERR_IO_PENDING);  // Pause
+  // Connectivity probe to receive from the server.
+  quic_data2.AddRead(ASYNC,
+                     server_maker_.MakeConnectivityProbingPacket(1, false));
+
+  quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  quic_data2.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream.
+  QuicStreamRequest request(factory_.get());
+  EXPECT_EQ(ERR_IO_PENDING,
+            request.Request(
+                scheme_host_port_, version_, privacy_mode_, DEFAULT_PRIORITY,
+                SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*use_dns_aliases=*/true, /*require_dns_https_alpn=*/false,
+                /*cert_verify_flags=*/0, url_, net_log_, &net_error_details_,
+                failed_on_default_network_callback_, callback_.callback()));
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&request);
+  EXPECT_TRUE(stream.get());
+
+  // Cause QUIC stream to be created.
+  HttpRequestInfo request_info;
+  request_info.method = "GET";
+  request_info.url = url_;
+  request_info.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+  stream->RegisterRequest(&request_info);
+  EXPECT_EQ(OK, stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_,
+                                         CompletionOnceCallback()));
+
+  // Ensure that session is alive and active.
+  QuicChromiumClientSession* session = GetActiveSession(scheme_host_port_);
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+  // Manually initialize the connection's self address. In real life, the
+  // initialization will be done during crypto handshake.
+  IPEndPoint ip;
+  session->GetDefaultSocket()->GetLocalAddress(&ip);
+  quic::test::QuicConnectionPeer::SetSelfAddress(session->connection(),
+                                                 ToQuicSocketAddress(ip));
+
+  // This will trigger multi-port path creation.
+  MaybeMakeNewConnectionIdAvailableToSession(cid_on_new_path, session);
+
+  // Send GET request on stream.
+  HttpResponseInfo response;
+  HttpRequestHeaders request_headers;
+  EXPECT_EQ(OK, stream->SendRequest(request_headers, &response,
+                                    callback_.callback()));
+
+  // Resume quic data and a connectivity probe response will be read on the new
+  // socket.
+  quic_data2.Resume();
+
+  // The response is received on the default path.
+  quic_data1.Resume();
+  // Response headers are received over the new port.
+  EXPECT_EQ(OK, stream->ReadResponseHeaders(callback_.callback()));
+  EXPECT_EQ(200, response.headers->response_code());
+
+  EXPECT_TRUE(QuicStreamFactoryPeer::IsLiveSession(factory_.get(), session));
+  EXPECT_TRUE(HasActiveSession(scheme_host_port_));
+  EXPECT_EQ(1u, session->GetNumActiveStreams());
+
+  // The periodic probing is handled and tested in quiche.
+  EXPECT_TRUE(quic::test::QuicConnectionPeer::GetMultiPortProbingAlarm(
+                  session->connection())
+                  ->IsSet());
+
+  stream.reset();
+  EXPECT_TRUE(quic_data1.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data1.AllWriteDataConsumed());
+  EXPECT_TRUE(quic_data2.AllReadDataConsumed());
+  EXPECT_TRUE(quic_data2.AllWriteDataConsumed());
+}
+
 TEST_P(QuicStreamFactoryTest,
        MigratePortOnPathDegrading_WithoutNetworkHandle_PathValidator) {
   if (!version_.HasIetfQuicFrames()) {
