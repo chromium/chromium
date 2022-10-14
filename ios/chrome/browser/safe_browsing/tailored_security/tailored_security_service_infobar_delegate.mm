@@ -4,6 +4,11 @@
 
 #import "ios/chrome/browser/safe_browsing/tailored_security/tailored_security_service_infobar_delegate.h"
 
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
+#import "ios/web/public/web_state.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -22,8 +27,13 @@ const std::u16string test_unconsent_enabled_string =
 
 namespace safe_browsing {
 TailoredSecurityServiceInfobarDelegate::TailoredSecurityServiceInfobarDelegate(
-    TailoredSecurityServiceMessageState message_state)
-    : message_state_(message_state) {}
+    TailoredSecurityServiceMessageState message_state,
+    web::WebState* web_state)
+    : message_state_(message_state),
+      web_state_(web_state ? web_state->GetWeakPtr() : nullptr) {}
+
+TailoredSecurityServiceInfobarDelegate::
+    ~TailoredSecurityServiceInfobarDelegate() = default;
 
 TailoredSecurityServiceInfobarDelegate*
 TailoredSecurityServiceInfobarDelegate::FromInfobarDelegate(
@@ -80,6 +90,27 @@ bool TailoredSecurityServiceInfobarDelegate::IsConsented() const {
 bool TailoredSecurityServiceInfobarDelegate::EqualsDelegate(
     infobars::InfoBarDelegate* delegate) const {
   return delegate->GetIdentifier() == GetIdentifier();
+}
+
+bool TailoredSecurityServiceInfobarDelegate::Accept() {
+  if (web_state_) {
+    switch (message_state_) {
+      case TailoredSecurityServiceMessageState::kConsentedAndFlowEnabled:
+      case TailoredSecurityServiceMessageState::kConsentedAndFlowDisabled:
+        SafeBrowsingTabHelper::FromWebState(web_state_.get())
+            ->OpenSafeBrowsingSettings();
+        break;
+      case TailoredSecurityServiceMessageState::kUnconsentedAndFlowEnabled:
+        ChromeBrowserState* browser_state =
+            ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+        SetSafeBrowsingState(
+            browser_state->GetPrefs(),
+            safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION,
+            /*is_esb_enabled_in_sync=*/false);
+        break;
+    }
+  }
+  return true;
 }
 
 infobars::InfoBarDelegate::InfoBarIdentifier

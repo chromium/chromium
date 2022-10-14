@@ -9,6 +9,12 @@
 
 #import <string>
 
+#import "base/memory/weak_ptr.h"
+
+namespace web {
+class WebState;
+}  // namespace web
+
 namespace safe_browsing {
 
 enum class TailoredSecurityServiceMessageState {
@@ -26,11 +32,13 @@ enum class TailoredSecurityServiceMessageState {
 class TailoredSecurityServiceInfobarDelegate : public ConfirmInfoBarDelegate {
  public:
   explicit TailoredSecurityServiceInfobarDelegate(
-      TailoredSecurityServiceMessageState message_state);
+      TailoredSecurityServiceMessageState message_state,
+      web::WebState* web_state);
   TailoredSecurityServiceInfobarDelegate(
       const TailoredSecurityServiceInfobarDelegate&) = delete;
   TailoredSecurityServiceInfobarDelegate& operator=(
       const TailoredSecurityServiceInfobarDelegate&) = delete;
+  ~TailoredSecurityServiceInfobarDelegate() override;
 
   // Returns |delegate| as an TailoredSecurityServiceInfobarDelegate, or
   // nullptr if it is of another type.
@@ -50,11 +58,15 @@ class TailoredSecurityServiceInfobarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetMessageText() const override;
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   bool EqualsDelegate(infobars::InfoBarDelegate* delegate) const override;
+  bool Accept() override;
 
  private:
   // Stores the state of the consent flow and is used to
   // return appropriate messages for the prompt.
   TailoredSecurityServiceMessageState message_state_;
+
+  // Stores associated WebState.
+  base::WeakPtr<web::WebState> web_state_;
 };
 
 }  // namespace safe_browsing

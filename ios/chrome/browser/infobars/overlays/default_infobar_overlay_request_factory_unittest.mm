@@ -193,7 +193,8 @@ TEST_F(DefaultInfobarOverlayRequestFactoryTest, TailoredSecurityService) {
   std::unique_ptr<InfoBarDelegate> delegate =
       safe_browsing::MockTailoredSecurityServiceInfobarDelegate::Create(
           /*message_state*/ TailoredSecurityServiceMessageState::
-              kConsentedAndFlowEnabled);
+              kConsentedAndFlowEnabled,
+          nullptr);
   InfoBarIOS infobar(InfobarType::kInfobarTypeTailoredSecurityService,
                      std::move(delegate));
 

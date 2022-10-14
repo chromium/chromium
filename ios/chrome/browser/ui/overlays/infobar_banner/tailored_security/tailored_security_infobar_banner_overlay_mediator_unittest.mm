@@ -33,7 +33,8 @@ TEST_F(TailoredSecurityInfobarBannerOverlayMediatorTest, SetUpConsumer) {
   std::unique_ptr<TailoredSecurityServiceInfobarDelegate> passed_delegate =
       MockTailoredSecurityServiceInfobarDelegate::Create(
           /*message_state*/ TailoredSecurityServiceMessageState::
-              kConsentedAndFlowEnabled);
+              kConsentedAndFlowEnabled,
+          nullptr);
   TailoredSecurityServiceInfobarDelegate* delegate = passed_delegate.get();
   InfoBarIOS infobar(InfobarType::kInfobarTypeTailoredSecurityService,
                      std::move(passed_delegate));
