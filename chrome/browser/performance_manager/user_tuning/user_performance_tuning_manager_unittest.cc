@@ -91,11 +91,10 @@ class UserPerformanceTuningManagerTest : public testing::Test {
   }
 
   void StartManager(
-      std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-          features_and_params = {
-              {performance_manager::features::kBatterySaverModeAvailable, {}},
-              {performance_manager::features::kHighEfficiencyModeAvailable, {}},
-          }) {
+      std::vector<base::test::FeatureRefAndParams> features_and_params = {
+          {performance_manager::features::kBatterySaverModeAvailable, {}},
+          {performance_manager::features::kHighEfficiencyModeAvailable, {}},
+      }) {
     auto test_sampling_event_source =
         std::make_unique<base::test::TestSamplingEventSource>();
     auto test_battery_level_provider =

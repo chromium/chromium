@@ -234,8 +234,7 @@ class LookalikeUrlNavigationThrottleBrowserTest
       public testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
     enabled_features.emplace_back(features::kSignedHTTPExchange,

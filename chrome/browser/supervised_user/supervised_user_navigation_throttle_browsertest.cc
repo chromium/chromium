@@ -604,8 +604,7 @@ bool SupervisedUserIframeFilterTest::RunCommandAndGetBooleanFromFrame(
 }
 
 void SupervisedUserIframeFilterTest::InitFeatures() {
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-      enabled_features_and_params;
+  std::vector<base::test::FeatureRefAndParams> enabled_features_and_params;
   std::vector<base::test::FeatureRef> disabled_features;
   if (IsWebFilterInterstitialRefreshEnabled()) {
     enabled_features_and_params.emplace_back(

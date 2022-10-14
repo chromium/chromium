@@ -769,8 +769,7 @@ class AppBannerManagerBrowserTestWithChromeBFCache
   }
 
   void SetupFeaturesAndParameters() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
 
     for (const auto& [feature, params] : enabled_features_with_params_) {
       enabled_features.emplace_back(*feature, params);

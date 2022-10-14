@@ -80,9 +80,8 @@ class StorageAccessAPIBaseBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  virtual std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-  GetEnabledFeatures() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled({
+  virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
+    std::vector<base::test::FeatureRefAndParams> enabled({
         {net::features::kStorageAccessAPI,
          {
              {
@@ -718,9 +717,8 @@ class StorageAccessAPIForOriginBrowserTest
                                         std::get<1>(GetParam())) {}
 
  protected:
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-  GetEnabledFeatures() override {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled =
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled =
         StorageAccessAPIBaseBrowserTest::GetEnabledFeatures();
     enabled.push_back(
         {blink::features::kStorageAccessAPIForOriginExtension, {}});
@@ -820,8 +818,7 @@ class StorageAccessAPIForOriginWithFirstPartySetsBrowserTest
   }
 
  protected:
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-  GetEnabledFeatures() override {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {{blink::features::kStorageAccessAPIForOriginExtension, {}},
             {net::features::kStorageAccessAPI,
              {
@@ -1030,8 +1027,7 @@ class StorageAccessAPIForOriginExplicitlyDisabledBrowserTest
     }
     return {net::features::kStorageAccessAPI};
   }
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-  GetEnabledFeatures() override {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     // When the standard API is enabled, return the parent class's enabled
     // feature list. Otherwise, enable only the extension; this should not take
     // effect.
@@ -1076,8 +1072,7 @@ class StorageAccessAPIWithFirstPartySetsBrowserTest
   }
 
  protected:
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-  GetEnabledFeatures() override {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {
         {net::features::kStorageAccessAPI,
          {
@@ -1180,8 +1175,7 @@ class StorageAccessAPIWithFirstPartySetsAndImplicitGrantsBrowserTest
       : StorageAccessAPIBaseBrowserTest(false, false) {}
 
  protected:
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-  GetEnabledFeatures() override {
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     return {
         {net::features::kStorageAccessAPI,
          {
@@ -1248,9 +1242,8 @@ class StorageAccessAPIWithCHIPSBrowserTest
             /*permission_grants_unpartitioned_storage=*/false,
             /*is_storage_partitioned=*/false) {}
 
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-  GetEnabledFeatures() override {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled =
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    std::vector<base::test::FeatureRefAndParams> enabled =
         StorageAccessAPIBaseBrowserTest::GetEnabledFeatures();
     enabled.push_back({net::features::kPartitionedCookies, {}});
     enabled.push_back(

@@ -2606,11 +2606,10 @@ class SiteIsolationForCOOPBrowserTest : public ChromeNavigationBrowserTest {
   SiteIsolationForCOOPBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     // Enable COOP isolation with a max of 3 stored sites.
-    const std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        kEnabledFeatures = {
-            {::features::kSiteIsolationForCrossOriginOpenerPolicy,
-             {{"stored_sites_max_size", base::NumberToString(3)},
-              {"should_persist_across_restarts", "true"}}}};
+    const std::vector<base::test::FeatureRefAndParams> kEnabledFeatures = {
+        {::features::kSiteIsolationForCrossOriginOpenerPolicy,
+         {{"stored_sites_max_size", base::NumberToString(3)},
+          {"should_persist_across_restarts", "true"}}}};
     // Disable full site isolation so we can observe effects of COOP isolation.
     const std::vector<base::test::FeatureRef> kDisabledFeatures = {
         features::kSitePerProcess};

@@ -34,10 +34,10 @@
 
 namespace {
 
-base::test::ScopedFeatureList::FeatureAndParams probability_zero{
+base::test::FeatureRefAndParams probability_zero{
     features::kHappinessTrackingSurveysForDesktopSettings,
     {{"probability", "0.000"}}};
-base::test::ScopedFeatureList::FeatureAndParams probability_one{
+base::test::FeatureRefAndParams probability_one{
     features::kHappinessTrackingSurveysForDesktopSettings,
     {{"probability", "1.000"},
      {"survey", kHatsSurveyTriggerSettings},
@@ -66,8 +66,7 @@ class ScopedSetMetricsConsent {
 class HatsServiceBrowserTestBase : public InProcessBrowserTest {
  protected:
   explicit HatsServiceBrowserTestBase(
-      std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-          enabled_features)
+      std::vector<base::test::FeatureRefAndParams> enabled_features)
       : enabled_features_(enabled_features) {
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features_, {});
   }
@@ -99,8 +98,7 @@ class HatsServiceBrowserTestBase : public InProcessBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-      enabled_features_;
+  std::vector<base::test::FeatureRefAndParams> enabled_features_;
 };
 
 class HatsServiceProbabilityZero : public HatsServiceBrowserTestBase {

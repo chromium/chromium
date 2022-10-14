@@ -402,11 +402,11 @@ class SearchPrefetchServiceEnabledBrowserTest
       public testing::WithParamInterface<std::tuple<BlockOnHeaders>> {
  public:
   SearchPrefetchServiceEnabledBrowserTest() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features = {{kSearchPrefetchServicePrefetching,
-                             {{"max_attempts_per_caching_duration", "3"},
-                              {"cache_size", "1"},
-                              {"device_memory_threshold_MB", "0"}}}};
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {kSearchPrefetchServicePrefetching,
+         {{"max_attempts_per_caching_duration", "3"},
+          {"cache_size", "1"},
+          {"device_memory_threshold_MB", "0"}}}};
     std::vector<base::test::FeatureRef> disabled_features = {};
     if (BlockOnHeadersEnabled()) {
       enabled_features.push_back({kSearchPrefetchBlockBeforeHeaders, {}});
@@ -3378,12 +3378,12 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
     : public SearchPrefetchBaseBrowserTest {
  public:
   SearchPrefetchServiceNavigationPrefetchBrowserTest() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features = {{kSearchPrefetchServicePrefetching,
-                             {{"max_attempts_per_caching_duration", "3"},
-                              {"cache_size", "1"},
-                              {"device_memory_threshold_MB", "0"}}},
-                            {kSearchNavigationPrefetch, {}}};
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {kSearchPrefetchServicePrefetching,
+         {{"max_attempts_per_caching_duration", "3"},
+          {"cache_size", "1"},
+          {"device_memory_threshold_MB", "0"}}},
+        {kSearchNavigationPrefetch, {}}};
     std::vector<base::test::FeatureRef> disabled_features = {};
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -3725,13 +3725,13 @@ class SearchNavigationPrefetchHoldbackBrowserTest
     : public SearchPrefetchBaseBrowserTest {
  public:
   SearchNavigationPrefetchHoldbackBrowserTest() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features = {{kSearchPrefetchServicePrefetching,
-                             {{"max_attempts_per_caching_duration", "3"},
-                              {"cache_size", "1"},
-                              {"device_memory_threshold_MB", "0"},
-                              {"prefetch_holdback", "true"}}},
-                            {kSearchNavigationPrefetch, {{}}}};
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {kSearchPrefetchServicePrefetching,
+         {{"max_attempts_per_caching_duration", "3"},
+          {"cache_size", "1"},
+          {"device_memory_threshold_MB", "0"},
+          {"prefetch_holdback", "true"}}},
+        {kSearchNavigationPrefetch, {{}}}};
     std::vector<base::test::FeatureRef> disabled_features = {};
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -3817,13 +3817,13 @@ class SearchNavigationPrefetchNoCancelBrowserTest
     : public SearchPrefetchBaseBrowserTest {
  public:
   SearchNavigationPrefetchNoCancelBrowserTest() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features = {{kSearchPrefetchServicePrefetching,
-                             {{"max_attempts_per_caching_duration", "3"},
-                              {"cache_size", "1"},
-                              {"device_memory_threshold_MB", "0"}}},
-                            {kSearchPrefetchSkipsCancel, {}},
-                            {kSearchNavigationPrefetch, {{}}}};
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {kSearchPrefetchServicePrefetching,
+         {{"max_attempts_per_caching_duration", "3"},
+          {"cache_size", "1"},
+          {"device_memory_threshold_MB", "0"}}},
+        {kSearchPrefetchSkipsCancel, {}},
+        {kSearchNavigationPrefetch, {{}}}};
     std::vector<base::test::FeatureRef> disabled_features = {};
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,

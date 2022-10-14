@@ -156,8 +156,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
   }
 
   void SetUpFeature(base::TimeDelta fallback_delay) {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (IsFeatureEnabled()) {
       base::FieldTrialParams params;

@@ -455,8 +455,7 @@ class FetchDiscountWorkerTestBase : public testing::Test {
 class FetchDiscountWorkerTest : public FetchDiscountWorkerTestBase {
  public:
   FetchDiscountWorkerTest() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     base::FieldTrialParams cart_params, coupon_params;
     cart_params["NtpChromeCartModuleAbandonedCartDiscountParam"] = "true";
     cart_params["discount-fetch-delay"] = "6h";
@@ -734,8 +733,7 @@ class FetchMerchantWideDiscountWorkerTest : public FetchDiscountWorkerTestBase {
   // Features need to be initialized before #SetUp runs, in
   // order to avoid tsan data race error on FeatureList.
   FetchMerchantWideDiscountWorkerTest() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     base::FieldTrialParams merchant_wide_params;
     merchant_wide_params[commerce::kReadyToFetchMerchantWidePromotionParam] =
         "true";
@@ -808,8 +806,7 @@ class FetchMerchantWideDiscountWorkerDisableFetchTest
   // Features need to be initialized before #SetUp runs, in
   // order to avoid tsan data race error on FeatureList.
   FetchMerchantWideDiscountWorkerDisableFetchTest() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     base::FieldTrialParams merchant_wide_params;
     merchant_wide_params[commerce::kReadyToFetchMerchantWidePromotionParam] =
         "false";

@@ -69,7 +69,7 @@
 #include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #endif
 
-using FeatureAndParams = base::test::ScopedFeatureList::FeatureAndParams;
+using FeatureAndParams = base::test::FeatureRefAndParams;
 using gfx::Range;
 using metrics::OmniboxEventProto;
 

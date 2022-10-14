@@ -857,7 +857,7 @@ class VariationsHttpHeadersBrowserTestWithOptimizationGuide
     : public VariationsHttpHeadersBrowserTest {
  public:
   VariationsHttpHeadersBrowserTestWithOptimizationGuide() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled = {
+    std::vector<base::test::FeatureRefAndParams> enabled = {
         {features::kLoadingPredictorPrefetch, {}},
         {features::kLoadingPredictorUseOptimizationGuide,
          {{"use_predictions_for_preconnect", "true"}}},

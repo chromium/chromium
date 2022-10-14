@@ -137,7 +137,7 @@ using content::NavigationController;
 using content::RenderFrameHost;
 using content::WebContents;
 using security_interstitials::BaseSafeBrowsingErrorUI;
-using FeatureAndParams = base::test::ScopedFeatureList::FeatureAndParams;
+using FeatureAndParams = base::test::FeatureRefAndParams;
 
 namespace safe_browsing {
 
@@ -474,7 +474,7 @@ class SafeBrowsingBlockingPageBrowserTest
     const char kTagAndAttributeParamName[] = "tag_attribute_csv";
     std::map<std::string, std::string> parameters = {
         {kTagAndAttributeParamName, "div,foo,div,baz"}};
-    base::test::ScopedFeatureList::FeatureAndParams tag_and_attribute(
+    base::test::FeatureRefAndParams tag_and_attribute(
         safe_browsing::kThreatDomDetailsTagAndAttributeFeature, parameters);
     scoped_feature_list_.InitWithFeaturesAndParameters({tag_and_attribute}, {});
   }

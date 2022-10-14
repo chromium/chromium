@@ -691,8 +691,7 @@ TEST_F(CartHandlerCartURLUTMTest, TestAppendUTMToNonPartnerMerchant) {
 class CartHandlerNtpModuleDiscountConsentV2Test : public CartHandlerTest {
  public:
   CartHandlerNtpModuleDiscountConsentV2Test() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
     base::FieldTrialParams consent_v2_params, cart_params;
     cart_params["NtpChromeCartModuleAbandonedCartDiscountParam"] = "true";
     cart_params["partner-merchant-pattern"] = "(foo.com)";

@@ -34,13 +34,13 @@ namespace settings {
 class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   HatsHandlerTest() {
-    base::test::ScopedFeatureList::FeatureAndParams settings_privacy{
+    base::test::FeatureRefAndParams settings_privacy{
         features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
         {{"settings-time", "15s"}}};
-    base::test::ScopedFeatureList::FeatureAndParams privacy_sandbox{
+    base::test::FeatureRefAndParams privacy_sandbox{
         features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
         {{"settings-time", "10s"}}};
-    base::test::ScopedFeatureList::FeatureAndParams privacy_guide{
+    base::test::FeatureRefAndParams privacy_guide{
         features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
         {{"settings-time", "15s"}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -138,7 +138,7 @@ class HatsHandlerNoSandboxTest : public HatsHandlerTest {
  public:
   HatsHandlerNoSandboxTest() {
     scoped_feature_list_.Reset();
-    base::test::ScopedFeatureList::FeatureAndParams settings_privacy{
+    base::test::FeatureRefAndParams settings_privacy{
         features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
         {{"no-sandbox", "true"}}};
     scoped_feature_list_.InitWithFeaturesAndParameters({settings_privacy}, {});

@@ -43,13 +43,13 @@ class SegmentationPlatformTest : public InProcessBrowserTest {
  public:
   SegmentationPlatformTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {base::test::ScopedFeatureList::FeatureAndParams(
-             features::kSegmentationPlatformFeature, {}),
-         base::test::ScopedFeatureList::FeatureAndParams(
+        {base::test::FeatureRefAndParams(features::kSegmentationPlatformFeature,
+                                         {}),
+         base::test::FeatureRefAndParams(
              features::kSegmentationStructuredMetricsFeature, {}),
-         base::test::ScopedFeatureList::FeatureAndParams(
+         base::test::FeatureRefAndParams(
              features::kSegmentationPlatformUkmEngine, {}),
-         base::test::ScopedFeatureList::FeatureAndParams(
+         base::test::FeatureRefAndParams(
              features::kSegmentationPlatformLowEngagementFeature,
              {{"enable_default_model", "true"}})},
         {});

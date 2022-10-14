@@ -53,10 +53,9 @@ class PageSpecificSiteDataDialogBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   PageSpecificSiteDataDialogBrowserTest() {
-    std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-        enabled_features = {
-            {net::features::kPartitionedCookies, {}},
-            {net::features::kPartitionedCookiesBypassOriginTrial, {}}};
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {net::features::kPartitionedCookies, {}},
+        {net::features::kPartitionedCookiesBypassOriginTrial, {}}};
 
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetParam()) {

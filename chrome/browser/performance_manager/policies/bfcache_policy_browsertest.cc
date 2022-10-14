@@ -168,8 +168,7 @@ class BFCachePolicyBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::vector<base::test::ScopedFeatureList::FeatureAndParams>
-      enabled_features_;
+  std::vector<base::test::FeatureRefAndParams> enabled_features_;
   std::vector<base::test::FeatureRef> disabled_features_;
 };
 
