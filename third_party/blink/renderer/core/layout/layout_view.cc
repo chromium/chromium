@@ -587,10 +587,12 @@ PhysicalRect LayoutView::ViewRect() const {
   if (!frame_view_)
     return PhysicalRect();
 
+  // TODO(bokan): This shouldn't be just for the outermost main frame, we
+  // should do it for all frames. crbug.com/1311518.
   if (frame_view_->GetFrame().IsOutermostMainFrame()) {
     auto* supplement =
         DocumentTransitionSupplement::FromIfExists(GetDocument());
-    if (supplement && !supplement->GetTransition()->IsIdle()) {
+    if (supplement && supplement->GetTransition()->IsRootTransitioning()) {
       // If we're capturing a transition snapshot, the root transition needs to
       // produce the snapshot at a known stable size, excluding all insetting
       // UI like mobile URL bars and virtual keyboards.
@@ -622,7 +624,14 @@ PhysicalRect LayoutView::OverflowClipRect(
   }
 
   rect.offset += location;
-  if (IsScrollContainer())
+
+  // When capturing the root snapshot for a transition, we paint the background
+  // color where the scrollbar would be so keep the clip rect the full ViewRect
+  // size.
+  auto* supplement = DocumentTransitionSupplement::FromIfExists(GetDocument());
+  bool is_in_transition =
+      supplement && supplement->GetTransition()->IsRootTransitioning();
+  if (IsScrollContainer() && !is_in_transition)
     ExcludeScrollbars(rect, overlay_scrollbar_clip_behavior);
 
   return rect;

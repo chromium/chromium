@@ -11,7 +11,12 @@
 
 html::page-transition {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+
+  /* Size will be set dynamically to correctly account for UI such as
+     virtual-keyboards */
+
   pointer-events: none;
 }
 

@@ -156,10 +156,23 @@ void DocumentTransitionStyleBuilder::AddContainerStyles(
   AddContainerStyles(tag, rule_builder.ReleaseString());
 }
 
-void DocumentTransitionStyleBuilder::AddRootStyles(const String& rules) {
+void DocumentTransitionStyleBuilder::AddRootStyles(
+    const gfx::RectF& snapshot_viewport_rect_css) {
   builder_.Append(kTransitionRootName);
   builder_.Append("{ ");
-  builder_.Append(rules);
+  builder_.AppendFormat(
+      R"CSS(
+        width: %.3fpx;
+        height: %.3fpx;
+      )CSS",
+      snapshot_viewport_rect_css.width(), snapshot_viewport_rect_css.height());
+  if (!snapshot_viewport_rect_css.OffsetFromOrigin().IsZero()) {
+    builder_.AppendFormat(
+        R"CSS(
+          transform: translate(%.3fpx, %.3fpx);
+        )CSS",
+        snapshot_viewport_rect_css.x(), snapshot_viewport_rect_css.y());
+  }
   builder_.Append(" }");
 }
 

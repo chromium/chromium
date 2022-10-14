@@ -135,6 +135,10 @@ class CORE_EXPORT DocumentTransition
 
   bool IsIdle() const { return state_ == State::kIdle; }
 
+  bool IsRootTransitioning() const {
+    return style_tracker_ && style_tracker_->IsRootTransitioning();
+  }
+
   // In physical pixels. See comments on equivalent methods in
   // DocumentTransitionStyleTracker for info.
   gfx::Rect GetSnapshotViewportRect() const;

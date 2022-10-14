@@ -37,7 +37,7 @@ class DocumentTransitionStyleBuilder {
                           const ContainerProperties& properties,
                           WritingMode writing_mode);
 
-  void AddRootStyles(const String& rules);
+  void AddRootStyles(const gfx::RectF& snapshot_viewport_rect_css);
 
   String Build();
 
