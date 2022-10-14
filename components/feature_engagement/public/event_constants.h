@@ -101,6 +101,9 @@ extern const char kClearedBrowsingData[];
 // The user has viewed their reading list.
 extern const char kViewedReadingList[];
 
+// The user has viewed What's New.
+extern const char kViewedWhatsNew[];
+
 // The user has triggered the translate infobar manually.
 extern const char kTriggeredTranslateInfobar[];
 

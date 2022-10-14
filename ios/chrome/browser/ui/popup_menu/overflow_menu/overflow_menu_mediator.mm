@@ -12,6 +12,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
@@ -261,9 +262,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   self.webContentAreaOverlayPresenter = nullptr;
 
   if (_engagementTracker) {
-    if (self.readingListDestination.showBadge) {
+    if (self.readingListDestination.badge != BadgeTypeNone) {
       _engagementTracker->Dismissed(
           feature_engagement::kIPHBadgedReadingListFeature);
+    }
+
+    if (self.whatsNewDestination.badge != BadgeTypeNone) {
+      _engagementTracker->Dismissed(
+          feature_engagement::kIPHBadgedWhatsNewFeature);
     }
 
     _engagementTracker = nullptr;
@@ -990,6 +996,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   // Place What's New at the top of the overflow menucarousel.
   [newDestinations addObject:self.whatsNewDestination];
   [newDestinations addObjectsFromArray:destinations];
+
+  // Set the new label badge.
+  if (self.engagementTracker &&
+      self.engagementTracker->ShouldTriggerHelpUI(
+          feature_engagement::kIPHBadgedWhatsNewFeature)) {
+    self.whatsNewDestination.badge = BadgeTypeNewLabel;
+  }
+
   return newDestinations;
 }
 
@@ -1164,10 +1178,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
       IsIncognitoModeDisabled(self.browserStatePrefs);
 
   // Set badges if necessary
-  self.readingListDestination.showBadge =
-      self.engagementTracker &&
+  if (self.engagementTracker &&
       self.engagementTracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHBadgedReadingListFeature);
+          feature_engagement::kIPHBadgedReadingListFeature)) {
+    self.readingListDestination.badge = BadgeTypeBlueDot;
+  }
 }
 
 // Returns whether the page can be manually translated. If `forceMenuLogging` is
@@ -1718,6 +1733,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 // Dismisses the menu and opens What's New.
 - (void)openWhatsNew {
   SetWhatsNewOverflowMenuUsed();
+  self.engagementTracker->NotifyEvent(
+      feature_engagement::events::kViewedWhatsNew);
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   [self.dispatcher showWhatsNew];
 }
