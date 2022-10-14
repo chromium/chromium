@@ -67,7 +67,8 @@ HTMLImageElement* HTMLMapElement::ImageElement() {
         image_element.FastGetAttribute(html_names::kUsemapAttr)
             .GetString()
             .Substring(1);
-    if (use_map_name == name_)
+    if (!use_map_name.empty() &&
+        (use_map_name == name_ || use_map_name == GetIdAttribute()))
       return &image_element;
   }
 
@@ -75,24 +76,23 @@ HTMLImageElement* HTMLMapElement::ImageElement() {
 }
 
 void HTMLMapElement::ParseAttribute(const AttributeModificationParams& params) {
-  // FIXME: This logic seems wrong for XML documents.
-  // Either the id or name will be used depending on the order the attributes
-  // are parsed.
-
+  // To return the first image that matches usemap on name or id attributes, we
+  // need to track their values in the TreeScope.
+  // https://html.spec.whatwg.org/multipage/#image-map-processing-model
   if (params.name == html_names::kIdAttr ||
       params.name == html_names::kNameAttr) {
     if (params.name == html_names::kIdAttr) {
       // Call base class so that hasID bit gets set.
       HTMLElement::ParseAttribute(params);
-      if (IsA<HTMLDocument>(GetDocument()))
-        return;
     }
     if (isConnected())
       GetTreeScope().RemoveImageMap(*this);
     String map_name = params.new_value;
     if (map_name[0] == '#')
       map_name = map_name.Substring(1);
-    name_ = AtomicString(map_name);
+    // name_ is the parsed name attribute value that is not empty.
+    if (!map_name.empty() && params.name == html_names::kNameAttr)
+      name_ = AtomicString(map_name);
     if (isConnected())
       GetTreeScope().AddImageMap(*this);
 
