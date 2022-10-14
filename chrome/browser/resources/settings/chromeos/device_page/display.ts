@@ -24,74 +24,83 @@ import '../../controls/settings_dropdown_menu.js';
 import 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/ash/common/focus_without_ink_js.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrSliderElement, SliderTick} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
+import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DropdownMenuOptionList} from '../../controls/settings_dropdown_menu.js';
+import {SettingsSliderElement} from '../../controls/settings_slider.js';
 import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
-import {Route} from '../../router.js';
+import {Route, RouteObserverMixin, RouteObserverMixinInterface} from '../../router.js';
+import {assertExists, cast, castExists} from '../assert_extras.js';
 import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
 import {routes} from '../os_route.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
-import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, getDisplayApi} from './device_page_browser_proxy.js';
+import {getTemplate} from './display.html.js';
+import {SettingsDisplayOverscanDialogElement} from './display_overscan_dialog.js';
 
-/**
- * @typedef {{
- *   value: (!{
- *     recommended: (boolean|undefined),
- *     external_width: (number|undefined),
- *     external_height: (number|undefined),
- *     external_use_native: (boolean|undefined),
- *     external_scale_percentage: (number|undefined),
- *     internal_scale_percentage: (number|undefined)
- *   }|null)
- * }}
- */
-let DisplayResolutionPrefObject;
+type DisplayLayout = chrome.system.display.DisplayLayout;
+type DisplayMode = chrome.system.display.DisplayMode;
+type DisplayProperties = chrome.system.display.DisplayProperties;
+type DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
+type GetInfoFlags = chrome.system.display.GetInfoFlags;
+type MirrorModeInfo = chrome.system.display.MirrorModeInfo;
+const MirrorMode = chrome.system.display.MirrorMode;
+
+interface DisplayResolutionPrefObject {
+  value: {
+    recommended?: boolean,
+    external_width?: number,
+    external_height?: number,
+    external_use_native?: boolean,
+    external_scale_percentage?: number,
+    internal_scale_percentage?: number,
+  }|null;
+}
 
 /**
  * The types of Night Light automatic schedule. The values of the enum values
  * are synced with the pref "prefs.ash.night_light.schedule_type".
- * @enum {number}
  */
-const NightLightScheduleType = {
-  NEVER: 0,
-  SUNSET_TO_SUNRISE: 1,
-  CUSTOM: 2,
-};
+enum NightLightScheduleType {
+  NEVER = 0,
+  SUNSET_TO_SUNRISE = 1,
+  CUSTOM = 2,
+}
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {DeepLinkingBehaviorInterface}
- * @implements {I18nBehaviorInterface}
- * @implements {PrefsBehaviorInterface}
- * @implements {RouteObserverBehaviorInterface}
- */
-const SettingsDisplayElementBase = mixinBehaviors(
-    [DeepLinkingBehavior, I18nBehavior, PrefsBehavior, RouteObserverBehavior],
-    PolymerElement);
+interface SettingsDisplayElement {
+  $: {
+    displayOverscan: SettingsDisplayOverscanDialogElement,
+    displaySizeSlider: SettingsSliderElement,
+  };
+}
 
-/** @polymer */
+const SettingsDisplayElementBase =
+    mixinBehaviors(
+        [DeepLinkingBehavior, PrefsBehavior],
+        RouteObserverMixin(I18nMixin(PolymerElement))) as {
+      new (): PolymerElement & DeepLinkingBehaviorInterface &
+          I18nMixinInterface & PrefsBehaviorInterface &
+          RouteObserverMixinInterface,
+    };
+
 class SettingsDisplayElement extends SettingsDisplayElementBase {
   static get is() {
     return 'settings-display';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /**
-       * @type {!chrome.settingsPrivate.PrefObject}
-       * @private
-       */
       selectedModePref_: {
         type: Object,
         value() {
@@ -103,10 +112,6 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
-      /**
-       * @type {!chrome.settingsPrivate.PrefObject}
-       * @private
-       */
       selectedZoomPref_: {
         type: Object,
         value() {
@@ -118,16 +123,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
-      /**
-       * Array of displays.
-       * @type {!Array<!chrome.system.display.DisplayUnitInfo>}
-       */
       displays: Array,
 
-      /**
-       * Array of display layouts.
-       * @type {!Array<!chrome.system.display.DisplayLayout>}
-       */
       layouts: Array,
 
       /**
@@ -139,7 +136,6 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
       /** Primary display id */
       primaryDisplayId: String,
 
-      /** @type {!chrome.system.display.DisplayUnitInfo|undefined} */
       selectedDisplay: Object,
 
       /** Id passed to the overscan dialog. */
@@ -151,28 +147,24 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
       /** Ids for mirroring destination displays. */
       mirroringDestinationIds: Array,
 
-      /** @private {!Array<number>} Mode index values for slider. */
+      /** Mode index values for slider. */
       modeValues_: Array,
 
       /**
-       * @private {!Array<SliderTick>} Display zoom slider tick
-       *     values.
+       * Display zoom slider tick values.
        */
       zoomValues_: Array,
 
-      /** @private {!DropdownMenuOptionList} */
       displayModeList_: {
         type: Array,
         value: [],
       },
 
-      /** @private {!DropdownMenuOptionList} */
       refreshRateList_: {
         type: Array,
         value: [],
       },
 
-      /** @private */
       unifiedDesktopAvailable_: {
         type: Boolean,
         value() {
@@ -180,7 +172,6 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
-      /** @private */
       ambientColorAvailable_: {
         type: Boolean,
         value() {
@@ -188,7 +179,6 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
-      /** @private */
       listAllDisplayModes_: {
         type: Boolean,
         value() {
@@ -196,16 +186,11 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
-      /** @private */
       unifiedDesktopMode_: {
         type: Boolean,
         value: false,
       },
 
-      /**
-       * @type {!chrome.settingsPrivate.PrefObject}
-       * @private
-       */
       selectedParentModePref_: {
         type: Object,
         value: function() {
@@ -217,7 +202,6 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
-      /** @private */
       scheduleTypesList_: {
         type: Array,
         value() {
@@ -239,28 +223,22 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         },
       },
 
-      /** @private */
       shouldOpenCustomScheduleCollapse_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private */
       nightLightScheduleSubLabel_: String,
 
-      /** @private */
       logicalResolutionText_: String,
 
-      /** @private {!Array<string>} */
       displayTabNames_: Array,
 
-      /** @private */
       selectedTab_: Number,
 
       /**
        * Contains the settingId of any deep link that wasn't able to be shown,
        * null otherwise.
-       * @private {?Setting}
        */
       pendingSettingId_: {
         type: Number,
@@ -269,7 +247,6 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
 
       /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
-       * @type {!Set<!Setting>}
        */
       supportedSettingIds: {
         type: Object,
@@ -288,7 +265,6 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
           Setting.kDisplayOverscan,
         ]),
       },
-
     };
   }
 
@@ -304,37 +280,61 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     ];
   }
 
-  /** @override */
+  displayIds: string;
+  displays: DisplayUnitInfo[];
+  layouts: DisplayLayout[];
+  mirroringDestinationIds: string[];
+  overscanDisplayId: string;
+  primaryDisplayId: string;
+  selectedDisplay?: DisplayUnitInfo;
+  private browserProxy_: DevicePageBrowserProxy;
+  private currentRoute_: Route|null;
+  private currentSelectedModeIndex_: number;
+  private currentSelectedParentModeIndex_: number;
+  private displayChangedListener_: EventListener|null;
+  private displayModeList_: DropdownMenuOptionList;
+  private displayTabNames_: string[];
+  private invalidDisplayId_: string;
+  private listAllDisplayModes_: boolean;
+  private logicalResolutionText_: string;
+  private modeToParentModeMap_: Map<number, number>;
+  private modeValues_: number[];
+  private nightLightScheduleSubLabel_: string;
+  private parentModeToRefreshRateMap_: Map<number, DropdownMenuOptionList>;
+  private pendingSettingId_: Setting|null;
+  private refreshRateList_: DropdownMenuOptionList;
+  private selectedModePref_: chrome.settingsPrivate.PrefObject;
+  private selectedParentModePref_: chrome.settingsPrivate.PrefObject;
+  private selectedTab_: number;
+  private selectedZoomPref_: chrome.settingsPrivate.PrefObject;
+  private shouldOpenCustomScheduleCollapse_: boolean;
+  private unifiedDesktopMode_: boolean;
+  private zoomValues_: SliderTick[];
+
   constructor() {
     super();
 
     /**
      * This represents the index of the mode with the highest refresh rate at
      * the current resolution.
-     * @private {number}
      */
     this.currentSelectedParentModeIndex_ = -1;
 
     /**
      * This is the index of the currently selected mode.
-     * @private {number} Selected mode index received from chrome.
+     * Selected mode index received from chrome.
      */
     this.currentSelectedModeIndex_ = -1;
 
     /**
      * Listener for chrome.system.display.onDisplayChanged events.
-     * @type {function(void)|undefined}
-     * @private
      */
-    this.displayChangedListener_ = undefined;
+    this.displayChangedListener_ = null;
 
-    /** @private {string} */
     this.invalidDisplayId_ = loadTimeData.getString('invalidDisplayId');
 
-    /** @private {!Route|undefined} */
-    this.currentRoute_ = undefined;
+    this.currentRoute_ = null;
 
-    /** @private {!DevicePageBrowserProxy} */
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
 
     /**
@@ -343,47 +343,39 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
      * display's mode list. Parent mode indexes represent the mode with the
      * highest refresh rate at a given resolution. There is 1 and only 1
      * parentModeIndex for each possible resolution .
-     * @private {!Map<number, DropdownMenuOptionList>}
      */
     this.parentModeToRefreshRateMap_ = new Map();
 
     /**
      * Map containing an entry for each display mode mapping its modeIndex to
      * the corresponding parentModeIndex value.
-     * @private {!Map<number, number>} Mode index values for slider.
+     * Mode index values for slider.
      */
     this.modeToParentModeMap_ = new Map();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.displayChangedListener_ =
-        this.displayChangedListener_ || (() => this.getDisplayInfo_());
+        this.displayChangedListener_ || this.getDisplayInfo_.bind(this);
     getDisplayApi().onDisplayChanged.addListener(this.displayChangedListener_);
 
     this.getDisplayInfo_();
     this.$.displaySizeSlider.updateValueInstantly = false;
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     getDisplayApi().onDisplayChanged.removeListener(
-        assert(this.displayChangedListener_));
+        castExists(this.displayChangedListener_));
 
     this.currentSelectedModeIndex_ = -1;
     this.currentSelectedParentModeIndex_ = -1;
   }
 
-  /**
-   * Overridden from DeepLinkingBehavior.
-   * @param {!Setting} settingId
-   * @return {boolean}
-   */
-  beforeDeepLinkAttempt(settingId) {
+  override beforeDeepLinkAttempt(_settingId: Setting): boolean {
     if (!this.displays) {
       // On initial page load, displays will not be loaded and deep link
       // attempt will fail. Suppress warnings by exiting early and try again
@@ -395,15 +387,11 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     return true;
   }
 
-  /**
-   * @param {!Route} newRoute
-   * @param {!Route=} opt_oldRoute
-   */
-  currentRouteChanged(newRoute, opt_oldRoute) {
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
     this.currentRoute_ = newRoute;
 
     // When navigating away from the page, deselect any selected display.
-    if (newRoute !== routes.DISPLAY && opt_oldRoute === routes.DISPLAY) {
+    if (newRoute !== routes.DISPLAY && oldRoute === routes.DISPLAY) {
       this.browserProxy_.highlightDisplay(this.invalidDisplayId_);
       return;
     }
@@ -425,10 +413,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   /**
    * Shows or hides the overscan dialog.
-   * @param {boolean} showOverscan
-   * @private
    */
-  showOverscanDialog_(showOverscan) {
+  private showOverscanDialog_(showOverscan: boolean) {
     if (showOverscan) {
       this.$.displayOverscan.open();
       this.$.displayOverscan.focus();
@@ -437,32 +423,28 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     }
   }
 
-  /** @private */
-  onDisplayIdsChanged_() {
+  private onDisplayIdsChanged_() {
     // Close any overscan dialog (which will cancel any overscan operation)
     // if displayIds changes.
     this.showOverscanDialog_(false);
   }
 
-  /** @private */
-  getDisplayInfo_() {
-    /** @type {chrome.system.display.GetInfoFlags} */ const flags = {
+  private getDisplayInfo_() {
+    const flags: GetInfoFlags = {
       singleUnified: true,
     };
     getDisplayApi().getInfo(
-        flags, displays => this.displayInfoFetched_(displays));
+        flags,
+        (displays: DisplayUnitInfo[]) => this.displayInfoFetched_(displays));
   }
 
-  /**
-   * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
-   * @private
-   */
-  displayInfoFetched_(displays) {
+  private displayInfoFetched_(displays: DisplayUnitInfo[]) {
     if (!displays.length) {
       return;
     }
     getDisplayApi().getDisplayLayout(
-        layouts => this.displayLayoutFetched_(displays, layouts));
+        (layouts: DisplayLayout[]) =>
+            this.displayLayoutFetched_(displays, layouts));
     if (this.isMirrored_(displays)) {
       this.mirroringDestinationIds = displays[0].mirroringDestinationIds;
     } else {
@@ -470,12 +452,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     }
   }
 
-  /**
-   * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
-   * @param {!Array<!chrome.system.display.DisplayLayout>} layouts
-   * @private
-   */
-  displayLayoutFetched_(displays, layouts) {
+  private displayLayoutFetched_(
+      displays: DisplayUnitInfo[], layouts: DisplayLayout[]) {
     this.layouts = layouts;
     this.displays = displays;
     this.displayTabNames_ = displays.map(({name}) => name);
@@ -483,12 +461,10 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   }
 
   /**
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @return {number} The index of the currently selected mode of the
+   * @return The index of the currently selected mode of the
    * |selectedDisplay|. If the display has no modes, returns 0.
-   * @private
    */
-  getSelectedModeIndex_(selectedDisplay) {
+  private getSelectedModeIndex_(selectedDisplay: DisplayUnitInfo): number {
     for (let i = 0; i < selectedDisplay.modes.length; ++i) {
       if (selectedDisplay.modes[i].isSelected) {
         return i;
@@ -497,69 +473,54 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     return 0;
   }
 
-  /**
-   * Checks if the given device policy is enabled.
-   * @param {DisplayResolutionPrefObject} policyPref
-   * @return {boolean}
-   * @private
-   */
-  isDevicePolicyEnabled_(policyPref) {
+  private isDevicePolicyEnabled_(policyPref: DisplayResolutionPrefObject):
+      boolean {
     return policyPref !== undefined && policyPref.value !== null;
   }
 
-  /**
-   * Checks if display resolution is managed by device policy.
-   * @param {DisplayResolutionPrefObject} resolutionPref
-   * @return {boolean}
-   * @private
-   */
-  isDisplayResolutionManagedByPolicy_(resolutionPref) {
+  private isDisplayResolutionManagedByPolicy_(
+      resolutionPref: DisplayResolutionPrefObject): boolean {
     return this.isDevicePolicyEnabled_(resolutionPref) &&
-        (resolutionPref.value.external_use_native !== undefined ||
-         (resolutionPref.value.external_width !== undefined &&
-          resolutionPref.value.external_height !== undefined));
+        (resolutionPref.value!.external_use_native !== undefined ||
+         (resolutionPref.value!.external_width !== undefined &&
+          resolutionPref.value!.external_height !== undefined));
   }
 
   /**
    * Checks if display resolution is managed by policy and the policy
    * is mandatory.
-   * @param {DisplayResolutionPrefObject} resolutionPref
-   * @return {boolean}
-   * @private
    */
-  isDisplayResolutionMandatory_(resolutionPref) {
+  private isDisplayResolutionMandatory_(
+      resolutionPref: DisplayResolutionPrefObject): boolean {
     return this.isDisplayResolutionManagedByPolicy_(resolutionPref) &&
-        !resolutionPref.value.recommended;
+        !resolutionPref.value!.recommended;
   }
 
   /**
    * Checks if display scale factor is managed by device policy.
-   * @param {chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @param {DisplayResolutionPrefObject} resolutionPref
-   * @return {boolean}
-   * @private
    */
-  isDisplayScaleManagedByPolicy_(selectedDisplay, resolutionPref) {
+  private isDisplayScaleManagedByPolicy_(
+      selectedDisplay: DisplayUnitInfo,
+      resolutionPref: DisplayResolutionPrefObject): boolean {
     if (!this.isDevicePolicyEnabled_(resolutionPref) || !selectedDisplay) {
       return false;
     }
     if (selectedDisplay.isInternal) {
-      return resolutionPref.value.internal_scale_percentage !== undefined;
+      return resolutionPref.value!.internal_scale_percentage !== undefined;
     }
-    return resolutionPref.value.external_scale_percentage !== undefined;
+    return resolutionPref.value!.external_scale_percentage !== undefined;
   }
 
   /**
    * Checks if display scale factor is managed by policy and the policy
    * is mandatory.
-   * @param {DisplayResolutionPrefObject} resolutionPref
-   * @return {boolean}
-   * @private
    */
-  isDisplayScaleMandatory_(selectedDisplay, resolutionPref) {
+  private isDisplayScaleMandatory_(
+      selectedDisplay: DisplayUnitInfo,
+      resolutionPref: DisplayResolutionPrefObject): boolean {
     return this.isDisplayScaleManagedByPolicy_(
                selectedDisplay, resolutionPref) &&
-        !resolutionPref.value.recommended;
+        !resolutionPref.value!.recommended;
   }
 
 
@@ -568,12 +529,10 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * contain entries representing a combined resolution + refresh rate.
    * Only one parse*DisplayModes_ method must be called, depending on the
    * state of |listAllDisplayModes_|.
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @private
    */
-  parseCompoundDisplayModes_(selectedDisplay) {
+  private parseCompoundDisplayModes_(selectedDisplay: DisplayUnitInfo) {
     assert(!this.listAllDisplayModes_);
-    const optionList = [];
+    const optionList: DropdownMenuOptionList = [];
     for (let i = 0; i < selectedDisplay.modes.length; ++i) {
       const mode = selectedDisplay.modes[i];
 
@@ -596,11 +555,9 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * height => refreshRate => modeIndex. modeIndex is the index of the
    * resolution + refreshRate combination in |selectedDisplay|'s mode list.
    * This is used to traverse all possible display modes in ascending order.
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @return {!Map<number, Map<number, Map<number, number>>>}
-   * @private
    */
-  createModeMap_(selectedDisplay) {
+  private createModeMap_(selectedDisplay: DisplayUnitInfo):
+      Map<number, Map<number, Map<number, number>>> {
     const modes = new Map();
     for (let i = 0; i < selectedDisplay.modes.length; ++i) {
       const mode = selectedDisplay.modes[i];
@@ -635,10 +592,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * selected, and other possible refresh rates at that resolution are shown
    * in a dropdown. Only one parse*DisplayModes_ method must be called,
    * depending on the state of |listAllDisplayModes_|.
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @private
    */
-  parseSplitDisplayModes_(selectedDisplay) {
+  private parseSplitDisplayModes_(selectedDisplay: DisplayUnitInfo) {
     assert(this.listAllDisplayModes_);
     // Clear the mappings before recalculating.
     this.modeToParentModeMap_ = new Map();
@@ -653,13 +608,13 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     const widthsArr = Array.from(modes.keys()).sort();
     for (let i = 0; i < widthsArr.length; i++) {
       const width = widthsArr[i];
-      const heightsMap = modes.get(width);
+      const heightsMap = modes.get(width)!;
       const heightArr = Array.from(heightsMap.keys());
       for (let j = 0; j < heightArr.length; j++) {
         // The highest/first refresh rate for each width/height pair
         // (resolution) is the default and therefore the "parent" mode.
         const height = heightArr[j];
-        const refreshRates = heightsMap.get(height);
+        const refreshRates = heightsMap.get(height)!;
         const parentModeIndex = this.getParentModeIndex_(refreshRates);
         this.addResolution_(parentModeIndex, width, height);
 
@@ -670,7 +625,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         const refreshRatesArr = Array.from(refreshRates.keys());
         for (let k = 0; k < refreshRatesArr.length; k++) {
           const rate = refreshRatesArr[k];
-          const modeIndex = refreshRates.get(rate);
+          const modeIndex = refreshRates.get(rate)!;
           const isInterlaced = selectedDisplay.modes[modeIndex].isInterlaced;
 
           this.addRefreshRate_(parentModeIndex, modeIndex, rate, isInterlaced);
@@ -682,7 +637,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     for (let i = 0; i < selectedDisplay.modes.length; i++) {
       const mode = selectedDisplay.modes[i];
       const parentModeIndex =
-          this.getParentModeIndex_(modes.get(mode.width).get(mode.height));
+          this.getParentModeIndex_(modes.get(mode.width)!.get(mode.height)!);
       this.modeToParentModeMap_.set(i, parentModeIndex);
     }
     assert(this.modeToParentModeMap_.size === selectedDisplay.modes.length);
@@ -694,24 +649,21 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Picks the appropriate parent mode from a refresh rate -> mode index map.
    * Currently this chooses the mode with the highest refresh rate.
-   * @param {Map<number,number>} refreshRates each possible refresh rate
+   * @param refreshRates each possible refresh rate
    *   mapped to the corresponding mode index.
-   * @private
    */
-  getParentModeIndex_(refreshRates) {
+  private getParentModeIndex_(refreshRates: Map<number, number>) {
     const maxRefreshRate = Math.max(...refreshRates.keys());
-    return refreshRates.get(maxRefreshRate);
+    // maxRefreshRate always exists as a key
+    return refreshRates.get(maxRefreshRate)!;
   }
 
   /**
    * Adds a an entry in |displayModeList_| for the resolution represented by
    * |width| and |height| and possible |refreshRates|.
-   * @param {number} parentModeIndex
-   * @param {number} width
-   * @param {number} height
-   * @private
    */
-  addResolution_(parentModeIndex, width, height) {
+  private addResolution_(
+      parentModeIndex: number, width: number, height: number) {
     assert(this.listAllDisplayModes_);
 
     // Add an entry in the outer map for |parentModeIndex|. The inner
@@ -733,13 +685,10 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Adds a an entry in |parentModeToRefreshRateMap_| for the refresh rate
    * represented by |rate|.
-   * @param {number} parentModeIndex
-   * @param {number} modeIndex
-   * @param {number} rate
-   * @param {boolean|undefined} isInterlaced
-   * @private
    */
-  addRefreshRate_(parentModeIndex, modeIndex, rate, isInterlaced) {
+  private addRefreshRate_(
+      parentModeIndex: number, modeIndex: number, rate: number,
+      isInterlaced?: boolean) {
     assert(this.listAllDisplayModes_);
 
     // Truncate at two decimal places for display. If the refresh rate
@@ -754,7 +703,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
 
     const refreshRateOption = this.i18n(id, refreshRate.toString());
 
-    this.parentModeToRefreshRateMap_.get(parentModeIndex).push({
+    this.parentModeToRefreshRateMap_.get(parentModeIndex)!.push({
       name: refreshRateOption,
       value: modeIndex,
     });
@@ -763,10 +712,9 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Sorts |displayModeList_| in descending order. First order sort is width,
    * second order sort is height.
-   * @private
    */
-  sortResolutionList_() {
-    const getWidthFromResolutionString = function(str) {
+  private sortResolutionList_() {
+    const getWidthFromResolutionString = function(str: string) {
       return Number(str.substr(0, str.indexOf(' ')));
     };
 
@@ -784,10 +732,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * refresh rate combo. If |listAllDisplayModes_| is on, resolution and
    * refresh rate are parsed into separate dropdowns and
    * |parentModeToRefreshRateMap_| + |modeToParentModeMap_| are populated.
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @private
    */
-  updateDisplayModeStructures_(selectedDisplay) {
+  private updateDisplayModeStructures_(selectedDisplay: DisplayUnitInfo) {
     if (this.listAllDisplayModes_) {
       this.parseSplitDisplayModes_(selectedDisplay);
     } else {
@@ -798,11 +744,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Returns a value from |zoomValues_| that is closest to the display zoom
    * percentage currently selected for the |selectedDisplay|.
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @return {number}
-   * @private
    */
-  getSelectedDisplayZoom_(selectedDisplay) {
+  private getSelectedDisplayZoom_(selectedDisplay: DisplayUnitInfo): number {
     const selectedZoom = selectedDisplay.displayZoomFactor;
     let closestMatch = this.zoomValues_[0].value;
     let minimumDiff = Math.abs(closestMatch - selectedZoom);
@@ -815,16 +758,14 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
       }
     }
 
-    return /** @type {number} */ (closestMatch);
+    return closestMatch;
   }
 
   /**
    * Given the display with the current display mode, this function lists all
    * the display zoom values and their labels to be used by the slider.
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @return {!Array<SliderTick>}
    */
-  getZoomValues_(selectedDisplay) {
+  private getZoomValues_(selectedDisplay: DisplayUnitInfo): SliderTick[] {
     return selectedDisplay.availableDisplayZoomFactors.map(value => {
       const ariaValue = Math.round(value * 100);
       return {
@@ -838,10 +779,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * We need to call this explicitly rather than relying on change events
    * so that we can control the update order.
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @private
    */
-  setSelectedDisplay_(selectedDisplay) {
+  private setSelectedDisplay_(selectedDisplay: DisplayUnitInfo) {
     // |modeValues_| controls the resolution slider's tick values. Changing it
     // might trigger a change in the |selectedModePref_.value| if the number
     // of modes differs and the current mode index is out of range of the new
@@ -878,9 +817,9 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
       // Now that everything is in sync, set the selected mode to its correct
       // value right before updating the pref.
       this.currentSelectedParentModeIndex_ =
-          this.modeToParentModeMap_.get(currentModeIndex);
+          this.modeToParentModeMap_.get(currentModeIndex)!;
       this.refreshRateList_ = this.parentModeToRefreshRateMap_.get(
-          this.currentSelectedParentModeIndex_);
+          this.currentSelectedParentModeIndex_)!;
     } else {
       this.currentSelectedParentModeIndex_ = currentModeIndex;
     }
@@ -888,27 +827,20 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     this.set(
         'selectedParentModePref_.value', this.currentSelectedParentModeIndex_);
 
-    this.updateLogicalResolutionText_(
-        /** @type {number} */ (this.selectedZoomPref_.value));
+    this.updateLogicalResolutionText_(this.selectedZoomPref_.value);
   }
 
   /**
    * Returns true if the resolution setting needs to be displayed.
-   * @param {!chrome.system.display.DisplayUnitInfo} display
-   * @return {boolean}
-   * @private
    */
-  showDropDownResolutionSetting_(display) {
+  private showDropDownResolutionSetting_(display: DisplayUnitInfo): boolean {
     return !display.isInternal;
   }
 
   /**
    * Returns true if the refresh rate setting needs to be displayed.
-   * @param {!chrome.system.display.DisplayUnitInfo} display
-   * @return {boolean}
-   * @private
    */
-  showRefreshRateSetting_(display) {
+  private showRefreshRateSetting_(display: DisplayUnitInfo): boolean {
     return this.listAllDisplayModes_ &&
         this.showDropDownResolutionSetting_(display);
   }
@@ -917,53 +849,37 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Returns true if external touch devices are connected and the current
    * display is not an internal display. If the feature is not enabled via the
    * switch, this will return false.
-   * @param {!chrome.system.display.DisplayUnitInfo} display Display being
-   *     checked for touch support.
-   * @return {boolean}
-   * @private
+   * @param display Display being checked for touch support.
    */
-  showTouchCalibrationSetting_(display) {
+  private showTouchCalibrationSetting_(display: DisplayUnitInfo): boolean {
     return !display.isInternal &&
         loadTimeData.getBoolean('enableTouchCalibrationSetting');
   }
 
   /**
    * Returns true if the overscan setting should be shown for |display|.
-   * @param {!chrome.system.display.DisplayUnitInfo} display
-   * @return {boolean}
-   * @private
    */
-  showOverscanSetting_(display) {
+  private showOverscanSetting_(display: DisplayUnitInfo): boolean {
     return !display.isInternal;
   }
 
   /**
    * Returns true if the ambient color setting should be shown for |display|.
-   * @param {boolean} ambientColorAvailable
-   * @param {chrome.system.display.DisplayUnitInfo} display
-   * @return {boolean}
-   * @private
    */
-  showAmbientColorSetting_(ambientColorAvailable, display) {
+  private showAmbientColorSetting_(
+      ambientColorAvailable: boolean, display: DisplayUnitInfo): boolean {
     return ambientColorAvailable && display && display.isInternal;
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  hasMultipleDisplays_() {
+  private hasMultipleDisplays_(): boolean {
     return this.displays.length > 1;
   }
 
   /**
    * Returns false if the display select menu has to be hidden.
-   * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @return {boolean}
-   * @private
    */
-  showDisplaySelectMenu_(displays, selectedDisplay) {
+  private showDisplaySelectMenu_(
+      displays: DisplayUnitInfo[], selectedDisplay: DisplayUnitInfo): boolean {
     if (selectedDisplay) {
       return displays.length > 1 && !selectedDisplay.isPrimary;
     }
@@ -974,12 +890,10 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Returns the select menu index indicating whether the display currently is
    * primary or extended.
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @param {string} primaryDisplayId
-   * @return {number} Returns 0 if the display is primary else returns 1.
-   * @private
+   * @return Returns 0 if the display is primary else returns 1.
    */
-  getDisplaySelectMenuIndex_(selectedDisplay, primaryDisplayId) {
+  private getDisplaySelectMenuIndex_(
+      selectedDisplay: DisplayUnitInfo, primaryDisplayId: string): number {
     if (selectedDisplay && selectedDisplay.id === primaryDisplayId) {
       return 0;
     }
@@ -988,22 +902,15 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   /**
    * Returns the i18n string for the text to be used for mirroring settings.
-   * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
-   * @return {string} i18n string for mirroring settings text.
-   * @private
+   * @return i18n string for mirroring settings text.
    */
-  getDisplayMirrorText_(displays) {
+  private getDisplayMirrorText_(displays: DisplayUnitInfo[]): string {
     return this.i18n('displayMirror', displays[0].name);
   }
 
-  /**
-   * @param {boolean} unifiedDesktopAvailable
-   * @param {boolean} unifiedDesktopMode
-   * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
-   * @return {boolean}
-   * @private
-   */
-  showUnifiedDesktop_(unifiedDesktopAvailable, unifiedDesktopMode, displays) {
+  private showUnifiedDesktop_(
+      unifiedDesktopAvailable: boolean, unifiedDesktopMode: boolean,
+      displays: DisplayUnitInfo[]): boolean {
     if (displays === undefined) {
       return false;
     }
@@ -1013,24 +920,14 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
          !this.isMirrored_(displays));
   }
 
-  /**
-   * @param {boolean} unifiedDesktopMode
-   * @return {string}
-   * @private
-   */
-  getUnifiedDesktopText_(unifiedDesktopMode) {
+  private getUnifiedDesktopText_(unifiedDesktopMode: boolean): string {
     return this.i18n(
         unifiedDesktopMode ? 'displayUnifiedDesktopOn' :
                              'displayUnifiedDesktopOff');
   }
 
-  /**
-   * @param {boolean} unifiedDesktopMode
-   * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
-   * @return {boolean}
-   * @private
-   */
-  showMirror_(unifiedDesktopMode, displays) {
+  private showMirror_(unifiedDesktopMode: boolean, displays: DisplayUnitInfo[]):
+      boolean {
     if (displays === undefined) {
       return false;
     }
@@ -1039,53 +936,30 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         (!unifiedDesktopMode && displays.length > 1);
   }
 
-  /**
-   * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
-   * @return {boolean}
-   * @private
-   */
-  isMirrored_(displays) {
+  private isMirrored_(displays: DisplayUnitInfo[]): boolean {
     return displays !== undefined && displays.length > 0 &&
         !!displays[0].mirroringSourceId;
   }
 
-  /**
-   * @param {!chrome.system.display.DisplayUnitInfo} display
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @return {boolean}
-   * @private
-   */
-  isSelected_(display, selectedDisplay) {
+  private isSelected_(
+      display: DisplayUnitInfo, selectedDisplay: DisplayUnitInfo): boolean {
     return display.id === selectedDisplay.id;
   }
 
-  /**
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @return {boolean}
-   * @private
-   */
-  enableSetResolution_(selectedDisplay) {
+  private enableSetResolution_(selectedDisplay: DisplayUnitInfo): boolean {
     return selectedDisplay.modes.length > 1;
   }
 
-  /**
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @return {boolean}
-   * @private
-   */
-  enableDisplayZoomSlider_(selectedDisplay) {
+  private enableDisplayZoomSlider_(selectedDisplay: DisplayUnitInfo): boolean {
     return selectedDisplay.availableDisplayZoomFactors.length > 1;
   }
 
   /**
    * Returns true if the given mode is the best mode for the
    * |selectedDisplay|.
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @param {!chrome.system.display.DisplayMode} mode
-   * @return {boolean}
-   * @private
    */
-  isBestMode_(selectedDisplay, mode) {
+  private isBestMode_(selectedDisplay: DisplayUnitInfo, mode: DisplayMode):
+      boolean {
     if (!selectedDisplay.isInternal) {
       return mode.isNative;
     }
@@ -1093,29 +967,25 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     // Things work differently for full HD devices(1080p). The best mode is
     // the one with 1.25 device scale factor and 0.8 ui scale.
     if (mode.heightInNativePixels === 1080) {
-      return Math.abs(mode.uiScale - 0.8) < 0.001 &&
+      return Math.abs(mode.uiScale! - 0.8) < 0.001 &&
           Math.abs(mode.deviceScaleFactor - 1.25) < 0.001;
     }
 
     return mode.uiScale === 1.0;
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  getResolutionText_() {
+  private getResolutionText_(): string {
+    assertExists(this.selectedDisplay);
     if (this.selectedDisplay.modes.length === 0 ||
         this.currentSelectedModeIndex_ === -1) {
-      // If currentSelectedModeIndex_ == -1, selectedDisplay and
+      // If currentSelectedModeIndex_ is -1, selectedDisplay and
       // |selectedModePref_.value| are not in sync.
       return this.i18n(
           'displayResolutionText', this.selectedDisplay.bounds.width.toString(),
           this.selectedDisplay.bounds.height.toString());
     }
-    const mode = this.selectedDisplay.modes[
-        /** @type {number} */ (this.selectedModePref_.value)];
-    assert(mode);
+    const mode =
+        castExists(this.selectedDisplay.modes[this.selectedModePref_.value]);
     const widthStr = mode.width.toString();
     const heightStr = mode.height.toString();
     if (this.isBestMode_(this.selectedDisplay, mode)) {
@@ -1129,11 +999,10 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Updates the logical resolution text to be used for the display size
    * section
-   * @param {number} zoomFactor Current zoom factor applied on the selected
-   *    display.
-   * @private
+   * @param zoomFactor Current zoom factor applied on the selected display.
    */
-  updateLogicalResolutionText_(zoomFactor) {
+  private updateLogicalResolutionText_(zoomFactor: number) {
+    assertExists(this.selectedDisplay);
     if (!this.selectedDisplay.isInternal) {
       this.logicalResolutionText_ = '';
       return;
@@ -1167,9 +1036,9 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Logical Resolution Text. Returns true if the longer edge of the
    * display's native pixels is different than the longer edge of the
    * display's current bounds.
-   * @private
    */
-  shouldSwapLogicalResolutionText_() {
+  private shouldSwapLogicalResolutionText_() {
+    assertExists(this.selectedDisplay);
     const mode = this.selectedDisplay.modes[this.currentSelectedModeIndex_];
     const bounds = this.selectedDisplay.bounds;
 
@@ -1177,30 +1046,27 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         mode.widthInNativePixels > mode.heightInNativePixels;
   }
 
-
   /**
    * Handles the event where the display size slider is being dragged, i.e.
    * the mouse or tap has not been released.
-   * @private
    */
-  onDisplaySizeSliderDrag_() {
+  private onDisplaySizeSliderDrag_() {
     if (!this.selectedDisplay) {
       return;
     }
 
-    const sliderValue =
-        this.$.displaySizeSlider.shadowRoot.querySelector('#slider').value;
-    const zoomFactor = this.$.displaySizeSlider.ticks[sliderValue].value;
-    this.updateLogicalResolutionText_(
-        /** @type {number} */ (zoomFactor));
+    const slider = castExists(
+        this.$.displaySizeSlider.shadowRoot!.querySelector<CrSliderElement>(
+            '#slider'));
+    const zoomFactor =
+        (this.$.displaySizeSlider.ticks as SliderTick[])[slider.value].value;
+    this.updateLogicalResolutionText_(zoomFactor);
   }
 
   /**
-   * @param {!CustomEvent<string>} e |e.detail| is the id of the selected
-   *     display.
-   * @private
+   * @param e |e.detail| is the id of the selected display.
    */
-  onSelectDisplay_(e) {
+  private onSelectDisplay_(e: CustomEvent<string>) {
     const id = e.detail;
     for (let i = 0; i < this.displays.length; ++i) {
       const display = this.displays[i];
@@ -1213,9 +1079,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     }
   }
 
-  /** @private */
-  onSelectDisplayTab_() {
-    const {selected} = this.shadowRoot.querySelector('cr-tabs');
+  private onSelectDisplayTab_() {
+    const {selected} = castExists(this.shadowRoot!.querySelector('cr-tabs'));
     if (this.selectedTab_ !== selected) {
       this.setSelectedDisplay_(this.displays[selected]);
     }
@@ -1223,31 +1088,26 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   /**
    * Handles event when a touch calibration option is selected.
-   * @param {!Event} e
-   * @private
    */
-  onTouchCalibrationTap_(e) {
-    getDisplayApi().showNativeTouchCalibration(this.selectedDisplay.id);
+  private onTouchCalibrationTap_() {
+    getDisplayApi().showNativeTouchCalibration(this.selectedDisplay!.id);
   }
 
   /**
    * Handles the event when an option from display select menu is selected.
-   * @param {!{target: !HTMLSelectElement}} e
-   * @private
    */
-  updatePrimaryDisplay_(e) {
-    /** @type {number} */ const PRIMARY_DISP_IDX = 0;
+  private updatePrimaryDisplay_(e: Event) {
     if (!this.selectedDisplay) {
       return;
     }
     if (this.selectedDisplay.id === this.primaryDisplayId) {
       return;
     }
-    if (!e.target.value) {
+    if (!(e.target as HTMLSelectElement).value) {
       return;
     }
 
-    /** @type {!chrome.system.display.DisplayProperties} */ const properties = {
+    const properties: DisplayProperties = {
       isPrimary: true,
     };
     getDisplayApi().setDisplayProperties(
@@ -1258,10 +1118,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Handles a change in the |selectedParentModePref| value triggered via the
    * observer.
-   * @param {number} newModeIndex The new index value
-   * @private
    */
-  onSelectedParentModeChange_(newModeIndex) {
+  private onSelectedParentModeChange_(newModeIndex: number) {
     if (this.currentSelectedParentModeIndex_ === newModeIndex) {
       return;
     }
@@ -1279,10 +1137,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Returns True if a new parentMode has been set and we have received an
    * update from Chrome.
-   * @return {boolean}
-   * @private
    */
-  hasNewParentModeBeenSet() {
+  private hasNewParentModeBeenSet(): boolean {
     if (this.currentSelectedParentModeIndex_ === -1) {
       return false;
     }
@@ -1294,10 +1150,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Returns True if a new mode has been set and we have received an update
    * from Chrome.
-   * @return {boolean}
-   * @private
    */
-  hasNewModeBeenSet() {
+  private hasNewModeBeenSet(): boolean {
     if (this.currentSelectedModeIndex_ === -1) {
       return false;
     }
@@ -1312,10 +1166,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   /**
    * Handles a change in |selectedModePref| triggered via the observer.
-   * @param {number} newModeIndex The new index value
-   * @private
    */
-  onSelectedModeChange_(newModeIndex) {
+  private onSelectedModeChange_(newModeIndex: number) {
     // We want to ignore all value changes to the pref due to the slider being
     // dragged. See http://crbug/845712 for more info.
     if (this.currentSelectedModeIndex_ === newModeIndex) {
@@ -1327,13 +1179,14 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
       // update from Chrome and the mode differs from the current mode.
       return;
     }
-    /** @type {!chrome.system.display.DisplayProperties} */ const properties = {
-      displayMode: this.selectedDisplay.modes[
-          /** @type {number} */ (this.selectedModePref_.value)],
+
+    assertExists(this.selectedDisplay);
+    const properties: DisplayProperties = {
+      displayMode: this.selectedDisplay.modes[this.selectedModePref_.value],
     };
 
-    this.refreshRateList_ = this.parentModeToRefreshRateMap_.get(
-        /** @type {number} */ (this.selectedParentModePref_.value));
+    this.refreshRateList_ = castExists(this.parentModeToRefreshRateMap_.get(
+        this.selectedParentModePref_.value));
     getDisplayApi().setDisplayProperties(
         this.selectedDisplay.id, properties,
         () => this.setPropertiesCallback_());
@@ -1343,16 +1196,14 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Triggerend when the display size slider changes its value. This only
    * occurs when the value is committed (i.e. not while the slider is being
    * dragged).
-   * @private
    */
-  onSelectedZoomChange_() {
+  private onSelectedZoomChange_() {
     if (this.currentSelectedModeIndex_ === -1 || !this.selectedDisplay) {
       return;
     }
 
-    /** @type {!chrome.system.display.DisplayProperties} */ const properties = {
-      displayZoomFactor:
-          /** @type {number} */ (this.selectedZoomPref_.value),
+    const properties: DisplayProperties = {
+      displayZoomFactor: this.selectedZoomPref_.value,
     };
 
     getDisplayApi().setDisplayProperties(
@@ -1363,25 +1214,20 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
   /**
    * Returns whether the option "Auto-rotate" is one of the shown options in
    * the rotation drop-down menu.
-   * @param {!chrome.system.display.DisplayUnitInfo} selectedDisplay
-   * @return {boolean|undefined}
-   * @private
    */
-  showAutoRotateOption_(selectedDisplay) {
+  private showAutoRotateOption_(selectedDisplay: DisplayUnitInfo): boolean
+      |undefined {
     return selectedDisplay.isAutoRotationAllowed;
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onOrientationChange_(event) {
-    const target = /** @type {!HTMLSelectElement} */ (event.target);
-    const value = /** @type {number} */ (parseInt(target.value, 10));
+  private onOrientationChange_(event: Event) {
+    const select = cast(event.target, HTMLSelectElement);
+    const value = parseInt(select.value, 10);
 
+    assertExists(this.selectedDisplay);
     assert(value !== -1 || this.selectedDisplay.isAutoRotationAllowed);
 
-    /** @type {!chrome.system.display.DisplayProperties} */ const properties = {
+    const properties: DisplayProperties = {
       rotation: value,
     };
     getDisplayApi().setDisplayProperties(
@@ -1389,17 +1235,14 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
         () => this.setPropertiesCallback_());
   }
 
-  /** @private */
-  onMirroredTap_(event) {
+  private onMirroredTap_(event: Event) {
     // Blur the control so that when the transition animation completes and
     // the UI is focused, the control does not receive focus. crbug.com/785070
-    event.target.blur();
+    (event.currentTarget as CrCheckboxElement).blur();
 
-    /** @type {!chrome.system.display.MirrorModeInfo} */
-    const mirrorModeInfo = {
-      mode: this.isMirrored_(this.displays) ?
-          chrome.system.display.MirrorMode.OFF :
-          chrome.system.display.MirrorMode.NORMAL,
+    const mirrorModeInfo: MirrorModeInfo = {
+      mode: this.isMirrored_(this.displays) ? MirrorMode.OFF :
+                                              MirrorMode.NORMAL,
     };
     getDisplayApi().setMirrorMode(mirrorModeInfo, () => {
       const error = chrome.runtime.lastError;
@@ -1409,35 +1252,28 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     });
   }
 
-  /** @private */
-  onUnifiedDesktopTap_() {
-    /** @type {!chrome.system.display.DisplayProperties} */ const properties = {
+  private onUnifiedDesktopTap_() {
+    const properties: DisplayProperties = {
       isUnified: !this.unifiedDesktopMode_,
     };
     getDisplayApi().setDisplayProperties(
         this.primaryDisplayId, properties, () => this.setPropertiesCallback_());
   }
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onOverscanTap_(e) {
+  private onOverscanTap_(e: Event) {
     e.preventDefault();
-    this.overscanDisplayId = this.selectedDisplay.id;
+    this.overscanDisplayId = this.selectedDisplay!.id;
     this.showOverscanDialog_(true);
   }
 
-  /** @private */
-  onCloseOverscanDialog_() {
-    focusWithoutInk(assert(this.shadowRoot.querySelector('#overscan')));
+  private onCloseOverscanDialog_() {
+    focusWithoutInk(castExists(this.shadowRoot!.getElementById('overscan')));
   }
 
-  /** @private */
-  updateDisplayInfo_() {
+  private updateDisplayInfo_() {
     let displayIds = '';
-    let primaryDisplay = undefined;
-    let selectedDisplay = undefined;
+    let primaryDisplay: DisplayUnitInfo|undefined = undefined;
+    let selectedDisplay: DisplayUnitInfo|undefined = undefined;
     for (let i = 0; i < this.displays.length; ++i) {
       const display = this.displays[i];
       if (displayIds) {
@@ -1471,8 +1307,7 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     });
   }
 
-  /** @private */
-  setPropertiesCallback_() {
+  private setPropertiesCallback_() {
     if (chrome.runtime.lastError) {
       console.error(
           'setDisplayProperties Error: ' + chrome.runtime.lastError.message);
@@ -1483,9 +1318,8 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
    * Invoked when the status of Night Light or its schedule type are changed,
    * in order to update the schedule settings, such as whether to show the
    * custom schedule slider, and the schedule sub label.
-   * @private
    */
-  updateNightLightScheduleSettings_() {
+  private updateNightLightScheduleSettings_() {
     const scheduleType = this.getPref('ash.night_light.schedule_type').value;
     this.shouldOpenCustomScheduleCollapse_ =
         scheduleType === NightLightScheduleType.CUSTOM;
@@ -1500,25 +1334,26 @@ class SettingsDisplayElement extends SettingsDisplayElementBase {
     }
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowArrangementSection_() {
+  private shouldShowArrangementSection_(): boolean {
     if (!this.displays) {
       return false;
     }
     return this.hasMultipleDisplays_() || this.isMirrored_(this.displays);
   }
 
-  /** @private */
-  onDisplaysChanged_() {
+  private onDisplaysChanged_() {
     flush();
-    const displayLayout = this.shadowRoot.querySelector('#displayLayout');
+    const displayLayout = this.shadowRoot!.querySelector('display-layout');
     if (displayLayout) {
       displayLayout.updateDisplays(
           this.displays, this.layouts, this.mirroringDestinationIds);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-display': SettingsDisplayElement;
   }
 }
 

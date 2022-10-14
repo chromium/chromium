@@ -14,9 +14,6 @@ js_type_check("closure_compile_module") {
     ":audio",
     ":cros_audio_config",
     ":device_page_browser_proxy",
-    ":display",
-    ":display_layout",
-    ":display_overscan_dialog",
     ":drag_behavior",
     ":keyboard",
     ":layout_behavior",
@@ -35,6 +32,8 @@ js_library("audio") {
     "../..:router",
     "//ash/webui/common/resources:i18n_behavior",
     "//chromeos/ash/components/audio/public/mojom:mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
   ]
 
   externs_list =
@@ -50,37 +49,6 @@ js_library("device_page_browser_proxy") {
   externs_list = [
     "$externs_path/chrome_send.js",
     "$externs_path/system_display.js",
-  ]
-}
-
-js_library("display") {
-  deps = [
-    "..:os_route",
-    "..:route_observer_behavior",
-    "../..:router",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list =
-      chrome_extension_public_externs + [
-        "$externs_path/settings_private.js",
-        "$externs_path/system_display.js",
-        "//ui/webui/resources/cr_elements/cr_slider/cr_slider_externs.js",
-        "../settings_controls_types.js",
-      ]
-}
-
-js_library("display_layout") {
-  deps = [
-    ":drag_behavior",
-    ":layout_behavior",
-  ]
-}
-
-js_library("display_overscan_dialog") {
-  deps = [
-    ":display",
-    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -137,6 +105,7 @@ js_library("storage") {
     "../..:router",
     "//ash/webui/common/resources:focus_without_ink_js",
     "//ash/webui/common/resources:web_ui_listener_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -147,6 +116,7 @@ js_library("storage_external") {
     ":device_page_browser_proxy",
     "//ash/webui/common/resources:i18n_behavior",
     "//ash/webui/common/resources:web_ui_listener_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -154,15 +124,14 @@ js_library("storage_external_entry") {
   deps = [
     "..:prefs_behavior",
     "//ash/webui/common/resources:web_ui_listener_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+  externs_list = chrome_extension_public_externs
 }
 
 html_to_js("web_components") {
   js_files = [
     "audio.js",
-    "display_layout.js",
-    "display.js",
-    "display_overscan_dialog.js",
     "keyboard.js",
     "power.js",
     "storage_external_entry.js",

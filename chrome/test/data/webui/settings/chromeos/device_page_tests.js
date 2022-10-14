@@ -1269,9 +1269,22 @@ suite('SettingsDevicePage', function() {
             displayDiv.click();
             assertEquals(
                 displayPage.displays[1].id, displayPage.selectedDisplay.id);
+            flush();
 
-            displayPage.updatePrimaryDisplay_({target: {value: '0'}});
-            displayPage.onOrientationChange_({target: {value: '90'}});
+            const primaryDisplaySelect =
+                displayPage.shadowRoot.getElementById('primaryDisplaySelect');
+            assertTrue(!!primaryDisplaySelect);
+            primaryDisplaySelect.value = '0';
+            primaryDisplaySelect.dispatchEvent(new CustomEvent('change'));
+            flush();
+
+            const orientationSelect =
+                displayPage.shadowRoot.getElementById('orientationSelect');
+            assertTrue(!!orientationSelect);
+            orientationSelect.value = '90';
+            orientationSelect.dispatchEvent(new CustomEvent('change'));
+            flush();
+
             fakeSystemDisplay.onDisplayChanged.callListeners();
 
             return Promise.all([
@@ -1294,7 +1307,12 @@ suite('SettingsDevicePage', function() {
             assertEquals(90, displayPage.displays[1].rotation);
 
             // Mirror the displays.
-            displayPage.onMirroredTap_({target: {blur: function() {}}});
+            const displayMirrorCheckbox =
+                displayPage.shadowRoot.getElementById('displayMirrorCheckbox');
+            assertTrue(!!displayMirrorCheckbox);
+            displayMirrorCheckbox.click();
+            flush();
+
             fakeSystemDisplay.onDisplayChanged.callListeners();
 
             return Promise.all([

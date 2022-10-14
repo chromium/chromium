@@ -16,18 +16,27 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../os_icons.js';
 import '../../settings_shared.css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getDisplayApi} from './device_page_browser_proxy.js';
+import {getTemplate} from './display_overscan_dialog.html.js';
 
-/** @polymer */
-class SettingsDisplayOverscanDialogElement extends PolymerElement {
+type Insets = chrome.system.display.Insets;
+
+export interface SettingsDisplayOverscanDialogElement {
+  $: {
+    dialog: CrDialogElement,
+  };
+}
+
+export class SettingsDisplayOverscanDialogElement extends PolymerElement {
   static get is() {
     return 'settings-display-overscan-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -46,26 +55,27 @@ class SettingsDisplayOverscanDialogElement extends PolymerElement {
     };
   }
 
+  displayId: string;
+  private committed_: boolean;
+  private keyHandler_: (event: KeyboardEvent) => void;
+
   constructor() {
     super();
 
     /**
      * Keyboard event handler for overscan adjustments.
-     * @type {?function(!Event)}
-     * @private
      */
-    this.keyHandler_ = null;
+    this.keyHandler_ = this.handleKeyEvent_.bind(this);
   }
 
   open() {
-    this.keyHandler_ = this.handleKeyEvent_.bind(this);
     // We need to attach the event listener to |window|, not |this| so that
     // changing focus does not prevent key events from occurring.
     window.addEventListener('keydown', this.keyHandler_);
     this.committed_ = false;
     this.$.dialog.showModal();
     // Don't focus 'reset' by default. 'Tab' will focus 'OK'.
-    this.shadowRoot.querySelector('#reset').blur();
+    this.shadowRoot!.getElementById('reset')!.blur();
   }
 
   close() {
@@ -78,8 +88,7 @@ class SettingsDisplayOverscanDialogElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  displayIdChanged_(newValue, oldValue) {
+  private displayIdChanged_(newValue: string, oldValue: string) {
     if (oldValue && !this.committed_) {
       getDisplayApi().overscanCalibrationReset(oldValue);
       getDisplayApi().overscanCalibrationComplete(oldValue);
@@ -91,23 +100,17 @@ class SettingsDisplayOverscanDialogElement extends PolymerElement {
     getDisplayApi().overscanCalibrationStart(newValue);
   }
 
-  /** @private */
-  onResetTap_() {
+  private onResetTap_() {
     getDisplayApi().overscanCalibrationReset(this.displayId);
   }
 
-  /** @private */
-  onSaveTap_() {
+  private onSaveTap_() {
     getDisplayApi().overscanCalibrationComplete(this.displayId);
     this.committed_ = true;
     this.close();
   }
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  handleKeyEvent_(event) {
+  private handleKeyEvent_(event: KeyboardEvent) {
     if (event.altKey || event.ctrlKey || event.metaKey) {
       return;
     }
@@ -147,13 +150,8 @@ class SettingsDisplayOverscanDialogElement extends PolymerElement {
     event.preventDefault();
   }
 
-  /**
-   * @param {number} x
-   * @param {number} y
-   * @private
-   */
-  move_(x, y) {
-    /** @type {!chrome.system.display.Insets} */ const delta = {
+  private move_(x: number, y: number) {
+    const delta: Insets = {
       left: x,
       top: y,
       right: x ? -x : 0,  // negating 0 will produce a double.
@@ -162,19 +160,20 @@ class SettingsDisplayOverscanDialogElement extends PolymerElement {
     getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
   }
 
-  /**
-   * @param {number} x
-   * @param {number} y
-   * @private
-   */
-  resize_(x, y) {
-    /** @type {!chrome.system.display.Insets} */ const delta = {
+  private resize_(x: number, y: number) {
+    const delta: Insets = {
       left: x,
       top: y,
       right: x,
       bottom: y,
     };
     getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-display-overscan-dialog': SettingsDisplayOverscanDialogElement;
   }
 }
 

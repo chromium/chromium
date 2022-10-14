@@ -121,7 +121,9 @@
       <div id="displayScreenTitle" class="start" aria-hidden="true">
         $i18n{displayScreenTitle}
       </div>
-      <select class="md-select" on-change="updatePrimaryDisplay_"
+      <select id="primaryDisplaySelect"
+          class="md-select"
+          on-change="updatePrimaryDisplay_"
           aria-labelledby="displayScreenTitle"
           value="[[getDisplaySelectMenuIndex_(
               selectedDisplay, primaryDisplayId)]]">
@@ -239,7 +241,8 @@
             icon-aria-label="$i18n{displayOrientation}">
         </cr-policy-pref-indicator>
       </template>
-      <select class="md-select"
+      <select id="orientationSelect"
+          class="md-select"
           value="[[selectedDisplay.rotation]]"
           aria-labelledby="displayOrientation"
           on-change="onOrientationChange_"
