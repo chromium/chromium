@@ -134,7 +134,7 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
   handleLinkClicked_(e) {
     e.stopPropagation();
 
-    switch (e.target.id) {
+    switch (e.currentTarget.id) {
       case 'diagnostics':
         this.feedbackServiceProvider_.openDiagnosticsApp();
         this.handleEmitMetrics_(
@@ -154,7 +154,7 @@ export class ConfirmationPageElement extends ConfirmationPageElementBase {
             FeedbackAppPostSubmitAction.kOpenChromebookCommunity);
         break;
       default:
-        console.warn('unexpected caller id: ', e.target.id);
+        console.warn('unexpected caller id: ', e.currentTarget.id);
     }
   }
 
