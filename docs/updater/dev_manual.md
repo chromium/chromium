@@ -56,6 +56,15 @@ Example:
   ```
   .\tools\mb\mb.bat run --swarmed --no-default-dimensions -d pool chromium.win.uac -d os Windows-10 .\out\Default updater_tests_system -- --gtest_filter=*Install*
   ```
+* `mb` can schedule tests in the pools managed by different swarming servers.
+  The default server is
+  [chromium-swarm.appspot.com](https://chromium-swarm.appspot.com/botlist?k=pool).
+  To schedule tests to pools managed by
+  [chrome-swarming.appspot.com](https://chrome-swarming.appspot.com/botlist?k=pool),
+  for example `chrome.tests`, add `--internal` flag in the command line:
+  ```
+    tools/mb/mb run -v --swarmed --internal --no-default-dimensions -d pool chrome.tests -d os Windows-10 out/WinDefault updater_tests
+  ```
 * If your test introduces dependency on a new app on macOS, you need to let
  `mb` tool know so it can correctly figure out the dependency. Example:
   https://crrev.com/c/3470143.
