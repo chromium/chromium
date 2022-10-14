@@ -25,14 +25,17 @@ void MaybeAddStackEntry(const S& s,
                         UnexpectedErrorInfoProto* info) {
   int line_number = s.GetLineNumber();
   if (js_line_offsets.contains(devtools_source_url)) {
-    const auto [begin, end] = js_line_offsets.at(devtools_source_url);
+    const JsLineOffsetRange& js_line_offset_range =
+        js_line_offsets.at(devtools_source_url);
 
     // If the line number is outside of the lines for which we want to generate
     // a stack entry we return.
-    if (line_number < begin || line_number > end) {
+    if (line_number < js_line_offset_range.begin ||
+        line_number > js_line_offset_range.end) {
       return;
     }
-    line_number -= begin;
+    // Set the line number relative to the offset range.
+    line_number -= js_line_offset_range.begin;
   }
 
   info->add_js_exception_locations(

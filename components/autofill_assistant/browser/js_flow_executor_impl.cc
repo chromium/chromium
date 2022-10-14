@@ -370,7 +370,7 @@ void JsFlowExecutorImpl::OnFlowFinished(
     std::unique_ptr<runtime::EvaluateResult> result) {
   const JsLineOffsets js_line_offsets = {
       {js_flow_util::GetDevtoolsSourceUrl(UnexpectedErrorInfoProto::JS_FLOW),
-       {kJsLineOffset, kJsLineOffset + CountLines(*js_flow_)}}};
+       {.begin = kJsLineOffset, .end = kJsLineOffset + CountLines(*js_flow_)}}};
   // Check and extract the return value. In case of exceptions, the sanitized
   // stack trace will be part of the returned ClientStatus. Only primitive
   // values are allowed (see js_flow_util::ExtractFlowReturnValue for details).

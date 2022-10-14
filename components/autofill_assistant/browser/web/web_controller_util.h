@@ -32,11 +32,16 @@ ClientStatus UnexpectedDevtoolsErrorStatus(
     const std::string& file,
     int line);
 
-// Map from devtools source url to js line offset pair. The js line offset pair
-// consists of the begin and end. The begin/end is the first/last line for which
-// we want to generate a stack entry. See js_flow_util for details on devtools
-// source urls.
-using JsLineOffsets = base::flat_map<std::string, std::pair<int, int>>;
+// Wrapper for the js line offset range. The begin/end of the range represents
+// the first/last line for which we want to generate a stack entry.
+struct JsLineOffsetRange {
+  int begin;
+  int end;
+};
+
+// Map from devtools source url to js line offset range.
+// See js_flow_util for details on devtools source urls.
+using JsLineOffsets = base::flat_map<std::string, JsLineOffsetRange>;
 
 // Builds a ClientStatus appropriate for a JavaScript error.
 ClientStatus JavaScriptErrorStatus(
@@ -68,7 +73,7 @@ ClientStatus CheckJavaScriptResult(
   return OkClientStatus();
 }
 
-// Fills a ClientStatus with appropriate details from the
+// Fills a ClientStatus with appropriate details from the failed web action
 void FillWebControllerErrorInfo(
     WebControllerErrorInfoProto::WebAction failed_web_action,
     ClientStatus* status);
