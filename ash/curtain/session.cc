@@ -82,8 +82,25 @@ Session::Session(Shell* shell,
   CurtainOffAllRootWindows();
 }
 
+void Session::Init() {
+  // We must ensure we use a cursor drawn by the software, as a cursor drawn
+  // by the hardware will appear above our curtain which we do not want.
+  // So we tell the shell to tell the cursor manager to ask us if cursor
+  // compositing should be enabled.
+  // This then ends up calling `SecurityCurtainController::IsEnabled()` which is
+  // only true after our constructor is finished, so we must move this in a
+  // separate Init() method instead.
+  shell_->UpdateCursorCompositingEnabled();
+}
+
 Session::~Session() {
-  RemoveCurtainOfAllRootWindows();
+  // Skip all cleanup if the shell has been destroyed (so when Chrome is
+  // shutting down). This prevents us from using a half-destroyed `shell_`
+  // object.
+  if (ash::Shell::HasInstance()) {
+    RemoveCurtainOfAllRootWindows();
+    shell_->UpdateCursorCompositingEnabled();
+  }
 }
 
 void Session::CurtainOffAllRootWindows() {

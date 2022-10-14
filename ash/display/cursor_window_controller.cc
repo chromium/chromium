@@ -12,9 +12,8 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/curtain/security_curtain_controller.h"
 #include "ash/display/display_color_manager.h"
-#include "ash/display/mirror_window_controller.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/fast_ink/cursor/cursor_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -26,7 +25,6 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
-#include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -167,10 +165,14 @@ bool CursorWindowController::ShouldEnableCursorCompositing() {
     return true;
   }
 
+  Shell* shell = Shell::Get();
+  if (shell->security_curtain_controller().IsEnabled()) {
+    return true;
+  }
+
   // During startup, we may not have a preference service yet. We need to check
   // display manager state first so that we don't accidentally ignore it while
   // early outing when there isn't a PrefService yet.
-  Shell* shell = Shell::Get();
   display::DisplayManager* display_manager = shell->display_manager();
   if ((display_manager->IsInSoftwareMirrorMode()) ||
       display_manager->IsInUnifiedMode() ||

@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/curtain/security_curtain_controller_impl.h"
+#include "ash/curtain/security_curtain_controller.h"
 
 #include "ash/curtain/security_curtain_widget_controller.h"
+#include "ash/display/cursor_window_controller.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/callback_forward.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,7 +19,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace aura {
-// This improves the error output for our tests that compare OcclusionState.
+// This improves the error output for our tests that compare `OcclusionState`.
 std::ostream& operator<<(std::ostream& os, Window::OcclusionState state) {
   os << Window::OcclusionStateToString(state);
   return os;
@@ -53,7 +54,7 @@ class TestEventHandler : public ui::EventHandler {
   bool has_seen_event_ = false;
 };
 
-// Helper class that allows observing of all ui::Event's on a given target
+// Helper class that allows observing of all `ui::Event`'s on a given target
 // window, and which allows easy generation of input events.
 class EventTester {
  public:
@@ -88,23 +89,23 @@ class SecurityCurtainControllerImplTest : public AshTestBase {
       const SecurityCurtainControllerImplTest&) = delete;
   ~SecurityCurtainControllerImplTest() override = default;
 
-  void SetUp() override {
-    AshTestBase::SetUp();
-    security_curtain_controller_.emplace(ash::Shell::Get());
-  }
+  void SetUp() override { AshTestBase::SetUp(); }
 
-  void TearDown() override {
-    // SecurityCurtainController cannot outlive Ash::Shell();
-    security_curtain_controller_.reset();
-    AshTestBase::TearDown();
-  }
+  void TearDown() override { AshTestBase::TearDown(); }
 
   SecurityCurtainController& security_curtain_controller() {
-    return security_curtain_controller_.value();
+    return ash::Shell::Get()->security_curtain_controller();
   }
 
   SecurityCurtainController::InitParams init_params() {
     return SecurityCurtainController::InitParams();
+  }
+
+  bool IsNativeCursorEnabled() {
+    return !Shell::Get()
+                ->window_tree_host_manager()
+                ->cursor_window_controller()
+                ->is_cursor_compositing_enabled();
   }
 
   SecurityCurtainController::InitParams WithEventFilter(EventFilter filter) {
@@ -194,9 +195,6 @@ class SecurityCurtainControllerImplTest : public AshTestBase {
     return EventTester(CreateTestWindow(display.bounds()),
                        *GetEventGenerator());
   }
-
- private:
-  absl::optional<SecurityCurtainControllerImpl> security_curtain_controller_;
 };
 
 EventFilter only_mouse_events_filter() {
@@ -475,6 +473,23 @@ TEST_F(SecurityCurtainControllerImplTest,
 
   security_curtain_controller().Disable();
   EXPECT_FALSE(IsOutputMuted());
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldDisableNativeMouseCursorWhenEnableIsCalled) {
+  ASSERT_THAT(IsNativeCursorEnabled(), Eq(true));
+
+  security_curtain_controller().Enable(init_params());
+
+  ASSERT_THAT(IsNativeCursorEnabled(), Eq(false));
+}
+
+TEST_F(SecurityCurtainControllerImplTest,
+       ShouldReenableNativeMouseCursorWhenDisableIsCalled) {
+  security_curtain_controller().Enable(init_params());
+  security_curtain_controller().Disable();
+
+  ASSERT_THAT(IsNativeCursorEnabled(), Eq(true));
 }
 
 }  // namespace

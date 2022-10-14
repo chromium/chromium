@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/curtain/input_event_filter.h"
 #include "ash/curtain/security_curtain_controller.h"
 #include "base/memory/raw_ref.h"
 
@@ -33,6 +32,11 @@ class Session {
   Session(const Session&) = delete;
   Session& operator=(const Session&) = delete;
   ~Session();
+
+  // Must be called after construction, and invokes code that calls
+  // `SecurityCurtainController::IsEnabled()` (which will only be true
+  // after the constructor of `Session` finishes).
+  void Init();
 
  private:
   void CurtainOffAllRootWindows();
