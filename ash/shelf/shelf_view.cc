@@ -2216,6 +2216,8 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
     AnnouncePinUnpinEvent(old_item, /*pinned=*/false);
     RecordPinUnpinUserAction(/*pinned=*/false);
   }
+
+  party_.erase(old_item.id);
 }
 
 void ShelfView::ShelfItemChanged(int model_index, const ShelfItem& old_item) {
