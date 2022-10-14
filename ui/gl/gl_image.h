@@ -96,9 +96,6 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   virtual void SetColorSpace(const gfx::ColorSpace& color_space);
   const gfx::ColorSpace& color_space() const { return color_space_; }
 
-  // Flush any preceding rendering for the image.
-  virtual void Flush();
-
   // Dumps information about the memory backing the GLImage to a dump named
   // |dump_name|.
   virtual void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,

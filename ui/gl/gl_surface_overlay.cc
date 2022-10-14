@@ -33,8 +33,4 @@ bool GLSurfaceOverlay::ScheduleOverlayPlane(gfx::AcceleratedWidget widget) {
                                       std::move(acquire_fences), {});
 }
 
-void GLSurfaceOverlay::Flush() const {
-  return image_->Flush();
-}
-
 }  // namespace gl

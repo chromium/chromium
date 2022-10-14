@@ -576,8 +576,7 @@ bool ClientBase::Init(const InitParams& params) {
     make_current_ = std::make_unique<ui::ScopedMakeCurrent>(gl_context_.get(),
                                                             gl_surface_.get());
 
-    if (display->ext->b_EGL_EXT_image_flush_external ||
-        display->ext->b_EGL_ARM_implicit_external_sync) {
+    if (display->ext->b_EGL_ARM_implicit_external_sync) {
       egl_sync_type_ = EGL_SYNC_FENCE_KHR;
     }
     if (display->ext->b_EGL_ANDROID_native_fence_sync) {

@@ -77,7 +77,6 @@ class FakeGLImageNativePixmap : public gl::GLImageEGL {
   bool displayed() const { return displayed_; }
 
   // Overridden from GLImage:
-  void Flush() override {}
   scoped_refptr<gfx::NativePixmap> GetNativePixmap() override {
     return pixmap_;
   }

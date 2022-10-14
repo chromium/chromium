@@ -125,8 +125,6 @@ bool GLImageAHardwareBuffer::CopyTexSubImage(unsigned target,
   return false;
 }
 
-void GLImageAHardwareBuffer::Flush() {}
-
 void GLImageAHardwareBuffer::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd,
     uint64_t process_tracing_id,

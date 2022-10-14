@@ -45,7 +45,6 @@ class GL_EXPORT GLImageMemory : public GLImage {
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
                        const gfx::Rect& rect) override;
-  void Flush() override {}
   Type GetType() const override;
 
   const unsigned char* memory() { return memory_; }

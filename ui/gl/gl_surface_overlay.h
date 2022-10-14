@@ -33,8 +33,6 @@ class GL_EXPORT GLSurfaceOverlay {
   // This should be called at most once.
   bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget);
 
-  void Flush() const;
-
   gfx::GpuFence* gpu_fence() const { return gpu_fence_.get(); }
   int z_order() const { return overlay_plane_data_.z_order; }
 

@@ -46,7 +46,6 @@ class DummyGLImage : public gl::GLImage {
     return false;
   }
   void SetColorSpace(const gfx::ColorSpace& color_space) override {}
-  void Flush() override {}
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override {}

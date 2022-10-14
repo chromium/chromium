@@ -187,8 +187,6 @@ bool GLImageDXGI::CopyTexSubImage(unsigned target,
   return false;
 }
 
-void GLImageDXGI::Flush() {}
-
 unsigned GLImageDXGI::GetInternalFormat() {
   if (!handle_.Get())
     return GL_BGRA_EXT;

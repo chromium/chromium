@@ -3368,7 +3368,6 @@ class MockGLImage : public gl::GLImage {
   MOCK_METHOD3(CopyTexSubImage,
                bool(unsigned, const gfx::Point&, const gfx::Rect&));
   MOCK_METHOD1(SetColorSpace, void(const gfx::ColorSpace&));
-  MOCK_METHOD0(Flush, void());
   MOCK_METHOD3(OnMemoryDump,
                void(base::trace_event::ProcessMemoryDump*,
                     uint64_t,
