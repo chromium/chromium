@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -16,6 +17,7 @@ class ProfilePickerSignedInFlowController;
 class ProfilePickerFlowController : public ProfileManagementFlowController {
  public:
   ProfilePickerFlowController(ProfilePickerWebContentsHost* host,
+                              ClearHostClosure clear_host_callback,
                               ProfilePicker::EntryPoint entry_point);
   ~ProfilePickerFlowController() override;
 

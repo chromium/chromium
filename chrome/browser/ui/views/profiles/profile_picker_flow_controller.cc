@@ -49,8 +49,11 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
 
 ProfilePickerFlowController::ProfilePickerFlowController(
     ProfilePickerWebContentsHost* host,
+    ClearHostClosure clear_host_callback,
     ProfilePicker::EntryPoint entry_point)
-    : ProfileManagementFlowController(host, Step::kProfilePicker),
+    : ProfileManagementFlowController(host,
+                                      std::move(clear_host_callback),
+                                      Step::kProfilePicker),
       entry_point_(entry_point) {
   RegisterStep(initial_step(),
                ProfileManagementStepController::CreateForProfilePickerApp(
@@ -100,19 +103,27 @@ void ProfilePickerFlowController::SwitchToPostSignIn(
   DCHECK_EQ(Step::kAccountSelection, current_step());
 #endif
   DCHECK(signed_in_profile);
-
   DCHECK(!IsStepInitialized(Step::kPostSignInFlow));
+
+  auto finish_flow_callback = FinishFlowCallback(
+      base::BindOnce(&ProfilePickerFlowController::FinishFlowAndRunInBrowser,
+                     // Unretained ok: the flow will be closed when we run
+                     // `finish_flow_callback`, so `this` will still be alive.
+                     base::Unretained(this),
+                     // Unretained ok: `signed_in_flow` keeps the profile alive
+                     // and will be alive until this callback runs.
+                     base::Unretained(signed_in_profile)));
 
   // TODO(crbug.com/1360055): Split out the SAML flow directly from here instead
   // of using `ProfileCreationSignedInFlowController` for it.
   auto signed_in_flow = std::make_unique<ProfileCreationSignedInFlowController>(
       host(), signed_in_profile, std::move(contents), profile_color_,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      is_saml
+      is_saml,
 #else
-      false
+      false,
 #endif
-  );
+      std::move(finish_flow_callback));
 
   weak_signed_in_flow_controller_ = signed_in_flow->GetWeakPtr();
   RegisterStep(Step::kPostSignInFlow,
@@ -162,7 +173,7 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
     }
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile: {
       // This results in destroying `this`.
-      host()->Clear();
+      ExitFlow();
       return;
     }
     case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:

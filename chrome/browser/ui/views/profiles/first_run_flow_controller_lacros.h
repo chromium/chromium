@@ -20,6 +20,7 @@ class FirstRunFlowControllerLacros : public ProfileManagementFlowController {
   // exited.
   FirstRunFlowControllerLacros(
       ProfilePickerWebContentsHost* host,
+      ClearHostClosure clear_host_callback,
       Profile* profile,
       ProfilePicker::DebugFirstRunExitedCallback first_run_exited_callback);
 
@@ -30,7 +31,7 @@ class FirstRunFlowControllerLacros : public ProfileManagementFlowController {
   ~FirstRunFlowControllerLacros() override;
 
  private:
-  void ExitFlowAndRun(PostHostClearedCallback callback);
+  void ExitFlowAndRun(Profile* profile, PostHostClearedCallback callback);
 
   // Captures the operation that the user expected to run at the time we chose
   // to show them the FRE. When we exit the FRE, we MUST run this. We expect

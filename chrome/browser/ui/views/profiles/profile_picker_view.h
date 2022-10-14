@@ -70,7 +70,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
       const GURL& url,
       base::OnceClosure navigation_finished_closure =
           base::OnceClosure()) override;
-  void Clear() override;
   bool ShouldUseDarkColors() const override;
   content::WebContents* GetPickerContents() const override;
 
@@ -129,6 +128,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Displays the profile picker.
   void Display();
+
+  // Closes the profile picker.
+  void Clear();
 
   // On picker profile creation success, it initializes the view.
   void OnPickerProfileCreated(Profile* picker_profile);
@@ -203,6 +205,12 @@ class ProfilePickerView : public views::WidgetDelegateView,
   GURL GetOnSelectProfileTargetUrl() const;
 
   ProfilePickerFlowController* GetProfilePickerFlowController() const;
+
+  // Returns a closure that can be executed to clear (see
+  // `ProfilePickerView::Clear()`) the view. It is the owner's responsibility to
+  // make sure that the `ProfilePickerView` is still alive and that the callback
+  // is valid, before running it.
+  ClearHostClosure GetClearClosure();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Called when the user selects an account on the Lacros-specific account

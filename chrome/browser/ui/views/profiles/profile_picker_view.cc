@@ -7,8 +7,10 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
@@ -597,12 +599,12 @@ void ProfilePickerView::Init(Profile* picker_profile) {
 
   if (IsClassicProfilePickerFlow(params_)) {
     flow_controller_ = std::make_unique<ProfilePickerFlowController>(
-        /*host=*/this, params_.entry_point());
+        /*host=*/this, GetClearClosure(), params_.entry_point());
   } else if (params_.entry_point() ==
              ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     flow_controller_ = std::make_unique<FirstRunFlowControllerLacros>(
-        /*host=*/this, picker_profile,
+        /*host=*/this, GetClearClosure(), picker_profile,
         base::BindOnce(&ProfilePicker::Params::NotifyFirstRunExited,
                        // Unretained ok because the controller is owned
                        // by this through `initialized_steps_`.
@@ -875,6 +877,15 @@ ProfilePickerFlowController* ProfilePickerView::GetProfilePickerFlowController()
     const {
   DCHECK(IsClassicProfilePickerFlow(params_));
   return static_cast<ProfilePickerFlowController*>(flow_controller_.get());
+}
+
+ClearHostClosure ProfilePickerView::GetClearClosure() {
+  return ClearHostClosure(base::BindOnce(
+      &ProfilePickerView::Clear,
+      // The method contract indicates that it is the responsibility of the
+      // callers to make sure `this` is valid. As the callers are all owned by
+      // `this`, it should be a reasonable assumption.
+      base::Unretained(this)));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

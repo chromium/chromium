@@ -20,6 +20,12 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+// Type for a callback that is used to close the `ProfilePickerWebContentsHost`.
+// It is the owner's responsibility to make sure that the issuing host is still
+// alive and that the callback is valid, before running it.
+using ClearHostClosure =
+    base::StrongAlias<class ClearHostClosureTag, base::OnceClosure>;
+
 // Class responsible for embedding a web contents in the profile picker and
 // providing extra UI such as a back button.
 class ProfilePickerWebContentsHost
@@ -39,9 +45,6 @@ class ProfilePickerWebContentsHost
   virtual void ShowScreenInPickerContents(
       const GURL& url,
       base::OnceClosure navigation_finished_closure = base::OnceClosure()) = 0;
-
-  // Hides the profile picker window.
-  virtual void Clear() = 0;
 
   // Returns whether dark colors should be used (based on native theme).
   virtual bool ShouldUseDarkColors() const = 0;

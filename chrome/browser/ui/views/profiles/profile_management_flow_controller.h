@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_FLOW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_MANAGEMENT_FLOW_CONTROLLER_H_
 
-#include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/profile_picker.h"
+#include "chrome/browser/ui/views/profiles/profile_management_utils.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
 class ProfileManagementStepController;
@@ -44,7 +46,11 @@ class ProfileManagementFlowController {
     kPostSignInFlow
   };
 
+  // Creates a flow controller that will advance to `initial_step` when it is
+  // `Init()`-ed.
+  // `clear_host_callback` will be called if `host` needs to be closed.
   explicit ProfileManagementFlowController(ProfilePickerWebContentsHost* host,
+                                           ClearHostClosure clear_host_callback,
                                            Step initial_step);
   virtual ~ProfileManagementFlowController();
 
@@ -71,6 +77,17 @@ class ProfileManagementFlowController {
 
   bool IsStepInitialized(Step step) const;
 
+  // Clears the flow, causing the `host()` to be deleted.
+  void ExitFlow();
+
+  // Opens a browser window for `profile`, closes the flow and then runs
+  // `callback`.
+  //
+  // Since the flow and its host will be destroyed by the time `callback` runs,
+  // it should be longer lived than these.
+  void FinishFlowAndRunInBrowser(Profile* profile,
+                                 PostHostClearedCallback callback);
+
   Step current_step() const { return current_step_; }
 
   Step initial_step() const { return initial_step_; }
@@ -83,6 +100,7 @@ class ProfileManagementFlowController {
   Step initial_step_;
 
   raw_ptr<ProfilePickerWebContentsHost> host_;
+  ClearHostClosure clear_host_callback_;
 
   base::flat_map<Step, std::unique_ptr<ProfileManagementStepController>>
       initialized_steps_;

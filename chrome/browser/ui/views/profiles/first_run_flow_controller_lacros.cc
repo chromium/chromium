@@ -4,47 +4,18 @@
 
 #include "chrome/browser/ui/views/profiles/first_run_flow_controller_lacros.h"
 
-#include "base/logging.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/profiles/lacros_first_run_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 
-namespace {
-
-// Helper to run `callback`, after hiding the profile picker.
-void HideProfilePickerAndRun(PostHostClearedCallback callback) {
-  ProfilePicker::Hide();
-
-  if (callback->is_null())
-    return;
-
-  // See if there is already a browser we can use.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = profile_manager->GetProfileByPath(
-      profile_manager->GetPrimaryUserProfilePath());
-  DCHECK(profile);
-  Browser* browser =
-      chrome::FindAnyBrowser(profile, /*match_original_profiles=*/true);
-  if (!browser) {
-    // TODO(https://crbug.com/1300109): Create a browser to run `callback`.
-    DLOG(WARNING)
-        << "No browser found when finishing Lacros FRE. Expected to find "
-        << "one for the primary profile.";
-    return;
-  }
-
-  std::move(callback.value()).Run(browser);
-}
-
-}  // namespace
-
 FirstRunFlowControllerLacros::FirstRunFlowControllerLacros(
     ProfilePickerWebContentsHost* host,
+    ClearHostClosure clear_host_callback,
     Profile* profile,
     ProfilePicker::DebugFirstRunExitedCallback first_run_exited_callback)
-    : ProfileManagementFlowController(host, Step::kPostSignInFlow),
+    : ProfileManagementFlowController(host,
+                                      std::move(clear_host_callback),
+                                      Step::kPostSignInFlow),
       first_run_exited_callback_(std::move(first_run_exited_callback)) {
   DCHECK(first_run_exited_callback_);
 
@@ -52,7 +23,10 @@ FirstRunFlowControllerLacros::FirstRunFlowControllerLacros(
       base::BindOnce(&FirstRunFlowControllerLacros::ExitFlowAndRun,
                      // Unretained ok: the callback is passed to a step that
                      // the `this` will own and outlive.
-                     base::Unretained(this)));
+                     base::Unretained(this),
+                     // Unretained ok: `signed_in_flow` will register a profile
+                     // keep alive.
+                     base::Unretained(profile)));
 
   auto signed_in_flow = std::make_unique<LacrosFirstRunSignedInFlowController>(
       host, profile,
@@ -82,9 +56,22 @@ FirstRunFlowControllerLacros::~FirstRunFlowControllerLacros() {
 }
 
 void FirstRunFlowControllerLacros::ExitFlowAndRun(
+    Profile* profile,
     PostHostClearedCallback callback) {
+  // We don't call `FinishFlowAndRunInBrowser()` directly, as
+  // `first_run_exited_callback_` should make a browser window available when
+  // it runs. If there is no browser, then we will create it as a fallback.
+  auto finish_flow_callback =
+      base::BindOnce(&FirstRunFlowControllerLacros::FinishFlowAndRunInBrowser,
+                     // Unretained ok: the flow will be closed when we run
+                     // `finish_flow_callback`, so `this` will still be alive.
+                     base::Unretained(this),
+                     // Unretained ok: the flow keeps the profile alive and
+                     // `first_run_exited_callback_` will open a browser for it.
+                     base::Unretained(profile), std::move(callback));
+
   std::move(first_run_exited_callback_)
       .Run(ProfilePicker::FirstRunExitStatus::kCompleted,
            ProfilePicker::FirstRunExitSource::kFlowFinished,
-           base::BindOnce(&HideProfilePickerAndRun, std::move(callback)));
+           std::move(finish_flow_callback));
 }

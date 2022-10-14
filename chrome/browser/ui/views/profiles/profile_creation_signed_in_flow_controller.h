@@ -11,8 +11,15 @@
 
 class Profile;
 
-// Class responsible for the part of the profile creation flow where the user is
-// signed in (most importantly offering sync).
+// Class triggering the signed-in section of the profile management flow, most
+// notably featuring the sync confirmation. In addition to what its base class
+// `ProfilePickerSignedInFlowController` is doing, this class:
+// - handles SAML accounts (skip to a browser)
+// - shows in product help and customization bubble at the end of the flow
+// - applies profile customizations (theme, profile name)
+// - finalizes the profile (deleting it if the flow is aborted, marks it
+//   non-ephemeral if the flow is completed)
+// `finish_flow_callback` is not called if the flow is canceled.
 class ProfileCreationSignedInFlowController
     : public ProfilePickerSignedInFlowController {
  public:
@@ -21,7 +28,8 @@ class ProfileCreationSignedInFlowController
       Profile* profile,
       std::unique_ptr<content::WebContents> contents,
       absl::optional<SkColor> profile_color,
-      bool is_saml);
+      bool is_saml,
+      FinishFlowCallback finish_flow_callback);
   ~ProfileCreationSignedInFlowController() override;
   ProfileCreationSignedInFlowController(
       const ProfilePickerSignedInFlowController&) = delete;
@@ -62,6 +70,8 @@ class ProfileCreationSignedInFlowController
   bool is_finished_ = false;
 
   std::unique_ptr<ProfileNameResolver> profile_name_resolver_;
+
+  FinishFlowCallback finish_flow_callback_;
 
   base::WeakPtrFactory<ProfileCreationSignedInFlowController> weak_ptr_factory_{
       this};

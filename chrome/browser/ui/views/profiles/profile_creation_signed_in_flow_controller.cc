@@ -12,7 +12,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -74,12 +73,14 @@ ProfileCreationSignedInFlowController::ProfileCreationSignedInFlowController(
     Profile* profile,
     std::unique_ptr<content::WebContents> contents,
     absl::optional<SkColor> profile_color,
-    bool is_saml)
+    bool is_saml,
+    FinishFlowCallback finish_flow_callback)
     : ProfilePickerSignedInFlowController(host,
                                           profile,
                                           std::move(contents),
                                           profile_color),
-      is_saml_(is_saml) {}
+      is_saml_(is_saml),
+      finish_flow_callback_(std::move(finish_flow_callback)) {}
 
 ProfileCreationSignedInFlowController::
     ~ProfileCreationSignedInFlowController() {
@@ -162,6 +163,7 @@ void ProfileCreationSignedInFlowController::FinishAndOpenBrowserImpl(
       profile_name_resolver_->resolved_profile_name();
   profile_name_resolver_.reset();
   DCHECK(!name_for_signed_in_profile.empty());
+  DCHECK(finish_flow_callback_.value());
 
   FinalizeNewProfileSetup(profile(), name_for_signed_in_profile);
 
@@ -192,22 +194,7 @@ void ProfileCreationSignedInFlowController::FinishAndOpenBrowserImpl(
       }
     }
   }
-
-  ExitPickerAndRunInNewBrowser(std::move(callback));
-}
-
-void ProfileCreationSignedInFlowController::ExitPickerAndRunInNewBrowser(
-    PostHostClearedCallback callback) {
-  profiles::OpenBrowserWindowForProfile(
-      base::BindOnce(&ProfileCreationSignedInFlowController::OnBrowserOpened,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      /*always_create=*/false,   // Don't create a window if one already exists.
-      /*is_new_profile=*/false,  // Don't create a first run window.
-      /*unblock_extensions=*/false,  // There is no need to unblock all
-                                     // extensions because we only open browser
-                                     // window if the Profile is not locked.
-                                     // Hence there is no extension blocked.
-      profile());
+  std::move(finish_flow_callback_.value()).Run(std::move(callback));
 }
 
 void ProfileCreationSignedInFlowController::FinishAndOpenBrowserForSAML() {
@@ -227,6 +214,7 @@ void ProfileCreationSignedInFlowController::OnSignInContentsFreedUp() {
   is_finished_ = true;
 
   DCHECK(!profile_name_resolver_);
+  DCHECK(finish_flow_callback_.value());
   contents()->SetDelegate(nullptr);
 
   FinalizeNewProfileSetup(profile(),
@@ -234,26 +222,7 @@ void ProfileCreationSignedInFlowController::OnSignInContentsFreedUp() {
   ProfileMetrics::LogProfileAddNewUser(
       ProfileMetrics::ADD_NEW_PROFILE_PICKER_SIGNED_IN);
 
-  ExitPickerAndRunInNewBrowser(PostHostClearedCallback(
-      base::BindOnce(&ContinueSAMLSignin, ReleaseContents())));
-}
-
-void ProfileCreationSignedInFlowController::OnBrowserOpened(
-    PostHostClearedCallback finish_flow_callback,
-    Profile* profile_with_browser_opened) {
-  CHECK_EQ(profile_with_browser_opened, profile());
-  TRACE_EVENT1("browser",
-               "ProfileCreationSignedInFlowController::OnBrowserOpened",
-               "profile_path", profile()->GetPath().AsUTF8Unsafe());
-
-  // Hide the flow window. This posts a task on the message loop to destroy the
-  // window incl. this view.
-  host()->Clear();
-
-  if (finish_flow_callback->is_null())
-    return;
-
-  Browser* browser = chrome::FindLastActiveWithProfile(profile());
-  CHECK(browser);
-  std::move(finish_flow_callback.value()).Run(browser);
+  std::move(finish_flow_callback_.value())
+      .Run(PostHostClearedCallback(
+          base::BindOnce(&ContinueSAMLSignin, ReleaseContents())));
 }

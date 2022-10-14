@@ -24,8 +24,15 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
-// Class responsible for the signed-in flow (within ProfilePickerView), most
-// notably featuring the sync confirmation.
+// Class triggering the signed-in section of the profile management flow, most
+// notably featuring the sync confirmation. This class:
+// - Expects a primary account to be set with `ConsentLevel::kSignin`.
+// - Runs the `TurnSyncOnHelper` and provides it a delegate to interact with
+//   `host`.
+// - At the end of the flow we are in one of these cases:
+//   - The host is closed and a browser is opened, via `FinishAndOpenBrowser()`;
+//   - The host is not closed and the profile switch screen is shown, via
+//     `SwitchToProfileSwitch()`.
 class ProfilePickerSignedInFlowController
     : public content::WebContentsDelegate {
  public:
