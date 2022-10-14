@@ -329,8 +329,8 @@ gfx::Rect FloatController::GetPreferredFloatWindowClamshellBounds(
   const int preferred_height =
       std::min(preferred_bounds.height(), work_area.height() - 2 * padding_dp);
 
-  return gfx::Rect(work_area.width() - preferred_width - padding_dp,
-                   work_area.height() - preferred_height - padding_dp,
+  return gfx::Rect(work_area.right() - preferred_width - padding_dp,
+                   work_area.bottom() - preferred_height - padding_dp,
                    preferred_width, preferred_height);
 }
 
@@ -366,13 +366,16 @@ gfx::Rect FloatController::GetPreferredFloatWindowTabletBounds(
   const int padding_dp = chromeos::wm::kFloatedWindowPaddingDp;
   switch (magnetism_corner) {
     case MagnetismCorner::kTopLeft:
-      origin = gfx::Point(padding_dp, padding_dp);
+      origin =
+          gfx::Point(work_area.x() + padding_dp, work_area.y() + padding_dp);
       break;
     case MagnetismCorner::kTopRight:
-      origin = gfx::Point(work_area.right() - width - padding_dp, padding_dp);
+      origin = gfx::Point(work_area.right() - width - padding_dp,
+                          work_area.y() + padding_dp);
       break;
     case MagnetismCorner::kBottomLeft:
-      origin = gfx::Point(padding_dp, work_area.bottom() - height - padding_dp);
+      origin = gfx::Point(work_area.x() + padding_dp,
+                          work_area.bottom() - height - padding_dp);
       break;
     case MagnetismCorner::kBottomRight:
       origin = gfx::Point(work_area.right() - width - padding_dp,
@@ -592,8 +595,9 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
   // window changes related with those changes are handled in
   // `OnTabletModeStarting`, `OnTabletModeEnding` or attaching/detaching window
   // states.
-  if (chromeos::TabletState::Get()->state() !=
-      display::TabletState::kInTabletMode) {
+  display::TabletState tablet_state = chromeos::TabletState::Get()->state();
+  if (tablet_state == display::TabletState::kEnteringTabletMode ||
+      tablet_state == display::TabletState::kEnteringTabletMode) {
     return;
   }
 
@@ -603,10 +607,15 @@ void FloatController::OnDisplayMetricsChanged(const display::Display& display,
   DCHECK(!floated_window_info_map_.empty());
   std::vector<aura::Window*> windows_need_reset;
   for (auto& [window, info] : floated_window_info_map_) {
-    if (!chromeos::wm::CanFloatWindow(window))
+    if (!chromeos::wm::CanFloatWindow(window)) {
       windows_need_reset.push_back(window);
-    else
-      UpdateWindowBoundsForTablet(window);
+    } else {
+      // Let the state object handle the work area change. This is normally
+      // handled by the `WorkspaceLayoutManager`, but the float container does
+      // not have one attached.
+      const WMEvent event(WM_EVENT_WORKAREA_BOUNDS_CHANGED);
+      WindowState::Get(window)->OnWMEvent(&event);
+    }
   }
   for (auto* window : windows_need_reset)
     ResetFloatedWindow(window);

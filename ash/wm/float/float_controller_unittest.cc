@@ -5,6 +5,7 @@
 #include "ash/wm/float/float_controller.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/frame/header_view.h"
@@ -523,20 +524,46 @@ TEST_F(WindowFloatTest, MoveFloatWindowBetweenDesksOnDifferentDisplay) {
   EXPECT_TRUE(secondary_root->Contains(window_1.get()));
 }
 
+// Test that floated window are contained within the work area.
+TEST_F(WindowFloatTest, FloatWindowWorkAreaConsiderations) {
+  UpdateDisplay("1600x1000");
+
+  // Create a window in the top right quadrant.
+  std::unique_ptr<aura::Window> window =
+      CreateAppWindow(gfx::Rect(1000, 100, 300, 300));
+
+  // We will use the docked magnifier to modify the work area in this test.
+  DockedMagnifierController* docked_magnifier_controller =
+      Shell::Get()->docked_magnifier_controller();
+  docked_magnifier_controller->SetEnabled(true);
+  ASSERT_GT(docked_magnifier_controller->GetMagnifierHeightForTesting(), 0);
+
+  // Float `window` and verify that it is underneath the docked magnifier
+  // region.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  EXPECT_GT(window->GetBoundsInScreen().y(),
+            docked_magnifier_controller->GetMagnifierHeightForTesting());
+
+  // Enter tablet mode and drag the floated window so it magnitizes to the top
+  // right. Verify that it is underneath the docked magnifier region.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+  NonClientFrameViewAsh* frame = SetUpAndGetFrame(window.get());
+  GetEventGenerator()->GestureScrollSequence(
+      frame->GetHeaderView()->GetBoundsInScreen().CenterPoint(),
+      gfx::Point(1000, 300), base::Seconds(3),
+      /*steps=*/10);
+  EXPECT_GT(window->GetBoundsInScreen().y(),
+            docked_magnifier_controller->GetMagnifierHeightForTesting());
+}
+
 class TabletWindowFloatTest : public WindowFloatTest {
  public:
   TabletWindowFloatTest() = default;
   TabletWindowFloatTest(const TabletWindowFloatTest&) = delete;
   TabletWindowFloatTest& operator=(const TabletWindowFloatTest&) = delete;
   ~TabletWindowFloatTest() override = default;
-
-  // WindowFloatTest:
-  void SetUp() override {
-    // This allows us to snap to the bottom in portrait mode.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ::switches::kUseFirstDisplayAsInternal);
-    WindowFloatTest::SetUp();
-  }
 
   // Flings a window to the top left or top right of the work area.
   void FlingWindow(aura::Window* window, bool left) {
@@ -550,6 +577,14 @@ class TabletWindowFloatTest : public WindowFloatTest {
         header_center,
         left ? header_center - gfx::Vector2d(10, 10) : work_area.top_right(),
         base::Milliseconds(10), /*steps=*/2);
+  }
+
+  // WindowFloatTest:
+  void SetUp() override {
+    // This allows us to snap to the bottom in portrait mode.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kUseFirstDisplayAsInternal);
+    WindowFloatTest::SetUp();
   }
 };
 
