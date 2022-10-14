@@ -66,9 +66,11 @@
     </div>
     <div id="fpsLearnMore"
         hidden$="[[!shouldShowFpsLearnMore_(filter, filteredList_)]]">
-      <localized-link localized-string="[[getFpsLearnMoreLabel_(filter)]]"
-          link-url="$i18n{cookiesSettingsHelpCenterURL}">
-      </localized-link>
+      [[getFpsLearnMoreLabel_(filter)]]
+      <a href="$i18n{cookiesSettingsHelpCenterURL}"
+          aria-label="$i18n{siteSettingsFirstPartySetsLearnMoreAccessibility}">
+        $i18n{learnMore}
+      </a>
     </div>
     <div class="list-frame" hidden$="[[!siteGroupMapEmpty_(siteGroupMap)]]">
       <div class="list-item secondary">$i18n{emptyAllSitesPage}</div>

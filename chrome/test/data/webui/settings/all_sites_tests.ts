@@ -1342,10 +1342,13 @@ suite('AllSites_EnableFirstPartySets', function() {
         fpsLearnMore =
             testElement.shadowRoot!.querySelector<HTMLElement>('#fpsLearnMore');
         assertFalse(fpsLearnMore!.hidden);
-        const textContainer = testElement.shadowRoot!
-                                  .querySelector<HTMLElement>(
-                                      'localized-link')!.shadowRoot!.innerHTML;
-        assertTrue(textContainer.search('foo.com') !== -1);
+        assertEquals(
+            [
+              loadTimeData.getStringF(
+                  'siteSettingsFirstPartySetsLearnMore', 'foo.com'),
+              loadTimeData.getString('learnMore'),
+            ].join(' '),
+            fpsLearnMore!.innerText.trim());
 
         testElement.filter = 'related:bar.com';
         flush();
