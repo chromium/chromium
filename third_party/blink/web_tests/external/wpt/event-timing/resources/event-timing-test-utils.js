@@ -5,10 +5,12 @@ async function clickOnElementAndDelay(id, delay, callback) {
   const element = document.getElementById(id);
   const clickHandler = () => {
     mainThreadBusy(delay);
-    if (callback)
+    if (callback) {
       callback();
+    }
     element.removeEventListener("pointerdown", clickHandler);
   };
+
   element.addEventListener("pointerdown", clickHandler);
   await test_driver.click(element);
 }
@@ -119,6 +121,46 @@ async function testDuration(t, id, numEntries, dur, slowDur) {
   });
   return Promise.all([observerPromise, clicksPromise]);
 }
+
+  // Add a PerformanceObserver and observe with a durationThreshold of |durThreshold|. This test will
+  // attempt to check that the duration is appropriately checked by:
+  // * Asserting that entries received have a duration which is the smallest multiple of 8
+  //   that is greater than or equal to |durThreshold|.
+  // * Issuing |numEntries| entries that have at least |processingDelay| as duration.
+  // * Asserting that the entries we receive has duration greater than or equals to the
+  //   duration threshold we setup
+  // Parameters:
+  // |t|                     - the test harness.
+  // |id|                    - the ID of the element to be clicked.
+  // |durThreshold|          - the durationThreshold for the PerformanceObserver.
+  // |numEntries|            - the number of slow and number of fast entries.
+  // |processingDelay|       - the event duration we add on each event.
+  async function testDurationWithDurationThreshold(t, id, numEntries, durThreshold, processingDelay) {
+    assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported.');
+    const observerPromise = new Promise(async resolve => {
+      let minDuration = Math.ceil(durThreshold / 8) * 8;
+      // Exposed events must always have a minimum duration of 16.
+      minDuration = Math.max(minDuration, 16);
+      new PerformanceObserver(t.step_func(list => {
+        const pointerDowns = list.getEntriesByName('pointerdown');
+        pointerDowns.forEach(p => {
+        assert_greater_than_equal(p.duration, minDuration,
+          "The entry's duration should be greater than or equal to " + minDuration + " ms.");
+        });
+        resolve();
+      })).observe({type: "event", durationThreshold: durThreshold});
+    });
+    for (let index = 0; index < numEntries; index++) {
+      // These clicks are expected to be ignored, unless the test has some extra delays.
+      // In that case, the test will verify the event duration to ensure the event duration is
+      // greater than the duration threshold
+      await clickOnElementAndDelay(id, processingDelay);
+    }
+    // Send click with event duration equals to or greater than |durThreshold|, so the
+    // observer promise can be resolved
+    await clickOnElementAndDelay(id, durThreshold);
+    return observerPromise;
+  }
 
 // Apply events that trigger an event of the given |eventType| to be dispatched to the
 // |target|. Some of these assume that the target is not on the top left corner of the
