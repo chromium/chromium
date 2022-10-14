@@ -72,8 +72,8 @@ bool VulkanImplementationScenic::InitializeVulkanInstance(bool using_surface) {
     }
   };
 
-  return vulkan_instance_.InitializeInstace(required_extensions,
-                                            required_layers);
+  return vulkan_instance_.InitializeInstance(required_extensions,
+                                             required_layers);
 }
 
 gpu::VulkanInstance* VulkanImplementationScenic::GetVulkanInstance() {

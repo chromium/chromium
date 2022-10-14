@@ -356,7 +356,7 @@ bool VulkanImage::InitializeWithExternalMemory(
       external_image_format_properties.externalMemoryProperties;
   if (!(external_format_properties.externalMemoryFeatures &
         VK_EXTERNAL_MEMORY_FEATURE_EXPORTABLE_BIT)) {
-    DLOG(ERROR) << "External memroy cannot be exported."
+    DLOG(ERROR) << "External memory cannot be exported."
                 << " format:" << format << " image_tiling:" << image_tiling
                 << " usage:" << usage << " flags:" << flags;
     return false;

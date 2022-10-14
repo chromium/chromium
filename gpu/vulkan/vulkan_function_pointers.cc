@@ -29,7 +29,7 @@ bool VulkanFunctionPointers::BindUnassociatedFunctionPointersFromLoaderLib(
   loader_library_ = lib;
 
   // vkGetInstanceProcAddr must be handled specially since it gets its
-  // function pointer through base::GetFunctionPOinterFromNativeLibrary().
+  // function pointer through base::GetFunctionPointerFromNativeLibrary().
   // Other Vulkan functions don't do this.
   vkGetInstanceProcAddr = reinterpret_cast<PFN_vkGetInstanceProcAddr>(
       base::GetFunctionPointerFromNativeLibrary(loader_library_,

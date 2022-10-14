@@ -78,7 +78,7 @@ bool VulkanInstance::Initialize(
     const std::vector<const char*>& required_layers) {
   if (!BindUnassignedFunctionPointers(vulkan_loader_library_path))
     return false;
-  return InitializeInstace(required_extensions, required_layers);
+  return InitializeInstance(required_extensions, required_layers);
 }
 
 bool VulkanInstance::BindUnassignedFunctionPointers(
@@ -112,7 +112,7 @@ bool VulkanInstance::BindUnassignedFunctionPointers(
   return true;
 }
 
-bool VulkanInstance::InitializeInstace(
+bool VulkanInstance::InitializeInstance(
     const std::vector<const char*>& required_extensions,
     const std::vector<const char*>& required_layers) {
   if (is_from_angle_)
