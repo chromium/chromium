@@ -254,6 +254,7 @@ void HelpContentProvider::GetHelpContents(
 void HelpContentProvider::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::HelpContentProvider>
         receiver) {
+  receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
 

@@ -149,6 +149,7 @@ void FeedbackServiceProvider::RecordHelpContentSearchResultCount(int count) {
 void FeedbackServiceProvider::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>
         receiver) {
+  receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
 

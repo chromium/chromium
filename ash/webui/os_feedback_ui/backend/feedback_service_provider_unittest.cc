@@ -178,5 +178,14 @@ TEST_F(FeedbackServiceProviderTest, RecordPostSubmitAction) {
       FeedbackAppPostSubmitAction::kClickDoneButton, 1);
 }
 
+TEST_F(FeedbackServiceProviderTest, ResetReceiverOnBindInterface) {
+  // This test simulates a user trying to open a second instant. The receiver
+  // should be reset before binding the new receiver. Otherwise we would get a
+  // DCHECK error from mojo::Receiver
+  provider_remote_.reset();  // reset the binding done in Setup.
+  provider_.BindInterface(provider_remote_.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+}
+
 }  // namespace feedback
 }  // namespace ash
