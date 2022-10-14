@@ -484,7 +484,7 @@ BASE_FEATURE(kCrostiniResetLxdDb,
 // Do we use the default LXD version or try LXD 4?
 BASE_FEATURE(kCrostiniUseLxd4,
              "CrostiniUseLxd4",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables experimental UI creating and managing multiple Crostini containers.
 BASE_FEATURE(kCrostiniMultiContainer,
