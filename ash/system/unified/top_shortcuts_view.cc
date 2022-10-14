@@ -62,48 +62,6 @@ class UserAvatarButton : public views::Button {
   ~UserAvatarButton() override = default;
 };
 
-auto avatar_button_lambda = [](UnifiedSystemTrayController* controller,
-                               const ui::Event& event) {
-  quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kAvatarButton);
-  controller->ShowUserChooserView();
-};
-
-auto sign_out_button_lambda = [](UnifiedSystemTrayController* controller,
-                                 const ui::Event& event) {
-  quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kSignOutButton);
-  controller->HandleSignOutAction();
-};
-
-auto power_button_lambda = [](UnifiedSystemTrayController* controller,
-                              const ui::Event& event) {
-  quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kPowerButton);
-  controller->HandlePowerAction();
-};
-
-auto lock_button_lambda = [](UnifiedSystemTrayController* controller,
-                             const ui::Event& event) {
-  quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kLockButton);
-  controller->HandleLockAction();
-};
-
-auto settings_button_lambda = [](UnifiedSystemTrayController* controller,
-                                 const ui::Event& event) {
-  quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kSettingsButton);
-  controller->HandleSettingsAction();
-};
-
-auto collapse_button_lambda = [](UnifiedSystemTrayController* controller,
-                                 const ui::Event& event) {
-  quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kCollapseButton);
-  controller->ToggleExpanded();
-};
-
 }  // namespace
 
 TopShortcutButtonContainer::TopShortcutButtonContainer() = default;
@@ -226,15 +184,25 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
   if (!is_on_login_screen) {
     user_avatar_button_ = button_container->AddUserAvatarButton(
         std::make_unique<UserAvatarButton>(base::BindRepeating(
-            avatar_button_lambda, base::Unretained(controller))));
+            [](UnifiedSystemTrayController* controller) {
+              quick_settings_metrics_util::RecordQsButtonActivated(
+                  QsButtonCatalogName::kAvatarButton);
+              controller->ShowUserChooserView();
+            },
+            base::Unretained(controller))));
     user_avatar_button_->SetEnabled(
         UserChooserDetailedViewController::IsUserChooserEnabled());
     user_avatar_button_->SetID(VIEW_ID_QS_USER_AVATAR_BUTTON);
 
     sign_out_button_ =
         button_container->AddSignOutButton(std::make_unique<PillButton>(
-            base::BindRepeating(sign_out_button_lambda,
-                                base::Unretained(controller)),
+            base::BindRepeating(
+                [](UnifiedSystemTrayController* controller) {
+                  quick_settings_metrics_util::RecordQsButtonActivated(
+                      QsButtonCatalogName::kSignOutButton);
+                  controller->HandleSignOutAction();
+                },
+                base::Unretained(controller)),
             user::GetLocalizedSignOutStringForStatus(
                 Shell::Get()->session_controller()->login_status(),
                 /*multiline=*/false),
@@ -244,14 +212,26 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
   }
   bool reboot = shell->shutdown_controller()->reboot_on_shutdown();
   power_button_ = button_container->AddChildView(std::make_unique<IconButton>(
-      base::BindRepeating(power_button_lambda, base::Unretained(controller)),
+      base::BindRepeating(
+          [](UnifiedSystemTrayController* controller) {
+            quick_settings_metrics_util::RecordQsButtonActivated(
+                QsButtonCatalogName::kPowerButton);
+            controller->HandlePowerAction();
+          },
+          base::Unretained(controller)),
       IconButton::Type::kSmall, &kUnifiedMenuPowerIcon,
       reboot ? IDS_ASH_STATUS_TRAY_REBOOT : IDS_ASH_STATUS_TRAY_SHUTDOWN));
   power_button_->SetID(VIEW_ID_QS_POWER_BUTTON);
 
   if (can_show_settings && can_lock_screen) {
     lock_button_ = button_container->AddChildView(std::make_unique<IconButton>(
-        base::BindRepeating(lock_button_lambda, base::Unretained(controller)),
+        base::BindRepeating(
+            [](UnifiedSystemTrayController* controller) {
+              quick_settings_metrics_util::RecordQsButtonActivated(
+                  QsButtonCatalogName::kLockButton);
+              controller->HandleLockAction();
+            },
+            base::Unretained(controller)),
         IconButton::Type::kSmall, &kUnifiedMenuLockIcon,
         IDS_ASH_STATUS_TRAY_LOCK));
     lock_button_->SetID(VIEW_ID_QS_LOCK_BUTTON);
@@ -260,8 +240,13 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
   if (can_show_settings) {
     settings_button_ =
         button_container->AddChildView(std::make_unique<IconButton>(
-            base::BindRepeating(settings_button_lambda,
-                                base::Unretained(controller)),
+            base::BindRepeating(
+                [](UnifiedSystemTrayController* controller) {
+                  quick_settings_metrics_util::RecordQsButtonActivated(
+                      QsButtonCatalogName::kSettingsButton);
+                  controller->HandleSettingsAction();
+                },
+                base::Unretained(controller)),
             IconButton::Type::kSmall, &vector_icons::kSettingsOutlineIcon,
             IDS_ASH_STATUS_TRAY_SETTINGS));
     settings_button_->SetID(VIEW_ID_QS_SETTINGS_BUTTON);
@@ -286,7 +271,12 @@ TopShortcutsView::TopShortcutsView(UnifiedSystemTrayController* controller) {
   auto collapse_button_container = std::make_unique<views::View>();
   collapse_button_ = collapse_button_container->AddChildView(
       std::make_unique<CollapseButton>(base::BindRepeating(
-          collapse_button_lambda, base::Unretained(controller))));
+          [](UnifiedSystemTrayController* controller) {
+            quick_settings_metrics_util::RecordQsButtonActivated(
+                QsButtonCatalogName::kCollapseButton);
+            controller->ToggleExpanded();
+          },
+          base::Unretained(controller))));
   collapse_button_->SetID(VIEW_ID_QS_COLLAPSE_BUTTON);
   const gfx::Size collapse_button_size = collapse_button_->GetPreferredSize();
   collapse_button_container->SetPreferredSize(
