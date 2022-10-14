@@ -1991,7 +1991,7 @@ void DesksController::RecordAndResetNumberOfWeeklyActiveDesks() {
 void DesksController::ReportClosedWindowsCountPerSourceHistogram(
     DesksCreationRemovalSource source,
     int windows_closed) const {
-  std::string desk_removal_source_histogram;
+  const char* desk_removal_source_histogram = nullptr;
   switch (source) {
     case DesksCreationRemovalSource::kButton:
       desk_removal_source_histogram = kNumberOfWindowsClosedByButton;
@@ -2011,9 +2011,9 @@ void DesksController::ReportClosedWindowsCountPerSourceHistogram(
     case DesksCreationRemovalSource::kDesksRestore:
     case DesksCreationRemovalSource::kEnsureDefaultDesk:
       break;
-      NOTREACHED();
   }
-  base::UmaHistogramCounts100(desk_removal_source_histogram, windows_closed);
+  if (desk_removal_source_histogram)
+    base::UmaHistogramCounts100(desk_removal_source_histogram, windows_closed);
 }
 
 }  // namespace ash
