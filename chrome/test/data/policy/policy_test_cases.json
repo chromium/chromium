@@ -20235,5 +20235,38 @@
         }
       }
     ]
+  },
+  "HindiInscriptLayoutEnabled": {
+    "os": ["chromeos_ash"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.input.hindi_inscript_layout_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "HindiInscriptLayoutEnabled": false
+        },
+        "prefs": {
+          "settings.input.hindi_inscript_layout_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "HindiInscriptLayoutEnabled": true
+        },
+        "prefs": {
+          "settings.input.hindi_inscript_layout_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
   }
 }

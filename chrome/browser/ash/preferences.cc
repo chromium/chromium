@@ -397,6 +397,7 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kCaptivePortalAuthenticationIgnoresProxy, true);
 
   registry->RegisterBooleanPref(::prefs::kLanguageImeMenuActivated, false);
+  registry->RegisterBooleanPref(::prefs::kHindiInscriptLayoutEnabled, false);
 
   // TODO(b/227674947): Eventually delete this after Sign in with Smart Lock has
   // been removed and enough time has elapsed for users to be notified.

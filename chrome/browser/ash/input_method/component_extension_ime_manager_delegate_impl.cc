@@ -427,11 +427,6 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
         continue;
       }
 
-      if (engine.engine_id == "vkd_hi_inscript" &&
-          !base::FeatureList::IsEnabled(features::kHindiInscriptLayout)) {
-        continue;
-      }
-
       component_ime.engines.push_back(engine);
     }
     out_imes->push_back(component_ime);

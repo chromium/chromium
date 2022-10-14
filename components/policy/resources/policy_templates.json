@@ -24342,6 +24342,36 @@
       Note: If the current input method is unsupported, it switches to the hardware keyboard layout (if allowed) or the first valid entry in this list. Invalid or unsupported methods are ignored.'''
     },
     {
+      'name': 'HindiInscriptLayoutEnabled',
+      'owners': ['jshin@chromium.org', 'tranbaoduy@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:108-'],
+      'device_only': False,
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Hindi Inscript Layout',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Hindi Inscript Layout',
+        },
+      ],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+        'unlisted': True,
+        'cloud_only': True
+      },
+      'default': False,
+      'example_value': True,
+      'id': 1025,
+      'caption': '''Enable the Hindi Inscript Layout''',
+      'tags': [],
+      'desc': '''Setting the policy enables Hindi Inscript Layout on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>. If false or unset, the layout is not available.'''
+    },
+    {
       'name': 'ArcAppInstallEventLoggingEnabled',
       'owners': ['file://components/policy/resources/OWNERS', 'pastarmovj@chromium.org'],
       'type': 'main',
@@ -36695,6 +36725,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 1024,
+  'highest_id_currently_used': 1025,
   'highest_atomic_group_id_currently_used': 43
 }
