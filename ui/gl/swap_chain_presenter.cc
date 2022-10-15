@@ -8,6 +8,7 @@
 #include <d3d11_4.h>
 
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -702,17 +703,40 @@ void SwapChainPresenter::AdjustSwapChainForFullScreenLetterboxing(
   visual_transform->set_rc(1, 1, scale_y);
 
 #if DCHECK_IS_ON()
-  // The new transform matrix should transform the swap chain correctly
-  gfx::Rect new_swap_chain_rect(params.quad_rect.origin(), *swap_chain_size);
-  gfx::Rect result_rect = visual_transform->MapRect(new_swap_chain_rect);
-  if (IsWithinMargin(clipped_onscreen_rect.x(), 0)) {
-    DCHECK_EQ(result_rect.x(), 0);
-    DCHECK_EQ(result_rect.width(), monitor_size.width());
-  }
+  {
+    // The new transform matrix should transform the swap chain correctly
+    gfx::Rect new_swap_chain_rect(params.quad_rect.origin(), *swap_chain_size);
+    gfx::Rect result_rect = visual_transform->MapRect(new_swap_chain_rect);
+    gfx::Rect new_clipped_onscreen_rect = clipped_onscreen_rect;
+    gfx::Transform new_visual_transform = *visual_transform;
+    base::debug::Alias(&new_swap_chain_rect);
+    base::debug::Alias(&result_rect);
+    base::debug::Alias(&new_clipped_onscreen_rect);
+    base::debug::Alias(&new_visual_transform);
+    // https://crbug.com/1366493: "DCHECK_EQ(result_rect.x(), 0);" sometimes
+    // failed in the field. But here we collect possible crashes in general.
+    static auto* new_swap_chain_rect_key = base::debug::AllocateCrashKeyString(
+        "new-swap-chain-rect", base::debug::CrashKeySize::Size256);
+    base::debug::ScopedCrashKeyString scoped_crash_key_1(
+        new_swap_chain_rect_key, new_swap_chain_rect.ToString());
+    static auto* visual_transform_key = base::debug::AllocateCrashKeyString(
+        "visual-transform", base::debug::CrashKeySize::Size256);
+    base::debug::ScopedCrashKeyString scoped_crash_key_2(
+        visual_transform_key, visual_transform->ToString());
+    static auto* result_rect_key = base::debug::AllocateCrashKeyString(
+        "result-rect", base::debug::CrashKeySize::Size256);
+    base::debug::ScopedCrashKeyString scoped_crash_key_3(
+        result_rect_key, result_rect.ToString());
 
-  if (IsWithinMargin(clipped_onscreen_rect.y(), 0)) {
-    DCHECK_EQ(result_rect.y(), 0);
-    DCHECK_EQ(result_rect.height(), monitor_size.height());
+    if (IsWithinMargin(clipped_onscreen_rect.x(), 0)) {
+      DCHECK_EQ(result_rect.x(), 0);
+      DCHECK_EQ(result_rect.width(), monitor_size.width());
+    }
+
+    if (IsWithinMargin(clipped_onscreen_rect.y(), 0)) {
+      DCHECK_EQ(result_rect.y(), 0);
+      DCHECK_EQ(result_rect.height(), monitor_size.height());
+    }
   }
 #endif
 }
