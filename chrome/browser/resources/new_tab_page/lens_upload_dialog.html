@@ -284,8 +284,13 @@
           <div id="inputContainer">
             <input id="inputBox" autocomplete="false" autocorrect="false"
                 placeholder="$i18n{lensSearchUploadDialogTextPlaceholder}"
-                text="text">
-            <div id="inputSubmit" tabindex="0" role="button">
+                text="text"
+                value="{{uploadUrl_::input}}"
+                on-keydown="onUrlKeyDown_">
+            <div id="inputSubmit"
+                 tabindex="0"
+                 role="button"
+                 on-click="onSubmitUrl_">
               $i18n{lensSearchUploadDialogSearchButtonLabel}
             </div>
           </div>

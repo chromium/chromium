@@ -7,7 +7,7 @@ import 'chrome://new-tab-page/new_tab_page.js';
 
 import {LensUploadDialogElement} from 'chrome://new-tab-page/lazy_load.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -18,6 +18,9 @@ suite('LensUploadDialogTest', () => {
   let wrapperElement: HTMLDivElement;
   let outsideClickTarget: HTMLDivElement;
   let windowProxy: TestBrowserProxy;
+
+  let submitUrlCalled = false;
+  let submittedUrl: string|null = null;
 
   setup(() => {
     document.body.innerHTML = '';
@@ -42,6 +45,16 @@ suite('LensUploadDialogTest', () => {
 
     uploadDialog = document.createElement('ntp-lens-upload-dialog');
     wrapperElement.appendChild(uploadDialog);
+
+    uploadDialog.$.lensForm.submitUrl = (url: string) => {
+      submitUrlCalled = true;
+      submittedUrl = url;
+    };
+  });
+
+  teardown(() => {
+    submitUrlCalled = false;
+    submittedUrl = null;
   });
 
   test('hidden be default', () => {
@@ -121,4 +134,63 @@ suite('LensUploadDialogTest', () => {
         // Assert.
         assertFalse(uploadDialog.hasAttribute('is-offline_'));
       });
+
+  test('submit url does not submit with empty url', async () => {
+    // Arrange.
+    uploadDialog.openDialog();
+    await waitAfterNextRender(uploadDialog);
+
+    // Act.
+    clickInputSubmit();
+
+    // Assert.
+    assertFalse(submitUrlCalled);
+  });
+
+  test(
+      'submit valid url by clicking submit button should submit ', async () => {
+        // Arrange.
+        const url = 'http://google.com/image.png';
+        uploadDialog.openDialog();
+        await waitAfterNextRender(uploadDialog);
+
+        // Act.
+        setInputBoxValue(url);
+        clickInputSubmit();
+
+        // Assert.
+        assertTrue(submitUrlCalled);
+        assertEquals(url, submittedUrl);
+      });
+
+  test('submit valid url by typing enter should submit ', async () => {
+    // Arrange.
+    const url = 'http://google.com/image.png';
+    uploadDialog.openDialog();
+    await waitAfterNextRender(uploadDialog);
+
+    // Act.
+    setInputBoxValue(url);
+    getInputBox().dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+
+    // Assert.
+    assertTrue(submitUrlCalled);
+    assertEquals(url, submittedUrl);
+  });
+
+  function getInputBox(): HTMLInputElement {
+    return uploadDialog.shadowRoot!.querySelector('#inputBox')!;
+  }
+
+  function setInputBoxValue(value: string) {
+    const inputBox = getInputBox();
+    inputBox.value = value;
+    inputBox.dispatchEvent(new InputEvent('input'));
+  }
+
+  function clickInputSubmit() {
+    const inputSubmit =
+        uploadDialog.shadowRoot!.querySelector('#inputSubmit') as HTMLElement;
+    inputSubmit.click();
+  }
 });

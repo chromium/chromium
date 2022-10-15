@@ -73,12 +73,16 @@ export class LensUploadDialogElement extends PolymerElement {
         computed: `computeIsOffline_(dialogState_)`,
         reflectToAttribute: true,
       },
+      uploadUrl_: {
+        type: String,
+      },
     };
   }
 
   private outsideClickHandler_: (event: MouseEvent) => void;
   private dialogState_ = DialogState.HIDDEN;
   private outsideClickHandlerAttached_ = false;
+  private uploadUrl_: string = '';
 
   private computeIsHidden_(dialogState: DialogState): boolean {
     return dialogState === DialogState.HIDDEN;
@@ -175,6 +179,20 @@ export class LensUploadDialogElement extends PolymerElement {
 
   private handleFormError_(_event: CustomEvent<LensErrorType>) {
     // TODO(crbug.com/1367506): Implement error state.
+  }
+
+  private onUrlKeyDown_(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.onSubmitUrl_();
+    }
+  }
+
+  private onSubmitUrl_() {
+    const url = this.uploadUrl_.trim();
+    if (url.length > 0) {
+      this.$.lensForm.submitUrl(url);
+    }
   }
 }
 declare global {

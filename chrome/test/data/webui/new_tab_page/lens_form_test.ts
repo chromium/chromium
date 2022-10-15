@@ -12,6 +12,7 @@ suite('LensFormTest', () => {
   let lensForm: LensFormElement;
 
   let fileFormSubmitted = false;
+  let urlFormSubmitted = false;
   let lastError: LensErrorType|null = null;
   let loading = false;
 
@@ -21,6 +22,10 @@ suite('LensFormTest', () => {
 
     lensForm.$.fileForm.submit = () => {
       fileFormSubmitted = true;
+    };
+
+    lensForm.$.urlForm.submit = () => {
+      urlFormSubmitted = true;
     };
 
     lensForm.addEventListener('error', (e: Event) => {
@@ -35,6 +40,7 @@ suite('LensFormTest', () => {
 
   teardown(() => {
     fileFormSubmitted = false;
+    urlFormSubmitted = false;
     lastError = null;
     loading = false;
   });
@@ -98,6 +104,85 @@ suite('LensFormTest', () => {
         assertEquals(LensErrorType.FILE_TYPE, lastError);
         assertFalse(loading);
       });
+
+  test('submit url with valid http should submit', async () => {
+    // Arrange.
+    const url = 'http://www.example.com/dog.jpg';
+
+    // Act.
+    lensForm.submitUrl(url);
+
+    // Assert.
+    assertTrue(urlFormSubmitted);
+    assertTrue(loading);
+  });
+
+  test('submit url with valid https should submit', async () => {
+    // Arrange.
+    const url = 'https://www.example.com/dog.jpg';
+
+    // Act.
+    lensForm.submitUrl(url);
+
+    // Assert.
+    assertTrue(urlFormSubmitted);
+    assertTrue(loading);
+  });
+
+  test(
+      'submit url with empty scheme should fail with invalid scheme error',
+      async () => {
+        // Arrange.
+        const url = 'www.example.com/dog.jpg';
+
+        // Act.
+        lensForm.submitUrl(url);
+
+        // Assert.
+        assertFalse(urlFormSubmitted);
+        assertEquals(LensErrorType.INVALID_SCHEME, lastError);
+      });
+
+  test(
+      'submit url with invalid scheme should fail with invalid scheme error',
+      async () => {
+        // Arrange.
+        const url = 'file://www.example.com/dog.jpg';
+
+        // Act.
+        lensForm.submitUrl(url);
+
+        // Assert.
+        assertFalse(urlFormSubmitted);
+        assertEquals(LensErrorType.INVALID_SCHEME, lastError);
+      });
+
+  test('submit invalid url should fail with invalid url error', async () => {
+    // Arrange.
+    const url = 'http://www.example.com/\uD800.jpg';
+
+    // Act.
+    lensForm.submitUrl(url);
+
+    // Assert.
+    assertFalse(urlFormSubmitted);
+    assertEquals(LensErrorType.INVALID_URL, lastError);
+  });
+
+  test('submit long url should fail with length too great error', async () => {
+    // Arrange.
+    let longString = 'http://www.example.com/dog.jpg?a=';
+    for (let i = 0; i < 2000; i++) {
+      longString += 'x';
+    }
+
+    // Act.
+    lensForm.submitUrl(longString);
+
+    // Assert.
+    assertFalse(urlFormSubmitted);
+    assertEquals(LensErrorType.LENGTH_TOO_GREAT, lastError);
+  });
 
   function dispatchFileInputChangeWithDataTransfer(dataTransfer: DataTransfer) {
     lensForm.$.fileInput.files = dataTransfer.files;
