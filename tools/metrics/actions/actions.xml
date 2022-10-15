@@ -31229,6 +31229,24 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="StatusArea_Audio_AutoInputSelectionOverridden">
+  <owner>aaronyu@google.com</owner>
+  <owner>judyhsiao@google.com</owner>
+  <owner>chromeos-audio-sw@google.com</owner>
+  <description>
+    The user overrode the automatically selected audio input device.
+  </description>
+</action>
+
+<action name="StatusArea_Audio_AutoOutputSelectionOverridden">
+  <owner>aaronyu@google.com</owner>
+  <owner>judyhsiao@google.com</owner>
+  <owner>chromeos-audio-sw@google.com</owner>
+  <description>
+    The user overrode the automatically selected audio output device.
+  </description>
+</action>
+
 <action name="StatusArea_Audio_CurrentInputDevice">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

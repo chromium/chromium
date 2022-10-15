@@ -814,6 +814,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // In this case, input mute changes will be disabled.
   bool input_muted_by_microphone_mute_switch_ = false;
 
+  // Whether the audio device was selected by user, to track user overrides
+  bool input_device_selected_by_user_ = false;
+  bool output_device_selected_by_user_ = false;
+
   // Task runner of browser main thread. All member variables should be accessed
   // on this thread.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;

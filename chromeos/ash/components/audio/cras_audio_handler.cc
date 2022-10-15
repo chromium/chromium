@@ -786,11 +786,28 @@ void CrasAudioHandler::SetActiveDevice(const AudioDevice& active_device,
     if (active_device.is_input) {
       base::RecordAction(
           base::UserMetricsAction("StatusArea_Audio_SwitchInputDevice"));
+      if (!input_device_selected_by_user_) {
+        base::RecordAction(base::UserMetricsAction(
+            "StatusArea_Audio_AutoInputSelectionOverridden"));
+      }
     } else {
       base::RecordAction(
           base::UserMetricsAction("StatusArea_Audio_SwitchOutputDevice"));
+      if (!output_device_selected_by_user_) {
+        base::RecordAction(base::UserMetricsAction(
+            "StatusArea_Audio_AutoOutputSelectionOverridden"));
+      }
     }
   }
+
+  // Update *_selected_by_user_.
+  // Including to unset it when selected by priority or by camera.
+  if (active_device.is_input) {
+    input_device_selected_by_user_ = activate_by == ACTIVATE_BY_USER;
+  } else {
+    output_device_selected_by_user_ = activate_by == ACTIVATE_BY_USER;
+  }
+
   if (active_device.is_input)
     CrasAudioClient::Get()->SetActiveInputNode(active_device.id);
   else
@@ -1826,6 +1843,17 @@ void CrasAudioHandler::HandleAudioDeviceChange(
     bool active_device_removed) {
   uint64_t& active_node_id =
       is_input ? active_input_node_id_ : active_output_node_id_;
+
+  if (has_device_change) {
+    // Mark device selected by the system, including when the algorithm
+    // does nothing ultimately. We still treat not switching the device
+    // as a decision of the algorithm.
+    if (is_input) {
+      input_device_selected_by_user_ = false;
+    } else {
+      output_device_selected_by_user_ = false;
+    }
+  }
 
   // No audio devices found.
   if (devices_pq.empty()) {
