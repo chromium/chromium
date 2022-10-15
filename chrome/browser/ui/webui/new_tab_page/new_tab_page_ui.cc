@@ -584,6 +584,10 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   // background image available as soon as the page loads to prevent a potential
   // white flicker.
 
+  // Load time data is cached across page reloads. Listen for theme changes so
+  // that theme info is up-to-date when reloading.
+  native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
+  theme_service_observation_.Observe(theme_service_.get());
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
 
@@ -595,7 +599,7 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   }
 
   // Populates the load time data with basic info.
-  OnColorProviderChanged();
+  OnThemeChanged();
   OnCustomBackgroundImageUpdated();
   OnLoad();
 }
@@ -791,7 +795,11 @@ void NewTabPageUI::CreatePageHandler(
   most_visited_page_handler_->SetShortcutsVisible(IsShortcutsVisible());
 }
 
-void NewTabPageUI::OnColorProviderChanged() {
+void NewTabPageUI::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
+  OnThemeChanged();
+}
+
+void NewTabPageUI::OnThemeChanged() {
   base::Value::Dict update;
   const ui::ColorProvider& color_provider = web_contents_->GetColorProvider();
   auto background_color = color_provider.GetColor(kColorNewTabPageBackground);
