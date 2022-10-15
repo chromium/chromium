@@ -572,16 +572,32 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
                   frame_header.buffer_removal_time);
   v4l2_frame_params.refresh_frame_flags = frame_header.refresh_frame_flags;
 
-  // TODO(b/248602457): Enable code for |order_hints| setup
-  // after |ref_order_hint| maintenance is implemented.
+  static_assert(std::size(decltype(v4l2_frame_params.order_hints){}) ==
+                    libgav1::kNumReferenceFrameTypes,
+                "Invalid size of |order_hints| array");
 
-  // These params looks duplicated with |ref_frame_idx|, but they are required
-  // and used when |frame_refs_short_signaling| is set according to the AV1
-  // spec. https://aomediacodec.github.io/av1-spec/#uncompressed-header-syntax
-  v4l2_frame_params.last_frame_idx =
-      frame_header.reference_frame_index[libgav1::kReferenceFrameLast];
-  v4l2_frame_params.gold_frame_idx =
-      frame_header.reference_frame_index[libgav1::kReferenceFrameGolden];
+  // |reference_frame_index| indicates which reference frame slot is used for
+  // different reference frame types: L(1), L2(2), L3(3), G(4), BWD(5), A2(6),
+  // A(7). As |ref_frames[i]| is a |AV1Picture| with frame header info, we can
+  // extract |order_hint| directly for each reference frame type instead of
+  // maintaining |RefOrderHint| array in the AV1 spec.
+  if (frame_header.frame_type != libgav1::kFrameKey) {
+    for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
+      const int8_t reference_frame_index =
+          frame_header.reference_frame_index[i];
+
+      // TODO(b/253676775): Add safety check to guarantee DCHECK()s
+      // in AV1Decoder::CheckAndCleanUpReferenceFrames()
+      DCHECK_GE(reference_frame_index, 0);
+      DCHECK_LT(reference_frame_index, libgav1::kNumReferenceFrameTypes);
+      DCHECK(ref_frames[reference_frame_index]);
+
+      const uint8_t order_hint =
+          ref_frames[reference_frame_index]->frame_header.order_hint;
+      v4l2_frame_params.order_hints[i + 1] =
+          base::strict_cast<__u32>(order_hint);
+    }
+  }
 
   for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
     const auto* v4l2_ref_pic =
@@ -594,9 +610,22 @@ DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(
   static_assert(std::size(decltype(v4l2_frame_params.ref_frame_idx){}) ==
                     libgav1::kNumInterReferenceFrameTypes,
                 "Invalid size of |ref_frame_idx| array");
-  for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++)
+  for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; i++) {
+    LOG_IF(ERROR, (frame_header.frame_type == libgav1::kFrameKey) &&
+                      (frame_header.reference_frame_index[i] != 0))
+        << "|reference_frame_index| from the frame header is not 0 for the "
+           "intra frame";
+
     v4l2_frame_params.ref_frame_idx[i] =
         base::checked_cast<__u8>(frame_header.reference_frame_index[i]);
+  }
+
+  // These params are duplicated with |ref_frame_idx|, and they are trending to
+  // be removed in AV1 uAPI RFC v4.
+  v4l2_frame_params.last_frame_idx =
+      frame_header.reference_frame_index[libgav1::kReferenceFrameLast];
+  v4l2_frame_params.gold_frame_idx =
+      frame_header.reference_frame_index[libgav1::kReferenceFrameGolden];
 
   v4l2_frame_params.skip_mode_frame[0] =
       base::checked_cast<__u8>(frame_header.skip_mode_frame[0]);
