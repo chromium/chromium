@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
@@ -244,25 +243,6 @@ public class NavigationHandle {
     }
 
     /**
-     * Set request's header. If the header is already present, its value is overwritten. When
-     * modified during a navigation start, the headers will be applied to the initial network
-     * request. When modified during a redirect, the headers will be applied to the redirected
-     * request.
-     */
-    public void setRequestHeader(String headerName, String headerValue) {
-        NavigationHandleJni.get().setRequestHeader(
-                mNativeNavigationHandleProxy, headerName, headerValue);
-    }
-
-    /**
-     * Remove a request's header. If the header is not present, it has no effect. Must be called
-     * during a redirect.
-     */
-    public void removeRequestHeader(String headerName) {
-        NavigationHandleJni.get().removeRequestHeader(mNativeNavigationHandleProxy, headerName);
-    }
-
-    /**
      * Get the Origin that initiated this navigation. May be null in the case of navigations
      * originating from the browser.
      */
@@ -310,12 +290,5 @@ public class NavigationHandle {
      */
     public boolean isReload() {
         return mIsReload;
-    }
-
-    @NativeMethods
-    interface Natives {
-        void setRequestHeader(
-                long nativeNavigationHandleProxy, String headerName, String headerValue);
-        void removeRequestHeader(long nativeNavigationHandleProxy, String headerName);
     }
 }

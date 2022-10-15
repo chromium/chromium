@@ -104,20 +104,4 @@ NavigationHandleProxy::~NavigationHandleProxy() {
   Java_NavigationHandle_release(env, java_navigation_handle_);
 }
 
-// Called from Java.
-void NavigationHandleProxy::SetRequestHeader(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& name,
-    const JavaParamRef<jstring>& value) {
-  cpp_navigation_handle_->SetRequestHeader(ConvertJavaStringToUTF8(name),
-                                           ConvertJavaStringToUTF8(value));
-}
-
-// Called from Java.
-void NavigationHandleProxy::RemoveRequestHeader(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& name) {
-  cpp_navigation_handle_->RemoveRequestHeader(ConvertJavaStringToUTF8(name));
-}
-
 }  // namespace content

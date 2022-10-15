@@ -35,15 +35,6 @@ class NavigationHandleProxy final {
   void DidRedirect();
   void DidFinish();
 
-  // Called from Java.
-  void SetRequestHeader(JNIEnv* env,
-                        const base::android::JavaParamRef<jstring>& name,
-                        const base::android::JavaParamRef<jstring>& value);
-
-  // Called from Java.
-  void RemoveRequestHeader(JNIEnv* env,
-                           const base::android::JavaParamRef<jstring>& name);
-
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_navigation_handle_;
   raw_ptr<NavigationHandle> cpp_navigation_handle_ = nullptr;
