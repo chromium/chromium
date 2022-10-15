@@ -43,12 +43,6 @@
           "builder": "Android Release (Nexus 5X)",
           "project": "chromium"
         }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-marshmallow-arm64-rel",
-          "group": "tryserver.chromium.android"
-        }
       ]
     }
   },

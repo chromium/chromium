@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "reclient")
+load("//lib/builders.star", "goma", "os")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -241,111 +241,6 @@ try_.builder(
 try_.builder(
     name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
     mirrors = builder_config.copy_from("try/android-pie-x86-rel"),
-)
-
-try_.builder(
-    name = "android-marshmallow-x86-fyi-rel-reviver",
-)
-
-try_.orchestrator_builder(
-    name = "android-marshmallow-arm64-rel",
-    mirrors = [
-        "ci/android-marshmallow-arm64-rel",
-        "ci/Android Release (Nexus 5X)",
-    ],
-    check_for_flakiness = True,
-    compilator = "android-marshmallow-arm64-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
-    use_java_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    # tryjob = try_.job(),
-    experiments = {
-        "remove_src_checkout_experiment": 100,
-        "enable_weetbix_queries": 100,
-        "weetbix.retry_weak_exonerations": 100,
-    },
-)
-
-try_.compilator_builder(
-    name = "android-marshmallow-arm64-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    check_for_flakiness = True,
-    cores = 64 if settings.is_main else 32,
-    main_list_view = "try",
-)
-
-try_.orchestrator_builder(
-    name = "android-marshmallow-x86-rel",
-    mirrors = [
-        "ci/android-marshmallow-x86-rel",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    check_for_flakiness = True,
-    compilator = "android-marshmallow-x86-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
-    use_java_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    # tryjob = try_.job(),
-    experiments = {
-        "enable_weetbix_queries": 100,
-        "weetbix.retry_weak_exonerations": 100,
-    },
-)
-
-try_.compilator_builder(
-    name = "android-marshmallow-x86-rel-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    check_for_flakiness = True,
-    main_list_view = "try",
-)
-
-# b/236070074: Experimental builder to test reclient migration
-try_.orchestrator_builder(
-    name = "android-marshmallow-x86-rel-reclient",
-    mirrors = [
-        "ci/android-marshmallow-x86-rel",
-    ],
-    try_settings = builder_config.try_settings(
-        rts_config = builder_config.rts_config(
-            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
-        ),
-    ),
-    description_html = "Experimental shadow builder to test reclient migration. <br/>The bot is shadowing <a href=\"https://ci.chromium.org/p/chromium/builders/try/android-marshmallow-x86-rel\">android-marshmallow-x86-rel</a>.",
-    check_for_flakiness = True,
-    compilator = "android-marshmallow-x86-rel-reclient-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    main_list_view = "try",
-    use_java_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
-    experiments = {
-        "enable_weetbix_queries": 100,
-        "weetbix.retry_weak_exonerations": 100,
-    },
-)
-
-try_.compilator_builder(
-    name = "android-marshmallow-x86-rel-reclient-compilator",
-    branch_selector = branches.STANDARD_MILESTONE,
-    check_for_flakiness = True,
-    main_list_view = "try",
-    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-marshmallow-x86-rel-non-cq",
-    mirrors = [
-        "ci/android-marshmallow-x86-rel-non-cq",
-    ],
 )
 
 try_.orchestrator_builder(

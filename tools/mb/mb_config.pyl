@@ -107,13 +107,6 @@
       'android-cronet-marshmallow-arm64-perf-rel': 'android_cronet_release_bot_minimal_symbols_arm64_reclient',
       'android-cronet-x86-dbg': 'android_cronet_debug_static_bot_x86_reclient',
       'android-cronet-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_reclient',
-
-      # This bot must use the gpu_tests mixin to match 'Android FYI Release (Nexus 5X)'
-      # on the chromium.gpu waterfall, which it mirrors via trybots.pyl.
-      'android-marshmallow-arm64-rel': 'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_reclient',
-
-      'android-marshmallow-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google_reclient',
-      'android-marshmallow-x86-rel-non-cq': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google_reclient',
       'android-nougat-x86-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       # TODO(crbug/1182468) Remove android coverage bots after coverage is
       # running on CQ.
@@ -132,7 +125,6 @@
       'android-annotator-rel': 'android_release_bot_minimal_symbols_arm64_webview_google_reclient',
       'android-chrome-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-cronet-asan-x86-rel': 'android_cronet_release_bot_minimal_symbols_x86_clang_asan_reclient',
-      'android-marshmallow-x86-fyi-rel-reviver': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_google_reclient',
       'android-pie-arm64-wpt-rel-non-cq': 'android_release_bot_minimal_symbols_arm64_webview_monochrome_reclient',
       'android-pie-x86-fyi-rel-reviver': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
       'android-weblayer-pie-x86-wpt-fyi-rel': 'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient',
@@ -991,11 +983,6 @@
       'android-deterministic-rel': 'android_without_codecs_release_trybot',
       'android-fieldtrial-rel': 'android_release_trybot_minimal_symbols_x86_fastbuild_disable_proguard_chrome_google',
       'android-inverse-fieldtrials-pie-x86-fyi-rel': 'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials',
-      'android-marshmallow-arm64-rel': 'gpu_tests_android_release_trybot_arm64_fastbuild_java_coverage',
-      'android-marshmallow-x86-fyi-rel-reviver': 'android_release_trybot_x86_fastbuild_webview_google',
-      'android-marshmallow-x86-rel': 'android_release_trybot_x86_fastbuild_webview_google_coverage',
-      'android-marshmallow-x86-rel-non-cq': 'android_release_trybot_x86_fastbuild_webview_google',
-      'android-marshmallow-x86-rel-reclient': 'android_release_trybot_x86_fastbuild_webview_google_coverage_reclient',
       'android-nougat-x86-rel': 'android_release_trybot_x86_fastbuild_webview_monochrome',
       'android-opus-arm-rel': 'android_release_trybot',
       'android-oreo-arm64-cts-networkservice-dbg': 'android_debug_trybot_arm64',
@@ -1687,11 +1674,6 @@
       'chrome_google'
     ],
 
-    'android_release_bot_minimal_symbols_x86_fastbuild_webview_google_reclient': [
-      'android', 'release_bot_reclient', 'minimal_symbols', 'x86',
-      'android_fastbuild', 'strip_debug_info', 'webview_google',
-    ],
-
     'android_release_bot_minimal_symbols_x86_fastbuild_webview_monochrome_reclient': [
       'android', 'release_bot_reclient', 'minimal_symbols', 'x86',
       'strip_debug_info', 'android_fastbuild', 'webview_monochrome',
@@ -1778,23 +1760,6 @@
       'android', 'release_trybot', 'strip_debug_info', 'x64',
       'android_fastbuild', 'webview_trichrome',
       'no_secondary_abi',
-    ],
-
-    'android_release_trybot_x86_fastbuild_webview_google': [
-      'android', 'release_trybot', 'x86', 'android_fastbuild',
-      'strip_debug_info', 'webview_google',
-    ],
-
-    'android_release_trybot_x86_fastbuild_webview_google_coverage': [
-      'android', 'release_trybot', 'x86', 'android_fastbuild',
-      'strip_debug_info', 'webview_google', 'use_java_coverage',
-      'partial_code_coverage_instrumentation',
-    ],
-
-    'android_release_trybot_x86_fastbuild_webview_google_coverage_reclient': [
-      'android', 'release_trybot_reclient', 'x86', 'android_fastbuild',
-      'strip_debug_info', 'webview_google', 'use_java_coverage',
-      'partial_code_coverage_instrumentation',
     ],
 
     'android_release_trybot_x86_fastbuild_webview_google_invert_fieldtrials': [
@@ -2657,12 +2622,6 @@
       'android_no_proguard', 'use_java_coverage',
     ],
 
-    'gpu_tests_android_release_bot_minimal_symbols_arm64_fastbuild_reclient': [
-      'gpu_tests', 'android', 'release_bot_reclient', 'minimal_symbols', 'arm64',
-      'resource_allowlisting', 'static_angle', 'android_fastbuild',
-      'webview_google',
-    ],
-
     # No symbols to prevent linker file too large error on
     # android_webview_unittests target.
     'gpu_tests_android_release_bot_no_symbols_arm64_fastbuild_native_coverage_reclient': [
@@ -2682,12 +2641,6 @@
     'gpu_tests_android_release_trybot_arm64_fastbuild': [
       'gpu_tests', 'android', 'release_trybot', 'arm64', 'static_angle',
       'android_fastbuild',
-    ],
-
-    'gpu_tests_android_release_trybot_arm64_fastbuild_java_coverage': [
-      'gpu_tests', 'android', 'release_trybot', 'arm64', 'static_angle',
-      'strip_debug_info', 'android_fastbuild', 'webview_google',
-      'use_java_coverage', 'partial_code_coverage_instrumentation',
     ],
 
     'gpu_tests_android_release_trybot_arm64_reclient': [
