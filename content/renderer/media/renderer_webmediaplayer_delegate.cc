@@ -191,7 +191,7 @@ void RendererWebMediaPlayerDelegate::OnPageVisibilityChanged(
   const bool is_shown =
       visibility_state == blink::mojom::PageVisibilityState::kVisible ||
       visibility_state == blink::mojom::PageVisibilityState::kHiddenButPainting;
-  if (is_shown_ == is_shown)
+  if (is_shown_.has_value() && *is_shown_ == is_shown)
     return;
   is_shown_ = is_shown;
 

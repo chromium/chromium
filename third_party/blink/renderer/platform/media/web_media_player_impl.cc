@@ -2610,6 +2610,7 @@ void WebMediaPlayerImpl::SuspendForFrameClosed() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
   was_suspended_for_frame_closed_ = true;
+  UpdateBackgroundVideoOptimizationState();
   UpdatePlayState();
 }
 
