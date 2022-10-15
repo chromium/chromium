@@ -421,9 +421,18 @@ x11::RandR::Mode DesktopResizerX11::UpdateMode(x11::RandR::Output output,
                                                int height) {
   std::string mode_name = GetModeNameForOutput(output);
   DeleteMode(output, mode_name);
+
+  // Set some clock values so that the computed refresh-rate is a realistic
+  // number:
+  // 60Hz = dot_clock / (htotal * vtotal).
+  // This allows GNOME's Display Settings tool to apply new settings for
+  // resolution/scaling - see crbug.com/1374488.
   x11::RandR::ModeInfo mode;
   mode.width = width;
   mode.height = height;
+  mode.dot_clock = 60;
+  mode.htotal = 1;
+  mode.vtotal = 1;
   mode.name_len = mode_name.size();
   if (auto reply =
           randr_->CreateMode({root_, mode, mode_name.c_str()}).Sync()) {
